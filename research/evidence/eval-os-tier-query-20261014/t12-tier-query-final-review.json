@@ -1,0 +1,64 @@
+{
+  "schema": "eval-os.t12-tier-query-final-review.v1",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "reviewer_native_thread": "01a13341-2c83-79b2-9a5a-dddb12e780e3",
+  "base": "3e5b68f3468b029205bbb30d2c855022d37bdb66",
+  "source_tree": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/eval-os-tier-query-20261014-57fd7cc5c269b449",
+  "scope": "Pure required_tier query sub-contract, two-file uncommitted draft; not PR6651source or fullT12delivery",
+  "ruling": "ACCEPTED_BOUNDED_SOURCE_AND_TARGETED_CLOSURE",
+  "findings": [],
+  "reviewed_sha256": {
+    "engine/intelligence_registry.py": "73f171baba1eee069eca1ed8ec9a3eeccdeed246ffcf35ea9ca10b763a781630",
+    "tests/test_intelligence_registry.py": "5c8e582893bd344fe0d6ec4ffa9884106f87e1d859f1b5b323343b22efc3be90"
+  },
+  "legacy_definition_review": {
+    "old_function_class_count": 22,
+    "changed": [],
+    "added": [
+      "required_tier"
+    ]
+  },
+  "closed_review_findings": [
+    {
+      "id": "T12-ARTIFACT-PARTITION",
+      "closure": "Global engine/excluded artifact identity inventory; each matched artifact must occur once. Unrelated content debt remains irrelevant. Actual engine/excluded collisions eachreproducedREDthenPASS."
+    },
+    {
+      "id": "T12-RULE-PREMISE",
+      "closure": "Matched gate_size requires scored/confirmer; matcheddisplay cannot beweightedtier orcarryscoredsurfaces. Knownrulepairs/allwinningartifact/max checks retained. Gateunweighted/displayweighted/displayranked actualREDthenPASS."
+    }
+  ],
+  "retained_evidence_sha256": {
+    "assurance/t12-tier-query-review.json": "8978abc9d3ed2051353c4ae3579097f6fec1ab55a0041139e4fe4fff4bf2966e",
+    "science/tier-query-review-red.txt": "d94af5157c1ed8870dc9676af69be14f5184bf2a158c44b7aec24924e95f5030",
+    "science/tier-query-final.xml": "21d5c393030f53a2aac0f36c7f6938f99c70963c0afe87619add748014cf81f5",
+    "science/tier-query-final.txt": "e603d5ff72639c07e248135eadeb23d2dd0e9392986bd0f11aa90fff12376a87",
+    "science/tier-query-regression.xml": "ab8bce51af0ea3fd8e497cef08ccaf595b7a00998e995543d4bf23e46a16d1a4",
+    "science/tier-query-regression.txt": "b26696bc09e87523b36088b15978e796bff4da5515894441cda7ceadadf4f5c6"
+  },
+  "verification": {
+    "discriminating_red": "5FAIL172deselected11.36s on oldhelper; no reviewer tests",
+    "final_targeted": "24PASS/errors0/failures0/skips0,console3.80s/JUnit3.926s",
+    "earlier_regression": "218PASS/errors0/failures0/skips0 before11lineguardclosure; reusedproportionatelybecauseolddefinitionsunchanged. Notrepresentedasanentirefinalsource242test rerun."
+  },
+  "accepted_contract": [
+    "Exactproducerpathmatching and allowner identities",
+    "displayT1/gate_sizeT3 only; unsupported/null/unmatched/excluded/unattributedtypedunresolved",
+    "Partialaggregate required_tiernull, maximum_supported_tierretained",
+    "No inferencefrommetrics/readiness/validation/AgentOSstate; no wholecorpuscontentgate",
+    "No filesystem/Git/network/readiness/evaluation/issue/routing/priority/admission/financial effects",
+    "Callerowns loadedregistryidentity/freshness; internallyconsistentprovenance is not authenticatedcurrentproduction proof"
+  ],
+  "completion_limits": [
+    "OriginalT12structuredresearchissueemission remainsowed",
+    "No T3study/outcomequalification, T4validation or globaltierpolicycompletion",
+    "No existingpublishedA1candidate/test/CIproof changed",
+    "Containingcommit/publication/requiredCI later owed before shipping helper"
+  ],
+  "reviewer_effects": {
+    "tests": false,
+    "network_CIqueries": false,
+    "source_Gitwrites": false,
+    "newFabric_nativeworkers": false
+  }
+}

@@ -1,0 +1,73 @@
+{
+ "B2_price_space_parity": {
+  "source": "_base/engine/options_dislocation.py synthetic_stock_price_deviation",
+  "structurally_absent_recorded": true
+ },
+ "american_pair": {
+  "incumbent_B1_forward_point": 101.0,
+  "q12": {
+   "hi": null,
+   "lo": null,
+   "reasons": [
+    "american_exercise_no_parity_equality_requires_q02_adjustment"
+   ],
+   "rejected": [],
+   "status": "unavailable"
+  }
+ },
+ "crossed_call": {
+  "incumbent_B1_forward_point": 101.07142857142857,
+  "q12": {
+   "hi": null,
+   "lo": null,
+   "reasons": [
+    "no_eligible_pairs"
+   ],
+   "rejected": [
+    [
+     "crossed_call"
+    ]
+   ],
+   "status": "unavailable"
+  }
+ },
+ "incompatible_strikes": {
+  "incumbent_B1_forward_point": 101.0,
+  "q12": {
+   "hi": null,
+   "lo": null,
+   "reasons": [
+    "pair_intervals_do_not_intersect"
+   ],
+   "rejected": [],
+   "status": "incompatible"
+  }
+ },
+ "stale_put": {
+  "incumbent_B1_forward_point": 101.0,
+  "q12": {
+   "hi": null,
+   "lo": null,
+   "reasons": [
+    "no_eligible_pairs"
+   ],
+   "rejected": [
+    [
+     "stale_put",
+     "asynchronous_legs"
+    ]
+   ],
+   "status": "unavailable"
+  }
+ },
+ "witness_european_F101": {
+  "incumbent_B1_forward_point": 101.0,
+  "q12": {
+   "hi": 101.16326530612245,
+   "lo": 100.83673469387755,
+   "reasons": [],
+   "rejected": [],
+   "status": "consistent"
+  }
+ }
+}

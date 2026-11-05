@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T20:06:52Z",
+ "accession": "0001104659-26-037706",
+ "cik": "0001951222",
+ "doc_byte_length": 5523011,
+ "doc_sha256": "0cce91aa4fda1161c07cc338f0e8a1391b21e40d6de6f3ae380609ef733002e7",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "laes-20251231x20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2309560,
+  "byte_start": 2309275,
+  "normalized": "Master Purchase Agreement by and between Cisco Systems International B.V. and INSIDE Secure, dated as of August 25, 2014 (incorporated by reference to Exhibit 10.27 to the Company’s Registration Statement on Form F-1 (File No. 333-269710) filed with the SEC on February 10, 2023)",
+  "normalized_sha256": "d7f8eb90cd5480b586d20f8194f8ab375583930d423192143bb6a141b3a493b7",
+  "raw": "Master Purchase Agreement by and between Cisco Systems International B.V. and INSIDE Secure, dated as of August 25, 2014 (incorporated by reference to Exhibit 10.27 to the Company&#8217;s Registration Statement on Form F-1 (File No. 333-269710) filed with the SEC on February 10, 2023)",
+  "raw_sha256": "7ebc8c74e4cae3fe7443b7205f3df5cc90b7a60121663e1de1362857704274ce"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/laes-20251231x20f.htm",
+ "xbrl_contexts": []
+}

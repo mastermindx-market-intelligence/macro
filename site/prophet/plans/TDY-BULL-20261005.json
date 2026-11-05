@@ -1,0 +1,1238 @@
+{
+  "schema": "prophet.trade_plan/v1",
+  "id": "TDY-BULL-20261005",
+  "asof": "2026-10-06",
+  "recorded_at": "2026-10-06",
+  "asset": "TDY",
+  "direction": "BULL",
+  "thesis": "TDY \u2014 conviction 8/100 (neutral) Entry grade: light. Drivers: quality. Cautions: Accounting quality is worth a second look.. Trust tier: Event edge: insider buying (lone FDR survivor) + earnings-surprise PEAD context + revisions \u2014 a confluence read, not a standalone alpha. Options positioning (as of 2026-10-05): the heaviest call open interest sat at $640.00, about 3.3% above the entry \u2014 dealer hedging tends to add friction into that level, which is a place price stalls, not a target. DISPLAY-ONLY: machine-generated from factor scores; no forward return guarantee; display-tier artifact.",
+  "thesis_zh": "TDY \u2014 \u786e\u4fe1\u5ea6 8/100\uff08\u4e2d\u6027\uff09 \u5165\u573a\u8bc4\u7ea7: light\u3002 \u9a71\u52a8\u56e0\u7d20: quality\u3002 \u6ce8\u610f\u4e8b\u9879: \u8d22\u52a1\u8d28\u91cf\u503c\u5f97\u518d\u6838\u67e5\u4e00\u6b21\u3002\u3002 \u53ef\u4fe1\u5ea6: \u4e8b\u4ef6\u9a71\u52a8\u4f18\u52bf\uff1a\u5185\u90e8\u4eba\u4e70\u5165\uff08\u552f\u4e00\u901a\u8fc7 FDR \u7684\u56e0\u5b50\uff09\uff0b\u76c8\u5229\u8d85\u9884\u671f PEAD \u80cc\u666f\uff0b\u8bc4\u7ea7\u8c03\u6574 \u2014 \u7efc\u5408\u53c2\u8003\uff0c\u975e\u72ec\u7acb\u8d85\u989d\u6536\u76ca\u3002 \u671f\u6743\u6301\u4ed3\uff08\u622a\u81f32026-10-05\uff09\uff1a\u6700\u91cd\u7684\u770b\u6da8\u6301\u4ed3\u4f4d\u4e8e $640.00\uff0c\u7ea6\u5728\u5165\u573a\u4ef7\u4e0a\u65b93.3% \u2014 \u505a\u5e02\u5546\u5bf9\u51b2\u901a\u5e38\u5728\u8be5\u4ef7\u4f4d\u5f62\u6210\u963b\u529b\uff1b\u90a3\u662f\u4ef7\u683c\u5bb9\u6613\u505c\u6ede\u4e4b\u5904\uff0c\u5e76\u975e\u76ee\u6807\u4ef7\u3002 \u4ec5\u4f9b\u5c55\u793a\uff1a\u7531\u56e0\u5b50\u5206\u6570\u673a\u5668\u751f\u6210\uff1b\u65e0\u524d\u77bb\u6536\u76ca\u4fdd\u8bc1\uff1b\u5c55\u793a\u5c42\u7ea7\u8f93\u51fa\u3002",
+  "source_engines": [
+    "us_standouts_buy_lane",
+    "neural_web"
+  ],
+  "trigger": 619.6,
+  "entry": 619.6,
+  "invalidation": 577.37,
+  "targets": [
+    682.945,
+    746.29
+  ],
+  "horizon_days": 45,
+  "min_hold_days": 10,
+  "tranche": 1,
+  "option_contract": null,
+  "stage_tilt": {
+    "leash": 1.0,
+    "eligible": false,
+    "stage_at_entry": 4,
+    "ec_sent": 25.0,
+    "ec_call_date": "2026-07-22",
+    "ec_source_state": "available",
+    "ec_source_path": "data/earnings_calls/history.parquet",
+    "ec_source_tier": "r2_history",
+    "ec_source_generation": {
+      "generation_id": "8f241c0783d42e215cf6fdb0",
+      "published_at": "2026-10-06T06:45:23.989469+00:00",
+      "rows": 50982
+    },
+    "ec_source_reason": null,
+    "bear_gate": false,
+    "provisional": true,
+    "demoted": false,
+    "basis": "PSQ 2026-07-20 quality re-grade; provisional \u2014 forward-shadow checked (~2026-12)"
+  },
+  "management_ref": "prophet/state/TDY-BULL-20261005.json",
+  "authority_tier": "display",
+  "reliability": {
+    "plan": "display \u2014 us_standouts buy-lane originated; display-only until forward ledger gate passes",
+    "option_premium": "null \u2014 symbol not in ThetaData store"
+  },
+  "formation_date": "2026-10-05",
+  "signal_date": "2026-10-05",
+  "confirmed_date": null,
+  "observed_date": "2026-10-05",
+  "signal_tier": "T1",
+  "signal_date_basis": "tier_event_date",
+  "signal_provisional": true,
+  "source_marker_date": "2026-10-05",
+  "price_basis_date": "2026-10-05",
+  "entry_date": "2026-10-05",
+  "what_to_do_now": [
+    "Wait for a pullback into the $607.20\u2013$613.30 zone before starting. No entry above $619.60; the plan waits at the band rather than paying the last print.",
+    "Keep the first tranche small; there is no need to rush. Exit on a close below $577.37.",
+    "If the zone fills, scale in gradually toward T1 ($682.95)."
+  ],
+  "what_to_do_now_zh": [
+    "\u7b49\u5f85\u4ef7\u683c\u56de\u843d\u81f3 $607.20\u2013$613.30 \u533a\u95f4\u518d\u5efa\u4ed3\u3002\u4e0d\u8981\u5728 $619.60 \u4e4b\u4e0a\u4e70\u5165\uff1b\u8ba1\u5212\u5728\u533a\u95f4\u7b49\u5f85\uff0c\u800c\u975e\u6309\u6700\u65b0\u4ef7\u8ffd\u5165\u3002",
+    "\u9996\u7b14\u4fdd\u6301\u5c0f\u4ed3\u4f4d\uff0c\u65e0\u9700\u6025\u4e8e\u5165\u573a\u3002\u6536\u76d8\u8dcc\u7834 $577.37 \u5373\u79bb\u573a\u3002",
+    "\u82e5\u533a\u95f4\u88ab\u89e6\u53ca\uff0c\u53ef\u9010\u6b65\u52a0\u4ed3\u81f3 T1\uff08$682.95\uff09\u3002"
+  ],
+  "profit_plan": [
+    {
+      "level": 682.945,
+      "label": "T1",
+      "action": "Scale out 40%, trail stop to entry",
+      "status": "ACTIVE"
+    },
+    {
+      "level": 746.29,
+      "label": "T2",
+      "action": "Close remaining 60%, exit full position",
+      "status": "PENDING"
+    }
+  ],
+  "profit_plan_zh": [
+    {
+      "level": 682.945,
+      "label": "T1",
+      "action": "\u51cf\u4ed3 40%\uff0c\u5c06\u6b62\u635f\u4e0a\u79fb\u81f3\u5165\u573a\u4f4d",
+      "status": "ACTIVE"
+    },
+    {
+      "level": 746.29,
+      "label": "T2",
+      "action": "\u5e73\u4ed3\u5269\u4f59 60%\uff0c\u5168\u90e8\u79bb\u573a",
+      "status": "PENDING"
+    }
+  ],
+  "_signal_date": "2026-10-05",
+  "_priority_score": 44.7,
+  "_conviction_score": 8,
+  "_act_level": 0,
+  "_r_unit": 42.23,
+  "_gate_go": false,
+  "admission_class": "patience",
+  "entry_status": "bounce_wait",
+  "selection_era": "anticipation-v1-2026-08-08",
+  "entry_basis": {
+    "basis_date": "2026-10-05",
+    "basis_source": "staleness_price_through",
+    "run_asof": "2026-10-06",
+    "lag": 0,
+    "lag_basis": "sessions",
+    "max_lag": 3,
+    "state": "current",
+    "signal_basis_date": "2026-10-05",
+    "signal_lag_sessions": 0,
+    "era": "anticipation-v1-2026-08-08"
+  },
+  "entry_zone": {
+    "schema": "prophet.entry_zone/v1",
+    "low": 607.2,
+    "high": 613.3,
+    "chase_above": 619.6,
+    "pct_from_entry": -1.51,
+    "zone_class": "reset_band",
+    "stance": "wait",
+    "basis": "the 10- and 20-day average band under the last price, from the entry ladder",
+    "basis_zh": "\u6700\u65b0\u4ef7\u4e0b\u65b9\u7684 10 \u65e5\u4e0e 20 \u65e5\u5747\u7ebf\u533a\u95f4\uff0c\u6765\u81ea\u5165\u573a\u9636\u68af",
+    "price_basis_date": "2026-10-05",
+    "expiry_sessions": 26,
+    "expiry_date": "2026-11-10",
+    "conversion_class": "washout",
+    "conversion_evidence": "the board reads this as a name coming off a low",
+    "conversion_evidence_zh": "\u770b\u677f\u628a\u5b83\u5f52\u5165\u4f4e\u4f4d\u56de\u5347\u7684\u4e00\u7c7b",
+    "converts_on_expiry": true,
+    "extension": {
+      "daily_stoch_k": 91.41,
+      "htf_stoch_k": 23.45,
+      "daily_extended": true,
+      "htf_extended": false,
+      "both_extended": false,
+      "threshold": 80.0,
+      "htf_timeframe": 3,
+      "source": "price_store_stoch_rsi",
+      "reason": null,
+      "asof": "2026-10-05"
+    },
+    "leader_pullback": {
+      "leader_pullback": false,
+      "state": null,
+      "pullback_high": null,
+      "days_in_state": null,
+      "construction_era": null,
+      "state_asof": null,
+      "context_states": [
+        "PULLBACK",
+        "RESET_TURN"
+      ],
+      "source": "unavailable",
+      "reason": "ticker is outside the leader-pullback organ's universe"
+    },
+    "era": "anticipation-v1-2026-08-08"
+  },
+  "early_turn": {
+    "fired": false,
+    "reason": "signature incomplete: from_washed",
+    "timeframes": [],
+    "washout_state": "NONE",
+    "leader_pullback_source": "unavailable",
+    "union_fired": false,
+    "union_legs": [
+      "relaxed_cross",
+      "early_dot"
+    ],
+    "union_texture": {},
+    "basket_context_chip": "NONE"
+  },
+  "government_revenue_annotation": {
+    "contract": "government_revenue.prophet_annotation.v1",
+    "schema_version": "1.0.0",
+    "label": {
+      "en": "shadow context",
+      "zh": "\u5f71\u5b50\u80cc\u666f"
+    },
+    "allowed_behavior": "annotate_only",
+    "authority": {
+      "tier": "display",
+      "context_only": true,
+      "can_rank": false,
+      "can_size": false,
+      "can_gate": false,
+      "can_originate_signal": false,
+      "can_add_candidates": false,
+      "can_escalate": false
+    },
+    "annotations": [
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-8ef89090c40791a63de4115a",
+        "observation_id": "gro1-c692fedbae90b5e4204ebaee",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "TDY",
+        "issuer": {
+          "company_name": "Teledyne",
+          "ticker": "TDY",
+          "issuer_company_id": "central:TDY",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-d9ca9eee78fa49aabea64d09",
+          "record_id": "award:generated:CONT_AWD_80MSFC22CA016_8000_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-08-28T00:00:00+00:00",
+          "known_at": "2026-08-31T01:10:50.489948+00:00",
+          "amount_id": null,
+          "amount_value": 12416700.090000033,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "022c868273ee0b38fb29a2141735bdccbe9cf6b93dbef2a06a7b1415d1f2d36e",
+            "374c2ef20c7210b6802aa2541e28ebf8501ae0ebc7d78a9971487648e2676a60",
+            "dcb24c4e4e723cfc34283e63cf7baee646336a79d03983b4d9249900ef1b5437",
+            "e83b6f1a5b2849f50309f8c95adc15107a9fa66c18de49ca94e5575e9cf0dfdd",
+            "f4491495d53a88c78adaac536816830ac750718ec6aeb4b1d1e77653de3fe55f",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_80MSFC22CA016_8000_-NONE-_-NONE-",
+            "govws-d9ca9eee78fa49aabea64d09"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:tdy:teledyne-technologies-inc",
+            "ownership:tdy:teledyne-brown-engineering-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:tdy-sec-10k",
+            "evidence:tdy-sec-ex21",
+            "evidence:tdy-usaspending-fbrsjb6v4lw8",
+            "https://api.usaspending.gov/api/v2/awards/CONT_AWD_80MSFC22CA016_8000_-NONE-_-NONE-/",
+            "usaspending:usaspending-97b25ea228b65919c41eab1a:award_detail:a0606237bb183133:e83b6f1a5b2849f5",
+            "usaspending:usaspending-e5c743f1b9ac8800b22e7437:award_detail:a0606237bb183133:dcb24c4e4e723cfc"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-97b25ea228b65919c41eab1a:award_detail:a0606237bb183133:e83b6f1a5b2849f5",
+            "usaspending:usaspending-e5c743f1b9ac8800b22e7437:award_detail:a0606237bb183133:dcb24c4e4e723cfc"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-31T01:10:50.489948+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-31T01:10:50.489948+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-c61acb8b4f8f3c8295ac9730",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-e9af2adae7cd84729d198125",
+        "observation_id": "gro1-3a881147b6a2999f6c8a5c09",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "TDY",
+        "issuer": {
+          "company_name": "Teledyne",
+          "ticker": "TDY",
+          "issuer_company_id": "central:TDY",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-9a776292a46313f093173c27",
+          "record_id": "award:generated:CONT_AWD_80MSFC22CA016_8000_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-08-27T00:00:00+00:00",
+          "known_at": "2026-08-31T01:10:50.489948+00:00",
+          "amount_id": null,
+          "amount_value": 12416700.09,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "022c868273ee0b38fb29a2141735bdccbe9cf6b93dbef2a06a7b1415d1f2d36e",
+            "0608db681bdc4893567a091633da34548ee67db29962f8aaf610211844c2d1be",
+            "374c2ef20c7210b6802aa2541e28ebf8501ae0ebc7d78a9971487648e2676a60",
+            "dcb24c4e4e723cfc34283e63cf7baee646336a79d03983b4d9249900ef1b5437",
+            "f4491495d53a88c78adaac536816830ac750718ec6aeb4b1d1e77653de3fe55f",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_80MSFC22CA016_8000_-NONE-_-NONE-",
+            "govws-9a776292a46313f093173c27"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:tdy:teledyne-technologies-inc",
+            "ownership:tdy:teledyne-brown-engineering-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:tdy-sec-10k",
+            "evidence:tdy-sec-ex21",
+            "evidence:tdy-usaspending-fbrsjb6v4lw8",
+            "https://api.usaspending.gov/api/v2/transactions/",
+            "usaspending:usaspending-e5c743f1b9ac8800b22e7437:actions:17b476315a9c3a97:0608db681bdc4893",
+            "usaspending:usaspending-e5c743f1b9ac8800b22e7437:award_detail:a0606237bb183133:dcb24c4e4e723cfc"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-e5c743f1b9ac8800b22e7437:actions:17b476315a9c3a97:0608db681bdc4893",
+            "usaspending:usaspending-e5c743f1b9ac8800b22e7437:award_detail:a0606237bb183133:dcb24c4e4e723cfc"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-31T01:10:50.489948+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-31T01:10:50.489948+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-20a906383aca3412abd2fe21",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-551b330cc1b4e828269f2f7a",
+        "observation_id": "gro1-d60ea6fc8d819ffa1fbb0739",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "TDY",
+        "issuer": {
+          "company_name": "Teledyne",
+          "ticker": "TDY",
+          "issuer_company_id": "central:TDY",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-ce1daf89b4c2f3fd2e783854",
+          "record_id": "award:generated:CONT_AWD_N0002419C6402_9700_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-05-26T00:00:00+00:00",
+          "known_at": "2026-08-27T02:39:58.581371+00:00",
+          "amount_id": null,
+          "amount_value": 9142857.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "022c868273ee0b38fb29a2141735bdccbe9cf6b93dbef2a06a7b1415d1f2d36e",
+            "374c2ef20c7210b6802aa2541e28ebf8501ae0ebc7d78a9971487648e2676a60",
+            "669206499edfea0016ddea5259f0fb5123857548dd82bbae0d5ae1cdb62f5e68",
+            "d2602901b3f8f9dfb58d7d062b835aeb4de144d0607eae625f45eaac86b232d6",
+            "f4491495d53a88c78adaac536816830ac750718ec6aeb4b1d1e77653de3fe55f",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0002419C6402_9700_-NONE-_-NONE-",
+            "govws-ce1daf89b4c2f3fd2e783854"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:tdy:teledyne-technologies-inc",
+            "ownership:tdy:teledyne-brown-engineering-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:tdy-sec-10k",
+            "evidence:tdy-sec-ex21",
+            "evidence:tdy-usaspending-fbrsjb6v4lw8",
+            "https://api.usaspending.gov/api/v2/transactions/",
+            "usaspending:usaspending-2954b87c837263e2ec835416:actions:7b6f93986a3b5679:d2602901b3f8f9df",
+            "usaspending:usaspending-2954b87c837263e2ec835416:award_detail:1a70c85f327d24a7:669206499edfea00"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-2954b87c837263e2ec835416:actions:7b6f93986a3b5679:d2602901b3f8f9df",
+            "usaspending:usaspending-2954b87c837263e2ec835416:award_detail:1a70c85f327d24a7:669206499edfea00"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-27T02:39:58.581371+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-27T02:39:58.581371+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-ac022d31fc19d67cf7b3bc14",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-9c087e02632d2441c1a0c018",
+        "observation_id": "gro1-d28ab4f8d1b16e87a8d2c9eb",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "TDY",
+        "issuer": {
+          "company_name": "Teledyne",
+          "ticker": "TDY",
+          "issuer_company_id": "central:TDY",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-142451e87b78ca0c685ca7c0",
+          "record_id": "award:generated:CONT_AWD_N0002419C6402_9700_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-05-26T00:00:00+00:00",
+          "known_at": "2026-08-27T02:39:58.581371+00:00",
+          "amount_id": null,
+          "amount_value": 9142857.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "022c868273ee0b38fb29a2141735bdccbe9cf6b93dbef2a06a7b1415d1f2d36e",
+            "374c2ef20c7210b6802aa2541e28ebf8501ae0ebc7d78a9971487648e2676a60",
+            "3882d657b89d63bf64fe216cf5327331eb1f28d3f325bb5eaf17ddae2fd6090a",
+            "669206499edfea0016ddea5259f0fb5123857548dd82bbae0d5ae1cdb62f5e68",
+            "f4491495d53a88c78adaac536816830ac750718ec6aeb4b1d1e77653de3fe55f",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0002419C6402_9700_-NONE-_-NONE-",
+            "govws-142451e87b78ca0c685ca7c0"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:tdy:teledyne-technologies-inc",
+            "ownership:tdy:teledyne-brown-engineering-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:tdy-sec-10k",
+            "evidence:tdy-sec-ex21",
+            "evidence:tdy-usaspending-fbrsjb6v4lw8",
+            "https://api.usaspending.gov/api/v2/awards/CONT_AWD_N0002419C6402_9700_-NONE-_-NONE-/",
+            "usaspending:usaspending-2954b87c837263e2ec835416:award_detail:1a70c85f327d24a7:669206499edfea00",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:1a70c85f327d24a7:3882d657b89d63bf"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-2954b87c837263e2ec835416:award_detail:1a70c85f327d24a7:669206499edfea00",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:1a70c85f327d24a7:3882d657b89d63bf"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-27T02:39:58.581371+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-27T02:39:58.581371+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-09e0bb6de364c5bfd3d396c6",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-a43fb1c27e55f6cd97093731",
+        "observation_id": "gro1-cc303c107e160fbb111d265f",
+        "candidate_family": "award_ceiling_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "TDY",
+        "issuer": {
+          "company_name": "Teledyne",
+          "ticker": "TDY",
+          "issuer_company_id": "central:TDY",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-49ec95b98d1cddedcc96cb9a",
+          "record_id": "award:generated:CONT_AWD_N0002419C6402_9700_-NONE-_-NONE-",
+          "event_type": "award_value_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-05-26T00:00:00+00:00",
+          "known_at": "2026-08-27T02:39:58.581371+00:00",
+          "amount_id": null,
+          "amount_value": 9142857.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "022c868273ee0b38fb29a2141735bdccbe9cf6b93dbef2a06a7b1415d1f2d36e",
+            "374c2ef20c7210b6802aa2541e28ebf8501ae0ebc7d78a9971487648e2676a60",
+            "3882d657b89d63bf64fe216cf5327331eb1f28d3f325bb5eaf17ddae2fd6090a",
+            "669206499edfea0016ddea5259f0fb5123857548dd82bbae0d5ae1cdb62f5e68",
+            "f4491495d53a88c78adaac536816830ac750718ec6aeb4b1d1e77653de3fe55f",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0002419C6402_9700_-NONE-_-NONE-",
+            "govws-49ec95b98d1cddedcc96cb9a"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:tdy:teledyne-technologies-inc",
+            "ownership:tdy:teledyne-brown-engineering-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:tdy-sec-10k",
+            "evidence:tdy-sec-ex21",
+            "evidence:tdy-usaspending-fbrsjb6v4lw8",
+            "https://api.usaspending.gov/api/v2/awards/CONT_AWD_N0002419C6402_9700_-NONE-_-NONE-/",
+            "usaspending:usaspending-2954b87c837263e2ec835416:award_detail:1a70c85f327d24a7:669206499edfea00",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:1a70c85f327d24a7:3882d657b89d63bf"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-2954b87c837263e2ec835416:award_detail:1a70c85f327d24a7:669206499edfea00",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:1a70c85f327d24a7:3882d657b89d63bf"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-27T02:39:58.581371+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-27T02:39:58.581371+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-f599b00bcdca9cd16c8f3cef",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-501895bf688106dac8f2063e",
+        "observation_id": "gro1-16383d9f9f609d109e00790e",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "TDY",
+        "issuer": {
+          "company_name": "Teledyne",
+          "ticker": "TDY",
+          "issuer_company_id": "central:TDY",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-8f412c393385e0b97a6683fa",
+          "record_id": "award:generated:CONT_AWD_NNM13AA29C_8000_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-08-19T00:00:00+00:00",
+          "known_at": "2026-08-21T23:22:35.575358+00:00",
+          "amount_id": null,
+          "amount_value": -137.86999994516373,
+          "amount_units": "usd",
+          "transmission_direction": "possible_negative"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "022c868273ee0b38fb29a2141735bdccbe9cf6b93dbef2a06a7b1415d1f2d36e",
+            "102fb013ccb5de32e78bc553a18d645a5e1eb89a037f2678e06e64e4526a88f9",
+            "374c2ef20c7210b6802aa2541e28ebf8501ae0ebc7d78a9971487648e2676a60",
+            "a595e67f0afe1fd4526c0c04e4f810e04be7a0c110e9d3b874be9b6c46a2082c",
+            "f4491495d53a88c78adaac536816830ac750718ec6aeb4b1d1e77653de3fe55f",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_NNM13AA29C_8000_-NONE-_-NONE-",
+            "govws-8f412c393385e0b97a6683fa"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:tdy:teledyne-technologies-inc",
+            "ownership:tdy:teledyne-brown-engineering-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:tdy-sec-10k",
+            "evidence:tdy-sec-ex21",
+            "evidence:tdy-usaspending-fbrsjb6v4lw8",
+            "https://api.usaspending.gov/api/v2/awards/CONT_AWD_NNM13AA29C_8000_-NONE-_-NONE-/",
+            "usaspending:usaspending-25413685766f3f311d882e8d:award_detail:0730944956d985d8:102fb013ccb5de32",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:0730944956d985d8:a595e67f0afe1fd4"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-25413685766f3f311d882e8d:award_detail:0730944956d985d8:102fb013ccb5de32",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:0730944956d985d8:a595e67f0afe1fd4"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-21T23:22:35.575358+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-21T23:22:35.575358+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-1646ac75b920c0b8943a7ddb",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-7dba279cb1f0e5a41c1b2d92",
+        "observation_id": "gro1-c09a5264ef516d90ec2f9ef1",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "TDY",
+        "issuer": {
+          "company_name": "Teledyne",
+          "ticker": "TDY",
+          "issuer_company_id": "central:TDY",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-5d08d21e8ed0c1cafae41c21",
+          "record_id": "award:generated:CONT_AWD_NNM13AA29C_8000_-NONE-_-NONE-",
+          "event_type": "deobligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-08-16T00:00:00+00:00",
+          "known_at": "2026-08-21T23:22:35.575358+00:00",
+          "amount_id": null,
+          "amount_value": -137.87,
+          "amount_units": "usd",
+          "transmission_direction": "possible_negative"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "022c868273ee0b38fb29a2141735bdccbe9cf6b93dbef2a06a7b1415d1f2d36e",
+            "102fb013ccb5de32e78bc553a18d645a5e1eb89a037f2678e06e64e4526a88f9",
+            "374c2ef20c7210b6802aa2541e28ebf8501ae0ebc7d78a9971487648e2676a60",
+            "c773a530e9f00b8a9e68c5a8a6ace29968406b51d079f8bce5684a1acf880b8f",
+            "f4491495d53a88c78adaac536816830ac750718ec6aeb4b1d1e77653de3fe55f",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_NNM13AA29C_8000_-NONE-_-NONE-",
+            "govws-5d08d21e8ed0c1cafae41c21"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:tdy:teledyne-technologies-inc",
+            "ownership:tdy:teledyne-brown-engineering-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:tdy-sec-10k",
+            "evidence:tdy-sec-ex21",
+            "evidence:tdy-usaspending-fbrsjb6v4lw8",
+            "https://api.usaspending.gov/api/v2/transactions/",
+            "usaspending:usaspending-25413685766f3f311d882e8d:actions:a503dff46b6432e4:c773a530e9f00b8a",
+            "usaspending:usaspending-25413685766f3f311d882e8d:award_detail:0730944956d985d8:102fb013ccb5de32"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-25413685766f3f311d882e8d:actions:a503dff46b6432e4:c773a530e9f00b8a",
+            "usaspending:usaspending-25413685766f3f311d882e8d:award_detail:0730944956d985d8:102fb013ccb5de32"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-21T23:22:35.575358+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-21T23:22:35.575358+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-b1d8acf639e73c21736c4b45",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-c6f08c7a958804464bba4c7f",
+        "observation_id": "gro1-9362b0a6bffdb3ed8fe5bf27",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "TDY",
+        "issuer": {
+          "company_name": "Teledyne",
+          "ticker": "TDY",
+          "issuer_company_id": "central:TDY",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-79f30e9fade86143b45ba266",
+          "record_id": "award:generated:CONT_AWD_80MSFC22CA016_8000_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-08-14T00:00:00+00:00",
+          "known_at": "2026-08-18T01:37:55.262200+00:00",
+          "amount_id": null,
+          "amount_value": 834000.56,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "022c868273ee0b38fb29a2141735bdccbe9cf6b93dbef2a06a7b1415d1f2d36e",
+            "374c2ef20c7210b6802aa2541e28ebf8501ae0ebc7d78a9971487648e2676a60",
+            "c1218277d09cbcc423b0f60181e9fae032e5855a1dc7dc71e7523ac0d17f3b43",
+            "e83b6f1a5b2849f50309f8c95adc15107a9fa66c18de49ca94e5575e9cf0dfdd",
+            "f4491495d53a88c78adaac536816830ac750718ec6aeb4b1d1e77653de3fe55f",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_80MSFC22CA016_8000_-NONE-_-NONE-",
+            "govws-79f30e9fade86143b45ba266"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:tdy:teledyne-technologies-inc",
+            "ownership:tdy:teledyne-brown-engineering-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:tdy-sec-10k",
+            "evidence:tdy-sec-ex21",
+            "evidence:tdy-usaspending-fbrsjb6v4lw8",
+            "https://api.usaspending.gov/api/v2/transactions/",
+            "usaspending:usaspending-97b25ea228b65919c41eab1a:actions:17b476315a9c3a97:c1218277d09cbcc4",
+            "usaspending:usaspending-97b25ea228b65919c41eab1a:award_detail:a0606237bb183133:e83b6f1a5b2849f5"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-97b25ea228b65919c41eab1a:actions:17b476315a9c3a97:c1218277d09cbcc4",
+            "usaspending:usaspending-97b25ea228b65919c41eab1a:award_detail:a0606237bb183133:e83b6f1a5b2849f5"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-19T05:44:34.128190+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-18T01:37:55.262200+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-97344a3bda2430d362d99861",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-d3a7f09b7b90b48858fffd89",
+        "observation_id": "gro1-db412325e85c42527c2ec2a0",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "TDY",
+        "issuer": {
+          "company_name": "Teledyne",
+          "ticker": "TDY",
+          "issuer_company_id": "central:TDY",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-48d58debfeb9e1ea9583aaa0",
+          "record_id": "award:generated:CONT_AWD_80MSFC22CA016_8000_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-08-14T00:00:00+00:00",
+          "known_at": "2026-08-18T01:37:55.262200+00:00",
+          "amount_id": null,
+          "amount_value": 834000.5599999726,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "022c868273ee0b38fb29a2141735bdccbe9cf6b93dbef2a06a7b1415d1f2d36e",
+            "374c2ef20c7210b6802aa2541e28ebf8501ae0ebc7d78a9971487648e2676a60",
+            "724c8c6b02834fcaeb6aef0562946063e238a853f0859a3debdec9269ee5baa3",
+            "e83b6f1a5b2849f50309f8c95adc15107a9fa66c18de49ca94e5575e9cf0dfdd",
+            "f4491495d53a88c78adaac536816830ac750718ec6aeb4b1d1e77653de3fe55f",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_80MSFC22CA016_8000_-NONE-_-NONE-",
+            "govws-48d58debfeb9e1ea9583aaa0"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:tdy:teledyne-technologies-inc",
+            "ownership:tdy:teledyne-brown-engineering-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:tdy-sec-10k",
+            "evidence:tdy-sec-ex21",
+            "evidence:tdy-usaspending-fbrsjb6v4lw8",
+            "https://api.usaspending.gov/api/v2/awards/CONT_AWD_80MSFC22CA016_8000_-NONE-_-NONE-/",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:a0606237bb183133:724c8c6b02834fca",
+            "usaspending:usaspending-97b25ea228b65919c41eab1a:award_detail:a0606237bb183133:e83b6f1a5b2849f5"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:a0606237bb183133:724c8c6b02834fca",
+            "usaspending:usaspending-97b25ea228b65919c41eab1a:award_detail:a0606237bb183133:e83b6f1a5b2849f5"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-19T05:44:34.128190+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-18T01:37:55.262200+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-28be93ab2b16ca5ab239aea3",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      }
+    ]
+  },
+  "context_engines": [
+    "government_revenue_foresight"
+  ]
+}

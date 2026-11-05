@@ -221,3 +221,111 @@ def test_turn_watch_passthrough_is_a_copy_not_an_alias():
     row = _subset(cs)["chains"][0]
     row["turn_watch"]["stalling"] = True
     assert tw["stalling"] is False, "the projection must not mutate the canonical artifact"
+
+
+# UIUX: scenario cards keep a compact glance tier without hiding the remaining asset.
+def _scenario_ui_source():
+    return (Path(__file__).resolve().parents[1] / 'templates/transmission.html.j2').read_text()
+
+
+def _scenario_ui_render(headwinds, tailwinds, labels=None):
+    from jinja2 import Environment
+    source = _scenario_ui_source()
+    start = source.index('<!-- ===================== SCENARIOS')
+    end = source.index('<!-- ===================== STUDY SHELF', start)
+    prefix = source[:source.index('<!DOCTYPE html>')]
+    meta_start = source.index('{% set SC_META')
+    meta = source[meta_start:source.index('} %}', meta_start) + 4]
+    tx = {'transmission': labels or {}, 'scenarios': [{
+        'key': 'real_up50', 'label': {'en': 'Example', 'zh': '示例'},
+        'headwinds': headwinds, 'tailwinds': tailwinds}]}
+    return Environment(autoescape=True).from_string(prefix + meta + source[start:end]).render(tx=tx)
+
+
+def _scenario_ui_rows(n, positive=False):
+    return [{'asset': f'ASSET{i}', 'label': f'Asset {i} (context)',
+             'implied_move_pct': (1 if positive else -1) * (10-i)} for i in range(n)]
+
+
+@pytest.mark.parametrize('side', ['headwinds', 'tailwinds'])
+@pytest.mark.parametrize('count', [0, 1, 4, 5, 7])
+def test_scenario_ui_disclosure_keeps_all_source_rows_in_order(side, count):
+    import re
+    rows = _scenario_ui_rows(count, side == 'tailwinds')
+    html = _scenario_ui_render(rows if side == 'headwinds' else [],
+                               rows if side == 'tailwinds' else [])
+    assert html.count('class="sx-item"') == count
+    assert re.findall(r'data-asset="([^"]+)"', html) == [r['asset'] for r in rows]
+    assert html.count('<details class="sx-extra">') == int(count > 4)
+    if count > 4:
+        assert html.index('data-asset="ASSET3"') < html.index('<details class="sx-extra">')
+        assert html.index('<details class="sx-extra">') < html.index('data-asset="ASSET4"')
+        assert f'Show {count-4} more' in html and 'Show fewer' in html
+        assert '再看' in html and '收起' in html
+        assert '<details class="sx-extra" open' not in html
+    else:
+        assert 'Show fewer' not in html
+
+
+def test_scenario_ui_reuses_canonical_chinese_asset_labels():
+    row = {'asset': 'X', 'label': 'English name (context)', 'implied_move_pct': -2.5}
+    html = _scenario_ui_render([row], [], {'X': {'label': {'en': row['label'], 'zh': '中文名称（背景）'}}})
+    assert '<span class="l-en">English name</span>' in html
+    assert '<span class="l-zh">中文名称</span>' in html
+    assert '中文名称（背景）' not in html
+
+
+def test_scenario_ui_prefers_explicit_labels_and_has_honest_fallback():
+    rows = [{'asset': 'X', 'label': {'en': 'Preferred', 'zh': '明确名称'}, 'implied_move_pct': -1},
+            {'asset': 'Y', 'label': 'Unmapped asset', 'implied_move_pct': -2}]
+    html = _scenario_ui_render(rows, [], {'X': {'label': {'en': 'Old', 'zh': '旧名称'}}})
+    assert '明确名称' in html and '旧名称' not in html
+    assert '<span class="l-zh">Unmapped asset</span>' in html
+
+
+def test_scenario_ui_escapes_labels_in_both_languages():
+    row = {'asset': 'X', 'label': {'en': '<script>bad</script>', 'zh': '<img src=x>'}, 'implied_move_pct': -1}
+    html = _scenario_ui_render([row], [])
+    assert '<script>bad' not in html and '<img src=x>' not in html
+    assert '&lt;script&gt;' in html and '&lt;img src=x&gt;' in html
+
+
+def test_scenario_ui_retains_full_shared_scale_and_signed_values():
+    import re
+    head = _scenario_ui_rows(5)
+    tail = [{'asset': 'PLUS', 'label': 'Positive', 'implied_move_pct': 20.0}]
+    html = _scenario_ui_render(head, tail)
+    widths = re.findall(r'class="[du]" style="width:([0-9.]+)%"', html)
+    assert widths == ['50.0', '45.0', '40.0', '35.0', '30.0', '100.0']
+    assert '-6.0%' in html and '+20.0%' in html
+    assert 'not forecasts' in html and '并非预测' in html
+
+
+def test_scenario_ui_controls_are_native_and_focus_visible():
+    src = _scenario_ui_source()
+    assert '.sx-extra>summary' in src and 'min-height:40px' in src
+    assert '.sx-extra>summary:focus-visible{outline:2px solid currentColor;' in src
+    assert '.sx-extra[open]>summary .sx-hide' in src
+    assert '.sx-card .sx-item .nm{white-space:normal' in src
+    block = src[src.index('<!-- ===================== SCENARIOS'):src.index('<!-- ===================== STUDY SHELF')]
+    assert 'onclick=' not in block and 'addEventListener' not in block
+    assert '<div class="sx-more">' not in block
+
+
+def test_scenario_ui_published_css_matches_canonical_source():
+    import re, hashlib
+    root = Path(__file__).resolve().parents[1]
+    html = (root / 'site/transmission.html').read_text()
+    refs = re.findall(r'assets/css/([0-9a-f]{8})\.css\?v=\1', html)
+    css = [root / 'site/assets/css' / (h + '.css') for h in refs]
+    owned = [p for p in css if p.exists() and '.sx-extra>summary' in p.read_text()]
+    assert len(owned) == 1
+    raw = owned[0].read_bytes()
+    assert hashlib.sha256(raw).hexdigest()[:8] == owned[0].stem
+    style = re.search(r'<style>(.*?)</style>', _scenario_ui_source(), re.S).group(1)
+    import ast
+    from jinja2 import Environment
+    builder = ast.parse((root / 'scripts/build_transmission.py').read_text())
+    color_node = next(n for n in builder.body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'C' for t in n.targets))
+    canonical = Environment(autoescape=True).from_string(style).render(C=ast.literal_eval(color_node.value))
+    assert raw.decode().strip() == canonical.strip()
