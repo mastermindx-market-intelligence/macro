@@ -650,3 +650,81 @@ RETAINED_CATALOG_TOOL_SCHEMA: dict = {
             "generation_id": {"type": "string"}, "generation_sha256": {"type": "string"},
         }, "required": []},
 }
+
+
+def get_fitted_retained_market_context(selection, evidence, *, policy) -> dict:
+    """Bounded fitted evidence for an already authorized same-process owner.
+
+    This projection neither opens a store nor creates a fit or query. The
+    caller supplies genuine native capabilities; serialized packets grant no
+    authority. The baseline tool and its source/citation contract are unchanged.
+    Gateway, citation and installed-use enrollment remain separate concerns.
+    """
+    from collections import Counter
+    from hashlib import sha256
+    from engine.neuralweb import market_memory_fitted_retrieval as retrieval
+    from engine.neuralweb import market_memory_fitted_evidence as service
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+
+    selected = retrieval.disclose_fitted_retrieval(selection, policy=policy)
+    original = service.disclose_fitted_evidence_packet(evidence, policy=policy)
+    if not 1 <= selected["requested_k"] <= 8:
+        raise service.FittedEvidenceError("brain_fitted_context_limit_must_be_1_to_8")
+    shared = ("retrieval_id", "selection_sha256", "query", "method", "index_id",
+              "index_content_sha256", "membership_sha256", "requested_k",
+              "denominator", "accounting", "status", "reason", "coverage")
+    if (any(original[key] != selected[key] for key in shared)
+            or original["owner"] != selected["query_owner"]
+            or original["selection_claims"] != selected["claims"]
+            or original["authority"] != selected["authority"]):
+        raise service.FittedEvidenceError("exact_brain_fitted_evidence_selection_required")
+    native_refs = [(row["candidate"]["capture_id"], row["candidate"]["context_id"],
+                    row["candidate"]["projection_id"], row["candidate"]["feature_sha256"],
+                    row["distance_q18"]) for row in selected["selected"]]
+    evidence_refs = [(row["capture_id"], row["context_id"], row["projection_id"],
+                      row["fitted_feature_sha256"], row["distance_q18"])
+                     for row in original["selected"]]
+    source_refs = [(selected["query"]["capture_id"], selected["query"]["context_id"],
+                    selected["query"]["packet_sha256"])] + [
+        (row["capture_id"], row["context_id"], row["packet_sha256"])
+        for row in original["selected"]]
+    if (native_refs != evidence_refs or source_refs != [
+            (card["capture_id"], card["context_id"], card["packet_sha256"])
+            for card in original["source_cards"]]):
+        raise service.FittedEvidenceError("ordered_brain_fitted_source_join_required")
+
+    value = {
+        "schema": "brain.retained_fitted_market_context.v2",
+        "method_family": "retained_original_house_output_fitted_l1",
+        "available": True, "status": original["status"], "reason": original["reason"],
+        "mode": original["mode"], "owner": original["owner"], "query": original["query"],
+        "retrieval_id": original["retrieval_id"],
+        "selection_sha256": original["selection_sha256"],
+        "evidence_packet_id": original["packet_id"],
+        "method": original["method"], "index_id": original["index_id"],
+        "index_content_sha256": original["index_content_sha256"],
+        "membership_sha256": original["membership_sha256"],
+        "requested_k": original["requested_k"], "denominator": original["denominator"],
+        "exclusion_counts": dict(sorted(Counter(
+            row["reason"] for row in original["accounting"]).items())),
+        "coverage": original["coverage"], "neighbors": original["selected"],
+        "source_cards": original["source_cards"],
+        "state_differences": original["state_differences"],
+        "missing_evidence": original["missing_evidence"],
+        "selection_claims": original["selection_claims"],
+        "claims": original["claims"], "authority": original["authority"],
+        "interpretation": (
+            "Original house outputs with explicitly fitted contextual distances; "
+            "no historical fit-existence, independent-sample, causal, forecast, "
+            "study-admission or action claim."),
+    }
+    value["context_id"] = "mmbrainfittedcontext_" + sha256(cohort.canonical(value)).hexdigest()
+    if len(cohort.canonical(value)) > RETAINED_CONTEXT_MAX_BYTES:
+        raise service.FittedEvidenceError("brain_fitted_evidence_byte_bound_exceeded")
+    # Native dual-scope owner policies need only check(); no fabricated source
+    # disclosure or site/Factory identity is introduced by this projection.
+    final_selection = retrieval.disclose_fitted_retrieval(selection, policy=policy)
+    final_evidence = service.disclose_fitted_evidence_packet(evidence, policy=policy)
+    if final_selection != selected or final_evidence != original:
+        raise service.FittedEvidenceError("brain_fitted_evidence_changed_during_projection")
+    return value
