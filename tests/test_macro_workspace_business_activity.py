@@ -562,10 +562,31 @@ def test_unknown_clock_phase_is_a_typed_absence_not_a_present_reading() -> None:
     assert phase["status"] == "ABSENT"
     assert phase["null_reason"] == "COMPUTATION_REFUSED"
     assert phase["freshness"] == "CURRENT"
-    # The four real phases are still published as present readings.
-    for label in sorted(mod.BUSINESS_CYCLE_PHASES):
+    # The clock-read implication quotes the raw token in both languages, so a
+    # refused read must not emit it either.
+    assert "phase_clock_read" not in {i["implication_id"] for i in snap["implications"]["items"]}
+    # The closed vocabulary is checked against the producer, not against the
+    # constant under test: the four sign quadrants of `_phase` are the phases.
+    producer_phases = {_phase(lead, coin)[0] for lead in (1.0, -1.0) for coin in (1.0, -1.0)}
+    assert producer_phases == {"expansion", "slowdown", "contraction", "recovery"} == mod.BUSINESS_CYCLE_PHASES
+    # The four real phases are still published as present readings with the read.
+    for label in ("expansion", "slowdown", "contraction", "recovery"):
         regime["business_cycle"]["phase"] = {"label": label}
         snap = _compose(regime)
         phase = next(m for m in snap["metrics"]["items"] if m["metric_id"] == "business_cycle_phase")
         assert phase["value"] == label and phase["status"] == "PRESENT" and phase["null_reason"] is None
+        assert "phase_clock_read" in {i["implication_id"] for i in snap["implications"]["items"]}
+
+
+def test_recession_signal_state_tokens_have_reviewed_zh_pairs() -> None:
+    """`recession_signal_state` publishes the producer's raw `on`/`off` token as
+    a present categorical. Both must resolve to a non-ASCII ZH label, or the
+    first nightly on which the 3-D's rule fires puts an untranslated "On" span
+    on the suite page (#10774 review F1, same class as the `unknown` phase)."""
+    from lib.macro_suite_labels import value_pair
+
+    for token in ("on", "off"):
+        pair = value_pair(token)
+        assert pair["en"] and pair["zh"], token
+        assert any(ord(ch) > 127 for ch in pair["zh"]), (token, pair)
 
