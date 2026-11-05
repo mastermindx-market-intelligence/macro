@@ -353,15 +353,51 @@ def parse_footer(text: str, *, group_prefix: str) -> dict[str, str]:
 class _WriteSite:
     """One resolved ``write_page()`` call: what route, from what template."""
 
-    __slots__ = ("route", "is_family", "builder", "template", "line")
+    __slots__ = ("route", "is_family", "builder", "template", "line",
+                 "public_carrier_held")
 
     def __init__(self, route: str, is_family: bool, builder: str,
-                 template: Optional[str], line: int) -> None:
+                 template: Optional[str], line: int,
+                 public_carrier_held: bool = False) -> None:
         self.route = route
         self.is_family = is_family
         self.builder = builder
         self.template = template
         self.line = line
+        self.public_carrier_held = public_carrier_held
+
+
+def _public_carrier_held(tree: ast.Module) -> bool:
+    """Read a producer's explicit withdrawal; never execute its carrier guard.
+
+    Missing metadata preserves historical diagnostic inventories. An explicit
+    declaration must be one immutable module-level boolean; ambiguous metadata
+    refuses the census rather than silently clearing a withdrawal.
+    """
+    name = "PUBLIC_CARRIER_HELD"
+    declarations = []
+    for node in tree.body:
+        targets = node.targets if isinstance(node, ast.Assign) else (
+            [node.target] if isinstance(node, ast.AnnAssign) else [])
+        if any(isinstance(target, ast.Name) and target.id == name
+               for target in targets):
+            declarations.append(node)
+    bindings = [node for node in ast.walk(tree)
+                if ((isinstance(node, ast.Name) and node.id == name
+                     and isinstance(node.ctx, (ast.Store, ast.Del)))
+                    or (isinstance(node, ast.arg) and node.arg == name)
+                    or getattr(node, "name", None) == name
+                    or (isinstance(node, ast.alias)
+                        and (node.asname or node.name) == name))]
+    if not declarations and not bindings:
+        return False
+    if len(declarations) != 1:
+        raise ValueError("PUBLIC_CARRIER_HELD must be one immutable module-level boolean")
+    value = declarations[0].value
+    if (len(bindings) != 1
+            or not isinstance(value, ast.Constant) or type(value.value) is not bool):
+        raise ValueError("PUBLIC_CARRIER_HELD must be one immutable module-level boolean")
+    return value.value
 
 
 # Base expressions that denote the site root.  Census-verified against every
@@ -698,6 +734,7 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
         except SyntaxError:
             continue
         names = _assign_map(tree)
+        held = _public_carrier_held(tree)
         # name -> the template it renders, for `tmpl = env.get_template(...)`
         # followed by `write_page(out, tmpl.render(...))`, or for a name bound
         # to a template literal (`template, _ = ISSUER_TEMPLATE`).
@@ -728,6 +765,8 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
             for call in calls:
                 handled.add(id(call))
                 if table is None:
+                    if held:
+                        raise ValueError("public-carrier withdrawal requires concrete write sites")
                     # The mapping is dynamic, reassigned or mutated: refuse it,
                     # and keep the call OUT of the module-wide map too — that
                     # map's one binding for the loop variable belongs to some
@@ -735,6 +774,8 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
                     unresolved.append((path.name, ast.unparse(call.args[0])))
                     continue
                 if not _writes_bound_page(call, page_var):
+                    if held:
+                        raise ValueError("public-carrier withdrawal requires concrete write sites")
                     # Not the `site / page` shape this binding vouches for —
                     # report the gap rather than substitute anything.
                     unresolved.append((path.name, ast.unparse(call.args[0])))
@@ -752,7 +793,7 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
                         "/" + key, False, f"scripts/{path.name}",
                         literal.group(1) if literal
                         else (template if named_template else None),
-                        call.lineno))
+                        call.lineno, held))
         for node in ast.walk(tree):
             if id(node) in handled:
                 continue
@@ -761,9 +802,13 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
                 continue
             resolved = _resolve_path_expr(ast.unparse(node.args[0]), names)
             if resolved is None:
+                if held:
+                    raise ValueError("public-carrier withdrawal requires concrete write sites")
                 unresolved.append((path.name, ast.unparse(node.args[0])))
                 continue
             route, is_family = resolved
+            if held and is_family:
+                raise ValueError("public-carrier withdrawal requires concrete write sites")
             template = None
             call_text = ast.unparse(node)
             found = _TEMPLATE_CALL_RE.search(call_text)
@@ -782,7 +827,7 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
                             template = rendered[hit]
                             break
             sites.append(_WriteSite(route, is_family,
-                                    f"scripts/{path.name}", template, node.lineno))
+                                    f"scripts/{path.name}", template, node.lineno, held))
     return sites, unresolved
 
 
@@ -898,6 +943,11 @@ def derive_macro(root: Path, *, site_dir: Optional[Path] = None,
     by_route: dict[str, list[_WriteSite]] = defaultdict(list)
     for site in sites:
         by_route[site.route].append(site)
+    held_routes = {route for route, writes in by_route.items()
+                   if any(site.public_carrier_held for site in writes)}
+    source["public_carrier_held_write_sites"] = sorted(
+        f"{site.builder}:{site.line} {site.route}" for site in sites
+        if site.public_carrier_held)
 
     templates_dir = root / "templates"
     nav = parse_nav(_read(templates_dir / "_navlinks.html.j2"),
@@ -931,7 +981,8 @@ def derive_macro(root: Path, *, site_dir: Optional[Path] = None,
     # A route a builder writes but the committed tree does not hold is still a
     # route; keep it rather than losing the builder's own statement.
     for route, group in by_route.items():
-        if not group[0].is_family and route.count("/") == 1:
+        if (route not in held_routes and not group[0].is_family
+                and route.count("/") == 1):
             candidate = "site" + route
             if candidate not in root_pages:
                 root_pages.append(candidate)
@@ -946,6 +997,8 @@ def derive_macro(root: Path, *, site_dir: Optional[Path] = None,
         name = page.split("/", 1)[1]
         stem = name[: -len(".html")]
         route = "/" if name == "index.html" else "/" + name
+        if route in held_routes:
+            continue
         row = blank_row(_macro_page_id(route), "macro", route)
         writes = by_route.get("/" + name, [])
         via_family = False

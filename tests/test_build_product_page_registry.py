@@ -706,6 +706,64 @@ def test_annotation_starts_the_line(capsys):
 
 
 # Source-shaped render-table attribution fixtures; builders are parsed, never run.
+
+@pytest.mark.parametrize("tracked", [False, True])
+def test_public_carrier_withdrawal_keeps_diagnostic_writes_out_of_rows(tmp_path, tracked):
+    source = '''PUBLIC_CARRIER_HELD = True
+def render():
+    write_page(site / "private_fixture.html", "private fixture")
+'''
+    _gmi_builder_fixture(tmp_path, "build_private_fixture.py", source)
+    # A second writer cannot clear the source-owned route withdrawal.
+    _gmi_builder_fixture(tmp_path, "build_other.py", '''def render():
+    write_page(site / "private_fixture.html", "stale copy")
+    write_page(site / "ordinary.html", "ordinary")
+''')
+    sites, _ = reg.scan_write_sites(tmp_path / "scripts")
+    assert any(s.route == "/private_fixture.html" and s.public_carrier_held for s in sites)
+    listing = ["site/index.html"] + (["site/private_fixture.html"] if tracked else [])
+    rows, metadata = reg.derive_macro(tmp_path, git=_gmi_fake_git(listing))
+    assert "/private_fixture.html" not in {r["route"] for r in rows}
+    assert "/ordinary.html" in {r["route"] for r in rows}
+    assert any("/private_fixture.html" in s for s in metadata["public_carrier_held_write_sites"])
+
+
+@pytest.mark.parametrize("declaration", ["", "PUBLIC_CARRIER_HELD = False\n"])
+def test_ordinary_unpublished_builder_diagnostics_remain_in_registry(tmp_path, declaration):
+    _gmi_builder_fixture(tmp_path, "build_ordinary.py", declaration + '''def render():
+    write_page(site / "ordinary.html", "ordinary")
+''')
+    rows, metadata = reg.derive_macro(tmp_path, git=_gmi_fake_git(["site/index.html"]))
+    assert "/ordinary.html" in {r["route"] for r in rows}
+    assert metadata["public_carrier_held_write_sites"] == []
+
+
+@pytest.mark.parametrize("declaration", [
+    "PUBLIC_CARRIER_HELD = 1", "PUBLIC_CARRIER_HELD = None",
+    "PUBLIC_CARRIER_HELD = read_policy()",
+    "PUBLIC_CARRIER_HELD = True\nPUBLIC_CARRIER_HELD = False",
+    "PUBLIC_CARRIER_HELD = True\ndef reset():\n    PUBLIC_CARRIER_HELD = False",
+    "if enabled:\n    PUBLIC_CARRIER_HELD = True",
+    "PUBLIC_CARRIER_HELD, other = (True, 1)",
+    "from policy import PUBLIC_CARRIER_HELD",
+])
+def test_ambiguous_public_carrier_withdrawal_refuses_registry(tmp_path, declaration):
+    _gmi_builder_fixture(tmp_path, "build_held.py", declaration + '''
+def render():
+    write_page(site / "held.html", "held")
+''')
+    with pytest.raises(ValueError, match="PUBLIC_CARRIER_HELD"):
+        reg.scan_write_sites(tmp_path / "scripts")
+
+
+@pytest.mark.parametrize("destination", ['site / f"held_{ticker}.html"', 'unknown_destination'])
+def test_public_carrier_withdrawal_requires_concrete_route(tmp_path, destination):
+    _gmi_builder_fixture(tmp_path, "build_held.py", f'''PUBLIC_CARRIER_HELD = True
+def render():
+    write_page({destination}, "held")
+''')
+    with pytest.raises(ValueError, match="requires concrete write sites"):
+        reg.scan_write_sites(tmp_path / "scripts")
 def _gmi_write_fixture(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
