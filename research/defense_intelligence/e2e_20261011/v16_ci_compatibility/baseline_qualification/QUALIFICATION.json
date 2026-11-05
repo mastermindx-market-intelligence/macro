@@ -1,0 +1,41 @@
+{
+  "schema": "defense.publisher_source_qualification.v1",
+  "observed_at": "2026-10-14T13:43:15.721261+00:00",
+  "baseline_source": "7c8069a604c77a63ef4c048263cef45f262d0bdc",
+  "qualified_source": "ef699bd38eea3ab818a26ea8d0c9f1d49428eae2",
+  "old_baseline_sha256": "323a69f640d1e9682d591449c8bc9f2c3f4359cd3c2e2f70fb13c1aa04982e01",
+  "candidate_baseline_sha256": "f954bf7347bcdc955666eec52539c390e043452e01d8847b818227f3c6508f3b",
+  "checks": {
+    "live_changed_steps": [
+      "prove the candidate projection before publishing it",
+      "commit complete evidence projection"
+    ],
+    "live_noncomment_execution_and_all_other_yaml_equal": true,
+    "daily_publisher_caller_byte_equal": true,
+    "daily_changed_jobs": [
+      "collect",
+      "capital_structure"
+    ],
+    "daily_changed_jobs_exact_protected_main": "29e383bc0ded2c3d3dae819fd5b7647ab6fea229"
+  },
+  "negative_controls": [
+    {
+      "case": "live_execution",
+      "rejected": true
+    },
+    {
+      "case": "daily_publisher",
+      "rejected": true
+    },
+    {
+      "case": "proof_helper",
+      "rejected": true
+    }
+  ],
+  "actual_read_baseline_positive": true,
+  "actual_read_baseline_source_drift_negatives": 5,
+  "legacy_operations_preserved": 33,
+  "all_non_source_closure_fields_unchanged": true,
+  "current_github_history_preflight": "still required in actual Actions publisher; this script supplies no Actions identity",
+  "publication_or_cas_performed": false
+}

@@ -56,7 +56,22 @@ decisions:
   - DEC:PROPHET-LAB-B5A-RECUT
   - DEC:PROPHET-B1-CANONICAL-EPISODE-BINDINGS
   - DEC:PROPHET-D5-PRESERVES-CONTEXT-VECTOR-AND-SEPARATES-EVIDENCE-AUTHORITY
+  - DEC:PROPHET-US-FABLE-META-CEO-DELEGATION
+  - DEC:PROPHET-US-D01-CONFLUENCE-VALIDITY-CONTRACT
+  - DEC:PROPHET-US-D02-EPISODE-ADMISSION-GATED
+  - DEC:PROPHET-US-D05-ENTRY-WATCH-PERSISTENCE
+  - DEC:PROPHET-US-D11-RELEASE-PATH-INCUMBENT-CONTROLS
+  - DEC:PROPHET-US-C-01-EARNINGS-SEQUENCING
 landmines:
+  - "R6 (2026-09-23): program judgment, D01-D12, B00-B28 and Q01-Q24 are delegated
+    to the Fable Meta-CEO seat (DEC:PROPHET-US-FABLE-META-CEO-DELEGATION; operation
+    prophet-us-fable-meta-ceo-20260923-001, #6805 comment 5793406610, PICKUP_ACK
+    5793983971). No Astra/Sol return is a prerequisite; existing technical owners,
+    independent review, source custody, rights, budget and release gates are unchanged.
+    Labor runs on the external fabric only; Fable/Opus children are permitted solely as
+    sub-orchestrators or adversarial auditors (Chairman live instruction, same day).
+    Incumbent carriers #7581/#7180/#7572 stay on their original writers until a
+    same-carrier custody statement is read."
   - "THE OUTAGE was LIVE at 0A (2026-08-17) and still unresolved at the 0B pin
     (2026-08-18T00Z: source_asof=2026-08-13, 206 plans). That historical fact is
     preserved. A1 is now RESOLVED by adoption of A1R #6320 plus the ordinary scheduled
@@ -153,6 +168,9 @@ artifacts:
   - research/prophet_v4/V4_A1_AVAILABILITY_RECOVERY_HANDOFF.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-25-a1-acceptance.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-25-b1-built.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/FABLE_META_CEO_EXECUTION_HANDOFF.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/effective/PROPHET_US_MASTER_PLAN_R6.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/FIRST_WAVE_RUNBOOK.md
 waves:
   - id: 0a
     title: "V4-0A — estate archaeology + architecture freeze. Merged #5832
@@ -657,16 +675,99 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  Chairman 2026-09-18 assigns Sol Meta-CEO accountability for the existing rotation
-  participation outcome; DEC:PROPHET-ROTATION-PARTICIPATION-META-CEO-MANDATE records
-  the scope without transferring incumbent source writers or runtime assignments.
-  Resume from agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-09-18-meta-ceo-rotation.md.
-  First close the current availability recovery's actual review/CI/publication gates
-  through its existing carriers and integration owner, not another recovery branch.
-  Then advance the already-frozen B3/B4/B5, GMI and Fusion dependency graph to a real
-  leadership-to-entry-to-thesis-management journey. Current-price publication alone
-  is not completion. Retain historical D5 evidence and independent owner boundaries;
-  do not replay its old next action without reconciling newer implementation/evidence.
+  2026-10-12 02:50 source progress: independent object comparison PR8874 is
+  normally squash-merged to a278075e6197 with 88 logical CI jobs and 310 passing
+  proof steps, zero blocking or inherited failures. Its source/CI/review gates are
+  closed. Original DailyBrief8249 corrected-source review is accepted within its
+  source/helper scope; 139 parent tests and two planner checks passed. Integrate
+  this newly released shared workstream record on the original Brief carrier,
+  preserve exact reviewed module/test/dependency bytes, then complete exact-head
+  CI and normal source release. P1a fresh native build is active; actual generated
+  access and browser evidence remain owed. Both human reopen approvals remain
+  received. No new human decision is pending. Earlier entries are historical.
+  2026-10-12 approved four-market continuation: use
+  PROPHET-US-V4-RECOVERY-2026-10-12-daily-brief-repair.md and programme6107291350.
+  The human explicitly reopened original P1a8444 integration and selected original
+  DailyBrief8249 for repair. B03 and Return live acceptance completed20:33UTC
+  October11; do not replay those closed checks. The Brief repair preserves native
+  independent clocks and malformed-input regressions;139 tests pass on integrated
+  main f65b8376. Corrected-source review is accepted within source/helper scope;
+  two planner checks pass. Finish exact-head CI and normal release,
+  then native selection/provenance binding and product integration. Today/standouts
+  already owns selection; do not create a second selector. P1a fresh generated
+  access proof and browser recapture remain in progress on its original carrier.
+  All unrelated custody/refusals remain. Earlier checkpoints below are historical.
+  2026-10-11 authenticated paging continuation: use
+  PROPHET-US-V4-RECOVERY-2026-10-11-b03-attested-relations.md and programme6107291350.
+  PR8832 and8845 are merged and closed. Live browse/filter succeeded but offset8
+  still aborted at15s. Return to candidate is verified live in grid and filtered
+  table. The new bounded one-entry relation cache reattests all actual B1 bytes
+  on every read through the B1 owner; cold construction retains full semantics
+  and post-attestation. Parent213 tests and complete371-row byte comparison pass.
+  Finish normal exact-head CI/release, ordinary API adoption and live paging/sign-out.
+  2026-10-12 four-market continuation: use programme6107291350 and the
+  PROPHET-US-V4-RECOVERY-2026-10-11-object-change.md handoff. PR8857 merged
+  normally to31afbfe1237e; B03 paging/filter/exact relation/sign-out and candidate
+  Return in EN grid/table/Today and settled ZH are accepted live in the retained
+  b03-and-return-live-acceptance-20261011.json receipt. All corresponding source,
+  review, CI, adoption and live checks are closed; do not repeat them.
+  Complete PR8874 with the upstream PR8870 calendar-dependency scope repair:
+  first CI38187164735 failed the unchanged import-closure test; its final semantic
+  evidence is consumed and closed. The reviewed comparison source/test bytes are
+  unchanged by current-main composition. Route integration remains behind
+  DailyBrief8249. Human explicitly reopened original P1a8444 main integration and
+  chose DailyBrief8249 as canonical with source repair; only refusals6029541334
+  and5924461491 are superseded. Both original operations are active, so do not
+  duplicate them or ask again. HK/China adoption waits for actual P1a release.
+  Today/standouts remains the selection owner; native object binding is required
+  before its own selection provenance can be emitted. No second selector or
+  manufactured owner/review/history receipt.
+  Earlier progression below is historical and does not reopen closed evidence.
+  2026-10-11 B1 validation continuation: use
+  PROPHET-US-V4-RECOVERY-2026-10-11-b1-validation-performance.md and programme
+  comment6107291350. PR8832 source is closed at3cb4bfcc and its exact engine was
+  installed before a normal API restart, but entitled B03 still aborted after15s.
+  Current isolated read25.57s spent24.57s in B1 semantics; request arrival remains
+  unknown. The new bounded repair removes repeated envelope validation and final
+  per-episode relation scans without weakening any per-request integrity check.
+  Parent190 affected tests pass; full371-row retained-input result is identical
+  and independent exact-diff review approved. PR8845's first exact plan exposed
+  a CI ownership gap: B1's four-suite command was in a nightly-only data job.
+  The same branch moves that unchanged proof to the existing Prophet code job
+  and tightens unique-owner/source-selector regression tests. Complete normal CI/merge/adoption
+  and live B03 proof; candidate return still awaits coherent generated HTML.
+  Earlier progress below is historical and does not reopen closed evidence.
+  2026-10-11 B03 runtime continuation: use
+  PROPHET-US-V4-RECOVERY-2026-10-11-b03-read-performance.md and programme comment
+  6107291350. B03/8798/8801/8806/8827 source releases are closed; 8827 merged as
+  f6ab52870283d0b1f782a6b0978a81b672864285. Earlier four-feature publication
+  completed, and live bilingual entry/source copy plus exact related Plan filter
+  were observed. Live B03 read aborted at its existing 15-second deadline;
+  original request arrival and first fault remain unknown. The current bounded
+  per-request relation index preserves full B1 validation, passes 53 affected
+  tests and exact 371-row retained-input comparison, and has independent scoped
+  review. Publish and consume exact-head CI before normal source release; actual
+  installed-source/live timeout resolution and 8827 candidate return remain owed.
+  The older progression below is historical and does not reopen closed releases.
+  2026-10-11 human-approved continuation under 6817/6805 and original root
+  01a11e89-b35d-7a81-9404-5fce2c6170cb: use
+  PROPHET-US-V4-RECOVERY-2026-10-11-entry-copy.md and programme comment 6107291350.
+  B03 PR8762 is source-merged at 395e5d6089e95aa907c48fae811ecb918fb26f95 after
+  accepted source, current-head hosted CI and explicit human component visual
+  approval. Existing automatic render 38133349439 and authenticated B03 production
+  proof remain owed. Deliver the current-main mixed Buy/Near group copy repair
+  through normal source/CI/release. B04 PR7869 and B06 PR8670 source releases and
+  reviews are closed. P1a PR8444 access/cached-render deltas are independently
+  accepted within scope at a8d84782b3d2f1e6a875012067584c0b4234d7c0; its original
+  explicit integration refusal and generated public-shell repair remain separate.
+  Resume prepared HK P1b then China P1c at the actual shared P1a acceptance/release
+  edge, preserving incumbent source effects. Daily Brief original PR8249 retains
+  its refused source edit and owner-issued exact selection tuple obligation.
+  Continue native evidence, truthful entry and Model Plans to four-market
+  authenticated production acceptance; do not replay closed operations or infer
+  mission completion from source delivery. Native same-parent children are
+  admitted within actual runtime limits; existing M2 remains preferred and no
+  Executive plugin is used.
 ---
 
 ## Context

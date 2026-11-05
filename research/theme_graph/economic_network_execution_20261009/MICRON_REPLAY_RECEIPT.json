@@ -1,0 +1,182 @@
+{
+  "case_id": "C01-micron-planned-product-integration",
+  "outcomes": {
+    "current": {
+      "exit_code": 0,
+      "result": {
+        "admission": "NOT_ADMITTED",
+        "annotation_trust": {
+          "document_annotations": "caller_supplied_not_authenticated",
+          "identity_annotations": "caller_supplied_not_authenticated",
+          "manual_assertions": "caller_supplied_not_authenticated"
+        },
+        "assertion_basis": "manual_review",
+        "authority": {
+          "gate": false,
+          "prediction": false,
+          "rank": false,
+          "size": false,
+          "trade": false
+        },
+        "content_boundary": {
+          "annotations": "echoed_as_supplied_may_contain_source_text",
+          "machine_replayed_support_text": "OMITTED",
+          "public_export": "NOT_AUTHORIZED",
+          "public_safe_payload": "NOT_CERTIFIED",
+          "quote_free_payload": "NOT_CERTIFIED"
+        },
+        "current_candidate_view": {
+          "assertion": {
+            "kind": "product_integration",
+            "lifecycle": "planned",
+            "magnitude": null,
+            "object_label": "NVIDIA",
+            "product_scope": "24GB 8H HBM3E",
+            "subject_label": "Micron"
+          },
+          "bilateral_candidate": true,
+          "candidate_id": "manual:micron-hbm3e-h200:2024-02-26:1",
+          "canonical_object_id": null,
+          "canonical_subject_id": null,
+          "disposition": "product_integration_candidate",
+          "economic_weight": null,
+          "identity_annotation_status": "UNTRUSTED_NOT_RESOLVED",
+          "identity_annotations": null,
+          "revenue": null,
+          "revision": {
+            "relation": "original",
+            "supersedes_candidate_id": null
+          },
+          "revision_resolution": "NO_AUTOMATIC_SELECTION_OR_ORIGINAL_ERASURE",
+          "scope": "product_only",
+          "shipments": null,
+          "theme_membership": null
+        },
+        "gaps": {
+          "identity": [
+            "as_of_native_issuer_identity_not_established"
+          ],
+          "native_adoption": [
+            "relationship_dataset_and_owner_adoption_required"
+          ],
+          "rights": [
+            "purpose_specific_rights_not_established",
+            "public_export_not_authorized"
+          ],
+          "time": [
+            "native_dataset_profile_and_bound_row_not_established"
+          ]
+        },
+        "graph1_projection": null,
+        "inspection_status": "INSPECTABLE",
+        "limitations": [
+          "structural_byte_replay_is_not_independent_semantic_adjudication",
+          "manual_assertion_is_not_verified_economic_truth",
+          "source_credibility_and_document_metadata_not_authenticated",
+          "echoed_annotations_may_contain_source_text_no_public_safe_certification",
+          "no_shipments_revenue_weight_theme_membership_or_propagation_inferred"
+        ],
+        "refusal": null,
+        "schema": "company_intelligence.relationship_inspection/v1",
+        "source_provenance": {
+          "dataset_id": null,
+          "document_id": "manual:micron-ir:hbm3e-h200:2024-02-26",
+          "metadata_authenticity": "caller_supplied_not_authenticated",
+          "published_date": "2024-02-26",
+          "source_credibility": "not_verified",
+          "source_hash_status": "matched_supplied_bytes",
+          "source_ref": "https://investors.micron.com/news/press-release/2024/Micron-Commences-Volume-Production-of-Industry-Leading-HBM3E-Solution-to-Accelerate-the-Growth-of-AI-02-26-2024/default.aspx",
+          "source_sha256": "a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e",
+          "version": "sha256:a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e"
+        },
+        "support": {
+          "byte_end": 371320,
+          "byte_start": 370936,
+          "char_end": 371258,
+          "char_start": 370876,
+          "schema": "earnings_release.span_receipt/v1",
+          "semantic_adjudication": "NOT_PERFORMED",
+          "span_bytes": 384,
+          "span_sha256": "f79bce81f656e826b3aa74380eb9a2b63bf74fc0e60376dc2b40c64600eb890a",
+          "status": "STRUCTURALLY_REPLAYED",
+          "value_text_sha256": "59bddc69a14d3528362fe55261e35cb9c2eca7214748c3647e512861b732f4f3"
+        },
+        "temporal": {
+          "historical_system_replay": false,
+          "mode": "current_inspection"
+        }
+      },
+      "stderr_empty": true
+    },
+    "historical": {
+      "exit_code": 2,
+      "result": {
+        "admission": "NOT_ADMITTED",
+        "annotation_trust": {
+          "document_annotations": "caller_supplied_not_authenticated",
+          "identity_annotations": "caller_supplied_not_authenticated",
+          "manual_assertions": "caller_supplied_not_authenticated"
+        },
+        "assertion_basis": "manual_review",
+        "authority": {
+          "gate": false,
+          "prediction": false,
+          "rank": false,
+          "size": false,
+          "trade": false
+        },
+        "content_boundary": {
+          "annotations": "echoed_as_supplied_may_contain_source_text",
+          "machine_replayed_support_text": "OMITTED",
+          "public_export": "NOT_AUTHORIZED",
+          "public_safe_payload": "NOT_CERTIFIED",
+          "quote_free_payload": "NOT_CERTIFIED"
+        },
+        "current_candidate_view": null,
+        "gaps": {
+          "identity": [
+            "as_of_native_issuer_identity_not_established"
+          ],
+          "native_adoption": [
+            "relationship_dataset_and_owner_adoption_required"
+          ],
+          "rights": [
+            "purpose_specific_rights_not_established",
+            "public_export_not_authorized"
+          ],
+          "time": [
+            "native_dataset_profile_and_bound_row_not_established"
+          ]
+        },
+        "graph1_projection": null,
+        "inspection_status": "REFUSED",
+        "limitations": [
+          "structural_byte_replay_is_not_independent_semantic_adjudication",
+          "manual_assertion_is_not_verified_economic_truth",
+          "source_credibility_and_document_metadata_not_authenticated",
+          "echoed_annotations_may_contain_source_text_no_public_safe_certification",
+          "no_shipments_revenue_weight_theme_membership_or_propagation_inferred"
+        ],
+        "refusal": {
+          "code": "AS_OF_REGISTRY_REQUIRED"
+        },
+        "schema": "company_intelligence.relationship_inspection/v1",
+        "source_provenance": null,
+        "support": null,
+        "temporal": {
+          "as_of": "2024-02-26T12:00:00+00:00",
+          "historical_system_replay": false,
+          "mode": "supplied_native_row_as_of_inspection",
+          "row_validation": "bounded_candidate_probe_not_universal_native_schema"
+        }
+      },
+      "stderr_empty": true
+    }
+  },
+  "production_admission": false,
+  "proof_scope": "held_source_to_actual_candidate_inspection_cli",
+  "schema": "economic_relationship_execution_witness.v1",
+  "served_product_proof": false,
+  "source_sha256": "a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e",
+  "status": "PASS"
+}
