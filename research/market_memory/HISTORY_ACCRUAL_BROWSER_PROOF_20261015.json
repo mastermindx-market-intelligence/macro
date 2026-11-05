@@ -1,0 +1,32 @@
+{
+  "archive_manifest_sha256": "a87654c54470d604640aa3ee3ed66b43fb4df18132c6f01a64d64a6e3c9984b7",
+  "checks": [
+    {
+      "default_date": "2026-10-14",
+      "default_rows": 25,
+      "errors": [],
+      "external_requests": 0,
+      "language": "en",
+      "previous_next_and_outcome_reset": true,
+      "theme": "dark",
+      "unknown_date_empty": true,
+      "width": 1440
+    },
+    {
+      "default_date": "2026-10-14",
+      "default_rows": 25,
+      "errors": [],
+      "external_requests": 0,
+      "language": "zh",
+      "previous_next_and_outcome_reset": true,
+      "theme": "light",
+      "unknown_date_empty": true,
+      "width": 390
+    }
+  ],
+  "html_bytes": 35242940,
+  "html_sha256": "0ccb87c8b675a7c4d0cf42e06a15afbc5c54448c599186c2e58ec9b183335a34",
+  "publicly_deployed": false,
+  "schema": "market_memory.accrual_browser_verification.v1",
+  "unchanged_UI_prior_full_eight_case_evidence_reused": true
+}

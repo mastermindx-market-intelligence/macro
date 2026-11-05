@@ -1,0 +1,69 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+__________ test_replay_maturity_counts_only_complete_outcome_windows ___________
+
+    def test_replay_maturity_counts_only_complete_outcome_windows():
+        for n, h in [(30, 21), (30, 5), (3, 1)]:
+            result = _maturity_replay_fixture([100.] * n, h)
+>           assert result["n_days"] == n - h
+E           assert 30 == (30 - 21)
+
+tests/test_risk_radar.py:432: AssertionError
+_______ test_replay_maturity_does_not_score_an_incomplete_positive_tail ________
+
+    def test_replay_maturity_does_not_score_an_incomplete_positive_tail():
+        result = _maturity_replay_fixture([100.] * 29 + [90.])
+>       assert result["n_days"] == 9 and result["n_alert"] == 9
+E       assert (30 == 9)
+
+tests/test_risk_radar.py:439: AssertionError
+_________ test_replay_maturity_empty_evidence_is_not_zero_performance __________
+
+    def test_replay_maturity_empty_evidence_is_not_zero_performance():
+        for prices, lo in [([100.] * 20, None), ([100.] * 30, "2027-01-01")]:
+            result = _maturity_replay_fixture(prices, lo=lo)
+>           assert result["n_days"] == result["n_alert"] == 0
+E           assert 20 == 0
+
+tests/test_risk_radar.py:447: AssertionError
+________________ test_replay_maturity_rejects_invalid_horizons _________________
+
+    def test_replay_maturity_rejects_invalid_horizons():
+        import pytest
+        for horizon in (0, -1, True, 1.5):
+>           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_risk_radar.py:455: Failed
+_______ test_replay_maturity_missing_comparison_never_passes_retune_gate _______
+
+    def test_replay_maturity_missing_comparison_never_passes_retune_gate():
+        for scores in [(None, None, .5, .5), (.2, None, .5, .5), (.2, .2, None, .5)]:
+            result = _maturity_comparison_fixture(scores)
+>           assert result["improves"] is False and result["comparison_ready"] is False
+E           assert (True is False)
+
+tests/test_risk_radar.py:471: AssertionError
+___________ test_replay_maturity_preserves_complete_comparison_rule ____________
+
+    def test_replay_maturity_preserves_complete_comparison_rule():
+        for scores, expected in [((.2, .3, .4, .5), True),
+                                 ((.2, .3, .2, .3), False),
+                                 ((.2, .3, .1, .5), False),
+                                 ((0., 0., .1, .1), True)]:
+            result = _maturity_comparison_fixture(scores)
+>           assert result["comparison_ready"] is True
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'comparison_ready'
+
+tests/test_risk_radar.py:480: KeyError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, admin, browser, calibration, content, data, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_risk_radar.py::test_replay_maturity_counts_only_complete_outcome_windows
+FAILED tests/test_risk_radar.py::test_replay_maturity_does_not_score_an_incomplete_positive_tail
+FAILED tests/test_risk_radar.py::test_replay_maturity_empty_evidence_is_not_zero_performance
+FAILED tests/test_risk_radar.py::test_replay_maturity_rejects_invalid_horizons
+FAILED tests/test_risk_radar.py::test_replay_maturity_missing_comparison_never_passes_retune_gate
+FAILED tests/test_risk_radar.py::test_replay_maturity_preserves_complete_comparison_rule
+6 failed, 34 deselected in 17.95s

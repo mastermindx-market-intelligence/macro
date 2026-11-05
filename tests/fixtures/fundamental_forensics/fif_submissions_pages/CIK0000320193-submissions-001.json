@@ -1,0 +1,66 @@
+{
+ "acceptanceDateTime": [
+  "1990-03-01T14:00:00.000Z",
+  "1990-06-01T14:00:00.000Z"
+ ],
+ "accessionNumber": [
+  "0000320193-90-000001",
+  "0000320193-90-000002"
+ ],
+ "act": [
+  "34",
+  "34"
+ ],
+ "core_type": [
+  null,
+  null
+ ],
+ "fileNumber": [
+  "000-00000",
+  "000-00000"
+ ],
+ "filingDate": [
+  "1990-03-01",
+  "1990-06-01"
+ ],
+ "filmNumber": [
+  null,
+  null
+ ],
+ "form": [
+  "10-K",
+  "10-Q"
+ ],
+ "isInlineXBRL": [
+  0,
+  0
+ ],
+ "isXBRL": [
+  0,
+  0
+ ],
+ "isXBRLNumeric": [
+  null,
+  null
+ ],
+ "items": [
+  null,
+  null
+ ],
+ "primaryDocDescription": [
+  null,
+  null
+ ],
+ "primaryDocument": [
+  "synthetic-19891231.htm",
+  "synthetic-19900331.htm"
+ ],
+ "reportDate": [
+  "1989-12-31",
+  "1990-03-31"
+ ],
+ "size": [
+  1024,
+  512
+ ]
+}

@@ -1,5 +1,87 @@
 ---
 key: OPTIONS-WORKBENCH-R0-REPLAY-GEOMETRY-FAILURES
+claim: 'The 2026-09-18 Options Workbench R0 observation is preserved as dated evidence. A 2026-11-05 canonical
+  source reconciliation proves Terminal #608 and Macro #7279/#7306 merged, including later repairs; their
+  archived Draft/rereview/queued-CI states are superseded. Macro #7271 was closed unmerged as superseded
+  by already-merged #8361, with later consumer follow-through in #8921; its original branch and evidence
+  remain retained. These source outcomes do not establish present production freshness, complete field
+  semantics or full #603/Quanted parity.'
+falsifier: Compare the canonical PR head, merged_at and merge_commit_sha for mastermind-terminal#608 and
+  macro#7279/#7306 and the source-linked receipts below; a contradictory canonical outcome invalidates
+  this reconciliation. The historical gamma internal-consistency claim remains falsifiable through python3
+  -m pytest -q tests/test_gex_engine.py and the original replay/provenance controls; those runtime tests
+  were not rerun in this records-only pass. Current schema validation or loss of any original archived
+  byte also invalidates the record update.
+so_what: 'Retire the stale source-merge blockers for Terminal #608 and Macro #7279/#7306 and the superseded
+  #7271 repair wait. Preserve their accepted replacements/repairs and the separately accepted dated live-flow
+  watermark proof. Reconcile remaining parent product, completeness and entitlement owners before further
+  work; do not duplicate writers, assume current deployment, turn OI-modeled exposure into observed inventory
+  or revive historical reviewer routing as new authority.'
+kind: runtime
+verified_at: 2026-09-18
+verified_by: 'Original runtime observation epoch is 2026-09-18 and its complete witness is archived verbatim
+  below. Separate administrative read on 2026-11-05: Terminal #608 head aa9333502ecad41054b5d392a4fae9138b163e04
+  merged as 4cd9cd022b9df397bde902bdddf364cbf93e6464; Macro #7279 head 2b0fe5d99f1829d5283d35e84691242346d51f41
+  merged as fc4efb9fd9ec97cc3e65f9ff9ee157626be5683f; #7306 head47ef463e36768cac0b6f49c7946f35351a308ba6
+  merged as98c67b7d2c5b89670b5e915c34dbc17d899e6df7; #7271 CLOSED_UNMERGED2026-11-05T13:30:12Z at retainedcadb7ec4a5029150dea3eb9445d9481f3f2aff66,
+  disposition6659241062 verifies accepted#8361 engine/current-source identity,15preserved test-function
+  ASTs and existingCIenrollment; replacement#8361 merge7084e176a8d510f96082d4195ee4117e08002890 and consumer#8921
+  mergea3134c11938e40e30731856fcf7dfca91f53cf12. Primary receipts5894994553,5739737411,5772431029,5772438979
+  and entitlement5724610745 read directly; no fresh runtime or entitlement test.'
+scope:
+- terminal
+- options-intelligence
+- terminal:terminal/components/surface
+- terminal:terminal/lib/heatSeries.ts
+- macro:scripts/build_flow_surface.py
+confidence: verified
+---
+
+## Dated source-outcome qualification — 2026-11-05
+
+This 2026-11-05 qualification reconciles administrative source outcomes. The complete 2026-09-18 observation is preserved verbatim below; its tests, browser results and source states keep their original epoch. The original `verified_at`, kind, confidence and scope are retained. Current GitHub state is checked separately and does not turn historical validation into a fresh product test.
+
+Current procedure for this record repair is `Mastermind@17f6e4ad95f7006c1e607885a40210115049d024` (Skillpack 1.0.1/bootstrap 1), under the Chairman's Macro-backlog assignment. The historical procedure pin in the archived record is evidence, not current authority. [Recovery brief](https://github.com/mastermindx-market-intelligence/macro/pull/7268#issuecomment-6659154642) bounds this two-record update. It creates no new implementation, source writer on the product carriers, control plane, provider request or release authority.
+
+### Reconciled carriers
+
+| Carrier | Canonical source outcome | Scope and remaining distinction |
+| --- | --- | --- |
+| [Terminal #608](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/608) | Merged 2026-09-29T17:48:44Z; final head `aa9333502ecad41054b5d392a4fae9138b163e04`; merge `4cd9cd022b9df397bde902bdddf364cbf93e6464`. | The archived `14f9a8d8` draft/rereview status is superseded. Later cold-index failure and render-boundary coverage are recorded in the final repair receipt. |
+| [Macro #7279](https://github.com/mastermindx-market-intelligence/macro/pull/7279) | Merged 2026-09-20T02:41:41Z; final head `2b0fe5d99f1829d5283d35e84691242346d51f41`; merge `fc4efb9fd9ec97cc3e65f9ff9ee157626be5683f`. | The earlier provenance fixes and later live-flow watermark repair landed on this carrier. Historical queued CI/rereview is no longer an open source-merge dependency. |
+| [Macro #7271](https://github.com/mastermindx-market-intelligence/macro/pull/7271) | Closed unmerged as superseded on 2026-11-05T13:30:12Z; original head `cadb7ec4a5029150dea3eb9445d9481f3f2aff66` and branch retained. | The intended correction is already protected through #8361, merge `7084e176a8d510f96082d4195ee4117e08002890`, with later consumer follow-through in #8921. Its historical fixture red is not relabeled inherited or green. |
+| [Macro #7306](https://github.com/mastermindx-market-intelligence/macro/pull/7306) | Merged 2026-10-04T01:08:55Z; final head `47ef463e36768cac0b6f49c7946f35351a308ba6`; merge `98c67b7d2c5b89670b5e915c34dbc17d899e6df7`. | Conditional scenario producer source landed; the separate R2 record qualifies its later clock repair and remaining consumer/acceptance boundaries. |
+
+### Evidence limits and accepted work
+
+[Terminal #608 receipt5894994553](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/608#issuecomment-5894994553) reports a later cold-index read failure that had falsely asserted accrual/absence or retained frames before any frame was admitted. The final repair consumes the existing index error, guards retention copy on actual frames and distinguishes read failure. It also records a discriminating render-boundary admission control for the session-rollover window. Its 276 focused tests and 36 no-retry responsive/language browser cases are dated September 29 receipts, not executions by this records pass. The receipt explicitly leaves SessionFlowPane, stored-frame freshness labeling and sub-pixel geometry residue separate. Preserve settled replay ownership, paused cursor, root/session/stamp admission and modeled metrics; do not restart these accepted repairs without a new material finding.
+
+[Macro #7279 receipt5772431029](https://github.com/mastermindx-market-intelligence/macro/pull/7279#issuecomment-5772431029) separately accepts the bounded live-flow watermark repair's natural September 21 M1 run at `4273786fa0c3a84efed2a793584f740fe110265a`. Its 20 natural cycle completions and matching publication/public-read receipts close that dated watermark operation. [5772438979](https://github.com/mastermindx-market-intelligence/macro/pull/7279#issuecomment-5772438979) records the permitted old rollback retirement. Neither receipt is a present-day host census or whole Options Workbench/replay production acceptance. Preserve that completed proof; this update does not repeat host operations or retire any other rollback.
+
+[Macro #7271 receipt5739737411](https://github.com/mastermindx-market-intelligence/macro/pull/7271#issuecomment-5739737411) classifies canonical run35300277920's pack4 failure: the dashboard rendered-fixture receipt differed in the integrated branch, while its GEX assertions passed. The author explicitly withheld an inherited-failure conclusion because composition carried fixture bytes. Its historical numerical review and 249/11 owner-pack evidence remain bounded historical evidence. The subsequent [supersession disposition6659241062](https://github.com/mastermindx-market-intelligence/macro/pull/7271#issuecomment-6659241062) establishes that this precursor no longer needs release: #8361 already landed the same intended actual-spot sign contract, with conservative invalid/near-zero handling. At main `9809bd750420ee93fa031cdc889babeb59379ae5`, the engine is byte-identical to accepted #8361 blob `bf1a2d740a3077ca91d15875c627164f7bb2f351`; 15 checked owner-test function ASTs and the current GEX modeling-core enrollment are preserved. The existing manifest owner has `gate: data`; this is source/enrollment proof, not a new PR code-gate or test-run claim. #7271 is closed unmerged with its unique synthetic research/logs retained on its immutable original carrier. This does not clear or reclassify the old fixture failure, and does not create a second dashboard/gamma owner.
+
+## Capability and entitlement boundaries
+
+The [Terminal #603 ruling](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/603#issuecomment-5724610745) distinguishes the lawful modeled SPY workflow, then other actually materialized/qualified roots, from measured participant inventory. OI-derived, assumption-signed SPX exposure does not become measured MM/Firm/Broker-Dealer/Customer positioning. That ruling records raw ThetaData `VENDOR_RAW / OPERATOR_ONLY` classification and no established browser/public redistribution terms in its source evidence. This records pass has not performed a fresh license or entitlement audit and grants no new redistribution right.
+
+Signed-participant SPX/VIX requires verified source, license/redistribution terms, settlement clocks and payload semantics. No provider purchase follows from this update. Preserve explicit quote/OI/valuation/build clocks, null and missingness semantics, modeled Greek labels, fixed-input assumptions and lawful incumbent collectors, kernels, replay, transport and release owners. No ranking, sizing, trading authority, predictive edge, live freshness or full #603/Quanted parity follows from source merges.
+
+## Current continuation
+
+1. Preserve #7271's completed supersession disposition and original evidence. The accepted gamma implementation and owner-native regression coverage are already protected through #8361 and later #8921 consumer work. Do not reopen the obsolete source repair or claim the old precursor was merged; any new defect requires its own current-source evidence and incumbent owner.
+2. The #7279 source-merge prerequisite for the separate Greek field-completeness work is satisfied. Determine the actual incumbent completeness work and acceptance before editing; this record does not assert that it remains unimplemented, complete, or safe to duplicate.
+3. Reconcile the existing parent #603/#599 owners for remaining profile resolution, completeness, linked panes, scenario consumption and production/natural-input acceptance. Three source merges do not establish parent completion, present-day deployment or continuing freshness.
+4. Preserve the accepted source and dated watermark operation as DO_NOT_REDO absent material changes. Use actual review/native/release gates when new work is proposed; archived reviewer routing and draft instructions are not renewed requests.
+
+Record-local validation for this update concerns schema, preserved original bytes and source citations. No fresh pricing/model tests, full-store joins, production/browser sessions or external entitlement verification are claimed.
+
+## Complete original record — historical head8b2b10e5
+
+This verbatim September18 record preserves its original claims, tests and continuation as dated evidence, not current execution authority.
+
+``````markdown
+---
+key: OPTIONS-WORKBENCH-R0-REPLAY-GEOMETRY-FAILURES
 claim: >
   Options Workbench R0 has repaired immutable candidates for the previously blocking
   Terminal replay-refresh and Macro public-provenance defects, while release gates remain
@@ -264,3 +346,4 @@ Next actions, in order of available evidence:
 Do not restart the competitor teardown, replace existing carriers, create a new replay
 or freshness store, or infer profitability/observed dealer positioning from these
 correctness slices.
+``````

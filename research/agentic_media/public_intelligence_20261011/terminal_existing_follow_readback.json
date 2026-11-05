@@ -1,0 +1,20 @@
+{
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "observed_at": "2026-10-12T05:04:21.527867+00:00",
+  "browser": "Chrome, real authenticated profile",
+  "dossier_url": "https://www.mastermind-x.com/stocks/NVDA.html?from=earnings-wire&tx=2027Q1",
+  "continuation_href": "https://app.mastermind-x.com/terminal?sym=NVDA&pane=transcripts&from=company-dossier&utm_source=company_dossier&utm_medium=organic_research&utm_campaign=company_intelligence_upgrade",
+  "observed_url": "https://app.mastermind-x.com/terminal?sym=NVDA&from=company-dossier&utm_source=company_dossier&utm_medium=organic_research&utm_campaign=company_intelligence_upgrade",
+  "signed_in_watchlist_tab_present": true,
+  "nvda_active_list_matches_before_reload": 1,
+  "nvda_active_list_matches_after_hydration": 1,
+  "same_selected_list_after_hydration": true,
+  "initial_hydration_transient": "An immediate post-reload selected-list comparison was false; waiting for the original visible selected-list control restored equality. Initial default UI is not final account-state proof.",
+  "mutation": {
+    "account_created": false,
+    "follow_written": false,
+    "list_changed": false
+  },
+  "scope": "Existing NVDA list membership survives a full reload after account-state hydration. No new follow write, independent cross-device cloud synchronization, or article conversion is claimed.",
+  "private_list_name_retained": false
+}

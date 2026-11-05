@@ -55,6 +55,7 @@ Envelope keys are siblings on the top-level dict, never a nested wrapper.
 """
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import math
@@ -356,7 +357,7 @@ def _summarize_market(repo: Path) -> tuple[dict, str | None]:
     # liquidity_plumbing: RRP/TGA/netliq quality numbers so bot/ask surfaces
     # can cite them (already display-only labels upstream — no recompute here).
     for key in ("verdict", "radar", "vol", "breadth", "rotation", "rotation_events",
-                "liquidity", "liquidity_plumbing",
+                "liquidity", "liquidity_plumbing", "risk_envelope",
                 "alerts", "data_health", "contradictions", "live_overlay", "sources"):
         v = ws.get(key)
         if v is not None:
@@ -550,7 +551,7 @@ def _summarize_macro_weather(repo: Path) -> tuple[dict, str | None]:
             # v2 compact delta fields for LLM context
             # calendar days from streak start to latest ledger asof (inclusive)
             "usd_trend_days": (fx_deltas.get("usd_trend") or {}).get("days_in_state"),
-            "regime_since": (fx_deltas.get("usd_regime") or {}).get("since"),
+            "regime_since": (fx_deltas.get("usd_regime") or {}).get("since") if fx_ws.get("regime") is not None else None,
             "top_scenario": (
                 (fx_ws.get("scenario_intensity") or [{}])[0].get("name")
                 if fx_ws.get("scenario_intensity") else None
@@ -1249,6 +1250,11 @@ def _summarize_fx_dollar(repo: Path) -> tuple[dict, str | None]:
     return lobe, None
 
 
+def _outlook_ok(ro: object) -> bool:
+    """True only for a well-formed regime_outlook.v1 projection; anything else is ignored (pre-E1 artifact)."""
+    return isinstance(ro, dict) and ro.get("schema_version") == "regime_outlook.v1"
+
+
 def _summarize_rates_command(repo: Path) -> tuple[dict, str | None]:
     """Distil world_state.rates_command into the rates_command lobe.
 
@@ -1293,6 +1299,11 @@ def _summarize_rates_command(repo: Path) -> tuple[dict, str | None]:
         "futures_plain_en":   rc.get("futures_plain_en"),
         "honesty_note":       "context only — measured rates data, not a trade signal or forecast",
     }
+    ro = rc.get("regime_outlook")
+    if _outlook_ok(ro):
+        # E3: the projection itself, verbatim (deep copy); never a paraphrase, never re-stamped.
+        lobe["regime_outlook"] = copy.deepcopy(ro)
+        lobe["regime_outlook_source"] = "world_state.rates_command.regime_outlook"
     return lobe, None
 
 
