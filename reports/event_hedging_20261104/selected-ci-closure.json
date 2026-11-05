@@ -1,0 +1,9 @@
+{
+  "scope": "three affected incumbent jobs, not full CI",
+  "findings": {
+    "flow-surface": [],
+    "options-payoff-lab-consumer": [],
+    "options-estate-guards": []
+  },
+  "note": "derived scopes for 3/3 jobs"
+}

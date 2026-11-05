@@ -31,12 +31,21 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True, help="snapshot JSON path or - for stdin")
     parser.add_argument("--output", default="-", help="output JSON path or - for stdout")
-    parser.add_argument("--mode", choices=("surface", "hedge-target"), default="surface")
+    parser.add_argument("--mode", choices=("surface", "hedge-target", "event-variance", "hedge-path", "event-scorecard"), default="surface")
     args = parser.parse_args()
 
     payload = _load(args.input)
     if args.mode == "hedge-target":
         out = build_hedge_target_change(**payload)
+    elif args.mode == "event-variance":
+        from engine.event_hedging_diagnostics import build_event_variance_diagnostic
+        out = build_event_variance_diagnostic(**payload)
+    elif args.mode == "hedge-path":
+        from engine.event_hedging_diagnostics import compare_hedge_path_targets
+        out = compare_hedge_path_targets(**payload)
+    elif args.mode == "event-scorecard":
+        from engine.event_hedging_evaluation import score_event_hedging_forecasts
+        out = score_event_hedging_forecasts(**payload)
     else:
         out = _surface(payload)
     encoded = json.dumps(out, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n"

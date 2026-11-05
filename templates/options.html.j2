@@ -1404,6 +1404,8 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
     </div>
   </div>
 
+  {% if event_hedging_view %}{% include "_options_event_hedging.html.j2" %}{% endif %}
+
   <div class="oew-panel">
     <div class="oew-phead">
       <h2 class="oew-ph-title">{{ t('What changed', '有何变化') }}</h2>

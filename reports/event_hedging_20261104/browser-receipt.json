@@ -1,0 +1,49 @@
+{
+  "evidence": "synthetic local browser, not production",
+  "checks": [
+    {
+      "viewport_width": 1440,
+      "language": "en",
+      "visible": true,
+      "details_open": true,
+      "overflow": {
+        "scroll": 1198,
+        "width": 1198
+      },
+      "screenshot": "/Volumes/Mastermind/agent-workspaces/macro/web/event-hedging-20261104-01/reports/event_hedging_20261104/options-event-hedging-1440-en.png"
+    },
+    {
+      "viewport_width": 1440,
+      "language": "zh",
+      "visible": true,
+      "details_open": true,
+      "overflow": {
+        "scroll": 1198,
+        "width": 1198
+      },
+      "screenshot": "/Volumes/Mastermind/agent-workspaces/macro/web/event-hedging-20261104-01/reports/event_hedging_20261104/options-event-hedging-1440-zh.png"
+    },
+    {
+      "viewport_width": 390,
+      "language": "en",
+      "visible": true,
+      "details_open": true,
+      "overflow": {
+        "scroll": 364,
+        "width": 364
+      },
+      "screenshot": "/Volumes/Mastermind/agent-workspaces/macro/web/event-hedging-20261104-01/reports/event_hedging_20261104/options-event-hedging-390-en.png"
+    },
+    {
+      "viewport_width": 390,
+      "language": "zh",
+      "visible": true,
+      "details_open": true,
+      "overflow": {
+        "scroll": 364,
+        "width": 364
+      },
+      "screenshot": "/Volumes/Mastermind/agent-workspaces/macro/web/event-hedging-20261104-01/reports/event_hedging_20261104/options-event-hedging-390-zh.png"
+    }
+  ]
+}

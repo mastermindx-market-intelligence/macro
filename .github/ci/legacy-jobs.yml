@@ -9255,6 +9255,11 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/event_hedging_evaluation.py"
+      - "engine/seasonality/multiplicity.py"
+      - "tests/test_event_hedging_evaluation.py"
+      - "engine/event_hedging_diagnostics.py"
+      - "tests/test_event_hedging_diagnostics.py"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
@@ -9983,7 +9988,7 @@ jobs:
       - name: AD-1T1 ThetaData T1 daily incremental maintainer (legacy characterization, --daily hostile suite, launchd scheduler)
         run: python -m pytest tests/test_topup_thetadata_legacy.py tests/test_topup_thetadata_daily.py tests/test_topup_thetadata_scheduler.py -q
       - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
-        run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py tests/test_options_scenario_admission.py -q
+        run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py tests/test_options_scenario_admission.py tests/test_event_hedging_diagnostics.py tests/test_event_hedging_evaluation.py -q
       - name: qualified joint exposure and legacy Hub publication compatibility
         run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_gex_archive_correction.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
@@ -18492,6 +18497,8 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "scripts/options_event_hedging_view.py"
+      - "templates/_options_event_hedging.html.j2"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "lib/exchange_holidays.py"
@@ -30188,6 +30195,12 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "tests/test_event_hedging_evaluation.py"
+      - "scripts/options_event_hedging_view.py"
+      - "scripts/build_options_scenario_surface.py"
+      - "templates/_options_event_hedging.html.j2"
+      - "tests/test_event_hedging_delivery.py"
+      - "tests/test_event_hedging_diagnostics.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -30325,7 +30338,7 @@ jobs:
         # workspace they render into. tests/test_options_intel_brief.py includes the
         # data-feasibility law test, which reads the committed data/polygon_gex store
         # present on a full CI checkout.
-        run: python -m pytest tests/test_build_options_command.py tests/test_options_intel_brief.py tests/test_options_intel_brief_ui.py tests/test_options_command_aib.py -q
+        run: python -m pytest tests/test_build_options_command.py tests/test_options_intel_brief.py tests/test_options_intel_brief_ui.py tests/test_options_command_aib.py tests/test_event_hedging_delivery.py -q
       - name: neural-web support-map suite (real-synapse census bands)
         run: python -m pytest tests/test_support_map.py -q
 

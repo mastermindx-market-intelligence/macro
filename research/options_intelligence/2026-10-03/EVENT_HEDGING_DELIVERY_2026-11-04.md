@@ -69,3 +69,19 @@ Principal retains architecture and financial-semantics adjudication. Eligible bo
 - Canonical new workspace acquisition succeeded at the exact baseline; no existing worktree was modified.
 - This document is an implementation plan, not an accepted forecast or production receipt.
 - First source milestone: EH1 tests and a real invocation of the pure composition API, including unavailable evidence paths.
+
+## Implementation milestone: independent diagnostics/consumer slice
+
+Observed after the initial plan publication at `11600ba4bda1de8a7f6d1deb33394a65a0ba220b`.
+
+EH2 and a bounded EH3/EH4 consumer are implemented in the independently acquired canonical workspace `/Volumes/Mastermind/agent-workspaces/macro/web/event-hedging-diagnostics-20261104-01`, branch `sol/web-event-hedging-diagnostics-20261104-01`, operation `event-hedging-diagnostics-20261104-01`. Parent source was moved with per-file SHA-256 verification; only those parent-authored paths were restored/removed in the original workspace. The reserved EH1 files and original branch were not touched. `reports/event_hedging_20261104/source-transfer.json` retains that receipt.
+
+Delivered locally: matched event-variance diagnostics; common-anchor remaining hedge-target diagnostics; paired 30/60/120-minute forecast scorecard using incumbent loss math; three modes on the existing scenario CLI; an explicit-input, bilingual, responsive Options research panel. See `docs/EVENT_HEDGING_RESEARCH.md` for contracts, usage and limits. No collector, new scheduler, publisher, model fit, forecast issuance, live alert or trading effect was introduced.
+
+Verification: the combined new/incumbent focused command completed with **783 passed, 5 skipped** in 127.30s. The three affected incumbent CI jobs have **zero uncovered import-closure paths** in the narrowed closure check. This is not a full hosted-CI pass. Local Chromium tested the real Options template at 1440/390px in EN/ZH, including expanded source details and no panel overflow. The browser inputs are explicitly synthetic and do not establish production behavior.
+
+Original EH1 Fabric request remains `event-hedging-eh1-core-20261104-01`, root `event-hedging-20261104-01`, controller PID 62892. Its original receipt showed RUN_RESERVED followed by LEASE_WAIT pool=minimax; the latest inspected status did not prove worker START or a returned result. Do not duplicate, rebind or overwrite it. The parent continues independent work rather than treating that reservation as execution.
+
+Read-only source inspection found dated M2 research copies (SPX display October 23; GEX archive October 20) and a non-promoted local flow-signing gate. M1 inspection separately confirmed substantial SPX/SPXW/SPY EOD Greek and OI files under the existing Theta store; the manifest reports a last update on October 19. Date-level history and completion metadata do not prove intraday clocks, historical availability or current capture. No raw quote/price/outcome corpus was committed or empirical result computed. These are bounded observations of inspected paths, not a global production-outage finding.
+
+Outstanding: exact-head source publication and hosted CI for this slice; original EH1 return; current source and event/contract-clock qualification; actual calibrated forecast work; existing Terminal/Mastermind machine consumption; protected release and installed source-to-user proof. The complete mission remains incomplete. Under the current Macro-specific release law, independent formal approval and eligible non-author arming are actual release prerequisites, not an extra blanket technical-review requirement.
