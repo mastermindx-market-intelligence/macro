@@ -446,16 +446,33 @@ def _current_membership_evidence(
     """Resolve membership without letting names override immutable IDs."""
     raw_names = project.get("initiative_names")
     if "initiative_ids" not in project:
+        # An omitted ``initiative_ids`` key leaves the immutable membership
+        # relation UNKNOWN, not empty.  A matching ``initiative_names`` value is
+        # presentation evidence: it can certify neither an intended membership
+        # nor a deliberate emptiness.  Report the omission through the existing
+        # hard-blocking identity-conflict mechanism so the caller refuses to
+        # certify either direction until the immutable IDs are supplied.
+        issues: list[dict[str, Any]] = [{
+            "code": "membership_identity_conflict",
+            "reason": "initiative_ids_missing",
+        }]
         if raw_names is None:
-            return {"initiative_ids": [], "names": [], "issues": []}
+            return {
+                "initiative_ids": [],
+                "names": [],
+                "issues": sorted(issues, key=lpp.canonical_bytes),
+            }
         names, names_valid = _clean_string_list(raw_names)
-        issues: list[dict[str, Any]] = []
         if not names_valid:
             issues.append({
                 "code": "membership_identity_conflict",
                 "reason": "initiative_names_malformed",
             })
-        return {"initiative_ids": [], "names": names, "issues": issues}
+        return {
+            "initiative_ids": [],
+            "names": names,
+            "issues": sorted(issues, key=lpp.canonical_bytes),
+        }
 
     issues: list[dict[str, Any]] = []
     raw_ids = project.get("initiative_ids")

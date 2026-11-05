@@ -14,6 +14,7 @@ from pathlib import Path
 import pytest
 
 from scripts import linear_initiative_plan as lip
+from scripts import linear_initiative_plan_legacy as _lip_legacy
 from scripts import linear_portfolio_plan as lpp
 
 REPO = Path(__file__).resolve().parents[1]
@@ -232,3 +233,235 @@ def test_current_plan_and_receipt_are_deterministic_and_hash_bound() -> None:
     assert first["summary"]["group_counts"] == EXPECTED_GROUP_COUNTS
     assert first_receipt["strategy_content_sha256"]
     assert first_receipt["desired_memberships_sha256"]
+
+
+# ---------------------------------------------------------------------------
+# Immutable membership evidence
+# ---------------------------------------------------------------------------
+#
+# The relation between a Linear Project and its Initiative is proved by the
+# immutable ``initiative_ids`` on the Project row.  ``initiative_names`` is
+# PRESENTATION evidence: it shows which Initiative a Project is labelled with,
+# but it cannot prove the membership relation itself.  A Project row that
+# OMITS ``initiative_ids`` therefore carries UNKNOWN evidence — it certifies
+# neither an intended membership nor a deliberate emptiness — and the compiler
+# must refuse it through the existing hard-blocking
+# ``membership_identity_conflict`` mechanism instead of compiling clean.
+
+_MEMBERSHIP_MODES = ("omitted", "explicit", "correct")
+_EXCEPTION_WORKSTREAM = "WS:WATCHLIST-PORTFOLIO-CEO"
+_EXCEPTION_PROJECT_ID = "9aef6461-306a-4a3c-911b-c6a4b6635a78"
+
+
+def _membership_snapshot(strategy: dict, mode: str) -> dict:
+    """Build a current snapshot whose Project rows carry the requested evidence.
+
+    ``omitted``  — matching ``initiative_names`` and NO ``initiative_ids`` key.
+    ``explicit`` — ``initiative_ids: []`` (known empty membership).
+    ``correct``  — the exact immutable ``initiative_ids`` plus the matching name.
+    """
+    if mode not in _MEMBERSHIP_MODES:
+        raise ValueError(mode)
+    names = {
+        key: strategy["initiatives"][initiative]["name"]
+        for key, initiative in strategy["memberships"].items()
+    }
+    ids = {
+        key: f"init-{strategy['memberships'][key]}"
+        for key in strategy["memberships"]
+    }
+    projects: list[dict] = []
+    for key in sorted(strategy["memberships"]):
+        row = {
+            "workstream_key": key,
+            "project_id": f"proj-{key}",
+            "name": f"{key} project",
+        }
+        if mode == "omitted":
+            row["initiative_names"] = [names[key]]
+        elif mode == "explicit":
+            row["initiative_ids"] = []
+        else:
+            row["initiative_ids"] = [ids[key]]
+            row["initiative_names"] = [names[key]]
+        projects.append(row)
+    # The two deliberate unassigned exceptions stay unassigned by construction.
+    projects.extend([
+        {
+            "workstream_key": _EXCEPTION_WORKSTREAM,
+            "project_id": "proj-watchlist-portfolio-ceo",
+            "name": "Watchlist portfolio compatibility redirect",
+            "initiative_ids": [],
+        },
+        {
+            "workstream_key": "WS:CANONICAL-PARENT-UNRESOLVED",
+            "project_id": _EXCEPTION_PROJECT_ID,
+            "name": "Canonical parent unresolved",
+            "initiative_ids": [],
+        },
+    ])
+    initiatives: list[dict] = []
+    for key in sorted(strategy["initiatives"]):
+        row = strategy["initiatives"][key]
+        initiatives.append({
+            "initiative_id": f"init-{key}",
+            "name": row["name"],
+            "status": row["status"],
+            "priority": row["priority"],
+            "owner_id": row["owner"],
+            "lead_team": row["lead_team"],
+            "target_date": row["target_date"],
+            "labels": list(row["labels"]),
+            "parent_initiative_ids": [],
+            "health": row["health"],
+        })
+    return {
+        "schema": "linear_initiative_snapshot.v1",
+        "source": {"authority": "witness_only_not_canonical"},
+        "initiatives": initiatives,
+        "projects": projects,
+    }
+
+
+def _compile_with_snapshot(tmp_path, strategy: dict, mode: str):
+    path = tmp_path / f"initiative_snapshot_{mode}.json"
+    path.write_text(
+        json.dumps(
+            _membership_snapshot(strategy, mode),
+            ensure_ascii=False,
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    return lip.compile_initiative_plan(
+        project_plan=_project_plan(strategy),
+        strategy_path=STRATEGY,
+        snapshot_path=path,
+    )
+
+
+def _drift_codes(plan: dict) -> list[str]:
+    return [row["code"] for row in plan["drift"]]
+
+
+def test_initiative_membership_evidence_helper_is_shared_by_the_facade() -> None:
+    """The facade must delegate the SAME helper the legacy compiler runs."""
+    assert lip._current_membership_evidence is _lip_legacy._current_membership_evidence
+    assert lip.initiative_drift is _lip_legacy.initiative_drift
+    assert _lip_legacy.validate_strategy is lip.validate_strategy
+
+    id_to_name = {"init-autonomous-ai-organization": "Autonomous AI Organization"}
+
+    omitted = lip._current_membership_evidence(
+        {"initiative_names": ["Autonomous AI Organization"]},
+        id_to_name,
+    )
+    assert omitted["initiative_ids"] == []
+    assert omitted["issues"] == [{
+        "code": "membership_identity_conflict",
+        "reason": "initiative_ids_missing",
+    }]
+
+    explicit = lip._current_membership_evidence({"initiative_ids": []}, id_to_name)
+    assert explicit == {"initiative_ids": [], "names": [], "issues": []}
+
+    correct = lip._current_membership_evidence(
+        {
+            "initiative_ids": ["init-autonomous-ai-organization"],
+            "initiative_names": ["Autonomous AI Organization"],
+        },
+        id_to_name,
+    )
+    assert correct == {
+        "initiative_ids": ["init-autonomous-ai-organization"],
+        "names": ["Autonomous AI Organization"],
+        "issues": [],
+    }
+
+
+def test_initiative_membership_omitted_ids_is_unverified_and_hard_blocking(tmp_path) -> None:
+    """Matching names without the immutable IDs must not compile clean."""
+    strategy = _strategy()
+    plan, receipt = _compile_with_snapshot(tmp_path, strategy, "omitted")
+
+    assert receipt["snapshot_supplied"] is True
+    codes = _drift_codes(plan)
+    assert set(codes) == {"membership_identity_conflict"}
+    assert len(plan["hard_blockers"]) == len(strategy["memberships"])
+    assert {row["code"] for row in plan["hard_blockers"]} == {
+        "membership_identity_conflict"
+    }
+    assert {row["reason"] for row in plan["hard_blockers"]} == {
+        "initiative_ids_missing"
+    }
+    # Unknown evidence certifies NEITHER an intended membership NOR a
+    # deliberate emptiness.
+    assert "membership_missing" not in codes
+    assert "membership_wrong" not in codes
+    assert "membership_multi_parent" not in codes
+    # The refusal names every Project whose evidence could not be verified.
+    assert {row["workstream_key"] for row in plan["hard_blockers"]} == set(
+        strategy["memberships"]
+    )
+
+
+def test_initiative_membership_explicit_empty_ids_is_known_empty(tmp_path) -> None:
+    """``initiative_ids: []`` is known empty membership, not unknown evidence."""
+    strategy = _strategy()
+    plan, receipt = _compile_with_snapshot(tmp_path, strategy, "explicit")
+
+    assert receipt["snapshot_supplied"] is True
+    codes = _drift_codes(plan)
+    assert set(codes) == {"membership_missing"}
+    assert len(plan["drift"]) == len(strategy["memberships"])
+    # Known-empty membership is an ordinary drift row, not an identity refusal.
+    assert plan["hard_blockers"] == []
+    assert {row["workstream_key"] for row in plan["drift"]} == set(
+        strategy["memberships"]
+    )
+
+
+def test_initiative_membership_exact_id_and_name_is_a_valid_control(tmp_path) -> None:
+    """Matching exact immutable ID and name is the valid control."""
+    strategy = _strategy()
+    plan, receipt = _compile_with_snapshot(tmp_path, strategy, "correct")
+
+    assert receipt["snapshot_supplied"] is True
+    assert plan["drift"] == []
+    assert plan["hard_blockers"] == []
+    assert plan["summary"]["desired_initiatives"] == 7
+    assert plan["summary"]["desired_memberships"] == 63
+    assert plan["summary"]["unassigned_exceptions"] == 2
+
+
+def test_initiative_deliberate_exceptions_remain_unassigned(tmp_path) -> None:
+    """The two deliberate exceptions stay unassigned in every evidence mode."""
+    strategy = _strategy()
+    for mode in _MEMBERSHIP_MODES:
+        plan, _receipt = _compile_with_snapshot(tmp_path, strategy, mode)
+        codes = _drift_codes(plan)
+        assert "exception_has_forbidden_membership" not in codes
+        assert "unmapped_visible_project" not in codes
+        assert not [
+            row for row in plan["drift"]
+            if row.get("workstream_key") == _EXCEPTION_WORKSTREAM
+            or row.get("project_id") == _EXCEPTION_PROJECT_ID
+        ]
+        assert plan["summary"]["unassigned_exceptions"] == 2
+
+
+def test_initiative_offline_planning_needs_no_snapshot() -> None:
+    """Offline desired-state planning stays valid without a live witness."""
+    strategy = _strategy()
+    plan, receipt = lip.compile_initiative_plan(
+        project_plan=_project_plan(strategy),
+        strategy_path=STRATEGY,
+    )
+
+    assert receipt["snapshot_supplied"] is False
+    assert plan["drift"] == []
+    assert plan["hard_blockers"] == []
+    assert plan["summary"]["desired_initiatives"] == 7
+    assert plan["summary"]["desired_memberships"] == 63
+    assert plan["summary"]["unassigned_exceptions"] == 2
+    assert plan["summary"]["group_counts"] == EXPECTED_GROUP_COUNTS
