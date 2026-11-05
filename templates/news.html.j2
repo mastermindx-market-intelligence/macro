@@ -86,7 +86,7 @@
         </div>
       </div>
       <div class="nd-follow" id="ndFollowBar" hidden><label for="ndFollowInput">{{ t('Follow','关注') }}</label><input id="ndFollowInput" maxlength="200" placeholder="NVDA, oil, Federal Reserve" data-placeholder-zh="NVDA, 原油, 美联储"><button type="button" class="nd-btn" id="ndFollowSave">{{ t('Save','保存') }}</button></div>
-      <div class="nd-banner" id="ndBanner" hidden><span id="ndBannerText"></span><a href="/?signin=1&amp;ret=news.html" id="ndSignIn" hidden>{{ t('Sign in','登录') }}</a><button type="button" class="nd-btn nd-btn-quiet" id="ndRetry" hidden>{{ t('Retry','重试') }}</button></div>
+      <div class="nd-banner" id="ndBanner" role="status" aria-live="polite" hidden><span id="ndBannerText"></span><a href="/?signin=1&amp;ret=news.html" id="ndSignIn" hidden>{{ t('Sign in','登录') }}</a><button type="button" class="nd-btn nd-btn-quiet" id="ndRetry" hidden>{{ t('Retry','重试') }}</button></div>
       <div class="nd-list-top"><span id="ndResultCount">{{ t('Latest reporting','最新报道') }}</span><span id="ndFreshness"></span><label><input type="checkbox" id="ndAutoFollow">{{ t('Follow live','跟随最新') }}</label><span class="nd-status nd-connection-mobile" id="ndConnectionMobile" data-state="connecting">{{ t('Connecting','正在连接') }}</span></div>
       <button type="button" class="nd-update-bar" id="ndUpdates" hidden></button>
       <div class="nd-compare-tray" id="ndCompareTray" hidden aria-label="Selected reports" data-label-zh="已选报道">

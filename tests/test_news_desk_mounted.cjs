@@ -8,23 +8,23 @@ const initialTime=Date.parse("2026-10-18T04:00:00Z");
 const story=(id="a",extra={})=>Object.assign({id,headline:"Source report "+id,source_name:"Private publisher",url:"https://example.com/"+id,published_at:"2026-10-18T03:55:00Z",evidence:[],brief:"Source details "+id},extra);
 const snapshot=stories=>({schema:"intelligence.desk/v1",stories,health:{last_source_published_at:"2026-10-18T03:55:00Z"}});
 const settle=async()=>{for(let i=0;i<4;i++)await new Promise(r=>setImmediate(r));};
-function harness(t,{mobile=false,hash="",preferences}={}){
- const dom=new JSDOM(markup,{url:"https://example.com/news.html"+hash,pretendToBeVisual:true});
+function harness(t,{mobile=false,hash="",search="",preferences,initialSnapshot=snapshot([story()]),snapshotFailure=null}={}){
+ const dom=new JSDOM(markup,{url:"https://example.com/news.html"+search+hash,pretendToBeVisual:true});
  const win=dom.window,doc=win.document;doc.getElementById("ndSeed").textContent='{"stories":[]}';
  if(preferences)win.localStorage.setItem("mm.newsDesk.preferences.v1",JSON.stringify(preferences));
- let now=initialTime,sequence=0,requests=0,status=200,payload=snapshot([story()]);
+ let now=initialTime,sequence=0,requests=0,status=200,payload=initialSnapshot,failure=snapshotFailure;
  const realNow=Date.now;Date.now=()=>now;
  const timeouts=new Map(),intervals=[];win.setTimeout=(fn,delay)=>{const id=++sequence;timeouts.set(id,{fn,at:now+delay});return id;};win.clearTimeout=id=>timeouts.delete(id);win.setInterval=fn=>{intervals.push(fn);return intervals.length;};
  const media={matches:mobile,listeners:[],addEventListener:(name,fn)=>media.listeners.push(fn)};win.matchMedia=()=>media;
  const historyRequests=[];let historyResponder=async()=>({ok:false,status:503,text:async()=>"{}"});
- win.fetch=async(url,options)=>{if(String(url).startsWith("/api/news-desk/history?")){historyRequests.push({url:String(url),options});return historyResponder(String(url),options);}requests++;return{ok:status===200,status,text:async()=>JSON.stringify(payload)};};
+ win.fetch=async(url,options)=>{if(String(url).startsWith("/api/news-desk/history?")){historyRequests.push({url:String(url),options});return historyResponder(String(url),options);}requests++;if(failure==="network")throw new TypeError("Snapshot network failure");if(failure==="timeout")return new Promise(()=>{});return{ok:status===200,status,text:async()=>JSON.stringify(payload)};};
  const streams=[];win.EventSource=class{constructor(){this.listeners={};this.closed=false;streams.push(this);}addEventListener(n,fn){this.listeners[n]=fn;}close(){this.closed=true;}emit(n,p){if(this.listeners[n])this.listeners[n]({data:JSON.stringify(p)});}};
  doc.querySelectorAll("dialog").forEach(d=>{d.showModal=()=>d.setAttribute("open","");d.close=()=>d.removeAttribute("open");});
  win.HTMLElement.prototype.scrollIntoView=function(){}; // jsdom has no layout viewport.
  const app=desk.mount(doc,win);
  const click=id=>{const n=doc.getElementById(id);n.focus();n.click();};
  t.after(()=>{win.dispatchEvent(new win.Event("pagehide"));Date.now=realNow;dom.window.close();});
- return{app,win,doc,streams,click,setPayload:p=>payload=p,setStatus:n=>status=n,requests:()=>requests,setHistory:fn=>historyResponder=fn,historyRequests:()=>historyRequests,
+ return{app,win,doc,streams,click,setPayload:p=>payload=p,setStatus:n=>status=n,setFailure:value=>failure=value,requests:()=>requests,setHistory:fn=>historyResponder=fn,historyRequests:()=>historyRequests,
   resize:value=>{media.matches=value;media.listeners.forEach(fn=>fn({matches:value}));},
   advance:async ms=>{now+=ms;intervals.forEach(fn=>fn());for(let pass=0;pass<4;pass++){for(const[id,task]of Array.from(timeouts)){if(task.at<=now){timeouts.delete(id);task.fn();}}await settle();}},
   key:key=>doc.dispatchEvent(new win.KeyboardEvent("keydown",{key,bubbles:true,cancelable:true}))};
@@ -500,4 +500,66 @@ test("resizing an open filter sheet keeps keyboard focus inside its dialog",asyn
  assert.equal(h.doc.activeElement.getAttribute("aria-label"),"Close filters");
  assert.equal(h.doc.activeElement.closest("dialog").id,"ndFilters");
  h.doc.activeElement.click();assert.equal(h.doc.activeElement.id,"ndFilterOpen");
+});
+
+
+// PR #10610 refresh guarantees, exercised against the replacement desk owner.
+function locale(h,lang){h.doc.documentElement.dataset.lang=lang;h.doc.dispatchEvent(new h.win.Event("langchange"));}
+function query(h,value){const input=h.doc.getElementById("ndSearch");input.value=value;input.dispatchEvent(new h.win.Event("input"));}
+function reportIds(h){return Array.from(h.doc.querySelectorAll("#ndFeed .nd-row"),row=>row.dataset.id);}
+for(const failure of ["network","timeout","schema"]){
+ test("snapshot refresh "+failure+" discloses degradation and retains a usable desk",async t=>{
+  const original=snapshot([story("a"),story("b",{brief:"Retained source evidence"})]);
+  const h=harness(t,{initialSnapshot:original});await settle();h.streams[0].emit("snapshot",original);
+  h.doc.querySelector('.nd-row[data-id="b"] .nd-title').click();query(h,"Source report b");
+  const accepted=reportIds(h),sourceClock=h.doc.getElementById("ndFreshness").textContent;
+  if(failure==="schema")h.setPayload({schema:"invalid",stories:[]});else h.setFailure(failure);
+  h.click("ndRetry");await settle();
+  if(failure==="timeout"){
+   await h.advance(9999);assert.notEqual(h.app.getState().mode,"degraded","the real request deadline has not elapsed");
+   await h.advance(1);
+  }
+  assert.equal(h.app.getState().mode,"degraded");
+  for(const id of ["ndConnection","ndConnectionMobile"])assert.equal(h.doc.getElementById(id).dataset.state,"degraded");
+  assert.equal(h.doc.getElementById("ndBanner").hidden,false);assert.equal(h.doc.getElementById("ndRetry").hidden,false);
+  assert.deepEqual(reportIds(h),accepted);assert.equal(h.app.getState().selected,"b");
+  assert.equal(h.app.getState().filters.query,"Source report b");
+  assert.equal(h.doc.getElementById("ndStoryTitle").textContent,"Source report b");
+  assert.match(h.doc.getElementById("ndDetailBody").textContent,/Retained source evidence/);
+  assert.match(sourceClock,/Latest publication/);assert.match(h.doc.getElementById("ndFreshness").textContent,/Latest publication/);
+  query(h,"Source report");assert.equal(reportIds(h).length,2);query(h,"");assert.equal(reportIds(h).length,2);query(h,"Source report b");
+  const englishBanner=h.doc.getElementById("ndBannerText").textContent;assert.match(englishBanner,/last available reporting/);
+  locale(h,"zh");assert.equal(h.app.getState().mode,"degraded");assert.equal(h.doc.getElementById("ndConnection").textContent,"更新不可用");
+  assert.match(h.doc.getElementById("ndBannerText").textContent,/无法载入实时更新/);assert.notEqual(h.doc.getElementById("ndBannerText").textContent,englishBanner);
+  assert.equal(h.app.getState().selected,"b");assert.equal(h.app.getState().filters.query,"Source report b");
+  locale(h,"en");assert.equal(h.doc.getElementById("ndBannerText").textContent,englishBanner);
+  const corrected=snapshot([story("a"),story("b",{brief:"Corrected source evidence"})]);h.setFailure(null);h.setPayload(corrected);
+  h.click("ndRetry");await settle();assert.equal(h.doc.getElementById("ndBanner").hidden,true);
+  h.streams.at(-1).emit("snapshot",corrected);assert.equal(h.app.getState().mode,"connected");assert.equal(h.app.getState().selected,"b");
+  assert.match(h.doc.getElementById("ndDetailBody").textContent,/Corrected source evidence/);
+ });
+}
+test("first snapshot failure distinguishes an unloaded desk and recovers",async t=>{
+ const h=harness(t,{snapshotFailure:"network"});await settle();
+ assert.equal(h.app.getState().mode,"degraded");assert.deepEqual(reportIds(h),[]);assert.equal(h.app.getState().selected,null);
+ assert.equal(h.doc.getElementById("ndRetry").hidden,false);assert.equal(h.doc.getElementById("ndBanner").hidden,false);
+ assert.doesNotMatch(h.doc.getElementById("ndBannerText").textContent,/last available|remains readable|last loaded/i);
+ assert.match(h.doc.getElementById("ndBannerText").textContent,/No reporting has loaded yet/);
+ locale(h,"zh");assert.match(h.doc.getElementById("ndBannerText").textContent,/尚未载入报道/);
+ h.setFailure(null);h.click("ndRetry");await settle();h.streams.at(-1).emit("snapshot",snapshot([story()]));
+ assert.equal(h.app.getState().mode,"connected");assert.equal(h.doc.getElementById("ndBanner").hidden,true);assert.deepEqual(reportIds(h),["a"]);
+});
+test("publication clocks and accepted ordering remain honest across refresh failure",async t=>{
+ const original=snapshot([story("a"),story("b",{published_at:"2026-10-18T03:50:00Z"})]);
+ const h=harness(t,{search:"?window=all",initialSnapshot:original});await settle();h.streams[0].emit("snapshot",original);
+ const ids=reportIds(h),fresh=h.doc.getElementById("ndFreshness").textContent;
+ h.setFailure("network");await h.advance(120000);assert.equal(h.app.getState().mode,"degraded");
+ assert.deepEqual(reportIds(h),ids);assert.notEqual(h.doc.getElementById("ndFreshness").textContent,fresh);
+ assert.equal(h.doc.getElementById("ndFreshness").textContent,"Latest publication "+desk.age("2026-10-18T03:55:00Z",initialTime+120000,false));
+ const unknown=Object.assign(snapshot([story("a",{published_at:null}),story("b",{published_at:null})]),{updated_at:new Date(initialTime+120000).toISOString()});
+ h.setFailure(null);h.setPayload(unknown);h.click("ndRetry");await settle();
+ assert.equal(h.doc.getElementById("ndFreshness").textContent,"Publication time unavailable");
+ h.setFailure("network");h.click("ndRetry");await settle();assert.equal(h.app.getState().mode,"degraded");
+ assert.equal(h.doc.getElementById("ndFreshness").textContent,"Publication time unavailable");assert.deepEqual(reportIds(h),ids);
+ locale(h,"zh");assert.equal(h.doc.getElementById("ndFreshness").textContent,"发布时间未提供");
 });

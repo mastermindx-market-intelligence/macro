@@ -4406,6 +4406,9 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # Paid Fabric source-only guidance and deterministic attribution tests are
+    # exclusively scoped; do not widen unrelated ordinary-code packing probes.
+    "meta-ceo-fabric-contracts",
     # A1 pure product/finite QA must run on code PRs without the legacy data job.
     "eval-os-a1",
     # Qledger suites retain all named imports; opaque fixture roots are audited.
@@ -4467,6 +4470,7 @@ CURATED_EXCLUSIVE = {
     "china-search-universe",
     "china-radar-record",  # W31 China Radar: render/ledger suites keep their measured closure.
     "quant-q02-american-exercise",  # Q02 quant assessment: suite imports importlib/subprocess; AST-derived closure
+    "p08-synthetic-composition",  # Research-only composition: curated solver/adapter/test closure.
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
     # off workflow-yaml, which was `gate: data` and never ran on a PR. Exclusive
     # because its suites read most of the repository: inferred, the job would add
@@ -4501,6 +4505,11 @@ CURATED_EXCLUSIVE = {
     # __init__.py pulls launch_slo_verifier -> earnings_narrative -> biocatalyst,
     # so the job's paths must cover its own import closure.
     "consumer-cyclical-economic-change",
+    # 2026-10-12 #7891 Technology ex-Semis: the registration shell loader's
+    # import_module(name) is an opaque dynamic import, so inferred scope rode the
+    # whole-tree fallback tier onto both code probes (+1 job each, fallback tier
+    # only). Curated to the measured closure plus the pending #7870 modules.
+    "technology-ex-semis-boundary",
     "options-payoff-lab-consumer",
     "options-catalyst-links",
     # 2026-09-23 Prophet US R6 wave 1 (#7823). `prophet-us-b4-prereg-registration` is
@@ -4512,6 +4521,8 @@ CURATED_EXCLUSIVE = {
     "earnings-economic-dossier",
     # 2026-09-30: CDV-1 Task 2 owns truthful private PG acquisition currentness.
     "earnings-economic-source-selection",
+    # 2026-09-30: CDV-1 Task 4 owns the v2 private generation.
+    "earnings-economic-private-publication",
     # 2026-09-24 GMI Mining M1 integration T01' (R-MIN-02/R-MIN-26). `mining-economic-dossier`
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
@@ -4584,6 +4595,10 @@ CURATED_EXCLUSIVE = {
     # the transport suites import app.main, whose closure smears whole-tree
     # scan roots onto all three packing probes (+1 job each) when inferred.
     "semiconductor-b-boundary",
+    # PR-S shared theme-research shell. Exclusive so the composer's
+    # company-intelligence / theme-graph fallback reads are not declared
+    # and the packing probes stay unselected. Paths are the owned closure.
+    "theme-research-shared-shell",
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
     # (unrun-publish-ops) is `gate: data`, which ci.yml never plans, so they
@@ -4988,6 +5003,12 @@ CURATED_EXCLUSIVE = {
     # stage-1b suites), so inference never unions the research/ fallback roots
     # onto the packing probes.
     "grey-deer-pullback-stage1",
+    # 2026-10-12 Robotics re-land (#7908 after #8013, stacked on #7870).
+    # One exclusive gate:code job for the eight Robotics suites. The declaration
+    # is their measured import closure (including the #7870 shared shell);
+    # exclusivity keeps that closure off the packing probes. The
+    # cover-their-own-import-closure test keeps the list honest.
+    "robotics-theme-research",
     # 2026-10-13 Grey Deer W5 (#9128): the pullback forward-lane suites import
     # the frozen stage-1 runner, whose lazy risk_radar closure made inference
     # select the job on the plan_book (130 > 129) and build_free_content
@@ -5153,6 +5174,13 @@ CURATED_EXCLUSIVE = {
     # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
     # suite reads by name; the curated-closure guard audits it like its parent.
     "ew-p4-descriptive-ui",
+    # GLT T22 (2026-11-03): tests/test_global_liquidity_views.py reaches the
+    # macro-suite view/label helpers and scripts/build_macro_suite_pages.py, so
+    # inference smeared this job's scan roots onto templates/index.html (138
+    # jobs / 5,919 s against the 137 / 5,909 probe ceilings). Exclusive with the
+    # exact 55-file non-wildcard import closure plus the eight Jinja templates the
+    # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
+    "global-liquidity-transmission",
 }
 
 
@@ -5438,9 +5466,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_919),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_934),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_675),
+    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_668),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5449,75 +5477,16 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
-    2026-11-03 News #9612 after accepted main 19a896b / hosted base 135e3713:
-    hosted contract-delta run41592734870, job125773577428, exact merge
-    06b35e1adb2d of head26baacec5a00 into base135e371359aa, measures
-    index137/5919, free-content137/5934 and plan-book131/5675, ten packs.
-    The base measures5909/5924/5665; no job is newly selected and these
-    three weight overruns are the gate's only introduced findings.
-    Same-source/inventory manifest comparison isolates collector-registry
-    17 -> 27 for retained News coverage, with identical selected IDs.
-    Fund exactly the three measured ten-unit excesses:5909 -> 5919,
-    5924 -> 5934,5665 -> 5675. Preserve job ceilings137/138/131, ten packs,
-    commands, selectors, duration overrides and execution limits.
-    These are deterministic planner estimates, not execution durations.
-    Clean qualification and hosted logs: docs/evidence/news-cockpit-20261102/
-    late-clean-canonical-20261103.json and late-packing-admission-20261103.json.
-
-    2026-11-03 News #9612 composition with accepted main 9f33cc8a:
-    clean exact-commit planner on 11c6b0ff6ea0, inventory 80b105c14411,
-    passes full exclusive closure over the 378-job registry. It measures
-    index136/5852, free-content137/5881 and plan-book129/5604, ten packs.
-    The incoming-main manifest on the SAME candidate source/inventory
-    measures 5842/5871/5594 with identical selected IDs; this is not a
-    historical main-source run. The only step/weight delta is the retained
-    News collector-registry coverage, 17 -> 27 estimator units. Existing
-    free-content margin covers six of those ten units: fund only its four
-    measured excess units, 5877 -> 5881, with no padding. Keep index/plan
-    weights, all job-count/pack ceilings, commands, selectors, duration
-    overrides and runtime limits unchanged. The separate daily.yml cap
-    remains 487000 bytes (actual 482604). The original ignored AAPL sample
-    is preserved; the clean checkout has no missing tracked dependencies.
-    Evidence: docs/evidence/news-cockpit-20261102/canonical-clean-20261103.json
-    and packing-main-manifest-comparison-20261103.json. These weights are
-    deterministic planning units, not measured execution durations.
-
-    2026-11-02 News #9612 composition with main b4a0ae4e: actual
-    372-job registry, all seven additive shared path fields preserved.
-    Local preflight on the composed tree (104.34s): index136/5843,
-    free-content137/5870, plan-book129/5593, each ten packs. All fit the
-    current main ceilings137/5886,138/5877,130/5636; retain those exactly.
-    No new budget, job, command, selector, timeout or pack-limit change.
-    Both parents' prior measurement histories follow. Estimator weights
-    are not measured execution times. News evidence: docs/evidence/
-    news-cockpit-20261102/integration-packing.json and integration-manifest.json.
-
-    2026-10-22 News #9612 integration with protected b472f77c: exact
-    current merged 349-job registry, the existing seven overlapping edited
-    job registrations and all prior selected suites retained. The full
-    targeted packing test measured index 136 jobs / 5,894 weight,
-    free-content 135 / 5,866, and Prophet 128 / 5,638 versus protected
-    ceilings 5,884 / 5,856 / 5,628. All three weigh +10 from the News
-    collector-registry suite; no selected job or ten-pack count changes.
-    Fund only this observed +10 per weight ceiling. Preserve all job-count
-    ceilings 136 / 136 / 130, full dependency/import closure, selectors,
-    original commands, timeouts, and ten-pack limit. These weights are
-    deterministic estimator units, not measured run durations.
-
-    News #9612 vs protected 59b37b8 (2026-10-22) integration RED:
-    349 registered jobs, with all protected live-status path registrations
-    and the News collector-registry suite. Compared with protected main,
-    News adds one collector-registry step set (News API/intake and mounted
-    Company contracts), with no new job and ten packs per probe. The
-    exact composed planner measured index 136 jobs / 5,880 weight,
-    free-content 135 / 5,852, and Prophet 128 / 5,624.
-    Main's accepted ceilings were 5,870 / 5,842 / 5,614; fund only the
-    three observed +10 estimator units. Preserve all job-count ceilings,
-    selectors, pack ceiling, test steps and execution-time limits.
-    Estimator weights are not execution timings. The separate local
-    import-closure failure is caused by preserved ignored
-    site/stockdata/AAPL.json; no new tracked source trigger is authorized
-    by that cache. Clean hosted checking remains required.
+    P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
+    candidate 5f0f047b160b against real base b4df44260aef, using the same
+    run_ci_pack blob 3cbed589. Comparison SHA256
+    18c613726a07f17a5484f76639079111ef7b69306f3d0360754c69fea2525888:
+    index137jobs/5909->5912, free137jobs/5924->5927, Prophet131jobs/5665->5668,
+    all ten packs, identical selected IDs with no entrants or exits. The sole
+    definition/selected-weight delta is existing basket-staleness-warn4->7
+    from its regional coverage step. Raise only those three estimated-weight
+    ceilings to the measured values. These are planner estimates, not runtime
+    evidence; job-count, pack, timeout and admission bounds remain unchanged.
 
     2026-11-01 main-red repair after #10294 (ee5cd3e1a8a8), which split the
     ``gate: data`` job ``tier-gate`` into ``tier-gate``, ``paywall-contracts``
@@ -6115,17 +6084,6 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Every suite, selector, job/pack bound and both other probe ceilings
     stay unchanged.
 
-    News Intelligence recovered source composition (2026-10-20,
-    PR #9612, head b87b2c97abcf6): hosted contract-delta workflow
-    39384789732 job 118501942835 measured scripts/build_free_content.py
-    134 selected jobs / 5,674 weight-seconds against the accepted-main
-    134 / 5,664. No newly selected job; the source/CI composition adds
-    ten estimator units. Fund only this exact observed increase:
-    5,664 -> 5,674. The 79 imported Marketing closure-file omissions
-    in seven scope:exclusive jobs are separately widened in
-    .github/ci/legacy-jobs.yml; no test, contract, job-count,
-    other probe ceiling, or 10-pack budget is removed.
-
     Shared Shell/current-main composition (2026-10-20, PR7949):
     the four existing scope/packing checks on 0f058428 plus this branch
     measure index.html 135 jobs / 5,793, build_free_content 134 / 5,668,
@@ -6166,36 +6124,6 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     new entrant. index.html (5,793) and plan_book (5,542) stay under
     their ceilings. Fund only the four-unit excess: 5,664 -> 5,668.
     Every other bound stays unchanged.
-
-    The recovered News Intelligence PR #9612 also adds ten independent
-    estimator units through the preserved News source and CI suite expansion
-    (hosted job 118501942835 measured 5,664 -> 5,674 with no new selected job).
-    Composing these two disjoint job run-text deltas on main 13e098071ab2
-    yields the current combined bound 5,664 + 4 + 10 = 5,678 for the same
-    134 selected jobs. The local composed packing-probe test must confirm this
-    ceiling; do not relax the other two probes, selectors, or pack count.
-
-    News recovery on accepted main 902c10722700 (2026-10-20, PR #9612)
-    preserves the existing News suite expansion plus every newer main job.
-    The unchanged packing_probe_measurements implementation measured:
-    index.html 135 jobs / 5,832 / 10 packs (ceiling 5,822);
-    build_free_content.py 134 jobs / 5,707 / 10 packs (ceiling 5,697);
-    plan_book.py 128 jobs / 5,581 / 10 packs (ceiling 5,600).
-    The independent News run-text delta remains ten estimator units. Fund
-    only the two measured ten-unit excesses. Every job-count ceiling, the
-    plan_book weight ceiling, all selectors, suites, and ten-pack bound stay
-    unchanged. Retained measurements are recorded with the News integration
-    evidence; this does not waive fresh hosted contract-delta qualification.
-
-    News recovery composition on main 8128e4085d8a (2026-10-20,
-    PR #9612) retains all 341 main jobs and the News import-closure entries.
-    The unchanged packing measurements report index 135 jobs / 5,832 / 10 packs,
-    free-content 135 / 5,805 / 10, and plan-book 128 / 5,581 / 10.
-    Compared with this main's weight ceilings 5,822 / 5,795 / 5,600,
-    only the same ten-unit News suite expansion exceeds the first two bounds.
-    Fund 5,832 and 5,805 exactly; retain main's new free-content job ceiling
-    of 135, the other job ceilings, plan-book weight and ten-pack ceiling.
-    No suite, selector or import-closure requirement is weakened.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py

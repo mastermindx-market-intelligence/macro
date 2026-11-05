@@ -536,3 +536,80 @@ def test_rss_trickling_transport_has_a_total_deadline_and_no_orphan(monkeypatch)
         news_rss._research_fetch(SPEC, {})
     assert time.monotonic() - start < 1.6
     assert children and all(p.poll() is not None for p in children)
+
+
+# PR #9612 review 5763807063: authorize the destination, not a raw prefix.
+_INSTITUTIONAL_SPEC = dict(SPEC, allowed_path_prefixes=["/press/pr/", "/press/govcdec/", "/press/accounts/"])
+
+@pytest.mark.parametrize("path", [
+    "/press/pr/../../pub/html/example.en.html",
+    "/press/pr/./date/release.html",
+    "/press/pr/../pr/date/release.html",
+    "/press/pr/..",
+    "/press/pr/%2e%2e/%2e%2e/pub/html/example.en.html",
+    "/press/pr/%2E%2E/pub/html/example.en.html",
+    "/press/pr/.%2e/pub/html/example.en.html",
+    "/press/pr/%2E./pub/html/example.en.html",
+    "/press/pr/%2e/date/release.html",
+    "/press/pr/..%2f..%2fpub/html/example.en.html",
+    "/press/pr/%2Fpub/html/example.en.html",
+    "/press/pr/%5c..%5C..%5cpub/html/example.en.html",
+    r"/press/pr/x\..\..\pub\html\example.en.html",
+    "/press/pr/%252e%252e/pub/html/example.en.html",
+    "/press/pr/%252Fpub/html/example.en.html",
+    "/press/pr/%255c..%255cpub/html/example.en.html",
+])
+def test_institutional_path_boundary_rejects_ambiguous_destinations(path):
+    stats = {}
+    rows = news_rss._research_parse(rss(url="https://example.gov" + path),
+                                    _INSTITUTIONAL_SPEC, now=NOW, diagnostics=stats)
+    assert rows == [], "ambiguous destination must not retain an attributed excerpt"
+    assert stats["observed_item_count"] == stats["filtered_item_count"] == 1
+    assert stats["eligible_item_count"] == 0
+
+
+@pytest.mark.parametrize("path", [
+    "/press/pr/date/ecb.pr260618~abc.en.html",
+    "/press/govcdec/date/release.html",
+    "/press/accounts/date/account.html",
+    "//press/pr/date/release.html",
+    "/press/pr/date/release%20notes.html",
+    "/press/pr/date/release%2Ehtml",
+    "/press/pr/date/release.html?next=%2e%2e%2fpub",
+    "/press/pr/date/release.html#notes",
+    r"/press/pr/date/release.html?next=\pub",
+])
+def test_institutional_path_boundary_preserves_clean_destinations(path):
+    stats = {}
+    rows = news_rss._research_parse(rss(url="https://example.gov" + path),
+                                    _INSTITUTIONAL_SPEC, now=NOW, diagnostics=stats)
+    assert len(rows) == 1
+    assert rows[0]["content_use"] == "attributed_feed_excerpt"
+    assert "Source summary" in json.dumps(rows[0])
+    assert stats["eligible_item_count"] == stats["observed_item_count"] == 1
+    assert stats["filtered_item_count"] == 0
+
+
+@pytest.mark.parametrize("url", [
+    "https://example.gov/press/key/date/speech.html",
+    "https://example.gov/press/blog/opinion.html?next=/press/pr/",
+    "https://unapproved.example/press/pr/release.html",
+    "https://example.gov.unapproved.example/press/pr/release.html",
+    "https://example.gov@unapproved.example/press/pr/release.html",
+    "https://user:password@example.gov/press/pr/release.html",
+])
+def test_institutional_path_boundary_preserves_host_and_source_grants(url):
+    assert news_rss._research_parse(rss(url=url), _INSTITUTIONAL_SPEC, now=NOW) == []
+
+
+@pytest.mark.parametrize("url", [
+    r"https://example.gov:443\pub/press/pr/release.html",
+    r"https://example.gov/press/pr/item;ignore\..\..\..\pub\html\release.html",
+    "https://example.gov/press/pr/item;ignore%5c..%5c..%5c..%5cpub%5chtml%5crelease.html",
+])
+def test_institutional_path_boundary_checks_authority_and_path_parameters(url):
+    stats = {}
+    assert news_rss._research_parse(rss(url=url), _INSTITUTIONAL_SPEC,
+                                    now=NOW, diagnostics=stats) == []
+    assert stats["observed_item_count"] == stats["filtered_item_count"] == 1
+    assert stats["eligible_item_count"] == 0

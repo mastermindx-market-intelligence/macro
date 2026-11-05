@@ -683,6 +683,9 @@ def test_naive_duplicate_macro_news_kwarg_raises_typeerror():
 
 
 
+# PR #10610 degraded-refresh contracts now run against the canonical modular
+# desk in test_news_desk_mounted.cjs (network, timeout, schema, locale and clocks).
+
 # --------------------------------------------------------------------------- #
 # F05 per-family inspection uses the existing producer and card contract.
 def _family_inspection_surface():

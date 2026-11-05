@@ -28,7 +28,7 @@ import xml.etree.ElementTree as ET
 from contextvars import ContextVar
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
-from urllib.parse import quote_plus, urlparse
+from urllib.parse import quote_plus, unquote, urlparse
 
 from engine import news_common as nc
 
@@ -475,6 +475,18 @@ def _research_fetch(spec: dict, applied: dict) -> dict:
                 "last_modified": response_headers.get("Last-Modified", "")[:1024]}
     raise ValueError("feed redirect limit")
 
+def _research_url_path_is_unambiguous(article: str) -> bool:
+    """Refuse path spellings whose destination can escape a source grant."""
+    # Inspect the original target: urlparse separates authority and final path
+    # parameters, but browser backslashes can turn either into path segments.
+    path = article.split("?", 1)[0].split("#", 1)[0]
+    # Encoded separators and nested escapes have decoder-dependent meaning.
+    # Decode dots only for inspection; never broaden the raw prefix allowlist.
+    if "\\" in path or any(token in path.lower() for token in ("%2f", "%5c", "%25")):
+        return False
+    return all(part.strip() not in (".", "..") for part in unquote(path).split("/"))
+
+
 def _research_parse(raw: bytes, spec: dict, *, now: datetime,
                     diagnostics: dict | None = None) -> list[dict]:
     """Source identity and revision are separate; absence is never retraction."""
@@ -523,6 +535,7 @@ def _research_parse(raw: bytes, spec: dict, *, now: datetime,
         # query string or by a different publisher's similarly named path.
         prefixes = spec.get("allowed_path_prefixes", [])
         if prefixes and (parsed.hostname.lower() not in spec.get("allowed_hosts", [])
+                         or not _research_url_path_is_unambiguous(article)
                          or not any(("/" + parsed.path.lstrip("/")).startswith(part)
                                     for part in prefixes)):
             stats["filtered_item_count"] += 1
