@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "/home/ubuntu0/lanes/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_site_shim.py::test_every_committed_site_page_has_shim",
+    "tests/test_site_shim.py::test_write_page_representative_head_keeps_prescan_contract",
+    "tests/test_build_market_memory_page.py::test_rendered_market_memory_artifact_keeps_temporal_disclosures",
+    "tests/test_build_market_memory_page.py::test_market_memory_page_loads_current_owned_asset_versions",
+    "tests/test_shared_shell_injection.py::test_bridge_runs_before_all_existing_page_scripts"
+  ],
+  "source_base": "f2fb5f52f3610daa46d56205971bb2811ff56016",
+  "completed_at": "2026-11-05T03:13:55.258683+00:00",
+  "exit_code": 0
+}

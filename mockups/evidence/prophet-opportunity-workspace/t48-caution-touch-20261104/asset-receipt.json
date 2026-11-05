@@ -1,0 +1,27 @@
+{
+  "operation": "prophet-t48-caution-touch-20261104-c2",
+  "source_base": "43ac1d47cdc73b716301da3edbe9dc69da8bd120",
+  "scope": "CSS-only native follow-up; no data regeneration, origination, account writes or deployment",
+  "template": "templates/_prophet_opportunity.css.j2",
+  "old_rule": ".po-cautions>summary{cursor:pointer;font-size:14px;line-height:1.5;min-width:0;overflow-wrap:anywhere}",
+  "new_rule": ".po-cautions>summary{cursor:pointer;font-size:14px;line-height:1.5;min-width:0;min-height:44px;padding-block:var(--sp-1,4px);overflow-wrap:anywhere}",
+  "template_sha256": "d70b508ed0dad758336073a9066431fcc0b7b5f52d2249b1ddaabb09abc42eff",
+  "render_template": "_prophet_workspace.css.j2",
+  "previous_render_exact_asset_match": true,
+  "old_asset": "site/assets/css/1546f0cb.css",
+  "new_asset": "site/assets/css/60dc406b.css",
+  "asset_sha256": "60dc406b8009347e9cd4fdc6d62823b2ccdca0313583dc005f7eb22e28dc0237",
+  "asset_emitter": "lib.pages.externalize_css_text + scripts.optimize_assets.make_optimizer",
+  "page_reference_replacements": 2,
+  "before_html_sha256": "2bfb709b652a92e40f48793fb2ac4bb542f7130b91a534b8ac8d2570388419db",
+  "after_html_sha256": "1114ee760bd96444f757c68fb7dc92f7173bbc213f26cd858df03f722ac29ea5",
+  "protected_artifacts_unchanged": {
+    "site/premiumdata/us_stocks.json": "92e2e176c52fc2ea4c1be7b791764c19b704c5b00d13a1966ae1f5d3f2a0d8cc",
+    "site/factordata/us_standouts.json": "2e77214946c6ea2b63271dddae81cdd5c0b8ac8bf22345bef50d1fa6e2623d7a",
+    "site/factordata/signal_gate.json": "9854f18d96ed1824a36f6c4d90ade6c6f23702f54bd34aec0490a49176611918",
+    "site/prophet/index.json": "7d305181b06aa8dd3b2dc79bd8fd2a59ebfbdf4332e9d26869971519d59ee139",
+    "data/prophet/ledger.jsonl": "38565bec10447a7a5c2c98b9a5b445da396deeef3fcbcd2435bc7cd8c1855093"
+  },
+  "historical_asset_preserved": true,
+  "created_at_utc": "2026-11-05T03:06:24Z"
+}
