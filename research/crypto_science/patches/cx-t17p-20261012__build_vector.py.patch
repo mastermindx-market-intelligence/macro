@@ -1,0 +1,45 @@
+diff --git a/scripts/build_vector.py b/scripts/build_vector.py
+--- a/scripts/build_vector.py
++++ b/scripts/build_vector.py
+@@ -971,9 +971,11 @@
+     p, n, cell, tilt = _cond_up_prob(df, cfg, h)
+     now = df["momentum_state"].iloc[-1] if "momentum_state" in df else None
+     if p is None:
+-        return {"now": now, "p_bull_7d": None, "p_bear_7d": None}
++        return {"now": now, "p_bull_7d": None, "p_bear_7d": None,
++                "probability_issued": False}
+     return {"now": now, "p_bull_7d": round(100 * p), "p_bear_7d": round(100 * (1 - p)),
+-            "n": n, "cell": cell, "tilt": tilt, "horizon": h}  # tilt = macro + cycle prior
++            "n": n, "cell": cell, "tilt": tilt, "horizon": h,
++            "probability_issued": True}  # tilt = macro + cycle prior
+ 
+ 
+ def scenarios_3d(df: pd.DataFrame, cfg: dict, high: pd.Series, low: pd.Series) -> dict:
+@@ -996,6 +998,7 @@
+     a1, a2, ai = 1.5 * vscale * atr, 2.5 * vscale * atr, 1.0 * atr
+     return {
+         "bull_prob": bull, "bear_prob": 100 - bull, "cell": cell, "n": n, "tilt": tilt,
++        "probability_issued": p is not None,
+         "vscale": round(vscale, 2),
+         "bull_target": px + a1, "bull_target2": max(swing_hi, px + a2), "bull_invalid": px - ai,
+         "bear_target": px - a1, "bear_target2": min(swing_lo, px - a2), "bear_invalid": px + ai,
+@@ -1197,7 +1200,8 @@
+     tilt = tilt or 0
+     if p_bull is None:
+         return {"state": "TOSS-UP", "dir": 0, "lean": 0, "conf": "thin", "n": n,
+-                "tape": "neutral", "confirmed": False, "p_bull": 50, "p_bear": 50, "tilt": tilt}
++                "tape": "neutral", "confirmed": False, "p_bull": 50, "p_bear": 50, "tilt": tilt,
++                "probability_issued": False}
+     lean = abs(p_bull - 50)
+     prob_dir = 1 if p_bull > 50 else (-1 if p_bull < 50 else 0)
+     toss_pp, edge_pp = bands
+@@ -1233,7 +1237,8 @@
+         state = "LEAN"
+     return {"state": state, "dir": prob_dir, "lean": lean, "conf": conf, "n": n,
+             "tape": tape, "confirmed": confirmed,
+-            "p_bull": p_bull, "p_bear": 100 - p_bull, "tilt": tilt}
++            "p_bull": p_bull, "p_bear": 100 - p_bull, "tilt": tilt,
++            "probability_issued": True}
+ 
+ 
+ def _conviction_why(c: dict, cell, n, horizon: int):

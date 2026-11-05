@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000320193-22-000070",
+    "expected_period_end": "2022-06-25",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": null,
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_absent",
+    "pack_id": "PK07",
+    "polarity": "negative",
+    "reason": "aapl-20220625.htm | untagged | Non-current assets: Marketable securities 131,077 127,877 Property, plant and equipment, net 40,335 39,440 Other non-current assets 52,605 48,849 Total non-current assets 224,017 216,166 | The consolidated balance sheets state no goodwill line (quoted non-current-assets section is complete, and the current-assets section lists only cash, marketable securities, accounts receivable, vendor non-trade receivables, inventories and other current assets). 10-Q concept enumeration: no ix concept containing 'goodwill' or 'intangible' exists; grepped 'goodwill' over the whole 10-Q: 0 hits; the single 'intangible' hit is the MD&A tax-rate sentence 'an adjustment to prior years' foreign-derived intangible income deductions'.",
+    "section_family": "goodwill_intangibles",
+    "split": "held_out",
+    "target_id": "goodwill",
+    "target_kind": "extract",
+    "trial_id": "PK07|0000320193-22-000070|extract|goodwill"
+  },
+  {
+    "accession": "0000320193-22-000070",
+    "expected_period_end": "2022-06-25",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": null,
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_absent",
+    "pack_id": "PK07",
+    "polarity": "negative",
+    "reason": "aapl-20220625.htm | untagged | Non-current assets: Marketable securities 131,077 127,877 Property, plant and equipment, net 40,335 39,440 Other non-current assets 52,605 48,849 Total non-current assets 224,017 216,166 | No intangible-asset balance exists: the balance sheets carry no such caption and no intangibles note is presented. 10-Q concept enumeration: no ix concept containing 'goodwill' or 'intangible' exists; grepped 'goodwill' over the whole 10-Q: 0 hits; the single 'intangible' hit is the MD&A tax-rate sentence 'an adjustment to prior years' foreign-derived intangible income deductions'; no 'intangible' text hit concerns intangible assets",
+    "section_family": "goodwill_intangibles",
+    "split": "held_out",
+    "target_id": "intangible_assets_net",
+    "target_kind": "extract",
+    "trial_id": "PK07|0000320193-22-000070|extract|intangible_assets_net"
+  }
+]

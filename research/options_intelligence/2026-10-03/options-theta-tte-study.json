@@ -1,0 +1,190 @@
+{
+  "scope": "Synthetic Black-Scholes call; S=K=100; r=q=0; sigma_true=0.20; ACT/365F. Not vendor data and not a vendor implementation proof. Greeks per underlying unit; raw vega per absolute volatility unit; charm/theta per calendar year.",
+  "rows": [
+    {
+      "seconds_remaining": 3600,
+      "exact_time": {
+        "price": 0.08524873156989088,
+        "iv": 0.2,
+        "delta": 0.5004262436578495,
+        "gamma": 1.8669465109748602,
+        "vega_per_vol_unit": 0.4262434956563607,
+        "vanna_per_vol_unit": 0.0021312174782818025,
+        "charm_per_year": -1.866946510974859,
+        "theta_per_year": -373.38930219497206
+      },
+      "floored_fixed_iv": {
+        "price": 0.08524873156989088,
+        "iv": 0.2,
+        "delta": 0.5004262436578495,
+        "gamma": 1.8669465109748602,
+        "vega_per_vol_unit": 0.4262434956563607,
+        "vanna_per_vol_unit": 0.0021312174782818025,
+        "charm_per_year": -1.866946510974859,
+        "theta_per_year": -373.38930219497206
+      },
+      "floored_refit_iv": {
+        "price": 0.08524873156989798,
+        "iv": 0.20000000000000434,
+        "delta": 0.5004262436578495,
+        "gamma": 1.8669465109748196,
+        "vega_per_vol_unit": 0.4262434956563607,
+        "vanna_per_vol_unit": 0.002131217478281803,
+        "charm_per_year": -1.8669465109749,
+        "theta_per_year": -373.38930219498013
+      },
+      "fixed_iv_gamma_ratio": 1.0,
+      "refit_gamma_ratio": 0.9999999999999782,
+      "refit_vega_ratio": 1.0,
+      "refit_charm_ratio": 1.000000000000022
+    },
+    {
+      "seconds_remaining": 1800,
+      "exact_time": {
+        "price": 0.060279961915028935,
+        "iv": 0.2,
+        "delta": 0.5003013998095751,
+        "gamma": 2.64026182954505,
+        "vega_per_vol_unit": 0.3013997522311701,
+        "vanna_per_vol_unit": 0.0015069987611558498,
+        "charm_per_year": -2.6402618295450493,
+        "theta_per_year": -528.0523659090101
+      },
+      "floored_fixed_iv": {
+        "price": 0.08524873156989088,
+        "iv": 0.2,
+        "delta": 0.5004262436578495,
+        "gamma": 1.8669465109748602,
+        "vega_per_vol_unit": 0.4262434956563607,
+        "vanna_per_vol_unit": 0.0021312174782818025,
+        "charm_per_year": -1.866946510974859,
+        "theta_per_year": -373.38930219497206
+      },
+      "floored_refit_iv": {
+        "price": 0.06027996191503604,
+        "iv": 0.14142135623733176,
+        "delta": 0.5003013998095752,
+        "gamma": 2.6402618295446345,
+        "vega_per_vol_unit": 0.42624361730121124,
+        "vanna_per_vol_unit": 0.002131218086506056,
+        "charm_per_year": -1.3201309147727325,
+        "theta_per_year": -264.0261829545466
+      },
+      "fixed_iv_gamma_ratio": 0.707106579386696,
+      "refit_gamma_ratio": 0.9999999999998426,
+      "refit_vega_ratio": 1.414213562373095,
+      "refit_charm_ratio": 0.5000000000000787
+    },
+    {
+      "seconds_remaining": 900,
+      "exact_time": {
+        "price": 0.04262437186719126,
+        "iv": 0.2,
+        "delta": 0.500213121859336,
+        "gamma": 3.733894620363171,
+        "vega_per_vol_unit": 0.21312183906182475,
+        "vanna_per_vol_unit": 0.0010656091953091234,
+        "charm_per_year": -3.7338946203631687,
+        "theta_per_year": -746.7789240726341
+      },
+      "floored_fixed_iv": {
+        "price": 0.08524873156989088,
+        "iv": 0.2,
+        "delta": 0.5004262436578495,
+        "gamma": 1.8669465109748602,
+        "vega_per_vol_unit": 0.4262434956563607,
+        "vanna_per_vol_unit": 0.0021312174782818025,
+        "charm_per_year": -1.866946510974859,
+        "theta_per_year": -373.38930219497206
+      },
+      "floored_refit_iv": {
+        "price": 0.04262437186719126,
+        "iv": 0.1000000000000133,
+        "delta": 0.500213121859336,
+        "gamma": 3.733894620362674,
+        "vega_per_vol_unit": 0.4262436781236495,
+        "vanna_per_vol_unit": 0.0021312183906182476,
+        "charm_per_year": -0.9334736550909166,
+        "theta_per_year": -186.69473101818335
+      },
+      "fixed_iv_gamma_ratio": 0.49999978595894995,
+      "refit_gamma_ratio": 0.9999999999998669,
+      "refit_vega_ratio": 2.0,
+      "refit_charm_ratio": 0.2500000000000333
+    },
+    {
+      "seconds_remaining": 300,
+      "exact_time": {
+        "price": 0.02460919335192102,
+        "iv": 0.2,
+        "delta": 0.5001230459667596,
+        "gamma": 6.4672958078069005,
+        "vega_per_vol_unit": 0.12304596285781777,
+        "vanna_per_vol_unit": 0.000615229814289089,
+        "charm_per_year": -6.467295807806902,
+        "theta_per_year": -1293.4591615613801
+      },
+      "floored_fixed_iv": {
+        "price": 0.08524873156989088,
+        "iv": 0.2,
+        "delta": 0.5004262436578495,
+        "gamma": 1.8669465109748602,
+        "vega_per_vol_unit": 0.4262434956563607,
+        "vanna_per_vol_unit": 0.0021312174782818025,
+        "charm_per_year": -1.866946510974859,
+        "theta_per_year": -373.38930219497206
+      },
+      "floored_refit_iv": {
+        "price": 0.02460919335192102,
+        "iv": 0.05773502691898756,
+        "delta": 0.5001230459667596,
+        "gamma": 6.467295807804103,
+        "vega_per_vol_unit": 0.4262437186719466,
+        "vanna_per_vol_unit": 0.002131218593359732,
+        "charm_per_year": -0.5389413173174746,
+        "theta_per_year": -107.78826346349501
+      },
+      "fixed_iv_gamma_ratio": 0.28867498355668275,
+      "refit_gamma_ratio": 0.9999999999995673,
+      "refit_vega_ratio": 3.464101615137754,
+      "refit_charm_ratio": 0.08333333333336933
+    },
+    {
+      "seconds_remaining": 60,
+      "exact_time": {
+        "price": 0.01100556598086655,
+        "iv": 0.2,
+        "delta": 0.5000550278299043,
+        "gamma": 14.46131360713393,
+        "vega_per_vol_unit": 0.05502782955530414,
+        "vanna_per_vol_unit": 0.0002751391477765207,
+        "charm_per_year": -14.461313607133931,
+        "theta_per_year": -2892.262721426786
+      },
+      "floored_fixed_iv": {
+        "price": 0.08524873156989088,
+        "iv": 0.2,
+        "delta": 0.5004262436578495,
+        "gamma": 1.8669465109748602,
+        "vega_per_vol_unit": 0.4262434956563607,
+        "vanna_per_vol_unit": 0.0021312174782818025,
+        "charm_per_year": -1.866946510974859,
+        "theta_per_year": -373.38930219497206
+      },
+      "floored_refit_iv": {
+        "price": 0.011005565980873655,
+        "iv": 0.025819888974746324,
+        "delta": 0.5000550278299044,
+        "gamma": 14.46131360711701,
+        "vega_per_vol_unit": 0.42624373489126643,
+        "vanna_per_vol_unit": 0.002131218674456332,
+        "charm_per_year": -0.24102189345251415,
+        "theta_per_year": -48.20437869050284
+      },
+      "fixed_iv_gamma_ratio": 0.12909937241481814,
+      "refit_gamma_ratio": 0.99999999999883,
+      "refit_vega_ratio": 7.745966692414833,
+      "refit_charm_ratio": 0.016666666666686165
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "state": "ROOT_ACCEPTED_BOUNDED_RETROSPECTIVE_DESCRIPTION",
+  "accepted_at": "2026-10-14T03:05:00.735482+00:00",
+  "original_root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "parent_manifest_sha256": "7c4c9470ebf13edd9197cd843b5d6c6a1a23c0dd9724d8f3284ebee8b1f59544",
+  "source_patch_sha256": "be4d86afff54468eb0a27bec1788cf881ced96a208e2472daaf394607cc43dda",
+  "original_events": 23,
+  "FA1_admissible": 0,
+  "numeric_comparisons": 575,
+  "censored_null_comparisons": 230,
+  "synthetic_cases": 9,
+  "predictive_verdicts": {
+    "Q1": "NOT_EVALUABLE",
+    "Q2": "NOT_EVALUABLE",
+    "Q4": "NOT_EVALUABLE"
+  },
+  "Q3_original_carrier": "UNKNOWN_OBSERVATION_REFUSAL_PRESERVED",
+  "licensed_raw_packet_committed": false,
+  "full_product_complete": false
+}

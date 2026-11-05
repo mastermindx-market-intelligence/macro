@@ -95,6 +95,18 @@
 
   var SECTION = 'Watchlist';
   var LIST_NAME = 'Watchlist';   // the primary list's name; created if absent
+  // X2-n designated list (seat ruling R2): ONE verbatim stored system name.
+  // Declared HERE, above its first reader, because resolveBoundList()'s branch
+  // 2 must exclude it by name (seat ruling R1) — see _firstNonDesignated().
+  var FIF_LIST_NAME = 'Filing Forensics';
+  // SIC-I07R designated list (seat decision): ONE dedicated list named exactly
+  // 'Sector Intelligence', holding the user's saved sector investigations as
+  // watchlist_symbols rows of section 'si'. Same identity law as the FIF list —
+  // the schema has no kind/system column, so the verbatim stored NAME plus the
+  // section literal are the identity. Declared HERE, beside FIF_LIST_NAME, so
+  // _firstNonDesignated()'s branch-2 exclusion reads the same values.
+  var SI_LIST_NAME = 'Sector Intelligence';
+  var SI_SECTION = 'si';
   var CACHE_PREFIX = 'mdash.wl.';
   var CACHE_SUFFIX = '.v1';
 
@@ -226,7 +238,7 @@
   /* Write the server membership of one list into its cache, PRESERVING the local
      item metadata (`added`, `note`) and settings already there — notes are local by
      ruling (no note column exists), so a sync must never erase them. */
-  function cacheWrite(listId, symbols) {
+  function cacheWrite(listId, symbols, siStamps) {
     if (!listId) return false;
     var prev = cacheRead(listId);
     syncOutboxEnsure(prev);
@@ -238,7 +250,14 @@
       updated: nowISO(),
       items: order.map(function (t) {
         var e = byT[t];
-        return { t: t, added: (e && e.added) || nowISO(), note: (e && e.note) || '' };
+        return { t: t, added: (e && e.added) || nowISO(), note: (e && e.note) || '',
+                 // RI07 finding 5: an investigation item's section stamp survives
+                 // a membership refresh the same way its local note does.
+                 // RI07b finding 6: a fresh device has no local item to inherit the
+                 // stamp from — the server read passes the rows it saw in section
+                 // 'si' (`siStamps`), so the dossier chip paints without a re-save.
+                 // Ordinary rows stay byte-identical (an undefined section is dropped).
+                 section: (e && e.section) || (siStamps && siStamps[t] ? SI_SECTION : undefined) };
       }),
       order: order,
       settings: prev.settings,
@@ -623,14 +642,39 @@
     return null;
   }
 
+  /* A designated list: a named surface that must never capture the page's
+     default bind (ruling R1). Two exist — the FIF subscription list (X2-n r1)
+     and the SIC-I07R 'Sector Intelligence' investigation list. Both are excluded
+     from branch 2 for the same reason: binding the page to them would aim
+     ordinary stars and pushList full-membership diffs at a surface whose rows
+     are owned by another producer. */
+  function _isDesignatedName(n) { return n === FIF_LIST_NAME || n === SI_LIST_NAME; }
+
+  /* The first list by (position, created_at) whose name is NOT a designated
+     list — the branch-2 bind candidate under seat ruling R1 (X2-n r1).
+     A sorted COPY, not listsCache order: the cache is sorted by listsFetch but
+     _rememberList appends, so "first by (position, created_at)" is restated
+     here rather than trusting the cache's incidental order. Returns null when
+     every list is designated (branch 2 declines, branch 3 creates). */
+  function _firstNonDesignated() {
+    var sorted = listsCache.slice().sort(_byPositionThenCreated);
+    for (var i = 0; i < sorted.length; i++) {
+      if (!_isDesignatedName(sorted[i].name)) return sorted[i];
+    }
+    return null;
+  }
+
   /* WHICH LIST THIS PAGE IS BOUND TO — Commissioning ruling R1 (2026-08-12), which
      supersedes the packet's bare "created if absent" for BINDING. The FOLD's
      create-if-absent is a separate question, resolved below.
 
        1. a list named exactly 'Watchlist' exists -> bind it
-       2. else the user has >= 1 list            -> bind the FIRST by (position,
-                                                    created_at) and CREATE NOTHING
-       3. else (zero lists)                      -> create 'Watchlist' and bind it
+       2. else the user has >= 1 non-designated list
+                                                -> bind the FIRST such list by
+                                                    (position, created_at) and
+                                                    CREATE NOTHING
+       3. else (zero lists, or only the designated list)
+                                               -> create 'Watchlist' and bind it
 
      Branch 2 is the ruling's substance, and it is a deliberate non-creation. A
      Terminal-native account's only list is called 'Default'. Minting an empty
@@ -639,12 +683,19 @@
      list picker once W1b makes lists server-backed. Binding the first list is exactly
      the pre-W1a behaviour for that cohort, and W2's switcher makes the choice explicit.
 
+     The designated-list exclusion (X2-n seat ruling R1) is what keeps the
+     subscription surface off this page's write path: on an account whose first
+     act was fifWatch, listCreate('Filing Forensics') holds position 0, and the
+     pre-R1 `listsCache[0]` bind aimed every ordinary star and pushList diff at
+     the subscription list. Branch 3 (not branch 2) now serves that account.
+
      PRECONDITION: listsFetch() has run — pull() always calls it first, and its ordering
      (`position`, then `created_at`) is what makes "first" well-defined here. */
   function resolveBoundList() {
     var named = _namedPrimary();
     if (named) return Promise.resolve(named);
-    if (listsCache.length > 0) return Promise.resolve(listsCache[0].id);
+    var bindable = _firstNonDesignated();
+    if (bindable) return Promise.resolve(bindable.id);
     return _createPrimary();
   }
 
@@ -686,21 +737,25 @@
     return _listsGuard().then(function () {
       if (!listId) throw new Error('no-list');
       return sb.from('watchlist_symbols')
-        .select('symbol, position, created_at')
+        // RI07b finding 6: `section` is SELECTED (so a fresh device learns which rows
+        // are saved investigations) but never FILTERED here — this read is the
+        // list's whole membership and the only delete authority (see `cloud`).
+        .select('symbol, section, position, created_at')
         .eq('watchlist_id', listId)
         .order('position');
     }).then(function (res) {
       if (res.error) throw res.error;
       var rows = (res.data || []).filter(function (r) { return r && r.symbol; });
-      var set = {}, order = [], mx = -1;
+      var set = {}, order = [], mx = -1, siByT = {};
       rows.forEach(function (r) {
+        if (r.section === SI_SECTION) siByT[r.symbol] = true;
         if (set[r.symbol]) return;
         set[r.symbol] = true;
         order.push(r.symbol);
         if ((r.position || 0) > mx) mx = r.position || 0;
       });
       cloud[listId] = { set: set, order: order, maxPos: mx };
-      cacheWrite(listId, order.slice());
+      cacheWrite(listId, order.slice(), siByT);
       return rows;
     });
   }
@@ -710,6 +765,78 @@
      (watchlist_id, symbol) — 0001_init.sql indexes watchlist_id alone — so a blind
      insert leaves a real duplicate row that only read-time dedupe hides. Reading first
      makes the dedupe authoritative instead of cosmetic. */
+  /* Observe exact owned-list membership without resubmitting a save.
+     This is a read result, not a receipt for an earlier INSERT. In particular,
+     absence never permits retry, and no outbox entry is cleared here. */
+  function symbolInspect(listId, symbol) {
+    var valid = typeof listId === 'string' && typeof symbol === 'string';
+    var lid = valid ? listId.trim() : '';
+    var ticker = valid ? symbol.trim() : '';
+    var epoch = authEpoch, uid = user && user.id, client = sb;
+    var name = null, ended = false;
+    function current() {
+      return epoch === authEpoch && uid === (user && user.id) && client === sb;
+    }
+    function answer(state, membership) {
+      var redacted = state === 'stale-session' || state === 'no-session' || state === 'invalid';
+      return {
+        state: state, membership: membership || 'unknown',
+        listId: redacted ? null : lid, symbol: redacted ? null : ticker,
+        listName: redacted ? null : name,
+        observedAt: state === 'present' || state === 'not-confirmed' ? nowISO() : null,
+        readRetryAllowed: state === 'present' || state === 'not-confirmed' || state === 'unavailable',
+        writeRetryAllowed: false
+      };
+    }
+    if (!valid || !lid || !ticker) return Promise.resolve(answer('invalid'));
+    if (!uid || !client) return Promise.resolve(answer('no-session'));
+    var work = Promise.resolve().then(function () {
+      if (!current()) return answer('stale-session');
+      if (ended) return answer('unavailable');
+      return client.from('watchlists').select('id,name,user_id')
+        .eq('id', lid).eq('user_id', uid).then(function (owned) {
+          if (!current()) return answer('stale-session');
+          if (ended) return answer('unavailable');
+          if (!owned || owned.error || !Array.isArray(owned.data) || owned.data.length !== 1) {
+            return answer('unavailable');
+          }
+          var row = owned.data[0];
+          if (!row || row.id !== lid || row.user_id !== uid) return answer('unavailable');
+          name = typeof row.name === 'string' ? row.name : null;
+          return client.from('watchlist_symbols').select('watchlist_id,symbol')
+            .eq('watchlist_id', lid).eq('symbol', ticker).then(function (observed) {
+              if (!current()) return answer('stale-session');
+          if (ended) return answer('unavailable');
+              if (!observed || observed.error || !Array.isArray(observed.data)) return answer('unavailable');
+              var rows = observed.data;
+              // Do not let a malformed, mismatched or broadly scoped response
+              // confirm another list/security or turn into a useful empty set.
+              if (!rows.every(function (item) {
+                return item && item.watchlist_id === lid && item.symbol === ticker;
+              })) return answer('unavailable');
+              return rows.length ? answer('present', 'present') : answer('not-confirmed', 'absent');
+            });
+        });
+    }).catch(function () {
+      // Provider errors do not disclose SQL, account IDs or another user's list.
+      return answer(current() ? 'unavailable' : 'stale-session');
+    });
+    // Reuse the store's configured read deadline. No timer retries the operation.
+    // Late ownership responses cannot start a second read after this result closes.
+    return new Promise(function (resolve) {
+      var timer = setTimeout(function () {
+        ended = true;
+        resolve(answer(current() ? 'unavailable' : 'stale-session'));
+      }, PF_CLOUD_DEADLINE_MS);
+      work.then(function (value) {
+        if (ended) return;
+        ended = true;
+        clearTimeout(timer);
+        resolve(value);
+      });
+    });
+  }
+
   function symbolAdd(listId, symbol) {
     var t = String(symbol == null ? '' : symbol).trim();
     if (!listId || !t) return Promise.reject(new Error('bad-args'));
@@ -771,6 +898,292 @@
     });
   }
 
+  /* ---- the checked, idempotent save (R7 Wave A §6.4/§10/§13) ----------------
+     saveChecked(listId, tickers, opts) — one save that reports what the ACCOUNT
+     actually answered, never repeats itself, and never claims "saved" without
+     reading the list back. Composed from the primitives above (symbolsFetch /
+     _deadline) plus its own single insert, _checkedInsert, which never hands a
+     failed write to the sync outbox — a checked ticker is written by this save
+     or by a later save's check-first read, never re-inserted behind the page.
+     _symbolInsert, the outbox and their retry semantics stay untouched for
+     every other caller.
+
+     opts.decisions   {TICKER: {en, zh}} — tonight's decision per ticker. For
+                      each ticker THIS save inserted and the read-back
+                      confirmed, it is frozen into the "When you saved"
+                      snapshot (localStorage `mdash.watchlist.saved_snap.v1`),
+                      never overwriting an existing entry: what you saved stays
+                      as it was. A ticker already on the list gets none.
+     opts.returnFocus an Element — echoed on every outcome detail so the page can
+                      hand focus back to the invoking control once the account
+                      has answered.
+
+     Resolves (never rejects) with one outcome, also dispatched on `document`
+     as `ws-save-outcome` (a `{state:'waiting', listName, names}` detail is
+     emitted once at the start of a real attempt):
+
+       {state:'saved', readBackAt, names, already, listCount, decisionsKept, listName}
+       {state:'rejected', reason, listName, names}   — the account answered no
+                                                       (4xx / PostgREST code) with
+                                                       nothing added anywhere
+       {state:'uncertain', askedAt, listName, names} — no answer in time, a lost
+                                                       response / 5xx the read-back
+                                                       could not confirm, or a
+                                                       write landed ambiguously;
+                                                       the NEXT save's check-first
+                                                       read is what prevents a
+                                                       second write, never a retry
+
+     `names` carries every requested ticker confirmed by the read-back (in
+     request order); `already` is the subset that was on the server BEFORE any
+     write, reported so the page can say "<N> names, <TK> is already in it". */
+  var SAVE_SNAP_KEY = 'mdash.watchlist.saved_snap.v1';
+  var SAVE_DEADLINE_TAG = 'saveChecked-deadline';
+  var saveChain = {};        // listId -> tail of the serialized save queue
+
+  /* Race one server call against the shared cloud deadline. The underlying
+     promise is NOT cancelled (a fetch cannot be) — a deadline loser may still
+     land its write afterwards, which is exactly the ambiguity 'uncertain'
+     names, and why the next attempt checks before writing again. */
+  function _withDeadline(fn) {
+    var d = _deadline(PF_CLOUD_DEADLINE_MS, SAVE_DEADLINE_TAG);
+    var p = Promise.resolve().then(fn);
+    return Promise.race([p, d.promise]).then(
+      function (v) { d.cancel(); return v; },
+      function (e) { d.cancel(); throw e; }
+    );
+  }
+  /* A refusal is an answer the ACCOUNT actually gave. postgrest-js resolves a
+     lost exchange as a plain object too — `{message:'TypeError: Failed to
+     fetch', code:''}` with status 0 — and a gateway 5xx body arrives the same
+     way, so "plain object with a message" proves nothing. A refusal therefore
+     needs a 4xx-class HTTP status from the account (401/403/409/422 …) or a
+     non-empty PostgREST/Postgres error `code`, and must not look like a lost
+     exchange. Status 0, any 5xx, a 408, a fetch/network/timeout message, and
+     our own Error instances (deadline tags, bad-args) are AMBIGUOUS: once an
+     insert was attempted, only the read-back may decide. */
+  var _AMBIGUOUS_ERR_RE = /failed to fetch|networkerror|network request failed|load failed|timed? ?out/i;
+  function _isRefusalErr(err) {
+    if (!err || typeof err !== 'object' || err instanceof Error) return false;
+    var status = (typeof err.status === 'number') ? err.status : null;
+    if (status !== null && (status === 0 || status === 408 || status >= 500)) return false;
+    if (_AMBIGUOUS_ERR_RE.test(String(err.message == null ? '' : err.message))) return false;
+    if (status !== null && status >= 400 && status < 500) return true;
+    return typeof err.code === 'string' && err.code !== '';
+  }
+  /* The checked save's own single insert: the row shape and cache bookkeeping
+     of _symbolInsert, with two differences the save contract needs.
+       - A failure is NEVER handed to the sync outbox (no pendingInserts
+         marker), so nothing re-inserts a checked ticker behind the user's back
+         after the page has reported 'uncertain'; the next save's check-first
+         read is the only road to a second write.
+       - The account's HTTP status rides on the thrown error, so
+         _isRefusalErr can tell a 4xx answer from a lost exchange (status 0)
+         or a gateway 5xx.
+     `onAttempt` fires immediately before the insert request leaves. */
+  function _checkedInsert(listId, t, onAttempt) {
+    return _listsGuard().then(function () {
+      return _cloudOf(listId) ? null : symbolsFetch(listId);
+    }).then(function () {
+      var c = _cloudOf(listId);
+      if (!c || c.set[t]) return { symbol: t, skipped: true };
+      setPill('syncing');
+      if (onAttempt) onAttempt();
+      return sb.from('watchlist_symbols')
+        .insert({ watchlist_id: listId, symbol: t, section: SECTION, position: _nextPos(listId) })
+        .then(function (res) {
+          if (res && res.error) {
+            var e = res.error;
+            if (e instanceof Error) throw e;
+            var out = (e && typeof e === 'object')
+              ? { message: e.message, code: e.code, details: e.details, hint: e.hint, status: e.status }
+              : { message: String(e) };
+            if (typeof res.status === 'number') out.status = res.status;
+            throw out;
+          }
+          _noteInserted(listId, [t]);
+          _syncClearInsertPending(listId, t);
+          setPill('synced');
+          return { symbol: t };
+        });
+    });
+  }
+  function _saveEmit(detail) {
+    try {
+      document.dispatchEvent(new CustomEvent('ws-save-outcome', { detail: detail }));
+    } catch (e) {}
+  }
+  function _listKnown(listId) {
+    for (var i = 0; i < listsCache.length; i++) {
+      if (String(listsCache[i].id) === String(listId)) return true;
+    }
+    return false;
+  }
+  function _pad2(n) { return ('0' + n).slice(-2); }
+  /* Freeze the "When you saved" snapshot for exactly the tickers THIS save
+     inserted and the read-back confirmed — a ticker that was already on the
+     server keeps whatever snapshot it had (none stays none), because today's
+     date and decision are not when it was saved. Returns how many entries were
+     actually stored (0 when storage refuses). Frozen history: an existing list+ticker entry is never
+     overwritten — a later correction belongs in the Tonight column, beside the
+     saved decision, not on top of it. Every storage access is guarded. */
+  function _saveSnapshots(listId, confirmed, decisions) {
+    if (!decisions || typeof decisions !== 'object') return 0;
+    var snap = {};
+    try {
+      var raw = localStorage.getItem(SAVE_SNAP_KEY);
+      if (raw) snap = JSON.parse(raw);
+    } catch (e) { snap = {}; }
+    if (!snap || typeof snap !== 'object') snap = {};
+    var perList = snap[listId];
+    if (!perList || typeof perList !== 'object') { perList = {}; snap[listId] = perList; }
+    var now = new Date();
+    var day = now.getFullYear() + '-' + _pad2(now.getMonth() + 1) + '-' + _pad2(now.getDate());
+    var stored = 0;
+    confirmed.forEach(function (t) {
+      if (perList[t]) return;                     // frozen history
+      var dec = decisions[t];
+      if (!dec || !(dec.en || dec.zh)) return;    // no decision supplied -> no snapshot
+      perList[t] = { d: day, en: String(dec.en || ''), zh: String(dec.zh || '') };
+      stored++;
+    });
+    if (!stored) return 0;
+    try { localStorage.setItem(SAVE_SNAP_KEY, JSON.stringify(snap)); } catch (e) { return 0; }
+    return stored;
+  }
+
+  /* The save must land in a list the account actually knows. listsCache is
+     only a cache — an id absent from it may be a list created elsewhere since
+     our last refresh, so absence alone never answers; ask once, then decide. */
+  function ensureList(listId) {
+    if (_listKnown(listId)) return Promise.resolve(true);
+    return _withDeadline(listsFetch).then(function () { return _listKnown(listId); });
+  }
+
+  function saveChecked(listId, tickers, opts) {
+    var o = opts || {};
+    // normalize + de-dupe the request, preserving order (fif's uppercase rule)
+    var want = [], seenReq = {};
+    (Array.isArray(tickers) ? tickers : [tickers]).forEach(function (t) {
+      var n = String(t == null ? '' : t).trim().toUpperCase();
+      if (n && !seenReq[n]) { seenReq[n] = 1; want.push(n); }
+    });
+    var listName = listNameOf(listId) || String(listId || '');
+    var askedAt = nowISO();
+    var rf = o.returnFocus || null;
+
+    // Serialize per list: two concurrent saves for one list would both pass a
+    // pre-read that cannot see the other's in-flight insert, and the schema
+    // carries no unique (watchlist_id, symbol) index to catch the duplicate.
+    var prev = saveChain[listId] || Promise.resolve();
+    var run = prev.then(_doSaveChecked, _doSaveChecked);
+    saveChain[listId] = run;
+    return run;
+
+    function _doSaveChecked() {
+      // synchronous guards: no attempt, no waiting event, zero network
+      if (!user || !sb) {
+        return Promise.resolve({
+          state: 'rejected', reason: 'no-session', listName: listName,
+          names: want.slice(), returnFocus: rf
+        }).then(_finish);
+      }
+      if (!listId || !want.length) {
+        return Promise.resolve({
+          state: 'rejected', reason: 'bad-args', listName: listName,
+          names: want.slice(), returnFocus: rf
+        }).then(_finish);
+      }
+      _saveEmit({ state: 'waiting', listName: listName, names: want.slice(), returnFocus: rf });
+
+      var wroteAnything = false;
+      var attempted = {};        // tickers whose insert request actually left
+      var uncertain = function () {
+        return { state: 'uncertain', askedAt: askedAt, listName: listName,
+                 names: want.slice(), returnFocus: rf };
+      };
+      var rejected = function (reason) {
+        return { state: 'rejected', reason: reason, listName: listName,
+                 names: want.slice(), returnFocus: rf };
+      };
+
+      return ensureList(listId)
+        .then(function (known) {
+          if (!known) return rejected('no-list');
+          // check FIRST: tickers already on the server are never written again
+          return _withDeadline(function () { return symbolsFetch(listId); })
+            .then(function (rows) {
+              var present = {};
+              (rows || []).forEach(function (r) {
+                if (r && r.symbol) present[String(r.symbol).toUpperCase()] = true;
+              });
+              var already = want.filter(function (t) { return !!present[t]; });
+              var missing = want.filter(function (t) { return !present[t]; });
+              var chain = Promise.resolve();
+              missing.forEach(function (t) {
+                chain = chain.then(function () {
+                  return _withDeadline(function () {
+                    return _checkedInsert(listId, t, function () { attempted[t] = true; });
+                  }).then(function () { wroteAnything = true; });
+                });
+              });
+              return chain.then(function () {
+                return { ok: true, already: already };
+              }, function (err) {
+                return { ok: false, err: err, already: already };
+              });
+            })
+            .then(function (stage) {
+              if (stage.state) return stage;
+              // A refusal with NOTHING landed is the account answering no. Any
+              // other write failure — a lost response (status 0, "Failed to
+              // fetch"), a gateway 5xx, the deadline, or a refusal after a
+              // landed write — is ambiguous: the list is read back once and
+              // only every requested ticker present may say 'saved'.
+              if (!stage.ok && _isRefusalErr(stage.err) && !wroteAnything) {
+                return rejected(String((stage.err && stage.err.message) ||
+                                       (stage.err && stage.err.code) || 'refused'));
+              }
+              return _withDeadline(function () { return symbolsFetch(listId); })
+                .then(function (rows) {
+                  var onList = {};
+                  (rows || []).forEach(function (r) {
+                    if (r && r.symbol) onList[String(r.symbol).toUpperCase()] = true;
+                  });
+                  var confirmed = want.filter(function (t) { return !!onList[t]; });
+                  if (confirmed.length !== want.length) return uncertain();
+                  // snapshot only what THIS save inserted and read back
+                  var mine = confirmed.filter(function (t) { return !!attempted[t]; });
+                  var kept = _saveSnapshots(listId, mine, o.decisions);
+                  return {
+                    state: 'saved', readBackAt: nowISO(),
+                    names: want.slice(), already: stage.already,
+                    listCount: (rows || []).length,
+                    decisionsKept: kept > 0,
+                    listName: listName, returnFocus: rf
+                  };
+                }, function () {
+                  // the read-back itself did not answer — the write's effect is
+                  // unknown either way, so 'uncertain' is the only honest state
+                  return uncertain();
+                });
+            });
+        })
+        .then(_finish, function (err) {
+          // ensureList / unexpected failures: a refusal answers no; anything
+          // else means nobody answered.
+          if (_isRefusalErr(err)) {
+            return _finish(rejected(String(err.message || err.code || 'refused')));
+          }
+          return _finish(uncertain());
+        });
+    }
+    function _finish(result) {
+      if (result && result.state !== 'waiting') _saveEmit(result);
+      return result;
+    }
+  }
+
   // ---- pull: fetch cloud symbols and merge into WL --------------------------
   function pull() {
     if (!user || !sb) return Promise.resolve();
@@ -819,8 +1232,11 @@
            what the visitor accumulated, and nothing else.
 
            Taken BEFORE the bind below: bindList re-points the blob at the list cache,
-           and capturing after that would fold the cloud membership, not the visitor's. */
-        var localBeforeMerge = _tickersOf(
+           and capturing after that would fold the cloud membership, not the visitor's.
+           RI07 finding 2: the capture is the FULL item (note + section included), so
+           the fold can route a saved investigation to its own dedicated list instead
+           of losing it inside the plain Watchlist. */
+        var localBeforeMerge = _itemsOf(
           (window.WL && window.WL.getBlob) ? window.WL.getBlob() : null);
 
         /* Bind the page to the list we just read, WITH its name. Leaving listId
@@ -977,7 +1393,7 @@
     return Promise.all(tasks.map(function (t) { return t.catch(function () {}); }));
   }
 
-  // ---- one-time fold: local tickers not in cloud -> insert -------------------
+  // ---- one-time fold: local items not in cloud -> insert ---------------------
   /* Retargeted in W1a: the fold lands in the list NAMED 'Watchlist' (created if
      absent), not in "whatever list sorted first". Both shipped behaviours are kept
      verbatim: ONE shot per device via the marker, and the marker is NOT written on an
@@ -987,8 +1403,18 @@
      ORDER IS LOAD-BEARING (ruling R1). The marker check and the empty-book check come
      BEFORE the target is resolved, so an account with nothing to fold never triggers
      the create-if-absent path. That is what makes creation here on-demand rather than
-     spurious, and it is why resolveBoundList() above is free to create nothing. */
-  function _foldLocalIntoCloud(localTickers) {
+     spurious, and it is why resolveBoundList() above is free to create nothing.
+
+     RI07 finding 2: the fold now has TWO targets. An item the anonymous store marked
+     as a saved investigation (`section === 'si'`, the stamp _siNoteWrite writes)
+     folds into the DEDICATED list through the save's own path, so
+     listSectorInvestigations() still returns it after sign-in. Everything else —
+     including an ordinary item carrying a user note — keeps the W1a ordinary fold
+     verbatim: notes are a first-class field of ORDINARY items too (they are local
+     by ruling, cacheWrite/mergeInto preserve them), so a non-empty note cannot
+     identify an investigation at fold time. That arm of the RI07 packet is
+     contradicted by the owner's pinned fold behavior and is reported, not taken. */
+  function _foldLocalIntoCloud(localItems) {
     // Only fold once per device (not per session) to avoid repeated inserts on
     // every sign-in after the ongoing diff-push is the real mechanism.
     var already = false;
@@ -996,27 +1422,74 @@
     if (already) return Promise.resolve();
     if (!user || !sb) return Promise.resolve();
 
-    // `localTickers` is the PRE-MERGE capture from pull(). It is a parameter and not a
-    // re-read of window.WL precisely so this function cannot see the merged blob.
-    var tickers = (localTickers || []).filter(function (t) { return !!t; });
-    if (tickers.length === 0) {
+    /* `localItems` is the PRE-MERGE capture from pull(). It is a parameter and not a
+       re-read of window.WL precisely so this function cannot see the merged blob.
+       A bare ticker string (the pre-RI07 test seam's shape) is tolerated as an item
+       with no note and no section — it can only ever take the ordinary fold. */
+    var items = (localItems || []).map(function (x) {
+      return (typeof x === 'string') ? { t: x } : x;
+    }).filter(function (it) { return it && !!it.t; });
+    if (items.length === 0) {
       // Do NOT mark folded: local is empty (fresh device or signed-out-built list).
       // Marking here would permanently consume the one-shot fold before any items exist.
       // Nor resolve a target: there is nothing to deliver, so nothing to create.
       return Promise.resolve();
     }
 
-    // There IS content to deliver — now resolve (and if necessary create) the target,
-    // and diff against ITS server rows, never the bound list's.
-    return resolveFoldTarget()
-      .then(function (id) {
-        foldTargetId = id;
-        if (_cloudOf(id)) return _foldInsert(tickers);
-        return symbolsFetch(id).then(function () { return _foldInsert(tickers); });
-      })
+    var siItems = [], plainTickers = [];
+    items.forEach(function (it) {
+      if (it.section === SI_SECTION) siItems.push(it);
+      else plainTickers.push(it.t);
+    });
+
+    // There IS content to deliver — now resolve (and if necessary create) the target
+    // of each half, and diff against THAT target's server rows, never the bound list's.
+    var siFold = (siItems.length === 0) ? Promise.resolve() : _siFold(siItems);
+    var plainFold = (plainTickers.length === 0) ? Promise.resolve()
+      : resolveFoldTarget()
+          .then(function (id) {
+            foldTargetId = id;
+            if (_cloudOf(id)) return _foldInsert(plainTickers);
+            return symbolsFetch(id).then(function () { return _foldInsert(plainTickers); });
+          });
+
+    return Promise.all([siFold, plainFold])
+      .then(function () { _markFolded(); })
       .catch(function (err) {
         warnOnce('fold', 'one-time fold failed: ' + (err && err.message || err));
       });
+  }
+
+  /* The investigation half of the one-time fold (RI07 finding 2): read-first per
+     symbol through the SAME primitives a save uses — siEnsureList, _siInsert
+     (section 'si'), _siNoteWrite — so the row the fold lands is indistinguishable
+     from one the signed-in save would have written, note included. */
+  function _siFold(siItems) {
+    return siEnsureList().then(function (list) {
+      return siRowsFetch(list.id).then(function (rows) {
+        var have = {}, maxPos = -1;
+        rows.forEach(function (r) {
+          have[String(r.symbol)] = true;
+          if ((r.position || 0) > maxPos) maxPos = r.position || 0;
+        });
+        // a read full-membership high-water mark outranks the section read, so
+        // the folded row's position never collides below an ordinary row's
+        var c = _cloudOf(list.id);
+        if (c && (c.maxPos || -1) > maxPos) maxPos = c.maxPos || -1;
+        var seq = Promise.resolve();
+        siItems.forEach(function (it) {
+          seq = seq.then(function () {
+            var done = have[it.t]
+              ? Promise.resolve({ symbol: it.t, skipped: true })
+              : _siInsert(list.id, it.t, maxPos).then(function (r) { maxPos += 1; return r; });
+            return done.then(function () {
+              _siNoteWrite(cacheKey(list.id), it.t, it.note || '');
+            });
+          });
+        });
+        return seq;
+      });
+    });
   }
 
   function _foldInsert(tickers) {
@@ -1027,7 +1500,7 @@
     if (!c) return Promise.resolve();
 
     var toInsert = tickers.filter(function (t) { return !c.set[t]; });
-    if (toInsert.length === 0) { _markFolded(); return Promise.resolve(); }
+    if (toInsert.length === 0) return Promise.resolve();
 
     // Insert sequentially; use maxPos+1 to avoid collisions after delete+add cycles
     var base = _nextPos(foldTargetId);
@@ -1040,11 +1513,12 @@
       .then(function (res) {
         if (res.error) throw res.error;
         _noteInserted(foldTargetId, toInsert);
-        _markFolded();
       })
       .catch(function (err) {
         warnOnce('fold', 'one-time fold failed: ' + (err && err.message || err));
-        // Don't mark folded on error so we retry next session
+        // Rethrow: the marker moved to _foldLocalIntoCloud, which must not mark a
+        // failed fold as done (the retry-next-session law). warnOnce keeps this quiet.
+        throw err;
       });
   }
 
@@ -1080,6 +1554,29 @@
       if (!it || !it.t || seen[it.t]) return;
       seen[it.t] = 1;
       out.push(it.t);
+    });
+    return out;
+  }
+
+  /* RI07 finding 2: the fold's capture is the FULL local item — symbol, note,
+     section, added ts — not just the ticker, because the fold now has to decide
+     per item WHICH list it belongs to. Duplicate tickers collapse to one entry:
+     earliest `added`, and a note/section from whichever occurrence carries one. */
+  function _itemsOf(blob) {
+    var seen = {}, out = [];
+    if (!blob || !Array.isArray(blob.items)) return out;
+    blob.items.forEach(function (it) {
+      if (!it || !it.t) return;
+      var e = seen[it.t];
+      if (!e) {
+        seen[it.t] = e = { t: it.t, added: it.added || '', note: it.note || '',
+                           section: it.section || '' };
+        out.push(e);
+        return;
+      }
+      if (it.added && (!e.added || it.added < e.added)) e.added = it.added;
+      if (!e.note && it.note) e.note = it.note;
+      if (!e.section && it.section) e.section = it.section;
     });
     return out;
   }
@@ -1677,6 +2174,136 @@
   }
   function portfolioReadState() { return pfReadState; }
 
+
+  /* Explicit read-only consumers do not opt into sync initialization. In particular,
+     mounting Ontology must not create a list, fold a local book, or retry an outbox.
+     This operation uses the SAME shared auth client and portfolio_positions owner;
+     it has no cache and never substitutes anonymous local rows. The caller clears
+     its own private rendering on auth/page lifecycle changes. Abort is best effort,
+     not proof that an already-issued network read stopped. */
+  function portfolioReadOnly(options) {
+    options = options || {};
+    var active = true;
+    var ownerId = null;
+    var deadline = performance.now() + PF_CLOUD_DEADLINE_MS;
+    var controller = new AbortController();
+    var timer, rejectStopped;
+    var stopped = new Promise(function (_resolve, reject) { rejectStopped = reject; });
+    var listeners = [];
+    // A setup failure can happen before the race subscribes. Always own this rejection.
+    void stopped.catch(function () {});
+    function refusal(reason) { var e = new Error('PRIVATE_PORTFOLIO_UNAVAILABLE'); e.reason = reason; return e; }
+    function stop(reason) {
+      if (!active) return;
+      active = false;
+      controller.abort();
+      rejectStopped(refusal(reason));
+    }
+    function check() {
+      if (!active) throw refusal('cancelled');
+      if (performance.now() >= deadline) throw refusal('read-timeout');
+    }
+    function canonical() {
+      check();
+      var auth = window.MDXAuth;
+      var u = auth && typeof auth.user === 'function' && auth.user();
+      if (!u || typeof u.id !== 'string' || !u.id) throw refusal('signed-out');
+      if (ownerId !== null && u.id !== ownerId) throw refusal('identity-changed');
+      return u.id;
+    }
+    function listen(target, type, fn) {
+      target.addEventListener(type, fn);
+      listeners.push(function () { target.removeEventListener(type, fn); });
+    }
+    function result(state, rows, warning) {
+      return { schema: 'portfolio_read.v1', authority: 'cloud', state: state,
+        rows: rows, owner_id: state === 'ready' ? ownerId : null,
+        last_good_at: state === 'ready' ? nowISO() : null, warning: warning };
+    }
+    async function owner(client, token) {
+      canonical();
+      var answer = await client.auth.getSession();
+      canonical();
+      var session = answer && !answer.error && answer.data && answer.data.session;
+      if (!session || !session.user || session.user.id !== ownerId ||
+          typeof session.access_token !== 'string' || !session.access_token) throw refusal('identity-changed');
+      // A changed session is conservatively discarded, even for the same user.
+      // The caller may explicitly read again; this is not an account-switch claim.
+      if (token && session.access_token !== token) throw refusal('session-changed');
+      return session.access_token;
+    }
+    async function read() {
+      ownerId = canonical();
+      var getClient = window.MDXAuth && window.MDXAuth.client;
+      if (typeof getClient !== 'function') throw refusal('client-unavailable');
+      var client = await getClient();
+      canonical();
+      if (!client || !client.auth || typeof client.auth.getSession !== 'function')
+        throw refusal('client-unavailable');
+      var token = await owner(client);
+      check();
+      // Request one overflow row and the exact owner count. A server cap or a
+      // partial response must never turn an incomplete book into a false zero.
+      var query = client.from('portfolio_positions')
+        .select('id,user_id,ticker,shares,entry_price,entry_date,status,created_at', { count: 'exact' })
+        .eq('user_id', ownerId).order('created_at').limit(501);
+      if (typeof query.abortSignal === 'function') query = query.abortSignal(controller.signal);
+      var response = await query;
+      canonical();
+      if (!response || response.error || !Array.isArray(response.data)) throw refusal('cloud-unavailable');
+      if (!Number.isSafeInteger(response.count) || response.count < 0 || response.count > 500 ||
+          response.count !== response.data.length) throw refusal('incomplete-book');
+      var ids = new Set();
+      var rows = response.data.map(function (row) {
+        if (!row || row.user_id !== ownerId || typeof row.id !== 'string' || !row.id ||
+            row.id.length > 128 || ids.has(row.id) || typeof row.ticker !== 'string' ||
+            !row.ticker || row.ticker.length > 64 || !['open', 'closed'].includes(row.status))
+          throw refusal('invalid-book');
+        ids.add(row.id);
+        ['shares', 'entry_price'].forEach(function (key) {
+          if (row[key] !== null && (typeof row[key] !== 'number' || !Number.isFinite(row[key])))
+            throw refusal('invalid-book');
+        });
+        ['entry_date', 'created_at'].forEach(function (key) {
+          if (row[key] !== null && (typeof row[key] !== 'string' || row[key].length > 64))
+            throw refusal('invalid-book');
+        });
+        // Copy only the selected position fields. Private notes are not needed
+        // for exposure, and are neither queried nor forwarded by this method.
+        return { id: row.id, ticker: row.ticker, shares: row.shares,
+          entry_price: row.entry_price, entry_date: row.entry_date,
+          status: row.status, created_at: row.created_at };
+      });
+      await owner(client, token);
+      check();
+      return result('ready', rows, null);
+    }
+    return Promise.resolve().then(function () {
+      if (!Number.isFinite(deadline)) throw refusal('read-timeout');
+      var external = options.signal;
+      if (external && (typeof external.aborted !== 'boolean' ||
+          typeof external.addEventListener !== 'function' ||
+          typeof external.removeEventListener !== 'function')) throw refusal('invalid-options');
+      listen(window, 'mdx-auth', function () { stop('session-changed'); });
+      listen(window, 'pagehide', function () { stop('cancelled'); });
+      if (external) {
+        if (external.aborted) stop('cancelled');
+        else listen(external, 'abort', function () { stop('cancelled'); });
+      }
+      timer = setTimeout(function () { stop('read-timeout'); }, PF_CLOUD_DEADLINE_MS);
+      return Promise.race([read(), stopped]);
+    }).catch(function (e) {
+      var allowed = ['signed-out', 'identity-changed', 'session-changed', 'client-unavailable', 'read-timeout',
+        'cancelled', 'cloud-unavailable', 'incomplete-book', 'invalid-book', 'invalid-options'];
+      return result('error', null, allowed.includes(e && e.reason) ? e.reason : 'cloud-unavailable');
+    }).finally(function () {
+      active = false;
+      controller.abort();
+      clearTimeout(timer);
+      listeners.forEach(function (remove) { try { remove(); } catch (_) { /* best effort */ } });
+    });
+  }
+
   var PF_IMPORT_SELECT = 'id, user_id, ticker, shares, entry_price, entry_date, notes, status';
 
   function pfCloudRows(rows, uid) {
@@ -1931,6 +2558,492 @@
     });
   }
 
+  // ---- FIF X2-n designated list (seat ruling R2) ------------------------------
+  /* The issuer-watch subscription surface: ONE designated watchlist named
+     "Filing Forensics". DATA FUNCTIONS ONLY — no DOM of its own, no styling,
+     and NO caller is wired anywhere in this repo (the FIF watch toggle is a
+     later, separately owned lane). Laws:
+       • created LAZILY, only on an explicit watch action — never auto-created,
+         never backfilled. findList() never creates; ensureList() is the only
+         creator, and a two-tab create race adopts the winner (listCreate's
+         23505 path).
+       • identified by the verbatim stored NAME: the watchlists schema carries
+         no kind/system/metadata column (Terminal 0001_init.sql:29-36), so the
+         unique (user_id, name) index is the identity. The FIF UI shows a
+         localized label; the stored row keeps this exact name (the hoisted
+         FIF_LIST_NAME constant, declared beside LIST_NAME at the top so
+         resolveBoundList's branch-2 exclusion reads the same value).
+       • ordered BEHIND the primary: on an account with no other list,
+         ensureList() creates 'Watchlist' FIRST so the designated list can
+         never hold position 0 — the page's default bind (seat ruling R1).
+       • removing the symbol (or the whole list) IS the unsubscribe — the
+         producer treats absence as "no subscription".
+     Composed strictly from the registered multi-list primitives above; no
+     other watchlist semantics change. Signed-out callers get rejected
+     promises from _listsGuard() — zero network when signed out. Symbols are
+     normalized to uppercase tickers here so the producer's read (which
+     uppercases) and the Terminal rows agree. */
+  function fifFindList() {
+    return _listsGuard().then(function () { return _findListByName(FIF_LIST_NAME); });
+  }
+  function fifEnsureList() {
+    return fifFindList().then(function (found) {
+      if (found) return found;
+      /* Seat ruling R1 (X2-n r1): the designated list must never be creatable
+         into position 0 of a list-less account — that slot is the page's
+         default bind (resolveBoundList branch 2, pre-R1). Refresh the cache
+         through listsFetch(), the same fetch pull() uses, so the decision
+         rests on server truth; then, ONLY when no non-designated list exists,
+         create the primary 'Watchlist' FIRST so the designated list lands at
+         position >= 1. When a non-designated list exists (e.g. a
+         Terminal-native 'Default'), nothing extra is minted and the
+         designated list takes max(position)+1 as listCreate already does. */
+      return listsFetch().then(function () {
+        var prep = _firstNonDesignated()
+          ? Promise.resolve(null)
+          : _createPrimary();
+        return prep.then(function () { return listCreate(FIF_LIST_NAME); });
+      });
+    });
+  }
+  function fifWatch(symbol) {
+    var t = String(symbol == null ? '' : symbol).trim().toUpperCase();
+    if (!t) return Promise.reject(new Error('bad-args'));
+    return fifEnsureList().then(function (list) {
+      return symbolAdd(list.id, t).then(function (r) { return { list: list, result: r }; });
+    });
+  }
+  function fifUnwatch(symbol) {
+    var t = String(symbol == null ? '' : symbol).trim().toUpperCase();
+    if (!t) return Promise.reject(new Error('bad-args'));
+    return fifFindList().then(function (list) {
+      // No designated list = already unsubscribed; never create to delete.
+      if (!list) return { removed: false };
+      return symbolRemove(list.id, t).then(function (r) { return { removed: true, result: r }; });
+    });
+  }
+  function fifIsWatched(symbol) {
+    var t = String(symbol == null ? '' : symbol).trim().toUpperCase();
+    if (!t) return Promise.resolve(false);
+    return fifFindList().then(function (list) {
+      if (!list) return false;
+      return symbolsFetch(list.id).then(function () {
+        var c = _cloudOf(list.id);
+        return !!(c && c.set[t]);
+      });
+    });
+  }
+
+  // F04 Macro Dashboard Watchlist overlay. Additive private read-only adapter,
+  // modeled on the accepted portfolioReadOnly cloud reader: canonical user and
+  // session checks, one monotonic 12000ms deadline, a Promise-owned rejection
+  // for setup failures, caller abort/pagehide/mdx-auth cleanup, and identity
+  // re-verified before and after every awaited read. It never touches
+  // listsFetch/symbolsFetch/init, the cache, sync, outbox or localStorage; the
+  // only effects are awaited Supabase reads on the existing watchlists and
+  // watchlist_symbols tables under the caller's RLS authority. No retries,
+  // no logs, token exports or JWT decoding.
+  function watchlistReadOnly(options) {
+    options = options || {};
+    var active = true;
+    var ownerId = null;
+    var deadline = performance.now() + PF_CLOUD_DEADLINE_MS;
+    var controller = new AbortController();
+    var timer, rejectStopped;
+    var stopped = new Promise(function (_resolve, reject) { rejectStopped = reject; });
+    var listeners = [];
+    // A setup failure can happen before the race subscribes. Always own this rejection.
+    void stopped.catch(function () {});
+    function refusal(reason) { var e = new Error('PRIVATE_WATCHLIST_UNAVAILABLE'); e.reason = reason; return e; }
+    function stop(reason) {
+      if (!active) return;
+      active = false;
+      controller.abort();
+      rejectStopped(refusal(reason));
+    }
+    function check() {
+      if (!active) throw refusal('cancelled');
+      if (performance.now() >= deadline) throw refusal('read-timeout');
+    }
+    function canonical() {
+      check();
+      var auth = window.MDXAuth;
+      var u = auth && typeof auth.user === 'function' && auth.user();
+      if (!u || typeof u.id !== 'string' || !u.id) throw refusal('signed-out');
+      if (ownerId !== null && u.id !== ownerId) throw refusal('identity-changed');
+      return u.id;
+    }
+    function listen(target, type, fn) {
+      target.addEventListener(type, fn);
+      listeners.push(function () { target.removeEventListener(type, fn); });
+    }
+    function result(state, payload, warning) {
+      var ready = state === 'ready';
+      return { schema: 'watchlist_read.v1', authority: 'cloud', state: state,
+        lists: ready ? payload.lists : null,
+        rows: ready ? payload.rows : null,
+        owner_id: ready ? ownerId : null,
+        list_id: ready ? payload.list_id : null,
+        last_good_at: ready ? nowISO() : null,
+        warning: warning };
+    }
+    async function owner(client, token) {
+      canonical();
+      var answer = await client.auth.getSession();
+      canonical();
+      var session = answer && !answer.error && answer.data && answer.data.session;
+      if (!session || !session.user || session.user.id !== ownerId ||
+          typeof session.access_token !== 'string' || !session.access_token) throw refusal('identity-changed');
+      // A changed session is conservatively discarded, even for the same user.
+      // The caller may explicitly read again; this is not an account-switch claim.
+      if (token && session.access_token !== token) throw refusal('session-changed');
+      return session.access_token;
+    }
+    // A list row is accepted only with a usable id/name, and only those two
+    // fields are copied. position and created_at merely steer the deterministic
+    // order, so they are checked loosely; any bad, duplicate or crossowner id
+    // refuses the whole read.
+    function listRow(row, ids) {
+      if (!row || row.user_id !== ownerId || typeof row.id !== 'string' || !row.id ||
+          row.id.length > 128 || ids.has(row.id) || typeof row.name !== 'string' ||
+          row.name.length > 256) throw refusal('invalid-lists');
+      ids.add(row.id);
+      if (row.position !== null && (typeof row.position !== 'number' || !Number.isFinite(row.position)))
+        throw refusal('invalid-lists');
+      if (row.created_at !== null && (typeof row.created_at !== 'string' || row.created_at.length > 64))
+        throw refusal('invalid-lists');
+      return { id: row.id, name: row.name };
+    }
+    // A symbol row must belong to the selected list. Duplicate symbols are
+    // legal owner rows (the table has no unique index yet), so every row is
+    // checked first and the dedupe happens only afterwards, in order.
+    function symbolRow(row, listId, seen) {
+      if (!row || row.watchlist_id !== listId || typeof row.symbol !== 'string' ||
+          !row.symbol || row.symbol.length > 64) throw refusal('invalid-symbols');
+      if (row.position !== null && (typeof row.position !== 'number' || !Number.isFinite(row.position)))
+        throw refusal('invalid-symbols');
+      if (row.created_at !== null && (typeof row.created_at !== 'string' || row.created_at.length > 64))
+        throw refusal('invalid-symbols');
+      if (seen.has(row.symbol)) return null;
+      seen.add(row.symbol);
+      return { symbol: row.symbol };
+    }
+    async function fetchLists(client, listId) {
+      var query;
+      if (listId) {
+        // Verify exactly this owner row and never enumerate another user's
+        // list; limit(2) turns any duplicate key into a refusal.
+        query = client.from('watchlists')
+          .select('id,user_id,name,position,created_at', { count: 'exact' })
+          .eq('user_id', ownerId).eq('id', listId).limit(2);
+      } else {
+        // Request one overflow row and the exact owner count. A server cap or
+        // a partial response must never turn an incomplete set into a false zero.
+        query = client.from('watchlists')
+          .select('id,user_id,name,position,created_at', { count: 'exact' })
+          .eq('user_id', ownerId)
+          .order('position').order('created_at').limit(101);
+      }
+      if (typeof query.abortSignal === 'function') query = query.abortSignal(controller.signal);
+      var answer = await query;
+      canonical();
+      if (!answer || answer.error || !Array.isArray(answer.data)) throw refusal('cloud-unavailable');
+      if (!Number.isSafeInteger(answer.count) || answer.count < 0) throw refusal('cloud-unavailable');
+      if (listId) {
+        // Exactly one owned row must match; anything else is not verifiable.
+        if (answer.count !== 1 || answer.data.length !== 1 || !answer.data[0] || answer.data[0].id !== listId)
+          throw refusal('list-not-found');
+      } else if (answer.count > 100 || answer.count !== answer.data.length) {
+        throw refusal('incomplete-lists');
+      }
+      var ids = new Set();
+      return answer.data.map(function (row) { return listRow(row, ids); });
+    }
+    async function read() {
+      ownerId = canonical();
+      var selected = null;
+      if (options.listId !== undefined && options.listId !== null) {
+        if (typeof options.listId !== 'string' || !options.listId || options.listId.length > 128)
+          throw refusal('invalid-options');
+        selected = options.listId;
+      }
+      var getClient = window.MDXAuth && window.MDXAuth.client;
+      if (typeof getClient !== 'function') throw refusal('client-unavailable');
+      var client = await getClient();
+      canonical();
+      if (!client || !client.auth || typeof client.auth.getSession !== 'function')
+        throw refusal('client-unavailable');
+      var token = await owner(client);
+      check();
+      var lists = await fetchLists(client, selected);
+      await owner(client, token);
+      check();
+      if (!selected) {
+        // Enumeration publishes id/name only; symbols need an explicit listId.
+        return result('ready', { lists: lists, rows: null, list_id: null }, null);
+      }
+      // Request one overflow row and the exact total. A server cap or a partial
+      // response must never turn an incomplete set into a false empty list.
+      var query = client.from('watchlist_symbols')
+        .select('watchlist_id,symbol,position,created_at', { count: 'exact' })
+        .eq('watchlist_id', selected)
+        .order('position').order('created_at').limit(501);
+      if (typeof query.abortSignal === 'function') query = query.abortSignal(controller.signal);
+      var answer = await query;
+      canonical();
+      if (!answer || answer.error || !Array.isArray(answer.data)) throw refusal('cloud-unavailable');
+      if (!Number.isSafeInteger(answer.count) || answer.count < 0 || answer.count > 500 ||
+          answer.count !== answer.data.length) throw refusal('incomplete-symbols');
+      var seen = new Set();
+      var rows = [];
+      answer.data.forEach(function (row) {
+        var copy = symbolRow(row, selected, seen);
+        if (copy) rows.push(copy);
+      });
+      await owner(client, token);
+      check();
+      return result('ready', { lists: lists, rows: rows, list_id: selected }, null);
+    }
+    return Promise.resolve().then(function () {
+      if (!Number.isFinite(deadline)) throw refusal('read-timeout');
+      var external = options.signal;
+      if (external && (typeof external.aborted !== 'boolean' ||
+          typeof external.addEventListener !== 'function' ||
+          typeof external.removeEventListener !== 'function')) throw refusal('invalid-options');
+      listen(window, 'mdx-auth', function () { stop('session-changed'); });
+      listen(window, 'pagehide', function () { stop('cancelled'); });
+      if (external) {
+        if (external.aborted) stop('cancelled');
+        else listen(external, 'abort', function () { stop('cancelled'); });
+      }
+      timer = setTimeout(function () { stop('read-timeout'); }, PF_CLOUD_DEADLINE_MS);
+      return Promise.race([read(), stopped]);
+    }).catch(function (e) {
+      var allowed = ['signed-out', 'identity-changed', 'session-changed', 'client-unavailable', 'read-timeout',
+        'cancelled', 'cloud-unavailable', 'incomplete-lists', 'incomplete-symbols', 'invalid-lists',
+        'invalid-symbols', 'list-not-found', 'invalid-options'];
+      return result('error', null, allowed.includes(e && e.reason) ? e.reason : 'cloud-unavailable');
+    }).finally(function () {
+      active = false;
+      controller.abort();
+      clearTimeout(timer);
+      listeners.forEach(function (remove) { try { remove(); } catch (_) { /* best effort */ } });
+    });
+  }
+
+  // ---- SIC-I07R saved sector investigations (seat decision) ------------------
+  /* "Save this sector investigation" rides the EXISTING watch/save owner — no
+     new store, table, column or notification transport. A saved investigation is ONE
+     watchlist_symbols row {symbol: <SPDR ETF ticker>, section: 'si'} inside the
+     user's dedicated list named exactly 'Sector Intelligence', created lazily
+     through the existing list-create path (unique per (user_id, name)). The
+     Dossier entity key IS the SPDR ETF ticker, so the subject fits the schema
+     as a symbol row. Laws:
+
+       • identified by the verbatim stored NAME + the section literal 'si' —
+         the watchlists schema carries no kind/metadata column, so the unique
+         (user_id, name) index is the list's identity and `section` is the row's.
+       • the question / snapshot / origin are DEVICE-LOCAL ONLY, in the existing
+         local item `note` (the dedicated list's per-list cache item signed in,
+         the anonymous blob's item signed out) — `watchlist_symbols` has no note
+         column and this wave adds none. Cross-device readback of `note` is a
+         recorded GAP (it needs a Terminal column): stated in the readback UI as
+         "saved on this device", never implied to sync, never worked around.
+       • readback comes from the store, never a cache of the click: cloud rows
+         (a real server read FILTERED BY section — the shared symbolsFetch()
+         does not filter by section, so this read is what keeps investigation
+         rows from being reported as, or leaked into, any other list) when
+         signed in; the anonymous local blob signed out.
+       • account isolation is the owner's existing user_id scoping; this wave
+         adds no auth code. Signed-out saves stay on the device; a signed-in
+         session is never routed to the anonymous blob (A1A authority law).
+       • symbol saves remain symbol saves: no condition watcher is created and
+         the nightly scanner is untouched — removing the row (or the list) IS
+         the unsave. */
+  function siFindList() {
+    return _listsGuard().then(function () { return _findListByName(SI_LIST_NAME); });
+  }
+  function siEnsureList() {
+    return siFindList().then(function (found) {
+      if (found) return found;
+      /* Same position-0 law as fifEnsureList (seat ruling R1): the designated
+         list must never be creatable into position 0 of a list-less account —
+         that slot is the page's default bind. Refresh through listsFetch() so
+         the decision rests on server truth, then mint the primary 'Watchlist'
+         FIRST only when no non-designated list exists. */
+      return listsFetch().then(function () {
+        var prep = _firstNonDesignated()
+          ? Promise.resolve(null)
+          : _createPrimary();
+        return prep.then(function () { return listCreate(SI_LIST_NAME); });
+      });
+    });
+  }
+  /* The dedicated list's investigation rows — a real server read filtered by
+     section, so ordinary 'Watchlist'-section rows (hand-added by a user who
+     selected this list in the switcher) are never reported as investigations. */
+  function siRowsFetch(listId) {
+    return _listsGuard().then(function () {
+      return sb.from('watchlist_symbols')
+        .select('symbol, section, position, created_at')
+        .eq('watchlist_id', listId)
+        .eq('section', SI_SECTION)
+        .order('position');
+    }).then(function (res) {
+      if (res.error) throw res.error;
+      return (res.data || []).filter(function (r) { return r && r.symbol; });
+    });
+  }
+  /* Device-local note read/write on a blob key — the ONLY place the question
+     text is persisted. Preserves every other field of the raw blob verbatim
+     (the per-list cache carries account-scoped outbox state). The item this
+     writes carries `section: 'si'` (RI07 finding 2): it is what the sign-in
+     fold routes on, and what the page's row source reads to gate the chip —
+     the one field beyond the shape the anonymous store already tolerated. */
+  function _siBlobRead(key) {
+    try {
+      var raw = localStorage.getItem(key);
+      if (raw) {
+        var b = JSON.parse(raw);
+        if (b && typeof b === 'object' && Array.isArray(b.items)) return b;
+      }
+    } catch (e) {}
+    return { v: 1, updated: '', items: [], order: [], settings: {} };
+  }
+  function _siNoteWrite(key, etf, note) {
+    var b = _siBlobRead(key);
+    var it = null;
+    for (var i = 0; i < b.items.length; i++) {
+      if (b.items[i] && b.items[i].t === etf) { it = b.items[i]; break; }
+    }
+    if (it) {
+      it.note = note || '';
+      it.section = SI_SECTION;
+    } else {
+      b.items.push({ t: etf, added: nowISO(), note: note || '', section: SI_SECTION });
+      if (!Array.isArray(b.order)) b.order = [];
+      if (b.order.indexOf(etf) < 0) b.order.push(etf);
+    }
+    b.updated = nowISO();
+    try { localStorage.setItem(key, JSON.stringify(b)); } catch (e) {}
+  }
+  function _siInsert(listId, t, basePos) {
+    setPill('syncing');
+    return sb.from('watchlist_symbols')
+      .insert({ watchlist_id: listId, symbol: t, section: SI_SECTION, position: basePos + 1 })
+      .then(function (res) {
+        if (res.error) throw res.error;
+        // keep a server-read membership current when one exists, so a later
+        // push diff against this list cannot delete the row it has not seen
+        if (_cloudOf(listId)) _noteInserted(listId, [t]);
+        setPill('synced');
+        return { symbol: t };
+      });
+  }
+  /* Public: save. Idempotent on the cloud row (a second save of the same ETF
+     updates the device-local note, never a second row — read-first, because
+     watchlist_symbols carries no unique index on (watchlist_id, symbol)).
+     RI07 finding 4: read-first loses to a RACE — two saves of one symbol in
+     flight together both read "absent" and both insert. One in-flight save per
+     symbol: a second call for the same etf chains after the first, re-reads,
+     and finds the row the first one minted. */
+  var _siSaveInFlight = {};
+  function saveSectorInvestigation(payload) {
+    var etf = String((payload && payload.etf) == null ? '' : payload.etf).trim().toUpperCase();
+    var note = String((payload && payload.note) == null ? '' : payload.note);
+    if (!etf) return Promise.reject(new Error('bad-args'));
+    /* RI07 finding 3: ticker allowlist. After the existing trim+uppercase, a
+       saved symbol is 1-8 plain upper-ASCII letters and nothing else — the
+       shape the dossier route (sectors/<ETF>.html) and the cloud row can own.
+       Anything else keeps the function's existing failure shape, on BOTH auth
+       paths (a refused etf never reaches the anonymous blob either). */
+    if (!/^[A-Z]{1,8}$/.test(etf)) return Promise.reject(new Error('bad-args'));
+    if (!user) {
+      // signed out: the anonymous local blob IS the store (same key the page
+      // reads). The item's `note` is the device-local home of the question.
+      _siNoteWrite('mdash.watchlist.v1', etf, note);
+      return Promise.resolve({ etf: etf, synced: false });
+    }
+    var prev = _siSaveInFlight[etf];
+    var run = (prev ? prev.catch(function () {}) : Promise.resolve())
+      .then(function () { return _siSave(etf, note); });
+    _siSaveInFlight[etf] = run;
+    run.then(function () { if (_siSaveInFlight[etf] === run) delete _siSaveInFlight[etf]; },
+             function () { if (_siSaveInFlight[etf] === run) delete _siSaveInFlight[etf]; });
+    return run;
+  }
+  function _siSave(etf, note) {
+    return siEnsureList().then(function (list) {
+      return siRowsFetch(list.id).then(function (rows) {
+        var exists = false, maxPos = -1;
+        rows.forEach(function (r) {
+          if (String(r.symbol) === etf) exists = true;
+          if ((r.position || 0) > maxPos) maxPos = r.position || 0;
+        });
+        // a read full-membership high-water mark outranks the section read, so
+        // the new row's position never collides below an ordinary row's
+        var c = _cloudOf(list.id);
+        if (c && (c.maxPos || -1) > maxPos) maxPos = c.maxPos || -1;
+        var done = exists ? Promise.resolve({ symbol: etf, skipped: true })
+                          : _siInsert(list.id, etf, maxPos);
+        return done.then(function (r) {
+          _siNoteWrite(cacheKey(list.id), etf, note);
+          return { etf: etf, listId: list.id, synced: true, skipped: !!(r && r.skipped) };
+        });
+      });
+    });
+  }
+  /* Public: readback, from the store. [{etf, added, note, synced}] — `added` is
+     the cloud row's created_at signed in; `note` is always the device-local
+     copy (the recorded GAP); `synced` names which store answered.
+     RI07 finding 4: ONE row per symbol even when the cloud still holds
+     duplicates an old race minted — the earliest created_at (when the
+     investigation was first saved) carrying the device-local note (the newest
+     copy; the note store is per-symbol, last write wins). */
+  function listSectorInvestigations() {
+    if (!user) {
+      /* Signed out: the anonymous blob. Its items carry no kind marker — a
+         non-empty `note` is the device-local signature of a saved investigation
+         (an ordinary star add writes note: ''). */
+      var b = _siBlobRead('mdash.watchlist.v1');
+      var pickL = {}, orderL = [];
+      b.items.forEach(function (it) {
+        if (!it || !it.t || !it.note) return;
+        var k = String(it.t), prev = pickL[k];
+        if (!prev) {
+          pickL[k] = { etf: it.t, added: it.added || '', note: it.note, synced: false };
+          orderL.push(k);
+          return;
+        }
+        if (it.added && (!prev.added || it.added < prev.added)) prev.added = it.added;
+        prev.note = it.note;   // array order is write order: the newest note wins
+      });
+      return Promise.resolve(orderL.map(function (k) { return pickL[k]; }));
+    }
+    return siFindList().then(function (list) {
+      if (!list) return [];   // never create on read
+      return siRowsFetch(list.id).then(function (rows) {
+        var byT = {};
+        cacheRead(list.id).items.forEach(function (it) { byT[it.t] = it; });
+        var pick = {}, order = [];
+        rows.forEach(function (r) {
+          var k = String(r.symbol);
+          if (!pick[k]) { pick[k] = r; order.push(k); }
+          else if ((r.created_at || '') < (pick[k].created_at || '')) pick[k] = r;
+        });
+        return order.map(function (k) {
+          var r = pick[k], it = byT[k];
+          return {
+            etf: r.symbol,
+            added: r.created_at || (it && it.added) || '',
+            note: (it && it.note) || '',
+            synced: true
+          };
+        });
+      });
+    });
+  }
+
   // ---- public API ------------------------------------------------------------
   window.WatchStore = {
     status: status,
@@ -1940,6 +3053,7 @@
     /* Registered multi-list seam (W1a). Signed-out callers get a rejected promise —
        the anonymous store is watchlist.js's `mdash.watchlist.v1` blob, untouched. */
     lists: {
+      readOnly: watchlistReadOnly,
       all: listsAll,                 // cached view, no network
       refresh: listsFetch,
       create: listCreate,
@@ -1954,12 +3068,37 @@
     },
     symbols: {
       list: symbolsFetch,            // server read; also refreshes the list's cache
+      inspect: symbolInspect,       // observation only; never a write or retry receipt
       add: symbolAdd,
       remove: symbolRemove,
-      push: pushList                 // full-membership diff, scoped to one list
+      push: pushList,                // full-membership diff, scoped to one list
+      // R7 Wave A: the checked, idempotent save — reports what the account
+      // answered (saved | rejected | uncertain) after reading the list back.
+      saveChecked: saveChecked
+    },
+    // FIF X2-n designated-list helper (R2): the issuer-watch subscription
+    // surface. Data functions only; no call site ships in this wave.
+    fif: {
+      listName: function () { return FIF_LIST_NAME; },
+      findList: fifFindList,
+      ensureList: fifEnsureList,
+      watch: fifWatch,
+      unwatch: fifUnwatch,
+      isWatched: fifIsWatched
+    },
+    // SIC-I07R saved-sector-investigation surface. The two frozen names live at
+    // the top level; the si group mirrors fif's shape for the page's renderer.
+    saveSectorInvestigation: saveSectorInvestigation,
+    listSectorInvestigations: listSectorInvestigations,
+    si: {
+      listName: function () { return SI_LIST_NAME; },
+      section: function () { return SI_SECTION; },
+      findList: siFindList,
+      ensureList: siEnsureList
     },
     portfolio: {
       list: portfolioList,
+      readOnly: portfolioReadOnly,
       upsert: portfolioUpsert,
       importBatch: portfolioImportBatch,
       close: portfolioClose,
@@ -2253,6 +3392,10 @@
       portfolio: window.WatchStore.portfolio,
       lists: window.WatchStore.lists,
       symbols: window.WatchStore.symbols,
+      fif: window.WatchStore.fif,
+      saveSectorInvestigation: saveSectorInvestigation,
+      listSectorInvestigations: listSectorInvestigations,
+      siFindList: siFindList, siEnsureList: siEnsureList, siRowsFetch: siRowsFetch,
       pull: pull,
       pushList: pushList,
       resolveBoundList: resolveBoundList,

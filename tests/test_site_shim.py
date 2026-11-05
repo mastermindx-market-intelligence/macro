@@ -26,6 +26,8 @@ import re
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config  # noqa: E402
@@ -125,10 +127,22 @@ def test_write_page_representative_head_keeps_prescan_contract(tmp_path):
     end = _charset_meta_end(raw)
     assert end > 0, "charset meta must survive injection"
     assert end <= 1024, f"charset meta ends at byte {end} of write_page output"
-    # and the shim still precedes every fetchable resource in <head>
+    # and the shim still precedes every fetchable resource the page itself brings.
+    # The Shared Shell block is the one exception, and it has to be: its bridge must
+    # run before every page script, and
+    # tests/test_shared_shell_injection.py::test_bridge_runs_before_all_existing_page_scripts
+    # pins the block ahead of <meta charset>, while inject_text pins the shim behind
+    # it. That order is safe only while the bridge never uses the data plane, so
+    # that premise is asserted here.
+    from lib.shared_shell import BLOCK
+
     text = raw.decode("utf-8")
-    assert text.index(DBASE_MARKER) < text.index("<link")
-    assert text.index(DBASE_MARKER) < text.index("<script src=")
+    page = BLOCK.sub("", text, count=1)
+    assert page != text, "write_page output lost its Shared Shell block"
+    assert page.index(DBASE_MARKER) < page.index("<link")
+    assert page.index(DBASE_MARKER) < page.index("<script src=")
+    bridge = (ROOT / "templates" / "shared_shell_bridge.js").read_text(encoding="utf-8")
+    assert "fetch(" not in bridge and "XMLHttpRequest" not in bridge and "DATA_BASE" not in bridge
 
 
 def test_shim_is_inlined_not_linked():
@@ -526,6 +540,33 @@ def test_no_raw_write_text_on_html_variables():
         "target — the data-base shim is dropped in any standalone builder run "
         f"(the render lane's inject_data_base sweep hides this on committed pages): {offenders}"
     )
+
+
+def test_unshimmed_writer_refuses_a_site_page(tmp_path, monkeypatch):
+    """It must not become the way round write_page."""
+    site = tmp_path / "site"
+    site.mkdir()
+    monkeypatch.setattr(pages_mod, "_site_root", lambda: site.resolve())
+    for doc in ("<!DOCTYPE html><p>x</p>", "<html><body>x</body></html>", "<HEAD></HEAD>x"):
+        with pytest.raises(ValueError, match="write_page"):
+            pages_mod.write_unshimmed_html(site / "a.html", doc)
+        assert not (site / "a.html").exists()
+
+
+def test_unshimmed_writer_keeps_fragments_and_scratch_pages_byte_exact(tmp_path, monkeypatch):
+    site = tmp_path / "site"
+    (site / "macro" / "fragments").mkdir(parents=True)
+    monkeypatch.setattr(pages_mod, "_site_root", lambda: site.resolve())
+    # <header> is not <head>: a fragment may carry one.
+    fragment = '<header class="x">标题</header><div data-mc-fragment>1</div>\n'
+    target = site / "macro" / "fragments" / "a.html"
+    pages_mod.write_unshimmed_html(target, fragment, encoding="utf-8")
+    assert target.read_text(encoding="utf-8") == fragment
+    page = "<!DOCTYPE html><html><head></head><body>x</body></html>"
+    scratch = tmp_path / "scratch" / "a.html"
+    scratch.parent.mkdir()
+    pages_mod.write_unshimmed_html(scratch, page)
+    assert scratch.read_text() == page
 
 
 def test_source_guard_fires_on_synthetic_offenders():

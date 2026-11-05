@@ -22,14 +22,21 @@ This tool:
        compiled → EXACT cause+target matching (case-insensitive)
   8. RF-14 fixed-order dedup in 4 layers (see below); near-dup flagged.
   9. ISO-WEEK FILING LOCK (CHF-R8): ≤3 cards per ISO week.  The weekly count
-     is computed as max(causal_mechanisms.jsonl rows, trial_ledger.jsonl rows)
-     so deleting causal_mechanisms.jsonl cannot reset the budget (M3).
+     is computed as max(causal_mechanisms.jsonl rows, filing-budget rows) so
+     deleting causal_mechanisms.jsonl cannot reset the budget (M3).  Filing-
+     budget rows live in data/neuralweb/causal_filing_budget.jsonl; rows filed
+     before that file existed are still read (never written) from
+     data/trial_ledger.jsonl.
      Second --write run in same week refuses with a printed message.
  10. Freshly-minted inbox cards have lineage.transitions reset to [] so the
      LLM's claimed history is discarded (M1 audit-trail law).
  11. Dry-run by default; --write appends accepted cards to
      data/neuralweb/causal_mechanisms.jsonl with actor='script' provenance
-     and logs one trial_ledger row per filed card under family='causal_scan'.
+     and logs one filing-budget row per filed card to
+     data/neuralweb/causal_filing_budget.jsonl.  It never writes
+     data/trial_ledger.jsonl: that file is engine.trial_ledger.TrialLedger's
+     owner-locked multiple-testing memory, and an unlocked append there could
+     interleave with a locked trial registration.
 
 RF-14 fixed-order dedup:
   (0) Existing causal_mechanisms.jsonl canonical hashes.
@@ -75,7 +82,10 @@ DEFAULT_OUT = ROOT / "data" / "neuralweb"
 _MECHANISMS = "causal_mechanisms.jsonl"
 _NULLS_FILE = ROOT / "data" / "neuralweb" / "causal_nulls.jsonl"
 _MACHINE_REGISTRY = ROOT / "data" / "neuralweb" / "machine_registry.jsonl"
+# Read-only here: legacy filing_budget rows (pre-causal_filing_budget.jsonl)
+# plus the trial-family dedup corpus. Only TrialLedger may append to it.
 _TRIAL_LEDGER = ROOT / "data" / "trial_ledger.jsonl"
+_FILING_BUDGET = ROOT / "data" / "neuralweb" / "causal_filing_budget.jsonl"
 _CAUSAL_PRIORS = ROOT / "config" / "causal_priors.yml"
 
 # Families considered rotation-family for oracle dedup check
@@ -358,17 +368,12 @@ def _count_filed_this_week_from_mechanisms(out_dir: Path, week: str) -> int:
     return count
 
 
-def _count_filed_this_week_from_ledger(week: str) -> int:
-    """Count filing_budget rows for this ISO week from data/trial_ledger.jsonl.
-
-    M3 ruling: deleting causal_mechanisms.jsonl cannot reset the budget.
-    One trial_ledger row with kind='filing_budget' and filing_week=<week> is
-    appended per filed card by _log_filing_budget_to_ledger() below.
-    """
-    if not _TRIAL_LEDGER.exists():
+def _count_filing_budget_rows(path: Path, week: str) -> int:
+    """Count kind='filing_budget' rows for ``week`` in one JSONL file (read-only)."""
+    if not path.exists():
         return 0
     count = 0
-    for line in _TRIAL_LEDGER.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if not line:
             continue
@@ -381,10 +386,23 @@ def _count_filed_this_week_from_ledger(week: str) -> int:
     return count
 
 
+def _count_filed_this_week_from_ledger(week: str) -> int:
+    """Count durable filing_budget rows for this ISO week.
+
+    M3 ruling: deleting causal_mechanisms.jsonl cannot reset the budget.
+    _log_filing_budget() below appends one row per filed card to
+    data/neuralweb/causal_filing_budget.jsonl.  Rows filed before that file
+    existed sit in data/trial_ledger.jsonl and are still counted, read-only;
+    the two sets are disjoint (nothing writes the old location now), so they sum.
+    """
+    return (_count_filing_budget_rows(_FILING_BUDGET, week)
+            + _count_filing_budget_rows(_TRIAL_LEDGER, week))
+
+
 def _count_filed_this_week(out_dir: Path) -> int:
     """Return durable filed count for current ISO week.
 
-    M3: uses max(causal_mechanisms.jsonl rows, trial_ledger.jsonl rows) so that
+    M3: uses max(causal_mechanisms.jsonl rows, filing-budget rows) so that
     deleting causal_mechanisms.jsonl cannot reset the ISO-week budget.
     """
     week = _current_iso_week()
@@ -393,8 +411,14 @@ def _count_filed_this_week(out_dir: Path) -> int:
     return max(from_mechanisms, from_ledger)
 
 
-def _log_filing_budget_to_ledger(mechanism_id: str, week: str) -> None:
-    """Append one filing_budget row to data/trial_ledger.jsonl for durability (M3)."""
+def _log_filing_budget(mechanism_id: str, week: str) -> None:
+    """Append one filing_budget row to data/neuralweb/causal_filing_budget.jsonl (M3).
+
+    Never to data/trial_ledger.jsonl: engine.trial_ledger.TrialLedger owns that
+    file under its owner flock and assumes no foreign writer, so an unlocked
+    append there can tear a locked trial registration or land between an
+    owner's history read and its append.
+    """
     row = {
         "ts": datetime.now(timezone.utc).isoformat(),
         "kind": "filing_budget",
@@ -403,11 +427,13 @@ def _log_filing_budget_to_ledger(mechanism_id: str, week: str) -> None:
         "mechanism_id": mechanism_id,
     }
     try:
-        _TRIAL_LEDGER.parent.mkdir(parents=True, exist_ok=True)
-        with _TRIAL_LEDGER.open("a", encoding="utf-8") as fh:
+        _FILING_BUDGET.parent.mkdir(parents=True, exist_ok=True)
+        with _FILING_BUDGET.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(row, default=str) + "\n")
-    except Exception:  # noqa: BLE001
-        pass  # non-fatal: mechanisms.jsonl is the primary store
+    except Exception as exc:  # noqa: BLE001
+        # non-fatal: mechanisms.jsonl is the primary store
+        print(f"[causal_ingest] WARNING: filing-budget row not recorded for "
+              f"{mechanism_id}: {exc}", file=sys.stderr)
 
 # ---------------------------------------------------------------------------
 # Near-dup detection (claim text similarity — flag only, not auto-reject)
@@ -686,9 +712,9 @@ def ingest(
     with p.open("a", encoding="utf-8") as fh:
         for card in accepted_cards:
             fh.write(json.dumps(card, ensure_ascii=False, default=str) + "\n")
-            # M3: log one filing_budget row per filed card to trial_ledger for
-            # durability — deleting causal_mechanisms.jsonl cannot reset the budget
-            _log_filing_budget_to_ledger(
+            # M3: log one filing_budget row per filed card for durability —
+            # deleting causal_mechanisms.jsonl cannot reset the budget
+            _log_filing_budget(
                 mechanism_id=card.get("mechanism_id", "unknown"),
                 week=week,
             )

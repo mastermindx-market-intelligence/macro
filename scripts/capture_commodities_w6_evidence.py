@@ -392,13 +392,15 @@ def render_page(ctx: dict | None = None) -> str:
 
 
 def write_fixture_site(scratch: Path) -> None:
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     scratch.mkdir(parents=True, exist_ok=True)
     shutil.copy(TEMPLATES_DIR / "theme.js", scratch / "theme.js")
     icons = TEMPLATES_DIR / "product-nav-icons.css"
     if icons.exists():
         shutil.copy(icons, scratch / "product-nav-icons.css")
-    (scratch / "commodities_w6.html").write_text(render_page(), encoding="utf-8")
-    (scratch / "commodities_w6_ntop9.html").write_text(
+    write_unshimmed_html(scratch / "commodities_w6.html", render_page(), encoding="utf-8")
+    write_unshimmed_html(
+        scratch / "commodities_w6_ntop9.html",
         render_page(fixture_vm(stretched=_STRETCHED_NINE)), encoding="utf-8"
     )
 

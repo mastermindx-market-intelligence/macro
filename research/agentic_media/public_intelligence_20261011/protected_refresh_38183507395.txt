@@ -1,0 +1,2 @@
+sweep	sweep merge-on-green pull requests	2026-10-11T23:15:57.3224432Z ##[notice]PR #8786: checks are clean but the proof is stale — main commit fba80a12a288 changed the check definitions themselves, so no existing green describes the checks that run now. Merging main into the head; its fresh checks decide on a later sweep.
+sweep	sweep merge-on-green pull requests	2026-10-11T23:15:59.7268145Z ##[notice]PR #8786: checks were clean but the base had moved — merged main into the head. Its fresh checks decide the merge on a later sweep.

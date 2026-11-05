@@ -33,6 +33,7 @@ Thin wrapper:
 - `statement_type` / `role_uri` / `title`
 - `columns` — filing-native periods (duration or instant). Column identity is the complete period (`kind` + `start` + `end`), not end date alone and not “newest N”. Quarterly tables may expose multiple duration families that share an end date. The `label` field may repeat an ISO date; it is not the disambiguator. Instant facts that sit inside duration columns do not define the column period.
 - `row_count` / `rows`
+- `refusal` (optional) — when present, `{"code": <refusal_code>}` only; the statement was not reconstructed line by line. A null `role_uri` or `title` may appear only alongside `refusal`.
 
 ## Row
 

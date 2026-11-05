@@ -1,0 +1,1158 @@
+{
+  "analysis_clock": "2026-10-17T07:30:00+00:00",
+  "bindings": {
+    "calendar": "first-party imports denied; native weekday fallback, only October16->17 age path in fresh fixtures",
+    "clock": "fixed declared research clock; executed_at separate",
+    "market_view_config": "empty fixture config; native fallback five sessions"
+  },
+  "cases": {
+    "1_withheld_forecast_caution": {
+      "gate_projection": {
+        "source": "risk_radar",
+        "state": "caution"
+      },
+      "input": {
+        "alert": false,
+        "asof": "2026-10-16",
+        "authority": {
+          "can_force": false,
+          "confirmed_validated_legs": [
+            "credit_oas_roc"
+          ],
+          "note_en": "Advisory \u2014 sizes risk; does not override the measured tape.",
+          "note_zh": "\u63d0\u793a\u6027\u4fe1\u53f7\u2014\u2014\u4ec5\u8c03\u6574\u4ed3\u4f4d\uff0c\u4e0d\u8986\u76d6\u5b9e\u6d4b\u76d8\u9762\u3002",
+          "reason": "early_tier_advisory",
+          "requires": [
+            "elevated_or_risk_off",
+            "above_base_rate",
+            "confirmed_validated_leg_in_hot_tier_a_scare"
+          ],
+          "state_above_base": false,
+          "tier": "advisory"
+        },
+        "can_force": false,
+        "cap_leadership": false,
+        "conjunction": true,
+        "context_gate": {
+          "breadth_weak": true,
+          "met": false,
+          "spy_below_200dma": false
+        },
+        "counterread": {
+          "as_of": "2026-10-16",
+          "authority": {
+            "horizon_role": "context",
+            "may_escalate": false,
+            "may_gate": false,
+            "may_rank": false,
+            "may_size": false,
+            "tier": "display"
+          },
+          "disclaimer": "Display-tier only. All may_* authority flags are False. It sits BESIDE the risk banner as context and never suppresses it. Forward ledger pre-registered as EXPECTED NULL \u2014 a capitulation-zone reading is historically TWO-SIDED (it precedes a bounce about as often as a further leg down); it is context, not a forecast, not a buy signal. Price depth = trailing-63-session drawdown percentile vs 10y self-history; momentum depth (if shown) = IHM MACD-histogram depth, a different quantity, labeled separately. The word 'validated' does not appear on these surfaces.",
+          "growth_band": "elevated",
+          "growth_extreme": false,
+          "growth_score": 82.7,
+          "ihm_depths": [
+            {
+              "depth_pctile": 10.9,
+              "extreme": true,
+              "index": "IWM",
+              "metric": "ihm_macd_hist_depth_pctile",
+              "reason": "washout_turn",
+              "washout_turn": true
+            }
+          ],
+          "ihm_hits": [
+            "IWM"
+          ],
+          "message_en": null,
+          "message_zh": null,
+          "price_depths": [
+            {
+              "depth_pctile": 62.9,
+              "drawdown_pct": -2.03,
+              "extreme": false,
+              "index": "SPY",
+              "metric": "price_63d_drawdown_pctile",
+              "n_hist": 2520
+            },
+            {
+              "depth_pctile": 78.5,
+              "drawdown_pct": -6.56,
+              "extreme": false,
+              "index": "QQQ",
+              "metric": "price_63d_drawdown_pctile",
+              "n_hist": 2520
+            },
+            {
+              "depth_pctile": 84.6,
+              "drawdown_pct": -9.17,
+              "extreme": false,
+              "index": "XLK",
+              "metric": "price_63d_drawdown_pctile",
+              "n_hist": 2520
+            }
+          ],
+          "price_hits": [],
+          "schema": "washout_counterread.v1",
+          "show": false
+        },
+        "cycle_context": {
+          "asof": "2026-10-16",
+          "caveat_en": "Calendar context only \u2014 it gently adjusts position size and never changes a signal band or raises an alarm. And ignore the folk story that the dollar firms up in midterm second halves: history shows the opposite, so trust the measured dollar and rate gauges, not the year.",
+          "caveat_zh": "\u4ec5\u4e3a\u65e5\u5386\u80cc\u666f\u2014\u2014\u53ea\u8f7b\u5fae\u8c03\u6574\u4ed3\u4f4d\uff0c\u4e0d\u6539\u53d8\u4fe1\u53f7\u7b49\u7ea7\uff0c\u4e5f\u7edd\u4e0d\u5355\u72ec\u62c9\u54cd\u8b66\u62a5\u3002\u81f3\u4e8e\u300c\u4e2d\u671f\u4e0b\u534a\u5e74\u7f8e\u5143\u8d70\u5f3a\u300d\u7684\u574a\u95f4\u8bf4\u6cd5\uff1a\u5386\u53f2\u6070\u597d\u76f8\u53cd\uff0c\u8bf7\u76f8\u4fe1\u5b9e\u6d4b\u7684\u7f8e\u5143\u4e0e\u5229\u7387\u6307\u6807\uff0c\u800c\u975e\u5e74\u4efd\u672c\u8eab\u3002",
+          "in_drawdown_window": true,
+          "in_h2": true,
+          "in_trough_window": true,
+          "is_midterm": true,
+          "label_en": "Midterm year",
+          "label_zh": "\u4e2d\u671f\u9009\u4e3e\u5e74",
+          "modulation": {
+            "active": true,
+            "band_delta": 0.0,
+            "gross_applied": true,
+            "gross_mult": 0.97,
+            "reason_en": "Midterm drawdown window \u2014 gross trimmed as a sizing prior; the calendar does not change Risk-Radar bands.",
+            "reason_zh": "\u4e2d\u671f\u56de\u64a4\u7a97\u53e3\u2014\u2014\u4ec5\u6309\u5b63\u8282\u6027\u5148\u9a8c\u5c0f\u5e45\u964d\u4ed3\uff1b\u65e5\u5386\u4e0d\u6539\u53d8\u98ce\u9669\u96f7\u8fbe\u7b49\u7ea7\u3002",
+            "risk_on_slice": true,
+            "sizing_only": true
+          },
+          "schema": "election_cycle.v1",
+          "sector_bias": {
+            "avoid": [
+              {
+                "en": "Energy",
+                "ticker": "XLE",
+                "zh": "\u80fd\u6e90"
+              },
+              {
+                "en": "Discretionary",
+                "ticker": "XLY",
+                "zh": "\u53ef\u9009\u6d88\u8d39"
+              }
+            ],
+            "display_only": true,
+            "favor": [
+              {
+                "en": "Health Care",
+                "ticker": "XLV",
+                "zh": "\u533b\u7597\u4fdd\u5065"
+              },
+              {
+                "en": "Staples",
+                "ticker": "XLP",
+                "zh": "\u5fc5\u9700\u6d88\u8d39"
+              },
+              {
+                "en": "Utilities",
+                "ticker": "XLU",
+                "zh": "\u516c\u7528\u4e8b\u4e1a"
+              }
+            ],
+            "note_en": "In past midterm second halves, defensives (health care, staples, utilities) held up while energy and discretionary lagged \u2014 mostly ordinary second-half seasonality, not a midterm effect.",
+            "note_zh": "\u5386\u6b21\u4e2d\u671f\u9009\u4e3e\u5e74\u4e0b\u534a\u5e74\uff0c\u9632\u5fa1\u677f\u5757\uff08\u533b\u7597\u3001\u5fc5\u9700\u6d88\u8d39\u3001\u516c\u7528\u4e8b\u4e1a\uff09\u76f8\u5bf9\u6297\u8dcc\uff0c\u80fd\u6e90\u4e0e\u53ef\u9009\u6d88\u8d39\u8d70\u5f31\u2014\u2014\u591a\u4e3a\u666e\u901a\u7684\u4e0b\u534a\u5e74\u5b63\u8282\u6027\uff0c\u5e76\u975e\u4e2d\u671f\u4e13\u5c5e\u6548\u5e94\u3002"
+          },
+          "show": true,
+          "slice_en": "The one measured edge: while the market still looks healthy (S&P above its 200-day average), pullbacks have come about 1.25\u00d7 as often in this window \u2014 an early heads-up for position size, never a trigger.",
+          "slice_zh": "\u552f\u4e00\u53ef\u91cf\u5316\u7684\u4f18\u52bf\uff1a\u5f53\u5927\u76d8\u4ecd\u5065\u5eb7\uff08\u6807\u666e\u9ad8\u4e8e 200 \u65e5\u5747\u7ebf\uff09\u65f6\uff0c\u8be5\u7a97\u53e3\u51fa\u73b0\u56de\u64a4\u7684\u9891\u7387\u7ea6\u4e3a\u5e73\u5e38\u7684 1.25 \u500d\u2014\u2014\u4ec5\u4f5c\u63d0\u524d\u63d0\u9192\u3001\u7528\u4e8e\u4ed3\u4f4d\uff0c\u7edd\u975e\u4e70\u5356\u89e6\u53d1\u3002",
+          "stat_en": "Midterm-year drops between April and October have run deeper than usual \u2014 though the pattern is loose, and the worst crashes on record came in other years.",
+          "stat_zh": "\u4e2d\u671f\u9009\u4e3e\u5e74 4\u201310 \u6708\u7684\u56de\u64a4\u5386\u6765\u6bd4\u5e73\u5e38\u66f4\u6df1\u2014\u2014\u4f46\u89c4\u5f8b\u5e76\u4e0d\u4e25\u683c\uff0c\u53f2\u4e0a\u6700\u6df1\u7684\u4e0b\u8dcc\u90fd\u53d1\u751f\u5728\u5176\u4ed6\u5e74\u4efd\u3002",
+          "trough_window_en": "historically bottoms ~Aug\u2013Oct 2026",
+          "trough_window_zh": "\u5386\u53f2\u4e0a\u7ea6\u5728 2026 \u5e74 8\u201310 \u6708\u89c1\u5e95",
+          "year": 2026,
+          "year_in_term": 2
+        },
+        "deescalation": {
+          "deescalated": [
+            {
+              "from": 53.3,
+              "key": "bubble",
+              "label_en": "Bubble / blow-off unwind",
+              "label_zh": "\u6ce1\u6cab/\u89c1\u9876\u56de\u5410",
+              "to": 23.9
+            },
+            {
+              "from": 92.3,
+              "key": "rates",
+              "label_en": "Rates / inflation shock",
+              "label_zh": "\u5229\u7387/\u901a\u80c0\u51b2\u51fb",
+              "to": 69.7
+            },
+            {
+              "from": 86.8,
+              "key": "global",
+              "label_en": "Global breadth breakdown",
+              "label_zh": "\u5168\u7403\u5e7f\u5ea6\u7834\u4f4d",
+              "to": 76.5
+            }
+          ],
+          "dominant_velocity": 37.8,
+          "drawdown_prob_h21": 0.22,
+          "drawdown_prob_trend": "rising",
+          "eligible": false,
+          "reason": "dominant scare = growth; h21 drawdown_prob RISING; growth sub-score still climbing",
+          "receding_scare": "bubble"
+        },
+        "disclaimer": "Evidence-gated leading-risk radar (research/RISK_ENGINE_V2_FINDINGS.md). At this state the measured 21-day pullback rate is 16.0% against a 17.8% unconditional base rate \u2014 a lift of 0.9x, i.e. BELOW base. This tier is an early watch flag, not an edge, and never a forecast. LOUD+EARLY by design \u2014 every alert prints its measured lift/lead, a forward-outcome log grades every call, and the Opus review loop retunes from its mistakes. De-risk = sizing, not selection; the validated regime quad is untouched.",
+        "display_only_legs": [
+          {
+            "confirmed": false,
+            "firing": false,
+            "leg": "ai_breadth_divergence",
+            "lift_2020": null,
+            "pctile": 0.0,
+            "reason_en": "Display-only until gauntlet-promoted \u2014 it cannot set a risk tier or move the sub-score.",
+            "reason_zh": "\u901a\u8fc7\u9a8c\u8bc1\u524d\u4ec5\u4f5c\u5c55\u793a\u2014\u2014\u4e0d\u53c2\u4e0e\u98ce\u9669\u7b49\u7ea7\u4e0e\u5206\u6570\u8ba1\u7b97\u3002",
+            "scare": "internals"
+          },
+          {
+            "confirmed": false,
+            "firing": false,
+            "leg": "corr_floor_break",
+            "lift_2020": null,
+            "pctile": 0.0,
+            "reason_en": "Display-only until gauntlet-promoted \u2014 it cannot set a risk tier or move the sub-score.",
+            "reason_zh": "\u901a\u8fc7\u9a8c\u8bc1\u524d\u4ec5\u4f5c\u5c55\u793a\u2014\u2014\u4e0d\u53c2\u4e0e\u98ce\u9669\u7b49\u7ea7\u4e0e\u5206\u6570\u8ba1\u7b97\u3002",
+            "scare": "vol"
+          }
+        ],
+        "dominant_label_en": "Growth scare / defensive rotation",
+        "dominant_label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8",
+        "dominant_scare": "growth",
+        "drawdown_prob": {
+          "h10": null,
+          "h21": null,
+          "h5": null
+        },
+        "drawdown_prob_evidence": {
+          "precision_grade": false,
+          "reason": "withheld_fixture"
+        },
+        "favor_entries": true,
+        "flow_status": {
+          "gex_missing_sessions": [
+            "2026-07-02",
+            "2026-07-06",
+            "2026-07-10",
+            "2026-07-14",
+            "2026-07-15",
+            "2026-07-16",
+            "2026-07-27",
+            "2026-07-30",
+            "2026-08-03",
+            "2026-08-04",
+            "2026-08-05",
+            "2026-08-11",
+            "2026-08-14",
+            "2026-09-01",
+            "2026-09-02",
+            "2026-09-24",
+            "2026-10-12",
+            "2026-10-13"
+          ],
+          "gex_rows": 83,
+          "mature": false,
+          "min_history": 252,
+          "note": "options-flow vol legs (put/call, GEX) accrue forward \u2014 deep history is unavailable freely; they activate + self-validate via the Opus loop when mature; 19 put/call and 18 GEX session(s) were never captured and cannot be backfilled (live-snapshot source)",
+          "putcall_missing_sessions": [
+            "2026-07-02",
+            "2026-07-06",
+            "2026-07-10",
+            "2026-07-14",
+            "2026-07-15",
+            "2026-07-16",
+            "2026-07-27",
+            "2026-07-30",
+            "2026-08-03",
+            "2026-08-04",
+            "2026-08-05",
+            "2026-08-11",
+            "2026-08-14",
+            "2026-08-20",
+            "2026-09-01",
+            "2026-09-02",
+            "2026-09-24",
+            "2026-10-12",
+            "2026-10-13"
+          ],
+          "putcall_rows": 82
+        },
+        "forward_log": {
+          "alert_precision": null,
+          "asof_range": [
+            "2026-06-23",
+            "2026-09-17"
+          ],
+          "by_state": {
+            "calm": {
+              "hit_rate": 0.0,
+              "n": 8
+            },
+            "caution": {
+              "hit_rate": 0.0,
+              "n": 28
+            },
+            "watch": {
+              "hit_rate": 0.0,
+              "n": 15
+            }
+          },
+          "context_gate_counterfactual": {
+            "alert_precision_ungated": null,
+            "n_alerts_ungated": 0,
+            "n_clamped_by_gate": 0,
+            "n_false_pos_ungated": 0,
+            "n_rows_with_ungated": 28,
+            "n_true_pos_ungated": 0,
+            "note": "Counterfactual: the state BEFORE the context gate clamped it, graded on the same realized SPY paths. Rows logged before state_ungated was recorded are excluded, so an empty block means 'not yet measurable', not 'no false alarms'."
+          },
+          "n_alerts": 0,
+          "n_false_pos": 0,
+          "n_graded": 51,
+          "n_true_pos": 0,
+          "recall_dd5_h21": null,
+          "recent_mistakes": []
+        },
+        "gate_clamped": true,
+        "gross_factor": 0.873,
+        "headline_en": "CAUTION: Growth scare / defensive rotation (83/100) + Credit stress \u00d7 Growth scare / defensive rotation. Leading: growth_cyc_def(84%), growth_defensives(81%). 21-session pullback odds 22% vs 18% normal (1.2x). Early flag, not a measured edge; avoid chasing without fighting the tape.",
+        "headline_zh": "CAUTION\uff1a\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8\uff0883/100\uff09\u3002 21 \u65e5\u56de\u64a4\u6982\u7387 22%\uff0c\u5e38\u6001 18%\uff081.2 \u500d\uff09\u3002 \u5c5e\u65e9\u671f\u63d0\u793a\u800c\u975e\u5b9e\u6d4b\u4f18\u52bf\uff1b\u907f\u514d\u8ffd\u9ad8\uff0c\u4f46\u4e0d\u9006\u52bf\u3002",
+        "is_context_only": false,
+        "loud_early": true,
+        "reader_contract": "Trim chasing; favor good entries over extended leaders; honor stops.",
+        "recovery_log": {
+          "asof_range": [
+            "2026-07-10",
+            "2026-07-20"
+          ],
+          "base_rates": {
+            "base_mean_fwd_ret_h21": 0.0277,
+            "base_mean_fwd_ret_h63": 0.0343,
+            "base_n_h21": 3,
+            "base_n_h63": 3
+          },
+          "n_eligible_phase": 3,
+          "n_graded": 6,
+          "note": "Rebound ruler (RRX-R2): h21 primary, h63 secondary vs peaking/receding base rate. No significance claim below n>=30 per arm. First permutation read: 2027-01-15.",
+          "per_chip": {
+            "cot_es_washout": {
+              "mean_fwd_ret_h21_with": null,
+              "mean_fwd_ret_h21_without": 0.0277,
+              "mean_fwd_ret_h63_with": null,
+              "mean_fwd_ret_h63_without": 0.0343,
+              "n_with": 0,
+              "n_without": 3,
+              "significance_note": "n_with=0, n_without=3. INSUFFICIENT (<30 per arm): descriptive only."
+            },
+            "fast_reclaim": {
+              "mean_fwd_ret_h21_with": 0.0296,
+              "mean_fwd_ret_h21_without": 0.0239,
+              "mean_fwd_ret_h63_with": 0.0376,
+              "mean_fwd_ret_h63_without": 0.0277,
+              "n_with": 2,
+              "n_without": 1,
+              "significance_note": "n_with=2, n_without=1. INSUFFICIENT (<30 per arm): descriptive only."
+            },
+            "ftd": {
+              "mean_fwd_ret_h21_with": null,
+              "mean_fwd_ret_h21_without": 0.0277,
+              "mean_fwd_ret_h63_with": null,
+              "mean_fwd_ret_h63_without": 0.0343,
+              "n_with": 0,
+              "n_without": 3,
+              "significance_note": "n_with=0, n_without=3. INSUFFICIENT (<30 per arm): descriptive only."
+            },
+            "msi_swing": {
+              "mean_fwd_ret_h21_with": null,
+              "mean_fwd_ret_h21_without": 0.0277,
+              "mean_fwd_ret_h63_with": null,
+              "mean_fwd_ret_h63_without": 0.0343,
+              "n_with": 0,
+              "n_without": 3,
+              "significance_note": "n_with=0, n_without=3. INSUFFICIENT (<30 per arm): descriptive only."
+            },
+            "naaim_regrossing": {
+              "mean_fwd_ret_h21_with": null,
+              "mean_fwd_ret_h21_without": 0.0277,
+              "mean_fwd_ret_h63_with": null,
+              "mean_fwd_ret_h63_without": 0.0343,
+              "n_with": 0,
+              "n_without": 3,
+              "significance_note": "n_with=0, n_without=3. INSUFFICIENT (<30 per arm): descriptive only."
+            },
+            "news_tone_recovering": {
+              "mean_fwd_ret_h21_with": null,
+              "mean_fwd_ret_h21_without": 0.0277,
+              "mean_fwd_ret_h63_with": null,
+              "mean_fwd_ret_h63_without": 0.0343,
+              "n_with": 0,
+              "n_without": 3,
+              "significance_note": "n_with=0, n_without=3. INSUFFICIENT (<30 per arm): descriptive only."
+            },
+            "oas_rollover": {
+              "mean_fwd_ret_h21_with": null,
+              "mean_fwd_ret_h21_without": 0.0277,
+              "mean_fwd_ret_h63_with": null,
+              "mean_fwd_ret_h63_without": 0.0343,
+              "n_with": 0,
+              "n_without": 3,
+              "significance_note": "n_with=0, n_without=3. INSUFFICIENT (<30 per arm): descriptive only."
+            },
+            "retest_divergence": {
+              "mean_fwd_ret_h21_with": null,
+              "mean_fwd_ret_h21_without": 0.0277,
+              "mean_fwd_ret_h63_with": null,
+              "mean_fwd_ret_h63_without": 0.0343,
+              "n_with": 0,
+              "n_without": 3,
+              "significance_note": "n_with=0, n_without=3. INSUFFICIENT (<30 per arm): descriptive only."
+            },
+            "thrust_confluence": {
+              "mean_fwd_ret_h21_with": null,
+              "mean_fwd_ret_h21_without": 0.0277,
+              "mean_fwd_ret_h63_with": null,
+              "mean_fwd_ret_h63_without": 0.0343,
+              "n_with": 0,
+              "n_without": 3,
+              "significance_note": "n_with=0, n_without=3. INSUFFICIENT (<30 per arm): descriptive only."
+            },
+            "vix_term_resolution": {
+              "mean_fwd_ret_h21_with": null,
+              "mean_fwd_ret_h21_without": 0.0277,
+              "mean_fwd_ret_h63_with": null,
+              "mean_fwd_ret_h63_without": 0.0343,
+              "n_with": 0,
+              "n_without": 3,
+              "significance_note": "n_with=0, n_without=3. INSUFFICIENT (<30 per arm): descriptive only."
+            },
+            "washout_thrust20": {
+              "mean_fwd_ret_h21_with": null,
+              "mean_fwd_ret_h21_without": 0.0277,
+              "mean_fwd_ret_h63_with": null,
+              "mean_fwd_ret_h63_without": 0.0343,
+              "n_with": 0,
+              "n_without": 3,
+              "significance_note": "n_with=0, n_without=3. INSUFFICIENT (<30 per arm): descriptive only."
+            }
+          }
+        },
+        "scares": [
+          {
+            "band": "risk-off",
+            "display_band": "risk-off",
+            "display_score": 89.7,
+            "firing_legs": [
+              {
+                "accruing": false,
+                "confirmed": true,
+                "era_robust": true,
+                "lead_d": 10,
+                "leg": "credit_oas_roc",
+                "lift_2020": 1.23,
+                "pctile": 0.928
+              },
+              {
+                "accruing": false,
+                "confirmed": false,
+                "era_robust": false,
+                "lead_d": 8,
+                "leg": "credit_hyg_tlt",
+                "lift_2020": 0.5,
+                "pctile": 0.726
+              }
+            ],
+            "label_en": "Credit stress",
+            "label_zh": "\u4fe1\u7528\u538b\u529b",
+            "lead_weighted": 110.4,
+            "n_legs_registered": 2,
+            "n_legs_resolved": 2,
+            "partial_composition": false,
+            "reading_state": "AVAILABLE",
+            "scare": "credit",
+            "score": 89.7,
+            "tier": "A",
+            "weight_coverage": 1.0
+          },
+          {
+            "band": "elevated",
+            "display_band": "elevated",
+            "display_score": 82.7,
+            "firing_legs": [
+              {
+                "accruing": false,
+                "confirmed": false,
+                "era_robust": false,
+                "lead_d": 12,
+                "leg": "growth_cyc_def",
+                "lift_2020": 1.63,
+                "pctile": 0.841
+              },
+              {
+                "accruing": false,
+                "confirmed": false,
+                "era_robust": false,
+                "lead_d": 12,
+                "leg": "growth_defensives",
+                "lift_2020": 1.62,
+                "pctile": 0.813
+              }
+            ],
+            "label_en": "Growth scare / defensive rotation",
+            "label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8",
+            "lead_weighted": 134.9,
+            "n_legs_registered": 2,
+            "n_legs_resolved": 2,
+            "partial_composition": false,
+            "reading_state": "AVAILABLE",
+            "scare": "growth",
+            "score": 82.7,
+            "tier": "A",
+            "weight_coverage": 1.0
+          },
+          {
+            "band": "caution",
+            "display_band": "caution",
+            "display_score": 76.5,
+            "firing_legs": [
+              {
+                "accruing": true,
+                "confirmed": true,
+                "era_robust": false,
+                "lead_d": 21,
+                "leg": "global_breadth",
+                "lift_2020": null,
+                "pctile": 0.911,
+                "validation_ref": "C3 global-breadth barometer \u2014 reports/intl-global-breadth-phase0.md (CONFIRMED #938: DSR 0.9326, orthogonality 62% vs SPY/HY/curve, cap 0.20 de-risk-only). Tier-B: display/escalator-only, forward-graded before trusted."
+              }
+            ],
+            "label_en": "Global breadth breakdown",
+            "label_zh": "\u5168\u7403\u5e7f\u5ea6\u7834\u4f4d",
+            "lead_weighted": 76.5,
+            "n_legs_registered": 2,
+            "n_legs_resolved": 2,
+            "partial_composition": false,
+            "reading_state": "AVAILABLE",
+            "scare": "global",
+            "score": 76.5,
+            "tier": "B",
+            "weight_coverage": 1.0
+          },
+          {
+            "band": "caution",
+            "display_band": "caution",
+            "display_score": 69.7,
+            "firing_legs": [
+              {
+                "accruing": false,
+                "confirmed": false,
+                "era_robust": false,
+                "lead_d": 15,
+                "leg": "rates_move",
+                "lift_2020": 1.52,
+                "pctile": 0.833
+              }
+            ],
+            "label_en": "Rates / inflation shock",
+            "label_zh": "\u5229\u7387/\u901a\u80c0\u51b2\u51fb",
+            "lead_weighted": 105.9,
+            "n_legs_registered": 2,
+            "n_legs_resolved": 2,
+            "partial_composition": false,
+            "reading_state": "AVAILABLE",
+            "scare": "rates",
+            "score": 69.7,
+            "tier": "A",
+            "weight_coverage": 1.0
+          },
+          {
+            "band": "calm",
+            "display_band": "calm",
+            "display_score": 28.8,
+            "firing_legs": [
+              {
+                "accruing": false,
+                "confirmed": false,
+                "era_robust": false,
+                "lead_d": 8,
+                "leg": "vol_term",
+                "lift_2020": 0.44,
+                "pctile": 0.865
+              }
+            ],
+            "label_en": "Volatility event",
+            "label_zh": "\u6ce2\u52a8\u7387\u4e8b\u4ef6",
+            "lead_weighted": 12.7,
+            "n_legs_registered": 3,
+            "n_legs_resolved": 1,
+            "partial_composition": true,
+            "reading_state": "PARTIAL",
+            "scare": "vol",
+            "score": 28.8,
+            "tier": "B",
+            "weight_coverage": 0.5
+          },
+          {
+            "band": "calm",
+            "display_band": "calm",
+            "display_score": 23.9,
+            "firing_legs": [],
+            "label_en": "Trend extension watch",
+            "label_zh": "\u8d8b\u52bf\u5ef6\u4f38\u89c2\u5bdf",
+            "lead_weighted": 23.9,
+            "n_legs_registered": 2,
+            "n_legs_resolved": 2,
+            "partial_composition": false,
+            "reading_state": "AVAILABLE",
+            "scare": "bubble",
+            "score": 23.9,
+            "tier": "A",
+            "weight_coverage": 1.0
+          },
+          {
+            "band": "calm",
+            "display_band": null,
+            "display_score": null,
+            "firing_legs": [],
+            "label_en": "Breadth internals deterioration",
+            "label_zh": "\u5185\u90e8\u5e7f\u5ea6\u6076\u5316",
+            "lead_weighted": 0.0,
+            "n_legs_registered": 1,
+            "n_legs_resolved": 0,
+            "partial_composition": true,
+            "reading_state": "UNAVAILABLE",
+            "scare": "internals",
+            "score": 0.0,
+            "tier": "B",
+            "weight_coverage": 0.0
+          }
+        ],
+        "schema": "risk_radar.v2",
+        "state": "caution",
+        "state_lift": {
+          "above_base": false,
+          "base_h21_pct": 17.8,
+          "h10": 0.93,
+          "h21": 0.9,
+          "h21_pct": 16.0,
+          "h5": 0.83
+        },
+        "state_ungated": "risk-off",
+        "top_score": 82.7,
+        "trajectory": {
+          "drivers": {
+            "faded": [
+              {
+                "key": "bubble",
+                "label_en": "Bubble / blow-off unwind",
+                "label_zh": "\u6ce1\u6cab/\u89c1\u9876\u56de\u5410",
+                "now": 23.9,
+                "peak": 53.3
+              },
+              {
+                "key": "rates",
+                "label_en": "Rates / inflation shock",
+                "label_zh": "\u5229\u7387/\u901a\u80c0\u51b2\u51fb",
+                "now": 69.7,
+                "peak": 92.3
+              },
+              {
+                "key": "global",
+                "label_en": "Global breadth breakdown",
+                "label_zh": "\u5168\u7403\u5e7f\u5ea6\u7834\u4f4d",
+                "now": 76.5,
+                "peak": 86.8
+              }
+            ],
+            "warm": [
+              {
+                "key": "credit",
+                "label_en": "Credit stress",
+                "label_zh": "\u4fe1\u7528\u538b\u529b",
+                "now": 89.7,
+                "peak": 89.7
+              },
+              {
+                "key": "rates",
+                "label_en": "Rates / inflation shock",
+                "label_zh": "\u5229\u7387/\u901a\u80c0\u51b2\u51fb",
+                "now": 69.7,
+                "peak": 92.3
+              }
+            ]
+          },
+          "intensity": 89.7,
+          "odds_delta": 0.03,
+          "odds_now": 0.22,
+          "odds_peak": 0.22,
+          "off_peak": 2.5,
+          "peak": 92.3,
+          "peak_days_ago": 12,
+          "phase": "rising",
+          "reached_risk": true,
+          "spark": [
+            68.5,
+            57.4,
+            55.6,
+            54.1,
+            55.3,
+            60.4,
+            75.9,
+            90.5,
+            79.9,
+            87.4,
+            91.7,
+            92.3,
+            84.8,
+            88.1,
+            88.7,
+            79.5,
+            80.8,
+            84.4,
+            83.5,
+            84.2,
+            85.7,
+            87.9,
+            88.2,
+            89.7
+          ],
+          "spark_h": 26,
+          "spark_last": {
+            "x": 93.0,
+            "y": 4.4
+          },
+          "spark_peak": {
+            "x": 46.0,
+            "y": 3.0
+          },
+          "spark_pts": "3.0,15.5 6.9,21.3 10.8,22.2 14.7,23.0 18.7,22.4 22.6,19.7 26.5,11.6 30.4,3.9 34.3,9.5 38.2,5.6 42.1,3.3 46.0,3.0 50.0,6.9 53.9,5.2 57.8,4.9 61.7,9.7 65.6,9.0 69.5,7.1 73.4,7.6 77.3,7.2 81.3,6.5 85.2,5.3 89.1,5.1 93.0,4.4",
+          "spark_w": 96,
+          "state_now": "caution",
+          "velocity": 6.3,
+          "window": 30
+        }
+      },
+      "legacy_plane": {
+        "confidence": 0.8270000000000001,
+        "direction": "risk_off",
+        "freshness": {
+          "age_sessions": 0,
+          "asof": "2026-10-16",
+          "future_dated": false,
+          "stale": false,
+          "stale_after_sessions": 5
+        },
+        "magnitude": null,
+        "raw": {
+          "alert": false,
+          "artifact_present": true,
+          "cap_leadership": false,
+          "dominant_scare": "growth",
+          "drawdown_prob_h21": null,
+          "favor_entries": true,
+          "present": true,
+          "signal_active": true,
+          "state": "caution",
+          "top_score": 82.7
+        },
+        "reading": "CAUTION: Growth scare / defensive rotation (83/100) + Credit stress \u00d7 Growth scare / defensive rotation. Leading: growth_cyc_def(84%), growth_defensives(81%). 21-session pullback odds 22% vs 18% normal (1.2x). Early flag, not a measured edge; avoid chasing without fighting the tape.",
+        "source_contract": "regime.risk_radar (forward_log.jsonl)",
+        "status": "validated"
+      },
+      "tilt": {
+        "contributors": [
+          "risk_radar"
+        ],
+        "direction": "risk_off",
+        "n_validated": 1,
+        "tilt": -1.0
+      }
+    },
+    "2_intensity_only": {
+      "30": {
+        "confidence": 0.3,
+        "direction": "risk_off",
+        "magnitude": null,
+        "tilt": {
+          "contributors": [
+            "risk_radar"
+          ],
+          "direction": "risk_off",
+          "n_validated": 1,
+          "tilt": -1.0
+        }
+      },
+      "90": {
+        "confidence": 0.9,
+        "direction": "risk_off",
+        "magnitude": null,
+        "tilt": {
+          "contributors": [
+            "risk_radar"
+          ],
+          "direction": "risk_off",
+          "n_validated": 1,
+          "tilt": -1.0
+        }
+      }
+    },
+    "3_vocabulary": {
+      "BLOCK_ABSENT": {
+        "gate_projection": {},
+        "held_lane": {
+          "asof": "2026-10-16",
+          "flags": [],
+          "reasons": [],
+          "state": "ok"
+        },
+        "legacy_direction": null,
+        "legacy_status": "advisory"
+      },
+      "None": {
+        "gate_projection": {},
+        "held_lane": {
+          "asof": "2026-10-16",
+          "flags": [],
+          "reasons": [],
+          "state": "ok"
+        },
+        "legacy_direction": null,
+        "legacy_status": "validated"
+      },
+      "calm": {
+        "gate_projection": {
+          "source": "risk_radar",
+          "state": "calm"
+        },
+        "held_lane": {
+          "asof": "2026-10-16",
+          "flags": [],
+          "reasons": [],
+          "state": "ok"
+        },
+        "legacy_direction": "risk_on",
+        "legacy_status": "validated"
+      },
+      "caution": {
+        "gate_projection": {
+          "source": "risk_radar",
+          "state": "caution"
+        },
+        "held_lane": {
+          "asof": "2026-10-16",
+          "flags": [
+            "radar_caution"
+          ],
+          "reasons": [
+            "risk radar: caution (dominant: growth)"
+          ],
+          "state": "elevated"
+        },
+        "legacy_direction": "risk_off",
+        "legacy_status": "validated"
+      },
+      "elevated": {
+        "gate_projection": {
+          "source": "risk_radar",
+          "state": "elevated"
+        },
+        "held_lane": {
+          "asof": "2026-10-16",
+          "flags": [],
+          "reasons": [],
+          "state": "ok"
+        },
+        "legacy_direction": "neutral",
+        "legacy_status": "validated"
+      },
+      "risk-off": {
+        "gate_projection": {
+          "source": "risk_radar",
+          "state": "risk-off"
+        },
+        "held_lane": {
+          "asof": "2026-10-16",
+          "flags": [
+            "radar_risk-off"
+          ],
+          "reasons": [
+            "risk radar: risk-off (dominant: growth)"
+          ],
+          "state": "elevated"
+        },
+        "legacy_direction": "risk_off",
+        "legacy_status": "validated"
+      },
+      "unknown": {
+        "gate_projection": {
+          "source": "risk_radar",
+          "state": "unknown"
+        },
+        "held_lane": {
+          "asof": "2026-10-16",
+          "flags": [],
+          "reasons": [],
+          "state": "ok"
+        },
+        "legacy_direction": "neutral",
+        "legacy_status": "validated"
+      },
+      "watch": {
+        "gate_projection": {
+          "source": "risk_radar",
+          "state": "watch"
+        },
+        "held_lane": {
+          "asof": "2026-10-16",
+          "flags": [],
+          "reasons": [],
+          "state": "ok"
+        },
+        "legacy_direction": "neutral",
+        "legacy_status": "validated"
+      }
+    },
+    "4_new_wrapper_old_source": {
+      "inner_session": "2026-10-16",
+      "qualified_value": null,
+      "status": {
+        "context_exclusions": {},
+        "observed_at": "2026-10-17T04:01:23Z",
+        "produced_at": "2026-10-17T04:01:23Z",
+        "qualified": false,
+        "reasons": [
+          "source_session_mismatch"
+        ],
+        "source_session": "2026-10-16",
+        "stale_after": null
+      },
+      "wrapper_asof": "2026-10-17"
+    },
+    "5_measured_with_unavailable_hazard": {
+      "authority": {
+        "envelope_may_execute": false,
+        "envelope_may_gate": false,
+        "envelope_may_rank": false,
+        "envelope_may_size": false,
+        "policy_actions_require_individual_authority": true
+      },
+      "coverage": {
+        "fresh": [
+          "market-state-latest",
+          "risk-radar-us"
+        ],
+        "missing": [],
+        "optional": [
+          "risk-radar-us",
+          "site-marketdata-rotation-events"
+        ],
+        "required": [
+          "market-state-latest",
+          "leadership-crack-latest"
+        ],
+        "source_count": 4,
+        "stale": [
+          "leadership-crack-latest",
+          "site-marketdata-rotation-events"
+        ]
+      },
+      "hazard_summary": {
+        "active_episode_count": 0,
+        "capped_sources": [],
+        "contributing_sources": [
+          "risk-radar-us"
+        ],
+        "display_only": true,
+        "primary_episode_id": null,
+        "stage": null,
+        "stage_reason": "required_coverage_unavailable",
+        "stage_since": null,
+        "stage_since_basis": "no_episode_lifecycle_in_v0",
+        "unmapped_required_sources": [],
+        "unreadable_sources": [
+          "leadership-crack-latest"
+        ]
+      },
+      "measured_state": {
+        "as_of": "2026-10-16",
+        "role": "slow_confirmed_trend",
+        "score": 40,
+        "source_artifact": "market-state-latest",
+        "usable": true,
+        "verdict": "RISK_OFF"
+      },
+      "qualification": {
+        "context_exclusions": {},
+        "observed_at": "2026-10-17T04:01:23Z",
+        "produced_at": "2026-10-17T04:01:23Z",
+        "qualified": true,
+        "reasons": [],
+        "source_session": "2026-10-16",
+        "stale_after": null
+      }
+    },
+    "6_recent_file_old_tail": {
+      "date_definition_maturity_returned": false,
+      "fixture": {
+        "asof": "2000-01-03",
+        "definition_id": "obsolete_fixture",
+        "mature": false,
+        "state": "caution"
+      },
+      "fixture_file_mtime": "2026-10-17T07:40:14.241875+00:00",
+      "gate_projection": {
+        "source": "risk_radar",
+        "state": "caution"
+      },
+      "native_return": "caution"
+    },
+    "7_duplicate_descriptive_path": {
+      "independence_inference": false,
+      "native_nw_direction": null,
+      "native_nw_status": "advisory",
+      "risk_context_preserved": true,
+      "with_nw": {
+        "contributors": [
+          "risk_radar"
+        ],
+        "direction": "risk_off",
+        "n_validated": 1,
+        "tilt": -1.0
+      },
+      "without_nw": {
+        "contributors": [
+          "risk_radar"
+        ],
+        "direction": "risk_off",
+        "n_validated": 1,
+        "tilt": -1.0
+      }
+    },
+    "8_no_effect_boundary": {
+      "full_consumer_cutover_acceptance": false,
+      "live_book_policy_prompt_ledger_parity": "NOT_TESTED; no live assembler, policy, sizing, rank, execution or persistence path was called",
+      "observed": {
+        "captured_inputs": true,
+        "live_first_party_modules_loaded": [],
+        "macro_checkout_status": true,
+        "source_snapshot_hashes": true
+      }
+    },
+    "9_future_date_guard": {
+      "fixture_asof": "2099-01-01",
+      "legacy_plane": {
+        "confidence": 0.8270000000000001,
+        "direction": "risk_off",
+        "freshness": {
+          "age_sessions": 0,
+          "asof": "2099-01-01",
+          "future_dated": false,
+          "stale": false,
+          "stale_after_sessions": 5
+        },
+        "magnitude": null,
+        "raw": {
+          "alert": false,
+          "artifact_present": true,
+          "cap_leadership": false,
+          "dominant_scare": "growth",
+          "drawdown_prob_h21": null,
+          "favor_entries": true,
+          "present": true,
+          "signal_active": true,
+          "state": "caution",
+          "top_score": 82.7
+        },
+        "reading": "CAUTION: Growth scare / defensive rotation (83/100) + Credit stress \u00d7 Growth scare / defensive rotation. Leading: growth_cyc_def(84%), growth_defensives(81%). 21-session pullback odds 22% vs 18% normal (1.2x). Early flag, not a measured edge; avoid chasing without fighting the tape.",
+        "source_contract": "regime.risk_radar (forward_log.jsonl)",
+        "status": "validated"
+      },
+      "tilt": {
+        "contributors": [
+          "risk_radar"
+        ],
+        "direction": "risk_off",
+        "n_validated": 1,
+        "tilt": -1.0
+      }
+    }
+  },
+  "executed_at": "2026-10-17T07:40:15.934656+00:00",
+  "fits": 0,
+  "macro_commit": "ab5156a4b2c336181f3c5256e7c0766f04f99598",
+  "macro_sources": {
+    "data/regime/latest.json": {
+      "blob": "16be456f3583065b94e66efa0917fa41ab8f2be1",
+      "sha256": "e21a679081f6843f5582a4274e1cb4f8b8821f2e6d5c4a0cc05a36bb3b210c4f"
+    },
+    "data/risk_envelope/latest.json": {
+      "blob": "cd250611cd5392f12503e74372abb21436441fe8",
+      "sha256": "5a55a8d2a0d595525a01f7211270077652c4f8fe5d1699977d6f5ac0255b1c3e"
+    }
+  },
+  "mission_complete": false,
+  "production_writes": 0,
+  "real_captured_result": {
+    "envelope_status": {
+      "context_exclusions": {},
+      "observed_at": "2026-10-17T04:01:23Z",
+      "produced_at": "2026-10-17T04:01:23Z",
+      "qualified": true,
+      "reasons": [],
+      "source_session": "2026-10-16",
+      "stale_after": null
+    },
+    "gate_projection": {
+      "source": "risk_radar",
+      "state": "caution"
+    },
+    "held_lane": {
+      "asof": "2026-10-16",
+      "flags": [
+        "radar_caution"
+      ],
+      "reasons": [
+        "risk radar: caution (dominant: growth)"
+      ],
+      "state": "elevated"
+    },
+    "legacy_plane": {
+      "confidence": 0.8270000000000001,
+      "direction": "risk_off",
+      "freshness": {
+        "age_sessions": 0,
+        "asof": "2026-10-16",
+        "future_dated": false,
+        "stale": false,
+        "stale_after_sessions": 5
+      },
+      "magnitude": 0.22,
+      "raw": {
+        "alert": false,
+        "artifact_present": true,
+        "cap_leadership": false,
+        "dominant_scare": "growth",
+        "drawdown_prob_h21": 0.22,
+        "favor_entries": true,
+        "present": true,
+        "signal_active": true,
+        "state": "caution",
+        "top_score": 82.7
+      },
+      "reading": "CAUTION: Growth scare / defensive rotation (83/100) + Credit stress \u00d7 Growth scare / defensive rotation. Leading: growth_cyc_def(84%), growth_defensives(81%). 21-session pullback odds 22% vs 18% normal (1.2x). Early flag, not a measured edge; avoid chasing without fighting the tape.",
+      "source_contract": "regime.risk_radar (forward_log.jsonl)",
+      "status": "validated"
+    }
+  },
+  "runner_sha256": "c18ff6b7b5807f3b4c32b35474d1e52c377ecbc794fe8ceced0932935181d9b2",
+  "schema": "risk-radar-isolated-consumer-reproduction/v1",
+  "scope": "Exact selected source functions; dependency-injected fixtures and source-only isolation, not full application/runtime delivery.",
+  "source_commit": "a552a5e506ae808efa575c2e13cb56f478c72b87",
+  "source_sha256": {
+    "brain__market_view.py": "0dbf3c0dfd6beb0dec09cf7566967e4c0729a75d108bf3041145c76da2789e2b",
+    "brain__neural_web_context.py": "2a4075b5a4bb54c0f2a964f44abcbbd7acdbdbc264b9076bd7f5ad17fd64f30f",
+    "brain__regime_frame.py": "d3105e21265da63574a2076300b3bdaeda56383d2ca5679e081976ac57832abc",
+    "portfolio__context_gate.py": "bac914207c9d5d61bf1558a8fc5b40d5f1319bca3a2b29183040f7bc60a28033",
+    "portfolio__held_risk.py": "28aec4f1e9a6c57d1b7aecdb511967303eebfaefc6a4ba22d3a0d3381fb54856"
+  },
+  "trial_registrations": 0
+}

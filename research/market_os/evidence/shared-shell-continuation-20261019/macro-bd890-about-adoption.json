@@ -1,0 +1,89 @@
+{
+  "started_at": "2026-10-20T23:33:31.202961+00:00",
+  "state": "CANONICAL_ABOUT_ADOPTED_VISUAL_GATE_PASS",
+  "source_head": "bd89047e4e403a93183c6a4763274e09acfdd044",
+  "source_tree": "b550a88360e5ffe3d5be7938d0318c72717c5342",
+  "capture_receipt_sha256": "e3b0eb5dc8511d8874cdc4513641c90ef841be5f4afdbe44106032ef3e7eb526",
+  "source_files": {
+    "scripts/run_press.py": "c435e0d33b7672a9f5b792ace3d05c2bc3eaa8a5d6dc134cd6879be1f1c03968",
+    "tests/test_press_run.py": "5fdf6e0bedb6add7bf31309b79ead1c1504004fd46a18f58d55dd4e5cab7ddee"
+  },
+  "adopted_files": [
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/evidence/3b07c866a506bf15.png",
+      "bytes": 372587,
+      "sha256": "3b07c866a506bf151864e5c1d8cf8fb9e397d4a91326f926afcb1911ea37ad34"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/evidence/411991b97356b809.png",
+      "bytes": 396807,
+      "sha256": "411991b97356b809e76f3f1fbfe0a9106f5036eab65da1e1018490b2047987f2"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/evidence/6a5762d2b2113a08.png",
+      "bytes": 345486,
+      "sha256": "6a5762d2b2113a0896ca8acad35d642a63cee3425dd0c4fc80b41e33551d4987"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/evidence/e292bb7f7ad72299.png",
+      "bytes": 322586,
+      "sha256": "e292bb7f7ad72299ae3ee893ac586e35d9d6b5ae616766fcad449f21ac11e38f"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/manifest.json",
+      "bytes": 9829,
+      "sha256": "9f4cb1874bb2246792a7017631d711f39ee7cf4b4d8207e40fb636a67c82ec0c"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/ux_smell_report.json",
+      "bytes": 3821,
+      "sha256": "bf8bef2c86bf090c4414eb4ed8b94d5ee84da030b18c8c98245caeb669413dc1"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/EVIDENCE.yml",
+      "bytes": 165,
+      "sha256": "8d39fd69129a1a67b1e85a6e36505d79b2c213c8535b01b6496dc0260d2bedaa"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/LIMITS.md",
+      "bytes": 1839,
+      "sha256": "b293b49f6fef50d461d5d8a10702b1000caf8bcf63aa9dacd748510bb045971a"
+    }
+  ],
+  "previous_receipt_sha256": "61d24f24c44b31277da06b3747134ca41959f62b7a3e3dc39847c74718a342bf",
+  "canonical_matrix": {
+    "states": 8,
+    "unique_pngs": 4,
+    "palette": "LIGHT_ONLY",
+    "auth": "anonymous",
+    "public": false
+  },
+  "visual_review": "Principal inspected all four distinct canonical PNGs; footer wraps and no visible clipping was found. This is bounded visual inspection, not independent geometry or auth qualification.",
+  "staged_tree": "35dd131db4019ff0330f98eae0a6f2b1d98dbd56",
+  "guard_sha256": "c1604698d38e6f6bb8079f468e11caa581d8efacc9ed53413c6c34a96f1dcf1a",
+  "diff": {
+    "base": "7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1",
+    "bytes": 6837271,
+    "sha256": "a0cdf161ce2beac4e7278915e2905969cf5042c5cda37b3a026cff612d0d9cce"
+  },
+  "command": [
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+    "-B",
+    "scripts/check_ui_visual_evidence.py",
+    "--diff-file",
+    "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ui-evidence-full-pr.diff",
+    "--repo-root",
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27"
+  ],
+  "gate_exit": 0,
+  "gate_log": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ui-evidence-gate.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "gate_finished_at": "2026-10-20T23:33:46.825621+00:00",
+  "source_inputs_unchanged": true,
+  "index_unchanged_during_gate": true,
+  "old_receipt_unchanged": true,
+  "finished_at": "2026-10-20T23:33:47.501814+00:00"
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "research.mechanism_decisions.v1",
+  "as_of": "2026-10-21",
+  "sample_status": "exposed survivor-selected historical exploration",
+  "production_authority": false,
+  "baseline_protocol_commit": "636fb729f9e0bf5dc81847da7a5195eca895c149",
+  "decisions": [
+    {
+      "family": "weekly_stoch_macd_pivot",
+      "status": "context_only",
+      "finding": "No demonstrated general incremental entry reliability from added lower-timeframe agreement.",
+      "next_question": "Does one context condition improve an existing executable policy on a common opportunity roster?"
+    },
+    {
+      "family": "late_macd_recovery",
+      "status": "bounded_research_lead",
+      "finding": "Positive recovery cohorts can fail near-pivot proximity; matched ordinary improvement remains uncertain.",
+      "next_question": "Confirmation versus entry cost under a frozen recovery mandate."
+    },
+    {
+      "family": "price_leader_reset_reclaim",
+      "status": "no_timing_promotion",
+      "finding": "Higher recent mean without higher win fraction; concentrated in semiconductors; no demonstrated matched-state timing advantage.",
+      "next_question": "Independent as-of selection information, not another price transform."
+    },
+    {
+      "family": "defensive_v11",
+      "status": "cohort_specific_prior_lead",
+      "finding": "Promising long-horizon context; distinct risk policies change executable reliability.",
+      "next_question": "Exact indicator species and a coherent ownership/risk mandate with preserved opportunity denominator."
+    },
+    {
+      "family": "sector_rsi_recovery",
+      "status": "post_hoc_candidate",
+      "finding": "Recent sector subgroup favorable; no fresh confirmation; correlated episodes.",
+      "next_question": "One frozen sector-allocation baseline, cash and concentration accounting, independent confirmation."
+    },
+    {
+      "family": "fundamental_information_revision",
+      "status": "untested_data_required",
+      "finding": "Price data cannot establish operating quality or the cause of a decline.",
+      "next_question": "Qualify release timestamps and archived expectations before event-plus-price testing."
+    },
+    {
+      "family": "symmetric_oscillator_exit",
+      "status": "no_general_exit_promotion",
+      "finding": "All17 recent top finalists had negative mean63-session zero-cash avoided return.",
+      "next_question": "Separate thesis, risk, expiry and profit-protection policies with re-entry accounting."
+    }
+  ]
+}

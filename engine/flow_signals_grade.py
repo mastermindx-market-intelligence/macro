@@ -294,6 +294,9 @@ def _grade_event(
     for h in [5, 21, 63, 126]:
         for suffix in ("fwd_ret", "fwd_mfe", "fwd_mdd", "spy_excess"):
             base[f"{suffix}_{h}"] = None
+        # This is a label-window endpoint, not an absolute-price endpoint.  It
+        # remains absent unless the existing SPY comparability gate accepts H.
+        base[f"outcome_end_session_{h}"] = None
     base["terminal_state_clean8_21"]  = None
     base["terminal_state_clean15_126"] = None
     base["prem_touch_50"] = None  # display-only; always null in FS-0
@@ -368,6 +371,9 @@ def _grade_event(
                 if spy_ret is None:
                     continue
                 base[f"spy_excess_{h}"] = ticker_ret - spy_ret
+                base[f"outcome_end_session_{h}"] = (
+                    pd.Timestamp(close.index[fill + h]).date().isoformat()
+                )
         except Exception:  # noqa: BLE001
             pass  # spy excess stays null; not fatal
 
@@ -517,6 +523,7 @@ def grade_matured(
                 **{f"{k}_{h}": None
                    for h in [5, 21, 63, 126]
                    for k in ["fwd_ret", "fwd_mfe", "fwd_mdd", "spy_excess"]},
+                **{f"outcome_end_session_{h}": None for h in [5, 21, 63, 126]},
                 "terminal_state_clean8_21": None,
                 "terminal_state_clean15_126": None,
                 "prem_touch_50": None,

@@ -1,0 +1,1 @@
+The Python 3.12 proof environment lacks Playwright. Capture did not execute. Local server stopped and retained its journal. Repeat browser capture uses the existing Python 3.14 browser runtime, with source and stage unchanged. This is a verifier environment failure, not failed product behavior.

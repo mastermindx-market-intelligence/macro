@@ -1,0 +1,314 @@
+{
+  "kind": "ISOLATED_NATIVE_SPR_RENDERED_ENTRY",
+  "observations": [
+    {
+      "fixture_state": "normal",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "dark",
+      "lang": "en",
+      "width": 1440,
+      "documentWidth": 1440,
+      "metrics": [
+        "-1.2 M",
+        "-126 M",
+        "144 d"
+      ],
+      "note": [
+        "Government-owned strategic crude \u00b7 authorized capacity 714 MMbbl"
+      ],
+      "trade": "US crude trade\n6.13 imp / 4.18 exp \u00b7 1.96 net Mb/d \u00b7 1y avg",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 UNITED STATES SPR \u00b7 EIA WEEKLY, AS OF OCT 23, 2026"
+    },
+    {
+      "fixture_state": "normal",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "documentWidth": 1440,
+      "metrics": [
+        "-1.2 M",
+        "-126 M",
+        "144 d"
+      ],
+      "note": [
+        "Government-owned strategic crude \u00b7 authorized capacity 714 MMbbl"
+      ],
+      "trade": "US crude trade\n6.13 imp / 4.18 exp \u00b7 1.96 net Mb/d \u00b7 1y avg",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 UNITED STATES SPR \u00b7 EIA WEEKLY, AS OF OCT 23, 2026"
+    },
+    {
+      "fixture_state": "normal",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "documentWidth": 1440,
+      "metrics": [
+        "-1.2 M",
+        "-126 M",
+        "144 \u5929"
+      ],
+      "note": [
+        "\u653f\u5e9c\u6301\u6709\u6218\u7565\u539f\u6cb9 \u00b7 \u6388\u6743\u5bb9\u91cf 714 \u767e\u4e07\u6876"
+      ],
+      "trade": "\u7f8e\u56fd\u539f\u6cb9\u8d38\u6613\n6.13 \u8fdb / 4.18 \u51fa \u00b7 1.96 \u51c0 \u767e\u4e07\u6876/\u65e5 \u00b7 1\u5e74\u5747",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u56fd\u6218\u7565\u77f3\u6cb9\u50a8\u5907 \u00b7 EIA \u6bcf\u5468\uff0c\u622a\u81f3 OCT 23, 2026"
+    },
+    {
+      "fixture_state": "normal",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "light",
+      "lang": "zh",
+      "width": 1440,
+      "documentWidth": 1440,
+      "metrics": [
+        "-1.2 M",
+        "-126 M",
+        "144 \u5929"
+      ],
+      "note": [
+        "\u653f\u5e9c\u6301\u6709\u6218\u7565\u539f\u6cb9 \u00b7 \u6388\u6743\u5bb9\u91cf 714 \u767e\u4e07\u6876"
+      ],
+      "trade": "\u7f8e\u56fd\u539f\u6cb9\u8d38\u6613\n6.13 \u8fdb / 4.18 \u51fa \u00b7 1.96 \u51c0 \u767e\u4e07\u6876/\u65e5 \u00b7 1\u5e74\u5747",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u56fd\u6218\u7565\u77f3\u6cb9\u50a8\u5907 \u00b7 EIA \u6bcf\u5468\uff0c\u622a\u81f3 OCT 23, 2026"
+    },
+    {
+      "fixture_state": "normal",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "dark",
+      "lang": "en",
+      "width": 390,
+      "documentWidth": 390,
+      "metrics": [
+        "-1.2 M",
+        "-126 M",
+        "144 d"
+      ],
+      "note": [
+        "Government-owned strategic crude \u00b7 authorized capacity 714 MMbbl"
+      ],
+      "trade": "US crude trade\n6.13 imp / 4.18 exp \u00b7 1.96 net Mb/d \u00b7 1y avg",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 UNITED STATES SPR \u00b7 EIA WEEKLY, AS OF OCT 23, 2026"
+    },
+    {
+      "fixture_state": "normal",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "light",
+      "lang": "en",
+      "width": 390,
+      "documentWidth": 390,
+      "metrics": [
+        "-1.2 M",
+        "-126 M",
+        "144 d"
+      ],
+      "note": [
+        "Government-owned strategic crude \u00b7 authorized capacity 714 MMbbl"
+      ],
+      "trade": "US crude trade\n6.13 imp / 4.18 exp \u00b7 1.96 net Mb/d \u00b7 1y avg",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 UNITED STATES SPR \u00b7 EIA WEEKLY, AS OF OCT 23, 2026"
+    },
+    {
+      "fixture_state": "normal",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 390,
+      "documentWidth": 390,
+      "metrics": [
+        "-1.2 M",
+        "-126 M",
+        "144 \u5929"
+      ],
+      "note": [
+        "\u653f\u5e9c\u6301\u6709\u6218\u7565\u539f\u6cb9 \u00b7 \u6388\u6743\u5bb9\u91cf 714 \u767e\u4e07\u6876"
+      ],
+      "trade": "\u7f8e\u56fd\u539f\u6cb9\u8d38\u6613\n6.13 \u8fdb / 4.18 \u51fa \u00b7 1.96 \u51c0 \u767e\u4e07\u6876/\u65e5 \u00b7 1\u5e74\u5747",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u56fd\u6218\u7565\u77f3\u6cb9\u50a8\u5907 \u00b7 EIA \u6bcf\u5468\uff0c\u622a\u81f3 OCT 23, 2026"
+    },
+    {
+      "fixture_state": "normal",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "light",
+      "lang": "zh",
+      "width": 390,
+      "documentWidth": 390,
+      "metrics": [
+        "-1.2 M",
+        "-126 M",
+        "144 \u5929"
+      ],
+      "note": [
+        "\u653f\u5e9c\u6301\u6709\u6218\u7565\u539f\u6cb9 \u00b7 \u6388\u6743\u5bb9\u91cf 714 \u767e\u4e07\u6876"
+      ],
+      "trade": "\u7f8e\u56fd\u539f\u6cb9\u8d38\u6613\n6.13 \u8fdb / 4.18 \u51fa \u00b7 1.96 \u51c0 \u767e\u4e07\u6876/\u65e5 \u00b7 1\u5e74\u5747",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u56fd\u6218\u7565\u77f3\u6cb9\u50a8\u5907 \u00b7 EIA \u6bcf\u5468\uff0c\u622a\u81f3 OCT 23, 2026"
+    },
+    {
+      "fixture_state": "partial",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "dark",
+      "lang": "en",
+      "width": 1440,
+      "documentWidth": 1440,
+      "metrics": [
+        "\u2014 M",
+        "\u2014 M"
+      ],
+      "note": [
+        "Government-owned strategic crude \u00b7 authorized capacity 714 MMbbl",
+        "Comparison unavailable where weekly history is insufficient."
+      ],
+      "trade": "US crude trade\n4.18 exp Mb/d \u00b7 1y avg",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 UNITED STATES SPR \u00b7 EIA WEEKLY, AS OF OCT 23, 2026"
+    },
+    {
+      "fixture_state": "partial",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "documentWidth": 1440,
+      "metrics": [
+        "\u2014 M",
+        "\u2014 M"
+      ],
+      "note": [
+        "Government-owned strategic crude \u00b7 authorized capacity 714 MMbbl",
+        "Comparison unavailable where weekly history is insufficient."
+      ],
+      "trade": "US crude trade\n4.18 exp Mb/d \u00b7 1y avg",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 UNITED STATES SPR \u00b7 EIA WEEKLY, AS OF OCT 23, 2026"
+    },
+    {
+      "fixture_state": "partial",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "documentWidth": 1440,
+      "metrics": [
+        "\u2014 M",
+        "\u2014 M"
+      ],
+      "note": [
+        "\u653f\u5e9c\u6301\u6709\u6218\u7565\u539f\u6cb9 \u00b7 \u6388\u6743\u5bb9\u91cf 714 \u767e\u4e07\u6876",
+        "\u6bcf\u5468\u5386\u53f2\u6570\u636e\u4e0d\u8db3\u7684\u6bd4\u8f83\u7a97\u53e3\u6682\u4e0d\u53ef\u7528\u3002"
+      ],
+      "trade": "\u7f8e\u56fd\u539f\u6cb9\u8d38\u6613\n4.18 \u51fa \u767e\u4e07\u6876/\u65e5 \u00b7 1\u5e74\u5747",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u56fd\u6218\u7565\u77f3\u6cb9\u50a8\u5907 \u00b7 EIA \u6bcf\u5468\uff0c\u622a\u81f3 OCT 23, 2026"
+    },
+    {
+      "fixture_state": "partial",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "light",
+      "lang": "zh",
+      "width": 1440,
+      "documentWidth": 1440,
+      "metrics": [
+        "\u2014 M",
+        "\u2014 M"
+      ],
+      "note": [
+        "\u653f\u5e9c\u6301\u6709\u6218\u7565\u539f\u6cb9 \u00b7 \u6388\u6743\u5bb9\u91cf 714 \u767e\u4e07\u6876",
+        "\u6bcf\u5468\u5386\u53f2\u6570\u636e\u4e0d\u8db3\u7684\u6bd4\u8f83\u7a97\u53e3\u6682\u4e0d\u53ef\u7528\u3002"
+      ],
+      "trade": "\u7f8e\u56fd\u539f\u6cb9\u8d38\u6613\n4.18 \u51fa \u767e\u4e07\u6876/\u65e5 \u00b7 1\u5e74\u5747",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u56fd\u6218\u7565\u77f3\u6cb9\u50a8\u5907 \u00b7 EIA \u6bcf\u5468\uff0c\u622a\u81f3 OCT 23, 2026"
+    },
+    {
+      "fixture_state": "partial",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "dark",
+      "lang": "en",
+      "width": 390,
+      "documentWidth": 390,
+      "metrics": [
+        "\u2014 M",
+        "\u2014 M"
+      ],
+      "note": [
+        "Government-owned strategic crude \u00b7 authorized capacity 714 MMbbl",
+        "Comparison unavailable where weekly history is insufficient."
+      ],
+      "trade": "US crude trade\n4.18 exp Mb/d \u00b7 1y avg",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 UNITED STATES SPR \u00b7 EIA WEEKLY, AS OF OCT 23, 2026"
+    },
+    {
+      "fixture_state": "partial",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "light",
+      "lang": "en",
+      "width": 390,
+      "documentWidth": 390,
+      "metrics": [
+        "\u2014 M",
+        "\u2014 M"
+      ],
+      "note": [
+        "Government-owned strategic crude \u00b7 authorized capacity 714 MMbbl",
+        "Comparison unavailable where weekly history is insufficient."
+      ],
+      "trade": "US crude trade\n4.18 exp Mb/d \u00b7 1y avg",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 UNITED STATES SPR \u00b7 EIA WEEKLY, AS OF OCT 23, 2026"
+    },
+    {
+      "fixture_state": "partial",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 390,
+      "documentWidth": 390,
+      "metrics": [
+        "\u2014 M",
+        "\u2014 M"
+      ],
+      "note": [
+        "\u653f\u5e9c\u6301\u6709\u6218\u7565\u539f\u6cb9 \u00b7 \u6388\u6743\u5bb9\u91cf 714 \u767e\u4e07\u6876",
+        "\u6bcf\u5468\u5386\u53f2\u6570\u636e\u4e0d\u8db3\u7684\u6bd4\u8f83\u7a97\u53e3\u6682\u4e0d\u53ef\u7528\u3002"
+      ],
+      "trade": "\u7f8e\u56fd\u539f\u6cb9\u8d38\u6613\n4.18 \u51fa \u767e\u4e07\u6876/\u65e5 \u00b7 1\u5e74\u5747",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u56fd\u6218\u7565\u77f3\u6cb9\u50a8\u5907 \u00b7 EIA \u6bcf\u5468\uff0c\u622a\u81f3 OCT 23, 2026"
+    },
+    {
+      "fixture_state": "partial",
+      "url": "http://127.0.0.1:58974/spr.html",
+      "theme": "light",
+      "lang": "zh",
+      "width": 390,
+      "documentWidth": 390,
+      "metrics": [
+        "\u2014 M",
+        "\u2014 M"
+      ],
+      "note": [
+        "\u653f\u5e9c\u6301\u6709\u6218\u7565\u539f\u6cb9 \u00b7 \u6388\u6743\u5bb9\u91cf 714 \u767e\u4e07\u6876",
+        "\u6bcf\u5468\u5386\u53f2\u6570\u636e\u4e0d\u8db3\u7684\u6bd4\u8f83\u7a97\u53e3\u6682\u4e0d\u53ef\u7528\u3002"
+      ],
+      "trade": "\u7f8e\u56fd\u539f\u6cb9\u8d38\u6613\n4.18 \u51fa \u767e\u4e07\u6876/\u65e5 \u00b7 1\u5e74\u5747",
+      "bridge": true,
+      "heading": "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u56fd\u6218\u7565\u77f3\u6cb9\u50a8\u5907 \u00b7 EIA \u6bcf\u5468\uff0c\u622a\u81f3 OCT 23, 2026"
+    }
+  ],
+  "blocked_external_origins": [],
+  "limits": [
+    "Actual build_spr.main/write_page and native spr.html entry; no authenticated parent shell or publication claim.",
+    "Normal inputs retained from protected source; partial is explicit one-observation/export-only falsifier; no provider acquired."
+  ]
+}

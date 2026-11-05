@@ -1,0 +1,133 @@
+{
+  "action_span": {
+    "claimed_quote": "NVIDIA corrects the additional share repurchase authorization to $165 billion.",
+    "span": {
+      "authority": "context_only",
+      "display_excerpt": "additional share repurchase authorization to $165 billion",
+      "document_id": "doc_nvidia_pr_correction_r6",
+      "document_version": 1,
+      "locator": {
+        "kind": "text_span",
+        "segment_index": 0,
+        "span_end_byte": 77,
+        "span_start_byte": 20,
+        "sub_kind": "transcript_segment"
+      },
+      "receipt": {
+        "segment_bytes": 78,
+        "segment_index": 0,
+        "segment_sha256": "2dd4e274cdb0a52cc75ba5c79b832b16dd93d96f2ea9540bb6926dc8d37474d0",
+        "source_sha256": "2dd4e274cdb0a52cc75ba5c79b832b16dd93d96f2ea9540bb6926dc8d37474d0",
+        "span_end_byte": 77,
+        "span_start_byte": 20,
+        "text_sha256": "f4b025a3e78f73b9c6951ce9b955a27ebacf7fe7574209bf92e7af674562e813"
+      },
+      "receipt_state": "byte_replayed",
+      "rights_profile": "rp_unknown_v1",
+      "schema": "source_span.v1",
+      "span_id": "span_0b0ccdf2c42c1566e7b7",
+      "text_sha256": "f4b025a3e78f73b9c6951ce9b955a27ebacf7fe7574209bf92e7af674562e813",
+      "unreplayable_reason": null
+    }
+  },
+  "action_type": "share_repurchase",
+  "authority": "context_only",
+  "channel_hint": "capital_allocation",
+  "cluster_grain": "fact_revision",
+  "commitment_status": "authorized",
+  "company_id": "cik:0001045810",
+  "document_id": "doc_nvidia_pr_correction_r6",
+  "executed_amount": {
+    "absence": {
+      "authority": "context_only",
+      "detail": "",
+      "missing_fields": [],
+      "reason": "not_stated",
+      "schema": "field_absence.v1",
+      "subject": "executed_amount"
+    },
+    "form": "absent"
+  },
+  "fact_id": "fact_000000000000000000000016",
+  "horizon_period": {
+    "calendar_end": null,
+    "period_kind": "fiscal_year",
+    "quarter": null,
+    "year": 2028
+  },
+  "incremental_amount": {
+    "basis": "incremental",
+    "bound": "exact",
+    "currency": "USD",
+    "evidence": {
+      "claimed_quote": "additional share repurchase authorization to $165 billion",
+      "span": {
+        "authority": "context_only",
+        "display_excerpt": "additional share repurchase authorization to $165 billion",
+        "document_id": "doc_nvidia_pr_correction_r6",
+        "document_version": 1,
+        "locator": {
+          "kind": "text_span",
+          "segment_index": 0,
+          "span_end_byte": 77,
+          "span_start_byte": 20,
+          "sub_kind": "transcript_segment"
+        },
+        "receipt": {
+          "segment_bytes": 78,
+          "segment_index": 0,
+          "segment_sha256": "2dd4e274cdb0a52cc75ba5c79b832b16dd93d96f2ea9540bb6926dc8d37474d0",
+          "source_sha256": "2dd4e274cdb0a52cc75ba5c79b832b16dd93d96f2ea9540bb6926dc8d37474d0",
+          "span_end_byte": 77,
+          "span_start_byte": 20,
+          "text_sha256": "f4b025a3e78f73b9c6951ce9b955a27ebacf7fe7574209bf92e7af674562e813"
+        },
+        "receipt_state": "byte_replayed",
+        "rights_profile": "rp_unknown_v1",
+        "schema": "source_span.v1",
+        "span_id": "span_0b0ccdf2c42c1566e7b7",
+        "text_sha256": "f4b025a3e78f73b9c6951ce9b955a27ebacf7fe7574209bf92e7af674562e813",
+        "unreplayable_reason": null
+      }
+    },
+    "form": "point",
+    "negated": false,
+    "period": {
+      "authority": "context_only",
+      "detail": "",
+      "missing_fields": [],
+      "reason": "not_stated",
+      "schema": "field_absence.v1",
+      "subject": "incremental_amount.period"
+    },
+    "unit": "USD",
+    "value": 165000000000
+  },
+  "issuer_role": "subject",
+  "negated": false,
+  "news_event_class": "buyback",
+  "novelty": "corrected_fact",
+  "observed_at": "2026-10-01T12:00:00Z",
+  "primary_amount_role": "incremental_authorization",
+  "prophet_flags": {
+    "may_gate": false,
+    "may_rank": false,
+    "may_size": false,
+    "prophet_authority": false
+  },
+  "remaining_authorization": {
+    "absence": {
+      "authority": "context_only",
+      "detail": "",
+      "missing_fields": [],
+      "reason": "not_stated",
+      "schema": "field_absence.v1",
+      "subject": "remaining_authorization"
+    },
+    "form": "absent"
+  },
+  "schema": "capital_allocation_event.v1",
+  "source_available_at": "2026-10-01T11:50:00Z",
+  "supersedes_fact_id": null,
+  "unsolicited_instruction_detected": false
+}

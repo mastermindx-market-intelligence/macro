@@ -484,3 +484,151 @@ class TestBannedWords:
         block = payload.get("thematic_state", {})
         hits = self._check_no_validated(block)
         assert not hits, f"'validated' found in world_state thematic_state: {hits}"
+
+
+class TestAcceptedGenerationConsumerBarrier:
+    """Existing consumers cannot downgrade successor state to loose-file answers."""
+
+    @staticmethod
+    def consume(root, consumer):
+        if consumer == "thesis":
+            from engine.neuralweb.ask_brain import _tool_read_theme_thesis
+            return _tool_read_theme_thesis(root, {})
+        if consumer == "world":
+            from engine.neuralweb.world_state import _compose_thematic_state
+            return _compose_thematic_state(root)
+        from engine.neuralweb.ask_brain import _tool_read_theme_state
+        params = {} if consumer == "brain" else {"theme_id": consumer}
+        return _tool_read_theme_state(root, params)
+
+    @staticmethod
+    def source_bytes(root):
+        return {str(p.relative_to(root)): p.read_bytes()
+                for p in root.rglob("*") if p.is_file() and not p.is_symlink()}
+
+    @pytest.mark.parametrize("consumer", ["world", "brain", "ai_semiconductors", "not_a_theme", "thesis"])
+    @pytest.mark.parametrize("marker", ["theme_state_current.json", ".theme_state_pending.json"])
+    def test_successor_marker_cannot_fall_back_to_legacy(self, tmp_path, consumer, marker):
+        _make_theme_state(tmp_path)
+        _make_theme_thesis(tmp_path)
+        (tmp_path / "data/neuralweb" / marker).write_text("{corrupt-generation")
+        before = self.source_bytes(tmp_path)
+        result = self.consume(tmp_path, consumer)
+        assert result["available"] is False
+        assert result["display_only"] is True
+        assert result.get("is_context_only") is True
+        assert not any(key in result for key in ("found", "stage", "stage_counts", "falsifiers_fired", "theses", "n_theses"))
+        assert self.source_bytes(tmp_path) == before
+
+    @pytest.mark.parametrize("consumer", ["world", "brain", "ai_semiconductors", "not_a_theme", "thesis"])
+    def test_successor_appearing_during_legacy_read_invalidates_answer(self, tmp_path, monkeypatch, consumer):
+        _make_theme_state(tmp_path)
+        _make_theme_thesis(tmp_path)
+        state = tmp_path / "data/neuralweb/theme_state.json"
+        watched = (tmp_path / "site/neuralwebdata/theme_thesis.json"
+                   if consumer == "thesis" else state)
+        original = Path.read_text
+        injected = False
+        def switch(path, *args, **kwargs):
+            nonlocal injected
+            result = original(path, *args, **kwargs)
+            if path == watched and not injected:
+                injected = True
+                (state.parent / ".theme_state_pending.json").write_text("{pending-transition")
+            return result
+        monkeypatch.setattr(Path, "read_text", switch)
+        result = self.consume(tmp_path, consumer)
+        assert injected
+        assert result["available"] is False
+        assert not any(key in result for key in ("found", "stage", "stage_counts", "falsifiers_fired", "theses", "n_theses"))
+
+    @pytest.mark.parametrize("consumer", ["world", "brain", "thesis"])
+    def test_known_successor_never_reads_unbound_state_or_thesis(self, tmp_path, monkeypatch, consumer):
+        _make_theme_state(tmp_path)
+        _make_theme_thesis(tmp_path)
+        (tmp_path / "data/neuralweb/theme_state_current.json").write_text("{broken")
+        forbidden = {tmp_path / "data/neuralweb/theme_state.json",
+                     tmp_path / "site/neuralwebdata/theme_thesis.json"}
+        original = Path.read_text
+        reads = []
+        def observe(path, *args, **kwargs):
+            if path in forbidden:
+                reads.append(str(path))
+            return original(path, *args, **kwargs)
+        monkeypatch.setattr(Path, "read_text", observe)
+        self.consume(tmp_path, consumer)
+        assert reads == [], "successor refusal must happen before loose payload acquisition"
+
+    @pytest.mark.parametrize("consumer", ["world", "brain"])
+    @pytest.mark.parametrize("empty", [False, True])
+    def test_legacy_without_successor_preserves_available_and_valid_empty(self, tmp_path, consumer, empty):
+        raw = _make_theme_state(tmp_path)
+        if empty:
+            raw["themes"] = []
+            raw["n_themes"] = 0
+            _write_json(tmp_path / "data/neuralweb/theme_state.json", raw)
+        result = self.consume(tmp_path, consumer)
+        assert result["available"] is True
+        assert result["n_themes"] == (0 if empty else 2)
+        assert result["display_only"] is True
+
+
+# Reuse the already-isolated owner fixture, never a production capture.
+from tests.test_theme_state_generation import prepared, AcceptedFixture
+from tests.test_theme_state_production import production_world
+
+
+class TestConsumerGenerationDisposition:
+    @pytest.mark.parametrize("consumer", ["world", "brain", "ai_semiconductors", "not_a_theme", "thesis"])
+    def test_accepted_generation_does_not_grant_machine_context(self, prepared, consumer):
+        from engine.neuralweb import theme_state_generation as generation
+        root, _, plan = prepared
+        generation.publish_generation(root, plan, controlled_verifier=AcceptedFixture())
+        # The independently emitted old thesis is deliberately not generation-bound.
+        _make_theme_thesis(root)
+        before = TestAcceptedGenerationConsumerBarrier.source_bytes(root)
+        result = TestAcceptedGenerationConsumerBarrier.consume(root, consumer)
+        assert result["available"] is False
+        assert result["generation_status"] == "UNAVAILABLE"
+        assert result["reason_codes"] == ["CURRENT_USE_AUTHORITY_UNAVAILABLE"]
+        assert result["materialization_allowed"] is False
+        assert not any(key in result for key in ("found", "stage_counts", "theses", "falsifiers_fired"))
+        assert TestAcceptedGenerationConsumerBarrier.source_bytes(root) == before
+
+    @pytest.mark.parametrize("consumer", ["world", "brain", "thesis"])
+    def test_valid_pending_is_distinct_from_missing_or_corrupt(self, prepared, consumer):
+        from engine.neuralweb import theme_state_generation as generation
+        root, _, plan = prepared
+        def interrupt(stage):
+            if stage == "seal":
+                raise RuntimeError("controlled pending publisher")
+        with pytest.raises(RuntimeError):
+            generation.publish_generation(root, plan, controlled_verifier=AcceptedFixture(), fault=interrupt)
+        result = TestAcceptedGenerationConsumerBarrier.consume(root, consumer)
+        assert result["available"] is False
+        assert result["generation_status"] == "PENDING"
+        assert result["reason_codes"] == ["PENDING_GENERATION_OWNS_PREFIX"]
+
+    @pytest.mark.parametrize("consumer", ["world", "brain", "thesis"])
+    @pytest.mark.parametrize("trace", ["orphan", "broken_link"])
+    def test_unreadable_successor_trace_is_not_legacy(self, tmp_path, consumer, trace):
+        _make_theme_state(tmp_path)
+        _make_theme_thesis(tmp_path)
+        if trace == "orphan":
+            (tmp_path / "data/neuralweb/theme_state_generations" / ("tsg-" + "a" * 64)).mkdir(parents=True)
+        else:
+            (tmp_path / "data/neuralweb/theme_state_current.json").symlink_to(tmp_path / "missing-ref")
+        result = TestAcceptedGenerationConsumerBarrier.consume(tmp_path, consumer)
+        assert result["available"] is False
+        assert result["generation_status"] == "INVALID"
+
+    def test_model_parameters_cannot_supply_a_purpose_or_verifier(self, prepared):
+        from engine.neuralweb import theme_state_generation as generation
+        from engine.neuralweb.ask_brain import _tool_read_theme_state, _tool_read_theme_thesis
+        root, _, plan = prepared
+        generation.publish_generation(root, plan, controlled_verifier=AcceptedFixture())
+        for reader in [_tool_read_theme_state, _tool_read_theme_thesis]:
+            result = reader(root, {"theme_id": "ai_semiconductors", "purpose": "research_internal",
+                                   "use_at": "2099-01-01T00:00:00Z", "controlled_verifier": True})
+            assert result["available"] is False
+            assert result["reason_codes"] == ["CURRENT_USE_AUTHORITY_UNAVAILABLE"]

@@ -1,0 +1,113 @@
+{# INTL-GS state-matrix fixture — spec R14 §10.8/§7 (board 14).
+   Test/evidence ONLY: never linked from nav, the shell or intl.html.j2.
+   One column of the 13 state cells (Complete up + Complete down + the other
+   eleven states) plus a shared-primitives section. Every specimen number sits
+   inside .intl-gs__specimen-scope, which also carries the specimen chip (L10)
+   in the header row with >=12px below it (VF14). #}
+{% import "intl_workspace/_gs_macros.html.j2" as gs %}
+
+<section class="intl-gs__specimen-scope">
+  <header class="intl-gs__pagehead">
+    {{ gs.gs_eyebrow(t('State matrix · specimen', '状态矩阵 · 示例')) }}
+    <h2 class="intl-gs__bandhead__title">{{ t('Coverage and data states', '覆盖与数据状态') }}</h2>
+    <p class="intl-gs__bandhead__sub">{{ t('All twelve §7 states plus both direction inks.', '全部十二种 §7 状态与两种方向墨色。') }}</p>
+    <p class="intl-gs__specimen-head">{{ gs.gs_specimen_chip() }}</p>
+  </header>
+
+  <div class="intl-gs__statematrix">
+    {{ gs.gs_state_cell('complete', t('Brazil', '巴西'), 1.24, '%', t('USD · Unhedged', '美元 · 未对冲'), t('21 Oct 08:00 UTC', '10月21日 08:00 UTC'), dir='up') }}
+    {{ gs.gs_state_cell('complete', t('Korea', '韩国'), -0.86, '%', t('USD · Unhedged', '美元 · 未对冲'), t('21 Oct 08:00 UTC', '10月21日 08:00 UTC'), dir='down') }}
+    {{ gs.gs_state_cell('loading', t('Taiwan', '台湾')) }}
+    {{ gs.gs_state_cell('qualified', t('India', '印度'), 0.42, '%', t('Proxy basis', '代理口径'), t('21 Oct 08:00 UTC', '10月21日 08:00 UTC'), reason=t('Thin session', '成交清淡'), dir='up') }}
+    {{ gs.gs_state_cell('abstain', t('Poland', '波兰'), reason=t('Unscored · insufficient history', '未评分 · 历史数据不足')) }}
+    {{ gs.gs_state_cell('empty', t('South Africa', '南非'), reason=t('Not published by source', '数据源未发布')) }}
+    {{ gs.gs_state_cell('partial', t('Mexico', '墨西哥'), 0.31, '%', t('3 of 5 legs', '5 条中 3 条'), t('21 Oct 08:00 UTC', '10月21日 08:00 UTC'), note=t(' · 3 of 5', ' · 5个中3个'), reason=t('Missing: CDS, funding', '缺失：CDS、融资'), dir='up') }}
+    {{ gs.gs_state_cell('stale', t('South Africa', '南非'), 0.55, '%', t('USD · Unhedged', '美元 · 未对冲'), t('Last good 19 Oct 21:00 UTC', '最后有效 10月19日 21:00 UTC'), note=t(' · 2d', ' · 2天')) }}
+    {{ gs.gs_state_cell('closed', t('Japan', '日本'), 0.12, '%', t('Last close', '上次收盘'), t('Opens 00:00 UTC', '00:00 UTC 开盘')) }}
+    {{ gs.gs_state_cell('suspended', t('Peru', '秘鲁'), -0.3, '%', t('Last print', '最后成交'), t('Halted 09:32 UTC', '09:32 UTC 起停牌')) }}
+    {{ gs.gs_state_cell('restricted', t('Chile', '智利'), reason=t('Licensed feed · not redistributable', '授权数据源 · 不可再分发')) }}
+    {{ gs.gs_state_cell('corrected', t('Brazil', '巴西'), 2.6, '%', t('USD % · close-to-close', '美元 % · 收盘对收盘'), t('Corrected 21 Oct 08:00 UTC', '已于 10月21日 08:00 UTC 更正'), old=2.9, note='') }}
+    {{ gs.gs_state_cell('recovered', t('Turkey', '土耳其'), 1.9, '%', t('USD · Unhedged', '美元 · 未对冲'), t('Gap marked on series', '序列上已标记缺口'), dir='up') }}
+  </div>
+
+  <section class="intl-gs__panel">
+    {{ gs.gs_bandhead(t('Shared primitives', '共享原语'), qnum=t('Specimen', '示例'), sub=t('Questions, snapshot bars, controls, chips, glyphs, bars, table, KPI, hand-off.', '问题、快照条、控件、标签、字形、条形、表格、KPI、交接。'), clock=t('21 Oct 08:00 UTC', '10月21日 08:00 UTC')) }}
+
+    {{ gs.gs_questions(active=2) }}
+
+    {# W2F-X X5 + FX1/FX5: both §10.0 snapshot variants — a populated
+       specimen-chipped bar and an all-None withheld bar. The context values
+       are composed by tests/intl_gs_fixture_site.py through the SAME
+       snapshot_display/horizon_label path the mount uses; no hand-typed
+       clock display string lives in this template. #}
+    {{ gs.gs_snapshot(snapshot_populated, 'local', horizon) }}
+    {{ gs.gs_snapshot(snapshot_withheld, 'usd_hedged', horizon) }}
+
+    <div class="intl-gs__demorow">
+      {{ gs.gs_btn(t('Saved investigations', '已保存的调查'), 'secondary') }}
+      {{ gs.gs_btn(t('Watch conditions', '观察条件'), 'primary') }}
+      {{ gs.gs_btn(t('Unavailable', '不可用'), 'secondary', disabled=true) }}
+      {{ gs.gs_segmented(horizon_options, active='1m') }}
+    </div>
+
+    <div class="intl-gs__demorow">
+      {{ gs.gs_tier_chip('T1') }} {{ gs.gs_tier_chip('T2') }} {{ gs.gs_tier_chip('T3') }} {{ gs.gs_tier_chip('Proxy') }} {{ gs.gs_tier_chip('Restricted') }}
+      {{ gs.gs_stance_chip('get_ready') }} {{ gs.gs_stance_chip('watch') }} {{ gs.gs_stance_chip('stand_aside') }}
+      <a class="intl-gs__chip intl-gs__chip--link" href="#intl-gs-fixture">{{ t('Chip link', '标签链接') }}</a>
+    </div>
+
+    <div class="intl-gs__demorow">
+      {%- for state in ['complete', 'qualified', 'partial', 'stale', 'abstain', 'closed', 'restricted', 'corrected'] %}
+      <span class="intl-gs__glyphwrap">{{ gs.gs_glyph(state) }} <span class="intl-gs__num intl-gs__num--muted">{{ t('21 Oct 08:00 UTC', '10月21日 08:00 UTC') }}</span></span>
+      {%- endfor %}
+    </div>
+
+    <div class="intl-gs__demorow intl-gs__edgelegend">
+      <span class="intl-gs__edgelabel">{{ gs.gs_typed_edge('flow') }} {{ t('Flow', '资金流') }}</span>
+      <span class="intl-gs__edgelabel">{{ gs.gs_typed_edge('lending') }} {{ t('Lending', '信贷') }}</span>
+      <span class="intl-gs__edgelabel">{{ gs.gs_typed_edge('credit') }} {{ t('Credit', '信用') }}</span>
+      <span class="intl-gs__edgelabel">{{ gs.gs_typed_edge('commodity') }} {{ t('Commodity', '大宗商品') }}</span>
+    </div>
+
+    <div class="intl-gs__demorow">
+      <span>{{ gs.gs_minibar(3.2, -1.1) }} <span class="intl-gs__num intl-gs__num--up intl-gs__num--fig">+3.2%</span> <span class="intl-gs__num intl-gs__num--down intl-gs__num--fig">−1.1%</span></span>
+      <span>{{ gs.gs_divergence(-1.8) }} <span class="intl-gs__num intl-gs__num--down intl-gs__num--fig">−1.8σ</span></span>
+      <span>{{ gs.gs_divergence(2.4) }} <span class="intl-gs__num intl-gs__num--up intl-gs__num--fig">+2.4σ</span></span>
+      <span>{{ gs.gs_sparkline([12, 10, 14, 13, 11, 9, 12, 15, 14, 12, 10, 8, 11, 13, 12, 9, 7, 10, 12, 11], gap_before_index=12) }}</span>
+    </div>
+
+    <div class="intl-gs__tablewrap">
+      <table class="intl-gs__table">
+        <thead>
+          <tr><th>{{ t('Market', '市场') }}</th><th class="is-num">{{ t('USD %', '美元 %') }}</th><th>{{ t('Tier', '层级') }}</th><th>{{ t('Stance', '姿态') }}</th></tr>
+        </thead>
+        <tbody>
+          <tr class="is-selected"><td>{{ t('Brazil', '巴西') }}</td><td class="is-num"><span class="intl-gs__num intl-gs__num--up">+3.4%</span></td><td>{{ gs.gs_tier_chip('T1') }}</td><td>{{ gs.gs_stance_chip('watch') }}</td></tr>
+          <tr><td>{{ t('Chile', '智利') }}</td><td class="is-num"><span class="intl-gs__num intl-gs__num--down">−0.9%</span></td><td>{{ gs.gs_tier_chip('Proxy') }}</td><td>{{ gs.gs_stance_chip('stand_aside') }}</td></tr>
+          <tr><td>{{ t('Korea', '韩国') }}</td><td class="is-num"><span class="intl-gs__num intl-gs__num--up">+1.1%</span></td><td>{{ gs.gs_tier_chip('T2') }}</td><td>{{ gs.gs_stance_chip('get_ready') }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="intl-gs__kpirow">
+      {{ gs.gs_kpi(t('EM index move', '新兴市场指数变动'), 1.8, '%', t('USD · Unhedged', '美元 · 未对冲'), t('21 Oct 08:00 UTC', '10月21日 08:00 UTC'), 'T1', 'up') }}
+      {{ gs.gs_kpi(t('Dollar strength', '美元强弱'), -0.4, '%', t('DXY', '美元指数'), t('21 Oct 08:00 UTC', '10月21日 08:00 UTC'), 'T2', 'down') }}
+      {{ gs.gs_kpi(t('Markets complete', '市场数据完整'), 31, '', t('of 34 covered', '覆盖 34 个中'), t('21 Oct 08:00 UTC', '10月21日 08:00 UTC'), 'T1', count=true) }}
+      {{ gs.gs_kpi(t('Restricted feeds', '受限数据源'), 3, '', t('rights matrix', '权限矩阵'), t('21 Oct 08:00 UTC', '10月21日 08:00 UTC'), 'Restricted', count=true) }}
+    </div>
+
+    {{ gs.gs_handoff([
+      {'name': t('Asia close', '亚洲收盘'), 'chip_html': gs.gs_state_chip('closed'), 'clock': '09:00 UTC'},
+      {'name': t('Europe open', '欧洲开盘'), 'chip_html': gs.gs_state_chip('complete'), 'clock': '08:00 UTC'},
+      {'name': t('US pre-market', '美国盘前'), 'chip_html': gs.gs_state_chip('loading'), 'clock': '13:30 UTC'}]) }}
+
+    <div class="intl-gs__demorow">
+      {{ gs.gs_rights_slot() }}
+      <span class="intl-gs__skel" aria-hidden="true"></span>
+      <span class="intl-gs__skel intl-gs__skel--sm" aria-hidden="true"></span>
+      {{ gs.gs_correction_note('+2.9%', '+2.6%', t('21 Oct 08:00 UTC', '10月21日 08:00 UTC')) }}
+    </div>
+
+    {{ gs.gs_footnote(t('Fixture only: specimen values are fabricated for layout and never shipped. Sources, rights and clocks follow the masterplan contracts.', '仅限测试页面：示例数值仅用于排版，永不投产。数据源、权限与时钟遵循总纲合同。')) }}
+  </section>
+</section>

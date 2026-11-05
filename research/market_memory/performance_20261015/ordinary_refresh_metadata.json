@@ -1,0 +1,118 @@
+{
+  "at": "2026-10-15T18:33:08.692032+00:00",
+  "kind": "EXISTING_SYSTEMD_ACCOUNTING_METADATA_ONLY",
+  "units": [
+    {
+      "unit": "macro-market-memory-source-spy-rest.service",
+      "query_returncode": 0,
+      "systemd_properties": {
+        "Result": "success",
+        "ExecMainStartTimestamp": "Thu 2026-10-15 04:00:00 UTC",
+        "ExecMainStartTimestampMonotonic": "7137213562161",
+        "ExecMainExitTimestamp": "Thu 2026-10-15 04:05:06 UTC",
+        "ExecMainExitTimestampMonotonic": "7137519290730",
+        "ExecMainStatus": "0",
+        "MemoryPeak": "70410240",
+        "CPUUsageNSec": "3385144000",
+        "CPUAccounting": "yes",
+        "MemoryAccounting": "yes",
+        "Id": "macro-market-memory-source-spy-rest.service",
+        "LoadState": "loaded",
+        "ActiveState": "inactive",
+        "SubState": "dead"
+      },
+      "last_process_wall_seconds": 305.728569
+    },
+    {
+      "unit": "macro-market-memory-technicals-v2.service",
+      "query_returncode": 0,
+      "systemd_properties": {
+        "Result": "success",
+        "ExecMainStartTimestamp": "Thu 2026-10-15 04:07:00 UTC",
+        "ExecMainStartTimestampMonotonic": "7137633542307",
+        "ExecMainExitTimestamp": "Thu 2026-10-15 04:07:01 UTC",
+        "ExecMainExitTimestampMonotonic": "7137633979885",
+        "ExecMainStatus": "0",
+        "MemoryPeak": "[not set]",
+        "CPUUsageNSec": "236352000",
+        "CPUAccounting": "yes",
+        "MemoryAccounting": "yes",
+        "Id": "macro-market-memory-technicals-v2.service",
+        "LoadState": "loaded",
+        "ActiveState": "inactive",
+        "SubState": "dead"
+      },
+      "last_process_wall_seconds": 0.437578
+    },
+    {
+      "unit": "macro-market-memory-experience-v2.service",
+      "query_returncode": 0,
+      "systemd_properties": {
+        "Result": "success",
+        "ExecMainStartTimestamp": "Thu 2026-10-15 04:32:00 UTC",
+        "ExecMainStartTimestampMonotonic": "7139133544210",
+        "ExecMainExitTimestamp": "Thu 2026-10-15 04:32:02 UTC",
+        "ExecMainExitTimestampMonotonic": "7139135729723",
+        "ExecMainStatus": "0",
+        "MemoryPeak": "[not set]",
+        "CPUUsageNSec": "1133058000",
+        "CPUAccounting": "yes",
+        "MemoryAccounting": "yes",
+        "Id": "macro-market-memory-experience-v2.service",
+        "LoadState": "loaded",
+        "ActiveState": "inactive",
+        "SubState": "dead"
+      },
+      "last_process_wall_seconds": 2.185513
+    },
+    {
+      "unit": "macro-market-memory-context.service",
+      "query_returncode": 0,
+      "systemd_properties": {
+        "Result": "success",
+        "ExecMainStartTimestamp": "Thu 2026-10-15 18:18:07 UTC",
+        "ExecMainStartTimestampMonotonic": "7188700466846",
+        "ExecMainExitTimestamp": "Thu 2026-10-15 18:18:09 UTC",
+        "ExecMainExitTimestampMonotonic": "7188701956474",
+        "ExecMainStatus": "0",
+        "MemoryPeak": "17866752",
+        "CPUUsageNSec": "486324000",
+        "CPUAccounting": "yes",
+        "MemoryAccounting": "yes",
+        "Id": "macro-market-memory-context.service",
+        "LoadState": "loaded",
+        "ActiveState": "inactive",
+        "SubState": "dead"
+      },
+      "last_process_wall_seconds": 1.489628
+    },
+    {
+      "unit": "macro-market-memory-options.service",
+      "query_returncode": 0,
+      "systemd_properties": {
+        "Result": "signal",
+        "ExecMainStartTimestamp": "",
+        "ExecMainStartTimestampMonotonic": "0",
+        "ExecMainExitTimestamp": "",
+        "ExecMainExitTimestampMonotonic": "0",
+        "ExecMainStatus": "0",
+        "MemoryPeak": "2641920",
+        "CPUUsageNSec": "207566000",
+        "CPUAccounting": "yes",
+        "MemoryAccounting": "yes",
+        "Id": "macro-market-memory-options.service",
+        "LoadState": "loaded",
+        "ActiveState": "failed",
+        "SubState": "failed"
+      },
+      "last_process_wall_seconds": null
+    }
+  ],
+  "limits": [
+    "last process observations, not a distribution",
+    "no service invocation/restart or log payload reads",
+    "CPU/memory absent or unavailable values remain unmeasured",
+    "source seal window includes intentional wait; wall time is not CPU time",
+    "no provider billing or successful data admission inferred from process success"
+  ]
+}

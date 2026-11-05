@@ -1,0 +1,15 @@
+{
+  "schema": "gmi.wp02.artifact_validation/v1",
+  "observed_at_utc": "2026-10-09T10:45:10.653619+00:00",
+  "artifact_structural_checks": "PASS",
+  "planned_issuers": 120,
+  "quota_cells": 90,
+  "selected_issuers": 0,
+  "profiled_fixed_ref_files": 19,
+  "parsed_parquet_files": 13,
+  "exact_source_contract_copies": 7,
+  "all_source_contract_git_blobs_match": true,
+  "all_current_json_files_parse": true,
+  "scope": "Local artifact consistency checks only. No application test, source producer, frame selector, capture or native replay was executed.",
+  "report_words": 4017
+}

@@ -1,0 +1,79 @@
+FFFFF.F                                                                  [100%]
+=================================== FAILURES ===================================
+____ test_no_first_party_context_refuses_before_any_provider_or_checkpoint _____
+tests/test_press_official_staging.py:695: in test_no_first_party_context_refuses_before_any_provider_or_checkpoint
+    assert out['staged'] is False and 'first-party' in out['reason']
+E   assert (True is False)
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 0 passed, 1 quarantined of 1 planned (tokens 0/240000)
+::warning title=press_staging_empty::press staging produced NO passing draft — every planned slot was quarantined or dropped. A thin day is legal; a permanently thin lane is a defect. Check data/press/staging/ for reasons.
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-230fc9bbc64e status quarantined (public article approval: false — no emit path)
+------------------------------ Captured log call -------------------------------
+WARNING  run_press:run_press.py:687 press: slot press-official-cd2747adeed2 quarantined — validators: fact_anchor, our_value, receipts
+________ test_explicit_empty_clock_cannot_fall_back_to_previous_date[] _________
+tests/test_press_official_staging.py:705: in test_explicit_empty_clock_cannot_fall_back_to_previous_date
+    with pytest.raises(ValueError, match='clock'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 0 passed, 1 quarantined of 1 planned (tokens 0/240000)
+::warning title=press_staging_empty::press staging produced NO passing draft — every planned slot was quarantined or dropped. A thin day is legal; a permanently thin lane is a defect. Check data/press/staging/ for reasons.
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status quarantined (public article approval: false — no emit path)
+------------------------------ Captured log call -------------------------------
+WARNING  run_press:run_press.py:687 press: slot press-official-cd2747adeed2 quarantined — validators: fact_anchor
+______ test_explicit_empty_clock_cannot_fall_back_to_previous_date[None] _______
+tests/test_press_official_staging.py:705: in test_explicit_empty_clock_cannot_fall_back_to_previous_date
+    with pytest.raises(ValueError, match='clock'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 0 passed, 1 quarantined of 1 planned (tokens 0/240000)
+::warning title=press_staging_empty::press staging produced NO passing draft — every planned slot was quarantined or dropped. A thin day is legal; a permanently thin lane is a defect. Check data/press/staging/ for reasons.
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status quarantined (public article approval: false — no emit path)
+------------------------------ Captured log call -------------------------------
+WARNING  run_press:run_press.py:687 press: slot press-official-cd2747adeed2 quarantined — validators: fact_anchor
+________ test_explicit_empty_clock_cannot_fall_back_to_previous_date[0] ________
+tests/test_press_official_staging.py:705: in test_explicit_empty_clock_cannot_fall_back_to_previous_date
+    with pytest.raises(ValueError, match='clock'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 0 passed, 1 quarantined of 1 planned (tokens 0/240000)
+::warning title=press_staging_empty::press staging produced NO passing draft — every planned slot was quarantined or dropped. A thin day is legal; a permanently thin lane is a defect. Check data/press/staging/ for reasons.
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status quarantined (public article approval: false — no emit path)
+------------------------------ Captured log call -------------------------------
+WARNING  run_press:run_press.py:687 press: slot press-official-cd2747adeed2 quarantined — validators: fact_anchor
+______ test_explicit_empty_clock_cannot_fall_back_to_previous_date[False] ______
+tests/test_press_official_staging.py:705: in test_explicit_empty_clock_cannot_fall_back_to_previous_date
+    with pytest.raises(ValueError, match='clock'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 0 passed, 1 quarantined of 1 planned (tokens 0/240000)
+::warning title=press_staging_empty::press staging produced NO passing draft — every planned slot was quarantined or dropped. A thin day is legal; a permanently thin lane is a defect. Check data/press/staging/ for reasons.
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status quarantined (public article approval: false — no emit path)
+------------------------------ Captured log call -------------------------------
+WARNING  run_press:run_press.py:687 press: slot press-official-cd2747adeed2 quarantined — validators: fact_anchor
+____ test_official_facts_keep_private_guard_when_mutable_labels_are_removed ____
+tests/test_press_official_staging.py:715: in test_official_facts_keep_private_guard_when_mutable_labels_are_removed
+    assert record['status'] == 'passed'
+E   AssertionError: assert 'quarantined' == 'passed'
+E     
+E     - passed
+E     + quarantined
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 0 passed, 1 quarantined of 1 planned (tokens 0/240000)
+::warning title=press_staging_empty::press staging produced NO passing draft — every planned slot was quarantined or dropped. A thin day is legal; a permanently thin lane is a defect. Check data/press/staging/ for reasons.
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status quarantined (public article approval: false — no emit path)
+------------------------------ Captured log call -------------------------------
+WARNING  run_press:run_press.py:687 press: slot press-official-cd2747adeed2 quarantined — validators: fact_anchor
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_official_staging.py::test_no_first_party_context_refuses_before_any_provider_or_checkpoint
+FAILED tests/test_press_official_staging.py::test_explicit_empty_clock_cannot_fall_back_to_previous_date[]
+FAILED tests/test_press_official_staging.py::test_explicit_empty_clock_cannot_fall_back_to_previous_date[None]
+FAILED tests/test_press_official_staging.py::test_explicit_empty_clock_cannot_fall_back_to_previous_date[0]
+FAILED tests/test_press_official_staging.py::test_explicit_empty_clock_cannot_fall_back_to_previous_date[False]
+FAILED tests/test_press_official_staging.py::test_official_facts_keep_private_guard_when_mutable_labels_are_removed
+6 failed, 1 passed, 38 deselected in 7.98s

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-04T22:20:43Z",
+ "accession": "0001628280-26-014733",
+ "cik": "0001438423",
+ "doc_byte_length": 1326156,
+ "doc_sha256": "d1e239f43c04a857c00616b6a24a5e30b6a6b5b94eb3d640ec9b2de9e4aa1245",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-04",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mram-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 967980,
+  "byte_start": 967548,
+  "normalized": "Since October 17, 2014, the Company has participated in a joint development agreement (JDA) with GLOBALFOUNDRIES Inc. (GF), a semiconductor foundry, for the joint development of STT-MRAM technology to produce a family of discrete and embedded MRAM technologies. The term of the agreement is until the completion, termination, or expiration of the last statement of work entered into pursuant to the joint development agreement.",
+  "normalized_sha256": "237730325ba55b6697d2664363becdfa7e4f7f6bbc6e750e64d563e427356176",
+  "raw": "Since October&#160;17, 2014, the Company has participated in a joint development agreement (JDA) with GLOBALFOUNDRIES Inc. (GF), a semiconductor foundry, for the joint development of STT-MRAM technology to produce a family of discrete and embedded MRAM technologies. The term of the agreement is until the completion, termination, or expiration of the last statement of work entered into pursuant to the joint development agreement.",
+  "raw_sha256": "8c1ce34dc27cbc683b4412b64877f0e7166c001178c310d4d5540e282436a8c3"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1438423/000162828026014733/mram-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,47 @@
+{
+  "checks_actually_performed": [
+    "Read-only source review of the frozen final edits and affected guard/store paths.",
+    "Exact byte-length and SHA-256 verification of the harness, app module, and incumbent store source field.",
+    "AST parsing of final harness bytes only; no execution or import of harness/application code."
+  ],
+  "confirmed_remaining_deterministic_execution_blockers": [],
+  "limits": [
+    "This is a final source-review verdict, not runtime certification or proof acceptance.",
+    "No harness/app imports, native proof execution, tests, Git operations, source acquisition, or changes to frozen source files were performed.",
+    "Python StringIO capture and os.* wrappers cover the reviewed Python paths; this is not operating-system-level descriptor redirection or native-code confinement.",
+    "Registry implementation was not independently reviewed from a local source snapshot. Registry([]) runtime behavior, actual native imports, platform audit/Popen behavior, real output equality, and immutable-state results remain for principal execution.",
+    "Child output size is checked after communicate returns; no hard streaming-memory bound or universal cancellation guarantee is certified.",
+    "Review scope is the consequential final edits and their interaction with the supplied app/LocalStore, not an exhaustive test matrix or security audit."
+  ],
+  "next_action": "Principal verifies the final source manifest and runs the authorized real proof; judge actual receipt and native results separately from this static verdict.",
+  "reviewed_app": {
+    "byte_length": 42756,
+    "path": "/workspace/scratch/9fd3d58c239a/lanes/relationship_observations_v2/relationship_observations.py",
+    "sha256": "85c07b309ff7b7220ec12f2b3f25c924a2ef4c9ab495ce9030f61038cbb9e8c7"
+  },
+  "reviewed_at_utc": "2026-10-09T11:34:37.258787+00:00",
+  "reviewed_harness": {
+    "byte_length": 62960,
+    "path": "/workspace/scratch/9fd3d58c239a/lanes/observation_real_native_proof_v1/prove_retained_c01_observation.py",
+    "sha256": "871b539f94fb3b55de9c12e11fadd78c99920ea034503e755eb6bb7f1ea57b74"
+  },
+  "reviewed_incumbent_store": {
+    "byte_length": 47498,
+    "carrier": "/workspace/scratch/9fd3d58c239a/lanes/observation_real_native_proof_v1/incumbent_store_read.json",
+    "field": "source",
+    "sha256": "7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd"
+  },
+  "reviewer": "/root/ci_release_evidence/harness_static_review",
+  "schema": "economic_network.retained_c01_harness_final_source_review/v1",
+  "source_review_results": {
+    "child_processes": "Popen creates only the exact configured child command with three private pipes. Pipe descriptors are registered before use. A returned PID is recorded before communicate. finally polls and, if still live, kills/waits while spawn_active remains true, then records returncode/reconciled state before clearing the phase. Cleanup failure propagates to a FAIL result with the already-recorded process observation available for reconciliation.",
+    "constructor_privacy": "Parent constructor temporarily applies umask 0077, restores it in finally, and checks root mode privacy. Child constructor allowance matches the existing-directory mkdir attempt.",
+    "controls_and_imports": "The final blocked-import names and positive controls remain mutually consistent. The no-fallthrough control and unexpected-denial checks remain present. ctypes and cffi are no longer in BLOCKED_ROOTS; the final proof expressly limits the guard to reviewed Python execution and does not claim an OS sandbox.",
+    "directory_guard": "The prior deterministic import blocker is repaired: readable_directory includes exact pinned code-file paths as targets, admitting their ancestors for checked_bytes descriptor traversal.",
+    "fail_closed": "Unexpected append guard attempts stop progression. Existing commitment, repeat, read, child equality, immutable-state and private-receipt readback checks remain prerequisites for a public PASS.",
+    "local_store_api": "TracedStore exact-length keyword reads, strict conditional writes, and capability validator match the supplied incumbent LocalStore. Its one root mkdir, lock/temp naming, descriptor-relative directory traversal, dup, rename publication, cleanup, and fsync operations match the admitted guard shapes.",
+    "parent_stdio": "main redirects Python sys.stdout and sys.stderr to StringIO during parent_main, restores them before emitting the public result, retains captured text privately, emits only lengths/hashes publicly, and marks nonempty capture FAIL. The tightened os.write wrapper denies unapproved descriptors including 1 and 2.",
+    "receipt_labels": "permitted_file_open_paths_by_phase and unique_permitted_file_open_paths_by_phase accurately describe deduplicated pre-open audit admission; they no longer claim successful opens or completed reads."
+  },
+  "verdict": "STATIC_PASS_BOUNDED"
+}

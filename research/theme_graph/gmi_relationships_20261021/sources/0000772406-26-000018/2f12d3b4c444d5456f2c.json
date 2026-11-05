@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 197767,
+  "byte_start": 197156,
+  "normalized": "We use a variety of foundries in the production of wafers, primarily supplied by GLOBALFOUNDRIES Inc., (\"GlobalFoundries\") and Taiwan Semiconductor Manufacturing Company, Limited (\"TSMC\"). In fiscal year 2022, the Company entered into a Capacity Reservation and Wafer Supply Commitment Agreement with GlobalFoundries to reserve capacity and set wafer pricing for products purchased pursuant to the agreement through calendar year 2026. On February 18, 2025, the Capacity Reservation Agreement was amended (the \"Amendment\") to define the quarterly spread of the remaining wafer quantities under the agreement.",
+  "normalized_sha256": "5bb740eea6c4cee47c79275f4c03634b4b30b24b634ebcd7c132094424610d11",
+  "raw": " We use a variety of foundries in the production of wafers, primarily supplied by GLOBALFOUNDRIES Inc., (\"GlobalFoundries\") and Taiwan Semiconductor Manufacturing Company, Limited (\"TSMC\").  In fiscal year 2022, the Company entered into a Capacity Reservation and Wafer Supply Commitment Agreement with GlobalFoundries to reserve capacity and set wafer pricing for products purchased pursuant to the agreement through calendar year 2026.  On February 18, 2025, the Capacity Reservation Agreement was amended (the \"Amendment\") to define the quarterly spread of the remaining wafer quantities under the agreement.",
+  "raw_sha256": "2f12d3b4c444d5456f2cce5ea535d4e50e5e57d36a6de601205247701c90a616"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}

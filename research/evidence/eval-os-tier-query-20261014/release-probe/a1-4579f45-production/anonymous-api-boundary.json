@@ -1,0 +1,9 @@
+{
+  "status": 401,
+  "final_url": "https://admin.mastermind-x.com/api/intelligence_os",
+  "content_type": "application/json; charset=utf-8",
+  "observed_at": "2026-10-24T03:12:12.044181+00:00",
+  "anonymous_get": true,
+  "credentials_sent": false,
+  "body_retained": false
+}
