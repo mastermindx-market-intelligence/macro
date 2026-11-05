@@ -289,3 +289,205 @@ def test_missing_original_history_blocks_driver_without_recreation(connected_cas
             spec=pf.spec(), config_sha256=run.identity.config_sha256)
     assert driver_calls == [] and not ledger.exists()
     assert not (case[0] / "renamed-after-missing").exists()
+
+
+# Exercise the application-owned cycle, rather than reconstructing its sequence
+# in this test. The old cases above remain independent component/oracle checks.
+from engine.research_factory import adapter_codegen as cycle
+from types import SimpleNamespace
+
+
+def _cycle_variants(case, *, second_expected="scripted_malformed_output"):
+    # Deliberately unusable caller readback: only the adapter's actual staging
+    # return may reach preparation, execution, evaluation or review.
+    placeholder = SimpleNamespace(expected_generation=case[3]["expected_generation"],
+                                  trial_readback=pf.bound({"not": "an accounting receipt"}))
+    return tuple(cycle.StagedVariant(descriptor["variant_id"], source,
+        _run_for(case, placeholder, index), pf.spec(),
+        "diagnostic" if index == 0 else second_expected)
+        for index, (descriptor, source) in enumerate(zip(case[2], case[1])))
+
+
+class ColdLedgerFakeEngine(pf.ScriptedFakeEngine):
+    def __init__(self, case, behaviour=None):
+        super().__init__(behaviour)
+        self.case = case
+
+    def run(self, argv, **kwargs):
+        rows = [json.loads(line) for line in
+                (self.case[0] / sa.LEDGER_BASENAME).read_bytes().splitlines()]
+        assert {row["config_hash"] for row in rows if "config" in row} == {
+            descriptor["incumbent_config_hash"] for descriptor in self.case[2]}
+        return super().run(argv, **kwargs)
+
+
+def _cycle_engines(case, first=None, second=None):
+    return (ColdLedgerFakeEngine(case, first),
+            ColdLedgerFakeEngine(case, second if second is not None else
+                                 {"workload": b'{"value":Infinity}'}))
+
+
+def _cycle(case, variants=None, engines=None, **overrides):
+    return cycle.run_staged_cycle(**{**case[3], "variants": variants or _cycle_variants(case),
+        "synthetic_test_engines": engines or _cycle_engines(case), **overrides})
+
+
+def test_application_cycle_accounts_once_and_reaches_review(connected_case, monkeypatch):
+    case = connected_case
+    engines = _cycle_engines(case)
+    original = sa.stage_synthetic_generation
+    stages = []
+
+    def stage(**kwargs):
+        result = original(**kwargs)
+        stages.append(result)
+        return result
+
+    monkeypatch.setattr(sa, "stage_synthetic_generation", stage)
+    result = _cycle(case, engines=engines)
+    assert len(stages) == 1 and result.staged is stages[0]
+    assert result.status == "DIAGNOSTIC_CYCLE_COMPLETE"
+    assert result.scope == "SYNTHETIC_ENGINEERING_ONLY"
+    assert not result.physical_acceptance and not result.authority_granted
+    assert result.scientific_acceptance == "UNQUALIFIED"
+    _assert_full_cold_accounting(case, result.staged)
+    assert [engine.creates for engine in engines] == [6, 1]
+    for row in result.variants:
+        assert row.status == "EXPECTED_ENGINEERING_RESULT"
+        assert row.run.trial_readback is result.staged.trial_readback
+        assert row.run.expected_generation is result.staged.expected_generation
+        assert row.review_packet["allowed_decisions"] == []
+        evidence = row.review_packet["engineering_evidence"]
+        assert evidence["accounting"]["trial_readback_sha256"] == result.staged.trial_readback.sha256
+        assert not evidence["physical_acceptance"]
+        # Scripted refusal is never claimed as observed temporal leakage detection.
+        assert evidence["controls"][2]["status"] == "NOT_RUN"
+        assert all(attempt.cleanup_confirmed for attempt in row.outcome.attempts)
+    good, bad = result.variants
+    assert good.review_packet["frozen_gate_metrics"]["paired_mean_improvement"] == pytest.approx(.175)
+    assert bad.review_packet["frozen_gate_metrics"]["paired_mean_improvement"] is None
+    assert bad.review_packet["diagnostic"]["status"] == "REFUSED"
+
+
+@pytest.mark.parametrize("mutation", ["variant_omitted", "config_omitted", "source_swapped"])
+def test_application_cycle_rejects_incomplete_set_before_effects(connected_case, mutation):
+    case = connected_case
+    variants, engines = _cycle_variants(case), _cycle_engines(case)
+    changes = {}
+    if mutation == "variant_omitted":
+        variants = variants[:1]
+    elif mutation == "config_omitted":
+        changes["configurations"] = case[3]["configurations"][:1]
+    else:
+        variants = (variants[0], replace(variants[1], source=variants[0].source))
+    with pytest.raises(cycle.StagedCycleRefused):
+        _cycle(case, variants, engines, **changes)
+    assert all(engine.calls == [] for engine in engines)
+    assert (case[0] / sa.LEDGER_BASENAME).read_bytes() == b""
+
+
+def test_application_cycle_preflights_later_inputs_before_first_attempt(connected_case):
+    case = connected_case
+    variants, engines = _cycle_variants(case), _cycle_engines(case)
+    variants = (variants[0], replace(variants[1], run=replace(variants[1].run, schedules=())))
+    result = _cycle(case, variants, engines)
+    assert result.status == "REFUSED"
+    assert {row.status for row in result.variants} == {"NOT_ATTEMPTED_INVALID_BATCH"}
+    assert all(engine.calls == [] for engine in engines)
+    # Generated choices remain charged even though no execution was attempted.
+    _assert_full_cold_accounting(case, result.staged)
+
+
+def test_application_cycle_unknown_stops_later_variants_and_retains_all_charges(connected_case):
+    case = connected_case
+    engines = _cycle_engines(case, first={"start_rc": 7})
+    result = _cycle(case, engines=engines)
+    assert result.status == "EFFECT_UNKNOWN"
+    first, second = result.variants
+    assert first.status == "EFFECT_UNKNOWN"
+    assert len(first.outcome.attempts) == 1 and first.outcome.attempts[0].execution_uncertain
+    assert first.review_packet["diagnostic"]["status"] == "REFUSED"
+    assert second.status == "NOT_ATTEMPTED_AFTER_REFUSAL" and second.outcome is None
+    assert engines[1].calls == []
+    _assert_full_cold_accounting(case, result.staged)
+
+
+def test_application_cycle_partial_output_is_not_salvaged(connected_case):
+    case = connected_case
+    variants = _cycle_variants(case)
+    variants = (replace(variants[0], spec=pf.spec(max_attempts=1)), variants[1])
+    engines = _cycle_engines(case)
+    result = _cycle(case, variants, engines)
+    assert result.status == "REFUSED"
+    first, second = result.variants
+    assert first.outcome.outputs == () and len(first.outcome.attempts) == 1
+    assert first.review_packet["frozen_gate_metrics"]["paired_mean_improvement"] is None
+    assert first.outcome.refusal_reasons == ("ATTEMPT_BUDGET_EXHAUSTED",)
+    assert second.outcome is None and engines[1].calls == []
+
+
+def test_transport_failure_does_not_pass_scripted_bad_control(connected_case):
+    case = connected_case
+    engines = _cycle_engines(case, second={"exit_state": {
+        "Running": False, "ExitCode": 7, "OOMKilled": False}})
+    result = _cycle(case, engines=engines)
+    assert result.status == "REFUSED" and result.variants[1].status == "REFUSED"
+    assert result.variants[1].outcome.refusal_reasons == ("TRANSPORT_ATTEMPT_NOT_CONFIRMED",)
+    assert result.variants[1].review_packet["engineering_evidence"]["controls"][2]["status"] == "NOT_RUN"
+
+
+def test_application_cycle_default_and_cli_refuse_without_effects(connected_case, capsys):
+    case = connected_case
+    with pytest.raises(cycle.StagedCycleRefused, match="RUNTIME_QUALIFICATION_UNAVAILABLE"):
+        cycle.run_staged_cycle(**case[3], variants=_cycle_variants(case))
+    from scripts.research_codegen_cycle import main
+    assert main([]) == 78
+    assert json.loads(capsys.readouterr().out)["execution_enabled"] is False
+    with pytest.raises(SystemExit) as rejected:
+        main(["--qualified"])
+    assert rejected.value.code == 2
+    assert (case[0] / sa.LEDGER_BASENAME).read_bytes() == b""
+
+
+def test_application_cycle_never_replays_existing_unknown_generation(connected_case):
+    case = connected_case
+    first = _cycle(case, engines=_cycle_engines(case, first={"start_rc": 7}))
+    assert first.status == "EFFECT_UNKNOWN"
+    before = (case[0] / sa.LEDGER_BASENAME).read_bytes()
+    engines = _cycle_engines(case)
+    second = _cycle(case, engines=engines, run_id="renamed-receipt-is-not-replay-authority")
+    assert second.status == "RECONCILIATION_REQUIRED"
+    assert all(row.status == "NOT_ATTEMPTED_EXISTING_GENERATION" for row in second.variants)
+    assert all(engine.calls == [] for engine in engines)
+    assert (case[0] / sa.LEDGER_BASENAME).read_bytes() == before
+
+
+def test_application_cycle_partial_existing_generation_does_not_replay(connected_case):
+    case = connected_case
+    expected = json.loads(case[3]["expected_generation"].raw)
+    expected["variants"] = expected["variants"][:1]
+    sa.stage_synthetic_generation(**{**case[3], "expected_generation": pf.bound(expected),
+                                   "configurations": case[3]["configurations"][:1]})
+    engines = _cycle_engines(case)
+    result = _cycle(case, engines=engines)
+    assert result.staged.newly_recorded_count == 1
+    assert result.status == "RECONCILIATION_REQUIRED"
+    assert all(engine.calls == [] for engine in engines)
+    _assert_full_cold_accounting(case, result.staged)
+
+
+def test_application_cycle_retains_attempt_if_review_consumer_refuses(connected_case, monkeypatch):
+    case = connected_case
+    engines = _cycle_engines(case)
+
+    def refuse(*args, **kwargs):
+        raise ValueError("fixture consumer failure")
+
+    monkeypatch.setattr(cycle, "diagnostic_review_packet", refuse)
+    result = _cycle(case, engines=engines)
+    assert result.status == "REFUSED"
+    first, later = result.variants
+    assert first.reason == "DIAGNOSTIC_COMPOSITION_REFUSED"
+    assert first.outcome.completed and len(first.outcome.attempts) == 6
+    assert first.diagnostic is not None and first.review_packet is None
+    assert later.outcome is None and engines[1].calls == []
