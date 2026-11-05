@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# EXTRACTED-VERBATIM-FROM: .github/workflows/daily.yml
 # Durable checkpoint for International public surfaces after normalization.
 set -euo pipefail
 

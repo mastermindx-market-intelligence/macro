@@ -1,0 +1,307 @@
+{
+  "schema": "mastermind.shared_shell.r41_browser_proof.v1",
+  "status": "BUILT_NOT_PROVEN",
+  "production_release_accepted": false,
+  "implementation_commit": "b50d1bf32c2b3ee74db4a65b451a0dbc284d8a43",
+  "pr": 7949,
+  "branch": "sol/market-os-shared-shell-design-20260924",
+  "procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "commit": "bdf2a972e68a70270c24d4b5d61a4d60edc4f288",
+    "index_blob": "4b0189a75d559d963365097485e8509a49c70e23",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "environment": {
+    "captured_at_utc": "2026-10-03T05:42:03.162753Z",
+    "browser": "Google Chrome 154.0.8037.95",
+    "playwright_test": "1.62.0",
+    "node": "v26.5.0",
+    "server": "python http.server against the exact local site tree at 127.0.0.1:8877",
+    "navigation_css_digest": "edfd821b"
+  },
+  "pilot_pages": [
+    "macro.html",
+    "sector_central.html",
+    "reports.html"
+  ],
+  "browser_matrix": {
+    "passed": 17,
+    "failed": 0,
+    "cases": [
+      "desktop 1440x1000 dark English open/search/no-match/reset/Escape/focus return on all three pilots",
+      "mobile 390x844 light Chinese heading focus/translation/close/viewport bounds on all three pilots",
+      "foreign live modal blocks All tools without disturbing the existing overlay",
+      "live source withdrawal disables the projected destination before navigation",
+      "320x568 dark English reachability on all three pilots",
+      "320x844 light Chinese with application typography tokens doubled on all three pilots",
+      "844x390 dark English landscape reachability on all three pilots"
+    ],
+    "initial_failure": {
+      "result": "16 passed / 1 failed",
+      "case": "macro.html 320-double-type",
+      "root_cause": "wrapped mobile categories reduced the sole vertical reading scrollport to 155px while a long doubled-type destination row grew to about 293px"
+    },
+    "repair_verification": [
+      "targeted macro 320-double-type: 1/1 passed",
+      "full browser matrix after repair: 17/17 passed"
+    ]
+  },
+  "source_verification": {
+    "shared_all_tools_nav_account_pytest": {
+      "passed": 141,
+      "failed": 0
+    },
+    "production_and_reference_controller": {
+      "passed": 107,
+      "failed": 0
+    },
+    "mutation_kills": {
+      "detected": 12,
+      "total": 12,
+      "evidence": "../mutations-r23.json"
+    },
+    "template_contract": {
+      "passed": 20,
+      "failed": 0
+    },
+    "template_site_sync": {
+      "pairs_checked": 105,
+      "status": "PASS"
+    },
+    "design_system_forward_ratchet": "PASS with 0 introduced blocking findings",
+    "ui_visual_evidence_guard": "PASS after required full-checkout restoration",
+    "git_diff_check": "PASS"
+  },
+  "repair": {
+    "reference_parity": "research reference now byte-matches the production nav_market controller marker block; sha256 49bc32c1bca12098c8a958cf686325fbc7f918304f1ad9f3892cce346b4249be",
+    "mobile_categories": "under 600px, category controls stay on one horizontally scrollable line and buttons do not shrink, preserving vertical budget for the sole reading scroller",
+    "cache_contract": "exactly the three admitted pilots reference navigation-refresh.css?v=edfd821b in preload and stylesheet links",
+    "unchanged_authority": "no new catalogue, route owner, account state, market preference, persistence authority or pilot expansion"
+  },
+  "screenshots": {
+    "macro-320-double-type-footer.png": {
+      "bytes": 69377,
+      "sha256": "e0fa327f7a9316c4dec28be7134d487d4997e714fbf6bd84cbd87cd299b973ec",
+      "viewport": "320x844",
+      "theme": "light",
+      "locale": "zh",
+      "stress": "application typography tokens doubled",
+      "capture": "footer"
+    },
+    "macro-320-double-type-top.png": {
+      "bytes": 64652,
+      "sha256": "21fe3a645d040e7c38583c983774e5e1aecca3d683546e537644374fd936e5ed",
+      "viewport": "320x844",
+      "theme": "light",
+      "locale": "zh",
+      "stress": "application typography tokens doubled",
+      "capture": "top"
+    },
+    "macro-320-short-footer.png": {
+      "bytes": 30713,
+      "sha256": "5848d93a0ddd5e260b15949b9d4410b7308ee1d366b4a7f70377a11ed1b64190",
+      "viewport": "320x568",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "narrow short viewport",
+      "capture": "footer"
+    },
+    "macro-320-short-top.png": {
+      "bytes": 37846,
+      "sha256": "91f8a54c4b9c5e3eaa53ce8f58506bb52ffa1b8441a47a14c7fb75fdf3ef7435",
+      "viewport": "320x568",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "narrow short viewport",
+      "capture": "top"
+    },
+    "macro-desktop-dark-en.png": {
+      "bytes": 201684,
+      "sha256": "1d3beb02aa34391357ee3f16233782763262f39c62eb685aa23ec39937d78e9e",
+      "viewport": "1440x1000",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "baseline desktop",
+      "capture": "state"
+    },
+    "macro-landscape-footer.png": {
+      "bytes": 29650,
+      "sha256": "3515e3f8069c70b3998a70e94cc410eef314ba28f89c2ebb5ffce8e6d0957cf5",
+      "viewport": "844x390",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "short landscape viewport",
+      "capture": "footer"
+    },
+    "macro-landscape-top.png": {
+      "bytes": 47993,
+      "sha256": "4c4742da11d20942816b02755006a376645708125e224f55b7e49a4cc47aa172",
+      "viewport": "844x390",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "short landscape viewport",
+      "capture": "top"
+    },
+    "macro-mobile-light-zh.png": {
+      "bytes": 66347,
+      "sha256": "502cce20afcef52409f49ee1e2787befe743cf0b9d422adc308960be2e05bbe6",
+      "viewport": "390x844",
+      "theme": "light",
+      "locale": "zh",
+      "stress": "baseline mobile",
+      "capture": "state"
+    },
+    "reports-320-double-type-footer.png": {
+      "bytes": 65984,
+      "sha256": "8959a8cfa6385aa742d899e2a6a4869081786d19a418b12bb6eba84d927e2cbf",
+      "viewport": "320x844",
+      "theme": "light",
+      "locale": "zh",
+      "stress": "application typography tokens doubled",
+      "capture": "footer"
+    },
+    "reports-320-double-type-top.png": {
+      "bytes": 61080,
+      "sha256": "a144bff346a989fa6e2f9b0a40a5a09aa2003d2ab4629556e86845e3300b2fbc",
+      "viewport": "320x844",
+      "theme": "light",
+      "locale": "zh",
+      "stress": "application typography tokens doubled",
+      "capture": "top"
+    },
+    "reports-320-short-footer.png": {
+      "bytes": 31370,
+      "sha256": "a7de9775934ec7435e9db550f34d9765e12552bc1fe92d19e97933f6a784dd75",
+      "viewport": "320x568",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "narrow short viewport",
+      "capture": "footer"
+    },
+    "reports-320-short-top.png": {
+      "bytes": 38796,
+      "sha256": "dd3b03ca957b4f6b0a25a37eb458cbc384807a8473cd92ba5b7f0043a6cab614",
+      "viewport": "320x568",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "narrow short viewport",
+      "capture": "top"
+    },
+    "reports-desktop-dark-en.png": {
+      "bytes": 179154,
+      "sha256": "a4cf3ac0d848e569ac800ca5514735d34339c083141964d31c0ffd0586243915",
+      "viewport": "1440x1000",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "baseline desktop",
+      "capture": "state"
+    },
+    "reports-landscape-footer.png": {
+      "bytes": 30055,
+      "sha256": "8fcd4b8b0b7ac96bf41584063092cf9f7224325c6826c90c6c3baad0b1ea39c1",
+      "viewport": "844x390",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "short landscape viewport",
+      "capture": "footer"
+    },
+    "reports-landscape-top.png": {
+      "bytes": 40293,
+      "sha256": "9c13bafcaa1d9420ee5f814172797f4144c78637faf5d9d929ce472191207637",
+      "viewport": "844x390",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "short landscape viewport",
+      "capture": "top"
+    },
+    "reports-mobile-light-zh.png": {
+      "bytes": 70411,
+      "sha256": "7f02af0e4bfb869a794ffb9d13ffb90c88a66a70adf41f27d6152834321b0fe4",
+      "viewport": "390x844",
+      "theme": "light",
+      "locale": "zh",
+      "stress": "baseline mobile",
+      "capture": "state"
+    },
+    "sector_central-320-double-type-footer.png": {
+      "bytes": 69523,
+      "sha256": "d837b616ddfa0678e8476c8c7b56413ab1bdb2c553640859a48641dd41df777e",
+      "viewport": "320x844",
+      "theme": "light",
+      "locale": "zh",
+      "stress": "application typography tokens doubled",
+      "capture": "footer"
+    },
+    "sector_central-320-double-type-top.png": {
+      "bytes": 68190,
+      "sha256": "47f67b99315ac72444cb698ee4013b7e6d332c5acf1ce2ec2489030f9fe3ee05",
+      "viewport": "320x844",
+      "theme": "light",
+      "locale": "zh",
+      "stress": "application typography tokens doubled",
+      "capture": "top"
+    },
+    "sector_central-320-short-footer.png": {
+      "bytes": 31259,
+      "sha256": "509c80c29906aef9a22450fae0b802b9b656ec00acc26e64b124a7e663605ceb",
+      "viewport": "320x568",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "narrow short viewport",
+      "capture": "footer"
+    },
+    "sector_central-320-short-top.png": {
+      "bytes": 38597,
+      "sha256": "2cf9cd0a9643cee2d4382576d20f9027eac4e402a3ee8f3141f86bf1fff160f2",
+      "viewport": "320x568",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "narrow short viewport",
+      "capture": "top"
+    },
+    "sector_central-desktop-dark-en.png": {
+      "bytes": 192372,
+      "sha256": "6c39a27a3262b785bb926b76276d44cd5e16df0d8718ee7e7c551520937928bc",
+      "viewport": "1440x1000",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "baseline desktop",
+      "capture": "state"
+    },
+    "sector_central-landscape-footer.png": {
+      "bytes": 28584,
+      "sha256": "b5946cbb3e33d36c6105770b7ccf3947851c5cec1719bfc7f05cf3b81a9a83f8",
+      "viewport": "844x390",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "short landscape viewport",
+      "capture": "footer"
+    },
+    "sector_central-landscape-top.png": {
+      "bytes": 46362,
+      "sha256": "cadd880f4e2e305b07f63dd66e8eee0c17fa4ccdbacd2e11eeb61732b52bacac",
+      "viewport": "844x390",
+      "theme": "dark",
+      "locale": "en",
+      "stress": "short landscape viewport",
+      "capture": "top"
+    },
+    "sector_central-mobile-light-zh.png": {
+      "bytes": 68020,
+      "sha256": "b9851abadf2042599a6baab53991b59179c29ad9890bbc054459601e8093a0f9",
+      "viewport": "390x844",
+      "theme": "light",
+      "locale": "zh",
+      "stress": "baseline mobile",
+      "capture": "state"
+    }
+  },
+  "limits": [
+    "local exact-tree Chrome proof, not deployed CDN or production-edge proof",
+    "double-type scenario mutates application typography tokens; it is not native browser 200-percent zoom acceptance",
+    "no authenticated account, portfolio, watchlist, alert, order or saved-state mutation",
+    "no Safari, Firefox, physical-device or assistive-technology acceptance",
+    "PR remains draft and HOLD-FOR-SOL; merge and deployment are not authorized"
+  ]
+}
