@@ -27,6 +27,15 @@ This helper closes the three escapes and adds the two the rebase path needed:
   generation already accepted: identical output bytes AND identical source
   dependencies AND no material source path moved between the proved checkout
   and HEAD.  A source change never reuses a proof blindly.
+* **Landing readback.**  A publication witness is minted only after one
+  bounded same-origin read of ``refs/heads/main`` confirms the sealed
+  generation actually landed there: the candidate commit itself
+  (fast-forward, possibly under later unrelated-only movement), or a squash
+  landing whose complete path/mode/blob projection and material source
+  closure equal the sealed candidate.  A bare publisher success result never
+  records the local candidate as the actual remote landing; a missing,
+  unknown, pending, or newer differing generation emits no successful
+  witness, and an existing witness record is never overwritten.
 
 Exit codes are a contract, consumed by the workflow and by
 ``tests/test_govrev_candidate_proof_gate.py``::
@@ -730,6 +739,32 @@ def _atomic_write(path: Path, text: str) -> None:
             pass
 
 
+def _atomic_create(path: Path, text: str) -> None:
+    """Publish one original witness without replacing a concurrent winner."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile('w', encoding='utf-8', dir=path.parent,
+                                     prefix=path.name + '.', delete=False) as handle:
+        name = handle.name
+        handle.write(text)
+        handle.flush()
+        os.fsync(handle.fileno())
+    try:
+        os.link(name, path)
+        directory = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    finally:
+        os.unlink(name)
+
+
+def _is_sealed_output_path(relative: str) -> bool:
+    """The output selection the sealed generation binds (data + published site)."""
+    static = relative in SHARED_OUTPUT_PATHS or (relative.startswith("site/government-revenue-") or relative.startswith("site/government_revenue")) and Path(relative).suffix in (".js", ".css", ".html")
+    return relative.startswith("data/government_revenue/") or relative.startswith("site/government-revenue-data/") or static
+
+
 def _committed_generation(root: Path, receipt: dict, commit: str) -> dict:
     result = _git(root, "ls-tree", "-r", "-z", commit, "--",
                   "data/government_revenue", "site")
@@ -738,8 +773,7 @@ def _committed_generation(root: Path, receipt: dict, commit: str) -> dict:
         if not row:
             continue
         metadata_row, relative = row.split("\t", 1)
-        static = relative in SHARED_OUTPUT_PATHS or (relative.startswith("site/government-revenue-") or relative.startswith("site/government_revenue")) and Path(relative).suffix in (".js", ".css", ".html")
-        if not (relative.startswith("data/government_revenue/") or relative.startswith("site/government-revenue-data/") or static):
+        if not _is_sealed_output_path(relative):
             continue
         mode, kind, oid = metadata_row.split()
         digest = receipt["outputs"].get(relative)
@@ -875,10 +909,156 @@ def command_observe_push(args: argparse.Namespace) -> int:
     return 0 if record["outcome"] == "original_effect_confirmed" else EXIT_PUSH_UNKNOWN
 
 
+_REMOTE_MAIN_LINE = re.compile(r"^([0-9a-f]{40}(?:[0-9a-f]{24})?)\s+refs/heads/main$")
+#: Bounded squash-landing search: how far back from the observed tip the
+#: readback may walk looking for the sealed projection.
+
+
+def _observed_remote_main(root: Path) -> str:
+    """One bounded same-origin read of refs/heads/main; never a push or retry."""
+    result = subprocess.run(
+        ["git", "-C", str(root), "ls-remote", "origin", "refs/heads/main"],
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=20,
+    )
+    rows = [row.strip() for row in result.stdout.splitlines() if row.strip()]
+    if len(rows) != 1:
+        raise ValueError("original_effect_not_confirmed")
+    match = _REMOTE_MAIN_LINE.match(rows[0])
+    if not match:
+        raise ValueError("invalid_remote_ref")
+    return match.group(1)
+
+
+def _tree_projection(root: Path, commit: str) -> dict[str, tuple[str, str]]:
+    """Complete path/mode/blob projection of the sealed output selection.
+
+    Used to compare the sealed candidate generation against a commit that
+    actually landed on the original ref.  Mode and blob id both bind: a
+    byte-equal file that flipped mode, or a symlink standing in for an
+    output, is a different generation.
+    """
+    result = _git(root, "ls-tree", "-r", "-z", commit, "--",
+                  "data/government_revenue", "site")
+    projection: dict[str, tuple[str, str]] = {}
+    for row in result.stdout.split("\0"):
+        if not row:
+            continue
+        metadata_row, relative = row.split("\t", 1)
+        if not _is_sealed_output_path(relative):
+            continue
+        mode, kind, oid = metadata_row.split()
+        if kind != "blob" or mode == "120000":
+            raise ValueError(f"sealed output is not a regular blob: {relative}")
+        projection[relative] = (mode, oid)
+    if not projection:
+        raise ValueError("empty committed generation")
+    return projection
+
+
+def _material_delta(root: Path, receipt: dict, base_commit: str, head_commit: str) -> list[str]:
+    """Material source paths (the receipt's own outputs exempt) that moved."""
+    delta = _git(root, "diff", "--name-only", "-z", "--no-renames",
+                 base_commit, head_commit, check=False)
+    if delta.returncode != 0:
+        raise ValueError("landing generation could not be diffed against the proved checkout")
+    changed = {path for path in delta.stdout.split('\0') if path}
+    selected = set(receipt.get('source_dependencies', {})) | set(receipt.get('inputs', {}))
+    return sorted(
+        path
+        for path in changed
+        if path not in receipt["outputs"]
+        and (path in selected or any(path.startswith(prefix) for prefix in MATERIAL_PREFIXES))
+    )
+
+
+def _ensure_remote_objects(root: Path, *commits: str) -> None:
+    """One bounded same-origin fetch of the observed tip, when not already local.
+
+    Only commits the local repository lacks are named: the sealed candidate
+    commit may legitimately never have existed on the original ref (squash
+    landing), so asking the origin for it would fail the whole readback.
+    """
+    missing = [commit for commit in commits
+               if _git(root, "cat-file", "-e", f"{commit}^{{commit}}", check=False).returncode != 0]
+    if not missing:
+        return
+    history_args = ["--filter=blob:none", "--deepen=128"] if _git(
+        root, "rev-parse", "--is-shallow-repository").stdout.strip() == "true" else []
+    subprocess.run(["git", "-C", str(root), "fetch", "--no-tags", "--no-write-fetch-head",
+                    *history_args, "origin", *missing],
+                   capture_output=True, check=True, timeout=20)
+
+
+def _landing_generation(root: Path, receipt: dict, expected_commit: str) -> dict:
+    """Derive the actually-landed generation from one bounded same-origin read.
+
+    The readback confirms the consumer's sealed generation on the original
+    ref; it never grants native route or merge authority — the incumbent
+    push_do/controller still owns that gate.
+    """
+    observed = _observed_remote_main(root)
+    landing = {"observed_commit": observed, "landing_commit": expected_commit,
+               "landing": "fast_forward"}
+    if observed == expected_commit:
+        return landing
+    _ensure_remote_objects(root, observed, expected_commit)
+    sealed = _tree_projection(root, expected_commit)
+    # Both ancestry and squash cases bind the CURRENT observed target tip.
+    # Finding matching bytes somewhere in old history cannot defeat supersession.
+    if _tree_projection(root, observed) != sealed:
+        raise ValueError("observed generation differs from the sealed candidate")
+    if _material_delta(root, receipt, receipt["source_checkout"], observed):
+        raise ValueError("observed generation moved sealed material source")
+    if _git(root, "merge-base", "--is-ancestor", expected_commit, observed,
+            check=False).returncode == 0:
+        return landing
+    # Squash landing: the candidate commit itself may never have existed on
+    # the original ref.  Allow only the complete sealed path/mode/blob
+    # projection at the observed ref, with the proof's material source closure
+    # unchanged — a
+    # byte-equal render over changed selected source never qualifies.
+    # This is the observed commit containing the exact generation, not a claim
+    # that raw Git metadata authenticated a native PR's merge operation.
+    landing["landing_commit"] = observed
+    landing["landing"] = "squash_projection"
+    return landing
+
+
+def _load_push_identity(identity_path: Path, receipt_path: Path, root: Path,
+                        receipt: dict, commit: str, origin_binding: str | None) -> dict | None:
+    """Bind the witness to the ORIGINAL same-carrier push identity, or refuse."""
+    try:
+        identity = json.loads(identity_path.read_text(encoding="utf-8"))
+        claimed = identity.pop("identity")
+        if claimed != _sha256_bytes(_canonical(identity).encode()):
+            raise ValueError("identity_invalid")
+        identity["identity"] = claimed
+        if (identity.get("contract") != "government_revenue.push_identity.v1"
+                or identity.get("issuance_authority") is not False
+                or identity.get("expected_commit") != commit
+                or identity.get("proof_identity") != receipt["identity"]
+                or identity.get("proof_receipt_sha256") != _sha256_bytes(receipt_path.read_bytes())
+                or identity.get("origin_binding_sha256") != origin_binding
+                or identity.get("run_id") != os.environ.get("GITHUB_RUN_ID")
+                or identity.get("run_attempt") != os.environ.get("GITHUB_RUN_ATTEMPT")
+                or not identity.get("push_attempt")):
+            raise ValueError("original_push_identity_mismatch")
+        return identity
+    except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError):
+        return None
+
+
 def command_publication_witness(args: argparse.Namespace) -> int:
     root = Path(args.root).resolve()
     out = Path(args.out).resolve()
     if out.is_relative_to(root) or args.commit != _head_commit(root):
+        return EXIT_WITNESS_MISMATCH
+    if out.exists():
+        _say("::error::publication witness output already exists; an original "
+             "witness record is never overwritten")
         return EXIT_WITNESS_MISMATCH
     args.committed = True
     status = command_verify(args)
@@ -886,28 +1066,74 @@ def command_publication_witness(args: argparse.Namespace) -> int:
         return status
     receipt = _load_receipt(Path(args.receipt))
     generation = _committed_generation(root, receipt, args.commit)
+    try:
+        origin_binding = _origin_binding(root)
+    except (ValueError, subprocess.SubprocessError):
+        origin_binding = None
+    identity = None
+    if getattr(args, "push_identity", None):
+        identity = _load_push_identity(Path(args.push_identity), Path(args.receipt),
+                                       root, receipt, args.commit, origin_binding)
+        if identity is None:
+            _say("::error title=govrev publication witness::the original push "
+                 "identity does not bind this proof, commit, run and unchanged "
+                 "single origin; refusing")
+            return EXIT_PUSH_UNKNOWN
     observation = None
+    observation_sha256 = None
     if args.push_status == "successful_after_same_carrier_observation":
         try:
             observation_path = Path(args.push_observation)
-            observation = json.loads(observation_path.read_text())
+            observation_raw = observation_path.read_bytes()
+            observation = json.loads(observation_raw)
+            observation_sha256 = _sha256_bytes(observation_raw)
             if (observation.get("outcome") != "original_effect_confirmed"
                     or observation.get("expected_commit") != args.commit
                     or observation.get("proof_identity") != receipt["identity"]
-                    or observation.get("origin_binding_sha256") != _origin_binding(root)):
+                    or observation.get("origin_binding_sha256") != origin_binding):
+                return EXIT_PUSH_UNKNOWN
+            if identity is not None and observation.get("push_identity") != identity["identity"]:
                 return EXIT_PUSH_UNKNOWN
         except (OSError, ValueError, TypeError, subprocess.SubprocessError):
             return EXIT_PUSH_UNKNOWN
+    elif identity is None:
+        # A bare publisher success result (push_do exit 0, queue metadata) is
+        # not landing evidence: without the original push identity binding
+        # this exact proof, commit, run and single origin, the local candidate
+        # must never be recorded as the actual remote landing.
+        _say("::error title=govrev publication witness::no original push "
+             "identity (GOVREV_PUSH_IDENTITY) and no same-carrier observation; "
+             "a publisher success result alone is not landing evidence")
+        return EXIT_PUSH_UNKNOWN
+    try:
+        landing = _landing_generation(root, receipt, args.commit)
+        if origin_binding is None or _origin_binding(root) != origin_binding:
+            raise ValueError('original_origin_changed_during_readback')
+    except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
+        # Do not retain Git errors/URLs: they can contain provisioned credentials.
+        _say("::error title=govrev publication witness::same-origin readback "
+             "did not confirm the sealed candidate generation on "
+             "refs/heads/main; no successful witness recorded")
+        return EXIT_PUSH_UNKNOWN
     witness = {"contract": "government_revenue.publication_witness.v1",
                "proof_identity": receipt["identity"], "generation": receipt["generation"],
                "committed_generation": generation, "push_status": args.push_status,
-               "push_status_source": "same_origin_original_commit_observation" if observation else "publisher workflow successful push_do branch",
-               "push_observation_sha256": _sha256_bytes(Path(args.push_observation).read_bytes()) if observation else None,
-               "observed_remote_commit": observation.get("observed_commit") if observation else args.commit,
+               "push_status_source": "same_origin_original_commit_observation" if observation else "same_origin_original_push_identity_readback",
+               "push_observation_sha256": observation_sha256,
+               "push_identity_sha256": _sha256_bytes(Path(args.push_identity).read_bytes()) if identity else None,
+               "origin_binding_sha256": origin_binding,
+               "observed_remote_commit": landing["observed_commit"],
+               "landing_commit": landing["landing_commit"],
+               "landing": landing["landing"],
                "serving_generation_authority": False,
                "observed_at": datetime.now(timezone.utc).isoformat(),
                "issuance_authority": False}
-    _atomic_write(out, _canonical(witness) + "\n")
+    try:
+        _atomic_create(out, _canonical(witness) + "\n")
+    except FileExistsError:
+        return EXIT_WITNESS_MISMATCH
+    except OSError:
+        return EXIT_PUSH_UNKNOWN
     return 0
 
 
@@ -1085,6 +1311,10 @@ def build_parser() -> argparse.ArgumentParser:
     witness.add_argument("--commit", required=True)
     witness.add_argument("--push-status", choices=("successful", "successful_after_same_carrier_observation"), required=True)
     witness.add_argument("--push-observation")
+    witness.add_argument("--push-identity",
+                         help="the ORIGINAL same-carrier push identity written "
+                              "before push_do (GOVREV_PUSH_IDENTITY); the live "
+                              "workflow must always pass it")
     witness.add_argument("--out", required=True)
     witness.set_defaults(func=command_publication_witness)
     identity = sub.add_parser("push-identity", help="pin the original publisher commit and single origin before push")

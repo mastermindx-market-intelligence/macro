@@ -46,6 +46,7 @@ EXIT_TREE_MUTATED = 4
 EXIT_INCOMPLETE_PROOF = 5
 EXIT_RECEIPT_INVALID = 6
 EXIT_WITNESS_MISMATCH = 10
+EXIT_PUSH_UNKNOWN = 75
 
 SUITE_OK = "def test_proof_green():\n    assert True\n"
 SUITE_FAIL = "def test_proof_boom():\n    assert False, 'intentional gate probe'\n"
@@ -594,6 +595,13 @@ def test_sealed_execution_artifact_loss_or_drift_refuses_witness(tmp_path, kind)
 
 
 def test_committed_witness_refuses_uncommitted_generation_then_binds_exact_commit(tmp_path):
+    """A fabricated success with no origin/remote no longer mints a witness.
+
+    The witness must confirm the actual landing on a real remote: a bare
+    publisher success result alone records nothing, the original push
+    identity binds the readback, and the recorded remote commit is the
+    actually observed refs/heads/main — never merely the local candidate.
+    """
     root = _proof_tree(tmp_path)
     queue = root / "data/government_revenue/candidate_queue.json"
     queue.write_text(queue.read_text() + "\n")
@@ -603,8 +611,24 @@ def test_committed_witness_refuses_uncommitted_generation_then_binds_exact_commi
     _git(root, "add", "-A")
     _git(root, "commit", "-qm", "publish exact sealed bytes")
     commit = _git(root, "rev-parse", "HEAD").strip()
+    remote = tmp_path / "origin.git"
+    subprocess.run(["git", "init", "--bare", "-q", str(remote)], check=True)
+    _git(root, "remote", "add", "origin", str(remote))
+    identity = tmp_path / "push.identity.json"
+    mint = _run_gate(root, "push-identity", "--root", ".", "--receipt",
+                     str(_receipt_path(tmp_path)), "--attempt", "1", "--out", str(identity))
+    assert mint.returncode == 0, mint.stdout + mint.stderr
     out = tmp_path / "publication.json"
-    result = _run_gate(root, "publication-witness", *common, "--commit", commit, "--push-status", "successful", "--out", str(out))
+    # No landing yet: the success status plus the identity still proves nothing.
+    refused = _run_gate(root, "publication-witness", *common, "--commit", commit,
+                        "--push-status", "successful", "--push-identity", str(identity),
+                        "--out", str(out))
+    assert refused.returncode == EXIT_PUSH_UNKNOWN, refused.stdout + refused.stderr
+    assert not out.exists()
+    _git(root, "push", "-q", "origin", "HEAD:main")
+    result = _run_gate(root, "publication-witness", *common, "--commit", commit,
+                       "--push-status", "successful", "--push-identity", str(identity),
+                       "--out", str(out))
     assert result.returncode == 0, result.stdout + result.stderr
     witness = json.loads(out.read_text())
     receipt = json.loads(_receipt_path(tmp_path).read_text())
@@ -613,6 +637,20 @@ def test_committed_witness_refuses_uncommitted_generation_then_binds_exact_commi
     assert witness["committed_generation"]["artifacts"]["data/government_revenue/candidate_queue.json"]["sha256"] == receipt["outputs"]["data/government_revenue/candidate_queue.json"]
     assert witness["issuance_authority"] is False
     assert witness["observed_at"] != receipt["generation"]["projection_generated_at"]
+    assert witness["observed_remote_commit"] == _git(root, "ls-remote", "origin", "refs/heads/main").split()[0]
+    assert witness["landing"] == "fast_forward"
+    assert witness["landing_commit"] == commit
+    assert witness["push_status_source"] == "same_origin_original_push_identity_readback"
+    import hashlib
+
+    assert witness["push_identity_sha256"] == hashlib.sha256(identity.read_bytes()).hexdigest()
+    # Even a qualifying readback must not overwrite an original witness record.
+    prior = out.read_bytes()
+    again = _run_gate(root, "publication-witness", *common, "--commit", commit,
+                      "--push-status", "successful", "--push-identity", str(identity),
+                      "--out", str(out))
+    assert again.returncode == EXIT_WITNESS_MISMATCH
+    assert out.read_bytes() == prior
 
 
 def test_committed_witness_refuses_unstaged_new_derived_output(tmp_path):

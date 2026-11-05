@@ -729,6 +729,7 @@ jobs:
             local rc=0 outcome_rc=0
             local prefix="$RUNNER_TEMP/govrev-candidate-proof.push-${PUSH_ATTEMPT}"
             GOVREV_PUSH_OBSERVATION="$prefix.observation.json"
+            GOVREV_PUSH_IDENTITY="$prefix.identity.json"
             GOVREV_PUSH_STATUS=successful
             python scripts/ci/govrev_candidate_proof.py push-identity \
               --root . --receipt "$RUNNER_TEMP/govrev-candidate-proof.receipt.json" \
@@ -1316,6 +1317,7 @@ jobs:
                   --root . --receipt "$RUNNER_TEMP/govrev-candidate-proof.receipt.json" \
                   --commit "$(git rev-parse HEAD)" --push-status "$GOVREV_PUSH_STATUS" \
                   --push-observation "$GOVREV_PUSH_OBSERVATION" \
+                  --push-identity "$GOVREV_PUSH_IDENTITY" \
                   --out "$RUNNER_TEMP/govrev-candidate-proof.publication.json"
                 echo "pushed Government Revenue evidence on attempt ${PUSH_ATTEMPT}"
                 push_won

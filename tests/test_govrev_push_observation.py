@@ -168,6 +168,246 @@ def test_reconciled_publication_witness_requires_same_proof_and_commit(tmp_path,
         assert record['serving_generation_authority'] is False
 
 
+def test_witness_binds_observation_to_the_same_original_identity(tmp_path):
+    root,remote,identity=prepared(tmp_path)
+    gate._git(root,'push','-q','origin','HEAD:main')
+    observation=tmp_path/'observation.json'
+    assert cli(root,'observe-push','--identity',str(identity),'--out',str(observation)).returncode==0
+    commit=gate._git(root,'rev-parse','HEAD').strip()
+    other=tmp_path/'other.identity.json'
+    assert cli(root,'push-identity','--receipt',str(gate._receipt_path(tmp_path)),
+        '--attempt','2','--out',str(other)).returncode==0
+    out=tmp_path/'publication.json'
+    common=('publication-witness','--receipt',str(gate._receipt_path(tmp_path)),
+        '--suite','tests/test_proof_gate_suite.py','--commit',commit,
+        '--push-status','successful_after_same_carrier_observation',
+        '--push-observation',str(observation),'--out',str(out))
+    mismatch=cli(root,*common,'--push-identity',str(other))
+    assert mismatch.returncode==75,mismatch.stdout+mismatch.stderr
+    assert not out.exists()
+    result=cli(root,*common,'--push-identity',str(identity))
+    assert result.returncode==0,result.stdout+result.stderr
+    record=json.loads(out.read_text())
+    assert record['push_status_source']=='same_origin_original_commit_observation'
+    assert record['push_identity_sha256']==hashlib.sha256(identity.read_bytes()).hexdigest()
+    assert record['observed_remote_commit']==commit
+
+
+def landing_prepared(tmp_path):
+    """prepared(), plus a sealed candidate commit that itself moves output bytes.
+
+    The extra movement makes the sealed output projection distinguishable from
+    the incumbent remote generation, so a ref without the landing cannot pass
+    the projection walk.
+    """
+    root,remote,identity=prepared(tmp_path)
+    queue=root/'data/government_revenue/candidate_queue.json'
+    queue.write_text(json.dumps({'content_id':'grcq1-proofgate','counts':{'total':2}}))
+    (root/'site/government-revenue-data/candidates.json').write_text(queue.read_text())
+    gate._git(root,'add','-A');gate._git(root,'commit','-qm','sealed output movement')
+    assert gate._prove(root,tmp_path).returncode==0
+    sealed_identity=tmp_path/'landing.identity.json'
+    result=cli(root,'push-identity','--receipt',str(gate._receipt_path(tmp_path)),
+        '--attempt','1','--out',str(sealed_identity))
+    assert result.returncode==0,result.stdout+result.stderr
+    return root,remote,sealed_identity
+
+
+def _peer_advance(tmp_path,root,remote,*,different_generation=False):
+    peer=tmp_path/'peer'
+    subprocess.run(['git','clone','-q','-b','main',str(remote),str(peer)],check=True)
+    gate._git(peer,'config','user.name','peer');gate._git(peer,'config','user.email','peer@test')
+    if different_generation:
+        payload='{"content_id":"grcq1-peer-generation"}'
+        (peer/'data/government_revenue/candidate_queue.json').write_text(payload)
+        (peer/'site/government-revenue-data/candidates.json').write_text(payload)
+    else:
+        (peer/'README').write_text('later unrelated movement')
+    gate._git(peer,'add','-A');gate._git(peer,'commit','-qm','peer advance');gate._git(peer,'push','-q')
+    return gate._git(peer,'rev-parse','HEAD').strip()
+
+
+def _push_squash_landing(root,remote,parent,*,message='squash landing',
+                         source_overrides=(),output_overrides=(),removals=(),additions=(),mode_overrides=()):
+    """Compose and push a real squash landing: the sealed candidate tree
+    re-parented onto the remote tip.  The landing commit never descends from
+    the candidate, and the local checkout never moves."""
+    env={**os.environ,'GIT_INDEX_FILE':str(root/'.git'/'govrev-squash-index')}
+
+    def run(*args,stdin=None):
+        return subprocess.run(['git','-C',str(root),*args],input=stdin,capture_output=True,
+            text=True,env=env,check=True).stdout
+
+    candidate_tree=gate._git(root,'rev-parse','HEAD^{tree}').strip()
+    run('read-tree',candidate_tree)
+    for path,body in source_overrides:
+        oid=run('hash-object','-w','--stdin',stdin=body).strip()
+        run('update-index','--add','--cacheinfo',f'100644,{oid},{path}')
+    for path,body in output_overrides:
+        oid=run('hash-object','-w','--stdin',stdin=body).strip()
+        run('update-index','--add','--cacheinfo',f'100644,{oid},{path}')
+    for path in removals:
+        run('update-index','--force-remove',path)
+    for path,body in additions:
+        oid=run('hash-object','-w','--stdin',stdin=body).strip()
+        run('update-index','--add','--cacheinfo',f'100644,{oid},{path}')
+    for mode,path in mode_overrides:
+        oid=run('ls-tree','HEAD','--',path).strip().split()[2]
+        run('update-index','--cacheinfo',f'{mode},{oid},{path}')
+    tree=run('write-tree').strip()
+    squash=run('commit-tree',tree,'-p',parent,'-m',message).strip()
+    gate._git(root,'push','-q',remote,f'{squash}:refs/heads/main')
+    return squash
+
+
+def witness_cli(root,tmp_path,identity,*extra,status='successful'):
+    out=tmp_path/'publication.json'
+    result=cli(root,'publication-witness','--receipt',str(gate._receipt_path(tmp_path)),
+        '--suite','tests/test_proof_gate_suite.py','--commit',gate._git(root,'rev-parse','HEAD').strip(),
+        '--push-status',status,'--push-identity',str(identity),*extra,'--out',str(out))
+    return result,out
+
+
+@pytest.mark.parametrize('state', [
+    'exact', 'later_unrelated_movement', 'squash', 'not_landed', 'unreadable',
+    'changed_origin', 'tampered_identity', 'newer_differing_generation',
+    'squash_changed_source', 'squash_changed_output', 'squash_added_output',
+    'squash_deleted_output', 'squash_mode_change', 'squash_symlink_output',
+    'squash_then_newer_output', 'squash_quoted_source',
+])
+def test_publication_witness_records_only_the_actually_landed_generation(tmp_path,state):
+    root,remote,identity=landing_prepared(tmp_path)
+    candidate=gate._git(root,'rev-parse','HEAD').strip()
+    expected={'exact':0,'later_unrelated_movement':0,'squash':0}
+    if state=='exact':
+        gate._git(root,'push','-q','origin','HEAD:main')
+    elif state=='later_unrelated_movement':
+        gate._git(root,'push','-q','origin','HEAD:main')
+        moved=_peer_advance(tmp_path,root,remote)
+    elif state=='squash':
+        parent=gate._git(root,'ls-remote',remote,'refs/heads/main').split()[0]
+        moved=_push_squash_landing(root,remote,parent)
+    elif state=='squash_then_newer_output':
+        parent=gate._git(root,'ls-remote',remote,'refs/heads/main').split()[0]
+        _push_squash_landing(root,remote,parent)
+        moved=_peer_advance(tmp_path,root,remote,different_generation=True)
+    elif state=='squash_quoted_source':
+        parent=gate._git(root,'ls-remote',remote,'refs/heads/main').split()[0]
+        moved=_push_squash_landing(root,remote,parent,source_overrides=(
+            ('scripts/é-source.py','changed protected source\n'),))
+    elif state=='newer_differing_generation':
+        moved=_peer_advance(tmp_path,root,remote,different_generation=True)
+    elif state=='squash_changed_source':
+        parent=gate._git(root,'ls-remote',remote,'refs/heads/main').split()[0]
+        moved=_push_squash_landing(root,remote,parent,source_overrides=(
+            ('tests/test_proof_gate_suite.py','def test_tampered():\n    assert False\n'),))
+    elif state=='squash_changed_output':
+        parent=gate._git(root,'ls-remote',remote,'refs/heads/main').split()[0]
+        moved=_push_squash_landing(root,remote,parent,output_overrides=(
+            ('data/government_revenue/candidate_queue.json','{"content_id":"grcq1-rewritten"}'),))
+    elif state=='squash_added_output':
+        parent=gate._git(root,'ls-remote',remote,'refs/heads/main').split()[0]
+        moved=_push_squash_landing(root,remote,parent,additions=(
+            ('data/government_revenue/extra.json','{}'),))
+    elif state=='squash_deleted_output':
+        parent=gate._git(root,'ls-remote',remote,'refs/heads/main').split()[0]
+        moved=_push_squash_landing(root,remote,parent,removals=(
+            'site/government-revenue-data/candidates.json',))
+    elif state in ('squash_mode_change','squash_symlink_output'):
+        parent=gate._git(root,'ls-remote',remote,'refs/heads/main').split()[0]
+        moved=_push_squash_landing(root,remote,parent,mode_overrides=(
+            ('100755' if state=='squash_mode_change' else '120000',
+             'data/government_revenue/candidate_queue.json'),))
+    elif state=='changed_origin':
+        other=tmp_path/'different.git'
+        subprocess.run(['git','init','--bare','-q',str(other)],check=True)
+        gate._git(root,'remote','set-url','origin',str(other))
+    elif state=='tampered_identity':
+        record=json.loads(identity.read_text());record['expected_commit']='0'*40
+        identity.write_text(json.dumps(record))
+    elif state=='unreadable':
+        remote.rename(tmp_path/'gone.git')
+    result,out=witness_cli(root,tmp_path,identity)
+    assert result.returncode==expected.get(state,75),result.stdout+result.stderr
+    if state not in expected:
+        assert not out.exists()
+        assert 'origin.git' not in (result.stdout+result.stderr)
+        return
+    witness=json.loads(out.read_text())
+    assert witness['issuance_authority'] is False
+    assert witness['serving_generation_authority'] is False
+    assert witness['committed_generation']['commit']==candidate
+    assert 'origin.git' not in out.read_text()
+    if state=='exact':
+        assert witness['observed_remote_commit']==candidate
+        assert witness['landing_commit']==candidate
+        assert witness['landing']=='fast_forward'
+        assert witness['push_status_source']=='same_origin_original_push_identity_readback'
+        assert witness['push_identity_sha256']==hashlib.sha256(identity.read_bytes()).hexdigest()
+    elif state=='later_unrelated_movement':
+        # The recorded remote commit is the observed main SHA, not the candidate.
+        assert witness['observed_remote_commit']==moved
+        assert witness['observed_remote_commit']!=candidate
+        assert witness['landing_commit']==candidate
+        assert witness['landing']=='fast_forward'
+    elif state=='squash':
+        # A real squash landing differs from the candidate and does not descend
+        # from it; the same sealed projection/source qualifies, and the actual
+        # remote SHA is recorded while the candidate stays in committed_generation.
+        assert witness['observed_remote_commit']==moved
+        assert witness['observed_remote_commit']!=candidate
+        assert witness['landing_commit']==moved
+        assert witness['landing']=='squash_projection'
+        assert witness['committed_generation']['commit']==candidate
+
+
+def test_publication_witness_refuses_without_original_push_identity(tmp_path):
+    root,remote,identity=landing_prepared(tmp_path)
+    gate._git(root,'push','-q','origin','HEAD:main')
+    # Drop the identity argument: the bare success status is not landing evidence,
+    # even though the sealed generation really is sitting on the remote.
+    out=tmp_path/'publication-no-identity.json'
+    result=cli(root,'publication-witness','--receipt',str(gate._receipt_path(tmp_path)),
+        '--suite','tests/test_proof_gate_suite.py','--commit',gate._git(root,'rev-parse','HEAD').strip(),
+        '--push-status','successful','--out',str(out))
+    assert result.returncode==75,result.stdout+result.stderr
+    assert not out.exists()
+    assert 'landing evidence' in (result.stdout+result.stderr)
+    # And the exact same invocation with the original identity qualifies.
+    witness,out_ok=witness_cli(root,tmp_path,identity)
+    assert witness.returncode==0,witness.stdout+witness.stderr
+    assert json.loads(out_ok.read_text())['observed_remote_commit']==gate._git(root,'rev-parse','HEAD').strip()
+
+
+def test_publication_witness_atomic_race_preserves_existing_original(tmp_path,monkeypatch):
+    root,remote,identity=landing_prepared(tmp_path)
+    gate._git(root,'push','-q','origin','HEAD:main')
+    out=tmp_path/'publication.json'
+    real=module._landing_generation
+    def racing(*args):
+        result=real(*args)
+        out.write_bytes(b'original winner must survive\n')
+        return result
+    monkeypatch.setattr(module,'_landing_generation',racing)
+    args=module.build_parser().parse_args(['publication-witness','--root',str(root),
+        '--receipt',str(gate._receipt_path(tmp_path)),'--suite','tests/test_proof_gate_suite.py',
+        '--commit',gate._git(root,'rev-parse','HEAD').strip(),'--push-status','successful',
+        '--push-identity',str(identity),'--out',str(out)])
+    assert module.command_publication_witness(args)!=0
+    assert out.read_bytes()==b'original winner must survive\n'
+
+
+def test_workflow_wires_the_original_push_identity_into_the_witness():
+    body=wrapper()
+    assert 'GOVREV_PUSH_IDENTITY="$prefix.identity.json"' in body
+    assert '"$prefix.identity.json"' in body and '--attempt "$PUSH_ATTEMPT"' in body
+    doc=yaml.safe_load((BASE/'.github/workflows/government-revenue-live.yml').read_text())
+    commit=next(s['run'] for s in doc['jobs']['refresh']['steps'] if 'commit complete' in s.get('name',''))
+    assert '--push-identity "$GOVREV_PUSH_IDENTITY"' in commit
+    assert commit.index('publication-witness')<commit.index('--push-identity "$GOVREV_PUSH_IDENTITY"')<commit.index('--out "$RUNNER_TEMP/govrev-candidate-proof.publication.json"')
+    assert len(commit)<=20563
+
+
 def test_interrupted_push_raw_response_is_outside_retained_artifact_namespace(tmp_path):
     root, remote, identity = prepared(tmp_path)
     runtemp = tmp_path / "temp"
