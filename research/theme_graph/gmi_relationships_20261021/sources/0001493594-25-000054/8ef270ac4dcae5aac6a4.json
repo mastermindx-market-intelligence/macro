@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-11-14T21:04:07Z",
+ "accession": "0001493594-25-000054",
+ "cik": "0001493594",
+ "doc_byte_length": 2028632,
+ "doc_sha256": "8e2c91064552d81a648c0229000dc604a4c6e43b9caf07e2f8783c29dfef851c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-14",
+ "form": "10-K",
+ "period_of_report": "2025-10-03",
+ "primary_document": "mtsi-20251003.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1918627,
+  "byte_start": 1918361,
+  "normalized": "Customer A did not represent more than 10% of revenue in fiscal year 2023. Customer B did not represent more than 10% of revenue in fiscal years 2024 and 2023. Customers A, B and C did not represent more than 10% of accounts receivable as of September 27, 2024.",
+  "normalized_sha256": "f106dca7b2d62bbf6487eabdec987113d5cf5a7e6b76cf8888c35a7cb9d82f6e",
+  "raw": "Customer A did not represent more than 10% of revenue in fiscal year 2023. Customer B did not represent more than 10% of revenue in fiscal years 2024 and 2023. Customers A, B and C did not represent more than 10% of accounts receivable as of September&#160;27, 2024.",
+  "raw_sha256": "8ef270ac4dcae5aac6a4bf9af5f5f05740b2e724d851803575e6e1027d25d5d9"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1493594/000149359425000054/mtsi-20251003.htm",
+ "xbrl_contexts": []
+}

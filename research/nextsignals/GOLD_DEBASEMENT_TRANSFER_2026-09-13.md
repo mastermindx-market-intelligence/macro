@@ -1,7 +1,17 @@
 # nextSignals Gold Debasement Transfer — Frozen Replication
 
-**Date:** 2026-09-13  
-**Status:** PREREG FROZEN BEFORE OUTCOME READ; final direct-portability ruling `REJECTED_BY_DESIGN`
+## Archival qualification — November 5, 2026
+
+This record describes the author's **September 13, 2026** study. Its numerical results, input fingerprints, claim of a freeze before outcome reading, and pre-outcome provenance correction are **author-reported and unverified by the current PR triage**. The private analysis script, results and decision panel were not independently inspected or rerun. The listed data fingerprints and historical public-source interpretation were not independently reproduced.
+
+References to “current,” “latest,” existing owners and source law in the study refer to its original date and frozen base. This archival acceptance does not establish point-in-time/as-published input availability, the claimed preregistration timeline, exact equivalence to the public tracker, causality, predictive utility or tradability. The reported controlled 21-session result is an exploratory association near the stated multiple-testing threshold. The original direct-portability rejection and disclosed FRED-vintage/source-contract limitations remain intact.
+
+The original study follows with limited wording qualifications. Its proposed continuation in §10 is historical context, not a current assignment or execution grant. No product, scoring, portfolio or trade authority is created by preserving this record. Original source: Macro #7145 at `4451262768c58200de837b818632040b29e9e93d`, blob `cafe2927029c40a348c31640ac7440d451aa391c`.
+
+## Original September 13 study
+
+**Date:** 2026-09-13\
+**Reported study status:** PREREG FROZEN BEFORE OUTCOME READ; final direct-portability ruling `REJECTED_BY_DESIGN`
 **Authority:** research only; no signal, portfolio, Prophet, Neural Web, Risk Radar, or execution authority
 
 ## 1. Mission
@@ -10,7 +20,7 @@ Test whether the publicly disclosed nextSignals “Gold Regime Tracker” idea a
 
 The user job is to know whether a gold/yield decoupling regime deserves a place inside Mastermind’s existing Commodity Vector. The machine job is to falsify portability and incrementality before any product or authority change. A successful result still earns only a separately gated research follow-up; it does not self-promote.
 
-Protected Sol Skillpack pin: `9ed16bf0fcc5b47e870350ff2413ff5c8c73b447` (`mastermind.sol_skillpack.v1`, v1.0.1).  
+Protected Sol Skillpack pin: `9ed16bf0fcc5b47e870350ff2413ff5c8c73b447` (`mastermind.sol_skillpack.v1`, v1.0.1).\
 Macro base frozen before analysis: `be6d1122e16da5e81fb26dd4205157f8e3ee4de6`.
 
 ## 2. Public disclosure facts being tested
@@ -60,7 +70,7 @@ Primary horizons are 21 and 63 gold sessions. For each eligible decision date we
 
 Temporal robustness is frozen as four eras: `2003–2009`, `2010–2016`, `2017–2022`, and `2023–latest`. The common 2003 start is chosen before outcomes because Mastermind’s 10Y-real-yield control begins in 2003.
 
-Inference: 20-session moving-block bootstrap, 5,000 resamples, deterministic RNG seed `20260913`; family-wise multiple testing uses Benjamini–Hochberg FDR `q=0.10`. The primary family is the 8 state/entry × return/drawdown × 21/63 contrasts plus the two incremental 21/63 regression coefficients below.
+Inference: 20-session moving-block bootstrap, 5,000 resamples, deterministic RNG seed `20260913`; multiple-testing correction uses Benjamini–Hochberg FDR `q=0.10`. The primary family is the 8 state/entry × return/drawdown × 21/63 contrasts plus the two incremental 21/63 regression coefficients below.
 
 Incrementality test: reproduce the current Commodity Vector gold features from the frozen Macro base and estimate `forward_return_h ~ 1 + debasement_active + shock_z + driver_score + ts_momentum` for `h ∈ {21,63}`. The `debasement_active` coefficient is the only candidate coefficient judged for incrementality; standard errors use Newey–West/HAC with lag equal to the horizon.
 ## 6. Frozen acceptance law
@@ -80,7 +90,7 @@ A pass still does **not** authorize trading or production scoring. It would just
 ## 7. Held / non-goals
 
 The yen differential, DXY 5-day confirmation, SOFR overlays, war/event labels, and any options positioning are held out. They may be tested only under a new frozen hypothesis after this core gold–2Y question is adjudicated. BTC ETF-flow mechanics are also a separate family; existing Mastermind BTC Farside + Coinbase-Premium work is not modified here, and current `WS-CRYPTO-INTELLIGENCE` authority blocks unscheduled ETH promotion.
-## 8. Results — frozen test executed
+## 8. Reported results — September 13 study
 
 The frozen formulation produced 6,443 eligible paired dates from 2000-10-27 through 2026-09-10, including 1,070 `DEBASEMENT` dates and 25 discrete entries. On the latest paired date, `c40 = -0.386` and the state is `NORMAL_INVERSE`. That is close to the publisher’s contemporaneous disclosed reading near -0.36 despite different source contracts; the raw-level 40-observation correlation is only `+0.007`. This supports the preregistered return-vs-yield-change interpretation rather than rescuing the test with a post-hoc formula change.
 
@@ -105,7 +115,7 @@ The active-state coefficient remains positive after conditioning on current gold
 | 21d | 5,310 | +1.80 pp | 0.70 pp | 0.0099 | **0.099** |
 | 63d | 5,272 | +2.15 pp | 1.68 pp | 0.1995 | 0.332 |
 
-This is a real short-horizon research finding, not a pass. The preregistered direct-transfer law requires both temporal robustness and a surviving unconditioned primary return contrast; neither condition is satisfied.
+This is a reported exploratory short-horizon association; it does not satisfy the stated direct-transfer acceptance law. The preregistered direct-transfer law requires both temporal robustness and a surviving unconditioned primary return contrast; neither condition is satisfied.
 
 ### Temporal robustness
 
@@ -128,18 +138,18 @@ Only 29.6% of candidate-active dates are simultaneously marked `decoupled` by Ma
 Why:
 
 - no unconditioned primary return contrast survives the frozen BH-FDR family;
-- discrete entries are only 25 and are not independently predictive at either horizon;
+- the reported discrete-entry test has only 25 entries and does not establish independently predictive value at either horizon;
 - the current 2023+ era reverses the 63-day return effect to -4.96 pp;
 - full-sample drawdown effects lean the wrong way at both horizons;
 - the only surviving incremental evidence is the 21-day controlled coefficient, while 63-day incrementality fails.
 
-The existing Commodity Vector gold residual/driver-axis architecture remains the canonical system. The 21-day controlled effect is retained as a research discovery, not product authority; any future use would require a **new original frozen hypothesis** rather than threshold-mining this public rule family.
+The existing Commodity Vector gold residual/driver-axis architecture remains the canonical system. The 21-day controlled effect is retained as a reported exploratory association for research, without product authority; any future use would require a **new original frozen hypothesis** rather than threshold-mining this public rule family.
 
 Private reproducibility artifacts: `/Users/chriswong/nextsignals_corpus_staging/analysis/gold_debasement_replication/results.json`, `decision_panel.csv`, and `/Users/chriswong/nextsignals_corpus_staging/analysis/gold_debasement_transfer.py`. Raw corpus/media remain private and are not committed.
-## 10. Acceptance and exact next action
+## 10. Historical completion criterion and proposed next action
 
-This research slice is complete when this record is merged with green repository validation. It establishes no new gold feature and changes no production signal or authority. The existing Commodity Vector gold residual/driver-axis system remains canonical.
+The original September 13 completion criterion was to merge this record with green repository validation. Current archival source acceptance preserves the reported study; repository checks do not independently validate its analysis, preregistration timing or input availability. It establishes no new gold feature and changes no production signal or authority. References to the existing Commodity Vector describe the original study's architecture context.
 
 Do **not** spend the next wave retuning this 40-observation tracker. The public yen/dollar confirmation mechanics are not specified precisely enough for a direct formula replication, so that branch stays held unless a source-complete rule is recovered or Mastermind deliberately preregisters a new original hypothesis before outcomes.
 
-Exact next action in the corpus program: perform current-owner/collision archaeology for the **BTC ETF-flow intelligence** family, compare the public concept set against Mastermind's existing Farside/Coinbase-Premium/crypto owners, and freeze one non-duplicative point-in-time incrementality hypothesis before reading forward outcomes. If the concept is already subsumed by an existing owner, record that as a no-build result rather than creating another crypto signal plane. Keep PR #7104's acquisition carrier separate and do not alter `WS-CRYPTO-INTELLIGENCE` product/trade authority from a research transfer test.
+The author's historical proposed next action in the corpus program was to perform current-owner/collision archaeology for the **BTC ETF-flow intelligence** family, compare the public concept set against Mastermind's existing Farside/Coinbase-Premium/crypto owners, and freeze one non-duplicative point-in-time incrementality hypothesis before reading forward outcomes. If the concept is already subsumed by an existing owner, record that as a no-build result rather than creating another crypto signal plane. Keep PR #7104's acquisition carrier separate and do not alter `WS-CRYPTO-INTELLIGENCE` product/trade authority from a research transfer test.

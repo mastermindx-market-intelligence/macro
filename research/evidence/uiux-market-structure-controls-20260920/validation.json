@@ -1,0 +1,11 @@
+{
+  "command": "python3 -m pytest tests/test_build_market_structure_page.py tests/test_market_structure_glance_copy.py tests/test_product_chrome.py tests/test_svg_wrapper_clipping.py -q",
+  "result": "89 passed, 5 pre-existing pytest temporary-directory cleanup warnings",
+  "exit": 0,
+  "new_regressions": 4,
+  "native_browser_matrix": 8,
+  "storage_denial_case": 1,
+  "canonical_capture_states": 24,
+  "design_blocking_findings": 0,
+  "visual_evidence_exit": 0
+}

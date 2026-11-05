@@ -1,0 +1,23 @@
+{
+  "phase": "green",
+  "head": "af0ba2d50a32c7a422508b442f35010dcdf154a2",
+  "source_sha256": "cd283e3de968314e620df1b84bd5945106c88f6e357f481f8d2c6be8c244e048",
+  "test_sha256": "b9c9988e5981a2c6e407797dac0987b4b3fcced846f97232bac5b661672a2d01",
+  "started_at": "2026-10-22T07:25:21.043951+00:00",
+  "completed_at": "2026-10-22T07:25:25.217463+00:00",
+  "seconds": 4.173,
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "tests/test_collect_failfast.py",
+    "tests/test_circuit_breaker_recovery.py",
+    "tests/test_fred_vintages.py",
+    "-q",
+    "--basetemp",
+    "/tmp/portfolio-fred-response-hardening-20261022/pytest-green"
+  ],
+  "exit_code": 0,
+  "log": "/tmp/portfolio-fred-response-hardening-20261022/green.log",
+  "ruff_available": false
+}

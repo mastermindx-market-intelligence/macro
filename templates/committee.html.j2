@@ -179,7 +179,7 @@ details.memo-raw pre { font-size:11px; overflow-x:auto; color:var(--muted); whit
 .ask-answer { display:none; }
 .ask-answer.active { display:block; }
 .ask-mode-badge { display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:7px; font-size:11px; font-weight:700; letter-spacing:.05em; margin-bottom:10px; }
-.ask-mode-live { background:color-mix(in srgb,var(--up) 16%,var(--panel2)); color:var(--ink-up, var(--up)); }
+.ask-mode-live { background:var(--wash-ok); color:var(--ink-ok, var(--ok)); }
 .ask-mode-memo { background:color-mix(in srgb,var(--warn) 16%,var(--panel2)); color:var(--ink-warn, var(--warn)); }
 .ask-degraded { background:color-mix(in srgb,var(--warn) 12%,var(--panel2)); border:1px solid color-mix(in srgb,var(--warn) 35%,transparent); border-radius:8px; padding:8px 12px; margin-bottom:10px; font-size:13px; color:var(--ink-warn, var(--warn)); }
 .ask-answer-text { font-size:14px; line-height:1.7; margin:8px 0 14px; white-space:pre-wrap; }
@@ -405,8 +405,8 @@ html{ scroll-behavior:smooth; }
   color:color-mix(in srgb,var(--lobe-us) 78%,#cdd7ea); display:flex; align-items:center; gap:10px;
   flex-wrap:wrap; margin-bottom:16px; }
 .nw-hero-eyebrow .live{ display:inline-flex; align-items:center; gap:6px; color:#c7d2e6; }
-.nw-hero-eyebrow .live i{ width:7px; height:7px; border-radius:50%; background:var(--up); font-style:normal;
-  box-shadow:0 0 0 0 color-mix(in srgb,var(--up) 70%,transparent); animation:nwPulse 2.6s ease-out infinite; }
+.nw-hero-eyebrow .live i{ width:7px; height:7px; border-radius:var(--r-pill, 999px); background:var(--ok); font-style:normal;
+  box-shadow:0 0 0 0 transparent; animation:nwPulse 2.6s ease-out infinite; }
 .page-committee .nw-hero-headline{ font:900 clamp(30px,5.6vw,54px)/1.01 var(--font-ui); letter-spacing:-.03em;
   margin:0 0 8px; background:linear-gradient(100deg,var(--lobe-us),var(--lobe-sig) 50%,var(--lobe-macro));
   -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
@@ -448,7 +448,7 @@ html{ scroll-behavior:smooth; }
 
 /* Hero boot + pulse. */
 @keyframes nwBoot{ from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:none;} }
-@keyframes nwPulse{ 0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--up) 62%,transparent);} 70%{box-shadow:0 0 0 8px transparent;} 100%{box-shadow:0 0 0 0 transparent;} }
+@keyframes nwPulse{ 0%{box-shadow:0 0 0 0 var(--ok);} 70%{box-shadow:0 0 0 8px transparent;} 100%{box-shadow:0 0 0 0 transparent;} }
 .nw-hero .nw-hero-eyebrow{ animation:nwBoot .6s .04s both; }
 .page-committee .nw-hero-headline{ animation:nwBoot .6s .12s both; }
 .page-committee .nw-hero-tagline{ animation:nwBoot .6s .2s both; }

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T20:42:18Z",
+ "accession": "0001104659-26-032133",
+ "cik": "0001456346",
+ "doc_byte_length": 4756365,
+ "doc_sha256": "87ebb619af5e6fc7f1cd5fa3c351004ae63195a47b0f964c32558e4c9e803b26",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "fnv-20251231xex99d1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 174284,
+  "byte_start": 173393,
+  "normalized": "On March 27, 2024, Franco-Nevada amended its precious metal stream agreement with reference to the gold and silver production from the Condestable mine in Peru, owned and operated by a subsidiary of Southern Peaks Mining LP, a private company (now Rio2 Limited), by advancing, through a wholly-owned subsidiary, an additional upfront deposit of $10.0 million for a total combined deposit of $175.0 million. Under the amended agreement, following the end of the fixed delivery period on December 31, 2025, Franco-Nevada receives 63% of the gold and silver contained in concentrate until a cumulative total of 87,600 ounces of gold and 2,910,000 ounces of silver have been delivered (the “Variable Phase 1 Deliveries”), then 37.5% over the remaining life of the mine (the “Variable Phase 2 Deliveries”).",
+  "normalized_sha256": "9bbe9d95637c9c0cce4f49cb0b366c4bcd223724658969d409a8d4fce6fb5a12",
+  "raw": "On March 27, 2024, Franco-Nevada amended its precious metal stream agreement with reference to the gold and silver production from the Condestable mine in Peru, owned and operated by a subsidiary of Southern Peaks Mining LP, a private company (now Rio2 Limited), by advancing, through a wholly-owned subsidiary, an additional upfront deposit of $10.0 million for a total combined deposit of $175.0 million. Under the amended agreement, following the end of the fixed delivery period on December 31, 2025, Franco-Nevada receives 63% of the gold and silver contained in concentrate until a cumulative total of 87,600 ounces of gold and 2,910,000 ounces of silver have been delivered (the &#8220;<b style=\"font-weight:bold;\">Variable Phase 1 Deliveries</b>&#8221;), then 37.5% over the remaining life of the mine (the &#8220;<b style=\"font-weight:bold;\">Variable Phase 2 Deliveries</b>&#8221;).",
+  "raw_sha256": "7761d5d9b1bb839c49a1b6488906bce8f70dbab9ddcc8edfd8e3af18b4976d35"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1456346/000110465926032133/fnv-20251231xex99d1.htm",
+ "xbrl_contexts": []
+}

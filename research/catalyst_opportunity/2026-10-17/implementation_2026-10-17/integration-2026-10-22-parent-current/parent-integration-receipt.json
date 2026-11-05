@@ -1,0 +1,381 @@
+{
+  "schema": "catalyst.parent_current_integration.v1",
+  "created_at": "2026-10-22T19:14:51.163817+00:00",
+  "operation_id": "catalyst-opportunity-macro-e2e-20261017",
+  "implementation_owner": "current Catalyst recovery parent",
+  "derivation": "New parent implementation from canonical Git three-way inputs. Failed worker response and failed preimage recovery are permanently closed and not adopted.",
+  "direct_retention": [
+    "LOWER_TOTAL_OVERHEAD after oversized malformed delivery",
+    "UNIQUE_APPROVED_ACCESS original typed publisher"
+  ],
+  "implementation": {
+    "main": "97f4389fbabbd2aeeac50d8a8b12a1ed9b035242",
+    "candidate": "a8984cf6bd70d9488098a13db76e618c6b3f4c68",
+    "composed_tree": "bc77d32f7917a89acdd2436e17f38d11e86065b2",
+    "tests_blob": "6797ba7ff9bd63d45d0003e0d5036a2359d4ecc1",
+    "tests_sha256": "f9497fa88ee9db2caf44d8167cb8804faac7ad29fdcd5707224b5bf5e88fc13c",
+    "bounds": {
+      "PACKING_PROBES": [
+        [
+          "templates/index.html",
+          136,
+          5870
+        ],
+        [
+          "scripts/build_free_content.py",
+          136,
+          5842
+        ],
+        [
+          "engine/prophet/plan_book.py",
+          130,
+          5620
+        ]
+      ],
+      "PACKING_PROBE_MAX_PACKS": 10
+    },
+    "post_budget_breaches": [],
+    "measurement_record": "composed-measurement.json",
+    "measurement_reused_reason": "Only budget constant and causal documentation changed; shipped planner and input manifest unchanged."
+  },
+  "changed_source_files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "preimage_blob": "d0dec71f9fe7869a6bc70325a798b8d9b65715a6",
+      "sha256": "a7e3476ab2642f48a085c8f435714a24429dfffe25723b61935ac9d1e8617c7f",
+      "blob": "af2d0d6895dd80d370975e4f217f4531caf697c9"
+    },
+    {
+      "path": "tests/test_ci_pack.py",
+      "preimage_blob": "f51569e40afe646ab4235cc61f00a7c439b1fefa",
+      "sha256": "f9497fa88ee9db2caf44d8167cb8804faac7ad29fdcd5707224b5bf5e88fc13c",
+      "blob": "6797ba7ff9bd63d45d0003e0d5036a2359d4ecc1"
+    }
+  ],
+  "semantic_preservation": {
+    "strict_duplicate_key_yaml": true,
+    "main_jobs": 349,
+    "composed_jobs": 350,
+    "added_job_exact_original": true,
+    "existing_job_order_and_nonpath_definitions_preserved": true,
+    "path_additions_exact_original": [
+      {
+        "job": "bea-gvc-current-descriptive-consumer",
+        "added_paths": [
+          "app/catalyst_opportunity.py",
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py",
+          "site/basketdata/sector_pulse.json"
+        ]
+      },
+      {
+        "job": "c19-wp32-integrated-answer-correction-denial-pins",
+        "added_paths": [
+          "app/catalyst_opportunity.py",
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py",
+          "site/basketdata/sector_pulse.json"
+        ]
+      },
+      {
+        "job": "c19-wp22-dhi-traversal",
+        "added_paths": [
+          "app/catalyst_opportunity.py",
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py",
+          "site/basketdata/sector_pulse.json"
+        ]
+      },
+      {
+        "job": "flow-surface",
+        "added_paths": [
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py",
+          "site/basketdata/sector_pulse.json"
+        ]
+      },
+      {
+        "job": "fif-kernel-guards",
+        "added_paths": [
+          "app/catalyst_opportunity.py",
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py",
+          "site/basketdata/sector_pulse.json"
+        ]
+      },
+      {
+        "job": "biocatalyst-serving",
+        "added_paths": [
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py"
+        ]
+      },
+      {
+        "job": "biocatalyst-history",
+        "added_paths": [
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py",
+          "site/basketdata/sector_pulse.json"
+        ]
+      },
+      {
+        "job": "crypto-assistant-context",
+        "added_paths": [
+          "app/catalyst_opportunity.py",
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py",
+          "site/basketdata/sector_pulse.json"
+        ]
+      },
+      {
+        "job": "defense-rail-laws",
+        "added_paths": [
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py"
+        ]
+      },
+      {
+        "job": "unrun-government-revenue-candidate-projection",
+        "added_paths": [
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py",
+          "site/basketdata/sector_pulse.json"
+        ]
+      },
+      {
+        "job": "unrun-government-revenue-grader",
+        "added_paths": [
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py",
+          "site/basketdata/sector_pulse.json"
+        ]
+      },
+      {
+        "job": "research-price-panel",
+        "added_paths": [
+          "app/catalyst_opportunity.py",
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py",
+          "site/basketdata/sector_pulse.json"
+        ]
+      },
+      {
+        "job": "ticker-news-qbus",
+        "added_paths": [
+          "app/catalyst_opportunity.py",
+          "engine/catalyst_opportunity/projection.py",
+          "engine/catalyst_opportunity/__init__.py",
+          "engine/catalyst_opportunity/reader.py",
+          "site/basketdata/sector_pulse.json"
+        ]
+      }
+    ],
+    "test_ast_changes_excluding_docstrings": {
+      "added": [],
+      "deleted": [],
+      "modified": []
+    },
+    "deployment_composition": {
+      "app/deploy/update.sh": {
+        "all_current_main_lines_preserved_in_order": true,
+        "main_sha256": "ef84e8eb07942d254928a7f773c3c67709f54414b22d391cba40216e354008ab",
+        "composed_sha256": "2f56c3b04723ddedc6ed7e25a6ae288047289bee32191b810025bba9f487a373"
+      },
+      "app/main.py": {
+        "all_current_main_lines_preserved_in_order": true,
+        "main_sha256": "af79e5cf34f9bb36fda56b0721f17007e3e1c65f9b4b515bd674ccca4bc16e25",
+        "composed_sha256": "c8adf29aaa52426b6ec0cc65d8b73e216121cb755dccc4e9b2dddb264d69b262"
+      },
+      "tests/test_deploy_update_self_heal.py": {
+        "all_current_main_lines_preserved_in_order": false,
+        "main_sha256": "f85573239ca9297bcbda23895b4c7e78c889531a6b6739ad84dc79a522daa87c",
+        "composed_sha256": "c9299fcba3b008a23275563e5110ae15ac26518dbd1680d737dc07807fc5670e",
+        "all_existing_test_functions_preserved": true,
+        "sole_helper_change_exact_original_feature": "_triggers_restart now exercises complete production trigger"
+      }
+    }
+  },
+  "planner_comparison": [
+    {
+      "probe": "templates/index.html",
+      "jobs_delta": 0,
+      "weight_delta": 0,
+      "added_jobs": [],
+      "removed_jobs": [],
+      "changed_existing_weights": {}
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs_delta": 0,
+      "weight_delta": 0,
+      "added_jobs": [],
+      "removed_jobs": [],
+      "changed_existing_weights": {}
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs_delta": 1,
+      "weight_delta": 6,
+      "added_jobs": [
+        "catalyst-opportunity"
+      ],
+      "removed_jobs": [],
+      "changed_existing_weights": {}
+    }
+  ],
+  "measured_rows": {
+    "main": {
+      "elapsed_seconds": 237.785,
+      "rows": [
+        {
+          "probe": "templates/index.html",
+          "jobs": 136,
+          "weight": 5870,
+          "packs": 10,
+          "max_jobs": 136,
+          "max_weight": 5870,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 136/349 jobs (2 unscoped always-on, 134 scoped matches)"
+        },
+        {
+          "probe": "scripts/build_free_content.py",
+          "jobs": 135,
+          "weight": 5842,
+          "packs": 10,
+          "max_jobs": 136,
+          "max_weight": 5842,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 135/349 jobs (2 unscoped always-on, 133 scoped matches)"
+        },
+        {
+          "probe": "engine/prophet/plan_book.py",
+          "jobs": 128,
+          "weight": 5614,
+          "packs": 10,
+          "max_jobs": 130,
+          "max_weight": 5614,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 128/349 jobs (2 unscoped always-on, 126 scoped matches)"
+        }
+      ],
+      "pre_adjustment_breaches": []
+    },
+    "composed": {
+      "elapsed_seconds": 237.446,
+      "rows": [
+        {
+          "probe": "templates/index.html",
+          "jobs": 136,
+          "weight": 5870,
+          "packs": 10,
+          "max_jobs": 136,
+          "max_weight": 5870,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 136/350 jobs (2 unscoped always-on, 134 scoped matches)"
+        },
+        {
+          "probe": "scripts/build_free_content.py",
+          "jobs": 135,
+          "weight": 5842,
+          "packs": 10,
+          "max_jobs": 136,
+          "max_weight": 5842,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 135/350 jobs (2 unscoped always-on, 133 scoped matches)"
+        },
+        {
+          "probe": "engine/prophet/plan_book.py",
+          "jobs": 129,
+          "weight": 5620,
+          "packs": 10,
+          "max_jobs": 130,
+          "max_weight": 5614,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 129/350 jobs (2 unscoped always-on, 127 scoped matches)"
+        }
+      ],
+      "pre_adjustment_breaches": [
+        [
+          "engine/prophet/plan_book.py",
+          "weight",
+          5620,
+          5614
+        ]
+      ]
+    }
+  },
+  "tests": [
+    {
+      "group": "ci_contracts",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "tests/test_ci_pack.py::test_d5_route_closure_keeps_affected_curated_jobs_selecting_dependencies",
+        "tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier",
+        "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+        "tests/test_ci_pack.py::test_autosave_adoption_contracts_execute_in_existing_code_job",
+        "tests/test_ci_pack.py::test_manifest_job_local_delta_is_bounded_to_changed_job",
+        "tests/test_ci_pack.py::test_manifest_multiple_job_local_deltas_are_all_forced",
+        "tests/test_ci_pack.py::test_manifest_job_delta_rejects_topology_gate_and_top_level_changes",
+        "tests/test_ci_pack.py::test_safe_manifest_job_delta_uses_canonical_trusted_repo_root",
+        "tests/test_ci_pack.py::test_copied_trusted_control_plans_manifest_delta_against_candidate_root",
+        "tests/test_ci_pack.py::test_safe_manifest_job_delta_reads_the_exact_base_commit",
+        "tests/test_ci_pack.py::test_proven_manifest_job_delta_forces_changed_job_without_full_suite"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 202.251,
+      "summary": "13 passed in 200.01s (0:03:20)"
+    },
+    {
+      "group": "catalyst_deployment",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_catalyst_opportunity_api.py",
+        "tests/test_catalyst_opportunity_projection.py",
+        "tests/test_deploy_update_self_heal.py",
+        "tests/test_caddy_autosave_driver.py",
+        "tests/test_macro_caddy_overlay.py",
+        "tests/test_macro_caddy_publication.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 38.742,
+      "summary": "477 passed, 1 warning in 36.41s"
+    }
+  ],
+  "evidence_hashes": {
+    "semantic-preservation.json": "2da2b53bf07c818b183765e6610695b8ad5a7a86937b3730b030fc1cb3f956ed",
+    "main-measurement.json": "da58921a49d50fb955cfa0fc4175136569b17428ab1e5edb4d7636c0a51fde4a",
+    "composed-measurement.json": "f130ea79747ee727802e7c1d3a8f2ca0c90fa276aa3628ffeadf4a269a03ae5d",
+    "measurement-comparison.json": "46c09c85ce7167e24d39c669a3655dbe1d91b7e31a9637f4710a7d24f70db421",
+    "ci_contracts.stdout": "6e5b9b4cb977289da827b04fdff70bbeec44949f5d144b3cf757821d166d1c85",
+    "catalyst_deployment.stdout": "a18bf433923cfc3dc63a54c9d42ac2a7c3ccc776c412532f264675a1029c5715"
+  },
+  "limits": [
+    "Source compatibility and synthetic contracts only; no deployment or entitled-user acceptance.",
+    "Composition binds protected main 97f4389f and original candidate a8984cf6; hosted CI must bind the new published candidate.",
+    "New independent review required before source release. Prior a898 review failures remain unaccepted and are not retried."
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "started_at": "2026-10-20T23:27:31.354392+00:00",
+  "head": "bd89047e4e403a93183c6a4763274e09acfdd044",
+  "scope": "Repair exact hosted press replay failure through missing-only in-memory capability comparison; preserve existing marked bytes, global estate comparator, shared injector, publisher and press write scope.",
+  "source_write_started": true,
+  "commands": [
+    {
+      "name": "regression-red",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "tests/test_press_run.py::test_press_comparison_respects_common_shell_owner"
+      ],
+      "started_at": "2026-10-20T23:27:32.192189+00:00",
+      "exit": 1,
+      "finished_at": "2026-10-20T23:27:35.295181+00:00",
+      "log_file": "macro-bd890-press-regression-red.log",
+      "log_bytes": 6461,
+      "log_sha256": "f3bea306351a1c606623bc9a55e8cd8a5aed2221eb19770815b2ce854f7481ed"
+    },
+    {
+      "name": "regression-green",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "tests/test_press_run.py::test_press_comparison_respects_common_shell_owner"
+      ],
+      "started_at": "2026-10-20T23:27:35.305133+00:00",
+      "exit": 0,
+      "finished_at": "2026-10-20T23:27:38.406513+00:00",
+      "log_file": "macro-bd890-press-regression-green.log",
+      "log_bytes": 4679,
+      "log_sha256": "39eae43a4fb854611051920dea8f0cb80e46b03abe8cb07de4d6ccc8691d8bfd"
+    },
+    {
+      "name": "suite-green",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "tests/test_press_run.py"
+      ],
+      "started_at": "2026-10-20T23:27:38.407036+00:00",
+      "exit": 0,
+      "finished_at": "2026-10-20T23:27:46.503659+00:00",
+      "log_file": "macro-bd890-press-suite-green.log",
+      "log_bytes": 4841,
+      "log_sha256": "f361a1702a1fd25a16f4aebae6a47f0cd00bc2e621749fb1878b7f21d7dcded0"
+    }
+  ],
+  "before": {
+    "scripts/run_press.py": {
+      "sha256": "46e7761acbfb0f8cd8fe10c8ac51f18d196a651a0ccc023b8dcf77a1208171d2",
+      "bytes": 67524
+    },
+    "tests/test_press_run.py": {
+      "sha256": "5827148fc6e899c191a5a8dca562103f3df909498eb749e164dba1c1ae367cc3",
+      "bytes": 94236
+    }
+  },
+  "unchanged_owners": {
+    "scripts/build_free_content.py": "4916b1164c615d81bc9f39ed69a84caa7963e5672137fc36eaf3afef5282bee8",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+    "lib/pages.py": "ee50b30dc5cd990e6c07ec433422f1032379d6857e4cd0586ee4de65f3b6c1a5",
+    "scripts/optimize_assets.py": "1c6ada51deb3be91f7b621bb6c1d3c52f373c6424c346ec6563ffb7b97cf26be",
+    ".github/ci/legacy-jobs.yml": "c19ac78034276ed0711ecda14e91e1d6091f203c661e34caf364dbc0f0ccff64"
+  },
+  "after": {
+    "scripts/run_press.py": {
+      "sha256": "c435e0d33b7672a9f5b792ace3d05c2bc3eaa8a5d6dc134cd6879be1f1c03968",
+      "bytes": 68345
+    },
+    "tests/test_press_run.py": {
+      "sha256": "5fdf6e0bedb6add7bf31309b79ead1c1504004fd46a18f58d55dd4e5cab7ddee",
+      "bytes": 96824
+    }
+  },
+  "diff": " scripts/run_press.py    | 27 ++++++++++++++++++------\n tests/test_press_run.py | 55 +++++++++++++++++++++++++++++++++++++++++++++++++\n 2 files changed, 76 insertions(+), 6 deletions(-)\n",
+  "head_unchanged": true,
+  "state": "NARROW_PRESS_OWNER_REPAIR_VALIDATED_UNCOMMITTED",
+  "finished_at": "2026-10-20T23:27:47.025149+00:00"
+}
