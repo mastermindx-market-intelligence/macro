@@ -1,0 +1,426 @@
+# D05 — native Cycles implementation candidate
+
+**Status: local source and composed-browser qualification delivered; final shared-design and release acceptance held.**
+The Chairman authorized continued implementation and use of the fleet. The
+original no-merge, no-Ready, no-queue, no-held-PR-relabel and no-production-deploy
+restrictions persist. This is the existing Macro Draft **#10703**, not a new
+release carrier. The original D05 design package covers all 13 canonical routes;
+this bounded source iteration completes the native Central/Cycles evidence and
+return-state contracts within the incumbent implementation.
+
+
+## Current integrated source and browser checkpoint — 2026-11-04 11:23:34 UTC
+
+**SELF_REVIEWED; locally qualified implementation. Final shared-design, hosted-CI,
+publication and release gates remain distinct.** This increment keeps the existing
+Macro #10703 carrier. It adopts only the already-published Dossier component at
+`74930f6931773b23072f91590319dc39fe5a7d07`; the newer compact desktop layout stays
+unpublished in its original #10707 operation after a typed precheck refusal.
+
+### Implemented and retained
+
+- The native Central Cycles view opens the existing, source-qualified Dossier on
+  disclosure. No premium parser-preload or alternate signal engine is added.
+  Opening the Dossier yields the mobile Cycle sheet without clearing selection;
+  closing it restores that sheet. An empty lazy mount is no longer mistaken for
+  a zero-width host.
+- The Dossier Members action captures exact native investigation state. The
+  existing Members page now exposes a closed, source-bound 4 KiB display-state
+  projection: sorting, exact listing focus and both page/table scroll positions.
+  Empty, unavailable and thin member data remain different states.
+- The existing bridge is **20261104.2**. A same-canonical-URL history replacement
+  checkpoints the current pure view without creating NAV or cancelling a restore.
+  Changed URLs and explicit same-URL pushes keep their actual navigation meaning.
+- Restoration uses the existing native owner. Its notice stays at the section
+  tail, so announcing success no longer inserts 63 px above the restored view.
+  Requested hidden native controls are revealed with the existing Advanced toggle
+  before focus readback; no additional disclosure state owner is introduced.
+- Confluence card/table counts preserve zero and missing price histories, separate
+  configured membership from positive-volume coverage, name successfully scored
+  groups accurately, and display member returns in percent versus excess in
+  percentage points. The underlying group and stock gates remain independent.
+- Rotation details disclose the source `asof`, actual rendered/published member
+  counts and cap30, standardized axis units, return-rate acceleration units and
+  explicit zero/unavailable acceleration. MTD is restored as the eighth native
+  display horizon. The shared China builder preserves its own artifact and
+  `china_lookup.html#` links.
+
+### Executed proof
+
+| Scope | Result | Exact limit |
+|---|---|---|
+| Actual Next → native Central/Dossier → Members → Company → Members → Central → map | **9 steps pass** at 1440 dark/EN and 390 light/ZH against published component749 | Local fixture identity and dated/synthetic inputs; not production auth or current market proof |
+| Additional compact-layout composed candidates | 390 light/ZH, 1440 light/ZH, 768 light/EN and 320 dark/ZH pass with actual theme assertions | Component layout remains unpublished in #10707; these are not substituted for the published749 proof |
+| Native Cycles retained functions | **42 browser cases pass** across 7 viewports/presentations, 5 source scenarios plus normal-motion coherent case | Native retention/source behavior; older requested-theme labels alone are not proof of actual painted light |
+| Members display/restore | **15 browser cases**, **11 producer cases** pass | Regional symbol cases are controlled display fixtures, not regional route/account acceptance |
+| Bridge | **87 tests pass** | Transport, cancellation, result ordering, state checkpoints and hostile envelopes |
+| Native host entry state | **8 tests pass** | Includes disclosure/access fencing and exact typed restore |
+| Changed confluence/rotation semantics | **21 tests pass** | Actual JS consumers and US/China builders; count/sort/unit/date/MTD/cap/link assertions |
+| Existing confluence and rotation regression | **24 passed, 3 data-dependent skips** | Skips require external local stores; not counted as passes |
+| Changed consumer visual/layout fixtures | **12 browser cases pass**, zero document overflow or JS errors | 1440 dark/EN, 1440 light/ZH, 390 light/ZH, 320 dark/EN; no live chart/data claim |
+| Terminal original operation | **142 tests in 11 suites**, full TypeScript exit0 | Source remains unpublished; 14 intended files, all486 inherited paths unchanged, zero unexpected changes |
+| CI registration | Two new suites have one existing owner; only `sector-cycles-page` changed | Full hosted/exclusive-closure gate remains required; no CI-green claim |
+
+The light journey explicitly crosses the **Company-owned native dark chart**
+and restores light/ZH on return. Company does not overwrite the public light
+selection. This is not Company light-mode acceptance.
+
+The browser runner asserts actual parent/child theme, exact source identity,
+sort, Dossier values offset50 and sources disclosure, requested focus, scroll,
+Company reload, and observed-history map return. It records correlated applied
+restore results. See [completion_validation.json](completion_validation.json),
+[COMPOSED_BROWSER.md](COMPOSED_BROWSER.md), [OWNER_OVERLAP.md](OWNER_OVERLAP.md),
+and the committed proof scripts.
+
+### Remaining carrier and acceptance gates
+
+Terminal #1244 remains at `624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9`.
+Its installed publisher lacks both exact selected-content commit and a separately
+qualified unchanged-inherited-baseline push. No Terminal commit/push was attempted.
+
+Component #10707 remains at `74930f69`. Its compact-layout typed commit returned
+`TYPED_GIT_PRECHECK_REFUSED / NOT_APPLIED`; original-operation status confirmed no
+new commit. No retry or alternate carrier contains that unpublished increment.
+
+Secretary's existing #917 recovery thread now records
+`WAITING_NATIVE_POOL_PIN_INSTALLATION_OWNER` and
+`TIMEOUT_ONLY_HELPER_NOT_SUPPORTED_ON_PINNED_SEATS` (gb2-ping-0344).
+The old helper is not a lawful general retry on retained-pin installations.
+The incumbent installation owner must return an applicable sealed successor and
+original-operation readback. Repeating Chairman's general permission is unnecessary.
+
+All13 assigned routes have retained-source and specification dispositions in
+the programme packet. This work does not claim authenticated save/entitlement
+and correction/refresh acceptance for every regional route. SC-066 publication,
+SC-092 native correction metadata, B12 parity and final F01/F02 acceptance remain
+separate holds. Root Paper stays read-only, including the three original uncertain
+effects. No merge, Ready/un-draft, queue, held-PR relabel or deployment occurred.
+
+## Prior source-only Company-return checkpoint — 2026-11-04 UTC
+
+The Macro half now implements the qualified native restore and the closed
+Shared Shell 20261104.1 return protocol described in [SOURCE_CONTRACT.md](SOURCE_CONTRACT.md#10-joint-company-return-implementation--2026-11-04).
+It composes on dd903b3, retaining the recovered Theme absence, reduced-motion
+and browser/preview corrections. Exact source checks pass: 79 bridge tests,
+seven entry cases and five actual producer/receiver scenarios. Terminal's
+original #1244 workspace has 97 passing tests across eight suites, including
+contract/lifecycle/hydration and existing presentation checks; full TypeScript
+also passed.
+Its source publication is separately blocked by the inherited-baseline
+publisher capability gap. All 486 original untracked artifacts remain unchanged.
+
+The original Fabric operations now report terminal/root-verified returns;
+this parent still lacks result-consumption authorization. The prior browser
+capture's deficiencies and all new actual-browser proof remain open. No
+production or final shared-design acceptance is claimed. Dossier 2c4edf26 is
+available for the next source-qualified disclosure integration.
+
+## Prior entry export and user-intent follow-through — 2026-11-04 UTC
+
+The current entry owner now provides **`SectorWorkspaceExport()`**, a pure,
+detached projection of its existing `siWorkspace` and single local
+`siCyclesOrigin` fields. It preserves the persisting `SectorWorkspaceCapture`
+hook for existing callers. A view-flush consumer can read the new export
+without re-entering `history.replaceState`. Foreign history fields, nested
+origins, DOM references and source payloads never enter the projection.
+
+The complete projection is limited to 32 KiB of UTF-8. Current Cycles exports
+also require the active entry/href, an admitted context and exact current
+verified publication/family/focus. A source-rejected or superseded chart cannot
+be exported as the current investigation. This exports **currently serialized
+settings**; map scope/horizon and other unrepresented controls are not covered.
+This prior increment introduced no public import, shared-shell message or Company
+restoration acknowledgement; the joint checkpoint above supplies those later changes.
+
+Queued viewport restoration now yields to subsequent pointer, touch, wheel or
+keyboard intent. Both the exact-entry two-frame replay and legacy per-view
+fallback use the existing cancellation generation. A regression executed the
+prior source and reproduced the late wheel overwrite before the fix.
+
+**105 passed / 0 skipped / 0 failed** across the four affected entry/history,
+publication-receiver and measured-panel suites. These overlap the earlier
+485-test run; the counts must not be added. After the local command service
+became unavailable, the exact deterministic patch was reconstructed against
+published parent `a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14`. The six executable
+host cases were rerun in memory through the already-owned Studio verification
+operation, with exact source/test SHA-256 and Git blob identities returned.
+That run is source proof, not browser or production proof; it changed no worker
+request, repository branch or production file.
+
+The Company source operation was separately recovered through the installed
+owner using its original operation/base. The exact #1244 workspace was reused,
+with 486 inherited untracked artifacts hashed for preservation and no tracked
+dirty source at that observation. This permits bounded continuation under the
+current assignment; it is not release of an old session or acceptance of its
+inherited artifacts. Neighboring F01 edits remain excluded. Cross-product
+Company return is still unproven.
+
+## Authority, source and ownership
+
+- Protected Mastermind law: `b5e8a9682f72b1bf802e50cf16f77f878ce596f3`;
+  INDEX 1.0.1 / bootstrap 1 compatible. Required law blobs were reconciled at
+  one pin; Paper integration law remains unchanged.
+- Original Macro preparation base: `c53915f6d67078d5c0aeaf73bf85ddea1a23de03`.
+  Previous candidate: `9906c882d56e5bed829b2d11aa7b837c5b7abc7f`.
+- This continuation coordinates source changes on `claude/d05-native-cycles-20261104`
+  / Draft #10703. The other admitted D05 continuation's dd903b3 increment was
+  read back and preserved before this joint checkpoint.
+- Programme continuity remains the existing Draft #10617 and its D05 builder
+  instructions; the last pre-iteration checkpoint is `e521f04dcc5afb4fb06152584d35c8a01dbe21ff`.
+- Full 13-route design/spec/retention package: `22f6a887a621e82497ea256611835cee2ba6f079`.
+  Its 174 capability rows, 119 planned cases and 12 Paper candidates are retained.
+- F01 #10645 and F02 #10630 remain provisional. Terminal #1244 retains the shared
+  shell/Company receiver. This candidate neither replaces that owner nor claims
+  a cross-product Company round trip is proven.
+
+| Overlap owner | This iteration |
+|---|---|
+| Macro #10689 | Agent OS workstream/handoff paths untouched. |
+| Macro #7595 | Existing asset injection/access/error hunks untouched; its observed router patch still passes read-only composition checking against this candidate. Composition/required review remain release dependencies. |
+| Macro #10695 | Observed merged; its regional flow/theme-builder paths untouched. |
+| Macro #8639 / #10625 / #10673 / #7669 | Theme geometry, refused temperature publication, rotation and held semantics remain with their existing owners. No publication replay. |
+| Terminal #1244 | Observed Draft at `624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9`; no branch or registry changes. The additive Macro generation fingerprint does not claim Terminal consumption. |
+
+## Retained experience and implemented behavior
+
+Central has a seventh native `#cycles` view using the single existing chart and
+renderer. Its measured-sector and board/trace links open that investigation.
+The full price/oscillator, log/linear, range/Home, phase, comparison-family,
+confirmed-leg, narrative, DNA, FX and pathway controls remain. The native view
+waits for a visible chart container; Market map keeps its own qualified mini
+charts. Standalone US, China and international pages use the same renderer.
+The 21 literal / 24 total compatibility aliases remain; `sc-cyclemap` targets
+Cycles. There is no fourteenth canonical route, iframe, new chart engine,
+market-data endpoint or persistence service.
+
+The host owns URL and browser-entry state; the renderer owns analytical state.
+All foreign history fields, including shared-shell `originNav`, are preserved.
+A bounded `history.state.siWorkspace` entry records measured-history lens,
+family/focus, price/oscillator, scale, range, phases, selected comparison series,
+stable leg dates, and typed focus/scroll. Two entries with identical URLs can
+retain different settings. Reload restores a valid entry only for the exact
+publication. A same-date content change resets old analytical settings with an
+explicit explanation. Neither href alone nor `history.length` proves adjacency.
+
+Return performs an ordinary validated local navigation carrying the bounded
+origin snapshot. Native Back/Forward remain independent. It restores the
+measured lens and a typed measured, board or trace opener after layout. A
+queued save from a departed entry cannot overwrite the next entry. In-chart
+selection on an admitted snapshot persists its own source mode immediately;
+subsequent language and data events cannot silently reclassify that selection
+as a Central source-aligned handoff.
+
+Changing family clears a previous family's selected leg. Language and data
+refreshes preserve the stable leg identity and keyboard focus on the same detail
+control. A focused sector remains visible outside the prior phase facet.
+Restoration cancels this chart's old zoom tween. Leaving the host view closes
+only this renderer's transient picker/fullscreen/sheet chrome.
+
+Market map and Cycles now have separate universe-control IDs. The map's global
+scope handler calls one renderer bridge into its existing payload closure;
+previously it silently attempted inaccessible functions. The map count uses
+the selected cohort noun. Source tests execute that closure boundary, and the
+browser runner checks the eleven fixture sector-group marks and list membership
+before and after the Cycles family switch and Return.
+
+## Source identity and historical meaning
+
+See [SOURCE_CONTRACT.md](SOURCE_CONTRACT.md) for the complete additive transport,
+source, state, error and build contracts.
+
+**A matching date is insufficient.** The Central producer fingerprints the
+actual unsplit sector input it consumed. The Cycles publisher fingerprints its
+own sector input with the same pure helper. Equality requires the same valid
+session, schema, cohort scope and digest. Basket-only changes deliberately do
+not alter this sector fingerprint; therefore it cannot authorize a theme
+handoff. Themes require the explicit own-snapshot choice. Theme mini charts,
+when verified, are labelled as a separate dated Cycles snapshot.
+
+The existing US, China and international builders emit a content-derived
+publication manifest for core, series, narratives and DNA. Each receiver hashes
+the exact serialized UTF-8 bytes before accepting a part. It checks namespace,
+part role and publication identity before in-place hydration. A replacement
+core supersedes old receipts immediately. Late digest completion cannot mutate
+another core. Central's reconstructed history and mini-chart consumers enforce
+the same identity; raw global presence is not successful loading. Cache keys
+include publication identity.
+
+Narrative source receipts distinguish available/empty, quarantined and
+missing-or-unreadable sources without publishing host paths. Valid core and
+series survive optional annotation failure. Existing narrative dates, epochs,
+TTL and revisions remain intact. Publication identity proves content coherence,
+not market-data correctness, original availability, correction lineage, model
+validity or point-in-time history. Native correction status remains unchanged.
+
+Unstamped archives remain explicitly unverified. They can be opened as their
+own dated reconstruction, but cannot satisfy a Central-alignment request or
+restore settings with a claimed verified publication. A stamped core never
+falls back to an unstamped lazy part. WebCrypto failure remains unavailable,
+not verified. Historical calibration and live parity stay separately disclosed;
+phase age retains measured, lower-bound and unknown trading-session semantics.
+
+## Executed source verification
+
+The completion follow-through run completed **485 passed / 3 skipped /
+0 failed** across the 17 suites recorded in `source_validation.json`. The three
+skips require absent local sector data (two) or the absent legacy price scorecard
+(one). Required committed narrative inputs were materialized without changing
+their bytes; sparse-checkout absence was not misclassified as a product defect.
+
+The suite executes the real Python emitter and JavaScript receivers, not a
+second implementation. It covers same-date corrections, sector versus basket
+scope, cross-region/mixed/corrupt chunks, manifest tampering, duplicate IDs,
+preloaded extras, superseded cores, in-place identity, mini-chart cache fences,
+measured-history failure isolation, actual family clicks, advanced state,
+entry-specific Back/Forward, reload, queued-save fencing, source-mode stability,
+foreign history preservation and safe return focus. The measured-read golden
+fixture receives only the new deterministic generation fingerprint; its prior
+measurement/event values remain unchanged.
+
+Authored JS/CSS and their `site/` copies are byte-identical. JS/Python syntax,
+rendered inline JavaScript, diff whitespace and the #7595 patch-composition
+check are additional source checks. These do not establish browser layout,
+accessibility, production rendering or final design acceptance.
+
+The added-lines design-system gate passes with zero new blocking findings.
+The runtime-style and general visual-evidence guards require the full generated
+and mockup trees; their sparse-worktree refusals are not reported as passes.
+The previous head's CI failed `reference-integrity` and `ew-p4-descriptive-ui`.
+Live Paper copy citations have been re-anchored to the actual retained source;
+historical annotation line numbers remain historical. Two doctrine labels now
+match the implemented research-stance and historical-calibration wording. The
+English/CJK falsifiers use fixed real-file counterexamples, while the unchanged
+deck audit still checks every live production citation. The EW receipt still
+requires an actual current-source recapture; no hash-only restamp is accepted.
+
+## Completion follow-through
+
+The exact `2e6c4589` CI contract-delta log identified four omissions: the new
+publication and entry-state suites were unregistered, and the two curated
+leadership jobs did not include `engine/sector_generation_guard.py`. Both
+suites now run in the existing `sector-cycles-page` owner with explicit Node 20;
+that owner and the two leadership scopes include their actual source closure.
+The canonical inference functions found zero uncovered concrete dependencies
+for these three owners (103 / 82 / 72 respectively), and each new suite has one
+CI owner. The existing packing-budget test passed. The full-tree exclusive
+scope test refused an unrelated omitted research job in this sparse checkout;
+that refusal is not a full-gate pass. Hosted CI remains separate evidence.
+
+The source audit's relative-trend defect was reproduced through the actual
+Central builder: its additive call referenced `fdir` before assignment, caught
+the resulting exception and never reached the price loader. The existing call
+now passes its known `site / "sectordata"` destination directly. Two regression
+cases exercise the real emitter with isolated input: the available source
+publishes the native 11-sector feed with its own source date; source failure
+still completes the main page without fabricating the additive feed. The
+builder/publication and relative-trend suites pass all 23 cases. No market
+engine, production refresh or forward-log write was performed.
+
+`regional_archive_serialization.json` records the actual committed US, China
+and international model snapshots passing through the new serializer. Their
+source dates, source hashes, 11/31/24 sector-or-country populations and distinct
+spines remain explicit. NARR/DNA were deliberately marked missing in this smoke
+check. It proves archived payload compatibility, not live regional data,
+point-in-time history, entitlement or browser acceptance.
+
+Companion Draft #10707 at `672bae2b85dd0101ed8185644e63c3af008e4759`
+retains an opt-in US Dossier Cycle presentation component. It is not mounted in
+this candidate. Its current date-only alignment, per-family history readiness,
+callback identity/focus and older Dossier host custody were returned to its
+active owner for qualification. `SectorCyclesHost` remains the singleton native
+chart owner. The verified Company receiver gap and joint requirements are in
+section 8 of `SOURCE_CONTRACT.md`; the original shared-shell source carrier and
+its uncommitted work are preserved.
+
+## Browser fixtures and proof boundary
+
+`prepare_preview.py` renders actual templates and current authored assets with
+archived committed inputs. Its default `archive` scenario preserves the real
+October 30 Central / November 2 Cycles mismatch and the original unverified
+archive status. Synthetic scenarios reconstruct a new explicit test input and
+run the actual publication serializer and pure measured projector:
+
+| Scenario | Purpose |
+|---|---|
+| `coherent` | Matching consumed sector input; real content verification and state restoration. |
+| `same-date-mismatch` | Changed sector evidence with unchanged session; selected comparison withheld. |
+| `mixed-series` | Core A with same-date series B; no incompatible hydration. |
+| `missing-extras` | Missing narrative transport; valid core/series and honest annotation failure. |
+
+Every page has a visible test-fixture banner and `data-d05-fixture` marker;
+`fixture_provenance.json` records the archived input digests. These synthetic
+publications are not assertions that the unstamped archive files were originally
+atomic, and are never production fallback data. No market engine, forward log,
+authentication mutation or deployment is run by preview preparation.
+
+`verify_browser.cjs` confines requests to GETs on its local fixture origin. It
+covers 1440 dark EN/light ZH, 1024, 768, 390 dark EN/light ZH and 320 dark ZH,
+with reduced motion, source selection, native chart controls, family, Return,
+Back and coherent-publication reload restoration. It writes screenshots and a
+machine-readable result. **A runnable script is not evidence that it passed.**
+It also checks the actual Market map population and the keyboard-reachable
+rotation-evidence disclosure in What's Moving after leaving and returning to
+Cycles. Archived rotation-events/fragmentation fixtures keep their own dates.
+
+Three complementary browser obligations remain:
+
+1. Execute this actual-page runner against the five prepared scenarios, inspect
+   the screenshots, and report product failures separately from runner defects.
+2. Run the unchanged `tests/probe_ew_p4_descriptive_ui_browser.py` against the
+   immutable candidate into staging: 68 cases, five contact sheets and its
+   existing keyboard checks. Refresh the canonical EW-P4 receipt only after
+   capture, adding its existing 31-file source-equivalence section from the
+   captured tree. Reuse byte-identical accepted shots; inspect changed shots.
+   Append the result to the existing Grey Deer evidence record. This component
+   harness does not prove the native Central host.
+3. Use the existing `scripts/capture_page_evidence.py` and its canonical v2
+   manifest for actual Central/Cycles pages: desktop/mobile × EN/ZH × dark/light,
+   plus real focus interaction in both themes. Bind the ordinary three-key
+   `EVIDENCE.yml` receipt to the changed presentation paths. Do not create a
+   parallel screenshot schema or treat this fixture as authenticated production.
+
+Prior local Chromium execution was blocked by a denied socket and a rejected
+sandbox escalation; the browser connection could not reach the local server.
+Those unchanged attempts are not repeated. The admitted Studio workspace was
+reconciled clean at the previous candidate. Browser-worker ingress initially
+rejected `/root` as invalid metadata. Native exact-run status returned NOT_FOUND;
+both running facade sources validate this field before reserve/dispatch, one
+matching the protected blob exactly. No START or browser result is claimed by
+that diagnostic. After installed-source and original-effect reconciliation,
+one schema correction retained the same run under conserved root/parent
+`6aea7863-bef8-83e9-bb5b-47850ca7132b`: browser run
+`d05-native-browser-proof-20261104-01`, controller 85044, admitted ubuntu0.
+A disjoint State-of-Themes absence repair has run
+`d05-theme-falsifier-absence-20261104-01`, controller 5795, admitted ubuntu3.
+At 06:30 UTC both controllers had retained launch/poll observations but native
+status still reported unverified lineage and unknown worker state. No START,
+result consumption, replay or background completion is claimed. Their original
+handles remain under read-only owner reconciliation; their granted files and
+browser effects are not duplicated.
+
+## Paper and remaining acceptance
+
+A fresh exact-file read confirms file `01M6FAXA774QT1VRDMAG7DFQ2W`, D05 page
+`p-3-0`, **12 boards / 1,448 nodes**, token hash `811c9dc5`. Incumbent R4 `p-2-0`
+is preserved. Current Paper Desktop 0.5.18 reports catalog
+`03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4`; the guarded
+adapter expects `ac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9`
+and says `accepted_for_write=false`. Read access is proven; further canvas
+mutation is not admitted. No edit, uncertain retry or shared-token change occurred.
+
+Still held: actual browser/visual evidence; all-route regional/Company return
+integration through the named owners; F01/F02 final shared acceptance; original
+source/model/access conditions; required CI and branch rules. No candidate,
+unit-test count, Paper image or generated URL represents production acceptance.
+
+## Reproduction on an admitted browser host
+
+```bash
+PYTHONPATH=. python docs/verification/d05_native_cycles_20261104/prepare_preview.py --scenario coherent --out /tmp/d05-proof/coherent
+python -m http.server 8765 --bind 127.0.0.1 --directory /tmp/d05-proof
+D05_BASE_URL=http://127.0.0.1:8765/coherent node docs/verification/d05_native_cycles_20261104/verify_browser.cjs
+```
+
+Use the existing host/runtime and task-owned processes. Do not install another
+browser, change host security, switch an uncertain worker, or open production
+to manufacture a passing result. Retain exact output and failures for repair.

@@ -277,6 +277,14 @@ function route(){
      resolvers (openBasket / openTheme, which expand a row inside Explore). Route to
      their view and then get out of the way — rewriting the hash here would eat the
      link before the resolver ever read it. */
+  // A native Shenwan deep link must expose the chart that owns its selection.
+  // Re-evaluate when the existing core-data loader announces its payload; do
+  // not infer membership from a numeric-looking hash or another region's data.
+  var cycleData=window.SECTOR_CYCLES;
+  if(h&&cycleData&&cycleData.meta&&cycleData.meta.region==='china'&&
+      Array.isArray(cycleData.sectors)&&cycleData.sectors.some(function(s){return s&&s.id===h;})){
+    activate('map',null); return;
+  }
   if(h.indexOf('b-')===0){ activate('explore',null); return; }
   if(h.indexOf('theme-')===0){ activate('explore',null); return; }
   if(VIEWS.indexOf(h)>=0){ activate(h,null); return; }
@@ -289,6 +297,7 @@ window.__siViewReads=reads;
 window.__siRoute=route;
 window.addEventListener('hashchange',route);
 window.addEventListener('mmx:shell-location',route);
+document.addEventListener('sc:cycles-data',route);
 document.addEventListener('langchange',function(){
   try{ document.title=BASE_TITLE+' · '+TITLES[current||'overview'][isZh()?1:0]; }catch(e){}
   reads();

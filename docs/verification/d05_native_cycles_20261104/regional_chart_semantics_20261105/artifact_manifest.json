@@ -1,0 +1,194 @@
+{
+  "README.md": {
+    "path": "README.md",
+    "bytes": 6147,
+    "sha256": "0c63c9ec8c597d8baeae576bb071125cd469538a9fd86a61141873dad9b9a75b",
+    "git_blob": "088cc905e3bf229024197f6224a7c5867a448084"
+  },
+  "verify_semantics.py": {
+    "path": "verify_semantics.py",
+    "bytes": 7025,
+    "sha256": "c35b713b3692b8936ea58633fdb4de8aad829fc98630e7ada625e20a68c34fb9",
+    "git_blob": "206d640e9efc1ad6c4bbbec3799946217dde3f0d"
+  },
+  "verify_semantics_attempt1.py": {
+    "path": "verify_semantics_attempt1.py",
+    "bytes": 6713,
+    "sha256": "1a83a34f13dfa44dae99bcb644716bf216eba5047edc879e3f8c7ca39d419ac7",
+    "git_blob": "3b314f432539ffe645bb9cbbb5b48d368754dc32"
+  },
+  "prepare_markup_fixture.py": {
+    "path": "prepare_markup_fixture.py",
+    "bytes": 4015,
+    "sha256": "ee634fa0fd01c763007c2c69a10c310bacd8f11dadb6836d6bcf3cf4403bfd22",
+    "git_blob": "2db65b4058d3dca0369fa75008a77faac784182f"
+  },
+  "fixture_provenance.json": {
+    "path": "fixture_provenance.json",
+    "bytes": 25277,
+    "sha256": "cebd7dd35457a7c19d30ca9a26b89e92d0d6f76ce3d435a9c53d3d1e20e96050",
+    "git_blob": "df6b4c231af4e5e2f78836273cdc1d1895060872"
+  },
+  "source_manifest.json": {
+    "path": "source_manifest.json",
+    "bytes": 2428,
+    "sha256": "1b0189df383298c024b8434d4f4feca5facc3c0dce889c176fc13fe6abe25d60",
+    "git_blob": "6e899b43413d3cc0cbbcd2c4016c95f3f96c5ee6"
+  },
+  "config.json": {
+    "path": "config.json",
+    "bytes": 1033,
+    "sha256": "c8e0d9795a6598f32d2bd64d1dc2e27adfaf5cc22500ad434e8b622318c315ce",
+    "git_blob": "09268aecf53dce7fe69ab35d428c74259992fd2c"
+  },
+  "citation_result.json": {
+    "path": "citation_result.json",
+    "bytes": 13676,
+    "sha256": "735b6357105110063bbb6e0f0eb717b8aac16b1a5571c8dcbdd2d18b7b409124",
+    "git_blob": "e52aaa906a75ec56d893c90afb2943edbb2ce0ec"
+  },
+  "copydeck_contract.py": {
+    "path": "copydeck_contract.py",
+    "bytes": 15645,
+    "sha256": "9f76fd5e8cbf0933beb4a746276f8398d06105fb45fe179f442be082537de817",
+    "git_blob": "df39073f927e40c3e5649676b7a4f178d2b97b60"
+  },
+  "verify_citations.py": {
+    "path": "verify_citations.py",
+    "bytes": 1586,
+    "sha256": "9cf6770841c00d78ee03ac3ac015cca1c4793ead586f83fda653e7e773fb7d3b",
+    "git_blob": "f0a4c7503a48c6c3477ab93279cc268a7d0af39d"
+  },
+  "citation_rows.json": {
+    "path": "citation_rows.json",
+    "bytes": 30029,
+    "sha256": "ca38dd0acac904932780b68380dad0751d0d55d6b27db977fe11f149435452ad",
+    "git_blob": "cded1c4794bd05035911b07c759579fe177c9fed"
+  },
+  "workspace_status.json": {
+    "path": "workspace_status.json",
+    "bytes": 1893,
+    "sha256": "e8f4745ca7db1c23f4849a17cd223b536cafc465c53ece8ea597a20861a3657e",
+    "git_blob": "d63f0d5839d0811786c39b7a3c498a743badb907"
+  },
+  "result.json": {
+    "path": "accepted/result.json",
+    "bytes": 48957,
+    "sha256": "ef98b5ea9fc641f776fd0b5306f287488b867559c698b84d1cc4a7386e408420",
+    "git_blob": "e9ffbbc3e933c1fe371898281d074826d172ebc5"
+  },
+  "attempt1.json": {
+    "path": "browser/result.json",
+    "bytes": 39057,
+    "sha256": "66183de7a57f7e2ab1d37a89ee49b05a045ea1bacf98d7e6002e6f72b8be5217",
+    "git_blob": "ff88d32aa9f9ae0cc28d0cc685ba3ffec90da9ea"
+  },
+  "us_result.json": {
+    "path": "browser-us/result.json",
+    "bytes": 24284,
+    "sha256": "120ee626b8c15a30517b93f12b6ae2401e61510b34d5b26d1ac6c3845c186e19",
+    "git_blob": "0098dc6433f9f12482ade9b89070db307aa33cbc"
+  },
+  "contact-sheet.jpg": {
+    "path": "accepted/contact-sheet.jpg",
+    "bytes": 500174,
+    "sha256": "82fd2a7c600d1d2ef1193f231f1eb1a68003607b2db2644eeff47e95e70f9792",
+    "git_blob": "cb19eb680b9b7538aa164057f33217f8d983d4f4"
+  },
+  "sector_central-1440-dark-en-price.png": {
+    "path": "accepted/sector_central-1440-dark-en-price.png",
+    "bytes": 276488,
+    "sha256": "ffce80cfcde66c272b6272c68dee305e08b5c9c4a4cc588dbe13774708059f46",
+    "git_blob": "eefc0c2943e2f2853a393b0c2d198b7591099f96"
+  },
+  "sector_central-1440-dark-zh-price.png": {
+    "path": "accepted/sector_central-1440-dark-zh-price.png",
+    "bytes": 272806,
+    "sha256": "199cec724390a9aa5b05625fd0d37beaca3f81c4af09d9568f99fb7efba10ac8",
+    "git_blob": "d99bbae300a25717b74117ad151a72e69fbc9f57"
+  },
+  "sector_central-390-light-en-price.png": {
+    "path": "accepted/sector_central-390-light-en-price.png",
+    "bytes": 126483,
+    "sha256": "0b0afc4bc9b9ded28fe4dc51bb4e281da824a4a5084e8acdb761119828295967",
+    "git_blob": "c8be424dd29a896828252dd31465f89b089e745d"
+  },
+  "sector_central-390-light-zh-price.png": {
+    "path": "accepted/sector_central-390-light-zh-price.png",
+    "bytes": 146123,
+    "sha256": "547249398bbba98e5095db343113a87e1a7c627287797ce7031e45ae6b676051",
+    "git_blob": "d120bc7bff3b074ab8ce76a2cb43a4231289264c"
+  },
+  "sector_central_china-1440-dark-en-price.png": {
+    "path": "accepted/sector_central_china-1440-dark-en-price.png",
+    "bytes": 458625,
+    "sha256": "dde4ceeb77e5b59c9d293ca65241aa8802b9f2529db2836d7f4585ad61df2e76",
+    "git_blob": "d000da4924e8a9067ba2e367d8032a76c4ccba5f"
+  },
+  "sector_central_china-1440-dark-zh-price.png": {
+    "path": "accepted/sector_central_china-1440-dark-zh-price.png",
+    "bytes": 458298,
+    "sha256": "d2a81f959c0c233e7034ebff4a1fd769fab6ca8109376aadea78f37da66323f1",
+    "git_blob": "4aaa127cf352c3993f400a376b66b7a7c2c52fc4"
+  },
+  "sector_central_china-390-light-en-price.png": {
+    "path": "accepted/sector_central_china-390-light-en-price.png",
+    "bytes": 108868,
+    "sha256": "2194b35ded6fea42693cfdd1b59bb8f8803e6fc60cc2e7fc2d62b631c2f8bc09",
+    "git_blob": "5dfcb7f2e20dbb20e65e036f87980fab13bcb354"
+  },
+  "sector_central_china-390-light-zh-price.png": {
+    "path": "accepted/sector_central_china-390-light-zh-price.png",
+    "bytes": 117990,
+    "sha256": "d4d3b364cd67d1a0fe2a52dfbcaf62e60ae8dc4b1bfbd27f03f1d7c7201a7ba7",
+    "git_blob": "573e6b1416ae6780fa40360556a0a1f22197fe79"
+  },
+  "sector_cycles-1440-dark-en-price.png": {
+    "path": "accepted/sector_cycles-1440-dark-en-price.png",
+    "bytes": 293737,
+    "sha256": "62ed4fd17c7ddcb77e7a0011a09d25be0839f5293b218d8fb51f1fa9de3b3c4c",
+    "git_blob": "0aa05150360d28e82c3e723a4c7c759264890a5f"
+  },
+  "sector_cycles-1440-dark-zh-price.png": {
+    "path": "accepted/sector_cycles-1440-dark-zh-price.png",
+    "bytes": 302609,
+    "sha256": "9206597207c383eeaf0d3083b3fbeab83e29a6a2a223f76aa39aafa665a0a7e4",
+    "git_blob": "94a9339d6cf68eed9932da8360a46e6e936de5fe"
+  },
+  "sector_cycles-390-light-en-price.png": {
+    "path": "accepted/sector_cycles-390-light-en-price.png",
+    "bytes": 105445,
+    "sha256": "24d46ada25fa05e98e15f65a5867e376b864402099e9b42579320062934371d4",
+    "git_blob": "2e19015a83730a6617e3914eefe1bad6ddf2d32d"
+  },
+  "sector_cycles-390-light-zh-price.png": {
+    "path": "accepted/sector_cycles-390-light-zh-price.png",
+    "bytes": 114809,
+    "sha256": "62f0ca9629d6f66a96324dc2cfb9a34f52738acfabe5e67e524918cf18ed2170",
+    "git_blob": "37688c7243976b830d3f2376ee29acd2f5f9ce54"
+  },
+  "sector_cycles_china-1440-dark-en-price.png": {
+    "path": "accepted/sector_cycles_china-1440-dark-en-price.png",
+    "bytes": 451742,
+    "sha256": "4acd0d5def1de5c15fe05943d2bdede113a89d41558a7ae2073e11f4ad18b81a",
+    "git_blob": "802f8d76c40aaaab0ae8b1441f0ac4676ff2029a"
+  },
+  "sector_cycles_china-1440-dark-zh-price.png": {
+    "path": "accepted/sector_cycles_china-1440-dark-zh-price.png",
+    "bytes": 488605,
+    "sha256": "6aec2819a9f8091687c036bc83d2441ccdec399f32087c881fff3dbf104de5b5",
+    "git_blob": "d4fea324ef51c0e3879c8ec1442c93dbca4067a8"
+  },
+  "sector_cycles_china-390-light-en-price.png": {
+    "path": "accepted/sector_cycles_china-390-light-en-price.png",
+    "bytes": 89849,
+    "sha256": "e3198cfb7d404c74331708505205a8bf1287e88cb6a121e01a6d68d82dd91516",
+    "git_blob": "20ce935ecf9aed6bd4b7d004277098eb35318fc4"
+  },
+  "sector_cycles_china-390-light-zh-price.png": {
+    "path": "accepted/sector_cycles_china-390-light-zh-price.png",
+    "bytes": 91318,
+    "sha256": "a106274583f83ba5a6d854162bab44355749440408c9c80a52d57a7e55f4d1ac",
+    "git_blob": "7c380e95403c24cac80ddc8010e3e9abd2586813"
+  }
+}

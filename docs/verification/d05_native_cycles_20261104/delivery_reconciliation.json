@@ -1,0 +1,107 @@
+{
+  "source_base": "77b6e5d4771242320198b002878d8c842f9833b9",
+  "law_pin": "690e5316629815ae3e78f65ebdec2eb87f0cad16",
+  "publication": "included with exact tested files in this commit; final browser acceptance pending",
+  "source_writer": "D05 Design Delivery continuation, six disjoint paths; original bridge/Company writer retained",
+  "patch": {
+    "bytes": 40943,
+    "lines": 723,
+    "sha256": "a2b4a9328e8a50c73dd2e87dda7eed2f0f1218435bc882680cc5495b3cf53f44",
+    "git_blob": "e8e48331bf7930cc80d79f4206c9fd25e37ba99c"
+  },
+  "files": [
+    {
+      "path": "scripts/build_state_of_themes.py",
+      "bytes": 90894,
+      "sha256": "ab73d394bcb00be4cb0c6fcf0f71078e2ac2c4b27984934d0f8174c66ec145bf",
+      "git_blob": "681cf1a954db33a713089a5725d93bc603e71694"
+    },
+    {
+      "path": "tests/test_state_of_themes.py",
+      "bytes": 89766,
+      "sha256": "cff132a1ca152a28e464d9ecbb389dc837d15e8b4c068d5f1bb4defa630eceaa",
+      "git_blob": "787844a742d9bd29bb96a2e32c832819aaa2414f"
+    },
+    {
+      "path": "templates/sector_cycles.js",
+      "bytes": 157554,
+      "sha256": "73e88b1f78cf9cb33a815b34cf73a5a357ab3db4dd4e295bea6107a2e02f4897",
+      "git_blob": "2fa557fbf11dd8f1d0b4860e1abacbad3e348e22"
+    },
+    {
+      "path": "site/sector_cycles.js",
+      "bytes": 157554,
+      "sha256": "73e88b1f78cf9cb33a815b34cf73a5a357ab3db4dd4e295bea6107a2e02f4897",
+      "git_blob": "2fa557fbf11dd8f1d0b4860e1abacbad3e348e22"
+    },
+    {
+      "path": "docs/verification/d05_native_cycles_20261104/prepare_preview.py",
+      "bytes": 7748,
+      "sha256": "d33fc78044a10ca9280fd4c89a02e871446e7e0057f2aebe178f14f59ae48352",
+      "git_blob": "4a70feb10fd66fe8e632e77c306fb221ee146119"
+    },
+    {
+      "path": "docs/verification/d05_native_cycles_20261104/verify_browser.cjs",
+      "bytes": 9999,
+      "sha256": "01b71a6c1d21eeba74854808fd22ef0a4e9fe71211ef3065acb7294219ff5f8e",
+      "git_blob": "3ae42666e5f9d8cd441569ac28098e6fb1caf0de"
+    }
+  ],
+  "schema": "d05.delivery_reconciliation.v1",
+  "observed_utc": "2026-11-04T07:53:09Z",
+  "verification": {
+    "command": "python3 -m pytest -q -rs tests/test_state_of_themes.py tests/test_cycles_publication.py tests/test_cycles_entry_state.py tests/test_sector_cycles.py tests/test_si_workspace_shell.py",
+    "passed": 253,
+    "skipped": 5,
+    "failed": 0,
+    "seconds": 74.14,
+    "skip_reasons": [
+      "state_of_themes: generated rendered file absent",
+      "state_of_themes: data/baskets/membership.json absent",
+      "sector_cycles: local sector data absent (two tests)",
+      "sector_cycles: promises_price_v1_zz14_v0.json absent"
+    ],
+    "notes": [
+      "248 passed / 5 skipped on predecessor a97b before the five additional entry tests; do not add suite counts.",
+      "Sparse fast-forward removed explicitly materialized fixtures; the four resulting checkout failures were repaired by restoring exact committed inputs before this run.",
+      "Byte-identical templates/site Cycles assets; Node syntax and git diff --check passed.",
+      "Updated coherent preview built successfully, with all six Inter font weights and product-nav-icons.css present.",
+      "Reconstruction for GitHub publication matched all six actual tested Git blob IDs."
+    ]
+  },
+  "browser_return": {
+    "run_id": "d05-native-browser-proof-20261104-01",
+    "source": "2e6c45899a9aeb7f90f03f85272aaff3ca42f4eb",
+    "response_sha256": "da3dc0bb0d6bfb49ce45e74a4a8abe107add8cb8546f11cbef8cedb663af331c",
+    "unchanged_passes": {
+      "archive": 7,
+      "same-date-mismatch": 7,
+      "mixed-series": 7,
+      "missing-extras": 7
+    },
+    "coherent": "failed twice on capturing an unfinished animated range; diagnostic settled copy passed 7; not an official unchanged-runner pass",
+    "captures": 48,
+    "standalone_focus_application_gaps": 8,
+    "font_and_icon_omissions": true,
+    "product_acceptance": false,
+    "fabric_acceptance": "NOT_ACCEPTED"
+  },
+  "theme_return": {
+    "run_id": "d05-theme-falsifier-absence-20261104-01",
+    "response_sha256": "fd9e4677511b89e6e4ef15fd5b9188ab1eb57585ac5a30289bef463af9be0f45",
+    "repairs_after_return": [
+      "missing typed count raised KeyError",
+      "negative counts were treated as valid",
+      "malformed summary with any_fired=true could still mark the row fired"
+    ],
+    "repaired_in_this_increment": true,
+    "fabric_acceptance": "NOT_ACCEPTED"
+  },
+  "holds": [
+    "Draft/HOLD retained",
+    "no merge, Ready/un-draft, enqueue, held-PR relabel or deploy",
+    "F01/F02 provisional; no final shared design acceptance",
+    "Company return and Dossier integration remain separately owned and unproven",
+    "fresh exact-source browser and visual proof still required"
+  ]
+}

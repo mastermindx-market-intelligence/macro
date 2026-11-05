@@ -60,7 +60,7 @@
 
 <link rel="prefetch" href="sector_cycles_china_data.js?v=8cd168d3" as="script">
 <link rel="prefetch" href="mm_charts.js?v=244eb769" as="script">
-<link rel="prefetch" href="sector_cycles.js?v=41cb03e6" as="script">
+<link rel="prefetch" href="sector_cycles.js?v=4f719b75" as="script">
 <link rel="prefetch" href="sector_cycles_china_series_data.js?v=a69d103c" as="script">
 <link rel="prefetch" href="sector_cycles_china_narr_data.js?v=b5a39641" as="script">
 <link rel="prefetch" href="sector_cycles_china_dna_data.js?v=ea6c6a47" as="script">
@@ -73,8 +73,8 @@
 <link rel="stylesheet" href="assets/css/d57821bb.css?v=d57821bb">
 
 <link rel="stylesheet" href="assets/css/99c711ee.css?v=99c711ee">
-<link rel="stylesheet" href="macro-desk.css?v=23dc8daa">
-<link rel="stylesheet" href="assets/css/123a9527.css?v=123a9527">
+<link rel="stylesheet" href="macro-desk.css?v=0a154674">
+<link rel="stylesheet" href="assets/css/e6650a73.css?v=e6650a73">
 <link rel="stylesheet" href="assets/css/e5fb69a9.css?v=e5fb69a9">
 <link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
 <link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
@@ -3085,7 +3085,7 @@
   
   <section class="scc-cycle cyc-page sc-page sc-china" id="sc-cyclemap">
     <div class="scc-section-h">
-      <h2><span class="l-en">Cycle map — every sector & theme on one clock</span><span class="l-zh">周期图谱 — 各板块与主题同框</span></h2>
+      <h2 id="sc-cyclemap-heading"><span class="l-en">Cycle map — every sector & theme on one clock</span><span class="l-zh">周期图谱 — 各板块与主题同框</span></h2>
       <span class="scc-section-sub"><span class="l-en">Price, or how far along the move is · big turns marked · tap a line to read one leg</span><span class="l-zh">看价格，或看这波走到哪一步了 · 大的拐点已经标出 · 点曲线可以看其中一段</span></span>
     </div>
     <section class="cyc-stage">
@@ -3120,7 +3120,8 @@
         <div class="sc-baskets" id="sc-baskets" aria-label="Thematic baskets"></div>
         <span id="sc-sr-status" class="sc-sr-status" role="status" aria-live="polite"></span>
         <div class="sc-chartwrap">
-          <div id="sc-chart" data-h="560" role="img" aria-label="China sector cycle clock — each line a sector's 0 to 100 cycle position over time. Tap a line for its story."></div>
+          <div id="sc-chart" data-h="560" role="img" aria-labelledby="sc-cyclemap-heading" aria-describedby="sc-chart-a11y"></div>
+          <p id="sc-chart-a11y" class="sc-sr-status"><span class="l-en">Price shows rebased price series; Cycle position shows a 0–100 oscillator. This chart does not provide a table of plotted points.</span><span class="l-zh">“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。此图表未提供逐点数据表。</span></p>
           <div class="sc-chart-hint" id="sc-chart-hint" hidden></div>
         </div>
       </div>
@@ -4184,6 +4185,6 @@ if(document.readyState!=='loading') boot(); else document.addEventListener('DOMC
 <script>window.SR_CFG={json:'marketdata/subsector_rotation_china.json',detailDir:'rotation_china/',pageHref:'sector_central_china.html'};</script>
 <script src="theme.js?v=3c193891" defer></script>
 
-<script src="si_workspace_china.js?v=f6959dc3" defer></script>
+<script src="si_workspace_china.js?v=f50df7eb" defer></script>
 </body>
 </html>

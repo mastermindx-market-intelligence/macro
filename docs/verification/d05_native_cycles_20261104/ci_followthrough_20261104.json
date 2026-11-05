@@ -1,0 +1,237 @@
+{
+  "schema": "d05.ci_followthrough.v1",
+  "recorded_utc": "2026-11-04 11:49:45 UTC",
+  "source_parent": "4802d1b1e2e53061c42f57e78223ab4e45b16c3a",
+  "protected_law": "7aefe3fa3917faecf9b074a3033d37f6a4e7838a",
+  "original_carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 10703,
+    "branch": "claude/d05-native-cycles-20261104",
+    "draft": true
+  },
+  "status": "SELF_REVIEWED_SOURCE_TESTED",
+  "source_files": {
+    "templates/sector_cycles.js": {
+      "git_blob": "2ebe533da5dd2c2b527ae51c5868e756e6ac3687",
+      "sha256": "8e8ac5f9795172764e9a3cf4fce3183df12063df74673123d60eab62be65b738",
+      "bytes": 159910
+    },
+    "site/sector_cycles.js": {
+      "git_blob": "2ebe533da5dd2c2b527ae51c5868e756e6ac3687",
+      "sha256": "8e8ac5f9795172764e9a3cf4fce3183df12063df74673123d60eab62be65b738",
+      "bytes": 159910
+    },
+    "templates/si_workspace.js": {
+      "git_blob": "ac426abc3a8a49a6d1023cc53b8eedb00a23c57a",
+      "sha256": "6006106e41060fea898989fe636cc9fed31ea9b41e4fa3b3e87f493a49231b62",
+      "bytes": 70675
+    },
+    "site/si_workspace.js": {
+      "git_blob": "ac426abc3a8a49a6d1023cc53b8eedb00a23c57a",
+      "sha256": "6006106e41060fea898989fe636cc9fed31ea9b41e4fa3b3e87f493a49231b62",
+      "bytes": 70675
+    },
+    "tests/test_cycles_entry_state.py": {
+      "git_blob": "5fccc0b272e5e74054f85a162161660bf85d841c",
+      "sha256": "4f10b0ab767ff2d77935ae8a2d3f59f664fb37c9322a27b7081e5cf7fe0faf74",
+      "bytes": 30710
+    },
+    "tests/test_cycles_publication.py": {
+      "git_blob": "7e09b99284051c1f169b0990f097064dc51b3b9b",
+      "sha256": "29db44b5cbba8869361ee7ea95eb9774b45b14755eda7256fb7ca443cb962abb",
+      "bytes": 15159
+    },
+    "tests/test_leadership_rotation_countercases.py": {
+      "git_blob": "833b53be54f72d7adbc190abfc33dc9ca831694d",
+      "sha256": "c2c36edda8ac58f368da49270ae5e51963871a806fb93274698c2815e73eb0ae",
+      "bytes": 74517
+    },
+    "tests/test_sector_completion_ownership_map.py": {
+      "git_blob": "a238d1722b0f8d19ad351c10978078954f1b59f0",
+      "sha256": "302ac6546912fb1740a74b73e8fcd7cd42040a215ed9cc345ff9aecad3264b85",
+      "bytes": 22346
+    },
+    "docs/verification/d05_native_cycles_20261104/prepare_preview.py": {
+      "git_blob": "3f629f36da2063ac070f0c1c06adf8be8c654988",
+      "sha256": "e6f2df31098141a0e4dafe9035ec6c86b0e471de340d1cee38af42fb9c8fe3a7",
+      "bytes": 14005
+    }
+  },
+  "qualification": {
+    "native_preflight": {
+      "command": "python3 -m pytest -q tests/test_cycles_entry_state.py tests/test_cycles_publication.py",
+      "passed": 22,
+      "failed": 0
+    },
+    "shared_shell": {
+      "command": "node --test tests/js/shared_shell_bridge.test.cjs",
+      "passed": 87,
+      "failed": 0,
+      "skipped": 0,
+      "initial_attempt": "The sparse verification checkout omitted committed site/shared_shell.css. Exact HEAD shared_shell.css and shared_shell_bridge.js were materialized; the unchanged suite then passed."
+    },
+    "ci_contracts": {
+      "command": "python3 -m pytest -q tests/test_leadership_rotation_countercases.py tests/test_sector_completion_ownership_map.py tests/test_sector_metric_definitions.py",
+      "passed": 57,
+      "failed": 0,
+      "parent_extra_negative": "The worker AST helper wrongly accepted an unrelated loop's suffix binding. A new regression reproduced it (1 failed); lexical ancestry and inner-shadow refusal repair made all 57 pass."
+    },
+    "guards": [
+      {
+        "check": "claims_source",
+        "exit_code": 0,
+        "tail": [
+          "check_validated_claims: OK [scope=source: engine/, lib/, scripts/build_*.py, scripts/render_*.py, templates/] — every affirmative 'validated' claim is backed."
+        ]
+      },
+      {
+        "check": "cycles_syntax",
+        "exit_code": 0,
+        "tail": []
+      },
+      {
+        "check": "workspace_syntax",
+        "exit_code": 0,
+        "tail": []
+      },
+      {
+        "check": "diff_whitespace",
+        "exit_code": 0,
+        "tail": []
+      }
+    ],
+    "preview": {
+      "scope": "local preview dependency and final byte integrity; not browser/auth/product acceptance",
+      "base": "1573afdee7f6956968bded3b84e5fd4e25a8c82c",
+      "script_sha256": "e6f2df31098141a0e4dafe9035ec6c86b0e471de340d1cee38af42fb9c8fe3a7",
+      "scenarios": [
+        {
+          "scenario": "archive",
+          "emitted_assets": 57,
+          "all_emitted_digests_match": true,
+          "dynamic_http_status": {
+            "account.js": 200,
+            "terminal_overlay.js": 200,
+            "nav_market.js": 200,
+            "basket/../nav_market.js": 200
+          },
+          "intentional_missing_assets": [],
+          "members_source_id": "members1-a902854d9996efbe41fe79dcce3183e9b196500fdfbb7621ae341c35780f3b8e"
+        },
+        {
+          "scenario": "coherent",
+          "emitted_assets": 57,
+          "all_emitted_digests_match": true,
+          "dynamic_http_status": {
+            "account.js": 200,
+            "terminal_overlay.js": 200,
+            "nav_market.js": 200,
+            "basket/../nav_market.js": 200
+          },
+          "intentional_missing_assets": [],
+          "members_source_id": "members1-a902854d9996efbe41fe79dcce3183e9b196500fdfbb7621ae341c35780f3b8e"
+        },
+        {
+          "scenario": "same-date-mismatch",
+          "emitted_assets": 57,
+          "all_emitted_digests_match": true,
+          "dynamic_http_status": {
+            "account.js": 200,
+            "terminal_overlay.js": 200,
+            "nav_market.js": 200,
+            "basket/../nav_market.js": 200
+          },
+          "intentional_missing_assets": [],
+          "members_source_id": "members1-a902854d9996efbe41fe79dcce3183e9b196500fdfbb7621ae341c35780f3b8e"
+        },
+        {
+          "scenario": "mixed-series",
+          "emitted_assets": 57,
+          "all_emitted_digests_match": true,
+          "dynamic_http_status": {
+            "account.js": 200,
+            "terminal_overlay.js": 200,
+            "nav_market.js": 200,
+            "basket/../nav_market.js": 200
+          },
+          "intentional_missing_assets": [],
+          "members_source_id": "members1-a902854d9996efbe41fe79dcce3183e9b196500fdfbb7621ae341c35780f3b8e"
+        },
+        {
+          "scenario": "missing-extras",
+          "emitted_assets": 56,
+          "all_emitted_digests_match": true,
+          "dynamic_http_status": {
+            "account.js": 200,
+            "terminal_overlay.js": 200,
+            "nav_market.js": 200,
+            "basket/../nav_market.js": 200
+          },
+          "intentional_missing_assets": [
+            "sector_cycles_narr_data.js"
+          ],
+          "members_source_id": "members1-a902854d9996efbe41fe79dcce3183e9b196500fdfbb7621ae341c35780f3b8e"
+        }
+      ]
+    },
+    "counts_note": "These are separate focused commands, with overlap in behavior. No aggregate programme test total is inferred."
+  },
+  "worker_return": {
+    "root_id": "6aea7863-bef8-83e9-bb5b-47850ca7132b",
+    "run_id": "d05-ci-contract-repair-20261104-01",
+    "controller_pid": 18960,
+    "native_terminal_rc": 0,
+    "native_root_verified": true,
+    "response_sha256": "9e5f90711b1ce1ca317caee7422391366db08e6f7caebeb18dd8c59400771f2c",
+    "patch_sha256": "e088bd1f652ea22bb375cca8d3426ceba6145a2b0b3316b16f5d5026fcb247e0",
+    "original_base": "ef0680c15169db3cba89bc63544f87a99b6ba63e",
+    "parent_disposition": "Verified original patch bytes and exact two postimages; base files unchanged on1573. Parent tightened AST lexical binding before final qualification. Worker346-suite report is not relabelled as parent execution."
+  },
+  "retained_browser_evidence": {
+    "source": "dd903b3866e45eb25665c73629ac6dcfd409b222",
+    "run_id": "d05-native-browser-refresh-20261104-01",
+    "response_sha256": "b518dbcee03e4cb6d55b9c16a4c3b789ebbf9d4e483fcf8949baac8974cdd401",
+    "actual_results": {
+      "behavior_passed": 42,
+      "canonical_captures": 48,
+      "verified_image_digests": 48,
+      "applied_focus": 16,
+      "applied_hover": 16,
+      "ewp4_images": 68,
+      "ewp4_digests_verified": 68,
+      "ewp4_document_overflow": 0,
+      "ewp4_page_exceptions": 0
+    },
+    "artifact_root": "/home/ubuntu3/lanes/returns/d05-native-browser-refresh-20261104-01/",
+    "limitations": [
+      "Intermediate source, not this current source or Company acceptance.",
+      "Two dynamically loaded shared scripts were absent in that capture; this increment completes their transitive preview graph.",
+      "Actual mobile Cycles presentation remained dense. Counts and captures do not establish Paper parity or final visual acceptance.",
+      "Authenticated tiers and production were not exercised."
+    ]
+  },
+  "holds": [
+    "No merge",
+    "No Ready/un-draft",
+    "No queue",
+    "No held-label change",
+    "No deployment",
+    "Terminal1244 remains on its original publisher gate",
+    "Final F01/F02 and D05 shared design acceptance remain held"
+  ],
+  "remaining": [
+    "EW-P4 canonical receipt must be refreshed against current render inputs.",
+    "Original 13-route/119-case programme coverage, authenticated tiers, durable save/refresh/correction lineage and production proof are not established by this increment."
+  ],
+  "tested_product_source_base": "1573afdee7f6956968bded3b84e5fd4e25a8c82c",
+  "concurrent_composition": {
+    "commit": "4802d1b1e2e53061c42f57e78223ab4e45b16c3a",
+    "parent": "1573afdee7f6956968bded3b84e5fd4e25a8c82c",
+    "paths": [
+      ".github/ci/legacy-jobs.yml",
+      "docs/verification/d05_native_cycles_20261104/ci_closure_repair.json"
+    ],
+    "product_source_changed": false,
+    "publication_reconciliation": "Original update returned UNKNOWN. Both original branch ref and PR readback showed4802, whose sole parent is1573; candidate790dd554 was not applied. Recompose once on this observed disjoint current head, same GitHub carrier and expected-head check."
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "d05.source_workspace_interruption.v1",
+  "recorded_at": "2026-11-05 11:31:31 UTC",
+  "source_parent": "f0f7aa176e600c5d21a656ae483ce3693b8c9151",
+  "operation_id": "sector-r3-chart-accessibility-20261105",
+  "worktree": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105",
+  "gitdir": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/sector-r3-chart-accessibility-20261105",
+  "observed_git_error": "fatal: not a git repository",
+  "status_read": {
+    "schema": "mastermind.studio_git_tool_error.v1",
+    "status": "REFUSED",
+    "effect_state": "NOT_APPLIED",
+    "code": "TYPED_GIT_PRECHECK_REFUSED",
+    "error_code": "INVALID_ARGUMENT"
+  },
+  "repositories_read": {
+    "schema": "mastermind.studio_workspace_repositories.v1",
+    "effect_state": "NOT_APPLIED",
+    "repositories": [
+      {
+        "alias": "mastermind",
+        "repository_full_name": "mastermindx-market-intelligence/Mastermind",
+        "default_branch": "master",
+        "state": "UNAVAILABLE"
+      },
+      {
+        "alias": "macro",
+        "repository_full_name": "mastermindx-market-intelligence/macro",
+        "default_branch": "main",
+        "state": "UNAVAILABLE"
+      },
+      {
+        "alias": "terminal",
+        "repository_full_name": "mastermindx-market-intelligence/mastermind-terminal",
+        "default_branch": "master",
+        "state": "UNAVAILABLE"
+      }
+    ],
+    "admission_evaluated": false
+  },
+  "managed_worktree_mutations_after_interruption": [],
+  "continued_lane": "Original GitHub expected-head non-force source carrier; temporary copies of sealed fixtures only",
+  "next_action": "Installed workspace owner restores the existing repository bindings; then reconcile the original operation once before any further managed-worktree source edit. Preserve all prior dirty state and held publisher effects."
+}

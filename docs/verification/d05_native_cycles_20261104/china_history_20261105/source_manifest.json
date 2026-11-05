@@ -1,0 +1,55 @@
+{
+  "parent": "1f050a234311a8c2a90d325b048159ebf2fe2386",
+  "files": [
+    {
+      "path": "templates/sector_cycles.js",
+      "git_blob": "f6c4de027c5e2a07cb4d30aedb0f2a90d89e2af4",
+      "sha256": "b5558157609e9ea098769426725e5b20e654c2a20b0f2ba0b9d3a14900bc8d65"
+    },
+    {
+      "path": "tests/test_cycles_publication.py",
+      "git_blob": "a8553c758ef170e72027514c34d2ff52da47dc17",
+      "sha256": "a1e719b3c2b10b78e51b91648d496899c00a8632af8dbf2468709c491aba317b"
+    },
+    {
+      "path": "site/sector_cycles.js",
+      "git_blob": "f6c4de027c5e2a07cb4d30aedb0f2a90d89e2af4",
+      "sha256": "b5558157609e9ea098769426725e5b20e654c2a20b0f2ba0b9d3a14900bc8d65"
+    },
+    {
+      "path": "site/country_cycles.html",
+      "git_blob": "4d791ca71b48fabd3ce65a40de9dd5cad46c4be4",
+      "changes": "renderer asset stamp only",
+      "references_updated": 2,
+      "original_git_blob": "30916fc163c1e26287c06d62275600104f51b903"
+    },
+    {
+      "path": "site/sector_central.html",
+      "git_blob": "4d52a850b877c0faa31edd9fdd9dea6de4ccf8de",
+      "changes": "renderer asset stamp only",
+      "references_updated": 1,
+      "original_git_blob": "0bfdc6baf3b8314696ddd5f65188e674250a8e92"
+    },
+    {
+      "path": "site/sector_central_china.html",
+      "git_blob": "c57e788f0439597e47e5ba0b668f805177ee84b5",
+      "changes": "renderer asset stamp only",
+      "references_updated": 1,
+      "original_git_blob": "5705649ec41501d4ec6921118d0849b2ae6621f9"
+    },
+    {
+      "path": "site/sector_cycles.html",
+      "git_blob": "5f1a1c33a1e3f7202b66453b8ede96828ae943eb",
+      "changes": "renderer asset stamp only",
+      "references_updated": 2,
+      "original_git_blob": "f6c181129d55d5bdcf7666c6152811b0fc4f3051"
+    },
+    {
+      "path": "site/sector_cycles_china.html",
+      "git_blob": "128fdc71c1a9937f8a6d050a9b530bb986b1454c",
+      "changes": "renderer asset stamp only",
+      "references_updated": 2,
+      "original_git_blob": "dcfddde643aa4fc5e57afc238d51fc4c05825fd2"
+    }
+  ]
+}

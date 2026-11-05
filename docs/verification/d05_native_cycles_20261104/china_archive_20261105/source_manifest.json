@@ -1,0 +1,62 @@
+[
+  {
+    "path": "templates/si_workspace_china.js",
+    "bytes": 17619,
+    "sha256": "f50df7ebae181485486b520944b27c61aaa7c823caa14b7d3d3166404b8577c0",
+    "git_blob": "56ab06a5f59f923babef9a489fee68baf8d00ed2"
+  },
+  {
+    "path": "templates/sector_cycles.js",
+    "bytes": 160263,
+    "sha256": "15e490116b21e276b21c10e94563f87bc4a1880d1c5b614278b03d52f705dd0d",
+    "git_blob": "e3440f5abfb3ffe2f00ae8d229f4e54bad4ad3de"
+  },
+  {
+    "path": "tests/test_china_si_workspace_shell.py",
+    "bytes": 22907,
+    "sha256": "da1be9c457afd55562026b3ea4fb9d2a9c4e5356fb09c048e6593dbad92fcf20",
+    "git_blob": "48f30a854d170fbe330792885e98282fa8b49858"
+  },
+  {
+    "path": "templates/macro-desk.css",
+    "bytes": 8889,
+    "sha256": "0a154674f36450059813acd831a1d99db3a42914e7084c083ee49bc1288d4acf",
+    "git_blob": "a06193cb96fff5cf126de2b87de479ef510f3248"
+  },
+  {
+    "path": "templates/sector_central_china.html.j2",
+    "bytes": 159848,
+    "sha256": "e5d7ddf4d0af4960524d23c8224507709e0377db915236f6b062b7334dc0118e",
+    "git_blob": "8e2beca43290ba17771101b955562a86b91b178c"
+  },
+  {
+    "path": "site/sector_cycles.js",
+    "bytes": 160263,
+    "sha256": "15e490116b21e276b21c10e94563f87bc4a1880d1c5b614278b03d52f705dd0d",
+    "git_blob": "e3440f5abfb3ffe2f00ae8d229f4e54bad4ad3de"
+  },
+  {
+    "path": "site/si_workspace_china.js",
+    "bytes": 17619,
+    "sha256": "f50df7ebae181485486b520944b27c61aaa7c823caa14b7d3d3166404b8577c0",
+    "git_blob": "56ab06a5f59f923babef9a489fee68baf8d00ed2"
+  },
+  {
+    "path": "site/macro-desk.css",
+    "bytes": 8889,
+    "sha256": "0a154674f36450059813acd831a1d99db3a42914e7084c083ee49bc1288d4acf",
+    "git_blob": "a06193cb96fff5cf126de2b87de479ef510f3248"
+  },
+  {
+    "path": "site/assets/css/e6650a73.css",
+    "bytes": 13068,
+    "sha256": "e6650a73623f7c9af0a7b1a6f89c6410109989120e78e73b7cee2e115b21525c",
+    "git_blob": "0416c3dd7c4ea1410ef6fdcac526328fdb9e6fec"
+  },
+  {
+    "path": "site/sector_central_china.html",
+    "bytes": 298969,
+    "sha256": "375d6ed80ff1b0be912e6d7a3bc30a5d1ecd8472d3545dcd0ef625cd50535a77",
+    "git_blob": "5705649ec41501d4ec6921118d0849b2ae6621f9"
+  }
+]

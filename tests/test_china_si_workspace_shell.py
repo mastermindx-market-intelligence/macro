@@ -388,3 +388,55 @@ def test_no_falsifier_language_on_the_router() -> None:
     code = _code(_router()).lower()
     for banned in ("falsifier", "refuted", "证伪", "thesis refuted"):
         assert banned not in code, f"front-facing copy uses banned term {banned!r}"
+
+
+def test_native_sector_deep_link_reveals_map_after_core_arrives() -> None:
+    """A retained selection is useless when its chart remains in a hidden view.
+
+    Exercise the actual router and existing core-data event. Unknown identifiers,
+    foreign cohorts and existing basket/theme/view links keep their own behavior.
+    The real Next/Chromium regional proof separately verifies visible rendering.
+    """
+    import subprocess
+
+    script = r"""
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
+const source=fs.readFileSync('templates/si_workspace_china.js','utf8');
+const capture=source.replace('function activate(view,target){',
+  'function activate(view,target){globalThis.lastView=[view,target];return;');
+const listeners={};
+const context={
+  document:{
+    documentElement:{getAttribute:()=>null},
+    querySelectorAll:()=>[],querySelector:()=>null,getElementById:()=>null,
+    addEventListener:(name,callback)=>{(listeners[name]??=[]).push(callback);},
+    title:'China'
+  },
+  location:{hash:'#801010'},
+  history:{replaceState:()=>{}},
+  addEventListener:()=>{},console
+};
+context.window=context;vm.createContext(context);vm.runInContext(capture,context);
+const view=()=>JSON.parse(JSON.stringify(context.lastView));
+assert.deepEqual(view(),['overview',null],'no cohort means no inferred membership');
+context.SECTOR_CYCLES={meta:{region:'china'},sectors:[{id:'801010'},{id:'801030'}]};
+assert.ok(listeners['sc:cycles-data']?.length,'existing data-arrival event must re-evaluate the route');
+listeners['sc:cycles-data'].forEach(fn=>fn());
+assert.deepEqual(view(),['map',null],'delayed native data must reveal the selected chart');
+assert.equal(context.location.hash,'#801010','routing must not consume the entity identity');
+function route(hash){context.location.hash=hash;context.__siRoute();return view();}
+assert.deepEqual(route('#801030'),['map',null]);
+assert.deepEqual(route('#999999'),['overview',null],'unknown numeric ids are not native members');
+assert.deepEqual(route('#xlk'),['overview',null],'foreign sector ids are not China members');
+context.SECTOR_CYCLES.meta.region='us';
+assert.deepEqual(route('#801010'),['overview',null],'wrong-region payload cannot admit a China selection');
+context.SECTOR_CYCLES={meta:{region:'china'},sectors:null};
+assert.deepEqual(route('#801010'),['overview',null],'malformed cohort remains unavailable');
+assert.deepEqual(route('#b-cn_semis'),['explore',null]);
+assert.deepEqual(route('#theme-semiconductors'),['explore',null]);
+assert.deepEqual(route('#map'),['map',null]);
+assert.deepEqual(route('#confluence'),['confluence',null]);
+assert.deepEqual(route('#unknown-view'),['overview',null]);
+"""
+    result = subprocess.run(["node", "-e", script], cwd=ROOT, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr

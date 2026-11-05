@@ -64,29 +64,31 @@
   <div class="sd-head">
     <div>
       <h1>{{ t(sub.name, sub.name_zh) }}</h1>
-      <div class="sd-theme">{{ t('Theme', '主题') }}: <b>{{ t(sub.theme, sub.theme_zh) }}</b> · {{ sub.n_members }} {{ t('stocks', '只成分股') }}
+      <div class="sd-theme">{{ t('Theme', '主题') }}: <b>{{ t(sub.theme, sub.theme_zh) }}</b> · {{ sub.n_members }} {{ t('configured stocks', '只配置成分股') }}
         · {{ t('heat rank', '热度排名') }} #{{ sub.rank }}{{ ' / ' ~ n_total }}</div>
     </div>
     <span class="sd-q {{ q_cls }}">{{ t(q_en, q_zh) }} · {{ t(qx_en, qx_zh) }}</span>
   </div>
 
+  <div class="sd-foot sd-asof">{{ t('Source snapshot', '来源快照') }}: {{ asof if asof else t('Date unavailable', '日期不可用') }}</div>
+
   <div class="sd-lede">{{ t(lede_en, lede_zh) }}</div>
 
   <div class="sd-grid">
     <div class="sd-card">
-      <div class="lab">{{ t('Strength vs. market', '相对大盘强度') }}</div>
+      <div class="lab">{{ t('Standardized strength', '标准化强度') }}</div>
       <div class="val {{ 'up' if sub.rs_ratio > 0 else ('dn' if sub.rs_ratio < 0 else '') }}">{{ '%+.2f'|format(sub.rs_ratio) }}</div>
-      <div class="sub">{{ t('positive = stronger than the median subsector', '正值 = 强于中位数子行业') }}</div>
+      <div class="sub">{{ t('dimensionless · blended 1M / 3M cross-sectional z-scores', '无量纲 · 1月 / 3月横截面标准分的均值') }}</div>
     </div>
     <div class="sd-card">
-      <div class="lab">{{ t('Trend (velocity)', '趋势（速度）') }}</div>
+      <div class="lab">{{ t('Standardized momentum', '标准化动量') }}</div>
       <div class="val {{ 'up' if sub.rs_mom > 0 else ('dn' if sub.rs_mom < 0 else '') }}">{{ '%+.2f'|format(sub.rs_mom) }}</div>
-      <div class="sub">{{ t('rate of change of relative strength — heating (+) or cooling (−)', '相对强度的变化速度 — 升温 (+) 或降温 (−)') }}</div>
+      <div class="sub">{{ t('dimensionless · recent (1W / 1M) minus longer (3M / 6M) standardized strength', '无量纲 · 近期（1周 / 1月）与较长周期（3月 / 6月）标准化强度之差') }}</div>
     </div>
     <div class="sd-card">
-      <div class="lab">{{ t('Acceleration', '加速度') }}</div>
+      <div class="lab">{{ t('Return-rate acceleration (pp/week)', '收益速率加速度（百分点/周）') }}</div>
       <div class="val {{ 'up' if (sub.accel or 0) > 0 else ('dn' if (sub.accel or 0) < 0 else '') }}">{{ ('%+.1f'|format(sub.accel)) if sub.accel is not none else '—' }}</div>
-      <div class="sub">{{ t('latest weekly pace vs the 3-month pace', '最近一周节奏 vs 三个月节奏') }}</div>
+      <div class="sub">{{ t('1W return per week minus 3M return per week; 1M fallback when 3M is absent', '1周每周收益减去3月每周收益；缺少3月数据时使用1月') }}</div>
     </div>
     <div class="sd-card">
       <div class="lab">{{ t('Heat score', '热度评分') }}</div>
@@ -105,6 +107,8 @@
     </div>
   </div>
 
+  <div class="sd-foot sd-member-coverage">{{ t('Showing', '显示') }} {{ members|length }} / {{ members_available|default(members|length) }} {{ t('published member rows · display limit', '条已发布成分记录 · 显示上限') }} {{ member_limit|default(30) }}. {{ t('Current configured membership; this does not establish historical membership.', '基于当前配置成分；不代表历史成分。') }}</div>
+
   {% if members %}
   <div class="sd-sec">
     <h2>{{ t('Member stocks', '成分股') }} <span style="color:var(--muted);font-weight:600;font-size:12px">({{ t('by 1-month return', '按1月涨跌') }})</span></h2>
@@ -122,8 +126,8 @@
   {% endif %}
 
   <div class="sd-foot">
-    {{ t('Part of the broad-universe theme → subsector rotation map. Relative strength is measured cross-sectionally vs the median subsector; trend and acceleration measure the VELOCITY of relative strength, not nominal return. Member returns are point-in-time snapshots. Research context only — not investment advice.',
-          '来自全市场「主题 → 子行业」轮动图。相对强度以横截面方式相对中位数子行业衡量；趋势与加速度衡量的是相对强度的变化速度，而非名义涨跌。成分股涨跌为快照。仅供研究参考，非投资建议。') }}
+    {{ t('Part of the broad-universe theme → subsector rotation map. Strength and momentum are dimensionless cross-sectional standardized measures. Acceleration compares instrument return per week, in percentage points per week; it is not the velocity of relative strength. Returns use the supplied source snapshot and current configured membership, not a point-in-time membership backtest. Calendar MTD and YTD are display horizons. Research context only — not investment advice.',
+          '来自全市场「主题 → 子行业」轮动图。强度与动量为无量纲的横截面标准化指标。加速度比较工具本身的每周收益，单位为百分点/周，并非相对强度的变化速度。收益使用所提供的来源快照和当前配置成分，不是基于历史时点成分的回测。月初至今和年初至今为日历展示周期。仅供研究参考，非投资建议。') }}
   </div>
 </div>
 

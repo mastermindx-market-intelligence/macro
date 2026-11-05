@@ -1,0 +1,722 @@
+{
+  "schema": "d05.chart_accessibility_browser.v1",
+  "source_commit": "eb807572d1c1d0645801e3bc060e1507dd374111",
+  "integration_parent": "d1ebd39fb1287f69592d8a621c5db0318e7fff05",
+  "fixture_only": true,
+  "fixture_provenance_sha256": "372a276c0111ae0597551c0eb3e54951b6ab68c9d4fd0132428491378286fba6",
+  "cases": [
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "page_errors": [],
+      "missing_assets": [],
+      "steps": [
+        {
+          "mode": "osc",
+          "scale": "log",
+          "ax": {
+            "role": "image",
+            "name": "Sector rotation overlay",
+            "description": "Price shows rebased sector ETF prices; Cycle position shows a 0–100 oscillator. Sector scorecards below are summaries, not a table of plotted points."
+          },
+          "path_count": 183,
+          "geometry_sha256": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+          "screenshot": {
+            "file": "1440-dark-en-osc.png",
+            "sha256": "62003a1bc1c6da8a06d3cc81e4ca3ce0b63d58ff8a5f8b9b331aa347c8565a55"
+          }
+        },
+        {
+          "mode": "price",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "Sector rotation overlay",
+            "description": "Price shows rebased sector ETF prices; Cycle position shows a 0–100 oscillator. Sector scorecards below are summaries, not a table of plotted points."
+          },
+          "path_count": 183,
+          "geometry_sha256": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+          "screenshot": {
+            "file": "1440-dark-en-price.png",
+            "sha256": "a690bdd5ac92f75b5a89199844749591b91beb8e89d8c9a7eece52616c25b116"
+          }
+        },
+        {
+          "mode": "osc",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "Sector rotation overlay",
+            "description": "Price shows rebased sector ETF prices; Cycle position shows a 0–100 oscillator. Sector scorecards below are summaries, not a table of plotted points."
+          },
+          "path_count": 183,
+          "geometry_sha256": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda"
+        }
+      ],
+      "evidence": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+        "asOf": "2026-11-02",
+        "region": "us",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "us_sectors_11",
+          "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "verified",
+          "dna": "verified"
+        },
+        "sources": {
+          "dna": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          },
+          "narr": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          }
+        }
+      },
+      "source": {
+        "asOf": "2026-11-02",
+        "region": null
+      },
+      "overflow": false,
+      "passed": true
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "zh",
+      "page_errors": [],
+      "missing_assets": [],
+      "steps": [
+        {
+          "mode": "osc",
+          "scale": "log",
+          "ax": {
+            "role": "image",
+            "name": "板块轮动叠加",
+            "description": "“价格”展示板块 ETF 的再基准化价格，“周期位置”展示 0–100 的振荡指标。下方板块记分卡是文字摘要，而非图表逐点数据表。"
+          },
+          "path_count": 183,
+          "geometry_sha256": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+          "screenshot": {
+            "file": "1440-dark-zh-osc.png",
+            "sha256": "b4cc3f21346491b4bcabe021a886ed44ce65583ab211c6241656688e4c85bd9f"
+          }
+        },
+        {
+          "mode": "price",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "板块轮动叠加",
+            "description": "“价格”展示板块 ETF 的再基准化价格，“周期位置”展示 0–100 的振荡指标。下方板块记分卡是文字摘要，而非图表逐点数据表。"
+          },
+          "path_count": 183,
+          "geometry_sha256": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+          "screenshot": {
+            "file": "1440-dark-zh-price.png",
+            "sha256": "b904e5ba64bd3f2be9ae0982512a9b35fe7547ffab1ad9712f035b0ce4b89940"
+          }
+        },
+        {
+          "mode": "osc",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "板块轮动叠加",
+            "description": "“价格”展示板块 ETF 的再基准化价格，“周期位置”展示 0–100 的振荡指标。下方板块记分卡是文字摘要，而非图表逐点数据表。"
+          },
+          "path_count": 183,
+          "geometry_sha256": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda"
+        }
+      ],
+      "evidence": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+        "asOf": "2026-11-02",
+        "region": "us",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "us_sectors_11",
+          "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "verified",
+          "dna": "verified"
+        },
+        "sources": {
+          "dna": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          },
+          "narr": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          }
+        }
+      },
+      "source": {
+        "asOf": "2026-11-02",
+        "region": null
+      },
+      "overflow": false,
+      "passed": true
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "lang": "en",
+      "page_errors": [],
+      "missing_assets": [],
+      "steps": [
+        {
+          "mode": "osc",
+          "scale": "log",
+          "ax": {
+            "role": "image",
+            "name": "Sector rotation overlay",
+            "description": "Price shows rebased sector ETF prices; Cycle position shows a 0–100 oscillator. Sector scorecards below are summaries, not a table of plotted points."
+          },
+          "path_count": 183,
+          "geometry_sha256": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+          "screenshot": {
+            "file": "1440-light-en-osc.png",
+            "sha256": "f4ba919c999ed1c2a68ff796a7b245720194031ab232b2be423fcb4c51813f78"
+          }
+        },
+        {
+          "mode": "price",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "Sector rotation overlay",
+            "description": "Price shows rebased sector ETF prices; Cycle position shows a 0–100 oscillator. Sector scorecards below are summaries, not a table of plotted points."
+          },
+          "path_count": 183,
+          "geometry_sha256": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+          "screenshot": {
+            "file": "1440-light-en-price.png",
+            "sha256": "55c8d24f11a07e7c58bbc07b63b267a970bf4502591c1c0776389aa443c16eb5"
+          }
+        },
+        {
+          "mode": "osc",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "Sector rotation overlay",
+            "description": "Price shows rebased sector ETF prices; Cycle position shows a 0–100 oscillator. Sector scorecards below are summaries, not a table of plotted points."
+          },
+          "path_count": 183,
+          "geometry_sha256": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda"
+        }
+      ],
+      "evidence": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+        "asOf": "2026-11-02",
+        "region": "us",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "us_sectors_11",
+          "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "verified",
+          "dna": "verified"
+        },
+        "sources": {
+          "dna": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          },
+          "narr": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          }
+        }
+      },
+      "source": {
+        "asOf": "2026-11-02",
+        "region": null
+      },
+      "overflow": false,
+      "passed": true
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "lang": "zh",
+      "page_errors": [],
+      "missing_assets": [],
+      "steps": [
+        {
+          "mode": "osc",
+          "scale": "log",
+          "ax": {
+            "role": "image",
+            "name": "板块轮动叠加",
+            "description": "“价格”展示板块 ETF 的再基准化价格，“周期位置”展示 0–100 的振荡指标。下方板块记分卡是文字摘要，而非图表逐点数据表。"
+          },
+          "path_count": 183,
+          "geometry_sha256": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+          "screenshot": {
+            "file": "1440-light-zh-osc.png",
+            "sha256": "1b08930f17402d365797658f7e730d9d67c8bbba9f959da70ca4461edb986aae"
+          }
+        },
+        {
+          "mode": "price",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "板块轮动叠加",
+            "description": "“价格”展示板块 ETF 的再基准化价格，“周期位置”展示 0–100 的振荡指标。下方板块记分卡是文字摘要，而非图表逐点数据表。"
+          },
+          "path_count": 183,
+          "geometry_sha256": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+          "screenshot": {
+            "file": "1440-light-zh-price.png",
+            "sha256": "0494a5a08722e1b853f2f0c724340f0e74bb04e298b130a9d72de00a04465b85"
+          }
+        },
+        {
+          "mode": "osc",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "板块轮动叠加",
+            "description": "“价格”展示板块 ETF 的再基准化价格，“周期位置”展示 0–100 的振荡指标。下方板块记分卡是文字摘要，而非图表逐点数据表。"
+          },
+          "path_count": 183,
+          "geometry_sha256": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda"
+        }
+      ],
+      "evidence": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+        "asOf": "2026-11-02",
+        "region": "us",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "us_sectors_11",
+          "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "verified",
+          "dna": "verified"
+        },
+        "sources": {
+          "dna": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          },
+          "narr": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          }
+        }
+      },
+      "source": {
+        "asOf": "2026-11-02",
+        "region": null
+      },
+      "overflow": false,
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "page_errors": [],
+      "missing_assets": [],
+      "steps": [
+        {
+          "mode": "osc",
+          "scale": "log",
+          "ax": {
+            "role": "image",
+            "name": "Sector rotation overlay",
+            "description": "Price shows rebased sector ETF prices; Cycle position shows a 0–100 oscillator. Sector scorecards below are summaries, not a table of plotted points."
+          },
+          "path_count": 183,
+          "geometry_sha256": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+          "screenshot": {
+            "file": "390-dark-en-osc.png",
+            "sha256": "37a894d2c1e943ef2455dfc2dc93c90bf8be01879b2a41968f06fd10ef907fb6"
+          }
+        },
+        {
+          "mode": "price",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "Sector rotation overlay",
+            "description": "Price shows rebased sector ETF prices; Cycle position shows a 0–100 oscillator. Sector scorecards below are summaries, not a table of plotted points."
+          },
+          "path_count": 183,
+          "geometry_sha256": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+          "screenshot": {
+            "file": "390-dark-en-price.png",
+            "sha256": "e7ca24e53842515ab05cb1bd24773cca041a1879ae25463772c3d9b1cf146a8b"
+          }
+        },
+        {
+          "mode": "osc",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "Sector rotation overlay",
+            "description": "Price shows rebased sector ETF prices; Cycle position shows a 0–100 oscillator. Sector scorecards below are summaries, not a table of plotted points."
+          },
+          "path_count": 183,
+          "geometry_sha256": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2"
+        }
+      ],
+      "evidence": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+        "asOf": "2026-11-02",
+        "region": "us",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "us_sectors_11",
+          "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "verified",
+          "dna": "verified"
+        },
+        "sources": {
+          "dna": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          },
+          "narr": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          }
+        }
+      },
+      "source": {
+        "asOf": "2026-11-02",
+        "region": null
+      },
+      "overflow": false,
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "lang": "zh",
+      "page_errors": [],
+      "missing_assets": [],
+      "steps": [
+        {
+          "mode": "osc",
+          "scale": "log",
+          "ax": {
+            "role": "image",
+            "name": "板块轮动叠加",
+            "description": "“价格”展示板块 ETF 的再基准化价格，“周期位置”展示 0–100 的振荡指标。下方板块记分卡是文字摘要，而非图表逐点数据表。"
+          },
+          "path_count": 183,
+          "geometry_sha256": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+          "screenshot": {
+            "file": "390-dark-zh-osc.png",
+            "sha256": "4f5cc845f689fcf907d0821f9926ea27fb72aa4ea71d932ba6d429ce0a34544d"
+          }
+        },
+        {
+          "mode": "price",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "板块轮动叠加",
+            "description": "“价格”展示板块 ETF 的再基准化价格，“周期位置”展示 0–100 的振荡指标。下方板块记分卡是文字摘要，而非图表逐点数据表。"
+          },
+          "path_count": 183,
+          "geometry_sha256": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+          "screenshot": {
+            "file": "390-dark-zh-price.png",
+            "sha256": "acd2ac86d96d6d490a7564d771ab117c4f5fcf2d19fa98ac5341e24b94e0061e"
+          }
+        },
+        {
+          "mode": "osc",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "板块轮动叠加",
+            "description": "“价格”展示板块 ETF 的再基准化价格，“周期位置”展示 0–100 的振荡指标。下方板块记分卡是文字摘要，而非图表逐点数据表。"
+          },
+          "path_count": 183,
+          "geometry_sha256": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2"
+        }
+      ],
+      "evidence": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+        "asOf": "2026-11-02",
+        "region": "us",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "us_sectors_11",
+          "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "verified",
+          "dna": "verified"
+        },
+        "sources": {
+          "dna": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          },
+          "narr": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          }
+        }
+      },
+      "source": {
+        "asOf": "2026-11-02",
+        "region": null
+      },
+      "overflow": false,
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "en",
+      "page_errors": [],
+      "missing_assets": [],
+      "steps": [
+        {
+          "mode": "osc",
+          "scale": "log",
+          "ax": {
+            "role": "image",
+            "name": "Sector rotation overlay",
+            "description": "Price shows rebased sector ETF prices; Cycle position shows a 0–100 oscillator. Sector scorecards below are summaries, not a table of plotted points."
+          },
+          "path_count": 183,
+          "geometry_sha256": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+          "screenshot": {
+            "file": "390-light-en-osc.png",
+            "sha256": "f035981a622e4b724243dbcfe957da808b4371f3b72e8cb747aec45e9121c04b"
+          }
+        },
+        {
+          "mode": "price",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "Sector rotation overlay",
+            "description": "Price shows rebased sector ETF prices; Cycle position shows a 0–100 oscillator. Sector scorecards below are summaries, not a table of plotted points."
+          },
+          "path_count": 183,
+          "geometry_sha256": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+          "screenshot": {
+            "file": "390-light-en-price.png",
+            "sha256": "c6caac702f8e7ed4419575019869c7dee6c2466e17ab936e3aa994070a7ccb46"
+          }
+        },
+        {
+          "mode": "osc",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "Sector rotation overlay",
+            "description": "Price shows rebased sector ETF prices; Cycle position shows a 0–100 oscillator. Sector scorecards below are summaries, not a table of plotted points."
+          },
+          "path_count": 183,
+          "geometry_sha256": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2"
+        }
+      ],
+      "evidence": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+        "asOf": "2026-11-02",
+        "region": "us",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "us_sectors_11",
+          "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "verified",
+          "dna": "verified"
+        },
+        "sources": {
+          "dna": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          },
+          "narr": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          }
+        }
+      },
+      "source": {
+        "asOf": "2026-11-02",
+        "region": null
+      },
+      "overflow": false,
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "zh",
+      "page_errors": [],
+      "missing_assets": [],
+      "steps": [
+        {
+          "mode": "osc",
+          "scale": "log",
+          "ax": {
+            "role": "image",
+            "name": "板块轮动叠加",
+            "description": "“价格”展示板块 ETF 的再基准化价格，“周期位置”展示 0–100 的振荡指标。下方板块记分卡是文字摘要，而非图表逐点数据表。"
+          },
+          "path_count": 183,
+          "geometry_sha256": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+          "screenshot": {
+            "file": "390-light-zh-osc.png",
+            "sha256": "3c4bcfb02a74e53522fcec90fbf41be8ffbef99ff7b8d3a5fc810f75fa45e56e"
+          }
+        },
+        {
+          "mode": "price",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "板块轮动叠加",
+            "description": "“价格”展示板块 ETF 的再基准化价格，“周期位置”展示 0–100 的振荡指标。下方板块记分卡是文字摘要，而非图表逐点数据表。"
+          },
+          "path_count": 183,
+          "geometry_sha256": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+          "screenshot": {
+            "file": "390-light-zh-price.png",
+            "sha256": "7651dc903af0f173b96566ed23369f6da76f90e4e18b0f4fb351961e5dbfe0a8"
+          }
+        },
+        {
+          "mode": "osc",
+          "scale": "linear",
+          "ax": {
+            "role": "image",
+            "name": "板块轮动叠加",
+            "description": "“价格”展示板块 ETF 的再基准化价格，“周期位置”展示 0–100 的振荡指标。下方板块记分卡是文字摘要，而非图表逐点数据表。"
+          },
+          "path_count": 183,
+          "geometry_sha256": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2"
+        }
+      ],
+      "evidence": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+        "asOf": "2026-11-02",
+        "region": "us",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "us_sectors_11",
+          "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "verified",
+          "dna": "verified"
+        },
+        "sources": {
+          "dna": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          },
+          "narr": {
+            "reason": "fixture_only",
+            "records": 56,
+            "status": "available"
+          }
+        }
+      },
+      "source": {
+        "asOf": "2026-11-02",
+        "region": null
+      },
+      "overflow": false,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

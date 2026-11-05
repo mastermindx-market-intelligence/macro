@@ -5,6 +5,50 @@ Every claim cites `path:line` in this tree. Nothing here is a proposal.
 
 ## Routes
 
+### D05 candidate addition — 2026-11-04, held for acceptance
+
+The original SIC-I01 observation below remains a historical source record. The
+D05 implementation candidate, based on Macro `c53915f6d67078d5c0aeaf73bf85ddea1a23de03`,
+adds **overview, map, cycles, moving, money, explore, confluence** to this branch's
+expected view set. This is source implementation evidence, not deployed behavior
+or final shared design acceptance. F01/F02 remain provisional.
+
+`#cycles` owns the single existing `#sc-chart`, family controls, native detail and
+scorecards. The compatibility anchor `#sc-cyclemap` now resolves to this view;
+all 21 literal aliases and all 24 live aliases remain. Map still loads cycle data
+for its mini charts. The native renderer defers the main chart's creation until
+its box is visible and receives `si:view` to mount it once.
+
+The Central router owns `cycle`, `cycleFamily`, and the explicit
+`cycleSource=latest` choice, preserving `g`, other query parameters and foreign
+history state. `SectorCyclesApply` returns `pending`, `unsupported`,
+`source_unavailable`, `source_mismatch`, or `applied`, with source date and series
+availability. Applying an id never writes the host URL. An embedded renderer
+notifies `SectorCyclesHost.onFocus`; standalone entity hashes remain supported.
+
+A selected Central handoff requires its measured session date to match Cycles.
+A mismatch is withheld, with a deliberate **Open the current Cycles snapshot**
+action; this keeps the older origin while labelling the displayed snapshot as a
+current reconstruction. Equal dates establish session alignment only, not an
+identical build/digest or point-in-time vintage. No historical-as-known claim is
+made. Heavy series still lack a producer publication-identity envelope; exact
+same-generation assurance remains a release blocker under the D05 contract.
+
+Return uses a validated local origin on an entry created by this router. The
+same selected measured panel remains mounted, preserving its recorded versus
+reconstructed history lens; view scroll/focus memory is retained. Exact
+restoration of *every* advanced chart setting across multiple distinct history
+entries and after reload is not claimed. Browser verification is still owed.
+
+Rotation and fragmentation are read only from the producer's dated
+`rotation_context` stamp. Unavailable or mismatched context is not replaced by
+an unguarded later raw-file fetch. Phase age retains trading-session units,
+measured/lower-bound/unknown status; the visible stance uses producer doctrine
+fields and preserves the old engine stance as provenance. Timing calibration is
+labelled historical, with live feature parity separately disclosed.
+
+### Original SIC-I01 observation
+
 The in-template router is `templates/si_workspace.js` (loaded by the shell at
 `templates/sector_central.html.j2:4058`). It is hash-based: `route()` reads
 `location.hash` (`templates/si_workspace.js:348-350`), is bound to `hashchange`

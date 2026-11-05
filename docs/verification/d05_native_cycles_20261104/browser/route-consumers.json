@@ -1,0 +1,104 @@
+{
+  "fixture_only": true,
+  "source": "explicit D05 candidate renderers; current producer semantics",
+  "cases": [
+    {
+      "path": "subsectors.html",
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "1440-dark-en-subsectors.html.png",
+      "passed": true
+    },
+    {
+      "path": "subsector/energy.html",
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "1440-dark-en-subsector-energy.html.png",
+      "passed": true
+    },
+    {
+      "path": "rotation/energy.html",
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "1440-dark-en-rotation-energy.html.png",
+      "passed": true
+    },
+    {
+      "path": "subsectors.html",
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "1440-light-zh-subsectors.html.png",
+      "passed": true
+    },
+    {
+      "path": "subsector/energy.html",
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "1440-light-zh-subsector-energy.html.png",
+      "passed": true
+    },
+    {
+      "path": "rotation/energy.html",
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "1440-light-zh-rotation-energy.html.png",
+      "passed": true
+    },
+    {
+      "path": "subsectors.html",
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "390-light-zh-subsectors.html.png",
+      "passed": true
+    },
+    {
+      "path": "subsector/energy.html",
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "390-light-zh-subsector-energy.html.png",
+      "passed": true
+    },
+    {
+      "path": "rotation/energy.html",
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "390-light-zh-rotation-energy.html.png",
+      "passed": true
+    },
+    {
+      "path": "subsectors.html",
+      "width": 320,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "320-dark-en-subsectors.html.png",
+      "passed": true
+    },
+    {
+      "path": "subsector/energy.html",
+      "width": 320,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "320-dark-en-subsector-energy.html.png",
+      "passed": true
+    },
+    {
+      "path": "rotation/energy.html",
+      "width": 320,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "320-dark-en-rotation-energy.html.png",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

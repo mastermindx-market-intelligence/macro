@@ -1,0 +1,130 @@
+{
+  "schema": "d05.regional_archive_serialization.v1",
+  "source_revision": "2e6c45899a9aeb7f90f03f85272aaff3ca42f4eb",
+  "checked_at_utc": "2026-11-04T06:22:29Z",
+  "status": "THREE_ARCHIVED_PAYLOADS_SERIALIZED",
+  "scope": "Actual committed model payloads passed through scripts._cycles_payload.publication_scripts; no engine, forward-log writer, deployment or browser was run.",
+  "annotations": "Explicitly empty NARR/DNA maps with status missing. This does not claim current narratives, DNA or live-source completeness.",
+  "historical_meaning": "Current reconstructions from the recorded source dates; not point-in-time archives or cross-region equivalent cohorts.",
+  "observations": [
+    {
+      "path": "site/sectordata/sector_cycles.json",
+      "input_sha256": "a69ebadb4bf199602067708763edc3263be039fa34e423f145616ba4e2235648",
+      "meta": {
+        "asOf": "2026-11-02",
+        "region": null,
+        "benchmark": "SPY",
+        "n_sectors": 11,
+        "n_baskets": 49
+      },
+      "sectors": 11,
+      "families": {
+        "baskets": 49,
+        "nasdaq": 6,
+        "russell": 0
+      },
+      "spine": {
+        "schema": "sector_cycles.sector_spine.v1",
+        "scope": "us_sectors_11",
+        "sha256": "2996035b44ca83eb641fae63fbcd5e5f95cef74f7feac2e396b5f33028a32130"
+      },
+      "publication_bytes": {
+        "core": 442333,
+        "series": 1888862,
+        "narr": 369,
+        "dna": 366
+      },
+      "sample_ids": [
+        [
+          "xlk",
+          "XLK"
+        ],
+        [
+          "xlc",
+          "XLC"
+        ]
+      ]
+    },
+    {
+      "path": "site/chinasectordata/sector_cycles.json",
+      "input_sha256": "e5fd4fa4fbe8329e4707e6d6e75168976dfc8b325c84c6b1f2499f61d1329da7",
+      "meta": {
+        "asOf": "2026-11-03",
+        "region": "china",
+        "benchmark": "SHCOMP",
+        "n_sectors": 31,
+        "n_baskets": 22
+      },
+      "sectors": 31,
+      "families": {
+        "baskets": 22,
+        "nasdaq": 0,
+        "russell": 0
+      },
+      "spine": {
+        "schema": "sector_cycles.sector_spine.v1",
+        "scope": "china:sectors",
+        "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+      },
+      "publication_bytes": {
+        "core": 645002,
+        "series": 759354,
+        "narr": 372,
+        "dna": 369
+      },
+      "sample_ids": [
+        [
+          "801010",
+          "801010"
+        ],
+        [
+          "801030",
+          "801030"
+        ]
+      ]
+    },
+    {
+      "path": "site/countrycyclesdata/country_cycles.json",
+      "input_sha256": "1e4512d9069070f838ff4653f080a546b678a2969da899ce55372db474343bc7",
+      "meta": {
+        "asOf": "2026-11-03",
+        "region": "intl",
+        "benchmark": "SPY",
+        "n_sectors": 24,
+        "n_baskets": 7
+      },
+      "sectors": 24,
+      "families": {
+        "baskets": 7,
+        "nasdaq": 0,
+        "russell": 0
+      },
+      "spine": {
+        "schema": "sector_cycles.sector_spine.v1",
+        "scope": "intl:sectors",
+        "sha256": "8e6257537b4627cdd114190326d301fa526a02ff7fd6a535d12e2aceaf512315"
+      },
+      "publication_bytes": {
+        "core": 493490,
+        "series": 1985081,
+        "narr": 371,
+        "dna": 368
+      },
+      "sample_ids": [
+        [
+          "ewl",
+          "EWL"
+        ],
+        [
+          "ewu",
+          "EWU"
+        ]
+      ]
+    }
+  ],
+  "regional_constraints": [
+    "Absent legacy US meta.region uses the existing US namespace; the source contains 11 US sectors.",
+    "China is region china with SHCOMP and 31 native Shenwan sector identifiers, not the US sector cohort.",
+    "International is region intl with SPY and 24 country/region ETFs; EWC does not represent a native Canadian sector cohort."
+  ]
+}

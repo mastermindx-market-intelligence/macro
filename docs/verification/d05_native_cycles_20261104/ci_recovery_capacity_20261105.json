@@ -1,0 +1,22 @@
+{
+  "head": "82c377fb79ec746a0705c3c62a0be0a760cb001a",
+  "candidate_cap": 600,
+  "board_symbols": 415,
+  "uncapped_symbols": 415,
+  "all_retained": true,
+  "board_parse_seconds": 0.12613441597204655,
+  "raw_board_input_bytes": 15078451,
+  "headroom_slots": 185,
+  "fraction": 0.6916666666666667,
+  "quote_snapshot_bytes": 5263,
+  "quote_count": 27,
+  "median_quote_entry_bytes": 184,
+  "measurement_scope": "exact-head committed input parse and size; no vendor latency measurement",
+  "tests": {
+    "passed": 13,
+    "deselected": 52,
+    "seconds": 5.07,
+    "scope": "affected existing quote-capacity contracts; exact source stage",
+    "warnings": 12
+  }
+}

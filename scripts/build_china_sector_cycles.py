@@ -42,29 +42,33 @@ PAGE_ASSETS = ("sector_cycles.css", "sector_cycles.js")   # SHARED with the US c
 SHARED_ASSETS = ("mm_charts.js", "cycle.css")             # the shared cycle design system
 
 
-def _load_narratives(root: Path) -> dict:
+def _load_narratives(root: Path, receipt: dict | None = None) -> dict:
     """NARR keyed by the chart series id: sectors by Shenwan code (801080…), baskets by the
     engine's "b-"+membership-key (b-cn_semis…). Optional — page renders without it.
 
     W2.1: epoch-aware — resolves narratives.<epoch>.json for the engine's current epoch,
     falling back to the legacy un-suffixed file (tagged tr_v0). Zero behaviour change today."""
-    from scripts._narrative_epoch import resolve_narratives
+    from scripts._narrative_epoch import resolve_narratives, publication_receipt
     res = resolve_narratives("china_sector_cycles", root / "data" / "china_sector_cycles", "narratives")
     if res["stale_quarantined"]:
         log.warning("china_sector_cycles: narratives stale-quarantined (epoch %s) — rendering without",
                     res["epoch"])
+    if receipt is not None:
+        receipt.update(publication_receipt(res))
     return res["map"]
 
 
-def _load_dna(root: Path) -> dict:
+def _load_dna(root: Path, receipt: dict | None = None) -> dict:
     """SECTOR_DNA cycle-cause profiles, same id keying as narratives (Shenwan code / "b-"+key).
 
     W2.1: epoch-aware (resolves cycle_dna.<epoch>.json, falls back to legacy cycle_dna.json)."""
-    from scripts._narrative_epoch import resolve_narratives
+    from scripts._narrative_epoch import resolve_narratives, publication_receipt
     res = resolve_narratives("china_sector_cycles", root / "data" / "china_sector_cycles", "cycle_dna")
     if res["stale_quarantined"]:
         log.warning("china_sector_cycles: cycle_dna stale-quarantined (epoch %s) — rendering without DNA",
                     res["epoch"])
+    if receipt is not None:
+        receipt.update(publication_receipt(res))
     return res["map"]
 
 
@@ -109,8 +113,9 @@ def main() -> int:
         log.warning("china_sector_cycles: no data (run collectors.china_sectors first) — skipped")
         return 0
 
-    narr = _load_narratives(root)
-    dna = _load_dna(root)
+    sources = {"narr": {}, "dna": {}}
+    narr = _load_narratives(root, sources["narr"])
+    dna = _load_dna(root, sources["dna"])
 
     # W3.4: enrich NARR map with TTL / staleness / archetype-check metadata
     try:
@@ -134,20 +139,11 @@ def main() -> int:
     #                                         hydrated AFTER first paint by sector_cycles.js)
     #   sector_cycles_china_narr_data.js   -> SECTOR_NARR (lazy, only needed in focus panels)
     #   sector_cycles_china_dna_data.js    -> SECTOR_DNA  (lazy, only needed in dnaHTML())
-    from scripts._cycles_payload import split_cycles_payload
-    core, series = split_cycles_payload(data)   # does not mutate `data` (raw model stays full)
-    (site / "sector_cycles_china_data.js").write_text(
-        "window.SECTOR_CYCLES=" + json.dumps(core, separators=(",", ":"), ensure_ascii=False) + ";\n",
-        encoding="utf-8")
-    (site / "sector_cycles_china_series_data.js").write_text(
-        "window.SECTOR_CYCLES_SERIES=" + json.dumps(series, separators=(",", ":"), ensure_ascii=False) + ";\n",
-        encoding="utf-8")
-    (site / "sector_cycles_china_narr_data.js").write_text(
-        "window.SECTOR_NARR=" + json.dumps(narr, separators=(",", ":"), ensure_ascii=False) + ";\n",
-        encoding="utf-8")
-    (site / "sector_cycles_china_dna_data.js").write_text(
-        "window.SECTOR_DNA=" + json.dumps(dna, separators=(",", ":"), ensure_ascii=False) + ";\n",
-        encoding="utf-8")
+    from scripts._cycles_payload import publication_scripts
+    publication = publication_scripts(data, narr, dna, sources=sources)
+    for kind, suffix in (("core", "data"), ("series", "series_data"), ("narr", "narr_data"), ("dna", "dna_data")):
+        (site / ("sector_cycles_china_" + suffix + ".js")).write_text(publication[kind], encoding="utf-8")
+
 
     # raw model + the per-theme cycle map (read by build_baskets_china for the mini-charts)
     fdir = site / "chinasectordata"

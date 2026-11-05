@@ -1,0 +1,128 @@
+{
+  "390-light-en-price.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/390-light-en-price.png",
+    "bytes": 107640,
+    "sha256": "c6caac702f8e7ed4419575019869c7dee6c2466e17ab936e3aa994070a7ccb46",
+    "git_blob": "8675d64800391d39a3295f542216e9b3064bcfab"
+  },
+  "1440-light-en-osc.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/1440-light-en-osc.png",
+    "bytes": 369158,
+    "sha256": "f4ba919c999ed1c2a68ff796a7b245720194031ab232b2be423fcb4c51813f78",
+    "git_blob": "c6849c12a50ed10344f5a838fc2ed808f418d12a"
+  },
+  "1440-dark-zh-osc.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/1440-dark-zh-osc.png",
+    "bytes": 381944,
+    "sha256": "b4cc3f21346491b4bcabe021a886ed44ce65583ab211c6241656688e4c85bd9f",
+    "git_blob": "c08ad076d1c2702cc80a3c0acd2f93f0f448516e"
+  },
+  "390-dark-zh-price.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/390-dark-zh-price.png",
+    "bytes": 115845,
+    "sha256": "acd2ac86d96d6d490a7564d771ab117c4f5fcf2d19fa98ac5341e24b94e0061e",
+    "git_blob": "ba5836f6af5cb47192599615b1ed0cb473cbfde9"
+  },
+  "1440-dark-zh-price.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/1440-dark-zh-price.png",
+    "bytes": 291811,
+    "sha256": "b904e5ba64bd3f2be9ae0982512a9b35fe7547ffab1ad9712f035b0ce4b89940",
+    "git_blob": "92822c282db7d1c4ce945f9eecb6a6a6deaacc9f"
+  },
+  "result.json": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/result.json",
+    "bytes": 24806,
+    "sha256": "b15e4fa02a9d3a6fd01f77aa303a61942295094c08d399e7c97d6ec60f2ec19f",
+    "git_blob": "873699d38042b8ecafd3c8665f2a8ccd9523584b"
+  },
+  "390-dark-zh-osc.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/390-dark-zh-osc.png",
+    "bytes": 136036,
+    "sha256": "4f5cc845f689fcf907d0821f9926ea27fb72aa4ea71d932ba6d429ce0a34544d",
+    "git_blob": "e50ce194bd8ab8e4e6f2805cc3ef622c5862534d"
+  },
+  "390-light-en-osc.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/390-light-en-osc.png",
+    "bytes": 128815,
+    "sha256": "f035981a622e4b724243dbcfe957da808b4371f3b72e8cb747aec45e9121c04b",
+    "git_blob": "033c7e2de186daa883a25eac4944afd23d0ce723"
+  },
+  "1440-light-zh-price.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/1440-light-zh-price.png",
+    "bytes": 286985,
+    "sha256": "0494a5a08722e1b853f2f0c724340f0e74bb04e298b130a9d72de00a04465b85",
+    "git_blob": "be214b05d175df92eea7e82b62c416d5418d69a0"
+  },
+  "390-light-zh-price.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/390-light-zh-price.png",
+    "bytes": 117874,
+    "sha256": "7651dc903af0f173b96566ed23369f6da76f90e4e18b0f4fb351961e5dbfe0a8",
+    "git_blob": "958da38a58b8f16f29c0fc536724346e4718fce0"
+  },
+  "1440-light-zh-osc.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/1440-light-zh-osc.png",
+    "bytes": 374089,
+    "sha256": "1b08930f17402d365797658f7e730d9d67c8bbba9f959da70ca4461edb986aae",
+    "git_blob": "c55945c07520ce2e424d4054b622923220d60053"
+  },
+  "390-dark-en-price.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/390-dark-en-price.png",
+    "bytes": 106833,
+    "sha256": "e7ca24e53842515ab05cb1bd24773cca041a1879ae25463772c3d9b1cf146a8b",
+    "git_blob": "b5733c7b8a3b7ad9422c342dd443b574efa6b69a"
+  },
+  "390-dark-en-osc.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/390-dark-en-osc.png",
+    "bytes": 128056,
+    "sha256": "37a894d2c1e943ef2455dfc2dc93c90bf8be01879b2a41968f06fd10ef907fb6",
+    "git_blob": "8667bfa0126b4f2cd794d013930f28c1fe8740f3"
+  },
+  "1440-dark-en-price.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/1440-dark-en-price.png",
+    "bytes": 283877,
+    "sha256": "a690bdd5ac92f75b5a89199844749591b91beb8e89d8c9a7eece52616c25b116",
+    "git_blob": "2385a0ba3cc7982d9b6edc300eb765710659c338"
+  },
+  "1440-dark-en-osc.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/1440-dark-en-osc.png",
+    "bytes": 376897,
+    "sha256": "62003a1bc1c6da8a06d3cc81e4ca3ce0b63d58ff8a5f8b9b331aa347c8565a55",
+    "git_blob": "920fa9c366597d430e20f470d51f69cb89d1b1dd"
+  },
+  "contact-sheet.jpg": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/contact-sheet.jpg",
+    "bytes": 273059,
+    "sha256": "83cc28677fd968303ac0c08944834572b3ae09c2b4194208bcbaa63ab4ac769c",
+    "git_blob": "b4b5a73df777afe98cb9ea3cce1a6f0d1e6bbc60"
+  },
+  "390-light-zh-osc.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/390-light-zh-osc.png",
+    "bytes": 137784,
+    "sha256": "3c4bcfb02a74e53522fcec90fbf41be8ffbef99ff7b8d3a5fc810f75fa45e56e",
+    "git_blob": "94eea880697c0f3c5487d47d43368cd8b1fe3d98"
+  },
+  "1440-light-en-price.png": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/browser/1440-light-en-price.png",
+    "bytes": 277618,
+    "sha256": "55c8d24f11a07e7c58bbc07b63b267a970bf4502591c1c0776389aa443c16eb5",
+    "git_blob": "d6104b04f0addccf2d9793b550a532bc63fb9e3b"
+  },
+  "verify_accessibility.py": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/verify_accessibility.py",
+    "bytes": 6355,
+    "sha256": "c60128c4267660ff685a150e9125b4628cfe2c2f9bc495c18408a442abc39f04",
+    "git_blob": "882729609ec2ccf0516b729d4ed62df42a0efd96"
+  },
+  "fixture_provenance.json": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/site/fixture_provenance.json",
+    "bytes": 14624,
+    "sha256": "372a276c0111ae0597551c0eb3e54951b6ab68c9d4fd0132428491378286fba6",
+    "git_blob": "b28b51d8d2d1e489e7120a4707b2e0b2fa04a026"
+  },
+  "README.md": {
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-accessibility-20261105/README.md",
+    "bytes": 3496,
+    "sha256": "edab32101576f832b2a0aba2ab7db95f93843bd3aaa0d20a91a944ac4ed1028a",
+    "git_blob": "54f42d81b042ed72b6151120731ba094fc05d19c"
+  }
+}

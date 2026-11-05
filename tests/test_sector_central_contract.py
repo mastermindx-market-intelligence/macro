@@ -20,7 +20,7 @@ CONTRACT = ROOT / "research" / "sector_completion_20261021" / "INTEGRATION_CONTR
 LEGACY_JOBS = ROOT / ".github" / "ci" / "legacy-jobs.yml"
 
 #: route ids the contract's Routes table records (observed set == expected set).
-ROUTES = ["overview", "map", "moving", "money", "explore", "confluence"]
+ROUTES = ["overview", "map", "cycles", "moving", "money", "explore", "confluence"]
 
 #: fixed mount points the contract records.
 MOUNT_IDS = ["tm-mount", "accumulation-section", "si-measured"]
@@ -124,7 +124,7 @@ def test_contract_records_observed_route_set_and_verdict():
     assert "RESTORES_VIEW" in text
     # the observed route set is stated as equal to the expected six (wrap-insensitive)
     flat = " ".join(text.split())
-    assert "overview, map, moving, money, explore, confluence" in flat
+    assert "overview, map, cycles, moving, money, explore, confluence" in flat
 
 
 def test_legacy_jobs_gate_line_lists_contract_suite():

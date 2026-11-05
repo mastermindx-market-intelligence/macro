@@ -8,7 +8,7 @@
   "use strict";
 
   var PROTOCOL = "mmx.shared-shell.v1";
-  var BRIDGE_VERSION = "20261018.1";
+  var BRIDGE_VERSION = "20261104.2";
   var DOCUMENT_META_NAME = "mmx-shell-document";
   var RESPONSE_META_NAME = "mmx-shell-response";
   var APPROVED_PARENT_ORIGINS = ["https://beta.mastermind-x.com", "https://app.mastermind-x.com"];
@@ -149,6 +149,7 @@
   var docVersion = null;
   var responseKind = null;
   var restorePending = null;
+  var activeRestore = null;
   var anchorObserver = null;
   var origReplaceBound = null;
   var origPushBound = null;
@@ -276,6 +277,20 @@
     var view = { x: clampCoord(w.scrollX), y: clampCoord(w.scrollY) };
     var id = currentFocusId();
     if (id !== null) view.focusId = id;
+    // Export is deliberately pure: Capture persists via wrapped history and
+    // would recursively re-enter this pre-navigation flush.
+    if (typeof w.SectorWorkspaceExport === "function") {
+      try {
+        var projected = projectSectorSettings(w.SectorWorkspaceExport(), false);
+        if (projected) view.page = { kind: "d05-sector-central", value: projected };
+      } catch (e) {}
+    }
+    if (!view.page && typeof w.SectorMembersExport === "function") {
+      try {
+        var members = projectMembersSettings(w.SectorMembersExport());
+        if (members) view.page = { kind: "d05-sector-members", value: members };
+      } catch (e) {}
+    }
     send("VIEW_STATE", { view: view });
   }
   function currentFocusId() {
@@ -288,6 +303,7 @@
     } catch (e) { return null; }
   }
   function emitNavigate(canonical, mode, sameDocument, viewCaptured) {
+    cancelRestore("navigation");
     // The parent must see the view the user is leaving *before* anything about the
     // child location, scroll or focus changes. viewCaptured=true means the caller
     // already flushed it and only then mutated the child document.
@@ -365,6 +381,16 @@
       return;
     }
     var current = currentUrl();
+    // Updating state on the same entry is not navigation. Native restoration
+    // writes its accepted view here; notifying the parent would cancel itself.
+    // A same-URL push still expresses a new entry and retains normal handling.
+    if (mode === "replace" && current && canonicalHref(u) === canonicalHref(current)) {
+      origReplaceSafe(state_, title, withTransport(u));
+      // Preserve ordinary chart-state checkpoints without exposing an interim
+      // native restore. finishRestore publishes its final receipt, then view.
+      if (state.active && (!activeRestore || activeRestore.done)) flushView();
+      return;
+    }
     var sameDocument = !!current && u.pathname === current.pathname;
     if (!state.active) {
       // Only mutate a same-document location after its parent notification is queued.
@@ -792,19 +818,162 @@
     if (pendingInitialReady) return;  // queued initial READY already carries the newer revision
     whenDocumentReady(function () { sendReady(false); });
   }
-  function applyRestore(restore) {
+  // Only the bridge knows transport keys. Every ordinary query byte survives
+  // projection/rebinding; the native entry owner sees exact local hrefs.
+  function projectSectorSettings(value, inbound) {
+    if (!isObj(value) || !exactKeys(value, ["siWorkspace", "siCyclesOrigin"])) return null;
     try {
-      if (restore) {
-        if (typeof w.scrollTo === "function") { try { w.scrollTo(restore.x, restore.y); } catch (e) {} }
+      var json = JSON.stringify(value);
+      if (json.length > 32768 || typeof TextEncoder !== "function" || new TextEncoder().encode(json).length > 32768) return null;
+      var copy = JSON.parse(json);
+      function href(raw) {
+        if (!boundedStr(raw, 4096) || raw.charAt(0) !== "/" || raw.indexOf("//") === 0 || raw.indexOf("\\") !== -1) throw new Error("invalid_route");
+        var u = new URL(raw, childOrigin);
+        if (u.origin !== childOrigin || u.pathname !== "/sector_central.html" || !credentialsFree(u) || isSensitiveURL(u)) throw new Error("invalid_route");
+        if (inbound && filterTransport(u.search) !== u.search) throw new Error("invalid_transport");
+        if (inbound) restoreTransport(u); else stripTransport(u);
+        return u.pathname + u.search + u.hash;
+      }
+      if (!isObj(copy.siWorkspace)) return null;
+      var expected = new URL(w.location.href);
+      if (!inbound) stripTransport(expected);
+      copy.siWorkspace.href = href(copy.siWorkspace.href);
+      if (copy.siWorkspace.href !== expected.pathname + expected.search + expected.hash) return null;
+      if (copy.siCyclesOrigin !== null) {
+        var origin = copy.siCyclesOrigin;
+        if (!isObj(origin) || !exactKeys(origin, ["href", "entry"])) return null;
+        var oldHref = origin.href;
+        origin.href = href(origin.href);
+        var originHash = new URL(origin.href, childOrigin).hash;
+        if (originHash === "#cycles" || originHash === "#sc-cyclemap") return null;
+        if (origin.entry !== null) {
+          if (!isObj(origin.entry) || origin.entry.href !== oldHref || origin.entry.view === "cycles") return null;
+          origin.entry.href = href(origin.entry.href);
+        }
+      }
+      return copy;
+    } catch (e) { return null; }
+  }
+  function projectMembersSettings(value) {
+    if (!isObj(value) || !exactKeys(value, ["schema","sourceId","basketId","region","asOf","sort","focus","viewport"])) return null;
+    try {
+      var json=JSON.stringify(value);
+      if (typeof TextEncoder!=="function" || new TextEncoder().encode(json).length>4096) return null;
+      var v=JSON.parse(json), dirs={us:"basket",china:"basket_china",hk:"basket_hk",canada:"basket_canada",intl:"basket_intl"};
+      function txt(raw,max) { return boundedStr(raw,max) && !/[\u0000-\u001f\u007f]/.test(raw); }
+      if(v.schema!=="sector_members.view.v1" || !/^members1-[a-f0-9]{64}$/.test(v.sourceId||"") ||
+        !txt(v.basketId,100) || !/^[A-Za-z0-9][A-Za-z0-9_.-]*$/.test(v.basketId) || !own(dirs,v.region) ||
+        w.location.pathname!=="/"+dirs[v.region]+"/"+v.basketId+".html" ||
+        (v.asOf!==null&&!txt(v.asOf,160)) || !isObj(v.sort) || !exactKeys(v.sort,["col","dir"]) ||
+        ["recommend","r20"].indexOf(v.sort.col)<0 || [-1,1].indexOf(v.sort.dir)<0 ||
+        !isObj(v.viewport) || !exactKeys(v.viewport,["x","y","tableX"]) ||
+        !coordOK(v.viewport.x)||!coordOK(v.viewport.y)||!coordOK(v.viewport.tableX)) return null;
+      if(v.focus!==null && !(isObj(v.focus)&&exactKeys(v.focus,["kind","symbol"])&&v.focus.kind==="listing"&&txt(v.focus.symbol,100)) &&
+        !(isObj(v.focus)&&exactKeys(v.focus,["kind","col"])&&v.focus.kind==="sort"&&["recommend","r20"].indexOf(v.focus.col)>=0)) return null;
+      return v;
+    } catch(e) { return null; }
+  }
+  function restoreCanonical() {
+    var url = currentUrl();
+    if (!url || isSensitiveURL(url)) return null;
+    stripTransport(url);
+    return url.pathname + url.search + url.hash;
+  }
+  function finishRestore(op, result) {
+    if (!op || activeRestore !== op || op.done) return;
+    op.done = true;
+    if (op.timer !== null) clearTimeout(op.timer);
+    for (var i = 0; i < op.inputs.length; i++) document.removeEventListener(op.inputs[i], op.interrupt, true);
+    var statuses = ["applied", "partial", "rejected"], focusStates = ["applied", "absent", "unavailable", "interrupted"];
+    var viewportStates = ["applied", "unavailable", "interrupted"];
+    var outcome = result && statuses.indexOf(result.status) >= 0 ? result.status : "rejected";
+    var reason = result && result.reason || null;
+    if (reason !== null && (!boundedStr(reason, 160) || !/^[a-z_]+$/.test(reason))) reason = "restore_unavailable";
+    var isMembers = op.restore.page && op.restore.page.kind === "d05-sector-members";
+    var publicationId = !isMembers && result && /^cycp1-[a-f0-9]{64}$/.test(result.publicationId || "") ? result.publicationId : null;
+    var membersSourceId = isMembers && result && /^members1-[a-f0-9]{64}$/.test(result.sourceId || "") ? result.sourceId : null;
+    if (outcome === "applied" && isMembers && membersSourceId !== op.restore.page.value.sourceId) { outcome = "partial"; reason = "source_changed"; }
+    var focus = result && focusStates.indexOf(result.focus) >= 0 ? result.focus : "unavailable";
+    var viewport = result && viewportStates.indexOf(result.viewport) >= 0 ? result.viewport : "unavailable";
+    if (outcome === "applied" && (reason || viewport !== "applied" || ["unavailable", "interrupted"].indexOf(focus) >= 0)) outcome = "partial";
+    if (op.restore.restoreId) {
+      send("RESTORE_RESULT", { restoreId: op.restore.restoreId, snapshotId: op.restore.snapshotId,
+        canonicalPath: op.canonical, outcome: outcome, reason: reason,
+        publicationId: publicationId, membersSourceId: membersSourceId, focus: focus, viewport: viewport });
+      // Ordered after the terminal receipt: the parent can now store actual
+      // supported state instead of the initial document's un-restored defaults.
+      sendViewState();
+    }
+  }
+  function cancelRestore(reason) {
+    var op = activeRestore;
+    if (!op || op.done) return;
+    for (var i = 0; i < correctionTimers.length; i++) clearTimeout(correctionTimers[i]);
+    correctionTimers.length = 0;
+    for (var j = 0; j < correctionCancelers.length; j++) document.removeEventListener(correctionCancelers[j][0], correctionCancelers[j][1], true);
+    correctionCancelers.length = 0;
+    if (op.native && typeof op.native.cancel === "function") op.native.cancel(reason);
+    if (!op.done) finishRestore(op, { status: op.started ? "partial" : "rejected", reason: reason,
+      publicationId: null, viewport: "interrupted", focus: "interrupted" });
+  }
+  function applyRestore(restore) {
+    if (!restore) { focusPrimary(); return; }
+    if (!restore.restoreId) {
+      // Retain the previous viewport-only contract for an older caller.
+      try {
+        if (typeof w.scrollTo === "function") w.scrollTo(restore.x, restore.y);
         if (restore.focusId) {
-          var el = document.getElementById(restore.focusId);
-          if (el && typeof el.focus === "function") { try { el.focus({ preventScroll: true }); } catch (e) {} }
+          var prior = document.getElementById(restore.focusId);
+          if (prior && typeof prior.focus === "function") prior.focus({ preventScroll: true });
         }
         scheduleCorrection(restore.x, restore.y);
-      } else {
-        focusPrimary();
+      } catch (e) {}
+      return;
+    }
+    var op = { restore: restore, canonical: restoreCanonical(), timer: null, inputs: ["wheel", "pointerdown", "touchstart", "keydown"],
+      native: null, done: false, started: false };
+    activeRestore = op;
+    op.interrupt = function () { cancelRestore("user_input"); };
+    for (var i = 0; i < op.inputs.length; i++) document.addEventListener(op.inputs[i], op.interrupt, true);
+    // One bounded completion deadline for this admitted document, never a retry.
+    op.timer = setTimeout(function () { if (activeRestore === op) cancelRestore("deadline"); }, 12000);
+    if (restore.page) {
+      var isMembers = restore.page.kind === "d05-sector-members";
+      var projection = isMembers ? projectMembersSettings(restore.page.value) : projectSectorSettings(restore.page.value, true);
+      var applyNative = isMembers ? w.SectorMembersApplyCurrent : w.SectorWorkspaceApplyCurrent;
+      if (!projection || typeof applyNative !== "function") {
+        finishRestore(op, { status: "rejected", reason: projection ? "workspace_unavailable" : "invalid_state" }); return;
       }
-    } catch (e) {}
+      try {
+        op.native = applyNative(projection, {
+          restoreId: restore.restoreId, snapshotId: restore.snapshotId,
+          expectedHref: w.location.pathname + w.location.search + w.location.hash,
+          onResult: function (result) { finishRestore(op, result); }
+        });
+        if (op.native && op.native.status === "rejected" && !op.done) finishRestore(op, op.native);
+      } catch (e) { finishRestore(op, { status: "rejected", reason: "workspace_unavailable" }); }
+      return; // D05 owns its typed viewport and focus; no competing generic replay.
+    }
+    op.started = true;
+    try {
+      w.scrollTo(restore.x, restore.y);
+      var focus = "absent";
+      if (restore.focusId) {
+        var el = document.getElementById(restore.focusId);
+        if (el && typeof el.focus === "function") { el.focus({ preventScroll: true }); focus = document.activeElement === el ? "applied" : "unavailable"; }
+        else focus = "unavailable";
+      }
+      // Reuse the existing correction budget, then acknowledge actual position.
+      scheduleCorrection(restore.x, restore.y);
+      clearTimeout(op.timer);
+      op.timer = setTimeout(function () {
+        if (op.done || activeRestore !== op) return;
+        var correct = Math.abs((w.scrollX || 0) - restore.x) <= 1 && Math.abs((w.scrollY || 0) - restore.y) <= 1;
+        finishRestore(op, { status: correct && focus !== "unavailable" ? "applied" : "partial",
+          reason: !correct ? "viewport_clamped" : focus === "unavailable" ? "focus_unavailable" : null,
+          publicationId: null, viewport: correct ? "applied" : "unavailable", focus: focus });
+      }, CORRECTION_BUDGET_MS);
+    } catch (e) { finishRestore(op, { status: "rejected", reason: "viewport_unavailable" }); }
   }
   function focusPrimary() {
     try {
@@ -876,12 +1045,27 @@
     if (v === null) return null;
     if (!isObj(v)) return BAD;
     var keys = Object.keys(v);
-    for (var i = 0; i < keys.length; i++) { if (["x", "y", "focusId"].indexOf(keys[i]) === -1) return BAD; }
+    for (var i = 0; i < keys.length; i++) { if (["x", "y", "focusId", "restoreId", "snapshotId", "page"].indexOf(keys[i]) === -1) return BAD; }
     if (!coordOK(v.x) || !coordOK(v.y)) return BAD;
     var out = { x: v.x, y: v.y };
     if (own(v, "focusId")) {
       if (!validId(v.focusId)) return BAD;
       out.focusId = v.focusId;
+    }
+    if (own(v, "restoreId") || own(v, "snapshotId")) {
+      if (!boundedStr(v.restoreId, 128) || !boundedStr(v.snapshotId, 160)) return BAD;
+      out.restoreId = v.restoreId; out.snapshotId = v.snapshotId;
+    }
+    if (own(v, "page")) {
+      if (!out.restoreId || !isObj(v.page) || !exactKeys(v.page, ["kind", "value"])
+        || ["d05-sector-central", "d05-sector-members"].indexOf(v.page.kind) < 0) return BAD;
+      // Keep canonical state until the target document's active transport is known.
+      try {
+        var json = JSON.stringify(v.page.value);
+        var limit = v.page.kind === "d05-sector-members" ? 4096 : 32768;
+        if (json.length > limit || typeof TextEncoder !== "function" || new TextEncoder().encode(json).length > limit) return BAD;
+        out.page = { kind: v.page.kind, value: JSON.parse(json) };
+      } catch (e) { return BAD; }
     }
     return out;
   }
@@ -1011,6 +1195,9 @@
       if (type === "CONTEXT") handleContext(data);
       else if (type === "LOCATION_ACCEPTED") handleLocationAccepted(data);
       else if (type === "VISIBILITY") handleVisibility(data);
+      else if (type === "RESTORE_CANCEL" && exactKeys(data, ENV_KEYS.concat(["restoreId", "snapshotId", "reason"]))
+        && data.reason === "deadline" && activeRestore && data.restoreId === activeRestore.restore.restoreId
+        && data.snapshotId === activeRestore.restore.snapshotId) cancelRestore("deadline");
     } catch (e) {}
   }
 
@@ -1036,6 +1223,7 @@
   }
 
   function cleanup() {
+    cancelRestore("document_closed");
     try { if (messageHandlerRef) w.removeEventListener("message", messageHandlerRef, false); } catch (e) {}
     try { if (scrollHandlerRef) w.removeEventListener("scroll", scrollHandlerRef, false); } catch (e) {}
     try { if (uncontrolledNavHandlerRef) { w.removeEventListener("hashchange", uncontrolledNavHandlerRef, false); w.removeEventListener("popstate", uncontrolledNavHandlerRef, false); } } catch (e) {}

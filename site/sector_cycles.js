@@ -15,7 +15,8 @@
 (function () {
   "use strict";
 
-  var DATA = window.SECTOR_CYCLES, NARR = window.SECTOR_NARR || {};
+  var DATA = window.SECTOR_CYCLES, PUB = window.SECTOR_CYCLES_PUBLICATION || null;
+  var NARR = PUB ? {} : (window.SECTOR_NARR || {}), DNA = PUB ? {} : (window.SECTOR_DNA || {});
   if (!DATA || !DATA.sectors) return;
 
   /* FIX 1b — strip "(Equal-Weight)" / "（等权）" suffixes from all string values at boot */
@@ -31,7 +32,7 @@
   }
   deepStrip(DATA);
   deepStrip(NARR);
-  if (window.SECTOR_DNA) { deepStrip(window.SECTOR_DNA); }
+  deepStrip(DNA);
   var META = DATA.meta, PHASES = DATA.phases, SECTORS = DATA.sectors;
   var BASKETS = DATA.baskets || [];
   var NASDAQ = DATA.nasdaq || [];
@@ -49,9 +50,9 @@
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   // Rotation Command RC-R3: active rotation events + fragmentation flags for THIS page's
-  // cards, fetched client-side from the same two artifacts the subsector_rotation rail
-  // reads. Keyed by lowercase sector id (== s.id == event.sector == fragRow.key). Empty
-  // until loadRotation() resolves; a missing/404 file degrades to no chips (never throws).
+  // cards, supplied by the producer's aligned rotation_context snapshot. Keyed by
+  // lowercase sector id (== s.id == event.sector == fragRow.key). Missing or
+  // incompatible context stays unavailable; a later raw fetch cannot replace it.
   var ROT_BY_SEC = {};   // 'xlk' -> [event, ...]
   var FRAG_BY_KEY = {};  // 'xlk' -> fragmentation row (only when .fragmented)
 
@@ -64,13 +65,187 @@
   // "YYYY-MM" -> decimal year (for the forecast band guides)
   function ymToX(t) { if (!t) return null; var p = String(t).split("-"); return (+p[0]) + ((+p[1] || 1) - 1) / 12; }
 
-  var byId = {};
+  var byId = Object.create(null);
   ALL.forEach(function (s) { byId[s.id] = s; });
+
+  /* The publication belongs to the existing split-data producer. Exact JSON
+     bytes are hashed before use; session equality alone is never coherence. */
+  var publicationState = PUB ? 'pending' : 'legacy_unverified';
+  var partStates = {core:publicationState, series:'pending', narr:'pending', dna:'pending'};
+  var partEpoch = {series:0, narr:0, dna:0};
+  var SHA = /^[a-f0-9]{64}$/;
+  function activePublication() {
+    return window.SECTOR_CYCLES === DATA && (!PUB || window.SECTOR_CYCLES_PUBLICATION === PUB);
+  }
+  function hashText(raw) {
+    if (!window.crypto || !window.crypto.subtle || typeof TextEncoder !== 'function') return Promise.reject(new Error('verification_unavailable'));
+    return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw)).then(function(bytes) {
+      return Array.from(new Uint8Array(bytes)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    });
+  }
+  function validManifest() {
+    return PUB && PUB.schema==='sector_cycles.publication.v1' && /^cycp1-[a-f0-9]{64}$/.test(PUB.id||'') &&
+      PUB.region===(META.region||'us') && PUB.namespace==='sector_cycles:'+(META.region||'us') &&
+      cycleSession(PUB.as_of) && PUB.as_of===META.asOf && PUB.benchmark===(META.benchmark||null) &&
+      PUB.basis==='current_reconstruction' && typeof PUB.payload_json==='string' && typeof PUB.manifest_json==='string' &&
+      PUB.payload_sha256 && ['core','series','narr','dna'].every(function(k){ return SHA.test(PUB.payload_sha256[k]||''); });
+  }
+  function publicationNotice() {
+    var host=document.getElementById('sc-native-study') || document.querySelector('.sc-chartwrap');
+    if (!host) return;
+    var note=document.getElementById('sc-publication-status');
+    if (!note) { note=el('p','sc-publication-status');note.id='sc-publication-status';note.setAttribute('role','status');host.insertBefore(note,host.firstChild); }
+    var text=publicationState==='verified' ? L('Core evidence verified', '基础证据已核验') :
+      publicationState==='legacy_unverified' ? L('Unverified archive — split-file identity is unavailable.', '未核验归档 — 分拆数据文件身份不可用。') :
+      publicationState==='pending' ? L('Verifying source integrity…', '正在核验来源完整性…') :
+      L('Source integrity could not be verified. This publication is unavailable.', '无法核验来源完整性。本发布版本不可用。');
+    var extra=['narr','dna'].filter(function(k){ return partStates[k]!=='pending' && partStates[k]!=='verified' && partStates[k]!=='legacy_unverified'; });
+    if (extra.length) text+=L(' · Some historical annotations are unavailable.', ' · 部分历史注释不可用。');
+    note.textContent=text;
+    note.dataset.state=publicationState;
+  }
+  function evidenceReceipt() {
+    var status=activePublication()?publicationState:'superseded';
+    return {schema:'sector_cycles.evidence.v1', status:status, publicationId:PUB&&PUB.id||null,
+      asOf:META.asOf||null, region:META.region||'us', spine:status==='verified'?PUB.sector_spine:null,
+      parts:Object.assign({},partStates), sources:PUB&&PUB.sources||null};
+  }
+  window.SectorCyclesEvidence=evidenceReceipt;
+  function verifyCore() {
+    if (!PUB) return Promise.resolve('legacy_unverified');
+    if (!validManifest()) return Promise.resolve('invalid_payload');
+    return Promise.all([hashText(PUB.payload_json),hashText(PUB.manifest_json)]).then(function(digests) {
+      if (!activePublication()) return 'superseded';
+      if (digests[0]!==PUB.payload_sha256.core || 'cycp1-'+digests[1]!==PUB.id) return 'integrity_failed';
+      var manifest=JSON.parse(PUB.manifest_json);
+      var keys=['schema','region','namespace','as_of','benchmark','basis','sector_spine','sources','payload_sha256'];
+      if (!manifest || Object.keys(manifest).length!==keys.length || !keys.every(function(k){
+        return Object.prototype.hasOwnProperty.call(manifest,k) && JSON.stringify(manifest[k])===JSON.stringify(PUB[k]);
+      })) return 'integrity_failed';
+      var parsed=JSON.parse(PUB.payload_json);deepStrip(parsed);
+      return JSON.stringify(parsed)===JSON.stringify(DATA)?'verified':'integrity_failed';
+    }).catch(function(){ return 'verification_unavailable'; });
+  }
+  function verifyPart(kind,envelope) {
+    if (publicationState!=='verified') return Promise.resolve({status:'source_unavailable'});
+    if (!envelope || envelope.schema!=='sector_cycles.part.v1' || envelope.kind!==kind || typeof envelope.payload_json!=='string') return Promise.resolve({status:'invalid_payload'});
+    if (envelope.publication_id!==PUB.id || envelope.namespace!==PUB.namespace || envelope.sha256!==PUB.payload_sha256[kind]) return Promise.resolve({status:'incompatible_publication'});
+    return hashText(envelope.payload_json).then(function(digest) {
+      if (digest!==envelope.sha256) return {status:'integrity_failed'};
+      var value=JSON.parse(envelope.payload_json);
+      return value && typeof value==='object' && !Array.isArray(value) ? {status:'verified',value:value} : {status:'invalid_payload'};
+    }).catch(function(){ return {status:'verification_unavailable'}; });
+  }
 
   /* ---- view state -------------------------------------------------------- */
   // family = which independent SECTION is active: the 11 sector ETFs (clean default)
   // or the 34 thematic baskets (their own space). Only one family is ever on screen.
   var state = { mode: "osc", scale: "log", focus: null, family: "sectors" };
+  var restoring = false, stateReady = false, selectedLeg = null, appliedEntry = null, entryRestoration = null;
+  // A host owns navigation explicitly. The two older embedding signals remain
+  // defensive guards for hosts (including China) that predate this contract.
+  function embedded() {
+    return !!(window.SectorCyclesHost || window.SC_LAZY_EXTRAS || document.querySelector(".si-view"));
+  }
+  // Standalone presentation belongs to this chart's existing URL/history owner.
+  // Only these two enums travel; source identity and host-owned snapshots do not.
+  function presentationKey(part) {
+    try { return decodeURIComponent(part.split("=")[0].replace(/\+/g, " ")); }
+    catch (e) { return ""; }
+  }
+  function standalonePresentation() {
+    var values = {sc_mode: [], sc_scale: []};
+    (location.search || "").slice(1).split("&").forEach(function (part) {
+      var key = presentationKey(part);
+      if (!Object.prototype.hasOwnProperty.call(values, key)) return;
+      var at = part.indexOf("="), value = at < 0 ? "" : part.slice(at + 1);
+      try { value = decodeURIComponent(value.replace(/\+/g, " ")); } catch (e) { value = ""; }
+      values[key].push(value);
+    });
+    return {
+      mode: values.sc_mode.length === 1 && ["osc", "price"].indexOf(values.sc_mode[0]) >= 0 ? values.sc_mode[0] : "osc",
+      scale: values.sc_scale.length === 1 && ["log", "linear"].indexOf(values.sc_scale[0]) >= 0 ? values.sc_scale[0] : "log"
+    };
+  }
+  function readStandalonePresentation() {
+    if (embedded()) return;
+    var view = standalonePresentation();
+    state.mode = view.mode; state.scale = view.scale;
+  }
+  function writeStandalonePresentation() {
+    if (embedded()) return;
+    var current = standalonePresentation();
+    if (current.mode === state.mode && current.scale === state.scale) return;
+    // Keep unrelated query bytes (including duplicate keys and transport fields)
+    // verbatim. The existing shared-shell wrapper owns canonical URL transport.
+    var raw = (location.search || "").slice(1);
+    var parts = (raw ? raw.split("&") : []).filter(function (part) {
+      var key = presentationKey(part);
+      return key !== "sc_mode" && key !== "sc_scale";
+    });
+    if (state.mode !== "osc") parts.push("sc_mode=" + state.mode);
+    if (state.scale !== "log") parts.push("sc_scale=" + state.scale);
+    try {
+      history.replaceState(history.state, "", location.pathname + (parts.length ? "?" + parts.join("&") : "") + location.hash);
+      if (_navDedupeReset) _navDedupeReset();
+    } catch (e) {}
+  }
+  function notifyHostFocus(id) {
+    var host = window.SectorCyclesHost;
+    if (host && typeof host.onFocus === "function") host.onFocus(id, state.family);
+  }
+  function notifyState() {
+    if (!stateReady || restoring) return;
+    writeStandalonePresentation();
+    var host=window.SectorCyclesHost;
+    if (host && typeof host.onState==='function') host.onState(captureView());
+  }
+  function captureView() {
+    return {schema:'sector_cycles.view.v1', publicationId:publicationState==='verified'?PUB.id:null,
+      region:META.region||'us', family:state.family, focus:state.focus, mode:state.mode, scale:state.scale,
+      range:(heroChart?heroChart.getView():curView).slice(),
+      phases:PHASE_FILTER.filter(function(p){return !!phaseState[p.key];}).map(function(p){return p.key;}),
+      selectedIds:activeList().filter(function(s){return isBasketRec(s)&&basketShown[s.id];}).map(function(s){return s.id;}),
+      mobileSelection:{mode:mobileShowAll?'all':mobileSel?'explicit':'leaders', ids:mobileSel?Object.keys(mobileSel).filter(function(id){return mobileSel[id];}):[]},
+      leg:selectedLeg?Object.assign({},selectedLeg):null};
+  }
+  window.SectorCyclesCapture=captureView;
+  function validView(s, family, id) {
+    if (!s || s.schema!=='sector_cycles.view.v1' || s.publicationId!== (PUB&&PUB.id) || publicationState!=='verified') return 'source_changed';
+    if (s.region!==(META.region||'us') || s.family!==family || s.focus!==id || !FAM[s.family] ||
+        ['osc','price'].indexOf(s.mode)<0 || ['log','linear'].indexOf(s.scale)<0) return 'invalid_state';
+    var range=s.range, minSpan=Math.min(0.5,(META.xDomain[1]-META.xDomain[0])/40);
+    if (!Array.isArray(range) || range.length!==2 || !range.every(function(x){return typeof x==='number'&&isFinite(x);}) ||
+        range[0]<META.xDomain[0] || range[1]>META.xDomain[1] || range[1]-range[0]<minSpan-1e-8) return 'invalid_state';
+    if (!Array.isArray(s.phases) || s.phases.length>5 || s.phases.some(function(k){return !PHASE_FILTER.some(function(p){return p.key===k;});})) return 'invalid_state';
+    function validIds(ids) {return Array.isArray(ids)&&ids.length<=ALL.length&&ids.every(function(key){return typeof key==='string'&&byId[key]&&isFamilyId(key,family);})&&new Set(ids).size===ids.length;}
+    if (!validIds(s.selectedIds) || !s.mobileSelection || ['leaders','all','explicit'].indexOf(s.mobileSelection.mode)<0 || !validIds(s.mobileSelection.ids)) return 'invalid_state';
+    if (s.leg && (!id || typeof s.leg.start!=='string' || typeof s.leg.end!=='string' || s.leg.start.length>32 || s.leg.end.length>32)) return 'invalid_state';
+    return null;
+  }
+  function isFamilyId(id,family) { return byId[id] && byId[id].kind===FAM[family].kind; }
+  function applyView(s,family,id) {
+    restoring=true;
+    if (reTimer) {clearTimeout(reTimer);reTimer=null;}
+    // MMChart's current nonanimated setView does not cancel its existing tween.
+    // Cancel this owned chart's pending frame before applying a traversed range.
+    if (heroChart && heroChart._tw) {cancelAnimationFrame(heroChart._tw);heroChart._tw=null;}
+    switchFamily(family);
+    var defaults=activeList().slice().sort(function(a,b){return (a.now.rs_rank||999)-(b.now.rs_rank||999);}).slice(0,6).map(function(x){return x.id;});
+    ALL.forEach(function(row){if(isBasketRec(row)) basketShown[row.id]=(s?s.selectedIds:defaults).indexOf(row.id)>=0;});
+    PHASE_FILTER.forEach(function(p){phaseState[p.key]=s?s.phases.indexOf(p.key)>=0:true;});
+    state.mode=s?s.mode:'osc'; state.scale=s?s.scale:'log';
+    mobileShowAll=!!(s&&s.mobileSelection.mode==='all');mobileSel=null;
+    if (s&&s.mobileSelection.mode==='explicit') {mobileSel={};s.mobileSelection.ids.forEach(function(key){mobileSel[key]=true;});}
+    selectedLeg=s&&s.leg?Object.assign({},s.leg):null;
+    state.focus=id; // setFocus must not clear the incoming stable leg identity
+    setFocus(id,true);
+    syncGroups();syncHeroControls();
+    curView=(s?s.range:DEFAULT_VIEW).slice();
+    if (heroChart) heroChart.setView(curView.slice(),false);
+    rebuildHero(false);remountSparks();
+    restoring=false;
+  }
   function activeList() { return FAM[state.family] ? FAM[state.family].list() : SECTORS; }
   function isActive(s) { return s.kind === (FAM[state.family] || FAM.sectors).kind; }
   // helpers to distinguish "basket-like" families (all non-sectors) from the sectors family
@@ -187,26 +362,15 @@
   };
   function tiltOf(s) { return TILT[(s.proj || {}).tilt] || TILT.mixed; }
 
-  /* ---- W3.6: ontology STANCE + DIVERGENCE rendering ----------------------
-     The kernel (engine/cycle_ontology.resolve_state) stamps the resolved action
-     into now.stance / now.stance_zh / now.tone and the "clocks disagree" flag into
-     now.divergence / now.divergence_note{,_zh}.  JS renders those stamped outputs —
-     it never recomputes a stance (D1 doctrine).  tone → an existing root color token
-     so the zh up/down flip keeps working with zero new color logic (A18):
-       bullish → --up  (flips red/green in zh)   bearish → --down (flips in zh)
-       caution → --warn (no flip)   anticipatory → accent (no flip)   neutral → --muted (no flip)
-     Only the bullish/bearish tones ride flip-sensitive tokens; the direction-less
-     stances (WAIT / GET READY / TRIM / COUNTERTREND ONLY / HIGH-RISK BOUNCE) do not. */
-  var TONE_CLS = {
-    bullish: "st-bull", bearish: "st-bear", caution: "st-caut",
-    anticipatory: "st-antic", neutral: "st-neu"
-  };
-  function stanceLabel(nw) { return curLang() === "zh" ? (nw.stance_zh || nw.stance) : nw.stance; }
+  /* Producer doctrine fields own the visible research stance. The original
+     engine classification stays in the provenance drawer; no browser-side
+     stance-to-doctrine mapping or model recomputation occurs. */
+  function stanceLabel(nw) { return L(nw.doctrine_stance_en, nw.doctrine_stance_zh); }
   function stanceHTML(nw) {
-    if (!nw || !nw.stance) return "";
-    var cls = TONE_CLS[nw.tone] || "st-neu";
-    return '<span class="cc-stance ' + cls + '" title="' +
-      L("Resolved stance · engine", "综合策略 · 引擎") + '">' + stanceLabel(nw) + '</span>';
+    if (!nw || !stanceLabel(nw)) return "";
+    var ink = ['ok','warn','muted'].indexOf(nw.doctrine_ink) >= 0 ? nw.doctrine_ink : 'muted';
+    return '<span class="cc-stance st-neu" style="color:var(--' + ink + ')" title="' +
+      L("Research stance · source", "研究立场 · 数据源") + '">' + esc(stanceLabel(nw)) + '</span>';
   }
   // amber "clocks disagree" chip — rendered ONLY when the cycle read and the timing
   // ladder disagree (D1 §2.3).  Replaces two contradictory action badges with one honest chip.
@@ -222,6 +386,52 @@
       (note ? '<span class="cc-diverge-note">' + esc(note) + '</span>' : "") + '</div>';
   }
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function phaseAgeText(age) {
+    if (age && (age.status === "measured" || age.status === "lower_bound") &&
+        Number.isInteger(age.sessions) && age.sessions > 0) {
+      return (age.status === "lower_bound" ? L("At least ", "至少 ") : "") +
+        age.sessions + L(age.sessions === 1 ? " trading session" : " trading sessions", " 个交易日");
+    }
+    var reasons = {
+      not_logged: ["Not recorded for this family", "该类别尚未记录"],
+      insufficient_history: ["Not enough recorded history", "记录历史不足"],
+      unknown_phase: ["Phase unavailable", "阶段不可用"],
+      source_unavailable: ["Recorded history unavailable", "历史记录不可用"]
+    };
+    var reason = reasons[age && age.status] || reasons.source_unavailable;
+    return L(reason[0], reason[1]);
+  }
+  function recordedPhaseLabel(nw) {
+    var zh={Peak:'高位',Expansion:'扩张',Downturn:'回落',Recovery:'修复',Trough:'低谷'};
+    return nw.phase_v2 ? L(nw.phase_v2,zh[nw.phase_v2]||nw.phase_v2) : L('unavailable','不可用');
+  }
+  function renderContext() {
+    var node = document.getElementById("sc-native-context");
+    if (!node) return;
+    var s = byId[state.focus], nw = s && s.now || {}, age = nw.phase_v2_age;
+    var facts = [L("Cycle source through ", "周期数据截至 ") + (META.asOf || L("unavailable", "不可用"))];
+    if (s) {
+      facts.push(nm(s) + " · " + (s.ticker || s.id));
+      facts.push(L("Recorded phase: ", "已记录阶段：") + recordedPhaseLabel(nw));
+      facts.push(L("Current phase age: ", "当前阶段时长：") + phaseAgeText(age));
+      // Doctrine is producer-owned. Never infer it from the old engine stance.
+      facts.push(L("Research stance: ", "研究立场：") +
+        (L(nw.doctrine_stance_en, nw.doctrine_stance_zh) || L("not published", "尚未发布")));
+    }
+    node.innerHTML = '<p>' + facts.map(esc).join(' · ') + '</p>' +
+      '<p>' + L("Current reconstruction. Chart history is not a record of what was known then.",
+        "当前重建结果。图中历史不等同于当时已知的记录。") + '</p>' +
+      '<details><summary>' + L("Method & source", "方法与来源") + '</summary><p>' +
+      esc(L("Benchmark: ", "基准：") + (META.benchmark || "—")) + ' · ' +
+      esc(L("Phase-age method: ", "阶段时长方法：") + (age && age.method || "—")) + ' · ' +
+      esc(L("Phase definition: ", "阶段定义：") + (nw.phase_v2 || "—")) + ' · ' +
+      esc(L("Phase observed from: ", "阶段观测起点：") + (age && age.observed_from || "—")) +
+      ' · ' + esc(L("Engine stance (provenance): ", "引擎立场（来源）：") + (L(nw.stance,nw.stance_zh) || "—")) +
+      '</p><p>' + L("Historical calibration does not establish current model validity. Live feature parity: ",
+        "历史校准不代表当前模型有效。实时特征一致性：") +
+      esc((META.live_hazard_parity || {}).verdict || L("not supplied", "未提供")) +
+      '</p></details>';
+  }
 
   /* ---- W3.9: FX-decomposition UX (INTL/country page only) ----------------
      The country card's PRIMARY chart/position is now the LOCAL-currency equity
@@ -462,6 +672,7 @@
   var reTimer = null;
   function scheduleReanchor(domain) {
     curView = domain.slice();
+    notifyState();
     if (state.mode !== "price" || !heroChart) return;
     if (reTimer) clearTimeout(reTimer);
     reTimer = setTimeout(function () { reTimer = null; rebuildHero(false); }, 130);
@@ -476,13 +687,16 @@
 
   function mountHero() {
     var node = document.getElementById("sc-chart");
-    if (!node) return;
+    // Central also loads cycle data for its map. Never create a zero-width
+    // chart while the separate Cycles view is hidden; mount it on si:view.
+    if (!node || heroChart || !node.getBoundingClientRect().width) return;
     heroChart = window.MMChart.create(node, heroSpec());
     heroChart.setHidden(chartHidden);
     if (META.xDomainDefault) heroChart.setView(DEFAULT_VIEW.slice(), false);   // open on the ~7y home view
     buildZoom();
     // chart-click → if a sector is focused, open the leg under the cursor
     node.addEventListener("click", onChartClick);
+    if (state.focus) heroChart.focus(state.focus);
   }
 
   function onChartClick(ev) {
@@ -559,10 +773,10 @@
       presets.map(function (p, i) { return '<button class="cyc-zbtn" data-i="' + i + '">' + p.label + '</button>'; }).join("") +
       '<button class="cyc-zbtn cyc-zreset" id="sc-zreset">' + L("Home ⤢", "首页 ⤢") + '</button>';
     presets.forEach(function (p, i) {
-      z.querySelector('[data-i="' + i + '"]').addEventListener("click", function () { if (heroChart) heroChart.setView(p.d.slice(), true); });
+      z.querySelector('[data-i="' + i + '"]').addEventListener("click", function () { if (heroChart) heroChart.setView(p.d.slice(), !REDUCE); });
     });
     // "Home" returns to the ~7y default view (not the full extent) — the intended landing window
-    z.querySelector("#sc-zreset").addEventListener("click", function () { if (heroChart) heroChart.setView(DEFAULT_VIEW.slice(), true); });
+    z.querySelector("#sc-zreset").addEventListener("click", function () { if (heroChart) heroChart.setView(DEFAULT_VIEW.slice(), !REDUCE); });
   }
 
   /* ---- mode + scale segmented controls ----------------------------------- */
@@ -574,6 +788,7 @@
         state.mode = m;
         syncHeroControls();
         rebuildHero(true); remountSparks();
+        notifyState();
       });
     });
     if (scale) scale.querySelectorAll(".sc-sbtn").forEach(function (b) {
@@ -582,6 +797,7 @@
         state.scale = sc;
         syncHeroControls();
         rebuildHero(true); remountSparks();
+        notifyState();
       });
     });
   }
@@ -591,7 +807,7 @@
   // (no dead greyed row that reads as the user's first broken tap, esp. on mobile).
   // aria-pressed keeps the segmented buttons announced to assistive tech.
   function syncHeroControls() {
-    var modes = document.getElementById("sc-modes"), scale = document.getElementById("sc-scale");
+    clearFirstHint(); var modes = document.getElementById("sc-modes"), scale = document.getElementById("sc-scale");
     if (modes) modes.querySelectorAll(".sc-mbtn").forEach(function (b) {
       var on = b.getAttribute("data-mode") === state.mode;
       b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false");
@@ -739,6 +955,7 @@
     updateChartHint();
     updateSeriesCount();  // keep the mobile Series(n) trigger badge honest
     if (heroChart) { heroChart.setHidden(chartHidden); rebuildHero(false); }
+    notifyState();
   }
   // visually-hidden live region near the phase chips — created once, lazily
   function srStatus(msg) {
@@ -776,7 +993,7 @@
       if (isBasketLike()) { mountBaskets(); bask.style.display = ""; bask.classList.remove("open"); }
       else { bask.style.display = "none"; bask.classList.remove("open"); }
     }
-    document.querySelectorAll("#sc-tabs .sc-tab").forEach(function (t) { var on = t.getAttribute("data-fam") === state.family; t.classList.toggle("on", on); t.setAttribute("aria-selected", on ? "true" : "false"); });
+    document.querySelectorAll("#sc-tabs .sc-tab").forEach(function (t) { var on = t.getAttribute("data-fam") === state.family; t.classList.toggle("on", on); t.setAttribute(t.getAttribute("role") === "tab" ? "aria-selected" : "aria-pressed", on ? "true" : "false"); });
     var ttl = document.getElementById("sc-hero-title");
     if (ttl) {
       if (state.family === "baskets") {
@@ -792,8 +1009,8 @@
     }
   }
   function switchFamily(fam) {
-    if (fam === state.family) return;
-    state.family = fam; state.focus = null;
+    if (!FAM[fam] || fam === state.family) return;
+    state.family = fam; state.focus = null; selectedLeg = null;
     mobileSel = null; mobileShowAll = false;   // each family opens on its own leaders default
     if (heroChart) heroChart.focus(null);
     // for basket-like families, initialise basketShown for the new active list — default-select
@@ -813,7 +1030,10 @@
   }
   function wireFamily() {
     document.querySelectorAll("#sc-tabs .sc-tab").forEach(function (t) {
-      t.addEventListener("click", function () { switchFamily(t.getAttribute("data-fam")); });
+      t.addEventListener("click", function () {
+        switchFamily(t.getAttribute("data-fam"));
+        setFocus(null);  // also clear the host's entity query, without changing its view
+      });
     });
     var ns = document.getElementById("sc-tab-n-sec"), nb = document.getElementById("sc-tab-n-bsk");
     var nn = document.getElementById("sc-tab-n-ndx"), nr = document.getElementById("sc-tab-n-rut");
@@ -1037,7 +1257,7 @@
   }
   function mountCards() {
     var grid = document.getElementById("sc-cards");
-    if (!grid) return;
+    if (!grid || !grid.getBoundingClientRect().width) return;
     Object.keys(sparks).forEach(function (k) { try { sparks[k].destroy(); } catch (e) {} });
     sparks = {};
     grid.innerHTML = "";
@@ -1046,6 +1266,9 @@
       var nw = s.now, tilt = tiltOf(s);
       var card = el("article", "cyc-card");
       card.setAttribute("data-id", s.id);
+      card.setAttribute("role", "button");
+      card.setAttribute("tabindex", "0");
+      keyActivate(card);
       card.style.setProperty("--c", s.accent);           // ETF identity dot
       card.style.setProperty("--ph", phaseHue(nw.phase)); // card chrome reads by CYCLE PHASE
       if (isBasketRec(s) && basketShown[s.id]) card.classList.add("sel");
@@ -1098,10 +1321,12 @@
     clearFirstHint();                              // any focus change = the user has engaged
     if (id && window.SC_LAZY_EXTRAS) _scheduleExtras();  // host deferred extras — load on first focus
     // focusing a basket-like record implies selecting it onto the chart
-    if (id && byId[id] && isBasketRec(byId[id]) && !basketShown[id]) {
-      basketShown[id] = true; updateBasketSel(); applyVisibility();
-    }
+    if (id && byId[id] && isBasketRec(byId[id]) && !basketShown[id]) basketShown[id] = true;
+    if (id!==state.focus) selectedLeg=null;
     state.focus = id;
+    // The selected instrument overrides a phase facet. Recompute only after
+    // assigning focus, otherwise a valid host receipt can name a hidden line.
+    applyVisibility();
     if (heroChart) { heroChart.focus(id); rebuildHero(false); }   // refresh narrative bands
     document.querySelectorAll(".cyc-chip").forEach(function (b) {
       b.classList.toggle("on", b.getAttribute("data-id") === id);
@@ -1119,7 +1344,12 @@
       if (isCnMobile()) { if (id) openSheet("half"); else closeSheet(); }   // hidden-at-rest detent sheet
       else if (id) expandSheet(true);                                       // US legacy peek sheet
     }
-    if (!fromHistory) try { history.replaceState(null, "", id ? "#" + id : location.pathname + location.search); if (_navDedupeReset) _navDedupeReset(); } catch (e) {}
+    renderContext();
+    if (!fromHistory) {
+      if (embedded()) notifyHostFocus(id);
+      else try { history.replaceState(history.state, "", id ? "#" + id : location.pathname + location.search); if (_navDedupeReset) _navDedupeReset(); } catch (e) {}
+    }
+    notifyState();
   }
 
   /* ---- detail panel ------------------------------------------------------ */
@@ -1127,15 +1357,37 @@
     var def = document.getElementById("sc-panel-default"), foc = document.getElementById("sc-panel-focus");
     if (!def || !foc) return;
     if (!id) { foc.classList.remove("show"); def.classList.add("show"); return; }
+    // Async annotations and language changes replace the detail markup. Keep
+    // keyboard focus on the same semantic control, never on a detached node.
+    var active=document.activeElement, focusKey=null;
+    if (foc.getAttribute('data-entity')===id && active && foc.contains(active)) {
+      var legNode=active.closest('.sc-leg');
+      if (legNode) focusKey={kind:'leg',start:legNode.getAttribute('data-start'),end:legNode.getAttribute('data-end')};
+      else if (active.closest('.cyc-back')) focusKey={kind:'back'};
+      else if (active.closest('.sc-dna-more')) focusKey={kind:'dna'};
+    }
     foc.innerHTML = focusHTML(byId[id]);
+    foc.setAttribute('data-entity',id);
     var back = foc.querySelector(".cyc-back");
     if (back) back.addEventListener("click", function () { setFocus(null); });
+    var panelLegs=legsOf(byId[id]);
     foc.querySelectorAll(".sc-leg").forEach(function (row) {
+      var leg=panelLegs.find(function(item){return item.i===+row.getAttribute('data-i');});
+      if (leg) { row.setAttribute('data-start',leg.start.date||leg.start.t);row.setAttribute('data-end',leg.end.date||leg.end.t); }
       row.addEventListener("click", function () { openLeg(byId[id], +row.getAttribute("data-i"), row); });
       keyActivate(row);
     });
     def.classList.remove("show"); foc.classList.add("show");
     _initDnaToggle(foc);
+    restoreLegDOM();
+    if (focusKey) {
+      var restored=null;
+      if (focusKey.kind==='leg') foc.querySelectorAll('.sc-leg').forEach(function(row){
+        if(row.getAttribute('data-start')===focusKey.start&&row.getAttribute('data-end')===focusKey.end)restored=row;
+      });
+      else restored=foc.querySelector(focusKey.kind==='back'?'.cyc-back':'.sc-dna-more');
+      if (restored && !restored.hidden) restored.focus({preventScroll:true});
+    }
   }
 
   // washout↔euphoria state signature (the Phase-0-stable read) — rendered when present
@@ -1172,7 +1424,7 @@
       : "";
     var cell = dir + "/" + key;
     var en = pass
-      ? ("Calibrated model probability — the " + cell + " cell PASSED the W4.2 gate " +
+      ? ("Historical calibration result — the " + cell + " cell PASSED the W4.2 gate " +
          "vs the family-stratified KM baseline (OOS Brier + month-block bootstrap CI + BH-FDR). " +
          "Epoch: " + epoch + revOpt + ". Cohort still accruing. " +
          "Not checked against later outcomes.")
@@ -1190,7 +1442,7 @@
     return L(en, zh);
   }
   function _hzBadge(pass) {
-    return pass ? '<span class="hz-badge hz-pass">' + L("PASS", "通过") + '</span>'
+    return pass ? '<span class="hz-badge hz-pass">' + L("HISTORICAL PASS", "历史通过") + '</span>'
                 : '<span class="hz-badge hz-prior">' + L("PRIOR", "先验") + '</span>';
   }
   // Full 1m/3m/6m row set for the detail sidebar (mirrors cycle.html's hazardLine).
@@ -1220,8 +1472,9 @@
         "PASS cells: isotonic-calibrated hazard model (calibration-gated vs KM, W4.2 gate). " +
         "PRIOR cells: KM base rate, shown muted. Display-only context — never a signal.",
         "开放周期段在各时间窗内出现下一个已确认拐点的概率。PASS=经W4.2门槛校准的模型输出；PRIOR=KM基准率（弱化显示）。仅供展示，绝非信号。")) + '">' +
-      L("Turn hazard (calibrated)", "转折风险（校准）") + '</span>' +
+      L("Turn timing · historical calibration", "转折时间 · 历史校准") + '</span>' +
       cells.join('<span class="hz-sep"> · </span>') +
+      '<p class="sc-hazard-qualification">' + L("Historical calibration does not validate current live inputs.", "历史校准不代表当前实时输入已验证。") + '</p>' +
       '</div>';
   }
   // Compact card chip: the horizon/direction-appropriate probability. Prefer 3m when
@@ -1411,6 +1664,14 @@
     if (US_SECTOR_PAGE[s.id]) return US_SECTOR_PAGE[s.id];
     return s.ticker ? ("stock.html#" + s.ticker) : null;
   }
+  // A read-only destination hook reuses the native membership mapping.
+  // It exposes no source rows and cannot grant access or navigate.
+  window.SectorCyclesMembersHref=function(selection){
+    if(!selection||!activePublication()||publicationState!=='verified'||META.region&&META.region!=='us'||
+       selection.publicationId!==PUB.id||!isFamilyId(selection.id,selection.family))return null;
+    var href=sectorPageHref(byId[selection.id]);
+    return typeof href==='string'&&/^basket\/[a-z0-9_.-]+\.html$/.test(href)?href:null;
+  };
   function sectorPageLabel(s) {
     if (META.region === "china") return L("Open in Sector Central", "在板块中枢查看");
     // both thematic baskets and US sector ETFs label by their own name → "Open <name> page".
@@ -1422,7 +1683,6 @@
   // What STRUCTURALLY drives this series to cycle, what marks its tops vs troughs, and which
   // past leg today most rhymes with — researched against the 15y dated turns. Hidden if absent.
   function dnaHTML(s) {
-    var DNA = window.SECTOR_DNA || {};
     var d = DNA[s.id]; if (!d) return "";
     var sum = curLang() === "zh" ? (d.summary_zh || d.summary) : d.summary;
     var drv = (curLang() === "zh" && d.drivers_zh) ? d.drivers_zh : (d.drivers || []);
@@ -1549,8 +1809,8 @@
          '</div>')
       : ('<div class="cyc-read"><div class="cyc-lbl">' + L("The read", "解读") + '</div><p class="sc-leg-pending">' +
          L("This " + noun.toLowerCase() + " is " + phaseLabel(s).toLowerCase() + " — cycle position " + Math.round(nw.pos) + "/100, " +
-           (nw.above200d ? "above" : "below") + " its 200-day. Engine read generating.",
-           "该" + nounZh + phaseLabel(s) + " — 周期位置 " + Math.round(nw.pos) + "/100，" + (nw.above200d ? "位于" : "低于") + "200日均线。引擎解读生成中。") + '</p>' +
+           (nw.above200d ? "above" : "below") + " its 200-day. Engine read unavailable in this source.",
+           "该" + nounZh + phaseLabel(s) + " — 周期位置 " + Math.round(nw.pos) + "/100，" + (nw.above200d ? "位于" : "低于") + "200日均线。此数据源暂无引擎解读。") + '</p>' +
          analystNoteHTML +
          '</div>'));
     var subtitle = isB
@@ -1593,6 +1853,10 @@
           fact(L(WIN_Y + "y change", WIN_Y + "年涨跌"), (nw.ret_win_pct >= 0 ? "+" : "") + nw.ret_win_pct + "%") +
         '</div>' +
         hazardLineHTML(s) +
+        '<details class="sc-native-provenance"><summary>' + L("Engine provenance", "引擎来源") + '</summary><p>' +
+          esc(L("Engine stance: ", "引擎立场：") + (L(nw.stance,nw.stance_zh) || L("unavailable", "不可用"))) + ' · ' +
+          esc(L("Recorded phase: ", "已记录阶段：") + recordedPhaseLabel(nw)) + ' · ' +
+          esc(phaseAgeText(nw.phase_v2_age)) + '</p></details>' +
       '</div>' +
       '<div class="cyc-grp cyc-grp-3">' +
         readHTML +
@@ -1647,12 +1911,28 @@
     var body = row.querySelector(".sc-leg-body"), wasOpen = body.classList.contains("show");
     foc.querySelectorAll(".sc-leg").forEach(function (r) { r.classList.remove("open"); r.querySelector(".sc-leg-body").classList.remove("show"); });
     if (!wasOpen) {
+      var leg=legsOf(s)[i];
+      selectedLeg=leg?{start:leg.start.date||leg.start.t,end:leg.end.date||leg.end.t}:null;
       row.classList.add("open"); body.classList.add("show");
-      row.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      row.scrollIntoView({ block: "nearest", behavior: REDUCE?"auto":"smooth" });
       // zoom the chart to this leg for context
       var g = legsOf(s)[i];
-      if (g && heroChart) heroChart.setView([Math.max(META.xDomain[0], g.x0 - 0.15), Math.min(META.xDomain[1], g.x1 + 0.15)], true);
-    }
+      if (g && heroChart) heroChart.setView([Math.max(META.xDomain[0], g.x0 - 0.15), Math.min(META.xDomain[1], g.x1 + 0.15)], !REDUCE);
+    } else selectedLeg=null;
+    restoreLegDOM();notifyState();
+  }
+  function restoreLegDOM() {
+    var panel=document.getElementById('sc-panel-focus'), rec=byId[state.focus];
+    if (!panel || !rec) return false;
+    var legs=legsOf(rec), found=false;
+    panel.querySelectorAll('.sc-leg').forEach(function(row) {
+      var leg=legs[+row.getAttribute('data-i')];
+      var on=!!(selectedLeg&&leg&&(leg.start.date||leg.start.t)===selectedLeg.start&&(leg.end.date||leg.end.t)===selectedLeg.end);
+      row.classList.toggle('open',on);row.setAttribute('aria-expanded',on?'true':'false');
+      var body=row.querySelector('.sc-leg-body');if(body) body.classList.toggle('show',on);
+      found=found||on;
+    });
+    return found;
   }
 
   /* ---- default panel: cross-sector map + leadership + how-to -------------- */
@@ -1820,9 +2100,11 @@
       return;
     }
     // China: inject a visible ✕ close — the grabber alone is easy to miss (NN/g).
+    // The handle now contains a real control; expose it to assistive technology.
+    handle.removeAttribute("aria-hidden");
     if (!handle.querySelector(".sc-sheet-x")) {
       var x = el("button", "sc-sheet-x"); x.type = "button";
-      x.setAttribute("aria-label", "Close"); x.innerHTML = "✕";
+      x.setAttribute("aria-label", curLang() === "zh" ? "关闭" : "Close"); x.innerHTML = "✕";
       x.addEventListener("click", function (e) { e.stopPropagation(); setFocus(null); });
       handle.appendChild(x);
     }
@@ -2035,6 +2317,8 @@
 
   /* ---- lang/theme re-render --------------------------------------------- */
   function rerender() {
+    var sheetClose = document.querySelector("#sc-handle .sc-sheet-x");
+    if (sheetClose) sheetClose.setAttribute("aria-label", curLang() === "zh" ? "关闭" : "Close");
     clearFirstHint();                              // drop the stale-language onboarding pill on a lang flip
     var savedFocus = state.focus, savedPhase = {};
     PHASE_FILTER.forEach(function (p) { savedPhase[p.key] = phaseState[p.key]; });
@@ -2043,7 +2327,8 @@
     PHASE_FILTER.forEach(function (p) { phaseState[p.key] = savedPhase[p.key]; });
     syncGroups(); syncHeroControls();              // re-localize the mode-aware legend on language flip
     if (heroChart) rebuildHero(false);
-    if (savedFocus) setFocus(savedFocus); else renderPanel(null);
+    if (savedFocus) setFocus(savedFocus, true); else renderPanel(null);
+    renderContext(); loadRotation(); publicationNotice();
   }
 
   /* ---- guided first-load: highlight ONE line + a tap hint (novice entry) --- */
@@ -2073,8 +2358,8 @@
     var wrap = document.querySelector(".sc-chartwrap"); if (!wrap) return;
     firstHintDone = true;
     var n = el("div", "sc-chart-hint sc-hint-tap"); n.id = "sc-firsthint";
-    n.innerHTML = L("High = stretched · low = washed-out — tap any line, chip or card for its story",
-                    "高 = 拉伸 · 低 = 超卖 — 点按任意曲线、标签或卡片查看其走势");
+    n.textContent = state.mode === "price" ? L("Rebased prices — tap any line, chip or card for its story", "再基准化价格 — 点按任意曲线、标签或卡片查看其走势")
+                    : L("High = stretched · low = washed-out — tap any line, chip or card for its story", "高 = 拉伸 · 低 = 超卖 — 点按任意曲线、标签或卡片查看其走势");
     wrap.appendChild(n);
     firstHintTimer = setTimeout(clearFirstHint, 11000);
   }
@@ -2106,21 +2391,38 @@
 
   var _extrasInjected = false;
   function hydrateExtras() {
-    NARR = window.SECTOR_NARR || {};
-    deepStrip(NARR);
-    if (window.SECTOR_DNA) { deepStrip(window.SECTOR_DNA); }
-    // Re-render the open focus panel so narr legs, analyst note, and DNA card appear.
-    if (state.focus) { renderPanel(state.focus); }
-    document.dispatchEvent(new CustomEvent('sc:extras-ready'));
+    function apply(kind,result,token) {
+      if (!activePublication() || token!==partEpoch[kind]) return;
+      var source=PUB && PUB.sources && PUB.sources[kind];
+      partStates[kind]=result.status;
+      if (result.status==='verified' && (!source || source.status!=='available')) {
+        partStates[kind]=source && source.status==='quarantined'?'quarantined':'source_unavailable';
+      }
+      var value=(partStates[kind]==='verified'||partStates[kind]==='legacy_unverified')?result.value:{};
+      if (kind==='narr') NARR=value||{}; else DNA=value||{};
+      deepStrip(value);
+      if (state.focus) renderPanel(state.focus);
+      publicationNotice();
+      document.dispatchEvent(new CustomEvent('sc:extras-ready',{detail:evidenceReceipt()}));
+    }
+    return Promise.all(['narr','dna'].map(function(kind) {
+      var key=kind==='narr'?'SECTOR_NARR':'SECTOR_DNA', token=++partEpoch[kind];
+      if (!PUB) { apply(kind,{status:'legacy_unverified',value:window[key]||{}},token);return; }
+      return verifyPart(kind,window[key+'_PUBLICATION']).then(function(result){apply(kind,result,token);});
+    }));
   }
   window.SectorCyclesHydrateExtras = hydrateExtras;
 
   // After boot(), if SC_EXTRA_DATA is set and either global is still absent,
   // inject those script URLs in order (async=false) then call hydrateExtras().
   function _scheduleExtras() {
+    if (PUB && publicationState!=='verified') return;
+    if (window.SECTOR_NARR !== undefined && window.SECTOR_DNA !== undefined) {
+      if (!_extrasInjected) { _extrasInjected=true;hydrateExtras(); }
+      return;
+    }
     var urls = window.SC_EXTRA_DATA;
     if (!Array.isArray(urls) || !urls.length) return;
-    if (window.SECTOR_NARR !== undefined && window.SECTOR_DNA !== undefined) return;
     if (_extrasInjected) return;
     _extrasInjected = true;
     function injectAll() {
@@ -2153,9 +2455,22 @@
      No-ops (backward-compat) when SC_SERIES_DATA is unset or the arrays are already present
      (the pre-split monolith still ships everything inline). */
   var _seriesInjected = false;
-  function hydrateSeries() {
-    var series = window.SECTOR_CYCLES_SERIES;
-    if (!series) return;
+  var seriesState = window.SC_SERIES_DATA ? "pending" : "ready";
+  function applySeries(series, verified) {
+    var heavyKeys = ['price','osc','turns','fx','usd_record','rs_history'];
+    var ids = series && typeof series === 'object' && !Array.isArray(series) ? Object.keys(series) : [];
+    var valid = (verified || ids.length) && ids.every(function(id) {
+      var part=series[id];
+      return byId[id] && part && typeof part==='object' && !Array.isArray(part) &&
+        Object.keys(part).length>0 && Object.keys(part).every(function(key){
+          return heavyKeys.indexOf(key)>=0 && (['price','osc','turns'].indexOf(key)<0 || part[key]==null || Array.isArray(part[key]));
+        });
+    });
+    if (!valid) {
+      seriesState='unavailable'; partStates.series='invalid_payload';
+      document.dispatchEvent(new CustomEvent('sc:series-error'));
+      return;
+    }
     // Merge in place onto the SAME entity objects DATA/ALL/byId reference — sector_central's
     // inline mini-cyc board holds references into window.SECTOR_CYCLES and must see the arrays
     // appear. No deepStrip here: series are numeric arrays + date strings only (no equal-weight
@@ -2163,6 +2478,8 @@
     Object.keys(series).forEach(function (id) {
       if (byId[id]) { Object.assign(byId[id], series[id]); }
     });
+    seriesState = "ready";
+    partStates.series=verified?"verified":"legacy_unverified";
     // Re-render whatever the heavy arrays now unlock: a non-sectors family (its chart+cards were
     // empty), or price mode (all families' price arrays were absent). mountCards()+rebuildHero()
     // is the same idempotent redraw path rerender()/loadRotation() use.
@@ -2174,6 +2491,19 @@
     if (state.focus && series[state.focus]) { renderPanel(state.focus); }
     document.dispatchEvent(new CustomEvent('sc:cycles-data'));   // sector_central mini-cyc board listens
     document.dispatchEvent(new CustomEvent('sc:series-ready'));
+    publicationNotice();
+  }
+  function hydrateSeries() {
+    if (!PUB) { applySeries(window.SECTOR_CYCLES_SERIES,false);return Promise.resolve(); }
+    var token=++partEpoch.series, envelope=window.SECTOR_CYCLES_SERIES_PUBLICATION;
+    return verifyPart('series',envelope).then(function(result) {
+      if (!activePublication() || token!==partEpoch.series) return;
+      if (result.status!=='verified') {
+        partStates.series=result.status;seriesState='unavailable';
+        document.dispatchEvent(new CustomEvent('sc:series-error',{detail:evidenceReceipt()}));return;
+      }
+      applySeries(result.value,true);
+    });
   }
   window.SectorCyclesHydrateSeries = hydrateSeries;
 
@@ -2187,7 +2517,10 @@
     s.async = false;
     s.src = vUrl(name);       // reuse the preloaded/prefetched, ?v=-stamped, immutable-cached URL
     s.onload = hydrateSeries;
-    s.onerror = function () { /* tolerated: the pre-hydration guards keep the page usable */ };
+    s.onerror = function () {
+      seriesState = "unavailable"; partStates.series="unavailable";
+      document.dispatchEvent(new CustomEvent('sc:series-error'));
+    };
     document.head.appendChild(s);
   }
 
@@ -2208,6 +2541,7 @@
 
   /* ---- boot -------------------------------------------------------------- */
   function boot() {
+    readStandalonePresentation();
     // Basket-like families: chart only the STRONGEST few to start — overlaid lines are an
     // unreadable tangle. The whole field is one tap away via "Select all visible". (They're
     // off the chart for now anyway because Sector ETFs is the active family at load.)
@@ -2237,8 +2571,8 @@
     // si_workspace_china.js loadCycles — the China hub once shipped without it), and the
     // shell root itself is detectable — activate() in both routers owns the .si-view
     // sections, so when one is present the hash is that router's, flag or no flag. The
-    // in-shell Cycles contract is SIC-I03/I09B's to build.
-    if (!window.SC_LAZY_EXTRAS && !document.querySelector(".si-view")) {
+    // native host additionally supplies SectorCyclesHost for explicit ownership.
+    if (!window.SectorCyclesHost && !window.SC_LAZY_EXTRAS && !document.querySelector(".si-view")) {
       // one traversal fires BOTH popstate and hashchange — the second arrival is the same
       // navigation and must not run the reader twice. Last-handled href dedupe; starts
       // null, never the bind-time href, or the first Back onto it would be eaten.
@@ -2246,6 +2580,8 @@
       var syncFocusHash = function () {
         if (location.href === lastNavHref) return;
         lastNavHref = location.href;
+        readStandalonePresentation();
+        syncHeroControls();
         // fromHistory=true: the traversed entry's URL is already where the browser put
         // it — setFocus(null) must not replaceState it fragment-less
         if (!applyFocusHash()) setFocus(null, true);
@@ -2257,49 +2593,148 @@
     if (!window.SC_LAZY_EXTRAS) _scheduleExtras();  // eager unless the host page defers to first focus
     _scheduleSeries();   // hydrate the heavy per-entity arrays after first paint (no-op if unsplit)
     loadRotation();
-  }
-  // Rotation Command RC-R3: fetch the two rotation artifacts, index them by lowercase
-  // sector id, and re-mount the cards once they land (mountCards is idempotent — it's the
-  // same re-render hydrateExtras uses). Null-safe: a 404/missing file leaves the maps empty
-  // and no chips render. No MutationObserver — this page re-renders on 'langchange' via
-  // rerender()→mountCards(), so the chips pick up the language flip for free.
-  function loadRotation() {
-    if (typeof fetch !== "function") return;
-    Promise.all([
-      fetch("marketdata/rotation_events.json", { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-      fetch("marketdata/sector_fragmentation.json", { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
-    ]).then(function (res) {
-      var ev = res[0], fr = res[1];
-      ROT_BY_SEC = {};
-      ((ev && ev.active) || []).forEach(function (e) {
-        // Index by donor sector (v1 path — always present)
-        (ROT_BY_SEC[e.sector] = ROT_BY_SEC[e.sector] || []).push(e);
-        // v2: also index by to_sector when present and different from donor sector,
-        // so cross-sector events chip the receiving card too (e.g. xlk->xlv chips XLV).
-        if (e.to_sector && e.to_sector !== e.sector) {
-          var _recv = ROT_BY_SEC[e.to_sector] = ROT_BY_SEC[e.to_sector] || [];
-          // Tag a copy with _is_receiver=true so the chip builder can vary the copy.
-          var _copy = Object.assign({}, e, { _is_receiver: true });
-          _recv.push(_copy);
+    renderContext();
+    document.addEventListener('si:view', function (e) {
+      var chartNode=document.getElementById('sc-chart');
+      var ownerView=chartNode&&chartNode.closest?chartNode.closest('.si-view'):null;
+      var chartView=ownerView?ownerView.getAttribute('data-view'):'cycles';
+      if (e.detail !== chartView) {
+        if (embedded()) {
+          var picker=document.getElementById('sc-series-ov');
+          if (picker&&picker.classList.contains('open')) closeSeriesPicker();
+          var full=document.querySelector('.sc-chartwrap.sc-fs');if(full) toggleChartFs(false);
+          if (isCnMobile()&&sheetDetent!=='hidden') closeSheet();
         }
-      });
-      FRAG_BY_KEY = {};
-      ((fr && fr.sectors) || []).forEach(function (r) { if (r.fragmented) FRAG_BY_KEY[r.key] = r; });
-      if (Object.keys(ROT_BY_SEC).length || Object.keys(FRAG_BY_KEY).length) mountCards();
+        return;
+      }
+      mountHero(); mountCards();
+      if (heroChart) rebuildHero(false);
     });
+    stateReady=true;
+    document.dispatchEvent(new CustomEvent('sc:cycles-ready'));
+  }
+  // Consume the producer's aligned snapshot. A later raw marketdata fetch
+  // cannot replace evidence from the cycle source session.
+  function loadRotation() {
+    var ctx = DATA.rotation_context || {};
+    function aligned(part, key) {
+      return ctx.schema === "sector_cycles.rotation_context.v1" && part &&
+        part.status === "aligned" && part.artifact_session === META.asOf &&
+        part.consumer_session === META.asOf && Array.isArray(part[key]);
+    }
+    var ev = aligned(ctx.events,'active') ? ctx.events : null;
+    var fr = aligned(ctx.fragmentation,'sectors') ? ctx.fragmentation : null;
+    ROT_BY_SEC = {}; FRAG_BY_KEY = {};
+    ((ev && ev.active) || []).forEach(function (e) {
+      (ROT_BY_SEC[e.sector] = ROT_BY_SEC[e.sector] || []).push(e);
+      if (e.to_sector && e.to_sector !== e.sector) {
+        var recv = ROT_BY_SEC[e.to_sector] = ROT_BY_SEC[e.to_sector] || [];
+        recv.push(Object.assign({}, e, { _is_receiver: true }));
+      }
+    });
+    ((fr && fr.sectors) || []).forEach(function (r) { if (r.fragmented) FRAG_BY_KEY[r.key] = r; });
+    var note = document.getElementById("sc-rotation-state");
+    if (note) note.textContent = L("Rotation events: ", "轮动事件：") +
+      (ev ? L(ev.active.length + " active in this snapshot", "本次快照中有 " + ev.active.length + " 项进行中") :
+        L("unavailable for this cycle date", "该周期日期的数据不可用")) + " · " +
+      L("Fragmentation: ", "内部分化：") + (fr ? L("same-session evidence", "同一交易日证据") : L("unavailable", "不可用"));
+    if (Object.keys(ROT_BY_SEC).length || Object.keys(FRAG_BY_KEY).length) mountCards();
   }
   // public hook: let a host page (e.g. Sector Central) focus the embedded overlay on a
   // sector/basket by id, switching family + scrolling the chart into view. Returns false
   // if the id is unknown so the caller can fall back to a normal link.
   window.SectorCyclesFocus = function (id) {
-    if (!id || !byId[id]) return false;
+    if (!id || !byId[id] || !activePublication() || (PUB && publicationState!=='verified')) return false;
     var s = byId[id];
     switchFamily(isBasketRec(s) ? (FAM[s.kind] ? s.kind : "baskets") : "sectors");
     setFocus(id);
     var ch = document.getElementById("sc-chart");
-    if (ch && ch.scrollIntoView) ch.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (!embedded() && ch && ch.scrollIntoView) ch.scrollIntoView({ behavior: REDUCE ? "auto" : "smooth", block: "center" });
     return true;
   };
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
-  else boot();
+  // Typed host receiver. Acknowledging an id is not proof of visible/dated
+  // evidence. This applies no historical lens and never writes navigation.
+  function cycleSession(value) {
+    if (typeof value!=='string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+    var date=new Date(value+'T00:00:00Z');
+    return isFinite(date.getTime()) && date.toISOString().slice(0,10)===value ? value : null;
+  }
+  window.SectorCyclesApply = function (context) {
+    context = context || {};
+    var id = context.id || null, node = document.getElementById("sc-chart");
+    var sourceDate=cycleSession(META.asOf);
+    var receipt = {status:"pending", id:id, asOf:sourceDate, series:seriesState, publication:evidenceReceipt()};
+    if (id && !byId[id]) { receipt.status="unsupported"; return receipt; }
+    if (!sourceDate || (context.requireSourceDate && !context.asOf) || (context.asOf && !cycleSession(context.asOf))) { receipt.status="source_unavailable"; return receipt; }
+    if (context.asOf && context.asOf !== sourceDate) { receipt.status="source_mismatch"; return receipt; }
+    if (!activePublication()) { receipt.status="source_mismatch"; return receipt; }
+    if (PUB && publicationState==='pending') return receipt;
+    if (PUB && publicationState!=='verified') { receipt.status="source_unavailable";return receipt; }
+    if (context.requirePublication || context.spine) {
+      var expected=context.spine, actual=receipt.publication.spine;
+      // This receipt fingerprints the sector cohort only. A theme can keep
+      // the same sector spine while its membership or history changes.
+      if (id && byId[id].kind!=='sector') { receipt.status='source_unavailable';receipt.reason='unverified_family';return receipt; }
+      if (!expected || !actual) { receipt.status="source_unavailable";return receipt; }
+      if (expected.schema!==actual.schema || expected.scope!==actual.scope || expected.sha256!==actual.sha256) { receipt.status="source_mismatch";return receipt; }
+    }
+    var family=id?(isBasketRec(byId[id])?(FAM[byId[id].kind]?byId[id].kind:'baskets'):'sectors'):(FAM[context.family]?context.family:'sectors');
+    if (context.strictRestore) {
+      var invalidStrict=validView(context.snapshot,family,id);
+      if (!invalidStrict && new Set(context.snapshot.phases).size!==context.snapshot.phases.length) invalidStrict='invalid_state';
+      if (!invalidStrict && family==='sectors' && context.snapshot.selectedIds.length) invalidStrict='invalid_state';
+      if (!invalidStrict && context.snapshot.mobileSelection.mode!=='explicit' && context.snapshot.mobileSelection.ids.length) invalidStrict='invalid_state';
+      if (invalidStrict) {receipt.status='rejected';receipt.reason=invalidStrict;return receipt;}
+      // Non-sector curves and every price chart depend on the verified series
+      // part. A loaded core or an equal session date cannot certify that history.
+      if (context.snapshot.mode==='price' || family!=='sectors') {
+        if (seriesState==='pending') return receipt;
+        if (seriesState!=='ready' || partStates.series!=='verified') {receipt.status='rejected';receipt.reason='series_unavailable';return receipt;}
+        var needed=context.snapshot.selectedIds.concat(context.snapshot.mobileSelection.ids);
+        if(id) needed.push(id);
+        if(context.snapshot.mode==='price' && needed.some(function(key){return !byId[key]||!Array.isArray(byId[key].price)||!byId[key].price.length;})){
+          receipt.status='rejected';receipt.reason='series_unavailable';return receipt;
+        }
+      }
+      if (context.snapshot.leg && !legsOf(byId[id]).some(function(leg) {
+        return (leg.start.date||leg.start.t)===context.snapshot.leg.start && (leg.end.date||leg.end.t)===context.snapshot.leg.end;
+      })) {receipt.status='rejected';receipt.reason='leg_unavailable';return receipt;}
+    }
+    if (!node || !node.getBoundingClientRect().width) return receipt;
+    if (context.validateOnly) {receipt.status='preflight_ready';receipt.family=family;return receipt;}
+    mountHero();
+    if (!heroChart) return receipt;
+    var fresh=context.entryKey && context.entryKey!==appliedEntry;
+    if (fresh || context.restore) {
+      var invalid=context.snapshot?validView(context.snapshot,family,id):null;
+      entryRestoration=invalid || (context.snapshot?'restored':'defaults');
+      applyView(invalid?null:context.snapshot,family,id);
+      appliedEntry=context.entryKey||null;
+    } else {
+      restoring=true;
+      switchFamily(family);
+      if (id !== state.focus) setFocus(id, true);
+      restoring=false;
+    }
+    receipt.status = "applied";
+    receipt.restoration=entryRestoration;
+    receipt.family = state.family;
+    var selected = id && byId[id];
+    if (seriesState === 'ready' && selected && (!Array.isArray(selected.price) || !selected.price.length)) receipt.series='unavailable';
+    if (selectedLeg && !restoreLegDOM()) receipt.leg=seriesState==='pending'?'pending':'unavailable';
+    else receipt.leg=selectedLeg?'restored':'closed';
+    return receipt;
+  };
+  function start() {
+    if (!PUB) { boot();publicationNotice();return; }
+    verifyCore().then(function(status) {
+      if (!activePublication()) return;
+      publicationState=status;partStates.core=status;
+      if (status==='verified') boot();
+      publicationNotice();
+      document.dispatchEvent(new CustomEvent('sc:publication-ready',{detail:evidenceReceipt()}));
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
 })();

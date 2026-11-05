@@ -55,7 +55,7 @@
 
 <link rel="preload" href="sector_cycles_data.js?v=41595ed6" as="script">
 <link rel="preload" href="mm_charts.js?v=244eb769" as="script">
-<link rel="preload" href="sector_cycles.js?v=41cb03e6" as="script">
+<link rel="preload" href="sector_cycles.js?v=4f719b75" as="script">
 <link rel="prefetch" href="sector_cycles_series_data.js?v=416f0361" as="script">
 <link rel="prefetch" href="sector_cycles_narr_data.js?v=d5fd2954" as="script">
 <link rel="prefetch" href="sector_cycles_dna_data.js?v=46b0879d" as="script">
@@ -465,7 +465,8 @@
       <div class="sc-baskets" id="sc-baskets" aria-label="Thematic baskets"></div>
       <span id="sc-sr-status" class="sc-sr-status" role="status" aria-live="polite"></span>
       <div class="sc-chartwrap">
-        <div id="sc-chart" data-h="600" role="img" aria-label="Sector cycle clock — each line a sector's 0 to 100 cycle position over time. Tap a line for its story."></div>
+        <div id="sc-chart" data-h="600" role="img" aria-labelledby="sc-hero-title" aria-describedby="sc-chart-a11y"></div>
+        <p id="sc-chart-a11y" class="sc-sr-status"><span class="l-en">Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points.</span><span class="l-zh">“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。</span></p>
         <div class="sc-chart-hint" id="sc-chart-hint" hidden></div>
       </div>
     </div>
@@ -489,7 +490,7 @@
 <script src="sector_cycles_data.js?v=41595ed6" defer></script>
 <script src="mm_charts.js?v=244eb769" defer></script>
 <script>window.SC_EXTRA_DATA=['sector_cycles_narr_data.js','sector_cycles_dna_data.js'];window.SC_SERIES_DATA='sector_cycles_series_data.js';</script>
-<script src="sector_cycles.js?v=41cb03e6" defer></script>
+<script src="sector_cycles.js?v=4f719b75" defer></script>
 <script>document.addEventListener('DOMContentLoaded',function(){try{document.getElementById('sc-asof').textContent=(window.SECTOR_CYCLES&&window.SECTOR_CYCLES.meta||{}).asOf||'';}catch(e){}});</script>
 <script>
 // window.SECTOR_CYCLES comes from a deferred script, which has run by DOMContentLoaded.

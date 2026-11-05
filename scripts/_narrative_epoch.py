@@ -66,6 +66,20 @@ def _basket_prefix(engine: str) -> str:
     return ENGINE_EPOCH_PARAMS.get(engine, {}).get("basket_prefix", "b-")
 
 
+def publication_receipt(res: dict) -> dict:
+    """Expose the existing resolver's disposition without publishing host paths.
+
+    A successfully read empty map is available/empty. Missing and unreadable
+    both remain unavailable because the resolver does not distinguish them.
+    """
+    source = res.get("source")
+    quarantined = bool(res.get("stale_quarantined"))
+    return {"status": "quarantined" if quarantined else "available" if source else "unavailable",
+            "reason": "epoch_mismatch" if quarantined else None if source else "missing_or_unreadable",
+            "epoch": res.get("epoch"), "source_file": Path(source).name if source else None,
+            "records": len(res.get("map") or {})}
+
+
 def _flatten_doc(doc: dict, basket_prefix: str = "b-") -> dict[str, Any]:
     """Flatten a narratives/dna doc into the builder's {series_id | <prefix>+key: rec} map.
 

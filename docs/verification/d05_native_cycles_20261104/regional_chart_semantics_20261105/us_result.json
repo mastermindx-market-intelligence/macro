@@ -1,0 +1,681 @@
+{
+  "schema": "d05.regional_chart_semantics_browser.v1",
+  "parent": "f0f7aa176e600c5d21a656ae483ce3693b8c9151",
+  "fixture_only": true,
+  "fixture_provenance_sha256": "cebd7dd35457a7c19d30ca9a26b89e92d0d6f76ce3d435a9c53d3d1e20e96050",
+  "cases": [
+    {
+      "surface": "sector_cycles",
+      "region": "us",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "page_errors": [],
+      "missing_assets": [],
+      "blocked_external": [],
+      "source": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+          "asOf": "2026-11-02",
+          "region": "us",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "us_sectors_11",
+            "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "verified",
+            "dna": "verified"
+          },
+          "sources": {
+            "dna": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            },
+            "narr": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            }
+          }
+        },
+        "region": null,
+        "asOf": "2026-11-02",
+        "sectors": 11,
+        "baskets": 49
+      },
+      "cycle_ax": {
+        "role": "image",
+        "name": "Sector rotation overlay",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "price_ax": {
+        "role": "image",
+        "name": "Sector rotation overlay",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "geometry": {
+        "cycle": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+        "price": "2a12255fafba3f75c2e7388f8644431bdc1acdfde7ef0b56ed6edf8f28710fbf"
+      },
+      "screenshot": {
+        "file": "sector_cycles-1440-dark-en-price.png",
+        "sha256": "62ed4fd17c7ddcb77e7a0011a09d25be0839f5293b218d8fb51f1fa9de3b3c4c"
+      },
+      "basket_ax": {
+        "role": "image",
+        "name": "Thematic basket rotation",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "returned_cycle_ax": {
+        "role": "image",
+        "name": "Thematic basket rotation",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "passed": true
+    },
+    {
+      "surface": "sector_cycles",
+      "region": "us",
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "en",
+      "page_errors": [],
+      "missing_assets": [],
+      "blocked_external": [],
+      "source": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+          "asOf": "2026-11-02",
+          "region": "us",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "us_sectors_11",
+            "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "verified",
+            "dna": "verified"
+          },
+          "sources": {
+            "dna": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            },
+            "narr": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            }
+          }
+        },
+        "region": null,
+        "asOf": "2026-11-02",
+        "sectors": 11,
+        "baskets": 49
+      },
+      "cycle_ax": {
+        "role": "image",
+        "name": "Sector rotation overlay",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "price_ax": {
+        "role": "image",
+        "name": "Sector rotation overlay",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "geometry": {
+        "cycle": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+        "price": "dcabd1e133622680a8f924586a57405d1a0c768eeb14040dc3edfb3ae4b50872"
+      },
+      "screenshot": {
+        "file": "sector_cycles-390-light-en-price.png",
+        "sha256": "24d46ada25fa05e98e15f65a5867e376b864402099e9b42579320062934371d4"
+      },
+      "basket_ax": {
+        "role": "image",
+        "name": "Thematic basket rotation",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "returned_cycle_ax": {
+        "role": "image",
+        "name": "Thematic basket rotation",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "passed": true
+    },
+    {
+      "surface": "sector_cycles",
+      "region": "us",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "zh",
+      "page_errors": [],
+      "missing_assets": [],
+      "blocked_external": [],
+      "source": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+          "asOf": "2026-11-02",
+          "region": "us",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "us_sectors_11",
+            "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "verified",
+            "dna": "verified"
+          },
+          "sources": {
+            "dna": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            },
+            "narr": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            }
+          }
+        },
+        "region": null,
+        "asOf": "2026-11-02",
+        "sectors": 11,
+        "baskets": 49
+      },
+      "cycle_ax": {
+        "role": "image",
+        "name": "板块轮动叠加",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "price_ax": {
+        "role": "image",
+        "name": "板块轮动叠加",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "geometry": {
+        "cycle": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+        "price": "2a12255fafba3f75c2e7388f8644431bdc1acdfde7ef0b56ed6edf8f28710fbf"
+      },
+      "screenshot": {
+        "file": "sector_cycles-1440-dark-zh-price.png",
+        "sha256": "9206597207c383eeaf0d3083b3fbeab83e29a6a2a223f76aa39aafa665a0a7e4"
+      },
+      "basket_ax": {
+        "role": "image",
+        "name": "主题篮子轮动",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "returned_cycle_ax": {
+        "role": "image",
+        "name": "主题篮子轮动",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "passed": true
+    },
+    {
+      "surface": "sector_cycles",
+      "region": "us",
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "zh",
+      "page_errors": [],
+      "missing_assets": [],
+      "blocked_external": [],
+      "source": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+          "asOf": "2026-11-02",
+          "region": "us",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "us_sectors_11",
+            "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "verified",
+            "dna": "verified"
+          },
+          "sources": {
+            "dna": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            },
+            "narr": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            }
+          }
+        },
+        "region": null,
+        "asOf": "2026-11-02",
+        "sectors": 11,
+        "baskets": 49
+      },
+      "cycle_ax": {
+        "role": "image",
+        "name": "板块轮动叠加",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "price_ax": {
+        "role": "image",
+        "name": "板块轮动叠加",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "geometry": {
+        "cycle": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+        "price": "dcabd1e133622680a8f924586a57405d1a0c768eeb14040dc3edfb3ae4b50872"
+      },
+      "screenshot": {
+        "file": "sector_cycles-390-light-zh-price.png",
+        "sha256": "62f0ca9629d6f66a96324dc2cfb9a34f52738acfabe5e67e524918cf18ed2170"
+      },
+      "basket_ax": {
+        "role": "image",
+        "name": "主题篮子轮动",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "returned_cycle_ax": {
+        "role": "image",
+        "name": "主题篮子轮动",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "passed": true
+    },
+    {
+      "surface": "sector_central",
+      "region": "us",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "page_errors": [],
+      "missing_assets": [
+        "/live/shock_state.json",
+        "/policy_lever.json",
+        "/live/basket_pulse.json",
+        "/marketdata/index_leadership.json",
+        "/live/quotes.json",
+        "/live/overlay.json",
+        "/basketdata/narrative_emergence.json",
+        "/basketdata/etf_pulse.json",
+        "/basketdata/vol_sentiment.json",
+        "/basketdata/theme_extension.json",
+        "/basketdata/pulse.json"
+      ],
+      "blocked_external": [],
+      "source": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+          "asOf": "2026-11-02",
+          "region": "us",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "us_sectors_11",
+            "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            },
+            "narr": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            }
+          }
+        },
+        "region": null,
+        "asOf": "2026-11-02",
+        "sectors": 11,
+        "baskets": 49
+      },
+      "cycle_ax": {
+        "role": "image",
+        "name": "Cycles",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "price_ax": {
+        "role": "image",
+        "name": "Cycles",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "geometry": {
+        "cycle": "d6492cf0941de7bdd1b007d448671338127c84a8bfd06462fc34bd91d0bec971",
+        "price": "af265538f3d44efd3a3b366f568cd5fad1d33afdab00a0668c3d6426e5fd7c0a"
+      },
+      "screenshot": {
+        "file": "sector_central-1440-dark-en-price.png",
+        "sha256": "ffce80cfcde66c272b6272c68dee305e08b5c9c4a4cc588dbe13774708059f46"
+      },
+      "basket_ax": {
+        "role": "image",
+        "name": "Cycles",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "returned_cycle_ax": {
+        "role": "image",
+        "name": "Cycles",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "passed": true
+    },
+    {
+      "surface": "sector_central",
+      "region": "us",
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "en",
+      "page_errors": [],
+      "missing_assets": [
+        "/live/shock_state.json",
+        "/policy_lever.json",
+        "/live/basket_pulse.json",
+        "/marketdata/index_leadership.json",
+        "/live/quotes.json",
+        "/live/overlay.json",
+        "/basketdata/narrative_emergence.json",
+        "/basketdata/etf_pulse.json",
+        "/basketdata/vol_sentiment.json",
+        "/basketdata/theme_extension.json",
+        "/basketdata/pulse.json"
+      ],
+      "blocked_external": [],
+      "source": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+          "asOf": "2026-11-02",
+          "region": "us",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "us_sectors_11",
+            "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            },
+            "narr": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            }
+          }
+        },
+        "region": null,
+        "asOf": "2026-11-02",
+        "sectors": 11,
+        "baskets": 49
+      },
+      "cycle_ax": {
+        "role": "image",
+        "name": "Cycles",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "price_ax": {
+        "role": "image",
+        "name": "Cycles",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "geometry": {
+        "cycle": "c64bcd1bca33d7e3d3ea850be751e12aa7109c3bd19921fd9f4f17ed28b33d20",
+        "price": "cfa9e43b6a07afe15fb3bb2fa8ef5092cac5a5bb40017d180906dd0fdfbe7b4d"
+      },
+      "screenshot": {
+        "file": "sector_central-390-light-en-price.png",
+        "sha256": "0b0afc4bc9b9ded28fe4dc51bb4e281da824a4a5084e8acdb761119828295967"
+      },
+      "basket_ax": {
+        "role": "image",
+        "name": "Cycles",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "returned_cycle_ax": {
+        "role": "image",
+        "name": "Cycles",
+        "description": "Price shows rebased price series; Cycle position shows a 0–100 oscillator. Scorecards below are summaries, not a table of plotted points."
+      },
+      "passed": true
+    },
+    {
+      "surface": "sector_central",
+      "region": "us",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "zh",
+      "page_errors": [],
+      "missing_assets": [
+        "/live/shock_state.json",
+        "/policy_lever.json",
+        "/live/basket_pulse.json",
+        "/marketdata/index_leadership.json",
+        "/live/quotes.json",
+        "/live/overlay.json",
+        "/basketdata/narrative_emergence.json",
+        "/basketdata/etf_pulse.json",
+        "/basketdata/vol_sentiment.json",
+        "/basketdata/theme_extension.json",
+        "/basketdata/pulse.json"
+      ],
+      "blocked_external": [],
+      "source": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+          "asOf": "2026-11-02",
+          "region": "us",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "us_sectors_11",
+            "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            },
+            "narr": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            }
+          }
+        },
+        "region": null,
+        "asOf": "2026-11-02",
+        "sectors": 11,
+        "baskets": 49
+      },
+      "cycle_ax": {
+        "role": "image",
+        "name": "周期",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "price_ax": {
+        "role": "image",
+        "name": "周期",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "geometry": {
+        "cycle": "d6492cf0941de7bdd1b007d448671338127c84a8bfd06462fc34bd91d0bec971",
+        "price": "af265538f3d44efd3a3b366f568cd5fad1d33afdab00a0668c3d6426e5fd7c0a"
+      },
+      "screenshot": {
+        "file": "sector_central-1440-dark-zh-price.png",
+        "sha256": "199cec724390a9aa5b05625fd0d37beaca3f81c4af09d9568f99fb7efba10ac8"
+      },
+      "basket_ax": {
+        "role": "image",
+        "name": "周期",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "returned_cycle_ax": {
+        "role": "image",
+        "name": "周期",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "passed": true
+    },
+    {
+      "surface": "sector_central",
+      "region": "us",
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "zh",
+      "page_errors": [],
+      "missing_assets": [
+        "/live/shock_state.json",
+        "/policy_lever.json",
+        "/live/basket_pulse.json",
+        "/marketdata/index_leadership.json",
+        "/live/quotes.json",
+        "/live/overlay.json",
+        "/basketdata/narrative_emergence.json",
+        "/basketdata/etf_pulse.json",
+        "/basketdata/vol_sentiment.json",
+        "/basketdata/theme_extension.json",
+        "/basketdata/pulse.json"
+      ],
+      "blocked_external": [],
+      "source": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+          "asOf": "2026-11-02",
+          "region": "us",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "us_sectors_11",
+            "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            },
+            "narr": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            }
+          }
+        },
+        "region": null,
+        "asOf": "2026-11-02",
+        "sectors": 11,
+        "baskets": 49
+      },
+      "cycle_ax": {
+        "role": "image",
+        "name": "周期",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "price_ax": {
+        "role": "image",
+        "name": "周期",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "geometry": {
+        "cycle": "c64bcd1bca33d7e3d3ea850be751e12aa7109c3bd19921fd9f4f17ed28b33d20",
+        "price": "cfa9e43b6a07afe15fb3bb2fa8ef5092cac5a5bb40017d180906dd0fdfbe7b4d"
+      },
+      "screenshot": {
+        "file": "sector_central-390-light-zh-price.png",
+        "sha256": "547249398bbba98e5095db343113a87e1a7c627287797ce7031e45ae6b676051"
+      },
+      "basket_ax": {
+        "role": "image",
+        "name": "周期",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "returned_cycle_ax": {
+        "role": "image",
+        "name": "周期",
+        "description": "“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。下方记分卡是文字摘要，而非图表逐点数据表。"
+      },
+      "passed": true
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,525 @@
+{
+  "schema": "d05.changed_template_citations.v1",
+  "parent": "f0f7aa176e600c5d21a656ae483ce3693b8c9151",
+  "validator_blob": "df39073f927e40c3e5649676b7a4f178d2b97b60",
+  "method": "existing repository row_gaps helper over every copy-deck citation referencing a changed template; other source citations were not rerun",
+  "rows": [
+    {
+      "board": "brief",
+      "key": "title",
+      "source": "templates/sector_central.html.j2:1502",
+      "gaps": []
+    },
+    {
+      "board": "brief",
+      "key": "tagline",
+      "source": "templates/sector_central.html.j2:1512",
+      "gaps": []
+    },
+    {
+      "board": "brief",
+      "key": "method_body",
+      "source": "templates/sector_central.html.j2:1543",
+      "gaps": []
+    },
+    {
+      "board": "brief",
+      "key": "distinction_body",
+      "source": "templates/sector_central.html.j2:1560",
+      "gaps": []
+    },
+    {
+      "board": "brief",
+      "key": "leaders_link",
+      "source": "templates/sector_central.html.j2:1548",
+      "gaps": []
+    },
+    {
+      "board": "brief",
+      "key": "not_measured_chip",
+      "source": "templates/sector_central.html.j2:1557",
+      "gaps": []
+    },
+    {
+      "board": "brief",
+      "key": "asof",
+      "source": "templates/sector_central.html.j2:1533",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "title",
+      "source": "templates/sector_central.html.j2:2212",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "tagline",
+      "source": "templates/sector_central.html.j2:2213",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "stands_h2",
+      "source": "templates/sector_central.html.j2:2169",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "quadrant_body",
+      "source": "templates/sector_central.html.j2:2169",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "measured_body",
+      "source": "templates/sector_central.html.j2:2216",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "order_footnote",
+      "source": "templates/sector_central.html.j2:2213",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "quad_lead",
+      "source": "templates/sector_central.html.j2:2188",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "quad_weak",
+      "source": "templates/sector_central.html.j2:2189",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "quad_improve",
+      "source": "templates/sector_central.html.j2:2178",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "quad_lag",
+      "source": "templates/sector_central.html.j2:2179",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "buyable_chip",
+      "source": "templates/sector_central.html.j2:2198",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "changed_label",
+      "source": "templates/sector_central.html.j2:1549",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "rotation_link",
+      "source": "templates/sector_central.html.j2:2476",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "breadth_label",
+      "source": "templates/sector_central.html.j2:2358",
+      "gaps": []
+    },
+    {
+      "board": "explore_rotation",
+      "key": "breadth_body",
+      "source": "templates/sector_central.html.j2:2356",
+      "gaps": []
+    },
+    {
+      "board": "explore_lenses",
+      "key": "title",
+      "source": "templates/sector_central.html.j2:2391",
+      "gaps": []
+    },
+    {
+      "board": "explore_lenses",
+      "key": "tagline",
+      "source": "templates/sector_central.html.j2:2391",
+      "gaps": []
+    },
+    {
+      "board": "explore_lenses",
+      "key": "compare_h2",
+      "source": "templates/sector_central.html.j2:1519",
+      "gaps": []
+    },
+    {
+      "board": "explore_lenses",
+      "key": "confluence_h2",
+      "source": "templates/sector_central.html.j2:2457",
+      "gaps": []
+    },
+    {
+      "board": "explore_lenses",
+      "key": "table_h2",
+      "source": "templates/sector_central.html.j2:2398",
+      "gaps": []
+    },
+    {
+      "board": "explore_lenses",
+      "key": "confluence_body",
+      "source": "templates/sector_central.html.j2:2460",
+      "gaps": []
+    },
+    {
+      "board": "explore_lenses",
+      "key": "confluence_footnote",
+      "source": "templates/sector_central.html.j2:2473",
+      "gaps": []
+    },
+    {
+      "board": "explore_lenses",
+      "key": "rebase_footnote",
+      "source": "templates/sector_central.html.j2:2413",
+      "gaps": []
+    },
+    {
+      "board": "explore_lenses",
+      "key": "baskets_chip",
+      "source": "templates/sector_central.html.j2:2467",
+      "gaps": []
+    },
+    {
+      "board": "explore_lenses",
+      "key": "nasdaq_chip",
+      "source": "templates/sector_central.html.j2:2465",
+      "gaps": []
+    },
+    {
+      "board": "explore_lenses",
+      "key": "russell_chip",
+      "source": "templates/sector_central.html.j2:2466",
+      "gaps": []
+    },
+    {
+      "board": "dossier",
+      "key": "tagline",
+      "source": "templates/sector_cycles.html.j2:112",
+      "gaps": []
+    },
+    {
+      "board": "dossier",
+      "key": "evidence_date_label",
+      "source": "templates/sector_central.html.j2:3788",
+      "gaps": []
+    },
+    {
+      "board": "dossier",
+      "key": "measured_order_label",
+      "source": "templates/sector_central.html.j2:3787",
+      "gaps": []
+    },
+    {
+      "board": "dossier",
+      "key": "history_label",
+      "source": "templates/sector_central.html.j2:3795",
+      "gaps": []
+    },
+    {
+      "board": "dossier",
+      "key": "recon_label",
+      "source": "templates/sector_central.html.j2:3797",
+      "gaps": []
+    },
+    {
+      "board": "dossier",
+      "key": "recorded_label",
+      "source": "templates/sector_central.html.j2:3799",
+      "gaps": []
+    },
+    {
+      "board": "dossier",
+      "key": "recon_body",
+      "source": "templates/sector_central.html.j2:3907",
+      "gaps": []
+    },
+    {
+      "board": "dossier",
+      "key": "recorded_body",
+      "source": "templates/sector_central.html.j2:3953",
+      "gaps": []
+    },
+    {
+      "board": "dossier",
+      "key": "prophet_link",
+      "source": "templates/sector_central.html.j2:3793",
+      "gaps": []
+    },
+    {
+      "board": "research",
+      "key": "title",
+      "source": "templates/sector_central.html.j2:1510",
+      "gaps": []
+    },
+    {
+      "board": "research",
+      "key": "estimate_body",
+      "source": "templates/sector_central.html.j2:3994-3995 (EN :3994, ZH :3995; the EN dash is the deck colon per the glyph rule)",
+      "gaps": []
+    },
+    {
+      "board": "watches",
+      "key": "title",
+      "source": "templates/sector_central.html.j2:1511",
+      "gaps": []
+    },
+    {
+      "board": "cycles",
+      "key": "title",
+      "source": "templates/sector_cycles.html.j2:38",
+      "gaps": []
+    },
+    {
+      "board": "cycles",
+      "key": "tagline",
+      "source": "templates/sector_cycles.html.j2:40",
+      "gaps": []
+    },
+    {
+      "board": "cycles",
+      "key": "intro_body",
+      "source": "templates/sector_cycles.html.j2:40",
+      "gaps": []
+    },
+    {
+      "board": "cycles",
+      "key": "r3_controls",
+      "source": "templates/sector_cycles.html.j2:75",
+      "gaps": []
+    },
+    {
+      "board": "cycles",
+      "key": "r8_grader",
+      "source": "templates/sector_central.html.j2:3394 (PRC-004: relabelled); ZH NEW (sic-p-copy-20261021-r1 deck: the PRC-004 relabel — the production h2 at :3394 is 自评分器 — 已衡量准确度; 判断评分器：已衡量命中率 has no production origin)",
+      "gaps": []
+    },
+    {
+      "board": "cycles",
+      "key": "r9_metadata",
+      "source": "templates/sector_central.html.j2:2478",
+      "gaps": []
+    },
+    {
+      "board": "cycles",
+      "key": "mode_price_chip",
+      "source": "templates/sector_cycles.html.j2:70",
+      "gaps": []
+    },
+    {
+      "board": "cycles",
+      "key": "mode_osc_chip",
+      "source": "templates/sector_cycles.html.j2:71",
+      "gaps": []
+    },
+    {
+      "board": "cycles",
+      "key": "scale_log_chip",
+      "source": "templates/sector_cycles.html.j2:78",
+      "gaps": []
+    },
+    {
+      "board": "cycles",
+      "key": "scale_linear_chip",
+      "source": "templates/sector_cycles.html.j2:79",
+      "gaps": []
+    },
+    {
+      "board": "cycles",
+      "key": "short_history_chip",
+      "source": "templates/sector_central.html.j2:3584",
+      "gaps": []
+    },
+    {
+      "board": "components",
+      "key": "asof_label",
+      "source": "templates/sector_cycles.html.j2:45",
+      "gaps": []
+    },
+    {
+      "board": "components",
+      "key": "asof_pattern",
+      "source": "templates/sector_central.html.j2:3952",
+      "gaps": []
+    },
+    {
+      "board": "components",
+      "key": "alt_table_label",
+      "source": "templates/sector_central.html.j2:2398",
+      "gaps": []
+    },
+    {
+      "board": "components",
+      "key": "alt_map_link",
+      "source": "templates/sector_central.html.j2:2476",
+      "gaps": []
+    },
+    {
+      "board": "components",
+      "key": "nav_brief",
+      "source": "templates/sector_central.html.j2:1508",
+      "gaps": []
+    },
+    {
+      "board": "components",
+      "key": "nav_explore",
+      "source": "templates/sector_central.html.j2:1509",
+      "gaps": []
+    },
+    {
+      "board": "components",
+      "key": "nav_research",
+      "source": "templates/sector_central.html.j2:1510",
+      "gaps": []
+    },
+    {
+      "board": "components",
+      "key": "nav_watches",
+      "source": "templates/sector_central.html.j2:1511",
+      "gaps": []
+    },
+    {
+      "board": "components",
+      "key": "workflow_note",
+      "source": "templates/sector_central.html.j2:1512",
+      "gaps": []
+    },
+    {
+      "board": "components",
+      "key": "workflow_aria",
+      "source": "templates/sector_central.html.j2:1507 (EN); ZH NEW (SIC-V2 wave-2 proposal)",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "stale_body",
+      "source": "templates/sector_central.html.j2:1984 (the ZH at that line is written as JS unicode escapes in the template; the deck test decodes them)",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "incompatible_generation_title",
+      "source": "templates/sector_central.html.j2:3614",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "incompatible_generation_body",
+      "source": "templates/sector_central.html.j2:3615-3616 (EN :3615, ZH :3616)",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "partial_title",
+      "source": "templates/sector_central.html.j2:3980",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "partial_body",
+      "source": "templates/sector_central.html.j2:3979",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "corrected_body",
+      "source": "templates/sector_central.html.j2:1987 (the ZH at that line is written as JS unicode escapes in the template; the deck test decodes them)",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "abstained_body",
+      "source": "templates/sector_central.html.j2:3998",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "error_title",
+      "source": "templates/sector_central.html.j2:3825 (mxError L(History unavailable right now, 历史暂不可用))",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "error_body",
+      "source": "templates/sector_central.html.j2:3826",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "empty_title",
+      "source": "templates/sector_central.html.j2:3923",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "empty_body",
+      "source": "templates/sector_central.html.j2:3924",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "no_access_body",
+      "source": "templates/sector_central.html.j2:2004 (the ZH at that line is written as JS unicode escapes in the template; the deck test decodes them)",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "loading_title",
+      "source": "templates/sector_central.html.j2:2470",
+      "gaps": []
+    },
+    {
+      "board": "states",
+      "key": "loading_body",
+      "source": "templates/sector_central.html.j2:3822",
+      "gaps": []
+    },
+    {
+      "board": "authority",
+      "key": "built_asof",
+      "source": "templates/sector_central.html.j2:2478",
+      "gaps": []
+    },
+    {
+      "board": "authority",
+      "key": "generated_asof",
+      "source": "templates/sector_central.html.j2:2486",
+      "gaps": []
+    },
+    {
+      "board": "authority",
+      "key": "grader_h2",
+      "source": "templates/sector_central.html.j2:3394 (PRC-004: relabelled); ZH NEW (sic-p-copy-20261021-r1 deck: the PRC-004 relabel — the production h2 at :3394 is 自评分器 — 已衡量准确度; 判断评分器：已衡量命中率 has no production origin)",
+      "gaps": []
+    },
+    {
+      "board": "authority",
+      "key": "grader_body",
+      "source": "templates/sector_central.html.j2:3395",
+      "gaps": []
+    },
+    {
+      "board": "authority",
+      "key": "accruing_body",
+      "source": "templates/sector_central.html.j2:3384",
+      "gaps": []
+    },
+    {
+      "board": "authority",
+      "key": "lanes_footnote",
+      "source": "templates/sector_central.html.j2:2107",
+      "gaps": []
+    }
+  ],
+  "passed": true
+}

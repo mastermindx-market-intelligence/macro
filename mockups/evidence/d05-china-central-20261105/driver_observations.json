@@ -1,0 +1,3702 @@
+[
+  {
+    "cell_id": "sector_central_china.html#801010|desktop|en|dark|anonymous",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      1440,
+      900
+    ],
+    "requested": {
+      "theme": "dark",
+      "locale": "en"
+    },
+    "force_state": null,
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-800.woff2",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json",
+      "supabase.js",
+      "fonts/Inter-700.woff2",
+      "fonts/Inter-400.woff2",
+      "nav_market.js",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "detail_rect": {
+      "top": 0.3125,
+      "bottom": 1038.28125,
+      "viewport": 836
+    },
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "dark",
+      "locale": "en",
+      "sheetClass": "cyc-detail",
+      "sheetBackground": "rgba(0, 0, 0, 0)",
+      "railBackground": "rgba(0, 0, 0, 0)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "dark",
+      "locale": "en",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    "screenshot_sha256": "346043e0c8c568bde9236e2c1c32a0b1a45c6b2bb2118518cbbcc0831fcc0855",
+    "loaded": true,
+    "applied_force_state": null,
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 95,
+      "bytes": 1580129
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|desktop|en|dark|anonymous|rail_hover",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      1440,
+      900
+    ],
+    "requested": {
+      "theme": "dark",
+      "locale": "en"
+    },
+    "force_state": {
+      "name": "rail_hover",
+      "kind": "hover",
+      "value": ".si-view-btn[data-view=\"overview\"]",
+      "attribute": null,
+      "spec": "rail_hover:hover(.si-view-btn[data-view=\"overview\"])"
+    },
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-800.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "fonts/Inter-700.woff2",
+      "nav_market.js",
+      "fonts/Inter-400.woff2",
+      "marketdata/rotation_events_china.json",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "detail_rect": {
+      "top": 0.3125,
+      "bottom": 1038.28125,
+      "viewport": 836
+    },
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "dark",
+      "locale": "en",
+      "sheetClass": "cyc-detail",
+      "sheetBackground": "rgba(0, 0, 0, 0)",
+      "railBackground": "rgba(0, 0, 0, 0)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "dark",
+      "locale": "en",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    "screenshot_sha256": "2fbd46f2da4e6359ed1e14a40a084ffc79ea4569ca38b6ae36a06a3cdd10810f",
+    "loaded": true,
+    "applied_force_state": "rail_hover",
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 93,
+      "bytes": 1649838
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|desktop|en|light|anonymous",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      1440,
+      900
+    ],
+    "requested": {
+      "theme": "light",
+      "locale": "en"
+    },
+    "force_state": null,
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-800.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "fonts/Inter-700.woff2",
+      "nav_market.js",
+      "fonts/Inter-400.woff2",
+      "marketdata/rotation_events_china.json",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "theme_control": "Light theme",
+    "detail_rect": {
+      "top": 0.3125,
+      "bottom": 1038.28125,
+      "viewport": 836
+    },
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "light",
+      "locale": "en",
+      "sheetClass": "cyc-detail",
+      "sheetBackground": "rgba(0, 0, 0, 0)",
+      "railBackground": "rgba(0, 0, 0, 0)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "light",
+      "locale": "en",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    "screenshot_sha256": "bd5e7bb112679e185f7bdb5b09602b6d19159b7bfb482f5d34b1073785d2f0f3",
+    "loaded": true,
+    "applied_force_state": null,
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 95,
+      "bytes": 3401046
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|desktop|en|light|anonymous|rail_hover",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      1440,
+      900
+    ],
+    "requested": {
+      "theme": "light",
+      "locale": "en"
+    },
+    "force_state": {
+      "name": "rail_hover",
+      "kind": "hover",
+      "value": ".si-view-btn[data-view=\"overview\"]",
+      "attribute": null,
+      "spec": "rail_hover:hover(.si-view-btn[data-view=\"overview\"])"
+    },
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-800.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "fonts/Inter-700.woff2",
+      "nav_market.js",
+      "fonts/Inter-400.woff2",
+      "marketdata/rotation_events_china.json",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "theme_control": "Light theme",
+    "detail_rect": {
+      "top": 0.3125,
+      "bottom": 1038.28125,
+      "viewport": 836
+    },
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "light",
+      "locale": "en",
+      "sheetClass": "cyc-detail",
+      "sheetBackground": "rgba(0, 0, 0, 0)",
+      "railBackground": "rgba(0, 0, 0, 0)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "light",
+      "locale": "en",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    "screenshot_sha256": "61eff2c4aa6ae32cdb04eb33d926eb9a533bdef95b31f2fc09063b08962c7f20",
+    "loaded": true,
+    "applied_force_state": "rail_hover",
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 95,
+      "bytes": 3384514
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|desktop|zh|dark|anonymous",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      1440,
+      900
+    ],
+    "requested": {
+      "theme": "dark",
+      "locale": "zh"
+    },
+    "force_state": null,
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-500.woff2",
+      "fonts/Inter-800.woff2",
+      "fonts/Inter-700.woff2",
+      "fonts/Inter-400.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "nav_market.js",
+      "marketdata/rotation_events_china.json",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "chinastatedata/participation.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "detail_rect": {
+      "top": 0.3125,
+      "bottom": 1004.640625,
+      "viewport": 836
+    },
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "dark",
+      "locale": "zh",
+      "sheetClass": "cyc-detail",
+      "sheetBackground": "rgba(0, 0, 0, 0)",
+      "railBackground": "rgba(0, 0, 0, 0)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "dark",
+      "locale": "zh",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    "screenshot_sha256": "d28ed7ef691a52b56be2f19927fe417bd27ef50fd9094854263a8be5eff1196a",
+    "loaded": true,
+    "applied_force_state": null,
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 94,
+      "bytes": 1586947
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|desktop|zh|dark|anonymous|rail_hover",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      1440,
+      900
+    ],
+    "requested": {
+      "theme": "dark",
+      "locale": "zh"
+    },
+    "force_state": {
+      "name": "rail_hover",
+      "kind": "hover",
+      "value": ".si-view-btn[data-view=\"overview\"]",
+      "attribute": null,
+      "spec": "rail_hover:hover(.si-view-btn[data-view=\"overview\"])"
+    },
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-500.woff2",
+      "fonts/Inter-800.woff2",
+      "fonts/Inter-700.woff2",
+      "fonts/Inter-400.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "nav_market.js",
+      "marketdata/rotation_events_china.json",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "detail_rect": {
+      "top": 0.3125,
+      "bottom": 1004.640625,
+      "viewport": 836
+    },
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "dark",
+      "locale": "zh",
+      "sheetClass": "cyc-detail",
+      "sheetBackground": "rgba(0, 0, 0, 0)",
+      "railBackground": "rgba(0, 0, 0, 0)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "dark",
+      "locale": "zh",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    "screenshot_sha256": "f00232a806262c80ca9b134a1151de430c548db72a66a8d30b2e8407ba5ac5b8",
+    "loaded": true,
+    "applied_force_state": "rail_hover",
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 94,
+      "bytes": 2001816
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|desktop|zh|light|anonymous",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      1440,
+      900
+    ],
+    "requested": {
+      "theme": "light",
+      "locale": "zh"
+    },
+    "force_state": null,
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "product-nav-icons.css",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-500.woff2",
+      "fonts/Inter-800.woff2",
+      "account.js",
+      "fonts/Inter-700.woff2",
+      "fonts/Inter-400.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "nav_market.js",
+      "marketdata/rotation_events_china.json",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "marketdata/rotation_events_china.json",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "theme_control": "浅色主题",
+    "detail_rect": {
+      "top": 0.3125,
+      "bottom": 1004.640625,
+      "viewport": 836
+    },
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "light",
+      "locale": "zh",
+      "sheetClass": "cyc-detail",
+      "sheetBackground": "rgba(0, 0, 0, 0)",
+      "railBackground": "rgba(0, 0, 0, 0)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "light",
+      "locale": "zh",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    "screenshot_sha256": "e72cc8a3309e0c125ffb3335f2c71d671fe46b9e9a1543dca9ad2873d90fe4bc",
+    "loaded": true,
+    "applied_force_state": null,
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 96,
+      "bytes": 1679268
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|desktop|zh|light|anonymous|rail_hover",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      1440,
+      900
+    ],
+    "requested": {
+      "theme": "light",
+      "locale": "zh"
+    },
+    "force_state": {
+      "name": "rail_hover",
+      "kind": "hover",
+      "value": ".si-view-btn[data-view=\"overview\"]",
+      "attribute": null,
+      "spec": "rail_hover:hover(.si-view-btn[data-view=\"overview\"])"
+    },
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-500.woff2",
+      "fonts/Inter-800.woff2",
+      "fonts/Inter-700.woff2",
+      "fonts/Inter-400.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "nav_market.js",
+      "marketdata/rotation_events_china.json",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "theme_control": "浅色主题",
+    "detail_rect": {
+      "top": 0.3125,
+      "bottom": 1004.640625,
+      "viewport": 836
+    },
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "light",
+      "locale": "zh",
+      "sheetClass": "cyc-detail",
+      "sheetBackground": "rgba(0, 0, 0, 0)",
+      "railBackground": "rgba(0, 0, 0, 0)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "light",
+      "locale": "zh",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    "screenshot_sha256": "8a17a43cd62a3aa12df6aa997d7f8806e43ddd4873f971060e444967bb2bf75b",
+    "loaded": true,
+    "applied_force_state": "rail_hover",
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 96,
+      "bytes": 2154914
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|mobile|en|dark|anonymous",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      390,
+      844
+    ],
+    "requested": {
+      "theme": "dark",
+      "locale": "en"
+    },
+    "force_state": null,
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-800.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "nav_market.js",
+      "fonts/Inter-400.woff2",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "dark",
+      "locale": "en",
+      "sheetClass": "cyc-detail sc-sheet-half",
+      "sheetBackground": "rgb(21, 24, 32)",
+      "railBackground": "rgb(21, 24, 32)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "dark",
+      "locale": "en",
+      "width": 390,
+      "documentWidth": 390
+    },
+    "screenshot_sha256": "b9df0815b9dce0b2940808d28dc8380a1b1d8b8ec8f7fc677ad79d0ddc8c653c",
+    "loaded": true,
+    "applied_force_state": null,
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 92,
+      "bytes": 2650115
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|mobile|en|dark|anonymous|rail_hover",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      390,
+      844
+    ],
+    "requested": {
+      "theme": "dark",
+      "locale": "en"
+    },
+    "force_state": {
+      "name": "rail_hover",
+      "kind": "hover",
+      "value": ".si-view-btn[data-view=\"overview\"]",
+      "attribute": null,
+      "spec": "rail_hover:hover(.si-view-btn[data-view=\"overview\"])"
+    },
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-800.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "nav_market.js",
+      "fonts/Inter-400.woff2",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "dark",
+      "locale": "en",
+      "sheetClass": "cyc-detail sc-sheet-half",
+      "sheetBackground": "rgb(21, 24, 32)",
+      "railBackground": "rgb(21, 24, 32)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "dark",
+      "locale": "en",
+      "width": 390,
+      "documentWidth": 390
+    },
+    "screenshot_sha256": "974fb1d0fcd0957d3723b969a7005a67da70bdd615974a684223bd14b8dcd056",
+    "loaded": true,
+    "applied_force_state": "rail_hover",
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 92,
+      "bytes": 2729455
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|mobile|en|light|anonymous",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      390,
+      844
+    ],
+    "requested": {
+      "theme": "light",
+      "locale": "en"
+    },
+    "force_state": null,
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-800.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "nav_market.js",
+      "fonts/Inter-400.woff2",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "theme_control": "Light theme",
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "light",
+      "locale": "en",
+      "sheetClass": "cyc-detail sc-sheet-half",
+      "sheetBackground": "rgb(255, 255, 255)",
+      "railBackground": "rgb(255, 255, 255)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "light",
+      "locale": "en",
+      "width": 390,
+      "documentWidth": 390
+    },
+    "screenshot_sha256": "a3e4658c1f801be3eb283a794a692edf5eaae41ac578aa423d37a75c95f7fc20",
+    "loaded": true,
+    "applied_force_state": null,
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 94,
+      "bytes": 3006653
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|mobile|en|light|anonymous|rail_hover",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      390,
+      844
+    ],
+    "requested": {
+      "theme": "light",
+      "locale": "en"
+    },
+    "force_state": {
+      "name": "rail_hover",
+      "kind": "hover",
+      "value": ".si-view-btn[data-view=\"overview\"]",
+      "attribute": null,
+      "spec": "rail_hover:hover(.si-view-btn[data-view=\"overview\"])"
+    },
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-800.woff2",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json",
+      "supabase.js",
+      "fonts/Inter-400.woff2",
+      "nav_market.js",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "theme_control": "Light theme",
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "light",
+      "locale": "en",
+      "sheetClass": "cyc-detail sc-sheet-half",
+      "sheetBackground": "rgb(255, 255, 255)",
+      "railBackground": "rgb(255, 255, 255)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "light",
+      "locale": "en",
+      "width": 390,
+      "documentWidth": 390
+    },
+    "screenshot_sha256": "60d3a994340c98bbb959c900975814b971304b2cd4eb85ca6a8fbbf8d259c17a",
+    "loaded": true,
+    "applied_force_state": "rail_hover",
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 96,
+      "bytes": 1570774
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|mobile|zh|dark|anonymous",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      390,
+      844
+    ],
+    "requested": {
+      "theme": "dark",
+      "locale": "zh"
+    },
+    "force_state": null,
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-800.woff2",
+      "fonts/Inter-700.woff2",
+      "fonts/Inter-400.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "marketdata/rotation_events_china.json",
+      "nav_market.js",
+      "terminal_overlay.js",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "chinastatedata/participation.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "dark",
+      "locale": "zh",
+      "sheetClass": "cyc-detail sc-sheet-half",
+      "sheetBackground": "rgb(21, 24, 32)",
+      "railBackground": "rgb(21, 24, 32)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "dark",
+      "locale": "zh",
+      "width": 390,
+      "documentWidth": 390
+    },
+    "screenshot_sha256": "c440646bbec8cb31486d38e387135e6cef640311528c0f7da5bc356a37f2098f",
+    "loaded": true,
+    "applied_force_state": null,
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 93,
+      "bytes": 1808542
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|mobile|zh|dark|anonymous|rail_hover",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      390,
+      844
+    ],
+    "requested": {
+      "theme": "dark",
+      "locale": "zh"
+    },
+    "force_state": {
+      "name": "rail_hover",
+      "kind": "hover",
+      "value": ".si-view-btn[data-view=\"overview\"]",
+      "attribute": null,
+      "spec": "rail_hover:hover(.si-view-btn[data-view=\"overview\"])"
+    },
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-800.woff2",
+      "fonts/Inter-700.woff2",
+      "fonts/Inter-400.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "marketdata/rotation_events_china.json",
+      "nav_market.js",
+      "terminal_overlay.js",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "sector_cycles_china_narr_data.js",
+      "marketdata/rotation_events_china.json",
+      "sector_cycles_china_dna_data.js"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "chinastatedata/participation.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "dark",
+      "locale": "zh",
+      "sheetClass": "cyc-detail sc-sheet-half",
+      "sheetBackground": "rgb(21, 24, 32)",
+      "railBackground": "rgb(21, 24, 32)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "dark",
+      "locale": "zh",
+      "width": 390,
+      "documentWidth": 390
+    },
+    "screenshot_sha256": "cb2b4dd4b16b2ca852a8157592c0d0bcf1ad31996a369b0dc70e1c24af46d151",
+    "loaded": true,
+    "applied_force_state": "rail_hover",
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 93,
+      "bytes": 350926
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|mobile|zh|light|anonymous",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      390,
+      844
+    ],
+    "requested": {
+      "theme": "light",
+      "locale": "zh"
+    },
+    "force_state": null,
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-800.woff2",
+      "fonts/Inter-700.woff2",
+      "fonts/Inter-400.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "nav_market.js",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "theme_control": "浅色主题",
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "light",
+      "locale": "zh",
+      "sheetClass": "cyc-detail sc-sheet-half",
+      "sheetBackground": "rgb(255, 255, 255)",
+      "railBackground": "rgb(255, 255, 255)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "light",
+      "locale": "zh",
+      "width": 390,
+      "documentWidth": 390
+    },
+    "screenshot_sha256": "ed5d4b4c0f429f9c8f745bb9a75a2293789029aebd53eac24d13090ab843509d",
+    "loaded": true,
+    "applied_force_state": null,
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 95,
+      "bytes": 3719141
+    }
+  },
+  {
+    "cell_id": "sector_central_china.html#801010|mobile|zh|light|anonymous|rail_hover",
+    "url": "http://localhost:3100/sector_central_china.html#801010",
+    "viewport": [
+      390,
+      844
+    ],
+    "requested": {
+      "theme": "light",
+      "locale": "zh"
+    },
+    "force_state": {
+      "name": "rail_hover",
+      "kind": "hover",
+      "value": ".si-view-btn[data-view=\"overview\"]",
+      "attribute": null,
+      "spec": "rail_hover:hover(.si-view-btn[data-view=\"overview\"])"
+    },
+    "intercepted": [
+      "sector_central_china.html",
+      "shared_shell.css",
+      "shared_shell_bridge.js",
+      "theme.css",
+      "dashboard-icons.css",
+      "cycle.css",
+      "sector_cycles.css",
+      "sector_central_china_data.js",
+      "macro-desk.css",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "forming_narratives.js",
+      "lightweight-charts.js",
+      "baskets_desk.js",
+      "theme.js",
+      "si_workspace_china.js",
+      "dashboard-icons.js",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "sector_cycles_china_series_data.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "subsector_rotation.js",
+      "subsectors_china.js",
+      "product-nav-icons.css",
+      "marketdata/rotation_events_china.json",
+      "chinabasketdata/baskets.json",
+      "account.js",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-800.woff2",
+      "fonts/Inter-700.woff2",
+      "fonts/Inter-400.woff2",
+      "sector_cycles_china_data.js",
+      "mm_charts.js",
+      "sector_cycles.js",
+      "supabase.js",
+      "nav_market.js",
+      "marketdata/rotation_events_china.json",
+      "sector_cycles_china_series_data.js",
+      "marketdata/rotation_events_china.json",
+      "terminal_overlay.js",
+      "sector_cycles_china_narr_data.js",
+      "sector_cycles_china_dna_data.js",
+      "marketdata/rotation_events_china.json",
+      "marketdata/rotation_events_china.json"
+    ],
+    "continued_child_requests": [
+      "chinastatedata/participation.json",
+      "chinabasketdata/narrative_emergence.json",
+      "chinasectordata/desk.json",
+      "basketdata/pulse.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json",
+      "chinastatedata/participation.json"
+    ],
+    "page_errors": [],
+    "auth_scope": "fixture-only synthetic identity; no live authenticated request",
+    "theme_control": "浅色主题",
+    "child": {
+      "meta": {
+        "region": "china",
+        "asOf": "2026-11-03",
+        "benchmark": "SHCOMP"
+      },
+      "publication": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "asOf": "2026-11-03",
+        "region": "china",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "china:sectors",
+          "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "source_unavailable",
+          "dna": "source_unavailable"
+        },
+        "sources": {
+          "dna": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          },
+          "narr": {
+            "reason": "archive_annotation_unavailable",
+            "records": 0,
+            "status": "missing"
+          }
+        }
+      },
+      "capture": {
+        "schema": "sector_cycles.view.v1",
+        "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+        "region": "china",
+        "family": "sectors",
+        "focus": "801010",
+        "mode": "osc",
+        "scale": "log",
+        "range": [
+          2019.838,
+          2027.338
+        ],
+        "phases": [
+          "Peak",
+          "Expansion",
+          "Downturn",
+          "Recovery",
+          "Trough"
+        ],
+        "selectedIds": [],
+        "mobileSelection": {
+          "mode": "leaders",
+          "ids": []
+        },
+        "leg": null
+      },
+      "sectorCount": 31,
+      "basketCount": 22,
+      "mapVisible": true,
+      "theme": "light",
+      "locale": "zh",
+      "sheetClass": "cyc-detail sc-sheet-half",
+      "sheetBackground": "rgb(255, 255, 255)",
+      "railBackground": "rgb(255, 255, 255)",
+      "closeHidden": false
+    },
+    "host": {
+      "theme": "light",
+      "locale": "zh",
+      "width": 390,
+      "documentWidth": 390
+    },
+    "screenshot_sha256": "da815d9d8652b6f12ebabc39c08b37c3f1ddfdeb21c1120c1201464422b3a93c",
+    "loaded": true,
+    "applied_force_state": "rail_hover",
+    "console_errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinabasketdata/narrative_emergence.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinasectordata/desk.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/basketdata/pulse.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      },
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "source_url": "http://localhost:8765/chinastatedata/participation.json"
+      }
+    ],
+    "failed_responses": [
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinasectordata/desk.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/basketdata/pulse.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      },
+      {
+        "url": "http://localhost:8765/chinastatedata/participation.json",
+        "status": 404
+      }
+    ],
+    "counts": {
+      "requests": 95,
+      "bytes": 1258970
+    }
+  }
+]

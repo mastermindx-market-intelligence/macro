@@ -1,0 +1,61 @@
+{
+  "parent": "f0f7aa176e600c5d21a656ae483ce3693b8c9151",
+  "files": [
+    {
+      "path": "templates/sector_cycles.html.j2",
+      "parent_blob": "e37c035f2f6fd8f7711b45f5221277723c428739",
+      "git_blob": "340f8a3ef1a69a70440889f2d471daf08e5adf7f",
+      "sha256": "e3f21baf76be5cc46e110a2bf7296b0cc94f3d89533403d77be73271079bc8a7",
+      "bytes": 10953
+    },
+    {
+      "path": "templates/sector_cycles_china.html.j2",
+      "parent_blob": "4caeadc4dee2d2f6bc89ed28a1821470ec340c5e",
+      "git_blob": "9e09c377a4b96a616d619be60e855173ecd56c18",
+      "sha256": "fcd3c8017624527ab88c84d319bf3d8e6c982335f1bb15ad1316cec88169a6a1",
+      "bytes": 14778
+    },
+    {
+      "path": "templates/sector_central.html.j2",
+      "parent_blob": "7fc01311669d6083a2c04abc75b4eb1b0d8eb6ed",
+      "git_blob": "ef96b8d3965dc6affcc7782625dbb9e85e7abb0d",
+      "sha256": "b871d8e36a2a4496d75a88979b04c12a41e0d3036027670943e864d680b51574",
+      "bytes": 319932
+    },
+    {
+      "path": "templates/sector_central_china.html.j2",
+      "parent_blob": "8e2beca43290ba17771101b955562a86b91b178c",
+      "git_blob": "7383b6735287787128acf73d0a0c0f9dc637f630",
+      "sha256": "67b0d11a3f5c9c21dd5ed1a1909fd1d3fcad792348b4177db171189f8c3f1a3c",
+      "bytes": 160193
+    },
+    {
+      "path": "site/sector_cycles.html",
+      "parent_blob": "971e26ac75e59375046f96a9c3d910c3f8be779d",
+      "git_blob": "722868fb0f0b96a8ac7a1b62925d95b3558a28f5",
+      "sha256": "c3e489af8f9f420f1e07e81d67535dcda06835cab59771e0adb35a58e1c317c2",
+      "bytes": 67340
+    },
+    {
+      "path": "site/sector_cycles_china.html",
+      "parent_blob": "a4266ebc1c33bfcc586534fb676b8c4516286a6e",
+      "git_blob": "1e06a9536532d4c01901acfa6910f254263a80cb",
+      "sha256": "d758e1303b015a5ed424afe8d2d9681f0271589e922204637af2985a7b1c6f21",
+      "bytes": 71084
+    },
+    {
+      "path": "site/sector_central.html",
+      "parent_blob": "18b7700371bd2294302fd93701a86afc2f1df399",
+      "git_blob": "3d9cd8277a3989f921633f759aaba76ff6653a32",
+      "sha256": "a9d346428785ea6d5af04422972eff8c9f48c47ade643ec4e3802bb3614a61ea",
+      "bytes": 404617
+    },
+    {
+      "path": "site/sector_central_china.html",
+      "parent_blob": "2f26b1ed9a4e3a1625f05e39129fbd372966f975",
+      "git_blob": "b111d496bfb1660981963c1cf9d54632dee49606",
+      "sha256": "9d369fe8ef72c29519cf5a5b032b955034fa67941af32218422e4e6fa635652d",
+      "bytes": 299314
+    }
+  ]
+}

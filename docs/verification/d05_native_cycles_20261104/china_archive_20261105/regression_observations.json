@@ -1,0 +1,121 @@
+{
+  "parent": "5344e0e19b4032c831e8cff0cd6f67d9f473d50a",
+  "observations": [
+    {
+      "version": "browser",
+      "cases": [
+        {
+          "viewport": [
+            1440,
+            1000
+          ],
+          "theme": "dark",
+          "lang": "en",
+          "passed": false,
+          "failure": "AssertionError: China canonical return link missing or ambiguous",
+          "steps": [
+            "actual Next China Central mounts archived native China cycle map",
+            "standalone China deep link selects exact Shenwan 801010 and real chart controls work",
+            "unsupported US-only Members handoff stays unavailable; absent DNA is not synthesized"
+          ]
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "theme": "light",
+          "lang": "zh",
+          "passed": false,
+          "failure": "AssertionError: China canonical return link missing or ambiguous",
+          "steps": [
+            "actual Next China Central mounts archived native China cycle map",
+            "standalone China deep link selects exact Shenwan 801010 and real chart controls work",
+            "unsupported US-only Members handoff stays unavailable; absent DNA is not synthesized"
+          ]
+        }
+      ]
+    },
+    {
+      "version": "browser-v2",
+      "cases": [
+        {
+          "viewport": [
+            1440,
+            1000
+          ],
+          "theme": "dark",
+          "lang": "en",
+          "passed": false,
+          "failure": "TimeoutError: Locator.scroll_into_view_if_needed: Timeout 29991ms exceeded.\nCall log:\n  - attempting scroll into view action\n    2 × waiting for element to be stable\n      - element is not visible\n    - retrying scroll into view action\n    - waiting 20ms\n    2 × waiting for element to be stable\n      - element is not visible\n    - retrying scroll into view action\n      - waiting 100ms\n    57 × waiting for element to be stable\n       - element is not visible\n     - retrying scroll into view action\n       - waiting 500ms\n",
+          "steps": [
+            "actual Next China Central mounts archived native China cycle map",
+            "standalone China deep link selects exact Shenwan 801010 and real chart controls work",
+            "unsupported US-only Members handoff stays unavailable; absent DNA is not synthesized",
+            "actual Open in Sector Central link returns to China map with selected Shenwan identity"
+          ]
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "theme": "light",
+          "lang": "zh",
+          "passed": false,
+          "failure": "TimeoutError: Locator.scroll_into_view_if_needed: Timeout 29994ms exceeded.\nCall log:\n  - attempting scroll into view action\n    2 × waiting for element to be stable\n      - element is not visible\n    - retrying scroll into view action\n    - waiting 20ms\n    2 × waiting for element to be stable\n      - element is not visible\n    - retrying scroll into view action\n      - waiting 100ms\n    57 × waiting for element to be stable\n       - element is not visible\n     - retrying scroll into view action\n       - waiting 500ms\n",
+          "steps": [
+            "actual Next China Central mounts archived native China cycle map",
+            "standalone China deep link selects exact Shenwan 801010 and real chart controls work",
+            "unsupported US-only Members handoff stays unavailable; absent DNA is not synthesized",
+            "actual Open in Sector Central link returns to China map with selected Shenwan identity"
+          ]
+        }
+      ]
+    },
+    {
+      "version": "browser-candidate",
+      "cases": [
+        {
+          "viewport": [
+            1440,
+            1000
+          ],
+          "theme": "dark",
+          "lang": "en",
+          "passed": true,
+          "failure": null,
+          "steps": [
+            "actual Next China Central mounts archived native China cycle map",
+            "standalone China deep link selects exact Shenwan 801010 and real chart controls work",
+            "unsupported US-only Members handoff stays unavailable; absent DNA is not synthesized",
+            "actual Open in Sector Central link returns to China map with selected Shenwan identity"
+          ]
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "theme": "light",
+          "lang": "zh",
+          "passed": true,
+          "failure": null,
+          "steps": [
+            "actual Next China Central mounts archived native China cycle map",
+            "standalone China deep link selects exact Shenwan 801010 and real chart controls work",
+            "unsupported US-only Members handoff stays unavailable; absent DNA is not synthesized",
+            "actual Open in Sector Central link returns to China map with selected Shenwan identity"
+          ]
+        }
+      ]
+    }
+  ],
+  "interpretation": {
+    "browser": "Driver selector expected a relative href; the existing bridge correctly rewrote it to an absolute localhost href. Corrected selector only; not a product failure.",
+    "browser-v2": "Real return link retained selected 801010, but the China router left Map hidden in Overview. Screenshot scroll timed out on that hidden chart.",
+    "browser-candidate": "Routing and truthful missing-read copy passed both cases; screenshot self-review then found transparent fixed sheet/sticky rail on mobile.",
+    "browser-candidate-v3": "Final five-source-file candidate passes all three cases, visible return chart, Back/Forward identity, opaque mobile surfaces, and accessible localized keyboard close."
+  },
+  "remaining_behavior": "China browser history returns preserve selected sector and dated source, but chart mode/scale reset to osc/log; this receipt does not claim complete advanced-state restoration."
+}

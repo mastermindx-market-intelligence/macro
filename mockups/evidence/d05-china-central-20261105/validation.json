@@ -1,0 +1,109 @@
+{
+  "scope": "incremental material UI diff from qualified 82c377 to fb4ee; ceff73 changed only copy citations; full-PR hosted gate separate",
+  "findings": [],
+  "totals": {
+    "pages": 1,
+    "states_attempted": 16,
+    "states_captured": 16
+  },
+  "outcome": "captured",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.4.0"
+  },
+  "all_loaded": true,
+  "page_errors": [],
+  "failed_responses": [
+    [
+      "http://localhost:8765/basketdata/pulse.json",
+      404
+    ],
+    [
+      "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+      404
+    ],
+    [
+      "http://localhost:8765/chinasectordata/desk.json",
+      404
+    ],
+    [
+      "http://localhost:8765/chinastatedata/participation.json",
+      404
+    ]
+  ],
+  "continued_child_requests": [
+    "basketdata/pulse.json",
+    "chinabasketdata/narrative_emergence.json",
+    "chinasectordata/desk.json",
+    "chinastatedata/participation.json"
+  ],
+  "host_overflow": [],
+  "desktop_detail_rects": [
+    {
+      "cell_id": "sector_central_china.html#801010|desktop|en|dark|anonymous",
+      "detail_rect": {
+        "top": 0.3125,
+        "bottom": 1038.28125,
+        "viewport": 836
+      }
+    },
+    {
+      "cell_id": "sector_central_china.html#801010|desktop|en|dark|anonymous|rail_hover",
+      "detail_rect": {
+        "top": 0.3125,
+        "bottom": 1038.28125,
+        "viewport": 836
+      }
+    },
+    {
+      "cell_id": "sector_central_china.html#801010|desktop|en|light|anonymous",
+      "detail_rect": {
+        "top": 0.3125,
+        "bottom": 1038.28125,
+        "viewport": 836
+      }
+    },
+    {
+      "cell_id": "sector_central_china.html#801010|desktop|en|light|anonymous|rail_hover",
+      "detail_rect": {
+        "top": 0.3125,
+        "bottom": 1038.28125,
+        "viewport": 836
+      }
+    },
+    {
+      "cell_id": "sector_central_china.html#801010|desktop|zh|dark|anonymous",
+      "detail_rect": {
+        "top": 0.3125,
+        "bottom": 1004.640625,
+        "viewport": 836
+      }
+    },
+    {
+      "cell_id": "sector_central_china.html#801010|desktop|zh|dark|anonymous|rail_hover",
+      "detail_rect": {
+        "top": 0.3125,
+        "bottom": 1004.640625,
+        "viewport": 836
+      }
+    },
+    {
+      "cell_id": "sector_central_china.html#801010|desktop|zh|light|anonymous",
+      "detail_rect": {
+        "top": 0.3125,
+        "bottom": 1004.640625,
+        "viewport": 836
+      }
+    },
+    {
+      "cell_id": "sector_central_china.html#801010|desktop|zh|light|anonymous|rail_hover",
+      "detail_rect": {
+        "top": 0.3125,
+        "bottom": 1004.640625,
+        "viewport": 836
+      }
+    }
+  ]
+}

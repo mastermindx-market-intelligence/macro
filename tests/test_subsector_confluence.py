@@ -20,8 +20,10 @@ def test_us_subsector_js_honesty_has_no_live_or_shishi():
     assert "实时" not in text
     assert "deep live coverage" not in text
     assert "enough live data" not in text
-    assert "have enough data to time" in text
-    assert "有足够数据可计时" in text
+    assert "have enough data to time" not in text
+    assert "有足够数据可计时" not in text
+    assert "' scored'" in text
+    assert "'已评分'" in text
     assert "High confidence — deep coverage" in text
 
 
@@ -35,7 +37,7 @@ def test_us_subsector_js_hero_denominator_falls_back_to_n_listed_for_baskets():
     root = Path(__file__).resolve().parent.parent
     text = (root / "templates" / "subsectors.js").read_text(encoding="utf-8")
     assert "var covTotal = cov.n_subsectors != null ? cov.n_subsectors : cov.n_listed;" in text
-    assert "cov.n_gateable != null && covTotal != null" in text
+    assert "publishedCount(cov.n_gateable) != null && publishedCount(covTotal) != null" in text
     assert "cov.n_subsectors + '</span>" not in text
     assert text.count("' + covTotal + '</span>") == 2  # EN "of N" and ZH "/N 个"
 

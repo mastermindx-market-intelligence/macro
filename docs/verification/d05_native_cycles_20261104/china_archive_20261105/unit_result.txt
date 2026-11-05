@@ -1,0 +1,6 @@
+Exact candidate source: five files listed in source_manifest.json plus exact parent test fixtures.
+Command: python3 -m pytest -q tests/test_china_si_workspace_shell.py
+Runtime Node path: /Users/chriswong/.local/share/mastermind-runtime/node/bin
+Result: 58 passed in 0.26s
+Process exit: 0
+Fixture-only stage; original tracked worktree was not modified.

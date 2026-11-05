@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/macro-desk.css
+  - templates/sector_central_china.html.j2
+manifest: mockups/evidence/d05-china-central-20261105/manifest.json

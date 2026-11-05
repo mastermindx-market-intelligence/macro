@@ -1,0 +1,61 @@
+{
+  "parent": "e09f7c4667a5dfbf0b209ad826b4692c15c3ca10",
+  "files": [
+    {
+      "path": "templates/sector_cycles.js",
+      "git_blob": "13d359b8d299bc55b725e8710b84343cc1b37d73",
+      "sha256": "4f719b75d47c8b5e407942e847e6adb1d146e21d8c010dd227e74bb83f709a7e",
+      "bytes": 162733,
+      "changes": "existing hint copy/lifecycle",
+      "references_updated": null
+    },
+    {
+      "path": "site/sector_cycles.js",
+      "git_blob": "13d359b8d299bc55b725e8710b84343cc1b37d73",
+      "sha256": "4f719b75d47c8b5e407942e847e6adb1d146e21d8c010dd227e74bb83f709a7e",
+      "bytes": 162733,
+      "changes": "existing hint copy/lifecycle",
+      "references_updated": null
+    },
+    {
+      "path": "site/country_cycles.html",
+      "git_blob": "ee1c891cb962b4a0e8b5e88cbe6b2b726052238e",
+      "sha256": "7f26310544031ed72f13c3453c87c67dd0f64d4453a25ae1ba6c3d87ddd86346",
+      "bytes": 113279,
+      "changes": "renderer asset stamp only",
+      "references_updated": 2
+    },
+    {
+      "path": "site/sector_central.html",
+      "git_blob": "18b7700371bd2294302fd93701a86afc2f1df399",
+      "sha256": "557683682807f17ac8221f27d2702f779fadf59a213e6b39884b2a434e44b9b1",
+      "bytes": 404262,
+      "changes": "renderer asset stamp only",
+      "references_updated": 1
+    },
+    {
+      "path": "site/sector_central_china.html",
+      "git_blob": "2f26b1ed9a4e3a1625f05e39129fbd372966f975",
+      "sha256": "b105c8d1ac590442886934fb85919ee929d5d72ceeaae426831f04112bbb4658",
+      "bytes": 298969,
+      "changes": "renderer asset stamp only",
+      "references_updated": 1
+    },
+    {
+      "path": "site/sector_cycles.html",
+      "git_blob": "971e26ac75e59375046f96a9c3d910c3f8be779d",
+      "sha256": "cda1130192d9597f6de70a1836a3e264827c84c6d397c88544b7c211c3763c6a",
+      "bytes": 66987,
+      "changes": "renderer asset stamp only",
+      "references_updated": 2
+    },
+    {
+      "path": "site/sector_cycles_china.html",
+      "git_blob": "a4266ebc1c33bfcc586534fb676b8c4516286a6e",
+      "sha256": "87ee0d981ce10d175d508ccefd3e49e291cd48eff053c83f29fd612efc3ffa70",
+      "bytes": 70737,
+      "changes": "renderer asset stamp only",
+      "references_updated": 2
+    }
+  ]
+}

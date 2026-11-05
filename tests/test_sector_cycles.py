@@ -1795,13 +1795,16 @@ def test_main_writes_turn_record_into_the_core_file(monkeypatch, tmp_path):
         "load",
         lambda: {"storage": {"site_dir": "site"}},
     )
-    monkeypatch.setattr(sc, "compute", lambda: {"sectors": [{"id": "xlk"}]})
+    monkeypatch.setattr(sc, "compute", lambda: {"meta":{"asOf":"2026-07-02","benchmark":"SPY"},"sectors": [{"id": "xlk"}]})
     assert build_sector_cycles.main() == 0
     path = root / "site" / "sector_cycles_data.js"
     text = path.read_text(encoding="utf-8")
-    body = text.split("=", 1)[1]
-    assert body.endswith(";\n")
-    core = json.loads(body[:-2])
+    # Execute the emitted compatibility global; the publication envelope must
+    # not change its native shape or lose the validated turn record.
+    import subprocess
+    result = subprocess.run(["node", "-e", "global.window={};require(process.argv[1]);process.stdout.write(JSON.stringify(window.SECTOR_CYCLES));", str(path)],
+                            capture_output=True, text=True, check=True)
+    core = json.loads(result.stdout)
     got = core["turn_record"]
     assert got["funds"] == ["xle", "xlk"]
     assert got["turns"] == 28
@@ -2050,3 +2053,29 @@ def test_reader_copy_in_sector_cycles_js_never_says_forecast():
     assert len(literals) > 1000
     assert [s for s in literals if "forecast" in s.lower()] == []
     assert sum("not a backtested prediction" in s for s in literals) == 3
+
+
+@pytest.mark.parametrize('age,expected', [
+    ({'status':'measured','sessions':3}, '3 trading sessions'),
+    ({'status':'lower_bound','sessions':18}, 'At least 18 trading sessions'),
+    ({'status':'not_logged','sessions':None}, 'Not recorded for this family'),
+    ({'status':'source_unavailable','sessions':0}, 'Recorded history unavailable'),
+    ({'status':'measured','sessions':0}, 'Recorded history unavailable'),
+])
+def test_native_cycle_phase_age_keeps_recorded_units_and_bounds(age, expected):
+    import json
+    import subprocess
+    source = 'function L(en,zh){return en;}\n' + _extract_js_fn(_template_text('sector_cycles.js'), 'phaseAgeText')
+    source += '\nconsole.log(phaseAgeText(' + json.dumps(age) + '));'
+    result = subprocess.run(['node','-e',source], capture_output=True, text=True, check=True)
+    assert result.stdout.strip() == expected
+
+
+def test_cycle_rotation_uses_only_the_stamped_aligned_snapshot():
+    js = _template_text('sector_cycles.js')
+    fn = _extract_js_fn(js, 'loadRotation')
+    assert 'DATA.rotation_context' in fn
+    assert 'part.artifact_session === META.asOf' in fn
+    assert 'part.consumer_session === META.asOf' in fn
+    assert 'fetch(' not in fn
+    assert 'unavailable for this cycle date' in fn
