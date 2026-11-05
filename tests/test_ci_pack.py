@@ -5466,9 +5466,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_913),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_928),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_669),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5476,6 +5476,22 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    MedTech Catalyst R1 (2026-11-05, PR #8182): hosted contract-delta
+    run 42000028056 / job 127152614095 measured candidate
+    d27ea43362a91eed9df12f4c4d89759f9051b8d3 against tested base
+    fe0693fe579c8f3025b41127e4e92b514f568692. The existing code-gated
+    unrun-factor-research owner gains one hermetic MedTech R1 pytest step,
+    research/medtech/test_medtech_catalyst_reference_r1.py. No job enters
+    or leaves any probe, and every probe remains ten packs. Paired
+    estimated weights are index 137 jobs / 5,912 -> 5,913, free-content
+    137 jobs / 5,927 -> 5,928, and plan-book 131 jobs / 5,668 -> 5,669.
+    Fund only that single additional planner unit on each breached
+    weight ceiling, without padding. Preserve the job ceilings
+    137 / 138 / 131 (the free-content ceiling remains 138), the ten-pack
+    bound, every existing suite and selector, and all timeout and
+    admission controls. These are deterministic planning estimates,
+    not measured execution durations or a change to global CI capacity.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
