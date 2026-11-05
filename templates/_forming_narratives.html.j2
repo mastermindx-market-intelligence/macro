@@ -9,4 +9,16 @@
    page's basketdata folder (default 'basketdata/' for US). #}
 <section id="forming-narratives"></section>
 <script src="forming_narratives.js"></script>
-<script>renderFormingNarratives({ base: "{{ ne_base | default('basketdata/') }}" });</script>
+<script>
+  // This optional asset may be denied to an anonymous visitor (HTTP 401).
+  // Leave the server's access policy unchanged and do not throw from a missing
+  // global; authenticated pages still execute the same renderer exactly once.
+  // optimize_assets stamps this external module with defer; a synchronous
+  // typeof check happens BEFORE a successful deferred asset has executed.
+  // DOMContentLoaded fires after deferred scripts, even when an asset is 401.
+  document.addEventListener("DOMContentLoaded", function () {
+    if (typeof window.renderFormingNarratives === "function") {
+      window.renderFormingNarratives({ base: "{{ ne_base | default('basketdata/') }}" });
+    }
+  }, { once: true });
+</script>

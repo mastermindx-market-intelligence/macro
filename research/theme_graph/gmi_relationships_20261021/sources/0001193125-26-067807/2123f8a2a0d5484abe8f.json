@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-24T23:47:52Z",
+ "accession": "0001193125-26-067807",
+ "cik": "0001724965",
+ "doc_byte_length": 5678099,
+ "doc_sha256": "65287718fc8ac81de8d0dbeb0c9aa8c7813b5e8d812161d6f12aa8d2e2727329",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "talo-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3309387,
+  "byte_start": 3308436,
+  "normalized": "Chevron Corporation 12",
+  "normalized_sha256": "5bc583fd69f084c9d0451e47007a17c8fe0a3017ff1db066c7f0d6f765a74718",
+  "raw": "Chevron Corporation</span></p></td>\n           <td style=\"padding-top:0.01in;white-space:nowrap;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;text-align:left;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:left;\"><span style=\"font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n           <td style=\"padding-top:0.01in;white-space:pre-wrap;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;text-align:center;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:right;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_6aba4ec9-0d1b-47b5-9699-47a9d2470b83\" contextRef=\"C_f023295b-4924-42ed-8b2e-75913fe2dcec\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">12",
+  "raw_sha256": "2123f8a2a0d5484abe8f18c3608a454de9acc7344c777e3eb78e4e39fffbcb19"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1724965/000119312526067807/talo-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 132587,
+   "byte_start": 131884,
+   "context_ref": "C_f023295b-4924-42ed-8b2e-75913fe2dcec",
+   "raw": "<xbrli:context id=\"C_f023295b-4924-42ed-8b2e-75913fe2dcec\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001724965</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">talo:ChevronCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "a4621d34f2150b2d8af4613f9f95d692eb399cc90aa700f782b87a3ae19ac31a"
+  }
+ ]
+}

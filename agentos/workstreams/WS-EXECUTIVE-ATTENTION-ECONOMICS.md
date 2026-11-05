@@ -22,101 +22,87 @@ waves:
     title: Executive Attention Frontier architecture/source-law freeze
     status: done
     next_action: >
-      Terminal architecture boundary. Mastermind PR #275 is merged and protected at
-      c544e8378b447bb69515666e539d6a4da24e4d27 with F0 through controlling F0G. Macro PR #6690
-      is the sole durable Agent OS projection and must be protected after exact current-base CI
-      review. F0 remains SPEC_ONLY / RECORDS_ONLY and creates no live allocator, queue, Wake route,
-      action authority, target transfer, lifecycle transition or Control Room ranking.
+      Preserve protected F0G through Mastermind PR #275 at
+      c544e8378b447bb69515666e539d6a4da24e4d27 and the durable Agent OS projection
+      through merged Macro PR #6690 at 51091ccaf8e40b2c0a2e6b21acb7c8e77dd6b76e.
+      These are completed source prerequisites, not proof of implementation acceptance,
+      installed execution, a live allocator or action authority.
   - id: A1
     title: Pure deterministic Executive Attention Frontier v1 engine
-    status: done
+    status: in_progress
     depends_on: [F0]
     next_action: >
-      Built as control_plane/executive_attention_frontier.py: pure explicit-demand -> authority x
-      attention-pressure x serviceability x projection transform with exact bundles, a genuine
-      partial-order frontier, fairness sentinels, concurrent-demand truth and explanation receipts.
-      No gather layer, no persistence, no clock, no scheduling, no Wake mutation, no placement, no
-      target transfer, no scalar score. Identity/freshness vocabulary is imported from the protected
-      Steward, never re-declared. 102 tests across the S0 adversarial corpus and the partial-order /
-      fairness / concurrency matrix. Permutation stability and the interrupt-visibility invariant each
-      hold over 1500-snapshot fuzzing with zero violations.
+      Recover and complete the existing unmerged Mastermind PR #888 candidate, observed at
+      ff147c8c1efdccf5608ce8414ff1b7e7c3be1cbd on 2026-11-05. It contains
+      control_plane/executive_attention_frontier.py and the corpus/order suites.
+      The September 20 report's 102 tests and 1500-snapshot fuzz are dated candidate
+      evidence, not current-head protected or production acceptance. Preserve the pure
+      explicit-demand transform and existing Steward vocabulary; do not recommission
+      another engine or infer a running worker from this wave's in_progress state.
   - id: A1R
     title: Independent adversarial semantics review
-    status: done
+    status: in_progress
     depends_on: [A1]
     next_action: >
-      Independent adversarial review broke 5 of 14 attacks with running repros; all are repaired and
-      each repair is verified against the reviewer's own repro. SEVERE: serviceability ignored freshness
-      so a STALE RuntimeBinding was emitted as the exact current action target with actor_can_act=True;
-      fan-in was not authority-partitioned so a CHAIRMAN emergency could render nowhere while its own
-      frontier claimed one interrupt (342/3000 fuzzed snapshots hid an interrupt); the dominance cleanup
-      loop's second clause was dead code, letting a receipt resolve to an omitted demand and letting
-      demand-id spelling decide visibility. Further fixes from the corpus lane: a STALE authority source
-      no longer grounds the class it claims; a CONFLICTED resolved target blocks again; conflict and
-      staleness no longer collapse into one cause; ready-age accounting no longer contradicts its own
-      items.
+      Retain the September 20 report of five defects found in fourteen adversarial
+      attacks and the candidate repairs, including freshness, authority-partitioned
+      fan-in and deterministic dominance. Those receipts do not establish acceptance
+      of the current unmerged #888 head. Complete the current applicable source,
+      required CI and acceptance gates on that carrier; the historical wave title
+      does not impose a separate review ceremony beyond current protected law.
   - id: A2
     title: Real-portfolio report-only shadow adaptor and forensic projection
-    status: done
+    status: in_progress
     depends_on: [A1R]
     next_action: >
-      Built as control_plane/executive_attention_shadow.py and run against live sources. Admission is
-      explicit and source-owned; workstream prose never manufactures demand. Consuming only
-      get_attention().data was found to DELETE a live ceo_decision_pending obligation, so admission now
-      reads the obligation facts and takes the resolver verdict alongside them, marking unjoinable or
-      conflicted obligations BLOCKED rather than dropping them. See
-      DSC:STEWARD-ATTENTION-JOIN-DROPS-REAL-EXECUTIVE-DEMAND. Real measurement: 69 work cards, 0
-      attention obligations, 0 runtime jobs, both backing stores absent from the host — admitted demand
-      is 0 because the source plane is dark, not because load is zero. The projection reports
-      admission_confidence NO_SOURCE/GATES_ONLY/SOURCED so an unanswered source plane can never render as
-      a calm empty desk. See DSC:EXECUTIVE-ATTENTION-ADMISSION-SOURCES-ARE-DARK.
+      Preserve #888's existing executive_attention_shadow.py candidate. The September
+      20 report measured 69 work cards and zero admitted obligations on one host; it
+      is not a current fleet-coverage measurement. Its disappearing-CEO example used
+      Control Room fixture obligations, not a verified production incident. Keep
+      source-confidence disclosure and source-owned admission; verify current owner
+      evidence before any installed or production claim. No new gather, persistence,
+      notification, Wake or lifecycle plane is authorized.
   - id: A3
     title: Control Room Attention Frontier experience
     status: in_progress
     depends_on: [A2]
     next_action: >
-      Python compositor seam is wired and green: an additive attention_frontier key on the EXISTING
-      Control Room through the same optional-module fence autonomy uses, degrading by name when not
-      shipped, with no second cockpit and no second truth store; the remote projector's allowlist drops
-      the key unchanged. 224 Control Room and remote tests pass. REMAINING: the browser section itself
-      (compact grouped surface, pressure-vs-authority-vs-can-act separation, forensic receipt drilldown,
-      responsive proof).
+      Complete the existing #888 draft UI/compositor candidate and its current
+      responsive and real-path acceptance. The observed head already contains
+      app/static/chairman_control HTML, CSS and JavaScript plus the UI regression
+      suite; the old September body saying the browser section is unimplemented
+      is not current source truth. Preserve the accepted D8 CSS repair. Handoff C
+      was removed from #888 and belongs only to #1231; do not copy that seam back.
   - id: A4
     title: Chat-native Meta-CEO and Program-CEO frontier consumer
-    status: done
+    status: in_progress
     depends_on: [A2]
     next_action: >
-      Built as render_chat_snapshot() in control_plane/executive_attention_shadow.py: the SAME read-only
-      frontier as compact chat-native context. Stores nothing, creates no session identity, confers no
-      action or routing authority; acting still passes the existing authority and runtime gates. When
-      admission_confidence is not SOURCED the render says so first, so an empty section cannot be
-      misread as "nothing needs you".
+      Retain render_chat_snapshot() in #888's existing shadow candidate and complete
+      its source and consumer acceptance on that carrier. The September 20 report
+      describes candidate behavior, not a protected or installed chat consumer.
+      Preserve the same read-only frontier, source-confidence disclosure and existing
+      authority/runtime gates; no session identity or action authority is created.
   - id: A5
     title: Point-in-time prospective multi-program calibration and promotion
     status: in_progress
     depends_on: [A3, A4]
     next_action: >
-      Harness built as control_plane/executive_attention_calibration.py: point-in-time evaluation that
-      raises HindsightLeak on any source observed after the decision boundary, computes the F0G section
-      15 metric families and returns a promotion verdict against the hard zero-violation laws. Proven on
-      a labelled episode: zero severe-interrupt misses, zero authority escalations, zero independent-
-      interrupt suppressions, zero semantic suppressions, zero invented waits — and it correctly returned
-      NOT_PROMOTABLE for lack of a scanning reduction rather than promoting itself. Real baseline
-      measured: 69 cards presented, 69 requiring a manual read. BLOCKED: prospective real-data
-      calibration cannot run while admitted demand is 0. The binding constraint is source population,
-      not the allocator.
+      Preserve #888's executive_attention_calibration.py candidate. The historical
+      labelled-episode result rejected promotion for insufficient scanning reduction;
+      it is not prospective production calibration. Current source coverage and
+      readiness must be established through the existing owners before real calibration.
+      Retain the zero-violation, point-in-time and no-hindsight acceptance requirements;
+      do not promote the program from candidate tests or the old zero-demand snapshot.
 next_action: >
-  A1, A1R, A2 and A4 are built and evidenced; A3's compositor seam is green with its browser section
-  outstanding; A5's harness is proven but its real calibration is BLOCKED. The binding constraint is
-  no longer the allocator — it is that the lawful admission sources have zero live coverage
-  (DSC:EXECUTIVE-ATTENTION-ADMISSION-SOURCES-ARE-DARK). Two items need a decision from the standing
-  owner, and neither belongs to a worker: (1) whether to populate the Executive Inbox/Wake and Agent
-  OS state planes on a fleet host so prospective calibration can run at all, and (2) whether any
-  additional structured signal — for example Agent OS `state: blocked` with `unmet_dependencies` —
-  becomes an accepted admission source, which is a versioned architecture change under F0G section
-  4. Until one of those lands, EAF remains correct, honest and empty. Also amend F0G section 17: the
-  Steward integrity defect it names as an A1 gate is already repaired on the protected bytes
-  (DSC:STEWARD-ATTENTION-JOIN-DROPS-REAL-EXECUTIVE-DEMAND).
+  Complete the existing Mastermind #888 implementation carrier after reconciling its
+  actual current custody, source, checks and remaining product proof. Observed on
+  2026-11-05: OPEN / Draft at ff147c8c1efdccf5608ce8414ff1b7e7c3be1cbd; the three
+  EAF modules remain absent from protected Mastermind
+  49c2e1d93e5e080b1671c98087a845e5beb09dd5. A1 through A5 in_progress means
+  unmerged candidate delivery, not an active runtime Job, Attempt or Worker.
+  Preserve the September evidence and the October 4 Handoff C transfer to #1231.
+  This Macro records correction neither completes EAF nor commissions execution.
 decisions:
   - DEC:EXECUTIVE-ATTENTION-FRONTIER-ARCHITECTURE
   - DEC:EXECUTIVE-ATTENTION-CONCURRENT-DEMAND-LAW
@@ -191,17 +177,42 @@ degrades serviceability. No global scalar or hidden total order is allowed.
 
 Both architecture/source prerequisites are protected: F0G through Mastermind PR #275 and the
 corrected pure Executive Steward through PR #228. This clears the **source-law prerequisite** for
-A1; it does not admit execution, bind a receiver, or prove production. Macro PR #6690 must first be
-protected so a fresh session can recover the exact workstream, laws and handoff without this chat.
+A1; it does not admit execution, bind a receiver, or prove production. Macro PR #6690 is already
+merged at `51091ccaf8e40b2c0a2e6b21acb7c8e77dd6b76e`. Its completed durable projection must not
+be recommissioned.
 
 A1 must consume existing owner-native immutable facts through the protected Steward composition. It
 may not gather, persist source state, invent demand from prose, copy Steward identity resolution, or
 create a second action/lifecycle/placement plane.
 
-## Current placement state
+## Current implementation custody and acceptance
 
-No implementation receiver, Job, Attempt or Worker is bound by this record. A1 is ordinary
-`CAPACITY_SELECTABLE` bounded implementation after the durable F0 projection is protected. Preferred
-avenue is `CTO Sol`; routine placement belongs to the current Capacity/runtime owner. This workstream
-must not ask the Chairman to choose a numbered account or broadcast an OPEN_PICKUP merely because
-placement is not yet available.
+[Mastermind #888](https://github.com/mastermindx-market-intelligence/Mastermind/pull/888)
+is the existing EAF implementation carrier, observed OPEN / Draft at
+`ff147c8c1efdccf5608ce8414ff1b7e7c3be1cbd` on 2026-11-05. Its engine, shadow,
+calibration, compositor and browser source exist on that candidate; the three EAF
+modules were absent from protected Mastermind
+`49c2e1d93e5e080b1671c98087a845e5beb09dd5` when checked. Source existence and
+historical tests do not establish protection, installation or product acceptance.
+
+The [October 4 custody receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/888#issuecomment-5977724837)
+names this exact head, preserves EAF and the D8 CSS repair, and transfers Handoff C
+to its sole carrier #1231. No EAF functionality was moved there. Recover current
+writer/effect state before another implementation mutation; an old author or role
+name is not a standing approval gate. This record creates no runtime binding and
+does not assert that a worker is currently running.
+
+## Dated candidate evidence preserved from September 20
+
+[Original Macro #7517 source](https://github.com/mastermindx-market-intelligence/macro/blob/f239ba0aab29bde02e84230436bd394a82dd4f77/agentos/workstreams/WS-EXECUTIVE-ATTENTION-ECONOMICS.md)
+preserves the complete original report. Its reported evidence includes:
+
+- A1: 102 tests and 1500-snapshot fuzz with no reported permutation or interrupt-visibility violation.
+- A1R: five of fourteen adversarial attacks exposed defects; the report describes repairs for freshness, authority partitioning, dominance, conflicted identity and ready-age accounting.
+- A2/A4: a shadow and chat projection candidate; the CEO-decision-loss reproduction used fixtures. A real host composition reportedly returned 69 work cards and no admitted attention demand.
+- A3: 224 Control Room/remote tests at that time. The later current candidate also contains browser implementation; neither statement is current responsive or production proof.
+- A5: a labelled episode with zero reported violations correctly returned NOT_PROMOTABLE because scanning reduction was unproven. Prospective calibration remained incomplete.
+
+These are dated source receipts, not newly executed tests or current coverage
+measurements. Current source law, native PR state and actual acceptance evidence
+govern continuation.

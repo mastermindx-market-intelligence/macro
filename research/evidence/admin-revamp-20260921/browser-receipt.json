@@ -1,0 +1,456 @@
+{
+  "asof": "2026-09-21T09:37:07.846953+00:00",
+  "scope": "local read-only browser; failures injected separately",
+  "checks": [
+    {
+      "name": "13 primary links, all 54 routes retained",
+      "pass": true
+    },
+    {
+      "name": "Research detail starts collapsed",
+      "pass": true
+    },
+    {
+      "name": "Search reaches a collapsed specialist page",
+      "pass": true
+    },
+    {
+      "name": "Native keyboard navigation updates URL",
+      "pass": true
+    },
+    {
+      "name": "Reload retains selected page",
+      "pass": true
+    },
+    {
+      "name": "Browser Back returns to overview",
+      "pass": true
+    },
+    {
+      "name": "Malformed route is recoverable",
+      "pass": true
+    },
+    {
+      "name": "Retry recovers failed page without browser reload",
+      "pass": true
+    },
+    {
+      "name": "Mobile has no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "Closed mobile navigation is inert",
+      "pass": true
+    },
+    {
+      "name": "Opening mobile nav focuses search",
+      "pass": true
+    },
+    {
+      "name": "Closing nav returns focus and makes it inert",
+      "pass": true
+    },
+    {
+      "name": "Session failure stays behind login",
+      "pass": true
+    },
+    {
+      "name": "Landing retries after temporary server failure",
+      "pass": true
+    },
+    {
+      "name": "All 54 routes rendered content or their embedded surface under outage fixture",
+      "pass": true
+    },
+    {
+      "name": "No unhandled browser errors",
+      "pass": true
+    },
+    {
+      "name": "No writes attempted",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "blocked_writes": [],
+  "routes": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "text_length": 1055,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "health",
+      "title": "Data health",
+      "text_length": 30,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "system",
+      "title": "System status",
+      "text_length": 188,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "deploy",
+      "title": "Build & Deploy",
+      "text_length": 252,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "analytics",
+      "title": "Analytics",
+      "text_length": 262,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "users",
+      "title": "Users",
+      "text_length": 46,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "support_tickets",
+      "title": "Support Tickets",
+      "text_length": 323,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "email_center",
+      "title": "Email Center",
+      "text_length": 492,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "revenue",
+      "title": "Revenue",
+      "text_length": 48,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_floor",
+      "title": "Publishing overview",
+      "text_length": 44,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_outbox",
+      "title": "Outbox",
+      "text_length": 45,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_content",
+      "title": "Content Studio",
+      "text_length": 53,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_publish",
+      "title": "Publisher",
+      "text_length": 48,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "neural_web",
+      "title": "Observatory",
+      "text_length": 54,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "intelligence_os",
+      "title": "Intelligence OS",
+      "text_length": 54,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "orchestrator",
+      "title": "Master Brain",
+      "text_length": 51,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "prophet",
+      "title": "Prophet",
+      "text_length": 46,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "macro_thesis",
+      "title": "Macro Thesis",
+      "text_length": 51,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "mastermind_ai",
+      "title": "Mastermind AI",
+      "text_length": 311,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "mastermind_logs",
+      "title": "AI Response Logs",
+      "text_length": 58,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "alerts",
+      "title": "Alerts",
+      "text_length": 31,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "long_hold",
+      "title": "Long-Hold Lobe",
+      "text_length": 28,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "context_lobe",
+      "title": "Context Lobe",
+      "text_length": 150,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "causal_lab",
+      "title": "Causal Lab",
+      "text_length": 175,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "chronicle",
+      "title": "Chronicle",
+      "text_length": 34,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "research_tools",
+      "title": "Research Tools",
+      "text_length": 611,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "experiments",
+      "title": "Experiments",
+      "text_length": 43,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_sentinel",
+      "title": "Sentinel",
+      "text_length": 47,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_lanes",
+      "title": "X Lanes",
+      "text_length": 44,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_radar",
+      "title": "Radar",
+      "text_length": 44,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_reply_queue",
+      "title": "Reply Deck",
+      "text_length": 59,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_seo",
+      "title": "SEO",
+      "text_length": 48,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_models",
+      "title": "Model Desk",
+      "text_length": 49,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_health",
+      "title": "Desk Health",
+      "text_length": 50,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_learning",
+      "title": "Learning",
+      "text_length": 47,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_lab",
+      "title": "Lab",
+      "text_length": 42,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_lobes",
+      "title": "Engines",
+      "text_length": 46,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_overview",
+      "title": "CMO Office",
+      "text_length": 49,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_departments",
+      "title": "Departments",
+      "text_length": 50,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_campaigns",
+      "title": "Campaigns",
+      "text_length": 48,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_channels",
+      "title": "Channels & Desks",
+      "text_length": 47,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "personas",
+      "title": "Persona Roster",
+      "text_length": 39,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_allies",
+      "title": "Allies",
+      "text_length": 45,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_ads",
+      "title": "Ad Central",
+      "text_length": 49,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "marketing_experiments",
+      "title": "Marketing experiments",
+      "text_length": 50,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "control_room",
+      "title": "Control Room",
+      "text_length": 0,
+      "recovery_screen": false,
+      "iframe": true
+    },
+    {
+      "id": "metabolism",
+      "title": "Metabolism",
+      "text_length": 1022,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "codex",
+      "title": "Codex Research",
+      "text_length": 406,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "cost",
+      "title": "AI Cost",
+      "text_length": 30,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "content",
+      "title": "Site inventory",
+      "text_length": 151,
+      "recovery_screen": true,
+      "iframe": false
+    },
+    {
+      "id": "site_gate",
+      "title": "Site Access",
+      "text_length": 41,
+      "recovery_screen": false,
+      "iframe": false
+    },
+    {
+      "id": "features",
+      "title": "Features",
+      "text_length": 151,
+      "recovery_screen": true,
+      "iframe": false
+    },
+    {
+      "id": "brief",
+      "title": "AI Brief",
+      "text_length": 151,
+      "recovery_screen": true,
+      "iframe": false
+    },
+    {
+      "id": "vector",
+      "title": "BTC Override",
+      "text_length": 39,
+      "recovery_screen": false,
+      "iframe": false
+    }
+  ]
+}
