@@ -1,0 +1,22 @@
+{
+  "auto_retry": false,
+  "completed_at_utc": "2026-10-22T02:49:05.206026+00:00",
+  "max_requests": 2,
+  "owner": "scripts.tiingo_ingest.collect",
+  "pause_seconds": 1.25,
+  "plan_sha256": "96353712a898d1a4e3b7846763e00794cb558c70ed62471a509e1f9debf2a1bc",
+  "purpose": "Observe the open00:00\u201304:00UTC candidate interval once as a real incomplete-window control; no claim of finality or new live feed. No repeated or failed request is retried.",
+  "result": {
+    "attempted": 2,
+    "bytes": 19764,
+    "errors": [],
+    "failed": 0,
+    "new": 2,
+    "ok": 2,
+    "row_hints": 171
+  },
+  "schema": "forex_r26.open_interval_collect.v1",
+  "scope": "RESEARCH_ONLY_NOT_CANONICAL",
+  "started_at_utc": "2026-10-22T02:49:03.227985+00:00",
+  "status": "RETURNED"
+}

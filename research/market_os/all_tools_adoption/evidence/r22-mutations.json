@@ -1,0 +1,103 @@
+{
+  "source_sha256": "fb0d93119b85c04c87f2d8fe3ce6b3e9b4e195f56e04c7f7a5a5f2e699c9a736",
+  "cases": [
+    {
+      "name": "detached_source_accepted",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 21 - withdrawn target is stopped at click without substituting a tool",
+        "not ok 34 - source withdrawal is reflected before context-menu navigation"
+      ],
+      "mutant_sha256": "b22f16be08ae039e75447e229d5f633e7a1558149c078d5f977839a9b800355a"
+    },
+    {
+      "name": "duplicate_menu_mount",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 41 - the renderer does not create more than one active source-driven menu in a document"
+      ],
+      "mutant_sha256": "40fe5e2bc63a92c60d62c428f9dbc3141841e761a18187cf50d93a035f91ff70"
+    },
+    {
+      "name": "context_erased",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 17 - composing Chinese does not render the unfinished query",
+        "not ok 27 - reopen clears search but does not change any source selection",
+        "not ok 38 - opening prepares the current source group rather than unrelated countries",
+        "not ok 39 - research page starts with its own source group while all destinations remain reachable"
+      ],
+      "mutant_sha256": "258ee25537313b886909b0766eae3c65a278c5ab78dcf455fd06d670e356e03d"
+    },
+    {
+      "name": "swallowed_native_link",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 23 - valid links retain normal modifier-key semantics"
+      ],
+      "mutant_sha256": "240f0b718efc7c85841ac85cacc0632d82bdcfa3f01374f29bb5e0b1affbd807"
+    },
+    {
+      "name": "svg_handler_copied",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 43 - source blueprint shapes survive but executable SVG nodes do not"
+      ],
+      "mutant_sha256": "5beb0155a1730f996ff516de90c4cdfead52577bb2dd654b057f629f0bc0d633"
+    },
+    {
+      "name": "query_reset_on_locale",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 26 - ordinary language switch keeps current query and hrefs"
+      ],
+      "mutant_sha256": "b05aadd77dad808a01384cc1626e7d094bf7da1801783340c3fbe5ed60b14455"
+    },
+    {
+      "name": "changed_tab_behavior_ignored",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 40 - a source link changing its tab behavior is disabled until refreshed"
+      ],
+      "mutant_sha256": "62261b4cf8b32385e723465a89b067c35808891b3e036abd8bf4547e60180af9"
+    },
+    {
+      "name": "server_disabled_ignored",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 32 - disabled source group cannot leak a child into the menu"
+      ],
+      "mutant_sha256": "7fca9bbf612cc21351ee611b8980b82356dc02a90465d48bfbabf638aa826af3"
+    },
+    {
+      "name": "unsafe_origin_accepted",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 56 - rejects unsafe href \"https://evil.invalid/tool\"",
+        "not ok 58 - rejects unsafe href \"//evil.invalid\"",
+        "not ok 60 - rejects unsafe href \"https://app.mastermind-x.com.evil.invalid\""
+      ],
+      "mutant_sha256": "22a03fefa2a20aa1f027c7d946c3513809cdef29f3b223e937e62bed898e5a26"
+    },
+    {
+      "name": "ime_filters_half_query",
+      "detected": true,
+      "exit": 1,
+      "failures": [
+        "not ok 17 - composing Chinese does not render the unfinished query"
+      ],
+      "mutant_sha256": "79db68bb4342c10a893139fb0f52ea39ca082a16d13e1276153541b5d5fc5706"
+    }
+  ],
+  "detected": 10,
+  "total": 10
+}

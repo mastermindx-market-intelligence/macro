@@ -841,5 +841,401 @@ def test_artifact_schema_shape():
         assert set(c) == {"key", "min", "max", "step", "default"}
 
 
+def _qualified_a6_input():
+    return {
+        "schema": "valuation_scenario_qualified_input.v1",
+        "ticker": "AAPL",
+        "requested_use": "research_display",
+        "decision_cutoff": "2026-01-02T21:00:00Z",
+        "financial": {
+            "receipt_id": "fin-aapl-fy2025-v1",
+            "issuer_ref": "issuer:aapl",
+            "security_ref": "security:aapl-common",
+            "currency": "USD",
+            "accounting_basis": "reported_gaap",
+            "fiscal_period": "FY2025",
+            "period_end": "2025-09-27",
+            "available_at": "2025-10-31T20:00:00Z",
+            "share_identity": "outstanding",
+            "corporate_action_basis": "split_adjusted_v1",
+            "permitted_uses": ["research_display"],
+            "net_income": 100.0,
+            "revenue": 1000.0,
+            "shares": 10.0,
+            "net_debt": 999.0,
+        },
+        "price": {
+            "receipt_id": "px-aapl-20260102-v1",
+            "security_ref": "security:aapl-common",
+            "currency": "USD",
+            "session": "2026-01-02",
+            "observed_at": "2026-01-02T20:59:00Z",
+            "share_identity": "outstanding",
+            "corporate_action_basis": "split_adjusted_v1",
+            "valuation_object": "equity_per_share",
+            "permitted_uses": ["research_display"],
+            "value": 185.4,
+        },
+    }
+
+
+def _refusal_codes(blob):
+    return {item["code"] for item in blob.get("refusals", [])}
+
+
+def _fixture_qualified_state(receipt):
+    """Owner-shaped fixture receipt only — not attested production qualification."""
+    state, refusals = va._validate_qualified_input(receipt)
+    assert state is not None, refusals
+    assert refusals == []
+    return state
+
+
+def _fixture_evaluate_qualified(receipt, **overrides):
+    state = _fixture_qualified_state(receipt)
+    params = {
+        "sales_growth_pct": 3.0,
+        "margin_delta_pp": 0.0,
+        "earnings_multiple": 18.0,
+    }
+    params.update(overrides)
+    return va._evaluate_qualified_assumptions_internal(state, **params)
+
+
+def _fixture_required_multiple(receipt, **overrides):
+    state = _fixture_qualified_state(receipt)
+    params = {
+        "sales_growth_pct": 3.0,
+        "margin_delta_pp": 0.0,
+        "price_tolerance": 0.01,
+    }
+    params.update(overrides)
+    return va._required_earnings_multiple_internal(state, **params)
+
+
+def _assert_owner_qualification_unavailable(out, *, schema):
+    assert out["schema"] == schema
+    assert out["valid"] is False
+    assert va.OWNER_QUALIFICATION_UNAVAILABLE in _refusal_codes(out)
+
+
+def test_public_a6_owner_qualification_unavailable_for_caller_authored_bundle():
+    """RED on pre-repair head 2fbd255: public seam accepted fixture bundles."""
+    _assert_owner_qualification_unavailable(
+        va.evaluate_qualified_assumptions(
+            _qualified_a6_input(),
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            earnings_multiple=18,
+        ),
+        schema="valuation_scenario_forward_evaluation.v1",
+    )
+
+
+def test_public_a6_hostile_fake_identity_refuses_at_owner_seam():
+    receipt = _qualified_a6_input()
+    receipt["price"]["security_ref"] = "security:hostile-fake"
+    _assert_owner_qualification_unavailable(
+        va.evaluate_qualified_assumptions(
+            receipt,
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            earnings_multiple=18,
+        ),
+        schema="valuation_scenario_forward_evaluation.v1",
+    )
+
+
+def test_public_a6_hostile_fake_fiscal_facts_refuses_at_owner_seam():
+    receipt = _qualified_a6_input()
+    receipt["financial"]["net_income"] = True
+    _assert_owner_qualification_unavailable(
+        va.evaluate_qualified_assumptions(
+            receipt,
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            earnings_multiple=18,
+        ),
+        schema="valuation_scenario_forward_evaluation.v1",
+    )
+
+
+def test_public_a6_hostile_fake_price_session_receipt_refuses_at_owner_seam():
+    receipt = _qualified_a6_input()
+    receipt["price"]["receipt_id"] = ""
+    _assert_owner_qualification_unavailable(
+        va.evaluate_qualified_assumptions(
+            receipt,
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            earnings_multiple=18,
+        ),
+        schema="valuation_scenario_forward_evaluation.v1",
+    )
+
+
+def test_public_a6_hostile_fake_permitted_use_refuses_at_owner_seam():
+    receipt = _qualified_a6_input()
+    receipt["financial"]["permitted_uses"] = []
+    _assert_owner_qualification_unavailable(
+        va.evaluate_qualified_assumptions(
+            receipt,
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            earnings_multiple=18,
+        ),
+        schema="valuation_scenario_forward_evaluation.v1",
+    )
+
+
+def test_public_a6_hostile_cutoff_incompatible_refuses_at_owner_seam():
+    receipt = _qualified_a6_input()
+    receipt["price"]["observed_at"] = "2026-01-02T21:00:01Z"
+    _assert_owner_qualification_unavailable(
+        va.evaluate_qualified_assumptions(
+            receipt,
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            earnings_multiple=18,
+        ),
+        schema="valuation_scenario_forward_evaluation.v1",
+    )
+
+
+def test_public_a7_owner_qualification_unavailable_for_caller_authored_bundle():
+    _assert_owner_qualification_unavailable(
+        va.required_earnings_multiple(
+            _qualified_a6_input(),
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            price_tolerance=0.01,
+        ),
+        schema="valuation_scenario_required_multiple.v1",
+    )
+
+
+def test_a6_pure_import_does_not_load_moving_event_readers():
+    code = """
+import sys
+import engine.valuation_assumptions
+assert 'engine.valuation_event_bridge' not in sys.modules
+assert 'engine.valuation_event_proposal' not in sys.modules
+"""
+    result = subprocess.run(
+        ["python3", "-c", code],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+
+
+def test_a6_fixture_internal_forward_preserves_owner_order_and_raw_display_split():
+    receipt = _qualified_a6_input()
+    out = _fixture_evaluate_qualified(receipt)
+    assert out["schema"] == "valuation_scenario_forward_evaluation.v1"
+    assert out["valid"] is True
+    assert out["refusals"] == []
+    assert out["model_family"] == "earnings_multiple"
+    assert out["model_version"] == "B-F07-A6.v1"
+    assert out["valuation_object"] == "equity_per_share"
+    assert out["currency"] == "USD"
+    assert out["share_identity"] == "outstanding"
+    assert out["unrounded_per_share"] == 185.4
+    assert out["display_per_share"] == round(out["unrounded_per_share"], 2)
+    assert out["display_policy"] == "python_round_half_even_2dp"
+    assert out["evidence_tier"] == "fixture_testing_only_not_attested"
+    assert out["accounting"]["debt_bridge"] == "NOT_APPLICABLE"
+    assert out["accounting"]["terminal_growth"] == "NOT_APPLICABLE"
+    assert out["accounting"]["terminal_value_share"] == "NOT_APPLICABLE"
+    assert out["input_refs"]["financial_receipt_id"] == "fin-aapl-fy2025-v1"
+    assert out["input_refs"]["price_receipt_id"] == "px-aapl-20260102-v1"
+    assert re.fullmatch(r"[0-9a-f]{64}", out["receipt_digest"])
+
+    changed_debt = json.loads(json.dumps(receipt))
+    changed_debt["financial"]["net_debt"] = -123456.0
+    changed = _fixture_evaluate_qualified(changed_debt)
+    assert changed["valid"] is True
+    assert changed["unrounded_per_share"] == out["unrounded_per_share"]
+
+
+def test_a6_fixture_input_validation_refuses_invalid_domain_basis_rights_and_cutoff():
+    cases = []
+
+    bad = _qualified_a6_input()
+    bad["financial"]["net_income"] = True
+    cases.append((bad, {}, "INVALID_NUMERIC_INPUT"))
+
+    bad = _qualified_a6_input()
+    bad["financial"]["revenue"] = float("inf")
+    cases.append((bad, {}, "INVALID_NUMERIC_INPUT"))
+
+    bad = _qualified_a6_input()
+    bad["financial"]["shares"] = 0
+    cases.append((bad, {}, "NONPOSITIVE_INPUT"))
+
+    bad = _qualified_a6_input()
+    bad["price"]["security_ref"] = "security:msft-common"
+    cases.append((bad, {}, "IDENTITY_MISMATCH"))
+
+    bad = _qualified_a6_input()
+    bad["price"]["currency"] = "EUR"
+    cases.append((bad, {}, "CURRENCY_MISMATCH"))
+
+    bad = _qualified_a6_input()
+    bad["price"]["corporate_action_basis"] = "raw_unadjusted"
+    cases.append((bad, {}, "CORPORATE_ACTION_BASIS_MISMATCH"))
+
+    bad = _qualified_a6_input()
+    bad["financial"]["share_identity"] = "diluted"
+    bad["price"]["share_identity"] = "diluted"
+    cases.append((bad, {}, "UNSUPPORTED_SHARE_IDENTITY"))
+
+    bad = _qualified_a6_input()
+    bad["price"]["valuation_object"] = "enterprise_value"
+    cases.append((bad, {}, "UNSUPPORTED_VALUATION_OBJECT"))
+
+    bad = _qualified_a6_input()
+    bad["financial"]["permitted_uses"] = []
+    cases.append((bad, {}, "RIGHTS_BLOCKED"))
+
+    bad = _qualified_a6_input()
+    bad["price"]["observed_at"] = "2026-01-02T21:00:01Z"
+    cases.append((bad, {}, "CUTOFF_VIOLATION"))
+
+    bad = _qualified_a6_input()
+    bad["financial"]["accounting_basis"] = ""
+    cases.append((bad, {}, "MISSING_RECEIPT_FIELD"))
+
+    cases.append((_qualified_a6_input(), {"sales_growth_pct": True}, "INVALID_NUMERIC_INPUT"))
+    cases.append((_qualified_a6_input(), {"sales_growth_pct": 21}, "PARAMETER_OUT_OF_BOUNDS"))
+    cases.append((_qualified_a6_input(), {"earnings_multiple": 7.99}, "PARAMETER_OUT_OF_BOUNDS"))
+
+    for receipt, overrides, expected_code in cases:
+        if overrides:
+            state = _fixture_qualified_state(receipt)
+            params = {
+                "sales_growth_pct": 3.0,
+                "margin_delta_pp": 0.0,
+                "earnings_multiple": 18.0,
+            }
+            params.update(overrides)
+            out = va._evaluate_qualified_assumptions_internal(state, **params)
+            assert out["valid"] is False, (expected_code, out)
+            assert expected_code in _refusal_codes(out), (expected_code, out)
+            continue
+        _, refusals = va._validate_qualified_input(receipt)
+        assert expected_code in {item["code"] for item in refusals}, (
+            expected_code,
+            refusals,
+        )
+
+
+def test_a6_fixture_internal_refuses_nonfinite_owner_order_intermediate():
+    receipt = _qualified_a6_input()
+    receipt["financial"]["net_income"] = 1e308
+    receipt["financial"]["revenue"] = 1e308
+    receipt["financial"]["shares"] = 1e308
+    out = _fixture_evaluate_qualified(
+        receipt,
+        sales_growth_pct=20,
+        margin_delta_pp=0,
+        earnings_multiple=35,
+    )
+    assert out["valid"] is False
+    assert "NONFINITE_FORWARD_INTERMEDIATE" in _refusal_codes(out)
+
+
+def test_a6_fixture_internal_raw_value_is_preserved_separately_from_legacy_display_rounding():
+    receipt = _qualified_a6_input()
+    receipt["financial"]["net_income"] = 26.75
+    receipt["financial"]["revenue"] = 267.5
+    receipt["financial"]["shares"] = 80.0
+    out = _fixture_evaluate_qualified(
+        receipt,
+        sales_growth_pct=0,
+        margin_delta_pp=0,
+        earnings_multiple=8,
+    )
+    assert out["valid"] is True
+    assert out["unrounded_per_share"] == 2.675
+    assert out["display_per_share"] == round(out["unrounded_per_share"], 2)
+    assert out["unrounded_per_share"] != out["display_per_share"]
+
+
+def test_a7_fixture_internal_conditional_inverse_recovers_multiple_and_identification_geometry():
+    receipt = _qualified_a6_input()
+    out = _fixture_required_multiple(receipt)
+    assert out["schema"] == "valuation_scenario_required_multiple.v1"
+    assert out["valid"] is True
+    assert out["refusals"] == []
+    assert abs(out["required_multiple"] - 18.0) < 1e-12
+    assert out["multiple_bounds"] == {"min": 8.0, "max": 35.0}
+    assert out["locked_assumptions"] == {
+        "sales_growth_pct": 3.0,
+        "margin_delta_pp": 0.0,
+    }
+    assert abs(out["forward_check"]["residual"]) <= 0.01
+    band = out["feasible_multiple_interval"]
+    assert band["nonempty"] is True
+    assert band["lower"] <= out["required_multiple"] <= band["upper"]
+
+    ident = out["identification"]
+    assert ident["parameter_dimension"] == 3
+    assert ident["independent_price_observations"] == 1
+    assert ident["jacobian_rank"] == 1
+    assert ident["nullspace_dimension"] == 2
+    assert ident["conditional_root_count"] == 1
+    assert ident["full_parameter_set_identified"] is False
+    jac = ident["jacobian"]
+    for vector in ident["nullspace_basis"]:
+        assert abs(sum(a * b for a, b in zip(jac, vector))) < 1e-10
+
+    assert out["prior"]["status"] == "NOT_USED"
+    assert out["compatibility_mass"] == {
+        "status": "UNAVAILABLE",
+        "value": None,
+        "reason": "INDEPENDENT_JOINT_REFERENCE_NOT_QUALIFIED",
+    }
+    assert out["evidence_tier"] == "fixture_testing_only_not_attested"
+
+
+def test_a7_fixture_internal_out_of_bounds_exact_inverse_is_not_clamped_even_if_band_intersects():
+    receipt = _qualified_a6_input()
+    receipt["price"]["value"] = 400.0
+    out = _fixture_required_multiple(
+        receipt,
+        price_tolerance=50.0,
+    )
+    assert out["valid"] is False
+    assert "REQUIRED_MULTIPLE_OUT_OF_BOUNDS" in _refusal_codes(out)
+    assert out["required_multiple"] > 35
+    assert "clamped_multiple" not in out
+    assert out["feasible_multiple_interval"]["nonempty"] is True
+    assert out["feasible_multiple_interval"]["upper"] == 35.0
+
+
+def test_a7_fixture_internal_refuses_invalid_tolerance_and_zero_or_nonfinite_scale():
+    receipt = _qualified_a6_input()
+    out = _fixture_required_multiple(receipt, price_tolerance=-0.01)
+    assert out["valid"] is False
+    assert "INVALID_TOLERANCE" in _refusal_codes(out)
+
+    tiny = _qualified_a6_input()
+    tiny["financial"]["net_income"] = 5e-324
+    tiny["financial"]["revenue"] = 5e-324
+    tiny["financial"]["shares"] = 1e308
+    tiny["price"]["value"] = 1.0
+    out = _fixture_required_multiple(
+        tiny,
+        sales_growth_pct=0,
+        margin_delta_pp=0,
+        price_tolerance=0,
+    )
+    assert out["valid"] is False
+    assert "ZERO_OR_NONFINITE_SCALE" in _refusal_codes(out)
+
+
 # Committed golden string of the V1 panel render (t = EN-only, AAPL fixture).
 GOLDEN_V1_HTML = '\n<style>\n.vs-lede{margin:2px 0 16px;font-size:13px;line-height:1.55;color:var(--muted);max-width:62ch;}\n.vs-ruler{position:relative;height:64px;margin:6px 4px 30px;}\n.vs-ruler .vs-track{position:absolute;left:0;right:0;top:28px;height:6px;border-radius:var(--r-ctl,3px);\n  background:var(--line);border:1px solid var(--hair);}\n.vs-ruler .vs-mark{position:absolute;top:16px;width:12px;height:12px;border-radius:var(--r-ctl,3px);\n  transform:translateX(-50%);background:var(--muted);}\n.vs-ruler .vs-mark.m-base{background:var(--link);box-shadow:0 0 10px color-mix(in srgb,var(--link) 55%,transparent);}\n.vs-ruler .vs-mark.m-upbeat{background:color-mix(in srgb,var(--link) 55%,var(--text));}\n.vs-ruler .vs-mark.m-gap{background:transparent;border:1px dashed var(--hair);box-shadow:none;}\n.vs-ruler .vs-mark:hover,.vs-ruler .vs-mark:focus-visible{height:14px;top:15px;transition:height var(--t-fast,.14s) ease,top var(--t-fast,.14s) ease;}\n.vs-ruler .vs-lbl{position:absolute;top:44px;transform:translateX(-50%);font-size:10.5px;\n  font-weight:650;color:var(--muted);white-space:nowrap;text-align:center;}\n.vs-ruler .vs-lbl.below{top:auto;bottom:-14px;}\n.vs-ruler .vs-lbl b{display:block;font-size:11.5px;font-weight:750;color:var(--text);font-variant-numeric:tabular-nums;}\n.vs-ruler .vs-price{position:absolute;top:6px;bottom:6px;width:2px;background:var(--text);\n  box-shadow:0 0 0 3px var(--panel);}\n.vs-ruler .vs-price-lbl{position:absolute;top:-14px;transform:translateX(-50%);font-size:9.5px;\n  font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);white-space:nowrap;}\n[data-theme="light"] .vs-ruler .vs-track{background:transparent;border:none;border-bottom:1px solid var(--line);}[data-theme="light"] .vs-ruler .vs-mark{top:28px;border-radius:var(--r-ctl,2px);background:transparent;border:1.5px solid var(--muted);}\n[data-theme="light"] .vs-ruler .vs-mark:hover,[data-theme="light"] .vs-ruler .vs-mark:focus-visible{top:27px;}\n[data-theme="light"] .vs-ruler .vs-mark.m-base{background:var(--link);\n  border:1px solid color-mix(in srgb,var(--link) 55%,var(--panel));box-shadow:0 2px 6px -3px color-mix(in srgb,var(--text) 28%,transparent);}\n[data-theme="light"] .vs-ruler .vs-mark.m-upbeat{background:color-mix(in srgb,var(--link) 50%,var(--panel));border-color:var(--text);}\n[data-theme="light"] .vs-ruler .vs-mark.m-cautious{background:transparent;border-color:var(--muted);}\n[data-theme="light"] .vs-ruler .vs-mark.m-gap{background:transparent;border:1px dashed var(--hair);box-shadow:none;}\n[data-theme="light"] .vs-ruler .vs-price{width:1.5px;background:var(--text);box-shadow:0 0 0 3px var(--panel);}\n\n.vs-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}\n.vs-card{background:color-mix(in srgb,var(--panel2) 55%,transparent);border:1px solid var(--hair);\n  border-radius:var(--r-card,13px);padding:14px 15px;min-width:0;}\n[data-theme="light"] .vs-card{background:var(--panel);border:1px solid var(--hair);box-shadow:0 6px 18px -12px color-mix(in srgb,var(--text) 18%,transparent);}\n.vs-card .vk{font-size:10.5px;font-weight:650;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}\n[data-lang="zh"] .vs-card .vk{letter-spacing:0;text-transform:none;}\n.vs-card .vv{margin-top:6px;font-size:20px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}\n.vs-card .vv.vv-null{font-size:12.5px;font-weight:600;color:var(--muted);}\n.vs-card .va{margin-top:8px;font-size:11.5px;line-height:1.5;color:var(--muted);}\n\n.vs-base{display:flex;flex-direction:column;gap:0;margin-top:2px;}\n.vs-base .r6{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 0;\n  border-bottom:1px solid var(--hair);font-size:12.5px;}\n.vs-base .r6:last-child{border-bottom:none;}\n.vs-base .k6{color:var(--muted);}\n.vs-base .k6 small{display:block;font-size:10.5px;margin-top:2px;}\n.vs-base .v6{font-weight:650;text-align:right;font-variant-numeric:tabular-nums;}\n.vs-base .v6.v6-null{font-weight:500;color:var(--muted);font-variant-numeric:normal;}\n.vs-base .v6 em{display:block;font-style:normal;font-size:10px;font-weight:500;color:var(--muted);margin-top:2px;}.vs-thirdparty-null{margin-top:12px;padding-top:10px;border-top:1px solid var(--hair);\n  font-size:11px;line-height:1.5;color:var(--muted);}\n\n@media(max-width:720px){.vs-cards{grid-template-columns:1fr;}}\n@media(max-width:390px){\n  .vs-base .r6{flex-direction:column;gap:2px;align-items:flex-start;}\n  .vs-base .v6{text-align:left;}\n}\n</style>\n\n\n\n\n\n\n\n\n\n\n\n\n<section class="mod rv" id="valuation-scenario" data-valuation-scenario="v1">\n  <div class="mod-hd">\n    <h2>What could it be worth?</h2>\n    <span class="hint">reported SEC figures · FY2025\n      \n    </span>\n  </div>\n  <p class="vs-lede">Three sets of assumptions applied to AAPL\'s last reported year. Change the assumption, change the answer.</p><div class="vs-ruler" role="img" aria-label="Per-share value scale across three assumption scenarios and today\'s price">\n    <div class="vs-track"></div>\n    \n    \n      \n      \n      <div class="vs-mark m-cautious" style="left:3.4%" tabindex="0"></div>\n      <div class="vs-lbl " style="left:3.4%">Cautious<b>$91</b></div>\n      \n    \n      \n      \n      <div class="vs-mark m-base" style="left:18.1%" tabindex="0"></div>\n      <div class="vs-lbl below" style="left:18.1%">Base<b>$131</b></div>\n      \n    \n      \n      \n      <div class="vs-mark m-upbeat" style="left:34.8%" tabindex="0"></div>\n      <div class="vs-lbl " style="left:34.8%">Upbeat<b>$176</b></div>\n      \n    \n    \n    <div class="vs-price" style="left:88.2%"></div>\n    <div class="vs-price-lbl" style="left:88.2%">Today\'s price</div>\n    \n  </div>\n\n  <div class="vs-cards">\n    \n    \n      \n      <div class="vs-card">\n        <div class="vk">Cautious</div>\n        \n        <div class="vv num">$90.94</div>\n        \n        <div class="va">\n          Sales fall 2% next year, margins narrow, valued at 14× the resulting earnings.\n          \n        </div>\n        \n        \n        \n        \n        <div class="va vs-bridge">Vs base: growth -5pp, margin -1.5pp, multiple -4x — $130.65 to $90.94 (-30.4%).</div>\n        \n      </div>\n    \n      \n      <div class="vs-card">\n        <div class="vk">Base</div>\n        \n        <div class="vv num">$130.65</div>\n        \n        <div class="va">\n          Sales grow 3% next year, margins hold, valued at 18× the resulting earnings.\n          \n        </div>\n      </div>\n    \n      \n      <div class="vs-card">\n        <div class="vk">Upbeat</div>\n        \n        <div class="vv num">$175.74</div>\n        \n        <div class="va">\n          Sales grow 7% next year, margins widen, valued at 22× the resulting earnings.\n        </div>\n        \n        \n        \n        \n        <div class="va vs-bridge">Vs base: growth +4pp, margin +1.5pp, multiple +4x — $130.65 to $175.74 (+34.5%).</div>\n        \n      </div>\n    \n  </div>\n\n  <div class="vs-base kv6">\n    \n    <div class="r6"><span class="k6">Revenue<small>FY2025 · Source: SEC filings</small></span>\n      <span class="v6 num">$416.0B</span></div>\n    <div class="r6"><span class="k6">Operating income<small>FY2025 · Source: SEC filings</small></span>\n      <span class="v6 num">$128.0B</span></div>\n    <div class="r6"><span class="k6">Net income<small>FY2025 · Source: SEC filings</small></span>\n      <span class="v6 num">$105.0B</span></div>\n    <div class="r6"><span class="k6">Share count<small>FY2025 · Source: SEC filings</small></span>\n      <span class="v6 num">14.90B<em>Shares outstanding, as reported</em></span></div>\n    <div class="r6"><span class="k6">Net cash / debt<small>FY2025 · Source: SEC filings</small></span>\n      <span class="v6 num">Net debt $48.0B</span></div>\n  </div>\n\n  <div class="vs-thirdparty-null" data-vs-thirdparty-null="1">This app does not license Wall Street\'s outside stock-picking research, so that layer is left empty here — shown honestly as missing, not filled in with a guess.</div>\n  <div class="mod-ft">Research display only — not advice.</div>\n</section>\n'

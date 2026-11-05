@@ -1067,8 +1067,16 @@ def test_W4R_M8_the_clamped_window_RUNS_the_S10_ARM_CLOCK_through_the_pass(
     assert result.payload["names"], "the pass produced no payload at all"
     minted = [e for e in ledger.episodes
               if e.detector_id == fh.C3_DETECTOR_ID and e.episode_id not in before]
-    assert minted, "the clamped window ran no C3 replay at all"
-    assert any(e.state == dt.DetectorState.EXPIRED.value for e in minted), \
+    # The replayed window starts up to 179 sessions back, so the episode the
+    # clock expires inside it is normally OLDER than the ledger's admission
+    # horizon (LED-2): it is refused at the door as history and reported on the
+    # delta WITH its state — the proof that the clock ran lives there.
+    refused = [r for r in (result.delta.historical if result.delta else ())
+               if r["detector_id"] == fh.C3_DETECTOR_ID
+               and r["episode_id"] not in before]
+    assert minted or refused, "the clamped window ran no C3 replay at all"
+    states = {e.state for e in minted} | {r["state"] for r in refused}
+    assert dt.DetectorState.EXPIRED.value in states, \
         "the clamped window never reached the §10 expiry"
     assert fh.C3_ARM_EXPIRY_SESSIONS == 15
 

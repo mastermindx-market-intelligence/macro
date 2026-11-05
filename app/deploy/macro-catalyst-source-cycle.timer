@@ -1,0 +1,11 @@
+[Unit]
+Description=Mastermind Catalyst SEC source cycle timer (off-render; dormant until installed)
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Unit=macro-catalyst-source-cycle.service
+
+[Install]
+WantedBy=timers.target

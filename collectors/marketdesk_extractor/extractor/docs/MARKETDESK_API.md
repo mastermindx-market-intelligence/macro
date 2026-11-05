@@ -78,6 +78,11 @@ fallback is retained for resilience.
 | pdf_filename           | `{pub_or_disc_date}_{institution}_{slug(title)}_{blob_id}.pdf`   |
 
 ## Notes / gotchas
+- Authenticated T&Cs overlay (observed 2026-10-24): the signed-in app can still
+  return `{"success": false}` from `library/browse/current` and `items/provision`
+  while `latest/latest` returns a 25-ID array. The UI posts `POST /terms/consent`
+  (`API.consent`) then reloads. The extractor does the same once per client and
+  retries; that is not a logged-out session and must not park the account.
 - Titles have doubled internal spaces — collapse to single spaces before slugifying.
 - `t` is seconds, not ms.
 - Discovery order for "newest": sort candidate papers by `t` desc; the tree's index-0 children

@@ -1,0 +1,37 @@
+{
+  "observed_at": "2026-10-14T11:26:20.116638+00:00",
+  "source_head": "3d715806076f71dcac406678fa238026640ffc45",
+  "capture": "24 actual-source local ASGI states; all passed; explicit local test principal only",
+  "matrix": [
+    "dark/light",
+    "EN/ZH",
+    "1440/820/390",
+    "normal/focus"
+  ],
+  "reviewed_images": [
+    "0daa9deb9d695e7a.png",
+    "52bcbff7c89d98ef.png"
+  ],
+  "inspection_crops": "Top1200px desktop and1600px mobile; original full-page captures retained unchanged",
+  "parent_visual_findings": [
+    "Dark desktop retains financial figures and their dated qualification, distinct research/observation state and source panels",
+    "Light Chinese mobile retains white research material, readable issuer baseline, all product labels and source limits; no horizontal overflow",
+    "Prior pixel identity is not claimed: shared assistant loaded and rotating navigation placeholder/state differ; all current captures retained"
+  ],
+  "api_and_data_bindings_identical_to_v13": true,
+  "cached_reader_evidence_reuse": {
+    "path": "combined_generation_v13_proof/CACHED_READER_BENCHMARK.json",
+    "scope": "Same API modules, data inputs, static program dossier and runtime reader paths. Existing10concurrent x100requests per route remains applicable, not a fresh installed benchmark."
+  },
+  "timing": {
+    "observed": 10,
+    "under3s": 9,
+    "median_ms": 2796.2499999925494,
+    "p95_ms": 3686.5,
+    "max_ms": 3686.5,
+    "all_pass": false,
+    "cause": "Not established. Sample4 is warm-readers/fresh-browser, no long tasks, delayed initial asset fetch and financial response under the existing throttled HTTP1.1 local profile. Preserve failure; installed performance acceptance remains open."
+  },
+  "installed_proof": false,
+  "independent_acceptance": false
+}

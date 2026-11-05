@@ -1,21 +1,21 @@
 {
   "schema": "evidence_foundation.reference.v1",
   "version": "1.0.0",
-  "reference_id": "efr_03e123a603931388eaa9298b7ea4e89f69df8efdc831312976dc4e8a02d0bde6",
+  "reference_id": "efr_6af86e5ca540e6d0f45bc5037882b227748e480c30d332ffd1b9af4c9736ea3b",
   "object_class": "derived_view",
   "owner_store": "fif.packet",
   "native_identity": {
-    "packet_id": "fip_18e2f725f6ba20678d0612bb"
+    "packet_id": "fip_efe52d02d4a72a5a19f85a60"
   },
   "native_schema": "financial_intelligence_packet.v1",
   "native_digest": {
     "state": "known",
-    "sha256": "18e2f725f6ba20678d0612bbbac25b44761271bf5dfd705bda41f852686588c7"
+    "sha256": "efe52d02d4a72a5a19f85a6085bbd8cec1c86b1de949332e4b772d9b4a5c6850"
   },
   "coverage_class": "source_release_snapshot_only",
   "subject": {
     "key_type": "fif_packet_id",
-    "key": "fip_18e2f725f6ba20678d0612bb"
+    "key": "fip_efe52d02d4a72a5a19f85a60"
   },
   "secondary_subjects": [],
   "clocks": [
@@ -52,7 +52,7 @@
     "pointer_only": true,
     "body_embedded": false,
     "owner_reader": "engine.fundamental_forensics.financial_intelligence_packet.validate_packet_semantics",
-    "pointer": "financial-packet://packet_id=fip_18e2f725f6ba20678d0612bb",
+    "pointer": "financial-packet://packet_id=fip_efe52d02d4a72a5a19f85a60",
     "owner_reader_kind": "parser"
   },
   "relations": [],

@@ -1,0 +1,68 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_link_name_replacement_is_uncertain_and_preserves_final[different_inode] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x111797770>
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-8774/test_link_name_replacement_is_0')
+replacement = 'different_inode'
+
+    @pytest.mark.parametrize("replacement", ["different_inode", "symlink"])
+    def test_link_name_replacement_is_uncertain_and_preserves_final(monkeypatch, tmp_path, replacement):
+        h = world(with_moves=False); root = tree(tmp_path); real_link = os.link
+        marker = root / "unrelated"; marker.write_bytes(b"must survive")
+        def replace_inside_link(src, dst, **kwargs):
+            # The original pre-link lstat has already returned at this boundary.
+            os.unlink(src, dir_fd=kwargs["src_dir_fd"])
+            if replacement == "symlink":
+                os.symlink(marker, src, dir_fd=kwargs["src_dir_fd"])
+            else:
+                fd = os.open(src, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600,
+                             dir_fd=kwargs["src_dir_fd"])
+                try:
+                    os.write(fd, b"x" * len(h.gex_bytes))
+                finally:
+                    os.close(fd)
+            return real_link(src, dst, **kwargs)
+        with monkeypatch.context() as m:
+            m.setattr(arrival.os, "link", replace_inside_link)
+>           with pytest.raises(arrival.SourceArrivalUncertain, match="source_arrival_uncertain"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE SourceArrivalUncertain
+
+tests/test_options_scenario_source_arrival.py:217: Failed
+_____ test_link_name_replacement_is_uncertain_and_preserves_final[symlink] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11192d590>
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-8774/test_link_name_replacement_is_1')
+replacement = 'symlink'
+
+    @pytest.mark.parametrize("replacement", ["different_inode", "symlink"])
+    def test_link_name_replacement_is_uncertain_and_preserves_final(monkeypatch, tmp_path, replacement):
+        h = world(with_moves=False); root = tree(tmp_path); real_link = os.link
+        marker = root / "unrelated"; marker.write_bytes(b"must survive")
+        def replace_inside_link(src, dst, **kwargs):
+            # The original pre-link lstat has already returned at this boundary.
+            os.unlink(src, dir_fd=kwargs["src_dir_fd"])
+            if replacement == "symlink":
+                os.symlink(marker, src, dir_fd=kwargs["src_dir_fd"])
+            else:
+                fd = os.open(src, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600,
+                             dir_fd=kwargs["src_dir_fd"])
+                try:
+                    os.write(fd, b"x" * len(h.gex_bytes))
+                finally:
+                    os.close(fd)
+            return real_link(src, dst, **kwargs)
+        with monkeypatch.context() as m:
+            m.setattr(arrival.os, "link", replace_inside_link)
+>           with pytest.raises(arrival.SourceArrivalUncertain, match="source_arrival_uncertain"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE SourceArrivalUncertain
+
+tests/test_options_scenario_source_arrival.py:217: Failed
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_options_scenario_source_arrival.py::test_link_name_replacement_is_uncertain_and_preserves_final[different_inode]
+FAILED tests/test_options_scenario_source_arrival.py::test_link_name_replacement_is_uncertain_and_preserves_final[symlink]
+2 failed, 30 deselected, 113 warnings in 1.33s

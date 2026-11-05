@@ -178,8 +178,8 @@ legacy queue keys. The deployed consumer proved an exact `AGENT-OS`/`W2B` join, 
 lowercase-wave near miss as `unknown/unmapped_ref`, preserved rank bytes, and persisted the
 authoritative 27-item agenda with zero authored refs and 27 structured N/A annotations.
 JSON, Markdown, internal API, and the tunneled UI agreed; all 27 cards visibly rendered
-readiness with no browser errors. W2B is therefore `done`. W4 remains untouched, `todo`,
-and merely eligible for a separate high-blast-radius hook PR.
+readiness with no browser errors. W2B was therefore `done`; at that receipt W4 remained `todo`. The separate W4
+acceptance below supersedes only that historical W4 status.
 
 ---
 
@@ -209,7 +209,7 @@ miss-rate on the existing harness at `research/context_index/BENCHMARK_RESULTS.m
 
 ---
 
-## Phase 4 — Hook auto-capture
+## Phase 4 — Hook auto-capture *(ACCEPTED 2026-10-04)*
 
 **Objective.** Drive steady-state friction toward zero. The brief's principle 3, made real.
 
@@ -217,8 +217,12 @@ miss-rate on the existing harness at `research/context_index/BENCHMARK_RESULTS.m
 that has not yet proven itself in manual use.**
 
 **Work.**
-1. Extend `.claude/hooks/ship_loop_guard.py` (report-only): if the branch matches a workstream's
-   `claim.by` or `owns_paths`, auto-update `updated`, wave `status`, and `prs` on PR creation.
+1. Extend `.claude/hooks/ship_loop_guard.py` at successful PostToolUse PR creation
+   (report-only): bind one current exact `claim.by` or one exact `owns_paths` owner,
+   require canonical Workstream/Wave identity, then capture the existing wave's `pr`
+   and `todo`/`in_progress` -> `awaiting_ci`. Leave the scoped edit for the next normal
+   commit/push. `updated` remains derived from Git (README rule 8); it is never authored.
+   See DEC:AGENTOS-W4-CAPTURE-BOUNDARY for current-source reconciliation.
 2. Stop-hook **reminder** — never a block — when a claimed workstream ends with no handoff.
 3. `agentos claim` / `agentos release` helpers wrapping the advisory claim.
 
@@ -232,6 +236,12 @@ records and a missing `agentos/` directory entirely.
 **Risk, stated.** `ship_loop_guard.py` is ~2,465 LOC and gates every session in the fleet. A
 defect here blocks the whole org. Mitigation: report-only, an explicit no-block test, and a
 separate PR from any other change so it can be reverted alone.
+
+**Acceptance.** PR8411 reviewed head `714c6f5b49337bbab9770c9c7ad454b277797c1e` passed the focused hooks,
+exact-head hosted CI `37181494645`, independent high-blast review and actual capture/cold
+consumer recovery; it merged as `7329199684df69a862ed6492ce07c65f7dbf71ec`. See the W4 delivery record for complete
+receipts and explicit limitations. MAS-28 calibration is separately accepted via PR8407.
+All declared V1 waves are complete; the canonical workstream is in maintenance mode.
 
 ---
 

@@ -1,0 +1,230 @@
+{
+  "started_at": "2026-10-20T19:11:19.898469+00:00",
+  "head": "608dfad299e2e48ab7703bf0b180e0dca1318229",
+  "incoming": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "owner": "scripts.build_macro_suite_pages.render",
+  "source_inputs": {
+    "lib/macro_suite_labels.py": {
+      "bytes": 110452,
+      "sha256": "06cdb700046b781b6195dcaf12a3ed48ed7c0280face297c83f26e96f936e9f2"
+    },
+    "scripts/build_macro_suite_pages.py": {
+      "bytes": 69712,
+      "sha256": "9187b81ee7c0ec1c58b20b4a91bf9af876a73d1f2c64a6f82104fe677cbd954c"
+    },
+    "scripts/check_macro_command_copy.py": {
+      "bytes": 25643,
+      "sha256": "a392b039a25f86cde95d07862d343c1e23a5cf92d424eccbf590beef69a67ddc"
+    },
+    "tests/test_macro_command_copy_law.py": {
+      "bytes": 208465,
+      "sha256": "d186ad6d154df9170f3eca2c4e812aefa87254c289b683ee400937f9caad620a"
+    }
+  },
+  "data_inputs": {
+    "site/macrodata/global_regime_fragment.json": {
+      "bytes": 51574,
+      "sha256": "52f146f76afbf8c7ca4abdb3f0ba4a766203c3b27dd0b0eaaf5e5032743c723c",
+      "git_blob": "a9aea207c78ab35bbe34dc2d0589235c37d57d4c"
+    },
+    "site/macrodata/macro_signals.json": {
+      "bytes": 135996,
+      "sha256": "5b718ddebe631b8726d7b6e3b75d86e8fa9b230d47fc84f8a338a4521e542182",
+      "git_blob": "629aa7c2ae236ecd0b559528e6b0febd3d8deb56"
+    },
+    "site/macrodata/release_forecast.json": {
+      "bytes": 96555,
+      "sha256": "ca2103594d4d5019c9899637aec4ebf495e2ed00ae2c80c96b3d91378c2a0d90",
+      "git_blob": "23522cf98e15ea1340fc5f1c46d1a06fe3f35743"
+    },
+    "site/macrodata/workspaces/business_activity/US/latest.json": {
+      "bytes": 107455,
+      "sha256": "72c04cda02cb6cef2fe9f0de6b20ff4f722bd7dcdc0f7518e194c0faaae6af14",
+      "git_blob": "e9df36c806fbb33d9cd435a80da4f24d4b57b773"
+    },
+    "site/macrodata/workspaces/capital_structure/US/latest.json": {
+      "bytes": 111363,
+      "sha256": "9b7bc5c4210ec73327920b40d43c7a13e5993510edcdd613307f78d13d56f563",
+      "git_blob": "9b02cc62def57b5750ba553848e497f71347f200"
+    },
+    "site/macrodata/workspaces/consumer_payments/US/latest.json": {
+      "bytes": 101311,
+      "sha256": "7cd4b80b4e138d7506e5f1c93f59b0214bd02366f15e8ca7e037de4b77e0f99b",
+      "git_blob": "b267b3f7a4844eacfde91782c038e16f66df300e"
+    },
+    "site/macrodata/workspaces/financial_conditions/US/latest.json": {
+      "bytes": 103873,
+      "sha256": "021dd80aa5a75a5820bd04280bb186737630726a7e77de7a766ccf5c25f9e292",
+      "git_blob": "e7a176d6e0435b0141277371a692d2a37a9e3603"
+    },
+    "site/macrodata/workspaces/growth_real_economy/US/latest.json": {
+      "bytes": 83518,
+      "sha256": "e3cacefaf5c77b1801497e4458e6e382659affe5cadf626765015b7139d275b4",
+      "git_blob": "747ab2401dd35d75c2e00a8ead1c56c86a9bbc9b"
+    },
+    "site/macrodata/workspaces/housing_real_estate/US/latest.json": {
+      "bytes": 95011,
+      "sha256": "1f30bbe939f15c3a24624f38e101fc3dc7823bf51d1f9786696d33e493b19a5e",
+      "git_blob": "dcdd3266f6b53b24533c5d385cabfdcd21e4d261"
+    },
+    "site/macrodata/workspaces/inflation_system/US/latest.json": {
+      "bytes": 62011,
+      "sha256": "dbd95194e565d67f7cdb8e19a27c1aa31506fc1fbf787f2c89d864e862ffe7ca",
+      "git_blob": "1718ad426fbd356b92adf5fcbffee75098a24240"
+    },
+    "site/macrodata/workspaces/labor_markets/US/latest.json": {
+      "bytes": 73676,
+      "sha256": "243fe7a7431ce3d5a41cdb99f7fbeb6d5f0a3d7cf313bc5d0e6dd78d9fabf0cd",
+      "git_blob": "bc4a8f7f473be562d3a8629b2f9b14797b8925f2"
+    },
+    "site/macrodata/workspaces/liquidity_central_banks/US/latest.json": {
+      "bytes": 112157,
+      "sha256": "f4fee39c2a0d58f6de5ec8d43b93b841e3893e56db2ce22832824d53dd982b3e",
+      "git_blob": "52e5706747f1d3773f613558d92c8bbc0f95d64e"
+    },
+    "site/macrodata/workspaces/liquidity_regime/US/latest.json": {
+      "bytes": 49824,
+      "sha256": "032b2bfea82bc95cf732022def16c7083cca1d56d0d88f54b60666550abe6f2d",
+      "git_blob": "1267752d141849f90b5ba7b5a6898e388428a149"
+    },
+    "site/macrodata/workspaces/manifest.json": {
+      "bytes": 6994,
+      "sha256": "64a10453cd3b4762f5a7cc22afa7d8527e97048bbbdd25366e27cb6a1ead97a6",
+      "git_blob": "e00446cd7e3fa834b312b795249bf8f18706ee1a"
+    },
+    "site/macrodata/workspaces/monetary_policy/US/latest.json": {
+      "bytes": 82091,
+      "sha256": "05472dea700a95f2b766b06a96db663ce35a8d71357998c912f1859cfebc8780",
+      "git_blob": "622aa04f5e9797e3e3b9bb70f6acae09359c62ba"
+    },
+    "site/macrodata/workspaces/national_debt_liabilities/US/latest.json": {
+      "bytes": 141110,
+      "sha256": "af6279fc4817bb016dc5b56139c972d8395710dbf411ae2460315c2e47efdd64",
+      "git_blob": "f8fdd9efdbadcbb4f221cb31a91dd7a18ff0ab17"
+    },
+    "site/macrodata/workspaces/rates_curves/US/latest.json": {
+      "bytes": 172160,
+      "sha256": "8e4fddde9acc11c907a1aeb0ede3e7172c765e5d997f675a8dfbce2a534629a4",
+      "git_blob": "a621a6ad54321e3c8748c55c2f7de40364e59c4b"
+    },
+    "site/macrodata/workspaces/trade_flows/US/latest.json": {
+      "bytes": 98393,
+      "sha256": "a52f71ba855b11ab46a67c514812e5733a0857b597aee45f27ba9cc5492a60ac",
+      "git_blob": "7dd3d63a2138d6da4cb94e0f65d97baba0df9be4"
+    }
+  },
+  "page_built_at": "2026-10-20T19:11:19Z",
+  "worktree_or_index_written": false,
+  "adopted": false,
+  "state": "RENDERED_NOT_ADOPTED",
+  "pages": [
+    {
+      "name": "macro_liquidity_regime.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_liquidity_regime.html",
+      "bytes": 200487,
+      "sha256": "4246982bc1281b97a42184c129eb57d17837babaf30228b68251583a27f314b6",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_growth_real_economy.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_growth_real_economy.html",
+      "bytes": 264837,
+      "sha256": "f7829a96b1f4bb68f26c46cd28a6e1d7730135a8c13eeb49fbe09adb0731b4e5",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_business_activity.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_business_activity.html",
+      "bytes": 292963,
+      "sha256": "4b6b3c13672c38214a8b7b713ea1e27ddd893baf3e770a2c70a9eb959ad06163",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_labor_markets.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_labor_markets.html",
+      "bytes": 254945,
+      "sha256": "e04b024e40329c96b04f7451b73ee0655c208e59f716a2cd68f66537c065ddb2",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_inflation_system.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_inflation_system.html",
+      "bytes": 208588,
+      "sha256": "851d7fdf05d98a51464075d610daca4df853d63fe83542afb9bbb9d460ac6935",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_monetary_policy.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_monetary_policy.html",
+      "bytes": 267689,
+      "sha256": "fb1d24a38913dda0a6f8a754feb431b5b234f7b0909bb704acb47a8e92583d44",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_financial_conditions.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_financial_conditions.html",
+      "bytes": 308053,
+      "sha256": "d210678ab66fe22a299aaf339be25b8e43bf0e7d2aeac50b4e368fa5596c253a",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_liquidity_central_banks.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_liquidity_central_banks.html",
+      "bytes": 337861,
+      "sha256": "0c0b3e0a1281eff9c843bd94db26bd1245812479263f4b8a244aee9d408b8455",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_capital_structure.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_capital_structure.html",
+      "bytes": 293940,
+      "sha256": "eda9e1660782d6655396c0eb6767b00843194909ebb51dc7f5955b69b424e434",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_housing_real_estate.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_housing_real_estate.html",
+      "bytes": 261931,
+      "sha256": "0222244f84b940820c20b99d1263c242473a236e934526a0f28a8e10910abeb2",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_consumer_payments.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_consumer_payments.html",
+      "bytes": 307646,
+      "sha256": "ea0401c34666997d72551910ab678939f4999499774f1dbc01800676a1ce7dae",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_national_debt_liabilities.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_national_debt_liabilities.html",
+      "bytes": 348069,
+      "sha256": "d976cec0e2ad8194465b75b25b83694e9c7f35a2c0e8b0a29caa9134672157e0",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_rates_curves.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_rates_curves.html",
+      "bytes": 422600,
+      "sha256": "53ae78c5cd02da44174de089f184d4db9d06a559dc07b8635dbbc11381a55b3b",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_trade_flows.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_trade_flows.html",
+      "bytes": 264892,
+      "sha256": "9fe685577f1da1ae3e2b7d46bbd846ae6ca5f6db8182f67d64b4c4654b34e0a1",
+      "copy_guard": []
+    },
+    {
+      "name": "macro_monetary.html",
+      "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-labor-render/site/macro_monetary.html",
+      "bytes": 148112,
+      "sha256": "111ffabeccc54622d2b35cffe9924799ddd01744c8007a92aae2146185c630e6",
+      "copy_guard": []
+    }
+  ],
+  "source_and_data_unchanged": true,
+  "finished_at": "2026-10-20T19:11:22.603586+00:00",
+  "all_copy_guards_pass": true
+}

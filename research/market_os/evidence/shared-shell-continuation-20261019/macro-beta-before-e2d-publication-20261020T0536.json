@@ -1,0 +1,51 @@
+{
+  "started_at": "2026-10-20T05:35:09.373979+00:00",
+  "finished_at": "2026-10-20T05:35:10.959794+00:00",
+  "remote_source_sha256": "c53b62c77cc27142fc31f20e771a50428be6311af72249eec6140e5a068e78c0",
+  "ssh_exit": 0,
+  "stdout_sha256": "5ea715ef0b3c6f8059a345d942ca11b81c6bc53bf30c3617f69752bb9420d256",
+  "stdout_bytes": 11881,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "queries": [
+    {
+      "argv": [
+        "dig",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "A"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\nbeta.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.99.101\nbeta.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.98.106\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "CNAME"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "curl",
+        "--head",
+        "--max-time",
+        "20",
+        "--silent",
+        "--show-error",
+        "https://beta.mastermind-x.com/api/shared-shell/status"
+      ],
+      "exit": 60,
+      "stdout": "",
+      "stderr": "curl: (60) SSL: no alternative certificate subject name matches target host name 'beta.mastermind-x.com'\nMore details here: https://curl.se/docs/sslcerts.html\n\ncurl failed to verify the legitimacy of the server and therefore could not\nestablish a secure connection to it. To learn more about this situation and\nhow to fix it, please visit the web page mentioned above.\n"
+    }
+  ],
+  "host_mutation": false,
+  "owner_invoked": false
+}

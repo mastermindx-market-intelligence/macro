@@ -1,0 +1,13 @@
+{
+  "finding": "T20-PARTIAL-EMPTY-ABSENCE",
+  "source_before_sha256": "f3ccfd436cb9c744174cdf72ab3f819676cee014ffa73ec31ff6f53bf5d9459c",
+  "red_command": "python3 -m pytest tests/test_evidence_findings_ui.py -q -k all_rejected_rows",
+  "red_exit_code": 1,
+  "red_failed": 2,
+  "red_deselected": 5,
+  "red_seconds": 9.97,
+  "red_tool_chunk": "56a15b",
+  "scope": "Actual bilingual renderer all-rejected panel/detail state; empty complete report remains zero.",
+  "source_after_sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772",
+  "regression_harness_repair": "Existing refresh-only harness now stubs the new separate findings renderer, which is exercised by its actual-client suite."
+}

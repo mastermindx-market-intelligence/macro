@@ -1,0 +1,191 @@
+{
+  "accessions": [
+    {
+      "accession": "0000320193-24-000123",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "3571",
+      "labels": 4,
+      "outcome": "ADMITTED",
+      "period_of_report": "2024-09-28",
+      "prediction_states": {
+        "emitted": 3,
+        "typed_absence": 1
+      },
+      "predictions": 4,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "contract_liability_rollforward_additions",
+        "contract_liability_rollforward_closing",
+        "contract_liability_rollforward_recognized",
+        "revenue_disaggregated",
+        "revenue_policy_text_block",
+        "rpo_percentage_next_12m",
+        "rpo_timing",
+        "rpo_total"
+      ]
+    },
+    {
+      "accession": "0001640147-23-000030",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "7372",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-01-31",
+      "prediction_states": {
+        "emitted": 6,
+        "not_evaluable": 2
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "contract_liability_rollforward_additions",
+        "contract_liability_rollforward_closing",
+        "contract_liability_rollforward_opening",
+        "revenue_disaggregated"
+      ]
+    },
+    {
+      "accession": "0001640147-23-000199",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-07-31",
+      "prediction_states": {
+        "emitted": 5,
+        "not_evaluable": 1
+      },
+      "predictions": 6,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "contract_liability_rollforward_additions",
+        "contract_liability_rollforward_closing",
+        "contract_liability_rollforward_opening",
+        "contract_liability_rollforward_recognized",
+        "revenue_disaggregated",
+        "revenue_policy_text_block"
+      ]
+    },
+    {
+      "accession": "0001640147-23-000260",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-10-31",
+      "prediction_states": {
+        "emitted": 5,
+        "not_evaluable": 1
+      },
+      "predictions": 6,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "contract_liability_rollforward_additions",
+        "contract_liability_rollforward_closing",
+        "contract_liability_rollforward_opening",
+        "contract_liability_rollforward_recognized",
+        "revenue_disaggregated",
+        "revenue_policy_text_block"
+      ]
+    },
+    {
+      "accession": "0001652044-23-000016",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 1,
+      "form": "10-K",
+      "issuer_sic": "7370",
+      "labels": 4,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 3
+      },
+      "predictions": 3,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "contract_liability_noncurrent",
+        "contract_liability_rollforward_additions",
+        "contract_liability_rollforward_closing",
+        "contract_liability_rollforward_opening",
+        "contract_liability_rollforward_recognized",
+        "revenue_policy_text_block",
+        "rpo_percentage_next_12m",
+        "rpo_timing"
+      ]
+    }
+  ],
+  "exclusions": [
+    {
+      "exclusion_reason": "duplicate_prediction_target:revenue_disaggregated",
+      "trial_id": "PK04|0001652044-23-000016|extract|revenue_disaggregated"
+    }
+  ],
+  "label_count": 28,
+  "labels_status": "labelled",
+  "pack_id": "PK04",
+  "sic_binding": {
+    "contract_id": "fif-held-out-v1",
+    "order": [
+      "held_out_contract",
+      "sec_submissions_witness"
+    ]
+  },
+  "trial_field_map": {
+    "PK04|0000320193-24-000123|extract|contract_liability_current": "contract_liability_current",
+    "PK04|0000320193-24-000123|extract|contract_liability_noncurrent": "contract_liability_noncurrent",
+    "PK04|0000320193-24-000123|extract|contract_liability_rollforward_opening": "contract_liability_rollforward_opening",
+    "PK04|0000320193-24-000123|extract|revenue": "revenue",
+    "PK04|0001640147-23-000030|extract|contract_liability_current": "contract_liability_current",
+    "PK04|0001640147-23-000030|extract|contract_liability_noncurrent": "contract_liability_noncurrent",
+    "PK04|0001640147-23-000030|extract|contract_liability_rollforward_recognized": "contract_liability_rollforward_recognized",
+    "PK04|0001640147-23-000030|extract|revenue": "revenue",
+    "PK04|0001640147-23-000030|extract|revenue_policy_text_block": "revenue_policy_text_block",
+    "PK04|0001640147-23-000030|extract|rpo_percentage_next_12m": "rpo_percentage_next_12m",
+    "PK04|0001640147-23-000030|extract|rpo_timing": "rpo_timing",
+    "PK04|0001640147-23-000030|extract|rpo_total": "rpo_total",
+    "PK04|0001640147-23-000199|extract|contract_liability_current": "contract_liability_current",
+    "PK04|0001640147-23-000199|extract|contract_liability_noncurrent": "contract_liability_noncurrent",
+    "PK04|0001640147-23-000199|extract|revenue": "revenue",
+    "PK04|0001640147-23-000199|extract|rpo_percentage_next_12m": "rpo_percentage_next_12m",
+    "PK04|0001640147-23-000199|extract|rpo_timing": "rpo_timing",
+    "PK04|0001640147-23-000199|extract|rpo_total": "rpo_total",
+    "PK04|0001640147-23-000260|extract|contract_liability_current": "contract_liability_current",
+    "PK04|0001640147-23-000260|extract|contract_liability_noncurrent": "contract_liability_noncurrent",
+    "PK04|0001640147-23-000260|extract|revenue": "revenue",
+    "PK04|0001640147-23-000260|extract|rpo_percentage_next_12m": "rpo_percentage_next_12m",
+    "PK04|0001640147-23-000260|extract|rpo_timing": "rpo_timing",
+    "PK04|0001640147-23-000260|extract|rpo_total": "rpo_total",
+    "PK04|0001652044-23-000016|extract|contract_liability_current": "contract_liability_current",
+    "PK04|0001652044-23-000016|extract|revenue": "revenue",
+    "PK04|0001652044-23-000016|extract|revenue_disaggregated": "revenue_disaggregated",
+    "PK04|0001652044-23-000016|extract|rpo_total": "rpo_total"
+  }
+}

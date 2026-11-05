@@ -1,0 +1,18 @@
+{
+  "observed_at": "2026-10-18T00:51:30.154932+00:00",
+  "scope": "Actual signed-in installed9498 journey plus official source browser read; not whole-program acceptance",
+  "installed_merge": "599ac1d476bc54b472e59510726627f45024d26c",
+  "history": {
+    "earlier_native_observation": "SelectJul01,selectJun12,Back restoresJul01 selection/search and focus; retained native transcript before context compaction",
+    "restored_event": "govws-d79141c06780e1712bdd6194",
+    "search": "N0002418C2305",
+    "current_dom_confirms_restored_url_search_selected_row": true
+  },
+  "demonstrated_source_gap": {
+    "primary_link": "https://api.usaspending.gov/api/v2/transactions/",
+    "same_event_second_receipt": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_N0002418C2305_9700_-NONE-_-NONE-/",
+    "official_detail_browser_observation": "USAspending API Award Retrieve; GET; HTTP200OK; PIIDN0002418C2305;generated_unique_award_idCONT_AWD_N0002418C2305_9700_-NONE-_-NONE-",
+    "source_fetched_into_product": false
+  },
+  "export_result": "live-exports/VERIFICATION.json"
+}

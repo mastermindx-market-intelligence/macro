@@ -1,0 +1,692 @@
+{
+  "schema": "market_memory.u1_u2_existing_ui_integration_packet.v1",
+  "created_at_utc": "2026-10-13T21:05:11.459608+00:00",
+  "status": "DESIGN_AND_ARCHITECTURE_FROZEN_FOR_ROOT_ADJUDICATION_IMPLEMENTATION_NOT_CLAIMED",
+  "original_root": "01a1333c-a475-7052-95a8-72c623fb12e1",
+  "coordinator_thread": "01a13703-4279-7021-83fe-f851bc10bd1b",
+  "commission": "U1/U2 actual existing UI integration design/intelligence coordination; root sole source writer; first SPY reference five house fields; no L0 outcome substitution",
+  "source": {
+    "worktree": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/market-memory-consumers-01a1333c-aeaa702ec1bb0bd3",
+    "commission_head": "91b529e12b60d0f343d130da9b95c8cd99309102",
+    "files": {
+      "templates/market_memory.html.j2": {
+        "bytes": 7622,
+        "sha256": "0d16df3d4c4cf45c4273134630a9de2aa946de4bb5efb9df9b4b8d78cebc7ce0"
+      },
+      "templates/market_memory.css": {
+        "bytes": 13308,
+        "sha256": "3915b3d3a5f3cd4519d34cf15100ae9eab56b418ed0d6bad0aff329920e1e94a"
+      },
+      "templates/market_memory.js": {
+        "bytes": 20713,
+        "sha256": "68beea3ed9c7f494f74b6b8bf6429046d502f02f75245d649151bd284de18c78"
+      },
+      "templates/theme.css": {
+        "bytes": 221718,
+        "sha256": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2"
+      },
+      "templates/_site_nav.html.j2": {
+        "bytes": 3388,
+        "sha256": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482"
+      },
+      "templates/_navlinks.html.j2": {
+        "bytes": 52328,
+        "sha256": "5318e6f11db80e225707cd02b0776f590c3defcaf6aaca81085e9bd956981242"
+      },
+      "app/market_memory.py": {
+        "bytes": 40920,
+        "sha256": "cfac0c0009ccc95a6acdd918b8e9e0165fdc6b6f6fe461535aa4c04b4a213eac"
+      },
+      "engine/neuralweb/market_memory_playback.py": {
+        "bytes": 33428,
+        "sha256": "4418b6e949391e4d6ccf3217dc68ea6715700a85fe8d4b1641ef81526974d205"
+      },
+      "engine/neuralweb/brain_analogues.py": {
+        "bytes": 28849,
+        "sha256": "3b1fe0577287c22e6b75a603d0bdb315db6f891644eb6041377b62dc31f83056"
+      },
+      "engine/neuralweb/market_memory_episode_features.py": {
+        "bytes": 18219,
+        "sha256": "c80ba0a39e42b62e3bd687301fdc974d18f935b584b7f0b462b753ccf044530a"
+      },
+      "engine/neuralweb/market_memory_retained_use.py": {
+        "bytes": 10658,
+        "sha256": "0166ccb83b4f73ec3601ea1923d57026948522a7ee8b70ff63d9c70e674b4734"
+      },
+      "config/market_memory_retained_use.v1.json": {
+        "bytes": 1701,
+        "sha256": "211c3bd22773e28a7be0e1448ac682e234d52f505cb91e2828305b8825866a89"
+      },
+      "tests/test_build_market_memory_page.py": {
+        "bytes": 15443,
+        "sha256": "61cb909d1cfd7bd67d769ae8517e6b8b7ec074a6af1b9ef739be0cc40db7219e"
+      },
+      "scripts/build_market_memory_page.py": {
+        "bytes": 1811,
+        "sha256": "3c6c9902e7e69f0551ea88fcff843c6250f8deb7927181b2c780b01837dc1389"
+      },
+      "research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md": {
+        "bytes": 60633,
+        "sha256": "ada85d7173da33986661dcaf3754b31fac1d0f46c6b221b737529efa010cd5f5"
+      },
+      "docs/DESIGN_DOCTRINE.md": {
+        "bytes": 16464,
+        "sha256": "687cbdaa9c26a324850af4d95090901b3eb45f96b48bbe96d4db3f526d67a764"
+      },
+      "research/DESIGN_MIGRATION_FACTORY_V1.md": {
+        "bytes": 27643,
+        "sha256": "bfb999a458085ceb78d530db6c8682717020a8bc5c3f848326458beef5af16d5"
+      },
+      "config/product_experience/page_registry_overrides.yml": {
+        "bytes": 36755,
+        "sha256": "142afcb8980fb93b40ba3e20969cf8104caa38a0ac7b32f24ee03d5c140c522e"
+      },
+      "mockups/design_system/specimen.html": {
+        "read_via": "git show HEAD; sparse file not materialized",
+        "bytes": 75101,
+        "sha256": "ac16c90229af9ef6b7634f021d7d2f822fcbd70f60b05470d2a390cc5382f44c"
+      }
+    }
+  },
+  "inputs": {
+    "extracted_masterplan": {
+      "path": "/Volumes/Mastermind/evidence/market-memory-20261012-01a1333c/MASTERPLAN.md",
+      "bytes": 68977,
+      "sha256": "223abef38f5601d4caab7e71da57f5c59d5ba67a64b516e9c9cddcc54d26873d"
+    },
+    "extracted_delivery_contracts": {
+      "path": "/Volumes/Mastermind/evidence/market-memory-20261012-01a1333c/DELIVERY_CONTRACTS.json",
+      "bytes": 32154,
+      "sha256": "fbeec177066536d53369aeeca8e53ac7653de63070de3a9c229eaa5284141e2a"
+    },
+    "acceptance_cases": {
+      "A26": {
+        "id": "A26",
+        "title": "Outcome lens",
+        "required_behavior": "Then-known and subsequently observed outcomes have different availability rules; neighbor selection remains unchanged.",
+        "tasks": [
+          "L0",
+          "U2"
+        ],
+        "acceptance": "not_run_in_authoring"
+      },
+      "A27": {
+        "id": "A27",
+        "title": "Forecast maturity",
+        "required_behavior": "No backfilled prospective predictions or grading before maturity; missing/censored outcomes do not become failures.",
+        "tasks": [
+          "L0",
+          "E2"
+        ],
+        "acceptance": "not_run_in_authoring"
+      },
+      "A28": {
+        "id": "A28",
+        "title": "Dependence and N",
+        "required_behavior": "Selected-neighbor count is not statistical effective N; duplicates and common market days handled and uncertainty exposed.",
+        "tasks": [
+          "A0",
+          "U2"
+        ],
+        "acceptance": "not_run_in_authoring"
+      },
+      "A35": {
+        "id": "A35",
+        "title": "Three product modes",
+        "required_behavior": "Actual output playback, hypothetical historical analysis and current decision support are unmistakably distinct.",
+        "tasks": [
+          "U1"
+        ],
+        "acceptance": "not_run_in_authoring"
+      },
+      "A36": {
+        "id": "A36",
+        "title": "Navigation and subjects",
+        "required_behavior": "Direct links/back/filter/cutoff/source focus restore exact current intent and generation in EN/ZH responsive views.",
+        "tasks": [
+          "U1"
+        ],
+        "acceptance": "not_run_in_authoring"
+      },
+      "A37": {
+        "id": "A37",
+        "title": "Failure visibility",
+        "required_behavior": "Current, stale-last-good, unavailable, rights-blocked, pending and valid-empty states do not fabricate freshness.",
+        "tasks": [
+          "U1"
+        ],
+        "acceptance": "not_run_in_authoring"
+      },
+      "A38": {
+        "id": "A38",
+        "title": "Inspectable match",
+        "required_behavior": "Show why cases matched, what differed, why others were excluded and which outcomes were unseen at query time.",
+        "tasks": [
+          "U2"
+        ],
+        "acceptance": "not_run_in_authoring"
+      },
+      "A45": {
+        "id": "A45",
+        "title": "Rights and privacy",
+        "required_behavior": "Authorize before source reads; no restricted bytes/user state in public caches; original retention versus later disclosure rights separately enforced.",
+        "tasks": [
+          "D0"
+        ],
+        "acceptance": "not_run_in_authoring"
+      }
+    },
+    "design_law": "docs/DESIGN_DOCTRINE.md > research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md > canonical specimen > individual live page",
+    "frontend_design_skill": "Doctrine references frontend-design:frontend-design; it is absent from available skills and targeted installed-directory search. This premium coordinator uses binding doctrine, design system and actual canonical specimen for design judgment; no invented alternate skill or labor spawn."
+  },
+  "fabric": "Installed M2 skill/global operations already loaded in this same coordinator. Original root immutable/allowance expired; canonical host disk+thermal prelaunch refusal retained. No replay, fresh allowance or native labor. This assignment is principal design/architecture judgment.",
+  "preservation": {
+    "U0": "Existing #8694 is MERGED as20f8f675e6213883ee0f141fe383da1c8d6028c9 per integration/U0_MERGE_RECEIPT.json. U0_LIVE_BROWSER_RECEIPT.json accepts real entitled invalid/empty/locale issuer recovery; real401,signout and natural late-response cases remain separately unproven. Preserve accepted code and evidence; do not reopen old repair.",
+    "existing_capabilities": [
+      {
+        "capability": "Shared authenticated navigation and search",
+        "disposition": "RETAIN",
+        "owner": "templates/_site_nav.html.j2, _navlinks.html.j2, navigation-refresh.css, nav_market.js, theme.js"
+      },
+      {
+        "capability": "Recomputed macro /macro and symbol /symbol/{ticker} tools",
+        "disposition": "RELOCATE_WITHIN_PAGE",
+        "landing": "Named Recomputed history study disclosure, original mm-macro/ mm-symbol IDs and latest-intent handlers preserved; never relabel those outputs as retained"
+      },
+      {
+        "capability": "Exact operational capture /context and /as-known-at",
+        "disposition": "IMPROVE_DISCOVERABILITY",
+        "landing": "Saved output mode catalog selection and source inspector"
+      },
+      {
+        "capability": "Three-grid symbol receipts and ticker deep links",
+        "disposition": "RETAIN",
+        "landing": "Existing legacy study region retains ticker URL/localStorage behavior and incumbent issuer state machine"
+      },
+      {
+        "capability": "L0 qualified outcomes",
+        "disposition": "BLOCKED_DATA",
+        "landing": "Visible Later outcomes unavailable state; no legacy price-return graft"
+      }
+    ],
+    "forbidden": "No new header/nav/token root, rewrite of legacy ticker ownership, current constituent truth claim, opaque JS stylesheet, model-generated market facts, outcomes fabricated from recomputed history, expanded symbols or sources."
+  },
+  "route_archetype": {
+    "route": "market_memory.html",
+    "registry": "macro:market_memory archetype=intelligence_desk",
+    "primary_question": "What did the saved house reading say, and what do comparable saved cases show?",
+    "secondary_jobs": [
+      "Inspect exact source evidence",
+      "Understand coverage and omitted cases",
+      "Open existing recomputed-history studies without confusing their basis"
+    ],
+    "layout": "Desk header with subject+mode+one cutoff → compact capture selector → lead comparable-case brief + source inspector → optional existing studies. L1 sections <=5; no count ladder, trading verdict or parallel dashboard. At1440, two supporting modules max above fold; at390 answer in first swipe and lead plus three case cards before source depth."
+  },
+  "modes": [
+    {
+      "ui_key": "saved",
+      "en": "Saved output",
+      "zh": "原始输出",
+      "wire_mode": "actual_output_operational_pit catalog; operational_pit exact context lookup",
+      "job": "Read the original captured packet and its exact source quotes",
+      "clock": "Original event_time and as_known_at; capture publication/captured_at shown separately in evidence. A saved original is not a reconstructed historical reader.",
+      "source": "GET /playback/catalog then exact GET /context/{context_id} or /as-known-at selected tuple, with response IDs+ETag/body matching catalog entry. Catalog selection alone is not playback evidence.",
+      "neighbors": "No analysis automatically substituted. User explicitly chooses Historical comparison or Current context for new method outputs.",
+      "outcomes": "Unavailable until L0 authorized qualified join"
+    },
+    {
+      "ui_key": "historical",
+      "en": "Historical comparison",
+      "zh": "历史比较",
+      "wire_mode": "historical_hypothetical; exact returned registered method_spec_id",
+      "job": "Apply current fixed contextual method to an exact saved query at a chosen supported evidence cutoff",
+      "clock": "Original saved packet cutoff and later analysis cutoff both retained; method applied now to a historical case is hypothetical. First_available_for_contextual_analysis is max exact authenticated owner capture/raw-built/raw-observed/feature/packet clocks, never source session date. A requested earlier cutoff yields unavailable; never silently shift it.",
+      "source": "GET /macro/retained exact query,subject,generation+SHA,query_cutoff,method_spec_id,limit<=8",
+      "neighbors": "Current accepted R2 fixed unfitted five-field L1 and registered5/5calendar exclusion, exact ties. No W2C original L2 substitution or source-native feature claim.",
+      "outcomes": "Unavailable until L0; future enable then_known and subsequent_observed explicitly"
+    },
+    {
+      "ui_key": "current",
+      "en": "Current context",
+      "zh": "当前参考",
+      "wire_mode": "current_contextual_support; exact returned registered method_spec_id",
+      "job": "Compare a selected saved reading with cases permitted at current request cutoff",
+      "clock": "Catalog supplies server reference cutoff and its request-time origin; user selects exact saved capture. Last saved-source date and current analysis date are visibly different when source is old. Never label a saved old capture as live today.",
+      "source": "Same exact retained endpoint and owners as historical mode, separate methodID/mode",
+      "neighbors": "Contextual comparison only, no probability/trade/independent-sample promise",
+      "outcomes": "Unavailable until L0"
+    }
+  ],
+  "authenticated_discovery": {
+    "current_fact": "GET /playback/catalog exists but requires subject_id+instrument_id; retained_method_catalog(root) is Python-only; no current GET method discovery route. Current page calls only legacy recomputed endpoints.",
+    "new_route": "GET /api/market-memory/v1/macro/retained/catalog",
+    "query": "Initial mode=historical_hypothetical|current_contextual_support, offset=0,limit<=20; subsequent pages supply same trusted generationID+SHA and exact continuation. No caller user/rights/path/feature/weight fields. Subject is installed first reference SPY allowed scope; future subject catalog expansion separately qualifies actual identities.",
+    "owner_function": "retained_catalog_for_user(root,user_id,request_spec,peer=None): genuine server authenticated user, current site_full and installed source-purpose/retention record before metadata access; same rate/2-slot and64MiB source budget as retained consumer. Reuse retained_method_catalog. Reuse trusted owner read_pinned_generation/capture_receipts and existing playback catalog projection semantics; do not force trusted-only discovery to depend on an unrelated missing W1A store or manufacture a combined generation.",
+    "bootstrap_scope": "Add explicit current-authority discovery-metadata policy action to existing retained-use owner: installed allowed subject/store permits only bounded generation/receipt metadata enumeration. Resolve exact pin, then request-local policy authenticates actual receipt subject and current capture/source rights before rich fields/count disclosure. No frozen caller bool, raw config JSON or site_full alone can grant source disclosure.",
+    "response": {
+      "schema": "market_memory.retained_context_catalog.v1",
+      "subject": "Authenticated stable subject+instrument IDs from actual owner, displayname from current qualified SPY reference config; association is house macro context, not SPY-specific constituent truth",
+      "generation": "trusted storeID/profile/generationID+SHA/source version assurance; all pages same pin",
+      "methods": "Both current registered modes+method_spec_ID/descriptor_ID/5field names/exclusiondays/mode/false fit/training/promotion, translated product labels",
+      "entries": "Exact queryID/contextID/captureID/packetSHA; original event_time/as_known_at/captured_at and earliest supported contextual cutoff from authenticated clocks; source_session measurement date; observed/missing field flags; ref usable directly by retained API/Brain",
+      "selection": "Deterministic descending original cutoff then event_time then IDs; offset/limit/returned/continuation; total only after current rights admit full disclosed set; explicitly exact-generation saved captures, not full market/opportunity census",
+      "request_clock": "Server_reference_cutoff UTC plus origin=runtime_request_clock for current comparison; never external authenticated timestamp claim",
+      "source_navigation": "Only authenticated API/page refs, no private paths/raw vendor body or admin URLs"
+    },
+    "privacy": "_PrivateMarketMemoryRoute + _response private,no-store,VaryAuthorization on success and all error paths; authenticate before reader creation; denied metadata includes no private subject/capture IDs/counts. Revocation affecting total/disclosure refuses rather than leak hidden count or silently shrink a complete-denominator claim.",
+    "existing_playback_reuse": "For already-known subject/instrument, old GET/playback/catalog remains exact original-output catalog and generation-pair non_atomic truth. New trusted discovery can provide exact subject+instrument and entry refs so Saved output uses it without typed-ID entry. If original multi-store playback unavailable, show its typed failure; do not silently present retained-analysis result as saved playback.",
+    "Brain_discovery": "Add bounded get_retained_market_catalog Brain tool if no supported same-owner discovery hook exists. It calls the same retained_catalog_for_user using actual Brain server user, returns<=8 original refs+two methodIDs with exact generation/cutoff. Existing get_retained_market_context then consumes these refs. UI may copy a bounded exact request or open an existing supported Brain reference context; no automatic chat message or invented auth/session/ID. Tool source and Fast visibility/dispatcher reviewed with N1 owner.",
+    "no_fallback": "Once a query/pin is chosen, absent/stale/revoked deep links refuse; no latest/nearest/recomputed substitution. Initial catalog discovery may explicitly pin current head; Refresh available captures is a new intentional selection action."
+  },
+  "UI_contract": {
+    "owned_region": "New .mm-retained region at beginning of existing main.mm-shell, header copy simplified; unchanged legacy panels move inside an explicit named details region with original IDs and listeners. Source JSON remains API-only; static builder emits no private fixture captures.",
+    "controls": [
+      "Three semantic tabs/segmented controls use existing .segbtn, roles/aria-controls/aria-selected and keyboard arrows/Home/End; mode hash update on explicit selection",
+      "Saved SPY capture select uses authenticated human dates with exact hidden refs, no machine-ID typing",
+      "Evidence available by labelled UTC datetime field; default from catalog supported clock, both original and analysis cutoff inspectable",
+      "Compare cases/Open saved output primary action; Inspect source per case focuses existing source panel; named source field focus restored via URL",
+      "Coverage and exclusions / Comparison method / Exact source reference use existing mm-details or canonical styled details, all touch/keyboard reachable"
+    ],
+    "exact_url_state": "Preserve incumbent ticker parameter. New mm_mode,mm_query,mm_subject,mm_gen,mm_gen_sha,mm_cutoff,mm_method,mm_context,mm_source_field,mm_outcome keys or exact equivalent typed URL codec. Hash task mode if .mx-tabset pattern; query retains exact refs. Back/popstate restores exact intent/pin/mode/cutoff/selectedcase/sourcefocus/outcomelens. No token/userID/raw payload in URL; no private payload in localStorage.",
+    "request_state": "Separate retained request epoch+auth epoch from legacy issuer epochs. On any new mode/query/cutoff/pin/invalid intent immediately clear old retained evidence, increment epoch, cancel where possible, then only commit exact epoch+request binding matches. Signout clears catalog/retained/source/counts/clipboard state and invalidates late returns. Locale re-renders only committed matching current intent; never reloads prior subject.",
+    "body_tiers": {
+      "glance": "Mode+exact source date/current cutoff caveat; M comparable saved cases; plain compare-then-inspect guidance. No IDs, A0 badge, internal lifecycle grant list, q18 math, n= or authority jargon. Return count is similarity selection, not independent trials.",
+      "hover_or_details": "Scale definitions, method/5days controls, source/native truth distinction, census basis and exhaustive exclusions, remaining evidence gaps.",
+      "source_study": "Exact five house values+JSON quote/sourceSHA/span/reference clocks; q18/components by selected case; preserved-output vs external fact distinction and source version IDs; clear unsupported/missing statuses."
+    },
+    "coverage": "One canonical response.denominator.expected_captures scope count. returned is labelled selected slice; eligible_representatives further slice. exclusion_counts derives from same accounting; sum disjoint dispositions must equal accounted_captures. Never mix old opportunity expected sessions with retained trusted capture denominator; no k=independentN.",
+    "match_explanation": "Use only exact field equality/differences and original comparator components: two numeric score differences and three categorical equal/mismatch. No generated narrative alleging causal explanation, macro facts or predictive relevance. Source revisions remain grouped before quality filtering; missing masks disclosed, not zeroed.",
+    "outcomes": "Visible Later outcomes / 后续结果 with Not attached / 尚未关联. No performance returns/probabilities/charts fetched in retained modes until qualified L0. Future lens Then known / 当时已知 versus Later observed / 后来观测, separate outcome_cutoff/version/maturity/censoring and unchanged selectionSHA. Current task does not mark A26/A27/U2 outcomes complete.",
+    "legacy_landing": "Existing macro and symbol study region retains current temporal/survivorship disclosures and all browser issuer repair behavior; no default legacy recomputed numbers mixed into retained results."
+  },
+  "copy": {
+    "page_title": [
+      "Market Memory",
+      "市场记忆"
+    ],
+    "deck": [
+      "Open a saved reading, compare cases, then inspect the evidence.",
+      "打开已保存的解读，比较案例，再核对原始依据。"
+    ],
+    "capture_label": [
+      "Saved SPY capture",
+      "已保存的 SPY 记录"
+    ],
+    "cutoff_label": [
+      "Evidence available by",
+      "依据截至时间"
+    ],
+    "reference_scope": [
+      "Saved house macro readings associated with SPY.",
+      "与 SPY 关联的已保存内部宏观解读。"
+    ],
+    "result_headline": [
+      "{returned} comparable saved cases",
+      "{returned} 个可比的已保存案例"
+    ],
+    "result_clause": [
+      "Compare the house readings; a match does not establish what comes next.",
+      "比较内部解读；相似案例不代表未来结果。"
+    ],
+    "stance": [
+      "Watch — don’t chase",
+      "观察，勿追涨"
+    ],
+    "source_heading": [
+      "What the output said",
+      "原始输出写了什么"
+    ],
+    "source_truth": [
+      "These values quote a saved house reading. Underlying economic facts have not been independently authenticated.",
+      "这些数值来自已保存的内部解读；底层经济事实尚未获得独立核实。"
+    ],
+    "five_fields": {
+      "growth_score": [
+        "Growth score",
+        "增长评分"
+      ],
+      "inflation_score": [
+        "Inflation score",
+        "通胀评分"
+      ],
+      "quad": [
+        "Quadrant label",
+        "象限标签"
+      ],
+      "liquidity_overlay": [
+        "Liquidity overlay",
+        "流动性状态"
+      ],
+      "cycle_tag": [
+        "Cycle tag",
+        "周期标签"
+      ]
+    },
+    "category_vocabulary": "Use actual owner enum twins only:quadQ1..Q4; liquidity expanding/neutral/contracting → 扩张/中性/收缩; cycle early/mid/late → 周期前段/中段/后段;unknown→未知. Raw quoted values remain exact in source study, labels localized without changing source.",
+    "coverage": [
+      "Coverage and exclusions — see what was left out",
+      "覆盖与排除 — 查看未纳入的记录"
+    ],
+    "method": [
+      "Comparison method — five fields, fixed rules",
+      "比较方法 — 五项字段、固定规则"
+    ],
+    "source_ref": [
+      "Exact source reference — verify the quote",
+      "确切来源引用 — 核对原文"
+    ],
+    "legacy": [
+      "Recomputed history — existing macro and symbol tools",
+      "重算历史 — 既有宏观与个股工具"
+    ]
+  },
+  "art_directions": {
+    "DARK_TREATMENT": "Command-center calm: graphite theme canvas, neutral panel luminance step, hairline bounds, panel2 query surface. One link accent for selected mode/actions; provisional or health inks only for truthful states. No decorative violet, new aurora or blinking Live chips. Resting case rows remain neutral; selected source focus distinguished by weight/border, not merit color.",
+    "LIGHT_TREATMENT": "Research workspace: white theme panels against cool deeper canvas, hairline row discipline, small controlled card shadow. Query controls use pale panel2 with crisp border; selected mode has link ring and ink underline, not glow. Warning/missing outcomes use quiet tint +3px health rail + deepened ink. All scores/source text use actual light text/ink rungs, never dark fixed literals.",
+    "intentional_differences": "Light action hover replaces bloom with ring/tightshadow; white panel depth uses border/shadow while dark earns depth by luminance. Shared IA/rows/order/semantics/touch geometry and exact-data claims; EN/ZH direction colors use shared house flips only when direction exists, health never flips.",
+    "governed_presentation": "templates/market_memory.css rebind mm-* local aliases to theme tokens under body.mm-page; no root palette, raw hex, custom font or opaque JS material style. Remove old page-local decorative hero arcs/glow/A0 authority badge in touched region. Existing mm-* class names may remain as layout scopes. Do not modify global navigation CSS/geometry.",
+    "scales": "Existing --fs-h1/h2/body/sm/label and --font-ui; --sp-* / --r-* fallbacks use exactly documented canonical values if scales not shipped. Skeleton/layout gaps named design-system values. Max nesting2. Buttons/selects>=40px (preview44), focus-visible, reduced motion, no pagehorizontal scroll.",
+    "mobile": "390: horizontally scrollable task-tab strip, selector stacked, answer+plain limitation within first swipe, three case row cards; source inspector below, Inspect source scrolls/focuses it with return focus. Detailed coverage/method/source live in named disclosures; legacy studies stay at their named landing, no capabilities deleted."
+  },
+  "degraded_states": [
+    {
+      "state": "LOADING",
+      "en": "Geometry-only skeleton; no stale cases under new intent",
+      "zh": "仅显示占位布局；新请求下不保留旧案例",
+      "mechanism": "Skeleton same panel geometry; dark panel2 luminance, light pale surface+hairline; no shimmer under reduced motion."
+    },
+    {
+      "state": "VALID_EMPTY",
+      "en": "No comparable saved cases",
+      "zh": "暂无可比的已保存案例",
+      "why_en": "Saved records were excluded or lacked the required fields. Open coverage to see why.",
+      "why_zh": "保存记录被规则排除或缺少必要字段；打开覆盖详情查看原因。",
+      "mechanism": "Full-weight neutral mx-empty with source date and authorized denominator/exclusions; available=true,ABSTAINED is not error."
+    },
+    {
+      "state": "INSUFFICIENT_POPULATION",
+      "en": "Too few saved cases",
+      "zh": "保存案例不足",
+      "why_en": "Fewer eligible cases exist than requested. Inspect the returned cases and missing coverage.",
+      "why_zh": "符合条件的案例少于请求数量；请核对已有案例与缺失覆盖。",
+      "mechanism": "Honest actual count plus coverage gap; no fabricated minimum or certainty."
+    },
+    {
+      "state": "MISSING_EXACT_CAPTURE",
+      "en": "This saved capture is unavailable",
+      "zh": "这条确切记录不可用",
+      "why_en": "Choose an available capture; this exact reference cannot be opened.",
+      "why_zh": "请选择可用记录；无法打开此确切引用。",
+      "mechanism": "404; preserve URL intent; Browse available captures explicit action, no replacement."
+    },
+    {
+      "state": "UNSUPPORTED_CUTOFF",
+      "en": "Evidence was not available then",
+      "zh": "当时尚无这些依据",
+      "why_en": "Choose a later evidenced cutoff or inspect the original saved output.",
+      "why_zh": "请选择有依据的较晚截至时间，或查看原始输出。",
+      "mechanism": "Temporal refusal; do not advance time silently."
+    },
+    {
+      "state": "RIGHTS_BLOCKED",
+      "en": "This source cannot be opened",
+      "zh": "无法打开此来源",
+      "why_en": "Your current access does not permit this evidence.",
+      "why_zh": "您当前的权限不允许查看这些依据。",
+      "mechanism": "403 source/use denial is distinct from402 subscription; redact IDs/counts/content, no arbitrary upgrade action for source rights denial."
+    },
+    {
+      "state": "AUTH_REQUIRED",
+      "en": "Sign in to open saved evidence",
+      "zh": "登录以查看已保存依据",
+      "why_en": "Use your existing account to continue.",
+      "why_zh": "请使用现有账户继续。",
+      "mechanism": "Existing MDXAuth.open signin, no new login path or credential handling; signout immediately redacts."
+    },
+    {
+      "state": "UNAVAILABLE",
+      "en": "Saved evidence is temporarily unavailable",
+      "zh": "已保存依据暂时不可用",
+      "why_en": "The exact source could not be read. Retry this reference or browse available captures.",
+      "why_zh": "无法读取确切来源；可重试此引用或浏览可用记录。",
+      "mechanism": "503 corrupt/owner/resource typed reason internal; human copy coarse; old exact source not repainted fresh. Limit refusal no partial success."
+    },
+    {
+      "state": "BUSY",
+      "en": "Evidence is busy",
+      "zh": "依据查询繁忙",
+      "why_en": "Retry shortly; your exact selection is preserved.",
+      "why_zh": "请稍后重试；您的确切选择已保留。",
+      "mechanism": "429/503 busy honors Retry-After; bounded explicit retry not polling waterfall."
+    },
+    {
+      "state": "STALE_LAST_GOOD",
+      "en": "Earlier saved reading",
+      "zh": "较早的已保存解读",
+      "why_en": "The source date is earlier than this analysis. Compare it as saved evidence.",
+      "why_zh": "来源日期早于本次分析；请按保存依据比较。",
+      "mechanism": "Original source/capture date remains visible beside current analysis cutoff. If failed newrequest/auth change, clear previous results; only explicit freshly authorized exact oldcapture selection may show earlier reading."
+    },
+    {
+      "state": "SOURCE_DIFFERENCE_OR_RULE_CONTRADICTION",
+      "en": "The readings differ",
+      "zh": "这些解读存在差异",
+      "why_en": "Inspect both dated sources; a difference is not itself a logical contradiction.",
+      "why_zh": "请核对两份有日期的来源；差异本身并不等于逻辑矛盾。",
+      "mechanism": "Render N0 exact state_differences as differences. Genuine external contradiction/rule issue only if owning source labels it; otherwise not_assessed."
+    },
+    {
+      "state": "OUTCOME_UNAVAILABLE",
+      "en": "Later outcomes are not attached",
+      "zh": "后续结果尚未关联",
+      "why_en": "Cases currently show original readings only.",
+      "why_zh": "当前案例仅展示原始解读。",
+      "mechanism": "Visible unavailable, no synthetic pending maturity label. L0 later supplies distinct PENDING/MATURE/MISSING/CENSORED states."
+    },
+    {
+      "state": "CORRECTED_VERSION",
+      "en": "A later saved version exists",
+      "zh": "存在较晚保存版本",
+      "why_en": "This view keeps the selected original. Open the later version to compare.",
+      "why_zh": "此视图保留所选原始版本；可打开较晚版本进行比较。",
+      "mechanism": "Explicit newer-ref action, original pin/sourceSHA/selection unchanged; correction is not automatic replacement."
+    }
+  ],
+  "preview": {
+    "path": "/Volumes/Mastermind/evidence/market-memory-20261012-01a1333c/science/u1-u2/preview.html",
+    "stylesheet": "/Volumes/Mastermind/evidence/market-memory-20261012-01a1333c/science/u1-u2/preview.css",
+    "owner": "Evidence-only static design artifact, actual shared nav/theme rendered from current template builder; fixture counts/dates/values prominently labeled; no API calls or restricted private data",
+    "layout_reference": "Current-context mode with selected source inspector open; other modes share frozen controls and state layout but require their own implemented functional receipts. Preview navigation/script uses incumbent shared shell, not a new header.",
+    "matrix": {
+      "evidence": "design_fixture_only_not_production",
+      "reducedMotion": true,
+      "results": [
+        {
+          "theme": "dark",
+          "lang": "en",
+          "width": 1440,
+          "path": "preview-dark-en-1440.png",
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "h1s": 1,
+          "mainTop": 76,
+          "firstResultTop": 451,
+          "selectorOverlap": false,
+          "selectedControlColor": "rgb(200, 208, 220)"
+        },
+        {
+          "theme": "dark",
+          "lang": "en",
+          "width": 390,
+          "path": "preview-dark-en-390.png",
+          "scrollWidth": 390,
+          "viewport": 390,
+          "h1s": 1,
+          "mainTop": 138,
+          "firstResultTop": 663.5,
+          "selectorOverlap": false,
+          "selectedControlColor": "rgb(200, 208, 220)"
+        },
+        {
+          "theme": "dark",
+          "lang": "zh",
+          "width": 1440,
+          "path": "preview-dark-zh-1440.png",
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "h1s": 1,
+          "mainTop": 76,
+          "firstResultTop": 468,
+          "selectorOverlap": false,
+          "selectedControlColor": "rgb(200, 208, 220)"
+        },
+        {
+          "theme": "dark",
+          "lang": "zh",
+          "width": 390,
+          "path": "preview-dark-zh-390.png",
+          "scrollWidth": 390,
+          "viewport": 390,
+          "h1s": 1,
+          "mainTop": 138,
+          "firstResultTop": 640.5,
+          "selectorOverlap": false,
+          "selectedControlColor": "rgb(200, 208, 220)"
+        },
+        {
+          "theme": "light",
+          "lang": "en",
+          "width": 1440,
+          "path": "preview-light-en-1440.png",
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "h1s": 1,
+          "mainTop": 76,
+          "firstResultTop": 451,
+          "selectorOverlap": false,
+          "selectedControlColor": "rgb(46, 57, 80)"
+        },
+        {
+          "theme": "light",
+          "lang": "en",
+          "width": 390,
+          "path": "preview-light-en-390.png",
+          "scrollWidth": 390,
+          "viewport": 390,
+          "h1s": 1,
+          "mainTop": 138,
+          "firstResultTop": 663.5,
+          "selectorOverlap": false,
+          "selectedControlColor": "rgb(46, 57, 80)"
+        },
+        {
+          "theme": "light",
+          "lang": "zh",
+          "width": 1440,
+          "path": "preview-light-zh-1440.png",
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "h1s": 1,
+          "mainTop": 76,
+          "firstResultTop": 468,
+          "selectorOverlap": false,
+          "selectedControlColor": "rgb(46, 57, 80)"
+        },
+        {
+          "theme": "light",
+          "lang": "zh",
+          "width": 390,
+          "path": "preview-light-zh-390.png",
+          "scrollWidth": 390,
+          "viewport": 390,
+          "h1s": 1,
+          "mainTop": 138,
+          "firstResultTop": 640.5,
+          "selectorOverlap": false,
+          "selectedControlColor": "rgb(46, 57, 80)"
+        }
+      ]
+    },
+    "files": {
+      "RENDER_MATRIX.json": {
+        "bytes": 2642,
+        "sha256": "759f013890841bb5da59bacf283725c23df43facf587faa8335e3b7a61b2d6d1"
+      },
+      "preview-dark-en-1440.png": {
+        "bytes": 294624,
+        "sha256": "ba556927f944a130841c4a6a8ec56b5764be646b5d4d13fc85c2e01672a976c0"
+      },
+      "preview-dark-en-390.png": {
+        "bytes": 227064,
+        "sha256": "9250aafbece748a7b6b522f13083231401054299ca1a0bd593f42f03cc7d1c0b"
+      },
+      "preview-dark-zh-1440.png": {
+        "bytes": 298626,
+        "sha256": "ea30c9e6df1b76257f1bd9ac39e293f3c9f22eca325d801712ce54682d6d7ceb"
+      },
+      "preview-dark-zh-390.png": {
+        "bytes": 229107,
+        "sha256": "3fbae2c1ad5bd9b363ad30a7a2cff0b3ae1e58954a83ef67fd919dbebc9d8066"
+      },
+      "preview-light-en-1440.png": {
+        "bytes": 292744,
+        "sha256": "00344ce63ccb9d13698bda0e7ff04e46b9a66451ddead41b85f65f53ec8549e8"
+      },
+      "preview-light-en-390.png": {
+        "bytes": 226357,
+        "sha256": "609806d7b9a4c36ab2307b9b7f2673eedc4929a8578161d75846c9bfee40eb4d"
+      },
+      "preview-light-zh-1440.png": {
+        "bytes": 298120,
+        "sha256": "fba6ee2f309045667970327166f9e2caf91b301ef94651f833dc211407401c0e"
+      },
+      "preview-light-zh-390.png": {
+        "bytes": 228526,
+        "sha256": "ad2cbeafc65a6f3cdc0297724e30efdc93d31baaf65a5892f738b5768dc9ca9a"
+      },
+      "preview.css": {
+        "bytes": 5417,
+        "sha256": "593f563807d2149e76f6c33401165177036f8a00b3c8511549764ae08b2dc9ab"
+      },
+      "preview.html": {
+        "bytes": 59601,
+        "sha256": "ea643c82189fc10f9188b3a0b5a204ff66aabfa3207b9b1482d757d26c343ee6"
+      }
+    },
+    "observed": "8 cells rendered, no horizontal overflow, no selector overlap, oneh1. Light EN desktop and dark/light ZH mobile visually inspected; light control transition settled under reduced-motion before final screenshots. No independent taste review, real API/browser behavior, all-mode interaction or contrast measurement claimed."
+  },
+  "evidence_required": {
+    "committed_matrix": "Dark/light × EN/ZH ×1440desktop/390mobile =8 production-shaped authenticated screenshots for each of three modes (24 total), plus sourcefocus/coverage/lateroutcome-unavailable states. Preview8 is design reference only.",
+    "forced_states": "At least valid-empty,missingcapture,source403,pending/loading,oldercapture,current-unavailable,correction andL0-unavailable in both themes; 390ZH+EN geometry for longest labels.",
+    "functional": "Actual installed served JS+CSS+HTML SHA, live authorized discovery→originalcapture→exact retained compare→case/source span→back/locale→Brain lookup; subject/query/generation/method/cutoff/selectionSHA binds API and visible DOM. Guest/current revoked checks no payload, all error cache headers; signout+late response no resurrection.",
+    "visual_review": "Independent Product Regression Critic and Visual/Taste Critic review comparative result/current production and preview before rationale; every affected light state adjudicated as a design. Contrast>=4.5 text and>=3 affordance on actual surface; focus/touch/reducedmotion and no horizontal overflow. Source fixture screenshots do not replace production proof.",
+    "ratchets": "check_design_system.py --mode enforce-added; check_runtime_style_injection.py no growth; check_ui_visual_evidence.py exact committed dual-theme receipt; page assets builder byte parity. Existing issuer owning suite remains required; accepted old cases reused unless material implementation changes invalidate them."
+  },
+  "acceptance_tests": [
+    "U1-01 Catalog bootstrap from genuine site_full/current source policy; no typedID entry; exact subject+trusted pin+two methods returned. Denied policy spies prove zero reader construction/private source reads.",
+    "U1-02 Actual Saved output selection /context or/as-known-at matches selected catalog IDs/ETag; mode does not execute retained/legacy calculations.",
+    "U1-03 Historical and Current mode route exact metadata+different registered modeIDs; source date vs analysis cutoff and method-applied-now clear; no eventdate substituted for availability cutoff.",
+    "U1-04 New mode/capture/cutoff invalidation, rapid stale response, language switch,signout/auth retry andpopstate restore exact current intent only. Existing legacy issuer U0 suite remains green.",
+    "U1-05 Wrong subject/query/pin/SHA/method/sourcefocus/deeplink duplicate fields reject; no nearest/latest/recompute fallback. Valid complete abstention differs from404/403/503/resourcebusy.",
+    "U2-01 Each case difference/component/quotedfield matches actual R2/N0 exact closure; counts reconcile one complete retained denominator/exhaustive exclusions. Revisions not independentN.",
+    "U2-02 L0 absent UI shows no qualified outcomes,probabilities or old legacy returns. Future lens change cannot alter selectionID/order/distances/SHA.",
+    "U1-06 Discovery current rights/retention revoke during catalog pagination or use; oldgenerationcontinuation preserved, newlydenied payload/counts redacted; private no-store success/errors.",
+    "U1-07 Same catalog helper used by UI and Brain discovery; real tool exact refs consumed through existing dispatcher/user owner, no fabricated identifiers or supplied identity/permissions.",
+    "U1-08 Static page build contains no real private capture/query/body data; templates/site assets identical; one shared nav; no newglobal palette or style injection. All8 visualcells+24actualmodecells and forced states truthfully labeled."
+  ],
+  "root_implementation_sequence": [
+    "Adjudicate this packet/preview, then save governed packet source with exact hashes under existing carrier before bounded builder labor. Root owns all conflicting app/JS/template files.",
+    "Implement authenticated discovery helper/route and optional Brain discovery tool; no widening of source/subject. Reuse current N1 request policy and method composition.",
+    "Add isolated retained UI state and three modes, source/coverage/method/outcome-unavailable inspector; rebind page-local mm tokens to theme. Preserve original issuer ownership and data-free builder.",
+    "Run discriminating discovery/client/API tests plus affected current incumbent suite once; render production-shaped matrix and independent review.",
+    "Original source/CI/merge/install path, then entitled real nonempty UI/API/Brain journey and failure proof. U2 outcome obligations remain open until separate L0 qualification."
+  ],
+  "rollback": "Revert new retained UI region/catalog/tool additions through original carrier; existing legacy region remains accessible and correctly labeled. No stored capture rewrites or release rollback of unrelated services.",
+  "effects": {
+    "source_edits": false,
+    "git_push_deploy": false,
+    "external_messages": false,
+    "new_workers": false,
+    "evidence_design_files_and_screenshots_only": true
+  }
+}

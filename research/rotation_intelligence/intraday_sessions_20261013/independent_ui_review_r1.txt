@@ -1,0 +1,40 @@
+[error] Model metadata for `qwen3.8-max` not found. Defaulting to fallback metadata; this can degrade performance and cause issues.
+STATUS: COMPLETE
+
+REVIEW VERDICT: **CHANGE_REQUIRED**
+
+Inspected only the supplied blocks of `templates/sector_central.html.j2` (`intraday-observation:style-start/end`, `:markup-start/end`, `intraday-observation:start/end`), the shared `tryRender`/`fetchJson`/`refreshPulse`/`bindIntradayRefresh` tail, and the pytest/Node harness. No tools, execution, or external source were used.
+
+**Blocking Defects**
+- Zero client-clock tolerance empties the panel. `readIntradayView` sets `age=nowMs-end` from the producer's `source_asof` and returns null on `age<0`. A browser clock behind the source clock by one millisecond rejects every fresh observation, and `intradayPlainReason` then falls through to "Comparable observations are unavailable." — misattributing clock disagreement to missing data. The same reader already tolerates up to 60s of skew *between* member endpoints (`max_clock_skew_seconds`), so the asymmetry is internal to the frozen contract. Minimal fix: `age<-30000` instead of `age<0`. That keeps `test_stale_and_future_clock_remain_unavailable` green, because its `now-2*60000` case yields exactly `age=-60000`; a wider allowance needs that case moved (e.g. `now-5*60000`) plus an accepting `now-2000` case. Leave the 45m upper bound and the expiry math untouched (both remain correct for negative age).
+- Automatic refresh can drop focus and re-announces everything. `window.focus` and `visibilitychange` both call `refreshPulse`, which ends in `host.innerHTML=html` inside `#si-intraday-body`, marked `aria-live="polite"`. Focus is restored only if the previously focused `summary` still exists as a `details` row: a row that flips to unverified renders `.si-intra-missing` (no summary), and any non-`ready` state replaces the body with one `<p>`. In both cases focus falls to `<body>` during a refresh the user did not request, and each refocus re-announces up to six rows of numbers even when nothing changed. Minimal fix: hold the built string in a module variable and return early when it equals the last emission (removes no-op churn, focus loss, and announcement bursts in the common case), plus `tabindex="-1"` on `host` and focus it when `focused` was set but no matching row survives.
+- Heading contradicts the ordering rule. Rows sort by `Math.abs(relative)` descending, so the first row can be the largest *loser* versus SPY, while the H2 reads "Intraday leadership" / 盘中领涨变化 (领涨 = leads the rise). The panel's own subtitle ("Recent relative moves…", 近期相对强弱) is direction-neutral and accurate. Minimal fix, copy-only: make the H2 magnitude-neutral in both languages (e.g. "Intraday relative moves" / 盘中相对强弱变化) or split leaders from laggards. Do not re-sort directionally — that would assert rank authority this review does not grant.
+
+**Non-Blocking Findings**
+- The expiry timer calls `tryRender()`, so a timeout owned by the new panel also re-renders the incumbent `renderTapeBand`. Call `renderIntradayComparisons(pulse,pulseState)` to respect the additive boundary.
+- Per-row rejection has no "present but failed verification" copy; the panel-level `invalid` string is unreachable per row, so a contract break reads as missing data.
+- Tolerances are far tighter than the 2-decimal display: `3e-6` on `relative_change_pct`, `1e-6` minutes on `elapsed_minutes`, `1e-3` on `coverage_pct`, exact `settlement_tolerance_seconds!==90`. Any producer-side rounding silently voids all rows (see confirmations).
+- `row.day` (`live_ew_chg_pct`) is the only unbounded rendered number: it skips the ±40 guard the comparison fields get, and `.si-intra-value` has no `overflow-wrap`, so an extreme value can overrun the `minmax(72px,96px)` track.
+- `labels[state]` indexes an object literal; a state string such as `constructor` would print a function body. Use `Object.create(null)` or a switch.
+- When no row verifies, the collapsed view prints up to six identical "unavailable" lines; prefer one panel-level line when `!rows.some(r=>r.view)`.
+- `new Intl.DateTimeFormat(...)` is built per row per render; with the 1000-basket cap and staggered expiries the single timer can drive many full re-renders. Hoist one module-scope instance.
+- "vs SPY" is a compounded ratio, not a difference; the detail discloses both components, but one defining clause would remove ambiguity.
+- `#si-intraday-more` has `aria-expanded` but no `aria-controls`, and there is no `aria-busy` during an in-flight refresh.
+
+**Verified Sound**
+- Escaping: every untrusted value reaching `innerHTML` passes `esc` (display name, `data-group` key, clock string); all other interpolations are validated numbers or fixed `L()` literals, and no raw status enum is ever rendered. The escaped-write/decoded-read `data-group` round trip is self-consistent (`open[row.id]` and the focus match both use the raw id).
+- Null/zero semantics: `pct(null)` → em dash with no sign class; `0` → unsigned `0.00%`; negatives use U+2212. A zero daily return does not suppress interval numbers.
+- Arithmetic: `relative` is recomputed from `absolute`/`benchmark` and compared; `coverage_pct` rederived from `n/total`; `elapsed_minutes` from `end-start`; skew bounded by `min(60, interval/10)`; session date rederived in `America/New_York` via `en-CA`. The ±40 guard precludes division by zero. Zoned-timestamp regex rejects naive strings; `Number.isSafeInteger` and the finite check reject booleans, strings, NaN, and Infinity.
+- Stale/duplicate/reordered: cached rows self-expire without a fetch (timer → re-validate against fresh `Date.now()` → null → "no longer current"); `clearTimeout` runs on every render including the early-return path, so timers cannot accumulate; ids dedupe first-wins on a null-prototype map; `pulseInFlight` makes out-of-order overwrite impossible. The region contains no `fetch(` and no `setInterval(`.
+- Failure states overwrite prior numbers; `hidden` on the more button is not defeated by a `display` override; disclosure targets meet 40px/46px; reduced-motion and `:focus-visible` are handled; mobile grid minimum (~294px) fits a 320px viewport.
+
+**Confirmations Needed (Minimal Inputs)**
+- Shipped `esc` body: attribute-context safety for `data-group` requires `"` and `'` escaping. The harness mocks `esc`, so no test proves this.
+- `nameEn`/`nameZh` bodies, including string coercion for unknown ids and the `window.BASKETS` fallback.
+- The ZH directional-ink flip rule: confirm it redefines `--up`/`--down` at a token/ancestor scope so `.si-intra .up/.dn` inherits it, rather than targeting the incumbent strip only.
+- Token existence and contrast: `--panel2`, `--card-shadow`, `--link`, `--font-mono`, `--up`, `--down`, and `--muted` at 11–12px.
+- Producer serialization precision for the five cross-checked fields and the `settlement_tolerance_seconds` constant, or one representative real payload.
+- That `#si-intraday` sits inside `data-view="moving"`, and which parts of `refreshPulse` (focus/visibility listeners, button disabling) are incumbent versus new.
+
+**Limitations**
+Text-only review: no execution, no repository access, no producer, no rendered page. The template surrounding the marked blocks, the shared helpers, the CSS custom properties, and the pre-change baseline of `refreshPulse`/`tryRender` were not supplied, so findings touching them are conditional. The Node harness stubs `querySelectorAll`, `contains`, `clearTimeout`, and `tryRender`, so open-state restoration, focus restoration, timer cancellation, and the expand/collapse path are unexercised by the supplied tests; I verified those by reading only, and `readIntradayView` alone is genuinely covered. The reported browser proof was not observable here and does not establish production behavior. Arithmetic tolerances and the settlement constant cannot be judged correct without the producer's rounding rule; I flagged them as coupling risk rather than asserting a defect. Calendar, source, provider, and price-basis qualification were treated as producer-owned and not re-derived.

@@ -1,0 +1,36 @@
+RUN 2026-10-09T09:41:22Z exit=0 cmd=python3.12 /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/quant-staging-20261008/Q04/research/quant_assessment_2026_10/Q04_signing_uncertainty/evaluate.py --mode baseline
+  input PREREG.md sha256=b74dae57b5050fc756a374354409740d09d49808a5d419ddd85fe032acdd88fd
+  input data/options_flow/signing_gate.json sha256=13bf08a8983a099e6b662e060745e259f7a414b9f53990ec2d7be7fcb3b302af
+  input data/options_flow/tape_signing_sessions.jsonl sha256=7bda2ef9fa39d1680c32ad7a7c1502ee1a11831e2e43017985fc484fc59c1d98
+  output results/baseline.json sha256=4e1111419e9a92aff989328386b49bc26026f3769e2eadb54c159416de94c77a
+  note incumbent raw tcbbo cache ABSENT: calibrate_flow_signing cannot be rerun; recorded gate figures are tick-vs-quote self-consistency
+RUN 2026-10-09T09:41:28Z exit=0 cmd=python3.12 /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/quant-staging-20261008/Q04/research/quant_assessment_2026_10/Q04_signing_uncertainty/evaluate.py --mode evaluate
+  input PREREG.md sha256=b74dae57b5050fc756a374354409740d09d49808a5d419ddd85fe032acdd88fd
+  input data/flow_signals/ledger.parquet sha256=c14b99cf92c29467d40a823a42e1b8974f018233c76b70d917b403f7a3898b62
+  input raw_cache_present sha256=False
+  output results/e2_summary.json sha256=a629624dffde58cca7431db33ad7b093ee8017ac890b4806cd0b881d821ff5f8
+  output results/cell_table.csv sha256=85fd50e0430823d836868115f0a2cdd85ba4b936c9926651efdcc814a2346d36
+  note overall=INSUFFICIENT_DATA sidecar=SIDECAR_INSUFFICIENT_DATA powered=False decision_skill=0.12535398853047264 ci=[0.1068834089431473,0.15390213173859602]
+RUN 2026-10-09T09:41:58Z exit=0 cmd=python3.12 /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/quant-staging-20261008/Q04/research/quant_assessment_2026_10/Q04_signing_uncertainty/evaluate.py --mode evaluate
+  input PREREG.md sha256=b74dae57b5050fc756a374354409740d09d49808a5d419ddd85fe032acdd88fd
+  input data/flow_signals/ledger.parquet sha256=c14b99cf92c29467d40a823a42e1b8974f018233c76b70d917b403f7a3898b62
+  input raw_cache_present sha256=False
+  output results/e2_summary.json sha256=a629624dffde58cca7431db33ad7b093ee8017ac890b4806cd0b881d821ff5f8
+  output results/cell_table.csv sha256=85fd50e0430823d836868115f0a2cdd85ba4b936c9926651efdcc814a2346d36
+  note overall=INSUFFICIENT_DATA sidecar=SIDECAR_INSUFFICIENT_DATA powered=False decision_skill=0.12535398853047264 ci=[0.1068834089431473,0.15390213173859602]
+RUN 2026-10-09T09:56:22Z exit=2 cmd=python3.12 /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/quant-staging-20261008/Q04/research/quant_assessment_2026_10/Q04_signing_uncertainty/evaluate.py --mode evaluate
+  code engine/flow_sign_uncertainty.py sha256=3a989f3f9fc00785f9758e27a7db6cabfb1ed73bf526c195533ccf8a725476d1
+  code research/quant_assessment_2026_10/Q04_signing_uncertainty/evaluate.py sha256=6a217dd7faeafcf0c112ab8aabbc8fb76372550d1ef05b4b81987a5ac6869138
+  code research/quant_assessment_2026_10/Q04_signing_uncertainty/PREREG_AMENDMENT.md sha256=513141ab766b1162ab78e893e6aefa8d89e36ff2d43d7034883c5f1c4f4b7027
+  input PREREG.md sha256=b74dae57b5050fc756a374354409740d09d49808a5d419ddd85fe032acdd88fd
+  note REFUSED: PREREG.md sha256 b74dae57b5050fc756a374354409740d09d49808a5d419ddd85fe032acdd88fd != FREEZE.log 513141ab766b1162ab78e893e6aefa8d89e36ff2d43d7034883c5f1c4f4b7027
+RUN 2026-10-09T09:56:38Z exit=0 cmd=python3.12 /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/quant-staging-20261008/Q04/research/quant_assessment_2026_10/Q04_signing_uncertainty/evaluate.py --mode evaluate
+  code engine/flow_sign_uncertainty.py sha256=3a989f3f9fc00785f9758e27a7db6cabfb1ed73bf526c195533ccf8a725476d1
+  code research/quant_assessment_2026_10/Q04_signing_uncertainty/evaluate.py sha256=6a217dd7faeafcf0c112ab8aabbc8fb76372550d1ef05b4b81987a5ac6869138
+  code research/quant_assessment_2026_10/Q04_signing_uncertainty/PREREG_AMENDMENT.md sha256=513141ab766b1162ab78e893e6aefa8d89e36ff2d43d7034883c5f1c4f4b7027
+  input PREREG.md sha256=b74dae57b5050fc756a374354409740d09d49808a5d419ddd85fe032acdd88fd
+  input data/flow_signals/ledger.parquet sha256=c14b99cf92c29467d40a823a42e1b8974f018233c76b70d917b403f7a3898b62
+  flag raw_cache_present=False
+  output results/e2_summary.json sha256=a629624dffde58cca7431db33ad7b093ee8017ac890b4806cd0b881d821ff5f8
+  output results/cell_table.csv sha256=85fd50e0430823d836868115f0a2cdd85ba4b936c9926651efdcc814a2346d36
+  note overall=INSUFFICIENT_DATA sidecar=SIDECAR_INSUFFICIENT_DATA powered=False decision_skill=0.12535398853047264 ci=[0.1068834089431473,0.15390213173859602]

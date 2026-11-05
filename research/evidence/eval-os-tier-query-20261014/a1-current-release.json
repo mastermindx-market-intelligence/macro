@@ -1,0 +1,653 @@
+{
+  "schema": "eval_os.current_release.v1",
+  "updated_at": "2026-10-16T03:22:17.373901+00:00",
+  "a1_pr": 6651,
+  "head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+  "published_at": "2026-10-15T20:21:22.130224+00:00",
+  "same_carrier": true,
+  "ordinary_publication": {
+    "at": "2026-10-15T20:21:01.378579+00:00",
+    "source": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "main": "eb46b820042f27d1f4a517af2df8b158be83d063",
+    "preview_tree": "3271d9ab08bb818eb09033c050a9827bff4a025b",
+    "changed_incoming_jobs": [
+      "capability-broker"
+    ],
+    "incoming_job_definitions_preserved": true,
+    "a1_job_unchanged": true,
+    "production_files_17_unchanged": true,
+    "source_paths": [
+      ".github/ci/legacy-jobs.yml",
+      "config/provider_native_capabilities.v1.json",
+      "engine/provider_native_capabilities.py",
+      "research/NATIVE_CLAUDE_REALM_PROVIDER_CONTROL_V2_ARCHITECTURE_2026-09-14.md",
+      "tests/test_provider_native_capabilities.py"
+    ],
+    "remote": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+    "clean": true,
+    "admission": "source-publication-admission-20261015T201651.json",
+    "scope": "Reuse accepted A1 closure and controls; incoming provider-only command retained. Fresh hosted checks required.",
+    "push_returncode": 0,
+    "readback": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "published_at": "2026-10-15T20:21:22.130224+00:00"
+  },
+  "admission": {
+    "source": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "no_effects": true,
+    "admission_complete": true,
+    "observed_at": "2026-10-15T20:17:09.284108+00:00",
+    "pr_head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+    "pr_state": "open",
+    "main": "eb46b820042f27d1f4a517af2df8b158be83d063",
+    "active_pr_proofs": 7,
+    "canonical_unindexed_reservations": 0,
+    "cap": 8,
+    "lease_owner": 9455,
+    "preview_returncode": 0,
+    "publication_admitted": true
+  },
+  "source_and_plan_only": false,
+  "terminal_binding_checks_pending": true,
+  "incumbent_release_pending": true,
+  "production_verified": false,
+  "programme_complete": false,
+  "latest_ci_observation": {
+    "observed_at": "2026-10-15T21:36:09.261248+00:00",
+    "run_id": 38801265500,
+    "attempt": 1,
+    "head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "status": "completed",
+    "ci_plan": "success",
+    "contract_delta": "success",
+    "plan_artifact_pending": false,
+    "packs_running": [],
+    "packs_passed": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "conclusion": "success",
+    "ci_gate": "success"
+  },
+  "qualified_previous_revision": {
+    "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+    "run_id": 38773271071,
+    "final_artifact_id": 11996491671,
+    "logical_jobs_pass": 127,
+    "semantic_command_steps_pass": 351,
+    "binding_clean_as_of": "2026-10-15T18:08:20Z",
+    "does_not_qualify_current_head": true,
+    "canonical_history_source": "e11aac9de1f3d00ee98240533d62f9bf54a290c6:research/evidence/eval-os-tier-query-20261014/a1-current-release.json"
+  },
+  "followon": {
+    "qualified_source": "7f1dcf04176ccef68a4d82a20ca846cf95f57120",
+    "runtime": "3528080cd35fb08d8f4e407e6692d2936a098a7e",
+    "updater_fix": "9cb9d0ad0c955ad1f46cc3519d34e4c12fd708a4",
+    "no_pr": true,
+    "composition_pending": true,
+    "prepared_resolution": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/targeted-qualification.json",
+    "resolution_limit": "Prospective composition0add on incumbent b2c44/main4574 is locally qualified. Six conflicts resolved;9merge-created duplicates removed; current A1/main commands and incoming options source retained. Actual qualified landing must be reconciled before same-carrier integration and PR; no carrier/main base integration or production acceptance.",
+    "scope_repair": {
+      "added_paths": [
+        "engine/intl_performance_charts.py",
+        "engine/rates_command_basis.py",
+        "engine/sector_intelligence/consumer_cyclical_display.py",
+        "engine/sector_intelligence/consumer_cyclical_projection.py",
+        "engine/sector_intelligence/consumer_cyclical_shared_contract.py",
+        "engine/sector_intelligence/finance_case_signal.py",
+        "engine/sector_intelligence/finance_page_signal.py",
+        "engine/sector_intelligence/finance_projection.py",
+        "engine/sector_intelligence/finance_watching.py",
+        "engine/sector_intelligence/finance_witness_hints.py",
+        "lib/intl_chart_geometry.py",
+        "lib/intl_chart_mount.py",
+        "lib/intl_chart_publication.py",
+        "scripts/build_consumer_cyclical_plnt_page.py",
+        "tests/test_backfill_qledger_us.py"
+      ],
+      "definitions_preserved": 314,
+      "focused_controls_passed": 2,
+      "unchanged_source_full_closure_reused_from": "dd1d34db1d40160205be33950c5936f0ad32148b",
+      "selection_parity": [
+        {
+          "probe": "templates/index.html",
+          "before": false,
+          "after": false
+        },
+        {
+          "probe": "scripts/build_free_content.py",
+          "before": false,
+          "after": false
+        },
+        {
+          "probe": "engine/prophet/plan_book.py",
+          "before": false,
+          "after": false
+        }
+      ],
+      "strict_probes_reused": [
+        {
+          "probe": "templates/index.html",
+          "jobs": 134,
+          "weight": 5621,
+          "packs": 10,
+          "max_jobs": 136,
+          "max_weight": 5803,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+        },
+        {
+          "probe": "scripts/build_free_content.py",
+          "jobs": 134,
+          "weight": 5441,
+          "packs": 10,
+          "max_jobs": 134,
+          "max_weight": 5600,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+        },
+        {
+          "probe": "engine/prophet/plan_book.py",
+          "jobs": 128,
+          "weight": 5384,
+          "packs": 9,
+          "max_jobs": 130,
+          "max_weight": 5600,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 128/314 jobs (1 unscoped always-on, 127 scoped matches)"
+        }
+      ],
+      "runtime_unchanged": true,
+      "ancestor_control_source_limit": "The attempted newer control is absent on this historical follow-on source (exit4 retained). The actual new-main prospective composition has independently executed this control successfully on0add; do not call the absent test a pass."
+    },
+    "prospective_composition": {
+      "source": "0add301edcf8d435b751a92ffe75be780fc67ac2",
+      "tree": "723ceb25eb8389613d525c17b0a03f66b3da36e9",
+      "a1_source": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
+      "main": "4574d083b0398dd4ac75e283eabff041c561c369",
+      "definitions_preserved": 320,
+      "canonical_qledger_closure_count": 920,
+      "canonical_qledger_closure_misses": [],
+      "other_jobs_closure_reused": true,
+      "ancestor_test_exit": 0,
+      "strict_probes_reused_after_selection_parity": [
+        {
+          "probe": "templates/index.html",
+          "jobs": 135,
+          "weight": 5659,
+          "packs": 10,
+          "max_jobs": 136,
+          "max_weight": 5803,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 135/320 jobs (2 unscoped always-on, 133 scoped matches)"
+        },
+        {
+          "probe": "scripts/build_free_content.py",
+          "jobs": 134,
+          "weight": 5467,
+          "packs": 10,
+          "max_jobs": 135,
+          "max_weight": 5600,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 134/320 jobs (2 unscoped always-on, 132 scoped matches)"
+        },
+        {
+          "probe": "engine/prophet/plan_book.py",
+          "jobs": 128,
+          "weight": 5410,
+          "packs": 10,
+          "max_jobs": 130,
+          "max_weight": 5600,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 128/320 jobs (2 unscoped always-on, 126 scoped matches)"
+        }
+      ],
+      "claims": "Local prospective composition only, not hosted or installed proof."
+    },
+    "retained_local_proof": [
+      {
+        "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/focused-red.xml",
+        "sha256": "be4e28da84f409c951169dcf4dcef8c13967e3b494cc718a5b6206e7306878f0"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/qualification-0e949-red.json",
+        "sha256": "b8ab444ef810ca9e504a0e26f6f49b2b09a8d82376d114fdf1a998727884325b"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/targeted-qualification.json",
+        "sha256": "146790b1422e44d2247b398531c7b0f2f3465db2f53508450fca15e06c2fcf79"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/followon-source-validation-wrong-test.json",
+        "sha256": "694a63ff4e3a36fb549b5a2423287f68b14bb34c3d4a5b0904255e4142dc8556"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/followon-source-qualification.json",
+        "sha256": "30ac92043822101bd2859ca7c16f154ee0a8085d0701070e4b47dd05e8f04dcc"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/followon-focused.xml",
+        "sha256": "b2666b0f4be75d5dfba46a029c1ec086a1eb6843eef119f52bd77cdc7b64e65f"
+      }
+    ],
+    "published_containing_head": "7a2a2de5bd031d3fa38fca8783367b07aa8d2f6f",
+    "newer_base_preview": {
+      "observed_at": "2026-10-15T15:59:31.511929+00:00",
+      "prior_qualified_prospective_source": "0add301edcf8d435b751a92ffe75be780fc67ac2",
+      "new_a1_source": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
+      "new_base": "76c38638fac3ac23463a1d27110fe98bfd6e8cd5",
+      "preview_tree": "2c2a9a9fc4757aec64f971837a40a57f5f263ac0",
+      "clean": true,
+      "current_a1_execution_definitions_preserved": 320,
+      "changed_jobs": [
+        "options-matrix-code"
+      ],
+      "prior_path_multisets_preserved": true,
+      "qualified_evaluator_unchanged": true,
+      "new_options_observer_and_test_match_a1": true,
+      "scope": "Read-only clean newer-base composition with source preservation checks. Existing qualification remains bound0add; no claim of final landing qualification or hosted checks, no carrier integration."
+    },
+    "release_probe": {
+      "qualified_source": "2edbb42d5e8c4ca69bfd9569e80b58fcb4931dd6",
+      "direct_source_file_count": 12,
+      "added_path": "app/deploy/update.sh",
+      "reason": "Follow-on updater9cb changes native API restart semantics; previous11-file source binding omitted it.",
+      "red_regressions": 2,
+      "affected_tests_passed": 16,
+      "subtests_passed": 20,
+      "junit_entries": 36,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "old_eleven_file_binding_refused": true,
+      "stale_updater_refused_before_any_child": true,
+      "evidence": [
+        {
+          "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/followon-updater-binding-red.xml",
+          "sha256": "667a3d8be63c3d139a2d7902ec48f8253239f88c714c534c1ae3c17fbaef61dd"
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/followon-updater-binding-green.xml",
+          "sha256": "a2aaf6d5d00539a96f9e6453e607e558d43de873501844af92ef71a54399f2e2"
+        }
+      ],
+      "unchanged": "Product/runtime/updater bytes, CI manifest/execution and CLI command definitions are unchanged; reuse their accepted checks.",
+      "limit": "Local fake-consumer proof only. Bind final follow-on source after qualification; separately verify actual installed updater copy and API/admin processes. No production execution or acceptance."
+    },
+    "latest_prepared_composition": {
+      "at": "2026-10-15T16:41:06.204986+00:00",
+      "qualified_preparation": "0add301edcf8d435b751a92ffe75be780fc67ac2",
+      "latest_followon": "2522d3d36672c448b0e4f09c7844cf191f710349",
+      "new_base": "76c38638fac3ac23463a1d27110fe98bfd6e8cd5",
+      "conflict_paths": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "resolution": "Retain exact qualified0add manifest after proving all314 latest branch path multisets are covered; the conflict is duplicated15-input declaration order, not missing input or changed execution.",
+      "resolved_tree": "8e271f7a5d12322f32ca311a456af3d65552596b",
+      "unreferenced_preview_commit": "1c3ac9746c24bd525f58ee2794693813df2a8fea",
+      "newer_base_preview_tree": "9883075f0654657210791639ce429797fd13e550",
+      "current_a1_execution_definitions_preserved": 320,
+      "latest_nonmanifest_files_preserved": [
+        "agentos/handoffs/EVAL-OS-SOURCE-INTERFACES-2026-10-14.md",
+        "research/evidence/eval-os-tier-query-20261014/a1-current-release.json",
+        "research/evidence/eval-os-tier-query-20261014/release-probe/README.md",
+        "research/evidence/eval-os-tier-query-20261014/release-probe/bind_followon_adoption_probe.py",
+        "research/evidence/eval-os-tier-query-20261014/release-probe/followon_adoption_probe.py",
+        "research/evidence/eval-os-tier-query-20261014/release-probe/test_followon_adoption_probe.py"
+      ],
+      "product_runtime_and_updater_unchanged_from_qualified_preparation": true,
+      "qualification_reused": "No runtime/probe test rerun: final probe bytes equal qualified2ed/latest2522; currentmain definitions/older closure retain source identities. Final actual landing integration/qualification still required.",
+      "no_carrier_integration": true,
+      "production_proven": false
+    },
+    "current_main_command_composition": {
+      "at": "2026-10-15T16:59:22.752106+00:00",
+      "refs": {
+        "base": "76c38638fac3ac23463a1d27110fe98bfd6e8cd5",
+        "main": "32bbb313dcc4df8939664ac6ffd8b7115bf0f717",
+        "a1": "5820d76771dea4a60a0c8328442f87d673bffdf3",
+        "followon": "91b7a168f11871dcefb67f85e0c3870377ade00e"
+      },
+      "changed_job": "research-factory-authority",
+      "job_definition_and_paths_exact_main_in_both_previews": true,
+      "changed_source_blobs_exact_main": [
+        "tests/test_research_codegen_factory_fence.py",
+        "engine/research_factory/codegen_boundary.py",
+        "engine/research_factory/schema.py",
+        "engine/research_factory/ledger.py",
+        "scripts/research_factory_run.py"
+      ],
+      "counts": {
+        "base": 319,
+        "main": 319,
+        "a1": 320,
+        "followon": 320
+      },
+      "scope": "Targeted composition check for the actual new-main command/test delta only. No test rerun, carrier integration, final source qualification or production claim."
+    },
+    "latest_continuity_composition": {
+      "at": "2026-10-15T18:00:38.162107+00:00",
+      "purpose": "Preserve newly published real T12 consumer and current continuity in existing prospective integration; not a carrier/base integration or final qualification.",
+      "prepared_parent": "1c3ac9746c24bd525f58ee2794693813df2a8fea",
+      "current_followon": "3d46e299b3723891f620bc933a0a0ca24bad1507",
+      "composition_tree": "ada6f6d79e1ddd14013d28b2c0f9c6ca244753f5",
+      "unreferenced_preview_commit": "2e1e3057d9c752297d654b45e0f0a5aae6c6088c",
+      "observed_main": "32bbb313dcc4df8939664ac6ffd8b7115bf0f717",
+      "main_composition_tree": "197198d978a825d25927c840877864c9cdf759c1",
+      "new_continuity_and_discovery_blobs_preserved": [
+        "agentos/discoveries/DSC-WHITEHOUSE-CLAIM-SNAPSHOT-REQUIRES-DIRECTION-SPLIT-EXCESS.md",
+        "agentos/handoffs/EVAL-OS-SOURCE-INTERFACES-2026-10-14.md",
+        "research/evidence/eval-os-tier-query-20261014/a1-current-release.json",
+        "research/evidence/eval-os-tier-query-20261014/t12-real-claim-consumer.json"
+      ],
+      "prepared_manifest_unchanged": true,
+      "incoming_research_factory_job_preserved": true,
+      "prospective_job_count": 320,
+      "reuse": "All unchanged runtime/CI/probe qualification retained. Actual qualified A1 landing must still be reconciled.",
+      "carrier_mutated": false,
+      "final_qualification": false,
+      "production_verified": false
+    },
+    "new_yahoo_dependency_repair": {
+      "parent": "ce701527b214b07e7980db94d34b496dd3af9703",
+      "jobs": [
+        "eval-os-a1",
+        "qledger-cluster-honest-ci"
+      ],
+      "added_inputs": [
+        "collectors/yahoo.py",
+        "lib/stooq.py"
+      ],
+      "branch_controls_passed": 2,
+      "prospective_controls_passed": 3,
+      "prospective_closure_counts": [
+        1240,
+        922
+      ],
+      "prospective_closure_missing": [],
+      "all_branch_execution_definitions_preserved": 314,
+      "all_prospective_execution_definitions_preserved": 320,
+      "packing_probe_selection_unchanged": true,
+      "runtime_unchanged": true,
+      "a1_carrier_changed": false
+    },
+    "published_source_correction": "7f1dcf04176ccef68a4d82a20ca846cf95f57120",
+    "latest_prepared_main_comparison": {
+      "at": "2026-10-15T20:24:35.454913+00:00",
+      "prepared": "cb274db9ffc5fdb650130837a855c933a3e07160",
+      "current_main": "eb46b820042f27d1f4a517af2df8b158be83d063",
+      "preview_tree": "8d1268e56432bf4ce3c89dd1c365ec45e0234d57",
+      "latest_followon": "e11aac9de1f3d00ee98240533d62f9bf54a290c6",
+      "changed_jobs_from_previous_preview": [
+        "capability-broker"
+      ],
+      "current_main_job_count": 319,
+      "current_job_count": 320,
+      "incoming_command_preserved": true,
+      "preexisting_followon_execution_deltas": [
+        "neural-web"
+      ],
+      "all_other_job_definitions_equal_prior_qualified_preview": true,
+      "runtime_unchanged": true,
+      "diagnostic_correction": "Initial equality-to-main assertion also caught accepted preexisting follow-on execution delta neural-web. Compared against prior qualified composition instead; only capability-broker changes and exactly matches incoming main. No source edit or failed product test.",
+      "scope": "Unreferenced read-only composition preparation only. Latest evidence continuity and actual qualified A1 landing must be reconciled before same follow-on integration; never publish synthetic previews.",
+      "adoption_12_file_comparison": {
+        "count": 12,
+        "changed_from_followon": [
+          "engine/neuralweb/brain_gateway.py"
+        ],
+        "gateway_delta": {
+          "changed_definitions": [
+            "_extract_citations_brain"
+          ],
+          "already_in_previous_prepared_composition": true,
+          "chat_and_chat_stream_ast_unchanged": true,
+          "classification": "Retained-source citation enrichment is inherited main code; native numeric verifier/request correlation and actual log reader source remain accepted. No new runtime source edit or broad rerun. Final release binder must use actual combined source bytes."
+        }
+      }
+    }
+  },
+  "next": "Consume original b4 CI38801265500 plan/tested source, terminal semantic evidence and all binding checks; real repair or incumbent-only refresh/merge, then final-source binding and actual production verification. No rerun or second manual A1 base integration.",
+  "preserved_boundaries": [
+    "incumbent-only A1 refresh/final merge",
+    "no second manual A1 integration",
+    "original Fabric effects and refusals",
+    "all production, model, PIT and consumer adoption obligations"
+  ],
+  "local_guard_event": {
+    "at": "2026-10-15T20:26:08Z",
+    "effect": "CI observation rejected locally before transport because 300 seconds had not elapsed. No API observation, clock reset or alternate reader. Continue source publication work."
+  },
+  "original_plan": {
+    "at": "2026-10-15T20:29:00.610145+00:00",
+    "run_id": 38801265500,
+    "attempt": 1,
+    "artifact_id": 12003744279,
+    "zip_sha256": "c7e0a5dcae8ab6cc46f1ef1d70f7bed86e95ab832a2040344207dc9982cda009",
+    "canonical_plan_sha256": "c36592b22778e006aa1449de94ebf7a31260b13f5dfe2bfb87d1a27ed7308378",
+    "subject_head_sha": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "base_sha": "eb46b820042f27d1f4a517af2df8b158be83d063",
+    "tested_commit": "248037474cd2cd1ad3d45efcfbd7a9f1f3cf52ad",
+    "tested_tree": "3271d9ab08bb818eb09033c050a9827bff4a025b",
+    "matches_admitted_preview": true,
+    "production_17_files_unchanged": true,
+    "eligible_jobs": 127,
+    "a1": {
+      "logical_job_id": "eval-os-a1",
+      "pack_index": 6,
+      "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+      "steps": [
+        {
+          "proof_id": "require Node for actual renderer contracts",
+          "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
+        },
+        {
+          "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+          "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
+        }
+      ]
+    },
+    "scope": "Original hosted plan identity only; terminal semantic evidence and all binding checks remain pending. No final source binding or production acceptance."
+  },
+  "original_critical_pack_consumption": {
+    "at": "2026-10-15T21:04:11.430748+00:00",
+    "run_id": 38801265500,
+    "attempt": 1,
+    "subject_head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "artifacts": [
+      {
+        "id": 12006006662,
+        "pack": 6,
+        "zip_sha256": "55e9dd2afbbcd6df78552301f8114896231a02fd83c4e315d4b42d1b5d6c4039"
+      },
+      {
+        "id": 12005458959,
+        "pack": 0,
+        "zip_sha256": "4701bed2f31ee0ffcc4e6de9de4f4066615d95b2a54b5a02fd8c5178a7903c05"
+      }
+    ],
+    "canonical_plan_sha256": "c36592b22778e006aa1449de94ebf7a31260b13f5dfe2bfb87d1a27ed7308378",
+    "planned_jobs_present": 14,
+    "passed_semantic_steps": 43,
+    "a1": {
+      "logical_job_id": "eval-os-a1",
+      "pack_index": 6,
+      "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+      "infrastructure": {
+        "outcome": "passed"
+      },
+      "steps": [
+        {
+          "proof_id": "require Node for actual renderer contracts",
+          "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        },
+        {
+          "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+          "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        }
+      ]
+    },
+    "scope": "Original pack0 and pack6 canonical consumption. All expected jobs/step identities matched exact plan. Not unit-test/zero-skip counts, final full-run gate, installed production or follow-on acceptance. Missing other fragments in partial reconciliation mean unobserved locally, not new hosted failures."
+  },
+  "current_main_preparation": {
+    "at": "2026-10-15T21:07:32.218194+00:00",
+    "main": "c2493c5770835f83e8b70f45a946a4d7689ad3bf",
+    "a1_preview_tree": "7e8d91498ef3b9f10b9e2a52872232e163dfae7b",
+    "changed_incoming_jobs": [
+      "research-price-panel"
+    ],
+    "a1_job_unchanged": true,
+    "new_source_paths_matching_a1_scopes": [],
+    "production_17_files_unchanged": true,
+    "followon_prepared_tree": "66761deb872a966d69048986ae02ddbd3447ce9c",
+    "followon_all_other_jobs_unchanged": true,
+    "followon_job_count": 320,
+    "accepted_preexisting_additives": {
+      "research-price-panel": {
+        "engine/k3e_eval1_forward.py": 1,
+        "engine/pick_forward_dist.py": 1,
+        "engine/seasonality/multiplicity.py": 1
+      }
+    },
+    "local_reporting_correction": "Initial equality-to-main assertion caught the three preexisting accepted research-price-panel additive paths. Comparison now preserves unchanged additive delta and all incoming commands/memberships; no source edit or product-test failure.",
+    "scope": "Current-main source preparation at critical completion. Incoming market-memory command/inputs retained; no actual carrier integration, new CI producer, final binding, source qualification rerun or production claim. Incumbent owns source-freshness/refresh/merge."
+  },
+  "terminal_semantic_evidence": {
+    "consumed_at": "2026-10-15T21:37:27.088174+00:00",
+    "workflow_run_id": 38801265500,
+    "attempt": 1,
+    "head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "artifact_id": 12007237637,
+    "zip_sha256": "6c4129d6651e7072bbce913c774fd0d44107554027c51a779c9d6625d4f9ecb2",
+    "canonical_mode": "semantic",
+    "plan_sha256": "c36592b22778e006aa1449de94ebf7a31260b13f5dfe2bfb87d1a27ed7308378",
+    "base_sha": "eb46b820042f27d1f4a517af2df8b158be83d063",
+    "tested_commit": "248037474cd2cd1ad3d45efcfbd7a9f1f3cf52ad",
+    "tested_git_tree": "3271d9ab08bb818eb09033c050a9827bff4a025b",
+    "jobs": 127,
+    "semantic_command_steps_passed": 351,
+    "blocked": 0,
+    "inherited": 0,
+    "infrastructure_blocking": false,
+    "clear": true,
+    "plan_execution_and_step_identities_match": true,
+    "local_binding_correction": "Canonical tested_tree_sha field names tested commit, already verified against actual Git tree by original plan. Initial local consumption supplied Git tree and correctly refused; corrected argument to original plan tested commit, no artifact or source change.",
+    "scope": "Original b4 terminal semantic CI proof. Binding checks, incumbent freshness/merge and production remain separate. Not unit-test count or zero-skip proof."
+  },
+  "current_source_preparation": {
+    "at": "2026-10-15T21:39:05.564418+00:00",
+    "main": "9db0c6d682c2e7e79c989709039066d6ab025e76",
+    "a1_preview": "cfab6b73b59af43225a092360f10c6bf4d16a15b",
+    "followon_preview": "7b77ada92081e0775e9ebabeca7494e74180e732",
+    "changed_incoming_jobs": [
+      "capability-broker"
+    ],
+    "new_source_paths": [
+      ".github/ci/legacy-jobs.yml",
+      "engine/provider_native_capability_source.py",
+      "research/NATIVE_CLAUDE_REALM_PROVIDER_CONTROL_V2_ARCHITECTURE_2026-09-14.md",
+      "scripts/build_provider_native_capability_registration.py",
+      "templates/market_memory_retained.js",
+      "tests/js/market_memory_retained_state.test.cjs",
+      "tests/test_provider_native_capability_source.py"
+    ],
+    "a1_job_unchanged": true,
+    "incoming_jobs_preserved": true,
+    "followon_other_jobs_unchanged": true,
+    "followon_job_count": 320,
+    "scope": "Read-only current-main composition; no carrier integration or repeated accepted qualification.",
+    "production_17_files_unchanged": true,
+    "followon_twelve_files_unchanged_from_prior_preparation": true,
+    "native_path_direct_imports_of_new_registration_source": [],
+    "provider_change_scope": "Additive fixed-source registration module/CLI and capability-broker check. No byte changes in twelve adoption files from prior prepared composition; four native verification caller/sink modules have no direct import of new registration source. No transitive runtime or production claim; reuse accepted source evidence."
+  },
+  "binding_checks": {
+    "observed_at": "2026-10-15T21:47:20.956986+00:00",
+    "pr_head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "pr_state": "open",
+    "merged": false,
+    "merge_commit_sha": "248037474cd2cd1ad3d45efcfbd7a9f1f3cf52ad",
+    "mergeable_state": "clean",
+    "canonical_verdict": "incomplete",
+    "problems": [
+      "ci-authority"
+    ],
+    "check_count": 27,
+    "authority": [
+      {
+        "id": 116650737614,
+        "name": "ci-authority",
+        "conclusion": "success"
+      },
+      {
+        "id": 116650577511,
+        "name": "ci-authority",
+        "conclusion": "cancelled"
+      }
+    ],
+    "controller": {
+      "id": 38811385852,
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-10-15T21:41:51Z"
+    },
+    "annotations": []
+  },
+  "authority_dependency": {
+    "cancelled_workflow_run": 38801258721,
+    "cancelled_check_run": 116650577511,
+    "newer_successful_workflow_run": 38801303047,
+    "newer_successful_check_run": 116650737614,
+    "binding_verdict": "incomplete",
+    "discriminating_read": "Canonical head_check_runs with explicit filter=latest returns both on same exact b4 head.",
+    "proposal": "One normal rerun of only original cancelled authority workflow, after fresh head and workflow identity checks. No pack rerun, manual integration, controller modification or waiver.",
+    "authorization": "REQUESTED exception to user no-rerun restriction; awaiting actual Chris answer. No rerun performed.",
+    "fabric_triage": "Original eval-b4-authority-triage-01a1333d-c1 consumed; NOT_ACCEPTED due material confusion of literal ci-authority with inactive pilot context. No release approval."
+  },
+  "latest_source_observation": {
+    "at": "2026-10-16T03:22:17.373901+00:00",
+    "head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "state": "open",
+    "merged": false,
+    "mergeable_state": "dirty",
+    "no_rerun_approval_received": true
+  },
+  "prepared_conflict_repair": {
+    "current_main": "668374308a3298a68541e253573fafa16b4f9818",
+    "preview_only_NEVER_PUSH": "6ac4f94366a492aecea016cfa4b6134b23eb215b",
+    "evidence": "a1-668-conflict-preparation-20261016.json",
+    "reproduction_patch": "a1-668-resolved-preview.patch",
+    "original_A1_carrier_unchanged": true,
+    "ordinary_same_carrier_application_pending": true,
+    "no_second_manual_base_integration_authorized": true,
+    "qualification_summary": {
+      "focused_controls_pass": 3,
+      "closure_misses": 0,
+      "strict_jobs": [
+        136,
+        135,
+        129
+      ],
+      "strict_breaches": [],
+      "initial_affected_tests_pass": 357,
+      "initial_affected_tests_fail": 1,
+      "repaired_subset_pass": 61,
+      "counts_overlap": true
+    }
+  }
+}

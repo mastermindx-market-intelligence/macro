@@ -1,0 +1,33 @@
+{
+  "source_candidate": "7411fadab71789f4cd4a92e22229dcf93a0c5014",
+  "old_suite": "tests/test_intl_tooltip_locale.py",
+  "new_suites": [
+    "tests/test_intl_gs_scanner.py",
+    "tests/test_intl_gs_dislocations_view.py",
+    "tests/test_intl_gs_transmission_view.py",
+    "tests/test_lens_nested_control_taps.py"
+  ],
+  "common_fixture": "tests/intl_gs_fixture_site.py",
+  "all_original_assertion_ASTs_preserved": true,
+  "original_assert_nodes": 33,
+  "dependency_adaptation": "stdlib HTMLParser locator in already-owned common fixture; exact simple selector semantics will be compared against retained native DOM/old bs4 observations. No new third-party dependency, skip, job/manifest/workflow/budget change.",
+  "source3templates_unchanged": true,
+  "regression_execution": "10passed,90deselected37.17s; bs4importsdenied;pluginautoload disabled;networkdenied; existing9logicalchecks split into10sourceowned tests",
+  "standalone_deleted": true,
+  "owner_jobs": [
+    "international-workspace-browser",
+    "international-dislocation-explorer",
+    "international-transmission-board",
+    "lens-tap-boundary"
+  ],
+  "exclusive_uncovered_closure": 0,
+  "current_main_jobs_unchanged": "04f2c18678470b5169d2e08b09d81138c542363d",
+  "source_sha256": {
+    "tests/test_intl_gs_scanner.py": "76251ecefcf6bbdc661f32ef7dfb21932c169f4b6e013f2c44d055577f1c7210",
+    "tests/test_intl_gs_dislocations_view.py": "5cbe85392fe42c3f4bfc0fd1bf3a6f73a9e7af96133037937f1e5429d9ef0cf4",
+    "tests/test_intl_gs_transmission_view.py": "ccb3c38e7a81b2c35d6bc3d28118ed288de9ece1473aad87bd5b038c9bc75edf",
+    "tests/test_lens_nested_control_taps.py": "fbe972676aed53098e83617695bda26e9d82ab6e523c8aedde53fbc4e1b24c05",
+    "tests/intl_gs_fixture_site.py": "5137a60a035d3c8b6c6eb9a5fb811ad8977216a142b5646e20f2fb93a0968913"
+  },
+  "native_hold": "Explicit Chromium CHILD sandbox_apply/initialize Operationnotpermitted; whydeniedUNKNOWN; no retries/flags/engine/profile/sandboxchange or browserreceipts"
+}

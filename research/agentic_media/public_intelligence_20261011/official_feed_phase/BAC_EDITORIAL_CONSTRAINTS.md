@@ -1,0 +1,11 @@
+# BAC source-specific editorial constraints
+
+The Treasury release links directly to FinCEN's executed consent order and OFAC's enforcement release. Both exact PDFs were retrieved successfully on October 14 UTC; response URLs, hashes, byte counts and reviewed pages are retained in `bac_penalty_credit_corroboration.json`. The source PDFs remain local evidence outside generated public site trees. These are independent primary-source corroboration, not an expansion of the current RSS-only consumer contract.
+
+FinCEN's order, printed pages 66–67, assesses $1.2 billion and credits the $750 million OCC payment, leaving $450 million payable under the FinCEN order. OFAC's own release page 1 specifies a separate $11,662,930 settlement. The arithmetic after that credit is $1,211,662,930. Never report $1.95 billion by adding overlapping assessments. This describes the orders, not proof of payments already made or an estimate of incremental earnings expense. The FinCEN order's rounded OFAC reference is superseded for exact amount by OFAC's own instrument.
+
+FinCEN page 5 confirms the bank is a subsidiary of the listed BAC parent. The announcement date is not the date all underlying conduct occurred. Keep findings, admitted facts, and OFAC apparent violations distinct; the OFAC determination is non-egregious. No stock-price move is causally attributed to this release. Do not infer EPS, tax deductibility of every settlement, capital depletion, reserve adequacy, or remediation cost from headline amounts.
+
+The current OCC RSS candidate contains only its complete summary plus explicitly dated broad-market observations. It does not contain these PDF claims. A future source-bound expansion must admit and attribute the exact additional documents before the writer may use them. The five broad-market facts are contextual at most; they do not become bank-specific analysis or justify padding merely to meet the anchored-receipt count. Candidate/source qualification and a numerical pass are not editorial or publication approval.
+
+Primary sources: [Treasury release](https://home.treasury.gov/news/press-releases/sb0657), [FinCEN consent order](https://www.fincen.gov/system/files/2026-10/BoA-Consent-Order-Execution-Final.pdf), [OFAC release](https://ofac.treasury.gov/media/937231/download?inline=).

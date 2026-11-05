@@ -1,0 +1,208 @@
+{% extends "_gmi_base.html.j2" %}
+{% from "_gmi_macros.html.j2" import t, ic, d, asof, sec, chain, tip_adm, tip_held with context %}
+{% from "_gmi_head.html.j2" import head %}
+{% block title %}GMI Explorer — {{ issuer.display_name }}{% endblock %}
+{% block seo %}{% set seo_title = 'GMI Explorer — ' ~ issuer.display_name ~ ' | Mastermind' %}{% set seo_desc = issuer.display_name ~ "'s theme links: proposed or admitted, with the source and review receipt behind each one." %}{% set seo_path = 'gmi-issuer-' ~ issuer.ticker|lower ~ '.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
+{% block body %}
+{#- S1 issuer page — port of mockups/refs/gmi_explorer s1_issuer() (specimen html).
+    The specimen is the HELD variant; every state branch below reads the model:
+    held = specimen markup, admitted = the data-branched wording named in the
+    lane packet. Company names/tickers stay English in both languages (GAP 25). -#}
+{% set n = issuer.links | length %}
+{% set all_admitted = namespace(ok=true) %}
+{% for lk in issuer.links %}
+{% if lk.curation.decision != 'ACCEPT' or model.micros[lk.micro_id].counts.admitted < 1 %}
+{% set all_admitted.ok = false %}
+{% endif %}
+{% endfor %}
+{% if n == 1 and all_admitted.ok %}
+{% set sub_en = 'One theme link, admitted after review.' %}
+{% set sub_zh = '一条主题关联，经审核已纳入。' %}
+{% elif n == 1 %}
+{% set sub_en = 'One proposed theme link, not yet a member.' %}
+{% set sub_zh = '一个拟议主题关联，尚未成为成员。' %}
+{% elif all_admitted.ok %}
+{% set sub_en = n ~ ' theme links, admitted after review.' %}
+{% set sub_zh = n ~ ' 条主题关联，经审核已纳入。' %}
+{% else %}
+{% set sub_en = n ~ ' proposed theme links, not yet members.' %}
+{% set sub_zh = n ~ ' 个拟议主题关联，尚未成为成员。' %}
+{% endif %}
+{#- primary link: first admitted, else first held, else the first link.
+    (issuer.links | length > 1 renders the primary only — no multi-link layout
+    is frozen; reported as a GAP in the lane return.) -#}
+{% set pick = namespace(l = issuer.links[0]) %}
+{% for lk in issuer.links if model.micros[lk.micro_id].kind == 'held' and model.micros[pick.l.micro_id].kind != 'adm' %}
+{% set pick.l = lk %}
+{% endfor %}
+{% for lk in issuer.links if model.micros[lk.micro_id].kind == 'adm' and model.micros[pick.l.micro_id].kind != 'adm' %}
+{% set pick.l = lk %}
+{% endfor %}
+{% set L = pick.l %}
+{% set micro = model.micros[L.micro_id] %}
+{% set is_held = micro.kind == 'held' %}
+{% set name = issuer.display_name %}
+{%- set STAGE_WORDS = {'planned': ('Planned', '计划中'), 'in_production': ('In production', '量产中'), 'announced': ('Announced', '已宣布')} -%}
+{#- id -> {en, zh} for categories, themes and sub-themes along a primary_path -#}
+{% set names = {} %}
+{% for c in model.cats %}
+{% set _ = names.update({c.id: c}) %}
+{% for th in c.themes %}
+{% set _ = names.update({th.id: th}) %}
+{% for sb in th.subs %}
+{% set _ = names.update({sb.id: sb}) %}
+{% endfor %}
+{% endfor %}
+{% endfor %}
+{#- documented relationships naming: issuer_id -> display name -#}
+{% set iss_names = {} %}
+{% for iss in model.issuers %}
+{% set _ = iss_names.update({iss.issuer_id: iss.display_name}) %}
+{% endfor %}
+{% set my_edges = [] %}
+{% for e in model.edges if e.from.issuer_id == issuer.issuer_id or e.to.issuer_id == issuer.issuer_id %}
+{% set _ = my_edges.append(e) %}
+{% endfor %}
+{% set side_block %}{{ asof(model.asof) }}<span class="gmi-chip gmi-chip--ghost">{{ t("Update history not tracked yet", "尚未跟踪更新记录") }}</span>{% endset %}
+{% set ticker_line %}<div class="gmi-ident gmi-ident--head"><span class="gmi-ticker">{{ issuer.ticker }}{% if issuer.exchange %} · {{ issuer.exchange }}{% endif %}</span></div>{% endset %}
+{{ head([('Research', '研究'), ('Companies', '公司')], name, name, sub_en, sub_zh, side=side_block, extra=ticker_line) }}
+<section class="gmi-band gmi-hero1" aria-labelledby="where-h">
+<div class="gmi-hero1-top"><h2 id="where-h">{% if is_held %}{{ t("Where it would sit", "拟归属位置") }}{% else %}{{ t("Where it sits", "归属位置") }}{% endif %}</h2>
+<span class="gmi-hero1-st">{% if is_held %}<span class="gmi-pip gmi-pip--held" aria-hidden="true"></span>{{ t("Held for review", "待审核") }} {{ tip_held() }}{% else %}<span class="gmi-pip gmi-pip--doc" aria-hidden="true"></span>{{ t("Admitted", "已纳入") }} {{ tip_adm() }}{% endif %}</span></div>
+{#- the taxonomy ladder hero, anchored on the micro-theme (primary_path = cat, [sub,] theme, micro) -#}
+{% set path = micro.primary_path %}
+{% set cat_id = path[0] %}
+{% set theme_id = path[-2] %}
+{% set sub_id = path[2] if path | length == 4 else none %}
+{% set lvl_micro %}{{ t("Micro-theme", "细分主题") }}{% endset %}
+{% set lvl_sub %}{{ t("Sub-theme", "子主题") }}{% endset %}
+{% set lvl_theme %}{{ t("Theme", "主题") }}{% endset %}
+{% set lvl_cat %}{{ t("Category", "类别") }}{% endset %}
+{% set step_micro %}{{ t(micro.en, micro.zh) }}{% endset %}
+{% if is_held %}
+{% set pip_anchor = 'held' %}
+{% set anchor_note %}{{ t("Proposed place for " ~ name, name ~ " 的拟定位置") }}{% endset %}
+{% else %}
+{% set pip_anchor = 'doc' %}
+{% set anchor_note %}{{ t("Admitted place for " ~ name, name ~ " 的已纳入位置") }}{% endset %}
+{% endif %}
+{% if sub_id %}
+{% set step_sub %}{{ t(names[sub_id].en, names[sub_id].zh) }}{% endset %}
+{% set sub_step = dict(cls=[], pip='doc', lvl=lvl_sub, name=step_sub) %}
+{% else %}
+{% set step_sub %}{{ t("None — sits directly under its theme", "无 —— 直接隶属于主题") }}{% endset %}
+{% set sub_step = dict(cls=['void', 'none'], pip='none', lvl=lvl_sub, name=step_sub) %}
+{% endif %}
+{% set step_theme %}{{ t(names[theme_id].en, names[theme_id].zh) }}{% endset %}
+{% set theme_note = '' %}
+{% if micro.path_count > 1 %}
+{% set others = [] %}
+{% for p in micro.paths %}
+{% if p[-2] != theme_id and p[-2] not in others %}{% set _ = others.append(p[-2]) %}{% endif %}
+{% endfor %}
+{% if others %}
+{% set other_en = [] %}{% set other_zh = [] %}
+{% for oid in others %}
+{% set _ = other_en.append(names[oid].en) %}
+{% set _ = other_zh.append(names[oid].zh) %}
+{% endfor %}
+{% set theme_note %}{{ t("Also listed under " ~ other_en | join(', '), "亦列于：" ~ other_zh | join('、')) }}{% endset %}
+{% endif %}
+{% endif %}
+{% set step_cat %}{{ t(names[cat_id].en, names[cat_id].zh) }}{% endset %}
+{% set cat_note = '' %}
+{% set cat_others = [] %}
+{% for cid in model.theme_parents.get(theme_id, []) %}
+{% if cid != cat_id and cid not in cat_others %}{% set _ = cat_others.append(cid) %}{% endif %}
+{% endfor %}
+{% if cat_others %}
+{% set cat_en = [] %}{% set cat_zh = [] %}
+{% for cid in cat_others %}
+{% set _ = cat_en.append(names[cid].en) %}
+{% set _ = cat_zh.append(names[cid].zh) %}
+{% endfor %}
+{% set cat_note %}{{ t("Its theme also sits in " ~ cat_en | join(', '), "所属主题亦归入：" ~ cat_zh | join('、')) }}{% endset %}
+{% endif %}
+{{ chain([dict(cls=['anchor'], pip=pip_anchor, lvl=lvl_micro, name=step_micro, note=anchor_note),
+          sub_step,
+          dict(cls=['theme'], pip='doc', lvl=lvl_theme, name=step_theme, note=theme_note),
+          dict(cls=['cat'], pip='doc', lvl=lvl_cat, name=step_cat, note=cat_note)], kind='ladder') }}
+{% if is_held %}
+{% set ans_en %}<b>Proposed, not a member.</b> Not used on the map or in any count until a curator reviews it.{% endset %}
+{% set ans_zh %}<b>拟议关联，尚非成员。</b>审核员审核前，不会用于主题地图或任何统计。{% endset %}
+{% else %}
+{% set ans_en %}<b>Admitted after review.</b> Used on the map and counted in coverage.{% endset %}
+{% set ans_zh %}<b>经审核已纳入。</b>用于主题地图并计入覆盖率。{% endset %}
+{% endif %}
+<p class="gmi-answer gmi-hero1-ans">{{ t(ans_en, ans_zh) }}</p>
+</section>
+<div class="gmi-cols gmi-cols--wide"><div class="gmi-col-main gmi-col-main--flat">
+<section class="gmi-flat">{{ sec("Why it was proposed", "提议依据") }}
+<dl class="gmi-dl gmi-dl--ledger">
+<div><dt>{{ t("Source", "来源") }}</dt><dd><a href="#receipt">{{ t(L.source.label_en, L.source.label_zh) }} · {{ d(L.source.published_date) }} {{ ic("ext", 14) }}</a></dd></div>
+<div><dt>{{ t("Product", "产品") }}</dt><dd>{{ L.scope.product if L.scope.product else t("Not in the source", "来源未披露") }}</dd></div>
+<div><dt>{{ t("Platform", "平台") }}</dt><dd>{{ L.scope.platform if L.scope.platform else t("Not in the source", "来源未披露") }}</dd></div>
+<div><dt>{{ t("Customer named", "所提及客户") }}</dt><dd>{{ t(L.scope.counterparty_display_name, L.scope.counterparty_display_name) if L.scope.counterparty_display_name else t("Not in the source", "来源未披露") }}</dd></div>
+<div><dt>{{ t("Stage", "阶段") }}</dt><dd>{% if L.lifecycle in STAGE_WORDS %}{{ t(STAGE_WORDS[L.lifecycle][0], STAGE_WORDS[L.lifecycle][1]) }}{% else %}{{ t("Not set yet", "尚未设定") }}{% endif %}</dd></div>
+<div><dt>{{ t("On file since", "收录日期") }}</dt><dd>{{ d(L.clock_states.knowledge.value) if L.clock_states.knowledge.value else t("Not set yet", "尚未设定") }}</dd></div>
+</dl>
+<details class="mx-disc" id="receipt"><summary>{{ t("Receipt", "凭证") }}<small>{{ t("proposal record, dates, permissions", "提案记录、日期、权限") }}</small></summary>
+<div class="mx-disc-body gmi-mono"><dl class="gmi-dl">
+<div><dt>proposal_id</dt><dd>{{ L.proposal_id }}</dd></div>
+<div><dt>proposal_status</dt><dd>{{ L.status }}</dd></div>
+<div><dt>graph_membership_use</dt><dd>{{ L.graph_membership_use }}</dd></div>
+<div><dt>role</dt><dd>{{ L.role }}</dd></div>
+<div><dt>lifecycle</dt><dd>{{ L.lifecycle }}</dd></div>
+<div><dt>relation</dt><dd>{{ L.species }}</dd></div>
+{% set clock_parts = [] %}
+{% for ck in ('publication', 'knowledge', 'observation', 'effective', 'admitted', 'correction', 'served_generation') %}
+{% set cst = L.clock_states[ck] %}
+{% set _ = clock_parts.append(ck ~ ' ' ~ (cst.value[:10] if cst.value else cst.state)) %}
+{% endfor %}
+<div><dt>clocks</dt><dd>{{ clock_parts | join(' · ') }}</dd></div>
+<div><dt>magnitudes</dt><dd>amount {{ L.magnitude_states.amount or 'null' }} · economic_share {{ L.magnitude_states.economic_share or 'null' }} · rights: {{ L.emission_state }}</dd></div>
+<div><dt>source_key</dt><dd>{{ L.source.source_key }}</dd></div>
+<div><dt>text_sha256</dt><dd class="tnum">{{ L.source.text_sha256 }}</dd></div>
+</dl>
+{%- if L.excerpt_state %}
+<p class="gmi-note">{{ t("Display rights for this figure are still being confirmed. The source filing is linked.", "该数值的展示权限仍在确认中。已附来源披露文件链接。") }}</p>
+{% if L.source.url_if_public %}<a class="gmi-btn gmi-btn--quiet" href="{{ L.source.url_if_public }}" rel="noopener" target="_blank">{{ t("Open the filing", "打开披露文件") }} {{ ic("ext", 16) }}</a>{% endif %}
+{%- endif %}
+</div></details>
+<p class="gmi-note">{{ t("Nothing here is inferred beyond the cited text.", "以上内容均来自引文，未作推断。") }}</p>
+</section>
+<section class="gmi-flat">{{ sec("What " ~ name ~ " does", name ~ " 的业务") }}
+<div class="gmi-facet"><div class="gmi-facet-h">{{ t("Principal activity", "主营业务") }}</div>
+<div class="gmi-facet-v gmi-facet-v--unset">{{ t("Not set yet", "尚未设定") }}</div>
+<p class="gmi-note">{{ t("No reviewed description of " ~ name ~ "’s main business is on file. It will appear here, with its source, once reviewed.", "目前没有经审核的 " ~ name ~ " 主营业务描述。审核后将连同来源显示于此。") }}</p></div>
+<div class="gmi-facet"><div class="gmi-facet-h">{{ t("Value-chain position", "价值链位置") }}</div>
+<div class="gmi-rail">
+{%- for v, en, zh in (('upstream', 'Upstream', '上游'), ('midstream', 'Midstream', '中游'), ('downstream', 'Downstream', '下游'), ('enabler', 'Enabler', '赋能')) -%}
+<div class="gmi-rail-seg{% if micro.vcp == v %} gmi-rail-seg--on{% endif %}"><span class="gmi-rail-bar"></span><span class="gmi-rail-lab">{{ t(en, zh) }}</span></div>
+{%- endfor -%}
+<div class="gmi-rail-seg{% if not micro.vcp %} gmi-rail-seg--unset gmi-rail-seg--on{% endif %}"><span class="gmi-rail-bar"></span><span class="gmi-rail-lab">{{ t("Not set yet", "尚未设定") }}</span></div>
+</div>
+{% if not micro.vcp %}
+<p class="gmi-note">{{ t("Not recorded for " ~ micro.en ~ " yet.", micro.zh ~ "的价值链位置尚未记录。") }}</p>
+{% endif %}</div>
+</section>
+</div><div class="gmi-col-side"><aside class="gmi-sheet">{{ sec("What we don’t know yet", "尚不清楚的信息") }}
+<ul class="gmi-list">
+{% if is_held %}<li><span>{{ t("Whether " ~ name ~ " belongs here", name ~ " 是否属于该主题") }}</span><span>{{ t("Awaiting review", "待审核") }}</span></li>
+{% endif %}<li><span>{{ t("Deal size", "规模") }}</span><span>{% set amt = L.magnitude_states.amount %}{% if not amt or amt == 'UNDISCLOSED' %}{{ t("Not in the source", "来源未披露") }}{% elif 'WITHHELD' in amt %}{{ t("Size withheld", "规模暂不显示") }}{% else %}{{ t("Not in the source", "来源未披露") }}{% endif %}</span></li>
+{% set eff = L.clock_states.effective %}
+<li><span>{{ t("Start date", "开始日期") }}</span><span>{{ d(eff.value) if eff.value else t("Not in the source", "来源未披露") }}</span></li>
+<li><span>{{ t("Business segment", "业务分部") }}</span><span>{{ L.scope.segment if L.scope.segment else t("Not in the source", "来源未披露") }}</span></li>
+</ul>
+<div class="gmi-sheet-div">{{ sec("Documented relationships", "已记录的关系", 3) }}
+{% if my_edges %}
+<ul class="gmi-list">
+{%- for e in my_edges %}<li><span><a href="{{ nav_prefix }}gmi-relationships.html">{{ iss_names.get(e.from.issuer_id, e.from.issuer_id) }} → {{ iss_names.get(e.to.issuer_id, e.to.issuer_id) }}</a></span></li>
+{% endfor -%}
+</ul>
+{% else %}
+<p class="gmi-note">{{ t("None documented for " ~ name ~ " yet.", name ~ " 暂无已记录的关系。") }}</p>
+<a class="gmi-btn gmi-btn--quiet" href="{{ nav_prefix }}gmi-relationships.html">{{ t("See documented relationships", "查看已记录的关系") }}{{ ic("arrow", 16) }}</a>
+{% endif %}
+</div></aside></div></div>
+{% endblock %}

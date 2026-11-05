@@ -1,0 +1,177 @@
+{
+  "schema": "research.implementation_work_packages/v0",
+  "as_of": "2026-10-08",
+  "adopted": false,
+  "production_authority": false,
+  "attachment_specific_coverage": "UNVERIFIED_ATTACHMENT_UNAVAILABLE",
+  "source_document": "IMPLEMENTATION_MASTERPLAN.md",
+  "work_packages": [
+    {
+      "id": "WP00",
+      "title": "Adjudication and collision check",
+      "dispatch_status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "custody": "commissioning Sol CEO, incumbent GMI/F04/K3-D and source owners.",
+      "dependencies": [],
+      "dependency_qualification": null,
+      "actions": "refresh pins, compare required deliverables, record D01–D10, identify actual native datasets and owner refs, select one vertical slice, and name unchanged accepted work. Keep the micro-membership research separate.",
+      "acceptance": "signed/accepted owner decision in the existing process, bounded file scope, exact dependency/hold list, no duplicate active implementation. Missing handoff criteria remain explicitly unverified until read.",
+      "rollback": null,
+      "planning_effort": "2–4 person-days of architecture/owner review, contingent on availability. This is an estimate, not a commitment.",
+      "specification_markdown": "**Custody:** commissioning Sol CEO, incumbent GMI/F04/K3-D and source owners.\n\n**Inputs:** this package, full recovered handoff, current protected procedure revisions, current PR/owner frontier and Commission4.\n\n**Actions:** refresh pins, compare required deliverables, record D01–D10, identify actual native datasets and owner refs, select one vertical slice, and name unchanged accepted work. Keep the micro-membership research separate.\n\n**Acceptance:** signed/accepted owner decision in the existing process, bounded file scope, exact dependency/hold list, no duplicate active implementation. Missing handoff criteria remain explicitly unverified until read.\n\n**Planning effort:** 2–4 person-days of architecture/owner review, contingent on availability. This is an estimate, not a commitment."
+    },
+    {
+      "id": "WP01",
+      "title": "Native contract and loss-aware projection specification",
+      "dispatch_status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "custody": "native fact owner with Data OS identity/temporal/source-policy owner; GMI projection owner consulted.",
+      "dependencies": [
+        "WP00"
+      ],
+      "dependency_qualification": "WP00, D01–D03.",
+      "actions": "specify observation/key/revision separation; legal parties and source-local aliases; scoped roles; original date precision; numerator/denominator/units; contradictions; rights; native dataset/TemporalProfile mapping. Prove the crosswalk preserves meaning or emits NO_MAPPING.",
+      "acceptance": "role/direction/endpoint/scope examples, planned-versus-executed example, multi-party agreement, a trustee rejection, null magnitudes and a source correction. The current closed schema must either remain untouched or change through an explicitly adopted version. No independent clock helper or identity map.",
+      "rollback": "disable the new projection; preserve raw/native observations and earlier accepted views.",
+      "planning_effort": "4–8 engineering person-days plus 2–4 analyst/reviewer days.",
+      "specification_markdown": "**Custody:** native fact owner with Data OS identity/temporal/source-policy owner; GMI projection owner consulted.\n\n**Dependencies:** WP00, D01–D03.\n\n**Likely affected seams after acceptance:** the chosen native fact contract, config/dataset_registry.yml, lib/dataos/registry.py validation path, and a reviewed ThemeGraph projection contract. The exact new fact path must follow the selected owner's current conventions.\n\n**Actions:** specify observation/key/revision separation; legal parties and source-local aliases; scoped roles; original date precision; numerator/denominator/units; contradictions; rights; native dataset/TemporalProfile mapping. Prove the crosswalk preserves meaning or emits NO_MAPPING.\n\n**Acceptance:** role/direction/endpoint/scope examples, planned-versus-executed example, multi-party agreement, a trustee rejection, null magnitudes and a source correction. The current closed schema must either remain untouched or change through an explicitly adopted version. No independent clock helper or identity map.\n\n**Rollback:** disable the new projection; preserve raw/native observations and earlier accepted views.\n\n**Planning effort:** 4–8 engineering person-days plus 2–4 analyst/reviewer days."
+    },
+    {
+      "id": "WP02",
+      "title": "Source diagnostic and adjudicated reference set",
+      "dispatch_status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "custody": "incumbent research/source owners; independent reviewers.",
+      "dependencies": [
+        "WP01"
+      ],
+      "dependency_qualification": "lawful collection scope and WP01 definitions; can proceed alongside contract implementation using research-only records.",
+      "actions": "freeze the 120-issuer diagnostic before viewing vendor outputs: five primary-listing strata of 24 issuers each, six sectors × four issuers per stratum. International comprises eight UK, eight Japan and eight EU issuers. Resolve dual listings to one issuer. Freeze selection date, capitalization categories, issuer identifiers and selected sources; do not select only easy disclosed pairs.",
+      "acceptance": "source-linked reference set, annotation instructions, disagreement record, fixed denominators and limitations. Report conditional adjudicated precision, verified-support yield, unknown rate and recall only within the defined reference set. Do not call this global recall or production-grade precision proof.",
+      "rollback": "stop a source route that lacks permission; keep permissible research notes and unresolved status.",
+      "planning_effort": "a hypothetical 30–90 minutes per issuer plus 15–30 hours adjudication gives approximately 75–210 analyst hours. Complexity may require a revised estimate after the first 12 cases. These estimates are not measured throughput.",
+      "specification_markdown": "**Custody:** incumbent research/source owners; independent reviewers.\n\n**Dependencies:** lawful collection scope and WP01 definitions; can proceed alongside contract implementation using research-only records.\n\n**Actions:** freeze the 120-issuer diagnostic before viewing vendor outputs: five primary-listing strata of 24 issuers each, six sectors × four issuers per stratum. International comprises eight UK, eight Japan and eight EU issuers. Resolve dual listings to one issuer. Freeze selection date, capitalization categories, issuer identifiers and selected sources; do not select only easy disclosed pairs.\n\nFor each issuer, record documents attempted, actual availability, named and anonymous relationships, role specificity, time precision, magnitude availability, source rights and source-selection bias. Independently adjudicate 30 difficult cases. Record unresolved cases instead of inventing truth.\n\n**Acceptance:** source-linked reference set, annotation instructions, disagreement record, fixed denominators and limitations. Report conditional adjudicated precision, verified-support yield, unknown rate and recall only within the defined reference set. Do not call this global recall or production-grade precision proof.\n\n**Planning effort:** a hypothetical 30–90 minutes per issuer plus 15–30 hours adjudication gives approximately 75–210 analyst hours. Complexity may require a revised estimate after the first 12 cases. These estimates are not measured throughput.\n\n**Rollback:** stop a source route that lacks permission; keep permissible research notes and unresolved status."
+    },
+    {
+      "id": "WP03",
+      "title": "One production-quality source adapter",
+      "dispatch_status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "custody": "selected native source/fact owner; Data OS source-policy interface.",
+      "dependencies": [
+        "WP01"
+      ],
+      "dependency_qualification": "WP01; source-purpose permission and source diagnostic.",
+      "actions": "stable source receipts, permitted retention, original language/units, version/digest, parser and extraction version, role/scope proposal, identity-resolution handoff, retries and correction handling. Native filing acceptance/publication clocks come from the registered dataset profile; no local date invention.",
+      "acceptance": "replayable lawful source receipt, one real admitted role-specific case, difficult role-unknown case, correction, source unavailability, duplicate-source deduplication and purpose-denied behavior. Error states distinguish absent from unavailable.",
+      "rollback": "disable adapter publication without deleting historical receipts that may lawfully be retained.",
+      "planning_effort": "1–3 engineering weeks for one adapter after permissions and native interfaces are clear. This does not promise a global multi-jurisdiction feed.",
+      "specification_markdown": "**Custody:** selected native source/fact owner; Data OS source-policy interface.\n\n**Dependencies:** WP01; source-purpose permission and source diagnostic.\n\n**Initial preference:** SEC original filings/issuer disclosures where the exact operation is allowed. SEC aggregate company facts alone do not provide a complete segment or relationship feed; parse the appropriate original filing and source spans. Observe the current official rate and identification requirements through the source owner.\n\n**Actions:** stable source receipts, permitted retention, original language/units, version/digest, parser and extraction version, role/scope proposal, identity-resolution handoff, retries and correction handling. Native filing acceptance/publication clocks come from the registered dataset profile; no local date invention.\n\n**Acceptance:** replayable lawful source receipt, one real admitted role-specific case, difficult role-unknown case, correction, source unavailability, duplicate-source deduplication and purpose-denied behavior. Error states distinguish absent from unavailable.\n\n**Rollback:** disable adapter publication without deleting historical receipts that may lawfully be retained.\n\n**Planning effort:** 1–3 engineering weeks for one adapter after permissions and native interfaces are clear. This does not promise a global multi-jurisdiction feed."
+    },
+    {
+      "id": "WP04",
+      "title": "Temporal compatibility amendment and replay proof",
+      "dispatch_status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "custody": "existing Data OS temporal owner and K3-D/ThemeState owners, each retaining their contract.",
+      "dependencies": [
+        "WP01",
+        "WP03"
+      ],
+      "dependency_qualification": "WP01 and a real WP03 receipt.",
+      "actions": "preserve current daily K3-D meaning unless a reviewed version changes it; specify exact instant eligibility and date-only failure behavior at the consumer boundary. Reproduce the 23-case pinned witness against the newly selected source revision. Add actual native-source, identity-map, correction and served-artifact replay witnesses.",
+      "acceptance": "a post-cutoff disclosure and a later correction cannot affect an earlier query; DERIVED-only history refuses; publication knowability is distinguished from actual historical ingestion; equal-timestamp ordering is specified; no new generic time law.",
+      "rollback": "retain accurately labeled daily evidence or evidence-only display; withhold exact historical claims. Do not unblock held K3-D without its owner's decision.",
+      "planning_effort": "5–10 engineering days and independent review. Legacy dependencies may extend this.",
+      "specification_markdown": "**Custody:** existing Data OS temporal owner and K3-D/ThemeState owners, each retaining their contract.\n\n**Dependencies:** WP01 and a real WP03 receipt.\n\n**Actions:** preserve current daily K3-D meaning unless a reviewed version changes it; specify exact instant eligibility and date-only failure behavior at the consumer boundary. Reproduce the 23-case pinned witness against the newly selected source revision. Add actual native-source, identity-map, correction and served-artifact replay witnesses.\n\n**Acceptance:** a post-cutoff disclosure and a later correction cannot affect an earlier query; DERIVED-only history refuses; publication knowability is distinguished from actual historical ingestion; equal-timestamp ordering is specified; no new generic time law.\n\n**Rollback:** retain accurately labeled daily evidence or evidence-only display; withhold exact historical claims. Do not unblock held K3-D without its owner's decision.\n\n**Planning effort:** 5–10 engineering days and independent review. Legacy dependencies may extend this."
+    },
+    {
+      "id": "WP05",
+      "title": "Graph 1 read projection and quality policy",
+      "dispatch_status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "custody": "native relationship and GMI projection owners; no standalone W4.",
+      "dependencies": [
+        "WP01",
+        "WP03",
+        "WP04"
+      ],
+      "dependency_qualification": "WP01, WP03, WP04; source diagnostic for any automation.",
+      "actions": "materialize only eligible facts; preserve type/scope/direction and evidence; retain historical/candidate/conflicted states; implement bounded traversal, revision references, rights filtering and null magnitudes.",
+      "acceptance": "deterministic rebuild at fixed inputs; no semantic or market edge fills a missing commercial role; no economic_share formula invention; multi-party agreement does not duplicate allocations; hierarchy does not propagate; queries expose coverage and truncation.",
+      "rollback": "stop the new projection and return existing semantic/context views; no source truth deletion.",
+      "planning_effort": "5–10 engineering days for the bounded first slice.",
+      "specification_markdown": "**Custody:** native relationship and GMI projection owners; no standalone W4.\n\n**Dependencies:** WP01, WP03, WP04; source diagnostic for any automation.\n\n**Actions:** materialize only eligible facts; preserve type/scope/direction and evidence; retain historical/candidate/conflicted states; implement bounded traversal, revision references, rights filtering and null magnitudes.\n\n**Acceptance:** deterministic rebuild at fixed inputs; no semantic or market edge fills a missing commercial role; no economic_share formula invention; multi-party agreement does not duplicate allocations; hierarchy does not propagate; queries expose coverage and truncation.\n\nAutomatic admission, if adopted, must meet the owner-approved per-stratum statistical floor and hard eligibility conditions. Until then, use reviewed cases. A simple extraction success rate on this casebook is not that gate.\n\n**Rollback:** stop the new projection and return existing semantic/context views; no source truth deletion.\n\n**Planning effort:** 5–10 engineering days for the bounded first slice."
+    },
+    {
+      "id": "WP06",
+      "title": "Conditional path composition",
+      "dispatch_status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "custody": "incumbent Economic Propagation/K3-D owner with native metric owners.",
+      "dependencies": [
+        "WP05"
+      ],
+      "dependency_qualification": "WP05, accepted parameter/path contract refinements.",
+      "actions": "implement direct mechanism templates for one demand, one supply constraint and one ownership/accounting case if the required sources exist. Carry variable/unit/period/state mappings, alternatives, falsifiers and unknown parameters. Preserve current two-hop default. Handle shared event allocations and cycles through explicit semantics.",
+      "acceptance": "real evidence path with undisclosed magnitude remains quantitatively abstained; wrong denominator, unit, period, state or intermediate variable refuses composition; a source-backed case is separated from a hypothetical nonlinear scenario. Existing hypothesis authority and killed-species receipts remain intact.",
+      "rollback": "retain factual relationship display and remove unsupported quantitative/path outputs.",
+      "planning_effort": "10–20 combined research/engineering person-days, depending on native parameter availability.",
+      "specification_markdown": "**Custody:** incumbent Economic Propagation/K3-D owner with native metric owners.\n\n**Dependencies:** WP05, accepted parameter/path contract refinements.\n\n**Actions:** implement direct mechanism templates for one demand, one supply constraint and one ownership/accounting case if the required sources exist. Carry variable/unit/period/state mappings, alternatives, falsifiers and unknown parameters. Preserve current two-hop default. Handle shared event allocations and cycles through explicit semantics.\n\n**Acceptance:** real evidence path with undisclosed magnitude remains quantitatively abstained; wrong denominator, unit, period, state or intermediate variable refuses composition; a source-backed case is separated from a hypothetical nonlinear scenario. Existing hypothesis authority and killed-species receipts remain intact.\n\n**Rollback:** retain factual relationship display and remove unsupported quantitative/path outputs.\n\n**Planning effort:** 10–20 combined research/engineering person-days, depending on native parameter availability."
+    },
+    {
+      "id": "WP07",
+      "title": "Product vertical slice",
+      "dispatch_status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "custody": "incumbent F04 and Terminal Company Intelligence owners.",
+      "dependencies": [
+        "WP05",
+        "WP06"
+      ],
+      "dependency_qualification": "WP05, WP06 where hypotheses are displayed; existing Company Intelligence generation and entitlement contracts.",
+      "actions": "extend the accepted context lineage, implement the specified relationship inspector and abstention states, preserve authentication/current-generation checks and navigation semantics. Avoid a new parallel API or public publication of restricted evidence.",
+      "acceptance": "all ten product witnesses in PRODUCT_INTEGRATION.md, including one real positive path and a real abstention on the actual route, same human/machine artifact, correction, generation mismatch and restricted purpose. Complete dark/light, EN/ZH, desktop/mobile and keyboard review on the implemented surface.",
+      "rollback": "feature/consumer fallback to the prior accepted context version. Keep fact ingestion independent from UI deployment.",
+      "planning_effort": "8–15 engineering days, 2–4 design/review days and 3–5 QA days for one bounded journey. Additional surfaces follow the accepted owner sequence.",
+      "specification_markdown": "**Custody:** incumbent F04 and Terminal Company Intelligence owners.\n\n**Dependencies:** WP05, WP06 where hypotheses are displayed; existing Company Intelligence generation and entitlement contracts.\n\n**Actions:** extend the accepted context lineage, implement the specified relationship inspector and abstention states, preserve authentication/current-generation checks and navigation semantics. Avoid a new parallel API or public publication of restricted evidence.\n\n**Acceptance:** all ten product witnesses in PRODUCT_INTEGRATION.md, including one real positive path and a real abstention on the actual route, same human/machine artifact, correction, generation mismatch and restricted purpose. Complete dark/light, EN/ZH, desktop/mobile and keyboard review on the implemented surface.\n\n**Rollback:** feature/consumer fallback to the prior accepted context version. Keep fact ingestion independent from UI deployment.\n\n**Planning effort:** 8–15 engineering days, 2–4 design/review days and 3–5 QA days for one bounded journey. Additional surfaces follow the accepted owner sequence."
+    },
+    {
+      "id": "WP08",
+      "title": "Operating-outcome experiment",
+      "dispatch_status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "custody": "existing research/evaluation and relevant operating-data owners; independent reviewer.",
+      "dependencies": [
+        "WP04",
+        "WP05",
+        "WP06"
+      ],
+      "dependency_qualification": "lawful frozen data, WP04 replay proof, WP05 quality, WP06 mechanisms.",
+      "actions": "choose one primary operating target and horizon, freeze its event universe and label policy, estimate independent event/time-block count and minimum detectable improvement, then preregister baselines and nulls. Run direct-link, nongraph same-information, macro/industry and appropriate IO alternatives before a neural challenger.",
+      "acceptance": "the full economic-evidence protocol. Show missingness, uncertainty, costs, coverage and failed hypotheses. Compare true paths with type/direction/layer/rewired controls. If the test cannot distinguish practical improvement, report inconclusive instead of “validated.”",
+      "rollback": "retain evidence product if predictive gain fails. No authority automatically increases.",
+      "planning_effort": "10–20 data-science days plus 2–5 review days after usable data exists. Obtaining historical vintages or observing future outcomes is a separate elapsed-time constraint.",
+      "specification_markdown": "**Custody:** existing research/evaluation and relevant operating-data owners; independent reviewer.\n\n**Dependencies:** lawful frozen data, WP04 replay proof, WP05 quality, WP06 mechanisms.\n\n**Actions:** choose one primary operating target and horizon, freeze its event universe and label policy, estimate independent event/time-block count and minimum detectable improvement, then preregister baselines and nulls. Run direct-link, nongraph same-information, macro/industry and appropriate IO alternatives before a neural challenger.\n\n**Acceptance:** the full economic-evidence protocol. Show missingness, uncertainty, costs, coverage and failed hypotheses. Compare true paths with type/direction/layer/rewired controls. If the test cannot distinguish practical improvement, report inconclusive instead of “validated.”\n\n**Rollback/stop:** retain evidence product if predictive gain fails. No authority automatically increases.\n\n**Planning effort:** 10–20 data-science days plus 2–5 review days after usable data exists. Obtaining historical vintages or observing future outcomes is a separate elapsed-time constraint."
+    },
+    {
+      "id": "WP09",
+      "title": "Optional neural challenger",
+      "dispatch_status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "custody": "incumbent research/model owner; same independent evaluation boundary.",
+      "dependencies": [
+        "WP08"
+      ],
+      "dependency_qualification": "WP08 demonstrates a tractable target and adequate eligible data; explicit lawful training/evaluation rights.",
+      "actions": "begin with a small typed relational model and a matched information budget. Add heterogeneous attention or temporal memory only for a measured deficiency. Freeze candidate pools and state by cutoff; distinguish undisclosed from negative edges. Audit pretrained-representation contamination and model lineage.",
+      "acceptance": "useful improvement over the best same-information non-neural comparator, uncertainty beyond the precommitted practical hurdle, calibration/coverage stability, source/region robustness, acceptable cost and prospective evidence. Preserve all existing kills.",
+      "rollback": "reject the added complexity if its benefit is unproven, fragile, rights-incompatible or uneconomic. Do not rename a failed model into an accepted graph score.",
+      "planning_effort": "10–20 data-science days for an initial challenger after data readiness. No prospective validation period is promised in advance.",
+      "specification_markdown": "**Custody:** incumbent research/model owner; same independent evaluation boundary.\n\n**Dependencies:** WP08 demonstrates a tractable target and adequate eligible data; explicit lawful training/evaluation rights.\n\n**Actions:** begin with a small typed relational model and a matched information budget. Add heterogeneous attention or temporal memory only for a measured deficiency. Freeze candidate pools and state by cutoff; distinguish undisclosed from negative edges. Audit pretrained-representation contamination and model lineage.\n\n**Acceptance:** useful improvement over the best same-information non-neural comparator, uncertainty beyond the precommitted practical hurdle, calibration/coverage stability, source/region robustness, acceptable cost and prospective evidence. Preserve all existing kills.\n\n**Rollback/stop:** reject the added complexity if its benefit is unproven, fragile, rights-incompatible or uneconomic. Do not rename a failed model into an accepted graph score.\n\n**Planning effort:** 10–20 data-science days for an initial challenger after data readiness. No prospective validation period is promised in advance."
+    },
+    {
+      "id": "WP10",
+      "title": "Controlled adoption and operations",
+      "dispatch_status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "custody": "existing product, source, evaluation and promotion owners according to the accepted output's authority.",
+      "dependencies": [],
+      "dependency_qualification": "relevant earlier packages and exact acceptance receipts.",
+      "actions": "source/rights freshness, correction propagation, stale model handling, artifact replacement, operational telemetry and rollback. Recheck source terms before expanding use. Any predictive consumer routes through existing grading/forward-ledger/promotion authority.",
+      "acceptance": "current owner decision cites exact version, target, horizon, rights, evaluation, limitations, fallback and monitored failure conditions. A research result is not a live release.",
+      "rollback": null,
+      "planning_effort": null,
+      "specification_markdown": "**Custody:** existing product, source, evaluation and promotion owners according to the accepted output's authority.\n\n**Dependencies:** relevant earlier packages and exact acceptance receipts.\n\n**Actions:** source/rights freshness, correction propagation, stale model handling, artifact replacement, operational telemetry and rollback. Recheck source terms before expanding use. Any predictive consumer routes through existing grading/forward-ledger/promotion authority.\n\n**Acceptance:** current owner decision cites exact version, target, horizon, rights, evaluation, limitations, fallback and monitored failure conditions. A research result is not a live release."
+    }
+  ]
+}

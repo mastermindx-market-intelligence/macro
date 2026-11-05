@@ -1,0 +1,25 @@
+{
+  "record_type": "bounded_source_consultation",
+  "reviewer": "/root/sector_rig_counsel",
+  "method": "immutable GitHub source reads",
+  "subject": "cd00da8f433f512baf471dfef4517a838cbef145",
+  "parent": "ad65b00bb0330ccdaa3042ce3a7697cc1cc85554",
+  "packaging_subject": "3261331f95371b96187ccbfd3fc055067d4a6945",
+  "verdict": "No substantive defect found in the exact43-file source delta; no material README/MANIFEST identity or consistency error found.",
+  "findings": [
+    "All40 HTML patches change only the canonical CSS stamp8c102aa3 to b1918cca; unchanged bridge048314d5.",
+    "Both CSS blobs are identical;467 UTF-8 bytes; only the two unused declaration deletions.",
+    "The only test deletion checks those literals; runtime, readiness, selector and paired-asset assertions retained.",
+    "27 manifest entries plus manifest exactly match28 committed evidence files; selected payload hashes independently matched."
+  ],
+  "limitations": [
+    "Whole-tree consumer census was not independently rerun.",
+    "No tests, native host, browser or release actions.",
+    "Not every gzip payload was independently decompressed; root's earlier byte verification remains separate evidence.",
+    "Active-frame visual evidence and release admission remain missing."
+  ],
+  "sources": [
+    "https://github.com/mastermindx-market-intelligence/macro/commit/cd00da8f433f512baf471dfef4517a838cbef145",
+    "https://github.com/mastermindx-market-intelligence/macro/commit/3261331f95371b96187ccbfd3fc055067d4a6945"
+  ]
+}

@@ -1,0 +1,87 @@
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(navigator.language||'').slice(0,2);if(l==='zh')document.documentElement.setAttribute('data-lang','zh');}catch(e){}</script>
+<title>PLNT economic change — Consumer Cyclical synthetic display — MastermindX</title>
+{% set seo_title = "PLNT economic change — Consumer Cyclical synthetic display — MastermindX" %}
+{% set seo_desc = "One synthetic display card of the Consumer Cyclical economic-change reading for PLNT — a fixture mount, not a filing." %}
+{% set seo_path = "consumer_cyclical_plnt.html" %}
+{% include "_seo_head.html.j2" %}
+<link rel="stylesheet" href="theme.css">
+<style>
+/* Consumer Cyclical PLNT card — DARK TREATMENT: a command-centre card on the
+   dark canvas — luminance depth by stacking --panel over --bg with a recessed
+   --panel2 reading list, one hairline --line, accent only through --link.
+   No glow beyond what the shared tokens already carry.
+   LIGHT TREATMENT: a research-workspace card — cool canvas, white material,
+   hairline --line discipline and --card-shadow for depth instead of glow.
+   Both art directions are the same semantic tokens resolving under
+   data-theme; no palette is authored here. Structure and copy are pinned by
+   tests; visual taste is adjudicated by the reviewing seat. */
+*{box-sizing:border-box}
+body{margin:0;padding-top:18px;background:var(--bg);color:var(--text);font:14.5px/1.55 var(--font-ui);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.ccp-shell{max-width:720px;margin:0 auto;padding:clamp(28px,5vw,56px) clamp(18px,4vw,44px) 80px}
+.ccp-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);box-shadow:var(--card-shadow);padding:clamp(22px,4vw,34px)}
+.ccp-kicker{margin:0 0 10px;color:var(--muted);font:650 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase}
+.ccp-card h1{margin:0;font:760 clamp(26px,4.4vw,38px)/1.1 var(--font-ui);letter-spacing:-.03em}
+.ccp-lead{margin:16px 0 0;max-width:60ch;color:var(--text);font-size:clamp(14px,2vw,16px)}
+.ccp-meta{margin:10px 0 0;color:var(--muted);font:500 12px/1.5 var(--font-mono)}
+.ccp-rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:22px 0 0;padding:0}
+.ccp-row{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:14px 16px}
+.ccp-row dt{margin:0 0 6px;color:var(--muted);font:650 10.5px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}
+.ccp-row dd{margin:0;font:700 15px/1.35 var(--font-ui);overflow-wrap:anywhere}
+.ccp-figure{font:760 clamp(24px,3.4vw,32px)/1 var(--font-mono);color:var(--link)}
+.ccp-row[data-state="withheld"] .ccp-figure,.ccp-row[data-state="absent"] .ccp-figure{color:var(--muted);font-size:14px}
+.ccp-withheld-reason{display:block;margin-top:6px;color:var(--muted);font:500 11px/1.4 var(--font-mono)}
+.ccp-provenance{display:inline-block;margin-top:18px;padding:6px 10px;border:1px solid var(--line);border-radius:var(--r-btn,10px);background:var(--panel2);color:var(--muted);font:650 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:lowercase}
+.ccp-note{margin:18px 0 0;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+{% set rel = '' %}
+{% include "_public_chrome_css.html.j2" %}
+</head>
+<body class="public-page ccp-page">
+{% include "_public_nav.html.j2" %}
+
+<main class="ccp-shell" id="ccp-main">
+  <section class="ccp-card" aria-labelledby="ccp-title"
+           data-availability="{{ packet.availability }}"
+           data-provenance="{{ packet.provenance }}"
+           data-filing-claim="{{ 'true' if packet.filing_claim else 'false' }}"
+           data-contract-status="{{ packet.shared_contract_status }}">
+    <p class="ccp-kicker">{{ t('Consumer Cyclical — synthetic display', '消费周期板块 — 合成展示') }}</p>
+    <h1 id="ccp-title">{{ t('PLNT economic change', 'PLNT 经济变化') }}</h1>
+    <p class="ccp-lead">{{ t(packet.lead, '本卡片经由展示数据包读取已提交的合成样例，呈现消费周期板块 PLNT 的经济变化读数，仅作展示。') }}</p>
+    <p class="ccp-meta">{{ t('PLNT · quarter over prior-year quarter · display-only reading', 'PLNT · 本季对比上年同季 · 仅作展示') }}</p>
+
+    <dl class="ccp-rows">
+      <div class="ccp-row" data-key="advertising_net_change" data-state="{{ packet.advertising_net_change_status }}">
+        <dt>{{ t('Advertising net change', '广告净变动') }}</dt>
+        <dd class="ccp-figure">{% if packet.advertising_net_change_status == 'ready' %}{{ packet.advertising_net_change }}{% elif packet.advertising_net_change_status == 'withheld' %}{{ t('withheld — figure not shown', '已暂缓 — 未展示数值') }}{% else %}{{ t('absent — no row emitted', '缺行 — 未生成该行') }}{% endif %}</dd>
+        {% if packet.advertising_net_change_status == 'withheld' and packet.advertising_net_change_withheld_reason %}<span class="ccp-withheld-reason">{{ packet.advertising_net_change_withheld_reason }}</span>{% endif %}
+      </div>
+      <div class="ccp-row" data-key="availability" data-state="{{ packet.availability }}">
+        <dt>{{ t('Document availability', '文档可用性') }}</dt>
+        <dd>{{ packet.availability }}</dd>
+      </div>
+      <div class="ccp-row" data-key="shared_contract" data-state="{{ packet.shared_contract_status }}">
+        <dt>{{ t('Shared curation contract', '共享策展契约') }}</dt>
+        <dd>{{ packet.shared_contract_status }}</dd>
+      </div>
+    </dl>
+
+    <p class="ccp-provenance" data-provenance="{{ packet.provenance }}">{{ t('synthetic fixture', '合成样例') }}</p>
+    <p class="ccp-note" data-filing-claim="{{ 'true' if packet.filing_claim else 'false' }}">{{ t('This card mounts the committed synthetic fixture through the display packet. It is not a filing claim and states no rating, entry or sizing.', '本卡片经由展示数据包读取已提交的合成样例。它不构成披露主张，也不包含评级、入场或仓位建议。') }}</p>
+  </section>
+</main>
+
+{% include "_public_footer.html.j2" %}
+<script src="theme.js"></script>
+{% include "_public_chrome_js.html.j2" %}
+</body>
+</html>

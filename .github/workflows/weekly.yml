@@ -325,6 +325,9 @@ jobs:
                      data/hk_fundamentals/fundamentals.parquet 2>/dev/null || true
           # Stock-search libraries are gitignored — force-add so the committed-tree
           # deploy ships their index/detail JSON. See daily.yml.
+          # GH001 carve (scripts/ci/qledger_carve.sh): the broad add above staged the ledger,
+          # and a staged ledger rejects the whole weekly commit. Withheld reds the run.
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 1
           if git diff --cached --quiet; then echo "no weekly changes to commit"; exit 0; fi
           # Fail-closed conflict gate (P0 2026-08-01, d29e4dd44d / #4167): same
           # broad-add + autostash-pull + always()-artifact shape as the daily

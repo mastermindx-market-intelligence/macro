@@ -1,0 +1,2 @@
+# Preserve the original returned patch bytes locally; its immutable Fabric response and SHA256 are recorded in OWNER_INTEGRATION.md.
+/original_spark_repair.patch

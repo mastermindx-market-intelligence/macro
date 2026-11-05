@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-14T03:06:05.406304+00:00",
+  "reviewed_source": "16586816a63a47bbe47841d80c976ee096b93e63",
+  "reviewer_thread": "01a13852-fe0d-79d2-b4ba-0604efb6029a",
+  "verified_turn_contexts": [
+    {
+      "model": "gpt-5.6-terra",
+      "effort": "medium",
+      "cwd": "/Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main"
+    },
+    {
+      "model": "gpt-5.6-terra",
+      "effort": "medium",
+      "cwd": "/Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main"
+    }
+  ],
+  "return_sha256": "00d9712fb94651bfb802ed57f76638adea00411e0dbd14f6614d5ae3ebe3f5f5",
+  "original_verdict": "NOT PASS",
+  "rereview": "PASS",
+  "rereview_tests": "19 passed, 102 deselected in 2.94s",
+  "parent_tests": "167 passed in 7.62s",
+  "accepted_scope": "Explicit quantity scale, exact boilerplate scoring, private preflight/clock/identity guards; preserves thresholds and existing receipt semantics. No publication acceptance."
+}

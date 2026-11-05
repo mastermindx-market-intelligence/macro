@@ -117,10 +117,12 @@ def _spliced_frames(quotes, max_chg, stale_after, now, session_open):
     quote that won ``_usable()``, never a builder wall clock. GD-3R1 amendment F3:
     a quote flagged ``quote_ts_synthetic`` (engine.live_quotes — its own ``quote_ts``
     did NOT come from a real market timestamp, e.g. a day/prev-close basis or a
-    fallback to the snapshot's refresh clock) still SPLICES normally (pricing/
-    staleness unaffected) but its clock is recorded as ``None`` here — Sol's
-    cannot-be-established -> null law — so a synthetic (builder/snapshot) wall
-    clock can never enter the event-time receipt."""
+    fallback to the snapshot's refresh clock) never puts that clock in the
+    event-time receipt. Since #8606 ``live_overlay.staleness()`` calls such a
+    quote stale (rule 6: a synthetic quote clock is no actionable live cash
+    update), so ``_usable()`` refuses it and the symbol reads its nightly close.
+    The ``None`` mapping below stays as a second fence — Sol's
+    cannot-be-established -> null law."""
     spliced, live_close, nightly_close, quote_clocks = {}, {}, {}, {}
     for name, sym in SPLICE.items():
         close = live_overlay.read_close(name)

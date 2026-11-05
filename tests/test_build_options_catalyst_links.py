@@ -343,7 +343,7 @@ def test_h_fomc_decision_dates_is_pure_and_sorted():
     assert fomc_decision_dates(date(2026, 5, 1), date(2026, 4, 1)) == []
     whole = fomc_decision_dates(date(2026, 1, 1), date(2026, 12, 31))
     assert whole == sorted(whole)
-    assert whole == [date.fromisoformat(raw) for raw, _sep in _FOMC]
+    assert whole == [date.fromisoformat(raw) for raw, _sep in _FOMC if raw.startswith("2026-")]
     assert fomc_decision_dates(date(2026, 9, 16), date(2026, 9, 16)) == [date(2026, 9, 16)]
     assert fomc_decision_dates(date(2026, 1, 1), date(2026, 12, 31)) == whole
     assert list(_FOMC) == before

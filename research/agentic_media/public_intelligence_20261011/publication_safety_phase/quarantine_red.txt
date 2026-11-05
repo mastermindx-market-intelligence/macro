@@ -1,0 +1,41 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_quarantined_return_retains_draft_and_failed_report_without_emit _____
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1624/test_quarantined_return_retain0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10fb1cef0>
+
+    def test_quarantined_return_retains_draft_and_failed_report_without_emit(tmp_path, monkeypatch):
+        root = F.fixture_root(tmp_path)
+        cfg = P.load_config(root)
+        returned = []
+    
+        def invalid_title(slot, n):
+            draft = _good_draft(slot, n)
+            draft["title"] = "x" * 100
+            returned.append(draft)
+            return draft
+    
+        calls = _stub_writer(monkeypatch, draft_fn=invalid_title)
+        summary = R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"],
+                                max_slots=1, single_attempt=True)
+        item = json.loads(next((root / "data/press/staging").glob("press-*.json")).read_text())
+        assert summary["quarantined"] == 1 and calls["n"] == 1
+        assert item["status"] == "quarantined"
+>       assert item["draft"]["body_html"] == returned[0]["body_html"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/test_press_run.py:241: TypeError
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 0 passed, 1 quarantined of 1 planned (tokens 0/240000)
+::warning title=press_staging_empty::press staging produced NO passing draft — every planned slot was quarantined or dropped. A thin day is legal; a permanently thin lane is a defect. Check data/press/staging/ for reasons.
+------------------------------ Captured log call -------------------------------
+WARNING  engine.press.desk_planner:desk_planner.py:384 press.desk_planner: canonical earnings-call ledger gap: data/chronicle/earnings_call_events.jsonl absent
+WARNING  engine.press.desk_planner:desk_planner.py:507 press.desk_planner: engine artifacts — 1 fact(s) dropped as of 2026-07-26 (artifact postdates the run date or carries no date): gex_spx@2026-08-05
+WARNING  run_press:run_press.py:630 press: slot press-brief-2026-07-26-f7651bfe081e quarantined — validators: frontmatter
+
+NOTE: sparse worktree — mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_run.py::test_quarantined_return_retains_draft_and_failed_report_without_emit
+1 failed in 6.22s

@@ -1,0 +1,36 @@
+{
+  "record_type": "Accepted bounded source-counsel return",
+  "scope": "Read-only comparison; no tests, host effects, source edits or release acceptance",
+  "reviewer": "/root/beta_recovery_counsel",
+  "source_identities": [
+    {
+      "revision": "f5689344ba3257efce2ecb7f4bf8aa98578e046f",
+      "path": "ops/terminal-build.sh",
+      "git_blob": "c25514c068202b1dfff8d2bac92a019eb110440e",
+      "bytes": 179598,
+      "sha256": "4d1b7c05d975a30be21de9556cc9eef964d07f30ba468f88abd0b40a61a84247"
+    },
+    {
+      "revision": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+      "path": "ops/terminal-build.sh",
+      "git_blob": "c25514c068202b1dfff8d2bac92a019eb110440e",
+      "bytes": 179598,
+      "sha256": "4d1b7c05d975a30be21de9556cc9eef964d07f30ba468f88abd0b40a61a84247"
+    },
+    {
+      "revision": "bd158476d6ba1394b2867fa09db6faa762473158",
+      "path": "ops/terminal-build.sh",
+      "git_blob": "016d6744123764a9f55c80cf761c6e2d63f4a5a4",
+      "bytes": 196115,
+      "sha256": "6d05d3d5745e0e0a29262c89ba61cf881c2605201cce5b0fc85a52bde0e42ec8"
+    }
+  ],
+  "ruling": "Protected f568 and application A share exact owner bytes. Incoming changed-file sets are disjoint from #1062. A normal refresh onto this observed base should retain reviewed repair bytes; verify the actual resulting R.",
+  "remaining_gates": [
+    "Normal protected landing and actual R identity",
+    "Existing production owner releases the shared hold",
+    "Fresh host baseline, exact beta receipt/source/dependency custody and capacity",
+    "Private script-only R staging using canonical A policy path; target beta bootstrap A=e45",
+    "Actual runtime, isolation, rollback and public acceptance"
+  ]
+}
