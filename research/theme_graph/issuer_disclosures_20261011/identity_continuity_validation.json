@@ -1,0 +1,44 @@
+{
+  "observed_at": "2026-10-12T10:33:50.802143+00:00",
+  "original_base": "2dbdc9b9455818955bf75e25d61deafad1f49ddb",
+  "integration_base": "be06bdbc67c1ddb76203a41954c7a59f9ec4d2d5",
+  "independent_reviews": {
+    "original_design": {
+      "run_id": "gmi-c01-identity-refresh-design-20261012-001",
+      "full_report_sha256": "f52c781efdd3dc37fd799f7b609a373f4ade2976b8fbb68940e3b6270a755c8d",
+      "content_recovered_from_exact_retained_stdout": true,
+      "canonical_artifact_delivery_repaired": false,
+      "recommendations_adjudicated": "Retain immutable fact/edition/ruling/clocks and original operation ID; use separate current snapshot/decision bindings, exact pair coherence and race checks."
+    },
+    "corrected_code": {
+      "run_id": "gmi-c01-identity-corrected-code-review-20261012-001",
+      "retained_sha256": "4f97433d84e37db6e7cbc43b8ec1079c71cd8cf441953a2f573cf77afe306fdb",
+      "accepted_review_outcome": true,
+      "findings": "Post-CAS reconciliation and durable identity binding fixed; actual CLI discharges operation-ID derivation concern."
+    }
+  },
+  "local_checks": {
+    "artifact_counterexamples": "9 failures before correction",
+    "artifact_tests": "104 passed in 4.42s",
+    "integrated_affected_tests": "224 passed in 12.06s",
+    "command": "python3 -B -m pytest tests/test_company_disclosure_owner.py tests/test_company_disclosure_identity_continuity.py tests/test_company_disclosure_preflight.py tests/test_company_disclosures_api.py -q -p no:cacheprovider",
+    "log_sha256": "d0a5b66f350f3a04a17f6d8a1b690bba014e93b91a974c6b523a636e53c3bb91",
+    "ci_import_scope_checks": "3 passed in 196.96s",
+    "ci_import_scope_log_sha256": "81893f682b4b301e6c308876a048012d894fbd9a5ec3465bc9c0a012480a4c45"
+  },
+  "conservation": {
+    "changed_existing_spec_fields": [
+      "schema"
+    ],
+    "added_spec_fields": [
+      "identity_continuity"
+    ],
+    "immutable_fact_edition_ruling_review_clocks_preserved": true,
+    "preflight_cli_native_kernel_unchanged": true,
+    "ci_jobs_count": 287,
+    "ci_changed_jobs": [
+      "company-relationship-candidates"
+    ]
+  },
+  "scope": "Source and fixture qualification only; exact-head CI/protected release/install, same-operation recovery and actual production proof remain required. No publication invocation or adoption authority."
+}

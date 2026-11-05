@@ -1,0 +1,46 @@
+{
+  "schema": "gmi.publisher_import_pin_repair/v1",
+  "at": "2026-10-11T18:09:19.114765+00:00",
+  "base_head": "d55a1b97d6a111fbc9c0b646d88c8444de9aa4e1",
+  "hosted_red": {
+    "run": 38160075224,
+    "job": 114531617748,
+    "test": "test_unpinned_entry_scripts_only_shrink",
+    "introduced_unpinned_script": "scripts/publish_company_disclosure.py",
+    "pr_failures": 1,
+    "base_failures": 0
+  },
+  "behavioral_red": {
+    "head": "d55a1b97d6a111fbc9c0b646d88c8444de9aa4e1",
+    "returncode": 1,
+    "wrong_repository_import": true,
+    "stdout_length": 0,
+    "production_effects": false
+  },
+  "behavioral_green": {
+    "source_sha256": "f369992b0af53a35eb3d7d2fb343321ed70dbba5d78c5e1b49bee80a49832bde",
+    "returncode": 0,
+    "wrong_repository_import": false,
+    "help_returned": true,
+    "production_effects": false
+  },
+  "affected_green": {
+    "exec": 77617,
+    "terminal_rc": 0,
+    "consumed": true,
+    "passed": 46,
+    "seconds": 28.57,
+    "suites": [
+      "tests/test_check_script_import_pinning.py",
+      "tests/test_company_disclosure_owner.py"
+    ],
+    "warning": "Inherited pytest temporary-directory cleanup PermissionError; test process completed rc0; protected temporary nodes were not altered"
+  },
+  "repair": "Unconditional __file__-derived repository-root sys.path pin before native imports; no baseline extension or waiver",
+  "prior_accepted_proof": "NATIVE_OWNER_PUBLICATION_PROOF.json",
+  "unchanged_prior_pins": 12,
+  "wire_contract_unchanged": true,
+  "runtime_layout_unchanged": true,
+  "publication_semantics_unchanged": true,
+  "production_effects": false
+}

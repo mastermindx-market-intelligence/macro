@@ -1,4 +1,103 @@
 ---
+workstream: "WS:CHAIRMAN-CONTROL-ROOM"
+session: "Mastermind#2028 / Macro#7883 historical continuity reconciliation"
+model: "sol"
+model_detail: "GPT-6 Astra Pro; existing Sol coordinator record category"
+ended_because: "ci_handoff"
+record_kind: "historical_record_with_current_source_corrections"
+recorded_at: "2026-11-05 UTC"
+mission: "Preserve the September 24 improvement-discovery handoff while correcting obsolete source and next-action statements; the larger improvement and cognition mission is not declared complete."
+state_before: "The unmerged 238-line handoff still presented #946 as queued or undeployed and included live-looking review, deploy, observer, runtime and canary instructions superseded by later original-carrier receipts."
+changed:
+  - path: "agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-24-improvement-discovery.md"
+    what: "Add dated, schema-valid active framing and canonical source corrections; preserve the complete original handoff unchanged inside a historical fence. No implementation, runtime, provider, observer or production state is changed."
+verified:
+  - claim: "Mastermind #946 is merged, not still queued or Draft as in the old handoff."
+    command: "GitHub API GET /repos/mastermindx-market-intelligence/Mastermind/pulls/946 and /commits/548682c96221b4068d46afdfc332395b5253b7c5"
+    result: "Observed 2026-11-05: final source head be0b04b0bdbd15e629aad0da2e1d355bf80c8d60; protected one-parent squash 548682c96221b4068d46afdfc332395b5253b7c5; parent ed678f27466392bc53cc03f584f91e4f3adf3aa3; merged 2026-09-24 08:16:03 UTC."
+  - claim: "The original carrier contains a dated deployment-effect reconciliation after the handoff's old deploy instruction."
+    command: "Read Macro #7883 comment 5813621082, posted 2026-09-24 11:58:18 UTC."
+    result: "That receipt reports APPLIED_AND_VERIFIED at a0779abef1a3d872d060657a1b54318db9dffab3 and separately preserves the persisted owner/default-Agenda proof gap. This is verification of the historical receipt, not a new deployment or current health check."
+  - claim: "The subsequent source carrier and later invalidator supersede the historical release recipe."
+    command: "GitHub API GET /repos/mastermindx-market-intelligence/Mastermind/pulls/968 and /issues/comments/5920711040"
+    result: "Observed 2026-11-05: #968 remains OPEN/Draft at ba2fff75052473becfc28745da5a211671e4c47b. The later ruling requires same-carrier current-base composition and forbids replaying the old close/reopen or historical merge recipe."
+  - claim: "The competing #970 request is closed unmerged."
+    command: "GitHub API GET /repos/mastermindx-market-intelligence/Mastermind/pulls/970; read Macro #7883 comment 5825540177."
+    result: "Observed 2026-11-05: #970 closed unmerged on 2026-09-25 at head 7a72d03cfc621a943f81c706a945930495f1a605. Its earlier sole-carrier wording in comment 5813799406 is historical and superseded by the later #968 reconciliation."
+  - claim: "The complete original proposed record is preserved as attributed historical evidence."
+    command: "Read the immutable #7883 file at 8448a89087775133d6971be585c86f787071e960; verify UTF-8 content identity and exact fenced extraction."
+    result: "Original blob 3a1f59d9799850b99323786d9366726a776c994b; 24,513 bytes; 238 LF and terminal LF; SHA256 68650a835b14d1b7ceb73e13b0eefc2a6473ee97374b3c684f0b6263873e2f57. No historical implementation tests, browser work or canary were replayed."
+unverified:
+  - claim: "Current live service, persisted NW/Agenda behavior, provider availability, observer state or Executive readiness."
+    what_would_verify: "Fresh lawful evidence from each existing owner when a separately authorized action actually needs it. This source-record correction does not query or mutate those surfaces."
+  - claim: "Current #968 release qualification or completion of the broader autonomous-improvement mission."
+    what_would_verify: "Same-carrier current-source composition, discriminating proof and required independent release/runtime/public-consumer evidence under the then-current authority."
+  - claim: "This new #7883 source record is accepted or merged."
+    what_would_verify: "Exact published-head independent review, terminal binding natural CI and canonical protected merge readback. Preparation or the schema check alone is not release."
+unresolved:
+  - "The historical semantic-CI refusal in Macro #7883 comment 6068845046 is retained; fresh source qualification does not silently waive it or reuse missing advertised evidence."
+  - "Subsequent cognition work remains with the actual currently assigned #968 receiver and its source/effect constraints; this record is not a writer transfer."
+  - "Historical deploy health did not establish positive current scheduler-owned default-Agenda behavior; the record does not infer today's missing or completed production proof."
+  - "Old observer armed, quota reset, worker/review running, Executive UNARMED/DEGRADED and EFFECT_UNKNOWN:none statements are dated reports, not present telemetry or a global effect census."
+next_actions:
+  - "On this existing #7883 carrier, review the exact corrected record and consume fresh natural CI; use the existing release controller only after actual required gates, then read back the protected outcome."
+  - "For any later #968 source work, the assigned receiver must first reconcile its current original ref, writer/effect custody and comment 5920711040, then compose only the material current-base delta. Do not replay the old close/reopen or merge candidate."
+  - "Use #946's merged lifecycle and original deployment receipt as completed historical evidence; do not repeat that old deployment, canary or tests solely because the preserved handoff says they are next."
+  - "Consult the existing #386 runtime/readiness owner only if a separately authorized action needs runtime admission; this file neither establishes its current state nor creates a worker, scheduler or queue."
+do_not_redo:
+  - "Do not recreate the accepted #946 source/review/merge history or rerun its historical deployment as a consequence of this archive."
+  - "Preserve the original #968 canary and review receipts; repeat only evidence invalidated by an actual material private-path semantic change under its current owner."
+  - "Keep the revealed GMI example as regression evidence, not blind or prospective discovery proof; preserve original hold/null and independent-judgment boundaries."
+  - "Do not create another cognition, provider, lifecycle, runtime, scheduler, queue, memory or public hypothesis store."
+  - "Do not repeat original completed tests or scans without a material invalidator."
+danger_areas:
+  - "The complete fenced original includes old YAML and imperative commands. All are historical text, not current policy, next actions, approval, live status or a request to execute."
+  - "Comment 5813557168 records a platform safety block of a production Neural-Web read before execution. This archive does not retry it, reroute it, or infer permission from a later different deployment receipt."
+  - "Private hypothesis prose must remain outside public Agenda/review mirrors; hash identities and public-safe counts do not establish semantic usefulness, source rights, readiness or trade authority."
+  - "A historical CI/review request, observer or DURABLE_EXECUTION_RUNNING label does not prove a current STARTED runtime or unattended autonomous execution."
+  - "The ci_handoff field marks this bounded record's remaining PR-qualification boundary, not parent-mission completion or a claim that a background executor is running."
+---
+
+# Historical improvement-discovery handoff — source correction, 2026-11-05
+
+This is a dated evidence record for the existing Chairman Control Room workstream. Its current source corrections are in the frontmatter and sections here; the complete September 24 handoff is preserved in the historical fence. Old pins, authoring sessions, commands, holds, live-status assertions and future instructions in that fence are not reissued as current authority.
+
+The larger improvement-discovery/cognition mission remains unfinished in this record. This archival correction neither discards that work nor marks it accepted through association with a merged source PR.
+
+## Corrected chronology and canonical owners
+
+| Evidence | What it establishes | What it does not establish |
+|---|---|---|
+| [Mastermind #946](https://github.com/mastermindx-market-intelligence/Mastermind/pull/946), protected merge `548682c96221b4068d46afdfc332395b5253b7c5`, 2026-09-24 08:16:03 UTC | The source PR merged. Root re-read the canonical PR and the one-parent commit in this reconciliation. | The old handoff's queued/unmerged status is not current. Merge alone does not establish production behavior. |
+| [Deployment receipt 5813621082](https://github.com/mastermindx-market-intelligence/macro/pull/7883#issuecomment-5813621082), 2026-09-24 11:58:18 UTC | The original receiver recorded one deployment at `a0779abef1a3d872d060657a1b54318db9dffab3`, exit0, matching health/marker and APPLIED_AND_VERIFIED. | Root did not replay or independently re-probe that deployment. The receipt itself retains the legacy persisted NW/default-Agenda proof gap; it is not today's health or end-to-end capability receipt. |
+| [Later source reconciliation 5825540177](https://github.com/mastermindx-market-intelligence/macro/pull/7883#issuecomment-5825540177) and current [#968](https://github.com/mastermindx-market-intelligence/Mastermind/pull/968) | The subsequent cognition carrier is #968. On 2026-11-05 it is OPEN/Draft at `ba2fff75052473becfc28745da5a211671e4c47b`. | Old green tests/reviews or a historical advisory canary do not make that source current or released. |
+| [Current-base invalidator 5920711040](https://github.com/mastermindx-market-intelligence/Mastermind/pull/968#issuecomment-5920711040) | The old release recipe was explicitly superseded because the shared `brain/cli_bridge.py` seam changed. Same-carrier reconciliation must preserve current delegation, permissions, accounting/logging/error handling and the private-ephemeral invariants. | Do not close/reopen the PR, replay the historical merge candidate or start a substitute source/runtime/provider path from the old text. |
+| [#970](https://github.com/mastermindx-market-intelligence/Mastermind/pull/970) | Canonical API now reports CLOSED, unmerged, at `7a72d03cfc621a943f81c706a945930495f1a605`; later #968 reconciliation preserves its history. | The earlier [5813799406](https://github.com/mastermindx-market-intelligence/macro/pull/7883#issuecomment-5813799406) sole-carrier claim is not today's assignment. It is retained as part of the chronology, not silently selected over #968. |
+
+The current source observation is dated 2026-11-05. Any later receiver must read the actual original carrier and affected current law before a new action. Historical actor names are not new approval gates, and this record does not release an actual lease or unknown effect.
+
+## Preserve the useful learning and unfinished work
+
+The original handoff records source-grounded discovery, exact-named-path granularity, owner-input completeness and historical-cutoff repairs, default Agenda composition, private-prose/public-count boundaries, and the distinction between a revealed GMI regression and independent prospective usefulness. Those findings and their quoted test/browser receipts remain preserved with their original scope.
+
+It also records limitations that must not be erased: no inference from coverage to semantic rerating quality, no private hypothesis prose in public review mirrors, no model-originated rank/sizing/trade authority, no duplicate control planes, and no autonomous runtime admission inferred from source code or a review request. The remaining program belongs to the existing source, scheduler, cognition and runtime owners under their actual current assignments.
+
+The historical comments add later canary, review and custody developments. In particular, [5816248281](https://github.com/mastermindx-market-intelligence/macro/pull/7883#issuecomment-5816248281) records a known Codex quota result and an unproven shared fallback, while [5816299898](https://github.com/mastermindx-market-intelligence/macro/pull/7883#issuecomment-5816299898) records a diagnostics-only advisory canary and distinct-provider judgment. These are dated author-reported receipts, not present provider availability, permission to rerun, production fallback proof or Executive execution.
+
+The earlier [5813557168](https://github.com/mastermindx-market-intelligence/macro/pull/7883#issuecomment-5813557168) platform denial for a production Neural-Web read remains a real recorded denial. Nothing here retries that action through another tool or infers its permission from a different later action. Historical EFFECT_UNKNOWN, observer, review-running and finalization labels are not restated as today's global state; CI and messages alone do not prove a running autonomous executor.
+
+## Exact original preservation
+
+Original [#7883 handoff at `8448a890`](https://github.com/mastermindx-market-intelligence/macro/blob/8448a89087775133d6971be585c86f787071e960/agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-24-improvement-discovery.md): blob `3a1f59d9799850b99323786d9366726a776c994b`, **24,513 UTF-8 bytes**, **238 LF**, with its original terminal LF retained; SHA256 `68650a835b14d1b7ceb73e13b0eefc2a6473ee97374b3c684f0b6263873e2f57`. The full payload appears once below. Added frontmatter, corrections and the four-tilde fence are outside those bytes.
+
+The original path was absent from captured protected Macro base `f4179d81d01fae1ba4b188617abb5e6edfa091ef`. The existing workstream join is `agentos/workstreams/WS-CHAIRMAN-CONTROL-ROOM.md`; this file does not replace that workstream or create a new continuity owner. Its schema category is the existing Sol coordinator category; the producer detail records the attended Astra Pro context and makes no automated model/router receipt.
+
+The old [semantic-CI refusal 6068845046](https://github.com/mastermindx-market-intelligence/macro/pull/7883#issuecomment-6068845046) remains part of the PR record. It is not relabeled as a source-effect uncertainty, waived, or satisfied by missing historical evidence. This changed source requires its own current owner-record validation, independent review and natural CI. No original implementation tests, browser proof, provider call, deploy, scheduler refresh, observer change or runtime operation was executed for this archive.
+
+## September 24 original handoff — verbatim historical payload
+
+~~~~markdown
+---
 workstream: WS:CHAIRMAN-CONTROL-ROOM
 session: sol/web-mastermind-improvement-discovery-gmi-20260924-sol-001
 model: sol
@@ -236,3 +335,4 @@ For the first canary, admissible next-action semantics are read-only investigati
 The first prospective proof should use a fresh provider turn with no access to this Chairman chat and a frozen evidence packet that does not disclose a target answer. The revealed GMI rerating idea remains regression-only. Seal only public-safe digest/metadata needed for evaluation; do not publish private hypothesis prose through `mastermind_ai.reviews.jsonl`, the public Agenda, or a new store. If the provider yields no useful grounded option, HOLD is a successful truthful outcome.
 
 After one read-only hypothesis survives duplicate/reuse checks, the bounded evidence sprint should run through the existing Executive/Capacity/worker path only when that runtime is admitted. Current Executive status is UNARMED/DEGRADED, so direct autonomous dispatch is not yet proven. This runtime blocker is lane-local: source-side cognition work may proceed after #946's release boundary, but no fake Job/Attempt/worker START may be claimed.
+~~~~

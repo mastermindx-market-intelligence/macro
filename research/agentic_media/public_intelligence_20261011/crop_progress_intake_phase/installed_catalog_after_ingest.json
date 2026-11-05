@@ -1,0 +1,69 @@
+{
+  "observed_at": "2026-10-14T17:02:35.343117+00:00",
+  "head_before": "0ce6fe978863a9becf8137362367ae1e6346965b",
+  "files": {
+    "data/research_vault/catalog.json": {
+      "present": true,
+      "sha256": "d11960cb1564b6ed75da0acf6c29b5fe4936a50700f64f14fff85f858a88a5d8",
+      "bytes": 3537035,
+      "total": 2909,
+      "matching_rows": 1,
+      "row": {
+        "id": "usda-nass-2026-10-13-crop-progress",
+        "title": "Crop Progress, October 13, 2026",
+        "institution": "U.S. Department of Agriculture, National Agricultural Statistics Service",
+        "side": "independent",
+        "desk": "Agriculture",
+        "published_at": "2026-10-13",
+        "summary_points": [
+          "USDA NASS reports corn harvest at 33% for the week ending 2026-10-11 across 18 selected states, versus 23% a week earlier and a 39% average for 2021-2025. Those states harvested 93% of the 2025 corn acreage.",
+          "USDA NASS estimates soybean harvest at 46% across 18 selected states, compared with 25% a week earlier and a 50% average for 2021-2025. Those states harvested 96% of the 2025 soybean acreage.",
+          "Adding the USDA NASS corn condition estimates of 44% good and 12% excellent gives 56%, versus a calculated 54% the previous week. This corn panel covers 18 states that planted 91% of the 2025 corn acreage.",
+          "Adding the USDA NASS soybean condition estimates of 46% good and 11% excellent gives 57%, unchanged from the previous week. This soybean panel covers 18 states that planted 96% of the 2025 soybean acreage.",
+          "Iowa corn harvest is 14%, compared with a 34% five-year average; Iowa soybean harvest is 31%, compared with 59%. Harvest completion and condition estimates do not measure yield, prices or company earnings.",
+          "Publication was 2026-10-13 and observations ended 2026-10-11. Corresponding prior-year estimates are unavailable because reports were cancelled during the October-November 2025 federal funding lapse. All cited 2021-2025 averages combine published 2021-2024 and imputed 2025 estimates.",
+          "NASS describes a non-probability survey of approximately 3,600 respondents making subjective observations. The estimates are acreage-weighted and subject to revision the following week; early responses may project weekend changes.",
+          "Corn and soybeans use different 18-state panels. NASS weights harvest progress by average harvested acreage over the preceding three crop years, and condition by average planted acreage; the aggregates are not simple state averages."
+        ],
+        "tags": [
+          "agriculture",
+          "corn",
+          "soybeans",
+          "harvest",
+          "crop-condition"
+        ],
+        "tickers": [],
+        "top_pick": false,
+        "pages": 16,
+        "language": "en",
+        "needs_metadata": false
+      }
+    },
+    "data/research_vault/excerpts.json": {
+      "present": true,
+      "sha256": "80d3e41c80426d5fd21eda610217cc277ec22326cbbdf214daa85cf96ec7412f",
+      "bytes": 11154502,
+      "paragraphs": 7,
+      "characters": 4196
+    },
+    "site/research/crop-progress-october-13-2026-ogress.html": {
+      "present": false
+    },
+    "site.served/research/crop-progress-october-13-2026-ogress.html": {
+      "present": false
+    },
+    "site/research_vault.html": {
+      "present": true,
+      "sha256": "beb09d8de5029f3964f050c37f40ab900343405bfb0387079688f29913d12c22",
+      "bytes": 88650
+    },
+    "site.served/research_vault.html": {
+      "present": true,
+      "sha256": "beb09d8de5029f3964f050c37f40ab900343405bfb0387079688f29913d12c22",
+      "bytes": 88650
+    }
+  },
+  "writes": 0,
+  "head_after": "0ce6fe978863a9becf8137362367ae1e6346965b",
+  "stable_head": true
+}

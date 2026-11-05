@@ -1,0 +1,78 @@
+{
+  "action_span": {
+    "claimed_quote": "Nemotron 3 Family of Open Models",
+    "span": {
+      "authority": "context_only",
+      "display_excerpt": "Nemotron 3 Family of Open Models",
+      "document_id": "doc_nvidia_nemotron_20251215",
+      "document_version": 1,
+      "locator": {
+        "kind": "text_span",
+        "segment_index": 0,
+        "span_end_byte": 46,
+        "span_start_byte": 14,
+        "sub_kind": "transcript_segment"
+      },
+      "receipt": {
+        "segment_bytes": 47,
+        "segment_index": 0,
+        "segment_sha256": "64dba8c6807d507e5869263f47e6cb45ef690e13871bf49ac47df0c31a7be76e",
+        "source_sha256": "64dba8c6807d507e5869263f47e6cb45ef690e13871bf49ac47df0c31a7be76e",
+        "span_end_byte": 46,
+        "span_start_byte": 14,
+        "text_sha256": "b54ffebc351248583185518b0942a431ef3e3f88d4f918081db3addf02fccaff"
+      },
+      "receipt_state": "byte_replayed",
+      "rights_profile": "rp_unknown_v1",
+      "schema": "source_span.v1",
+      "span_id": "span_63628b26e37c02f1c87a",
+      "text_sha256": "b54ffebc351248583185518b0942a431ef3e3f88d4f918081db3addf02fccaff",
+      "unreplayable_reason": null
+    }
+  },
+  "authority": "context_only",
+  "channel_hint": "strategic_option",
+  "cluster_grain": "fact_revision",
+  "commitment_status": "announced",
+  "company_id": "cik:0001045810",
+  "counterparty_company_id": {
+    "authority": "context_only",
+    "detail": "",
+    "missing_fields": [],
+    "reason": "not_stated",
+    "schema": "field_absence.v1",
+    "subject": "counterparty_company_id"
+  },
+  "counterparty_role": "none",
+  "document_id": "doc_nvidia_nemotron_20251215",
+  "economic_claim_class": "option_path",
+  "event_kind": "product_release",
+  "fact_id": "fact_000000000000000000000005",
+  "issuer_role": "subject",
+  "negated": false,
+  "news_event_class": "product_launch",
+  "novelty": "new_magnitude_timing_commitment_counterparty",
+  "object_name": "Nvid\u0456a Blackwell rack deployment",
+  "observed_at": "2025-12-15T16:05:00Z",
+  "prophet_flags": {
+    "may_gate": false,
+    "may_rank": false,
+    "may_size": false,
+    "prophet_authority": false
+  },
+  "schema": "strategic_product_partnership_event.v1",
+  "source_available_at": "2025-12-15T16:00:00Z",
+  "stated_quantity": {
+    "absence": {
+      "authority": "context_only",
+      "detail": "",
+      "missing_fields": [],
+      "reason": "not_stated",
+      "schema": "field_absence.v1",
+      "subject": "stated_quantity"
+    },
+    "form": "absent"
+  },
+  "supersedes_fact_id": null,
+  "unsolicited_instruction_detected": false
+}
