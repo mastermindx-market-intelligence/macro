@@ -59,9 +59,9 @@ do_not_redo:
   - Do not create another dashboard, collector, price store, calendar, identity, auth, retry or publication owner.
   - Do not change existing 50/200, Act-Now, Prophet, options authority or graders.
   - Do not split the originally commissioned calendar/constituent journey into another feature PR.
-  - Do not replace the started/effectful Claude8 writer or reuse another carrier.
+  - Preserve any actual current live writer or unresolved original source/review effect on PR7060; reconcile its exact carrier before changing custody. Historical Claude8 attribution is not an indefinite approval seat.
   - Do not bypass or reinterpret the native transmission-safety denial through another AI assertion.
-  - Do not edit shared PR7056 paths until that earlier owner merges/releases and current integration is refreshed.
+  - PR7056 is already merged. Before shared-path edits, reconcile current source and actual writer/effect custody; do not wait for the historical owner to merge again or infer custody release from a merge alone.
 ---
 
 # Current source reconciliation — 2026-11-05
@@ -95,11 +95,17 @@ no-trade-authority rules remain. Current exact-head/current-base checks, applica
 review, qualified real input and served publication/browser acceptance remain
 distinct obligations. Source publication of these records completes none of them.
 
-The ten other original records in PR7035 remain unchanged. Their September 10–11
-implementation and transport statements describe their dated epochs; this current
-reconciliation supersedes only stale sequencing/current-state claims, including
-"SPEC_ONLY", "PARTIAL / disconnected" and the now-merged PR7056 predecessor.
-It does not reopen completed research or waive the original product journey.
+The nine research records in PR7035 remain unchanged. The integration decision
+now also carries its own current/historical boundary, so its dated "SPEC_ONLY"
+and Terra-placement language cannot become a separate active continuation.
+The complete original decision and workstream texts are preserved verbatim in
+their respective archives. Historical Claude8 attribution does not create an
+indefinite approval seat: protect actual live writers and unresolved original
+effects, and recover current custody on the same PR7060 carrier. PR7056 is
+already merged; shared-path work still requires current integration and custody
+checks. No merge by itself establishes effect absence or releases a live writer.
+These qualifications do not reopen completed research or waive the original
+calendar/constituent product journey.
 
 ## Original September 11 workstream — retained verbatim
 
