@@ -307,8 +307,8 @@
   {% if s.confluence and s.confluence.ok %}
   {% set c = s.confluence %}
   <div class="panel" id="confluence">
-    <h2>{{ t('Entry setup — the 3-day view', '入场配置 — 3 日视角') }}
-      {{ help("The same buy/sell read that drives the Sector setups board on the main dashboard, checked against the 200-day trend. A sector whose momentum is already stretched is never a fresh buy. The base rate is what this state actually went on to do over the next 63 days, against SPY. A risk and timing read, not a forecast.", "和主看板「板块买卖配置」用的是同一套买卖读数，以 200 日趋势把关。动量已经拉得很开的板块，绝不算新买点。基础概率是这个状态在随后 63 天里对 SPY 的实际表现。这是风险和择时的参考，不是预测。") }}
+    <h2>{{ t('Entry setup — the 3-day view', '入场形态 — 3 日视角') }}
+      {{ help("The same buy/sell read that drives the Sector setups board on the main dashboard, checked against the 200-day trend. A sector whose momentum is already stretched is never a fresh buy. The base rate is what this state actually went on to do over the next 63 days, against SPY. A risk and timing read, not a forecast.", "和主看板「板块买卖 — 短线择时」栏目用的是同一套买卖读数，以 200 日趋势把关。动量已经拉得很开的板块，绝不算新买点。基准率是这个状态在随后 63 天里对 SPY 的实际表现。这是风险和择时的参考，不是预测。") }}
     </h2>
     <p style="margin:6px 0">
       <span class="state" style="border:1px solid {{ c.color }};color:{{ c.color }};padding:2px 9px;border-radius:7px;font-weight:700">{{ t(c.label, c.label_zh) }}</span>
@@ -438,7 +438,7 @@
     {% set holdings_en = ('Top ' ~ n ~ ' holdings, ' ~ share ~ '% of the fund — each analyzed on its own cycle') if have_share else ('Top ' ~ n ~ ' holdings — each analyzed on its own cycle') %}
     {% set holdings_zh = ('前 ' ~ n ~ ' 大持仓，合计占基金 ' ~ share ~ '% — 各自按其周期分析') if have_share else ('前 ' ~ n ~ ' 大持仓 — 各自按其周期分析') %}
     <h2>{{ t(holdings_en, holdings_zh) }}
-      {{ help("Every holding gets the same treatment as the ETF: daily-cycle position, multi-timeframe momentum, and a ladder state. The states carry measured base rates (table at the bottom). Weight = % of the ETF this stock represents — the top names drive the fund.", "每只持仓都与 ETF 同样处理：日线周期位置、跨周期动量及阶梯状态。各状态附有实测基准胜率（见底部表格）。权重=该股票占 ETF 的百分比 — 前几大成分股主导基金走势。") }}
+      {{ help("Every holding gets the same treatment as the ETF: daily-cycle position, multi-timeframe momentum, and a ladder state. The states carry measured base rates (table at the bottom). Weight = % of the ETF this stock represents — the top names drive the fund.", "每只持仓都与 ETF 同样处理：日线周期位置、跨周期动量及阶梯状态。各状态附有实测基准率（见底部表格）。权重=该股票占 ETF 的百分比 — 前几大成分股主导基金走势。") }}
     </h2>
     {% for h in s.holdings %}
     <div class="card">
@@ -479,7 +479,7 @@
   <section role="tabpanel" id="scd-p-record" class="scd-panel" aria-labelledby="scd-t-record" tabindex="0">
   <div class="panel">
     <h2>{{ t('How much to trust these states — measured, not promised', '这些状态有多可信 — 实测得出，而非承诺') }}
-      {{ help("Every trading day since 2000, across sector ETFs and large stocks, we computed the same ladder state from data available at the time and measured what price did over the next month. These are those base rates. They are tendencies with real spread around them — position sizing beats certainty.", "自 2000 年以来的每个交易日，针对各行业 ETF 与大型股票，我们用当时可得的数据计算出相同的阶梯状态，并测量此后一个月的价格表现。以下即为这些基准胜率。它们是带有实际离散度的倾向 — 仓位管理胜过确定性。") }}
+      {{ help("Every trading day since 2000, across sector ETFs and large stocks, we computed the same ladder state from data available at the time and measured what price did over the next month. These are those base rates. They are tendencies with real spread around them — position sizing beats certainty.", "自 2000 年以来的每个交易日，针对各行业 ETF 与大型股票，我们用当时可得的数据计算出相同的阶梯状态，并测量此后一个月的价格表现。以下即为这些基准率。它们是带有实际离散度的倾向 — 仓位管理胜过确定性。") }}
     </h2>
     {% if calibration %}
     <table>

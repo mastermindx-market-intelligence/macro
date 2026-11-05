@@ -11,6 +11,12 @@ state: T1-T4 step down in ink weight and fill, never in hue, so a green T2 can
 not read as a falling price on a ZH page. The node render of the localized engine words lives in
 tests/test_product_chrome.py, next to the page's existing render harness.
 
+Lane L6.5q (O-INT iii) applies the same wording rule to the fund dossier
+(templates/sector.html.j2, sectors/<F>.html). Its 3-day entry heading is 入场形态,
+never 入场配置. A measured base rate is 基准率, the deck's word
+(components.prior_gloss), never 胜率: the deck reserves 胜率 for "not a win rate"
+(components.grader_caption).
+
 Pure text checks; no node.
 """
 from __future__ import annotations
@@ -103,3 +109,40 @@ def test_subsector_chart_legend_wraps_on_phones():
     assert "@media (max-width:560px){ #chart-host .bchart-legend{white-space:normal;max-width:29ch" in text
     assert "#chart-host .bchart-legend span{white-space:nowrap}" in text
     assert "{#chart-host" not in text
+
+
+DOSSIER = ROOT / "templates" / "sector.html.j2"
+DOSSIER_REQUIRED = ("'入场形态 — 3 日视角'", "实测基准率（见底部表格）", "以下即为这些基准率。")
+DOSSIER_FORBIDDEN = ("配置", "胜率", "基础概率")
+
+
+def dossier_zh_problems(text: str) -> list[str]:
+    """Every reason the dossier text fails the wording rule; empty when it passes."""
+    problems = [f"missing {s!r}" for s in DOSSIER_REQUIRED if s not in text]
+    problems += [f"{w!r} appears {text.count(w)} time(s)" for w in DOSSIER_FORBIDDEN if w in text]
+    return problems
+
+
+def test_fund_dossier_passes_the_wording_rule():
+    assert dossier_zh_problems(DOSSIER.read_text(encoding="utf-8")) == []
+
+
+def test_deck_names_base_rate_jizhunlv_and_reserves_shenglv():
+    deck = json.loads(DECK.read_text(encoding="utf-8"))
+    assert "基准率" in deck["components"]["prior_gloss"]["zh"]
+    assert "并非胜率" in deck["components"]["grader_caption"]["zh"]
+
+
+@pytest.mark.parametrize(
+    "old",
+    [
+        "{{ t('Entry setup — the 3-day view', '入场配置 — 3 日视角') }}",
+        "和主看板「板块买卖配置」用的是同一套买卖读数",
+        "各状态附有实测基准胜率（见底部表格）",
+        "以下即为这些基准胜率。",
+        "基础概率是这个状态在随后 63 天里对 SPY 的实际表现。",
+    ],
+)
+def test_the_dossier_rule_rejects_the_base_strings(old):
+    text = DOSSIER.read_text(encoding="utf-8") + "\n" + old
+    assert dossier_zh_problems(text)
