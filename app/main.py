@@ -2516,6 +2516,10 @@ app.include_router(research_router)
 from app.macro_command import router as macro_command_router  # noqa: E402
 app.include_router(macro_command_router)
 
+# The existing verified-user family hosts source-bound policy previews.
+from app.macro_policy_preview import router as macro_policy_preview_router  # noqa: E402
+app.include_router(macro_policy_preview_router)
+
 # Earnings Wire member continuations are never static objects.  The public page
 # carries only its redacted preview; this authenticated route reads the complete
 # continuation from the existing private Research Vault bucket after enforcing
