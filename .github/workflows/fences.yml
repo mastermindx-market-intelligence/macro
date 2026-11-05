@@ -255,7 +255,7 @@ jobs:
       - name: selftest annotation quiet (a green selftest must not annotate the PR)
         id: selftest_annotation_quiet
         continue-on-error: true
-        run: python -m pytest tests/test_selftest_annotation_quiet.py -q
+        run: python -m pytest tests/test_chat_nav_sync.py -q -k annotation_mode
 
       - name: publish required fence contexts
         id: publish
