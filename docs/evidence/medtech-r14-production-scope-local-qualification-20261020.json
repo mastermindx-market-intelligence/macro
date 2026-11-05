@@ -1,0 +1,142 @@
+{
+  "schema": "medtech.production_scope_local_qualification/v1",
+  "qualified_at": "2026-10-20T05:54:40.257087Z",
+  "retained_generated_at": "2026-10-20T04:40:30.926402Z",
+  "snapshot_id": "fa7a1c7e541a65c572af3169a44c373eebc604d3e9641e79b5ca4ae0a8153e3b",
+  "source_records": {
+    "pma": 1752,
+    "510k": 2571
+  },
+  "pathways": {
+    "pma_supplement": 1674,
+    "other_device_submission": 16,
+    "510k": 2545,
+    "pma_original": 35,
+    "de_novo": 26,
+    "pma_panel_track_supplement": 27
+  },
+  "events": 4323,
+  "sources": [
+    {
+      "cadence": "monthly",
+      "coverage": {
+        "complete_for_query": true,
+        "end": "2026-10-20",
+        "kind": "decision_date_range",
+        "records": 2571,
+        "start": "2026-01-01"
+      },
+      "dataset": "510k",
+      "dataset_updated_at": "2026-10-05",
+      "last_checked_at": "2026-10-20T04:40:26.036064Z",
+      "timely_alert_source": false
+    },
+    {
+      "cadence": "monthly",
+      "coverage": {
+        "complete_for_query": true,
+        "end": "2026-10-20",
+        "kind": "decision_date_range",
+        "records": 1752,
+        "start": "2026-01-01"
+      },
+      "dataset": "pma",
+      "dataset_updated_at": "2026-10-05",
+      "last_checked_at": "2026-10-20T04:40:30.681947Z",
+      "timely_alert_source": false
+    }
+  ],
+  "sample_records": {
+    "pma_supplement": {
+      "event_id": "fda-pma-P150012-S191",
+      "submission_id": "P150012",
+      "pathway": "pma_supplement",
+      "decision": {
+        "code": "OK30",
+        "date": "2026-10-03",
+        "date_precision": "day",
+        "label": "Decision recorded",
+        "source_description": null,
+        "status": "unmapped"
+      },
+      "source": {
+        "dataset": "pma",
+        "publisher": "FDA",
+        "record_id": "P150012S191",
+        "source_published_at": null,
+        "url": "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpma/pma.cfm?id=P150012S191"
+      }
+    },
+    "de_novo": {
+      "event_id": "fda-510k-DEN260007",
+      "submission_id": "DEN260007",
+      "pathway": "de_novo",
+      "decision": {
+        "code": "DENG",
+        "date": "2026-09-29",
+        "date_precision": "day",
+        "label": "Granted",
+        "source_description": "Unknown",
+        "status": "granted"
+      },
+      "source": {
+        "dataset": "510k",
+        "publisher": "FDA",
+        "record_id": "DEN260007",
+        "source_published_at": null,
+        "url": "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/denovo.cfm?id=DEN260007"
+      }
+    },
+    "legacy_pma": {
+      "event_id": "fda-pma-N16837-S039",
+      "submission_id": "N16837",
+      "pathway": "other_device_submission",
+      "decision": {
+        "code": "APPR",
+        "date": "2026-09-04",
+        "date_precision": "day",
+        "label": "Approved",
+        "source_description": null,
+        "status": "approved"
+      },
+      "source": {
+        "dataset": "pma",
+        "publisher": "FDA",
+        "record_id": "N16837S039",
+        "source_published_at": null,
+        "url": "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpma/pma.cfm?id=N16837S039"
+      }
+    }
+  },
+  "checks": [
+    "4323-record current-generation list",
+    "private no-store response",
+    "monthly-source health",
+    "stale generation refused",
+    "pma_supplement exact detail, history and watch subject",
+    "de_novo exact detail, history and watch subject",
+    "legacy_pma exact detail, history and watch subject"
+  ],
+  "candidate_file_sha256": {
+    "collectors/medtech/openfda.py": "c1cd72ecb1f3a9de676ef893a7f42e4a39610c89feaa5635949f272652f42440",
+    "engine/medtech/events.py": "08d08f107ac32dc1b072bc38384547ec4c662433d689bcccc8aa8fb980f87afc",
+    "engine/medtech/publication.py": "49bde58450600bb36344c15179e146322b911396f4f1480b09f34c638dbea675",
+    "engine/medtech/store.py": "b2a3815370d56f8063af85dd0afd95ee2b297b2810991e20fd85e9540ae252bf",
+    "tests/test_medtech.py": "149521fc812292449980e54b4f76a458b7382702a8d8736cbdfcb67bd5fc7fe5",
+    ".github/ci/legacy-jobs.yml": "5295d30f1736fd74ca7b798f3bc93cacbd23386ce96a1ae93fe1f68a1b9d352c"
+  },
+  "backend_tests": {
+    "passed": 94,
+    "subtests_passed": 31,
+    "exit_code": 0
+  },
+  "ci_manifest_repair": {
+    "undeclared_ancestors_before": 349,
+    "added_initializer_dependencies": 13,
+    "ratchet_test_passed": true,
+    "ceiling_unchanged": 344
+  },
+  "authentication_proof": "local test override only",
+  "source_reacquired_during_recovery": false,
+  "production_effects": false
+}

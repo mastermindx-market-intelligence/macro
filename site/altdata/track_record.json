@@ -1,16 +1,16 @@
 {
   "schema": "altdata_track_record.v1",
-  "as_of": "2026-10-11",
-  "scored_total": 397,
-  "open": 265,
+  "as_of": "2026-11-04",
+  "scored_total": 516,
+  "open": 215,
   "unscored_soft": 0,
-  "expired": 17,
+  "expired": 18,
   "overall": {
-    "n": 397,
-    "hits": 206,
-    "misses": 191,
-    "hit_rate": 0.519,
-    "dir_accuracy": 0.39
+    "n": 516,
+    "hits": 273,
+    "misses": 243,
+    "hit_rate": 0.529,
+    "dir_accuracy": 0.395
   },
   "by_conviction": {
     "high": {
@@ -28,20 +28,20 @@
       "dir_accuracy": null
     },
     "low": {
-      "n": 397,
-      "hits": 206,
-      "misses": 191,
-      "hit_rate": 0.519,
-      "dir_accuracy": 0.39
+      "n": 516,
+      "hits": 273,
+      "misses": 243,
+      "hit_rate": 0.529,
+      "dir_accuracy": 0.395
     }
   },
   "by_kind": {
     "rel_return": {
-      "n": 397,
-      "hits": 206,
-      "misses": 191,
-      "hit_rate": 0.519,
-      "dir_accuracy": 0.39
+      "n": 516,
+      "hits": 273,
+      "misses": 243,
+      "hit_rate": 0.529,
+      "dir_accuracy": 0.395
     },
     "level": {
       "n": 0,
@@ -52,99 +52,99 @@
     }
   },
   "by_regime": {},
-  "calibration_note": "397 scored, hit-rate 0.519 (directional accuracy 0.39).",
+  "calibration_note": "516 scored, hit-rate 0.529 (directional accuracy 0.395).",
   "recent": [
     {
-      "id": "2026-07-14-SPGI-altconv",
-      "subject": "SPGI alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.1078,
-      "check_by": "2026-10-09"
-    },
-    {
-      "id": "2026-07-14-AZO-altconv",
-      "subject": "AZO alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0844,
-      "check_by": "2026-10-09"
-    },
-    {
-      "id": "2026-07-14-UNP-altconv",
-      "subject": "UNP alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0766,
-      "check_by": "2026-10-09"
-    },
-    {
-      "id": "2026-07-14-TDG-altconv",
-      "subject": "TDG alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.1421,
-      "check_by": "2026-10-09"
-    },
-    {
-      "id": "2026-07-13-HUBB-altconv",
-      "subject": "HUBB alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0568,
-      "check_by": "2026-10-08"
-    },
-    {
-      "id": "2026-07-10-MRVL-altconv",
-      "subject": "MRVL alt-data convergence",
+      "id": "2026-08-06-SRE-altconv",
+      "subject": "SRE alt-data convergence",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "hit",
-      "realized": 0.0959,
-      "check_by": "2026-10-09"
+      "realized": -0.0183,
+      "check_by": "2026-11-03"
     },
     {
-      "id": "2026-07-10-MARA-altconv",
-      "subject": "MARA alt-data convergence",
+      "id": "2026-08-06-ORCL-altconv",
+      "subject": "ORCL alt-data convergence",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "miss",
-      "realized": -0.3058,
-      "check_by": "2026-10-09"
+      "realized": -0.106,
+      "check_by": "2026-11-03"
     },
     {
-      "id": "2026-09-09-MARA-altconv",
-      "subject": "MARA alt-data convergence",
+      "id": "2026-08-06-NEE-altconv",
+      "subject": "NEE alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0017,
+      "check_by": "2026-11-03"
+    },
+    {
+      "id": "2026-08-06-D-altconv",
+      "subject": "D alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0018,
+      "check_by": "2026-11-03"
+    },
+    {
+      "id": "2026-08-06-BABA-altconv",
+      "subject": "BABA alt-data convergence",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "miss",
-      "realized": -0.1727,
-      "check_by": "2026-10-08"
+      "realized": -0.1991,
+      "check_by": "2026-11-03"
     },
     {
-      "id": "2026-09-09-GILD-altconv",
-      "subject": "GILD alt-data convergence",
+      "id": "2026-08-06-CRM-altconv",
+      "subject": "CRM alt-data convergence",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "hit",
-      "realized": -0.0073,
-      "check_by": "2026-10-08"
+      "realized": 0.1715,
+      "check_by": "2026-11-03"
     },
     {
-      "id": "2026-09-09-LLY-altconv",
-      "subject": "LLY alt-data convergence",
+      "id": "2026-08-06-AMD-altconv",
+      "subject": "AMD alt-data convergence",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "hit",
-      "realized": 0.0302,
-      "check_by": "2026-10-08"
+      "realized": 0.0239,
+      "check_by": "2026-11-03"
+    },
+    {
+      "id": "2026-08-06-HBAN-altconv",
+      "subject": "HBAN alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0788,
+      "check_by": "2026-11-03"
+    },
+    {
+      "id": "2026-08-06-HII-altconv",
+      "subject": "HII alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0176,
+      "check_by": "2026-11-03"
+    },
+    {
+      "id": "2026-08-06-ITW-altconv",
+      "subject": "ITW alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0159,
+      "check_by": "2026-11-03"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 397 \u6761\uff0c\u547d\u4e2d\u7387 0.519\uff08\u65b9\u5411\u51c6\u786e\u7387 0.39\uff09\u3002",
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 516 \u6761\uff0c\u547d\u4e2d\u7387 0.529\uff08\u65b9\u5411\u51c6\u786e\u7387 0.395\uff09\u3002",
   "note": "Alt-data convergence theses graded vs SPY. Context-only \u2014 the signal earns a scored vote only once this track record shows forward edge."
 }

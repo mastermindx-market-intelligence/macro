@@ -271,3 +271,50 @@ def test_vif_never_returns_non_finite_values():
     full = pd.DataFrame({"x1": x1, "x2": x2, "x3": rng.normal(size=200)})
     for frame in (singular, zero_var, full):
         assert all(math.isfinite(v) for v in vif(frame).values())
+
+# --------------------------------------------------------------------------- #
+# C19 WP07 N1: the impact-cost sigma warmup must not read future returns
+# --------------------------------------------------------------------------- #
+def _c19_wp07_fixture():
+    n = 300
+    idx = pd.bdate_range("2020-01-01", periods=n)
+    r = np.random.default_rng(7).normal(0.0003, 0.012, n)
+    r2 = r.copy()
+    r2[151:] *= 3.0                                     # identical through bar 150, 3x vol after
+    c1 = pd.Series(100 * np.cumprod(1 + r), index=idx)
+    c2 = pd.Series(100 * np.cumprod(1 + r2), index=idx)
+    alloc = pd.Series([(i // 3) % 2 for i in range(n)], index=idx, dtype=float)
+    kw = dict(cost_bps=5.0, dollar_adv=pd.Series(1e7, index=idx), aum_usd=1e8)
+    return c1, c2, alloc, kw
+
+
+def test_backtest_core_impact_sigma_warmup_is_non_anticipating():
+    c1, c2, alloc, kw = _c19_wp07_fixture()
+    a = backtest_core(c1, alloc, **kw)
+    b = backtest_core(c2, alloc, **kw)
+    assert a["turnover"].iloc[:151].equals(b["turnover"].iloc[:151])
+    assert a["net"].iloc[:151].equals(b["net"].iloc[:151])       # past net may not move when the future does
+    assert not a["net"].iloc[151:].equals(b["net"].iloc[151:])   # the perturbation is real
+
+
+def test_backtest_core_flat_cost_path_is_byte_identical():
+    c1, _, alloc, _ = _c19_wp07_fixture()
+    bt = backtest_core(c1, alloc, 5.0)
+    ret = c1.pct_change().fillna(0)
+    pos = alloc.shift(1).reindex(ret.index).ffill().fillna(0)
+    turnover = pos.diff().abs().fillna(0.0)
+    assert sorted(bt) == ["gross", "hold", "net", "pos", "ret", "turnover", "years"]
+    assert bt["net"].equals(pos * ret - (5.0 / 1e4) * turnover)
+
+
+def test_backtest_core_impact_sigma_unchanged_once_window_fills():
+    c1, _, alloc, kw = _c19_wp07_fixture()
+    bt = backtest_core(c1, alloc, **kw)
+    ret = c1.pct_change().fillna(0)
+    pos = alloc.shift(1).reindex(ret.index).ffill().fillna(0)
+    turnover = pos.diff().abs().fillna(0.0)
+    sigma = ret.rolling(21).std()
+    participation = (1e8 * turnover / kw["dollar_adv"]).clip(lower=0.0)
+    cost = (5.0 / 1e4 + 0.1 * sigma * np.sqrt(participation)) * turnover
+    expected = pos * ret - cost
+    assert np.array_equal(bt["net"].iloc[20:].to_numpy(), expected.iloc[20:].to_numpy())
