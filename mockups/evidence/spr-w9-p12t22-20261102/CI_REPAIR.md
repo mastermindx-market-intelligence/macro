@@ -1,0 +1,5 @@
+# Original CI repair — P12.T22
+
+Original run41550166483 at8e7d2bb4 failed `self-mod-fence` / `test_spr_store_group_is_eia`: the presenter insertion shifted the earlier F01 document's numeric source citations. The store read is still the same EIA SPR owner. Source b864bb5b adds a discrete source-anchor refresh at248/291/297 and the dated-endpoint presenter. It preserves existing source-rights rows and the separate open#8125 writer's rights edits; no test, source-policy, scientific helper, product code, data or rendered output changed.
+
+The exact original citation test reproduced FAIL before the note. The entire existing F01 source-rights proof module now passes22cases. Root independently reviewed current source and accepted the offsets and absence of posture changes. All source/visual evidence for the accepted SPR repair remains reusable. Original logs and collision check for#8125 are in the assigning parent's existing spr-w9-p12t22-20261102 evidence directory. No CI guard was weakened; one necessary original-repair push and fresh protected CI remain required before landing/render/served proof. No discretionary CI or runtime/provider effect.

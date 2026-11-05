@@ -9,30 +9,30 @@
       "ok": true,
       "fails": [],
       "warns": [],
-      "as_of": "2026-11-02",
-      "n": 55,
-      "coverage": 55,
+      "as_of": "2026-11-04",
+      "n": 61,
+      "coverage": 61,
       "row": {
-        "run_date": "2026-11-03",
+        "run_date": "2026-11-05",
         "surface": "standouts",
-        "as_of": "2026-11-02",
-        "n_records": 55,
-        "coverage": 55,
-        "fingerprint": "2e2fc6c4a75ab41f",
+        "as_of": "2026-11-04",
+        "n_records": 61,
+        "coverage": 61,
+        "fingerprint": "13a2d999c62a732e",
         "scores": {
           "conviction.composite_z": {
-            "n_sub": 55,
-            "pop": 55,
-            "uniq": 53,
-            "mean": -0.18236363636363634,
-            "std": 0.4660701220607109
+            "n_sub": 61,
+            "pop": 61,
+            "uniq": 55,
+            "mean": -0.10527868852459016,
+            "std": 0.46594892181712616
           },
           "alpha": {
-            "n_sub": 55,
-            "pop": 55,
-            "uniq": 51,
-            "mean": 0.015272727272727276,
-            "std": 0.8395211937233888
+            "n_sub": 61,
+            "pop": 61,
+            "uniq": 55,
+            "mean": 0.03327868852459016,
+            "std": 0.856622650270034
           }
         }
       }
@@ -43,30 +43,30 @@
       "ok": true,
       "fails": [],
       "warns": [],
-      "as_of": "2026-11-03",
+      "as_of": "2026-11-04",
       "n": 25,
       "coverage": 25,
       "row": {
-        "run_date": "2026-11-03",
+        "run_date": "2026-11-05",
         "surface": "briefing",
-        "as_of": "2026-11-03",
+        "as_of": "2026-11-04",
         "n_records": 25,
         "coverage": 25,
-        "fingerprint": "43289a6f1ff7ded4",
+        "fingerprint": "2bfe8ec02b498348",
         "scores": {
           "priority": {
             "n_sub": 25,
             "pop": 25,
-            "uniq": 20,
-            "mean": 0.26752,
-            "std": 0.09781088691960625
+            "uniq": 18,
+            "mean": 0.25964,
+            "std": 0.09902318112442157
           },
           "strength": {
             "n_sub": 25,
             "pop": 25,
-            "uniq": 18,
-            "mean": 0.3504,
-            "std": 0.12199934426053281
+            "uniq": 14,
+            "mean": 0.33480000000000004,
+            "std": 0.12316233190387392
           }
         }
       }
@@ -77,23 +77,23 @@
       "ok": true,
       "fails": [],
       "warns": [],
-      "as_of": "2026-11-03",
-      "n": 263,
-      "coverage": 263,
+      "as_of": "2026-11-04",
+      "n": 264,
+      "coverage": 264,
       "row": {
-        "run_date": "2026-11-03",
+        "run_date": "2026-11-05",
         "surface": "radar",
-        "as_of": "2026-11-03",
-        "n_records": 263,
-        "coverage": 263,
-        "fingerprint": "cbfa738dbacaf6d4",
+        "as_of": "2026-11-04",
+        "n_records": 264,
+        "coverage": 264,
+        "fingerprint": "ef6fa68db6c559ba",
         "scores": {
           "edge_score": {
             "n_sub": 252,
             "pop": 252,
             "uniq": 26,
-            "mean": 6.238095238095238,
-            "std": 9.309858720074924
+            "mean": 5.857142857142857,
+            "std": 9.41858538034738
           }
         }
       }
@@ -104,30 +104,30 @@
       "ok": true,
       "fails": [],
       "warns": [],
-      "as_of": "2026-11-03",
+      "as_of": "2026-11-05",
       "n": 30,
       "coverage": 30,
       "row": {
-        "run_date": "2026-11-03",
+        "run_date": "2026-11-05",
         "surface": "altdata",
-        "as_of": "2026-11-03",
+        "as_of": "2026-11-05",
         "n_records": 30,
         "coverage": 30,
-        "fingerprint": "e64dae2b30db91f7",
+        "fingerprint": "fe9a744c8843df8b",
         "scores": {
           "signal_score": {
             "n_sub": 30,
             "pop": 30,
             "uniq": 20,
-            "mean": 41.6,
-            "std": 10.669582934679312
+            "mean": 42.13333333333333,
+            "std": 11.79189929099163
           },
           "weighted_score": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 15,
-            "mean": 1.1616666666666666,
-            "std": 0.39151060720695113
+            "uniq": 17,
+            "mean": 1.1966666666666665,
+            "std": 0.39474323581566567
           }
         }
       }
@@ -138,30 +138,30 @@
       "ok": true,
       "fails": [],
       "warns": [],
-      "as_of": "2026-11-03",
-      "n": 170,
-      "coverage": 170,
+      "as_of": "2026-11-05",
+      "n": 209,
+      "coverage": 209,
       "row": {
-        "run_date": "2026-11-03",
+        "run_date": "2026-11-05",
         "surface": "news",
-        "as_of": "2026-11-03",
-        "n_records": 170,
-        "coverage": 170,
-        "fingerprint": "162d9d0a71050fd2",
+        "as_of": "2026-11-05",
+        "n_records": 209,
+        "coverage": 209,
+        "fingerprint": "4985626b4f3f628e",
         "scores": {
           "n_recent": {
-            "n_sub": 170,
-            "pop": 170,
-            "uniq": 5,
-            "mean": 1.5411764705882354,
-            "std": 1.163695342953246
+            "n_sub": 209,
+            "pop": 209,
+            "uniq": 6,
+            "mean": 1.937799043062201,
+            "std": 1.5220726670022848
           },
           "sentiment_score": {
-            "n_sub": 170,
-            "pop": 170,
+            "n_sub": 209,
+            "pop": 209,
             "uniq": 3,
-            "mean": 0.2823529411764706,
-            "std": 0.8132977850684409
+            "mean": 0.0861244019138756,
+            "std": 0.7900389450928342
           }
         }
       }
@@ -172,37 +172,37 @@
       "ok": true,
       "fails": [],
       "warns": [],
-      "as_of": "2026-11-03",
+      "as_of": "2026-11-04",
       "n": 30,
       "coverage": 30,
       "row": {
-        "run_date": "2026-11-03",
+        "run_date": "2026-11-05",
         "surface": "intel_hub",
-        "as_of": "2026-11-03",
+        "as_of": "2026-11-04",
         "n_records": 30,
         "coverage": 30,
-        "fingerprint": "9b6622bb9c112090",
+        "fingerprint": "668e334cac6488fe",
         "scores": {
           "composite_conviction": {
             "n_sub": 30,
             "pop": 30,
             "uniq": 26,
-            "mean": 33.56333333333333,
-            "std": 15.895607010184362
+            "mean": 31.666666666666668,
+            "std": 17.018271226994695
           },
           "opportunity_score": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 16,
-            "mean": 19.853333333333335,
-            "std": 6.2031031660684866
+            "uniq": 18,
+            "mean": 20.916666666666668,
+            "std": 6.220615367916228
           },
           "edge_remaining": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 19,
-            "mean": 0.5871999999999999,
-            "std": 0.182371306222589
+            "uniq": 17,
+            "mean": 0.6409666666666667,
+            "std": 0.20966934020552985
           }
         }
       }
@@ -217,5 +217,5 @@
     "intel_hub"
   ],
   "missing": [],
-  "evaluated_at": "2026-11-03T21:23:18.179244+00:00"
+  "evaluated_at": "2026-11-05T13:32:07.703051+00:00"
 }
