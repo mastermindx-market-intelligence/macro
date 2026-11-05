@@ -508,9 +508,9 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-05T07:38:19Z",
+    "built_at": "2026-11-05T10:00:13Z",
     "calculation_as_of": "2026-11-05",
-    "code_version": "8a5b9fb3f82ec6f4fad61eb510b5563894ad5a80",
+    "code_version": "e26dddef9b88ebefbcb9600423a069a829c6899d",
     "content_sha256": "837dfc0da85658993390ad620df3880c468958662e141bb84c9263c697decb98",
     "generation_id": "rates_curves-US-837dfc0da8565899",
     "producer": "engine.market_os.macro_workspaces.rates_curves",
