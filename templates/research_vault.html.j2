@@ -277,6 +277,10 @@ html[data-theme="light"] .rv-more{ color:var(--rv); }
 #si-research-entry{ margin-top:18px; }
 #si-research-readback .facet-grp{ align-items:baseline; }
 .si-rb-val{ font-size:13px; color:var(--text); max-width:56ch; overflow-wrap:anywhere; }
+/* SIC-D39: a carried machine id (sector:XLK, sector_central.html) reads as a
+   page-language name; the verbatim value stays beside it in secondary mono ink */
+.si-rb-name{ font-size:13px; font-weight:600; color:var(--text); }
+.si-rb-val.si-rb-raw{ font-family:var(--num); font-size:11.5px; color:var(--muted); }
 #si-research-entry textarea{
   display:block; width:100%; box-sizing:border-box; margin-top:12px; padding:10px 14px;
   border-radius:var(--r-ctl,8px); border:1px solid var(--line); background:var(--panel2); color:var(--text);
@@ -716,12 +720,12 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
       <span class="why">{{ t('Carried in by link from the sector surfaces — read back verbatim, never re-typed.', '由板块页面链接携带 —— 原样回读，无需重输。') }}</span>
     </div>
     <div class="rv-facets" id="si-research-readback">
-      <div class="facet-grp"><span class="facet-lbl">{{ t('Subject', '主体') }}</span><span class="si-rb-val" id="si-rb-subject"></span></div>
+      <div class="facet-grp"><span class="facet-lbl">{{ t('Subject', '主体') }}</span><span class="si-rb-name" id="si-rb-subject-name" hidden></span><span class="si-rb-val" id="si-rb-subject"></span></div>
       <div class="facet-grp"><span class="facet-lbl">{{ t('Carried question', '携带问题') }}</span><span class="si-rb-val" id="si-rb-q"></span></div>
       <div class="facet-grp"><span class="facet-lbl">{{ t('Source snapshot', '来源快照') }}</span><span class="si-rb-val" id="si-rb-snap"></span></div>
       <div class="facet-grp"><span class="facet-lbl">{{ t('Observation date', '观察日期') }}</span><span class="si-rb-val" id="si-rb-obs"></span></div>
       <div class="facet-grp"><span class="facet-lbl">{{ t('Evidence mode', '证据模式') }}</span><span class="si-rb-val" id="si-rb-ev"></span></div>
-      <div class="facet-grp"><span class="facet-lbl">{{ t('Origin page', '来源页面') }}</span><span class="si-rb-val" id="si-rb-origin"></span></div>
+      <div class="facet-grp"><span class="facet-lbl">{{ t('Origin page', '来源页面') }}</span><span class="si-rb-name" id="si-rb-origin-name" hidden></span><span class="si-rb-val" id="si-rb-origin"></span></div>
     </div>
     <p class="si-note" id="si-rb-state" role="status" hidden>{{ t('Partial coverage', '覆盖不完整') }} · {{ t('Subject', '主体') }} + {{ t('Carried question', '携带问题') }}</p>
     <textarea id="si-research-q" rows="4" aria-label="{{ t('Research question', '研究问题') }}"
@@ -866,6 +870,52 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
     var el = document.getElementById(id);
     if (el) el.textContent = value || (document.documentElement.getAttribute('data-lang') === 'zh' ? '— 不可用' : '— unavailable');
   }
+  /* SIC-D39: subject and origin arrive as machine ids. A name in the page
+     language rides beside each (sector names as engine/news_common.py
+     SECTOR_ETFS, page names as the nav); the verbatim value is still painted
+     by paint() above and only demoted to secondary ink. Unknown ids get the
+     kind word, never a guess. */
+  var SECTOR_NAMES = {
+    XLB: ['Materials', '原材料'], XLC: ['Communication Services', '通信服务'],
+    XLE: ['Energy', '能源'], XLF: ['Financials', '金融'],
+    XLI: ['Industrials', '工业'], XLK: ['Technology', '科技'],
+    XLP: ['Consumer Staples', '必需消费'], XLRE: ['Real Estate', '房地产'],
+    XLU: ['Utilities', '公用事业'], XLV: ['Health Care', '医疗保健'],
+    XLY: ['Consumer Discretionary', '可选消费']
+  };
+  var KIND_NAMES = {
+    sector: ['Sector', '行业'], subsector: ['Subsector', '子行业'],
+    theme: ['Theme', '主题'], stock: ['Stock', '个股']
+  };
+  var ORIGIN_NAMES = {
+    'sector_central.html': ['Sector Intelligence', '行业情报'],
+    'sector_cycles.html': ['U.S. Sector Cycles', '美国行业周期']
+  };
+  function subjectName(lang) {
+    var sector = fields.kind === 'sector' && SECTOR_NAMES[fields.id.toUpperCase()];
+    if (sector) return sector[lang] + ' · ' + fields.id;
+    var kind = KIND_NAMES[fields.kind];
+    return kind ? kind[lang] + ' · ' + fields.id : '';
+  }
+  function originName(lang) {
+    var path = fields.origin.split('#')[0];
+    if (ORIGIN_NAMES[path]) return ORIGIN_NAMES[path][lang];
+    var page = /^sectors\/([A-Za-z0-9]{1,8})\.html$/.exec(path);
+    if (!page) return '';
+    var sector = SECTOR_NAMES[page[1].toUpperCase()];
+    return (sector ? sector[lang] : page[1]) + ' · ' + (lang ? '行业页' : 'sector page');
+  }
+  function paintName(nameId, valueId, name) {
+    var el = document.getElementById(nameId);
+    if (el) { el.textContent = name; el.hidden = !name; }
+    var value = document.getElementById(valueId);
+    if (value) value.classList.toggle('si-rb-raw', !!name);
+  }
+  function paintNames() {
+    var lang = document.documentElement.getAttribute('data-lang') === 'zh' ? 1 : 0;
+    paintName('si-rb-subject-name', 'si-rb-subject', subjectName(lang));
+    paintName('si-rb-origin-name', 'si-rb-origin', originName(lang));
+  }
   /* all six sinks in one place so a language switch repaints the unavailable
      state too; a clipped mark rides only a present value */
   function paintReadback() {
@@ -875,6 +925,7 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
     paint('si-rb-obs', fields.obs);
     paint('si-rb-ev', fields.ev);
     paint('si-rb-origin', fields.origin);
+    paintNames();
   }
   paintReadback();
 
