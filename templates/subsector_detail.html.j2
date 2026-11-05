@@ -126,7 +126,7 @@ const pageIdentity = DETAIL.kind === 'concept' || DETAIL.kind === 'basket' ? L("
 const tierB = t => {
   const key = t || 'none';
   const en = {T1:'T1 · confirmed setup',T2:'T2 · early setup',T3:'T3 · forming',T4:'T4 · first sign',none:'—'};
-  const zh = {T1:'T1 · 已确认配置',T2:'T2 · 早期配置',T3:'T3 · 形成中',T4:'T4 · 初步迹象',none:'—'};
+  const zh = {T1:'T1 · 已确认形态',T2:'T2 · 早期形态',T3:'T3 · 形成中',T4:'T4 · 初步迹象',none:'—'};
   return '<span class="tier ' + esc(key) + '" data-tier="' + esc(key) + '" title="' + (key === 'none' ? '' : 'Technical tier ' + esc(key)) + '">' + L(en[key] || key, zh[key] || key) + '</span>';
 };
 
@@ -184,7 +184,7 @@ function render() {
   const behavesPill = m => m.behaves_as && m.behaves_as.home_id !== (g.basket_id || g.key) ? ' · <span class="pill behavesas" title="' + esc((m.behaves_as.homes || []).map(x => x.label + ' r20 ' + (x.corr20 == null ? '–' : x.corr20.toFixed(2))).join('; ')) + '">↔ ' + L('behaves-as ' + esc(m.behaves_as.home_label || ''), '类同 ' + esc(m.behaves_as.home_label_zh || m.behaves_as.home_label || '')) + '</span>' : '';
   if (ms.length) {
     h += '<section id="members"><div class="id-section-hd"><div><h2>' + L('Members','成分') + '</h2><p>' + L('Who is actually carrying the group — same source rows, adapted to the viewport.','谁在真正带动该组——同一数据源，按屏幕宽度适配。') + '</p></div><span class="pill neutral">' + ms.length + ' ' + L('shown','只') + '</span></div>';
-    h += '<div class="members-table-wrap"><table class="tbl"><thead><tr><th>' + L('Ticker','代码') + '</th><th>' + L('Price','价格') + '</th><th>' + L('Own setup','自身配置') + '</th><th>' + L('20d','20日') + '</th><th>' + L('vs group','相对本组') + '</th><th>' + L('Read','研判') + '</th></tr></thead><tbody>';
+    h += '<div class="members-table-wrap"><table class="tbl"><thead><tr><th>' + L('Ticker','代码') + '</th><th>' + L('Price','价格') + '</th><th>' + L('Own setup','自身形态') + '</th><th>' + L('20d','20日') + '</th><th>' + L('vs group','相对本组') + '</th><th>' + L('Read','研判') + '</th></tr></thead><tbody>';
     h += ms.map(m => {
       const zh = m.name_zh ? ' <span style="color:var(--muted);font-weight:400;font-size:.85em">' + esc(m.name_zh) + '</span>' : '';
       const behaves = behavesPill(m);
