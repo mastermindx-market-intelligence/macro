@@ -9,6 +9,10 @@ mission: Deliver isolated original research features through causal inputs, exis
 state_before: Original31-package programme recovered against Macro2498181e; component acceptance preserved,
   real P01 incomplete; original V4 and worktree effects remain UNKNOWN.
 changed:
+- path: scripts/run_ci_pack.py
+  what: P3.T2.S1 ports the existing CI-owner canonical acquisition helper's optional exact comparison-object
+    closure and two design consumers. Full templates/templates+site scopes, fixed guards, pinned bindings,
+    unchanged HEAD/FETCH_HEAD and original deadline/fetch-failure refusal remain enforced.
 - path: engine/research_codegen/plan_engine_provider.py
   what: P2.T6.S2 adds canonical single-use per-plan engine selection to the existing prefix and staged
     synthetic caller; explicit injected executor and CID receipt required, no issuer or activation.
@@ -27,6 +31,11 @@ changed:
     consumers; pure declaration helper does not fabricate pre-stage accounting. All observations remain
     UNKNOWN/unattested and authority false.
 verified:
+- claim: Canonical comparison acquisition and existing consumer composition remain fail-closed
+  command: python3 -m pytest -q tests/test_ci_pack_semantic.py; python3 -m pytest -q tests/test_run_ci_pack_fetch_fallback.py
+  result: 197 passed and 10 subtests; 33 fetch-contract checks passed including eight guard/scope-weakening
+    negatives. Production AST outside prepare_canonical_main is unchanged, only two design steps change,
+    and their downstream guard tails are identical. Source qualification does not prove hosted transport.
 - claim: Original qualification transport preimage and source contract preserved
   command: python3 -m pytest -q tests/test_research_codegen_transport.py tests/test_research_codegen_prefix_driver.py
     tests/test_research_codegen_connected_p01.py scripts/research_codegen_qualification/runtime/tests
@@ -61,6 +70,10 @@ unverified:
 - Hosted source CI/merge and postmerge source consumer for this new adapter increment
 - Actual P01, containment, authenticated candidate workflow and scientific acceptance
 unresolved:
+- Original a7f149 CI42058962406 failed canonical-base acquisition in design-governance; observer29182
+  consumed/closed. Canonical failure/pr_regression retained. Candidate remote fetch reset before its
+  comparison, while exact-base replay used local origin. CI owner returned bounded source patch6325aafc;
+  root ported it on this same carrier. Fresh-head review and natural CI must qualify the repair.
 - CI42037040984 on69a88a failed pack5 because the provider addition changed byte-pinned transport.py.
   Observer58313 consumed/closed. Repair isolates the provider and restores the original transport preimage;
   the changed head requires new review and natural CI, without any hash-pin waiver.

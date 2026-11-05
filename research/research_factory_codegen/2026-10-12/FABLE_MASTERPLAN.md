@@ -48,6 +48,11 @@ The active P2.T6 source prerequisites retain separate acceptance:
 - **P2.T1.S1:** preserve private role assessment through the unchanged connected
   consumers. Source implemented/reviewed; effective identity qualification remains
   separate from declarations.
+- **P3.T2.S1:** qualify the CI-owner canonical comparison acquisition on the same
+  release carrier. Acquire the exact fixed-guard and complete comparison objects,
+  preserve all design/visual checks and fail-closed behavior, and require fresh
+  hosted proof. This repairs a necessary release dependency without widening the
+  research or runtime scope.
 
 The adapter must validate the whole batch before effects, account for the full emitted
 set before the first attempt, use the actual ledger readback for every variant, retain
