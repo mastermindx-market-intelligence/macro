@@ -185,7 +185,22 @@ Evidence remains under the existing native directory:
 `/Volumes/Mastermind/Mastermind/artifacts/native-role-loadability-20260906-websol3/`.
 It is evidence, not a replacement process, effect, retry or lifecycle database.
 
-## Exact next action and no-rebuild boundary
+## Dated continuation and no-rebuild boundary
+
+**Currency qualification — 2026-11-05:** The native-proof limits below record the
+September 7 evidence and are not a new execution or retry grant. Personal source
+[PR #516](https://github.com/mastermindx-market-intelligence/Mastermind/pull/516)
+subsequently merged at **2026-09-07T06:13:00Z** as
+`6ce1e0104f43657b3d5fc333d848025e28a8173a`. That source merge does not prove
+installed native-role use or broader program completion. The historical Personal
+first-read/controller/Terra repair grants quoted below are not current grants and
+do not reopen the terminal source or release children. Any newly authorized
+continuation belongs to the currently assigned receiver, which must recover the
+existing Integration, Cockpit and Runtime owners' actual receipts and reconcile
+original-carrier leases or uncertain effects before acting. The discovery creates
+no assignment, worker, lifecycle, retry or release authority. Previously blocked
+native probes and the blocked local records-validation request remain frozen;
+this qualification supplies no alternate execution path.
 
 The remaining helper-specific gate is **lawful installed/native proof**, not another
 source repair or merge attempt. It must bind the actual binary and configuration,
@@ -201,12 +216,14 @@ prove upstream binary authenticity, worker PATH selection, loaded roles or child
 permissions. A public release-asset comparison failed before download; no binary
 comparison or successful native probe is claimed.
 
-Preserve the existing Personal first-read operation and original carrier
-`C0BSBM78V1N/1788719305.919709`, its controller/Terra and current repair grants.
-Preserve Steward, Runtime/Cockpit, Connected Office, provider harness, exact
-continuation and browser owners. No duplicate worker, discovery, workstream,
-router, native helper registry or release queue is created by this record.
+### Historical September 7 continuation, retained as evidence
 
-The overall program remains PARTIAL: real authenticated reads, useful parent/child
-observation, attributable results, exact supervisor continuation, independent
-review/repair and explicit terminal closure must still be demonstrated end-to-end.
+> Preserve the existing Personal first-read operation and original carrier
+> `C0BSBM78V1N/1788719305.919709`, its controller/Terra and current repair grants.
+> Preserve Steward, Runtime/Cockpit, Connected Office, provider harness, exact
+> continuation and browser owners. No duplicate worker, discovery, workstream,
+> router, native helper registry or release queue is created by this record.
+>
+> The overall program remains PARTIAL: real authenticated reads, useful parent/child
+> observation, attributable results, exact supervisor continuation, independent
+> review/repair and explicit terminal closure must still be demonstrated end-to-end.

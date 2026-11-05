@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-en="Lens switcher" data-zh="策略切换">Lens switcher</title>
+<style>
+:root{color-scheme:light;--bg:#F7F8FA;--panel:#FFFFFF;--fill:#EEF1F6;--text:#1C2430;--muted:#5D6B7E;--line:#C9CCD1;--line-quiet:#E2E6EC;--up:#1E6D47;--down:#B23C3D;--warn:#7D5922;--link:#2758E6;--ok:#2F8A52;--shadow:0 1px 2px rgba(28,36,48,.06)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0F1115;--panel:#181B21;--fill:#1E222A;--text:#D7DCE3;--muted:#8B93A1;--line:#3A4150;--line-quiet:#272C35;--up:#45B873;--down:#E06464;--warn:#E0A030;--link:#7AA7E0;--ok:#3DA564;--shadow:none}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0F1115;--panel:#181B21;--fill:#1E222A;--text:#D7DCE3;--muted:#8B93A1;--line:#3A4150;--line-quiet:#272C35;--up:#45B873;--down:#E06464;--warn:#E0A030;--link:#7AA7E0;--ok:#3DA564;--shadow:none}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"PingFang SC",system-ui,sans-serif;font-size:14px;line-height:20px}
+html[lang="zh-Hans"] body{line-height:22px}
+.label{font-size:12.5px;line-height:18px;color:var(--muted)}
+html[lang="zh-Hans"] .label{line-height:20px}
+.body{font-size:14px;line-height:20px}
+html[lang="zh-Hans"] .body{line-height:22px}
+.num{font-variant-numeric:tabular-nums}
+a:focus-visible,button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 24px;flex-wrap:wrap}
+.bar-actions{display:flex;gap:8px}
+.btn{font:inherit;font-size:12.5px;line-height:18px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);cursor:pointer}
+.btn:hover{background:var(--fill)}
+.wrap{max-width:720px;margin:0 auto;padding:24px 24px 24px}
+.tabs{display:flex;align-items:center;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow);padding:4px;flex-wrap:wrap}
+.tab{font:inherit;font-size:14px;line-height:20px;color:var(--text);background:transparent;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;display:inline-flex;align-items:baseline;gap:8px}
+html[lang="zh-Hans"] .tab{line-height:22px}
+.tab:hover{background:var(--fill)}
+.tab[aria-selected="true"]{background:var(--fill);font-weight:600}
+.tab-count{font-size:12.5px;line-height:18px;color:var(--muted);font-weight:400}
+html[lang="zh-Hans"] .tab-count{line-height:20px}
+.question{margin:16px 4px 0;color:var(--muted);min-height:44px}
+.foot{padding:12px 24px 32px;max-width:720px;margin:0 auto}
+</style>
+</head>
+<body>
+<header class="bar">
+  <p class="body" data-en="Lens switcher (reference)" data-zh="策略切换（参考稿）">Lens switcher (reference)</p>
+  <div class="bar-actions">
+    <button class="btn" id="langBtn" type="button">中文</button>
+    <button class="btn" id="themeBtn" type="button" data-en="Toggle theme" data-zh="切换主题">Toggle theme</button>
+  </div>
+</header>
+<main class="wrap">
+  <div role="tablist" aria-label="Lens" data-en-aria="Lens" data-zh-aria="策略">
+    <button role="tab" type="button" class="tab" data-lens="all" id="tab-all" aria-selected="true" aria-controls="q" tabindex="0">
+      <span data-en="All" data-zh="全部">All</span>
+      <span class="tab-count num">16</span>
+    </button>
+    <button role="tab" type="button" class="tab" data-lens="early" id="tab-early" aria-selected="false" aria-controls="q" tabindex="-1">
+      <span data-en="Early leadership" data-zh="早期领涨">Early leadership</span>
+      <span class="tab-count num">8</span>
+    </button>
+    <button role="tab" type="button" class="tab" data-lens="earnings" id="tab-earnings" aria-selected="false" aria-controls="q" tabindex="-1">
+      <span data-en="Quality earnings" data-zh="优质盈利">Quality earnings</span>
+      <span class="tab-count num">5</span>
+    </button>
+    <button role="tab" type="button" class="tab" data-lens="cycle" id="tab-cycle" aria-selected="false" aria-controls="q" tabindex="-1">
+      <span data-en="Cycle capture" data-zh="周期捕捉">Cycle capture</span>
+      <span class="tab-count num">3</span>
+    </button>
+  </div>
+  <p class="question body" id="q" role="tabpanel" aria-labelledby="tab-early" hidden></p>
+</main>
+<footer class="foot">
+  <p class="label" data-en="Sample names and prices for design review, not live signals." data-zh="示例名称与价格，仅供设计评审，并非实时信号。">Sample names and prices for design review, not live signals.</p>
+</footer>
+<script>
+(function(){
+  var root=document.documentElement;
+  var tabs=[].slice.call(document.querySelectorAll('[role="tab"]'));
+  var q=document.getElementById('q');
+  var QUESTIONS={
+    early:{en:"What is emerging early, what is supporting it, and what opportunity remains?",zh:"哪些东西在早期浮现？是什么在支撑它？还剩多少机会？"},
+    earnings:{en:"Has the company's economic reality or expectation path improved enough to deserve attention?",zh:"公司的经济现实或预期路径，是否已改善到值得关注的程度？"},
+    cycle:{en:"Is the economic turn real, can the company finance the path, and can original equity participate?",zh:"经济拐点是否真实？公司能否为这条路提供资金？原有股权能否参与？"}
+  };
+  function currentLang(){return root.getAttribute('lang')==='zh-Hans'?'zh':'en'}
+  function selectedTab(){
+    var found=tabs[0];
+    tabs.forEach(function(t){if(t.getAttribute('aria-selected')==='true'){found=t}});
+    return found;
+  }
+  function updateQ(){
+    var t=selectedTab();
+    var lens=t.getAttribute('data-lens');
+    var item=QUESTIONS[lens];
+    if(!item){q.hidden=true;q.removeAttribute('aria-labelledby');q.textContent='';return}
+    q.hidden=false;
+    q.setAttribute('aria-labelledby',t.id);
+    q.textContent=item[currentLang()];
+  }
+  function select(t,focus){
+    tabs.forEach(function(x){
+      var on=x===t;
+      x.setAttribute('aria-selected',on?'true':'false');
+      x.tabIndex=on?0:-1;
+    });
+    updateQ();
+    if(focus){t.focus()}
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click',function(){select(t,false)});
+    t.addEventListener('keydown',function(e){
+      var j=null;
+      if(e.key==='ArrowRight'){j=(i+1)%tabs.length}
+      else if(e.key==='ArrowLeft'){j=(i-1+tabs.length)%tabs.length}
+      else if(e.key==='Home'){j=0}
+      else if(e.key==='End'){j=tabs.length-1}
+      if(j!==null){e.preventDefault();select(tabs[j],true)}
+    });
+  });
+  function isDark(){
+    var t=root.getAttribute('data-theme');
+    if(t==='dark'){return true}
+    if(t==='light'){return false}
+    return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  function applyLang(lang){
+    root.setAttribute('lang',lang==='zh'?'zh-Hans':'en');
+    var pick=lang==='zh'?'data-zh':'data-en';
+    document.querySelectorAll('[data-en]').forEach(function(el){
+      var s=el.getAttribute(pick);
+      if(s!==null){el.textContent=s}
+    });
+    document.querySelectorAll('[data-en-aria]').forEach(function(el){
+      el.setAttribute('aria-label',el.getAttribute(lang==='zh'?'data-zh-aria':'data-en-aria'));
+    });
+    var lb=document.getElementById('langBtn');
+    if(lb){lb.textContent=lang==='zh'?'English':'中文'}
+    updateQ();
+  }
+  document.getElementById('langBtn').addEventListener('click',function(){
+    applyLang(root.getAttribute('lang')==='zh-Hans'?'en':'zh');
+  });
+  document.getElementById('themeBtn').addEventListener('click',function(){
+    root.setAttribute('data-theme',isDark()?'light':'dark');
+  });
+  updateQ();
+})();
+</script>
+</body>
+</html>

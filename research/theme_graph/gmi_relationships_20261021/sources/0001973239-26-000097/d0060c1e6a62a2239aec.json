@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-26T20:35:23Z",
+ "accession": "0001973239-26-000097",
+ "cik": "0001973239",
+ "doc_byte_length": 3137018,
+ "doc_sha256": "8ab052cc035f9cc93429c0bfd76edf2bc11a686a80f0cc7b568fbd456b2ec815",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-26",
+ "form": "20-F",
+ "period_of_report": "2026-03-31",
+ "primary_document": "arm-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 490430,
+  "byte_start": 489997,
+  "normalized": "The jury failed to reach a complete verdict on the three issues presented to it. The jury concluded that certain technology was licensed to Qualcomm under the Qualcomm license and that Qualcomm had not breached the Nuvia ALA but failed to reach a verdict on whether Nuvia breached the Nuvia ALA. Both parties filed post-trial motions seeking judgment as a matter of law, and we also sought a new trial on the issues that were tried.",
+  "normalized_sha256": "edf521817e6f2299c8aa8ae34025c912d77106a46e9d44a1d2e61500cd9a42d0",
+  "raw": " The jury failed to reach a complete verdict on the three issues presented to it. The jury concluded that certain technology was licensed to Qualcomm under the Qualcomm license and that Qualcomm had not breached the Nuvia ALA but failed to reach a verdict on whether Nuvia breached the Nuvia ALA. Both parties filed post-trial motions seeking judgment as a matter of law, and we also sought a new trial on the issues that were tried.",
+  "raw_sha256": "d0060c1e6a62a2239aec05a4f365e45614124cdc84dea822b1fe46d4f507874e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1973239/000197323926000097/arm-20260331.htm",
+ "xbrl_contexts": []
+}

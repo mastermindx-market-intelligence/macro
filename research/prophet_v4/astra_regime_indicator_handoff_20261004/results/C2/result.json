@@ -1,0 +1,3068 @@
+{
+  "lane": "C2",
+  "status": "DELIVERED",
+  "repo_head": "052e02d085b01f29baf499357e224c836d8eb224",
+  "data_class": {
+    "vintage": "final",
+    "universe": "survivor-selected baskets"
+  },
+  "provenance": {
+    "host": {
+      "host": "m2",
+      "uname": "m2studio",
+      "python": "/opt/homebrew/opt/python@3.14/bin/python3.14 3.14.7",
+      "pandas": "3.0.5",
+      "numpy": "2.5.2",
+      "pyarrow": "25.0.1",
+      "scipy": "1.18.0",
+      "pytest": "9.1.1"
+    }
+  },
+  "round0_shas": {
+    "B1_events_panel": "8b17049773a32c6e517a614a48e530f29bc250f126e4ee9b8871ecd4cd7690a1",
+    "B1_confirmation_pairs": "22eabfe6287a69233b7de328616f45a7424801dc4cd69fdfb3049dc2328b01eb",
+    "B1_result_json": "7ede0e4333738127484a82d93a76c7795505b4112d6a61c223d35e8ffaaaad0b",
+    "C1_rotation_state": "9361dbf08018f0c23bc6e9b29fa014bc42429ed3289d359adf7a16f52be3e2dd",
+    "C1_result_json": "3492dc2d30ef09a0870aea5f5167be0c1c6f26d167c6b838e3d740625a4e1519",
+    "engine_canon": "bdf34dc8a9b851889e9b6beae939867ca4611ad41a78b4b43322f2a8a9b18165",
+    "engine_session_anchor": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f",
+    "engine_bar_derive": "eb3a9d4c6ece400902a1765997b741c09a0b1d0c47ff798acffe0049a691e469",
+    "C2_result_json": "9372f0f7ad0a4795e74a46dc7f4fc08d11adc2eb2dd158504b28dfc4f82842e0"
+  },
+  "inputs": {
+    "B1_events_panel_sha256": "209e224686955cf14401b6d65b9cf06464ce17e3c9cf092aef968319334d7ef8",
+    "B1_confirmation_pairs_sha256": "d20cd4056e8e6b1fbb6e9545ddfda50109cb65cbf030af60461bf90cf41f61ae",
+    "C1_rotation_state_sha256": "9361dbf08018f0c23bc6e9b29fa014bc42429ed3289d359adf7a16f52be3e2dd",
+    "B1_result_json_sha256": "e480d73a06b1fe01ebbd67ce4c80f1e83b08466d0f82a4b82f03955fc0dd4d09",
+    "C1_result_json_sha256": "142de0f2541513d9bbe660ff562678c63139e05def86d0048da5db1703cfea2f",
+    "engine_canon_sha256": "bdf34dc8a9b851889e9b6beae939867ca4611ad41a78b4b43322f2a8a9b18165",
+    "engine_session_anchor_sha256": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f",
+    "engine_bar_derive_sha256": "eb3a9d4c6ece400902a1765997b741c09a0b1d0c47ff798acffe0049a691e469",
+    "C1_controls_status": "BROKEN",
+    "B1_verdict": {
+      "grain_effect_3d": "NOT SUPPORTED",
+      "grain_effect_2d": "NOT SUPPORTED",
+      "memory_effect_3": "NOT SUPPORTED"
+    },
+    "B1_3d_verdicts": [
+      "NOT SUPPORTED",
+      "NOT SUPPORTED",
+      "NOT SUPPORTED"
+    ]
+  },
+  "era_labels": {
+    "2014-2019": {
+      "label": "2014-2019",
+      "start": "2015-08-05",
+      "end": "2019-12-30",
+      "display": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "2020-2026": {
+      "label": "2020-2026",
+      "start": "2019-12-31",
+      "end": "2026-08-28",
+      "display": "2020-2026 (2019-12-31..2026-08-28)"
+    }
+  },
+  "n_1d_events_joined": 296637,
+  "n_1d_events_dropped_no_state": 0,
+  "did": {
+    "3D": {
+      "pooled": {
+        "h10": {
+          "delta": 0.0034518154435143936,
+          "ci": [
+            -0.0008752350470632498,
+            0.007598139844272105
+          ],
+          "n": {
+            "fast": {
+              "confirmed": {
+                "n_events": 75099,
+                "n_months": 119,
+                "n_names": 2566
+              },
+              "all_1d": {
+                "n_events": 94503,
+                "n_months": 119,
+                "n_names": 2586
+              }
+            },
+            "persistent": {
+              "confirmed": {
+                "n_events": 70996,
+                "n_months": 121,
+                "n_names": 2579
+              },
+              "all_1d": {
+                "n_events": 94158,
+                "n_months": 121,
+                "n_names": 2586
+              }
+            }
+          }
+        },
+        "h21": {
+          "delta": 0.0026576341814137324,
+          "ci": [
+            -0.0032376860633840064,
+            0.008375507631665828
+          ],
+          "n": {
+            "fast": {
+              "confirmed": {
+                "n_events": 75099,
+                "n_months": 119,
+                "n_names": 2566
+              },
+              "all_1d": {
+                "n_events": 94503,
+                "n_months": 119,
+                "n_names": 2586
+              }
+            },
+            "persistent": {
+              "confirmed": {
+                "n_events": 70996,
+                "n_months": 121,
+                "n_names": 2579
+              },
+              "all_1d": {
+                "n_events": 94158,
+                "n_months": 121,
+                "n_names": 2586
+              }
+            }
+          }
+        }
+      },
+      "by_phase": {
+        "p0": {
+          "h10": {
+            "delta": 0.0024163688746524845,
+            "ci": [
+              -0.002147153857599152,
+              0.007063695023628452
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 25227,
+                  "n_months": 119,
+                  "n_names": 2561
+                },
+                "all_1d": {
+                  "n_events": 94503,
+                  "n_months": 119,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 23775,
+                  "n_months": 121,
+                  "n_names": 2576
+                },
+                "all_1d": {
+                  "n_events": 94158,
+                  "n_months": 121,
+                  "n_names": 2586
+                }
+              }
+            }
+          },
+          "h21": {
+            "delta": 0.0023469203105751894,
+            "ci": [
+              -0.0034965222812780913,
+              0.008048051012375306
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 25227,
+                  "n_months": 119,
+                  "n_names": 2561
+                },
+                "all_1d": {
+                  "n_events": 94503,
+                  "n_months": 119,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 23775,
+                  "n_months": 121,
+                  "n_names": 2576
+                },
+                "all_1d": {
+                  "n_events": 94158,
+                  "n_months": 121,
+                  "n_names": 2586
+                }
+              }
+            }
+          }
+        },
+        "p1": {
+          "h10": {
+            "delta": 0.004450625446363366,
+            "ci": [
+              -0.00019922502919713863,
+              0.008765189815445712
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 24833,
+                  "n_months": 119,
+                  "n_names": 2566
+                },
+                "all_1d": {
+                  "n_events": 94503,
+                  "n_months": 119,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 23532,
+                  "n_months": 121,
+                  "n_names": 2577
+                },
+                "all_1d": {
+                  "n_events": 94158,
+                  "n_months": 121,
+                  "n_names": 2586
+                }
+              }
+            }
+          },
+          "h21": {
+            "delta": 0.0021421207264626973,
+            "ci": [
+              -0.004058466268293923,
+              0.00857781250702971
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 24833,
+                  "n_months": 119,
+                  "n_names": 2566
+                },
+                "all_1d": {
+                  "n_events": 94503,
+                  "n_months": 119,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 23532,
+                  "n_months": 121,
+                  "n_names": 2577
+                },
+                "all_1d": {
+                  "n_events": 94158,
+                  "n_months": 121,
+                  "n_names": 2586
+                }
+              }
+            }
+          }
+        },
+        "p2": {
+          "h10": {
+            "delta": 0.00348845200952733,
+            "ci": [
+              -0.0012095241761360123,
+              0.007988972436862548
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 25039,
+                  "n_months": 119,
+                  "n_names": 2565
+                },
+                "all_1d": {
+                  "n_events": 94503,
+                  "n_months": 119,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 23689,
+                  "n_months": 121,
+                  "n_names": 2579
+                },
+                "all_1d": {
+                  "n_events": 94158,
+                  "n_months": 121,
+                  "n_names": 2586
+                }
+              }
+            }
+          },
+          "h21": {
+            "delta": 0.003483861507203311,
+            "ci": [
+              -0.0027900541283373296,
+              0.009361058667285042
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 25039,
+                  "n_months": 119,
+                  "n_names": 2565
+                },
+                "all_1d": {
+                  "n_events": 94503,
+                  "n_months": 119,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 23689,
+                  "n_months": 121,
+                  "n_names": 2579
+                },
+                "all_1d": {
+                  "n_events": 94158,
+                  "n_months": 121,
+                  "n_names": 2586
+                }
+              }
+            }
+          }
+        }
+      },
+      "by_era": {
+        "2014-2019 (2015-08-05..2019-12-30)": {
+          "h10": {
+            "delta": 0.003278961540121713,
+            "ci": [
+              -0.001978937674007431,
+              0.008212946185749732
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 35011,
+                  "n_months": 51,
+                  "n_names": 1933
+                },
+                "all_1d": {
+                  "n_events": 43285,
+                  "n_months": 51,
+                  "n_names": 1965
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 18823,
+                  "n_months": 46,
+                  "n_names": 1828
+                },
+                "all_1d": {
+                  "n_events": 23688,
+                  "n_months": 46,
+                  "n_names": 1957
+                }
+              }
+            }
+          },
+          "h21": {
+            "delta": 0.0033672936217843566,
+            "ci": [
+              -0.002896589584095058,
+              0.009461873218191834
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 35011,
+                  "n_months": 51,
+                  "n_names": 1933
+                },
+                "all_1d": {
+                  "n_events": 43285,
+                  "n_months": 51,
+                  "n_names": 1965
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 18823,
+                  "n_months": 46,
+                  "n_names": 1828
+                },
+                "all_1d": {
+                  "n_events": 23688,
+                  "n_months": 46,
+                  "n_names": 1957
+                }
+              }
+            }
+          },
+          "by_phase": {
+            "p0": {
+              "h10": {
+                "delta": 0.001802729898211764,
+                "ci": [
+                  -0.0031304513537718233,
+                  0.006954793363725689
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 11750,
+                      "n_months": 51,
+                      "n_names": 1933
+                    },
+                    "all_1d": {
+                      "n_events": 43285,
+                      "n_months": 51,
+                      "n_names": 1965
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 6252,
+                      "n_months": 46,
+                      "n_names": 1824
+                    },
+                    "all_1d": {
+                      "n_events": 23688,
+                      "n_months": 46,
+                      "n_names": 1957
+                    }
+                  }
+                }
+              },
+              "h21": {
+                "delta": 0.004513822513434133,
+                "ci": [
+                  -0.0022154763839675315,
+                  0.011259853779824495
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 11750,
+                      "n_months": 51,
+                      "n_names": 1933
+                    },
+                    "all_1d": {
+                      "n_events": 43285,
+                      "n_months": 51,
+                      "n_names": 1965
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 6252,
+                      "n_months": 46,
+                      "n_names": 1824
+                    },
+                    "all_1d": {
+                      "n_events": 23688,
+                      "n_months": 46,
+                      "n_names": 1957
+                    }
+                  }
+                }
+              }
+            },
+            "p1": {
+              "h10": {
+                "delta": 0.0049304091246015055,
+                "ci": [
+                  -0.0006510843268858697,
+                  0.01019641258831545
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 11581,
+                      "n_months": 51,
+                      "n_names": 1928
+                    },
+                    "all_1d": {
+                      "n_events": 43285,
+                      "n_months": 51,
+                      "n_names": 1965
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 6194,
+                      "n_months": 46,
+                      "n_names": 1823
+                    },
+                    "all_1d": {
+                      "n_events": 23688,
+                      "n_months": 46,
+                      "n_names": 1957
+                    }
+                  }
+                }
+              },
+              "h21": {
+                "delta": 0.002732939667922903,
+                "ci": [
+                  -0.004379377089071916,
+                  0.00885441410141221
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 11581,
+                      "n_months": 51,
+                      "n_names": 1928
+                    },
+                    "all_1d": {
+                      "n_events": 43285,
+                      "n_months": 51,
+                      "n_names": 1965
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 6194,
+                      "n_months": 46,
+                      "n_names": 1823
+                    },
+                    "all_1d": {
+                      "n_events": 23688,
+                      "n_months": 46,
+                      "n_names": 1957
+                    }
+                  }
+                }
+              }
+            },
+            "p2": {
+              "h10": {
+                "delta": 0.0031037455975518697,
+                "ci": [
+                  -0.0026974827813841832,
+                  0.008486165901462388
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 11680,
+                      "n_months": 51,
+                      "n_names": 1931
+                    },
+                    "all_1d": {
+                      "n_events": 43285,
+                      "n_months": 51,
+                      "n_names": 1965
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 6377,
+                      "n_months": 46,
+                      "n_names": 1828
+                    },
+                    "all_1d": {
+                      "n_events": 23688,
+                      "n_months": 46,
+                      "n_names": 1957
+                    }
+                  }
+                }
+              },
+              "h21": {
+                "delta": 0.0028551186839960337,
+                "ci": [
+                  -0.004357194069184559,
+                  0.009421182218781342
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 11680,
+                      "n_months": 51,
+                      "n_names": 1931
+                    },
+                    "all_1d": {
+                      "n_events": 43285,
+                      "n_months": 51,
+                      "n_names": 1965
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 6377,
+                      "n_months": 46,
+                      "n_names": 1828
+                    },
+                    "all_1d": {
+                      "n_events": 23688,
+                      "n_months": 46,
+                      "n_names": 1957
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "2020-2026 (2019-12-31..2026-08-28)": {
+          "h10": {
+            "delta": 0.005139847746540715,
+            "ci": [
+              -0.0008890051666184334,
+              0.011165492837143416
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 40088,
+                  "n_months": 68,
+                  "n_names": 2559
+                },
+                "all_1d": {
+                  "n_events": 51218,
+                  "n_months": 68,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 52173,
+                  "n_months": 75,
+                  "n_names": 2577
+                },
+                "all_1d": {
+                  "n_events": 70470,
+                  "n_months": 75,
+                  "n_names": 2586
+                }
+              }
+            }
+          },
+          "h21": {
+            "delta": 0.004093768232955501,
+            "ci": [
+              -0.003902755385478806,
+              0.01227327841032449
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 40088,
+                  "n_months": 68,
+                  "n_names": 2559
+                },
+                "all_1d": {
+                  "n_events": 51218,
+                  "n_months": 68,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 52173,
+                  "n_months": 75,
+                  "n_names": 2577
+                },
+                "all_1d": {
+                  "n_events": 70470,
+                  "n_months": 75,
+                  "n_names": 2586
+                }
+              }
+            }
+          },
+          "by_phase": {
+            "p0": {
+              "h10": {
+                "delta": 0.0042740280894920735,
+                "ci": [
+                  -0.0022440921771446523,
+                  0.011003870341401885
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 13477,
+                      "n_months": 68,
+                      "n_names": 2558
+                    },
+                    "all_1d": {
+                      "n_events": 51218,
+                      "n_months": 68,
+                      "n_names": 2586
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 17523,
+                      "n_months": 75,
+                      "n_names": 2574
+                    },
+                    "all_1d": {
+                      "n_events": 70470,
+                      "n_months": 75,
+                      "n_names": 2586
+                    }
+                  }
+                }
+              },
+              "h21": {
+                "delta": 0.0032608825831667975,
+                "ci": [
+                  -0.004572957812728563,
+                  0.011143330028860835
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 13477,
+                      "n_months": 68,
+                      "n_names": 2558
+                    },
+                    "all_1d": {
+                      "n_events": 51218,
+                      "n_months": 68,
+                      "n_names": 2586
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 17523,
+                      "n_months": 75,
+                      "n_names": 2574
+                    },
+                    "all_1d": {
+                      "n_events": 70470,
+                      "n_months": 75,
+                      "n_names": 2586
+                    }
+                  }
+                }
+              }
+            },
+            "p1": {
+              "h10": {
+                "delta": 0.006044686106002558,
+                "ci": [
+                  -0.00014566754241257464,
+                  0.011849476981182076
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 13252,
+                      "n_months": 68,
+                      "n_names": 2559
+                    },
+                    "all_1d": {
+                      "n_events": 51218,
+                      "n_months": 68,
+                      "n_names": 2586
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 17338,
+                      "n_months": 75,
+                      "n_names": 2577
+                    },
+                    "all_1d": {
+                      "n_events": 70470,
+                      "n_months": 75,
+                      "n_names": 2586
+                    }
+                  }
+                }
+              },
+              "h21": {
+                "delta": 0.003417114070006758,
+                "ci": [
+                  -0.005440867132498084,
+                  0.012047675121761085
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 13252,
+                      "n_months": 68,
+                      "n_names": 2559
+                    },
+                    "all_1d": {
+                      "n_events": 51218,
+                      "n_months": 68,
+                      "n_names": 2586
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 17338,
+                      "n_months": 75,
+                      "n_names": 2577
+                    },
+                    "all_1d": {
+                      "n_events": 70470,
+                      "n_months": 75,
+                      "n_names": 2586
+                    }
+                  }
+                }
+              }
+            },
+            "p2": {
+              "h10": {
+                "delta": 0.005100829044127516,
+                "ci": [
+                  -0.0011655451542974386,
+                  0.011265351818249721
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 13359,
+                      "n_months": 68,
+                      "n_names": 2558
+                    },
+                    "all_1d": {
+                      "n_events": 51218,
+                      "n_months": 68,
+                      "n_names": 2586
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 17312,
+                      "n_months": 75,
+                      "n_names": 2577
+                    },
+                    "all_1d": {
+                      "n_events": 70470,
+                      "n_months": 75,
+                      "n_names": 2586
+                    }
+                  }
+                }
+              },
+              "h21": {
+                "delta": 0.0056033080456929455,
+                "ci": [
+                  -0.0027610488798867736,
+                  0.014293167732179169
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 13359,
+                      "n_months": 68,
+                      "n_names": 2558
+                    },
+                    "all_1d": {
+                      "n_events": 51218,
+                      "n_months": 68,
+                      "n_names": 2586
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 17312,
+                      "n_months": 75,
+                      "n_names": 2577
+                    },
+                    "all_1d": {
+                      "n_events": 70470,
+                      "n_months": 75,
+                      "n_names": 2586
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "2D": {
+      "pooled": {
+        "h10": {
+          "delta": 0.0029922927791120723,
+          "ci": [
+            -0.00047163129853382323,
+            0.006655543175142839
+          ],
+          "n": {
+            "fast": {
+              "confirmed": {
+                "n_events": 90113,
+                "n_months": 119,
+                "n_names": 2584
+              },
+              "all_1d": {
+                "n_events": 94503,
+                "n_months": 119,
+                "n_names": 2586
+              }
+            },
+            "persistent": {
+              "confirmed": {
+                "n_events": 87896,
+                "n_months": 121,
+                "n_names": 2586
+              },
+              "all_1d": {
+                "n_events": 94158,
+                "n_months": 121,
+                "n_names": 2586
+              }
+            }
+          }
+        },
+        "h21": {
+          "delta": 0.0012691537412800784,
+          "ci": [
+            -0.0036902735944218455,
+            0.005874660727385326
+          ],
+          "n": {
+            "fast": {
+              "confirmed": {
+                "n_events": 90113,
+                "n_months": 119,
+                "n_names": 2584
+              },
+              "all_1d": {
+                "n_events": 94503,
+                "n_months": 119,
+                "n_names": 2586
+              }
+            },
+            "persistent": {
+              "confirmed": {
+                "n_events": 87896,
+                "n_months": 121,
+                "n_names": 2586
+              },
+              "all_1d": {
+                "n_events": 94158,
+                "n_months": 121,
+                "n_names": 2586
+              }
+            }
+          }
+        }
+      },
+      "by_phase": {
+        "p0": {
+          "h10": {
+            "delta": 0.002751909449145159,
+            "ci": [
+              -0.0006913408081250979,
+              0.006444511137203525
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 45056,
+                  "n_months": 119,
+                  "n_names": 2584
+                },
+                "all_1d": {
+                  "n_events": 94503,
+                  "n_months": 119,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 43881,
+                  "n_months": 121,
+                  "n_names": 2586
+                },
+                "all_1d": {
+                  "n_events": 94158,
+                  "n_months": 121,
+                  "n_names": 2586
+                }
+              }
+            }
+          },
+          "h21": {
+            "delta": 0.0011870133092017326,
+            "ci": [
+              -0.003982411834928811,
+              0.006227070076609378
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 45056,
+                  "n_months": 119,
+                  "n_names": 2584
+                },
+                "all_1d": {
+                  "n_events": 94503,
+                  "n_months": 119,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 43881,
+                  "n_months": 121,
+                  "n_names": 2586
+                },
+                "all_1d": {
+                  "n_events": 94158,
+                  "n_months": 121,
+                  "n_names": 2586
+                }
+              }
+            }
+          }
+        },
+        "p1": {
+          "h10": {
+            "delta": 0.0032326761090789857,
+            "ci": [
+              -0.00037370297511059883,
+              0.0072349403425457015
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 45057,
+                  "n_months": 119,
+                  "n_names": 2583
+                },
+                "all_1d": {
+                  "n_events": 94503,
+                  "n_months": 119,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 44015,
+                  "n_months": 121,
+                  "n_names": 2586
+                },
+                "all_1d": {
+                  "n_events": 94158,
+                  "n_months": 121,
+                  "n_names": 2586
+                }
+              }
+            }
+          },
+          "h21": {
+            "delta": 0.0013512941733584242,
+            "ci": [
+              -0.003524108730089008,
+              0.005766397271075899
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 45057,
+                  "n_months": 119,
+                  "n_names": 2583
+                },
+                "all_1d": {
+                  "n_events": 94503,
+                  "n_months": 119,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 44015,
+                  "n_months": 121,
+                  "n_names": 2586
+                },
+                "all_1d": {
+                  "n_events": 94158,
+                  "n_months": 121,
+                  "n_names": 2586
+                }
+              }
+            }
+          }
+        }
+      },
+      "by_era": {
+        "2014-2019 (2015-08-05..2019-12-30)": {
+          "h10": {
+            "delta": 0.0012393943689528756,
+            "ci": [
+              -0.002937906868226521,
+              0.005805011881898153
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 41846,
+                  "n_months": 51,
+                  "n_names": 1957
+                },
+                "all_1d": {
+                  "n_events": 43285,
+                  "n_months": 51,
+                  "n_names": 1965
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 22589,
+                  "n_months": 46,
+                  "n_names": 1921
+                },
+                "all_1d": {
+                  "n_events": 23688,
+                  "n_months": 46,
+                  "n_names": 1957
+                }
+              }
+            }
+          },
+          "h21": {
+            "delta": 0.0009422855709826884,
+            "ci": [
+              -0.004494700519709001,
+              0.00655173859312407
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 41846,
+                  "n_months": 51,
+                  "n_names": 1957
+                },
+                "all_1d": {
+                  "n_events": 43285,
+                  "n_months": 51,
+                  "n_names": 1965
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 22589,
+                  "n_months": 46,
+                  "n_names": 1921
+                },
+                "all_1d": {
+                  "n_events": 23688,
+                  "n_months": 46,
+                  "n_names": 1957
+                }
+              }
+            }
+          },
+          "by_phase": {
+            "p0": {
+              "h10": {
+                "delta": 0.0008320899122274501,
+                "ci": [
+                  -0.0036852220439486418,
+                  0.005652260471179774
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 20912,
+                      "n_months": 51,
+                      "n_names": 1955
+                    },
+                    "all_1d": {
+                      "n_events": 43285,
+                      "n_months": 51,
+                      "n_names": 1965
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 11313,
+                      "n_months": 46,
+                      "n_names": 1921
+                    },
+                    "all_1d": {
+                      "n_events": 23688,
+                      "n_months": 46,
+                      "n_names": 1957
+                    }
+                  }
+                }
+              },
+              "h21": {
+                "delta": 0.0003628051814174981,
+                "ci": [
+                  -0.005439053717365705,
+                  0.006400895562554447
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 20912,
+                      "n_months": 51,
+                      "n_names": 1955
+                    },
+                    "all_1d": {
+                      "n_events": 43285,
+                      "n_months": 51,
+                      "n_names": 1965
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 11313,
+                      "n_months": 46,
+                      "n_names": 1921
+                    },
+                    "all_1d": {
+                      "n_events": 23688,
+                      "n_months": 46,
+                      "n_names": 1957
+                    }
+                  }
+                }
+              }
+            },
+            "p1": {
+              "h10": {
+                "delta": 0.0016466988256783012,
+                "ci": [
+                  -0.0023677659528509374,
+                  0.005649696205138737
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 20934,
+                      "n_months": 51,
+                      "n_names": 1957
+                    },
+                    "all_1d": {
+                      "n_events": 43285,
+                      "n_months": 51,
+                      "n_names": 1965
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 11276,
+                      "n_months": 46,
+                      "n_names": 1913
+                    },
+                    "all_1d": {
+                      "n_events": 23688,
+                      "n_months": 46,
+                      "n_names": 1957
+                    }
+                  }
+                }
+              },
+              "h21": {
+                "delta": 0.0015217659605478787,
+                "ci": [
+                  -0.003780631613376798,
+                  0.007218254970209537
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 20934,
+                      "n_months": 51,
+                      "n_names": 1957
+                    },
+                    "all_1d": {
+                      "n_events": 43285,
+                      "n_months": 51,
+                      "n_names": 1965
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 11276,
+                      "n_months": 46,
+                      "n_names": 1913
+                    },
+                    "all_1d": {
+                      "n_events": 23688,
+                      "n_months": 46,
+                      "n_names": 1957
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "2020-2026 (2019-12-31..2026-08-28)": {
+          "h10": {
+            "delta": 0.004954115323805827,
+            "ci": [
+              -0.00023043933035679103,
+              0.009694700856197471
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 48267,
+                  "n_months": 68,
+                  "n_names": 2584
+                },
+                "all_1d": {
+                  "n_events": 51218,
+                  "n_months": 68,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 65307,
+                  "n_months": 75,
+                  "n_names": 2586
+                },
+                "all_1d": {
+                  "n_events": 70470,
+                  "n_months": 75,
+                  "n_names": 2586
+                }
+              }
+            }
+          },
+          "h21": {
+            "delta": 0.0027108466074858496,
+            "ci": [
+              -0.004002575955650978,
+              0.00873316224679308
+            ],
+            "n": {
+              "fast": {
+                "confirmed": {
+                  "n_events": 48267,
+                  "n_months": 68,
+                  "n_names": 2584
+                },
+                "all_1d": {
+                  "n_events": 51218,
+                  "n_months": 68,
+                  "n_names": 2586
+                }
+              },
+              "persistent": {
+                "confirmed": {
+                  "n_events": 65307,
+                  "n_months": 75,
+                  "n_names": 2586
+                },
+                "all_1d": {
+                  "n_events": 70470,
+                  "n_months": 75,
+                  "n_names": 2586
+                }
+              }
+            }
+          },
+          "by_phase": {
+            "p0": {
+              "h10": {
+                "delta": 0.005078612314585981,
+                "ci": [
+                  5.230980156148581e-05,
+                  0.009893016748755503
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 24144,
+                      "n_months": 68,
+                      "n_names": 2584
+                    },
+                    "all_1d": {
+                      "n_events": 51218,
+                      "n_months": 68,
+                      "n_names": 2586
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 32568,
+                      "n_months": 75,
+                      "n_names": 2586
+                    },
+                    "all_1d": {
+                      "n_events": 70470,
+                      "n_months": 75,
+                      "n_names": 2586
+                    }
+                  }
+                }
+              },
+              "h21": {
+                "delta": 0.0032574705243545105,
+                "ci": [
+                  -0.0037836500301820296,
+                  0.009719252495766504
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 24144,
+                      "n_months": 68,
+                      "n_names": 2584
+                    },
+                    "all_1d": {
+                      "n_events": 51218,
+                      "n_months": 68,
+                      "n_names": 2586
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 32568,
+                      "n_months": 75,
+                      "n_names": 2586
+                    },
+                    "all_1d": {
+                      "n_events": 70470,
+                      "n_months": 75,
+                      "n_names": 2586
+                    }
+                  }
+                }
+              }
+            },
+            "p1": {
+              "h10": {
+                "delta": 0.004829618333025673,
+                "ci": [
+                  -0.00046216035853612693,
+                  0.009865029364312503
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 24123,
+                      "n_months": 68,
+                      "n_names": 2583
+                    },
+                    "all_1d": {
+                      "n_events": 51218,
+                      "n_months": 68,
+                      "n_names": 2586
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 32739,
+                      "n_months": 75,
+                      "n_names": 2586
+                    },
+                    "all_1d": {
+                      "n_events": 70470,
+                      "n_months": 75,
+                      "n_names": 2586
+                    }
+                  }
+                }
+              },
+              "h21": {
+                "delta": 0.002164222690617189,
+                "ci": [
+                  -0.004128798436241295,
+                  0.007966894951704936
+                ],
+                "n": {
+                  "fast": {
+                    "confirmed": {
+                      "n_events": 24123,
+                      "n_months": 68,
+                      "n_names": 2583
+                    },
+                    "all_1d": {
+                      "n_events": 51218,
+                      "n_months": 68,
+                      "n_names": 2586
+                    }
+                  },
+                  "persistent": {
+                    "confirmed": {
+                      "n_events": 32739,
+                      "n_months": 75,
+                      "n_names": 2586
+                    },
+                    "all_1d": {
+                      "n_events": 70470,
+                      "n_months": 75,
+                      "n_names": 2586
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "gaps": {
+    "3D": {
+      "fast": {
+        "p0": {
+          "gap_h10": 0.0019127338080729738,
+          "ci": [
+            -0.0007173367589573883,
+            0.004668540591643647
+          ],
+          "gap_h21": 0.0015670302355071351,
+          "ci_h21": [
+            -0.0017635459731445435,
+            0.0050958612428219
+          ],
+          "n_confirmed": 25227,
+          "n_1d": 94503,
+          "n_events_confirmed": 25227,
+          "n_months_confirmed": 119,
+          "n_names_confirmed": 2561,
+          "n_events_1d": 94503,
+          "n_months_1d": 119,
+          "n_names_1d": 2586
+        },
+        "p1": {
+          "gap_h10": 0.003228131340834607,
+          "ci": [
+            0.0007330671570684456,
+            0.0058609769332880705
+          ],
+          "gap_h21": 0.0016933936185266627,
+          "ci_h21": [
+            -0.0022551047616259424,
+            0.005785571606123062
+          ],
+          "n_confirmed": 24833,
+          "n_1d": 94503,
+          "n_events_confirmed": 24833,
+          "n_months_confirmed": 119,
+          "n_names_confirmed": 2566,
+          "n_events_1d": 94503,
+          "n_months_1d": 119,
+          "n_names_1d": 2586
+        },
+        "p2": {
+          "gap_h10": 0.0020761999500387845,
+          "ci": [
+            -0.0002775615293883064,
+            0.004620941629098522
+          ],
+          "gap_h21": 0.0025639662326805727,
+          "ci_h21": [
+            -0.0012190005801270458,
+            0.006659738661810596
+          ],
+          "n_confirmed": 25039,
+          "n_1d": 94503,
+          "n_events_confirmed": 25039,
+          "n_months_confirmed": 119,
+          "n_names_confirmed": 2565,
+          "n_events_1d": 94503,
+          "n_months_1d": 119,
+          "n_names_1d": 2586
+        }
+      },
+      "mid": {
+        "p0": {
+          "gap_h10": 0.0028907231138105447,
+          "ci": [
+            -0.00031391627147313674,
+            0.006063408589142165
+          ],
+          "gap_h21": 0.0027249403271045296,
+          "ci_h21": [
+            -0.00042661907801874917,
+            0.0058621637690212496
+          ],
+          "n_confirmed": 29180,
+          "n_1d": 107976,
+          "n_events_confirmed": 29180,
+          "n_months_confirmed": 130,
+          "n_names_confirmed": 2579,
+          "n_events_1d": 107976,
+          "n_months_1d": 130,
+          "n_names_1d": 2586
+        },
+        "p1": {
+          "gap_h10": 0.0026077748890177997,
+          "ci": [
+            -0.0003792777040351664,
+            0.005718317849427024
+          ],
+          "gap_h21": 0.0008632759268167086,
+          "ci_h21": [
+            -0.002238875687618106,
+            0.004110773185482406
+          ],
+          "n_confirmed": 29620,
+          "n_1d": 107976,
+          "n_events_confirmed": 29620,
+          "n_months_confirmed": 130,
+          "n_names_confirmed": 2578,
+          "n_events_1d": 107976,
+          "n_months_1d": 130,
+          "n_names_1d": 2586
+        },
+        "p2": {
+          "gap_h10": 0.0026993027220868046,
+          "ci": [
+            -0.000129361528246418,
+            0.005337159197156861
+          ],
+          "gap_h21": 0.0014768961614402701,
+          "ci_h21": [
+            -0.00208150355816781,
+            0.0051269223510428735
+          ],
+          "n_confirmed": 29563,
+          "n_1d": 107976,
+          "n_events_confirmed": 29563,
+          "n_months_confirmed": 130,
+          "n_names_confirmed": 2576,
+          "n_events_1d": 107976,
+          "n_months_1d": 130,
+          "n_names_1d": 2586
+        }
+      },
+      "persistent": {
+        "p0": {
+          "gap_h10": -0.0005036350665795107,
+          "ci": [
+            -0.004520651546077111,
+            0.0034188382320715707
+          ],
+          "gap_h21": -0.0007798900750680543,
+          "ci_h21": [
+            -0.005281863434124207,
+            0.004401079839729672
+          ],
+          "n_confirmed": 23775,
+          "n_1d": 94158,
+          "n_events_confirmed": 23775,
+          "n_months_confirmed": 121,
+          "n_names_confirmed": 2576,
+          "n_events_1d": 94158,
+          "n_months_1d": 121,
+          "n_names_1d": 2586
+        },
+        "p1": {
+          "gap_h10": -0.0012224941055287595,
+          "ci": [
+            -0.004863196257414371,
+            0.002507182530959661
+          ],
+          "gap_h21": -0.00044872710793603457,
+          "ci_h21": [
+            -0.005266198041428027,
+            0.004698866419930881
+          ],
+          "n_confirmed": 23532,
+          "n_1d": 94158,
+          "n_events_confirmed": 23532,
+          "n_months_confirmed": 121,
+          "n_names_confirmed": 2577,
+          "n_events_1d": 94158,
+          "n_months_1d": 121,
+          "n_names_1d": 2586
+        },
+        "p2": {
+          "gap_h10": -0.0014122520594885453,
+          "ci": [
+            -0.004979795831182389,
+            0.002256967388311793
+          ],
+          "gap_h21": -0.0009198952745227383,
+          "ci_h21": [
+            -0.0056243963803003635,
+            0.004130635434640153
+          ],
+          "n_confirmed": 23689,
+          "n_1d": 94158,
+          "n_events_confirmed": 23689,
+          "n_months_confirmed": 121,
+          "n_names_confirmed": 2579,
+          "n_events_1d": 94158,
+          "n_months_1d": 121,
+          "n_names_1d": 2586
+        }
+      }
+    },
+    "2D": {
+      "fast": {
+        "p0": {
+          "gap_h10": 0.0018842654655579693,
+          "ci": [
+            -0.00030279463144807466,
+            0.004131334726507045
+          ],
+          "gap_h21": 0.0011577857688333647,
+          "ci_h21": [
+            -0.0017506826223925528,
+            0.004026236179227487
+          ],
+          "n_confirmed": 45056,
+          "n_1d": 94503,
+          "n_events_confirmed": 45056,
+          "n_months_confirmed": 119,
+          "n_names_confirmed": 2584,
+          "n_events_1d": 94503,
+          "n_months_1d": 119,
+          "n_names_1d": 2586
+        },
+        "p1": {
+          "gap_h10": 0.0022662931538010066,
+          "ci": [
+            0.00017025559758603547,
+            0.0043614085630469465
+          ],
+          "gap_h21": 0.0009634331987384923,
+          "ci_h21": [
+            -0.0016131854229098968,
+            0.003519500156277338
+          ],
+          "n_confirmed": 45057,
+          "n_1d": 94503,
+          "n_events_confirmed": 45057,
+          "n_months_confirmed": 119,
+          "n_names_confirmed": 2583,
+          "n_events_1d": 94503,
+          "n_months_1d": 119,
+          "n_names_1d": 2586
+        }
+      },
+      "mid": {
+        "p0": {
+          "gap_h10": 0.0006276916540982253,
+          "ci": [
+            -0.0023545247330375827,
+            0.0032735450976283673
+          ],
+          "gap_h21": -0.0005004193780080365,
+          "ci_h21": [
+            -0.003432359808578816,
+            0.002402510390418153
+          ],
+          "n_confirmed": 52384,
+          "n_1d": 107976,
+          "n_events_confirmed": 52384,
+          "n_months_confirmed": 130,
+          "n_names_confirmed": 2585,
+          "n_events_1d": 107976,
+          "n_months_1d": 130,
+          "n_names_1d": 2586
+        },
+        "p1": {
+          "gap_h10": 0.0009976107296557342,
+          "ci": [
+            -0.0017165891002132198,
+            0.0034186095646897537
+          ],
+          "gap_h21": 0.0003505971342182756,
+          "ci_h21": [
+            -0.0025532493087866075,
+            0.003267759706256072
+          ],
+          "n_confirmed": 51754,
+          "n_1d": 107976,
+          "n_events_confirmed": 51754,
+          "n_months_confirmed": 130,
+          "n_names_confirmed": 2585,
+          "n_events_1d": 107976,
+          "n_months_1d": 130,
+          "n_names_1d": 2586
+        }
+      },
+      "persistent": {
+        "p0": {
+          "gap_h10": -0.0008676439835871895,
+          "ci": [
+            -0.00384513652209639,
+            0.00193140728194377
+          ],
+          "gap_h21": -2.9227540368367833e-05,
+          "ci_h21": [
+            -0.004272547589430236,
+            0.0043090549684422835
+          ],
+          "n_confirmed": 43881,
+          "n_1d": 94158,
+          "n_events_confirmed": 43881,
+          "n_months_confirmed": 121,
+          "n_names_confirmed": 2586,
+          "n_events_1d": 94158,
+          "n_months_1d": 121,
+          "n_names_1d": 2586
+        },
+        "p1": {
+          "gap_h10": -0.0009663829552779791,
+          "ci": [
+            -0.00437845495518396,
+            0.0020906297969277465
+          ],
+          "gap_h21": -0.0003878609746199319,
+          "ci_h21": [
+            -0.004367886007413767,
+            0.003695939570669366
+          ],
+          "n_confirmed": 44015,
+          "n_1d": 94158,
+          "n_events_confirmed": 44015,
+          "n_months_confirmed": 121,
+          "n_names_confirmed": 2586,
+          "n_events_1d": 94158,
+          "n_months_1d": 121,
+          "n_names_1d": 2586
+        }
+      }
+    }
+  },
+  "cost_curve": {
+    "3D": {
+      "fast": {
+        "mean_mfe_consumed": 0.047826083593259114,
+        "median_mfe_consumed": 0.32534703612327576,
+        "sd_mfe": 16.721219842045162,
+        "min_mfe": -2444.025634765625,
+        "max_mfe": 1.0,
+        "ci": [
+          -0.18926452840679422,
+          0.18693878615193368
+        ],
+        "mean_cost_pct": 0.041584890978334864,
+        "ci_cost": [
+          0.038215597074065175,
+          0.045696780333633336
+        ],
+        "n": 72059,
+        "n_finite_mfe": 72059,
+        "n_events": 75099,
+        "n_months": 119,
+        "n_names": 2577
+      },
+      "mid": {
+        "mean_mfe_consumed": 0.14672785287888135,
+        "median_mfe_consumed": 0.34096595644950867,
+        "sd_mfe": 4.977780884493394,
+        "min_mfe": -1194.3111572265625,
+        "max_mfe": 1.0,
+        "ci": [
+          0.09247107054106955,
+          0.19007388416103418
+        ],
+        "mean_cost_pct": 0.04697865504057614,
+        "ci_cost": [
+          0.043131692305471106,
+          0.05068019584263174
+        ],
+        "n": 84760,
+        "n_finite_mfe": 84760,
+        "n_events": 88363,
+        "n_months": 130,
+        "n_names": 2584
+      },
+      "persistent": {
+        "mean_mfe_consumed": 0.12144966336661082,
+        "median_mfe_consumed": 0.33444759249687195,
+        "sd_mfe": 3.016677714043815,
+        "min_mfe": -256.900634765625,
+        "max_mfe": 1.0,
+        "ci": [
+          0.07560093688931262,
+          0.16237272076837023
+        ],
+        "mean_cost_pct": 0.052506916844984604,
+        "ci_cost": [
+          0.04259230283463295,
+          0.07023013453293833
+        ],
+        "n": 67699,
+        "n_finite_mfe": 67699,
+        "n_events": 70996,
+        "n_months": 121,
+        "n_names": 2584
+      }
+    },
+    "2D": {
+      "fast": {
+        "mean_mfe_consumed": 0.08581218918681864,
+        "median_mfe_consumed": 0.24139460921287537,
+        "sd_mfe": 4.849362472219643,
+        "min_mfe": -1228.1839599609375,
+        "max_mfe": 1.0,
+        "ci": [
+          0.040781146916569075,
+          0.12318034764083922
+        ],
+        "mean_cost_pct": 0.028325879766751508,
+        "ci_cost": [
+          0.026047557284427383,
+          0.030700310732210412
+        ],
+        "n": 85733,
+        "n_finite_mfe": 85733,
+        "n_events": 90113,
+        "n_months": 119,
+        "n_names": 2584
+      },
+      "mid": {
+        "mean_mfe_consumed": 0.04142627804681179,
+        "median_mfe_consumed": 0.24713191390037537,
+        "sd_mfe": 4.349905570284991,
+        "min_mfe": -616.2652587890625,
+        "max_mfe": 1.0,
+        "ci": [
+          -0.013738998036143698,
+          0.08711724699128168
+        ],
+        "mean_cost_pct": 0.031695872995939206,
+        "ci_cost": [
+          0.029047871082235322,
+          0.03434535262204035
+        ],
+        "n": 98973,
+        "n_finite_mfe": 98973,
+        "n_events": 104138,
+        "n_months": 130,
+        "n_names": 2585
+      },
+      "persistent": {
+        "mean_mfe_consumed": -0.3643166792840195,
+        "median_mfe_consumed": 0.23310153186321259,
+        "sd_mfe": 116.37473834994874,
+        "min_mfe": -33488.609375,
+        "max_mfe": 1.0,
+        "ci": [
+          -1.2929205574441818,
+          0.0677212529027389
+        ],
+        "mean_cost_pct": 0.03493954095427828,
+        "ci_cost": [
+          0.02855011462752899,
+          0.04464356689770616
+        ],
+        "n": 82885,
+        "n_finite_mfe": 82885,
+        "n_events": 87896,
+        "n_months": 121,
+        "n_names": 2586
+      }
+    },
+    "monotonic_3d": false,
+    "monotonic_2d": true
+  },
+  "false_starts_avoided": {
+    "fast": {
+      "share_unconfirmed": 0.7587542315504401,
+      "n": 36925,
+      "n_events": 36925,
+      "n_months": 119,
+      "n_names": 2581
+    },
+    "mid": {
+      "share_unconfirmed": 0.7546478135637601,
+      "n": 42009,
+      "n_events": 42009,
+      "n_months": 130,
+      "n_names": 2585
+    },
+    "persistent": {
+      "share_unconfirmed": 0.7629726890756302,
+      "n": 38080,
+      "n_events": 38080,
+      "n_months": 121,
+      "n_names": 2584
+    }
+  },
+  "large_winners_excluded": {
+    "fast": {
+      "share_unconfirmed": 0.4963325183374083,
+      "n": 12270,
+      "n_events": 12270,
+      "n_months": 119,
+      "n_names": 2403
+    },
+    "mid": {
+      "share_unconfirmed": 0.4761044824250242,
+      "n": 15505,
+      "n_events": 15505,
+      "n_months": 130,
+      "n_names": 2513
+    },
+    "persistent": {
+      "share_unconfirmed": 0.5341676904176904,
+      "n": 13024,
+      "n_events": 13024,
+      "n_months": 121,
+      "n_names": 2445
+    }
+  },
+  "breadth_axis": {
+    "3D": {
+      "contrast": "gap(narrow) − gap(broad)",
+      "pooled": {
+        "h10": {
+          "delta": 0.0032353725545509796,
+          "ci": [
+            -0.0011000430220576426,
+            0.007460736037497135
+          ]
+        },
+        "h21": {
+          "delta": -0.0011650781131879774,
+          "ci": [
+            -0.0069694792854791505,
+            0.004507486127945265
+          ]
+        }
+      },
+      "by_phase": {
+        "p0": {
+          "h10": {
+            "delta": 0.003137258826429553,
+            "ci": [
+              -0.001867219600170564,
+              0.008241253509358813
+            ]
+          },
+          "h21": {
+            "delta": -0.0016586636764382313,
+            "ci": [
+              -0.007797042585529063,
+              0.004240542765761202
+            ]
+          }
+        },
+        "p1": {
+          "h10": {
+            "delta": 0.005965281150737422,
+            "ci": [
+              0.0016554507296573423,
+              0.010318034316288806
+            ]
+          },
+          "h21": {
+            "delta": 0.0010778220783557516,
+            "ci": [
+              -0.00517806687226769,
+              0.006566792982019029
+            ]
+          }
+        },
+        "p2": {
+          "h10": {
+            "delta": 0.0006035776864859624,
+            "ci": [
+              -0.0037282138436715573,
+              0.004613244930697208
+            ]
+          },
+          "h21": {
+            "delta": -0.0029143927414814527,
+            "ci": [
+              -0.008841704902327304,
+              0.0030326734451507674
+            ]
+          }
+        }
+      },
+      "by_era": {
+        "2014-2019 (2015-08-05..2019-12-30)": {
+          "h10": {
+            "delta": 0.0003852235828016198,
+            "ci": [
+              -0.004166152487922922,
+              0.004754873511290708
+            ]
+          },
+          "h21": {
+            "delta": -0.006274816190997848,
+            "ci": [
+              -0.013715439572816287,
+              0.002137465669967273
+            ]
+          },
+          "by_phase": {
+            "p0": {
+              "h10": {
+                "delta": 0.0014092789245417681,
+                "ci": [
+                  -0.0032308616913941427,
+                  0.005568653844491214
+                ]
+              },
+              "h21": {
+                "delta": -0.007839378480994348,
+                "ci": [
+                  -0.015570358361775597,
+                  0.0008030223231171951
+                ]
+              }
+            },
+            "p1": {
+              "h10": {
+                "delta": 0.0007509876082211352,
+                "ci": [
+                  -0.004145468385603466,
+                  0.005368962327526516
+                ]
+              },
+              "h21": {
+                "delta": -0.0037281869235061852,
+                "ci": [
+                  -0.011863019410112809,
+                  0.005534433520820623
+                ]
+              }
+            },
+            "p2": {
+              "h10": {
+                "delta": -0.0010045957843580438,
+                "ci": [
+                  -0.006501891230316732,
+                  0.004168394608494233
+                ]
+              },
+              "h21": {
+                "delta": -0.007256883168493012,
+                "ci": [
+                  -0.01492419982419734,
+                  0.0016820219849840207
+                ]
+              }
+            }
+          }
+        },
+        "2020-2026 (2019-12-31..2026-08-28)": {
+          "h10": {
+            "delta": 0.005652413108015939,
+            "ci": [
+              3.271679974399607e-05,
+              0.010983890680812323
+            ]
+          },
+          "h21": {
+            "delta": 0.0012455615781685897,
+            "ci": [
+              -0.006686092960191311,
+              0.008615619448911973
+            ]
+          },
+          "by_phase": {
+            "p0": {
+              "h10": {
+                "delta": 0.005394861728365365,
+                "ci": [
+                  -0.0011548143433543741,
+                  0.011627169184363868
+                ]
+              },
+              "h21": {
+                "delta": 0.0013646944589762178,
+                "ci": [
+                  -0.00682885638260809,
+                  0.009241427529106522
+                ]
+              }
+            },
+            "p1": {
+              "h10": {
+                "delta": 0.009198858222222953,
+                "ci": [
+                  0.0036118179968471957,
+                  0.014702267629537498
+                ]
+              },
+              "h21": {
+                "delta": 0.003277055862767343,
+                "ci": [
+                  -0.00549103549813675,
+                  0.010861661270249841
+                ]
+              }
+            },
+            "p2": {
+              "h10": {
+                "delta": 0.0023635193734595017,
+                "ci": [
+                  -0.003216031046681156,
+                  0.007699461226064305
+                ]
+              },
+              "h21": {
+                "delta": -0.0009050655872377914,
+                "ci": [
+                  -0.00910878433664789,
+                  0.006732933529320514
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "2D": {
+      "contrast": "gap(narrow) − gap(broad)",
+      "pooled": {
+        "h10": {
+          "delta": 0.0029553151130093692,
+          "ci": [
+            -0.0010155636284906791,
+            0.0068150936994615325
+          ]
+        },
+        "h21": {
+          "delta": 0.0010545176971079248,
+          "ci": [
+            -0.003262801350756173,
+            0.0052726185680577855
+          ]
+        }
+      },
+      "by_phase": {
+        "p0": {
+          "h10": {
+            "delta": 0.0022336783362231433,
+            "ci": [
+              -0.0015880836944015986,
+              0.006089200141694963
+            ]
+          },
+          "h21": {
+            "delta": 0.0010499726741430414,
+            "ci": [
+              -0.0035526573964527273,
+              0.005382945537465691
+            ]
+          }
+        },
+        "p1": {
+          "h10": {
+            "delta": 0.003676951889795595,
+            "ci": [
+              -0.000231869752167127,
+              0.007838708578528095
+            ]
+          },
+          "h21": {
+            "delta": 0.0010590627200728082,
+            "ci": [
+              -0.003358893625956196,
+              0.005501354120007626
+            ]
+          }
+        }
+      },
+      "by_era": {
+        "2014-2019 (2015-08-05..2019-12-30)": {
+          "h10": {
+            "delta": 0.0003870427372589685,
+            "ci": [
+              -0.0037005557274214598,
+              0.004116915416341062
+            ]
+          },
+          "h21": {
+            "delta": -0.001309065800297565,
+            "ci": [
+              -0.007546095598551757,
+              0.006022803161099848
+            ]
+          },
+          "by_phase": {
+            "p0": {
+              "h10": {
+                "delta": -0.0005200239803694142,
+                "ci": [
+                  -0.005215664431930249,
+                  0.00344253267713165
+                ]
+              },
+              "h21": {
+                "delta": -0.0023089004644974353,
+                "ci": [
+                  -0.008700065698385516,
+                  0.005060354245771602
+                ]
+              }
+            },
+            "p1": {
+              "h10": {
+                "delta": 0.0012941094548873512,
+                "ci": [
+                  -0.00270892882557373,
+                  0.00519596960063308
+                ]
+              },
+              "h21": {
+                "delta": -0.00030923113609769484,
+                "ci": [
+                  -0.00658220345433866,
+                  0.006916910615680873
+                ]
+              }
+            }
+          }
+        },
+        "2020-2026 (2019-12-31..2026-08-28)": {
+          "h10": {
+            "delta": 0.004505831014334997,
+            "ci": [
+              -0.0005349893403138002,
+              0.00957679856412512
+            ]
+          },
+          "h21": {
+            "delta": 0.002359417681085431,
+            "ci": [
+              -0.0037842190858197395,
+              0.00798254853013337
+            ]
+          },
+          "by_phase": {
+            "p0": {
+              "h10": {
+                "delta": 0.0039958849320612345,
+                "ci": [
+                  -0.0010726540979448251,
+                  0.00896318953552623
+                ]
+              },
+              "h21": {
+                "delta": 0.0027852105937557596,
+                "ci": [
+                  -0.0035066908347478176,
+                  0.008269976859395279
+                ]
+              }
+            },
+            "p1": {
+              "h10": {
+                "delta": 0.00501577709660876,
+                "ci": [
+                  -0.00030572626618855815,
+                  0.010064202846843333
+                ]
+              },
+              "h21": {
+                "delta": 0.0019336247684151025,
+                "ci": [
+                  -0.004067107890456176,
+                  0.007739281252319673
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "support": {
+    "1D|fast|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 43285,
+      "n_months": 51,
+      "n_names": 1965,
+      "meets_floor": true,
+      "variant": "1D",
+      "tercile": "fast",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "1D|fast|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 51218,
+      "n_months": 68,
+      "n_names": 2586,
+      "meets_floor": true,
+      "variant": "1D",
+      "tercile": "fast",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "1D|mid|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 32601,
+      "n_months": 52,
+      "n_names": 1957,
+      "meets_floor": true,
+      "variant": "1D",
+      "tercile": "mid",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "1D|mid|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 75375,
+      "n_months": 78,
+      "n_names": 2586,
+      "meets_floor": true,
+      "variant": "1D",
+      "tercile": "mid",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "1D|persistent|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 23688,
+      "n_months": 46,
+      "n_names": 1957,
+      "meets_floor": true,
+      "variant": "1D",
+      "tercile": "persistent",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "1D|persistent|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 70470,
+      "n_months": 75,
+      "n_names": 2586,
+      "meets_floor": true,
+      "variant": "1D",
+      "tercile": "persistent",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "2D.p0|fast|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 20912,
+      "n_months": 51,
+      "n_names": 1955,
+      "meets_floor": true,
+      "variant": "2D.p0",
+      "tercile": "fast",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "2D.p0|fast|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 24144,
+      "n_months": 68,
+      "n_names": 2584,
+      "meets_floor": true,
+      "variant": "2D.p0",
+      "tercile": "fast",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "2D.p0|mid|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 15650,
+      "n_months": 52,
+      "n_names": 1935,
+      "meets_floor": true,
+      "variant": "2D.p0",
+      "tercile": "mid",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "2D.p0|mid|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 36734,
+      "n_months": 78,
+      "n_names": 2585,
+      "meets_floor": true,
+      "variant": "2D.p0",
+      "tercile": "mid",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "2D.p0|persistent|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 11313,
+      "n_months": 46,
+      "n_names": 1921,
+      "meets_floor": true,
+      "variant": "2D.p0",
+      "tercile": "persistent",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "2D.p0|persistent|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 32568,
+      "n_months": 75,
+      "n_names": 2586,
+      "meets_floor": true,
+      "variant": "2D.p0",
+      "tercile": "persistent",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "2D.p1|fast|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 20934,
+      "n_months": 51,
+      "n_names": 1957,
+      "meets_floor": true,
+      "variant": "2D.p1",
+      "tercile": "fast",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "2D.p1|fast|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 24123,
+      "n_months": 68,
+      "n_names": 2583,
+      "meets_floor": true,
+      "variant": "2D.p1",
+      "tercile": "fast",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "2D.p1|mid|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 15543,
+      "n_months": 52,
+      "n_names": 1935,
+      "meets_floor": true,
+      "variant": "2D.p1",
+      "tercile": "mid",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "2D.p1|mid|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 36211,
+      "n_months": 78,
+      "n_names": 2585,
+      "meets_floor": true,
+      "variant": "2D.p1",
+      "tercile": "mid",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "2D.p1|persistent|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 11276,
+      "n_months": 46,
+      "n_names": 1913,
+      "meets_floor": true,
+      "variant": "2D.p1",
+      "tercile": "persistent",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "2D.p1|persistent|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 32739,
+      "n_months": 75,
+      "n_names": 2586,
+      "meets_floor": true,
+      "variant": "2D.p1",
+      "tercile": "persistent",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "3D.p0|fast|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 11750,
+      "n_months": 51,
+      "n_names": 1933,
+      "meets_floor": true,
+      "variant": "3D.p0",
+      "tercile": "fast",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "3D.p0|fast|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 13477,
+      "n_months": 68,
+      "n_names": 2558,
+      "meets_floor": true,
+      "variant": "3D.p0",
+      "tercile": "fast",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "3D.p0|mid|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 8865,
+      "n_months": 52,
+      "n_names": 1898,
+      "meets_floor": true,
+      "variant": "3D.p0",
+      "tercile": "mid",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "3D.p0|mid|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 20315,
+      "n_months": 78,
+      "n_names": 2579,
+      "meets_floor": true,
+      "variant": "3D.p0",
+      "tercile": "mid",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "3D.p0|persistent|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 6252,
+      "n_months": 46,
+      "n_names": 1824,
+      "meets_floor": true,
+      "variant": "3D.p0",
+      "tercile": "persistent",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "3D.p0|persistent|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 17523,
+      "n_months": 75,
+      "n_names": 2574,
+      "meets_floor": true,
+      "variant": "3D.p0",
+      "tercile": "persistent",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "3D.p1|fast|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 11581,
+      "n_months": 51,
+      "n_names": 1928,
+      "meets_floor": true,
+      "variant": "3D.p1",
+      "tercile": "fast",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "3D.p1|fast|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 13252,
+      "n_months": 68,
+      "n_names": 2559,
+      "meets_floor": true,
+      "variant": "3D.p1",
+      "tercile": "fast",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "3D.p1|mid|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 9118,
+      "n_months": 52,
+      "n_names": 1901,
+      "meets_floor": true,
+      "variant": "3D.p1",
+      "tercile": "mid",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "3D.p1|mid|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 20502,
+      "n_months": 78,
+      "n_names": 2578,
+      "meets_floor": true,
+      "variant": "3D.p1",
+      "tercile": "mid",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "3D.p1|persistent|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 6194,
+      "n_months": 46,
+      "n_names": 1823,
+      "meets_floor": true,
+      "variant": "3D.p1",
+      "tercile": "persistent",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "3D.p1|persistent|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 17338,
+      "n_months": 75,
+      "n_names": 2577,
+      "meets_floor": true,
+      "variant": "3D.p1",
+      "tercile": "persistent",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "3D.p2|fast|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 11680,
+      "n_months": 51,
+      "n_names": 1931,
+      "meets_floor": true,
+      "variant": "3D.p2",
+      "tercile": "fast",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "3D.p2|fast|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 13359,
+      "n_months": 68,
+      "n_names": 2558,
+      "meets_floor": true,
+      "variant": "3D.p2",
+      "tercile": "fast",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "3D.p2|mid|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 9151,
+      "n_months": 52,
+      "n_names": 1893,
+      "meets_floor": true,
+      "variant": "3D.p2",
+      "tercile": "mid",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "3D.p2|mid|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 20412,
+      "n_months": 78,
+      "n_names": 2576,
+      "meets_floor": true,
+      "variant": "3D.p2",
+      "tercile": "mid",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    },
+    "3D.p2|persistent|2014-2019 (2015-08-05..2019-12-30)": {
+      "n_events": 6377,
+      "n_months": 46,
+      "n_names": 1828,
+      "meets_floor": true,
+      "variant": "3D.p2",
+      "tercile": "persistent",
+      "era": "2014-2019 (2015-08-05..2019-12-30)"
+    },
+    "3D.p2|persistent|2020-2026 (2019-12-31..2026-08-28)": {
+      "n_events": 17312,
+      "n_months": 75,
+      "n_names": 2577,
+      "meets_floor": true,
+      "variant": "3D.p2",
+      "tercile": "persistent",
+      "era": "2020-2026 (2019-12-31..2026-08-28)"
+    }
+  },
+  "verdict": {
+    "3D": "INSUFFICIENT SUPPORT",
+    "2D": "INSUFFICIENT SUPPORT",
+    "rule": "SUPPORTED iff pooled 3D DiD on H10 net < 0 with 95% CI excluding zero, AND the pooled DiD has the same sign in both eras, AND DiD(p) < 0 with CI excluding zero for ≥ 2 of 3 phases, AND the 3D cost curve is monotonic fast > mid > persistent. NOT SUPPORTED iff the pooled 3D DiD CI includes zero AND all fast/persistent cells meet the floors. INSUFFICIENT SUPPORT otherwise (also whenever C1 controls are BROKEN or B1's verdict is INSUFFICIENT on every 3D phase).",
+    "reasons": [
+      "C1 controls.status is BROKEN (pre-declared AR(1) gate)",
+      "pooled H10 DiD 95% CI includes zero",
+      "all fast/persistent cells meet the support floors"
+    ],
+    "reasons_2d": [
+      "C1 controls.status is BROKEN (pre-declared AR(1) gate)",
+      "pooled H10 DiD 95% CI includes zero",
+      "all fast/persistent cells meet the support floors"
+    ],
+    "diagnostics_3d": {
+      "delta_neg": false,
+      "ci_excludes_zero": false,
+      "era_same_sign": true,
+      "era_signs": {
+        "2014-2019 (2015-08-05..2019-12-30)": "+",
+        "2020-2026 (2019-12-31..2026-08-28)": "+"
+      },
+      "n_phases_ok": 0,
+      "phase_ok": {
+        "p0": false,
+        "p1": false,
+        "p2": false
+      },
+      "monotonic": false,
+      "floors_ok": true,
+      "supported_stat": false,
+      "not_supported_stat": true,
+      "phase_count": 0
+    },
+    "diagnostics_2d": {
+      "delta_neg": false,
+      "ci_excludes_zero": false,
+      "era_same_sign": true,
+      "era_signs": {
+        "2014-2019 (2015-08-05..2019-12-30)": "+",
+        "2020-2026 (2019-12-31..2026-08-28)": "+"
+      },
+      "n_phases_ok": 0,
+      "phase_ok": {
+        "p0": false,
+        "p1": false
+      },
+      "monotonic": true,
+      "floors_ok": true,
+      "supported_stat": false,
+      "not_supported_stat": true,
+      "phase_count": 0
+    },
+    "counterfactual_if_c1_pass": {
+      "3D": "NOT SUPPORTED",
+      "2D": "NOT SUPPORTED",
+      "reasons_3d": [
+        "pooled H10 DiD 95% CI includes zero",
+        "all fast/persistent cells meet the support floors"
+      ],
+      "reasons_2d": [
+        "pooled H10 DiD 95% CI includes zero",
+        "all fast/persistent cells meet the support floors"
+      ],
+      "diagnostics_3d": {
+        "delta_neg": false,
+        "ci_excludes_zero": false,
+        "era_same_sign": true,
+        "era_signs": {
+          "2014-2019 (2015-08-05..2019-12-30)": "+",
+          "2020-2026 (2019-12-31..2026-08-28)": "+"
+        },
+        "n_phases_ok": 0,
+        "phase_ok": {
+          "p0": false,
+          "p1": false,
+          "p2": false
+        },
+        "monotonic": false,
+        "floors_ok": true,
+        "supported_stat": false,
+        "not_supported_stat": true,
+        "phase_count": 0
+      },
+      "diagnostics_2d": {
+        "delta_neg": false,
+        "ci_excludes_zero": false,
+        "era_same_sign": true,
+        "era_signs": {
+          "2014-2019 (2015-08-05..2019-12-30)": "+",
+          "2020-2026 (2019-12-31..2026-08-28)": "+"
+        },
+        "n_phases_ok": 0,
+        "phase_ok": {
+          "p0": false,
+          "p1": false
+        },
+        "monotonic": true,
+        "floors_ok": true,
+        "supported_stat": false,
+        "not_supported_stat": true,
+        "phase_count": 0
+      }
+    }
+  },
+  "tests": "18 passed",
+  "report_gaps": [
+    "C1 controls.status is BROKEN (AR(1) lag-21 of LP = -0.0404); every rotation-conditioned cell is therefore INSUFFICIENT SUPPORT under the pre-declared rule even though every table is computed and reported.",
+    "B1 grain_effect_3d is NOT SUPPORTED (not INSUFFICIENT); the extra 'B1 INSUFFICIENT on every 3D phase' clause does not fire.",
+    "Zero 1D events dropped for a missing C1 date (all 1D signal dates are present on the shifted rotation_state_daily index)."
+  ],
+  "gaps_list": [
+    "C1 controls.status is BROKEN (AR(1) lag-21 of LP = -0.0404); every rotation-conditioned cell is therefore INSUFFICIENT SUPPORT under the pre-declared rule even though every table is computed and reported.",
+    "B1 grain_effect_3d is NOT SUPPORTED (not INSUFFICIENT); the extra 'B1 INSUFFICIENT on every 3D phase' clause does not fire.",
+    "Zero 1D events dropped for a missing C1 date (all 1D signal dates are present on the shifted rotation_state_daily index)."
+  ],
+  "deviations": [
+    "JSON objects cannot hold two keys named 'gaps'; the spec lists both the gap(p,T) table and the textual gaps array under that name. The nested gap table is stored as 'gaps' (schema body) and the textual array as 'report_gaps' (added key).",
+    "Confirmed-entry bootstrap/era keys use the 1D parent's entry_month and era (the conditioner known when the first signal fired), not the later confirmation date. Cost-curve means use the same parent month.",
+    "False-starts / large-winners 'no 3D confirmation (pooled phases)' is implemented as no confirmation on any of 3D.p0/p1/p2 (never confirmed), not as a stacked (event × phase) share.",
+    "Breadth-axis DiD is gap(narrow) − gap(broad), analogous to gap(fast) − gap(persistent).",
+    "C2 does not recompute indicators; engine.canon / session_anchor / bar_derive are imported per lane law and unused in the join.",
+    "result.json era keys outside era_labels are qualified with the actual signal_date range (N6); internal compute still uses the two era tokens.",
+    "cost-curve n is the finite mfe21_consumed_frac count (N5); n_events is the raw row count."
+  ],
+  "meta": {
+    "n_1d_events_joined": 296637,
+    "n_1d_events_dropped_no_state": 0,
+    "n_1d_nan_rotation_tercile": 0,
+    "n_months_universe": 133,
+    "draws_shape": [
+      1000,
+      133
+    ],
+    "n_confirmed": {
+      "2D.p0": 141321,
+      "2D.p1": 140826,
+      "3D.p0": 78182,
+      "3D.p1": 77985,
+      "3D.p2": 78291
+    },
+    "floors_ok_3d": true,
+    "floors_ok_2d": true,
+    "monotonic_3d": false,
+    "monotonic_2d": true
+  },
+  "n_fixes": [
+    "N1 FIXED run.py:536 run.py:565 test_C2.py:457 test_C2.py:472 (MC1 → test_c1_status_is_read_from_record; MC2 → test_verdict_insufficient_when_c1_broken)",
+    "N2 FIXED run.py:511 run.py:528 test_C2.py:501 test_C2.py:510",
+    "N3 FIXED run.py:780 run.py:654 test_C2.py:516 (old integer-index mapping must fail that test)",
+    "N4 FIXED leaf-diff vs round-0 sha 9372f0f7ad0a4795… in RESULT.md ## Leaf diff",
+    "N5 FIXED run.py:849 honest-N on both DiD legs; cost n = n_finite_mfe run.py:1044",
+    "N6 FIXED run.py:664 era_labels definition table is the only bare era key",
+    "N7 FIXED provenance + hashes.txt pin full sha256 of B1/C1/engine at round 0 and now",
+    "N8 FIXED COUNTERFACTUAL line under ## Verdict run.py:1620",
+    "N9 FIXED run.py:1911 K11 write order records→pytest→fold→hashes LAST; pytest timing stripped run.py:1810"
+  ],
+  "mutant_table": [
+    {
+      "mutant": "M5",
+      "expected": "test_compute_all_did_sign_under_h10",
+      "observed": "test_compute_all_did_sign_under_h10 - AssertionError: J2 FAIL: pooled DiD should be clearly negative (fast gap << persistent gap), got 0.035. Mutant M5 would flip the sign.",
+      "rc": 1
+    },
+    {
+      "mutant": "M6",
+      "expected": "test_compute_all_floors",
+      "observed": "test_compute_all_floors - AssertionError: J3 FAIL: tiny cell must have meets_floor False; mutant M6 would force True",
+      "rc": 1
+    },
+    {
+      "mutant": "M7",
+      "expected": "test_compute_all_paired_zero",
+      "observed": "1 passed, 17 deselected",
+      "rc": 0
+    },
+    {
+      "mutant": "MC1",
+      "expected": "test_c1_status_is_read_from_record",
+      "observed": "test_c1_status_is_read_from_record - AssertionError: assert 'OK' == 'BROKEN'",
+      "rc": 1
+    },
+    {
+      "mutant": "MC2",
+      "expected": "test_verdict_insufficient_when_c1_broken",
+      "observed": "test_verdict_insufficient_when_c1_broken - AssertionError: assert 'NOT SUPPORTED' == 'INSUFFICIENT SUPPORT'",
+      "rc": 1
+    },
+    {
+      "mutant": "N3_old_mapping",
+      "expected": "test_confirmed_share_mapping_by_key",
+      "observed": "test_confirmed_share_mapping_by_key - assert [False, False, False] == [False, True, True]",
+      "rc": 1
+    }
+  ],
+  "result_json_sha_a": null,
+  "result_json_sha_b": null,
+  "leaf_diff": {
+    "rows": [
+      {
+        "leaf": "n_1d_events_joined",
+        "r0": 296635,
+        "now": 296637,
+        "attr": "(a) B1 panel delta (−32/+2 1D rows)"
+      },
+      {
+        "leaf": "did.3D.pooled.h10.delta",
+        "r0": 0.003451310614323792,
+        "now": 0.0034518154435143936,
+        "attr": "(a) B1 panel delta"
+      },
+      {
+        "leaf": "did.3D.pooled.h10.ci",
+        "r0": [
+          -0.0008754812751993297,
+          0.007598016858986852
+        ],
+        "now": [
+          -0.0008752350470632498,
+          0.007598139844272105
+        ],
+        "attr": "(a) B1 panel delta"
+      },
+      {
+        "leaf": "verdict.3D",
+        "r0": "INSUFFICIENT SUPPORT",
+        "now": "INSUFFICIENT SUPPORT",
+        "attr": "(c) N1 packet rule — both INSUFFICIENT SUPPORT under C1 BROKEN"
+      },
+      {
+        "leaf": "C1_controls_status",
+        "r0": "BROKEN",
+        "now": "BROKEN",
+        "attr": "(b) C1 record delta cannot move numerics (rotation parquet byte-identical)"
+      },
+      {
+        "leaf": "cost_curve.monotonic_3d",
+        "r0": false,
+        "now": false,
+        "attr": "(a) panel / (c) N2 strict monotonic helper (same predicate as round 0)"
+      },
+      {
+        "leaf": "false_starts_avoided.fast.share",
+        "r0": 0.7587542315504401,
+        "now": 0.7587542315504401,
+        "attr": "(a) B1 panel + (c) N3 key mapping restore"
+      },
+      {
+        "leaf": "large_winners_excluded.fast.share",
+        "r0": 0.4963325183374083,
+        "now": 0.4963325183374083,
+        "attr": "(a) B1 panel + (c) N3 key mapping restore"
+      },
+      {
+        "leaf": "cost_curve.3D.fast.n",
+        "r0": 75099,
+        "now": 72059,
+        "attr": "(c) N5 cost-curve n is finite mfe count"
+      },
+      {
+        "leaf": "false_starts_avoided.mid.share",
+        "r0": 0.7546419729575319,
+        "now": 0.7546478135637601,
+        "attr": "(a) B1 panel + (c) N3 key mapping restore"
+      },
+      {
+        "leaf": "large_winners_excluded.mid.share",
+        "r0": 0.4761044824250242,
+        "now": 0.4761044824250242,
+        "attr": "(a) B1 panel + (c) N3 key mapping restore"
+      },
+      {
+        "leaf": "cost_curve.3D.mid.n",
+        "r0": 88363,
+        "now": 84760,
+        "attr": "(c) N5 cost-curve n is finite mfe count"
+      },
+      {
+        "leaf": "false_starts_avoided.persistent.share",
+        "r0": 0.7629726890756302,
+        "now": 0.7629726890756302,
+        "attr": "(a) B1 panel + (c) N3 key mapping restore"
+      },
+      {
+        "leaf": "large_winners_excluded.persistent.share",
+        "r0": 0.5341676904176904,
+        "now": 0.5341676904176904,
+        "attr": "(a) B1 panel + (c) N3 key mapping restore"
+      },
+      {
+        "leaf": "cost_curve.3D.persistent.n",
+        "r0": 70996,
+        "now": 67699,
+        "attr": "(c) N5 cost-curve n is finite mfe count"
+      },
+      {
+        "leaf": "C1_rotation_state_sha",
+        "r0": "9361dbf08018f0c23bc6e9b29fa014bc42429ed3289d359adf7a16f52be3e2dd",
+        "now": "9361dbf08018f0c23bc6e9b29fa014bc42429ed3289d359adf7a16f52be3e2dd",
+        "attr": "(b) SAME bytes — no numeric movement from C1 table"
+      }
+    ],
+    "r0_pooled_h10": 0.003451310614323792,
+    "now_pooled_h10": 0.0034518154435143936,
+    "pooled_h10_delta": 5.048291906017272e-07,
+    "r0_sha_ok": true
+  },
+  "round0_headlines": {
+    "rows": [
+      {
+        "name": "pooled 3D H10 DiD",
+        "r0": 0.003451310614323792,
+        "now": 0.0034518154435143936,
+        "moved": "yes"
+      },
+      {
+        "name": "pooled 3D H10 CI lo",
+        "r0": [
+          -0.0008754812751993297,
+          0.007598016858986852
+        ],
+        "now": [
+          -0.0008752350470632498,
+          0.007598139844272105
+        ],
+        "moved": "yes"
+      },
+      {
+        "name": "verdict 3D",
+        "r0": "INSUFFICIENT SUPPORT",
+        "now": "INSUFFICIENT SUPPORT",
+        "moved": "no"
+      },
+      {
+        "name": "verdict 2D",
+        "r0": "INSUFFICIENT SUPPORT",
+        "now": "INSUFFICIENT SUPPORT",
+        "moved": "no"
+      },
+      {
+        "name": "n_1d_events_joined",
+        "r0": 296635,
+        "now": 296637,
+        "moved": "yes"
+      },
+      {
+        "name": "monotonic_3d",
+        "r0": false,
+        "now": false,
+        "moved": "no"
+      },
+      {
+        "name": "false_starts fast",
+        "r0": 0.7587542315504401,
+        "now": 0.7587542315504401,
+        "moved": "no"
+      },
+      {
+        "name": "large_winners fast",
+        "r0": 0.4963325183374083,
+        "now": 0.4963325183374083,
+        "moved": "no"
+      }
+    ]
+  }
+}
