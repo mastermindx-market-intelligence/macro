@@ -1,0 +1,476 @@
+FFFFFFFFFFFFFFFFF                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_records_stay_context_without_inventing_impossible_contradiction _____
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_records_stay_context_with0')
+
+    def test_records_stay_context_without_inventing_impossible_contradiction(tmp_path):
+        path = write_report(tmp_path)
+        before = path.read_bytes()
+>       result = adapter().load_findings(tmp_path, outputs())
+                 ^^^^^^^^^
+
+tests/test_evidence_findings.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+_______________ test_missing_malformed_and_empty_remain_distinct _______________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_missing_malformed_and_emp0')
+
+    def test_missing_malformed_and_empty_remain_distinct(tmp_path):
+>       mod = adapter()
+              ^^^^^^^^^
+
+tests/test_evidence_findings.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+__ test_unsupported_rows_are_disclosed_without_adopting_authority[mutation0] ___
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_unsupported_rows_are_disc0')
+mutation = {'severity': 'critical'}
+
+    @pytest.mark.parametrize("mutation", [
+        {"severity": "critical"}, {"display_only": False},
+        {"kind": "impossible-contradiction"}, {"a": {"artifact": "/private/data.json", "reading": "bad"}},
+    ])
+    def test_unsupported_rows_are_disclosed_without_adopting_authority(tmp_path, mutation):
+        bad = {**row(), **mutation}
+        write_report(tmp_path, rows=[row(), bad])
+>       result = adapter().load_findings(tmp_path, outputs())
+                 ^^^^^^^^^
+
+tests/test_evidence_findings.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+__ test_unsupported_rows_are_disclosed_without_adopting_authority[mutation1] ___
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_unsupported_rows_are_disc1')
+mutation = {'display_only': False}
+
+    @pytest.mark.parametrize("mutation", [
+        {"severity": "critical"}, {"display_only": False},
+        {"kind": "impossible-contradiction"}, {"a": {"artifact": "/private/data.json", "reading": "bad"}},
+    ])
+    def test_unsupported_rows_are_disclosed_without_adopting_authority(tmp_path, mutation):
+        bad = {**row(), **mutation}
+        write_report(tmp_path, rows=[row(), bad])
+>       result = adapter().load_findings(tmp_path, outputs())
+                 ^^^^^^^^^
+
+tests/test_evidence_findings.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+__ test_unsupported_rows_are_disclosed_without_adopting_authority[mutation2] ___
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_unsupported_rows_are_disc2')
+mutation = {'kind': 'impossible-contradiction'}
+
+    @pytest.mark.parametrize("mutation", [
+        {"severity": "critical"}, {"display_only": False},
+        {"kind": "impossible-contradiction"}, {"a": {"artifact": "/private/data.json", "reading": "bad"}},
+    ])
+    def test_unsupported_rows_are_disclosed_without_adopting_authority(tmp_path, mutation):
+        bad = {**row(), **mutation}
+        write_report(tmp_path, rows=[row(), bad])
+>       result = adapter().load_findings(tmp_path, outputs())
+                 ^^^^^^^^^
+
+tests/test_evidence_findings.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+__ test_unsupported_rows_are_disclosed_without_adopting_authority[mutation3] ___
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_unsupported_rows_are_disc3')
+mutation = {'a': {'artifact': '/private/data.json', 'reading': 'bad'}}
+
+    @pytest.mark.parametrize("mutation", [
+        {"severity": "critical"}, {"display_only": False},
+        {"kind": "impossible-contradiction"}, {"a": {"artifact": "/private/data.json", "reading": "bad"}},
+    ])
+    def test_unsupported_rows_are_disclosed_without_adopting_authority(tmp_path, mutation):
+        bad = {**row(), **mutation}
+        write_report(tmp_path, rows=[row(), bad])
+>       result = adapter().load_findings(tmp_path, outputs())
+                 ^^^^^^^^^
+
+tests/test_evidence_findings.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+______________ test_wrong_owner_contract_is_unavailable[changes0] ______________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_wrong_owner_contract_is_u0')
+changes = {'display_only': False}
+
+    @pytest.mark.parametrize("changes", [
+        {"display_only": False}, {"is_context_only": False}, {"tier": "action"},
+        {"schema": "other.v1"}, {"contradiction_records": None}, {"gaps": None},
+    ])
+    def test_wrong_owner_contract_is_unavailable(tmp_path, changes):
+        write_report(tmp_path, **changes)
+>       result = adapter().load_findings(tmp_path, [])
+                 ^^^^^^^^^
+
+tests/test_evidence_findings.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+______________ test_wrong_owner_contract_is_unavailable[changes1] ______________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_wrong_owner_contract_is_u1')
+changes = {'is_context_only': False}
+
+    @pytest.mark.parametrize("changes", [
+        {"display_only": False}, {"is_context_only": False}, {"tier": "action"},
+        {"schema": "other.v1"}, {"contradiction_records": None}, {"gaps": None},
+    ])
+    def test_wrong_owner_contract_is_unavailable(tmp_path, changes):
+        write_report(tmp_path, **changes)
+>       result = adapter().load_findings(tmp_path, [])
+                 ^^^^^^^^^
+
+tests/test_evidence_findings.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+______________ test_wrong_owner_contract_is_unavailable[changes2] ______________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_wrong_owner_contract_is_u2')
+changes = {'tier': 'action'}
+
+    @pytest.mark.parametrize("changes", [
+        {"display_only": False}, {"is_context_only": False}, {"tier": "action"},
+        {"schema": "other.v1"}, {"contradiction_records": None}, {"gaps": None},
+    ])
+    def test_wrong_owner_contract_is_unavailable(tmp_path, changes):
+        write_report(tmp_path, **changes)
+>       result = adapter().load_findings(tmp_path, [])
+                 ^^^^^^^^^
+
+tests/test_evidence_findings.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+______________ test_wrong_owner_contract_is_unavailable[changes3] ______________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_wrong_owner_contract_is_u3')
+changes = {'schema': 'other.v1'}
+
+    @pytest.mark.parametrize("changes", [
+        {"display_only": False}, {"is_context_only": False}, {"tier": "action"},
+        {"schema": "other.v1"}, {"contradiction_records": None}, {"gaps": None},
+    ])
+    def test_wrong_owner_contract_is_unavailable(tmp_path, changes):
+        write_report(tmp_path, **changes)
+>       result = adapter().load_findings(tmp_path, [])
+                 ^^^^^^^^^
+
+tests/test_evidence_findings.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+______________ test_wrong_owner_contract_is_unavailable[changes4] ______________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_wrong_owner_contract_is_u4')
+changes = {'contradiction_records': None}
+
+    @pytest.mark.parametrize("changes", [
+        {"display_only": False}, {"is_context_only": False}, {"tier": "action"},
+        {"schema": "other.v1"}, {"contradiction_records": None}, {"gaps": None},
+    ])
+    def test_wrong_owner_contract_is_unavailable(tmp_path, changes):
+        write_report(tmp_path, **changes)
+>       result = adapter().load_findings(tmp_path, [])
+                 ^^^^^^^^^
+
+tests/test_evidence_findings.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+______________ test_wrong_owner_contract_is_unavailable[changes5] ______________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_wrong_owner_contract_is_u5')
+changes = {'gaps': None}
+
+    @pytest.mark.parametrize("changes", [
+        {"display_only": False}, {"is_context_only": False}, {"tier": "action"},
+        {"schema": "other.v1"}, {"contradiction_records": None}, {"gaps": None},
+    ])
+    def test_wrong_owner_contract_is_unavailable(tmp_path, changes):
+        write_report(tmp_path, **changes)
+>       result = adapter().load_findings(tmp_path, [])
+                 ^^^^^^^^^
+
+tests/test_evidence_findings.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+_______ test_exact_path_binding_rejects_lookalikes_and_ambiguous_owners ________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_exact_path_binding_reject0')
+
+    def test_exact_path_binding_rejects_lookalikes_and_ambiguous_owners(tmp_path):
+        write_report(tmp_path)
+        ambiguous = outputs() + [{"path": "data/regime/latest.json", "engine_id": "other::owner"}]
+>       result = adapter().load_findings(tmp_path, ambiguous)
+                 ^^^^^^^^^
+
+tests/test_evidence_findings.py:104: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, plugins, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_____ test_detail_filters_only_exact_bound_records_and_retains_global_gap ______
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_detail_filters_only_exact0')
+
+    def test_detail_filters_only_exact_bound_records_and_retains_global_gap(tmp_path):
+        other = row()
+        other["a"] = {"artifact": "data/unknown.json", "reading": "unknown"}
+        other["b"] = {"artifact": "data/other.json", "reading": "unknown"}
+        write_report(tmp_path, rows=[row(), other])
+>       mod = adapter()
+              ^^^^^^^^^
+
+tests/test_evidence_findings.py:118: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, plugins, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_________________ test_actual_read_budget_precedes_json_decode _________________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_actual_read_budget_preced0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1118649b0>
+
+    def test_actual_read_budget_precedes_json_decode(tmp_path, monkeypatch):
+>       mod = adapter()
+              ^^^^^^^^^
+
+tests/test_evidence_findings.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+______________ test_changed_artifact_is_not_mixed_into_a_success _______________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_changed_artifact_is_not_m0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x111865d10>
+
+    def test_changed_artifact_is_not_mixed_into_a_success(tmp_path, monkeypatch):
+>       mod = adapter()
+              ^^^^^^^^^
+
+tests/test_evidence_findings.py:140: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+__ test_artifact_correction_changes_digest_without_claiming_market_freshness ___
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-279/test_artifact_correction_chang0')
+
+    def test_artifact_correction_changes_digest_without_claiming_market_freshness(tmp_path):
+        write_report(tmp_path)
+>       mod = adapter()
+              ^^^^^^^^^
+
+tests/test_evidence_findings.py:153: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def adapter():
+>       assert importlib.util.find_spec("admin.evidence_findings") is not None, (
+            "A1 has no recorded typed-findings consumer"
+        )
+E       AssertionError: A1 has no recorded typed-findings consumer
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104b73320>('admin.evidence_findings')
+E        +    where <function find_spec at 0x104b73320> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_evidence_findings.py:12: AssertionError
+
+NOTE: sparse worktree — data, mockups, plugins, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_evidence_findings.py::test_records_stay_context_without_inventing_impossible_contradiction
+FAILED tests/test_evidence_findings.py::test_missing_malformed_and_empty_remain_distinct
+FAILED tests/test_evidence_findings.py::test_unsupported_rows_are_disclosed_without_adopting_authority[mutation0]
+FAILED tests/test_evidence_findings.py::test_unsupported_rows_are_disclosed_without_adopting_authority[mutation1]
+FAILED tests/test_evidence_findings.py::test_unsupported_rows_are_disclosed_without_adopting_authority[mutation2]
+FAILED tests/test_evidence_findings.py::test_unsupported_rows_are_disclosed_without_adopting_authority[mutation3]
+FAILED tests/test_evidence_findings.py::test_wrong_owner_contract_is_unavailable[changes0]
+FAILED tests/test_evidence_findings.py::test_wrong_owner_contract_is_unavailable[changes1]
+FAILED tests/test_evidence_findings.py::test_wrong_owner_contract_is_unavailable[changes2]
+FAILED tests/test_evidence_findings.py::test_wrong_owner_contract_is_unavailable[changes3]
+FAILED tests/test_evidence_findings.py::test_wrong_owner_contract_is_unavailable[changes4]
+FAILED tests/test_evidence_findings.py::test_wrong_owner_contract_is_unavailable[changes5]
+FAILED tests/test_evidence_findings.py::test_exact_path_binding_rejects_lookalikes_and_ambiguous_owners
+FAILED tests/test_evidence_findings.py::test_detail_filters_only_exact_bound_records_and_retains_global_gap
+FAILED tests/test_evidence_findings.py::test_actual_read_budget_precedes_json_decode
+FAILED tests/test_evidence_findings.py::test_changed_artifact_is_not_mixed_into_a_success
+FAILED tests/test_evidence_findings.py::test_artifact_correction_changes_digest_without_claiming_market_freshness
+17 failed in 63.25s (0:01:03)

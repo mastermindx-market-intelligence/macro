@@ -25,6 +25,116 @@ waves:
     title: Additive sector participation vertical; source PR returned and held in review
     status: in_progress
     next_action: >
+      Reconcile the current Macro PR7060 source and later Decimal repairs against
+      its existing review and current-base CI obligations, then advance the separately
+      qualified real-input and served-publication proof on the same product carrier.
+      Earlier shared-path predecessor PR7056 is merged; do not recommission it.
+next_action: >
+  Consume the current canonical PR7060 head, review and integration evidence under
+  its existing operation and live writer/effect fences. Preserve BUILT_NOT_PROVEN
+  until its actual release and product-acceptance gates are met. Do not replay the
+  historical denied transmission or treat PR7056 as an unmerged predecessor.
+decisions:
+  - DEC:SKYLIT-INTEGRATE-EXISTING-SECTOR-INTELLIGENCE
+artifacts:
+  - research/skylit/INTEGRATION_RULING_2026-09-10.md
+  - research/skylit/US_SECTOR_PARTICIPATION_W1_2026-09-10.md
+  - research/skylit/LOCAL_INPUT_PREFLIGHT_2026-09-10.md
+  - research/skylit/RESEARCH_GATE_DISPOSITION_2026-09-10.md
+  - research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md
+  - research/skylit/W1_PR7060_SOL_REVIEW_2026-09-11.md
+  - research/skylit/W1_DERIVED_PACKAGE_AND_UI_CONTRACT_2026-09-11.md
+landmines:
+  - Reference-roster reconstruction is not historical membership or PIT replay.
+  - Missing price columns must remain in expected membership and exclusions.
+  - Requesting adjusted data does not prove the returned response is adjusted or complete.
+  - Summary, member evidence and clocks must come from one validated generation.
+  - The inherited BreadthAdapter path must not activate W1 for regional/size siblings.
+  - One per-name timeout does not bound the 503-name operation; old breadth must survive W1 failure.
+  - The September 11 gate:data finding is historical; current PR7060 CI needs exact-head and current-base qualification.
+  - PR7056 merged as 4abff538f5a7035982dabd438412a201c468d02f; current shared-path custody must be read from current sources.
+  - Delivery, START, source effects, CI, merge, publication and acceptance remain distinct.
+do_not_redo:
+  - Do not reopen completed XPV2 reference cycles or claim W1 completes full R3C.
+  - Do not create another dashboard, collector, price store, calendar, identity, auth, retry or publication owner.
+  - Do not change existing 50/200, Act-Now, Prophet, options authority or graders.
+  - Do not split the originally commissioned calendar/constituent journey into another feature PR.
+  - Do not replace the started/effectful Claude8 writer or reuse another carrier.
+  - Do not bypass or reinterpret the native transmission-safety denial through another AI assertion.
+  - Do not edit shared PR7056 paths until that earlier owner merges/releases and current integration is refreshed.
+---
+
+# Current source reconciliation — 2026-11-05
+
+This is a records correction on Macro PR7035, not a product-source change or an
+acceptance of W1. The workstream and W1 wave remain active/in_progress.
+
+- [PR7056](https://github.com/mastermindx-market-intelligence/Macro/pull/7056)
+  merged as `4abff538f5a7035982dabd438412a201c468d02f`. The dated instruction
+  to await that PR's merge is satisfied; it is not evidence of a present writer lease.
+- [PR7060](https://github.com/mastermindx-market-intelligence/Macro/pull/7060)
+  is still OPEN/Draft, observed at `170ad35b12673eac75ebefb53b3a5da4640daf06`.
+  Its later source/evidence documents the connected Money & Breadth vertical and
+  subsequent exact-Decimal repairs. Its capability remains **BUILT_NOT_PROVEN**.
+  The old "helpers only / disconnected" description is a September 11 observation,
+  not the present implementation claim.
+- The [September 23 recovery checkpoint](https://github.com/mastermindx-market-intelligence/Macro/pull/7060#issuecomment-5791505600)
+  records recovered semantic head `f1142b32d8f295736945d75d9b0a902fd65d3570`,
+  current-base integration and review obligations, and the same existing independent
+  review child. The currently observed remote head is newer; reconcile that source
+  movement and actual review/effect state before a release decision. This records
+  update does not claim that the latest head has passed review or CI.
+- The September native transmission denial remains a historical attempt with
+  known effect **NONE**. It is not replayed, reinterpreted as approval, or treated
+  as today's next action. Preserve any actual current live writer, started review
+  and uncertain effect on their original carriers.
+
+The existing Sector Central/US breadth ownership, full-roster denominator,
+one-generation package, licensed-source boundaries, sibling/50-200 invariance and
+no-trade-authority rules remain. Current exact-head/current-base checks, applicable
+review, qualified real input and served publication/browser acceptance remain
+distinct obligations. Source publication of these records completes none of them.
+
+The ten other original records in PR7035 remain unchanged. Their September 10–11
+implementation and transport statements describe their dated epochs; this current
+reconciliation supersedes only stale sequencing/current-state claims, including
+"SPEC_ONLY", "PARTIAL / disconnected" and the now-merged PR7056 predecessor.
+It does not reopen completed research or waive the original product journey.
+
+## Original September 11 workstream — retained verbatim
+
+The following archived document preserves the original metadata, findings and
+transport chronology. Its "current" headings and next actions refer to that dated
+checkpoint; they are not new commissions or present release authority.
+
+```markdown
+---
+key: US-SECTOR-PARTICIPATION
+title: US Sector Central participation calendar and constituent investigation
+objective: >
+  Let a researcher inspect sector participation across completed sessions,
+  verify the same numerator, denominator, exclusions and reference-universe
+  constituents, and follow existing research links from the real Sector Central page.
+status: active
+program: sector-rotation-intelligence
+repos: [macro]
+owner: ceo-sol
+class: build
+blast_radius: user_facing
+ambiguity: scoped
+owns_paths:
+  - research/skylit/INTEGRATION_RULING_2026-09-10.md
+  - research/skylit/US_SECTOR_PARTICIPATION_W1_2026-09-10.md
+  - research/skylit/RESEARCH_GATE_DISPOSITION_2026-09-10.md
+  - research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md
+  - research/skylit/W1_PR7060_SOL_REVIEW_2026-09-11.md
+  - research/skylit/W1_DERIVED_PACKAGE_AND_UI_CONTRACT_2026-09-11.md
+  - agentos/decisions/DEC-SKYLIT-INTEGRATE-EXISTING-SECTOR-INTELLIGENCE.md
+waves:
+  - id: W1
+    title: Additive sector participation vertical; source PR returned and held in review
+    status: in_progress
+    next_action: >
       Continue the same Claude8 source writer in Macro PR7060 under Sol review
       5174640493 and Slack repair1789096018.269229. Repair the code-gated proof,
       producer and atomic package on disjoint paths; integrate Money & Breadth only
@@ -156,3 +266,4 @@ Required closeout remains immutable implementation evidence, actual code-gated C
 independent review, current-base integration, qualified real-input proof, served
 browser/publication proof and an explicit terminal dialogue edge. No records commit,
 helper method, green focused test or delivered continuation alone satisfies that.
+```
