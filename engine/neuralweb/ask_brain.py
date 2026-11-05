@@ -590,6 +590,7 @@ _FAST_VISIBLE_TOOL_FAMILIES: dict[str, tuple[str, ...]] = {
         "query_spine", "read_contradictions",
     ),
     "macro_rates": (
+        "get_fitted_retained_market_context",
         "get_retained_market_context",
         "get_retained_market_catalog",
         "read_world_state", "get_curve_detail", "read_mechanism_pathways",

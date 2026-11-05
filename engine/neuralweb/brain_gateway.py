@@ -319,6 +319,7 @@ _BRAIN_TOOLS = frozenset({
     "get_historical_analogues",
     "get_retained_market_context",
     "get_retained_market_catalog",
+    "get_fitted_retained_market_context",
     "get_curve_detail",
     # Analyst OS W3 — per-user memory: own-session recall + own trade journal
     # (signed-in only, per-user scoped; derived from canonical stores — CXI-R12)
@@ -374,6 +375,7 @@ _BRAIN_ONLY_TOOLS = frozenset({
     "get_historical_analogues",
     "get_retained_market_context",
     "get_retained_market_catalog",
+    "get_fitted_retained_market_context",
     "get_curve_detail",
     # Analyst OS W3
     "recall_sessions",
@@ -5487,6 +5489,15 @@ def _dispatch_brain_tool(
                 return {"error": "retained_catalog_unavailable", "http_status": exc.status_code,
                         "state": exc.detail.get("state", "SITE_ENTITLEMENT_REQUIRED")
                         if isinstance(exc.detail, dict) else "SITE_ENTITLEMENT_REQUIRED"}
+        if tool_name == "get_fitted_retained_market_context":
+            from app.market_memory_fitted import retained_fitted_context_for_user
+            from fastapi import HTTPException
+            try:
+                return retained_fitted_context_for_user(root, user_id, tool_params)
+            except HTTPException as exc:
+                return {"error": "fitted_retained_context_unavailable", "http_status": exc.status_code,
+                        "state": exc.detail.get("state", "SITE_ENTITLEMENT_REQUIRED")
+                        if isinstance(exc.detail, dict) else "SITE_ENTITLEMENT_REQUIRED"}
         if tool_name == "get_retained_market_context":
             from app.market_memory import retained_macro_for_user
             from fastapi import HTTPException
@@ -5636,6 +5647,10 @@ def _all_brain_tool_schemas(
                 pass
             else:
                 schemas = schemas + [_ban.RETAINED_CONTEXT_TOOL_SCHEMA, _ban.RETAINED_CATALOG_TOOL_SCHEMA]
+                from app.market_memory_fitted import tool_available
+                if tool_available(root):
+                    from engine.neuralweb.market_memory_fitted_brain_citations import TOOL_SCHEMA
+                    schemas = schemas + [TOOL_SCHEMA]
     except Exception:  # noqa: BLE001
         pass
     try:
@@ -5704,7 +5719,8 @@ def _fast_visible_tool_schemas(
     # These schemas are deliberately withheld upstream when site-full access is
     # absent. Their omission is not family drift and must not expose every other
     # authorized tool to an otherwise qualified Fast question.
-    entitlement_optional_names = {"get_retained_market_context", "get_retained_market_catalog"}
+    entitlement_optional_names = {"get_retained_market_context", "get_retained_market_catalog",
+                                  "get_fitted_retained_market_context"}
     missing = [
         name for name in visible_names
         if name not in authorized_names and name not in entitlement_optional_names
@@ -7925,9 +7941,11 @@ def _extract_citations_brain(
     from engine.neuralweb.ask_brain import _extract_citations  # noqa: PLC0415
 
     from engine.neuralweb.market_memory_brain_citations import retained_source_citations
+    from engine.neuralweb.market_memory_fitted_brain_citations import fitted_source_citations
 
     found = list(_extract_citations(messages))
     found.extend(retained_source_citations(messages))
+    found.extend(fitted_source_citations(messages))
     for message in messages:
         content = message.get("content") if isinstance(message, dict) else None
         if not isinstance(content, list):
@@ -8697,6 +8715,7 @@ _TOOL_LABELS: dict[str, tuple[str, str]] = {
     "get_historical_analogues": ("Searching the desk's history books", "检索历史相似情景"),
     "get_retained_market_catalog": ("Finding saved market captures", "查找已保存的市场记录"),
     "get_retained_market_context": ("Reading original retained evidence", "读取原始留存证据"),
+    "get_fitted_retained_market_context": ("Opening the saved fitted comparison", "打开已保存的拟合比较"),
     "get_curve_detail":       ("Reading the yield curve",       "解读收益率曲线"),
     "recall_sessions":        ("Recalling your past sessions",  "回顾您最近的会话"),
     "get_trade_episodes":     ("Reading your trade journal",    "读取您的交易日志"),
