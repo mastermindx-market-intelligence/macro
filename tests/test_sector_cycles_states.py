@@ -391,7 +391,7 @@ def test_china_builder_degrades_to_the_client_date(monkeypatch, caplog):
 
 
 @pytest.mark.parametrize("fixture, gen, words", [
-    ("aligned", "aligned", ("Up to date", "已是最新")),
+    ("aligned", "aligned", ("History matches the current read", "历史与当前读数一致")),
     ("incompatible", "incompatible_generation", ("History is from a different day", "历史来自不同日期")),
     ("missing", "unavailable", ("— unavailable", "— 不可用")),
     ("projection_error", "unavailable", ("— unavailable", "— 不可用")),
@@ -573,3 +573,18 @@ def test_members_notices_are_byte_identical_to_base(template):
     now = (TPL / template).read_text(encoding="utf-8")
     for block in re.findall(r"\{% with lock_renderer=.*?\{% endwith %\}", base, re.S):
         assert block in now
+
+
+def test_china_rank_rs_stamps_both_lenses():
+    """SIC-D33: rs_rank stays the 63d lens; rs_21d_rank ranks the 21d value the
+    card shows. A missing value is left unranked, never ranked last. The pin lives
+    here, not in tests/test_china_sector_cycles.py, because this suite runs in CI."""
+    from engine import china_sector_cycles as ccc
+
+    items = [{"now": {"rs_63d": 4.0, "rs_21d": -1.0}},
+             {"now": {"rs_63d": 9.0, "rs_21d": 2.5}},
+             {"now": {"rs_63d": None, "rs_21d": 6.0}},
+             {"now": {"rs_63d": -3.0, "rs_21d": None}}]
+    ccc._rank_rs(items)
+    assert [s["now"].get("rs_rank") for s in items] == [2, 1, None, 3]
+    assert [s["now"].get("rs_21d_rank") for s in items] == [3, 2, 1, None]

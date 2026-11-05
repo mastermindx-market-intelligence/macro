@@ -40,8 +40,10 @@
     'patents': ['Patents', '专利'], 'trade': ['Trade', '贸易'], 'forecast': ['Forecast', '预测'],
     'Fear and Greed': ['Fear and Greed', '恐惧与贪婪']
   };
-  function tagName(t) { var n = TAG_NAMES[t]; return n ? T(n[0], n[1]) : t; }
-  function tagLang(t) { return (!TAG_NAMES[t] && zh()) ? 'en' : ''; }
+  // Own keys only: a slug such as 'constructor' is unknown, not an Object member.
+  function tagPair(t) { return Object.prototype.hasOwnProperty.call(TAG_NAMES, t) ? TAG_NAMES[t] : null; }
+  function tagName(t) { var n = tagPair(t); return n ? T(n[0], n[1]) : t; }
+  function tagLang(t) { return (!tagPair(t) && zh()) ? 'en' : ''; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   /* ── transfer progress ───────────────────────────────────────────────────

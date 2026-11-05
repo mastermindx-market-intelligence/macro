@@ -206,7 +206,7 @@
     if (!nw || !nw.doctrine_stance) return scStanceUnavailable();
     var cls = scDoctrineInkCls(nw.doctrine_ink);
     return '<span class="cc-stance ' + cls + '" title="' +
-      L("Resolved stance · engine", "综合策略 · 引擎") + '">' + stanceLabel(nw) + '</span>';
+      L("Resolved stance · engine", "综合策略 · 引擎") + '">' + esc(stanceLabel(nw)) + '</span>';
   }
   // amber "clocks disagree" chip — rendered ONLY when the cycle read and the timing
   // ladder disagree (D1 §2.3).  Replaces two contradictory action badges with one honest chip.

@@ -193,6 +193,29 @@ def test_compare_tray_contract():
 
 
 @needs_node
+def test_compare_basis_ignores_inherited_object_keys():
+    """A basis or kind named after an Object member ('constructor', '__proto__',
+    'toString') is unknown: the row shows the basis gap, never a label read off
+    the prototype, and it never counts toward the mixed-basis disclosure."""
+    recs = [
+        {"id": "a", "name": "A", "kind": "sector", "basis": "constructor"},
+        {"id": "b", "name": "B", "kind": "__proto__", "basis": "tr"},
+        {"id": "c", "name": "C", "kind": "toString", "basis": "price"},
+        {"id": "d", "name": "D", "kind": "sector", "basis": "tr"},
+    ]
+    src = _module_src("sector_cycles_compare.js") + (
+        "var C = window.SC_COMPARE, R = " + json.dumps(recs) + ";"
+        "console.log(JSON.stringify([R.map(C.basisOf), C.basisLabel(R[0]), C.basisLabel(R[1]),"
+        " C.mixedBasis(R), C.tray(R, {})]));")
+    bases, lab0, lab1, mixed, html = _node(src)
+    assert bases == [None, None, None, "tr"]
+    assert 'data-deck-gap="basis-constructor"' in lab0 and "今日暂不可用" in lab0
+    assert 'data-deck-gap="basis-tr"' in lab1
+    assert mixed is False
+    assert "function" not in html and "[object" not in html and "undefined" not in html
+
+
+@needs_node
 def test_platform_announce_and_return_focus():
     src = (
         "var node = { textContent: 'old' }, timers = [];"
@@ -529,7 +552,8 @@ def test_pinned_focus_and_compared_ids_survive_phase_filter():
 # A2_D30 adds 204/206/207/1055/1056 (stance chip -> stamped doctrine face); stanceHTML
 # leaves the frozen list and is pinned by tests/test_sector_cycles_doctrine_stance.py.
 # SIC-D33 (L6.5n) adds 1053: the card RS chip prints the signed value its ink qualifies.
-WAVE_SEAM_LINES = {95, 204, 206, 207, 258, 274, 647, 648, 1053, 1055, 1056, 1167, 1192, 1207,
+# The #10777 review adds 209: stanceHTML escapes the engine's stance label.
+WAVE_SEAM_LINES = {95, 204, 206, 207, 209, 258, 274, 647, 648, 1053, 1055, 1056, 1167, 1192, 1207,
                    1208, 1209, 1212, 1223, 1231, 1232, 1233, 1234, 1235, 1236, 1258,
                    1259, 1811}
 WAVE_FROZEN_FNS = ("mountTurnRecord", "projPast", "applyVisibility",

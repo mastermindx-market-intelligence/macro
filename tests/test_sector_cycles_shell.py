@@ -229,6 +229,16 @@ def test_cycles_query_is_parked_before_the_state_event() -> None:
     assert names[0] == "sector_cycles_data.js" and names[-1] == "sector_cycles.js"
 
 
+def test_cycles_query_reaches_the_renderer_still_encoded() -> None:
+    """The renderer decodes each value once (_parseQs). The router must hand it the
+    query as written: decoding the whole hash first turned an id holding an encoded
+    '&' or ',' into two parameters or a split list."""
+    out = _replay("#cycles/f=sectors&s=A%26B", "#cycles/m=X%2CY")
+    assert out["routes"]["#cycles/f=sectors&s=A%26B"] == ["cycles", None]
+    assert out["events"] == [["si:cycles-state", "f=sectors&s=A%26B"],
+                             ["si:cycles-state", "m=X%2CY"]]
+
+
 def test_cycles_hash_writeback_points_dossier_at_the_sector_page() -> None:
     out = _replay()
     assert out["replaced"] == ["#cycles/f=sectors&s=XLK", "#cycles/f=themes&s=QQQ", "#cycles/"]
@@ -256,7 +266,9 @@ def test_coverage_names_the_missing_sector(tmp_path: Path) -> None:
     assert '<time datetime="2026-10-30">2026-10-30</time>' in line, "as-of must be baked"
     assert "Partial coverage" in line and "覆盖不完整" in line
     assert "10 / 11" in line and "XLU" in line
-    assert "Up to date" in line and "已是最新" in line
+    # aligned only says history and the current read share one day; it is not a freshness claim
+    assert "History matches the current read" in line and "历史与当前读数一致" in line
+    assert "Up to date" not in line
     baked = json.loads(line.split('id="si-cycles-ctx">', 1)[1].split("</script>", 1)[0])
     assert baked["coverage"] == ctx["coverage"] and baked["asof"] == "2026-10-30"
 
@@ -285,7 +297,7 @@ def test_mismatched_generation_is_typed_not_drawn(tmp_path: Path) -> None:
     assert "History is from a different day" in line and "历史来自不同日期" in line
     assert 'data-tip-en="History 2026-10-30, current read 2026-10-31.' in line
     assert 'data-tip-zh="历史 2026-10-30，当前读数 2026-10-31。' in line
-    assert "Up to date" not in line
+    assert "History matches the current read" not in line
 
 
 def test_absent_payload_renders_typed_unavailable(tmp_path: Path) -> None:
@@ -343,3 +355,14 @@ def test_grader_reads_as_not_a_win_rate() -> None:
     foot = src.split("function paintFoot(){", 1)[1].split("\n}", 1)[0]
     assert " · Not a win rate'" in foot and " · 并非胜率')" in foot
     assert "g.title=isZh()?'%s'" % caption[1] in foot and "'%s';" % caption[0] in foot
+
+
+def test_what_changed_chips_wrap_inside_the_phone_width() -> None:
+    """A What-changed chip can be a whole sentence. Under the old nowrap rule the
+    China page's trailing-leader chip measured 469px and gave a 390px phone a 499px
+    page. Both pages' chip idiom wraps inside its pill."""
+    for name in ("sector_central.html.j2", "sector_central_china.html.j2"):
+        rule = re.search(r"\n  \.tc-chip \{[^}]*\}", (TPL / name).read_text(encoding="utf-8"))
+        assert rule, f"{name}: the base tc-chip rule is missing"
+        assert "white-space:normal;max-width:100%" in rule.group(0), name
+        assert "nowrap" not in rule.group(0), name

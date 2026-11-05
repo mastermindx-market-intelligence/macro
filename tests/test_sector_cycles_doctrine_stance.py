@@ -52,6 +52,7 @@ def _helpers(stance_label: str | None = None) -> str:
     return "\n".join([
         _one_line("  function curLang() "),
         _one_line("  function L(en, zh) "),
+        _one_line("  function esc(s) "),
         stance_label or _one_line("  function stanceLabel(nw) "),
         _block("  function stanceHTML(nw) {"),
         _one_line("  function scDoctrineInkCls(ink) "),
@@ -159,3 +160,12 @@ def test_mutation_control_base_stance_label_fails_on_buy():
     with pytest.raises(AssertionError) as exc:
         _assert_doctrine_chips(BASE_STANCE_LABEL, keys=["BUY"])
     assert "'BUY'" in str(exc.value) and "Act" in str(exc.value)
+
+
+# ---- (D) the stamped label is text, never markup (PR #10777 review F7) ---------------------------------
+@pytest.mark.skipif(shutil.which("node") is None, reason="node is required to run the stance renderer")
+def test_stamped_doctrine_label_is_escaped():
+    nw = dict(_fixture("BUY"), doctrine_stance_en="<b>x</b> & y", doctrine_stance_zh="<i>甲</i> & 乙")
+    en_html, zh_html = _render([{"lang": "en", "nw": nw}, {"lang": "zh", "nw": nw}])
+    assert "&lt;b&gt;x&lt;/b&gt; &amp; y" in en_html and "<b>" not in en_html, en_html
+    assert "&lt;i&gt;甲&lt;/i&gt; &amp; 乙" in zh_html and "<i>" not in zh_html, zh_html

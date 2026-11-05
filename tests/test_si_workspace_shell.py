@@ -732,3 +732,28 @@ def test_handoff_name_ink_never_carries_direction() -> None:
     page = _page()
     assert "(r20<0?'rvx-dn':'rvx-up')" in page
     assert '<span class="rvx-num rvx-up">\'+fmtPct(r20)' not in page
+
+
+def test_rail_grader_counts_never_fabricate_a_zero():
+    """SIC-F4: an absent grader count is a dash in the rail footer, never 0."""
+    import json as _json
+    import shutil as _shutil
+    import subprocess as _sp
+
+    if _shutil.which("node") is None:
+        pytest.skip("node not installed")
+    js = (TPL / "si_workspace.js").read_text(encoding="utf-8")
+    foot = js[js.index("function paintFoot(){"):js.index("function reads(){")]
+    assert "||0)" not in foot
+    cnt = re.search(r"^function cnt\(v\)\{.*\}$", js, re.M).group(0)
+    frame = js[js.index("function graderVersionFrame(GR){"):js.index("function reads(){")]
+    prog = (cnt + "\n" + "function esc(s){return String(s);}\nfunction L(e,z){return e+'|'+z;}\n" + frame
+            + "\nprocess.stdout.write(JSON.stringify([cnt(undefined),cnt(null),cnt(0),cnt(7),"
+            + "graderVersionFrame({score_version_segments:{'1':{last_date:'2026-10-01'}},by_score_version:{'2':{}}}),"
+            + "graderVersionFrame({score_version_segments:{'1':{last_date:'2026-10-01'}},by_score_version:{'2':{n_calls:3}}})]));")
+    out = _sp.run(["node", "-e", prog], capture_output=True, text=True)
+    assert out.returncode == 0, out.stderr
+    a, b, zero, seven, absent, three = _json.loads(out.stdout)
+    assert (a, b, zero, seven) == ("—", "—", 0, 7)
+    assert "n=—" in absent and "n=0" not in absent
+    assert "n=3" in three

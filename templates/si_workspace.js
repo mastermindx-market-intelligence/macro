@@ -168,6 +168,8 @@ function loadAssets(view){
 function isZh(){ return document.documentElement.getAttribute('data-lang')==='zh'; }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){
   return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
+/* an unknown count is a dash, never a zero */
+function cnt(v){ return (typeof v==='number'&&isFinite(v))?v:'—'; }
 function L(en,zh){ return '<span class="l-en">'+en+'</span><span class="l-zh">'+(zh==null?en:zh)+'</span>'; }
 function P(){ return window.BASKETS||null; }
 function TI(){ var p=P(); return (p&&p.theme_intel)||null; }
@@ -278,14 +280,14 @@ function paintFoot(){
   var GR=(window.SECTOR_CENTRAL&&window.SECTOR_CENTRAL.grader)||null;
   if(!g||!GR) return;
   if(!GR.available){
-    g.innerHTML=L('Self-grader: accruing · '+(GR.n_calls||0)+' calls logged',
-                  '自评分器：累积中 · 已记录 '+(GR.n_calls||0)+' 个判断');
+    g.innerHTML=L('Self-grader: accruing · '+cnt(GR.n_calls)+' calls logged',
+                  '自评分器：累积中 · 已记录 '+cnt(GR.n_calls)+' 个判断');
     return;
   }
   var bh=GR.by_horizon||{}, h=bh['21d']||bh['63d']||bh['126d']||null;
   g.innerHTML=((h&&h.dir_hit_rate!=null)
-    ? L('Self-grader: '+Math.round(h.dir_hit_rate*100)+'% hit · n='+(h.n||0)+' · Not a win rate',
-        '自评分器：命中 '+Math.round(h.dir_hit_rate*100)+'% · n='+(h.n||0)+' · 并非胜率')
+    ? L('Self-grader: '+Math.round(h.dir_hit_rate*100)+'% hit · n='+cnt(h.n)+' · Not a win rate',
+        '自评分器：命中 '+Math.round(h.dir_hit_rate*100)+'% · n='+cnt(h.n)+' · 并非胜率')
     : L('Self-grader: accruing','自评分器：累积中'))+graderVersionFrame(GR);
   g.title=isZh()?'全部已结算判断（含中性）的条件命中率，并非胜率。'
     :'Conviction-call hit rate over all resolved calls, Neutral included. Not a win rate.';
@@ -296,7 +298,7 @@ function graderVersionFrame(GR){
   var v2=(GR.by_score_version||{})['2']||null;
   if(!s1||!s1.last_date) return '';
   var out=L(' · v1 calls through '+esc(s1.last_date),' · 版本1判断截至 '+esc(s1.last_date));
-  if(v2) out+=L(' · v2 accruing n='+(v2.n_calls||0),' · 版本2累积中 n='+(v2.n_calls||0));
+  if(v2) out+=L(' · v2 accruing n='+cnt(v2.n_calls),' · 版本2累积中 n='+cnt(v2.n_calls));
   return out;
 }
 function reads(){
@@ -443,7 +445,10 @@ window.__siCyclesHash=function(qs){
 };
 function route(ev){
   var user=!!(ev&&ev.type==='hashchange');
-  var h=(location.hash||'').replace(/^#/,'');
+  var raw=(location.hash||'').replace(/^#/,''), h=raw;
+  /* The cycles query is decoded once, per value, by its renderer (_parseQs): decoding
+     the whole hash first would split an id holding an encoded '&', ',' or '='. */
+  if(raw.indexOf('cycles/')===0){ routeCycles(raw.slice(7),user); return; }
   try{ h=decodeURIComponent(h); }catch(e){}
   if(h.indexOf('theme-')===0){ activate('overview',null); return; }  // resolver owns it
   if(h.indexOf('read-')===0){ pendingTrace=h.slice(5); activate('overview',null); return; }

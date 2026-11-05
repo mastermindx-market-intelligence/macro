@@ -15,14 +15,16 @@
   };
   var BASIS = { tr: ['total return', '含股息总回报'], price: ['price only', '仅价格'] };
   var KIND = { sector: ['sector', '板块'], basket: ['basket', '篮子'] };
+  var OWN = Object.prototype.hasOwnProperty;
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
   function bi(en, zh) { return '<span class="l-en">' + en + '</span><span class="l-zh">' + zh + '</span>'; }
   function P(p) { return bi(esc(p[0]), esc(p[1])); }
   function pick(p, ctx) { return ctx && ctx.lang === 'zh' ? p[1] : p[0]; }
-  /* kind · basis per cycles.kind_basis_pattern "{kind} · {basis}"; tr_fallback / missing / unknown -> gap. */
+  /* kind · basis per cycles.kind_basis_pattern "{kind} · {basis}"; tr_fallback / missing / unknown -> gap.
+     Own keys only: a 'constructor' or '__proto__' basis is unknown, not an inherited Object member. */
   function basisOf(rec) {
     var b = rec && rec.basis, k = rec && rec.kind;
-    if (!b || b === 'tr_fallback' || !BASIS[b] || !KIND[k]) return null;
+    if (!b || b === 'tr_fallback' || !OWN.call(BASIS, b) || !OWN.call(KIND, k)) return null;
     return b;
   }
   function basisLabel(rec) {

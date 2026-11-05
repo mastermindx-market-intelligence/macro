@@ -7824,6 +7824,7 @@ jobs:
       - "templates/dashboard.html.j2"
       - "templates/research_vault.html.j2"
       - "templates/sector.html.j2"
+      - "templates/sector_central_china.html.j2"
       - "templates/sector_dossier.js"
       - "templates/si_workspace.js"
       - "templates/theme.js"

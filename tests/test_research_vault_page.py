@@ -891,17 +891,23 @@ var out = {};
   LANG = l;
   out[l] = {topic: tagName('cybersecurity'), topicLang: tagLang('cybersecurity'),
             person: tagName('McElligott'), personLang: tagLang('McElligott'),
-            unknown: tagName('new-slug'), unknownLang: tagLang('new-slug')};
+            unknown: tagName('new-slug'), unknownLang: tagLang('new-slug'),
+            inherited: ['constructor', '__proto__', 'toString'].map(function (t) {
+              return [tagName(t), tagLang(t)]; })};
 });
 console.log(JSON.stringify(out));
 """
     done = subprocess.run([node, "-e", script], capture_output=True, text=True, timeout=30)
     assert done.returncode == 0, done.stderr
     out = json.loads(done.stdout)
+    inherited = ["constructor", "__proto__", "toString"]
+    # An Object member name is an unknown slug: verbatim, and marked English under ZH.
     assert out["en"] == {"topic": "Cybersecurity", "topicLang": "", "person": "McElligott",
-                         "personLang": "", "unknown": "new-slug", "unknownLang": ""}
+                         "personLang": "", "unknown": "new-slug", "unknownLang": "",
+                         "inherited": [[t, ""] for t in inherited]}
     assert out["zh"] == {"topic": "网络安全", "topicLang": "", "person": "McElligott",
-                         "personLang": "en", "unknown": "new-slug", "unknownLang": "en"}
+                         "personLang": "en", "unknown": "new-slug", "unknownLang": "en",
+                         "inherited": [[t, "en"] for t in inherited]}
 
 
 # --- SIC-D41: no painted edge stripe on a vault container --------------------

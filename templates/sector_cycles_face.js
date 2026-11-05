@@ -42,6 +42,7 @@
   function T(key, ctx, f) { var e = dk(key); return esc(fill(e[(ctx && ctx.lang === 'zh') ? 1 : 0], f)); }
   function P(en, zh) { return bi(esc(en), esc(zh)); }
   function num(v) { return typeof v === 'number' && isFinite(v); }
+  function ratio(a, b, id) { return num(a) && num(b) ? esc(a + '/' + b) : gap(id); }
   function nowOf(x) { return x && x.now ? x.now : (x || {}); }
   function recOf(x) { return x && x.now ? x : { now: x || {} }; }
   function ext(a, b) { var k; for (k in b) if (HOP.call(b, k)) a[k] = b[k]; return a; }
@@ -249,7 +250,7 @@ SC_FACE.hazardPass = function (cell, ek, key) { return !!cell && cell.p != null 
     rows.push([code('estimate_kinds'), mono(ek.schema + ' · ' + ekh['1m'] + '/' + ekh['3m'] + '/' + ekh['6m'] + ' · ' + ek.model_cell_current_claim) + ' ' + mono(lfp ? ('live_feature_parity ' + lfp.verdict + ' · ' + (lfp.failing || []).length + ' features') : 'live_feature_parity null')]);
     if (zhEnum(h.direction)) rows.push([code('hazard_footnote'), D2('cycles.hazard_footnote', { direction: h.direction }, { direction: zhEnum(h.direction) })]);
     rows.push([code('rhythm'), mono(r.schema + ' · ' + r.next_turn + ' · ' + (r.window ? r.window.low + '/' + r.window.central + '/' + r.window.high : 'null') + ' · ' + r.status + ' · ' + r.n_confirmed_halves + ' · ' + r.elapsed_half_cycle_ratio + ' · overdue ' + r.overdue)]);
-    if (pj) rows.push([D('cycles.proj_label'), mono(pj.nextTurn + ' · ' + pj.central + ' · ' + pj.low + ' · ' + pj.high + ' · overdue_frac ' + pj.overdue_frac + ' · period_yrs ' + (pj.period_yrs ? pj.period_yrs.median : 'null') + ' · ' + nextTxt(pj, ctx).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ')) + ' ' + src('cycles.proj_label')]);
+    if (pj) rows.push([D('cycles.proj_label'), mono(pj.nextTurn + ' · ' + pj.central + ' · ' + pj.low + ' · ' + pj.high + ' · overdue_frac ' + pj.overdue_frac + ' · period_yrs ' + (pj.period_yrs ? pj.period_yrs.median : 'null')) + ' · ' + nextTxt(pj, ctx) + ' ' + src('cycles.proj_label')]);
     if (typeof now.read === 'string') rows.push([D('cycles.read_legacy_withheld'), mono('pos ' + now.pos + ' · phase ' + now.phase) + ' <span class="cyc-prov-read">' + P(now.read, now.read_zh || now.read) + '</span>']);
     rows.push([code('series_provenance'), mono(sp.schema + ' · structure ' + sp.structure_basis + ' · rs ' + sp.rs_basis + ' · ' + sp.membership + ' · pit ' + sp.point_in_time + ' · ' + sp.benchmark)]);
     return drawer(rows);
@@ -276,7 +277,7 @@ SC_FACE.hazardPass = function (cell, ek, key) { return !!cell && cell.p != null 
   function rsPath(rows, key, x0, x1, W, H, lo, hi) {
     var d = '', prev = null, i, r, t, px, py, open = false;
     for (i = 0; i < rows.length; i++) {
-      r = rows[i]; t = Date.parse(r.date);
+      r = rows[i] || {}; t = Date.parse(r.date);
       if (!num(r[key]) || !num(t)) { open = false; prev = null; continue; }
       if (prev != null && (t - prev) > 7 * 864e5) open = false;
       px = ((t - x0) / Math.max(1, x1 - x0)) * W; py = H - ((r[key] - lo) / Math.max(1e-9, hi - lo)) * H;
@@ -285,15 +286,16 @@ SC_FACE.hazardPass = function (cell, ek, key) { return !!cell && cell.p != null 
     return d;
   }
   SC_FACE.rsTrail = function (x, ctx) {
-    var rec = recOf(x), rows = rec.rs_history && rec.rs_history.rows ? rec.rs_history.rows : rec.rs_history, W = 320, H = 72, lo = 0, hi = 0, i, v, x0, x1, bench = (ctx && ctx.meta && ctx.meta.benchmark) || 'SPY', zy;
-    if (!rows || !rows.length) return sec('scf-rs', BP('leadership', bench + ' (21d · 63d)', bench + '(21日 · 63日)'), gap('rs-history'));
-    for (i = 0; i < rows.length; i++) { v = rows[i]; if (num(v.rs_21d)) { lo = Math.min(lo, v.rs_21d); hi = Math.max(hi, v.rs_21d); } if (num(v.rs_63d)) { lo = Math.min(lo, v.rs_63d); hi = Math.max(hi, v.rs_63d); } }
+    var rec = recOf(x), rows = rec.rs_history && rec.rs_history.rows ? rec.rs_history.rows : rec.rs_history, W = 320, H = 72, lo = 0, hi = 0, i, v, x0, x1, bench = (ctx && ctx.meta && ctx.meta.benchmark) || 'SPY', zy, d0, d1;
+    for (i = 0; rows && i < rows.length; i++) { v = rows[i] && Date.parse(rows[i].date); if (num(v)) { if (x0 == null) { x0 = v; d0 = rows[i].date; } x1 = v; d1 = rows[i].date; } }
+    if (!rows || !rows.length || x0 == null || !(x1 > x0)) return sec('scf-rs', BP('leadership', bench + ' (21d · 63d)', bench + '(21日 · 63日)'), gap('rs-history'));
+    for (i = 0; i < rows.length; i++) { v = rows[i] || {}; if (!num(Date.parse(v.date))) continue; if (num(v.rs_21d)) { lo = Math.min(lo, v.rs_21d); hi = Math.max(hi, v.rs_21d); } if (num(v.rs_63d)) { lo = Math.min(lo, v.rs_63d); hi = Math.max(hi, v.rs_63d); } }
     if (hi === lo) hi = lo + 1;
-    x0 = Date.parse(rows[0].date); x1 = Date.parse(rows[rows.length - 1].date); zy = (H - ((0 - lo) / (hi - lo)) * H).toFixed(1);
+    zy = (H - ((0 - lo) / (hi - lo)) * H).toFixed(1);
     return sec('scf-rs', BP('leadership', bench + ' (21d · 63d)', bench + '(21日 · 63日)'),
       '<svg class="scf-rs-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(T('dossier.recon_label', ctx)) + '"><line class="scf-rs-zero" x1="0" x2="' + W + '" y1="' + zy + '" y2="' + zy + '"/>' +
       '<path class="scf-rs-21" d="' + rsPath(rows, 'rs_21d', x0, x1, W, H, lo, hi) + '"/><path class="scf-rs-63" d="' + rsPath(rows, 'rs_63d', x0, x1, W, H, lo, hi) + '"/></svg>' +
-      '<p class="scf-foot">' + D('dossier.recon_label') + ' · ' + mono(rows[0].date + ' – ' + rows[rows.length - 1].date) + '</p>' +
+      '<p class="scf-foot">' + D('dossier.recon_label') + ' · ' + mono(d0 + ' – ' + d1) + '</p>' +
       drawer([[D('dossier.recon_label'), D('dossier.recon_body')], [code('rs_history'), mono(rows.length + ' · rs_history_rows_excluded_nonfinite ' + (rec.rs_history_rows_excluded_nonfinite || 0)) + ' ' + code('engine/sector_cycles.py:549 _leadership_history_counted')]], false));
   };
   SC_FACE.turnInspector = function (x, ctx, idx) {
@@ -329,13 +331,13 @@ SC_FACE.hazardPass = function (cell, ek, key) { return !!cell && cell.p != null 
       e = bh[hs[i]];
       out += '<div class="scf-grade" data-horizon="' + hs[i] + '"><span class="scf-grade-h">' + gapLbl('horizon-label', 'by_horizon') + ' ' + '<span class="mono">' + P(hs[i], hs[i].replace(/d$/, '日')) + '</span></span>';
       if (!e) out += gap('horizon-' + hs[i]);
-      else if (e.note === 'accruing' || !num(e.conditional_directional_hit_rate)) out += '<p>' + D('authority.accruing_body', { n: num(e.n) ? e.n : 0 }) + '</p>';
+      else if (e.note === 'accruing' || !num(e.conditional_directional_hit_rate)) out += num(e.n) ? '<p>' + D('authority.accruing_body', { n: e.n }) + '</p>' : gap('horizon-' + hs[i] + '-n');
       else {
-        out += '<div data-metric="conditional_directional_hit_rate"><span class="k">' + gapLbl('conditional-hit-rate-label', 'conditional_directional_hit_rate') + '</span><span class="v mono">' + (e.conditional_directional_hit_rate * 100).toFixed(1) + '% · ' + e.n_correct_directional + '/' + e.n_directional + '</span></div>' +
-               '<div data-metric="abstention"><span class="k">' + D('states.abstained_title') + '</span><span class="v mono">' + e.n_neutral + '/' + e.n + '</span></div>';
+        out += '<div data-metric="conditional_directional_hit_rate"><span class="k">' + gapLbl('conditional-hit-rate-label', 'conditional_directional_hit_rate') + '</span><span class="v mono">' + (e.conditional_directional_hit_rate * 100).toFixed(1) + '% · ' + ratio(e.n_correct_directional, e.n_directional, 'horizon-' + hs[i] + '-directional') + '</span></div>' +
+               '<div data-metric="abstention"><span class="k">' + D('states.abstained_title') + '</span><span class="v mono">' + ratio(e.n_neutral, e.n, 'horizon-' + hs[i] + '-abstention') + '</span></div>';
       }
       out += '</div>';
-      if (e) rows.push([code('by_horizon.' + hs[i]), mono('n ' + e.n + ' · n_directional ' + e.n_directional + ' · n_neutral ' + e.n_neutral + ' · rank_ic ' + e.rank_ic + ' · se ' + e.conditional_hit_rate_se + ' · mean_excess_vs_bench ' + e.mean_excess_vs_bench + ' · invalidated_membership ' + JSON.stringify(e.invalidated_membership == null ? null : e.invalidated_membership) + ' · invalidated_pre_chain ' + JSON.stringify(e.invalidated_pre_chain == null ? null : e.invalidated_pre_chain))]);
+      if (e) rows.push([code('by_horizon.' + hs[i]), mono(['n', 'n_directional', 'n_neutral', 'rank_ic', 'conditional_hit_rate_se', 'mean_excess_vs_bench', 'invalidated_membership', 'invalidated_pre_chain'].map(function (k) { return (k === 'conditional_hit_rate_se' ? 'se' : k) + ' ' + JSON.stringify(e[k] == null ? null : e[k]); }).join(' · '))]);
     }
     rows.push([code('grader'), code('engine/sector_central_grader.py::grade')]);
     return '<section class="scf scf-panel scf-grader">' + head + '<div class="scf-grades">' + out + '</div>' + foot(D('components.footnote_pattern')) + drawer(rows, false) + '</section>';

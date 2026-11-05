@@ -310,6 +310,40 @@ def test_rs_trail_breaks_on_gaps_and_counts_exclusions():
     assert 'data-deck-gap="rs-history"' in none
 
 
+
+def test_rs_trail_ignores_rows_without_a_parseable_date():
+    """PR #10777 review F6: a row whose date does not parse neither sets the time axis nor scales it; with
+    fewer than two dated rows the trail is the deck gap, never a NaN path or an "undefined" range."""
+    undated = rec("xlf")
+    undated["rs_history"] = [{"date": "n/a", "rs_21d": 1.0, "rs_63d": 2.0}, {"date": None, "rs_21d": 0.5}, None]
+    single = rec("xlf")
+    single["rs_history"] = [{"date": "2026-01-02", "rs_21d": 1.0}, {"date": "garbage", "rs_21d": 2.0}]
+    lead = _rs()
+    lead["rs_history"] = [{"date": "bad", "rs_21d": 9.0, "rs_63d": -9.0}] + FIX["rs_history"] + [None]
+    a, b, c, base = _run([["rsTrail", [undated, ctx()]], ["rsTrail", [single, ctx()]],
+                          ["rsTrail", [lead, ctx()]], ["rsTrail", [_rs(), ctx()]]])
+    for html in (a, b):
+        assert 'data-deck-gap="rs-history"' in html and "NaN" not in html and "undefined" not in html, html
+    assert "NaN" not in c and "undefined" not in c
+    for cls in ("scf-rs-21", "scf-rs-63", "scf-rs-zero"):
+        pat = r'class="' + cls + r'" (?:d|x1)="([^"]*)"'
+        assert re.search(pat, c).group(1) == re.search(pat, base).group(1), cls
+    rng = r'<p class="scf-foot">.*?<span class="mono">([^<]*)</span></p>'
+    assert re.search(rng, c).group(1) == re.search(rng, base).group(1)
+
+
+def test_card_provenance_projection_is_bilingual_text_not_one_mono_run():
+    """PR #10777 review F5: the provenance row prints the projection sentence through the deck's
+    bilingual spans. The old row stripped the spans and re-escaped the text into one mono run, which
+    joined the EN and ZH sentences and double-escaped any entity."""
+    fresh, past = _run([["prov", [rec("xlf"), ctx(today=None)]], ["prov", [rec("xlf"), ctx()]]])
+    assert '<span class="l-en">Next ' in fresh and '<span class="l-zh">下次' in fresh
+    assert '<span class="l-en">ref: Peak was proj. ' in past and '<span class="l-zh">参考：' in past
+    for html in (fresh, past):
+        monos = re.findall(r'<span class="mono">([^<]*)</span>', html)
+        assert not [m for m in monos if any(z in m for z in ("Next ", "下次", "参考", "已过"))], monos
+        assert "&amp;amp;" not in html and "&amp;lt;" not in html
+
 def test_turn_inspector_labels_and_gaps():
     r = rec("xlf")
     empty = rec("xlf")
@@ -380,6 +414,23 @@ def test_evidence_grader_honest_counts():
     assert 'data-deck-gap="grader-unavailable"' in u and "no calls logged yet" in u
     assert "21日" in z
 
+
+
+def test_evidence_grader_missing_counts_are_gaps_not_zero_or_undefined():
+    """SIC-F4: a horizon record that lacks a count shows a typed gap; it never
+    prints "undefined" and never fabricates a zero."""
+    g = json.loads(json.dumps(FIX["grader"]))
+    h21 = g["by_horizon"]["21d"]
+    for k in ("n_directional", "n_neutral", "n"):
+        h21.pop(k)
+    g["by_horizon"]["126d"].pop("n")
+    out = _one("evidence", g, ctx())
+    for gid in ("horizon-21d-directional", "horizon-21d-abstention", "horizon-126d-n"):
+        assert f'data-deck-gap="{gid}"' in out, gid
+    assert "undefined" not in out and "NaN" not in out
+    assert "60.0% · " in out and "18/" not in out and "/40" not in out
+    assert en("authority.accruing_body", n=0) not in out
+    assert "n_directional null" in out
 
 def test_methods_parity_chip_follows_meta_verdict():
     holds = dict(META, live_hazard_parity=dict(META["live_hazard_parity"], verdict="PARITY_HOLDS"))

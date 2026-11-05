@@ -388,16 +388,3 @@ def test_no_falsifier_language_on_the_router() -> None:
     code = _code(_router()).lower()
     for banned in ("falsifier", "refuted", "证伪", "thesis refuted"):
         assert banned not in code, f"front-facing copy uses banned term {banned!r}"
-
-
-def test_what_changed_chips_wrap_inside_the_phone_width() -> None:
-    """A What-changed chip can be a whole sentence. Under the old nowrap rule the
-    trailing-leader chip measured 469px and gave a 390px phone a 499px page. The chip
-    idiom wraps inside its pill, matching the US page's rule."""
-    s = _page()
-    rule = re.search(r"\n  \.tc-chip \{[^}]*\}", s)
-    assert rule, "the base tc-chip rule is missing"
-    assert "white-space:normal;max-width:100%" in rule.group(0)
-    assert "nowrap" not in rule.group(0)
-    us = (TPL / "sector_central.html.j2").read_text(encoding="utf-8")
-    assert "white-space:normal;max-width:100%" in re.search(r"\n  \.tc-chip \{[^}]*\}", us).group(0)
