@@ -99,3 +99,50 @@ def test_grade_hmm_on_synthetic_ledger(tmp_path, monkeypatch):
     g = V.grade_hmm()
     assert g["n_matured"] == 3      # the None row not matured
     assert g["hits"] == 2          # Q1==Q1, Q4==Q4
+
+
+def test_inspect_hmm_cli_is_read_only(tmp_path, monkeypatch, capsys):
+    import json
+    import sys
+    from lib import config
+    root = tmp_path / "regime"
+    root.mkdir()
+    p = root / "regime_fwd_hmm.jsonl"
+    row = {"asof": "2026-07-01", "pred_modal_quad": "Q1",
+           "p_quad_filtered": {"Q1": .7, "Q2": .1, "Q3": .1, "Q4": .1},
+           "realized_quad_at_21d": None}
+    p.write_text(json.dumps(row) + "\n")
+    before = p.read_bytes()
+    def forbidden(*args, **kwargs):
+        pytest.fail("inspection entered the modifying grading/collection path")
+    for name in ("_axis_scores", "mature_hmm", "mature_base_effect", "check_base_effect_pit"):
+        monkeypatch.setattr(V, name, forbidden)
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(sys, "argv", ["validate_regime_fwd", "--inspect-hmm-asof", "2026-07-01"])
+    assert V.main() == 0
+    out = json.loads(capsys.readouterr().out)
+    assert out["recorded_prediction"] == row["p_quad_filtered"]
+    assert out["historical_replay_eligible"] is False
+    assert p.read_bytes() == before
+    assert list(tmp_path.rglob("*")) == [root, p]
+
+
+def test_hmm_inspect_and_accrue_are_mutually_exclusive(monkeypatch):
+    import sys
+    monkeypatch.setattr(sys, "argv", ["validate_regime_fwd", "--accrue",
+                                     "--inspect-hmm-asof", "2026-07-01"])
+    with pytest.raises(SystemExit) as exc:
+        V.main()
+    assert exc.value.code == 2
+
+
+def test_inspect_hmm_missing_date_is_explicit_without_creating_store(tmp_path, monkeypatch, capsys):
+    import json
+    import sys
+    monkeypatch.setattr(V.config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(sys, "argv", ["validate_regime_fwd", "--inspect-hmm-asof", "2026-07-01"])
+    assert V.main() == 1
+    out = json.loads(capsys.readouterr().out)
+    assert out["status"] == "missing_ledger"
+    assert out["recorded_prediction"] is None
+    assert list(tmp_path.iterdir()) == []

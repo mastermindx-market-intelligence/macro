@@ -1,0 +1,20 @@
+{
+  "base_commit": "91fe14e31f6e0d34885e53156e045ff7ce3bf674",
+  "candidate_commit": null,
+  "data_pin": "477b9c3f449e451063634f1078fc6ce47e209648",
+  "frame_sha256": "71b7fe8185c3d2bde8f97909116b411bcd5e3ca831244564a0012ea1fda8f0d2",
+  "fitted_rows": 15467,
+  "compared_fields": [
+    "regime_probs_filtered",
+    "modal_quad",
+    "quads_present",
+    "n_obs",
+    "smoothed_hindsight",
+    "history_filtered"
+  ],
+  "all_identical": true,
+  "scope": "published HMM numerical fields at current and252 historical endpoints on this real committed frame; not portfolio equivalence or production proof",
+  "candidate_parent_commit": "0aa432bf5f24de8f131db0572aff5fc8122b274c",
+  "candidate_source_sha256": "b36e1c10da7db6a4a120a85fceae056f9e7272214fe25bb6be9de85b06f1ced2",
+  "note": "Post-review validation-order repair; source hash binds the precommit bytes without a circular self-commit reference."
+}

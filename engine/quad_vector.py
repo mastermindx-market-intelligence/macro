@@ -2,8 +2,8 @@
 
 THIS MODULE COMPUTES NO PROBABILITIES. One source of truth per concept (P7):
 the continuous quad posterior is owned by the hedgeye-informed program —
-engine/regime_one._causal_filtered_pquad (causal forward-alpha HMM, no
-lookahead), with engine/regime_hmm as the smoothed display sibling. This is a
+engine/regime_one._causal_filtered_pquad (forward-alpha HMM; historical rows
+are reconstructions using the current fit), with engine/regime_hmm as the smoothed display sibling. This is a
 thin publisher that reshapes their output into the stable consumer contract
 the Mastermind bot (and any other machine reader) codes against, so the
 producer can evolve internally without breaking consumers:
@@ -97,8 +97,8 @@ def _drivers(full_row: pd.Series) -> dict:
 
 def _momentum(history: list | None) -> dict | None:
     """d(p)/dt: mean per-session Δp over the trailing _MOM_WINDOW sessions of the
-    causal filtered history — which quad is GAINING mass (the forward tell the
-    discrete transition_state cannot give)."""
+    reconstructed filtered history — which quad gains mass under the CURRENT
+    fit. This is not a sequence of as-issued belief changes or a calibrated forecast."""
     if not history or len(history) < 2:
         return None
     tail = history[-(_MOM_WINDOW + 1):]
@@ -123,6 +123,8 @@ def build(latest: dict, full: pd.DataFrame, asof: pd.Timestamp) -> dict:
     degraded, reason = False, None
     source = None
     history = None
+    history_basis = None
+    model_fit_asof = None
 
     r1 = (latest.get("regime_one") or {})
     pq = ((r1.get("forward") or {}).get("p_quad") or {})
@@ -131,6 +133,8 @@ def build(latest: dict, full: pd.DataFrame, asof: pd.Timestamp) -> dict:
     if p is not None:
         source = "regime_one.forward.p_quad (causal filtered HMM)"
         history = pq.get("history_filtered")
+        history_basis = "reconstructed_with_current_fit"
+        model_fit_asof = pq.get("model_fit_asof")
     else:
         hmm = latest.get("regime_hmm") or {}
         p = _clean_p(hmm.get("regime_probs"))
@@ -140,6 +144,8 @@ def build(latest: dict, full: pd.DataFrame, asof: pd.Timestamp) -> dict:
             source = "regime_hmm.regime_probs (smoothed fallback)"
             pq_asof = hmm.get("asof") or latest.get("date")
             history = hmm.get("history")
+            history_basis = "smoothed_with_current_fit"
+            model_fit_asof = hmm.get("asof")
             degraded, reason = True, "causal p_quad missing; smoothed HMM fallback"
         else:
             p = {q: 0.25 for q in _QUADS}
@@ -164,6 +170,9 @@ def build(latest: dict, full: pd.DataFrame, asof: pd.Timestamp) -> dict:
     confidence = None if pd.isna(agree) else round(float(max_p * agree), 3)
 
     hard = latest.get("quad")
+    momentum = _momentum(history)
+    if momentum is not None:
+        momentum.update(basis=history_basis, historical_replay_eligible=False)
     return {
         "schema_version": 1,
         "asof": str(pq_asof) if pq_asof else str(pd.Timestamp(asof).date()),
@@ -176,7 +185,9 @@ def build(latest: dict, full: pd.DataFrame, asof: pd.Timestamp) -> dict:
         "confidence": confidence,  # max(p) x axis agreement, [0,1]
         "confidence_note": "max(p) * mean(growth_agreement, inflation_agreement)",
         "drivers": _drivers(row),
-        "transition_momentum": _momentum(history),
+        "transition_momentum": momentum,
+        "model_fit_asof": model_fit_asof,
+        "confidence_basis": "heuristic_not_calibrated_probability",
         "degraded": bool(degraded),
         "degrade_reason": reason,
     }

@@ -407,7 +407,7 @@ def run(force: bool = False) -> dict:
                 _r1_prev = json.loads(_r1_path.read_text())
             except Exception:  # noqa: BLE001
                 _r1_prev = None
-        _r1_out = _r1.compute(full, _r1_rel, _r1_bex, latest, prev=_r1_prev, data_dir=p)
+        _r1_out = _r1.compute(full, _r1_rel, _r1_bex, latest, prev=_r1_prev, data_dir=p.parent)
         latest["regime_one"] = _r1_out
         with open(_r1_path, "w") as _r1fh:
             json.dump(_r1_out, _r1fh, indent=2, default=str)
