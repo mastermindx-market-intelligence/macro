@@ -433,7 +433,7 @@ unresolved:
 - Preserve Sector six views and basket behavior, Paper REVISE, and C4 SPEC_ONLY/UNAPPLIED/UNRUN. previous_runtime=null
   does not establish A-to-B-to-A rollback.
 next_actions:
-- "Finish qualified current source diagnostics/records/plan, publish one genuine10674 successor unarmed for natural exacthead proof and normal independentrelease; then native/API/beta/served. Keep10696/GMIatomic/JP/runtime/browser/UNKNOWN holds and newHistoryNOT_INSTALLED explicit."
+- "Finish qualified current source records/plan without deferred diagnostics as a gate, publish one genuine10674 successor unarmed for natural exacthead proof and normal independentrelease; then native/API/beta/served. Keep10696/GMIatomic/JP/runtime/browser/UNKNOWN holds and newHistoryNOT_INSTALLED explicit."
 - "Freeze coherent Company/T55/History/Risk/official API source and actual current-base plan, publish same10674 branch unarmed for one natural proof, then qualify genuine formal/non-author protected release; preserve original10696/9533/runtime/browser effects."
 - Continue the existing Company owner's independently ready T52 composition. The finite P9 publication window has expired; actual review/CI/custody gates still apply.
 - Preserve Projection10696 unarmed until the existing Ontology repair, original effects, current CI and actual independent formal review/release decision qualify; then export through the original canonical owner.
@@ -545,10 +545,11 @@ The original Ontology timeout remains UNKNOWN. Retained logs prove a cumulative
 600-second logical-job deadline:373.41s acquisition plus63.78s earlier suites
 left162.81s for the browser suite, still advancing at cutoff. Original execution
 quiescence is qualified narrowly through the documented hosted-VM lifecycle and
-mock/local side-effect audit, not semantic PASS or a speed fix. Current CI owner
-is preparing bounded phase diagnostics for a genuinely changed next proof; no
-budget increase, old rerun or unproved setup shortcut is authorized. Future P9
-rollout is not a release prerequisite. Use the currently installed lawful mechanism with actual
+mock/local side-effect audit, not semantic PASS or a speed fix. The proposed phase diagnostics
+were deferred before launch with no postimage, test or live worker; they are not
+a release gate. Proceed with the genuine repaired successor and this diagnosed
+timing limitation. No speed fix, budget increase, old rerun or unproved setup
+shortcut is claimed or authorized. Future P9 rollout is not a release prerequisite. Use the currently installed lawful mechanism with actual
 current-head/base/plan proof, genuine formal review and independent arming.
 
 Root's scoped source disposition at #10674/comment6663828912 releases only the
@@ -583,8 +584,8 @@ The latest validated mmtask export is2026-11-05T19:24:43Z:153 verified entries,
 | P12.T2.S14.S8.S7.S5 | reviewed | Integrate accepted surveillance ordered-owner guard successor |
 | P12.T2.S14.S8.S7.S6 | reviewed | Compose qualified IM14 fixture-only preparation without discarded full render |
 
-Next: freeze the actual final source/closure/eligible plan with qualified diagnostic
-input, retain this same independent reviewer, then one normal same-branch nonforce
+Next: freeze the actual final source/closure/eligible plan, retain this same
+independent reviewer, then one normal same-branch nonforce
 publication and one natural exact-head CI return. Keep unarmed until actual proof,
 formal non-author review, source holds and independent release predicates qualify.
 Continue through trusted protected landing, normal native/API installation and
