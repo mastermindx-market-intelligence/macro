@@ -1,0 +1,1016 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "hover",
+        "name": "nbcard-hover",
+        "spec": "nbcard-hover:hover(a.nbcard)",
+        "value": "a.nbcard"
+      },
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "nbcard-focus",
+        "spec": "nbcard-focus:focus(a.nbcard)",
+        "value": "a.nbcard"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-11-05T06:58:26Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/overlay.json",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/cn_prophet_live.js?v=e4bfdad0",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861908000",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861914286",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:3100/terminal?sym=603530.SS&from=macro&ret=http%3A%2F%2F127.0.0.1%3A8767%2Fnew%2Fchina_stocks.html",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861921581",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861928760",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861934415",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861941721",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861948936",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861954729",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861962059",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861969280",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861975108",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861982459",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861989625",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861995175",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862002299",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862009362",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862014909",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862022131",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862029333",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862034917",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862042094",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862049274",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862054878",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862062232",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/overlay.json"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/cn_prophet_live.js?v=e4bfdad0"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861908000"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861914286"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861921581"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861928760"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861934415"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861941721"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861948936"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861954729"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861962059"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861969280"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861975108"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861982459"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861989625"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793861995175"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862002299"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862009362"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862014909"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862022131"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862029333"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862034917"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862042094"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862049274"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862054878"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8767/new/live/china_risk_state.json?t=1793862062232"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3574,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 7151,
+            "elements_wider_than_viewport": 20,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 2,
+        "document_height_px": 3574,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 5,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 31,
+        "payload_bytes_total": 3545152,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 38,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 1450
+      },
+      "page_id": "china_stocks.html",
+      "registry_route": "/china_stocks.html",
+      "route": "/china_stocks.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 942097,
+          "captured": true,
+          "file": "captures/48ef168095cb201d.png",
+          "force_state": null,
+          "height": 3574,
+          "locale": "en",
+          "sha256": "48ef168095cb201d669f8a5dc861c9b8601aeaa7693f3e62dd6706ff71208827",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.7059769299416876,
+            "inp_proxy_ms": null,
+            "lcp_ms": 1056,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 919388,
+          "captured": true,
+          "file": "captures/874d3da25b8e46e6--nbcard-hover.png",
+          "force_state": "nbcard-hover",
+          "height": 3574,
+          "locale": "en",
+          "sha256": "874d3da25b8e46e627de425a700e499b99d3923f46342c752403de6d98d27b55",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.6597349736719956,
+            "inp_proxy_ms": null,
+            "lcp_ms": 168,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 897430,
+          "captured": true,
+          "file": "captures/f7dd2b999d1089b4--nbcard-focus.png",
+          "force_state": "nbcard-focus",
+          "height": 3574,
+          "locale": "en",
+          "sha256": "f7dd2b999d1089b4184c714962cf88d312d70e5fa573a5b4928c3da53cac7b6c",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.6597349309390138,
+            "inp_proxy_ms": null,
+            "lcp_ms": 184,
+            "resource_count": 36,
+            "server_timing": [],
+            "transfer_bytes": 1451094
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 941134,
+          "captured": true,
+          "file": "captures/47bd9c441a0432a8.png",
+          "force_state": null,
+          "height": 3574,
+          "locale": "en",
+          "sha256": "47bd9c441a0432a8ffa7e7e0eec7594e1955c8e871ea876964cc776ce13efe0c",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6664778822575741,
+            "inp_proxy_ms": null,
+            "lcp_ms": 176,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 919981,
+          "captured": true,
+          "file": "captures/4968d6ff11ba762f--nbcard-hover.png",
+          "force_state": "nbcard-hover",
+          "height": 3574,
+          "locale": "en",
+          "sha256": "4968d6ff11ba762fcc8be466a2c1d41e7b0635be44a42c31a61ddf0d21839038",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6664779249905559,
+            "inp_proxy_ms": null,
+            "lcp_ms": 176,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 902044,
+          "captured": true,
+          "file": "captures/5b221ec68cdb22d2--nbcard-focus.png",
+          "force_state": "nbcard-focus",
+          "height": 3574,
+          "locale": "en",
+          "sha256": "5b221ec68cdb22d29c16d83a242178f64ce819d3b4273895055c568a21195ddd",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6664778822575741,
+            "inp_proxy_ms": null,
+            "lcp_ms": 188,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 887317,
+          "captured": true,
+          "file": "captures/da24dc6e71672602.png",
+          "force_state": null,
+          "height": 3492,
+          "locale": "zh",
+          "sha256": "da24dc6e716726025fa7ddc2e757eff3d1d8fd9844ccd7fbe3a0ed71f964a8e3",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.6562719930180471,
+            "inp_proxy_ms": null,
+            "lcp_ms": 180,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1500366
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 864131,
+          "captured": true,
+          "file": "captures/dae6419c551c9797--nbcard-hover.png",
+          "force_state": "nbcard-hover",
+          "height": 3492,
+          "locale": "zh",
+          "sha256": "dae6419c551c979745dedb2f6b36659c3c448fedd490561f1dde8c849e68fbd0",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.6562719235769516,
+            "inp_proxy_ms": null,
+            "lcp_ms": 268,
+            "resource_count": 39,
+            "server_timing": [],
+            "transfer_bytes": 1500366
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 843310,
+          "captured": true,
+          "file": "captures/eed212607f89a1b7--nbcard-focus.png",
+          "force_state": "nbcard-focus",
+          "height": 3492,
+          "locale": "zh",
+          "sha256": "eed212607f89a1b7fcbcd30dd7fbafac97cb8da838c690d3d060a07e19d7d1e9",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.6562719235769516,
+            "inp_proxy_ms": null,
+            "lcp_ms": 184,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1500366
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 890130,
+          "captured": true,
+          "file": "captures/dc3e0133db5f205e.png",
+          "force_state": null,
+          "height": 3492,
+          "locale": "zh",
+          "sha256": "dc3e0133db5f205e0b2efcbc7382feee1545036b7213869941e5aaab9f5d8df5",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6631854175876362,
+            "inp_proxy_ms": null,
+            "lcp_ms": 248,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1500366
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 865957,
+          "captured": true,
+          "file": "captures/43977e7e5102174c--nbcard-hover.png",
+          "force_state": "nbcard-hover",
+          "height": 3492,
+          "locale": "zh",
+          "sha256": "43977e7e5102174c42ff700c863df9b18c1d04d57b02891b464a05ab565afc2d",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6631855106055492,
+            "inp_proxy_ms": null,
+            "lcp_ms": 180,
+            "resource_count": 39,
+            "server_timing": [],
+            "transfer_bytes": 1500366
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 849122,
+          "captured": true,
+          "file": "captures/9e487e274acce3ff--nbcard-focus.png",
+          "force_state": "nbcard-focus",
+          "height": 3492,
+          "locale": "zh",
+          "sha256": "9e487e274acce3ff8ab14c95379d3d440c473223c300ea01de9b4420f770f685",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6631855106055492,
+            "inp_proxy_ms": null,
+            "lcp_ms": 268,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1500366
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 679310,
+          "captured": true,
+          "file": "captures/e0efddc24826df06.png",
+          "force_state": null,
+          "height": 7151,
+          "locale": "en",
+          "sha256": "e0efddc24826df0606c076865a91b0608eb7df2ff5d7905c78f9b596db415387",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.22129889899713842,
+            "inp_proxy_ms": null,
+            "lcp_ms": 468,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 653760,
+          "captured": true,
+          "file": "captures/5a82063731f9ee5f--nbcard-hover.png",
+          "force_state": "nbcard-hover",
+          "height": 7151,
+          "locale": "en",
+          "sha256": "5a82063731f9ee5fa4fe3f062d24ea2048ed21e1ca0d65aa8bf75611a948908e",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.22129918606276403,
+            "inp_proxy_ms": null,
+            "lcp_ms": 4712,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 658910,
+          "captured": true,
+          "file": "captures/c06f8c1d25505ea2--nbcard-focus.png",
+          "force_state": "nbcard-focus",
+          "height": 7203,
+          "locale": "en",
+          "sha256": "c06f8c1d25505ea2d39ac406301646c29062fcf8d4c43b15307dc7232486b3d0",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.2638679794051741,
+            "inp_proxy_ms": null,
+            "lcp_ms": 4624,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 689611,
+          "captured": true,
+          "file": "captures/59bc19c86f6771d3.png",
+          "force_state": null,
+          "height": 7203,
+          "locale": "en",
+          "sha256": "59bc19c86f6771d3b26e2748da902d2c77d98523bded07a21777fc01dea0f4ea",
+          "theme": "light",
+          "timing": {
+            "cls": 0.2741414934635067,
+            "inp_proxy_ms": null,
+            "lcp_ms": 524,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 661226,
+          "captured": true,
+          "file": "captures/3128149f5c43f74a--nbcard-hover.png",
+          "force_state": "nbcard-hover",
+          "height": 7203,
+          "locale": "en",
+          "sha256": "3128149f5c43f74a12e2ca52bced60bf671fef4b2a28f504932caab6b4a7f0d3",
+          "theme": "light",
+          "timing": {
+            "cls": 0.2741370538451243,
+            "inp_proxy_ms": null,
+            "lcp_ms": 4672,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 659522,
+          "captured": true,
+          "file": "captures/69e79380d3026558--nbcard-focus.png",
+          "force_state": "nbcard-focus",
+          "height": 7203,
+          "locale": "en",
+          "sha256": "69e79380d3026558f5da65d6d0e471c7732a271a7b0ddc08dca8798a75cd7dc7",
+          "theme": "light",
+          "timing": {
+            "cls": 0.2741370538451243,
+            "inp_proxy_ms": null,
+            "lcp_ms": 4740,
+            "resource_count": 36,
+            "server_timing": [],
+            "transfer_bytes": 1451094
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 636276,
+          "captured": true,
+          "file": "captures/c55635661674daf5.png",
+          "force_state": null,
+          "height": 5750,
+          "locale": "zh",
+          "sha256": "c55635661674daf5b1b92f6e739f571a83b419e5491cfcad8bfeb5fb1eb1ff4e",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.2770250708224195,
+            "inp_proxy_ms": null,
+            "lcp_ms": 564,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 606208,
+          "captured": true,
+          "file": "captures/b849cd576893198a--nbcard-hover.png",
+          "force_state": "nbcard-hover",
+          "height": 5750,
+          "locale": "zh",
+          "sha256": "b849cd576893198a39cb7f364eb0e805339aca4573d8ff5d90ec64f70c30569f",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.27702460434077786,
+            "inp_proxy_ms": null,
+            "lcp_ms": 4764,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 604209,
+          "captured": true,
+          "file": "captures/2a2b241a6d2a16f9--nbcard-focus.png",
+          "force_state": "nbcard-focus",
+          "height": 5750,
+          "locale": "zh",
+          "sha256": "2a2b241a6d2a16f992397d5d031a776372d66ea75bf8283c374cec3858c1ed5e",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.27702460434077786,
+            "inp_proxy_ms": null,
+            "lcp_ms": 4720,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 634147,
+          "captured": true,
+          "file": "captures/fb07f9013a2c662c.png",
+          "force_state": null,
+          "height": 5750,
+          "locale": "zh",
+          "sha256": "fb07f9013a2c662cd294f79bca13f7eeaece513e16da9f3019744c54de4e4d24",
+          "theme": "light",
+          "timing": {
+            "cls": 0.28774950884781253,
+            "inp_proxy_ms": null,
+            "lcp_ms": 616,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 605457,
+          "captured": true,
+          "file": "captures/5c1fbf02157fe8c4--nbcard-hover.png",
+          "force_state": "nbcard-hover",
+          "height": 5750,
+          "locale": "zh",
+          "sha256": "5c1fbf02157fe8c439e9fd0b4046c805544d954afe7a90fa2c0005587b06d310",
+          "theme": "light",
+          "timing": {
+            "cls": 0.28774950884781253,
+            "inp_proxy_ms": null,
+            "lcp_ms": 4780,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nbcard-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 603747,
+          "captured": true,
+          "file": "captures/54454110211b5c7d--nbcard-focus.png",
+          "force_state": "nbcard-focus",
+          "height": 5750,
+          "locale": "zh",
+          "sha256": "54454110211b5c7de587f744869d731442d06b3cf35ca5a9e246a766b78e14bc",
+          "theme": "light",
+          "timing": {
+            "cls": 0.28774950884781253,
+            "inp_proxy_ms": null,
+            "lcp_ms": 4860,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1475794
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/china_stocks.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": "http://127.0.0.1:8767/new",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "unavailable: a live origin does not disclose the commit it is serving",
+    "site_dir": null
+  },
+  "timing_basis": "lab",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.4.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 24,
+    "states_captured": 24
+  }
+}
