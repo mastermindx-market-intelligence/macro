@@ -7,9 +7,13 @@ not rebase the engine's dirty working tree to get there.
 """
 from __future__ import annotations
 
+import gzip
+import hashlib
 import json
 import os
+import re
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -22,8 +26,10 @@ from scripts import security_state_producer as producer
 ROOT = Path(__file__).resolve().parents[1]
 DAILY = ROOT / ".github" / "workflows" / "daily.yml"
 PROPHET_STEP = "Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)"
+BOARD_ACCEPTANCE_STEP = "prophet-board-acceptance (post-publish alarm, never a gate)"
 CHECKPOINT_STEP = "checkpoint Prophet outputs to main (durable before engine tail)"
-R2_PUBLISH_STEP = "publish Prophet public health receipt to R2 (and enforce index tombstone)"
+R2_PUBLISH_STEP = "publish Prophet public health receipt to R2"
+R2_TOMBSTONE_STEP = "enforce Prophet R2 index tombstone (unconditional)"
 ACCEPTED_SOURCE_STEP = "restore accepted Prophet source for downstream derivations"
 STAGE_SHADOW_STEP = (
     "Prophet × Stage forward-shadow (tag actual entries + nightly grade advance)"
@@ -78,15 +84,18 @@ def _git(
     )
 
 
-def _write(repo: Path, relative: str, content: str) -> None:
+def _write(repo: Path, relative: str, content: str | bytes) -> None:
     path = repo / relative
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8")
+    if isinstance(content, bytes):
+        path.write_bytes(content)
+    else:
+        path.write_text(content, encoding="utf-8")
 
 
 def _accepted_source_fixture(
     tmp_path: Path,
-) -> tuple[Path, str, dict[str, str], tuple[str, ...]]:
+) -> tuple[Path, str, dict[str, str | bytes], tuple[str, ...]]:
     origin = tmp_path / "origin.git"
     runner = tmp_path / "runner"
     _git(tmp_path, "init", "--bare", str(origin))
@@ -96,6 +105,7 @@ def _accepted_source_fixture(
     _git(runner, "config", "user.email", "prophet-restore@example.invalid")
 
     base = {
+        "site/factordata/us_standouts.json": '{"generation":"stale-board"}\n',
         "site/prophet/index.json": '{"generation":"stale"}\n',
         "data/prophet/ledger.jsonl": '{"id":"existing"}\n',
         "data/prophet_arena/scoreboard.json": '{"generation":"stale"}\n',
@@ -109,10 +119,19 @@ def _accepted_source_fixture(
     _git(runner, "remote", "add", "origin", str(origin))
     _git(runner, "push", "-u", "origin", "main")
 
+    source_bytes = b'{"generation":"accepted-source-board"}\n'
+    source_sha = hashlib.sha256(source_bytes).hexdigest()
+    source_rel = f"data/prophet/origination_sources/{source_sha}.json.gz"
     accepted = {
-        "site/prophet/index.json": '{"generation":"accepted"}\n',
+        "site/prophet/index.json": json.dumps({
+            "generation": "accepted",
+            "source_board_sha256": source_sha,
+            "source_board_snapshot_path": source_rel,
+            "source_board_snapshot_encoding": "gzip",
+        }, sort_keys=True) + "\n",
         "site/prophet/plans/NEW-BULL-20260808.json": '{"id":"NEW-BULL-20260808"}\n',
         "data/prophet/origination_receipts/run-2.json": '{"schema":"receipt/v1"}\n',
+        source_rel: gzip.compress(source_bytes, compresslevel=9, mtime=0),
         "data/prophet_arena/price_basis_trigger_v2/C0_champion_mirror.jsonl": (
             '{"plan_id":"NEW-BULL-20260808"}\n'
         ),
@@ -130,6 +149,11 @@ def _accepted_source_fixture(
         "data/prophet_arena/local-only.json",
     )
     _write(runner, "site/prophet/index.json", '{"generation":"dirty-build"}\n')
+    _write(
+        runner,
+        "site/factordata/us_standouts.json",
+        '{"generation":"fresh-product-board"}\n',
+    )
     for relative in local_only:
         _write(runner, relative, "local-only\n")
     return runner, accepted_sha, accepted, local_only
@@ -159,22 +183,26 @@ def test_successful_prophet_build_is_checkpointed_immediately_before_the_tail() 
     steps = _engine_steps()
     names = [s.get("name") for s in steps]
     build_i = names.index(PROPHET_STEP)
+    acceptance_i = names.index(BOARD_ACCEPTANCE_STEP)
     checkpoint_i = names.index(CHECKPOINT_STEP)
     r2_i = names.index(R2_PUBLISH_STEP)
+    tombstone_i = names.index(R2_TOMBSTONE_STEP)
     source_i = names.index(ACCEPTED_SOURCE_STEP)
 
-    assert checkpoint_i == build_i + 1
+    assert acceptance_i == build_i + 1
+    assert checkpoint_i == acceptance_i + 1
     assert r2_i == checkpoint_i + 1
-    assert source_i == r2_i + 1
+    assert tombstone_i == r2_i + 1
+    assert source_i == tombstone_i + 1
     assert source_i < names.index(STAGE_SHADOW_STEP)
     assert checkpoint_i < names.index(ENGINE_BARRIER_STEP)
     assert checkpoint_i < names.index("commit engine outputs")
 
 
 def test_prophet_workflow_embedded_python_is_syntactically_valid() -> None:
-    names = (PROPHET_STEP, R2_PUBLISH_STEP, STAGE_SHADOW_STEP)
+    names = (PROPHET_STEP, R2_PUBLISH_STEP, R2_TOMBSTONE_STEP, STAGE_SHADOW_STEP)
     blocks = [block for name in names for block in _python_heredocs(_step(name)["run"])]
-    assert len(blocks) >= 6
+    assert len(blocks) >= 7
     for i, source in enumerate(blocks):
         compile(source, f"daily.yml:{names}:{i}", "exec")
 
@@ -283,10 +311,20 @@ def test_r2_publisher_reconstructs_and_hashes_the_checkpointed_git_blob() -> Non
     assert '"sha256": expected_sha' in run
     assert 'if status == 412:' in run
     assert 'os.environ.get("R2_BUCKET") or "mastermindx"' in run
-    # DEC:B1-PROPHET-PUBLIC-SPLIT: the full plan book must never reach R2 again,
-    # and the forbidden key is enforced closed by a self-healing tombstone.
+    # DEC:B1-PROPHET-PUBLIC-SPLIT: this step publishes health only.
+    assert "FORBIDDEN_INDEX_KEY" not in run
+    assert "R2_INDEX_KEY" not in run
+
+
+def test_r2_index_tombstone_runs_on_every_non_cancelled_nightly() -> None:
+    tombstone = _step(R2_TOMBSTONE_STEP)
+    run = tombstone["run"]
+
+    assert tombstone["if"] == "${{ !cancelled() }}"
+    assert tombstone["continue-on-error"] is True
+    assert tombstone["timeout-minutes"] == 5
     assert "FORBIDDEN_INDEX_KEY = \"prophet/index.json\"" in run
-    assert "enforce_index_tombstone" in run
+    assert "client.head_object(Bucket=bucket, Key=FORBIDDEN_INDEX_KEY)" in run
     assert "client.delete_object(Bucket=bucket, Key=FORBIDDEN_INDEX_KEY)" in run
     assert "Prophet R2 tombstone::" in run
     assert "removed forbidden public object {FORBIDDEN_INDEX_KEY}" in run
@@ -365,7 +403,13 @@ def test_accepted_source_restore_handles_new_paths_over_a_stale_head(
     assert "ready=true" in outputs
     assert f"accepted_sha={accepted_sha}" in outputs
     for relative, content in accepted.items():
-        assert (repo / relative).read_text(encoding="utf-8") == content
+        if isinstance(content, bytes):
+            assert (repo / relative).read_bytes() == content
+        else:
+            assert (repo / relative).read_text(encoding="utf-8") == content
+    assert (repo / "site/factordata/us_standouts.json").read_text(encoding="utf-8") == (
+        '{"generation":"fresh-product-board"}\n'
+    )
     for relative in local_only:
         assert not (repo / relative).exists()
     # Downstream readers get accepted bytes without staging them against the
@@ -420,6 +464,142 @@ def test_checkpoint_never_rebases_the_dirty_engine_worktree() -> None:
     assert "git pull --rebase --autostash" not in run
     assert checkpoint["continue-on-error"] is True
     assert checkpoint["timeout-minutes"] == 12
+
+
+def test_zero_origin_night_checkpoints_exact_source_snapshot_not_live_board(
+    tmp_path: Path, monkeypatch
+) -> None:
+    import scripts.build_prophet as bp
+
+    repo = tmp_path / "repo"
+    board_rel = "site/factordata/us_standouts.json"
+    board = {
+        "as_of": "2026-09-14",
+        "gate_go": False,
+        "buy": [],
+        "staleness": {
+            "price_through": "2026-09-14",
+            "delayed": False,
+            "unknown": False,
+            "basis": "panel_majority",
+            "inputs": {"panel": {"mixed_vintage": False}},
+        },
+    }
+    _write(repo, board_rel, json.dumps(board, sort_keys=True) + "\n")
+    (repo / "site/prophet/plans").mkdir(parents=True)
+
+    env = os.environ.copy()
+    env.update({
+        "GITHUB_WORKSPACE": str(repo),
+        "PROPHET_BASELINE": str(tmp_path / "before.json"),
+        "PROPHET_DELTA": str(tmp_path / "delta.tsv"),
+        "PROPHET_SOURCE_SNAPSHOT": str(tmp_path / "source.json"),
+        "PROPHET_SOURCE_BLOB": str(tmp_path / "source-board.json"),
+        "PYTHONPATH": str(ROOT),
+    })
+    blocks = _python_heredocs(_step(PROPHET_STEP)["run"])
+    assert len(blocks) == 3
+
+    first = subprocess.run(
+        [sys.executable, "-c", blocks[0]],
+        cwd=ROOT, env=env, check=False, capture_output=True, text=True,
+    )
+    assert first.returncode == 0, first.stdout + first.stderr
+
+    monkeypatch.setattr(bp, "STANDOUTS_PATH", repo / board_rel)
+    monkeypatch.setattr(bp, "LEDGER_DIR", repo / "data/prophet")
+    _, source_sha, source_rel = bp._freeze_origination_source_board()
+    source_path = repo / source_rel
+    assert gzip.decompress(source_path.read_bytes()) == (repo / board_rel).read_bytes()
+
+    receipt = subprocess.run(
+        [sys.executable, "-c", blocks[1]],
+        cwd=ROOT, env=env, check=False, capture_output=True, text=True,
+    )
+    assert receipt.returncode == 0, receipt.stdout + receipt.stderr
+    assert not (repo / "data/prophet/origination_receipts").exists()
+
+    manifest = subprocess.run(
+        [sys.executable, "-c", blocks[2]],
+        cwd=ROOT, env=env, check=False, capture_output=True, text=True,
+    )
+    assert manifest.returncode == 0, manifest.stdout + manifest.stderr
+    rows = [line.split("\t") for line in (tmp_path / "delta.tsv").read_text().splitlines()]
+    paths = [row[0] for row in rows]
+    assert source_rel == f"data/prophet/origination_sources/{source_sha}.json.gz"
+    assert paths == [source_rel]
+    assert board_rel not in paths
+
+
+@pytest.mark.parametrize("source_state", ["missing", "malformed"])
+def test_nightly_missing_or_malformed_source_withholds_nonfatally(
+    tmp_path: Path, source_state: str
+) -> None:
+    repo = tmp_path / "repo"
+    (repo / "site/prophet/plans").mkdir(parents=True)
+    board = repo / "site/factordata/us_standouts.json"
+    if source_state == "malformed":
+        board.parent.mkdir(parents=True)
+        board.write_bytes(b'{"as_of":"2026-09-14"')
+
+    output = tmp_path / "github-output.txt"
+    env = os.environ.copy()
+    env.update({
+        "GITHUB_WORKSPACE": str(repo),
+        "RUNNER_TEMP": str(tmp_path),
+        "GITHUB_RUN_ID": "source-failure-test",
+        "GITHUB_RUN_ATTEMPT": "1",
+        "GITHUB_OUTPUT": str(output),
+        "PYTHONPATH": str(ROOT),
+    })
+    result = subprocess.run(
+        ["bash", str(ROOT / "scripts/ci/daily_engine_prophet_nightly.sh")],
+        cwd=ROOT,
+        env=env,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "succeeded=false" in output.read_text(encoding="utf-8")
+    assert "could not snapshot the closed Prophet output allowlist" in result.stdout
+    assert not (repo / "site/prophet/index.json").exists()
+    assert not (repo / "data/prophet/origination_sources").exists()
+
+
+def test_source_snapshot_not_live_board_is_closed_inside_every_checkpoint_proof() -> None:
+    build_run = _step(PROPHET_STEP)["run"]
+    checkpoint_run = _step(CHECKPOINT_STEP)["run"]
+    publish_run = _step(R2_PUBLISH_STEP)["run"]
+    accepted_run = _step(ACCEPTED_SOURCE_STEP)["run"]
+    final_run = _step("commit engine outputs")["run"]
+    board = "site/factordata/us_standouts.json"
+    source_dir = "data/prophet/origination_sources"
+
+    exact_blocks = re.findall(r"exact = \{(.*?)\n\}", build_run, flags=re.S)
+    assert len(exact_blocks) == 2
+    assert all(board not in block for block in exact_blocks)
+    assert build_run.count(f'"{source_dir}": "*.json.gz"') == 2
+    assert "head_fingerprint" not in build_run
+
+    protected = checkpoint_run.split("PROTECTED_PROPHET_PATHS=(", 1)[1].split(")", 1)[0]
+    allowlist = checkpoint_run.split('case "$rel" in', 1)[1].split("*)", 1)[0]
+    assert board not in protected
+    assert board not in allowlist
+    assert f"{source_dir}/*.json.gz" in allowlist
+    assert board not in publish_run
+    assert board not in accepted_run
+
+    safe_restore = final_run.split("if ! git checkout HEAD --", 1)[1].split("; then", 1)[0]
+    reset_block = final_run.split("git reset -q --", 1)[1].split("git clean -fd --", 1)[0]
+    assert board not in safe_restore
+    assert board not in reset_block
+    assert "data/prophet" in reset_block
+    clean_tail = final_run.split("git clean -fd --", 2)[2].split(
+        "# Re-exclude", 1
+    )[0]
+    assert source_dir in clean_tail
 
 
 def test_build_emits_a_hashed_closed_allowlist_delta_manifest() -> None:
@@ -857,7 +1037,7 @@ def _ss_patch_owner_stack(monkeypatch: pytest.MonkeyPatch, seen: list[tuple[str,
             "source_asof": "2026-09-24",
             "source_delayed": False,
             "source_unknown": False,
-            "current_plan_refs": [f"{ticker}-PLAN"],
+            "has_current_plan": True,
         },
     )
 
@@ -867,10 +1047,9 @@ def _ss_patch_owner_stack(monkeypatch: pytest.MonkeyPatch, seen: list[tuple[str,
         state["generated_at"] = str(kwargs["now"])
         state["content_sha256"] = f"new-{ticker}"
         state["legs"]["opportunity_context"]["prophet"] = {
-            "ref": f"{ticker}-PLAN",
-            "refs": [f"{ticker}-PLAN"],
+            "ref": None,
             "state": "AVAILABLE",
-            "reason": None,
+            "reason": "PROPHET_CURRENT_OUTLOOK_AVAILABLE",
         }
         return state
 
@@ -903,8 +1082,12 @@ def test_refresh_reuses_owner_read_and_renders_only_allowlisted_pages(
     assert got == ["AAPL", "MSFT"]
     assert [ticker for ticker, _read in seen] == ["AAPL", "MSFT"]
     for ticker, owner_read in seen:
-        assert owner_read["current_plan_refs"] == [f"{ticker}-PLAN"]
+        assert owner_read["has_current_plan"] is True
         rec = json.loads((site / "stockdata" / f"{ticker}.json").read_text())
+        assert rec["security_state"]["legs"]["opportunity_context"]["prophet"] == {
+            "ref": None, "state": "AVAILABLE", "reason": "PROPHET_CURRENT_OUTLOOK_AVAILABLE",
+        }
+        assert "-PLAN" not in json.dumps(rec)
         assert rec["security_state"]["generated_at"] == "2026-09-24T15:00:00+00:00"
         assert (site / "stocks" / f"{ticker}.html").read_text() == f"NEW-{ticker}"
 
@@ -1141,7 +1324,7 @@ def _ss_write_prophet_index(path: Path, *, plans: list[dict], **overrides: objec
     path.write_text(json.dumps(payload), encoding="utf-8")
 
 
-def test_owner_read_selects_only_explicitly_open_plan_refs(tmp_path: Path) -> None:
+def test_owner_read_reduces_open_plans_to_boolean_without_identifiers(tmp_path: Path) -> None:
     path = tmp_path / "index.json"
     _ss_write_prophet_index(
         path,
@@ -1158,7 +1341,7 @@ def test_owner_read_selects_only_explicitly_open_plan_refs(tmp_path: Path) -> No
         "source_asof": "2026-09-24",
         "source_delayed": False,
         "source_unknown": False,
-        "current_plan_refs": ["MSFT-BULL-NOW"],
+        "has_current_plan": True,
     }
 
 
@@ -1172,7 +1355,7 @@ def test_owner_read_cleanly_distinguishes_no_current_plan(tmp_path: Path) -> Non
     )
     got = producer._read_prophet_owner_read(path, "MSFT")
     assert got["disposition"] == "found"
-    assert got["current_plan_refs"] == []
+    assert got["has_current_plan"] is False
 
 
 def test_owner_read_preserves_delayed_source_clock(tmp_path: Path) -> None:
@@ -1194,7 +1377,7 @@ def test_owner_read_refuses_malformed_matching_plan_instead_of_calling_absence(t
     _ss_write_prophet_index(path, plans=[{"id": "MSFT-BULL-UNKNOWN", "asset": "MSFT"}])
     got = producer._read_prophet_owner_read(path, "MSFT")
     assert got["disposition"] == "conflicted"
-    assert got["current_plan_refs"] == []
+    assert got["has_current_plan"] is None
 
 
 
@@ -1216,7 +1399,7 @@ def test_owner_read_excludes_invalidated_episode_even_when_closed_flag_is_false(
     )
     got = producer._read_prophet_owner_read(path, "MSFT")
     assert got["disposition"] == "found"
-    assert got["current_plan_refs"] == []
+    assert got["has_current_plan"] is False
 
 
 def test_owner_read_refuses_unknown_matching_lifecycle(tmp_path: Path) -> None:
@@ -1234,7 +1417,7 @@ def test_owner_read_refuses_unknown_matching_lifecycle(tmp_path: Path) -> None:
     )
     got = producer._read_prophet_owner_read(path, "MSFT")
     assert got["disposition"] == "conflicted"
-    assert got["current_plan_refs"] == []
+    assert got["has_current_plan"] is None
 
 
 def test_owner_read_excludes_quarantined_open_episode(tmp_path: Path) -> None:
@@ -1253,7 +1436,7 @@ def test_owner_read_excludes_quarantined_open_episode(tmp_path: Path) -> None:
     )
     got = producer._read_prophet_owner_read(path, "MSFT")
     assert got["disposition"] == "found"
-    assert got["current_plan_refs"] == []
+    assert got["has_current_plan"] is False
 
 def test_owner_read_unavailable_when_index_missing(tmp_path: Path) -> None:
     got = producer._read_prophet_owner_read(tmp_path / "missing.json", "MSFT")
@@ -1263,7 +1446,7 @@ def test_owner_read_unavailable_when_index_missing(tmp_path: Path) -> None:
         "source_asof": None,
         "source_delayed": None,
         "source_unknown": None,
-        "current_plan_refs": [],
+        "has_current_plan": None,
     }
 
 
@@ -1272,4 +1455,63 @@ def test_owner_read_refuses_wrong_index_schema(tmp_path: Path) -> None:
     path.write_text(json.dumps({"schema": "wrong", "plans": []}), encoding="utf-8")
     got = producer._read_prophet_owner_read(path, "MSFT")
     assert got["disposition"] == "conflicted"
-    assert got["current_plan_refs"] == []
+    assert got["has_current_plan"] is None
+
+
+@pytest.mark.parametrize("bad_row", [
+    {"asset": "MSFT", "closed": False, "lifecycle_state": "ready"},
+    {"id": "PRIVATE-BAD", "asset": "MSFT", "closed": False, "lifecycle_state": "unknown"},
+    {"id": "PRIVATE-BAD", "asset": "MSFT", "closed": "false", "lifecycle_state": "ready"},
+    {"id": "PRIVATE-FIRST", "asset": "MSFT", "closed": False, "lifecycle_state": "ready"},
+    {"id": "PRIVATE-UNBOUND"},
+    "PRIVATE-NONOBJECT",
+])
+def test_owner_read_scans_after_first_plan_and_never_echoes_bad_rows(
+    tmp_path: Path, bad_row: object,
+) -> None:
+    path = tmp_path / "index.json"
+    _ss_write_prophet_index(path, plans=[
+        {"id": "PRIVATE-FIRST", "asset": "MSFT", "closed": False, "lifecycle_state": "ready"},
+        bad_row,
+    ])
+    got = producer._read_prophet_owner_read(path, "MSFT")
+    assert got["disposition"] == "conflicted"
+    assert got["has_current_plan"] is None
+    assert "PRIVATE" not in json.dumps(got)
+
+
+@pytest.mark.parametrize("name", ["asof", "source_asof"])
+@pytest.mark.parametrize("value", [123, [], {"PRIVATE": "CLOCK"}])
+def test_owner_read_nonstring_clock_is_conflicted(tmp_path: Path, name: str, value: object) -> None:
+    path = tmp_path / "index.json"
+    _ss_write_prophet_index(path, plans=[], **{name: value})
+    got = producer._read_prophet_owner_read(path, "MSFT")
+    assert got["disposition"] == "conflicted"
+    assert "PRIVATE" not in json.dumps(got)
+
+
+@pytest.mark.parametrize("failure", ["none", "mktemp", "git", "python", "rm"])
+def test_optional_prophet_refresh_failure_cannot_abort_durable_checkpoint(
+    tmp_path: Path, failure: str,
+) -> None:
+    checkpoint = (ROOT / "scripts/ci/daily_engine_prophet_checkpoint.sh").read_text()
+    start = checkpoint.index('      if SECURITY_STATE_PROPHET_INDEX=')
+    end = checkpoint.index('      echo "r2_ready=true"', start)
+    optional_refresh = checkpoint[start:end]
+    # Execute the actual optional shell body under errexit. The earlier durable
+    # commit, ancestry, delta and hash guards are deliberately outside this fixture.
+    harness = r'''
+set -e
+mktemp() { [ "$FAIL_STAGE" != mktemp ] || return 1; command mktemp "$@"; }
+git() { [ "$FAIL_STAGE" != git ] || return 1; printf '{}\n'; }
+python() { [ "$FAIL_STAGE" != python ] || return 1; }
+rm() { [ "$FAIL_STAGE" != rm ] || return 1; command rm "$@"; }
+'''
+    env = dict(os.environ, FAIL_STAGE=failure, RUNNER_TEMP=str(tmp_path),
+               GITHUB_WORKSPACE=str(tmp_path), CHECKPOINT_SHA="accepted-fixture")
+    result = subprocess.run(
+        ["bash", "-c", harness + optional_refresh + '\nprintf "r2_ready=true\\n"\n'],
+        env=env, text=True, capture_output=True,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.rstrip().endswith("r2_ready=true")

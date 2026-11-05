@@ -86,6 +86,7 @@ while IFS=$'\t' read -r rel before_sha after_sha; do
     data/prophet/ledger.jsonl|data/prophet/ledger_quarantine.json|\
     data/prophet_arena/scoreboard.json|\
     data/prophet/origination_receipts/*.json|\
+    data/prophet/origination_sources/*.json.gz|\
     data/prophet/legacy_shadow/*/*.parquet|\
     data/prophet_arena/price_basis_trigger_v2/C0_champion_mirror.jsonl|\
     data/prophet_arena/price_basis_trigger_v2/C1_buy_soon_first.jsonl|\
@@ -212,19 +213,24 @@ while push_attempt; do
       # This remains display-only and non-fatal to Prophet durability: the
       # refresh itself is transactional and restores the prior AAPL/MSFT
       # stockdata/pages if compile/render fails.
-      SECURITY_STATE_PROPHET_INDEX="$(mktemp "${RUNNER_TEMP}/security-state-prophet.XXXXXX.json")"
-      if git show "${CHECKPOINT_SHA}:site/prophet/index.json" > "$SECURITY_STATE_PROPHET_INDEX"; then
-        if ! (
-          cd "$GITHUB_WORKSPACE"
-          python -m scripts.refresh_security_state_prophet_outlook \
-            --prophet-index "$SECURITY_STATE_PROPHET_INDEX"
-        ); then
-          echo "::warning title=security-state Prophet refresh::accepted Prophet checkpoint is durable, but the bounded public Security State refresh failed; prior Security State bytes were preserved"
+      if SECURITY_STATE_PROPHET_INDEX="$(mktemp "${RUNNER_TEMP}/security-state-prophet.XXXXXX.json")"; then
+        if git show "${CHECKPOINT_SHA}:site/prophet/index.json" > "$SECURITY_STATE_PROPHET_INDEX"; then
+          if ! (
+            cd "$GITHUB_WORKSPACE" &&
+            python -m scripts.refresh_security_state_prophet_outlook \
+              --prophet-index "$SECURITY_STATE_PROPHET_INDEX"
+          ); then
+            echo "::warning title=security-state Prophet refresh::accepted Prophet checkpoint is durable, but the bounded public Security State refresh failed; prior Security State bytes were preserved"
+          fi
+        else
+          echo "::warning title=security-state Prophet refresh::accepted Prophet index could not be reconstructed; prior Security State bytes were preserved"
+        fi
+        if ! rm -f -- "$SECURITY_STATE_PROPHET_INDEX"; then
+          echo "::warning title=security-state Prophet refresh::temporary accepted-index cleanup failed; the durable checkpoint remains accepted"
         fi
       else
-        echo "::warning title=security-state Prophet refresh::accepted Prophet index could not be reconstructed; prior Security State bytes were preserved"
+        echo "::warning title=security-state Prophet refresh::temporary accepted-index allocation failed; prior Security State bytes were preserved"
       fi
-      rm -f -- "$SECURITY_STATE_PROPHET_INDEX"
 
       echo "r2_ready=true" >> "$GITHUB_OUTPUT"
       echo "checkpoint_sha=$CHECKPOINT_SHA" >> "$GITHUB_OUTPUT"

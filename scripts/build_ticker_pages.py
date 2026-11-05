@@ -31,6 +31,7 @@ from calendar import month_abbr
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 _HERE = Path(__file__).resolve().parent
 _ROOT = _HERE.parent
@@ -483,6 +484,61 @@ def is_stale(freshness_date: str | None) -> bool:
         return (date.today() - d).days > STALENESS_DAYS
     except (ValueError, TypeError):
         return True
+
+
+def _issuer_clocks(per: dict, intel: dict | None, news_rec: dict | None) -> dict:
+    """Keep issuer evidence, measured price and daily-analysis clocks separate.
+
+    A global publication receipt is not an observation of every issuer. The
+    stock-library owner binds price_asof to its actual close and blob.asof to
+    its analysis series; neither may be advanced by news or this render.
+    """
+    blob = per.get("blob") or {}
+    tech = blob.get("tech") or {}
+    price = tech.get("price")
+    price_as_of = None
+    if (isinstance(price, (int, float)) and not isinstance(price, bool)
+            and math.isfinite(price) and price > 0):
+        price_as_of = page_freshness([tech.get("price_asof")])
+    daily_as_of = page_freshness([per.get("blob_asof") or blob.get("asof")]) if tech else None
+    dates = [price_as_of, daily_as_of]
+    for artifact, key in (("blob", "blob_asof"), ("gex_v1", "gex_as_of"),
+                          ("signals", "signals_as_of"), ("flow", "flow_as_of"),
+                          ("brief", "brief_as_of")):
+        if per.get(artifact):
+            dates.append(per.get(key))
+    if isinstance(intel, dict):
+        # Only existing semantic channels qualify, not schema/version/receipt
+        # metadata or has_* flags. A measured numeric zero remains evidence.
+        read = intel.get("read") if isinstance(intel.get("read"), dict) else {}
+        brain = intel.get("brain") if isinstance(intel.get("brain"), dict) else {}
+        alt = intel.get("alt") if isinstance(intel.get("alt"), dict) else {}
+        radar = intel.get("radar") if isinstance(intel.get("radar"), dict) else {}
+        texts = (intel.get("note"), read.get("read"), read.get("label"),
+                 brain.get("evidence"), radar.get("note"))
+        numbers = (brain.get("confidence"), alt.get("signal_score"), radar.get("edge_score"))
+        if (any(isinstance(text, str) and _clean_str(text) for text in texts)
+                or any(finite(number) is not None for number in numbers)):
+            dates.append(intel.get("asof") or intel.get("as_of"))
+    headlines = news_rec.get("top") if isinstance(news_rec, dict) else None
+    for headline in headlines if isinstance(headlines, list) else []:
+        if not isinstance(headline, dict):
+            continue
+        title, url, published = (headline.get(key) for key in ("title", "url", "published"))
+        if not all(isinstance(value, str) and value.strip() for value in (title, url, published)) or not _clean_str(title):
+            continue
+        try:
+            source = urlsplit(url)
+            if (source.scheme not in {"http", "https"} or not source.hostname
+                    or source.username or source.password):
+                continue
+        except ValueError:
+            continue
+        # Publication of an actual issuer headline is a dated source; the
+        # row/global collection receipt is not a substitute for that date.
+        dates.append(published)
+    return {"freshness": page_freshness(dates), "price_as_of": price_as_of,
+            "daily_as_of": daily_as_of, "price_stale": is_stale(price_as_of)}
 
 
 def build_sitemap(existing_xml: str, stocks_entries: list[dict]) -> str:
@@ -1585,7 +1641,7 @@ def _build_deep(blob: dict | None, per: dict, agg: dict, ticker: str,
 
 def _build_meta(
     ticker: str, name: str, blob: dict | None, stance_en: str,
-    freshness: str, stale: bool, generated_utc: str,
+    freshness: str | None, stale: bool, generated_utc: str,
 ) -> dict:
     price = None
     if blob:
@@ -1626,12 +1682,15 @@ def _build_meta(
         "@type": "ProfilePage",
         "@id": f"{canonical}#profile",
         "name": f"{ticker} — {name} company dossier",
-        "datePublished": freshness,
-        "dateModified": freshness,
         "publisher": {"@type": "Organization", "name": "MastermindX"},
         "mainEntity": company_entity,
         "url": canonical,
     }
+    # Profile publication history is not retained here. This document's known
+    # generation day can describe modification, never the market observation.
+    generated_day = page_freshness([generated_utc])
+    if generated_day:
+        jsonld["dateModified"] = generated_day
     jsonld_str = json.dumps(jsonld, ensure_ascii=False).replace("</", "<\\/")
 
     return {
@@ -4091,9 +4150,9 @@ _SS_REASON: dict[str, dict[str, str]] = {
         "en": "Prophet published no current open plan for this security.",
         "zh": "先知系统当前未发布该证券的开放计划。",
     },
-    "PROPHET_NO_CURRENT_PLAN_SOURCE_DELAYED": {
-        "en": "Prophet published no current open plan, but its source data is delayed.",
-        "zh": "先知系统当前未发布开放计划，但其来源数据存在延迟。",
+    "PROPHET_CURRENT_OUTLOOK_AVAILABLE": {
+        "en": "A current Prophet outlook is available for this security.",
+        "zh": "该证券当前有可用的先知系统前瞻。",
     },
     "PROPHET_SOURCE_DELAYED": {
         "en": "This Prophet read is published, but its source data is delayed.",
@@ -4114,10 +4173,6 @@ _SS_REASON: dict[str, dict[str, str]] = {
     "PROPHET_OWNER_CONFLICTED": {
         "en": "The Prophet owner output conflicts and cannot be reduced to one current read.",
         "zh": "先知系统所有者输出存在冲突，无法归并为单一当前读数。",
-    },
-    "PROPHET_MULTIPLE_CURRENT_PLANS": {
-        "en": "More than one current Prophet plan is published for this security.",
-        "zh": "该证券同时发布了多个当前先知系统计划。",
     },
     "PRIOR_CYCLE_COMMITTED_STATE": {
         "en": "This is the last complete read from a previous cycle.",
@@ -5332,23 +5387,25 @@ def _ss_fill_opportunity(out: dict[str, Any], leg: dict) -> None:
         code = _clean_str(node.get("state") or "").upper()
         if not code and node.get("available") is True:
             code = "AVAILABLE"
+        if fld == "prophet" and code not in _SS_COVERAGE:
+            code = "CONFLICTED"
         cov = _SS_COVERAGE.get(code, _SS_COVERAGE_FALLBACK)
         reason_raw = _clean_str(node.get("reason") or node.get("null_reason") or "")
-        reason_en, reason_zh = _ss_map_subread_reason(reason_raw)
-        refs_raw = node.get("refs")
-        refs = (
-            [_clean_str(ref) for ref in refs_raw if _clean_str(ref)]
-            if isinstance(refs_raw, list)
-            else []
-        )
+        if fld == "prophet" and reason_raw and (
+            not reason_raw.startswith("PROPHET_") or reason_raw not in _SS_REASON
+        ):
+            reason_en, reason_zh = _SS_COVERAGE_FALLBACK["en"], _SS_COVERAGE_FALLBACK["zh"]
+        else:
+            reason_en, reason_zh = _ss_map_subread_reason(reason_raw)
         subs.append({
             "en": en, "zh": zh,
             "cov": code, "tone": cov["tone"], "rail": cov["rail"],
             "cov_en": cov["en"], "cov_zh": cov["zh"],
             "reason_en": reason_en,
             "reason_zh": reason_zh,
-            "ref": _clean_str(node.get("ref") or ""),
-            "refs": refs,
+            # Public v1 never carries a Prophet identifier, including when a
+            # stale or invalid upstream record supplies one.
+            "ref": "" if fld == "prophet" else _clean_str(node.get("ref") or ""),
         })
     out["subreads"] = subs
 
@@ -5800,16 +5857,8 @@ def build_page_context(
     inv_en, inv_zh = _scrub_machine(inv_en), _scrub_machine_zh(inv_zh)
 
     # --- Freshness ---
-    freshness_dates = [
-        per.get("blob_asof"),
-        per.get("gex_as_of"),
-        per.get("signals_as_of"),
-        per.get("flow_as_of"),
-        agg.get("intel_as_of"),
-        agg.get("news_as_of"),
-        per.get("brief_as_of"),
-    ]
-    freshness = page_freshness(freshness_dates) or date.today().isoformat()
+    clocks = _issuer_clocks(per, intel, news_rec)
+    freshness = clocks["freshness"]
     stale = is_stale(freshness)
 
     # --- Trailing returns + seasonality from ohlc ---
@@ -6002,6 +6051,9 @@ def build_page_context(
         "meta_desc": meta["meta_desc"],
         "jsonld_str": meta["jsonld_str"],
         "freshness": freshness,
+        "price_as_of": clocks["price_as_of"],
+        "daily_as_of": clocks["daily_as_of"],
+        "price_stale": clocks["price_stale"],
         "stale": stale,
         "stance_en": stance_en,
         "stance_zh": stance_zh,
@@ -6403,6 +6455,11 @@ def run(
             )
             write_page(out / "index.html", index_html)
             index_written = True
+            if out == site / "stocks" and only_tickers is None:
+                # Retired /movers.html: emit the fixed moved-notice stub only
+                # alongside successful canonical stock-index generation — never
+                # in --only subset or context-only modes.
+                _write_movers_stub(site)
             sitemap_entries.insert(0, {
                 "loc": f"{CANONICAL_BASE}/stocks/index.html",
                 "lastmod": date.today().isoformat(),
@@ -6485,6 +6542,32 @@ def run(
     return 0
 
 
+def _write_movers_stub(site: Path) -> bool:
+    """Write the retired /movers.html fixed moved-notice stub into ``site``.
+
+    Zero-data by contract: renders templates/movers.html — a constant
+    bilingual notice pointing at /stocks/index.html#today-movers — through the
+    same Jinja Environment/FileSystemLoader(TEMPLATES_DIR) +
+    lib.pages.write_page pair used by every other page in this module.
+    Fail-soft: warns and returns False instead of raising when the template is
+    unavailable, matching run()'s template-loading behaviour.
+    """
+    try:
+        from jinja2 import Environment, FileSystemLoader
+
+        env = Environment(
+            loader=FileSystemLoader(str(TEMPLATES_DIR)),
+            autoescape=True,
+        )
+        tmpl = env.get_template("movers.html")
+        write_page(site / "movers.html", tmpl.render())
+        return True
+    except Exception as e:  # noqa: BLE001
+        print(f"::warning title=movers::movers stub page not written: {e}",
+              flush=True)
+        return False
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build static per-ticker stock dossier pages (v2).")
     parser.add_argument("--out", default=None, help="Output directory (default: site/stocks)")
@@ -6497,7 +6580,16 @@ def main(argv: list[str] | None = None) -> int:
                         help="Comma-separated list of tickers to render (skips sitemap merge when used)")
     parser.add_argument("--manifest-out", default=None,
                         help="Optional JSON receipt listing ticker pages rendered in this invocation")
+    parser.add_argument("--movers-page-only", action="store_true",
+                        help="Write only the fixed /movers.html moved-notice stub "
+                             "into the site root and exit (no run, data, membership, "
+                             "stock, logo or sitemap work)")
     args = parser.parse_args(argv)
+
+    if args.movers_page_only:
+        # Early return BEFORE any run/data/membership/stock/logo/sitemap work:
+        # page-only mode performs only the fixed stub emission.
+        return 0 if _write_movers_stub(SITE) else 1
 
     out = Path(args.out) if args.out else (SITE / "stocks")
     sitemap_out = Path(args.sitemap_out) if args.sitemap_out else None

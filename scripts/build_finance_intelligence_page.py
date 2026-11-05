@@ -30,6 +30,8 @@ sys.path.insert(0, str(_ROOT))
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
+from engine.sector_intelligence.finance_watching import shell_hint_rows  # noqa: E402
+
 
 def _temp_sibling(path: Path) -> Path:
     return path.with_name(f".{path.name}.{os.getpid()}.tmp")
@@ -59,6 +61,15 @@ def render_shell(root: Path) -> Path:
         generated_utc="runtime-api",
         active_section="research",
         active_page="finance_intelligence",
+        # Ruling F-5: with FI_READ_URL="" the shell ships NO watching items —
+        # the page is unbuilt, so it carries no synthetic constant, no
+        # fabricated window and no reading of the financial sector. The
+        # watching include renders empty; only a connected page may fill it.
+        # W10-FIN-2: the #company-exposure hint roster. Eleven
+        # RESEARCH_HINT_UNVALIDATED rows whose record ids come only from
+        # hint_binding(symbol)["record_id"] — visible citations, no stock
+        # route, no source_record, no identity validation, no fetch.
+        hint_rows=shell_hint_rows(),
         # Bound at integration only (Chairman directive 2026-09-24): an empty
         # value renders the shell in its "not connected" state with no fetch.
         fi_read_url=FI_READ_URL,

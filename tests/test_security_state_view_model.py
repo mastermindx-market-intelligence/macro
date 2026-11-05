@@ -1589,13 +1589,12 @@ def test_m1_subread_reason_is_house_copy_never_english_on_zh_page() -> None:
     "code",
     [
         "PROPHET_NO_CURRENT_PLAN",
-        "PROPHET_NO_CURRENT_PLAN_SOURCE_DELAYED",
+        "PROPHET_CURRENT_OUTLOOK_AVAILABLE",
         "PROPHET_SOURCE_DELAYED",
         "PROPHET_SOURCE_UNKNOWN",
         "PROPHET_OWNER_OUTPUT_STALE",
         "PROPHET_OWNER_CLOCK_FUTURE",
         "PROPHET_OWNER_CONFLICTED",
-        "PROPHET_MULTIPLE_CURRENT_PLANS",
     ],
 )
 def test_prophet_owner_reason_codes_have_bilingual_house_copy(code: str) -> None:
@@ -1610,16 +1609,13 @@ def test_prophet_owner_reason_codes_have_bilingual_house_copy(code: str) -> None
 
 
 
-def test_prophet_available_ref_reaches_decision_spine_drilldown() -> None:
-    contract = _contract(legs={
+def _prophet_status_contract(**overrides: object) -> dict:
+    return _contract(legs={
         **_contract()["legs"],
         "opportunity_context": {
             "prophet": {
-                "ref": "AAPL-BULL-20260823",
-                "state": "AVAILABLE",
-                "reason": None,
-                "published_asof": "2026-08-23",
-                "source_asof": "2026-08-23",
+                "ref": None, "state": "AVAILABLE",
+                "reason": "PROPHET_CURRENT_OUTLOOK_AVAILABLE", **overrides,
             },
             "entry": {"state": "AVAILABLE", "available": True, "null_reason": None},
             "market_incorporation": {"ref": None, "state": "NOT_COVERED"},
@@ -1627,57 +1623,38 @@ def test_prophet_available_ref_reaches_decision_spine_drilldown() -> None:
             "coverage_state": "AVAILABLE",
         },
     })
-    view = build_security_state({"security_state": contract})
+
+
+def test_prophet_status_reaches_bilingual_decision_spine() -> None:
+    from scripts.build_ticker_pages import _SS_REASON
+
+    view = build_security_state({"security_state": _prophet_status_contract()})
     assert view is not None
-    prophet = next(
-        s for s in _axis(view, "opportunity_context")["subreads"]
-        if s["en"] == "Prophet outlook"
-    )
-    assert prophet["ref"] == "AAPL-BULL-20260823"
-
-    en_html = _render_section(view, lang="en")
-    zh_html = _render_section(view, lang="zh")
-    assert "Owner reference" in en_html
-    assert "所有者引用" in zh_html
-    assert "AAPL-BULL-20260823" in en_html
-    assert "AAPL-BULL-20260823" in zh_html
-
-
-
-def test_prophet_multiple_strategy_refs_remain_visible_without_precedence() -> None:
-    contract = _contract(legs={
-        **_contract()["legs"],
-        "opportunity_context": {
-            "prophet": {
-                "ref": None,
-                "refs": ["AAPL-CYCLE-20260823", "AAPL-TACTICAL-20260823"],
-                "state": "AVAILABLE",
-                "reason": "PROPHET_MULTIPLE_CURRENT_PLANS",
-                "published_asof": "2026-08-23",
-                "source_asof": "2026-08-23",
-            },
-            "entry": {"state": "AVAILABLE", "available": True, "null_reason": None},
-            "market_incorporation": {"ref": None, "state": "NOT_COVERED"},
-            "dislocation": {"ref": None, "state": "NOT_COVERED"},
-            "coverage_state": "AVAILABLE",
-        },
-    })
-    view = build_security_state({"security_state": contract})
-    assert view is not None
-    prophet = next(
-        s for s in _axis(view, "opportunity_context")["subreads"]
-        if s["en"] == "Prophet outlook"
-    )
+    prophet = next(s for s in _axis(view, "opportunity_context")["subreads"]
+                   if s["en"] == "Prophet outlook")
     assert prophet["ref"] == ""
-    assert prophet["refs"] == ["AAPL-CYCLE-20260823", "AAPL-TACTICAL-20260823"]
+    assert "refs" not in prophet
     assert prophet["cov"] == "AVAILABLE"
+    copy = _SS_REASON["PROPHET_CURRENT_OUTLOOK_AVAILABLE"]
+    for lang in ("en", "zh"):
+        html = _render_section(view, lang=lang)
+        assert copy[lang] in html
+        assert "PROPHET_CURRENT_OUTLOOK_AVAILABLE" not in html
 
-    en_html = _render_section(view, lang="en")
-    zh_html = _render_section(view, lang="zh")
-    assert "Owner references" in en_html
-    assert "所有者引用" in zh_html
-    assert "AAPL-CYCLE-20260823" in en_html
-    assert "AAPL-TACTICAL-20260823" in en_html
+
+@pytest.mark.parametrize("overrides", [
+    {"ref": "PRIVATE-PLAN-ID"},
+    {"refs": ["PRIVATE-PLAN-ONE", "PRIVATE-PLAN-TWO"]},
+    {"reason": "Private plan PRIVATE-PLAN-ID is ready"},
+    {"state": "PRIVATE-STATE"},
+    {"published_asof": "PRIVATE-CLOCK", "source_asof": "PRIVATE-SOURCE-CLOCK"},
+])
+def test_prophet_invalid_private_fields_cannot_reach_context_or_html(overrides: dict) -> None:
+    view = build_security_state({"security_state": _prophet_status_contract(**overrides)})
+    assert view is not None
+    assert "PRIVATE" not in json.dumps(view)
+    for lang in ("en", "zh"):
+        assert "PRIVATE" not in _render_section(view, lang=lang)
 
 def test_pinned_identity_not_owner_read_house_copy_is_the_frozen_pair() -> None:
     """REQUIRED 4: PINNED_IDENTITY_NOT_OWNER_READ_THIS_CYCLE is a frozen

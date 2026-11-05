@@ -253,13 +253,12 @@ _WARNING_TEXT: dict[str, dict[str, str]] = {
 
 _PROPHET_REASON = "PROPHET_OWNER_OUTPUT_ABSENT"
 _PROPHET_NO_CURRENT_PLAN = "PROPHET_NO_CURRENT_PLAN"
-_PROPHET_NO_CURRENT_PLAN_SOURCE_DELAYED = "PROPHET_NO_CURRENT_PLAN_SOURCE_DELAYED"
+_PROPHET_CURRENT_OUTLOOK_AVAILABLE = "PROPHET_CURRENT_OUTLOOK_AVAILABLE"
 _PROPHET_SOURCE_DELAYED = "PROPHET_SOURCE_DELAYED"
 _PROPHET_SOURCE_UNKNOWN = "PROPHET_SOURCE_UNKNOWN"
 _PROPHET_OWNER_OUTPUT_STALE = "PROPHET_OWNER_OUTPUT_STALE"
 _PROPHET_OWNER_CLOCK_FUTURE = "PROPHET_OWNER_CLOCK_FUTURE"
 _PROPHET_OWNER_CONFLICTED = "PROPHET_OWNER_CONFLICTED"
-_PROPHET_MULTIPLE_CURRENT_PLANS = "PROPHET_MULTIPLE_CURRENT_PLANS"
 
 # Decision Spine required axes (Sol blocker 1): state + change. legs.evidence
 # REMAINS a leg but is supporting metadata for change's provenance, not its
@@ -1250,159 +1249,66 @@ def _prophet_outlook_from_owner_read(
     *,
     decision_date: date,
 ) -> dict[str, Any]:
-    """Project one bounded Prophet owner read into Opportunity Context.
+    """Project private owner freshness into the unchanged public v1 subread.
 
-    The compiler does not read the plan book and does not reimplement Prophet
-    lifecycle law. The producer passes only the owner publication clock and
-    stable refs it already selected as current/open. Missing owner input keeps
-    the pre-integration behavior byte-for-byte.
+    Public output is exactly {ref: null, state, reason}. Private identifiers,
+    multiplicity and clocks never enter the wire, reason text or diagnostics.
+    No owner read retains the pre-integration public behavior byte-for-byte.
     """
+    def _public(state: str, reason: str) -> dict[str, Any]:
+        return {"ref": None, "state": state, "reason": reason}
+
     if owner_read is None:
-        return {"ref": None, "state": "UNAVAILABLE", "reason": _PROPHET_REASON}
+        return _public("UNAVAILABLE", _PROPHET_REASON)
     if not isinstance(owner_read, Mapping):
         raise SecurityStateCompilationError("prophet_owner_read must be a mapping")
+    disposition = owner_read.get("disposition")
+    if disposition == "unavailable":
+        return _public("UNAVAILABLE", _PROPHET_REASON)
+    if disposition != "found":
+        return _public("CONFLICTED", _PROPHET_OWNER_CONFLICTED)
+    has_current_plan = owner_read.get("has_current_plan")
+    if not isinstance(has_current_plan, bool):
+        return _public("CONFLICTED", _PROPHET_OWNER_CONFLICTED)
 
-    disposition = str(owner_read.get("disposition") or "").strip().lower()
-    published_raw = _null_to_none(owner_read.get("published_asof"))
-    source_raw = _null_to_none(owner_read.get("source_asof"))
-
-    def _date_field(value: Any, field: str) -> date | None:
+    def _date_field(value: Any) -> date | None:
         if value is None:
             return None
-        text = str(value).strip()
-        try:
-            parsed = date.fromisoformat(text)
-        except ValueError as exc:
-            raise SecurityStateCompilationError(
-                f"prophet_owner_read.{field} is not a valid ISO date: {value!r}"
-            ) from exc
+        if not isinstance(value, str):
+            raise ValueError("invalid owner clock")
+        parsed = date.fromisoformat(value)
+        if parsed.isoformat() != value:
+            raise ValueError("noncanonical owner clock")
         return parsed
 
-    published = _date_field(published_raw, "published_asof")
-    source_asof = _date_field(source_raw, "source_asof")
-
-    refs_raw = owner_read.get("current_plan_refs")
-    if refs_raw is None:
-        refs: list[str] = []
-    elif isinstance(refs_raw, Sequence) and not isinstance(refs_raw, (str, bytes, bytearray)):
-        refs = []
-        seen: set[str] = set()
-        for raw in refs_raw:
-            ref = str(raw or "").strip()
-            if not ref:
-                raise SecurityStateCompilationError(
-                    "prophet_owner_read.current_plan_refs contains an empty ref"
-                )
-            if ref in seen:
-                raise SecurityStateCompilationError(
-                    f"prophet_owner_read.current_plan_refs duplicates {ref!r}"
-                )
-            seen.add(ref)
-            refs.append(ref)
-    else:
-        raise SecurityStateCompilationError(
-            "prophet_owner_read.current_plan_refs must be a sequence"
-        )
-
-    def _with_clocks(
-        *,
-        ref: str | None,
-        refs_out: Sequence[str],
-        state: str,
-        reason: str | None,
-    ) -> dict[str, Any]:
-        out: dict[str, Any] = {
-            "ref": ref,
-            "refs": list(refs_out),
-            "state": state,
-            "reason": reason,
-        }
-        out["published_asof"] = published.isoformat() if published is not None else None
-        out["source_asof"] = source_asof.isoformat() if source_asof is not None else None
-        return out
-
-    if disposition == "unavailable":
-        return _with_clocks(
-            ref=None, refs_out=(), state="UNAVAILABLE", reason=_PROPHET_REASON
-        )
-    if disposition == "conflicted":
-        return _with_clocks(
-            ref=None,
-            refs_out=(),
-            state="CONFLICTED",
-            reason=_PROPHET_OWNER_CONFLICTED,
-        )
-    if disposition != "found":
-        raise SecurityStateCompilationError(
-            f"unknown prophet_owner_read.disposition: {disposition!r}"
-        )
+    try:
+        published = _date_field(owner_read.get("published_asof"))
+        source_asof = _date_field(owner_read.get("source_asof"))
+    except (TypeError, ValueError):
+        return _public("CONFLICTED", _PROPHET_OWNER_CONFLICTED)
     if published is None:
-        raise SecurityStateCompilationError(
-            "prophet_owner_read.published_asof is required for a found owner read"
-        )
-
-    ref = refs[0] if len(refs) == 1 else None
+        return _public("CONFLICTED", _PROPHET_OWNER_CONFLICTED)
     if published > decision_date:
-        return _with_clocks(
-            ref=None,
-            refs_out=refs,
-            state="CONFLICTED",
-            reason=_PROPHET_OWNER_CLOCK_FUTURE,
-        )
-
-    source_unknown_raw = owner_read.get("source_unknown")
-    source_delayed_raw = owner_read.get("source_delayed")
+        return _public("CONFLICTED", _PROPHET_OWNER_CLOCK_FUTURE)
     if source_asof is not None and source_asof > published:
-        return _with_clocks(
-            ref=ref,
-            refs_out=refs,
-            state="CONFLICTED",
-            reason=_PROPHET_OWNER_CONFLICTED,
-        )
+        return _public("CONFLICTED", _PROPHET_OWNER_CONFLICTED)
     if published < decision_date:
-        return _with_clocks(
-            ref=ref,
-            refs_out=refs,
-            state="STALE",
-            reason=_PROPHET_OWNER_OUTPUT_STALE,
-        )
+        return _public("STALE", _PROPHET_OWNER_OUTPUT_STALE)
+
+    source_unknown = owner_read.get("source_unknown")
+    source_delayed = owner_read.get("source_delayed")
     if (
         source_asof is None
-        or not isinstance(source_unknown_raw, bool)
-        or not isinstance(source_delayed_raw, bool)
-        or source_unknown_raw
+        or not isinstance(source_unknown, bool)
+        or not isinstance(source_delayed, bool)
+        or source_unknown
     ):
-        return _with_clocks(
-            ref=ref,
-            refs_out=refs,
-            state="PARTIAL",
-            reason=_PROPHET_SOURCE_UNKNOWN,
-        )
-    source_delayed = source_delayed_raw
+        return _public("PARTIAL", _PROPHET_SOURCE_UNKNOWN)
     if source_delayed:
-        return _with_clocks(
-            ref=ref,
-            refs_out=refs,
-            state="PARTIAL",
-            reason=(
-                _PROPHET_SOURCE_DELAYED
-                if refs
-                else _PROPHET_NO_CURRENT_PLAN_SOURCE_DELAYED
-            ),
-        )
-    if not refs:
-        return _with_clocks(
-            ref=None,
-            refs_out=(),
-            state="NOT_APPLICABLE",
-            reason=_PROPHET_NO_CURRENT_PLAN,
-        )
-    return _with_clocks(
-        ref=ref,
-        refs_out=refs,
-        state="AVAILABLE",
-        reason=_PROPHET_MULTIPLE_CURRENT_PLANS if len(refs) > 1 else None,
-    )
+        return _public("PARTIAL", _PROPHET_SOURCE_DELAYED)
+    if not has_current_plan:
+        return _public("NOT_APPLICABLE", _PROPHET_NO_CURRENT_PLAN)
+    return _public("AVAILABLE", _PROPHET_CURRENT_OUTLOOK_AVAILABLE)
 
 
 def _build_opportunity_context_leg(
