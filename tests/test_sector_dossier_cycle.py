@@ -517,7 +517,14 @@ def test_reclicking_the_current_tab_adds_no_history_entry():
 
 def test_build_site_ships_binder_and_members():
     src = BUILD.read_text(encoding="utf-8")
-    assert 'copy_asset("sector_dossier.js"' in src
+    assert "site_assets.copy_asset(_asset, _asset_src, site)" in src
+    # build_site ships every root script and style the dossier template loads,
+    # so no render scope can publish sectors/<F>.html without them.
+    tpl = (ROOT / "templates" / "sector.html.j2").read_text(encoding="utf-8")
+    for asset in ("sector_dossier.js", "sector_cycles_states.js",
+                  "sector_cycles_face.js", "sector_cycles_states.css"):
+        assert f'"../{asset}"' in tpl, asset
+        assert f'"{asset}"' in src, asset
     assert '"members": members' in src
     assert '"no_price_history"' in src and '"insufficient_history"' in src
 

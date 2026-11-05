@@ -4142,11 +4142,15 @@ def build_sector_pages(env: Environment, site: Path, generated: str,
     tpl = env.get_template("sector.html.j2")
     outdir = site / "sectors"
     outdir.mkdir(parents=True, exist_ok=True)
-    # Sector dossier binder (tabs + Cycles mounts). Its Cycles-family siblings
-    # (sector_cycles_states/_face .js/.css) are copied by build_sector_central.
-    _dossier_src = config.ROOT / "templates" / "sector_dossier.js"
-    if _dossier_src.exists():
-        site_assets.copy_asset("sector_dossier.js", _dossier_src, site)
+    # Sector dossier binder (tabs + Cycles mounts) and the Cycles-family siblings
+    # sectors/<F>.html loads. build_sector_central copies the siblings too, but a
+    # scope that runs build_site without it (engine-render `macro`) would leave the
+    # dossier pointing at missing files; the copies are byte-identical.
+    for _asset in ("sector_dossier.js", "sector_cycles_states.js",
+                   "sector_cycles_face.js", "sector_cycles_states.css"):
+        _asset_src = config.ROOT / "templates" / _asset
+        if _asset_src.exists():
+            site_assets.copy_asset(_asset, _asset_src, site)
     # Policy-shock de-escalation state (PS-R3: display de-escalation only — no sizing/reordering)
     _shock_path = site / "live" / "shock_state.json"
     _shock_state: dict | None = None
