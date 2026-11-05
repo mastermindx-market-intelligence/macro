@@ -12,8 +12,8 @@ def git(*parts):
     return subprocess.check_output(["git", *parts], cwd=root, text=True).strip()
 head = git("rev-parse", "HEAD")
 assert head == args.source_head, (head, args.source_head)
-prior_receipt_rel = "research/evidence/ew_p4_descriptive_ui_20261104_c2/receipt.json"
-receipt_rel = "research/evidence/ew_p4_descriptive_ui_20261105_c2/receipt.json"
+prior_receipt_rel = "research/evidence/ew_p4_descriptive_ui_20261105_c2/receipt.json"
+receipt_rel = "research/evidence/ew_p4_descriptive_ui_20261105_integrated71971/receipt.json"
 output_rel = str(Path(receipt_rel).parent)
 prior_bytes = subprocess.check_output(["git", "show", head + ":" + prior_receipt_rel], cwd=root)
 prior = json.loads(prior_bytes)
