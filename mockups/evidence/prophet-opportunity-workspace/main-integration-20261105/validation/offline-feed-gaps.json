@@ -1,0 +1,54 @@
+{
+  "scope": "Anonymous offline static capture; this is not a production-feed failure claim. No CSS or JS is among these omitted routes.",
+  "responses": 128,
+  "unique_routes": [
+    {
+      "path": "/live/basket_pulse.json",
+      "status": 404,
+      "occurrences": 16,
+      "exists_in_source_site": true
+    },
+    {
+      "path": "/basketdata/baskets.json",
+      "status": 404,
+      "occurrences": 16,
+      "exists_in_source_site": true
+    },
+    {
+      "path": "/live/prophet_live.json",
+      "status": 404,
+      "occurrences": 16,
+      "exists_in_source_site": false
+    },
+    {
+      "path": "/live/quotes.json",
+      "status": 404,
+      "occurrences": 16,
+      "exists_in_source_site": true
+    },
+    {
+      "path": "/live/overlay.json",
+      "status": 404,
+      "occurrences": 16,
+      "exists_in_source_site": true
+    },
+    {
+      "path": "/live/breadth.json",
+      "status": 404,
+      "occurrences": 16,
+      "exists_in_source_site": true
+    },
+    {
+      "path": "/live/risk_state.json",
+      "status": 404,
+      "occurrences": 16,
+      "exists_in_source_site": true
+    },
+    {
+      "path": "/live/release_publications.json",
+      "status": 404,
+      "occurrences": 16,
+      "exists_in_source_site": false
+    }
+  ]
+}

@@ -1,0 +1,1852 @@
+{
+  "source_head": "ee5d7f68229ad14e9d384af61bafc3701df70f65",
+  "scope": "Exact native-generated HTML and CSS; source_head identifies the clean build input; anonymous offline Chromium; no protected data served, account writes, live authentication, Paper edits or deployment.",
+  "page_sha256": "5f09f469275023fa6cbee3db2e161796ae6c6f4febc6f924eeffceba756a8646",
+  "css_sha256": "60dc406b8009347e9cd4fdc6d62823b2ccdca0313583dc005f7eb22e28dc0237",
+  "cells": [
+    {
+      "case": "1440-light-en",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "theme": "light",
+        "lang": "en",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 57,
+              "y": 1247.5625,
+              "width": 294,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality looks weak. +1 more"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 401,
+              "y": 1247.5625,
+              "width": 294,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality is worth a second look. +2 more"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 745,
+              "y": 1247.5625,
+              "width": 294,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution The broad tape is under stress. Size down, or wait for confirmation. +2 more"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 40,
+              "y": 908.984375,
+              "width": 328,
+              "height": 677.875
+            },
+            "clientWidth": 326,
+            "scrollWidth": 326
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 384,
+              "y": 908.984375,
+              "width": 328,
+              "height": 623.875
+            },
+            "clientWidth": 326,
+            "scrollWidth": 326
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 728,
+              "y": 908.984375,
+              "width": 328,
+              "height": 623.875
+            },
+            "clientWidth": 326,
+            "scrollWidth": 326
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(40, 95, 255)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851732000",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-1440-light-en.png",
+      "screenshot_sha256": "077c2682e032a290eee9d34068946ec5ff40d25686b3805a4448a29526556b16",
+      "viewport_screenshot": "screener-view-1440-light-en.png",
+      "expanded_screenshot": null
+    },
+    {
+      "case": "1440-light-zh",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "theme": "light",
+        "lang": "zh-CN",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 57,
+              "y": 1228.9375,
+              "width": 294,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量偏弱。 +1 条"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 401,
+              "y": 1228.9375,
+              "width": 294,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量值得再核查一次。 +2 条"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 745,
+              "y": 1228.9375,
+              "width": 294,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 大盘承压。减小仓位，或等待信号确认。 +2 条"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 40,
+              "y": 890.359375,
+              "width": 328,
+              "height": 656.875
+            },
+            "clientWidth": 326,
+            "scrollWidth": 326
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 384,
+              "y": 890.359375,
+              "width": 328,
+              "height": 623.875
+            },
+            "clientWidth": 326,
+            "scrollWidth": 326
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 728,
+              "y": 890.359375,
+              "width": 328,
+              "height": 623.875
+            },
+            "clientWidth": 326,
+            "scrollWidth": 326
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(40, 95, 255)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851732508",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-1440-light-zh.png",
+      "screenshot_sha256": "23f00403c9aca4afee9a650454e3ea58761dca3892230fea4677bd2562251f06",
+      "viewport_screenshot": null,
+      "expanded_screenshot": null
+    },
+    {
+      "case": "1440-dark-en",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "theme": "dark",
+        "lang": "en",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 57,
+              "y": 1247.5625,
+              "width": 294,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality looks weak. +1 more"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 401,
+              "y": 1247.5625,
+              "width": 294,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality is worth a second look. +2 more"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 745,
+              "y": 1247.5625,
+              "width": 294,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution The broad tape is under stress. Size down, or wait for confirmation. +2 more"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 40,
+              "y": 908.984375,
+              "width": 328,
+              "height": 677.875
+            },
+            "clientWidth": 326,
+            "scrollWidth": 326
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 384,
+              "y": 908.984375,
+              "width": 328,
+              "height": 623.875
+            },
+            "clientWidth": 326,
+            "scrollWidth": 326
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 728,
+              "y": 908.984375,
+              "width": 328,
+              "height": 623.875
+            },
+            "clientWidth": 326,
+            "scrollWidth": 326
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(122, 167, 224)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851732979",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-1440-dark-en.png",
+      "screenshot_sha256": "3c8728bf68e06dc54409d5961931b08423c8fbf0ea637114cc263a977a23aa20",
+      "viewport_screenshot": "screener-view-1440-dark-en.png",
+      "expanded_screenshot": null
+    },
+    {
+      "case": "1440-dark-zh",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 57,
+              "y": 1228.9375,
+              "width": 294,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量偏弱。 +1 条"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 401,
+              "y": 1228.9375,
+              "width": 294,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量值得再核查一次。 +2 条"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 745,
+              "y": 1228.9375,
+              "width": 294,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 大盘承压。减小仓位，或等待信号确认。 +2 条"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 40,
+              "y": 890.359375,
+              "width": 328,
+              "height": 656.875
+            },
+            "clientWidth": 326,
+            "scrollWidth": 326
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 384,
+              "y": 890.359375,
+              "width": 328,
+              "height": 623.875
+            },
+            "clientWidth": 326,
+            "scrollWidth": 326
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 728,
+              "y": 890.359375,
+              "width": 328,
+              "height": 623.875
+            },
+            "clientWidth": 326,
+            "scrollWidth": 326
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(122, 167, 224)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851733484",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-1440-dark-zh.png",
+      "screenshot_sha256": "39e8872a74c3f723520c56aedbfdc9cfcd77efbedafdba36612b34f231a02baa",
+      "viewport_screenshot": null,
+      "expanded_screenshot": null
+    },
+    {
+      "case": "768-light-en",
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "theme": "light",
+        "lang": "en",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 35,
+              "y": 1468.0625,
+              "width": 324,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality looks weak. +1 more"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 409,
+              "y": 1468.0625,
+              "width": 324,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality is worth a second look. +2 more"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 35,
+              "y": 2140.9375,
+              "width": 324,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution The broad tape is under stress. Size down, or wait for confirmation. +2 more"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 18,
+              "y": 1129.484375,
+              "width": 358,
+              "height": 656.875
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 392,
+              "y": 1129.484375,
+              "width": 358,
+              "height": 623.875
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 18,
+              "y": 1802.359375,
+              "width": 358,
+              "height": 623.875
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(40, 95, 255)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851733897",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-768-light-en.png",
+      "screenshot_sha256": "d5361a7cb1acec02a5b0c3cf2eec4b8b495f83b7545ebd1f6e62fd8a04397378",
+      "viewport_screenshot": null,
+      "expanded_screenshot": null
+    },
+    {
+      "case": "768-light-zh",
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "theme": "light",
+        "lang": "zh-CN",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 35,
+              "y": 1409.6875,
+              "width": 324,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量偏弱。 +1 条"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 409,
+              "y": 1409.6875,
+              "width": 324,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量值得再核查一次。 +2 条"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 35,
+              "y": 2082.5625,
+              "width": 324,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 大盘承压。减小仓位，或等待信号确认。 +2 条"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 18,
+              "y": 1071.109375,
+              "width": 358,
+              "height": 656.875
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 392,
+              "y": 1071.109375,
+              "width": 358,
+              "height": 623.875
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 18,
+              "y": 1743.984375,
+              "width": 358,
+              "height": 623.875
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(40, 95, 255)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851734268",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-768-light-zh.png",
+      "screenshot_sha256": "41a318fbf3b190d6c280de07e03b70a8aa8673d8845bbf47d96700d9b6b971d5",
+      "viewport_screenshot": "screener-view-768-light-zh.png",
+      "expanded_screenshot": null
+    },
+    {
+      "case": "768-dark-en",
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "theme": "dark",
+        "lang": "en",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 35,
+              "y": 1468.0625,
+              "width": 324,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality looks weak. +1 more"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 409,
+              "y": 1468.0625,
+              "width": 324,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality is worth a second look. +2 more"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 35,
+              "y": 2140.9375,
+              "width": 324,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution The broad tape is under stress. Size down, or wait for confirmation. +2 more"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 18,
+              "y": 1129.484375,
+              "width": 358,
+              "height": 656.875
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 392,
+              "y": 1129.484375,
+              "width": 358,
+              "height": 623.875
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 18,
+              "y": 1802.359375,
+              "width": 358,
+              "height": 623.875
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(122, 167, 224)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851734734",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-768-dark-en.png",
+      "screenshot_sha256": "68c4fef91d39c93ea7d5cb290990c3c1f810223245e479de39248ca9f164d279",
+      "viewport_screenshot": null,
+      "expanded_screenshot": null
+    },
+    {
+      "case": "768-dark-zh",
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 35,
+              "y": 1409.6875,
+              "width": 324,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量偏弱。 +1 条"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 409,
+              "y": 1409.6875,
+              "width": 324,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量值得再核查一次。 +2 条"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 35,
+              "y": 2082.5625,
+              "width": 324,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 大盘承压。减小仓位，或等待信号确认。 +2 条"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 18,
+              "y": 1071.109375,
+              "width": 358,
+              "height": 656.875
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 392,
+              "y": 1071.109375,
+              "width": 358,
+              "height": 623.875
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 18,
+              "y": 1743.984375,
+              "width": 358,
+              "height": 623.875
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(122, 167, 224)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851735092",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-768-dark-zh.png",
+      "screenshot_sha256": "8c91324bf1aa1f4ffc4eb385d54a1949d54ce4dce67603c784ed016e3f934c14",
+      "viewport_screenshot": null,
+      "expanded_screenshot": null
+    },
+    {
+      "case": "390-light-en",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "theme": "light",
+        "lang": "en",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 35,
+              "y": 1572.6875,
+              "width": 320,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality looks weak. +1 more"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 35,
+              "y": 2245.5625,
+              "width": 320,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality is worth a second look. +2 more"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 35,
+              "y": 2885.4375,
+              "width": 320,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution The broad tape is under stress. Size down, or wait for confirmation. +2 more"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 18,
+              "y": 1234.109375,
+              "width": 354,
+              "height": 656.875
+            },
+            "clientWidth": 352,
+            "scrollWidth": 352
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 18,
+              "y": 1906.984375,
+              "width": 354,
+              "height": 623.875
+            },
+            "clientWidth": 352,
+            "scrollWidth": 352
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 18,
+              "y": 2546.859375,
+              "width": 354,
+              "height": 623.875
+            },
+            "clientWidth": 352,
+            "scrollWidth": 352
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(40, 95, 255)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851735457",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-390-light-en.png",
+      "screenshot_sha256": "7f16f405dd070ddf146726be6986864c1609be6d647132d32d586b3751b6dbf0",
+      "viewport_screenshot": "screener-view-390-light-en.png",
+      "expanded_screenshot": null
+    },
+    {
+      "case": "390-light-zh",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "theme": "light",
+        "lang": "zh-CN",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 35,
+              "y": 1452.0625,
+              "width": 320,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量偏弱。 +1 条"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 35,
+              "y": 2124.9375,
+              "width": 320,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量值得再核查一次。 +2 条"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 35,
+              "y": 2764.8125,
+              "width": 320,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 大盘承压。减小仓位，或等待信号确认。 +2 条"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 18,
+              "y": 1113.484375,
+              "width": 354,
+              "height": 656.875
+            },
+            "clientWidth": 352,
+            "scrollWidth": 352
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 18,
+              "y": 1786.359375,
+              "width": 354,
+              "height": 623.875
+            },
+            "clientWidth": 352,
+            "scrollWidth": 352
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 18,
+              "y": 2426.234375,
+              "width": 354,
+              "height": 623.875
+            },
+            "clientWidth": 352,
+            "scrollWidth": 352
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(40, 95, 255)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851735868",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-390-light-zh.png",
+      "screenshot_sha256": "ed3b0505426ae3a6145f6c5268d1d64574671fe846a2c433d6f1fe157f6c8a17",
+      "viewport_screenshot": null,
+      "expanded_screenshot": null
+    },
+    {
+      "case": "390-dark-en",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "theme": "dark",
+        "lang": "en",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 35,
+              "y": 1572.6875,
+              "width": 320,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality looks weak. +1 more"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 35,
+              "y": 2245.5625,
+              "width": 320,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality is worth a second look. +2 more"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 35,
+              "y": 2885.4375,
+              "width": 320,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution The broad tape is under stress. Size down, or wait for confirmation. +2 more"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 18,
+              "y": 1234.109375,
+              "width": 354,
+              "height": 656.875
+            },
+            "clientWidth": 352,
+            "scrollWidth": 352
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 18,
+              "y": 1906.984375,
+              "width": 354,
+              "height": 623.875
+            },
+            "clientWidth": 352,
+            "scrollWidth": 352
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 18,
+              "y": 2546.859375,
+              "width": 354,
+              "height": 623.875
+            },
+            "clientWidth": 352,
+            "scrollWidth": 352
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(122, 167, 224)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851736235",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-390-dark-en.png",
+      "screenshot_sha256": "a2f1feadbae8fbe537e53bc3ddf1444ca6819181bb5ffd1fc78fc3961c26253c",
+      "viewport_screenshot": null,
+      "expanded_screenshot": null
+    },
+    {
+      "case": "390-dark-zh",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 35,
+              "y": 1452.0625,
+              "width": 320,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量偏弱。 +1 条"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 35,
+              "y": 2124.9375,
+              "width": 320,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量值得再核查一次。 +2 条"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 35,
+              "y": 2764.8125,
+              "width": 320,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 大盘承压。减小仓位，或等待信号确认。 +2 条"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 18,
+              "y": 1113.484375,
+              "width": 354,
+              "height": 656.875
+            },
+            "clientWidth": 352,
+            "scrollWidth": 352
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 18,
+              "y": 1786.359375,
+              "width": 354,
+              "height": 623.875
+            },
+            "clientWidth": 352,
+            "scrollWidth": 352
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 18,
+              "y": 2426.234375,
+              "width": 354,
+              "height": 623.875
+            },
+            "clientWidth": 352,
+            "scrollWidth": 352
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(122, 167, 224)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851736606",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-390-dark-zh.png",
+      "screenshot_sha256": "4969c859502e01fd4505dc6937f428408ec868434b56746d655d6fdbb44803e1",
+      "viewport_screenshot": "screener-view-390-dark-zh.png",
+      "expanded_screenshot": "screener-expanded-390-dark-zh.png"
+    },
+    {
+      "case": "320-light-en",
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "theme": "light",
+        "lang": "en",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 35,
+              "y": 1821.046875,
+              "width": 250,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality looks weak. +1 more"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 35,
+              "y": 2553.515625,
+              "width": 250,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality is worth a second look. +2 more"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 35,
+              "y": 3231.984375,
+              "width": 250,
+              "height": 62
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution The broad tape is under stress. Size down, or wait for confirmation. +2 more"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 18,
+              "y": 1420.484375,
+              "width": 284,
+              "height": 739.859375
+            },
+            "clientWidth": 282,
+            "scrollWidth": 282
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 18,
+              "y": 2176.34375,
+              "width": 284,
+              "height": 662.46875
+            },
+            "clientWidth": 282,
+            "scrollWidth": 282
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 18,
+              "y": 2854.8125,
+              "width": 284,
+              "height": 680.46875
+            },
+            "clientWidth": 282,
+            "scrollWidth": 282
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(40, 95, 255)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851737087",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-320-light-en.png",
+      "screenshot_sha256": "94ffa9f32d6ff478bfa1ba1718a939dd490be696f2ef0a858d4f5ac676a4fd63",
+      "viewport_screenshot": "screener-view-320-light-en.png",
+      "expanded_screenshot": "screener-expanded-320-light-en.png"
+    },
+    {
+      "case": "320-light-zh",
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "theme": "light",
+        "lang": "zh-CN",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 35,
+              "y": 1672.65625,
+              "width": 250,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量偏弱。 +1 条"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 35,
+              "y": 2384.125,
+              "width": 250,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量值得再核查一次。 +2 条"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 35,
+              "y": 3062.59375,
+              "width": 250,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 大盘承压。减小仓位，或等待信号确认。 +2 条"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 18,
+              "y": 1295.484375,
+              "width": 284,
+              "height": 695.46875
+            },
+            "clientWidth": 282,
+            "scrollWidth": 282
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 18,
+              "y": 2006.953125,
+              "width": 284,
+              "height": 662.46875
+            },
+            "clientWidth": 282,
+            "scrollWidth": 282
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 18,
+              "y": 2685.421875,
+              "width": 284,
+              "height": 662.46875
+            },
+            "clientWidth": 282,
+            "scrollWidth": 282
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(40, 95, 255)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851737578",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-320-light-zh.png",
+      "screenshot_sha256": "1e2edc9daa4736ed145001b4a470a8e72d45e02b4baeb1f963838b9bd896ab8b",
+      "viewport_screenshot": null,
+      "expanded_screenshot": null
+    },
+    {
+      "case": "320-dark-en",
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "theme": "dark",
+        "lang": "en",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 35,
+              "y": 1821.046875,
+              "width": 250,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality looks weak. +1 more"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 35,
+              "y": 2553.515625,
+              "width": 250,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution Accounting quality is worth a second look. +2 more"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 35,
+              "y": 3231.984375,
+              "width": 250,
+              "height": 62
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "Key caution The broad tape is under stress. Size down, or wait for confirmation. +2 more"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 18,
+              "y": 1420.484375,
+              "width": 284,
+              "height": 739.859375
+            },
+            "clientWidth": 282,
+            "scrollWidth": 282
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 18,
+              "y": 2176.34375,
+              "width": 284,
+              "height": 662.46875
+            },
+            "clientWidth": 282,
+            "scrollWidth": 282
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 18,
+              "y": 2854.8125,
+              "width": 284,
+              "height": 680.46875
+            },
+            "clientWidth": 282,
+            "scrollWidth": 282
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(122, 167, 224)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851737950",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-320-dark-en.png",
+      "screenshot_sha256": "b7467b0d51714fced9c68180ba858c8984ad90ce4495b1c4a1c7affa1ff15a8b",
+      "viewport_screenshot": null,
+      "expanded_screenshot": null
+    },
+    {
+      "case": "320-dark-zh",
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "reducedMotion": true,
+        "protectedControls": 0,
+        "controls": [
+          {
+            "card": "po-screener-1",
+            "rect": {
+              "x": 35,
+              "y": 1672.65625,
+              "width": 250,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量偏弱。 +1 条"
+          },
+          {
+            "card": "po-screener-2",
+            "rect": {
+              "x": 35,
+              "y": 2384.125,
+              "width": 250,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 财务质量值得再核查一次。 +2 条"
+          },
+          {
+            "card": "po-screener-3",
+            "rect": {
+              "x": 35,
+              "y": 3062.59375,
+              "width": 250,
+              "height": 44
+            },
+            "display": "list-item",
+            "listStyle": "disclosure-closed",
+            "text": "关键注意 大盘承压。减小仓位，或等待信号确认。 +2 条"
+          }
+        ],
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "rect": {
+              "x": 18,
+              "y": 1295.484375,
+              "width": 284,
+              "height": 695.46875
+            },
+            "clientWidth": 282,
+            "scrollWidth": 282
+          },
+          {
+            "id": "po-screener-2",
+            "rect": {
+              "x": 18,
+              "y": 2006.953125,
+              "width": 284,
+              "height": 662.46875
+            },
+            "clientWidth": 282,
+            "scrollWidth": 282
+          },
+          {
+            "id": "po-screener-3",
+            "rect": {
+              "x": 18,
+              "y": 2685.421875,
+              "width": 284,
+              "height": 662.46875
+            },
+            "clientWidth": 282,
+            "scrollWidth": 282
+          }
+        ]
+      },
+      "keyboard": {
+        "enter_opens": true,
+        "space_closes": true,
+        "focus": {
+          "active": true,
+          "visible": true,
+          "outlineStyle": "solid",
+          "outlineWidth": "2px",
+          "outlineColor": "rgb(122, 167, 224)",
+          "boxShadow": "none"
+        }
+      },
+      "page_errors": [],
+      "failed_local_responses": [],
+      "blocked_urls": [
+        "http://127.0.0.1:47259/basketdata/baskets.json",
+        "http://127.0.0.1:47259/live/basket_pulse.json",
+        "http://127.0.0.1:47259/live/breadth.json",
+        "http://127.0.0.1:47259/live/overlay.json",
+        "http://127.0.0.1:47259/live/prophet_live.json",
+        "http://127.0.0.1:47259/live/quotes.json",
+        "http://127.0.0.1:47259/live/release_publications.json",
+        "http://127.0.0.1:47259/live/risk_state.json?t=1793851738310",
+        "http://127.0.0.1:47259/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "screener-card-320-dark-zh.png",
+      "screenshot_sha256": "4050009bffd6c43036d0442778d839c861f4e9235b67c5a2a5bd190e4063e566",
+      "viewport_screenshot": null,
+      "expanded_screenshot": null
+    }
+  ],
+  "started_at": "2026-11-05T04:08:51.635142+00:00",
+  "browser_version": "156.0.8078.4",
+  "completed_at": "2026-11-05T04:08:58.852914+00:00",
+  "passed_cells": 16
+}
