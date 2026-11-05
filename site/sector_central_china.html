@@ -3085,7 +3085,7 @@
   
   <section class="scc-cycle cyc-page sc-page sc-china" id="sc-cyclemap">
     <div class="scc-section-h">
-      <h2><span class="l-en">Cycle map — every sector & theme on one clock</span><span class="l-zh">周期图谱 — 各板块与主题同框</span></h2>
+      <h2 id="sc-cyclemap-heading"><span class="l-en">Cycle map — every sector & theme on one clock</span><span class="l-zh">周期图谱 — 各板块与主题同框</span></h2>
       <span class="scc-section-sub"><span class="l-en">Price, or how far along the move is · big turns marked · tap a line to read one leg</span><span class="l-zh">看价格，或看这波走到哪一步了 · 大的拐点已经标出 · 点曲线可以看其中一段</span></span>
     </div>
     <section class="cyc-stage">
@@ -3120,7 +3120,8 @@
         <div class="sc-baskets" id="sc-baskets" aria-label="Thematic baskets"></div>
         <span id="sc-sr-status" class="sc-sr-status" role="status" aria-live="polite"></span>
         <div class="sc-chartwrap">
-          <div id="sc-chart" data-h="560" role="img" aria-label="China sector cycle clock — each line a sector's 0 to 100 cycle position over time. Tap a line for its story."></div>
+          <div id="sc-chart" data-h="560" role="img" aria-labelledby="sc-cyclemap-heading" aria-describedby="sc-chart-a11y"></div>
+          <p id="sc-chart-a11y" class="sc-sr-status"><span class="l-en">Price shows rebased price series; Cycle position shows a 0–100 oscillator. This chart does not provide a table of plotted points.</span><span class="l-zh">“价格”展示再基准化价格序列；“周期位置”展示 0–100 的振荡指标。此图表未提供逐点数据表。</span></p>
           <div class="sc-chart-hint" id="sc-chart-hint" hidden></div>
         </div>
       </div>

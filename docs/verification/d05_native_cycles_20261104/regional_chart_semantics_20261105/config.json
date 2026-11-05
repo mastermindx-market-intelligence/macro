@@ -1,0 +1,20 @@
+{
+  "parent": "f0f7aa176e600c5d21a656ae483ce3693b8c9151",
+  "parent_blobs": {
+    "templates/sector_cycles.html.j2": "e37c035f2f6fd8f7711b45f5221277723c428739",
+    "templates/sector_cycles_china.html.j2": "4caeadc4dee2d2f6bc89ed28a1821470ec340c5e",
+    "templates/sector_central.html.j2": "7fc01311669d6083a2c04abc75b4eb1b0d8eb6ed",
+    "templates/sector_central_china.html.j2": "8e2beca43290ba17771101b955562a86b91b178c",
+    "site/sector_cycles.html": "971e26ac75e59375046f96a9c3d910c3f8be779d",
+    "site/sector_cycles_china.html": "a4266ebc1c33bfcc586534fb676b8c4516286a6e",
+    "site/sector_central.html": "18b7700371bd2294302fd93701a86afc2f1df399",
+    "site/sector_central_china.html": "2f26b1ed9a4e3a1625f05e39129fbd372966f975"
+  },
+  "labels": {
+    "sector_cycles": "sc-hero-title",
+    "sector_cycles_china": "sc-hero-title",
+    "sector_central": "sc-cycle-heading",
+    "sector_central_china": "sc-cyclemap-heading"
+  },
+  "current_renderer_sha256": "4f719b75d47c8b5e407942e847e6adb1d146e21d8c010dd227e74bb83f709a7e"
+}

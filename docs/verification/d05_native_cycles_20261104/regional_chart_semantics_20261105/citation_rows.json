@@ -1,0 +1,1120 @@
+[
+  {
+    "board": "brief",
+    "key": "title",
+    "entry": {
+      "en": "Sector Intelligence",
+      "zh": "板块情报",
+      "role": "h1",
+      "source": "templates/sector_central.html.j2:1502"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "brief",
+    "key": "tagline",
+    "entry": {
+      "en": "Sectors, themes and industries, connected.",
+      "zh": "串联板块、主题与行业。",
+      "role": "subtitle",
+      "source": "templates/sector_central.html.j2:1512"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "brief",
+    "key": "method_body",
+    "entry": {
+      "en": "Follow leadership, check participation, then assess each stock’s entry.",
+      "zh": "先看领涨，再查参与度，最后判断个股入场。",
+      "role": "body",
+      "source": "templates/sector_central.html.j2:1543"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "brief",
+    "key": "distinction_body",
+    "entry": {
+      "en": "Strength tells you where to look. Entry conditions qualify the individual stock.",
+      "zh": "强势提示研究方向，入场条件决定个股是否符合要求。",
+      "role": "body",
+      "source": "templates/sector_central.html.j2:1560"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "brief",
+    "key": "leaders_link",
+    "entry": {
+      "en": "Inspect the leaders",
+      "zh": "查看领涨方向",
+      "role": "link",
+      "source": "templates/sector_central.html.j2:1548"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "brief",
+    "key": "not_measured_chip",
+    "entry": {
+      "en": "Not measured",
+      "zh": "暂无实测",
+      "role": "chip",
+      "source": "templates/sector_central.html.j2:1557"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "brief",
+    "key": "asof",
+    "entry": {
+      "en": "as of",
+      "zh": "截至",
+      "role": "asof",
+      "source": "templates/sector_central.html.j2:1533"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "title",
+    "entry": {
+      "en": "What is actually changing",
+      "zh": "实际在变什么",
+      "role": "h1",
+      "source": "templates/sector_central.html.j2:2212"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "tagline",
+    "entry": {
+      "en": "Measured, not forecast",
+      "zh": "实测，非预测",
+      "role": "subtitle",
+      "source": "templates/sector_central.html.j2:2213"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "stands_h2",
+    "entry": {
+      "en": "Where everything stands",
+      "zh": "全景位置",
+      "role": "h2",
+      "source": "templates/sector_central.html.j2:2169"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "quadrant_body",
+    "entry": {
+      "en": "Right = strong vs the S&P. Up = gaining speed this week. Leaders sweep from Leading into Weakening as they tire; laggards turn up through Improving. Hover any dot. Click through for members.",
+      "zh": "右 = 相对标普强。上 = 本周加速。领涨者会从「领先」滑向「走弱」；落后者经「改善」重新转强。悬停查看，点击进入成分页。",
+      "role": "body",
+      "source": "templates/sector_central.html.j2:2169"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "measured_body",
+    "entry": {
+      "en": "Measured performance relative to the S&P 500: a description, not a forecast or an entry call.",
+      "zh": "相对标普500的实测表现：只是描述，不是预测，也不是入场信号。",
+      "role": "body",
+      "source": "templates/sector_central.html.j2:2216"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "order_footnote",
+    "entry": {
+      "en": "Order = measured 3-month performance, not a recommendation.",
+      "zh": "排序 = 实测3个月表现，并非推荐。",
+      "role": "footnote",
+      "source": "templates/sector_central.html.j2:2213"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "quad_lead",
+    "entry": {
+      "en": "Leading: strong & rising",
+      "zh": "领先：强且上行",
+      "role": "label",
+      "source": "templates/sector_central.html.j2:2188"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "quad_weak",
+    "entry": {
+      "en": "Weakening: strong but fading",
+      "zh": "走弱：强但转弱",
+      "role": "label",
+      "source": "templates/sector_central.html.j2:2189"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "quad_improve",
+    "entry": {
+      "en": "Improving: weak but turning up",
+      "zh": "改善：弱但转强",
+      "role": "label",
+      "source": "templates/sector_central.html.j2:2178"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "quad_lag",
+    "entry": {
+      "en": "Lagging: weak & falling",
+      "zh": "落后：弱且下行",
+      "role": "label",
+      "source": "templates/sector_central.html.j2:2179"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "buyable_chip",
+    "entry": {
+      "en": "Buyable",
+      "zh": "可买",
+      "role": "chip",
+      "source": "templates/sector_central.html.j2:2198"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "changed_label",
+    "entry": {
+      "en": "What changed?",
+      "zh": "发生了什么变化？",
+      "role": "label",
+      "source": "templates/sector_central.html.j2:1549"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "rotation_link",
+    "entry": {
+      "en": "See the rotation map",
+      "zh": "查看轮动图",
+      "role": "link",
+      "source": "templates/sector_central.html.j2:2476"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "breadth_label",
+    "entry": {
+      "en": "MARKET BREADTH",
+      "zh": "市场广度",
+      "role": "label",
+      "source": "templates/sector_central.html.j2:2358"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_rotation",
+    "key": "breadth_body",
+    "entry": {
+      "en": "Breadth tells you whether the rotation is a broad tide or a narrow few. Be selective when it is narrow.",
+      "zh": "广度告诉你这是全面上涨还是少数领涨。领涨面窄时应精挑细选。",
+      "role": "body",
+      "source": "templates/sector_central.html.j2:2356"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_lenses",
+    "key": "title",
+    "entry": {
+      "en": "Explore all",
+      "zh": "浏览全部",
+      "role": "h1",
+      "source": "templates/sector_central.html.j2:2391"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_lenses",
+    "key": "tagline",
+    "entry": {
+      "en": "Every basket, sortable, with a rebased chart",
+      "zh": "全部篮子，可排序，附归一走势图",
+      "role": "subtitle",
+      "source": "templates/sector_central.html.j2:2391"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_lenses",
+    "key": "compare_h2",
+    "entry": {
+      "en": "Themes & compare",
+      "zh": "主题与比较",
+      "role": "h2",
+      "source": "templates/sector_central.html.j2:1519"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_lenses",
+    "key": "confluence_h2",
+    "entry": {
+      "en": "Subsector Confluence",
+      "zh": "子行业汇聚",
+      "role": "h2",
+      "source": "templates/sector_central.html.j2:2457"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_lenses",
+    "key": "table_h2",
+    "entry": {
+      "en": "Performance table",
+      "zh": "表现一览",
+      "role": "h2",
+      "source": "templates/sector_central.html.j2:2398"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_lenses",
+    "key": "confluence_body",
+    "entry": {
+      "en": "Every sub-industry as its own basket, scored for entry timing. The read below is answer-first: the rotation backdrop, which groups just turned buyable, which are late or fading, and the stocks firing inside a group with the wind at its back. A timing map. Confirm before acting.",
+      "zh": "将每个子行业视作独立篮子，按入场时机评分。下方读数以结论优先：轮动情况、哪些子行业刚转为可买、哪些已偏晚或转弱，以及在顺风子行业中触发的个股。择时图。行动前请确认。",
+      "role": "body",
+      "source": "templates/sector_central.html.j2:2460"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_lenses",
+    "key": "confluence_footnote",
+    "entry": {
+      "en": "Every subsector is an equal-weight basket of its members, scored on a 3-day cadence for entry timing, not a buy list.",
+      "zh": "每个子行业为其成分的等权篮子，按 3 日周期为入场时机评分，并非买入清单。层级衡量汇聚交叉的新鲜度（T1 最新）。",
+      "role": "footnote",
+      "source": "templates/sector_central.html.j2:2473"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_lenses",
+    "key": "rebase_footnote",
+    "entry": {
+      "en": "Lines are rebased to 0% at the start of the window. Toggle baskets from the legend; “All” covers the available cache history.",
+      "zh": "曲线在窗口起点重设为 0%。可在图例中开关篮子；“全部”覆盖可用缓存历史。",
+      "role": "footnote",
+      "source": "templates/sector_central.html.j2:2413"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_lenses",
+    "key": "baskets_chip",
+    "entry": {
+      "en": "Thematic Baskets",
+      "zh": "主题篮子",
+      "role": "chip",
+      "source": "templates/sector_central.html.j2:2467"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_lenses",
+    "key": "nasdaq_chip",
+    "entry": {
+      "en": "Nasdaq-100",
+      "zh": "纳斯达克100",
+      "role": "chip",
+      "source": "templates/sector_central.html.j2:2465"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "explore_lenses",
+    "key": "russell_chip",
+    "entry": {
+      "en": "Russell-2000",
+      "zh": "罗素2000",
+      "role": "chip",
+      "source": "templates/sector_central.html.j2:2466"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "dossier",
+    "key": "tagline",
+    "entry": {
+      "en": "Tap any card, or its line on the chart, to focus it",
+      "zh": "点按任意卡片（或图中其曲线）以聚焦",
+      "role": "subtitle",
+      "source": "templates/sector_cycles.html.j2:112"
+    },
+    "refs": [
+      "templates/sector_cycles.html.j2"
+    ]
+  },
+  {
+    "board": "dossier",
+    "key": "evidence_date_label",
+    "entry": {
+      "en": "Evidence date",
+      "zh": "证据日期",
+      "role": "label",
+      "source": "templates/sector_central.html.j2:3788"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "dossier",
+    "key": "measured_order_label",
+    "entry": {
+      "en": "Measured order",
+      "zh": "实测排序",
+      "role": "label",
+      "source": "templates/sector_central.html.j2:3787"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "dossier",
+    "key": "history_label",
+    "entry": {
+      "en": "History",
+      "zh": "历史",
+      "role": "label",
+      "source": "templates/sector_central.html.j2:3795"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "dossier",
+    "key": "recon_label",
+    "entry": {
+      "en": "Reconstructed from prices",
+      "zh": "按价格重建",
+      "role": "label",
+      "source": "templates/sector_central.html.j2:3797"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "dossier",
+    "key": "recorded_label",
+    "entry": {
+      "en": "Recorded at the time",
+      "zh": "当时记录",
+      "role": "label",
+      "source": "templates/sector_central.html.j2:3799"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "dossier",
+    "key": "recon_body",
+    "entry": {
+      "en": "Reconstructed from prices: calculated later, not what Mastermind showed at the time.",
+      "zh": "按价格重建：事后计算，并非 Mastermind 当时显示的内容。",
+      "role": "body",
+      "source": "templates/sector_central.html.j2:3907"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "dossier",
+    "key": "recorded_body",
+    "entry": {
+      "en": "Recorded by Mastermind at the time, not recalculated later.",
+      "zh": "由 Mastermind 当时记录，事后未重新计算。",
+      "role": "body",
+      "source": "templates/sector_central.html.j2:3953"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "dossier",
+    "key": "prophet_link",
+    "entry": {
+      "en": "Compare in Prophet",
+      "zh": "前往 Prophet 对照",
+      "role": "link",
+      "source": "templates/sector_central.html.j2:3793"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "research",
+    "key": "title",
+    "entry": {
+      "en": "Research",
+      "zh": "研究",
+      "role": "h1",
+      "source": "templates/sector_central.html.j2:1510"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "research",
+    "key": "estimate_body",
+    "entry": {
+      "en": "Research estimate, display only: {p}% over the next {n} sessions. Not a recommendation.",
+      "zh": "研究估计，仅供展示：未来 {n} 个交易日的概率为 {p}%。不构成建议。",
+      "role": "body",
+      "source": "templates/sector_central.html.j2:3994-3995 (EN :3994, ZH :3995; the EN dash is the deck colon per the glyph rule)"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "watches",
+    "key": "title",
+    "entry": {
+      "en": "Watches",
+      "zh": "观察",
+      "role": "h1",
+      "source": "templates/sector_central.html.j2:1511"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "cycles",
+    "key": "title",
+    "entry": {
+      "en": "Sector Cycle Intelligence",
+      "zh": "板块周期情报",
+      "role": "h1",
+      "source": "templates/sector_cycles.html.j2:38"
+    },
+    "refs": [
+      "templates/sector_cycles.html.j2"
+    ]
+  },
+  {
+    "board": "cycles",
+    "key": "tagline",
+    "entry": {
+      "en": "Where every US sector stands",
+      "zh": "每个美股板块所处的位置",
+      "role": "subtitle",
+      "source": "templates/sector_cycles.html.j2:40"
+    },
+    "refs": [
+      "templates/sector_cycles.html.j2"
+    ]
+  },
+  {
+    "board": "cycles",
+    "key": "intro_body",
+    "entry": {
+      "en": "The 11 GICS sector ETFs on one cycle clock: real price (rebased & log, so every line shares an axis) with a one-tap cycle-position view. Peaks & troughs are auto-detected from the tape, each sector is graded by where it sits in its cycle, and clicking a leg tells you what drove the move. Projections here are windows, not certainties: re-drawn nightly as new data lands.",
+      "zh": "11 个 GICS 板块 ETF 同处一张周期时钟：真实价格（再基准化并取对数，使每条线共用同一坐标轴），并可一键切换为周期位置视图。波峰与波谷由价格走势自动识别，每个板块按其周期所处阶段评级，点击任一区段即可了解推动该走势的原因。这里的预测是时间窗口，而非确定性结论：每晚随新数据重新计算。",
+      "role": "body",
+      "source": "templates/sector_cycles.html.j2:40"
+    },
+    "refs": [
+      "templates/sector_cycles.html.j2"
+    ]
+  },
+  {
+    "board": "cycles",
+    "key": "r3_controls",
+    "entry": {
+      "en": "Chart options",
+      "zh": "图表选项",
+      "role": "h2",
+      "source": "templates/sector_cycles.html.j2:75"
+    },
+    "refs": [
+      "templates/sector_cycles.html.j2"
+    ]
+  },
+  {
+    "board": "cycles",
+    "key": "r8_grader",
+    "entry": {
+      "en": "Conviction-call grader: measured hit rate",
+      "zh": "判断评分器：已衡量命中率",
+      "role": "h2",
+      "source": "templates/sector_central.html.j2:3394 (PRC-004: relabelled); ZH NEW (sic-p-copy-20261021-r1 deck: the PRC-004 relabel — the production h2 at :3394 is 自评分器 — 已衡量准确度; 判断评分器：已衡量命中率 has no production origin)"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "cycles",
+    "key": "r9_metadata",
+    "entry": {
+      "en": "Built",
+      "zh": "生成于",
+      "role": "h2",
+      "source": "templates/sector_central.html.j2:2478"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "cycles",
+    "key": "mode_price_chip",
+    "entry": {
+      "en": "Price",
+      "zh": "价格",
+      "role": "chip",
+      "source": "templates/sector_cycles.html.j2:70"
+    },
+    "refs": [
+      "templates/sector_cycles.html.j2"
+    ]
+  },
+  {
+    "board": "cycles",
+    "key": "mode_osc_chip",
+    "entry": {
+      "en": "Cycle position",
+      "zh": "周期位置",
+      "role": "chip",
+      "source": "templates/sector_cycles.html.j2:71"
+    },
+    "refs": [
+      "templates/sector_cycles.html.j2"
+    ]
+  },
+  {
+    "board": "cycles",
+    "key": "scale_log_chip",
+    "entry": {
+      "en": "Log",
+      "zh": "对数",
+      "role": "chip",
+      "source": "templates/sector_cycles.html.j2:78"
+    },
+    "refs": [
+      "templates/sector_cycles.html.j2"
+    ]
+  },
+  {
+    "board": "cycles",
+    "key": "scale_linear_chip",
+    "entry": {
+      "en": "Linear",
+      "zh": "线性",
+      "role": "chip",
+      "source": "templates/sector_cycles.html.j2:79"
+    },
+    "refs": [
+      "templates/sector_cycles.html.j2"
+    ]
+  },
+  {
+    "board": "cycles",
+    "key": "short_history_chip",
+    "entry": {
+      "en": "Short history",
+      "zh": "价格历史不足",
+      "role": "chip",
+      "source": "templates/sector_central.html.j2:3584"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "components",
+    "key": "asof_label",
+    "entry": {
+      "en": "As of",
+      "zh": "截至",
+      "role": "asof",
+      "source": "templates/sector_cycles.html.j2:45"
+    },
+    "refs": [
+      "templates/sector_cycles.html.j2"
+    ]
+  },
+  {
+    "board": "components",
+    "key": "asof_pattern",
+    "entry": {
+      "en": "As of {date} · {source}",
+      "zh": "截至 {date} · {source}",
+      "role": "asof",
+      "source": "templates/sector_central.html.j2:3952"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "components",
+    "key": "alt_table_label",
+    "entry": {
+      "en": "Performance table",
+      "zh": "表现一览",
+      "role": "label",
+      "source": "templates/sector_central.html.j2:2398"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "components",
+    "key": "alt_map_link",
+    "entry": {
+      "en": "See the rotation map",
+      "zh": "查看轮动图",
+      "role": "link",
+      "source": "templates/sector_central.html.j2:2476"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "components",
+    "key": "nav_brief",
+    "entry": {
+      "en": "Brief",
+      "zh": "简报",
+      "role": "nav",
+      "source": "templates/sector_central.html.j2:1508"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "components",
+    "key": "nav_explore",
+    "entry": {
+      "en": "Explore",
+      "zh": "探索",
+      "role": "nav",
+      "source": "templates/sector_central.html.j2:1509"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "components",
+    "key": "nav_research",
+    "entry": {
+      "en": "Research",
+      "zh": "研究",
+      "role": "nav",
+      "source": "templates/sector_central.html.j2:1510"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "components",
+    "key": "nav_watches",
+    "entry": {
+      "en": "Watches",
+      "zh": "观察",
+      "role": "nav",
+      "source": "templates/sector_central.html.j2:1511"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "components",
+    "key": "workflow_note",
+    "entry": {
+      "en": "Sectors, themes and industries, connected.",
+      "zh": "串联板块、主题与行业。",
+      "role": "nav",
+      "source": "templates/sector_central.html.j2:1512"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "components",
+    "key": "workflow_aria",
+    "entry": {
+      "en": "Sector Intelligence workflow",
+      "zh": "板块情报工作流",
+      "role": "aria",
+      "source": "templates/sector_central.html.j2:1507 (EN); ZH NEW (SIC-V2 wave-2 proposal)"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "stale_body",
+    "entry": {
+      "en": "Observation is no longer current.",
+      "zh": "观测已过期。",
+      "role": "state_body",
+      "source": "templates/sector_central.html.j2:1984 (the ZH at that line is written as JS unicode escapes in the template; the deck test decodes them)"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "incompatible_generation_title",
+    "entry": {
+      "en": "History is from a different day",
+      "zh": "历史来自不同日期",
+      "role": "state_title",
+      "source": "templates/sector_central.html.j2:3614"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "incompatible_generation_body",
+    "entry": {
+      "en": "History {x}, current read {y}. Not drawn, so the two are never mixed.",
+      "zh": "历史 {x}，当前读数 {y}。不绘制，避免混用。",
+      "role": "state_body",
+      "source": "templates/sector_central.html.j2:3615-3616 (EN :3615, ZH :3616)"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "partial_title",
+    "entry": {
+      "en": "Partial coverage",
+      "zh": "覆盖不完整",
+      "role": "state_title",
+      "source": "templates/sector_central.html.j2:3980"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "partial_body",
+    "entry": {
+      "en": "Based on {x} of {y} checks",
+      "zh": "基于 {y} 项检查中的 {x} 项",
+      "role": "state_body",
+      "source": "templates/sector_central.html.j2:3979"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "corrected_body",
+    "entry": {
+      "en": "Comparison reset after a source change.",
+      "zh": "数据变更后，正在重新建立比较。",
+      "role": "state_body",
+      "source": "templates/sector_central.html.j2:1987 (the ZH at that line is written as JS unicode escapes in the template; the deck test decodes them)"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "abstained_body",
+    "entry": {
+      "en": "Forecast: none. No forecasting model has been approved for this read.",
+      "zh": "预测：无。此项尚无获批的预测模型。",
+      "role": "state_body",
+      "source": "templates/sector_central.html.j2:3998"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "error_title",
+    "entry": {
+      "en": "History unavailable right now",
+      "zh": "历史暂不可用",
+      "role": "state_title",
+      "source": "templates/sector_central.html.j2:3825 (mxError L(History unavailable right now, 历史暂不可用))"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "error_body",
+    "entry": {
+      "en": "The current read above is unaffected.",
+      "zh": "上方的当前读数不受影响。",
+      "role": "state_body",
+      "source": "templates/sector_central.html.j2:3826"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "empty_title",
+    "entry": {
+      "en": "No recorded events are open.",
+      "zh": "目前没有已记录事件。",
+      "role": "state_title",
+      "source": "templates/sector_central.html.j2:3923"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "empty_body",
+    "entry": {
+      "en": "Events appear here once Mastermind records one.",
+      "zh": "Mastermind 记录后将自动出现。",
+      "role": "state_body",
+      "source": "templates/sector_central.html.j2:3924"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "no_access_body",
+    "entry": {
+      "en": "Sign in with access to view these observations.",
+      "zh": "请使用有权限的账户登录查看。",
+      "role": "state_body",
+      "source": "templates/sector_central.html.j2:2004 (the ZH at that line is written as JS unicode escapes in the template; the deck test decodes them)"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "loading_title",
+    "entry": {
+      "en": "Loading…",
+      "zh": "加载中…",
+      "role": "state_title",
+      "source": "templates/sector_central.html.j2:2470"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "states",
+    "key": "loading_body",
+    "entry": {
+      "en": "Loading history…",
+      "zh": "历史加载中…",
+      "role": "state_body",
+      "source": "templates/sector_central.html.j2:3822"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "authority",
+    "key": "built_asof",
+    "entry": {
+      "en": "Built {timestamp}",
+      "zh": "生成于 {timestamp}",
+      "role": "asof",
+      "source": "templates/sector_central.html.j2:2478"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "authority",
+    "key": "generated_asof",
+    "entry": {
+      "en": "Generated {timestamp}",
+      "zh": "生成于 {timestamp}",
+      "role": "asof",
+      "source": "templates/sector_central.html.j2:2486"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "authority",
+    "key": "grader_h2",
+    "entry": {
+      "en": "Conviction-call grader: measured hit rate",
+      "zh": "判断评分器：已衡量命中率",
+      "role": "h2",
+      "source": "templates/sector_central.html.j2:3394 (PRC-004: relabelled); ZH NEW (sic-p-copy-20261021-r1 deck: the PRC-004 relabel — the production h2 at :3394 is 自评分器 — 已衡量准确度; 判断评分器：已衡量命中率 has no production origin)"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "authority",
+    "key": "grader_body",
+    "entry": {
+      "en": "Realized directional hit-rate, cross-sectional rank-IC and excess-vs-SPY of the conviction calls, by horizon. Sparse until it accrues; never fed back into the live score.",
+      "zh": "按时间跨度衡量信念判断的已实现方向命中率、横截面秩相关与超越SPY的超额收益。数据累积前较稀疏；绝不回灌入实时评分。",
+      "role": "body",
+      "source": "templates/sector_central.html.j2:3395"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "authority",
+    "key": "accruing_body",
+    "entry": {
+      "en": "Accruing: dated calls are logged and will be graded against realized forward returns as time passes ({n} calls logged).",
+      "zh": "累积中：带日期的判断已记录，将随时间推移对照已实现的前瞻收益进行评分（已记录 {n} 个判断）。",
+      "role": "body",
+      "source": "templates/sector_central.html.j2:3384"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  },
+  {
+    "board": "authority",
+    "key": "lanes_footnote",
+    "entry": {
+      "en": "Lanes are the only gated, graded calls on this page. Everything below is context, measured nightly.",
+      "zh": "操作清单是本页唯一的门控与自评分判断。下方内容均为背景信息，每晚计算。",
+      "role": "footnote",
+      "source": "templates/sector_central.html.j2:2107"
+    },
+    "refs": [
+      "templates/sector_central.html.j2"
+    ]
+  }
+]
