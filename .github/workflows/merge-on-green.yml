@@ -175,6 +175,15 @@ jobs:
       # is added, not the day someone remembers to edit this list. If it stops being
       # fetched the sweep aborts loudly (`Could not establish the tested-surface
       # gate`) rather than merging on undated greens.
+      #
+      # `scripts/ci_scope_dependencies.py`, `scripts/audit_unrun_tests.py` and
+      # `scripts/workflow_run_source.py` are run_ci_pack's import closure. Without
+      # them `from scripts.run_ci_pack import GLOBAL_INVALIDATORS` raised
+      # ImportError on every sweep, so `_touches_ci_control_plane` failed closed
+      # and the live-inherited-red waiver could never fire (found 2026-11-05 while
+      # scoping manifest edits). The closure is guarded by
+      # tests/test_merge_on_green.py::test_the_sweep_checkout_can_import_the_pack_runner,
+      # which imports the runner from a directory holding exactly this list.
       - uses: actions/checkout@v4
         with:
           filter: blob:none
@@ -184,6 +193,9 @@ jobs:
             scripts/ci_authority_paths.py
             scripts/gh_path_filter.py
             scripts/run_ci_pack.py
+            scripts/ci_scope_dependencies.py
+            scripts/audit_unrun_tests.py
+            scripts/workflow_run_source.py
             .github/workflows
           sparse-checkout-cone-mode: false
 

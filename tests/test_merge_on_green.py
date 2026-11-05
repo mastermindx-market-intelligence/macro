@@ -281,7 +281,11 @@ def test_the_sweeper_sparse_checks_out_only_what_it_reads():
 
     `scripts/run_ci_pack.py` is here because live-inherited red must read
     `GLOBAL_INVALIDATORS` from the same list the packs use. Without it the
-    import fail-closes and the waiver never fires.
+    import fail-closes and the waiver never fires. The three modules after it
+    are its import closure: with only the runner itself fetched, the import
+    raised ImportError on every sweep (2026-11-05), and the waiver never fired
+    anyway. `test_the_sweep_checkout_can_import_the_pack_runner` proves the
+    closure is complete from a directory that holds exactly this list.
     """
     checkout = _workflow()["jobs"]["sweep"]["steps"][0]
     assert checkout["uses"] == "actions/checkout@v4"
@@ -294,9 +298,56 @@ def test_the_sweeper_sparse_checks_out_only_what_it_reads():
         "scripts/ci_authority_paths.py",
         "scripts/gh_path_filter.py",
         "scripts/run_ci_pack.py",
+        "scripts/ci_scope_dependencies.py",
+        "scripts/audit_unrun_tests.py",
+        "scripts/workflow_run_source.py",
         ".github/workflows",
     }
     assert options["sparse-checkout-cone-mode"] is False
+
+
+def test_the_sweep_checkout_can_import_the_pack_runner(tmp_path):
+    """The sparse list must be the runner's whole import closure, proven by
+    importing it from a directory that holds exactly that list and nothing else.
+    A missing module fails closed into `_touches_ci_control_plane`, which is
+    exactly the silent outcome this test exists to make loud."""
+    import os
+    import shutil
+    import subprocess
+    import sys
+
+    repo = Path(MOG.__file__).resolve().parents[1]
+    checkout = _workflow()["jobs"]["sweep"]["steps"][0]
+    for entry in str(checkout["with"]["sparse-checkout"]).split():
+        source = repo / entry
+        target = tmp_path / entry
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if source.is_dir():
+            shutil.copytree(source, target)
+        else:
+            shutil.copy2(source, target)
+    # The probe names no repository path literally: the closure tracer that
+    # scopes ci-control-plane-contracts reads string constants in this suite as
+    # files it depends on, so a literal `engine/...` here would widen that job.
+    probe = (
+        "from scripts.run_ci_pack import GLOBAL_INVALIDATORS\n"
+        "import scripts.merge_on_green as m\n"
+        "plain = next(i for i in GLOBAL_INVALIDATORS if not set('*?[') & set(i))\n"
+        "assert m._touches_ci_control_plane(['not_a_control_plane_file.py']) is False\n"
+        "assert m._touches_ci_control_plane([plain]) is True, plain\n"
+        "print(len(GLOBAL_INVALIDATORS))\n"
+    )
+    env = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
+    result = subprocess.run(
+        [sys.executable, "-c", probe],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        env=env,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert int(result.stdout.strip()) > 0
 
 
 def test_the_sweeper_installs_the_yaml_parser_before_it_sweeps():
@@ -3565,7 +3616,7 @@ INCIDENT_4583_FILES = [
     "engine/china_prophet_shadow.py",
     "engine/hk_board_rank.py",
     "engine/signal_gate.py",
-    "engine/signal_quality.py",
+    "engine/signal_quality.py",  # ci-trigger-closure: data — fixture changed-file name, never opened
     "research/signal_engine/SCHEMA.json",
     "scripts/validate_signals.py",
     "site/chart.js",
@@ -3855,19 +3906,257 @@ def test_one_source_file_defeats_the_pipeline_bake_exclusion():
     assert stale and "engine/**" in reason, reason
 
 
-def test_a_commit_changing_the_check_definitions_re_proves_every_pull_request():
-    """A legacy-jobs.yml edit changes WHAT would run. No pull request's
-    existing green describes those checks, whatever its own footprint is — note the
-    footprint here shares nothing with the commit."""
-    freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, [".github/ci/legacy-jobs.yml"])],
-        gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
-        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
+def test_a_commit_changing_the_check_definitions_re_proves_every_pull_request(
+    monkeypatch,
+):
+    """A legacy-jobs.yml edit to a job this head RAN changes what its green means,
+    whatever the head's own footprint is — note the footprint here shares nothing
+    with the commit. (Edits to jobs the head never ran are scoped below, X1.)"""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _seed_manifests(
+        _manifest_window(),
+        base={"a": _exclusive_job()},
+        tip={"a": _exclusive_job(run="python -m pytest tests/test_a.py -q -p no:cacheprovider")},
+        eligible=frozenset({"a"}),
     )
-    stale, reason = freshness.stale_for(
+    stale, reason = _manifest_verdict(freshness)
+    assert stale and "check definitions" in reason, reason
+    assert "legacy job 'a' changed, and this pull request's proof ran it" in reason
+
+
+# -- X1: a legacy-manifest edit is scoped to the jobs each head actually ran ----
+
+_MANIFEST = ".github/ci/legacy-jobs.yml"
+
+
+def _exclusive_job(paths=("engine/**",), run="python -m pytest tests/test_a.py -q", **extra):
+    job = {
+        "if": "${{ false }}",
+        "gate": "code",
+        "scope": "exclusive",
+        "paths": list(paths),
+        "steps": [{"run": run}],
+    }
+    job.update(extra)
+    return job
+
+
+def _inferred_job(run="python -m pytest tests/test_b.py -q"):
+    return {"if": "${{ false }}", "gate": "code", "steps": [{"run": run}]}
+
+
+def _manifest_window(pull_files=("engine/signal_quality.py",), extra_files=()):  # ci-trigger-closure: data — fixture changed-file name, never opened
+    """One main commit after the exact proof base that edits (at least) the manifest."""
+    return _freshness(
+        commits=[(MAIN_MOVED_AT_1026, [_MANIFEST, *extra_files])],
+        gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
+        pull_files={4242: list(pull_files)},  # ci-trigger-closure: data — fixture changed-file name, never opened
+    )
+
+
+def _seed_manifests(freshness, base, tip, *, eligible, base_blob="b" * 40, tip_blob="t" * 40):
+    """Seed both ends of the window and the proof's selection: no reads remain."""
+    tip_sha = freshness.commits[0]["sha"]
+    freshness._manifest_blob_shas[PROOF_BASE_SHA] = base_blob
+    freshness._manifest_blob_shas[tip_sha] = tip_blob
+    freshness._manifest_jobs[PROOF_BASE_SHA] = base
+    freshness._manifest_jobs[tip_sha] = tip
+    freshness._eligible_jobs[4242] = eligible
+    return freshness
+
+
+def _manifest_verdict(freshness):
+    return freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
     )
+
+
+def test_a_manifest_edit_to_a_job_the_head_never_ran_keeps_its_proof_current(
+    monkeypatch,
+):
+    """Measured 2026-11-04/05: one legacy-jobs.yml edit on main sent every armed
+    head through update-branch and twelve packs on the single render-heavy runner,
+    for a job none of them ran. Scoped: the proof selected `a`; main edited `b`'s
+    steps, and `b` keeps an exclusive declared scope that still does not select
+    this head."""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _seed_manifests(
+        _manifest_window(),
+        base={"a": _exclusive_job(), "b": _exclusive_job(("docs/**",))},
+        tip={
+            "a": _exclusive_job(),
+            "b": _exclusive_job(("docs/**",), run="python -m pytest tests/test_b2.py -q"),
+        },
+        eligible=frozenset({"a"}),
+    )
+    stale, reason = _manifest_verdict(freshness)
+    assert stale is False, reason
+    assert "changed the check definitions, but 1 legacy job definition(s) changed" in reason
+    assert "none of them a job this pull request's proof ran (1 selected)" in reason
+
+
+def test_a_byte_identical_manifest_at_both_ends_needs_no_plan_read(monkeypatch):
+    """A revert (or a comment-only edit that round-trips to the same blob) leaves the
+    same object id at both ends: current, and the proof's plan is never fetched."""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _manifest_window()
+    tip_sha = freshness.commits[0]["sha"]
+    freshness._manifest_blob_shas[PROOF_BASE_SHA] = "s" * 40
+    freshness._manifest_blob_shas[tip_sha] = "s" * 40
+    stale, reason = _manifest_verdict(freshness)
+    assert stale is False, reason
+    assert "byte-identical" in reason
+    assert 4242 not in freshness._eligible_jobs
+
+
+def test_an_added_legacy_job_re_proves_every_head(monkeypatch):
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _seed_manifests(
+        _manifest_window(),
+        base={"a": _exclusive_job()},
+        tip={"a": _exclusive_job(), "c": _exclusive_job(("docs/**",))},
+        eligible=frozenset({"a"}),
+    )
+    stale, reason = _manifest_verdict(freshness)
     assert stale and "check definitions" in reason, reason
+    assert "legacy job 'c' was added" in reason
+
+
+def test_an_edit_to_an_inferred_scope_job_re_proves_every_head(monkeypatch):
+    """A job without `scope: exclusive` is scoped by inference over its steps, so
+    any edit to it may widen it onto this head: conservative."""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _seed_manifests(
+        _manifest_window(),
+        base={"a": _exclusive_job(), "b": _inferred_job()},
+        tip={"a": _exclusive_job(), "b": _inferred_job(run="python -m pytest tests/test_b2.py -q")},
+        eligible=frozenset({"a"}),
+    )
+    stale, reason = _manifest_verdict(freshness)
+    assert stale and "check definitions" in reason, reason
+    assert "legacy job 'b' changed and its scope is inferred" in reason
+
+
+def test_an_exclusive_job_whose_declared_scope_changed_re_proves_every_head(
+    monkeypatch,
+):
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _seed_manifests(
+        _manifest_window(),
+        base={"a": _exclusive_job(), "b": _exclusive_job(("docs/**",))},
+        tip={"a": _exclusive_job(), "b": _exclusive_job(("docs/**", "engine/**"))},
+        eligible=frozenset({"a"}),
+    )
+    stale, reason = _manifest_verdict(freshness)
+    assert stale and "check definitions" in reason, reason
+    assert "legacy job 'b' changed its declared scope" in reason
+
+
+def test_a_removed_job_the_head_never_ran_keeps_its_proof_current(monkeypatch):
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _seed_manifests(
+        _manifest_window(),
+        base={"a": _exclusive_job(), "b": _exclusive_job(("docs/**",))},
+        tip={"a": _exclusive_job()},
+        eligible=frozenset({"a"}),
+    )
+    stale, reason = _manifest_verdict(freshness)
+    assert stale is False, reason
+    assert "1 legacy job definition(s) changed" in reason
+
+
+def test_an_unreadable_plan_keeps_the_manifest_edit_conservative(monkeypatch):
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _seed_manifests(
+        _manifest_window(),
+        base={"a": _exclusive_job()},
+        tip={"a": _exclusive_job(), "b": _exclusive_job(("docs/**",))},
+        eligible=None,
+    )
+    stale, reason = _manifest_verdict(freshness)
+    assert stale and "check definitions" in reason, reason
+    assert "could not be read from v1 semantic evidence" in reason
+
+
+def test_a_head_that_edits_the_manifest_itself_is_always_re_proved(monkeypatch):
+    """Its tested manifest is the merge of its own edit, not main's: unscopable."""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _manifest_window(pull_files=("engine/signal_quality.py", _MANIFEST))  # ci-trigger-closure: data — fixture changed-file name, never opened
+    stale, reason = _manifest_verdict(freshness)
+    assert stale and "check definitions" in reason, reason
+    assert "edits the manifest itself" in reason
+
+
+def test_a_manifest_edit_beside_a_workflow_edit_is_still_global(monkeypatch):
+    """ci.yml changes the pack harness: no scoping, no reads, every head re-proves."""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _manifest_window(extra_files=(".github/workflows/ci.yml",))
+    stale, reason = _manifest_verdict(freshness)
+    assert stale and "check definitions themselves" in reason, reason
+
+
+def test_the_manifest_is_read_through_bounded_tree_hops(monkeypatch):
+    """Commit -> root tree -> .github -> ci -> blob, every hop by object id, and a
+    blob parsed once however many commits carry it."""
+    freshness = _manifest_window()
+    reads: list[str] = []
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    manifest = yaml.safe_dump(
+        {"jobs": {"a": _exclusive_job(), "b": _inferred_job()}}, sort_keys=True
+    ).encode("utf-8")
+    for commit, root in (("c1" * 20, "r1" * 20), ("c2" * 20, "r2" * 20)):
+        freshness._commit_tree_shas[commit] = root
+        freshness._root_trees[root] = {".github": ("tree", "040000", "g" * 40)}
+    freshness._root_trees["g" * 40] = {"ci": ("tree", "040000", "k" * 40)}
+    freshness._root_trees["k" * 40] = {"legacy-jobs.yml": ("blob", "100644", "m" * 40)}
+    real_blob = freshness._blob
+    freshness._blobs["m" * 40] = manifest
+    freshness._blob = lambda sha: reads.append(sha) or real_blob(sha)  # type: ignore[method-assign]
+    assert freshness.manifest_blob_sha("c1" * 20) == "m" * 40
+    assert set(freshness.manifest_jobs_at("c1" * 20)) == {"a", "b"}
+    assert set(freshness.manifest_jobs_at("c2" * 20)) == {"a", "b"}
+    assert reads == ["m" * 40], "one parse per blob, not per commit"
+    # A tree without `ci/` has no manifest: None, never an exception.
+    freshness._commit_tree_shas["c3" * 20] = "r3" * 20
+    freshness._root_trees["r3" * 20] = {".github": ("tree", "040000", "h" * 40)}
+    freshness._root_trees["h" * 40] = {"workflows": ("tree", "040000", "w" * 40)}
+    assert freshness.manifest_blob_sha("c3" * 20) is None
+    assert freshness.manifest_jobs_at("c3" * 20) is None
+
+
+def test_the_manifest_parser_accepts_only_a_jobs_mapping():
+    assert MOG._manifest_jobs_from_bytes(b"jobs:\n  a:\n    gate: code\n") == {"a": {"gate": "code"}}
+    assert MOG._manifest_jobs_from_bytes(b"jobs: []\n") is None
+    assert MOG._manifest_jobs_from_bytes(b"jobs:\n  a: not-a-mapping\n") is None
+    assert MOG._manifest_jobs_from_bytes(b"- a\n") is None
+    assert MOG._manifest_jobs_from_bytes(b"jobs: {\n") is None
+    assert MOG._manifest_jobs_from_bytes(b"\xff\xfe") is None
+
+
+def test_the_proofs_selected_jobs_come_from_its_v1_plan(monkeypatch):
+    class Loaded:
+        def __init__(self, evidence):
+            self.evidence = evidence
+
+    freshness = _manifest_window()
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    loaded = Loaded({"plan": {"eligible_jobs": ["a", "b"]}})
+    assert freshness.eligible_jobs_of(_pull(), [], loaded) == frozenset({"a", "b"})
+    # Cached per head: a later call never re-reads.
+    assert freshness.eligible_jobs_of(_pull(), [], Loaded(None)) == frozenset({"a", "b"})
+    assert freshness.eligible_jobs_of(_pull(number=7), [], Loaded(None)) is None
+    assert freshness.eligible_jobs_of(_pull(number=8), [], Loaded({"plan": {"eligible_jobs": ["a", 3]}})) is None
+    # Without evidence in hand the head's own v1 artifact is the source.
+    monkeypatch.setattr(
+        MOG, "semantic_evidence_for_head", lambda *_a, **_k: Loaded({"plan": {"eligible_jobs": ["z"]}})
+    )
+    assert freshness.eligible_jobs_of(_pull(number=9), []) == frozenset({"z"})
+
+    def _refuse(*_a, **_k):
+        raise MOG.semantic_proof.SemanticProofError("no artifact")
+
+    monkeypatch.setattr(MOG, "semantic_evidence_for_head", _refuse)
+    assert freshness.eligible_jobs_of(_pull(number=10), []) is None
 
 
 def test_an_exact_proof_base_does_not_reprove_its_own_definition_commit(
@@ -4620,7 +4909,7 @@ def test_a_raising_surface_check_can_never_become_permission_to_merge(monkeypatc
     )
 
     class Exploding:
-        def stale_for(self, *_a):
+        def stale_for(self, *_a, **_kw):
             raise ZeroDivisionError("boom")
 
     assert MOG.sweep_pull(
