@@ -106,6 +106,20 @@
 
     function openSavedIdentity(view,cut){
       var subject=cut.subject,record=cut.record,context=record.archetype_context,ownerAtOpen=ownerId;
+      function meaning(value){
+        var labels={not_established:tr('Not established','尚未确立'),unknown:tr('Unknown','未知'),
+          ordinary_share:tr('Ordinary share','普通股'),adr:tr('ADR / depositary receipt','ADR / 存托凭证'),
+          joint_venture:tr('Joint venture','合资企业'),equity_method:tr('Equity method','权益法'),
+          consolidated:tr('Consolidated basis disclosed','已披露合并口径'),
+          source_supported_current_research:tr('Source-supported current research identity','来源支持的当前研究身份'),
+          government_revenue_identity_context:tr('Government Revenue identity context only','仅用于政府收入研究的身份背景'),
+          current_observation_only:tr('Current observation only','仅为当前观测'),
+          disclosed_snapshot_only:tr('Disclosure snapshot only; later continuity is unestablished','仅为披露快照；其后持续性尚未确立'),
+          direct_edge_interest_not_issuer_capture:tr('Direct ownership interest, not issuer revenue or cash capture','直接所有权权益，不代表发行人收入或现金获取')};
+        return Object.prototype.hasOwnProperty.call(labels,value)?labels[value]:text(value,tr('Not established','尚未确立'));
+      }
+      function fields(lines,source,spec){spec.forEach(function(field){if(source[field[0]]!=null)lines.push(tr(field[1],field[2])+meaning(source[field[0]]))})}
+      function interest(value){return typeof value==='number'&&Number.isFinite(value)?Math.round(value*1000)/10+'%':meaning(value)}
       var lines=[tr('Subject: ','主体：')+subject.ticker+' · '+record.company_name,
         tr('Evidence content ID: ','证据内容标识：')+cut.atlas.content_id,
         tr('Context known at: ','背景获知时间：')+subject.known_at,
@@ -119,14 +133,28 @@
         var native=row.native_identity||{},research=row.research_identity||{};
         var details=[tr('Source known at: ','来源获知时间：')+row.known_at,
           tr('Source period: ','来源期间：')+text(row.source_as_of,tr('Not established','尚未确立')),
-          tr('Effective interval: ','有效区间：')+text(row.effective_interval_state),
-          tr('Rights state: ','权利状态：')+text(row.rights_state)];
-        if(row.native_identity)details.push(JSON.stringify(native));
+          tr('Effective interval: ','有效区间：')+meaning(row.effective_interval_state),
+          tr('Source reuse rights: ','来源复用权利：')+meaning(row.rights_state)];
+        fields(details,native,[['issuer_name_as_printed','Issuer as printed: ','来源原文发行人：'],
+          ['issuer_registry','Issuer registry: ','发行人登记机关：'],['issuer_native_id','Native issuer identifier: ','原生发行人标识：'],
+          ['venue','Venue: ','交易场所：'],['symbol','Source symbol: ','来源代码：'],['security_kind','Security type: ','证券类型：']]);
         if(row.ordinary_shares_per_adr!=null)details.push(tr('Ordinary shares per ADR: ','每份 ADR 对应普通股：')+row.ordinary_shares_per_adr);
         if(row.quote_currency)details.push(tr('Quote currency: ','报价币种：')+row.quote_currency);
-        if(row.research_identity)details.push(tr('Research identity: ','研究身份：')+JSON.stringify(research));
-        if(row.relationship)details.push(tr('Ownership context: ','所有权背景：')+JSON.stringify({relationship:row.relationship,ownership_interest:row.ownership_interest,interest_basis:row.interest_basis,accounting_basis:row.accounting_basis,documentary_counterparties:row.documentary_counterparties,revenue_capture:row.revenue_capture,workshare:row.workshare,cash_capture:row.cash_capture}));
-        details.push(tr('Listing admission / price comparability / recipient attribution / economic capture: ','上市准入 / 价格可比性 / 收款方归属 / 经济获取：')+[row.listing_admission,row.price_comparability,row.recipient_attribution,row.economic_capture].map(function(v){return text(v,tr('Not established','尚未确立'))}).join(' / '));
+        fields(details,research,[['state','Research identity: ','研究身份：'],['scope','Research scope: ','研究范围：'],
+          ['issuer_cik','SEC filer CIK: ','SEC 披露主体 CIK：'],['filer_name_as_printed','SEC filer as printed: ','SEC 来源原文披露主体：'],
+          ['security_isin','Security ISIN: ','证券 ISIN：'],['underlying_isin','Underlying ISIN: ','标的普通股 ISIN：'],
+          ['underlying_symbol_as_printed','Underlying source symbol: ','标的来源代码：'],['underlying_venue_as_printed','Underlying source venue: ','标的来源交易场所：'],
+          ['depositary_as_printed','Depositary as printed: ','来源原文存托行：'],['sponsorship_as_printed','Sponsorship source code: ','来源保荐状态代码：'],
+          ['mapping_snapshot','Identity observation date: ','身份观测日期：'],['known_at','Research identity known at: ','研究身份获知时间：'],
+          ['effective_interval_state','Research validity: ','研究有效性：']]);
+        if(row.relationship){
+          fields(details,row,[['relationship','Ownership relationship: ','所有权关系：'],['interest_basis','Interest basis: ','权益口径：'],['accounting_basis','Accounting basis: ','会计口径：']]);
+          details.push(tr('Ownership interest: ','所有权权益：')+interest(row.ownership_interest));
+          (row.documentary_counterparties||[]).forEach(function(party){details.push(tr('Same-source counterparty: ','同一来源的交易对方：')+text(party.name_as_printed)+' · '+interest(party.ownership_interest)+' · '+tr('Identity path: ','身份路径：')+meaning(party.identity_path))});
+          details.push(tr('Revenue / workshare / cash capture: ','收入 / 工作份额 / 现金获取：')+[row.revenue_capture,row.workshare,row.cash_capture].map(meaning).join(' / '),
+            tr('Ownership interest is not revenue, workshare or distributable cash.','所有权权益不等于收入、工作份额或可分配现金。'));
+        }
+        details.push(tr('Listing admission / price comparability / recipient attribution / economic capture: ','上市准入 / 价格可比性 / 收款方归属 / 经济获取：')+[row.listing_admission,row.price_comparability,row.recipient_attribution,row.economic_capture].map(meaning).join(' / '));
         html+='<article class="receipt"><h3>'+esc(native.symbol||row.canonical_name||subject.ticker)+'</h3><div class="receipt-code">'+esc(details.join('\n')).replace(/\n/g,'<br>')+'</div>'+row.evidence.map(function(receipt){var url=savedSource(receipt.url);return url?'<a class="source-link" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(receipt.publisher+' · '+receipt.record_id)+'</a><div class="receipt-code">'+esc(receipt.content_sha256)+'</div>':''}).join('')+'</article>';
       });
       if(context.gaps.length)html+='<p class="limit-copy">'+esc(context.gaps.join(' · '))+'</p>';

@@ -320,6 +320,12 @@ def test_international_saved_context_survives_remount_and_current_generation_cha
     assert retained_atlas['content_id'] in result['reopened']
     assert changed['content_id'] not in result['reopened']
     assert 'US05523R1077' in result['reopened'] and 'GB0002634946' in result['reopened']
+    for label in (['Issuer registry: ', 'Security type: ADR / depositary receipt', 'SEC filer CIK: 0000895564',
+                   'Security ISIN: US05523R1077', 'Underlying ISIN: GB0002634946', 'Research validity: Current observation only']
+                  if lang == 'en' else ['发行人登记机关：', '证券类型：ADR / 存托凭证', 'SEC 披露主体 CIK：0000895564',
+                   '证券 ISIN：US05523R1077', '标的普通股 ISIN：GB0002634946', '研究有效性：仅为当前观测']):
+        assert label in result['reopened']
+    assert 'issuer_registry' not in result['reopened'] and 'security_isin' not in result['reopened']
     assert '2026-10-13T05:36:47.904824+00:00' in result['reopened']
     assert '2026-10-13T07:54:08.066798+00:00' in result['reopened']
     assert retained_atlas['content_id'] in result['csv'] and 'US05523R1077' in result['csv']
