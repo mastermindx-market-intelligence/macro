@@ -1,4 +1,11 @@
-"""Metered production API usage modes for the Shared AI Provider Control program.
+"""Production API and application binding owner for Shared AI Provider Control.
+
+The application companion resolves a server-selected Fabric mode through the real
+workload policy and capability broker before reading its proxy credential. It uses
+the existing owner configuration, retains turn-scoped client lifetime, and owns no
+account claims, queue, worker jobs or usage ledger. No application mode is enrolled
+in the shipped configuration; the inspected Experiential implementation remains
+unqualified and cannot be promoted by configuration alone.
 
 WHY THIS EXISTS
 ---------------
@@ -68,12 +75,14 @@ CONTRACT
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
+import math
 import os
 import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any, Callable, Mapping
@@ -250,6 +259,7 @@ PROVIDER_ID_RE = re.compile(r"^[a-z][a-z0-9_]{1,31}$")
 CAP_ID_RE = re.compile(r"^prod_api:[a-z][a-z0-9_]{1,31}$")
 
 _TOP_LEVEL_KEYS = frozenset({"schema", "producer_program", "modes"})
+_OPTIONAL_TOP_LEVEL_KEYS = frozenset({"application_fabric_modes"})
 _REQUIRED_RECORD_KEYS = frozenset({
     "provider_id",
     "protocol",
@@ -570,15 +580,24 @@ def _validate_record(mode_id: str, raw: Any) -> ProductionMode:
     return mode
 
 
-def load_modes(path: str | Path | None = None) -> dict[str, ProductionMode]:
-    """Load and validate the closed production-mode config.
+def _owner_json_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ProductionModeConfigError("duplicate owner configuration key")
+        result[key] = value
+    return result
 
-    Raises :class:`ProductionModeConfigError` on any deviation.  Returns a
-    dict keyed by ``mode_id``.
-    """
+
+def _load_owner_document(path: str | Path | None = None) -> dict:
+    """Read one fresh, credential-free snapshot of this owner's configuration."""
     cfg_path = Path(path) if path is not None else DEFAULT_PATH
     try:
-        raw = json.loads(cfg_path.read_text(encoding="utf-8"))
+        with cfg_path.open("rb") as handle:
+            data = handle.read(262145)
+        if len(data) > 262144:
+            raise ProductionModeConfigError("owner configuration is too large")
+        raw = json.loads(data.decode("utf-8"), object_pairs_hook=_owner_json_object)
     except FileNotFoundError as exc:
         raise ProductionModeConfigError(f"production modes config missing: {cfg_path}") from exc
     except json.JSONDecodeError as exc:
@@ -586,7 +605,7 @@ def load_modes(path: str | Path | None = None) -> dict[str, ProductionMode]:
 
     if not isinstance(raw, dict):
         raise ProductionModeConfigError("production modes config must be a JSON object")
-    unknown = sorted(set(raw) - _TOP_LEVEL_KEYS)
+    unknown = sorted(set(raw) - _TOP_LEVEL_KEYS - _OPTIONAL_TOP_LEVEL_KEYS)
     if unknown:
         raise ProductionModeConfigError(f"unknown top-level key(s) {unknown} — closed set")
     missing = sorted(_TOP_LEVEL_KEYS - set(raw))
@@ -596,6 +615,13 @@ def load_modes(path: str | Path | None = None) -> dict[str, ProductionMode]:
         raise ProductionModeConfigError(f"schema must be {SCHEMA!r}, got {raw['schema']!r}")
     if raw["producer_program"] != PRODUCER_PROGRAM:
         raise ProductionModeConfigError(f"producer_program must be {PRODUCER_PROGRAM!r}")
+
+    return raw
+
+
+def load_modes(path: str | Path | None = None) -> dict[str, ProductionMode]:
+    """Load the closed PAYG identities without opening application credentials."""
+    raw = _load_owner_document(path)
 
     modes_raw = raw["modes"]
     if not isinstance(modes_raw, dict) or not modes_raw:
@@ -624,7 +650,362 @@ def _mode(mode_id: str, path: str | Path | None = None) -> ProductionMode:
         ) from exc
 
 
-def _resolve_credential(mode: ProductionMode, env: Mapping[str, str] | None) -> str | None:
+class ApplicationFabricBindingError(ValueError):
+    """Bounded application refusal; never echo owner documents or credentials."""
+
+
+@dataclass(frozen=True)
+class _ApplicationFabricTransport:
+    """Closed implementation identity, not a pool/account or routing registry.
+
+    Application eligibility is independent of native worker registration. A
+    configuration edit cannot qualify an implementation whose owner has not
+    qualified it in source. Provider and billing attribution belong to this
+    implementation, not to the word 'fabric'.
+    """
+
+    base_url: str
+    secret_ref: str
+    provider_id: str
+    model: str
+    cost_basis: str
+    cap_id: str
+    capability_id: str
+    qualified: bool = False
+    application_allowed: bool = False
+    protocol: str = "openai_chat_v1"
+
+
+# Closed application implementations remain held until independently qualified
+# and permitted by this owner. Neither native worker availability nor a config
+# edit grants application permission. No mode is enrolled below or in shipped
+# configuration, and no subscription/metered billing is inferred.
+_APPLICATION_FABRIC_TRANSPORTS = {
+    "experiential_proxy_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:8311/v1",
+        secret_ref="FABRIC_PROXY_TOKEN",
+        provider_id="experiential",
+        model="glm-5.3-uncensored",
+        cost_basis="unknown",
+        cap_id="fabric:experiential_proxy",
+        capability_id="fabric_application_proxy",
+    ),
+    "native_go_application_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1",
+        secret_ref="MACRO_FABRIC_APPLICATION_TOKEN",
+        provider_id="go",
+        model="deepseek-v4.1-flash",
+        cost_basis="unknown",
+        cap_id="fabric:go_application",
+        capability_id="fabric_application_go",
+        protocol="native_application_v1",
+        qualified=False,
+        application_allowed=False,
+    ),
+}
+_APPLICATION_MODE_IDS = frozenset({"shared_fabric"})
+_APPLICATION_ID = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}\Z")
+_APPLICATION_IDENTITY_FIELDS = (
+    "base_url", "secret_ref", "provider_id", "model", "cost_basis",
+    "cap_id", "capability_id",
+)
+_APPLICATION_RECORD_FIELDS = frozenset(_APPLICATION_IDENTITY_FIELDS) | {
+    "transport_id", "enabled", "application_allowed", "qualification",
+    "qualification_ref", "qualified_until",
+}
+
+
+def _application_refuse(code: str):
+    raise ApplicationFabricBindingError(code)
+
+
+@dataclass(frozen=True)
+class _ApplicationFabricMode:
+    transport: _ApplicationFabricTransport
+    enabled: bool
+    application_allowed: bool
+    qualification: str
+    qualification_ref: str | None
+    qualified_until: float | None
+
+    @property
+    def secret_ref(self) -> str:
+        return self.transport.secret_ref
+
+
+def _application_fabric_mode(mode_id: str, root: Path) -> _ApplicationFabricMode:
+    """Read the incumbent owner document; no secret, client, ledger or claim."""
+    if mode_id not in _APPLICATION_MODE_IDS:
+        _application_refuse("fabric_application_mode_unknown")
+    try:
+        document = _load_owner_document(root / "config/provider_production_modes.v1.json")
+    except Exception:
+        raise ApplicationFabricBindingError("fabric_owner_config_invalid") from None
+    records = document.get("application_fabric_modes", {})
+    if not isinstance(records, dict) or set(records) - _APPLICATION_MODE_IDS:
+        _application_refuse("fabric_application_modes_invalid")
+    raw = records.get(mode_id)
+    if raw is None:
+        _application_refuse("fabric_application_binding_missing")
+    if not isinstance(raw, dict) or set(raw) != _APPLICATION_RECORD_FIELDS:
+        _application_refuse("fabric_application_binding_invalid")
+    transport_id = raw["transport_id"]
+    if not isinstance(transport_id, str):
+        _application_refuse("fabric_application_transport_invalid")
+    transport = _APPLICATION_FABRIC_TRANSPORTS.get(transport_id)
+    if type(transport) is not _ApplicationFabricTransport:
+        _application_refuse("fabric_application_transport_unregistered")
+    if any(raw[k] != getattr(transport, k) for k in _APPLICATION_IDENTITY_FIELDS):
+        _application_refuse("fabric_application_identity_mismatch")
+    if type(raw["enabled"]) is not bool or type(raw["application_allowed"]) is not bool:
+        _application_refuse("fabric_application_flags_invalid")
+    qualification = raw["qualification"]
+    if not isinstance(qualification, str) or qualification not in REQUEST_PROFILE_QUALIFICATIONS:
+        _application_refuse("fabric_application_qualification_invalid")
+    ref, until = raw["qualification_ref"], raw["qualified_until"]
+    if ref is not None and (not isinstance(ref, str) or not _APPLICATION_ID.fullmatch(ref)):
+        _application_refuse("fabric_application_qualification_invalid")
+    if until is not None and (type(until) not in (float, int)
+                              or not 0 < until <= 253402300799 or not math.isfinite(until)):
+        _application_refuse("fabric_application_qualification_invalid")
+    return _ApplicationFabricMode(
+        transport, raw["enabled"], raw["application_allowed"], qualification, ref, until,
+    )
+
+
+@dataclass(frozen=True)
+class ApplicationFabricFactory:
+    """Trusted startup composition; fresh configuration, workload and capability checks.
+
+    The native admission/gateway owner retains the account claim and operation
+    fence. This object adds neither a worker job nor a lease/usage/retry ledger.
+    Callers cannot pass a qualification dictionary, URL, token or model override.
+    """
+
+    mode_id: str
+    lane: str
+    root: Path
+    _profile_present: bool
+    _profile: Any
+    _provider_order: tuple[str, ...]
+    _inspection_commitment: str | None = None
+
+    def workload_configuration(self) -> dict:
+        cfg = {"provider_order": list(self._provider_order)}
+        if self._profile_present:
+            cfg["workload_profile"] = self._profile
+        return cfg
+
+    def workload_decision(self):
+        from engine.provider_workload_policy import HOST_PROFILE_ENV, decide_workload
+
+        decision = decide_workload(
+            self.workload_configuration(), host_profile=os.environ.get(HOST_PROFILE_ENV),
+            policy_path=self.root / "config/provider_workloads.v1.json",
+        )
+        # None is legacy migration, never permission to construct Fabric.
+        if decision is None or decision.allowed_order != ("fabric",) or decision.denied_order:
+            _application_refuse("fabric_application_workload_denied")
+        return decision
+
+    def _eligibility(self, caller_cfg: Mapping[str, Any] | None = None):
+        """The ONE owner/workload/capability/qualification check set.
+
+        It resolves NO credential and constructs NO client, so the
+        credential-free inspection and the real binder reuse the same rules.
+        Configuration can change between calls; with_inspection() narrows a
+        later binding to the exact earlier identity. Every refusal
+        below happens BEFORE any secret is read, so an ineligible host never
+        touches a credential at all.
+
+        Returns (mode, transport, decision). The caller decides what to do
+        with a credential-free result: inspect() publishes the identity,
+        _bind_with_workload() spends it.
+        """
+        mode = _application_fabric_mode(self.mode_id, self.root)
+        decision = self.workload_decision()
+        if caller_cfg is not None:
+            if not isinstance(caller_cfg, Mapping):
+                _application_refuse("fabric_application_workload_invalid")
+            if "workload_profile" in caller_cfg:
+                from engine.provider_workload_policy import (
+                    HOST_PROFILE_ENV, WorkloadDecision, decide_workload,
+                )
+
+                # The explicit Fabric branch has already selected one transport.
+                # Preserve the actual caller's selector, including null/empty;
+                # its legacy waterfall cannot add another selected transport.
+                caller = decide_workload(
+                    {"workload_profile": caller_cfg["workload_profile"],
+                     "provider_order": ["fabric"]},
+                    host_profile=os.environ.get(HOST_PROFILE_ENV),
+                    policy_path=self.root / "config/provider_workloads.v1.json",
+                )
+                if caller is None or caller.allowed_order != ("fabric",) or caller.denied_order:
+                    _application_refuse("fabric_application_workload_denied")
+                if (caller.policy_hash, caller.policy_revision) != (decision.policy_hash, decision.policy_revision):
+                    _application_refuse("fabric_application_policy_changed")
+                decision = WorkloadDecision(
+                    decision.policy_revision, decision.policy_hash,
+                    tuple(dict.fromkeys((*decision.profiles, *caller.profiles))),
+                    ("fabric",), (),
+                )
+        transport = mode.transport
+        if transport.protocol not in {"openai_chat_v1", "native_application_v1"}:
+            _application_refuse("fabric_application_protocol_invalid")
+        if not mode.enabled:
+            _application_refuse("fabric_application_disabled")
+        if transport.qualified is not True or mode.qualification != PROFILE_QUALIFIED_CANARY:
+            _application_refuse("fabric_application_unqualified")
+        if transport.application_allowed is not True or mode.application_allowed is not True:
+            _application_refuse("fabric_application_not_permitted")
+        if not mode.qualification_ref or mode.qualified_until is None or mode.qualified_until <= time.time():
+            _application_refuse("fabric_application_qualification_expired")
+
+        from engine.neuralweb import capability_broker
+
+        # Explicit root bypasses the incumbent broker's process manifest cache.
+        grant = capability_broker.resolve(transport.capability_id, self.lane, root=self.root)
+        if not isinstance(grant, dict) or grant.get("allowed") is not True:
+            _application_refuse("fabric_application_capability_denied")
+        if grant.get("ref_name") != transport.secret_ref:
+            _application_refuse("fabric_application_credential_ref_mismatch")
+        return mode, transport, decision
+
+    @staticmethod
+    def _inspection_identity(transport, decision) -> dict:
+        return {
+            "provider": transport.provider_id,
+            "model": transport.model,
+            "cap_id": transport.cap_id,
+            "capability_id": transport.capability_id,
+            "cost_basis": transport.cost_basis,
+            "workload_policy": decision.receipt(),
+            # Commit the private source recipe without publishing its endpoint
+            # or secret-reference name. This contains no credential value.
+            "transport_identity": hashlib.sha256(json.dumps({
+                **{key: getattr(transport, key) for key in _APPLICATION_IDENTITY_FIELDS},
+                "protocol": transport.protocol,
+            }, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest(),
+        }
+
+    @staticmethod
+    def _commit_inspection(identity: Mapping[str, Any]) -> str:
+        # A snapshot only narrows an already eligible owner. It grants nothing.
+        fields = {"provider", "model", "cap_id", "capability_id", "cost_basis",
+                  "workload_policy", "transport_identity"}
+        if type(identity) is not dict or set(identity) != fields:
+            _application_refuse("fabric_application_inspection_invalid")
+        try:
+            return json.dumps(identity, sort_keys=True, separators=(",", ":"),
+                              ensure_ascii=False, allow_nan=False)
+        except (TypeError, ValueError, OverflowError):
+            _application_refuse("fabric_application_inspection_invalid")
+
+    def with_inspection(self, identity: Mapping[str, Any]) -> "ApplicationFabricFactory":
+        """Return the same immutable owner type, narrowed to an observed identity.
+
+        The commitment contains only inspection metadata and is copied by value.
+        Binding still runs every current eligibility check before comparing it
+        and before resolving any credential or constructing a transport client.
+        """
+        commitment = self._commit_inspection(identity)
+        if self._inspection_commitment is not None and self._inspection_commitment != commitment:
+            _application_refuse("fabric_application_identity_changed")
+        return replace(self, _inspection_commitment=commitment)
+
+    def inspect(self, caller_cfg: Mapping[str, Any] | None = None) -> dict:
+        """Inspect current eligible identity without credentials, clients or admission.
+
+        A cache may use this current identity without opening a credential. A
+        later cold fill must bind with with_inspection(snapshot) so a valid
+        reconfiguration cannot store another model's output under this key.
+        Missing credentials may still prevent that later fill.
+        """
+        mode, transport, decision = self._eligibility(caller_cfg)
+        identity = self._inspection_identity(transport, decision)
+        if (self._inspection_commitment is not None
+                and self._inspection_commitment != self._commit_inspection(identity)):
+            _application_refuse("fabric_application_identity_changed")
+        return identity
+
+    def _bind_with_workload(self, caller_cfg: Mapping[str, Any] | None = None,
+                            *, operation_id: str | None = None,
+                            prior_admission_possible: bool = False):
+        """Internal composition returns the exact policy receipt with the client."""
+        mode, transport, decision = self._eligibility(caller_cfg)
+        if (self._inspection_commitment is not None
+                and self._inspection_commitment != self._commit_inspection(
+                    self._inspection_identity(transport, decision))):
+            _application_refuse("fabric_application_identity_changed")
+        from engine.fabric_inference_client import (
+            FabricInferenceClient, NATIVE_PROTOCOL, validate_native_operation_id,
+        )
+
+        native = transport.protocol == NATIVE_PROTOCOL
+        if type(prior_admission_possible) is not bool or prior_admission_possible and not native:
+            _application_refuse("fabric_application_restoration_invalid")
+        if native:
+            # Original identity is part of the trusted owner join. A caller
+            # cannot omit/rewrite it and still touch the service credential.
+            validate_native_operation_id(operation_id)
+        credential = _resolve_credential(mode, None)
+        if credential is None:
+            _application_refuse("fabric_application_unconfigured")
+
+        client = FabricInferenceClient(
+            base_url=transport.base_url, proxy_token=credential, model=transport.model,
+            **({"protocol": NATIVE_PROTOCOL, "operation_id": operation_id,
+                "prior_admission_possible": prior_admission_possible} if native else {}),
+        )
+        return ({"client": client, "model": transport.model,
+                 "provider": transport.provider_id, "cost_basis": transport.cost_basis,
+                 "cap_id": transport.cap_id}, decision)
+
+    def __call__(self) -> dict:
+        return self._bind_with_workload()[0]
+
+
+def make_application_fabric_factory(
+    *, mode_id: str, lane: str, workload_cfg: Mapping[str, Any], root: Path,
+) -> ApplicationFabricFactory:
+    """Select by trusted owner mode; keep absent/invalid workload selectors distinct."""
+    if (not isinstance(mode_id, str) or mode_id not in _APPLICATION_MODE_IDS
+            or not isinstance(lane, str) or not _APPLICATION_ID.fullmatch(lane)
+            or not isinstance(root, Path) or not root.is_absolute()
+            or not isinstance(workload_cfg, Mapping)):
+        _application_refuse("fabric_application_selection_invalid")
+    order = workload_cfg.get("provider_order")
+    if not isinstance(order, list) or order != ["fabric"]:
+        _application_refuse("fabric_application_provider_order_invalid")
+    return ApplicationFabricFactory(
+        mode_id, lane, root, "workload_profile" in workload_cfg,
+        workload_cfg.get("workload_profile"), tuple(order),
+    )
+
+
+def configured_application_fabric(*, lane: str, workload_profile: str, root: Path):
+    """Compose a service's trusted startup selection without opening credentials.
+
+    Absence preserves legacy startup. Any present invalid selection remains
+    selected with no factory, so the AI path refuses while other service paths
+    remain available. Browser input and injected callbacks cannot weaken it.
+    """
+    if "MM_PROVIDER_APPLICATION_MODE" not in os.environ:
+        return False, None
+    try:
+        factory = make_application_fabric_factory(
+            mode_id=os.environ["MM_PROVIDER_APPLICATION_MODE"], lane=lane, root=root,
+            workload_cfg={"workload_profile": workload_profile, "provider_order": ["fabric"]},
+        )
+    except ApplicationFabricBindingError:
+        return True, None
+    return True, factory
+
+
+def _resolve_credential(
+    mode: ProductionMode | _ApplicationFabricMode, env: Mapping[str, str] | None,
+) -> str | None:
     """The ONE credential boundary: env-var NAME in, value (or ``None``) out.
 
     ``env=None`` means ``os.environ`` — the only place in this module that
@@ -998,7 +1379,11 @@ def _minimax_transport(
         # the caller handed the transport an empty value.
         return TransportOutcome(reason="unconfigured", error_class="unconfigured")
     try:
-        client = anthropic.Anthropic(api_key=credential, base_url=mode.base_url)
+        # This owner issues one production attempt. A timeout/connection error
+        # can follow provider dispatch, so SDK retries must not replay it.
+        client = anthropic.Anthropic(
+            api_key=credential, base_url=mode.base_url, max_retries=0,
+        )
         message = client.messages.create(
             model=mode.default_model,
             max_tokens=int(max_tokens),

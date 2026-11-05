@@ -181,26 +181,37 @@ def parse_model_output(
 def _default_call(system: str, user: str, *, model_id: str, max_tokens: int) -> tuple[str, str, str]:
     from engine import llm_auth
 
-    providers = llm_auth.build_providers({"usage_lane": "research-intelligence"}, opus_model=model_id)
+    provider_cfg = {"usage_lane": "research-intelligence"}
+    if llm_auth.application_mode_id(provider_cfg) is not None:
+        provider_cfg["workload_profile"] = "site_batch"
+    providers = llm_auth.build_providers(provider_cfg, opus_model=model_id)
     if not providers:
         raise _ProvidersUnavailable("no configured provider")
     served_model = ""
+    selected = llm_auth.is_fabric_selection(providers)
 
     def do_call(client, model):
         nonlocal served_model
-        served_model = str(model or "")
         resp = client.messages.create(
             model=model, max_tokens=max_tokens, system=system,
             messages=[{"role": "user", "content": user}],
         )
+        if selected and (getattr(resp, "stop_reason", None) != "end_turn"
+                         or not resp.content
+                         or any(getattr(block, "type", "") != "text" for block in resp.content)):
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
         text = "".join(
             block.text for block in resp.content if getattr(block, "type", "") == "text"
         )
+        if selected and not text.strip():
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+        served_model = str(getattr(resp, "model", None) or model or "")
         return (text or None), None, resp
 
-    raw, _reason, provider = llm_auth.make_call(
-        providers, do_call, context="research_intelligence"
-    )
+    with llm_auth.begin_operation(providers, context="research_intelligence") as operation:
+        raw, _reason, provider = llm_auth.make_call(
+            operation.providers, do_call, context="research_intelligence"
+        )
     return str(raw or ""), str(provider or ""), served_model
 
 

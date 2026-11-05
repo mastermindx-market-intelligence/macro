@@ -5465,10 +5465,16 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
+# Fabric application composition (2026-11-04): canonical tracked-tree probes at
+# c166bb33 measured 137/5924, 137/5939 and 131/5680 (jobs/weight seconds).
+# The added production, gateway and authenticated Admin coverage costs exactly
+# 12 weight seconds above protected ec67; job and ten-pack ceilings are unchanged.
+# Trusted application-owner composition at 26f62c1a adds six measured weight
+# seconds: 137/5930, 137/5945, 131/5686; all ten packs, no new selected jobs.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_960),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_975),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_716),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5476,6 +5482,54 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Native caller joins and held Go recipe (2026-11-05): the actual managed
+    source planner measured index137/5959, free137/5974 and Prophet131/5715,
+    all ten packs. Two suites added to the existing Fabric command cost four
+    weight units, with no new selected jobs. Preserve every job-count, pack,
+    runtime and admission bound.
+    Qualifying the external native fixture paths then measures 5960, 5975,
+    and 5716 respectively: one additional estimator unit on the same command,
+    with identical job counts and ten packs. Fund only that measured unit.
+
+    Buffered native Brain delivery (2026-11-05): actual current-source
+    measurements are index137/5955, free137/5970 and Prophet131/5711,
+    all ten packs. Registering one native-backed suite in the incumbent
+    Fabric command adds exactly two planner weight units. Preserve every
+    existing job-count, pack, runtime and admission bound.
+
+    Native application client (2026-11-05): canonical head closure/packing
+    measured index137/5953, free137/5968 and Prophet131/5709, all ten packs,
+    zero missing closure paths or unrun suites. The existing Fabric step now
+    fetches the closed immutable native fixture and runs two additional
+    suites, adding nine estimated weight seconds with no selected-job entrants.
+    Preserve every job-count, pack, runtime and admission bound.
+
+    Cached Brain callbacks and Translation (2026-11-05): canonical head
+    closure/packing functions measured index137/5944, free137/5959 and
+    Prophet131/5700, all ten packs, zero missing closure paths or unrun
+    suites. Three new owner/consumer suites add six estimated weight
+    seconds. Preserve all job-count, pack, timeout and admission bounds.
+
+    News and authenticated Ask (2026-11-05): canonical contract-delta
+    measured index137/5938, free137/5953 and Prophet131/5694, all ten
+    packs with no selected-job entrants. Registering both real-owner suites
+    adds four estimated weight seconds. Preserve every existing gate,
+    job, timeout and pack bound; widen the two China dependency closures.
+
+    Shared consumers and AI Brief (2026-11-05): canonical contract-delta
+    against protected ec67 measured index137/5934, free137/5949 and
+    Prophet131/5690, all ten packs and no selected-job entrants. Registering
+    the two new real-owner suites in the existing Fabric step adds exactly
+    four estimated weight seconds. Fund only these measured four seconds;
+    retain every selected test, job-count, pack, runtime and admission bound.
+
+    Fabric application owner (2026-11-04): canonical contract-delta at
+    26f62c1a against protected ec67 measured index137/5930, free137/5945,
+    Prophet131/5686, ten packs each, with no selected-job entrants. The new
+    owner/startup proof adds six planner weight seconds above the prior
+    consumer composition. Fund only these measured six seconds; preserve
+    job-count, pack, runtime, admission and all required test bounds.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same

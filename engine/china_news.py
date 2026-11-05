@@ -1416,7 +1416,7 @@ def flash_headlines(today: date | None = None) -> dict | None:
 
 
 # --------------------------------------------------------------------------- #
-# optional LLM brief (gated on flag AND key; provider-agnostic; default OFF)
+# optional LLM brief (gated on flag AND provider; default OFF)
 # --------------------------------------------------------------------------- #
 BRIEF_SYSTEM = (
     "You write a 2-3 sentence plain-中文 summary of the current China macro backdrop "
@@ -1432,6 +1432,9 @@ def _llm_ready(cfg: dict) -> bool:
     if not cfg.get("enabled", False) or not cfg.get("llm_brief", False):
         return False
     try:
+        from engine import llm_auth
+        if llm_auth.application_mode_id(cfg) is not None:
+            return True  # Eligibility is checked fresh by begin_operation.
         return bool(config.secret(cfg.get("api_key_env", "DEEPSEEK_API_KEY")))
     except Exception:  # noqa: BLE001
         return False
@@ -1439,23 +1442,45 @@ def _llm_ready(cfg: dict) -> bool:
 
 def news_brief(headlines: list[dict] | None, tone_line: str = "") -> dict | None:
     """OPTIONAL one-paragraph narration of the filtered flashes + the policy-tone
-    state. Default-off, gated on key, provider-agnostic (DeepSeek/Anthropic), degrade
+    state. Default-off, gated on an eligible provider, degrade
     to None. Labeled context; never scored."""
     cfg = _cfg()
     if not _llm_ready(cfg) or not headlines:
         return None
     try:
+        lines = "\n".join(f"- [{h.get('theme', '')}] {h['title']}" for h in headlines[:12])
+        user = (f"Policy tone: {tone_line or 'n/a'}\n"
+                f"Filtered macro flashes:\n{lines}")
+        from engine import llm_auth
+        if llm_auth.application_mode_id(cfg) is not None:
+            selected_cfg = dict(cfg)
+            selected_cfg.setdefault("workload_profile", "site_batch")
+            selected_cfg.setdefault("usage_lane", "china-news")
+            providers = llm_auth.build_providers(selected_cfg)
+            with llm_auth.begin_operation(providers, context="china_news") as operation:
+                def call(client, model):
+                    response = client.messages.create(
+                        model=model, max_tokens=220, system=BRIEF_SYSTEM,
+                        messages=[{"role": "user", "content": user}])
+                    if (getattr(response, "stop_reason", "") not in {"end_turn", "stop_sequence"}
+                            or any(getattr(b, "type", "") == "tool_use" for b in response.content)):
+                        return None, "invalid_narration", response
+                    text = "".join(b.text for b in response.content
+                                   if getattr(b, "type", "") == "text").strip()
+                    return text or None, None, response
+
+                text, reason, _ = llm_auth.make_call(
+                    operation.providers, call, context="china_news")
+                if not text or reason:
+                    return None
+                provider = operation.providers[0]
+                return {"text": text, "model": provider["model"],
+                        "provider": provider["provider"], "is_context_only": True}
         import anthropic
-    except ImportError:
-        return None
-    try:
         key = config.secret(cfg.get("api_key_env", "DEEPSEEK_API_KEY"))
         base = cfg.get("base_url")
         client = anthropic.Anthropic(api_key=key, base_url=base) if base \
             else anthropic.Anthropic(api_key=key)
-        lines = "\n".join(f"- [{h.get('theme', '')}] {h['title']}" for h in headlines[:12])
-        user = (f"Policy tone: {tone_line or 'n/a'}\n"
-                f"Filtered macro flashes:\n{lines}")
         resp = client.messages.create(
             model=cfg.get("llm_model", "deepseek-chat"), max_tokens=220,
             system=BRIEF_SYSTEM, messages=[{"role": "user", "content": user}])
