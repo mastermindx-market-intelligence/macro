@@ -27,7 +27,7 @@ import scripts.merge_on_green as MOG
 
 ROOT = Path(__file__).resolve().parents[1]
 REAL_IN_FLIGHT_PR_PROOFS = MOG.in_flight_pr_proofs
-REAL_SHARED_POOL_CENSUS = MOG.shared_pool_census
+REAL_HOSTED_POOL_CENSUS = MOG.hosted_pool_census
 REAL_REFRESH_LEASE_RESERVATION_COUNT = MOG.refresh_lease_reservation_count
 REAL_PREPARE_REFRESH_LEASE = MOG.prepare_refresh_lease
 REAL_SERIALIZED_REFRESH_AUTHORITY = MOG.serialized_refresh_authority
@@ -78,7 +78,7 @@ def _no_unstubbed_http(monkeypatch):
     # The adaptive-cap census is another main()-only read. Its neutral default is
     # "unreadable" (the flat cap of 8), so every test written against the flat cap
     # keeps its numbers; tests about the adaptive cap override it.
-    monkeypatch.setattr(MOG, "shared_pool_census", lambda *_a: None)
+    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: None)
     monkeypatch.setattr(MOG, "refresh_lease_reservation_count", lambda *_a: 0)
     monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a: True)
     monkeypatch.setattr(
@@ -5198,20 +5198,36 @@ def test_existing_owner_only_consumes_extra_capacity_until_its_run_is_indexed(
     assert observed == [(expected_allowance, requires_lease)]
 
 
+def _census(queued_runs=0, sampled_runs=3, refused_jobs=0, served_runs=3):
+    return MOG.HostedPoolCensus(queued_runs, sampled_runs, refused_jobs, served_runs)
+
+
 @pytest.mark.parametrize(
     "census,expected_cap,needle",
     [
         (None, 8, "census unavailable"),
-        ((1, 0), 8, "+0 adaptive: 1 queued, 0 in progress"),
-        ((0, 0), 16, "+8 adaptive"),
-        ((0, 6), 16, "+8 adaptive"),
-        ((0, 7), 12, "+4 adaptive"),
-        ((0, 12), 12, "+4 adaptive"),
-        ((0, 13), 8, "+0 adaptive"),
-        ((2, 3), 8, "+0 adaptive: 2 queued"),
+        (_census(queued_runs=1), 8, "+0 adaptive: hosted pool refused 1 queued run(s)"),
+        (
+            _census(refused_jobs=2, served_runs=2),
+            8,
+            "+0 adaptive: hosted pool refused 0 queued run(s), 2 waiting hosted job(s)",
+        ),
+        (_census(served_runs=3), 16, "+8 adaptive: 3 of 3 mature run(s) served"),
+        (_census(served_runs=2), 16, "+8 adaptive: 2 of 3 mature run(s) served"),
+        (
+            _census(sampled_runs=1, served_runs=1),
+            12,
+            "+4 adaptive: 1 of 1 mature run(s) served",
+        ),
+        (
+            _census(sampled_runs=0, served_runs=0),
+            8,
+            "+0 adaptive: no mature run witnessed the hosted pool (0 sampled)",
+        ),
+        (_census(sampled_runs=2, served_runs=0), 8, "+0 adaptive: no mature run"),
     ],
 )
-def test_adaptive_proof_cap_is_clamped_between_flat_cap_and_sixteen(
+def test_adaptive_proof_cap_widens_only_on_job_level_service_evidence(
     census, expected_cap, needle
 ):
     cap, detail = MOG.adaptive_proof_cap(census)
@@ -5220,57 +5236,135 @@ def test_adaptive_proof_cap_is_clamped_between_flat_cap_and_sixteen(
     assert MOG.MAX_IN_FLIGHT_PR_PROOFS <= cap <= MOG.ADAPTIVE_PROOF_CAP_MAX == 16
 
 
-def test_shared_pool_census_reads_repo_run_totals_and_fails_closed(monkeypatch):
+def _census_job(name, status, labels=("ubuntu-latest",)):
+    return {"name": name, "status": status, "labels": list(labels)}
+
+
+def _census_jobs(*jobs):
+    return 200, {"total_count": len(jobs), "jobs": list(jobs)}
+
+
+def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch):
     seen: list[str] = []
+    now = dt.datetime(2026, 11, 5, 14, 25, tzinfo=dt.timezone.utc)
+    served = _census_jobs(
+        _census_job("ci-plan", "completed"),
+        _census_job("trusted-ci", "completed", labels=()),
+        *[_census_job(f"ci-pack-{i}", "in_progress") for i in range(12)],
+    )
+    refused = _census_jobs(
+        _census_job("ci-plan", "completed"),
+        *[_census_job(f"ci-pack-{i}", "in_progress") for i in range(10)],
+        _census_job("ci-pack-10", "queued"),
+        _census_job("ci-pack-11", "queued"),
+    )
+    render_only = _census_jobs(
+        _census_job("ci-plan", "completed"),
+        _census_job("render", "queued", labels=("self-hosted", "macstudio")),
+        _census_job("render-light", "queued", labels=("self-hosted", "macstudio-light")),
+    )
 
     def fake_request(method, url, token, payload=None):
         seen.append(url)
-        assert method == "GET" and "/repos/acme/widgets/actions/runs?" in url
-        assert "per_page=1" in url
-        if "status=queued" in url:
-            return 200, {"total_count": 2}
-        if "status=in_progress" in url:
-            return 200, {"total_count": 9}
+        assert method == "GET" and token == "read"
+        if "/workflows/ci.yml/runs?" in url and "status=queued" in url:
+            assert "per_page=1" in url
+            return 200, {"total_count": 0}
+        if "/workflows/ci.yml/runs?" in url and "status=in_progress" in url:
+            # Mature = created before now - 240 s, newest first, sample of three.
+            assert "per_page=3" in url
+            assert "created=%3C2026-11-05T14%3A21%3A00Z" in url
+            return 200, {"workflow_runs": [{"id": 11}, {"id": 12}, {"id": 13}]}
+        if url.endswith("/runs/11/jobs?filter=latest&per_page=100"):
+            return served
+        if url.endswith("/runs/12/jobs?filter=latest&per_page=100"):
+            return refused
+        if url.endswith("/runs/13/jobs?filter=latest&per_page=100"):
+            return render_only
         raise AssertionError(url)
 
     monkeypatch.setattr(MOG, "_request", fake_request)
-    assert REAL_SHARED_POOL_CENSUS("acme/widgets", "read") == (2, 9)
-    assert len(seen) == 2
-    for bad in (
-        lambda *_a, **_k: (403, {"message": "rate limited"}),
-        lambda *_a, **_k: (200, {"total_count": True}),
-        lambda *_a, **_k: (200, {"total_count": -1}),
-        lambda *_a, **_k: (200, None),
+    census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now)
+    # Run 11 is served; run 12 has two hosted jobs the pool refused; run 13's only
+    # waiting jobs are self-hosted render jobs, which say nothing about the hosted
+    # pool, so it is neither served nor refused.
+    assert census == MOG.HostedPoolCensus(
+        queued_runs=0, sampled_runs=3, refused_jobs=2, served_runs=1
+    )
+    assert len(seen) == 5
+
+    def failing(step, answer):
+        def request(method, url, token, payload=None):
+            if step == "queued" and "status=queued" in url:
+                return answer
+            if step == "list" and "status=in_progress" in url:
+                return answer
+            if step == "jobs" and "/jobs?" in url:
+                return answer
+            return fake_request(method, url, token, payload)
+
+        return request
+
+    for step, answer in (
+        ("queued", (403, {"message": "rate limited"})),
+        ("queued", (200, {"total_count": True})),
+        ("list", (500, None)),
+        ("list", (200, {"workflow_runs": [{"id": True}]})),
+        ("list", (200, {"total_count": 3})),
+        ("jobs", (403, {"message": "rate limited"})),
+        ("jobs", (200, {"total_count": 101, "jobs": []})),
+        ("jobs", (200, {"jobs": "nope"})),
     ):
-        monkeypatch.setattr(MOG, "_request", bad)
-        assert REAL_SHARED_POOL_CENSUS("acme/widgets", "read") is None
+        monkeypatch.setattr(MOG, "_request", failing(step, answer))
+        assert REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now) is None, (
+            step,
+            answer,
+        )
+
+
+def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
+    def fake_request(method, url, token, payload=None):
+        if "status=queued" in url:
+            return 200, {"total_count": 0}
+        if "status=in_progress" in url:
+            return 200, {"workflow_runs": []}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read")
+    assert census == MOG.HostedPoolCensus(0, 0, 0, 0)
+    assert MOG.adaptive_proof_cap(census)[0] == MOG.MAX_IN_FLIGHT_PR_PROOFS
 
 
 @pytest.mark.parametrize(
     "census,active,expected_allowance",
     [
-        ((0, 0), 8, 8),
-        ((0, 0), 15, 1),
-        ((0, 0), 16, 0),
-        ((0, 10), 10, 2),
-        ((3, 2), 8, 0),
+        (_census(served_runs=3), 8, 8),
+        (_census(served_runs=3), 15, 1),
+        (_census(served_runs=3), 16, 0),
+        (_census(sampled_runs=1, served_runs=1), 10, 2),
+        (_census(refused_jobs=1, served_runs=2), 8, 0),
+        (_census(queued_runs=1), 8, 0),
+        (_census(sampled_runs=0, served_runs=0), 8, 0),
         (None, 8, 0),
     ],
     ids=(
-        "idle-pool-cap-16",
-        "idle-pool-last-slot",
-        "idle-pool-full",
-        "light-pool-cap-12",
+        "served-pool-cap-16",
+        "served-pool-last-slot",
+        "served-pool-full",
+        "one-served-run-cap-12",
+        "refused-job-flat-cap",
         "queued-run-flat-cap",
+        "no-witness-flat-cap",
         "census-unreadable-flat-cap",
     ),
 )
-def test_adaptive_cap_widens_update_branch_capacity_only_on_a_free_pool(
+def test_adaptive_cap_widens_update_branch_capacity_only_on_a_served_pool(
     monkeypatch, capsys, census, active, expected_allowance
 ):
     _main_harness(monkeypatch, [_pull(1)])
     monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
-    monkeypatch.setattr(MOG, "shared_pool_census", lambda *_a: census)
+    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: census)
     allowances: list[int] = []
 
     def inspect_budget(
@@ -5287,16 +5381,48 @@ def test_adaptive_cap_widens_update_branch_capacity_only_on_a_free_pool(
     assert f"global cap {expected_cap} (" in out
 
 
+@pytest.mark.parametrize(
+    "active,authorized,lease_readable",
+    [(0, True, True), (3, False, True), (3, True, False)],
+    ids=("idle-repo", "refresh-authority-refused", "lease-unreadable"),
+)
+def test_adaptive_census_is_not_read_where_it_cannot_widen_anything(
+    monkeypatch, capsys, active, authorized, lease_readable
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a: authorized)
+    if not lease_readable:
+        monkeypatch.setattr(
+            MOG,
+            "prepare_refresh_lease",
+            lambda repo, read, write, pulls: (
+                MOG.RefreshLease(repo, read, write, readable=False),
+                pulls,
+            ),
+        )
+
+    def never(*_a, **_k):
+        raise AssertionError("census read although no headroom could be used")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", never)
+    monkeypatch.setattr(MOG, "sweep_pull", lambda *_a: "pending")
+    assert MOG.main() == 0
+    out = capsys.readouterr().out
+    if active == 0 and authorized and lease_readable:
+        assert "global cap 8 (census skipped: flat cap)" in out
+
+
 def test_adaptive_census_exception_degrades_to_the_flat_cap_without_deferring(
     monkeypatch, capsys
 ):
     _main_harness(monkeypatch, [_pull(1)])
     monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 7)
 
-    def rate_limited(*_a):
+    def rate_limited(*_a, **_k):
         raise MOG.RateLimited("core budget exhausted")
 
-    monkeypatch.setattr(MOG, "shared_pool_census", rate_limited)
+    monkeypatch.setattr(MOG, "hosted_pool_census", rate_limited)
     allowances: list[int] = []
 
     def inspect_budget(
@@ -6779,10 +6905,12 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     assert MOG.RATE_LIMIT_RESERVE < MOG.RATE_LIMIT_FLOOR
 
     assert MOG.pull_cap_for_budget(14_904, 15_000) == MOG.MAX_PULL_CAP
-    assert MOG.pull_cap_for_budget(600, 15_000) == 9
+    # (600 - 260 reserve - 92 fixed - 8 attempts) // 27 = 8; the fixed overhead
+    # now carries the up-to-five adaptive hosted-pool census reads.
+    assert MOG.pull_cap_for_budget(600, 15_000) == 8
     affordable_cost = (
         MOG.FULL_SWEEP_FIXED_REQUESTS
-        + 9 * MOG.MAX_REQUESTS_PER_PULL
+        + 8 * MOG.MAX_REQUESTS_PER_PULL
         + MOG.MAX_REFRESHES_PER_SWEEP
         + MOG.RATE_LIMIT_RESERVE
     )
