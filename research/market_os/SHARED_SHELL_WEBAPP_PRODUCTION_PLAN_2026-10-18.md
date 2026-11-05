@@ -19,19 +19,37 @@ source, CI, merge, installation, native publication and product acceptance are
 separate facts; task counts do not measure completion.
 
 The same Macro #10674 carrier remains unarmed/merge-blocked at published
-`4462b2a4129199e7739b44832052aa0a2affcf15`. Its original run42065204216 is terminal:
-**619 PASS, 69 UNKNOWN, 1 PR_REGRESSION, 0 inherited; clear=false** at tested
-`245162700ec557962a14d8c6f430fdda772ca0b6`, base
-`d3ab2890c210be72d0a8dd21cdf14af87d10b10f`, plan `ff871eb1`.
-Original observer69181 is closed. Formal5788443077 applies only to4462;
-historical8c/687PASS/formal5782911631 are not successor proof.
+`667e93fa9ab4c136060ad9e5e8caa5b69d202e5f`. Natural run42098955595 is terminal:
+**683 PASS, 6 UNKNOWN, 0 inherited; clear=false** at tested
+`fb69a896323b5495271913c6b0f7cde5c9072e84`, base
+`a20e6437cc8a892b769d549876ebf81ca0e2dcd1`, authoritative plan `31560218`.
+Original observer49747 and its foreground consumer are closed. Exact formal
+5791291941 approves only667; it is not a successor review. Earlier4462/run420652
+619PASS/69UNKNOWN/1PR_REGRESSION,69181 and formal5788443077 remain historical
+facts; historical8c/687PASS/formal5782911631 are not successor proof.
+
+The sole current failure is a test-selector ownership ambiguity in the existing
+International browser command:203 Node cases,202PASS/1FAIL. The manual-draft
+roundtrip test selected three Scenario actions: the canonical tab and two authored
+manual-Scenario CTAs. Source repair `b57b1866` selects the actual
+`[data-im-history-tabs]` owner, asserts one target, and preserves the original
+force-click plus every draft/result/route assertion. Actual rendered-fixture
+source-DOM proof measures3 broad/1 owned; both CTAs remain. Removing the tab
+container leaves two CTAs and zero eligible tabs; missing/misspelled/duplicate
+owners reject. This is not a new browser, click, layout or hosted PASS. The exact
+base replay timed out and remains UNKNOWN; no inherited credit is assigned.
 
 The reviewed product-source boundary is `4f4024c996f663c4786c237df68af4a5cb9f6c5f`.
 The first protected39133 composition preserved all407 prior owned diff entries
 and ten incoming entries by mode/blob. Action-time protected
 `a20e6437cc8a892b769d549876ebf81ca0e2dcd1` is now composed: its28 further
 nonoverlapping paths are exact, all product-source entries unchanged. The actual
-protected CI-authority conservative inventory/admin checks are preserved, not waived. Reviewed Company/T55, Bonds/Forensics/Business/China/Radar/Calendar/HK/
+protected CI-authority conservative inventory/admin checks are preserved, not waived.
+Action-time protected `02839f000f3e0623ad65c8bc2fb3b910b7cce6d2` adds21
+nonoverlapping record/documentation/marketing paths, all preserved exactly by
+local merge733c5a9c. Its technical-parity README clarifies charted versus event
+Bollinger definitions without changing any fixture, formula or comparator.
+Reviewed Company/T55, Bonds/Forensics/Business/China/Radar/Calendar/HK/
 T52 scope, B2 outline projection, current API/MarketMemory/Options contracts and
 protected quote-board cap640 remain. Source clocks and B2 activation are
 **NOT_YET_LIVE** until their actual normal installation/publication and consumer
@@ -59,15 +77,28 @@ byte-exact. **New paginated History/Compare is NOT_INSTALLED**. Its actual lawfu
 normal producer/rendition, receipts/generation/feeds and served acceptance remain
 owed; no fixture HTML or raw snapshot was substituted.
 
+At this genuinely necessary corrective boundary, local65228b98 composes the exact
+reviewed durable Risk18-path delta4ba7e593 and disjoint advisory diagnosticsc778,
+plus accepted one-file Coverage reuse5b6c. Durable rendering stays default OFF:
+manual exactIntl scope must bind this invocation's native input absence/presence,
+Risk, generation, page and publication receipts. Old identical files, resilient
+zero exits and an absent direct selector cannot supply success. No durable command,
+collector, API restart, host installation or publication has been invoked here.
+The Coverage test reuses one invocation-local immutable HTML for eight identical
+reads, retaining nine fresh payload reads, fresh parsers, all35 original cases and
+four isolation/exception controls; no deadline or speed claim is changed.
+
 The original Ontology timeout remains UNKNOWN. Retained logs prove a cumulative
 600-second logical-job deadline:373.41s acquisition plus63.78s earlier suites
 left162.81s for the browser suite, still advancing at cutoff. Original execution
 quiescence is qualified narrowly through the documented hosted-VM lifecycle and
-mock/local side-effect audit, not semantic PASS or a speed fix. The proposed phase diagnostics
-were deferred before launch with no postimage, test or live worker; they are not
-a release gate. Proceed with the genuine repaired successor and this diagnosed
-timing limitation. No speed fix, budget increase, old rerun or unproved setup
-shortcut is claimed or authorized. Future P9 rollout is not a release prerequisite. Use the currently installed lawful mechanism with actual
+mock/local side-effect audit, not semantic PASS or a speed fix. Its initial phase
+request was deferred before launch. The separately qualified advisory sourcec778
+is now included at the authorized safe boundary: unprivileged outer-stderr phase
+clocks preserve the original protocol, calls, result dictionary and deadlines;
+a raised phase cannot claim passed. This is not a speed fix, original UNKNOWN
+clearance, acquisition, new runtime observation or release gate. No budget
+increase, old rerun or unproved setup shortcut is claimed or authorized. Future P9 rollout is not a release prerequisite. Use the currently installed lawful mechanism with actual
 current-head/base/plan proof, genuine formal review and independent arming.
 
 Root's scoped source disposition at #10674/comment6663828912 releases only the
@@ -75,12 +106,14 @@ three accepted withdrawal/scanner postimages under actual source-release gates.
 Original #10696/e5dd/UNKNOWN remains held on its original carrier. Atomic GMI
 registry/overlay/report/current-generation/export and SS05 runtime remain deferred;
 T55 original UNKNOWN tuples, foreign9533, JP/source/runtime/SQL/private/default-OFF,
-Gold/admin and actual browser refusals remain. No new provider, host, SQL, browser,
-financial recomputation or production activation occurred in this source repair.
+Gold/admin and actual browser refusals remain. History287/Comparison164/rename366
+are original held Paper operations; they do not establish a generic source-DOM ban
+or clear the distinct1188/29789 Chromium refusals. No new provider, host, SQL,
+browser, financial recomputation or production activation occurred in this source repair.
 
-The latest validated mmtask export is2026-11-05T19:24:43Z:153 verified entries,
+The latest validated mmtask export is2026-11-05T21:54:54Z:159 verified entries,
 0 errors/1 warning, **PREPARED ONLY**. Export SHA256:
-`41f4981f35b398371cd2dc41aa6c7c54d9e5dd4c67463a655b6fe3b730c5ed1c`.
+`0da11b4e31708d604737f19333ed8f2257bf3ffe581fae91d5dab35d5d0a2808`.
 
 | Existing task | Buffered source state | Bounded outcome |
 | --- | --- | --- |
@@ -101,6 +134,9 @@ The latest validated mmtask export is2026-11-05T19:24:43Z:153 verified entries,
 | P12.T2.S14.S8.S7.S4 | reviewed | Compose accepted History missing-value explanation and bounded-payload assertion repair |
 | P12.T2.S14.S8.S7.S5 | reviewed | Integrate accepted surveillance ordered-owner guard successor |
 | P12.T2.S14.S8.S7.S6 | reviewed | Compose qualified IM14 fixture-only preparation without discarded full render |
+| P12.T2.S14.S8.S8 | reviewed | Correct exact canonical-tab selector ambiguity with actual rendered-DOM negatives |
+| P12.T2.S14.S8.S9 | reviewed | Compose reviewed durable Risk, advisory diagnostics and actual required source contracts |
+| P12.T2.S14.S8.S9.S1 | reviewed | Adopt exact accepted invocation-local Coverage HTML reuse without changing assertions |
 
 Next: freeze the actual final source/closure/eligible plan, retain this same
 independent reviewer, then one normal same-branch nonforce

@@ -1,0 +1,214 @@
+{
+  "schema": "shared-shell.source-composition.v1",
+  "task": "P12.T2.S14.S8.S9",
+  "state": "SOURCE_COMPONENT_QUALIFIED_NOT_HOSTED_OR_RELEASED",
+  "runtime_component_head": "65228b988921a6594e598fe94f7f24682f89dfdc",
+  "runtime_component_tree": "6872ba7f4b27fa550839f3d1ba5d020162d45128",
+  "protected_base": "02839f000f3e0623ad65c8bc2fb3b910b7cce6d2",
+  "prior_published_head": "667e93fa9ab4c136060ad9e5e8caa5b69d202e5f",
+  "prior_CI": {
+    "run": 42098955595,
+    "tested": "fb69a896323b5495271913c6b0f7cde5c9072e84",
+    "base": "a20e6437cc8a892b769d549876ebf81ca0e2dcd1",
+    "passed": 683,
+    "unknown": 6,
+    "inherited": 0,
+    "clear": false,
+    "all_original_unknowns_preserved": true
+  },
+  "selector_repair": {
+    "path": "tests/intl_workspace_history_controller.test.cjs",
+    "postimage": "100644 blob e48488d093d7731d25bc5576945768964eb079b9",
+    "post_sha256": "a863d796dd06bcbe84974ba4e63f9977f8e548ea90707fafa1ce2268250a922a",
+    "actual_failure": "203Nodecases202PASS1FAIL; strictScenario selector resolvescanonicaltab+twoCTAs",
+    "actual_source_DOM": {
+      "head": "667e93fa9ab4c136060ad9e5e8caa5b69d202e5f",
+      "file": "tests/intl_workspace_history_controller.test.cjs",
+      "before_sha256": "8c903fdc827816d0e8e0ede3aff30058018fd61158036712d966a0bdf0d9aeca",
+      "after_sha256": "a863d796dd06bcbe84974ba4e63f9977f8e548ea90707fafa1ce2268250a922a",
+      "actual_fixture_sha256": "f56a90690cfb40f7729414e60494c7acd4ff87b8dfafd37f9fd1302152c326c1",
+      "actual_before_global_count": 3,
+      "canonical_owned_count": 1,
+      "both_authored_CTAs_present": 2,
+      "canonical_container_removed": {
+        "CTA_remaining": 2,
+        "owned": 0,
+        "reject": true
+      },
+      "missing_owner": {
+        "global": 3,
+        "owned": 0,
+        "reject": true
+      },
+      "one_character_owner_typo": {
+        "owned": 0,
+        "reject": true
+      },
+      "duplicate_owner": {
+        "owned": 2,
+        "reject": true
+      },
+      "unrelated_CTA": {
+        "global": 4,
+        "owned": 1
+      },
+      "all_other_test_source_exact": true,
+      "retained_roundtrip_assertions": [
+        "rawmanual5",
+        "resultvisible",
+        "overview/historydispatch"
+      ],
+      "runtime": {
+        "node": "v26.5.0",
+        "jsdom": "26.1.0"
+      },
+      "scope": "Actual incumbent fixture/sourceDOM only under OSdenyallnetwork. No browser/capture/click/layout/nativeCI/base-replay/provider effect."
+    },
+    "all_other_test_source_and_assertions_exact": true,
+    "browser_command_replayed": false
+  },
+  "accepted_components": {
+    "durable18": "4ba7e59347d5584eb7c5527a7db49d95676454f6/tree7a1ed231",
+    "advisory2": "c778eef4a16952a2f5db04ce7973a1f2b27b5e54/tree83acc012",
+    "coverage1": "5b6c3956b2b57629162c73fa301447e709ef04a9/blob4fc499934ccc8ea37d66e9bbb626261c9888d07c"
+  },
+  "durable_advisory20_postimages": {
+    ".github/ci/legacy-jobs.yml": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "59ed842e1b46e6932cd6e4857e0e30e01c96b35b"
+    },
+    ".github/workflows/render.yml": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "e30c214f182052e2d6d0df56a8944ecda067b8ab"
+    },
+    "lib/intl_annual_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "232d45f46fcb3042cf982fdda3354c0b523f9f57"
+    },
+    "lib/intl_boe_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "a52e1c29dd0013d48d0981a8c68beac2ecd0b2d2"
+    },
+    "lib/intl_durable_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "b273d234d1eae1436ee3e87e2755b815e9aa7a8b"
+    },
+    "lib/intl_ecb_policy_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "302ea5c8954ccdb09a2c725799ea0a3b5526663b"
+    },
+    "lib/intl_eod_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "e98c3264e637dffd17c0422524a8fccdda7557f5"
+    },
+    "lib/intl_eurostat_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "79302a8666ea72acfb669cea98ae19633001f222"
+    },
+    "lib/intl_macro_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "0f1f3929ba52d0d06855db197751ec54918e9107"
+    },
+    "lib/intl_yield_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "2af9c8e77f659771288144a3a78599a833132d75"
+    },
+    "scripts/build_feeds.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "206f63a693bc3b9d11185adb7532091fd607fb8e"
+    },
+    "scripts/build_intl.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "c21c45874119a89853781c720422ecfb51bf5f93"
+    },
+    "scripts/ci_browser_native_setup.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "49062eae8a8ddc8e43224619ed823815df440bc9"
+    },
+    "scripts/render_intl_durable.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "015def259d194a432b2ad28182bfa3c56266a95c"
+    },
+    "tests/test_ci_browser_native_setup.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "0c90285ae19c01bf5758612cad0070011442353b"
+    },
+    "tests/test_intl_durable_native_inputs.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "5a3ab3e5e6d1842433182bdd5fe656e7e33cfb60"
+    },
+    "tests/test_intl_durable_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "c3c5c2fdd0dbbea7c9473ce66f147e30cddc3f2a"
+    },
+    "tests/test_intl_native_read_observer.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "53898ecb41fdc0cf7cf85bfd12c6e6b1cf91d683"
+    },
+    "tests/test_render_intl_durable.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "4ed24045266596697052b918fad29d91f5330726"
+    },
+    "tests/test_render_intl_scope.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "c1e32a59f8ef32975a834b1be27f73b656b45d10"
+    }
+  },
+  "coverage_postimage": "100644 blob 4fc499934ccc8ea37d66e9bbb626261c9888d07c",
+  "source_preservation": {
+    "all20exact": true,
+    "all21newprotected_paths_exact": true,
+    "prior_bound_entries_unchanged_outside_declared_components": 491,
+    "current_Business_API_B2_T55_source_preserved": true,
+    "no_generated_site_or_data_in_component": true
+  },
+  "actual_composition_checks": {
+    "Coverage_qualification_path": "/Volumes/Mastermind/evidence/shared-shell-iw2-10708-integration-20261105-carson/durable-source/company-652-integration-qualification.json",
+    "Coverage_qualification_sha256": "0d7861d4a5e77700ef1dd2d88fcbdeaab41fabd0578d02bedd68862a3c0d13d5",
+    "canonical_fullmanifest_closure_and_three_packing_probes": "2PASS200.33s, pinnedPython3.12.13 andOSdenyallnetwork",
+    "missing_edges": 0,
+    "packing_breaches": 0,
+    "observed_workflow_yaml_weight": 90,
+    "calibration_or_budget_change": false,
+    "actual_V22_builder_seam": "1PASS4.37s; unchangedguardprojection on composedbuilder"
+  },
+  "review": "SAME distinct-context reviewer652preparation40b57483 sourcePASS; finalremote exacthead formal/CI/freshness/non-authorrelease remainrequired",
+  "artifacts": {
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/S14_S8_S8_SELECTOR_REPAIR_INPUT.json": "15848dd4d8af256b7d34a324c89d0477b385baf29284068d3f71c048fea4bdd4",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s8-history-tab-source-dom-result.json": "a4dc3f370ec9276f0e90bffe244f8e5d3cce64ae93ddc8696fcc998b6a8f1987",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s8-history-tab-source-dom.cjs": "bfa6204f5081f42ef804755e7fa487f112797b2c0cb4dbb29dae386e35eef6c4",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s7-terminal-final-semantic-consumption.json": "c7c2cd411604c725a10f7757660f050ba8910456eb044f1a7bfe8c713a41346b",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/native-formal-review/652-durable-diagnostics-source-preparation.json": "40b5748339c8a186ed462f9f0ad8333cbe8cc08c9adbe94c0102a53dd9aca558",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-actual-v22-composition.log": "9e473887857eb0b504d1212f37313f47f0c4393eca92d0e5c566ece1f2781e83",
+    "/Volumes/Mastermind/evidence/shared-shell-iw2-10708-integration-20261105-carson/durable-source/company-652-integration-qualification.json": "0d7861d4a5e77700ef1dd2d88fcbdeaab41fabd0578d02bedd68862a3c0d13d5",
+    "/Volumes/Mastermind/evidence/shared-shell-iw2-10708-integration-20261105-carson/durable-source/dependent-release-input.json": "b8962ca21143e327ae3b041228d9ff378e8d03a0e2a5b2516f192efefc4b533b",
+    "/Volumes/Mastermind/evidence/shared-shell-iw2-10708-integration-20261105-carson/durable-source/dependent-optional-diagnostics-input.json": "e58ddaab40d5da652b13142ef5a17c6900d4b952fc31c8eaa3ae3571311e6599",
+    "/Volumes/Mastermind/evidence/shared-shell-w9-export-sources-20261102-01a19e33/intl-coverage-reuse/qualified-source-input.json": "45cb1fd120932af3dcd0871bd4cbf3aa5939394c112d991b4f2e685f6c55d5a9"
+  },
+  "runtime_limits": [
+    "DurabledefaultOFF/manualexactIntl only; no invocation/collector/sourceinstallation or publisher effect",
+    "No speed/PIT/currentmarket/served/fullHistory/Compare acceptance",
+    "Old base timed_out andPaper/Chromium/10696/T55/9533/SQL/private/defaultOFF holds preserved",
+    "No oldCI/formal review transferred to successor; normal full required proof and controller release owed"
+  ]
+}
