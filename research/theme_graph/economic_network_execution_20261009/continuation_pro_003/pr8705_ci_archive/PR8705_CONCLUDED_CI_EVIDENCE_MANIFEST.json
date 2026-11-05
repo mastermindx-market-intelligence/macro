@@ -1,0 +1,355 @@
+{
+  "archive": {
+    "bytes": 390593,
+    "filename": "PR8705_CONCLUDED_CI_EVIDENCE_93012584.tar.gz",
+    "format": "gzip/ustar",
+    "normalization": {
+      "compression_level": 9,
+      "entry_order": "lexicographic",
+      "gid": 0,
+      "gname": "",
+      "gzip_filename": "",
+      "gzip_mtime": 0,
+      "mode": "0644",
+      "mtime": 0,
+      "type": "regular",
+      "uid": 0,
+      "uname": ""
+    },
+    "sha256": "ca65d83a987fc11197c3e66eb58670dc40d887ca1fcd66c3167df4773b6368e6",
+    "uncompressed_tar_bytes": 1505280
+  },
+  "entries": [
+    {
+      "archive_name": "lanes/PR8705_INDEPENDENT_RELEASE_AUDIT.json",
+      "bytes": 28429,
+      "sha256": "c172005b35a33eeddeca199abc7c6e6d81fc7211b615f787e4792899d8902209",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/PR8705_INDEPENDENT_RELEASE_AUDIT.md",
+      "bytes": 22004,
+      "sha256": "0634ed80a06ccd8e6782692e7373343bc8b9eada3fb9b2efebac7fbc5d632e0c",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/PR8705_CONCLUDED_CI_EVIDENCE_REVIEW.json",
+      "bytes": 62869,
+      "sha256": "19a7cb1affdfc069a97340f7cf37d5ee3a90cb087879dda6d080d662ffa3a6d8",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/PR8705_CONCLUDED_CI_EVIDENCE_REVIEW.md",
+      "bytes": 16222,
+      "sha256": "a5d35ceebd78c2201f044723344acd00c1a02c97fcde6a1f0edaa2734ab39a71",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/action_contract_source_read_001.json",
+      "bytes": 1965,
+      "sha256": "21f7e4e7fd0f44aad2509c567b88d4f0d9b16ab35cbf474417655536d9a7129c",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610115675.zip",
+      "bytes": 1604,
+      "sha256": "ff8acd5785df5cd5667fcee2e1ae972b6b06a20d0d9d5ada21194709454f5398",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610275768.zip",
+      "bytes": 3991,
+      "sha256": "84c6de04521398966c5a133e9b811b177ef55d16c01bd933bf0dd79ca4f05e8b",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610309828.zip",
+      "bytes": 4338,
+      "sha256": "c9a7c66934960927312607d81fc4f04aac06c33f944c2b7007d0c8a468b3aabc",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610391276.zip",
+      "bytes": 4183,
+      "sha256": "f9ac42082b2ccb8d88a8875089cc6000a2e7d90c0677c346a7fb86b11871fb1e",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610656413.zip",
+      "bytes": 3880,
+      "sha256": "96651b732ef2f0c98f804eb5bf2ec6608fbab25ef406ab99776d6dd19563bf2c",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610852161.zip",
+      "bytes": 3442,
+      "sha256": "8dfc85ae072d3f857699ebb7139cb8cce31c2d41f8bf9e1c2d18698e3205bf19",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610870530.zip",
+      "bytes": 3569,
+      "sha256": "38583737e445c2d12466aeb90437c08ebfd6e39dceda390c9ecfc4e5829d17b8",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610906740.zip",
+      "bytes": 1593,
+      "sha256": "33fe0f36ad222c571b7984332c842f36cdb55621e599c2526171785ead6b1824",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11611011680.zip",
+      "bytes": 2723,
+      "sha256": "8f2aa1425abf62d1bfc08c8c75c5e1b3f5c54c420b72851a655f170285d8cc87",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11611015908.zip",
+      "bytes": 3835,
+      "sha256": "b498d70861b03e45efc614f3a1c2d5cdbe594a7f0bf6589e850d612663d4c12a",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11611168469.zip",
+      "bytes": 28383,
+      "sha256": "71eaa2c409eb766501ce0ebc09a9a7beda42c0812a5a80012e7297b53bb22227",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11611180347.zip",
+      "bytes": 644,
+      "sha256": "d2eeeea4561423520f7f289376206c1ac49c6caabfc838f824e8bb908b1afac2",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11611241809.zip",
+      "bytes": 2349,
+      "sha256": "b3c299d901b0145c1156918c8620fd4e08a6242d593c9436750b8522fa6aa90e",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_inventory_001.json",
+      "bytes": 15541,
+      "sha256": "28dd66db16a339d5252b5020eac5228aa96c15b274be2215addf7f60fc02b475",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/ci-semantic-evidence.json",
+      "bytes": 94642,
+      "sha256": "7f6fd60c5e3f2503ca9cd0cc8deb39ea0fccbe503a655e65aaff77de17599d11",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/ci_semantic_proof_reviewed_source.txt",
+      "bytes": 73298,
+      "sha256": "9df4b9a9a8d68f7e9aa34a8eebe99e8d17e27f2ef0560eadcc050f3130359158",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/final_artifacts_read_001.json",
+      "bytes": 44832,
+      "sha256": "283ce9609147836fde1cdea559330665e540998f048a81a2bbb337b5d8a50e49",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/fragment_verification_001.json",
+      "bytes": 9032,
+      "sha256": "88933c250d5965196d772f18057d8d29e81c20fafafdc62c724693102e5eb4b0",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/full_artifact_verification_002.json",
+      "bytes": 9278,
+      "sha256": "a66a5bfb0b65071fa507358534f0ef599df9e06509ca5427fda8ae3cd5df0143",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/immutable_source_read_001.json",
+      "bytes": 121720,
+      "sha256": "6adac5280b4510e007deeebe83f80776cd6bbf754a35125dd651123889079ec7",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/job_log_get_diagnostic_002.json",
+      "bytes": 317,
+      "sha256": "9a43f44211c6407ef3f5db3e2c0fa1af93be6762c014490fe31d51fe617f720e",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/native_read_scripts.json",
+      "bytes": 19644,
+      "sha256": "bc807b079467aa56b65d7e872d207bf86212f71973250f3a339903635036214e",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/native_snapshot_001.json",
+      "bytes": 272556,
+      "sha256": "c1343d8a961b4959303210fc7469a0088d9304c3c4fecc44730601c17cebb77e",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/native_snapshot_002.json",
+      "bytes": 269096,
+      "sha256": "955cbeae18f3943fe2ba2471bda22b2a32996191e767928a704c7caed69dab31",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/owner_digest_source_read_001.json",
+      "bytes": 3304,
+      "sha256": "46203a53e81ae6d4af7bc5e7bde0e732cf11d0ea4437f5036677453b7e5921a3",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/owner_job_log_read_003.json",
+      "bytes": 8409,
+      "sha256": "4efcd9d30e392f820def5e5473380d99f4a68859bcfa87ed685ed3494d6933a4",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack-0.json",
+      "bytes": 3630,
+      "sha256": "d4508e6493416874a7d89ec8a159ccdc0ba2705f638a910130b5908cb74a5d44",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack-1.json",
+      "bytes": 806,
+      "sha256": "319b01f8b1b279e28dabb0f36ab8bfac233604303498bb12fcd365fbc3ba4c77",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack-10.json",
+      "bytes": 10653,
+      "sha256": "03cc578600b33ad5e0b674d2e6521b71931a1d8a25daeed1074a36fd55f2cb88",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack-11.json",
+      "bytes": 10296,
+      "sha256": "b2202aa81a514e617cf4a119d924d8aede4662aa5c5dbe8a98f9a8c490ee714e",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack-2.json",
+      "bytes": 3614,
+      "sha256": "7eeb77c26b4f8657240b53323c67d9dfa3f5530dce5ef83c1d64f4f43d6e3075",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack-3.json",
+      "bytes": 9201,
+      "sha256": "8fe4105881e97e067f2995b780e1477efda5ea11d0ae6dfd594a2af44f7682b6",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack-4.json",
+      "bytes": 8488,
+      "sha256": "3efc14e9eac6a59c63f0f120bb76abff88ddad69de9f175431d9029cb690f77b",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack-5.json",
+      "bytes": 9707,
+      "sha256": "2a5c99a1c269540ad83892d29a4a144a633904f9ddcb2ad92d2efa295a91c941",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack-6.json",
+      "bytes": 10909,
+      "sha256": "63df19bc2097951187f2dbf4e990e1a65794425172a0611378ee02e8187d2793",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack-7.json",
+      "bytes": 6743,
+      "sha256": "2301df56ebab64defa473998e0e3206b28f8ac842cb2ff5a3711b119f8e78be3",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack-8.json",
+      "bytes": 9664,
+      "sha256": "d5d7b55dceaad7b7cf15d1612c94d03fd9fdfc908f3f0a9ccffc642f1bf44f0c",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack-9.json",
+      "bytes": 5834,
+      "sha256": "b531a6b1f3084dd0d70bd9ccf85bbf1182b577f4c57ae7fce59d8d26dd34478f",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/pack_artifacts_read_001.json",
+      "bytes": 42693,
+      "sha256": "296db9dc3e0af65788c9a7ba944148a671acd42c859232ac31cd510480ac9ecf",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/runner_contract_source_read_001.json",
+      "bytes": 19783,
+      "sha256": "b69244b46c0ba30bc6e5084d93bd826fcdb961a8f392e4f8d62cac2e0707ae16",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/source_and_log_read_failure_001.json",
+      "bytes": 802,
+      "sha256": "39fd998a77c2380c55dafed74ab445532f71272026f78436fd6f3452acc4d6a3",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/verify_observed_ci_artifacts.py",
+      "bytes": 11573,
+      "sha256": "6c247f5e3468fbc0c410a223d8820e1fedcac0f00fa769f8257837bf6177b8ec",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_release_audit_evidence/artifact_11608754261.zip",
+      "bytes": 30989,
+      "sha256": "42eabf12152cd190ad6d2d4ea2db5eb95e9e329752cff4e0586b87b81d04f889",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_release_audit_evidence/artifact_11608789344.zip",
+      "bytes": 765,
+      "sha256": "2874da0336c6b1810eb73c0f0adf8956b9ae198d293ae3600bac75cf178bc8a3",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_release_audit_evidence/changed-files.json",
+      "bytes": 2918,
+      "sha256": "a1a276181e5d2c2d0b8568220066fe17a78d94ffa9ef44994186d75ffb1156af",
+      "type": "regular"
+    },
+    {
+      "archive_name": "lanes/pr8705_release_audit_evidence/ci-plan.json",
+      "bytes": 97293,
+      "sha256": "4c1d87d65f4deb353075556c6ab25bcacfcf918d4924f8f934ef5e99ff74cb92",
+      "type": "regular"
+    },
+    {
+      "archive_name": "packaging/README.md",
+      "bytes": 5157,
+      "sha256": "3ea202488911c7f250ef271381bb4d6015765dfd9cf47c73d5e5829891625526",
+      "type": "regular"
+    },
+    {
+      "archive_name": "packaging/build_and_verify_archive.py",
+      "bytes": 16121,
+      "sha256": "c2a4cfc645f676a484a1a9650c9ad49f8dbdd1d7e24941aa8c57dc5c4e6961d7",
+      "type": "regular"
+    },
+    {
+      "archive_name": "packaging/source_selection.json",
+      "bytes": 2987,
+      "sha256": "bad1bb01f59ee40a339c8b2a68337ea1985a1876072e39ed60a56aed4103aaee",
+      "type": "regular"
+    }
+  ],
+  "entry_count": 54,
+  "manifest_scope": "Every outer archive member is listed; this external manifest and the post-build receipt are not archive members.",
+  "payload_bytes": 1458318,
+  "run_attempt": 1,
+  "schema": "gmi.pr8705.durable_ci_archive_manifest/v1",
+  "subject_head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+  "workflow_run_id": 37915994513
+}

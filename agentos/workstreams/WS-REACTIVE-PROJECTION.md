@@ -66,16 +66,22 @@ waves:
     status: done
     pr: 616
     next_action: >
-      PROVEN_LIVE 2026-09-18 on served Terminal generation
-      1f56eae265bdbb69c60ce1c5b63dcea19f1f480e, which contains protected PR #616 merge
-      82ca818be7ea592f7cdb1fb6731cc19f94610593. Live Hub/App files matched the canonical
-      checkout byte-for-byte; QCOM recorded zero ext-LRU evictions since the current Quote Hub
-      restart; and fresh public 1440/390 browser proof showed every regular quote request using
-      view=regular, last-good extended values surviving an injected non-authoritative HTTP 503,
-      and desktop detail/watchlist plus the compact mobile lane advancing coherently after recovery.
-      No further product repair is owed for this wave. A real provider null remains an honest null;
-      unsupported 20:00-04:00 ET coverage must never be fabricated. The separate exact-SHA
-      release-hardening programme in Terminal issue #483 continues under its own acceptance gates.
+      Dated PROVEN_LIVE 2026-09-18T12:21Z for this bounded reported defect on served Terminal
+      generation 1f56eae265bdbb69c60ce1c5b63dcea19f1f480e, containing Terminal PR #616 merge
+      82ca818be7ea592f7cdb1fb6731cc19f94610593. Acceptance:
+      https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/616#issuecomment-5729928134.
+      Six critical live files matched canonical bytes; QCOM had zero ext-LRU evictions since
+      that observed restart. Public desktop 1440/mobile 390 UI used live ordinary quote requests
+      with view=regular and live assets/rendering; deliberately injected extended responses
+      proved last-good retention through an injected 503 and coherent recovery. The actual provider
+      returned an honest null. This dated result is not fresh November service or natural-provider
+      recovery proof. No further repair of this accepted defect is owed absent a material new
+      regression; preserve its source and acceptance as DO_NOT_REDO. Do not fabricate coverage
+      or freshness. Terminal issue 483 closed 2026-09-29T19:06:47Z; its older open instructions
+      and separate October 12 login-release denial are dated history, not a current release action.
+      Reconcile any independently assigned release in its incumbent source/effect owner.
+      Administrative qualification: agentos/handoffs/REACTIVE-PROJECTION-2026-09-18.md and
+      https://github.com/mastermindx-market-intelligence/macro/pull/7282#issuecomment-6659649356.
   - id: R1B
     title: Ordered delta transport (SSE) — measurement-gated decision
     status: todo

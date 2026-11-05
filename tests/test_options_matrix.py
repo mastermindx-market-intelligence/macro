@@ -35,6 +35,7 @@ from engine.options_matrix import (
     _bs_gamma_scalar,
     _bs_vanna_scalar,
     _compute_max_pain,
+    _extract_spot,
     _gex_dollar,
     _heat_seeker,
     _median_iv,
@@ -1374,3 +1375,441 @@ def test_options_matrix_example_tracks_live_unusual_contract():
     )
     assert validate_matrix(example) == []
     assert set(example["cells"][0]["unusual"]) == {"call", "put"}
+
+
+# Production regression: OI publication advances before the EOD/Greeks session.
+def _session_repair_store(tmp_path, *, oi_dates=("2026-09-21", "2026-09-22", "2026-09-23"),
+                          eod_dates=("2026-09-21", "2026-09-22"),
+                          greek_dates=("2026-09-21", "2026-09-22")):
+    store = tmp_path / "matrix_session_source"
+    for tier, dates in (("oi", oi_dates), ("eod", eod_dates), ("greeks", greek_dates)):
+        rows = []
+        for date in dates:
+            for strike in (95.0, 100.0, 105.0):
+                for right in ("C", "P"):
+                    row = {"root": "SPY", "expiration": "2026-10-16", "strike": strike,
+                           "right": right, "date": pd.Timestamp(date)}
+                    if tier == "oi":
+                        # The next publication is deliberately huge; accidental look-ahead is detectable.
+                        amount = {"2026-09-21": 100, "2026-09-22": 200}.get(date, 9999)
+                        row["open_interest"] = amount if right == "C" else amount // 2
+                    elif tier == "eod":
+                        row.update(volume=10, close=2.0)
+                    else:
+                        row.update(underlying_price=100.0, implied_vol=0.25)
+                    rows.append(row)
+        if rows:
+            frame = pd.DataFrame(rows)
+            for year, group in frame.groupby(frame["date"].dt.year):
+                path = store / tier / "SPY" / f"{year}.parquet"
+                path.parent.mkdir(parents=True, exist_ok=True)
+                group.to_parquet(path, index=False)
+    return store
+
+
+def test_matrix_auto_uses_complete_same_session_not_newer_oi(tmp_path):
+    from engine.thetadata_store import clear_parquet_cache
+    clear_parquet_cache()
+    store = _session_repair_store(tmp_path)
+    doc = build_matrix("SPY", store)
+    assert doc["cells"], doc.get("_no_data_reason")
+    assert doc["spot"] == 100.0
+    assert doc["session"] == "2026-09-22"
+    assert doc["_build_meta"]["asof_date"] == "2026-09-22"
+    assert doc["_build_meta"]["source_dates"] == {
+        "eod": "2026-09-22", "greeks": "2026-09-22", "oi_publication": "2026-09-22",
+        "previous_oi_publication": "2026-09-21", "latest_oi_publication": "2026-09-23",
+    }
+    assert doc["_build_meta"]["session_selection"] == "latest_common_session"
+    assert sum(cell["call_oi"] for cell in doc["cells"]) == 600
+    assert sum(cell["put_oi"] for cell in doc["cells"]) == 300
+    assert sum(cell["delta_oi"]["call"] for cell in doc["cells"]) == 300
+    assert sum(cell["delta_oi"]["put"] for cell in doc["cells"]) == 150
+    assert validate_matrix(doc) == []
+
+
+def test_matrix_explicit_missing_date_is_not_silently_replaced(tmp_path):
+    from engine.thetadata_store import clear_parquet_cache
+    clear_parquet_cache()
+    doc = build_matrix("SPY", _session_repair_store(tmp_path), asof="2026-09-23")
+    assert doc["cells"] == []
+    assert "2026-09-23" in doc["_no_data_reason"]
+
+
+def test_matrix_auto_no_common_source_session_is_explicit_null(tmp_path):
+    from engine.thetadata_store import clear_parquet_cache
+    clear_parquet_cache()
+    store = _session_repair_store(tmp_path, oi_dates=("2026-09-23",),
+                                  eod_dates=("2026-09-22",), greek_dates=("2026-09-22",))
+    doc = build_matrix("SPY", store)
+    assert doc["cells"] == []
+    assert "common" in doc["_no_data_reason"].lower()
+
+
+def test_matrix_common_source_search_crosses_year_boundary(tmp_path):
+    from engine.thetadata_store import clear_parquet_cache
+    clear_parquet_cache()
+    store = _session_repair_store(tmp_path, oi_dates=("2025-12-30", "2025-12-31", "2026-01-02"),
+                                  eod_dates=("2025-12-31",), greek_dates=("2025-12-31",))
+    # Exercise the year boundary with an actually eligible expiry, not a >90DTE null.
+    for path in store.glob("*/SPY/*.parquet"):
+        frame = pd.read_parquet(path)
+        frame["expiration"] = "2026-01-16"
+        frame.to_parquet(path, index=False)
+    doc = build_matrix("SPY", store)
+    assert doc.get("_no_data_reason") != "spot unavailable on 2026-01-02"
+    assert doc["_build_meta"]["asof_date"] == "2025-12-31"
+    assert doc["spot"] == 100.0
+
+
+
+def test_matrix_auto_refuses_common_session_beyond_five_nyse_sessions(tmp_path):
+    from engine.thetadata_store import clear_parquet_cache
+    clear_parquet_cache()
+    store = _session_repair_store(
+        tmp_path,
+        oi_dates=("2026-08-21", "2026-09-23"),
+        eod_dates=("2026-08-21",),
+        greek_dates=("2026-08-21",),
+    )
+    doc = build_matrix("SPY", store)
+    assert doc["cells"] == []
+    assert doc["session"] is None
+    assert "within 5 NYSE sessions" in doc["_no_data_reason"]
+    assert "2026-09-23" in doc["_no_data_reason"]
+
+
+def test_matrix_auto_loads_each_candidate_greeks_year_once(tmp_path, monkeypatch):
+    import engine.options_matrix as matrix
+    from engine.thetadata_store import clear_parquet_cache
+    clear_parquet_cache()
+    store = _session_repair_store(tmp_path)
+    calls = []
+    original = matrix._load_parquets
+
+    def observed(tier, root, years, source):
+        if tier == "greeks":
+            calls.append(tuple(years or ()))
+        return original(tier, root, years, source)
+
+    monkeypatch.setattr(matrix, "_load_parquets", observed)
+    doc = matrix.build_matrix("SPY", store)
+    assert doc["cells"]
+    assert calls == [(2026,)]
+
+
+@pytest.mark.parametrize("values", [[], [None], [float("nan")], [float("inf")],
+                                    [float("-inf")], [0.0], [-1.0], ["bad"]])
+def test_option_premiums_never_substitute_for_underlying(values):
+    from engine.options_matrix import _extract_spot
+    greeks = pd.DataFrame({"underlying_price": values})
+    premiums = pd.DataFrame({"close": [1.25, 2.0, 4.75]})
+    assert _extract_spot(greeks, premiums) is None
+
+
+def test_spot_uses_only_finite_positive_underlying_observations():
+    from engine.options_matrix import _extract_spot
+    greeks = pd.DataFrame({"underlying_price": [None, -1.0, 0.0, float("inf"), "192.53"]})
+    assert _extract_spot(greeks, pd.DataFrame({"close": [2.0]})) == 192.53
+
+
+def test_matrix_publisher_preserves_dated_artifact_on_missing_source(tmp_path, monkeypatch):
+    import scripts.build_options_matrix as builder
+    import engine.thetadata_store as td
+    output = tmp_path / "out"
+    output.mkdir()
+    original = b'{"asof":"2026-09-22","cells":[{"gex":42}]}'
+    (output / "SPY.json").write_bytes(original)
+    monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
+    monkeypatch.setattr(builder, "build_matrix", lambda *args, **kwargs: _null_payload("SPY", "2026-09-24", "source missing"))
+    monkeypatch.setattr(sys, "argv", ["builder", "--roots", "SPY", "--out", str(output)])
+    with pytest.raises(SystemExit) as error:
+        builder.main()
+    assert error.value.code == 1
+    assert (output / "SPY.json").read_bytes() == original
+
+
+
+def test_matrix_publisher_never_regresses_a_newer_usable_session(tmp_path, monkeypatch):
+    import scripts.build_options_matrix as builder
+    import engine.thetadata_store as td
+    output = tmp_path / "out"
+    output.mkdir()
+    existing = {
+        "root": "SPY", "session": "2026-09-23", "spot": 100.0,
+        "cells": [{"strike": 100.0, "gex": 42}],
+    }
+    existing_bytes = json.dumps(existing).encode()
+    (output / "SPY.json").write_bytes(existing_bytes)
+    candidate = {
+        "root": "SPY", "session": "2026-09-22", "spot": 99.0,
+        "cells": [{"strike": 100.0, "gex": 99}],
+        "_build_meta": {"asof_date": "2026-09-22"},
+    }
+    monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
+    monkeypatch.setattr(builder, "build_matrix", lambda *args, **kwargs: candidate)
+    monkeypatch.setattr(sys, "argv", ["builder", "--roots", "SPY", "--out", str(output)])
+    with pytest.raises(SystemExit) as error:
+        builder.main()
+    assert error.value.code == 1
+    assert (output / "SPY.json").read_bytes() == existing_bytes
+
+
+def test_matrix_publisher_replaces_legacy_empty_artifact_with_usable_session(tmp_path, monkeypatch):
+    import scripts.build_options_matrix as builder
+    import engine.thetadata_store as td
+    output = tmp_path / "out"
+    output.mkdir()
+    (output / "SPY.json").write_text(
+        json.dumps({"root": "SPY", "spot": None, "cells": [], "_no_data_reason": "old null"})
+    )
+    candidate = {
+        "schema": "options_structure.matrix/v1",
+        "root": "SPY", "session": "2026-09-22", "spot": 100.0,
+        "cells": [{"strike": 100.0, "gex": 5}],
+        "_build_meta": {"asof_date": "2026-09-22"},
+    }
+    monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
+    monkeypatch.setattr(builder, "build_matrix", lambda *args, **kwargs: candidate)
+    monkeypatch.setattr(sys, "argv", ["builder", "--roots", "SPY", "--out", str(output)])
+    assert builder.main() is None
+    assert json.loads((output / "SPY.json").read_text()) == candidate
+
+
+def test_matrix_publisher_missing_credentials_is_not_success(tmp_path, monkeypatch):
+    import scripts.build_options_matrix as builder
+    import engine.thetadata_store as td
+    monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
+    monkeypatch.setattr(builder, "_r2_client", lambda: None)
+    monkeypatch.setattr(sys, "argv", ["builder", "--publish", "--out", str(tmp_path)])
+    with pytest.raises(SystemExit) as error:
+        builder.main()
+    assert error.value.code == 1
+
+
+@pytest.mark.parametrize("upload_ok", [True, False])
+def test_matrix_publisher_finishes_healthy_root_but_reports_partial_failure(tmp_path, monkeypatch, capsys, upload_ok):
+    import scripts.build_options_matrix as builder
+    import engine.thetadata_store as td
+    monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
+    monkeypatch.setattr(builder, "_r2_client", lambda: object())
+    # This test isolates current-head delivery; retention has a real fake-store suite.
+    monkeypatch.setattr(builder, "retain_snapshot", lambda *args: None)
+    monkeypatch.setenv("R2_BUCKET", "fixture-bucket")
+    good = {"schema": "options_structure.matrix/v1", "root": "MU", "session": "2026-09-22", "spot": 100.0, "cells": [{"strike": 100, "gex": 5}]}
+    monkeypatch.setattr(builder, "build_matrix", lambda root, **kwargs:
+                        good if root == "MU" else _null_payload(root, "2026-09-24", "source missing"))
+    uploads = []
+    monkeypatch.setattr(builder, "_upload_r2", lambda client, bucket, path, key:
+                        uploads.append(key) is None and upload_ok)
+    monkeypatch.setattr(sys, "argv", ["builder", "--publish", "--roots", "SPY", "MU", "--out", str(tmp_path)])
+    with pytest.raises(SystemExit) as error:
+        builder.main()
+    assert error.value.code == 1
+    assert not (tmp_path / "SPY.json").exists()
+    assert json.loads((tmp_path / "MU.json").read_text()) == good
+    assert uploads == ["options_structure/matrix/MU.json"]
+    expected_health = "DEGRADED" if upload_ok else "FAILED"
+    assert f"health={expected_health}" in capsys.readouterr().out
+
+
+def test_matrix_default_publisher_covers_the_motivating_mu_symbol():
+    from scripts.build_options_matrix import DEFAULT_ROOTS
+    assert {"MU", "ARM"}.issubset(DEFAULT_ROOTS)
+    assert len(DEFAULT_ROOTS) == len(set(DEFAULT_ROOTS))
+
+
+@pytest.mark.parametrize("upload_ok", [True, False])
+def test_matrix_publisher_all_healthy_roots_distinguishes_delivery_success(tmp_path, monkeypatch, upload_ok):
+    import scripts.build_options_matrix as builder
+    import engine.thetadata_store as td
+    monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
+    monkeypatch.setattr(builder, "_r2_client", lambda: object())
+    # This test isolates current-head delivery; retention has a real fake-store suite.
+    monkeypatch.setattr(builder, "retain_snapshot", lambda *args: None)
+    monkeypatch.setenv("R2_BUCKET", "fixture-bucket")
+    doc = {"schema": "options_structure.matrix/v1", "root": "MU", "session": "2026-09-22", "spot": 100.0, "cells": [{"strike": 100, "gex": 5}]}
+    monkeypatch.setattr(builder, "build_matrix", lambda root, **kwargs: doc)
+    uploads = []
+    def deliver(client, bucket, path, key):
+        uploads.append(key)
+        return upload_ok
+    monkeypatch.setattr(builder, "_upload_r2", deliver)
+    monkeypatch.setattr(sys, "argv", ["builder", "--publish", "--roots", "MU", "--out", str(tmp_path)])
+    if upload_ok:
+        assert builder.main() is None
+    else:
+        with pytest.raises(SystemExit) as error:
+            builder.main()
+        assert error.value.code == 1
+    assert uploads == ["options_structure/matrix/MU.json"]
+    assert json.loads((tmp_path / "MU.json").read_text()) == doc
+
+
+def test_indexed_contract_iv_matches_original_scalar_semantics():
+    from engine.options_matrix import _contract_iv_lookup, _lookup_iv
+    frame = pd.DataFrame([
+        {"strike": "100.0", "expiration": pd.Timestamp("2026-10-16"), "right": "call", "implied_vol": None},
+        {"strike": 100, "expiration": "2026-10-16", "right": "C", "implied_vol": 0.21},
+        {"strike": 100, "expiration": "2026-10-16", "right": "C", "implied_vol": 0.99},
+        {"strike": 100, "expiration": "2026-10-16", "right": "put", "implied_vol": 0.32},
+        {"strike": 100, "expiration": "2026-11-20", "right": "C", "implied_vol": 0.44},
+        {"strike": 105, "expiration": "2026-10-16", "right": "C", "implied_vol": 0.0},
+        {"strike": 110, "expiration": "2026-10-16", "right": "C", "implied_vol": "unused-invalid"},
+    ])
+    lookup = _contract_iv_lookup(frame)
+    # The original reader masks exact strike/expiry/right, then takes first nonmissing IV.
+    for strike, expiry, right, expected in [
+        (100, "2026-10-16", "C", 0.21), (100, "2026-10-16", "P", 0.32),
+        (100, "2026-11-20", "C", 0.44), (105, "2026-10-16", "C", 0.0),
+        (999, "2026-10-16", "C", 0.0), (100, "2026-10-16", "p", 0.0),
+    ]:
+        assert _lookup_iv(frame, strike, expiry, right, lookup=lookup) == expected
+        assert _lookup_iv(frame, strike, expiry, right) == expected
+    with pytest.raises(ValueError):
+        _lookup_iv(frame, 110, "2026-10-16", "C", lookup=lookup)
+
+
+def test_matrix_build_indexes_iv_once_not_once_per_contract(tmp_path, monkeypatch):
+    import engine.options_matrix as matrix
+    from engine.thetadata_store import clear_parquet_cache
+    clear_parquet_cache()
+    store = _session_repair_store(tmp_path)
+    indexed = []
+    original = matrix._contract_iv_lookup
+    def build_index(frame):
+        indexed.append(len(frame))
+        return original(frame)
+    monkeypatch.setattr(matrix, "_contract_iv_lookup", build_index)
+    doc = matrix.build_matrix("SPY", store)
+    assert doc["cells"]
+    assert indexed == [6]
+
+
+def test_prebuilt_iv_queries_do_not_renormalize_the_frame(monkeypatch):
+    import engine.options_matrix as matrix
+    frame = pd.DataFrame([{"strike": float(k), "expiration": "2026-10-16", "right": "C", "implied_vol": 0.25} for k in range(100, 300)])
+    normalized = []
+    original = matrix._to_iso_date
+    monkeypatch.setattr(matrix, "_to_iso_date", lambda value: normalized.append(value) or original(value))
+    lookup = matrix._contract_iv_lookup(frame)
+    for k in range(100, 300):
+        assert matrix._lookup_iv(frame, float(k), "2026-10-16", "C", lookup=lookup) == 0.25
+    assert len(normalized) == 200  # one pass, not200×200 date conversions
+
+
+def test_spot_never_uses_option_premiums():
+    option_eod = pd.DataFrame({"close": [1.25, 2.0, 4.75]})
+    assert _extract_spot(pd.DataFrame(), option_eod) is None
+    assert _extract_spot(pd.DataFrame({"implied_vol": [0.2]}), option_eod) is None
+
+
+@pytest.mark.parametrize("invalid", [None, np.nan, np.inf, -np.inf, 0.0, -1.0, "bad", True])
+def test_spot_rejects_invalid_underlying_price(invalid):
+    greeks = pd.DataFrame({"underlying_price": [invalid]})
+    assert _extract_spot(greeks, pd.DataFrame({"close": [2.0]})) is None
+
+
+def test_spot_preserves_valid_underlying_price_without_premium_fallback():
+    greeks = pd.DataFrame({"underlying_price": [np.nan, -1.0, np.inf, 500.0, 501.0]})
+    assert _extract_spot(greeks, pd.DataFrame({"close": [2.0]})) == 500.0
+
+
+@pytest.mark.parametrize("greeks_date", [None, "2026-07-06"])
+def test_matrix_missing_same_session_underlying_price_is_unavailable(tmp_path, greeks_date):
+    root, expiry, asof = "SPY", "2026-08-15", "2026-07-07"
+    store = _make_store(
+        tmp_path, root, [_base_oi_row(root, 500.0, expiry)],
+        eod_rows=[{"root": root, "expiration": expiry, "strike": 500.0,
+                   "right": "C", "close": 2.0, "volume": 100, "count": 10}],
+    )
+    if greeks_date:
+        greeks_path = store / "greeks" / root
+        greeks_path.mkdir(parents=True)
+        pd.DataFrame([{
+            "root": root, "expiration": expiry, "strike": 500.0, "right": "C",
+            "date": greeks_date, "underlying_price": 500.0, "implied_vol": 0.2,
+        }]).to_parquet(greeks_path / "2026.parquet", index=False)
+    payload = build_matrix(root, store=str(store), asof=asof)
+    assert payload["spot"] is None
+    assert payload["cells"] == []
+    assert payload["_no_data_reason"] == f"spot unavailable on {asof}"
+    assert validate_matrix(payload) == []
+
+
+@pytest.mark.parametrize("right,side", [("C", "call"), ("P", "put")])
+@pytest.mark.parametrize("previous,current,expected_oi,expected_delta", [
+    (10, 15, 15, 5),
+    (10, 0, 0, -10),
+    (10, None, None, None),
+    (0, 10, 10, 10),
+    (None, 10, 10, None),
+    (0, 0, 0, 0),
+    (None, None, None, None),
+    (10, 10, 10, 0),
+])
+def test_oi_delta_requires_two_observed_sides(
+    tmp_path, right, side, previous, current, expected_oi, expected_delta,
+):
+    """Real parquet rows: absent is unknown, explicitly observed zero is data."""
+    from engine.thetadata_store import clear_parquet_cache
+    store = _session_repair_store(tmp_path)
+    path = store / "oi" / "SPY" / "2026.parquet"
+    frame = pd.read_parquet(path)
+    for date, value in (("2026-09-21", previous), ("2026-09-22", current)):
+        target = ((frame["date"] == pd.Timestamp(date))
+                  & (frame["strike"] == 100.0) & (frame["right"] == right))
+        if value is None:
+            frame = frame.loc[~target].copy()
+        else:
+            frame.loc[target, "open_interest"] = value
+    frame.to_parquet(path, index=False)
+    clear_parquet_cache()
+    doc = build_matrix("SPY", store, asof="2026-09-22")
+    cell = next(c for c in doc["cells"] if c["strike"] == 100.0)
+    assert cell[f"{side}_oi"] == expected_oi
+    assert cell["delta_oi"][side] == expected_delta
+    # A different side and the deliberately large future publication cannot
+    # qualify the target observation or change its current/prior binding.
+    other = "put" if side == "call" else "call"
+    assert cell[f"{other}_oi"] == (100 if other == "put" else 200)
+    assert cell["delta_oi"][other] == (50 if other == "put" else 100)
+    assert doc["_build_meta"]["asof_date"] == "2026-09-22"
+
+
+@pytest.mark.parametrize("date", ["2026-09-21", "2026-09-22"])
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -1.0, 2.5])
+def test_invalid_oi_does_not_qualify_an_observation(tmp_path, date, value):
+    from engine.thetadata_store import clear_parquet_cache
+    store = _session_repair_store(tmp_path)
+    path = store / "oi" / "SPY" / "2026.parquet"
+    frame = pd.read_parquet(path)
+    frame["open_interest"] = frame["open_interest"].astype(float)
+    target = ((frame["date"] == pd.Timestamp(date))
+              & (frame["strike"] == 100.0) & (frame["right"] == "P"))
+    frame.loc[target, "open_interest"] = value
+    frame.to_parquet(path, index=False)
+    clear_parquet_cache()
+    doc = build_matrix("SPY", store, asof="2026-09-22")
+    cell = next(c for c in doc["cells"] if c["strike"] == 100.0)
+    assert cell["put_oi"] == (None if date == "2026-09-22" else 100)
+    assert cell["delta_oi"]["put"] is None
+    assert cell["call_oi"] == 200
+    assert cell["delta_oi"]["call"] == 100
+
+
+@pytest.mark.parametrize("value", [False, True])
+def test_boolean_oi_column_never_becomes_contract_counts(tmp_path, value):
+    from engine.thetadata_store import clear_parquet_cache
+    store = _session_repair_store(tmp_path)
+    path = store / "oi" / "SPY" / "2026.parquet"
+    frame = pd.read_parquet(path)
+    frame["open_interest"] = value
+    frame.to_parquet(path, index=False)
+    clear_parquet_cache()
+    doc = build_matrix("SPY", store, asof="2026-09-22")
+    assert doc["cells"]  # EOD volume remains independently available.
+    for cell in doc["cells"]:
+        assert cell["call_oi"] is None and cell["put_oi"] is None
+        assert cell["delta_oi"] == {"call": None, "put": None}
+        assert cell["call_vol"] == 10 and cell["put_vol"] == 10

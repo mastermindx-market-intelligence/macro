@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-10-15T06:49:04.089747+00:00",
+  "head": "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17",
+  "main": "0f89ed608e68a861fde2426ccadbb5afedf0bbd7",
+  "returncode": 0,
+  "output": "ef27f1f984ace2aa760898c7af57c649b03b35e8\n",
+  "error": "",
+  "effect": "read-only preview after capacity deferral; no extra main integration"
+}

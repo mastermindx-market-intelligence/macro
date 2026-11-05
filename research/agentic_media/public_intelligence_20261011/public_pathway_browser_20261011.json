@@ -1,0 +1,31 @@
+{
+  "observedAt": "2026-10-11T19:21:33.394685+00:00",
+  "method": "Chrome browser UI via cua_repl",
+  "dossier": {
+    "url": "https://www.mastermind-x.com/stocks/TTWO.html",
+    "title": "TTWO \u2014 Take-Two Interactive: signals, options & factor profile | MastermindX",
+    "rendered": true,
+    "generatedDisplayed": "2026-10-11 18:51 UTC",
+    "terminalHref": "https://app.mastermind-x.com/terminal?sym=TTWO&from=macro"
+  },
+  "earningsRecord": {
+    "reachedBy": "clicked Open this earnings record on the dossier",
+    "url": "https://www.mastermind-x.com/stocks/earnings/ttwo-2026q4-call-record.html?from=company-intelligence&tx=2026Q4",
+    "title": "TTWO \u2014 Take-Two Interactive Q4 FY2026 earnings call record \u2014 MastermindX",
+    "rendered": true,
+    "sourceHashDisplayedPrefix": "03a45a89e263",
+    "receiptPanelExpanded": true,
+    "fullImmutablePacketIdentityProvided": false,
+    "terminalHref": "https://app.mastermind-x.com/terminal?sym=TTWO&pane=transcripts&tx=2026Q4&utm_source=earnings_wire&utm_medium=organic_research&utm_campaign=company_intelligence",
+    "visibleLimits": [
+      "receipt verified; raw body not publicly linked",
+      "transcript present; release, filing and slides not ingested",
+      "consensus unlicensed/absent; market reaction not joined"
+    ]
+  },
+  "scope": "Existing live dossier and Earnings source-record navigation only, not PR8786 installation or new Press story acceptance",
+  "newPressArticleRightsGranted": false,
+  "signupCompleted": false,
+  "tickerFollowPersisted": false,
+  "blockedTerminalNavigationRetried": false
+}
