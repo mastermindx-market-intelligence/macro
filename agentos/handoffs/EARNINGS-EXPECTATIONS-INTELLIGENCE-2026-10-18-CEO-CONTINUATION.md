@@ -1,3 +1,41 @@
+---
+workstream: WS:EARNINGS-EVENT-INTELLIGENCE-COMPILER
+session: handoff/earnings-expectations-ceo-20261018
+model: sol
+ended_because: ci_handoff
+mission: >-
+  Preserve the existing earnings-expectations and E3 CEO continuation as a
+  parseable Agent OS record, without changing its evidence or acceptance scope.
+state_before: >-
+  The body is the historical 2026-10-18 checkpoint from Macro PR #9613 head
+  45e257c5cdd2b27c0c9e2725a1a61139894dc14a. It lacked YAML frontmatter.
+  This metadata repair does not revalidate its historical runtime, CI, review,
+  licensing or deployment claims. ci_handoff describes records publication,
+  not mission completion or an inferred cause of the original session ending.
+changed:
+  - path: agentos/handoffs/EARNINGS-EXPECTATIONS-INTELLIGENCE-2026-10-18-CEO-CONTINUATION.md
+    what: Add required frontmatter; preserve all 63 original body lines byte-for-byte.
+verified:
+  - claim: The retained historical body has an exact immutable source size.
+    command: git cat-file -s 40029877e8cf2ef4c0943986daa1add4e5760a83
+    result: 14755 bytes; this is source identity evidence, not current runtime proof.
+unverified:
+  - claim: Current production-user, R3 release and licensed PIT-data acceptance.
+    what_would_verify: Fresh qualified receipts from the existing source, production and data owners.
+unresolved:
+  - This repair establishes no current disposition of the original program's remaining gates.
+next_actions:
+  - Reconcile current original PRs, accepted receipts, source custody and effects before advancing any dated next action.
+  - Follow the preserved body section 5 only for work still owed under the current assignment and source law.
+do_not_redo:
+  - Preserve accepted Mastermind research PR 1407 and Terminal consumer PR 1007; do not replay the historical deploy attempt.
+  - Preserve the original Macro PR 7530 negative receipt, sealed eight-event holdout and spent GOOGL out-of-sample attempt.
+danger_areas:
+  - Historical dirty workspaces and process observations are not current writer custody or permission to reset, push or redeploy.
+  - Metadata publication grants no browser, runtime, data-rights, holdout, review or product-release acceptance.
+prs: [9613]
+---
+
 # Earnings Expectations, Behavioral Repricing & Market Incorporation — CEO continuation
 
 **Checkpoint as observed:** 2026-10-18 (Chairman-requested fresh-session handoff).  
