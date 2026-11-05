@@ -3706,3 +3706,29 @@ def test_caller_adoption_hot_tape_session_stops_after_terminal(tmp_path):
     assert len([c for c in calls if c.startswith("pull")]) == 1, (
         f"pass two re-entered the rebase: {calls}"
     )
+
+
+def test_caller_adoption_hot_tape_terminal_exits_before_next_collection(tmp_path):
+    """An original terminal result must reach the upload/gate before another pass."""
+    body = _lane_block("marketing-hot-tape.yml", _CALLER_ADOPTION_PUBLISHERS["marketing-hot-tape.yml"][1], {})
+    shipped = body[body.index('HOT_TAPE_PUBLISH_STOPPED=""'):]
+    tracked = {"data/marketing/outbox/items.jsonl": "x\n", "data/marketing/hot_tape_ring.jsonl": "old\n", "data/marketing/hot_tape_fired.jsonl": "old\n"}
+    _bare, lane = _caller_fixture(tmp_path, tracked, {"data/marketing/hot_tape_ring.jsonl": "old\nnew\n"})
+    stub = tmp_path / "bin"
+    stub.mkdir()
+    _caller_py_stub(stub, 75)
+    for name in ("python", "python3"):
+        p = stub / name
+        p.write_text(p.read_text().replace('case "$*" in\n', 'case "$*" in\n  *--window-status*) printf "IN_WINDOW=1\\nWINDOW_END_EPOCH=9999999999\\n"; exit 0 ;;\n'))
+    log = tmp_path / "git-calls.log"
+    _caller_git_wrapper(stub, log)
+    driver = (f'. "{LIB}"\n'
+              + 'refresh_shared_tape() { :; }\n'
+              + 'JOB_BUDGET_S=3600; MAX_PASSES=2; PASS_INTERVAL_S=0; HALF=test; DRY_RUN=false\n'
+              + f'HOT_TAPE_IDS_FILE={shlex.quote(str(tmp_path / "ids"))}\n'
+              + shipped)
+    result = _run_caller_step(driver, lane, stub, tmp_path)
+    assert result.returncode == 75, result.stdout + result.stderr
+    assert result.stdout.count("hot-tape pass ") == 1, result.stdout
+    calls = _caller_git_calls(log)
+    assert len([c for c in calls if c.startswith("pull")]) == 1, calls

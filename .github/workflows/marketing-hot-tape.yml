@@ -501,4 +501,10 @@ jobs:
             elif [ -s "${HOT_TAPE_IDS_FILE}" ]; then
               echo "::warning::marketing-hot-tape: pass ${passes} booked $(cat "${HOT_TAPE_IDS_FILE}") but the push did not land - NOT dispatching (the publisher folds items from main)"
             fi
+            # End this original publication operation before another collection
+            # pass; pending origin must reach retention/settlement immediately.
+            if [ -n "${HOT_TAPE_PUBLISH_STOPPED:-}" ]; then
+              [ "${PUSH_TERMINAL_RC:-0}" -gt 0 ] || exit 1
+              exit "$PUSH_TERMINAL_RC"
+            fi
           done
