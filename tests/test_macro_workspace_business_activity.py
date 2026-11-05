@@ -540,3 +540,32 @@ def test_sample_note_stays_off_when_the_producer_does_not_record_it() -> None:
     assert "mq-metric-sample" not in _render_catch_metric(
         _CATCH_TRANSFORMATION, metric_id="recession_signal_in_sample_catch_rate"
     )
+
+
+def test_unknown_clock_phase_is_a_typed_absence_not_a_present_reading() -> None:
+    """`_phase` returns ("unknown", "未知") when a momentum leg is None while the
+    owner artifact is still available. The workspace must publish that as
+    ABSENT/COMPUTATION_REFUSED, never as a present categorical: a present
+    "unknown" deslugs to an untranslated "Unknown" ZH span on the suite page
+    (#10759 review F2)."""
+    import copy
+
+    from engine.business_cycle import _phase
+    from engine.market_os.macro_workspaces import business_activity as mod
+
+    assert _phase(None, 1.0) == ("unknown", "未知")
+    regime = copy.deepcopy(_base_regime())
+    regime["business_cycle"]["phase"] = {"label": "unknown", "label_zh": "未知"}
+    snap = _compose(regime)
+    phase = next(m for m in snap["metrics"]["items"] if m["metric_id"] == "business_cycle_phase")
+    assert phase["value"] is None
+    assert phase["status"] == "ABSENT"
+    assert phase["null_reason"] == "COMPUTATION_REFUSED"
+    assert phase["freshness"] == "CURRENT"
+    # The four real phases are still published as present readings.
+    for label in sorted(mod.BUSINESS_CYCLE_PHASES):
+        regime["business_cycle"]["phase"] = {"label": label}
+        snap = _compose(regime)
+        phase = next(m for m in snap["metrics"]["items"] if m["metric_id"] == "business_cycle_phase")
+        assert phase["value"] == label and phase["status"] == "PRESENT" and phase["null_reason"] is None
+
