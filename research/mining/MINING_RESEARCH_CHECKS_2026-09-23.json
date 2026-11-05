@@ -1,0 +1,227 @@
+{
+  "operation": "gmi-mining-principal-research-20260923-sol-001",
+  "run_date": "2026-09-23",
+  "command": "python /mnt/data/mining_research/check_research.py",
+  "classification": "LOCAL_RESEARCH_INTEGRITY_AND_ARITHMETIC_ONLY",
+  "document": "MINING_PRINCIPAL_RESEARCH_FOUNDATION_2026-09-23.md",
+  "document_bytes": 37792,
+  "document_words": 4845,
+  "document_sha256": "7271cbf940685a0b14cd201a5de49a59c7460144a99ed969c930e4c604f66991",
+  "document_git_blob_sha1": "d107e5527a898c834c26b4869d6de7e51b254af1",
+  "total_checks": 20,
+  "passed": 20,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "ten_unique_cases",
+      "passed": true,
+      "evidence": [
+        "C01",
+        "C02",
+        "C03",
+        "C04",
+        "C05",
+        "C06",
+        "C07",
+        "C08",
+        "C09",
+        "C10"
+      ]
+    },
+    {
+      "check": "nineteen_unique_primary_sources",
+      "passed": true,
+      "evidence": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S06",
+        "S07",
+        "S08",
+        "S09",
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S14",
+        "S15",
+        "S16",
+        "S17",
+        "S18",
+        "S19"
+      ]
+    },
+    {
+      "check": "thirty_prospective_requirements",
+      "passed": true,
+      "evidence": [
+        "MN-01",
+        "MN-02",
+        "MN-03",
+        "MN-04",
+        "MN-05",
+        "MN-06",
+        "MN-07",
+        "MN-08",
+        "MN-09",
+        "MN-10",
+        "MN-11",
+        "MN-12",
+        "MN-13",
+        "MN-14",
+        "MN-15",
+        "MN-16",
+        "MN-17",
+        "MN-18",
+        "MN-19",
+        "MN-20",
+        "MN-21",
+        "MN-22",
+        "MN-23",
+        "MN-24",
+        "MN-25",
+        "MN-26",
+        "MN-27",
+        "MN-28",
+        "MN-29",
+        "MN-30"
+      ]
+    },
+    {
+      "check": "four_hypothetical_cases",
+      "passed": true,
+      "evidence": [
+        "H01",
+        "H02",
+        "H03",
+        "H04"
+      ]
+    },
+    {
+      "check": "source_references_resolve",
+      "passed": true,
+      "evidence": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S06",
+        "S07",
+        "S08",
+        "S09",
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S14",
+        "S15",
+        "S16",
+        "S17",
+        "S18",
+        "S19"
+      ]
+    },
+    {
+      "check": "one_unique_url_per_primary_source",
+      "passed": true,
+      "evidence": 19
+    },
+    {
+      "check": "mission_and_handoff_held",
+      "passed": true,
+      "evidence": "explicit research-only boundary"
+    },
+    {
+      "check": "procedural_pin_present",
+      "passed": true,
+      "evidence": "Mastermind exact SHA"
+    },
+    {
+      "check": "implementation_baseline_present",
+      "passed": true,
+      "evidence": "Macro exact SHA"
+    },
+    {
+      "check": "scope_correction_preserves_original_carrier",
+      "passed": true,
+      "evidence": "Healthcare evidence not transferred"
+    },
+    {
+      "check": "H01_payable_tonnes",
+      "passed": true,
+      "evidence": "8640.000000"
+    },
+    {
+      "check": "H01_attributable_tonnes",
+      "passed": true,
+      "evidence": "5184.00000000"
+    },
+    {
+      "check": "H02_equity_dilution_counterexample",
+      "passed": true,
+      "evidence": {
+        "before": "10",
+        "after": "9.230769230769230769230769231"
+      }
+    },
+    {
+      "check": "H03_earnings_multiple_counterexample",
+      "passed": true,
+      "evidence": "EPS +50%; hypothetical price unchanged, dividends excluded"
+    },
+    {
+      "check": "H04_vintage_counterexample",
+      "passed": true,
+      "evidence": {
+        "first": "10.0",
+        "revised": "4.761904761904761904761904800"
+      }
+    },
+    {
+      "check": "C05_MP_revenue_eliminations",
+      "passed": true,
+      "evidence": "USD thousands; S06"
+    },
+    {
+      "check": "C09_gold_source_version_difference",
+      "passed": true,
+      "evidence": "tonnes; S13/S14; not an archived PIT receipt"
+    },
+    {
+      "check": "C09_gold_recycling_table_implies_minus_six",
+      "passed": true,
+      "evidence": {
+        "derived_percent": "-5.941736371502740121142197870",
+        "source": "S14"
+      }
+    },
+    {
+      "check": "C01_FCX_price_arithmetic",
+      "passed": true,
+      "evidence": {
+        "percent": "35.90308370044052863436123350",
+        "source": "S01",
+        "not_a_return_forecast": true
+      }
+    },
+    {
+      "check": "unverified_contract_lag_disclosed",
+      "passed": true,
+      "evidence": "No inferred lag used"
+    }
+  ],
+  "not_claimed": [
+    "application tests",
+    "CI",
+    "independent review",
+    "canonical Agent OS validator",
+    "browser proof",
+    "native source ingestion",
+    "investment validation",
+    "Fable dispatch",
+    "implementation acceptance"
+  ]
+}
