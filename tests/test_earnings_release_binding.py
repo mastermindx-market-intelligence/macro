@@ -566,3 +566,161 @@ def test_submissions_rows_transposes_edgars_parallel_arrays() -> None:
     # A short list must not raise or shift a value onto the wrong filing.
     payload["filings"]["recent"]["reportDate"] = [REPORT_DATE]
     assert binding.submissions_rows(payload)[1]["reportDate"] == ""
+
+
+# Synthetic acquisition records exercise provenance replay, never a live grant.
+def _synthetic_acquisition():
+    import json
+    return json.loads((FIXTURES / "sec_acquisition.synthetic.json").read_text())
+
+
+def _validate_synthetic_acquisition(receipt, source_text=None):
+    fixture = _synthetic_acquisition()
+    return rcp.validate_sec_acquisition_receipt(
+        receipt, cik="0000320193", accession="0000320193-26-000001",
+        source_url=fixture["acquisition_receipt"]["requested_url"],
+        source_text=fixture["decoded_text"] if source_text is None else source_text,
+    )
+
+
+def test_sec_acquisition_synthetic_entity_to_utf8_replays_without_minting():
+    fixture = _synthetic_acquisition()
+    receipt = fixture["acquisition_receipt"]
+    assert fixture["fixture_kind"].startswith("SYNTHETIC_NOT_LIVE")
+    assert receipt["entity_sha256"] != receipt["source_sha256"]
+    validated = _validate_synthetic_acquisition(receipt)
+    assert validated == receipt and validated is not receipt
+    validated["filing_key"]["cik"] = "0000000001"
+    assert receipt["filing_key"]["cik"] == "0000320193"
+    assert rcp.validate_sec_acquisition_receipt(
+        receipt, cik=320193, accession="0000320193-26-000001",
+        source_url=receipt["requested_url"], source_text=fixture["decoded_text"],
+        entity_body=bytes.fromhex(fixture["entity_bytes_hex"]),
+    ) == receipt
+
+
+@pytest.mark.parametrize("url", [
+    "http://www.sec.gov/Archives/edgar/data/320193/000032019326000001/ex991.htm",
+    "https://www.sec.gov.evil.test/Archives/edgar/data/320193/000032019326000001/ex991.htm",
+    "https://evil.test/Archives/edgar/data/320193/000032019326000001/ex991.htm",
+    "https://www.sec.gov:443/Archives/edgar/data/320193/000032019326000001/ex991.htm",
+    "https://user@www.sec.gov/Archives/edgar/data/320193/000032019326000001/ex991.htm",
+    "https://www.sec.gov/Archives/edgar/data/320194/000032019326000001/ex991.htm",
+    "https://www.sec.gov/Archives/edgar/data/320193/000032019326000002/ex991.htm",
+    "https://www.sec.gov/Archives/edgar/data/0320193/000032019326000001/ex991.htm",
+    "https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/../ex991.htm",
+    "https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/%65x991.htm",
+    "https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/ex991.htm?",
+    "https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/ex991.htm#",
+    "https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/ex991.htm?token=x",
+    "https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/ex991.htm#part",
+    "https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/a\\ex991.htm",
+    "https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/é.htm",
+])
+def test_sec_acquisition_url_refuses_noncanonical_or_different_filing(url):
+    with pytest.raises(rcp.ReceiptError):
+        rcp.validate_sec_acquisition_url(url, cik=320193, accession="0000320193-26-000001")
+
+
+@pytest.mark.parametrize("field,value", [
+    ("schema", "other"), ("http_status", True), ("http_status", 201),
+    ("body_representation", "raw_wire"), ("redirect_policy", "follow_any"),
+    ("entity_sha256", "0" * 64), ("source_sha256", "f" * 64),
+    ("entity_length", True), ("source_utf8_length", -1),
+    ("acquired_at", "2026-01-01"), ("acquired_at", "2026-02-30T00:00:00Z"),
+    ("acquired_at", "2026-01-01T00:00:00+00:00"),
+    ("decoder", "ascii"), ("decoder", []), ("decode_policy", []),
+    ("decode_errors", "replace"), ("decode_policy", "utf8_strict"),
+    ("declared_charset", "utf-8"), ("content_type", {"bad": True}),
+    ("redirects", {}), ("filing_key", {"cik": "0000320194", "accession": "0000320193-26-000001"}),
+])
+def test_sec_acquisition_receipt_fails_closed_on_material_tampering(field, value):
+    receipt = _synthetic_acquisition()["acquisition_receipt"]
+    receipt[field] = value
+    with pytest.raises(rcp.ReceiptError):
+        _validate_synthetic_acquisition(receipt)
+
+
+def test_sec_acquisition_refuses_unknown_missing_keys_body_and_unnecessary_fallback():
+    receipt = _synthetic_acquisition()["acquisition_receipt"]
+    with pytest.raises(rcp.ReceiptError):
+        _validate_synthetic_acquisition({**receipt, "rights_granted": True})
+    with pytest.raises(rcp.ReceiptError):
+        _validate_synthetic_acquisition({k: v for k, v in receipt.items() if k != "acquired_at"})
+    with pytest.raises(rcp.ReceiptError):
+        _validate_synthetic_acquisition(receipt, "different body")
+    for value in (None, [], "receipt"):
+        with pytest.raises(rcp.ReceiptError):
+            _validate_synthetic_acquisition(value)
+    text = "ASCII body"
+    receipt.update(entity_sha256=hashlib.sha256(text.encode()).hexdigest(),
+                   source_sha256=hashlib.sha256(text.encode()).hexdigest(),
+                   entity_length=len(text), source_utf8_length=len(text))
+    with pytest.raises(rcp.ReceiptError, match="fallback was not required"):
+        _validate_synthetic_acquisition(receipt, text)
+
+
+def test_sec_acquisition_redirect_chain_requires_every_hop_same_filing():
+    fixture = _synthetic_acquisition()
+    receipt = fixture["acquisition_receipt"]
+    first = receipt["requested_url"]
+    final = first.replace("www.sec.gov", "sec.gov").replace("ex991.htm", "canonical.htm")
+    receipt["redirects"] = [{"url": first, "status": 302, "location": final, "next_url": final}]
+    receipt["final_url"] = final
+    assert _validate_synthetic_acquisition(receipt) == receipt
+    receipt["redirects"][0]["location"] = "https://evil.test/stolen.htm"
+    with pytest.raises(rcp.ReceiptError):
+        _validate_synthetic_acquisition(receipt)
+    receipt["redirects"][0].update(location=first, next_url=first)
+    receipt["final_url"] = first
+    with pytest.raises(rcp.ReceiptError, match="cycle"):
+        _validate_synthetic_acquisition(receipt)
+
+
+def test_sec_acquisition_schema_and_runtime_agree_on_synthetic_example():
+    import json
+    from jsonschema import Draft202012Validator, FormatChecker
+    schema = json.loads((Path(__file__).resolve().parents[1] / "contracts" / "earnings_release" / "sec_acquisition.v1.schema.json").read_text())
+    receipt = _synthetic_acquisition()["acquisition_receipt"]
+    Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
+    assert set(schema["required"]) == set(receipt)
+    assert _validate_synthetic_acquisition(receipt) == receipt
+
+
+@pytest.mark.parametrize("name", ["index.htm", "index.html", "index.txt", "index-headers.html", "filing-index.htm", "filing-index.html", "filing-index-headers.html", "filing-index-headers.txt", "INDEX-HEADERS.html"])
+def test_sec_index_document_exclusion_in_urls_receipts_and_schema(name):
+    import json
+    from copy import deepcopy
+    from jsonschema import Draft202012Validator
+    schema = json.loads((Path(__file__).resolve().parents[1] / "contracts/earnings_release/sec_acquisition.v1.schema.json").read_text())
+    original = _synthetic_acquisition()["acquisition_receipt"]
+    excluded = original["requested_url"].rsplit("/", 1)[0] + "/" + name
+    with pytest.raises(rcp.ReceiptError):
+        rcp.validate_sec_acquisition_url(excluded, **original["filing_key"])
+    for field in ("requested_url", "final_url"):
+        receipt = deepcopy(original)
+        receipt[field] = excluded
+        assert not Draft202012Validator(schema).is_valid(receipt)
+        with pytest.raises(rcp.ReceiptError):
+            _validate_synthetic_acquisition(receipt)
+
+
+@pytest.mark.parametrize("location", ["./canonical.htm", "a/../canonical.htm", "%63anonical.htm", "a\\canonical.htm", "canonical.htm?", "canonical.htm#", "https:canonical.htm", "https:/canonical.htm"])
+def test_sec_stored_redirect_raw_location_cannot_be_normalized_into_admission(location):
+    from urllib.parse import urljoin
+    receipt = _synthetic_acquisition()["acquisition_receipt"]
+    first = receipt["requested_url"]
+    final = urljoin(first, location)
+    receipt["redirects"] = [{"url": first, "status": 302, "location": location, "next_url": final}]
+    receipt["final_url"] = final
+    with pytest.raises(rcp.ReceiptError):
+        _validate_synthetic_acquisition(receipt)
+
+
+def test_sec_safe_relative_basename_redirect_remains_supported():
+    receipt = _synthetic_acquisition()["acquisition_receipt"]
+    first = receipt["requested_url"]
+    final = first.rsplit("/", 1)[0] + "/canonical.htm"
+    receipt["redirects"] = [{"url": first, "status": 302, "location": "canonical.htm", "next_url": final}]
+    receipt["final_url"] = final
+    assert _validate_synthetic_acquisition(receipt) == receipt

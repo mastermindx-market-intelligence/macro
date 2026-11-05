@@ -1,0 +1,53 @@
+{
+  "fixture_kind": "synthetic_structural_not_production_admission",
+  "facts": [
+    {
+      "accounting_basis": "business_disposal:completed:total_enterprise_value",
+      "fact_class": "reported_shareholder_terms",
+      "fact_id": "evt_cik0000202058_2026q2_results:space_business_sale_completed_terms",
+      "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12",
+      "period": "2026-08-04",
+      "source_span": {
+        "document_id": "disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12",
+        "receipt_state": "byte_replayed",
+        "source_url": "https://investors.l3harris.com/news/news-details/2026/L3Harris-Completes-Sale-of-Majority-Stake-in-Commercial-Space-Propulsion-Power-and-Electronics-Businesses-to-AE-Industrial-Partners/default.aspx",
+        "span_id": "span_8f869313f284954d3309",
+        "text_sha256": "b51fbb80151016a3f3983c058517dfbe4130381412c850a8bb9579c6aa887aa2"
+      },
+      "unit": "source_reported_terms",
+      "value": "completed the sale of a majority stake"
+    },
+    {
+      "accounting_basis": "business_disposal:completed:retained_interest_scope",
+      "fact_class": "reported_shareholder_terms",
+      "fact_id": "evt_cik0000202058_2026q2_results:space_business_sale_retained_scope",
+      "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12",
+      "period": "2026-08-04",
+      "source_span": {
+        "document_id": "disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12",
+        "receipt_state": "byte_replayed",
+        "source_url": "https://investors.l3harris.com/news/news-details/2026/L3Harris-Completes-Sale-of-Majority-Stake-in-Commercial-Space-Propulsion-Power-and-Electronics-Businesses-to-AE-Industrial-Partners/default.aspx",
+        "span_id": "span_6e87348dd609672e1f59",
+        "text_sha256": "9ab3840420750d1e590880a9c139ae59c6f1e16be4089cff7541c5ace1070ef1"
+      },
+      "unit": "source_reported_terms",
+      "value": "RS-25 excluded; ~40% retained"
+    }
+  ],
+  "source_bindings": {
+    "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12": {
+      "content_id": "883fb5c69607c3d248b45f7e",
+      "contract": "event_workspace.v1",
+      "issuer_id": "cik:0000202058",
+      "observed_at": "2026-10-13T05:47:02Z",
+      "owner_admission_ref": "synthetic_fixture_not_production",
+      "owner_family": "company_intelligence",
+      "periods": [
+        "2026-08-04"
+      ],
+      "security_id": "xnys:LHX",
+      "sha256": "19bc8cd2c70367910aa0f014d8a0a03ff05da7106c5e088f68b27388c7c7e203",
+      "source_available_at": "2026-10-13T05:47:02Z"
+    }
+  }
+}

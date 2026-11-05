@@ -50,6 +50,7 @@ import yfinance as yf
 from collectors.base import Adapter, is_connection_error
 from collectors.breadth import repair_seams
 from lib import config
+from lib.market_observations import current_adjusted_columns, filter_session_observations
 
 log = logging.getLogger(__name__)
 
@@ -67,6 +68,9 @@ def _overwrite_overlap(fresh: pd.DataFrame, prev: pd.DataFrame) -> pd.DataFrame:
     if prev is None or prev.empty:
         return fresh.sort_index()
     if fresh is None or fresh.empty:
+        return prev.sort_index()
+    fresh = current_adjusted_columns(fresh, prev)
+    if fresh.empty:
         return prev.sort_index()
     # defensive: a duplicated column label makes df[col] return a DataFrame → later boolean
     # checks would raise 'truth value of a Series is ambiguous'. Dedup keeps the last.
@@ -358,7 +362,9 @@ class ChinaUniverseAdapter(Adapter):
                     if df is None or df.empty:
                         break
                     closes = df["Close"] if "Close" in df.columns.get_level_values(0) else df
-                    parts.append(closes)
+                    closes = filter_session_observations(closes, "CN")
+                    if not closes.empty:
+                        parts.append(closes)
                     break
                 except Exception as e:  # noqa: BLE001
                     wait = self.ycfg["backoff_base_s"] * (2 ** attempt)
@@ -382,10 +388,35 @@ class ChinaUniverseAdapter(Adapter):
         basis: a permanent fake step exactly at the fresh window's lower edge.
         Flagged tickers are re-pulled over the full window and replaced
         wholesale; never fatal (see collectors.breadth.repair_seams)."""
+        accepted = current_adjusted_columns(fresh, prev)
+        if len(accepted.columns) < len(fresh.columns):
+            log.warning("%s: stale/invalid adjusted columns rejected; last-good histories retained", self.name)
+        if accepted.empty:
+            return prev.sort_index()
+        fresh = accepted
         merged = _overwrite_overlap(fresh, prev)
-        merged, _ = repair_seams(merged, fresh, prev, self._download_closes,
+        rejected_repulls = set()
+
+        def current_repull(tickers, period):
+            # Download failures are caught by repair_seams; retain the old whole
+            # column unless a successful response proves its rebase is current.
+            rejected_repulls.update(tickers)
+            response = self._download_closes(tickers, period)
+            accepted = current_adjusted_columns(response, merged)
+            rejected_repulls.difference_update(accepted.columns)
+            return accepted
+
+        merged, _ = repair_seams(merged, fresh, prev, current_repull,
                                  name=self.name)
-        return merged
+        for ticker in rejected_repulls:
+            if ticker in prev:
+                # A failed/stale full rebase cannot replace a current bar or leave
+                # a partial new adjustment basis spliced onto the prior history.
+                merged[ticker] = prev[ticker].reindex(merged.index)
+        if rejected_repulls:
+            log.warning("%s: stale/empty full adjustment re-pulls rejected; "
+                        "complete last-good columns retained", self.name)
+        return merged.dropna(how="all")
 
     # -- English name + sector (yfinance get_info, cached + bounded) ----------
     def _enrich(self, members: pd.DataFrame, prev: pd.DataFrame | None,

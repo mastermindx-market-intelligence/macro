@@ -1,0 +1,233 @@
+{
+  "effective_date": "2026-10-21",
+  "matrix_version": "intl-source-rights-matrix-v1",
+  "note": "Scoped to the International Markets global universe; does not retro-gate any existing owner product.",
+  "rows": [
+    {
+      "auth_class": "keyless_public",
+      "capability": "equity_index_fx",
+      "decision_ref": "chairman-user-facing-redistribution-confirmed-2026-10-09",
+      "delay": "intl-conservative-observed-eod-tplus2-v1",
+      "grant_scope": "intl-index-fx-eod-user-facing-v1",
+      "id": "intl_yahoo_eod.legacy_seven_configured_index_fx_series",
+      "review": {
+        "next_action": null,
+        "status": "decided"
+      },
+      "rights_class": "direct_display_ok",
+      "scope": "legacy seven configured index and FX EOD series in config.yml intl.countries",
+      "source_family": "intl_yahoo_eod"
+    },
+    {
+      "auth_class": "keyless_public",
+      "capability": "equity_index_fx",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "intl_yahoo_eod.expanded_universe_instruments",
+      "review": {
+        "next_action": "rights decision before any expanded-universe display",
+        "status": "decision_required"
+      },
+      "rights_class": "unresolved",
+      "scope": "any instrument outside the legacy seven configured series",
+      "source_family": "intl_yahoo_eod"
+    },
+    {
+      "auth_class": "keyless_public",
+      "capability": "history_pit_rights",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "intl_yahoo_eod.legacy_seven_eod_history",
+      "review": {
+        "next_action": "decide history redistribution scope",
+        "status": "decision_required"
+      },
+      "rights_class": "unresolved",
+      "scope": "retained history of the legacy seven configured series beyond the EOD publication scope",
+      "source_family": "intl_yahoo_eod"
+    },
+    {
+      "auth_class": "keyless_public",
+      "capability": "constituent_breadth",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "ishares_ucits_holdings.legacy_configured_funds",
+      "review": {
+        "next_action": "rights decision before constituent display",
+        "status": "decision_required"
+      },
+      "rights_class": "unresolved",
+      "scope": "UCITS holdings files configured per legacy market",
+      "source_family": "ishares_ucits_holdings"
+    },
+    {
+      "auth_class": "keyless_public",
+      "capability": "local_rates_credit",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "fred.oecd_mirror_rates",
+      "review": {
+        "next_action": "confirm FRED/OECD redistribution terms",
+        "status": "decision_required"
+      },
+      "rights_class": "unresolved",
+      "scope": "FRED OECD mirror rate series configured per legacy market",
+      "source_family": "fred"
+    },
+    {
+      "auth_class": "keyless_public",
+      "capability": "macro_policy",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "fred.oecd_mirror_macro",
+      "review": {
+        "next_action": "confirm FRED/OECD redistribution terms",
+        "status": "decision_required"
+      },
+      "rights_class": "unresolved",
+      "scope": "FRED OECD mirror macro series configured per legacy market",
+      "source_family": "fred"
+    },
+    {
+      "auth_class": "keyless_public",
+      "capability": "macro_policy",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "ecb.statistical_data_warehouse",
+      "review": {
+        "next_action": "confirm ECB reuse terms",
+        "status": "decision_required"
+      },
+      "rights_class": "unresolved",
+      "scope": "ECB SDW euro-area series",
+      "source_family": "ecb"
+    },
+    {
+      "auth_class": "keyless_public",
+      "capability": "dollar_funding_external",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "bis.statistics",
+      "review": {
+        "next_action": "confirm BIS terms",
+        "status": "decision_required"
+      },
+      "rights_class": "unresolved",
+      "scope": "BIS dollar funding and external debt statistics",
+      "source_family": "bis"
+    },
+    {
+      "auth_class": "keyless_public",
+      "capability": "dollar_funding_external",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "imf.data",
+      "review": {
+        "next_action": "confirm IMF terms",
+        "status": "decision_required"
+      },
+      "rights_class": "unresolved",
+      "scope": "IMF reserves and external position data",
+      "source_family": "imf"
+    },
+    {
+      "auth_class": "keyless_public",
+      "capability": "reference",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "iso10383_mic_register.venue_reference",
+      "review": {
+        "next_action": "verify MICs against a dated register vintage",
+        "status": "decision_required"
+      },
+      "rights_class": "unresolved",
+      "scope": "ISO 10383 MIC register for venue identity",
+      "source_family": "iso10383_mic_register"
+    },
+    {
+      "auth_class": "keyless_public",
+      "capability": "reference",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "msci_classification.country_classification",
+      "review": {
+        "next_action": "provider review of DM/EM labels",
+        "status": "decision_required"
+      },
+      "rights_class": "unresolved",
+      "scope": "MSCI market classification",
+      "source_family": "msci_classification"
+    },
+    {
+      "auth_class": "keyless_public",
+      "capability": "reference",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "ftse_classification.country_classification",
+      "review": {
+        "next_action": "provider review",
+        "status": "decision_required"
+      },
+      "rights_class": "unresolved",
+      "scope": "FTSE country classification matrix",
+      "source_family": "ftse_classification"
+    },
+    {
+      "auth_class": "keyless_public",
+      "capability": "reference",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "wfe_statistics.market_indicators",
+      "review": {
+        "next_action": "honor WFE redistribution terms; never republish",
+        "status": "internal_only"
+      },
+      "rights_class": "internal_only",
+      "scope": "WFE capitalization and turnover statistics (denominator candidates)",
+      "source_family": "wfe_statistics"
+    },
+    {
+      "auth_class": "licensed",
+      "capability": "constituent_breadth",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "licensed_global_feed.expanded_index_constituents",
+      "review": {
+        "next_action": "Chairman procurement decision",
+        "status": "procurement_not_authorized"
+      },
+      "rights_class": "unresolved",
+      "scope": "licensed global index constituents",
+      "source_family": "licensed_global_feed"
+    },
+    {
+      "auth_class": "licensed",
+      "capability": "us_exposure_transmission",
+      "decision_ref": null,
+      "delay": null,
+      "grant_scope": null,
+      "id": "licensed_global_feed.us_exposure",
+      "review": {
+        "next_action": "Chairman procurement decision",
+        "status": "procurement_not_authorized"
+      },
+      "rights_class": "unresolved",
+      "scope": "licensed revenue/supply-chain exposure to the US",
+      "source_family": "licensed_global_feed"
+    }
+  ],
+  "vocabulary_owner": "engine/theme_graph/rights.py"
+}

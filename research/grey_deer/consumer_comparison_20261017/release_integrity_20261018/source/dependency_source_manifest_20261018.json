@@ -1,0 +1,132 @@
+{
+  "repository": "mastermindx-market-intelligence/Mastermind",
+  "source_variants": [
+    {
+      "ref": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+      "path": "bot/__init__.py",
+      "bytes": 1182,
+      "sha256": "2e5bd759495533c77f6ac0016f0f582aa256daf5ec47d45015efbd2969036f18",
+      "blob": "7cd08f9dbb5a7534f997a1394062b4d72774d7a0"
+    },
+    {
+      "ref": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+      "path": "app/scheduler.py",
+      "bytes": 111145,
+      "sha256": "e1e1965a172e7edf168fca6d144b59f572cff1f662b6a683d2d040c0707e9333",
+      "blob": "979ae223b87c85b14a5906c009de4eb78fda31d4"
+    },
+    {
+      "ref": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+      "path": "app/main.py",
+      "bytes": 34012,
+      "sha256": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+      "blob": "fdb22dc1a2650ff57d50a1c9c1cfebcf10521da4"
+    },
+    {
+      "ref": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+      "path": "app/web.py",
+      "bytes": 167964,
+      "sha256": "721b792941160c962adf99c28febd048163be5c39eb8a5c8d67786c93fdc8a2d",
+      "blob": "3cff8680694edc84aeb8dc64361422ba4c5e7944"
+    },
+    {
+      "ref": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+      "path": "portfolio/paper_account.py",
+      "bytes": 156107,
+      "sha256": "6c22b0609e867bf8160811487cb7bb942291cc9a336e6422dcb4d7628e6468d0",
+      "blob": "d80b8cfc3397742e203e99ee8c15e5f44969cd50"
+    },
+    {
+      "ref": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+      "path": "scripts/refresh_datadog_release_tag.sh",
+      "bytes": 881,
+      "sha256": "985a3ee9757daa65604d7b53752fc7d10dc3aed2cfd4888208c4f47d0bdd8ad9",
+      "blob": "a7a32713ef1477d1b84398ff24c6b9fda938831e"
+    },
+    {
+      "ref": "b08223680180dcffdca7de10b03831dee3e1c287",
+      "path": "bot/__init__.py",
+      "bytes": 1182,
+      "sha256": "2e5bd759495533c77f6ac0016f0f582aa256daf5ec47d45015efbd2969036f18",
+      "blob": "7cd08f9dbb5a7534f997a1394062b4d72774d7a0"
+    },
+    {
+      "ref": "b08223680180dcffdca7de10b03831dee3e1c287",
+      "path": "app/scheduler.py",
+      "bytes": 111145,
+      "sha256": "e1e1965a172e7edf168fca6d144b59f572cff1f662b6a683d2d040c0707e9333",
+      "blob": "979ae223b87c85b14a5906c009de4eb78fda31d4"
+    },
+    {
+      "ref": "b08223680180dcffdca7de10b03831dee3e1c287",
+      "path": "app/main.py",
+      "bytes": 34012,
+      "sha256": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+      "blob": "fdb22dc1a2650ff57d50a1c9c1cfebcf10521da4"
+    },
+    {
+      "ref": "b08223680180dcffdca7de10b03831dee3e1c287",
+      "path": "app/web.py",
+      "bytes": 167964,
+      "sha256": "721b792941160c962adf99c28febd048163be5c39eb8a5c8d67786c93fdc8a2d",
+      "blob": "3cff8680694edc84aeb8dc64361422ba4c5e7944"
+    },
+    {
+      "ref": "b08223680180dcffdca7de10b03831dee3e1c287",
+      "path": "portfolio/paper_account.py",
+      "bytes": 156107,
+      "sha256": "6c22b0609e867bf8160811487cb7bb942291cc9a336e6422dcb4d7628e6468d0",
+      "blob": "d80b8cfc3397742e203e99ee8c15e5f44969cd50"
+    },
+    {
+      "ref": "b08223680180dcffdca7de10b03831dee3e1c287",
+      "path": "scripts/refresh_datadog_release_tag.sh",
+      "bytes": 881,
+      "sha256": "985a3ee9757daa65604d7b53752fc7d10dc3aed2cfd4888208c4f47d0bdd8ad9",
+      "blob": "a7a32713ef1477d1b84398ff24c6b9fda938831e"
+    },
+    {
+      "ref": "e77631490e5bddca7d40c8cf039ae7763ce17b99",
+      "path": "bot/__init__.py",
+      "bytes": 1182,
+      "sha256": "2e5bd759495533c77f6ac0016f0f582aa256daf5ec47d45015efbd2969036f18",
+      "blob": "7cd08f9dbb5a7534f997a1394062b4d72774d7a0"
+    },
+    {
+      "ref": "e77631490e5bddca7d40c8cf039ae7763ce17b99",
+      "path": "app/scheduler.py",
+      "bytes": 111145,
+      "sha256": "e1e1965a172e7edf168fca6d144b59f572cff1f662b6a683d2d040c0707e9333",
+      "blob": "979ae223b87c85b14a5906c009de4eb78fda31d4"
+    },
+    {
+      "ref": "e77631490e5bddca7d40c8cf039ae7763ce17b99",
+      "path": "app/main.py",
+      "bytes": 34012,
+      "sha256": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+      "blob": "fdb22dc1a2650ff57d50a1c9c1cfebcf10521da4"
+    },
+    {
+      "ref": "e77631490e5bddca7d40c8cf039ae7763ce17b99",
+      "path": "app/web.py",
+      "bytes": 167964,
+      "sha256": "721b792941160c962adf99c28febd048163be5c39eb8a5c8d67786c93fdc8a2d",
+      "blob": "3cff8680694edc84aeb8dc64361422ba4c5e7944"
+    },
+    {
+      "ref": "e77631490e5bddca7d40c8cf039ae7763ce17b99",
+      "path": "portfolio/paper_account.py",
+      "bytes": 156107,
+      "sha256": "6c22b0609e867bf8160811487cb7bb942291cc9a336e6422dcb4d7628e6468d0",
+      "blob": "d80b8cfc3397742e203e99ee8c15e5f44969cd50"
+    },
+    {
+      "ref": "e77631490e5bddca7d40c8cf039ae7763ce17b99",
+      "path": "scripts/refresh_datadog_release_tag.sh",
+      "bytes": 881,
+      "sha256": "985a3ee9757daa65604d7b53752fc7d10dc3aed2cfd4888208c4f47d0bdd8ad9",
+      "blob": "a7a32713ef1477d1b84398ff24c6b9fda938831e"
+    }
+  ],
+  "all_six_files_identical_across_three_pins": true
+}

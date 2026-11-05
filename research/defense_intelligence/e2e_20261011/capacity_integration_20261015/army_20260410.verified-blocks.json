@@ -1,0 +1,46 @@
+{
+  "source": {
+    "schema": "defense.primary_public_capacity_source_acquisition.v1",
+    "url": "https://www.army.mil/article/291670",
+    "http_status": 200,
+    "observed_at": "2026-10-14T05:42:48.990244+00:00",
+    "retrieved_at": "2026-10-14T05:42:51.258232+00:00",
+    "response_sha256": "17cc11b30b0aa388018eecbf090fc0e54d9d9cf444a500b93eef055de29318a2",
+    "bytes": 16926,
+    "printed_publication_date": "2026-04-10",
+    "available_at": "2026-10-14T05:42:51.258232+00:00",
+    "availability_basis": "complete_response_retrieval_not_request_start_or_printed_publication_date",
+    "transport": "incumbent scripts.refresh_event_workspaces._http_get",
+    "owner_admission": "STAGED_NOT_ADMITTED",
+    "root_source_mutation": false,
+    "publication": false
+  },
+  "document_id": "disclosure_document_b49587fadd16c3be65cfa61ec7bcd65fba1e81a4262cc7ec49c3dc27da9a6703",
+  "blocks": [
+    {
+      "document_id": "disclosure_document_b49587fadd16c3be65cfa61ec7bcd65fba1e81a4262cc7ec49c3dc27da9a6703",
+      "block_id": "disclosure_block_27a246472f7f2e6a7fb7cffaa36c5ed0ed35b459d311e5971bde7fe0d7ef6c82",
+      "text": "REDSTONE ARSENAL, Ala. — April 10, 2026 — The U.S. government has awarded Lockheed Martin a $4.7 billion undefinitized contract action to support accelerated production of Patriot Advanced Capability-3 Missile Segment Enhancement, or PAC-3 MSE, interceptors.",
+      "normalized_text_sha256": "1feab3f0c7243203122f3b5cd5da1ccec54c69e94d1cd18c1a6d4d47cf6fbed7",
+      "source_span": {
+        "char_start": 5543,
+        "char_end": 5808
+      },
+      "byte_replay_receipt": {
+        "schema": "earnings_release.span_receipt/v1",
+        "source_sha256": "17cc11b30b0aa388018eecbf090fc0e54d9d9cf444a500b93eef055de29318a2",
+        "char_start": 5543,
+        "char_end": 5808,
+        "byte_start": 5555,
+        "byte_end": 5824,
+        "span_sha256": "99ad0484dfcad9f2d56e14277c2bb06f58fb776edbc8cd2da87e3e3bd5f3cb52",
+        "span_bytes": 269,
+        "span_text": "<p>REDSTONE ARSENAL, Ala. — April 10, 2026 — The U.S. government has awarded Lockheed Martin a $4.7 billion undefinitized contract action to support accelerated production of Patriot Advanced Capability-3 Missile Segment Enhancement, or PAC-3 MSE, interceptors.</p>",
+        "value_text": "REDSTONE ARSENAL, Ala. — April 10, 2026 — The U.S. government has awarded Lockheed Martin a $4.7 billion undefinitized contract action to support accelerated production of Patriot Advanced Capability-3 Missile Segment Enhancement, or PAC-3 MSE, interceptors.",
+        "value_text_sha256": "1feab3f0c7243203122f3b5cd5da1ccec54c69e94d1cd18c1a6d4d47cf6fbed7"
+      }
+    }
+  ],
+  "source_bytes_changed": false,
+  "supersedes_metadata_only": "34a77ba0fc6681f21a86d5a1cedf0746836019de8278074dff7757aa4ec738b3"
+}

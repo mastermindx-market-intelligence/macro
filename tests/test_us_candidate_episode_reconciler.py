@@ -1397,3 +1397,96 @@ def test_downstream_fixture_consumes_only_the_canonical_reader(tmp_path: Path, m
         "security_id": "SEC:US-XNAS-ALFA",
         "episode_state": "ACTIVE",
     }]
+
+
+def test_reader_validates_each_envelope_once_per_read_without_cross_request_reuse(tmp_path, monkeypatch):
+    """A private read pays for one full validation, and a later read pays again."""
+    from engine import us_candidate_episode as core
+
+    _seed_sources(tmp_path)
+    document = json.loads(_turn_path(tmp_path).read_text())
+    document["rows"].append({**document["rows"][0], "ticker": "UNKNOWN"})
+    _turn_path(tmp_path).write_text(canonical_json(_rehash_turn_watch(document)) + "\n")
+    _run_nightly(tmp_path, monkeypatch)
+    counts = {"events": 0, "suppressions": 0, "opened": 0}
+    for name, key in (("validate_events", "events"), ("validate_suppressions", "suppressions")):
+        original = getattr(core, name)
+
+        def counted(rows, _original=original, _key=key):
+            counts[_key] += len(rows)
+            return _original(rows)
+
+        monkeypatch.setattr(core, name, counted)
+    original_open = core._row_from_open
+
+    def counted_open(event):
+        counts["opened"] += 1
+        return original_open(event)
+
+    monkeypatch.setattr(core, "_row_from_open", counted_open)
+    expected = {"events": len(_event_rows(tmp_path)), "suppressions": len(_suppression_rows(tmp_path)), "opened": 1}
+    assert expected["events"] > 0 and expected["suppressions"] > 0
+    first = core.load_candidate_episode_store_snapshot(_episode_root(tmp_path))
+    assert counts == expected
+    second = core.load_candidate_episode_store_snapshot(_episode_root(tmp_path))
+    assert second == first
+    assert counts == {key: 2 * count for key, count in expected.items()}
+    event_path = _generation(tmp_path) / "events" / "2026-11.jsonl"
+    event_path.write_bytes(event_path.read_bytes() + b" ")
+    with pytest.raises(EpisodeContractError, match="manifest"):
+        core.load_candidate_episode_store_snapshot(_episode_root(tmp_path))
+
+
+@pytest.mark.parametrize("kind", ["event", "suppression"])
+def test_partition_reader_rejects_cross_month_identity_collision(tmp_path, monkeypatch, kind):
+    """Recorded month can differ while the immutable semantic address stays equal."""
+    from engine import us_candidate_episode as core
+
+    _seed_sources(tmp_path)
+    _run_nightly(tmp_path, monkeypatch)
+    opened = _event_rows(tmp_path)[0]
+    directory = tmp_path / "partitions"
+    directory.mkdir()
+    if kind == "event":
+        first = opened
+        second = make_event(**{key: value for key, value in opened.items()
+                               if key not in {"schema", "event_id", "content_sha256", "recorded_at"}},
+                            recorded_at="2026-12-01T18:05:00Z")
+        loader, message = core._load_partitioned_events, "semantic event identity collision"
+        assert first["event_id"] == second["event_id"]
+    else:
+        raw = _same_key_suppression(opened)
+        first = writer._normalize_suppression(raw, recorded_at=RECORDED_AT)
+        second = writer._normalize_suppression(raw, recorded_at="2026-12-01T18:05:00Z")
+        loader, message = core._load_partitioned_suppressions, "duplicate immutable suppression"
+        assert first["suppression_id"] == second["suppression_id"]
+    (directory / "2026-11.jsonl").write_text(canonical_json(first) + "\n")
+    (directory / "2026-12.jsonl").write_text(canonical_json(second) + "\n")
+    with pytest.raises(EpisodeContractError, match=message):
+        loader(directory)
+
+
+@pytest.mark.parametrize("kind", ["content_hash", "CORRECTED", "RETRACTED"])
+def test_reader_rejects_readdressed_bad_envelope_or_missing_causal_parent(tmp_path, monkeypatch, kind):
+    """Manifest validity cannot stand in for envelope validation or causal replay."""
+    _seed_sources(tmp_path)
+    _run_nightly(tmp_path, monkeypatch)
+    opened = _event_rows(tmp_path)[0]
+    if kind == "content_hash":
+        events = [{**opened, "content_sha256": "0" * 64}]
+        message = "content address or bytes"
+    else:
+        command = make_event(event_type=kind, episode_id=opened["episode_id"],
+                             source_system="test_source", source_schema="test.source/v1",
+                             source_event_id="missing-parent-command", occurred_at="2026-11-27T18:06:00Z",
+                             known_at="2026-11-27T18:06:00Z", recorded_at="2026-11-27T18:07:00Z",
+                             source_receipt="sha256:" + "a" * 64, definition_era=opened["definition_era"],
+                             correction_of="pee:" + "0" * 64,
+                             payload={"changes": {"ticker_at_observation": "ALFA.CORRECTED"}} if kind == "CORRECTED" else {})
+        events = [opened, command]
+        message = "event references an unknown event or unopened episode"
+    (_generation(tmp_path) / "events" / "2026-11.jsonl").write_text(
+        "".join(canonical_json(row) + "\n" for row in events))
+    _readdress_current_generation(tmp_path)
+    with pytest.raises(EpisodeContractError, match=message):
+        load_candidate_episode_store(_episode_root(tmp_path))

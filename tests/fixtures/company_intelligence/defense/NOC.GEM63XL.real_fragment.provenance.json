@@ -1,0 +1,18 @@
+{
+  "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm",
+  "source_sha256": "5f8488263feeed78515180fa7ac0d48ca370e4692ac592ddc9371ae62389a038",
+  "available_at": "2026-07-21T10:45:45Z",
+  "raw_char_start": 222049,
+  "raw_char_end": 222673,
+  "fragment_sha256": "2f5fb3e28c98166b5835db69c29b235d11958d8e814914ea64c364c444aeedb2",
+  "text": "Second quarter 2026 operating income decreased $44 million, or 16 percent, primarily due to a lower operating margin rate, partially offset by higher sales. Operating margin rate decreased to 8.6 percent from 10.6 percent, primarily due to lower net EAC adjustments, including a $91 million unfavorable adjustment on GEM 63XL largely related to increases in the projected cost to complete the program, partially offset by favorable changes in contract mix.",
+  "reported_basis": "unfavorable EAC adjustment, largely projected cost to complete",
+  "prohibited_inferences": [
+    "cash outflow",
+    "realized loss",
+    "HALO amount",
+    "guidance",
+    "all margin decline caused by GEM",
+    "current October status"
+  ]
+}

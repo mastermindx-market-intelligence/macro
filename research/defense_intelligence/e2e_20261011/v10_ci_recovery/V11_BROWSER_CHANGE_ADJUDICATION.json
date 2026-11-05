@@ -1,0 +1,81 @@
+{
+  "scope": "V11 integration repairs with one Chinese disclosure literal change; no product behavior or financial generation change",
+  "asset_delta": {
+    "file": "government-revenue-dossiers.js",
+    "exact_replacement": "SEC申报主体CIK： -> SEC披露主体CIK：",
+    "other_bytes_identical": true
+  },
+  "unchanged": [
+    "generated HTML bytes",
+    "all16 static data payloads",
+    "11 other standalone JS assets",
+    "all35 API source modules",
+    "all98 API input bindings",
+    "canonical input inventory",
+    "shared minified theme and CSS"
+  ],
+  "reuse": {
+    "V10_TIMING_COLD10": "Retained: exact critical finance path and served finance inputs unchanged; maximum2838.30ms, median2787.35ms. Changed disclosure literal is in later-loaded optional dossier UI.",
+    "V10_24_CELL_MATRIX": "Retained for unchanged investor/six-theme composition and styles.",
+    "V10_DENSITY_AND_DEEPLINKS": "Retained; controller/data/narratives unchanged."
+  },
+  "affected_copy_checks": {
+    "states": [
+      {
+        "width": 1440,
+        "theme": "dark",
+        "pass": true,
+        "observed": "BAE Systems plc\nADR / 存托凭证 · OTC · BAESY · 报价币种：USD\n来源支持的研究身份\n1份ADR代表4股普通股。\n上市身份准入与发行人获取尚未确立。\n显示限定条件、时钟与来源\n发行人登记机关：Companies House England and Wales\n原生发行人标识：01470151\n来源原文代码：BAESY\nData OS上市身份准入：尚未确立。\n价格可比性 / 收款方归属 / 经济获取：尚未确立。\nSEC披露主体CIK：0000895564\nADR ISIN：US05523R1077\n标的普通股ISIN：GB0002634946\n存托行 / 标的来源代码：JPM · BA/ · London\n现有CIK观测：data/symbol_directory/cik_map/2026-10-05.parquet · 2026-10-05\n所有者观测SHA-256：5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9\n研究身份首次获知：2026-10-13T07:54:08.066798+00:00\n仅支持当前研究身份；历史准入、价格覆盖与授标归属尚未确立。\n披露基准日：未报告\n首次获知：2026-10-13T05:36:47.904824+00:00\n有效区间尚未确立。\n来源复用权利：未知\n保留的证据形态：已复核网页摘录\n保留的证据形态：已复核网页摘录\n保留的证据形态：已复核浏览器摘录\n保留的证据形态：已复核网页摘录\n保留的证据形态：现有所有者观测摘录\n发布方：BAE Systems\n记录：bae:shareholder-faq:company-01470151\nsha256: 01010d0cda5c4027b43a5c600eedbee0b1416f5e3bdd77de496e49e4ec7f772b\n\n发布方：BAE Systems\n记录：bae:adr:BAESY\nsha256: 1ca08337c0d41822e7bf0e57e9105229174a038141d8acb5bacaf931cae3b076\n\n发布方：J.P. Morgan\n记录：jpm:drprofile:05523R107\nsha256: 4a55f871a39d1c04d45d3fa969ba5b987aa22413d0b51066fe68c8d54ba115ed\n\n发布方：SEC\n记录：0000895564-26-000004:index\nsha256: 4ea876211b586f0f84d2acd63d68fcaea1fd90e4cd0c83209d84c4888c4afb04\n\n发布方：SEC / existing Data OS observation\n记录：dataos:cik-map:2026-10-05:BAESY\nsha256: 4e3c77cd11156abbf82c62159a09efc24d3028e44434696e6f7fb43a1931552b\nBAE Systems\n↗\nBAE Systems\n↗\nJ.P. Morgan\n↗\nSEC\n↗\nSEC / existing Data OS observation\n↗",
+        "state": {
+          "lang": "zh",
+          "theme": "dark",
+          "overflow": false
+        }
+      },
+      {
+        "width": 1440,
+        "theme": "light",
+        "pass": true,
+        "observed": "BAE Systems plc\nADR / 存托凭证 · OTC · BAESY · 报价币种：USD\n来源支持的研究身份\n1份ADR代表4股普通股。\n上市身份准入与发行人获取尚未确立。\n显示限定条件、时钟与来源\n发行人登记机关：Companies House England and Wales\n原生发行人标识：01470151\n来源原文代码：BAESY\nData OS上市身份准入：尚未确立。\n价格可比性 / 收款方归属 / 经济获取：尚未确立。\nSEC披露主体CIK：0000895564\nADR ISIN：US05523R1077\n标的普通股ISIN：GB0002634946\n存托行 / 标的来源代码：JPM · BA/ · London\n现有CIK观测：data/symbol_directory/cik_map/2026-10-05.parquet · 2026-10-05\n所有者观测SHA-256：5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9\n研究身份首次获知：2026-10-13T07:54:08.066798+00:00\n仅支持当前研究身份；历史准入、价格覆盖与授标归属尚未确立。\n披露基准日：未报告\n首次获知：2026-10-13T05:36:47.904824+00:00\n有效区间尚未确立。\n来源复用权利：未知\n保留的证据形态：已复核网页摘录\n保留的证据形态：已复核网页摘录\n保留的证据形态：已复核浏览器摘录\n保留的证据形态：已复核网页摘录\n保留的证据形态：现有所有者观测摘录\n发布方：BAE Systems\n记录：bae:shareholder-faq:company-01470151\nsha256: 01010d0cda5c4027b43a5c600eedbee0b1416f5e3bdd77de496e49e4ec7f772b\n\n发布方：BAE Systems\n记录：bae:adr:BAESY\nsha256: 1ca08337c0d41822e7bf0e57e9105229174a038141d8acb5bacaf931cae3b076\n\n发布方：J.P. Morgan\n记录：jpm:drprofile:05523R107\nsha256: 4a55f871a39d1c04d45d3fa969ba5b987aa22413d0b51066fe68c8d54ba115ed\n\n发布方：SEC\n记录：0000895564-26-000004:index\nsha256: 4ea876211b586f0f84d2acd63d68fcaea1fd90e4cd0c83209d84c4888c4afb04\n\n发布方：SEC / existing Data OS observation\n记录：dataos:cik-map:2026-10-05:BAESY\nsha256: 4e3c77cd11156abbf82c62159a09efc24d3028e44434696e6f7fb43a1931552b\nBAE Systems\n↗\nBAE Systems\n↗\nJ.P. Morgan\n↗\nSEC\n↗\nSEC / existing Data OS observation\n↗",
+        "state": {
+          "lang": "zh",
+          "theme": "light",
+          "overflow": false
+        }
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "pass": true,
+        "observed": "BAE Systems plc\nADR / 存托凭证 · OTC · BAESY · 报价币种：USD\n来源支持的研究身份\n1份ADR代表4股普通股。\n上市身份准入与发行人获取尚未确立。\n显示限定条件、时钟与来源\n发行人登记机关：Companies House England and Wales\n原生发行人标识：01470151\n来源原文代码：BAESY\nData OS上市身份准入：尚未确立。\n价格可比性 / 收款方归属 / 经济获取：尚未确立。\nSEC披露主体CIK：0000895564\nADR ISIN：US05523R1077\n标的普通股ISIN：GB0002634946\n存托行 / 标的来源代码：JPM · BA/ · London\n现有CIK观测：data/symbol_directory/cik_map/2026-10-05.parquet · 2026-10-05\n所有者观测SHA-256：5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9\n研究身份首次获知：2026-10-13T07:54:08.066798+00:00\n仅支持当前研究身份；历史准入、价格覆盖与授标归属尚未确立。\n披露基准日：未报告\n首次获知：2026-10-13T05:36:47.904824+00:00\n有效区间尚未确立。\n来源复用权利：未知\n保留的证据形态：已复核网页摘录\n保留的证据形态：已复核网页摘录\n保留的证据形态：已复核浏览器摘录\n保留的证据形态：已复核网页摘录\n保留的证据形态：现有所有者观测摘录\n发布方：BAE Systems\n记录：bae:shareholder-faq:company-01470151\nsha256: 01010d0cda5c4027b43a5c600eedbee0b1416f5e3bdd77de496e49e4ec7f772b\n\n发布方：BAE Systems\n记录：bae:adr:BAESY\nsha256: 1ca08337c0d41822e7bf0e57e9105229174a038141d8acb5bacaf931cae3b076\n\n发布方：J.P. Morgan\n记录：jpm:drprofile:05523R107\nsha256: 4a55f871a39d1c04d45d3fa969ba5b987aa22413d0b51066fe68c8d54ba115ed\n\n发布方：SEC\n记录：0000895564-26-000004:index\nsha256: 4ea876211b586f0f84d2acd63d68fcaea1fd90e4cd0c83209d84c4888c4afb04\n\n发布方：SEC / existing Data OS observation\n记录：dataos:cik-map:2026-10-05:BAESY\nsha256: 4e3c77cd11156abbf82c62159a09efc24d3028e44434696e6f7fb43a1931552b\nBAE Systems\n↗\nBAE Systems\n↗\nJ.P. Morgan\n↗\nSEC\n↗\nSEC / existing Data OS observation\n↗",
+        "state": {
+          "lang": "zh",
+          "theme": "dark",
+          "overflow": false
+        }
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "pass": true,
+        "observed": "BAE Systems plc\nADR / 存托凭证 · OTC · BAESY · 报价币种：USD\n来源支持的研究身份\n1份ADR代表4股普通股。\n上市身份准入与发行人获取尚未确立。\n显示限定条件、时钟与来源\n发行人登记机关：Companies House England and Wales\n原生发行人标识：01470151\n来源原文代码：BAESY\nData OS上市身份准入：尚未确立。\n价格可比性 / 收款方归属 / 经济获取：尚未确立。\nSEC披露主体CIK：0000895564\nADR ISIN：US05523R1077\n标的普通股ISIN：GB0002634946\n存托行 / 标的来源代码：JPM · BA/ · London\n现有CIK观测：data/symbol_directory/cik_map/2026-10-05.parquet · 2026-10-05\n所有者观测SHA-256：5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9\n研究身份首次获知：2026-10-13T07:54:08.066798+00:00\n仅支持当前研究身份；历史准入、价格覆盖与授标归属尚未确立。\n披露基准日：未报告\n首次获知：2026-10-13T05:36:47.904824+00:00\n有效区间尚未确立。\n来源复用权利：未知\n保留的证据形态：已复核网页摘录\n保留的证据形态：已复核网页摘录\n保留的证据形态：已复核浏览器摘录\n保留的证据形态：已复核网页摘录\n保留的证据形态：现有所有者观测摘录\n发布方：BAE Systems\n记录：bae:shareholder-faq:company-01470151\nsha256: 01010d0cda5c4027b43a5c600eedbee0b1416f5e3bdd77de496e49e4ec7f772b\n\n发布方：BAE Systems\n记录：bae:adr:BAESY\nsha256: 1ca08337c0d41822e7bf0e57e9105229174a038141d8acb5bacaf931cae3b076\n\n发布方：J.P. Morgan\n记录：jpm:drprofile:05523R107\nsha256: 4a55f871a39d1c04d45d3fa969ba5b987aa22413d0b51066fe68c8d54ba115ed\n\n发布方：SEC\n记录：0000895564-26-000004:index\nsha256: 4ea876211b586f0f84d2acd63d68fcaea1fd90e4cd0c83209d84c4888c4afb04\n\n发布方：SEC / existing Data OS observation\n记录：dataos:cik-map:2026-10-05:BAESY\nsha256: 4e3c77cd11156abbf82c62159a09efc24d3028e44434696e6f7fb43a1931552b\nBAE Systems\n↗\nBAE Systems\n↗\nJ.P. Morgan\n↗\nSEC\n↗\nSEC / existing Data OS observation\n↗",
+        "state": {
+          "lang": "zh",
+          "theme": "light",
+          "overflow": false
+        }
+      }
+    ],
+    "all_pass": true,
+    "first_attempt": "Desktop2 passed; mobile2 tried a hidden inspector without opening its native sheet and timed out. Original result retained.",
+    "mobile_correction": "Scroll to actual workspace, click native Inspect control, then expand source disclosure. Both themes pass with no horizontal overflow and exact CIK/ISIN/qualification text."
+  },
+  "evidence": {
+    "ADR_COPY_V11/RESULT.json": "d18d3831adc412160158fe7b1d9a9623b3c751250d5938dc1a7b28d919a64f2f",
+    "ADR_COPY_V11_MOBILE/RESULT.json": "a08833963bf012288c4c374d5a46412c85dcc4bc82521957d46e4bcbe1694cbc",
+    "V10_V11_BROWSER_INPUT_DELTA.json": "427fdf3c68f870a091115244ff4c3f98e7615128ee8f0d962b632cf48cda680e",
+    "stage-v11/INPUT_RECEIPT.json": "bf2b328eb9bac554b02b77a4ac9fa27340f8458f1c5440f946cf087075c40c2a",
+    "asgi-v11/SERVER_RECEIPT.json": "7cb9a3c4a8dbe0163feaf045d5ee15d3b7fa1b90b2862fa9821d706c9bddea6e"
+  },
+  "limits": "Local actual-source ASGI with explicit test-principal; no production, installed entitlement or independent customer acceptance claim."
+}

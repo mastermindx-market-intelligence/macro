@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prophet R7 Wave A3 receipts specimen</title>
+<link rel="stylesheet" href="/site/theme.css">
+<script src="/site/theme.js"></script>
+<style>
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui)}
+.spec{max-width:880px;margin:0 auto;padding:24px 16px 48px}
+.spec-h1{font-size:var(--fs-h1);margin:0 0 6px}
+.spec-lede{font-size:var(--fs-sm);line-height:1.5;color:var(--muted);margin:0 0 20px;max-width:70ch}
+.spec-sec{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);padding:16px;margin:0 0 16px}
+.spec-h2{font-size:var(--fs-h2);margin:0 0 4px}
+.spec-cap{font-size:var(--fs-sm);line-height:1.5;color:var(--muted);margin:0 0 12px;max-width:70ch}
+.spec-empty{border:1px dashed var(--line);border-radius:var(--r-ctl);min-height:40px;padding:8px 10px;font-size:var(--fs-sm);color:var(--muted)}
+</style>
+
+<style>
+
+.pvr{margin:16px 0 0;border-top:1px solid var(--line);padding-top:10px}
+.pvr-sum{display:flex;align-items:center;gap:9px;cursor:pointer;list-style:none;padding:4px 0;color:var(--text);border-radius:6px}
+.pvr-sum::-webkit-details-marker{display:none}
+.pvr-sum:hover .pvr-hd{color:var(--pv-wait)}
+.pvr-sum:focus-visible{outline:2px solid var(--pv-wait);outline-offset:3px}
+.pvr-hd{font-size:12.5px;font-weight:700;letter-spacing:.02em;transition:color .12s}
+.pvr-stat{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pvr-caret{margin-left:auto;width:7px;height:7px;flex:none;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(45deg) translate(-2px,-2px);transition:transform .16s}
+.pvr[open] .pvr-caret{transform:rotate(225deg) translate(-2px,-2px)}
+.pvr-lede{margin:9px 0 13px;font-size:11.5px;line-height:1.5;color:var(--muted);max-width:62ch}
+.pvr-list{list-style:none;margin:0;padding:0;display:grid;gap:13px}
+.pvr-g{position:relative;padding:3px 0 3px 12px}
+.pvr-g::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:2px;border-radius:2px;background:color-mix(in srgb,var(--muted) 52%,transparent)}
+.pvr-g.is-near::before{background:var(--pv-wait)}
+.pvr-gh{display:flex;align-items:baseline;gap:10px}
+.pvr-why{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.35}
+.pvr-n{font-size:12px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;margin-left:auto;flex:none;opacity:.75}
+.pvr-tks{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.pvr-tk{font:600 10.5px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.03em;padding:0 5px;min-width:34px;text-align:center;border-radius:4px;background:color-mix(in srgb,var(--muted) 12%,transparent);border:1px solid color-mix(in srgb,var(--muted) 26%,transparent);color:var(--muted)}
+.pvr-g.is-near .pvr-tk{color:var(--text);border-color:color-mix(in srgb,var(--pv-wait) 40%,transparent)}
+
+.pvr-open{margin:14px 0 0;font-size:11.5px;line-height:1.5;color:var(--muted);max-width:62ch}
+.pvr-ft{margin:9px 0 0;font-size:10.5px;color:var(--muted);opacity:.8}
+
+.pvr-era,.pvr-recon[data-tip-en]{border-bottom:1px dotted color-mix(in srgb,var(--muted) 55%,transparent)}
+html[data-theme="light"] .pvr-g::before{background:color-mix(in srgb,var(--muted) 70%,transparent)}
+
+html[data-theme="light"] .pvr-g.is-near::before{background:var(--pv-wait)}
+html[data-theme="light"] .pvr-tk{background:#fff;border-color:color-mix(in srgb,var(--muted) 38%,transparent);color:color-mix(in srgb,var(--text) 70%,var(--muted))}
+html[data-theme="light"] .pvr-g.is-near .pvr-tk{color:var(--text)}
+@media (max-width:640px){.pvr-why{font-size:12px}}
+
+.pvr-rcs{margin:0}
+.pvr-rc-hd{margin:0 0 2px;font-size:12.5px;font-weight:700;color:var(--text)}
+.pvr-rc,.pvr-rc-more{border-top:1px solid var(--line-quiet, var(--line))}
+.pvr-rc-sum{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;cursor:pointer;list-style:none;padding:9px 0;color:var(--text)}
+.pvr-rc-sum::-webkit-details-marker{display:none}
+.pvr-rc-sum:focus-visible{outline:2px solid var(--ink-link);outline-offset:2px}
+.pvr-rc-tk{font:600 10.5px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.03em;color:var(--muted)}
+.pvr-rc-nm{font-size:12.5px;font-weight:600;color:var(--text)}
+.pvr-rc-sec{font-size:11px;color:var(--muted)}
+.pvr-rc-why{font-size:11.5px;color:var(--muted);margin-left:auto;text-align:right}
+.pvr-rc-mh{font-size:12px;font-weight:650;color:var(--text)}
+.pvr-rc-bd{display:grid;gap:8px;padding:0 0 11px}
+.pvr-rc-row{margin:0;font-size:11.5px;color:var(--text)}
+.pvr-rc-k{font-size:11px;color:var(--muted)}
+.pvr-rc-p{margin:0;font-size:11.5px;line-height:1.55;color:var(--muted);max-width:62ch}
+.pvr-rc-a{font-size:11.5px}
+.pvr-rc-cap{margin:0 0 2px;font-size:11px;line-height:1.5;color:var(--muted)}
+.pvr-tc{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:0}
+.pvr-tc-hd{font-size:12.5px;font-weight:700;color:var(--text)}
+.pvr-tc-n{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pvr-tc-a{font-size:11.5px}
+@media (max-width:640px){.pvr-rc-why{margin-left:0;text-align:left;flex-basis:100%}}
+</style>
+
+</head>
+<body>
+<main class="spec">
+  <h1 class="spec-h1"><span class="l-en">Passed-on receipts — component specimen</span><span class="l-zh">未纳入标的回执 — 组件样张</span></h1>
+  <p class="spec-lede"><span class="l-en">Rendered from templates/_prophet_receipts.html.j2, imported as pvr exactly as dashboard.html.j2 imports it, with fixture data (sample=true). Six names: two plan-data refusals, two that cleared every check, two that ran too far, one without a score.</span><span class="l-zh">由 templates/_prophet_receipts.html.j2 渲染，导入方式与 dashboard.html.j2 相同（as pvr），使用固定样例数据（sample=true）。共六只：两只计划数据未核验，两只各项检查都通过，两只涨得太急，其中一只没有评分。</span></p>
+
+  <section class="spec-sec" aria-labelledby="spec-today">
+    <h2 class="spec-h2" id="spec-today"><span class="l-en">Today count</span><span class="l-zh">今日计数</span></h2>
+    <p class="spec-cap"><span class="l-en">pvr_today_count: label, the lossless total and one plain link to the full list.</span><span class="l-zh">pvr_today_count：标签、完整总数，以及一个指向完整列表的普通链接。</span></p>
+    
+<div class="pvr-tc">
+  <span class="pvr-tc-hd"><span class="l-en">Passed on tonight</span><span class="l-zh">今晚未纳入</span></span>
+  <span class="pvr-tc-n">6</span>
+  <a class="pvr-tc-a" href="#spec-collapsed"><span class="l-en">See all 6 passed names</span><span class="l-zh">查看全部 6 只未纳入标的</span></a><p class="pvr-ft"><span class="l-en">Sample names and prices for design review, not live signals.</span><span class="l-zh">示例名称与价格，仅供设计评审，并非实时信号。</span></p>
+</div>
+  </section>
+
+  <section class="spec-sec" aria-labelledby="spec-collapsed">
+    <h2 class="spec-h2" id="spec-collapsed"><span class="l-en">Collapsed</span><span class="l-zh">收起状态</span></h2>
+    <p class="spec-cap"><span class="l-en">pvr_receipts at the default limit of 4: plan-data refusals first, then score descending; the two remaining names sit behind one “Show 2 more” disclosure.</span><span class="l-zh">pvr_receipts，默认显示 4 只：计划数据未核验的排在最前，其余按评分从高到低；剩余两只收在一个“再显示 2 只”的展开项里。</span></p>
+    <div class="pvr-rcs">
+  <p class="pvr-rc-hd"><span class="l-en">6 names</span><span class="l-zh">6 只</span></p>
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">ALAB</span>
+      <span class="pvr-rc-nm">Astera Labs</span><span class="pvr-rc-sec">Semiconductors</span>
+      <span class="pvr-rc-why"><span class="l-en">Passed the board&#39;s checks — tonight&#39;s plan data didn&#39;t verify</span><span class="l-zh">通过了榜单检查 — 但今晚的计划数据未能核验</span></span>
+    </summary>
+    <div class="pvr-rc-bd">
+      <p class="pvr-rc-row"><span class="pvr-rc-k"><span class="l-en">What didn’t verify</span><span class="l-zh">未能核实的内容</span></span> — <span class="l-en">Tonight’s plan data</span><span class="l-zh">今晚的计划数据</span></p>
+      <p class="pvr-rc-p"><span class="l-en">Because the plan data didn&#39;t verify, we show no entry zone, timing or exit for ALAB tonight.</span><span class="l-zh">由于计划数据未能核实，今晚不显示 ALAB 的入场区间、时机或退出。</span></p>
+      <p class="pvr-rc-p"><span class="l-en">This is not a rejection of the setup and not a Wait. It rejoins the board when its plan data verifies; the next build is Wednesday 05:30 ET.</span><span class="l-zh">这不是否定该形态，也不是等待。计划数据核实后它会重新回到榜单；下次构建在 周三 05:30（美东）。</span></p><a class="pvr-rc-a" href="stock.html#ALAB"><span class="l-en">Open research</span><span class="l-zh">查看研究</span></a>
+    </div>
+  </details>
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">CRDO</span>
+      <span class="pvr-rc-nm">Credo Technology</span>
+      <span class="pvr-rc-why"><span class="l-en">Passed the board&#39;s checks — tonight&#39;s plan data didn&#39;t verify</span><span class="l-zh">通过了榜单检查 — 但今晚的计划数据未能核验</span></span>
+    </summary>
+    <div class="pvr-rc-bd">
+      <p class="pvr-rc-row"><span class="pvr-rc-k"><span class="l-en">What didn’t verify</span><span class="l-zh">未能核实的内容</span></span> — <span class="l-en">Tonight’s plan data</span><span class="l-zh">今晚的计划数据</span></p>
+      <p class="pvr-rc-p"><span class="l-en">Because the plan data didn&#39;t verify, we show no entry zone, timing or exit for CRDO tonight.</span><span class="l-zh">由于计划数据未能核实，今晚不显示 CRDO 的入场区间、时机或退出。</span></p>
+      <p class="pvr-rc-p"><span class="l-en">This is not a rejection of the setup and not a Wait. It rejoins the board when its plan data verifies; the next build is Wednesday 05:30 ET.</span><span class="l-zh">这不是否定该形态，也不是等待。计划数据核实后它会重新回到榜单；下次构建在 周三 05:30（美东）。</span></p><a class="pvr-rc-a" href="stock.html#CRDO"><span class="l-en">Open research</span><span class="l-zh">查看研究</span></a>
+    </div>
+  </details>
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">SMCI</span>
+      <span class="pvr-rc-nm">Super Micro Computer</span>
+      <span class="pvr-rc-why"><span class="l-en">Ran too far — waiting for a pullback</span><span class="l-zh">涨得太急 — 等回调</span></span>
+    </summary><div class="pvr-rc-bd"><a class="pvr-rc-a" href="stock.html#SMCI"><span class="l-en">Open research</span><span class="l-zh">查看研究</span></a></div>
+  </details>
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">VRT</span>
+      <span class="pvr-rc-nm">Vertiv Holdings</span><span class="pvr-rc-sec">Industrials</span>
+      <span class="pvr-rc-why"><span class="l-en">Cleared every check — no entry plan came together tonight</span><span class="l-zh">各项检查都通过 — 但今晚没能形成完整计划</span></span>
+    </summary><div class="pvr-rc-bd"><a class="pvr-rc-a" href="stock.html#VRT"><span class="l-en">Open research</span><span class="l-zh">查看研究</span></a></div>
+  </details><details class="pvr-rc-more">
+    <summary class="pvr-rc-sum"><span class="pvr-rc-mh"><span class="l-en">Show 2 more</span><span class="l-zh">再显示 2 只</span></span></summary>
+    <p class="pvr-rc-cap"><span class="l-en">Showing 4 of 6. Plan data refusals are listed first, then the rest by original priority.</span><span class="l-zh">显示 6 只中的 4 只。计划数据未核实的排在最前，其余按建立时优先级排序。</span></p>
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">ANET</span>
+      <span class="pvr-rc-nm">Arista Networks</span>
+      <span class="pvr-rc-why"><span class="l-en">Cleared every check — no entry plan came together tonight</span><span class="l-zh">各项检查都通过 — 但今晚没能形成完整计划</span></span>
+    </summary><div class="pvr-rc-bd"><a class="pvr-rc-a" href="stock.html#ANET"><span class="l-en">Open research</span><span class="l-zh">查看研究</span></a></div>
+  </details>
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">COHR</span>
+      <span class="pvr-rc-nm">Coherent Corp</span>
+      <span class="pvr-rc-why"><span class="l-en">Ran too far — waiting for a pullback</span><span class="l-zh">涨得太急 — 等回调</span></span>
+    </summary><div class="pvr-rc-bd"><a class="pvr-rc-a" href="stock.html#COHR"><span class="l-en">Open research</span><span class="l-zh">查看研究</span></a></div>
+  </details></details><p class="pvr-ft"><span class="l-en">Sample names and prices for design review, not live signals.</span><span class="l-zh">示例名称与价格，仅供设计评审，并非实时信号。</span></p>
+</div>
+  </section>
+
+  <section class="spec-sec" aria-labelledby="spec-expanded" data-spec-open>
+    <h2 class="spec-h2" id="spec-expanded"><span class="l-en">Expanded</span><span class="l-zh">展开状态</span></h2>
+    <p class="spec-cap"><span class="l-en">The same list with every disclosure open: the plan-data refusal body (what did not verify, no entry, timing or exit, the next build) and the research-link-only body for every other reason.</span><span class="l-zh">同一列表，所有展开项均已打开：计划数据未核验的说明（未核实内容、不显示入场/时机/退出、下次构建），其余原因只显示研究链接。</span></p>
+    <div class="pvr-rcs">
+  <p class="pvr-rc-hd"><span class="l-en">6 names</span><span class="l-zh">6 只</span></p>
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">ALAB</span>
+      <span class="pvr-rc-nm">Astera Labs</span><span class="pvr-rc-sec">Semiconductors</span>
+      <span class="pvr-rc-why"><span class="l-en">Passed the board&#39;s checks — tonight&#39;s plan data didn&#39;t verify</span><span class="l-zh">通过了榜单检查 — 但今晚的计划数据未能核验</span></span>
+    </summary>
+    <div class="pvr-rc-bd">
+      <p class="pvr-rc-row"><span class="pvr-rc-k"><span class="l-en">What didn’t verify</span><span class="l-zh">未能核实的内容</span></span> — <span class="l-en">Tonight’s plan data</span><span class="l-zh">今晚的计划数据</span></p>
+      <p class="pvr-rc-p"><span class="l-en">Because the plan data didn&#39;t verify, we show no entry zone, timing or exit for ALAB tonight.</span><span class="l-zh">由于计划数据未能核实，今晚不显示 ALAB 的入场区间、时机或退出。</span></p>
+      <p class="pvr-rc-p"><span class="l-en">This is not a rejection of the setup and not a Wait. It rejoins the board when its plan data verifies; the next build is Wednesday 05:30 ET.</span><span class="l-zh">这不是否定该形态，也不是等待。计划数据核实后它会重新回到榜单；下次构建在 周三 05:30（美东）。</span></p><a class="pvr-rc-a" href="stock.html#ALAB"><span class="l-en">Open research</span><span class="l-zh">查看研究</span></a>
+    </div>
+  </details>
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">CRDO</span>
+      <span class="pvr-rc-nm">Credo Technology</span>
+      <span class="pvr-rc-why"><span class="l-en">Passed the board&#39;s checks — tonight&#39;s plan data didn&#39;t verify</span><span class="l-zh">通过了榜单检查 — 但今晚的计划数据未能核验</span></span>
+    </summary>
+    <div class="pvr-rc-bd">
+      <p class="pvr-rc-row"><span class="pvr-rc-k"><span class="l-en">What didn’t verify</span><span class="l-zh">未能核实的内容</span></span> — <span class="l-en">Tonight’s plan data</span><span class="l-zh">今晚的计划数据</span></p>
+      <p class="pvr-rc-p"><span class="l-en">Because the plan data didn&#39;t verify, we show no entry zone, timing or exit for CRDO tonight.</span><span class="l-zh">由于计划数据未能核实，今晚不显示 CRDO 的入场区间、时机或退出。</span></p>
+      <p class="pvr-rc-p"><span class="l-en">This is not a rejection of the setup and not a Wait. It rejoins the board when its plan data verifies; the next build is Wednesday 05:30 ET.</span><span class="l-zh">这不是否定该形态，也不是等待。计划数据核实后它会重新回到榜单；下次构建在 周三 05:30（美东）。</span></p><a class="pvr-rc-a" href="stock.html#CRDO"><span class="l-en">Open research</span><span class="l-zh">查看研究</span></a>
+    </div>
+  </details>
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">SMCI</span>
+      <span class="pvr-rc-nm">Super Micro Computer</span>
+      <span class="pvr-rc-why"><span class="l-en">Ran too far — waiting for a pullback</span><span class="l-zh">涨得太急 — 等回调</span></span>
+    </summary><div class="pvr-rc-bd"><a class="pvr-rc-a" href="stock.html#SMCI"><span class="l-en">Open research</span><span class="l-zh">查看研究</span></a></div>
+  </details>
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">VRT</span>
+      <span class="pvr-rc-nm">Vertiv Holdings</span><span class="pvr-rc-sec">Industrials</span>
+      <span class="pvr-rc-why"><span class="l-en">Cleared every check — no entry plan came together tonight</span><span class="l-zh">各项检查都通过 — 但今晚没能形成完整计划</span></span>
+    </summary><div class="pvr-rc-bd"><a class="pvr-rc-a" href="stock.html#VRT"><span class="l-en">Open research</span><span class="l-zh">查看研究</span></a></div>
+  </details><details class="pvr-rc-more">
+    <summary class="pvr-rc-sum"><span class="pvr-rc-mh"><span class="l-en">Show 2 more</span><span class="l-zh">再显示 2 只</span></span></summary>
+    <p class="pvr-rc-cap"><span class="l-en">Showing 4 of 6. Plan data refusals are listed first, then the rest by original priority.</span><span class="l-zh">显示 6 只中的 4 只。计划数据未核实的排在最前，其余按建立时优先级排序。</span></p>
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">ANET</span>
+      <span class="pvr-rc-nm">Arista Networks</span>
+      <span class="pvr-rc-why"><span class="l-en">Cleared every check — no entry plan came together tonight</span><span class="l-zh">各项检查都通过 — 但今晚没能形成完整计划</span></span>
+    </summary><div class="pvr-rc-bd"><a class="pvr-rc-a" href="stock.html#ANET"><span class="l-en">Open research</span><span class="l-zh">查看研究</span></a></div>
+  </details>
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">COHR</span>
+      <span class="pvr-rc-nm">Coherent Corp</span>
+      <span class="pvr-rc-why"><span class="l-en">Ran too far — waiting for a pullback</span><span class="l-zh">涨得太急 — 等回调</span></span>
+    </summary><div class="pvr-rc-bd"><a class="pvr-rc-a" href="stock.html#COHR"><span class="l-en">Open research</span><span class="l-zh">查看研究</span></a></div>
+  </details></details><p class="pvr-ft"><span class="l-en">Sample names and prices for design review, not live signals.</span><span class="l-zh">示例名称与价格，仅供设计评审，并非实时信号。</span></p>
+</div>
+  </section>
+
+  <section class="spec-sec" aria-labelledby="spec-empty">
+    <h2 class="spec-h2" id="spec-empty"><span class="l-en">Empty</span><span class="l-zh">空状态</span></h2>
+    <p class="spec-cap"><span class="l-en">With no passed-on names (passed = 0, no groups) or a missing contract, both macros render nothing, so no heading or empty box reaches the page. Rendered characters: receipts 0, receipts on {} 0, today count 0. The dashed slot below holds that output.</span><span class="l-zh">没有未纳入标的（passed = 0、无分组）或合约缺失时，两个宏都不输出任何内容，页面上不会出现空标题或空框。输出字符数：回执 0，空合约回执 0，今日计数 0。下方虚线框内即为该输出。</span></p>
+    <div class="spec-empty"></div>
+  </section>
+</main>
+<script>
+document.querySelectorAll('[data-spec-open] details').forEach(function(d){d.open=true;});
+</script>
+</body>
+</html>

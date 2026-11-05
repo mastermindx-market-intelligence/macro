@@ -1,0 +1,30 @@
+{
+  "cone_vol_ann_last": 0.2648859031376679,
+  "cone_vol_ann_median": 0.3750032364305709,
+  "cone_vol_ann_nonnull": 4098,
+  "consistency_prev_day": {
+    "median_abs_logdiff": 0.014396027685596557,
+    "n": 3932,
+    "share_within_1bp": 0.00508646998982706
+  },
+  "consistency_same_day": {
+    "median_abs_logdiff": 0.0,
+    "n": 3932,
+    "share_within_1bp": 1.0
+  },
+  "daily_first": "2015-07-20",
+  "daily_last": "2026-10-09",
+  "daily_rows": 4100,
+  "forward_vol_ann22_nonnull_label_only": 4078,
+  "har_vol_nonnull": 4098,
+  "hourly_rows": 94365,
+  "realized_vol22_last_daily_units": 0.021588761540909746,
+  "realized_vol22_nonnull": 4089,
+  "stage": "baseline",
+  "vol_forecast_HAR_LAGS": [
+    2,
+    5,
+    22,
+    66
+  ]
+}

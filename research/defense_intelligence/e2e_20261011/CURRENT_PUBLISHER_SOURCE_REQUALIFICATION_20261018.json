@@ -1,0 +1,41 @@
+{
+  "contract": "government_revenue.publisher_source_requalification.v1",
+  "observed_at": "2026-10-18T06:20:10.221648+00:00",
+  "original_root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "qualified_previous_source": "e7a554f427bcb41232140c8fa115fa8bfca3987e",
+  "protected_main_after": "6b2dd5dc8d7eb4729d769644183bac6117063e72",
+  "baseline_before_sha256": "ff92466042d156cf5f078b62f89966b4bb817da20d1d55f77c47137a2b76d503",
+  "source_closure_before": {
+    "scripts/ci/govrev_publisher_preflight.py": "f5fb09af2d8bfe34065b3e3c23082021398e6af146ea9e9fe74b5ca393e80878",
+    "scripts/ci/govrev_candidate_proof.py": "43267a7a3352810d7dd3751d3c4e6150dbc6e274a0ceb6d129c627a5ba26e299",
+    "scripts/ci/fms_persist.py": "6b0decd045e494d1aaf4f77b00eade3d205e17004470b2cb081311bbabbed4d1",
+    ".github/workflows/government-revenue-live.yml": "e6f2941f9efaf638d8bc82592a6f5cf38d9b0323db2e8c2dd087b08052aa1376",
+    ".github/workflows/daily.yml": "ed25c015087e6bd29c7b6c5c02f1b15b7ddc1ffb31b94712f2cfa860dbeca9bb",
+    ".github/workflows/fms-acquire.yml": "91e65a31eb3c38c38dad3aa99e9c4f80c7c31fa44820af1d7a6720aa2e0b904a"
+  },
+  "source_closure_after": {
+    "scripts/ci/govrev_publisher_preflight.py": "f5fb09af2d8bfe34065b3e3c23082021398e6af146ea9e9fe74b5ca393e80878",
+    "scripts/ci/govrev_candidate_proof.py": "43267a7a3352810d7dd3751d3c4e6150dbc6e274a0ceb6d129c627a5ba26e299",
+    "scripts/ci/fms_persist.py": "6b0decd045e494d1aaf4f77b00eade3d205e17004470b2cb081311bbabbed4d1",
+    ".github/workflows/government-revenue-live.yml": "e6f2941f9efaf638d8bc82592a6f5cf38d9b0323db2e8c2dd087b08052aa1376",
+    ".github/workflows/daily.yml": "bc3a1e6c97479b2ac07de56fca0efae3a159b94c93ce40adb7c4a3a834f23e77",
+    ".github/workflows/fms-acquire.yml": "91e65a31eb3c38c38dad3aa99e9c4f80c7c31fa44820af1d7a6720aa2e0b904a"
+  },
+  "changed_daily_jobs": [
+    "causal",
+    "collect"
+  ],
+  "daily_government_projection_block_sha256": "e4cc3daac8532e7724e2476b2f041c1e8326aa672d7b6c7ab19159c8954eaa1d",
+  "daily_top_level_unchanged": true,
+  "collect_outputs_unchanged": true,
+  "other_five_source_paths_unchanged": true,
+  "legacy_operation_count": 33,
+  "legacy_operations_sha256": "82777546373b44d9f871aaebeae5eda0156d02effad3e8f600e8bb7834e2b0dc",
+  "cutovers_preserved": {
+    "scan_created_after": "2026-10-10T17:26:49Z",
+    "legacy_effects_reconciled_at": "2026-10-13T06:55:59.489033+00:00"
+  },
+  "scope": "Current source binding after consuming protected main. Other collect/causal changes are not certified semantically equivalent or reimplemented here. Direct GovRev caller, workflow entry/concurrency and collector output interface unchanged; native candidate proof still qualifies actual changed inputs before effects. Classifier and five other inspected entrypoints byte-identical.",
+  "non_effects": "No new legacy disposition, cutoff movement, history adoption, retired run, GitHub call or publication. Original9490 missing-history review/unknown effects remain held.",
+  "checkpoint_compatibility": "A checkpoint with a different baseline hash is refused as prior_checkpoint_not_qualified. The initial full scan is used only if no checkpoint-bearing record exists in the bounded recent discovery window. This source rebind neither adopts missing history nor authorizes removal or retirement of a prior checkpoint."
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-12T18:43:55Z",
+ "accession": "0001895262-26-000076",
+ "cik": "0001895262",
+ "doc_byte_length": 2547631,
+ "doc_sha256": "f45be69703d371724ebab79f57f3008bd2f57fa61c35de50d9f159629e2afe16",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-12",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ne-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 475280,
+  "byte_start": 473736,
+  "normalized": "ExxonMobil, Shell plc, BP, and TotalEnergies represented approximately 23.7%, 19.5%, 16.2%, and 12.6% of our contract backlog, respectively, and operations within the US Gulf, Guyana, Suriname, and the North Sea accounted for approximately 35.3%,",
+  "normalized_sha256": "3e8827e4712355b982233dbf18ab0791352ac27e60a87aee01b99a80f022a94b",
+  "raw": "ExxonMobil</span><span style=\"color:#231f20;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">, </span><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">Shell plc</span><span style=\"color:#231f20;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">, </span><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">BP,</span><span style=\"color:#231f20;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"> and </span><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">TotalEnergies</span><span style=\"color:#231f20;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"> represented approximately 23.7%, </span><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">19.5%, 16.2%, and 12.6%</span><span style=\"color:#231f20;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"> of our contract backlog, respectively, and operations within the US Gulf, Guyana, Suriname, and the North Sea accounted for approximately </span><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">35.3%</span><span style=\"color:#231f20;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">,",
+  "raw_sha256": "2aa92d51b87c2ede2cd71797717927e1692d3ade059ad74f82212dd421b74818"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1895262/000189526226000076/ne-20251231.htm",
+ "xbrl_contexts": []
+}

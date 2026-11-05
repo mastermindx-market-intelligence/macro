@@ -1,0 +1,33 @@
+{
+  "books": [
+    {
+      "book": "autonomous",
+      "bytes": 10284,
+      "exists": true,
+      "nonempty_after_strip": true,
+      "readable_text": true,
+      "sha256": "9472f17124caf3e0c328d82a247a98cf2a2d59ee3331a977af311d1180c0b55b"
+    },
+    {
+      "book": "china",
+      "bytes": 10394,
+      "exists": true,
+      "nonempty_after_strip": true,
+      "readable_text": true,
+      "sha256": "78702d4501e83ea3ff5659fa628867ad35ee2f92a5021855151d2c2fe3d6bbee"
+    },
+    {
+      "book": "hk",
+      "bytes": 10258,
+      "exists": true,
+      "nonempty_after_strip": true,
+      "readable_text": true,
+      "sha256": "d14505dd7835682e784113d068b7cc000e222cf5153ae9a033fa816a4c8ec602"
+    }
+  ],
+  "observed_at": "2026-10-18T03:22:37.312398+00:00",
+  "production_mutation": false,
+  "raw_nav_rows_exported": false,
+  "schema": "risk_radar.first_run_guard_input_observation.v1",
+  "source_guard_executed": false
+}

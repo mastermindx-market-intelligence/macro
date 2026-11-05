@@ -1,0 +1,56 @@
+{
+  "calling_carrier_sha": "6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde",
+  "credentials_included": false,
+  "files": [
+    {
+      "bytes": 1352,
+      "file": "audit-exact-wave.py",
+      "sha256": "e8cc0ff67da9ec15d5f93957ad2e622f7251408ffdea9875a03fb74e31b4f8c4"
+    },
+    {
+      "bytes": 393391,
+      "file": "eod-1000-wave2-candidates.json",
+      "sha256": "c477aa6b442b86ff9ad9f6644532972c525ba32d3ec5356df7d47283ed5d3b17"
+    },
+    {
+      "bytes": 642278,
+      "file": "eod-1000-wave2-corpus-audit.json",
+      "sha256": "6a3276476762ca9c4e44ae3e80abd61b0d40cab1254f35dc52a553d75da27100"
+    },
+    {
+      "bytes": 450,
+      "file": "eod-1000-wave2-corpus-verification.log",
+      "sha256": "46e3dfeb08cd0383836478916c2d4f4f16928630106999d5340bed7fde0ee387"
+    },
+    {
+      "bytes": 7657,
+      "file": "eod-1000-wave2-live-batch.log",
+      "sha256": "a353e3da7f9729e91b650702f985eadcd4bbaf6926dcd82885308cc19f989bad"
+    },
+    {
+      "bytes": 2514526,
+      "file": "live-archive-wave2-proof.json",
+      "sha256": "a26970a90f3e158122a038ad917dc36672c6b2903844506f53f4cfc5122afda9"
+    },
+    {
+      "bytes": 232,
+      "file": "live-materialization-wave2.log",
+      "sha256": "5e1691793480d36233b7bdcb5ecc6d82cf0b4c1bb449517aa11189d054be82f2"
+    },
+    {
+      "bytes": 798,
+      "file": "live-wave2-verification.log",
+      "sha256": "8f5fb7fbce82200cfde509e07be603c02fdb4a4a22c152f01bed9adacecddf24"
+    },
+    {
+      "bytes": 6357,
+      "file": "verify-archive.py",
+      "sha256": "ab9e2b889ced3d9340db501a535bffb6f49fbb51a8d21c0c8549bf6dcd130274"
+    }
+  ],
+  "licensed_market_rows_included": false,
+  "observed_at_utc": "2026-10-11T20:38:12.057478+00:00",
+  "producer_logic_sha": "bddd8da1f5c5225b258ff4d6d35ce72fca5a09fb",
+  "schema": "tiingo_safe_evidence_manifest.v1",
+  "subscription_id_values_included": false
+}

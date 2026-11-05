@@ -24,7 +24,13 @@ permissions: {}
 
 concurrency:
   group: ci-authority-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.run_id }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request_target' }}
+  # A later edited event is not a replacement for the required opened/synchronize
+  # workflow. Preserve both executions and their real conclusions. Keeping only
+  # one pending run also drops required events during a burst, so retain GitHub's
+  # bounded queue (100 pending runs) while executing one run per group at a time.
+  # Overflow remains a cancellation/refusal, never a synthetic success.
+  cancel-in-progress: false
+  queue: max
 
 jobs:
   ci-authority:

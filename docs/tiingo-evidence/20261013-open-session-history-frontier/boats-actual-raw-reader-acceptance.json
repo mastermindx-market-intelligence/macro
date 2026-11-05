@@ -1,0 +1,45 @@
+{
+  "accepted_at_utc": "2026-10-13T00:30:50.908919+00:00",
+  "actual_capture_result_sha256": "9b2e2b45178cf31ca50c018f453ffb74416b59778398b094ff3bfc56184014bb",
+  "actual_capture_scope_sha256": "3595b565238aa71b42810041d5eb1fc0a9318f61c2239b34145cd9bfad140983",
+  "actual_control_messages": 6,
+  "actual_control_response_codes": [
+    {
+      "count": 5,
+      "message_type": "H",
+      "response_code": 200
+    },
+    {
+      "count": 1,
+      "message_type": "I",
+      "response_code": 200
+    }
+  ],
+  "actual_projection_files_written": 2000,
+  "actual_quote_messages": 1939898,
+  "actual_raw_bytes": 448959986,
+  "actual_raw_messages": 2000000,
+  "actual_receipt_segments": 2000,
+  "actual_trade_break_messages": 0,
+  "actual_trade_messages": 60096,
+  "all_2000_current_receipt_hashes_verified": true,
+  "all_original_raw_and_reader_lineage_accepted": true,
+  "canonical_identity_or_pit_admission": false,
+  "case_diagnosis_sha256": "e21afeecc0df6b87ab13a989c4cdacd24eacfec0c6e4d89227c216cda59404af",
+  "distinct_vendor_symbols": 11577,
+  "eod_window05_writer_release_condition_satisfied": true,
+  "follow_on_audit_scope": "read-only final32 original receipts using actual lowercase vendor spellings; no archive/materialization writes",
+  "full_session_or_publication_or_production_acceptance": false,
+  "method_sha256": "e13773e6374fe3f39f92b8ab3b31eb6403a543204a7c7250dad0c67f487dd0b9",
+  "original_63_uppercase_audit_chunks_preserved": true,
+  "original_exit_code": 0,
+  "original_log_sha256": "3ca2f5533dfecb4ccf6c2cdec93bea163bf3b7bb991eaf058aa1b2b5fc364261",
+  "original_terminal_return_consumed": true,
+  "original_tool_session_id": 48859,
+  "original_uppercase_selected_symbol_events_all_zero": true,
+  "qualified_proof_sha256": "8bea6d46a5fbff25b441814bb18a360e6bd4b3edcfb2b28b9e6555ab9e035c0e",
+  "qualified_proof_snapshot_cutoff_utc": "2026-10-13T00:12:17.337290+00:00",
+  "schema": "tiingo_actual_boats_raw_reader_parent_acceptance.v1",
+  "sole_boats_materialization_writer_settled": true,
+  "ticker_specific_audit_acceptance": false
+}

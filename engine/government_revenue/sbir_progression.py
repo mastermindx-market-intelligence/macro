@@ -27,12 +27,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 import pandas as pd
 
 from collectors.sbir_awards import (
+    PII_SOURCE_FIELDS_NEVER_PERSISTED,
     PROGRESSION_LIMITATION,
     SBIR_COLLECTION_RECEIPTS_FILENAME,
     SBIR_INGEST_STATUS_FILENAME,
@@ -77,6 +79,30 @@ AUTHORITY: dict[str, Any] = {
 # on a field this source does not have.
 EXACT_ISSUER_JOIN_RULE = "exact_uei"
 ATTRIBUTED_RESOLUTION_STATES = frozenset({"confirmed", "reviewed"})
+
+_PUBLIC_FIELDS = frozenset({
+    "schema_version", "contract", "as_of", "known_at", "first_observed_at", "authority",
+    "source", "availability", "generation", "baseline", "candidate_impact", "coverage",
+    "phase_observations", "progression_evidence", "forward_events", "forward_events_emitted",
+    "mapping_backlog", "exact_identity", "limitations", "content_id",
+})
+_PRIVATE_SOURCE_FIELD = re.compile(
+    r"(?:^|_)(?:email|e_mail|phone|fax|password|token|secret|authorization|"
+    r"contact|poc|principal_investigator|address|headers)(?:_|$)|"
+    r"^(?:raw_(?:body|payload|response|request)|response_body|request_body)$",
+    re.IGNORECASE,
+)
+
+
+def _has_private_source_fields(value: Any) -> bool:
+    """Refuse source-contact/raw transport creep before exposing the read model."""
+    if isinstance(value, Mapping):
+        return any(
+            str(key).lower() in PII_SOURCE_FIELDS_NEVER_PERSISTED
+            or _PRIVATE_SOURCE_FIELD.search(str(key)) or _has_private_source_fields(child)
+            for key, child in value.items()
+        )
+    return isinstance(value, list) and any(_has_private_source_fields(child) for child in value)
 
 PRODUCTION_CONVERSION_LIMITATION = (
     "Phase movement is never production conversion. An exact production award chain is "
@@ -645,9 +671,20 @@ def is_valid_sbir_progression_payload(payload: Any) -> bool:
     """
     if not isinstance(payload, Mapping):
         return False
+    if set(payload) - _PUBLIC_FIELDS or _has_private_source_fields(payload):
+        return False
     if payload.get("contract") != SBIR_PROGRESSION_CONTRACT:
         return False
     if payload.get("schema_version") != SBIR_PROGRESSION_SCHEMA_VERSION:
+        return False
+    availability = payload.get("availability")
+    if not isinstance(availability, Mapping):
+        return False
+    state = availability.get("state")
+    if state not in {"ready", "unavailable"}:
+        return False
+    source = payload.get("source")
+    if not isinstance(source, Mapping) or source.get("official_api_urls") != [SBIR_AWARDS_URL]:
         return False
     if payload.get("authority") != AUTHORITY:
         return False
@@ -701,11 +738,85 @@ def is_valid_sbir_progression_payload(payload: Any) -> bool:
             return False
         if link.get("issuer_attribution") == "not_asserted" and _text(link.get("ticker")):
             return False
+        cutoff = _timestamp(payload.get("as_of"))
+        envelope_known = _timestamp(payload.get("known_at"))
+        row_known = _timestamp(row.get("known_at"))
+        if cutoff is None or envelope_known is None or row_known is None:
+            return False
+        if not row_known <= envelope_known <= cutoff:
+            return False
+        leg_known = []
+        effective = []
+        for key, phase in (("phase_i", "I"), ("phase_ii", "II")):
+            leg = row.get(key)
+            if not isinstance(leg, Mapping) or leg.get("phase") != phase:
+                return False
+            known = _timestamp(leg.get("known_at"))
+            first = _timestamp(leg.get("first_seen_at"))
+            observed = _timestamp(leg.get("observed_at"))
+            start = _timestamp(leg.get("effective_at"))
+            if any(clock is None for clock in (known, first, observed, start)):
+                return False
+            if not first <= known <= cutoff or observed > cutoff:
+                return False
+            leg_known.append(known)
+            effective.append(start)
+        if row_known != max(leg_known) or effective[0] >= effective[1]:
+            return False
     backlog = payload.get("mapping_backlog")
     if not isinstance(backlog, list) or len(backlog) > MAX_MAPPING_BACKLOG_ROWS:
         return False
     for row in backlog:
         if not isinstance(row, Mapping) or row.get("issuer_attribution") != "not_asserted":
+            return False
+        known = _timestamp(row.get("known_at"))
+        envelope_known = _timestamp(payload.get("known_at"))
+        cutoff = _timestamp(payload.get("as_of"))
+        if any(clock is None for clock in (known, envelope_known, cutoff)) or not known <= envelope_known <= cutoff:
+            return False
+
+    # A content hash proves identity, not semantic readiness. In particular an
+    # unavailable envelope cannot become ready by changing one word and hashing
+    # it again. Keep a valid empty bounded collection distinct from no bundle.
+    for name in ("observations_visible", "progression_pairs", "mapping_backlog_count"):
+        count = coverage.get(name)
+        if type(count) is not int or count < 0:
+            return False
+    if coverage["progression_pairs"] != len(evidence) or coverage["mapping_backlog_count"] != len(backlog):
+        return False
+    if state == "unavailable":
+        if (
+            availability.get("reason") != "sbir_observation_bundle_absent"
+            or baseline.get("state") != "no_bundle"
+            or payload.get("known_at") is not None
+            or payload.get("generation") is not None
+            or coverage["observations_visible"] != 0
+            or evidence or backlog
+        ):
+            return False
+    else:
+        generation = payload.get("generation")
+        if (
+            availability.get("reason") != "sbir_observation_bundle_ready"
+            or baseline.get("state") not in {"first_baseline", "accrued"}
+            or source.get("receipt_ledger") != SBIR_COLLECTION_RECEIPTS_FILENAME
+            or not isinstance(generation, Mapping)
+            or not _text(generation.get("projection_generation_id"))
+            or not _text(generation.get("coverage_manifest_id"))
+            or _timestamp(generation.get("collector_observed_at")) is None
+            or generation.get("collector_status") != "ok"
+            or _timestamp(payload.get("as_of")) is None
+            or type(coverage.get("observations_total")) is not int
+            or coverage["observations_total"] < coverage["observations_visible"]
+            or "first_observed_at" not in payload
+        ):
+            return False
+        if coverage["observations_visible"]:
+            first = _timestamp(payload.get("first_observed_at"))
+            known = _timestamp(payload.get("known_at"))
+            if first is None or known is None or not first <= known <= _timestamp(payload["as_of"]):
+                return False
+        elif payload.get("known_at") is not None or payload.get("first_observed_at") is not None:
             return False
     return sbir_progression_content_id(payload) == payload.get("content_id")
 

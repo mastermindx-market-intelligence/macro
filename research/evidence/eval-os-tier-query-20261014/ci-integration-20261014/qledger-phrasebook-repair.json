@@ -1,0 +1,7 @@
+{
+  "head": "faed2a591b7a2210cb0c806861fc5afce3a86841",
+  "path": "data/china_official/phrase_book.yml",
+  "sha256": "a80fb64380194ed866507278a256eb008a437b5fa6a49bf2891e063edc6d7fbe",
+  "bytes": 10409,
+  "reason": "21 Communique fixture failures because sparse checkout omitted tracked static phrase-book seed; finite tuple join also absent from inferred closure. Materialized only exact HEAD source and added explicit CI dependency. Not a grade or sealed outcome read."
+}

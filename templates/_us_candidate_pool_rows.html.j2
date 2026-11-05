@@ -13,6 +13,8 @@
   'stood_down': ('Standing aside for now', '暂时回避'),
   'pending_expired': ('Confirmation window expired', '确认窗口已过期'),
   'already_open': ('Already has a plan running', '已有在跑的计划'),
+  'base_after_event': ("Passed the board's checks — its base re-formed after the signal fired", '通过了榜单检查 — 但基底在信号触发后重新形成'),
+  'validation_failed': ("Passed the board's checks — tonight's plan data didn't verify", '通过了榜单检查 — 但今晚的计划数据未能核验'),
   'plan_not_built': ('Cleared every check — no entry plan came together tonight', '各项检查都通过 — 但今晚没能形成完整计划'),
   'board_featured': ('Featured on the main list', '主榜重点展示'),
   'cleared_admission': ('Admission checks passed', '已通过准入检查'),
@@ -77,7 +79,7 @@
     {% set _row_ticker = (row.get('ticker') or '')|string|trim|upper %}
     {% set _row_plans = (plan_rel_by_ticker or {}).get(_row_ticker, []) if plan_rel_by_ticker is defined else [] %}
     {% set _row_plan_rel = {'state': 'unknown', 'plans': []} if plan_rel is defined and plan_rel is mapping and plan_rel.get('state') == 'unknown' else {'state': 'related_security' if _row_plans else 'none', 'plans': _row_plans} %}
-    {{ psd.action(psd.body(row, 'pool', setup_as_of if setup_as_of is defined else (us_candidate_visibility.get('as_of') if us_candidate_visibility is defined and us_candidate_visibility is mapping else none), _row_plan_rel)) }}
+    {{ psd.action(psd.body(row, 'pool', setup_as_of if setup_as_of is defined else (us_candidate_visibility.get('as_of') if us_candidate_visibility is defined and us_candidate_visibility is mapping else none), _row_plan_rel, why_copy=_why.get(_reason))) }}
     <details class="ucp-receipt"><summary><span class="l-en">Decision record</span><span class="l-zh">决策记录</span></summary>
       <span class="l-en">Screen position</span><span class="l-zh">筛选位置</span> {{ row.get('pool_rank') if row.get('pool_rank') is not none else '—' }}
       {% if row.get('tier_cascade') %} · <span class="l-en">Signal</span><span class="l-zh">信号</span> {{ row.tier_cascade }}{% endif %}

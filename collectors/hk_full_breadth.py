@@ -52,6 +52,7 @@ class HkFullBreadthAdapter(Adapter):
 
     name = "hk_full_breadth"
     group = "hk_full_breadth"
+    session_calendar = "HK"  # observation dates follow the cash/Connect session
     stale_after_days = 6   # snapshot-only; tolerate a long weekend / HK holiday
     # FRAGILE source (intermittent RemoteDisconnected/403, no backfill): report
     # 'blocked' instead of tripping the breaker, keeping it isolated from hk_breadth.

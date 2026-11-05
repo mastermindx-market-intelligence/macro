@@ -19,6 +19,7 @@ tariff flush, not the day estimates ticked up. DISPLAY-ONLY; ranks by EDGE REMAI
 """
 from __future__ import annotations
 
+import importlib
 import json
 import logging
 from datetime import datetime, timezone
@@ -286,6 +287,113 @@ def _entry(stage: str, disloc: dict | None) -> tuple[bool, str]:
     return False, "thesis intact — await a dislocation/flush to enter"
 
 
+def _fda_molecule_lists(scarcity_row):
+    """(molecules_checked, molecules_with_rows) when both were measured, else None.
+
+    The only producer, engine.fda_scarcity.compute_fda_scarcity, writes both
+    lists under summary.coverage; it also mirrors molecules_checked at the row
+    top level, but never molecules_with_rows. A row that names molecules only
+    at the top level has not measured the gap — naming every checked molecule
+    would invent one — so there is no row-level fallback.
+    """
+    if not isinstance(scarcity_row, dict):
+        return None
+    summary = scarcity_row.get("summary")
+    coverage = summary.get("coverage") if isinstance(summary, dict) else None
+    if (
+        isinstance(coverage, dict)
+        and "molecules_checked" in coverage
+        and "molecules_with_rows" in coverage
+    ):
+        return (
+            coverage.get("molecules_checked"),
+            coverage.get("molecules_with_rows"),
+        )
+    return None
+
+
+def _fda_detail_lines(scarcity_row):
+    """Up to three producer-computed FDA record lines, or None.
+
+    The only producer, engine.fda_scarcity.compute_fda_scarcity, writes the
+    list at the row top level: one line per record, three at most, already in
+    display order. The lines restate the capture, so nothing is rewritten,
+    translated or reordered here. The freshness gate reads the same keys as
+    _fda_observation_inputs: an unqualified or unfinished capture publishes
+    no per-record line — the chip and the split already carry the withheld
+    form, and naming records from a source that did not answer would be a
+    claim the desk cannot vouch for.
+    """
+    if not isinstance(scarcity_row, dict):
+        return None
+    summary = scarcity_row.get("summary")
+    freshness = summary.get("freshness") if isinstance(summary, dict) else None
+    if not isinstance(freshness, dict):
+        return None
+    if (
+        freshness.get("capture_qualified") is not True
+        or freshness.get("capture_incomplete")
+    ):
+        return None
+    raw = scarcity_row.get("details")
+    if not isinstance(raw, list):
+        return None
+    items = [item for item in raw if isinstance(item, str) and item.strip()][:3]
+    return items or None
+
+
+def _fda_observation_inputs(scarcity_row):
+    """(regulator_counts, manufacturer_counts, capture_incomplete), or None.
+
+    Regulator counts are the present-row tally already on summary.counts.
+    Manufacturer availability has no tally on the summary, so it is counted
+    here over the same rows the regulator tally used: rows absent from the
+    current generation are skipped, exactly as the chip skips them, and a
+    value the collector could not classify lands in no bucket rather than
+    being read as "not stated". An unfinished capture travels as its own
+    flag: this function does not decide the wording, the display module
+    does, so the unpublished (no-digit) form stays one decision in one place.
+    None when the row carries no measured counts, or when the capture is
+    neither qualified nor flagged incomplete: an all-zero tally from a source
+    that did not answer is not an observation, and the split would publish a
+    clause the row does not have.
+    """
+    if not isinstance(scarcity_row, dict):
+        return None
+    summary = scarcity_row.get("summary")
+    if not isinstance(summary, dict):
+        return None
+    counts = summary.get("counts")
+    if not isinstance(counts, dict):
+        return None
+    regulator = {
+        "current": counts.get("current"),
+        "resolved": counts.get("resolved"),
+        "discontinued": counts.get("discontinued"),
+    }
+    manufacturer = {"available": 0, "limited": 0, "unavailable": 0, "not_stated": 0}
+    for row in summary.get("rows") or []:
+        if not isinstance(row, dict) or row.get("absent"):
+            continue
+        stated = row.get("manufacturer_availability")
+        if stated is None or not str(stated).strip():
+            manufacturer["not_stated"] += 1
+            continue
+        normalised = str(row.get("availability_normalized") or "").strip().casefold()
+        if normalised in ("available", "limited", "unavailable"):
+            manufacturer[normalised] += 1
+    freshness = summary.get("freshness")
+    if not isinstance(freshness, dict):
+        return None
+    capture_incomplete = bool(freshness.get("capture_incomplete"))
+    if not capture_incomplete and freshness.get("capture_qualified") is not True:
+        # The source did not answer and the capture is not merely unfinished:
+        # an all-zero tally here means "no observation", not "nothing recorded",
+        # so there is nothing to split and no clause is published.
+        return None
+    return (regulator, manufacturer, capture_incomplete)
+
+
 def compute_foresight_cascade(bottleneck: dict | None = None,
                               revisions: dict | None = None,
                               demand: dict | None = None,
@@ -427,6 +535,9 @@ def compute_foresight_cascade(bottleneck: dict | None = None,
         # W5b: per-theme physical feed chip (generic — any orphan-rescue feed populates here)
         # FDA drug shortages for glp1_obesity; future feeds (Pink Sheet, LBNL) reuse same field.
         theme_feed_summary: dict | None = None
+        molecule_gap = None
+        observation_split = None
+        fda_details = None
         if fda_scarcity is not None:
             scarcity_row = fda_scarcity.get(k)
             if scarcity_row is not None:
@@ -435,6 +546,47 @@ def compute_foresight_cascade(bottleneck: dict | None = None,
                     theme_feed_summary = format_theme_feed_chip(scarcity_row, k)
                 except Exception as _e:  # noqa: BLE001
                     log.debug("fda_scarcity chip format failed for %s: %s", k, _e)
+                # After the chip. The module name is split so the closure walk
+                # does not attach this helper to every exclusive job that
+                # already imports the cascade. healthcare-fda-supply owns the
+                # file because its suite imports it. The clause is optional
+                # decoration, so it degrades in control flow like the chip
+                # guard above, but the failure logs at WARNING, not debug:
+                # production builds run at INFO (scripts/build_foresight.py
+                # basicConfig), where a debug line would hide a clause that
+                # silently stopped rendering. molecule_gap stays None.
+                try:
+                    names = _fda_molecule_lists(scarcity_row)
+                    if names is not None:
+                        gap_module = importlib.import_module(
+                            "engine." + "healthcare_molecule_gap"
+                        )
+                        molecule_gap = gap_module.molecule_gap_clause(*names)
+                except Exception as _e:  # noqa: BLE001
+                    log.warning("fda_scarcity molecule_gap clause failed for %s: %s", k, _e)
+                # Sibling of the chip and of the gap clause: one observation, three
+                # separate claims. The module name is split for the same closure
+                # reason as the gap helper above, and it degrades the same way -
+                # observation_split stays None and the failure logs at WARNING, so
+                # a clause that stops rendering on real data cannot disappear from
+                # the page silently in an INFO-level production build.
+                try:
+                    inputs = _fda_observation_inputs(scarcity_row)
+                    if inputs is not None:
+                        split_module = importlib.import_module(
+                            "engine." + "healthcare_observation_split"
+                        )
+                        observation_split = split_module.observation_split_clause(*inputs)
+                except Exception as _e:  # noqa: BLE001
+                    log.warning("fda_scarcity observation_split clause failed for %s: %s", k, _e)
+                # Sibling of the chip and of the clauses above: the producer's
+                # own per-record lines, published as text below the chips. It
+                # degrades the same way — fda_details stays None and the
+                # failure logs at WARNING, not debug.
+                try:
+                    fda_details = _fda_detail_lines(scarcity_row)
+                except Exception as _e:  # noqa: BLE001
+                    log.warning("fda_scarcity fda_details failed for %s: %s", k, _e)
 
         # W1b: Federal Register policy catalyst chip — fold into rationale only.
         # NEVER changes stage. policy_reg_chip is a display dict; summary folds into rationale.
@@ -495,6 +647,13 @@ def compute_foresight_cascade(bottleneck: dict | None = None,
             "glut_score": (gl or {}).get("glut_score"),
             # W5b: per-theme physical feed (generic slot — FDA shortages now, future feeds same field)
             "theme_feed_summary": theme_feed_summary,
+            # Sibling of the chip: configured molecules with no rows. Not a chip key.
+            "molecule_gap": molecule_gap,
+            # Sibling of the chip: regulator status, manufacturer availability and
+            # capacity kept as three clauses. Not a chip key, never in the chip title.
+            "observation_split": observation_split,
+            # Sibling of the chip: the producer's record lines. Not a chip key, never in a title.
+            "fda_details": fda_details,
             # W2c: demand per-name divergence + bottleneck PPI for score de-circularization
             # (P1-C): passed through so foresight_score axes can read real inputs
             # without default-filling. One hunk addition only — does not touch stage logic.

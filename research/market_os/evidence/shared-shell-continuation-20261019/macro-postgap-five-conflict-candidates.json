@@ -1,0 +1,336 @@
+{
+  "started_at": "2026-10-20T00:16:52.710831+00:00",
+  "base": "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd",
+  "ours": "e22e1c33c810da99f7389f5069dd2ee045270c85",
+  "incoming": "aa208d3c9ca38a57e92bd8e912eadd17d08f8d92",
+  "preview_tree": "167df5d775c1e79471db639d01ebb2f5ac4b9f8d",
+  "source_effect": false,
+  "files": [
+    {
+      "path": "site/etfs.html",
+      "base_sha256": "97f444495e0cb92bc8c73afa2dc92950f902fee9af93e5843460c35be4e8f7ee",
+      "ours_sha256": "f8ee19ce24f88d0dede677dce3bcfa45676cda8602b28ff4c818b99367628daf",
+      "incoming_sha256": "4daebce586277d6bb63ef4f90ac1231a1ac0ca2f722962474e8baee202c3367b",
+      "candidate_sha256": "f8b898079f7d2af5ab08a7877ef15f40202f70aad9d2a47dae2f371e07e5cf72",
+      "candidate_bytes": 97332,
+      "base_to_ours_reconstructed": true,
+      "incoming_recovered_exactly": true,
+      "injector_idempotent": true,
+      "adapter_count": 1
+    },
+    {
+      "path": "site/us_stocks.html",
+      "base_sha256": "984412804326fc072b99b662d41ea3f329066865f55ed0453714a347f0d9cb79",
+      "ours_sha256": "3beacdc885ad4967a3da95661d4145a7cde0b8f291e36ec65685134389c3c52b",
+      "incoming_sha256": "b39af1fafbc99d08ff030105a83686584ead66f9c28a68258b6203f39fbcf055",
+      "candidate_sha256": "eaf2cb07ef36f65baface2bf87da98d78845d0cf2a9d41e4d2c3b631aa907420",
+      "candidate_bytes": 731236,
+      "base_to_ours_reconstructed": true,
+      "incoming_recovered_exactly": true,
+      "injector_idempotent": true,
+      "adapter_count": 3
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "base_sha256": "838d2927f1f05b120eceafd7dc42039dc5b3a17ad0402f985ee77aa3cc9077f5",
+      "ours_sha256": "7eb493e569c4755772bbb94e427cd3935126cc768086ce431caf89736fa1b523",
+      "incoming_sha256": "6de6d01adbe40a5c71f8d80472f3d0deca5a02a99c4e27779984b3bff4d274b1",
+      "candidate_sha256": "4ab43219e01a82a024f157bddac7e41dfd49a9424b3921907028a5ba46246f2c",
+      "candidate_bytes": 75815,
+      "conflict_count": 4,
+      "preserves_both_intents": true
+    },
+    {
+      "path": "app/deploy/update.sh",
+      "base_sha256": "fc03c782c4c1be90b0f8cd040cc071d9dd4142c139b5a5b3c636ddc832b3c3e8",
+      "ours_sha256": "d102c5f39366389eea8f75d8a2ffb754398e40f5c0e19779539656cdb6716002",
+      "incoming_sha256": "d0c5fc92078310fab3f96653b312121411f54ceb97a02bc06f2e5e42141cdf88",
+      "candidate_sha256": "eae12bef34a5dbba1a986846fb3c59992ba228ca472a0316c042ced6e0e48d88",
+      "candidate_bytes": 141843,
+      "conflict_count": 1,
+      "preserves_both_intents": true,
+      "inverse_recovers_entire_incoming_file": true
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "base_sha256": "625a2aa08ea6aec2d4cbe73a6ed0db3b003553ea6ce20a64b44e4dff8da4dc37",
+      "ours_sha256": "1b210d6ca000d8bf5460e44f3518a267af8065203817ffd78c2f45259402fe9d",
+      "incoming_sha256": "0e064e874d3eecb9bc62bb575fb1504f89286d43ecf4f551862882903651ca08",
+      "candidate_sha256": "bd03bb678da28c98549eee1adb2f97a9c6593fe17760295348db51a120a4b23c",
+      "candidate_bytes": 1915930,
+      "conflict_count": 14,
+      "preserves_both_intents": true,
+      "base_job_count": 327,
+      "ours_job_count": 327,
+      "incoming_job_count": 329,
+      "merged_job_count": 329,
+      "incoming_job_order_preserved": true,
+      "new_incoming_jobs": [
+        "market-memory-e0-contract",
+        "research-codegen-runtime-qualification"
+      ],
+      "all_job_fields_three_way_verified": true,
+      "ours_job_delta_fields": [
+        {
+          "job": "bea-gvc-current-descriptive-consumer",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "c19-wp32-integrated-answer-correction-denial-pins",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "c19-wp22-dhi-traversal",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "c19-wp31-incremental-information",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "am-edition-producer",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "conviction-profile",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "options-matrix-code",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "international-workspace-foundation",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "international-workspace-browser",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "fif-kernel-guards",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "cycle-consistency",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "intelligence-registry",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "push-retry-policy",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "transmission-chains",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "options-payoff-lab-consumer",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "finance-intelligence",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "consumer-cyclical-economic-change",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "research-screener",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "leader-radar-unit",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "validated-claims-contract",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "data-base-shim",
+          "fields": [
+            "steps"
+          ]
+        },
+        {
+          "job": "sanctions-map-page",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "itr-turn-rotation",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "nw-lobe-unfreeze",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "lr-rotation-evidence-modes",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "biocatalyst-worker",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "crypto-assistant-context",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "crypto-vector-r2-organs",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "govrev-program-ontology",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "unrun-nav-chrome",
+          "fields": [
+            "steps"
+          ]
+        },
+        {
+          "job": "washout-turn-organ",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "earnings-economic-source-selection",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "earnings-economic-dossier",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "research-price-panel",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "leadership-rotation-countercases",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "ticker-news-qbus",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "market-os-macro-workspaces",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "market-os-macro-suite-pages",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "markets-regime-strip",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "skew-accrual-lane",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "mining-economic-dossier",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "industrials-result-cash",
+          "fields": [
+            "paths"
+          ]
+        },
+        {
+          "job": "pb-d-event-quality",
+          "fields": [
+            "paths"
+          ]
+        }
+      ]
+    }
+  ],
+  "finished_at": "2026-10-20T00:17:08.759303+00:00"
+}

@@ -947,6 +947,7 @@ def test_production_openapi_mounts_every_attested_history_route() -> None:
     assert "/api/forensics/v1/financial/revisions" in paths
     assert "/api/forensics/v1/financial/packet" in paths
     assert "/api/forensics/v1/financial/statements" in paths
+    assert "/api/forensics/v1/financial/catalog" in paths
 
 
 def test_financial_query_post_unauthenticated_returns_401_with_private_headers() -> None:
@@ -1019,6 +1020,7 @@ _MOUNTED_PAID_PATHS = (
     "/api/forensics/v1/financial/revisions",
     "/api/forensics/v1/financial/packet",
     "/api/forensics/v1/financial/statements",
+    "/api/forensics/v1/financial/catalog",
 )
 
 

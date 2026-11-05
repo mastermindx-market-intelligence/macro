@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T12:24:32Z",
+ "accession": "0001193125-26-233537",
+ "cik": "0000866291",
+ "doc_byte_length": 4981774,
+ "doc_sha256": "9bfce73a4ff3ec58c3821089b8cb487ea67ec44d612c8db96567e4ebe0d95b48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-27",
+ "primary_document": "algm-20260327.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1388128,
+  "byte_start": 1387773,
+  "normalized": "Wafer Foundry Agreement, effective January 26, 2023, by and between Allegro MicroSystems, Inc. and Polar Semiconductor, LLC (incorporated by reference from Exhibit 10.6 to the Company’s Quarterly Report on Form 10-Q filed on February 1, 2023)†",
+  "normalized_sha256": "07ca900410bcc7fa2f1c0b137b63be027194ec6514b1697de83b3bb02890d0b5",
+  "raw": "Wafer Foundry Agreement, effective January 26, 2023, by and between Allegro MicroSystems, Inc. and Polar Semiconductor, LLC (incorporated by reference from Exhibit 10.6 to the Company&#8217;s Quarterly Report on Form 10-Q filed on February 1, 2023)</span></a><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">&#134;",
+  "raw_sha256": "18959f0b2c911956c9238ee2ea1c78053175b0f6296706826f43003838b7a311"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/866291/000119312526233537/algm-20260327.htm",
+ "xbrl_contexts": []
+}

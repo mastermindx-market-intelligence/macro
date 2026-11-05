@@ -1,0 +1,70 @@
+{
+  "observed_at_utc": "2026-10-13T02:53:18.050676+00:00",
+  "original_cli_exit_code": 0,
+  "trigger": "source frontier9053 actual merged and canonicaljoin consumed",
+  "pr": {
+    "headRefOid": "8811e38c64eb14fadc40a00ccfbfb31c37f863e8",
+    "mergeStateStatus": "BEHIND",
+    "number": 955,
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-12T23:02:31Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38319939063/job/115045337906",
+        "name": "Analyze (actions)",
+        "startedAt": "2026-10-12T23:01:42Z",
+        "status": "COMPLETED",
+        "workflowName": "CodeQL"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-12T23:03:40Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38319939063/job/115045338054",
+        "name": "Analyze (javascript-typescript)",
+        "startedAt": "2026-10-12T23:01:41Z",
+        "status": "COMPLETED",
+        "workflowName": "CodeQL"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-12T23:02:31Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38319939063/job/115045338097",
+        "name": "Analyze (python)",
+        "startedAt": "2026-10-12T23:01:41Z",
+        "status": "COMPLETED",
+        "workflowName": "CodeQL"
+      },
+      {
+        "__typename": "StatusContext",
+        "context": "Vercel \u2013 macro-eiz4",
+        "startedAt": "2026-10-12T23:01:38Z",
+        "state": "FAILURE",
+        "targetUrl": "https://vercel.com/chriswong6031-creator?upgradeToPro=build-rate-limit"
+      },
+      {
+        "__typename": "StatusContext",
+        "context": "Vercel \u2013 mastermind-terminal",
+        "startedAt": "2026-10-12T23:01:38Z",
+        "state": "FAILURE",
+        "targetUrl": "https://vercel.com/chriswong6031-creator?upgradeToPro=build-rate-limit"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-12T23:02:23Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/runs/115045556727",
+        "name": "CodeQL",
+        "startedAt": "2026-10-12T23:02:20Z",
+        "status": "COMPLETED",
+        "workflowName": ""
+      }
+    ],
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/955"
+  },
+  "original_workflow_approval_refusal_preserved": true,
+  "approval_or_dispatch_attempted": false
+}

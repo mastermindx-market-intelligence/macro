@@ -36,6 +36,9 @@ from engine.cycle_ontology import (
     ONTOLOGY_VERSION,
     PHASES,
     STANCES,
+    DOCTRINE_STANCE,
+    DOCTRINE_STANCES,
+    doctrine_for,
     TurnParams,
     canonical_position,
     classify_phase,
@@ -960,3 +963,144 @@ def test_classify_phase_low_pos_recovery_trough():
     r_down = classify_phase(20.0, -5.0, _bearish_mtf(), {"macd_pos": False})
     assert r_up["phase"]   == "Recovery", f"Expected Recovery, got {r_up['phase']}"
     assert r_down["phase"] == "Trough",   f"Expected Trough, got {r_down['phase']}"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 13. Doctrine stance — producer-stamped action vocabulary (RIG
+#     sector-intelligence-cycles-20261021, adjudication SIC-ADJ-01 / SIC-V3-C01, C02)
+# ─────────────────────────────────────────────────────────────────────────────
+
+_DOCTRINE_INK_BY_TONE = {
+    "bullish": {"ok", "warn"}, "anticipatory": {"ok"}, "caution": {"warn"},
+    "bearish": {"warn", "muted"}, "neutral": {"muted"},
+}
+
+
+def test_doctrine_stance_maps_every_engine_stance_exactly_once():
+    """Every STANCES key has one doctrine target; no extra keys; None is never mapped
+    (a missing stance is "Stance unavailable", never a chip — SIC-V3-C02)."""
+    assert set(DOCTRINE_STANCE) == set(STANCES)
+    assert None not in DOCTRINE_STANCE
+    assert all(v in DOCTRINE_STANCES for v in DOCTRINE_STANCE.values())
+    assert "ignore" not in DOCTRINE_STANCE.values()
+    assert set(DOCTRINE_STANCES) == {"act", "get_ready", "watch", "protect", "aside", "ignore"}
+    assert doctrine_for(None) is None
+    assert doctrine_for("NOT A STANCE") is None
+
+
+def test_doctrine_ink_never_contradicts_engine_tone():
+    """Chip ink is a function of the doctrine word, and the doctrine word may only be
+    reached from a tone whose ink group contains it (SIC-V3-C01: ink never contradicts
+    now.tone). Stance is not direction: ink ∈ {ok, warn, muted} only."""
+    for eng, key in DOCTRINE_STANCE.items():
+        ink = DOCTRINE_STANCES[key]["ink"]
+        assert ink in {"ok", "warn", "muted"}, (eng, key, ink)
+        assert ink in _DOCTRINE_INK_BY_TONE[STANCES[eng]["tone"]], (eng, key, ink)
+    # the adjudicated rows (verdict.yml SIC-ADJ-01)
+    assert DOCTRINE_STANCE["BUY"] == "act"
+    assert DOCTRINE_STANCE["GET READY"] == "get_ready"
+    assert {DOCTRINE_STANCE[s] for s in ("HOLD", "HIGH-RISK BOUNCE", "COUNTERTREND ONLY")} == {"watch"}
+    assert {DOCTRINE_STANCE[s] for s in ("TRIM", "SELL")} == {"protect"}
+    assert {DOCTRINE_STANCE[s] for s in ("WAIT", "AVOID")} == {"aside"}
+
+
+def test_resolve_state_stamps_doctrine_fields_for_every_cell():
+    """resolve_state emits the four doctrine fields for every phase×ladder cell, and
+    they agree with DOCTRINE_STANCE / DOCTRINE_STANCES for the stamped engine stance."""
+    for phase in PHASES:
+        for ladder in LADDER:
+            for pos in (20.0, 50.0, 80.0):
+                r = resolve_state(pos=pos, phase=phase, phase_dir="rising",
+                                  ladder_state=ladder, dc_phase=None, failed_cycle=False)
+                key = DOCTRINE_STANCE[r["stance"]]
+                assert r["doctrine_stance"] == key, (phase, ladder, pos)
+                assert r["doctrine_stance_en"] == DOCTRINE_STANCES[key]["en"]
+                assert r["doctrine_stance_zh"] == DOCTRINE_STANCES[key]["zh"]
+                assert r["doctrine_ink"] == DOCTRINE_STANCES[key]["ink"]
+                assert r["doctrine_ink"] in _DOCTRINE_INK_BY_TONE[r["tone"]]
+
+
+def test_export_payload_carries_doctrine_without_logic():
+    """The generated-JS payload carries the doctrine vocabulary, the engine→doctrine map
+    and a doctrine_stance on every crosswalk cell, so JS renders stamped values only."""
+    payload = export_payload()
+    assert payload["doctrine"] == DOCTRINE_STANCES
+    assert payload["doctrine_stance"] == DOCTRINE_STANCE
+    for key, cell in payload["crosswalk"].items():
+        assert cell["doctrine_stance"] == DOCTRINE_STANCE[cell["stance"]], key
+
+
+# SIC-ADJ-02 / SIC-V4-C01: the production template line that already renders each ZH word.
+_DOCTRINE_ZH_ORIGIN = {
+    "get_ready": ("templates/china_altdata.html.j2", 227),
+    "watch":     ("templates/stage_analysis.html.j2", 1497),
+    "protect":   ("templates/stage_analysis.html.j2", 1499),
+    "aside":     ("templates/stage_analysis.html.j2", 1500),
+    "ignore":    ("templates/options.html.j2", 3630),
+}
+
+
+def test_doctrine_vocabulary_is_the_production_vocabulary():
+    """EN is docs/DESIGN_DOCTRINE.md:44 verbatim and in order; every ZH word except ``act`` is the
+    exact string its cited production template renders; no doctrine ZH equals an engine stance
+    word; Watch never carries the engine's WAIT word (VTC-029 / PRC-036)."""
+    import re as _re
+    from pathlib import Path as _Path
+    from engine.cycle_ontology import DOCTRINE_STANCES, STANCES
+    repo = _Path(__file__).resolve().parents[1]
+    line = (repo / "docs" / "DESIGN_DOCTRINE.md").read_text(encoding="utf-8").split("\n")[43]
+    assert _re.findall(r"\*\*(.+?)\*\*", line) == [v["en"] for v in DOCTRINE_STANCES.values()]
+    for key, (rel, ln) in _DOCTRINE_ZH_ORIGIN.items():
+        src = (repo / rel).read_text(encoding="utf-8").split("\n")[ln - 1]
+        assert DOCTRINE_STANCES[key]["zh"] in src, (key, rel, ln, src[:120])
+    assert set(DOCTRINE_STANCES) - set(_DOCTRINE_ZH_ORIGIN) == {"act"}
+    assert not {v["zh"] for v in STANCES.values()} & {v["zh"] for v in DOCTRINE_STANCES.values()}
+    assert "观望" not in DOCTRINE_STANCES["watch"]["zh"]
+
+
+def test_hold_sentence_is_identical_and_true():
+    """SIC-V5-C02 (PRC-037, SIC-ADJ-01a) narrowed by SIC-V6-C02 (PRC-047): the HOLD sentence is one sentence in three
+    places — the engine comment beside ``DOCTRINE_STANCE["HOLD"]``, design_refs/sector-paper-20261021/cycles_ia.md and
+    components/COMPONENTS.md — identical after whitespace folding; its line citation lands on the Peak extended-uptrend
+    override (the condition ``trend_up and phase == "Peak"`` with the ladder tuple, and the effects stance HOLD /
+    note_key extended_uptrend, all inside the cited range); the folded sentence names every RALLY ON row, Recovery ×
+    TOP WATCH and BOTTOM WATCH / TURN SIGNALED / FRESH BUY; and, as an independent hand-written second check,
+    ``resolve_state`` stamps HOLD on exactly (every RALLY ON row, Recovery × TOP WATCH, Peak × BOTTOM WATCH / TURN
+    SIGNALED / FRESH BUY under trend_up) with no other HOLD cell. The test does not parse the cells out of the sentence."""
+    import re as _re
+    from pathlib import Path as _Path
+    from engine import cycle_ontology as c
+    repo = _Path(__file__).resolve().parents[1]
+    pat = _re.compile(r"HOLD is stamped on every RALLY ON row.*?SIC-V5-C02\)", _re.S)
+    src = (repo / "engine" / "cycle_ontology.py").read_text(encoding="utf-8").split("\n")
+    i = next(n for n, l in enumerate(src) if l.startswith('    "HOLD":') and '"watch"' in l)  # the DOCTRINE_STANCE row, not STANCE_DISPLAY
+    comment = " ".join(l.split("#", 1)[1] for l in src[i:i + 6])
+    docs = ("design_refs/sector-paper-20261021/cycles_ia.md", "design_refs/sector-paper-20261021/components/COMPONENTS.md")
+    found = [pat.findall(t) for t in [comment] + [(repo / p).read_text(encoding="utf-8") for p in docs]]
+    assert [len(f) for f in found] == [1, 1, 1], [len(f) for f in found]
+    sents = [_re.sub(r"\s+", " ", f[0]) for f in found]
+    assert sents[0] == sents[1] == sents[2], sents
+    m = _re.search(r"engine/cycle_ontology\.py:(\d+)-(\d+)", sents[0])
+    cited = "\n".join(src[int(m.group(1)) - 1:int(m.group(2))])
+    for frag in ('trend_up and phase == "Peak"', 'ladder_state in ("BOTTOM WATCH", "TURN SIGNALED", "FRESH BUY")',
+                 'stance = "HOLD"', 'note_key = "extended_uptrend"'):
+        assert frag in cited, (frag, cited)
+    for phrase in ("every RALLY ON row", "Recovery × TOP WATCH", "BOTTOM WATCH / TURN SIGNALED / FRESH BUY"):
+        assert phrase in sents[0], (phrase, sents[0])
+    ladders = sorted({k[1] for k in c._SIMPLE_CROSSWALK})
+    hold = set()
+    for ph in c.PHASES:
+        for ld in ladders:
+            for tu in (False, True):
+                for pos in (10.0, 50.0, 90.0):
+                    r = c.resolve_state(pos=pos, phase=ph, phase_dir="rising" if ph in ("Recovery", "Expansion", "Peak") else "falling",
+                                        ladder_state=ld, trend_up=tu)
+                    if r["stance"] == "HOLD":
+                        hold.add((ph, ld, tu))
+    expected = ({(ph, "RALLY ON", tu) for ph in c.PHASES for tu in (False, True)}
+                | {("Recovery", "TOP WATCH", tu) for tu in (False, True)}
+                | {("Peak", ld, True) for ld in ("BOTTOM WATCH", "TURN SIGNALED", "FRESH BUY")})
+    assert hold == expected, hold ^ expected
+    r = c.resolve_state(pos=80.0, phase="Peak", phase_dir="rising", ladder_state="FRESH BUY", trend_up=True)
+    assert r["divergence"] is False and r["divergence_note"] == c.DIVERGENCE_NOTES["extended_uptrend"]["en"]
+    assert r["doctrine_stance"] == "watch" and r["doctrine_stance_en"] == c.DOCTRINE_STANCES["watch"]["en"]

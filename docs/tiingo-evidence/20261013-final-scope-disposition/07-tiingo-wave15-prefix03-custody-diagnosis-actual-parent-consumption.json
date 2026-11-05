@@ -1,0 +1,16 @@
+{
+  "schema": "tiingo.readonly_collision_diagnosis_actual_parent_consumption/v1",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "original_tool_session": 66869,
+  "original_exit_code": 0,
+  "actual_original_terminal_return_consumed": true,
+  "actual_diagnosis_sha256": "33b92629ab4a724e46b41891517ba90568872ba4647b0aee8710dbe70fa671c4",
+  "actual_frozen_diagnostic_snapshot_sha256": "425bf9fbf315dbcca49032084e651f58580939c695142a8df8faf0c18fc16bec",
+  "failed_prefix03_exact_snapshot_claimed": false,
+  "existing_foreign_content_projection_is_prior_accepted_PXSTD": true,
+  "current_receipt_vendor_symbol": "STMGD",
+  "foreign_receipt_vendor_symbol": "PXSTD",
+  "archive_writes": 0,
+  "provider_requests": 0,
+  "current_new_qualification_writer_started": false
+}

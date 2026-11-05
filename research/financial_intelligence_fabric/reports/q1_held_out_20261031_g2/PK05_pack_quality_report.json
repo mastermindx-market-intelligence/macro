@@ -1,0 +1,545 @@
+{
+  "aapl_golden_used_as_held_out": false,
+  "builders_read_held_out": false,
+  "cells": [
+    {
+      "exclusion_reasons": [
+        "no_prediction",
+        "not_evaluable"
+      ],
+      "fiscal_year": "2024",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 2,
+      "n_labeled": 8,
+      "n_predicted": 7,
+      "polarity": "positive",
+      "section_family": "income_tax",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 8,
+      "n_predicted": 8,
+      "polarity": "positive",
+      "section_family": "utp",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "income_tax",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "income_tax",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [
+        "no_prediction",
+        "not_evaluable"
+      ],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 2,
+      "n_labeled": 8,
+      "n_predicted": 7,
+      "polarity": "positive",
+      "section_family": "income_tax",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 8,
+      "n_predicted": 8,
+      "polarity": "positive",
+      "section_family": "utp",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [
+        "not_evaluable"
+      ],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 1,
+      "n_labeled": 7,
+      "n_predicted": 7,
+      "polarity": "positive",
+      "section_family": "income_tax",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "utp",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 7,
+      "n_predicted": 7,
+      "polarity": "positive",
+      "section_family": "utp",
+      "split": "held_out"
+    }
+  ],
+  "evaluated_at": "2026-10-31T16:37:04Z",
+  "evaluator_role": "independent_q1",
+  "failed_families": [
+    {
+      "blocks": [
+        "PK05"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "7/27",
+        "false_positive_rate": "0/1",
+        "precision": "17/18",
+        "recall": "17/26",
+        "source_fidelity_error": "0/18"
+      },
+      "pack_id": "PK05",
+      "reason_codes": [
+        "precision_below_floor"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "income_tax"
+    },
+    {
+      "blocks": [
+        "PK05"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "1/24",
+        "false_positive_rate": "0/1",
+        "precision": "15/23",
+        "recall": "15/23",
+        "source_fidelity_error": "0/23"
+      },
+      "pack_id": "PK05",
+      "reason_codes": [
+        "precision_below_floor"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "utp"
+    }
+  ],
+  "false_positives": [
+    {
+      "accession": "0000018230-23-000011",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK05:PK05|0000018230-23-000011|extract|utp_rollforward_decreases_prior_period",
+      "guarded_token_present": false,
+      "issuer": "CAT",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "cat-20221231.htm | us-gaap:UnrecognizedTaxBenefitsDecreasesResultingFromPriorPeriodTaxPositions @ ia986bad5dd40477fb48a00fdb5deb9c3_D20220101-20221231 | 'Reductions for tax positions related to prior years (66) (30) (12)' | 2022 reductions for prior-year positions; displayed in parentheses and treated as negative here; the ix fact carries the positive magnitude 66; in millions."
+      },
+      "pack_id": "PK05",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "66000000"
+      },
+      "section_family": "utp",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000018230-23-000011",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK05:PK05|0000018230-23-000011|extract|utp_rollforward_lapse_of_statute",
+      "guarded_token_present": false,
+      "issuer": "CAT",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "cat-20221231.htm | us-gaap:UnrecognizedTaxBenefitsReductionsResultingFromLapseOfApplicableStatuteOfLimitations @ ia986bad5dd40477fb48a00fdb5deb9c3_D20220101-20221231 | 'Reductions for expiration of statute of limitations (3) (3) (3)' | 2022 reductions for statute expirations; displayed in parentheses and treated as negative here; the ix fact carries the positive magnitude 3; in millions."
+      },
+      "pack_id": "PK05",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "3000000"
+      },
+      "section_family": "utp",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000018230-23-000011",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK05:PK05|0000018230-23-000011|extract|utp_rollforward_settlements",
+      "guarded_token_present": false,
+      "issuer": "CAT",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "cat-20221231.htm | us-gaap:UnrecognizedTaxBenefitsDecreasesResultingFromSettlementsWithTaxingAuthorities @ ia986bad5dd40477fb48a00fdb5deb9c3_D20220101-20221231 | 'Reductions for settlements 2 (840) (24) (94)' | 2022 reductions for settlements (IRS settlement of 2007-2016 years); displayed in parentheses and treated as negative here; the ix fact carries the positive magnitude 840; in millions."
+      },
+      "pack_id": "PK05",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "840000000"
+      },
+      "section_family": "utp",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000123",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK05:PK05|0000320193-24-000123|extract|utp_rollforward_decreases_prior_period",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20240928.htm | us-gaap:UnrecognizedTaxBenefitsDecreasesResultingFromPriorPeriodTaxPositions @ c-1 | 'Decreases related to tax positions taken during a prior year (386) (1,463) (1,982)' | FY2024 decrease from prior-period positions; displayed in parentheses and treated as negative here; the ix fact carries the positive magnitude 386; in millions."
+      },
+      "pack_id": "PK05",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "386000000"
+      },
+      "section_family": "utp",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000123",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK05:PK05|0000320193-24-000123|extract|utp_rollforward_lapse_of_statute",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20240928.htm | us-gaap:UnrecognizedTaxBenefitsReductionsResultingFromLapseOfApplicableStatuteOfLimitations @ c-1 | 'Decreases related to expiration of the statute of limitations (229) (494) (929)' | FY2024 decreases from statute expirations; displayed in parentheses and treated as negative here; the ix fact carries the positive magnitude 229; in millions."
+      },
+      "pack_id": "PK05",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "229000000"
+      },
+      "section_family": "utp",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000123",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK05:PK05|0000320193-24-000123|extract|utp_rollforward_settlements",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20240928.htm | us-gaap:UnrecognizedTaxBenefitsDecreasesResultingFromSettlementsWithTaxingAuthorities @ c-1 | 'Decreases related to settlements with taxing authorities (1,070) (19) (28)' | FY2024 decreases from settlements; displayed in parentheses and treated as negative here; the ix fact carries the positive magnitude 1,070; in millions."
+      },
+      "pack_id": "PK05",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "1070000000"
+      },
+      "section_family": "utp",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-23-000016",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK05:PK05|0001652044-23-000016|extract|effective_tax_rate_disclosed",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20221231.htm | untagged | 'Effective tax rate 16.2 %' | Disclosed 2022 effective tax rate; Note 14 rate reconciliation table (no EffectiveTaxRateContinuingOperations ix fact in the filing)."
+      },
+      "pack_id": "PK05",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "0.159"
+      },
+      "section_family": "income_tax",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-23-000016",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK05:PK05|0001652044-23-000016|extract|utp_rollforward_decreases_prior_period",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20221231.htm | us-gaap:UnrecognizedTaxBenefitsDecreasesResultingFromPriorPeriodTaxPositions @ i460134f8252348bba054a6bb814c5a7a_D20220101-20221231 | 'Decreases related to prior year tax positions (557) (263) (437)' | 2022 decrease from prior-year positions; displayed in parentheses and treated as negative here; the ix fact carries the positive magnitude 437; in millions."
+      },
+      "pack_id": "PK05",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "437000000"
+      },
+      "section_family": "utp",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-23-000016",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK05:PK05|0001652044-23-000016|extract|utp_rollforward_settlements",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20221231.htm | us-gaap:UnrecognizedTaxBenefitsDecreasesResultingFromSettlementsWithTaxingAuthorities @ i460134f8252348bba054a6bb814c5a7a_D20220101-20221231 | 'Decreases related to settlement with tax authorities (45) (329) (140)' | 2022 decreases from settlements; displayed in parentheses and treated as negative here; the ix fact carries the positive magnitude 140; in millions."
+      },
+      "pack_id": "PK05",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "140000000"
+      },
+      "section_family": "utp",
+      "split": "held_out"
+    }
+  ],
+  "head_commit": "af6d63be102326f5019df8d95484454d79302e6e",
+  "language_gate": {
+    "guarded_token_count": 0,
+    "hyphen_guarded_count": 0
+  },
+  "metrics": {
+    "extraction": {
+      "abstention": {
+        "denominator": 51,
+        "exclusions": [
+          "insufficient_evidence:3",
+          "not_applicable:5"
+        ],
+        "numerator": 8,
+        "wilson95": [
+          0.0817,
+          0.2801
+        ]
+      },
+      "false_positive_rate": {
+        "denominator": 2,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.6576
+        ]
+      },
+      "precision": {
+        "denominator": 41,
+        "exclusions": [
+          "PK05|0000018230-23-000011|extract|tax_note_text_block",
+          "PK05|0000320193-24-000123|extract|tax_note_text_block",
+          "PK05|0001652044-23-000016|extract|tax_note_text_block"
+        ],
+        "numerator": 32,
+        "wilson95": [
+          0.6329,
+          0.88
+        ]
+      },
+      "recall": {
+        "denominator": 49,
+        "exclusions": [],
+        "numerator": 32,
+        "wilson95": [
+          0.5131,
+          0.7708
+        ]
+      },
+      "source_fidelity_error": {
+        "denominator": 41,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.0857
+        ]
+      }
+    },
+    "findings": {
+      "abstention": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "false_positive_rate": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "precision": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "recall": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      }
+    },
+    "refusal": {
+      "abstention": {
+        "denominator": 2,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.6576
+        ]
+      },
+      "precision": {
+        "denominator": 5,
+        "exclusions": [],
+        "numerator": 2,
+        "wilson95": [
+          0.1176,
+          0.7693
+        ]
+      },
+      "recall": {
+        "denominator": 2,
+        "exclusions": [],
+        "numerator": 2,
+        "wilson95": [
+          0.3424,
+          1.0
+        ]
+      }
+    }
+  },
+  "numerator_denominator_note": "Every rate is numerator/denominator with exclusions listed; truthful refusal is excluded from positive coverage.",
+  "pack_id": "PK05",
+  "pack_name": "Tax and uncertain tax positions",
+  "protocol_id": "fif-q0-quality-protocol/v1",
+  "quality_label": "underpowered",
+  "schema": "fundamental_forensics.pack_quality_report/v1",
+  "split_roots": {
+    "gold": "tests/fixtures/fundamental_forensics/",
+    "held_out": "tests/fixtures/fundamental_forensics_held_out/"
+  }
+}

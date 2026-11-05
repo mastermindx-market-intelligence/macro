@@ -283,6 +283,23 @@ def test_live_strip_ssrs_day_change_not_monthly() -> None:
     assert "GC=F_chg': a.chg}" not in live
 
 
+def test_price_lamps_do_not_say_live() -> None:
+    """Four price lamps say last. seo_desc does not open on Live commodity."""
+    src = _tpl()
+    start = src.index("LIVE PRICE STRIP")
+    end = src.index("SECTION 2", start)
+    strip = src[start:end]
+    assert ">live<" not in strip
+    assert "实时" not in strip
+    assert ">last<" in strip
+    assert ">最新<" in strip
+    # The observer still turns a lamp green when live.js patches a price.
+    assert 'data-live-pill="{{ sym }}"' in strip
+    seo_at = src.index("seo_desc")
+    seo = src[seo_at:src.index("seo_path", seo_at)]
+    assert "Live commodity" not in seo
+
+
 def test_same_window_cannot_ship_two_values() -> None:
     """Grid and asset_vm 1-month both go through _chg_pct(close, CHG_1M_BARS)."""
     close = pd.Series([float(i) for i in range(50, 80)])

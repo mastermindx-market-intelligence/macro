@@ -99,7 +99,7 @@ page shape is stable across refreshes.
               <li key={ep.episode_id} className={s.row} data-ticker={ep.ticker}
                   data-stance={ep.display.stance} data-state={ep.state}>
                 <div className={s.rail}>
-                  <time className={s.when} dateTime={ep.display.knowable_at}>{fmtClock(ep.display.knowable_at)}</time>
+                  <time className={s.when} dateTime={ep.display.knowable_at}>{hm}<span className={s.tz}>{tz}</span></time>{/* [hm, tz] = splitClock(fmtClock(...)); textContent stays "11:30 ET" */}
                   <span className={s.age} data-testid="dislo-age">{fmtAge(ep.display.knowable_at, now, lang)}</span>
                 </div>
                 <a className={s.sym} href={navHref(ep.ticker)}>{ep.ticker}</a>
@@ -205,24 +205,27 @@ adds a muted line under the header: `Some watchlist names could not be joined.` 
 ## §7 CSS (module; tokens only; copy `.title`/`.sub`/`.disclosure` declarations from `EventImpactPanel.module.css`)
 
 ```css
-.wrap { max-width: 1120px; margin: 0 auto; padding: var(--sp-5) var(--sp-4) var(--sp-8); }
+.wrap { width: 100%; box-sizing: border-box; justify-self: stretch; align-self: stretch; max-width: 1120px; margin: 0 auto; padding: var(--sp-5) var(--sp-4) var(--sp-8); }
 .head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--sp-4); flex-wrap: wrap; }
-.status { display: inline-flex; align-items: center; gap: var(--sp-2); color: var(--text-2); font-size: var(--fs-micro); }
-.badge { border: 1px solid var(--hairline-strong); border-radius: 999px; padding: 1px var(--sp-2); color: var(--text-2); }
+.status { display: inline-flex; flex-wrap: wrap; row-gap: 2px; align-items: center; gap: var(--sp-2); color: var(--text-2); font-size: var(--fs-micro); }
+.badge { white-space: nowrap; border: 1px solid var(--hairline-strong); border-radius: 999px; padding: 1px var(--sp-2); color: var(--text-2); }
+.dot { color: var(--text-3); }
+.asof { white-space: nowrap; }
 .chip { border-radius: 999px; padding: 1px var(--sp-2); font-size: var(--fs-micro); border: 1px solid var(--hairline); color: var(--text-2); white-space: nowrap; }
 .chipWarn { border-color: var(--warn); color: var(--warn); }
 .group { margin-top: var(--sp-6); }
 .eyebrow { display: flex; align-items: baseline; gap: var(--sp-2); margin: 0 0 var(--sp-2); font-size: var(--fs-micro); letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); border-bottom: 1px solid var(--hairline); padding-bottom: var(--sp-1); }
 .count { font-variant-numeric: tabular-nums; color: var(--text-2); }
 .list { list-style: none; margin: 0; padding: 0; }
-.row { display: grid; grid-template-columns: 4.25rem 5.5rem minmax(0, 1fr) auto; column-gap: var(--sp-3); align-items: start;
+.row { display: grid; grid-template-columns: 6.25rem 5.5rem minmax(0, 1fr) auto; column-gap: var(--sp-3); align-items: start;
        padding: var(--sp-3) var(--sp-3) var(--sp-3) var(--sp-2); border-left: 2px solid var(--hairline-strong); border-bottom: 1px solid var(--hairline); }
 .row[data-stance="confirmed"] { border-left-color: var(--up); }
 .row[data-stance="forming"]   { border-left-color: var(--brand-2); }
 .row[data-state="INVALIDATED"] { border-left-color: var(--down); }
 .rail { display: flex; flex-direction: column; }
-.when { font-size: var(--fs-num-lg); font-variant-numeric: tabular-nums; line-height: 1; color: var(--text); }
-.age  { margin-top: 2px; font-size: var(--fs-micro); color: var(--text-3); font-variant-numeric: tabular-nums; }
+.when { white-space: nowrap; font-size: var(--fs-num-lg); font-variant-numeric: tabular-nums; line-height: 1; color: var(--text); }
+.age  { white-space: nowrap; margin-top: 2px; font-size: var(--fs-micro); color: var(--text-3); font-variant-numeric: tabular-nums; }
+.tz   { font-size: var(--fs-micro); letter-spacing: .06em; color: var(--text-3); font-variant-numeric: normal; }
 .sym  { font-weight: 600; color: var(--text); text-decoration: none; align-self: baseline; }
 .sym:focus-visible { outline: 2px solid var(--brand-2); outline-offset: 2px; }
 .body { min-width: 0; }
@@ -236,11 +239,11 @@ adds a muted line under the header: `Some watchlist names could not be joined.` 
 .voidLine { margin: 0; padding: var(--sp-3) var(--sp-2); color: var(--text-3); font-size: var(--fs-micro); }
 .warnLine { margin: var(--sp-3) 0 0; color: var(--warn); font-size: var(--fs-micro); }
 @media (max-width: 820px) {
-  .row { grid-template-columns: 3.75rem 4.5rem minmax(0, 1fr); }
+  .row { grid-template-columns: 5.75rem 4.5rem minmax(0, 1fr); }
   .chips { grid-column: 2 / -1; justify-self: start; margin-top: var(--sp-1); flex-wrap: wrap; }
 }
 @media (max-width: 480px) {
-  .row { grid-template-columns: 3.5rem minmax(0, 1fr); row-gap: 2px; }
+  .row { grid-template-columns: 4.75rem minmax(0, 1fr); row-gap: 2px; }
   .sym  { grid-column: 2; }
   .body, .chips { grid-column: 2; }
   .sentence { white-space: normal; }
@@ -248,6 +251,13 @@ adds a muted line under the header: `Some watchlist names could not be joined.` 
 }
 @media (prefers-reduced-motion: reduce) { .row, .chip { transition: none; } }
 ```
+
+**Amendment 2026-10-04 (seat review of the first crops, Terminal PR #808):** the 4.25rem rail wrapped
+"ET" / "美东" onto a second 28px line and the age onto three, and `.wrap` without a `width` let the
+shell size the page to its header (620px populated, 830px stale). The rail is now 6.25 / 5.75 / 4.75rem
+per breakpoint with the digits `nowrap`, the zone renders as a micro `.tz` suffix inside `<time>`
+(textContent unchanged, so the "HH:MM ET" assertions hold), and `.wrap` is `width: 100%` + stretch.
+The values above are the amended ones; the shipped CSS is `components/dislocations/DislocationsView.module.css`.
 
 The row's `<details>` opens in place; its `.tech` grid spans the row (place the `<details>` so the
 `dl` lands in a new grid row: wrap `.chips` + `.more` in the same cell and let `.tech` be

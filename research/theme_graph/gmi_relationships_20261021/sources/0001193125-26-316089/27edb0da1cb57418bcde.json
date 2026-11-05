@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 518534,
+  "byte_start": 517949,
+  "normalized": "While Microsoft, Sony, and Nintendo are among our licensees in the gaming market, a significant portion of our gaming royalty revenues comes from third-party peripheral makers who make licensed gaming products designed for use with popular video game console systems from such video game console makers. Video game console systems are closed, proprietary systems, and video game console system makers typically impose certain requirements or restrictions on third-party peripheral makers who wish to make peripherals that will be compatible with a particular video game console system.",
+  "normalized_sha256": "27edb0da1cb57418bcde8c315779e545bb671288dbfec7e402e0e06fe753f725",
+  "raw": "While Microsoft, Sony, and Nintendo are among our licensees in the gaming market, a significant portion of our gaming royalty revenues comes from third-party peripheral makers who make licensed gaming products designed for use with popular video game console systems from such video game console makers. Video game console systems are closed, proprietary systems, and video game console system makers typically impose certain requirements or restrictions on third-party peripheral makers who wish to make peripherals that will be compatible with a particular video game console system.",
+  "raw_sha256": "27edb0da1cb57418bcde8c315779e545bb671288dbfec7e402e0e06fe753f725"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

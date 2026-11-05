@@ -1,0 +1,15 @@
+{
+  "base": "2e17ae66adca54dcecb9cbe9c669f32d8593ff41",
+  "source_blobs": {
+    "templates/intl_workspace/_gs_scanner_macros.html.j2": "77e7566c478afffe5e3c0734f550ac515262a148",
+    "templates/intl_workspace/dislocations.html.j2": "8691890cd494d16b998107b840cb7ca3e596afa2",
+    "templates/intl_workspace/transmission.html.j2": "f871dbddf7de3d85bb371a73f1ed914a990dbfec",
+    "templates/theme.js": "21a1fb1627ac34badc6078cff486f98486e9b773",
+    "templates/intl.html.j2": "9311816ba0f43a716fb3f7c4880e4bc01eb478a2",
+    "scripts/build_intl.py": "f6785ee4075377e5812f0206d6ff2f1d6ff95bdc"
+  },
+  "packet_sha256": "d496425b7beca2ae0f774c0a0dc7b228685943d8c7b952e7516bd94d1708bb53",
+  "browser": "NEW_LAUNCH_HELD; source/pure-render only until retained crash diagnosis returns",
+  "writers": "Exact path status in historical6492 clean; source/process census found no live tooltip writer; current tree exclusive",
+  "effects": "none beyond separateSSD mint; no sourcechanges before packet"
+}

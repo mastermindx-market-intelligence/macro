@@ -1,0 +1,186 @@
+[
+  {
+    "rev": "90e0644f9f08ab37115dfffedce2ba7939b0835d",
+    "sources": {
+      "site/intelligence/by_ticker.json": {
+        "retained": true,
+        "sha256": "81a0b2406a645584a05b38a4b269e96fa87430813aca3ec887801c5552ccf493",
+        "global_clock": "2026-11-02",
+        "rows": {
+          "HTFL": {
+            "exists": false,
+            "truthy": false,
+            "type": "NoneType",
+            "keys": null,
+            "row_clock": null,
+            "usable_headlines": null
+          },
+          "MIAX": {
+            "exists": false,
+            "truthy": false,
+            "type": "NoneType",
+            "keys": null,
+            "row_clock": null,
+            "usable_headlines": null
+          },
+          "AAPL": {
+            "exists": true,
+            "truthy": true,
+            "type": "dict",
+            "keys": [
+              "ticker",
+              "news",
+              "alt",
+              "radar",
+              "standout",
+              "has_news",
+              "has_alt",
+              "has_radar",
+              "has_standout",
+              "read",
+              "brain",
+              "note"
+            ],
+            "row_clock": {},
+            "usable_headlines": 0
+          }
+        }
+      },
+      "site/news/by_ticker.json": {
+        "retained": true,
+        "sha256": "26880bc452ef13111088b9abc748cb97a27f66f1281a5ff92a9f2f753e2fba1c",
+        "global_clock": "2026-11-02",
+        "rows": {
+          "HTFL": {
+            "exists": false,
+            "truthy": false,
+            "type": "NoneType",
+            "keys": null,
+            "row_clock": null,
+            "usable_headlines": null
+          },
+          "MIAX": {
+            "exists": false,
+            "truthy": false,
+            "type": "NoneType",
+            "keys": null,
+            "row_clock": null,
+            "usable_headlines": null
+          },
+          "AAPL": {
+            "exists": true,
+            "truthy": true,
+            "type": "dict",
+            "keys": [
+              "n_recent",
+              "sentiment_lean",
+              "n_pos",
+              "n_neg",
+              "sentiment_score",
+              "sentiment_strength",
+              "baskets",
+              "sectors",
+              "is_mag7",
+              "top",
+              "note"
+            ],
+            "row_clock": {},
+            "usable_headlines": 4
+          }
+        }
+      }
+    }
+  },
+  {
+    "rev": "91b2942304f8d32e1da22d5ea98d8474f8956c50",
+    "sources": {
+      "site/intelligence/by_ticker.json": {
+        "retained": true,
+        "sha256": "b8cfd54c2d15e57e20b68f22e454017f90b4647771746eb2c821f662959ae62f",
+        "global_clock": "2026-11-02",
+        "rows": {
+          "HTFL": {
+            "exists": false,
+            "truthy": false,
+            "type": "NoneType",
+            "keys": null,
+            "row_clock": null,
+            "usable_headlines": null
+          },
+          "MIAX": {
+            "exists": false,
+            "truthy": false,
+            "type": "NoneType",
+            "keys": null,
+            "row_clock": null,
+            "usable_headlines": null
+          },
+          "AAPL": {
+            "exists": true,
+            "truthy": true,
+            "type": "dict",
+            "keys": [
+              "ticker",
+              "news",
+              "alt",
+              "radar",
+              "standout",
+              "has_news",
+              "has_alt",
+              "has_radar",
+              "has_standout",
+              "read",
+              "brain",
+              "note"
+            ],
+            "row_clock": {},
+            "usable_headlines": 0
+          }
+        }
+      },
+      "site/news/by_ticker.json": {
+        "retained": true,
+        "sha256": "81486260768d9754bdc0d5c78d0b8a4c8033f4007a62f7e8de69f66dbff648ed",
+        "global_clock": "2026-11-03",
+        "rows": {
+          "HTFL": {
+            "exists": false,
+            "truthy": false,
+            "type": "NoneType",
+            "keys": null,
+            "row_clock": null,
+            "usable_headlines": null
+          },
+          "MIAX": {
+            "exists": false,
+            "truthy": false,
+            "type": "NoneType",
+            "keys": null,
+            "row_clock": null,
+            "usable_headlines": null
+          },
+          "AAPL": {
+            "exists": true,
+            "truthy": true,
+            "type": "dict",
+            "keys": [
+              "n_recent",
+              "sentiment_lean",
+              "n_pos",
+              "n_neg",
+              "sentiment_score",
+              "sentiment_strength",
+              "baskets",
+              "sectors",
+              "is_mag7",
+              "top",
+              "note"
+            ],
+            "row_clock": {},
+            "usable_headlines": 4
+          }
+        }
+      }
+    }
+  }
+]

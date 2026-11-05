@@ -1,0 +1,101 @@
+{
+  "observed_at": "2026-10-21T09:54:36.831338+00:00",
+  "service": {
+    "MainPID": "3972732",
+    "NRestarts": "0",
+    "ActiveState": "active",
+    "ActiveEnterTimestamp": "Wed 2026-10-21 08:30:43 UTC"
+  },
+  "installed": "fe7afd0111141bae27927715e709d074fea729e2",
+  "namespace_installed": "fe7afd0111141bae27927715e709d074fea729e2",
+  "books": {
+    "autonomous": {
+      "authority_files": {
+        "nav_history.jsonl": {
+          "bytes": 10538,
+          "sha256": "0e0a85db720d63b8e29efe946c8c573be8c74bfdc3dcacc49b243bc4aa92f558",
+          "nonempty": true
+        },
+        "account.json": {
+          "bytes": 1411,
+          "sha256": "7869964267ad65e3533aa43a034fe81e7fd62df3628cb6bc7b4b1b8b641dcbea",
+          "nonempty": true
+        },
+        "fills.jsonl": {
+          "bytes": 12606,
+          "sha256": "778f2846e0e9e527b314a91e0cf105604186c8f081085c0b543a63da54df0a91",
+          "nonempty": true
+        }
+      },
+      "pending_or_wal": [],
+      "settlement_receipt_count": 0
+    },
+    "china": {
+      "authority_files": {
+        "nav_history.jsonl": {
+          "bytes": 10786,
+          "sha256": "1ce9ad2c7fdd5a7d979e100dd05988743eb4fc3f84d540ef9f95e7047a322b0d",
+          "nonempty": true
+        },
+        "account.json": {
+          "bytes": 2823,
+          "sha256": "40041d51f109c3dc4a16728cacf0f9ee4392b3ddb96a8b4881e0a0c113107a06",
+          "nonempty": true
+        },
+        "fills.jsonl": {
+          "bytes": 18251,
+          "sha256": "ed5f35b9d22c1630a25f696611d2152578afa464037cdb75bd4ed483919ee5a7",
+          "nonempty": true
+        }
+      },
+      "pending_or_wal": [],
+      "settlement_receipt_count": 0
+    },
+    "hk": {
+      "authority_files": {
+        "nav_history.jsonl": {
+          "bytes": 10636,
+          "sha256": "1095f0dea3775d594484bcb0a9de7298d40765a30eea74b8964b6a0864b65443",
+          "nonempty": true
+        },
+        "account.json": {
+          "bytes": 2208,
+          "sha256": "90f63ac286b4de07ef245a686a60d8fd51a5b836a77a1f62d60f67a67c940441",
+          "nonempty": true
+        },
+        "fills.jsonl": {
+          "bytes": 13401,
+          "sha256": "e37be161fd3f39371160c785142d798ee32edf1568c3a4da1c090a40f7617f93",
+          "nonempty": true
+        }
+      },
+      "pending_or_wal": [],
+      "settlement_receipt_count": 0
+    }
+  },
+  "cohort": {
+    "sha256": "75d5182d55ffc7e569f50008d9293682cadf56130d42b00eaba23412e2e8585c",
+    "bytes": 90345
+  },
+  "scripts/deploy_from_git.sh": {
+    "sha256": "b983a9e88f6eddeac00929797d1e05c80e09e3c206bcabf4e26342fdb7dbb42f"
+  },
+  "scripts/deploy_code_to_vps.sh": {
+    "sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8"
+  },
+  "market_view": {
+    "sha256": "17e4621d51d0b517fa9143214936c89997784ad85fe5779740ebaba7134b5df5",
+    "asof": "2026-08-07",
+    "built_at": "2026-08-10T22:40:11.583831+00:00",
+    "seq": 9,
+    "publication": null,
+    "mtf_asof": "2026-08-05"
+  },
+  "selected_public_runtime_flags": {
+    "MASTERMIND_SERVE_ONLY": "0",
+    "MASTERMIND_VPS_AUTHORITATIVE": "1",
+    "MASTERMIND_JOBSTORE": "memory",
+    "MASTERMIND_MACRO_MANAGED_EXTERNALLY": "1"
+  },
+  "macro_head": "0ac79d3ab964918a2828aa000064c1b92d0dc980"
+}
