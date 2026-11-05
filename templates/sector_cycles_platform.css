@@ -14,11 +14,21 @@
   .sc-plat .cyc-detail.sc-dragging { transition: none; will-change: transform; }
   .sc-plat .cyc-panels { overscroll-behavior: contain; }
   .sc-plat .cyc-handle { min-height: 22px; padding: 13px 0 9px; position: relative; touch-action: none; }
-  .sc-plat .sc-sheet-x { position: absolute; top: 7px; right: 12px; width: 40px; height: 40px;
-    display: flex; align-items: center; justify-content: center; border: 0; cursor: pointer;
-    background: var(--panel2); color: var(--muted); border-radius: var(--r-pill, 999px); font-size: 17px; line-height: 1;
+  /* The close control carries its visible word (Close / 关闭, set by _labelChrome), so it is a
+     labelled pill, not a 40px glyph circle: the word fits on one line in EN and ZH (D34). */
+  .sc-plat .sc-sheet-x { position: absolute; top: 7px; right: 12px; min-width: 40px; height: 40px; padding: 0 14px;
+    display: flex; align-items: center; justify-content: center; border: 0; cursor: pointer; white-space: nowrap;
+    background: var(--panel2); color: var(--muted); border-radius: var(--r-pill, 999px); font: inherit;
+    font-size: 12.5px; font-weight: 700; line-height: 1;
     box-shadow: var(--card-shadow); z-index: 2; -webkit-tap-highlight-color: transparent; }
   .sc-plat .sc-sheet-x:active { transform: scale(.92); }
+  .sc-plat .sc-sheet-x:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  /* An open sheet owns the bottom of the screen. The shared assistant launcher (stub #mmb-boot,
+     loaded #mmb-launch) sits over its lower right at z 2147483000, so it takes the launcher's own
+     hidden state while the sheet is up and returns when the sheet closes (D34). */
+  body:has(.sc-plat .cyc-detail.sc-sheet-half) #mmb-boot, body:has(.sc-plat .cyc-detail.sc-sheet-full) #mmb-boot,
+  body:has(.sc-plat .cyc-detail.sc-sheet-half) #mmb-launch, body:has(.sc-plat .cyc-detail.sc-sheet-full) #mmb-launch {
+    opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(8px); }
   .sc-plat .sc-scrim { background: var(--pv-dialog-backdrop); }
 
   /* ---- control stack: one scrollable phase row, cards stand in for the legend ------- */

@@ -262,6 +262,47 @@ def test_platform_css_has_no_accent_stripe():
     assert not HEX.search(css) and "rgba(" not in css and "font-family" not in css
 
 
+def _mobile_block(css):
+    start = css.index("@media (max-width: 880px) {")
+    depth, i = 0, css.index("{", start)
+    for j in range(i, len(css)):
+        depth += {"{": 1, "}": -1}.get(css[j], 0)
+        if depth == 0:
+            return css[i:j]
+    raise AssertionError("unterminated mobile block")
+
+
+def test_open_sheet_retires_the_assistant_launcher_on_mobile_only():
+    # D34: the shared launcher (z 2147483000) sat over the lower right of the half sheet.
+    css = _text("sector_cycles_platform.css")
+    mob = _mobile_block(css)
+    for detent in ("sc-sheet-half", "sc-sheet-full"):
+        for fab in ("#mmb-boot", "#mmb-launch"):
+            sel = "body:has(.sc-plat .cyc-detail.%s) %s" % (detent, fab)
+            pat = re.escape(sel) + r"(?![\w-])"
+            assert re.search(pat, mob), sel
+            assert len(re.findall(pat, css)) == 1, "launcher hide must live in the mobile block only: " + sel
+    rule = mob[mob.index("body:has(.sc-plat .cyc-detail.sc-sheet-half) #mmb-boot"):]
+    rule = rule[rule.index("{") + 1:rule.index("}")]
+    for decl in ("opacity: 0", "visibility: hidden", "pointer-events: none"):
+        assert decl in rule, decl
+    # the resting sheet (no detent class) never hides the launcher
+    assert not re.search(r":has\(\.sc-plat \.cyc-detail\)", css)
+
+
+def test_sheet_close_is_a_one_line_labelled_pill():
+    # D34: _labelChrome puts the word Close / 关闭 in the control; a fixed 40px circle overflowed
+    # in EN and wrapped to two lines in ZH.
+    mob = _mobile_block(_text("sector_cycles_platform.css"))
+    rule = mob[mob.index(".sc-plat .sc-sheet-x {"):]
+    rule = rule[rule.index("{") + 1:rule.index("}")]
+    assert "white-space: nowrap" in rule and "min-width: 40px" in rule and "height: 40px" in rule
+    assert not re.search(r"(?<![-\w])width:\s*40px", rule), "a fixed width clips the visible word"
+    assert ".sc-plat .sc-sheet-x:focus-visible" in mob
+    js = _text("sector_cycles.js")
+    assert 'x.textContent = L("Close", "关闭")' in js
+
+
 def test_zh_hazard_line_carries_no_latin_probability_symbol():
     # The ZH face uses the copy-deck form 转折≤1月 (cycles.hz_1m_chip.zh); the
     # Latin P( reading stays on the EN face and in the % cells' meaning.
