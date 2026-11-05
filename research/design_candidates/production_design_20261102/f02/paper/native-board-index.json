@@ -1,8 +1,8 @@
 {
   "schema": "f02.native-board-index.v1",
-  "generated_at": "2026-11-04T02:12:17.464141+00:00",
+  "generated_at": "2026-11-05T00:16:53.472842+00:00",
   "source_checkpoint": "paper/writer-continuation-progress.json",
-  "checkpoint_sha256": "c2f4f15543664aa14050ee2b1adc40d6a2649e8912118178adf7c386448f17a4",
+  "checkpoint_sha256": "453c7acbe8f0e439a793886d8ddecdb4fbfac79dca80ec1fe31fba6d25816d8f",
   "operation_count": 650,
   "unresolved_operations": [
     "f02-c2-macro-light-zh-390-chart-footer-20261103-01"
@@ -1776,35 +1776,59 @@
         "sector-7": "7ND-0",
         "post-table": "7NQ-0",
         "chart-heading": "7NT-0",
-        "chart": "7NX-0"
+        "chart": "7NX-0",
+        "chart-footer": "9SE-0",
+        "build-note": "9SM-0"
       },
-      "screenshot": null,
-      "jsx": null,
-      "latest_writer_capture": null,
-      "latest_scoped_capture": {
-        "key": "macro-light-zh-390--in-progress",
+      "screenshot": {
+        "path": "paper/screenshots/macro-light-zh-390.jpg",
+        "bytes": 98152,
+        "sha256": "adfc12f315dd8a95c18f96095ed98fbae57ffece991e7a8349ccec554bfb3d35"
+      },
+      "jsx": {
+        "path": "paper/exports/macro-light-zh-390.jsx",
+        "bytes": 47639,
+        "sha256": "ace4135ce71a5e2114fd5603cc746cb06d6527b3e5412b307ac76ffa4a577363"
+      },
+      "latest_writer_capture": {
+        "key": "macro-light-zh-390",
         "boardKey": "macro-light-zh-390",
         "boardId": "7IS-0",
         "nodeId": "7IS-0",
-        "stepKey": null,
-        "capture_state": "IN_PROGRESS_21_OF23_CONFIRMED_FOOTER_UNRESOLVED",
-        "captured_at": "2026-11-03T06:40:32.467Z",
-        "operations_through": 435,
-        "source_input": {
-          "key": "macro-light-zh-390",
-          "path": "f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
-          "sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
-          "pageId": "p-5-0"
-        },
-        "screenshot": "f02/paper/screenshots/macro-light-zh-390--in-progress.jpg",
-        "jsx": "f02/paper/exports/macro-light-zh-390--in-progress.jsx",
+        "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
+        "captured_at": "2026-11-05T00:00:37.123Z",
+        "operations_through": 650,
+        "jsx": "f02/paper/exports/macro-light-zh-390.jsx",
+        "screenshot": "f02/paper/screenshots/macro-light-zh-390.jpg",
         "mime_type": "image/jpeg",
-        "screenshot_sha256": "563f312cf109a91e992fcd317905ebd8b48d93fd8808c184d4375857e15427e9",
-        "jsx_sha256": "adf6f90dea30d3773916cb06ecae4ff8f2794855364cea7813bea14c97343a6c",
-        "screenshot_bytes": 69446,
-        "verdict": "PASS_PARTIAL_ONLY: ten Chinese comparison rows and seven-point gap chart fit cleanly; complete key/clock footer and implementation note are absent, with one transport outcome unresolved. No completion or browser behavior claim."
+        "verdict": "Final full-board native screenshot and JSX byte-equal to published evidence; historical G15 transport outcome remains unresolved",
+        "jsx_sha256": "ace4135ce71a5e2114fd5603cc746cb06d6527b3e5412b307ac76ffa4a577363",
+        "jsx_bytes": 47639,
+        "screenshot_sha256": "adfc12f315dd8a95c18f96095ed98fbae57ffece991e7a8349ccec554bfb3d35",
+        "screenshot_bytes": 98152,
+        "readback_source": "Mastermind Paper direct get_screenshot and get_jsx at exact file/board; no new write operation",
+        "original_transport_uncertainty": "f02-c2-macro-light-zh-390-chart-footer-20261103-01"
       },
-      "writer_status": "IN_PROGRESS_WRITES_PAUSED",
+      "latest_scoped_capture": {
+        "key": "macro-light-zh-390",
+        "boardKey": "macro-light-zh-390",
+        "boardId": "7IS-0",
+        "nodeId": "7IS-0",
+        "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
+        "captured_at": "2026-11-05T00:00:37.123Z",
+        "operations_through": 650,
+        "jsx": "f02/paper/exports/macro-light-zh-390.jsx",
+        "screenshot": "f02/paper/screenshots/macro-light-zh-390.jpg",
+        "mime_type": "image/jpeg",
+        "verdict": "Final full-board native screenshot and JSX byte-equal to published evidence; historical G15 transport outcome remains unresolved",
+        "jsx_sha256": "ace4135ce71a5e2114fd5603cc746cb06d6527b3e5412b307ac76ffa4a577363",
+        "jsx_bytes": 47639,
+        "screenshot_sha256": "adfc12f315dd8a95c18f96095ed98fbae57ffece991e7a8349ccec554bfb3d35",
+        "screenshot_bytes": 98152,
+        "readback_source": "Mastermind Paper direct get_screenshot and get_jsx at exact file/board; no new write operation",
+        "original_transport_uncertainty": "f02-c2-macro-light-zh-390-chart-footer-20261103-01"
+      },
+      "writer_status": "CONTENT_COMPLETE_NATIVE_READBACK_G15_HISTORY_UNRESOLVED",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {

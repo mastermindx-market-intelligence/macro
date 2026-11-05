@@ -1,6 +1,6 @@
 # Native Paper board index
 
-Generated from the exclusive writer’s observed IDs. Design evidence only; reference approval and runtime proof remain separate. A full capture pair records observed bytes, not completion of pending native repairs or reference acceptance.
+Generated from writer operation-response IDs plus exact-file, same-carrier subsequent native readback. Design evidence only; reference approval and runtime proof remain separate. A full capture pair records observed bytes, not a terminal outcome for historical G15 or runtime acceptance.
 
 | Board | Actual ID | Page | Width | Capture / editable export |
 | --- | --- | --- | --- | --- |
@@ -25,7 +25,7 @@ Generated from the exclusive writer’s observed IDs. Design evidence only; refe
 | options-full-row-evidence-320 | `74P-0` | [p-5-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | 320 | [JPEG](screenshots/options-full-row-evidence-320.jpg) · [JSX](exports/options-full-row-evidence-320.jsx) |
 | controls-variants | `771-0` | [p-4-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0) | 1440 | [JPEG](screenshots/controls-variants.jpg) · [JSX](exports/controls-variants.jsx) |
 | macro-dark-en-390 | `7CM-0` | [p-5-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | 390 | [JPEG](screenshots/macro-dark-en-390.jpg) · [JSX](exports/macro-dark-en-390.jsx) |
-| macro-light-zh-390 | `7IS-0` | [p-5-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | 390 | Final capture pending; [IN_PROGRESS_21_OF23_CONFIRMED_FOOTER_UNRESOLVED JPEG](screenshots/macro-light-zh-390--in-progress.jpg) · [partial JSX](exports/macro-light-zh-390--in-progress.jsx) |
+| macro-light-zh-390 | `7IS-0` | [p-5-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | 390 | [JPEG](screenshots/macro-light-zh-390.jpg) · [JSX](exports/macro-light-zh-390.jsx) |
 | macro-docked-1280 | `8G2-0` | [p-5-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | 1280 | [JPEG](screenshots/macro-docked-1280.jpg) · [JSX](exports/macro-docked-1280.jsx) |
 | macro-zh-evidence-return-390 | `8N8-0` | [p-5-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | 390 | [JPEG](screenshots/macro-zh-evidence-return-390.jpg) · [JSX](exports/macro-zh-evidence-return-390.jsx) |
 | company-fy2025-eps-evidence-390 | `8PF-0` | [p-5-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | 390 | [JPEG](screenshots/company-fy2025-eps-evidence-390.jpg) · [JSX](exports/company-fy2025-eps-evidence-390.jsx) |

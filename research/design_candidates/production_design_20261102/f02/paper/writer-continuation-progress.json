@@ -1,7 +1,7 @@
 {
   "schema": "f02.paper-writer-continuation-progress.v1",
-  "checkpoint": "WIDTH-1600-DOCKED_CONSTRUCTED",
-  "observed_at": "2026-11-04T02:12:16.520470+00:00",
+  "checkpoint": "ZH-390-FINAL_NATIVE_READBACK_G15_HISTORY_UNRESOLVED",
+  "observed_at": "2026-11-05T00:00:39.042Z",
   "fileId": "01M312VSDSZFVT45674GDVJVZN",
   "actor": "/root",
   "assignment_owner": "/root",
@@ -2214,27 +2214,27 @@
         "sector-7": "7ND-0",
         "post-table": "7NQ-0",
         "chart-heading": "7NT-0",
-        "chart": "7NX-0"
+        "chart": "7NX-0",
+        "chart-footer": "9SE-0",
+        "build-note": "9SM-0"
       },
       "created_at": "2026-11-03T06:20:08.213Z",
-      "writer_status": "IN_PROGRESS_WRITES_PAUSED",
-      "construction_complete": false,
-      "confirmed_steps": 21,
+      "writer_status": "CONTENT_COMPLETE_NATIVE_READBACK_G15_HISTORY_UNRESOLVED",
+      "construction_complete": true,
+      "confirmed_steps": 23,
       "expected_steps": 23,
-      "pending_steps": [
-        "chart-footer",
-        "build-note"
-      ],
+      "pending_steps": [],
       "unresolved_operation": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
       "pending_native_repairs": [
         {
           "kind": "numeric_column_end_alignment",
           "frames": 33,
-          "status": "SOURCE_ONLY_PREPARATION_NOT_APPLIED",
-          "owner": "/root/continuation_dependencies"
+          "status": "NATIVE_READBACK_CONFIRMED_33_FRAMES",
+          "owner": "/root/continuation_dependencies",
+          "verification": "paper/returns/native-zh-390-20261104.json"
         }
       ],
-      "verification_capture": "macro-light-zh-390--in-progress"
+      "verification_capture": "macro-light-zh-390"
     },
     {
       "key": "macro-docked-1280",
@@ -178234,6 +178234,25 @@
       "jsx_sha256": "0d7d737e9e9463d521b5af35e31b912971203670d6aafe47e854d3ba5b795741",
       "screenshot_sha256": "c2b855832b7e7d3ac40130fd301311c1662e0ee6b3df92097fd9c0401b41395a",
       "screenshot_bytes": 220446
+    },
+    {
+      "key": "macro-light-zh-390",
+      "boardKey": "macro-light-zh-390",
+      "boardId": "7IS-0",
+      "nodeId": "7IS-0",
+      "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
+      "captured_at": "2026-11-05T00:00:37.123Z",
+      "operations_through": 650,
+      "jsx": "f02/paper/exports/macro-light-zh-390.jsx",
+      "screenshot": "f02/paper/screenshots/macro-light-zh-390.jpg",
+      "mime_type": "image/jpeg",
+      "verdict": "Final full-board native screenshot and JSX byte-equal to published evidence; historical G15 transport outcome remains unresolved",
+      "jsx_sha256": "ace4135ce71a5e2114fd5603cc746cb06d6527b3e5412b307ac76ffa4a577363",
+      "jsx_bytes": 47639,
+      "screenshot_sha256": "adfc12f315dd8a95c18f96095ed98fbae57ffece991e7a8349ccec554bfb3d35",
+      "screenshot_bytes": 98152,
+      "readback_source": "Mastermind Paper direct get_screenshot and get_jsx at exact file/board; no new write operation",
+      "original_transport_uncertainty": "f02-c2-macro-light-zh-390-chart-footer-20261103-01"
     }
   ],
   "repairs": [

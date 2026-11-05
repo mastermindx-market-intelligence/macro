@@ -1,6 +1,6 @@
 {
   "schema": "f02.native-role-bindings.v1",
-  "generated_at": "2026-11-04T02:12:17.464141+00:00",
+  "generated_at": "2026-11-05T00:16:53.472842+00:00",
   "input_map_sha256": "ef5c27e7bde424b72db9528729bb831c98a4054291dd88b2d93cf1e9c818a287",
   "roles": [
     {
@@ -274,12 +274,10 @@
               "native_step_ids": {
                 "title": "7J6-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-5-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "title"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
@@ -316,7 +314,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "MetricValue",
@@ -1760,16 +1758,10 @@
                 "sector-3": "7L7-0",
                 "post-table": "7NQ-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-5-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "section-toolbar",
-                "scroll-cue",
-                "table",
-                "sector-3",
-                "post-table"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
@@ -1888,7 +1880,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "VirtualizedDataInspector",
@@ -2710,12 +2702,10 @@
               "native_step_ids": {
                 "sector-3": "7L7-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-5-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "sector-3"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
@@ -2773,7 +2763,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "EvidenceInspector",
@@ -3123,13 +3113,10 @@
                 "metric": "7JE-0",
                 "sector-3": "7L7-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-5-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "metric",
-                "sector-3"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             },
             {
@@ -3322,7 +3309,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "StatePanel",
@@ -5364,14 +5351,10 @@
             "metric": "7JE-0",
             "sector-3": "7L7-0"
           },
-          "binding_status": "FINAL_EXPORT_PENDING",
+          "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
           "native_page_id": "p-5-0",
           "unbound_steps": [],
-          "steps_not_in_current_export": [
-            "title",
-            "metric",
-            "sector-3"
-          ],
+          "steps_not_in_current_export": [],
           "qualification": "Design evidence binding only; no runtime or RIG approval"
         },
         {
@@ -5537,50 +5520,7 @@
       "limit": "Anatomy chart: gap 26 Oct, 50–80%. Macro consumer: gap 23 Oct, 40–80%. Keep separate names/source identities or explicitly align through a reviewed data change."
     }
   ],
-  "unresolved_bindings": [
-    {
-      "board": "macro-light-zh-390",
-      "missing": [],
-      "not_in_export": [
-        "title"
-      ]
-    },
-    {
-      "board": "macro-light-zh-390",
-      "missing": [],
-      "not_in_export": [
-        "section-toolbar",
-        "scroll-cue",
-        "table",
-        "sector-3",
-        "post-table"
-      ]
-    },
-    {
-      "board": "macro-light-zh-390",
-      "missing": [],
-      "not_in_export": [
-        "sector-3"
-      ]
-    },
-    {
-      "board": "macro-light-zh-390",
-      "missing": [],
-      "not_in_export": [
-        "metric",
-        "sector-3"
-      ]
-    },
-    {
-      "board": "macro-light-zh-390",
-      "missing": [],
-      "not_in_export": [
-        "title",
-        "metric",
-        "sector-3"
-      ]
-    }
-  ],
+  "unresolved_bindings": [],
   "not_proved": [
     "Live source correctness or schema/producer completeness",
     "Real entitlement, protected-payload omission, account identity or billing offer validity",
@@ -5600,6 +5540,6 @@
       "LifecycleRail",
       "DecisionRow / VerdictHero"
     ],
-    "unresolved_binding_count": 5
+    "unresolved_binding_count": 0
   }
 }

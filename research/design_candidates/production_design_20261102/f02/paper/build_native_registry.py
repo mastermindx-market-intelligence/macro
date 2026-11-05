@@ -172,7 +172,7 @@ def main():
     save('native-predecessor-bindings.json', {'schema': 'f02.native-predecessor-bindings.v1', 'generated_at': now,
          'counts': ledger['counts'], 'rows': predecessors,
          'boundary': 'No deletion, relocation, replacement approval or domain requalification is claimed. IMPROVE is candidate intent; originals remain preserved.'})
-    lines = ['# Native Paper board index', '', 'Generated from the exclusive writer’s observed IDs. Design evidence only; reference approval and runtime proof remain separate. A full capture pair records observed bytes, not completion of pending native repairs or reference acceptance.', '',
+    lines = ['# Native Paper board index', '', 'Generated from writer operation-response IDs plus exact-file, same-carrier subsequent native readback. Design evidence only; reference approval and runtime proof remain separate. A full capture pair records observed bytes, not a terminal outcome for historical G15 or runtime acceptance.', '',
              '| Board | Actual ID | Page | Width | Capture / editable export |', '| --- | --- | --- | --- | --- |']
     for b in board_rows:
         artifacts = f"[JPEG](screenshots/{b['key']}.jpg) · [JSX](exports/{b['key']}.jsx)" if b['screenshot'] and b['jsx'] else 'Final capture pending'
