@@ -126,7 +126,7 @@
   var S = {
     cat: null, F: {}, factorOrder: [],
     fm: null, fmTried: false,
-    matrix: null, ticker: null, loadSeq: 0,
+    matrix: null, ticker: null, loadSeq: 0, loading: false,
     active: {}, tol: 0, range: "10y", horizon: "1d",
     matches: [], matchedSet: null, stats: null, base: null, total: 0,
     tab: "days",
@@ -223,27 +223,68 @@
   /* ---------------- staleness ---------------- */
   function bizDaysSince(isoDate) {
     try {
+      if (typeof isoDate !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return null;
       var d = new Date(isoDate + "T00:00:00Z"), now = new Date(), n = 0;
-      if (!(d < now)) return 0;
+      var today = Math.floor(now.getTime() / 86400000) * 86400000;
+      if (!isFinite(d.getTime()) || !isFinite(today) || d.toISOString().slice(0, 10) !== isoDate || d.getTime() > today) return null;
       var cur = new Date(d);
-      while (cur < now && n < 40) {
+      // Compare UTC dates, not midnight with the current time: the latter
+      // counts tomorrow on every non-midnight visit. Preserve the >3 policy.
+      while (cur.getTime() < today && n < 40) {
         cur.setUTCDate(cur.getUTCDate() + 1);
         var wd = cur.getUTCDay();
         if (wd !== 0 && wd !== 6) n++;
       }
       return n;
-    } catch (e) { return 0; }
+    } catch (e) { return null; }
+  }
+  function observedDate() {
+    // The catalog date is the newest matrix in the universe. The selected
+    // history is anchored to its last observed epoch day, just like the chart.
+    var day = S.matrix && S.matrix.dates[todayIdx()];
+    if (typeof day !== "number" || !isFinite(day) || Math.floor(day) !== day) return null;
+    try {
+      var iso = new Date(day * 86400000).toISOString().slice(0, 10);
+      return bizDaysSince(iso) == null ? null : iso;
+    } catch (e) { return null; }
   }
   function staleCheck() {
-    var el = $("#od-stale");
-    if (!el || !S.cat || !S.cat.asof) return;
-    var days = bizDaysSince(S.cat.asof);
-    if (days > 3) {
-      el.innerHTML = "⚠ " + biRaw(
-        "Data as of <b>" + esc(S.cat.asof) + "</b> — the nightly build looks stale; odds below may lag the tape.",
-        "数据截至 <b>" + esc(S.cat.asof) + "</b> — 夜间构建似乎滞后，以下概率可能落后于最新行情。");
-      el.hidden = false;
-    } else el.hidden = true;
+    var el = $("#od-stale"), chip = $("#od-asof-chip");
+    if (!S.cat) return;
+    var warnings = [], catDate = S.cat.asof, catDays = bizDaysSince(catDate);
+    if (catDays == null) {
+      warnings.push(bi("Catalog date unavailable — market context freshness cannot be checked.",
+                       "目录日期不可用——无法核实市场环境数据的新鲜度。"));
+    } else if (catDays > 3) {
+      warnings.push(biRaw(
+        "Catalog as of <b>" + esc(catDate) + "</b> — market context may lag the tape.",
+        "目录截至 <b>" + esc(catDate) + "</b>——市场环境数据可能落后于最新行情。"));
+    }
+    if (S.ticker) {
+      if (S.loading) {
+        if (chip) chip.innerHTML = bi(S.ticker + " history loading", S.ticker + " 历史数据加载中");
+      } else if (!S.matrix) {
+        if (chip) chip.innerHTML = bi(S.ticker + " history unavailable", S.ticker + " 历史数据不可用");
+      } else {
+        var date = observedDate();
+        if (date == null) {
+          if (chip) chip.innerHTML = bi(S.ticker + " history date unavailable", S.ticker + " 历史日期不可用");
+          warnings.push(bi(S.ticker + " history date unavailable — freshness cannot be checked.",
+                           S.ticker + " 历史日期不可用——无法核实数据的新鲜度。"));
+        } else {
+          if (chip) chip.innerHTML = bi(S.ticker + " history as of " + date, S.ticker + " 历史截至 " + date);
+          if (bizDaysSince(date) > 3) warnings.push(biRaw(
+            esc(S.ticker) + " history as of <b>" + esc(date) + "</b> — selected history looks stale; odds below may lag the tape.",
+            esc(S.ticker) + " 历史截至 <b>" + esc(date) + "</b>——所选历史数据似乎滞后，以下概率可能落后于最新行情。"));
+        }
+      }
+    } else if (chip) {
+      chip.innerHTML = bi("Catalog as of " + (catDays == null ? "—" : catDate), "目录截至 " + (catDays == null ? "—" : catDate));
+    }
+    if (el) {
+      el.innerHTML = warnings.length ? "⚠ " + warnings.join("<br>") : "";
+      el.hidden = !warnings.length;
+    }
   }
 
   /* ---------------- condition rail ---------------- */
@@ -255,6 +296,7 @@
     return v == null ? null : v;
   }
   function condValLine(fid) {
+    if (S.loading) return bi("history loading", "历史数据加载中");
     var v = todayBucket(fid);
     if (v == null) return bi("no data today", "今日无数据");
     var lab = bktLabel(fid, v), extra = ["", ""];
@@ -313,7 +355,8 @@
     var k = activeIds().length;
     if (ac) ac.innerHTML = biRaw(k + " active", k + " 项启用");
     if (mc) {
-      if (!S.matrix) mc.innerHTML = bi("no history loaded", "未加载历史数据");
+      if (S.loading) mc.innerHTML = bi("history loading", "历史数据加载中");
+      else if (!S.matrix) mc.innerHTML = bi("no history loaded", "未加载历史数据");
       else {
         mc.innerHTML = biRaw(
           "<b>" + S.matches.length + "</b> matching days · " + S.total + " in range",
@@ -1217,12 +1260,15 @@
           '<div class="od-skel-block" style="width:62px;height:28px"></div>' +
         "</div></div></div>" +
       '<div class="od-skel-block" style="height:12px;margin-top:18px"></div>';
-    var pc = $("#od-price-chart");
-    if (pc) {
-      if (priceChart) { try { priceChart.destroy(); } catch (e) {} priceChart = null; }
-      pc.innerHTML = '<div class="od-skel-block" style="position:absolute;left:0;right:0;top:6px;bottom:6px"></div>';
-    }
-    var vs = $("#od-vol-strip"); if (vs) vs.hidden = true;
+    if (priceChart) { try { priceChart.destroy(); } catch (e) {} priceChart = null; }
+    ["#od-price-chart", "#od-path-chart", "#od-hist-chart", "#od-strip-chart"].forEach(function (id) {
+      var el = $(id);
+      if (el) el.innerHTML = '<div class="od-skel-block" style="position:absolute;left:0;right:0;top:6px;bottom:6px"></div>';
+    });
+    ["#od-days-note", "#od-path-note", "#od-ret-note"].forEach(function (id) {
+      var el = $(id); if (el) el.innerHTML = "";
+    });
+    var vs = $("#od-vol-strip"); if (vs) { vs.hidden = true; vs.innerHTML = ""; }
     var tbl = $("#od-days-table");
     if (tbl) tbl.innerHTML = '<tbody><tr><td style="border-bottom:none">' +
       '<div class="od-skel-block" style="height:14px;margin:4px 0"></div>' +
@@ -1233,6 +1279,15 @@
     if (!t) return;
     S.ticker = t;
     var seq = ++S.loadSeq;
+    S.loading = true;
+    // A selected symbol must never reuse the previous symbol's observations,
+    // including through controls, hidden panes, CSV, or delayed redraws.
+    S.matrix = null;
+    computeAll();
+    prevRate = null;
+    updateTopChrome();
+    renderRail();
+    staleCheck();
     var inp = $("#od-tk-input"); if (inp) inp.value = t;
     renderSkeletons();
     var base = (window.DATA_BASE || "");
@@ -1243,6 +1298,8 @@
         Array.isArray(m.dates) && m.dates.length > 1 &&
         Array.isArray(m.close) && m.close.length === m.dates.length && m.cols;
       S.matrix = okShape ? m : null;
+      S.loading = false;
+      staleCheck();
       if (S.matrix) {
         /* deactivate conditions with no value today — null can never match */
         S.factorOrder.forEach(function (fid) {
@@ -1257,12 +1314,14 @@
 
   /* ---------------- recompute + render router ---------------- */
   function recompute(firstChart) {
+    if (S.loading) return;
     try { computeAll(); } catch (e) { S.matches = []; S.stats = null; }
     renderRailCounts();
     renderVerdict();
     renderActivePane(firstChart);
   }
   function renderActivePane(firstChart) {
+    if (S.loading && S.tab !== "fm") return;
     try {
       if (S.tab === "days") { renderPriceChart(firstChart); renderDaysTable(); }
       else if (S.tab === "path") renderPathChart();
@@ -1376,11 +1435,13 @@
     });
   }
   function initReactivity() {
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) staleCheck(); });
     var re = debounce(function () { renderActivePane(); syncTabInk(); }, 70);
     document.addEventListener("themechange", re);
     document.addEventListener("langchange", function () { syncPlaceholders(); re(); });
     if (window.ResizeObserver) {
       var ro = new ResizeObserver(debounce(function () {
+        if (S.loading) return;
         if (S.tab === "days") renderPriceChart();
         else if (S.tab === "path") renderPathChart();
         else if (S.tab === "returns") renderReturns();
@@ -1486,6 +1547,9 @@
     try {
       var st = S.stats, base = S.base, m = S.matrix;
       if (!st || !m || st.n < 5) return;
+      // This requested export is a click-time snapshot, even if selection or
+      // controls change before the asynchronous logo finishes loading.
+      var ticker = S.ticker, horizon = S.horizon;
       var zh = isZh();
       var W = 1200, H = 630;
       var cv = document.createElement("canvas");
@@ -1497,7 +1561,7 @@
       var cUp = cssVar("--od-up", "#34D399"), cDn = cssVar("--od-down", "#F87171");
       var tone = edge >= 5 ? cUp : edge <= -5 ? cDn : "#E7EBF2";
       var FF = ", Inter, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif";
-      var hz = HORIZON_TXT[S.horizon], rg = RANGE_TXT[S.range];
+      var hz = HORIZON_TXT[horizon], rg = RANGE_TXT[S.range];
       var conds = condSummary();
       var D = edDate(m.dates[todayIdx()]);
       var dateStr = zh
@@ -1524,9 +1588,9 @@
           } catch (e) { try { ctx.restore(); } catch (e2) {} }
         }
         ctx.fillStyle = "#E7EBF2"; ctx.font = "700 30px" + FF; ctx.textBaseline = "middle";
-        ctx.fillText(S.ticker, hx + 68, 96);
+        ctx.fillText(ticker, hx + 68, 96);
         ctx.fillStyle = "#8B93A3"; ctx.font = "400 17px" + FF;
-        var u = ((S.cat && S.cat.universe) || []).filter(function (x) { return x && x.t === S.ticker; })[0];
+        var u = ((S.cat && S.cat.universe) || []).filter(function (x) { return x && x.t === ticker; })[0];
         ctx.fillText((u && u.name ? String(u.name).slice(0, 40) : ""), hx + 68, 124);
         ctx.textAlign = "right"; ctx.fillStyle = "#5C6474"; ctx.font = "400 16px" + FF;
         ctx.fillText(dateStr + " · " + (zh ? "开盘→收盘" : "open-to-close"), W - 76, 104);
@@ -1583,7 +1647,7 @@
         try {
           var a = document.createElement("a");
           a.href = cv.toDataURL("image/png");
-          a.download = "odds_" + S.ticker + "_" + S.horizon + "_" + (m.asof || "latest") + ".png";
+          a.download = "odds_" + ticker + "_" + horizon + "_" + (m.asof || "latest") + ".png";
           document.body.appendChild(a); a.click();
           setTimeout(function () { a.remove(); }, 300);
         } catch (e) {   // tainted canvas or blocked download — degrade to disabled
@@ -1597,7 +1661,7 @@
       img.onload = function () { if (!done) { done = true; finish(img); } };
       img.onerror = function () { if (!done) { done = true; finish(null); } };
       setTimeout(function () { if (!done) { done = true; finish(null); } }, 1500);
-      img.src = LOGO_CDN + S.ticker + ".png";
+      img.src = LOGO_CDN + ticker + ".png";
     } catch (e) { try { btn.disabled = true; } catch (e2) {} }
   }
 
@@ -1620,8 +1684,6 @@
         });
         if (defs.range && RANGE_TXT[defs.range]) S.range = defs.range;
         if (defs.horizon && FWD_KEY[defs.horizon]) S.horizon = defs.horizon;
-        var asof = $("#od-asof-chip");
-        if (asof) asof.innerHTML = bi("As of " + (cat.asof || "—"), "截至 " + (cat.asof || "—"));
         var uni = $("#od-uni-chip");
         if (uni) { uni.innerHTML = biRaw(cat.universe.length + " symbols", cat.universe.length + " 个标的"); uni.hidden = false; }
         staleCheck();
