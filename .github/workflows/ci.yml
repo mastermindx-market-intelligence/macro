@@ -1786,6 +1786,7 @@ on:
       - "tests/test_brain_analogues.py"
       - "tests/test_brain_curve.py"
       - "tests/test_response_eval.py"
+      - "tests/test_fabric_response_eval.py"
       # Analyst OS W3: per-user memory tools + prefs plumbing.
       - "tests/test_brain_user_memory.py"
       - "tests/test_user_prefs.py"
