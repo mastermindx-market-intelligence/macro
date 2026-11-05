@@ -1,8 +1,8 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-11-02",
-  "data_session": "2026-10-30",
-  "built": "2026-11-02T10:00:33Z",
+  "asof": "2026-11-04",
+  "data_session": "2026-11-03",
+  "built": "2026-11-04T14:51:57Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -20,8 +20,8 @@
     "unknown": 0,
     "total": 2759,
     "current_coverage_pct": 98.1,
-    "data_session": "2026-10-30",
-    "data_session_all": "2026-10-30",
+    "data_session": "2026-11-03",
+    "data_session_all": "2026-11-03",
     "week_histogram": [
       {
         "week": "2026-10-30",
@@ -61,12 +61,12 @@
   "counts": {
     "total": 2706,
     "stage1": 186,
-    "stage2": 1367,
-    "stage2_fresh": 391,
-    "stage3": 221,
+    "stage2": 1366,
+    "stage2_fresh": 390,
+    "stage3": 222,
     "stage4": 932,
     "too_young": 362,
-    "new_today": 36
+    "new_today": 35
   },
   "market": {
     "pct_stage2": 50.5,
@@ -77,267 +77,106 @@
   },
   "top_stage2": [
     {
-      "ticker": "MHK",
-      "company": "Mohawk Industries",
-      "sector": "Consumer Discretionary",
-      "stage_source_asof": "2026-10-30",
+      "ticker": "VALU",
+      "company": "Value Line Inc",
+      "sector": "Financial",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 4,
+      "weeks_in_stage": 7,
       "fresh": true,
-      "sga_score": 81,
-      "ma30_slope_pct5w": 3.812,
-      "pct_vs_ma30": 18.39,
-      "mansfield_rs": 13.84,
-      "vol_ratio": 1.43,
-      "event": "pullback_resume",
-      "gate_tier": "T2",
+      "sga_score": 72,
+      "ma30_slope_pct5w": 3.381,
+      "pct_vs_ma30": 13.91,
+      "mansfield_rs": 8.98,
+      "vol_ratio": 1.03,
+      "event": null,
+      "gate_tier": "T1",
       "blackout": false,
-      "arc_pos": 0.3,
+      "arc_pos": 0.3375,
       "earnings": {
-        "present": true,
-        "sentiment": -0.2,
-        "performance": 5.0,
-        "tone_word": "mixed",
-        "tags": [
-          "margin_contraction",
-          "demand_slowdown",
-          "buyback_or_dividend",
-          "macro_sensitivity"
-        ],
-        "quarter": "Q3",
-        "summary": "Q3 FY2026 sales were $2.8 billion, up 1% as reported and essentially flat adjusting for FX and an extra shipping day; volumes fell 4% while price/mix rose 4%. Adjusted EPS was $2.72, adjusted operating income $200 million (down $5 million YoY), and adjusted EBITDA margin 12.7%…"
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
       },
       "why": [
-        "Early in its climb — 4 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
+        "Early in its climb — 7 weeks up so far",
+        "Trading above its 30-week line — the trend is with it",
         "Also shows a strong confirmation from our other checks"
       ],
       "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
+        "上升初期 — 已上行 7 周",
+        "位于 30 周均线之上 — 趋势向好",
         "其他多项验证同样给出强确认"
       ],
-      "atr_14w": 11.3543,
-      "atr_ext": 1.907,
-      "atr_pct_price": 0.08145,
-      "sata_score": 8,
-      "sata_change_1w": 2,
-      "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": 90.5
+      "atr_14w": 3.6988,
+      "atr_ext": 1.395,
+      "atr_pct_price": 0.08759,
+      "sata_score": 7,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
     },
     {
-      "ticker": "DNOW",
-      "company": "NOW Inc",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-10-30",
+      "ticker": "GENI",
+      "company": "Genius Sports Limited",
+      "sector": "Communication Services",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 6,
       "fresh": true,
-      "sga_score": 76,
-      "ma30_slope_pct5w": 4.902,
-      "pct_vs_ma30": 13.36,
-      "mansfield_rs": 10.1,
-      "vol_ratio": 0.92,
+      "sga_score": 66,
+      "ma30_slope_pct5w": 4.266,
+      "pct_vs_ma30": 3.11,
+      "mansfield_rs": -15.02,
+      "vol_ratio": 1.05,
       "event": "pullback_resume",
-      "gate_tier": "T2",
-      "blackout": false,
+      "gate_tier": "T1",
+      "blackout": true,
       "arc_pos": 0.325,
       "earnings": {
         "present": true,
-        "sentiment": 0.5,
-        "performance": 7.8,
+        "sentiment": 0.8,
+        "performance": 9.5,
         "tone_word": "confident",
         "tags": [
           "beat_and_raise",
-          "margin_contraction",
-          "demand_acceleration",
-          "buyback_or_dividend"
+          "margin_expansion",
+          "demand_acceleration"
         ],
         "quarter": "Q2",
-        "summary": "DNOW reported Q2 FY2026 revenue of $1.3 billion (up 10% sequentially) and adjusted EBITDA of $60 million (a 54% sequential increase), beating expectations with raised full-year guidance to approximately $5-5.1 billion in revenue and a target EBITDA margin near 4.5%. The quarte…"
+        "summary": "Genius Sports reported Q2 FY2026 revenue of $196 million (up 65% YoY) and adjusted EBITDA of $53 million, beating guidance on all metrics including a significant margin expansion to roughly 27%. Management raised full-year 2026 revenue guidance to $1.005-$1.025 billion and adj…"
       },
       "why": [
         "Early in its climb — 6 weeks up so far",
         "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 6 周",
         "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
+        "财报临近 — 先等待，不要追高"
       ],
-      "atr_14w": 1.1679,
-      "atr_ext": 1.646,
-      "atr_pct_price": 0.0716,
-      "sata_score": 7,
+      "atr_14w": 1.0266,
+      "atr_ext": 0.187,
+      "atr_pct_price": 0.16142,
+      "sata_score": 4,
       "sata_change_1w": 0,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 58.8
-    },
-    {
-      "ticker": "GM",
-      "company": "General Motors",
-      "sector": "Consumer Discretionary",
-      "stage_source_asof": "2026-10-30",
-      "stage_week_end": "2026-10-30",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 4,
-      "fresh": true,
-      "sga_score": 69,
-      "ma30_slope_pct5w": 1.832,
-      "pct_vs_ma30": 7.47,
-      "mansfield_rs": 3.83,
-      "vol_ratio": 1.16,
-      "event": "trendline_recapture",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.3,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.0,
-        "performance": 7.5,
-        "tone_word": "mixed",
-        "tags": [
-          "margin_expansion",
-          "buyback_or_dividend",
-          "macro_sensitivity",
-          "demand_slowdown"
-        ],
-        "quarter": "Q3",
-        "summary": "GM reported record Q3 revenue of $50 billion, up 3% year-over-year, with EBIT adjusted of $4.1 billion (+22%), EPS diluted adjusted of $3.70 (+30%), and North America margin of 8.7% (+2.5 pts). Full-year EBIT adjusted guidance was narrowed to $14.5-$15.5 billion from $14-$16 b…"
-      },
-      "why": [
-        "Early in its climb — 4 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 5.8501,
-      "atr_ext": 1.038,
-      "atr_pct_price": 0.06693,
-      "sata_score": 6,
-      "sata_change_1w": 2,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 87.5
-    },
-    {
-      "ticker": "NX",
-      "company": "Quanex Building Products Corporation",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-10-30",
-      "stage_week_end": "2026-10-30",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 2,
-      "fresh": true,
-      "sga_score": 67,
-      "ma30_slope_pct5w": 2.202,
-      "pct_vs_ma30": 8.5,
-      "mansfield_rs": 8.31,
-      "vol_ratio": 1.05,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.275,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.0,
-        "performance": 5.0,
-        "tone_word": "mixed",
-        "tags": [
-          "margin_expansion",
-          "buyback_or_dividend",
-          "demand_slowdown",
-          "macro_sensitivity"
-        ],
-        "quarter": "Q3",
-        "summary": "NX reported Q3 FY2026 net sales of $501.8 million, up 1.3% YoY, with volumes flat, pricing up ~3%, and a ~2% drag from IEEPA tariff reimbursements. Adjusted EPS rose to $0.79 from $0.69 and adjusted EBITDA edged up to $72.7 million from $70.3 million, though Extruded and Custo…"
-      },
-      "why": [
-        "Early in its climb — 2 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 2 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 2.2598,
-      "atr_ext": 0.717,
-      "atr_pct_price": 0.10933,
-      "sata_score": 6,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 81.8
-    },
-    {
-      "ticker": "CVCO",
-      "company": "Cavco Industries, Inc.",
-      "sector": "Consumer Discretionary",
-      "stage_source_asof": "2026-10-30",
-      "stage_week_end": "2026-10-30",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 66,
-      "ma30_slope_pct5w": 2.172,
-      "pct_vs_ma30": 11.67,
-      "mansfield_rs": 4.07,
-      "vol_ratio": 0.91,
-      "event": "trendline_recapture",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.4,
-        "performance": 7.5,
-        "tone_word": "steady",
-        "tags": [
-          "margin_contraction",
-          "demand_acceleration",
-          "supply_constraint",
-          "buyback_or_dividend",
-          "new_product",
-          "macro_sensitivity"
-        ],
-        "quarter": "Q2",
-        "summary": "Cavco reported Q2 FY2027 net revenue of $656.4 million, up 18% YoY from $556.5 million, with record shipments of 5,972 homes and diluted EPS of $7.17 versus $6.55. Factory-built gross margin was 21.1%, down from 22.9% a year ago on higher input costs but up roughly 30-40 bps s…"
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 47.6157,
-      "atr_ext": 1.359,
-      "atr_pct_price": 0.07692,
-      "sata_score": 7,
-      "sata_change_1w": 3,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": null
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": 32.8
     },
     {
       "ticker": "APOG",
       "company": "Apogee Enterprises, Inc.",
       "sector": "Industrials",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -385,7 +224,7 @@
       "ticker": "OPK",
       "company": "Opko Health Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -426,107 +265,10 @@
       "industry_percentile": null
     },
     {
-      "ticker": "SMP",
-      "company": "Standard Motor Products, Inc.",
-      "sector": "Consumer Discretionary",
-      "stage_source_asof": "2026-10-30",
-      "stage_week_end": "2026-10-30",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 62,
-      "ma30_slope_pct5w": 1.232,
-      "pct_vs_ma30": 10.72,
-      "mansfield_rs": 5.2,
-      "vol_ratio": 0.93,
-      "event": "trendline_recapture",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 5.0,
-        "tone_word": "confident",
-        "tags": [
-          "margin_contraction",
-          "new_product",
-          "buyback_or_dividend",
-          "macro_sensitivity"
-        ],
-        "quarter": "Q3",
-        "summary": "Q3 FY2026 adjusted sales rose 2.8% with adjusted EBITDA of $67M (13% of net sales, $4.9M above last year) and non-GAAP diluted EPS up 13.2% to $1.54. Vehicle Control grew 6% to $209.5M, Nissens rose 7.6% on Europe's hot summer, Temperature Control fell 4.1% to $138.7M against …"
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 2.8623,
-      "atr_ext": 1.434,
-      "atr_pct_price": 0.06749,
-      "sata_score": 7,
-      "sata_change_1w": 3,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 100.0
-    },
-    {
-      "ticker": "MSEX",
-      "company": "Middlesex Water Company",
-      "sector": "Utilities",
-      "stage_source_asof": "2026-10-30",
-      "stage_week_end": "2026-10-30",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 61,
-      "ma30_slope_pct5w": 0.957,
-      "pct_vs_ma30": 3.94,
-      "mansfield_rs": 0.63,
-      "vol_ratio": 0.95,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 2.5626,
-      "atr_ext": 0.84,
-      "atr_pct_price": 0.04512,
-      "sata_score": 6,
-      "sata_change_1w": 2,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 66.7
-    },
-    {
       "ticker": "VGZ",
       "company": "Vista Gold Corp",
       "sector": "Basic Materials",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -570,7 +312,7 @@
       "ticker": "WS",
       "company": "Worthington Steel",
       "sector": "Materials",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -619,7 +361,7 @@
       "ticker": "NVAX",
       "company": "Novavax Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -632,7 +374,7 @@
       "vol_ratio": 1.8,
       "event": "pullback_resume",
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.3625,
       "earnings": {
         "present": true,
@@ -648,11 +390,13 @@
       },
       "why": [
         "Early in its climb — 9 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
+        "Trading above its 30-week line — the trend is with it",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 9 周",
-        "位于 30 周均线之上 — 趋势向好"
+        "位于 30 周均线之上 — 趋势向好",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 1.44,
       "atr_ext": 0.522,
@@ -660,13 +404,13 @@
       "sata_score": 5,
       "sata_change_1w": 0,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 73.3
+      "industry_percentile": 74.0
     },
     {
       "ticker": "HIPO",
       "company": "Hippo Holdings Inc",
       "sector": "Financial",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -716,7 +460,7 @@
       "ticker": "RXRX",
       "company": "Recursion Pharmaceuticals Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -729,7 +473,7 @@
       "vol_ratio": 1.61,
       "event": "pullback_resume",
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.3,
       "earnings": {
         "present": true,
@@ -745,11 +489,13 @@
       },
       "why": [
         "Early in its climb — 4 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
+        "Already stretched well above its 30-week line — may need a rest",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 4 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 0.5982,
       "atr_ext": 0.965,
@@ -757,13 +503,13 @@
       "sata_score": 6,
       "sata_change_1w": 1,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 66.4
+      "industry_percentile": 67.2
     },
     {
       "ticker": "BWMN",
       "company": "Bowman Consulting Group Ltd",
       "sector": "Industrials",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -807,7 +553,7 @@
       "ticker": "COOK",
       "company": "COOK",
       "sector": "Unknown",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -856,7 +602,7 @@
       "ticker": "HRMY",
       "company": "Harmony Biosciences Holdings, Inc.",
       "sector": "Health Care",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -869,7 +615,7 @@
       "vol_ratio": 1.2,
       "event": "pullback_resume",
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.3625,
       "earnings": {
         "present": true,
@@ -887,11 +633,13 @@
       },
       "why": [
         "Early in its climb — 9 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
+        "Trading above its 30-week line — the trend is with it",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 9 周",
-        "位于 30 周均线之上 — 趋势向好"
+        "位于 30 周均线之上 — 趋势向好",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 3.2356,
       "atr_ext": 0.937,
@@ -905,7 +653,7 @@
       "ticker": "U",
       "company": "Unity Software Inc.",
       "sector": "Information Technology",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -918,7 +666,7 @@
       "vol_ratio": 0.9,
       "event": null,
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.375,
       "earnings": {
         "present": true,
@@ -937,11 +685,13 @@
       },
       "why": [
         "Early in its climb — 10 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
+        "Trading above its 30-week line — the trend is with it",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 10 周",
-        "位于 30 周均线之上 — 趋势向好"
+        "位于 30 周均线之上 — 趋势向好",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 5.0856,
       "atr_ext": 0.655,
@@ -952,63 +702,10 @@
       "industry_percentile": 44.6
     },
     {
-      "ticker": "CDNS",
-      "company": "Cadence Design Systems",
-      "sector": "Information Technology",
-      "stage_source_asof": "2026-10-30",
-      "stage_week_end": "2026-10-30",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 4,
-      "fresh": true,
-      "sga_score": 57,
-      "ma30_slope_pct5w": 2.517,
-      "pct_vs_ma30": -3.29,
-      "mansfield_rs": -4.51,
-      "vol_ratio": 1.0,
-      "event": null,
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.3,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.7,
-        "performance": 9.0,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "guidance_raised",
-          "margin_expansion",
-          "buyback_or_dividend",
-          "demand_acceleration",
-          "new_product"
-        ],
-        "quarter": "Q3",
-        "summary": "Cadence reported Q3 revenue of $1.633 billion, up 22% YoY with double-digit growth in every product group (core EDA +20%, IP +24%, SDA +30%), and exceeded guidance on every key metric. Non-GAAP operating margin was 44.1% and non-GAAP EPS was $2.11, with record backlog of $8.2 …"
-      },
-      "why": [
-        "Early in its climb — 4 weeks up so far",
-        "Still near its 30-week line — not clear of it yet",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "仍接近 30 周均线 — 尚未站稳",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 29.6936,
-      "atr_ext": -0.375,
-      "atr_pct_price": 0.09056,
-      "sata_score": 4,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 31.7
-    },
-    {
       "ticker": "PI",
       "company": "Impinj, Inc.",
       "sector": "Information Technology",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1054,62 +751,73 @@
       "industry_percentile": 87.0
     },
     {
-      "ticker": "ARES",
-      "company": "Ares Management",
-      "sector": "Financials",
-      "stage_source_asof": "2026-10-30",
+      "ticker": "AES",
+      "company": "AES Corporation",
+      "sector": "Utilities",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 6,
+      "weeks_in_stage": 1,
       "fresh": true,
       "sga_score": 56,
-      "ma30_slope_pct5w": 2.328,
-      "pct_vs_ma30": 3.62,
-      "mansfield_rs": -6.65,
-      "vol_ratio": 0.92,
-      "event": "trendline_recapture",
+      "ma30_slope_pct5w": 1.332,
+      "pct_vs_ma30": 2.82,
+      "mansfield_rs": -1.58,
+      "vol_ratio": 1.14,
+      "event": "pullback_resume",
       "gate_tier": "T1",
       "blackout": false,
-      "arc_pos": 0.325,
+      "arc_pos": 0.2625,
       "earnings": {
         "present": true,
-        "sentiment": 0.4,
-        "performance": 7.0,
+        "sentiment": 0.7777777777777778,
+        "performance": 7.5,
         "tone_word": "confident",
         "tags": [
-          "guidance_lowered",
-          "margin_expansion",
-          "buyback_or_dividend",
-          "demand_slowdown",
-          "new_product"
+          "renewables_growth",
+          "data_center_demand",
+          "battery_storage",
+          "safe_harbor_tax",
+          "eps_guidance",
+          "regulated_utilities",
+          "capital_allocation",
+          "cost_savings_plan",
+          "renewable_energy_development",
+          "utility_rate_base_growth",
+          "battery_storage_infrastructure",
+          "corporate_ppas",
+          "grid_modernization",
+          "energy_infrastructure",
+          "data_center_powering",
+          "regulated_electric_utilities"
         ],
         "quarter": "Q3",
-        "summary": "Management fees rose 10% YoY to nearly $1.1 billion, FRE came in at $524 million with a 42.5% margin versus 41.4% a year ago, and after-tax realized income per share was $1.26 ($3.79 YTD, up 15%). AUM reached $691 billion (+16% YoY) and fee-paying AUM $416 billion (+13%), with…"
+        "summary": "\"Renewables EBITDA increased 46% year-to-date, primarily driven by 3 gigawatts of new capacity completed over the last 12 months.\""
       },
       "why": [
-        "Early in its climb — 6 weeks up so far",
+        "Early in its climb — 1 weeks up so far",
         "Trading above its 30-week line — the trend is with it",
         "Also shows a strong confirmation from our other checks"
       ],
       "why_zh": [
-        "上升初期 — 已上行 6 周",
+        "上升初期 — 已上行 1 周",
         "位于 30 周均线之上 — 趋势向好",
         "其他多项验证同样给出强确认"
       ],
-      "atr_14w": 10.3854,
-      "atr_ext": 0.431,
-      "atr_pct_price": 0.08104,
-      "sata_score": 5,
+      "atr_14w": 0.0883,
+      "atr_ext": 4.602,
+      "atr_pct_price": 0.00596,
+      "sata_score": 9,
       "sata_change_1w": 1,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 43.9
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": 100.0
     },
     {
       "ticker": "DIN",
       "company": "Dine Brands Global Inc",
       "sector": "Consumer Cyclical",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1153,10 +861,59 @@
       "industry_percentile": 77.6
     },
     {
+      "ticker": "MHK",
+      "company": "Mohawk Industries",
+      "sector": "Consumer Discretionary",
+      "stage_source_asof": "2026-11-03",
+      "stage_week_end": "2026-10-30",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 4,
+      "fresh": true,
+      "sga_score": 56,
+      "ma30_slope_pct5w": 3.812,
+      "pct_vs_ma30": 18.39,
+      "mansfield_rs": 13.84,
+      "vol_ratio": 1.43,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3,
+      "earnings": {
+        "present": true,
+        "sentiment": -0.2,
+        "performance": 5.0,
+        "tone_word": "mixed",
+        "tags": [
+          "margin_contraction",
+          "demand_slowdown",
+          "buyback_or_dividend",
+          "macro_sensitivity"
+        ],
+        "quarter": "Q3",
+        "summary": "Q3 FY2026 sales were $2.8 billion, up 1% as reported and essentially flat adjusting for FX and an extra shipping day; volumes fell 4% while price/mix rose 4%. Adjusted EPS was $2.72, adjusted operating income $200 million (down $5 million YoY), and adjusted EBITDA margin 12.7%…"
+      },
+      "why": [
+        "Early in its climb — 4 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 4 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 11.3543,
+      "atr_ext": 1.907,
+      "atr_pct_price": 0.08145,
+      "sata_score": 8,
+      "sata_change_1w": 2,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": 90.5
+    },
+    {
       "ticker": "RGR",
       "company": "Sturm, Ruger & Co Inc",
       "sector": "Industrials",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1169,7 +926,7 @@
       "vol_ratio": 3.07,
       "event": null,
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.325,
       "earnings": {
         "present": false,
@@ -1182,11 +939,13 @@
       },
       "why": [
         "Early in its climb — 6 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
+        "Trading above its 30-week line — the trend is with it",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 6 周",
-        "位于 30 周均线之上 — 趋势向好"
+        "位于 30 周均线之上 — 趋势向好",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 2.8464,
       "atr_ext": 1.475,
@@ -1200,7 +959,7 @@
       "ticker": "AFRI",
       "company": "Forafric Global PLC",
       "sector": "Consumer Defensive",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1244,7 +1003,7 @@
       "ticker": "CTEV",
       "company": "Claritev Corp",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1294,7 +1053,7 @@
       "ticker": "DNA",
       "company": "Ginkgo Bioworks Holdings Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1307,7 +1066,7 @@
       "vol_ratio": 2.23,
       "event": "pullback_resume",
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.3125,
       "earnings": {
         "present": true,
@@ -1323,11 +1082,13 @@
       },
       "why": [
         "Early in its climb — 5 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
+        "Already stretched well above its 30-week line — may need a rest",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 5 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 2.2662,
       "atr_ext": 1.078,
@@ -1338,10 +1099,60 @@
       "industry_percentile": 100.0
     },
     {
+      "ticker": "FSUN",
+      "company": "Firstsun Capital Bancorp",
+      "sector": "Financial",
+      "stage_source_asof": "2026-11-03",
+      "stage_week_end": "2026-10-30",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 4,
+      "fresh": true,
+      "sga_score": 55,
+      "ma30_slope_pct5w": 1.35,
+      "pct_vs_ma30": 3.16,
+      "mansfield_rs": -1.37,
+      "vol_ratio": 1.1,
+      "event": null,
+      "gate_tier": "T1",
+      "blackout": false,
+      "arc_pos": 0.3,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.2,
+        "performance": 5.5,
+        "tone_word": "confident",
+        "tags": [
+          "margin_expansion",
+          "demand_slowdown",
+          "buyback_or_dividend"
+        ],
+        "quarter": "Q3",
+        "summary": "Adjusted EPS was $1.03 with adjusted ROAA of 1.23%, and PPNR per share fell to $1.42 from $1.50 in Q2. NIM expanded 24 bps to 3.82% and service fee revenue was $39.4M (down ~4% QoQ, 21.9% of revenue), while total loans declined $110M (3.8% annualized) and total deposits fell $…"
+      },
+      "why": [
+        "Early in its climb — 4 weeks up so far",
+        "Trading above its 30-week line — the trend is with it",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 4 周",
+        "位于 30 周均线之上 — 趋势向好",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 2.0952,
+      "atr_ext": 0.573,
+      "atr_pct_price": 0.05349,
+      "sata_score": 5,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": null
+    },
+    {
       "ticker": "PCVX",
       "company": "Vaxcyte Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1393,13 +1204,13 @@
       "sata_score": 5,
       "sata_change_1w": 0,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 71.0
+      "industry_percentile": 71.8
     },
     {
       "ticker": "PGY",
       "company": "Pagaya Technologies Ltd",
       "sector": "Technology",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1444,61 +1255,10 @@
       "industry_percentile": 37.6
     },
     {
-      "ticker": "SFBS",
-      "company": "ServisFirst Bancshares, Inc.",
-      "sector": "Financials",
-      "stage_source_asof": "2026-10-30",
-      "stage_week_end": "2026-10-30",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 2,
-      "fresh": true,
-      "sga_score": 55,
-      "ma30_slope_pct5w": 1.536,
-      "pct_vs_ma30": -1.94,
-      "mansfield_rs": -3.64,
-      "vol_ratio": 1.07,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.275,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.4,
-        "performance": 7.5,
-        "tone_word": "confident",
-        "tags": [
-          "margin_expansion",
-          "buyback_or_dividend",
-          "competitor_threat",
-          "demand_slowdown"
-        ],
-        "quarter": "Q3",
-        "summary": "ServisFirst reported Q3 2026 net income of $87.3 million, or $0.80 per diluted share on a split-adjusted basis, up 2.6% linked-quarter and up 23% year-over-year on an adjusted basis versus $0.65. Net interest income rose 2.7% sequentially to $159.8 million, margin held at 3.63…"
-      },
-      "why": [
-        "Early in its climb — 2 weeks up so far",
-        "Still near its 30-week line — not clear of it yet",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 2 周",
-        "仍接近 30 周均线 — 尚未站稳",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 2.3086,
-      "atr_ext": -0.346,
-      "atr_pct_price": 0.05731,
-      "sata_score": 4,
-      "sata_change_1w": -1,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 27.1
-    },
-    {
       "ticker": "AFRM",
       "company": "Affirm Holdings, Inc.",
       "sector": "Financials",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1511,7 +1271,7 @@
       "vol_ratio": 0.83,
       "event": "trendline_recapture",
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.375,
       "earnings": {
         "present": true,
@@ -1528,11 +1288,13 @@
       },
       "why": [
         "Early in its climb — 10 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
+        "Trading above its 30-week line — the trend is with it",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 10 周",
-        "位于 30 周均线之上 — 趋势向好"
+        "位于 30 周均线之上 — 趋势向好",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 8.2188,
       "atr_ext": 0.236,
@@ -1546,7 +1308,7 @@
       "ticker": "EVH",
       "company": "Evolent Health Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1594,7 +1356,7 @@
       "ticker": "FWDI",
       "company": "Forward Industries Inc",
       "sector": "Financial",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1638,61 +1400,10 @@
       "industry_percentile": null
     },
     {
-      "ticker": "SBCF",
-      "company": "Seacoast Banking Corporation of Florida",
-      "sector": "Financials",
-      "stage_source_asof": "2026-10-30",
-      "stage_week_end": "2026-10-30",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 54,
-      "ma30_slope_pct5w": 1.685,
-      "pct_vs_ma30": 1.45,
-      "mansfield_rs": -2.51,
-      "vol_ratio": 1.01,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2875,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.4,
-        "performance": 6.5,
-        "tone_word": "confident",
-        "tags": [
-          "margin_expansion",
-          "buyback_or_dividend",
-          "demand_slowdown",
-          "macro_sensitivity"
-        ],
-        "quarter": "Q3",
-        "summary": "Seacoast reported Q3 FY2026 net income of $59.9 million ($0.55 per share), up 1% sequentially and 64% YoY, with adjusted EPS of $0.66 (up 9% QoQ, 59% YoY) and adjusted ROA of 1.34%. Net interest margin held at 3.83% (core up 1 bp to 3.66%), loans grew $429 million or 13% annua…"
-      },
-      "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 1.778,
-      "atr_ext": 0.266,
-      "atr_pct_price": 0.05383,
-      "sata_score": 5,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 33.6
-    },
-    {
       "ticker": "BKH",
       "company": "Black Hills Corporation",
       "sector": "Utilities",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1705,7 +1416,7 @@
       "vol_ratio": 1.47,
       "event": "pullback_resume",
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.275,
       "earnings": {
         "present": true,
@@ -1721,11 +1432,13 @@
       },
       "why": [
         "Early in its climb — 2 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
+        "Trading above its 30-week line — the trend is with it",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 2 周",
-        "位于 30 周均线之上 — 趋势向好"
+        "位于 30 周均线之上 — 趋势向好",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 3.6884,
       "atr_ext": 2.289,
@@ -1739,7 +1452,7 @@
       "ticker": "CD",
       "company": "Chaince Digital Holdings Inc",
       "sector": "Financial",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1783,7 +1496,7 @@
       "ticker": "DSP",
       "company": "Viant Technology Inc",
       "sector": "Technology",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1832,7 +1545,7 @@
       "ticker": "IRON",
       "company": "Disc Medicine Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1845,7 +1558,7 @@
       "vol_ratio": 2.46,
       "event": null,
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.275,
       "earnings": {
         "present": false,
@@ -1858,11 +1571,13 @@
       },
       "why": [
         "Early in its climb — 2 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
+        "Trading above its 30-week line — the trend is with it",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 2 周",
-        "位于 30 周均线之上 — 趋势向好"
+        "位于 30 周均线之上 — 趋势向好",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 8.0006,
       "atr_ext": 1.167,
@@ -1870,13 +1585,13 @@
       "sata_score": 6,
       "sata_change_1w": 1,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 67.9
+      "industry_percentile": 68.7
     },
     {
       "ticker": "PACB",
       "company": "Pacific Biosciences of California Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1889,7 +1604,7 @@
       "vol_ratio": 1.89,
       "event": "pullback_resume",
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.3,
       "earnings": {
         "present": true,
@@ -1906,11 +1621,13 @@
       },
       "why": [
         "Early in its climb — 4 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
+        "Already stretched well above its 30-week line — may need a rest",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 4 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 0.4514,
       "atr_ext": 2.331,
@@ -1924,7 +1641,7 @@
       "ticker": "QSI",
       "company": "Quantum-Si Incorporated",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1971,7 +1688,7 @@
       "ticker": "ZYME",
       "company": "Zymeworks BC Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -1984,7 +1701,7 @@
       "vol_ratio": 1.89,
       "event": null,
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.375,
       "earnings": {
         "present": true,
@@ -2013,11 +1730,13 @@
       },
       "why": [
         "Early in its climb — 10 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
+        "Trading above its 30-week line — the trend is with it",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 10 周",
-        "位于 30 周均线之上 — 趋势向好"
+        "位于 30 周均线之上 — 趋势向好",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 2.8245,
       "atr_ext": 1.046,
@@ -2025,13 +1744,13 @@
       "sata_score": 6,
       "sata_change_1w": 0,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 74.0
+      "industry_percentile": 74.8
     },
     {
       "ticker": "BRBS",
       "company": "Blue Ridge Bankshares Inc (VA)",
       "sector": "Financial",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2075,7 +1794,7 @@
       "ticker": "BRZE",
       "company": "Braze Inc",
       "sector": "Technology",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2125,7 +1844,7 @@
       "ticker": "CBLL",
       "company": "Ceribell Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2174,7 +1893,7 @@
       "ticker": "HRI",
       "company": "Herc Holdings Inc",
       "sector": "Industrials",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2224,7 +1943,7 @@
       "ticker": "LFCR",
       "company": "Lifecore Biomedical Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2272,7 +1991,7 @@
       "ticker": "MATV",
       "company": "Mativ Holdings Inc",
       "sector": "Basic Materials",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2319,7 +2038,7 @@
       "ticker": "MDT",
       "company": "Medtronic",
       "sector": "Health Care",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2370,7 +2089,7 @@
       "ticker": "SDGR",
       "company": "Schrödinger, Inc.",
       "sector": "Health Care",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2383,7 +2102,7 @@
       "vol_ratio": 1.43,
       "event": "pullback_resume",
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.375,
       "earnings": {
         "present": true,
@@ -2399,11 +2118,13 @@
       },
       "why": [
         "Early in its climb — 10 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
+        "Already stretched well above its 30-week line — may need a rest",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 10 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 4.185,
       "atr_ext": 2.144,
@@ -2414,10 +2135,60 @@
       "industry_percentile": 100.0
     },
     {
+      "ticker": "SKY",
+      "company": "Champion Homes, Inc.",
+      "sector": "Consumer Discretionary",
+      "stage_source_asof": "2026-11-03",
+      "stage_week_end": "2026-10-30",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 1,
+      "fresh": true,
+      "sga_score": 52,
+      "ma30_slope_pct5w": 1.242,
+      "pct_vs_ma30": 3.25,
+      "mansfield_rs": -4.19,
+      "vol_ratio": 0.93,
+      "event": "trendline_recapture",
+      "gate_tier": "T2",
+      "blackout": false,
+      "arc_pos": 0.2625,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.5,
+        "performance": 7.8,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "demand_acceleration",
+          "margin_contraction"
+        ],
+        "quarter": "Q1",
+        "summary": "Champion Homes reported Q1 FY2027 net sales of $710.2 million (up 1.3% YoY) and adjusted EPS of $0.88 per share, slightly ahead of expectations with results aligning to guidance. The company raised its backlog by approximately 34% sequentially to $421.8 million while maintaini…"
+      },
+      "why": [
+        "Early in its climb — 1 weeks up so far",
+        "Trading above its 30-week line — the trend is with it",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 1 周",
+        "位于 30 周均线之上 — 趋势向好",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 7.3157,
+      "atr_ext": 0.364,
+      "atr_pct_price": 0.08637,
+      "sata_score": 5,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": 57.1
+    },
+    {
       "ticker": "TBCH",
       "company": "Turtle Beach Corp",
       "sector": "Technology",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2467,7 +2238,7 @@
       "ticker": "VSTM",
       "company": "Verastem Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2480,7 +2251,7 @@
       "vol_ratio": 2.08,
       "event": null,
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.3625,
       "earnings": {
         "present": true,
@@ -2497,11 +2268,13 @@
       },
       "why": [
         "Early in its climb — 9 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
+        "Already stretched well above its 30-week line — may need a rest",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 9 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 1.265,
       "atr_ext": 2.762,
@@ -2512,62 +2285,61 @@
       "industry_percentile": null
     },
     {
-      "ticker": "BCC",
-      "company": "Boise Cascade",
+      "ticker": "DNOW",
+      "company": "NOW Inc",
       "sector": "Industrials",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 1,
+      "weeks_in_stage": 6,
       "fresh": true,
       "sga_score": 51,
-      "ma30_slope_pct5w": 0.978,
-      "pct_vs_ma30": 3.25,
-      "mansfield_rs": -2.73,
-      "vol_ratio": 0.83,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2625,
+      "ma30_slope_pct5w": 4.902,
+      "pct_vs_ma30": 13.36,
+      "mansfield_rs": 10.1,
+      "vol_ratio": 0.92,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": true,
+      "arc_pos": 0.325,
       "earnings": {
         "present": true,
-        "sentiment": 0.05,
-        "performance": 5.5,
-        "tone_word": "mixed",
+        "sentiment": 0.5,
+        "performance": 7.8,
+        "tone_word": "confident",
         "tags": [
-          "guidance_lowered",
+          "beat_and_raise",
           "margin_contraction",
-          "demand_slowdown",
-          "new_product",
+          "demand_acceleration",
           "buyback_or_dividend"
         ],
         "quarter": "Q2",
-        "summary": "Boise Cascade's Q2 2026 consolidated sales rose 5% YoY to $1.8 billion, with EPS of $1.63 up from the prior year excluding asset-sale gains. Wood Products EBITDA increased to $52.4 million from $37.3 million, while BMD EBITDA fell to $85.6 million from $91.8 million. Managemen…"
+        "summary": "DNOW reported Q2 FY2026 revenue of $1.3 billion (up 10% sequentially) and adjusted EBITDA of $60 million (a 54% sequential increase), beating expectations with raised full-year guidance to approximately $5-5.1 billion in revenue and a target EBITDA margin near 4.5%. The quarte…"
       },
       "why": [
-        "Early in its climb — 1 weeks up so far",
+        "Early in its climb — 6 weeks up so far",
         "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
-        "上升初期 — 已上行 1 周",
+        "上升初期 — 已上行 6 周",
         "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
+        "财报临近 — 先等待，不要追高"
       ],
-      "atr_14w": 5.4111,
-      "atr_ext": 0.458,
-      "atr_pct_price": 0.06864,
-      "sata_score": 5,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 29.4
+      "atr_14w": 1.1679,
+      "atr_ext": 1.646,
+      "atr_pct_price": 0.0716,
+      "sata_score": 7,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 58.8
     },
     {
       "ticker": "MSFT",
       "company": "Microsoft",
       "sector": "Information Technology",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2617,7 +2389,7 @@
       "ticker": "MXCT",
       "company": "MaxCyte Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2664,7 +2436,7 @@
       "ticker": "NUTX",
       "company": "Nutex Health Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2677,7 +2449,7 @@
       "vol_ratio": 0.9,
       "event": null,
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.375,
       "earnings": {
         "present": true,
@@ -2696,12 +2468,12 @@
       "why": [
         "Early in its climb — 10 weeks up so far",
         "Already stretched well above its 30-week line — may need a rest",
-        "Its last earnings call read upbeat"
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 10 周",
         "已明显高于 30 周均线 — 可能需要回踩",
-        "最近一次财报电话会语气积极"
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 22.974,
       "atr_ext": 1.513,
@@ -2715,7 +2487,7 @@
       "ticker": "NWE",
       "company": "NorthWestern Energy",
       "sector": "Utilities",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2728,7 +2500,7 @@
       "vol_ratio": 1.32,
       "event": "pullback_resume",
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.2875,
       "earnings": {
         "present": true,
@@ -2755,11 +2527,13 @@
       },
       "why": [
         "Early in its climb — 3 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
+        "Trading above its 30-week line — the trend is with it",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 3 周",
-        "位于 30 周均线之上 — 趋势向好"
+        "位于 30 周均线之上 — 趋势向好",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 3.5975,
       "atr_ext": 2.434,
@@ -2773,7 +2547,7 @@
       "ticker": "AVPT",
       "company": "AvePoint Inc",
       "sector": "Technology",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2786,7 +2560,7 @@
       "vol_ratio": 1.67,
       "event": "pullback_resume",
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.375,
       "earnings": {
         "present": true,
@@ -2803,11 +2577,13 @@
       },
       "why": [
         "Early in its climb — 10 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
+        "Already stretched well above its 30-week line — may need a rest",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 10 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 1.2518,
       "atr_ext": 3.814,
@@ -2821,7 +2597,7 @@
       "ticker": "CNNE",
       "company": "Cannae Holdings Inc",
       "sector": "Consumer Cyclical",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2869,61 +2645,10 @@
       "industry_percentile": 85.0
     },
     {
-      "ticker": "CWT",
-      "company": "California Water Service Group",
-      "sector": "Utilities",
-      "stage_source_asof": "2026-10-30",
-      "stage_week_end": "2026-10-30",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 2,
-      "fresh": true,
-      "sga_score": 50,
-      "ma30_slope_pct5w": 0.86,
-      "pct_vs_ma30": 2.89,
-      "mansfield_rs": -0.01,
-      "vol_ratio": 0.82,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.275,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 7.5,
-        "tone_word": "confident",
-        "tags": [
-          "margin_expansion",
-          "buyback_or_dividend",
-          "new_product",
-          "macro_sensitivity"
-        ],
-        "quarter": "Q3",
-        "summary": "Q3 2026 net income was $65.4 million, or $1.05 per diluted share, versus $61.2 million or $1.03 a year earlier; revenue rose 6.7% to $332.2 million on $22.1 million from rate changes and new customers, with EPS up only $0.02 as dilution from ATM share issuance and a $3.9 milli…"
-      },
-      "why": [
-        "Early in its climb — 2 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 2 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 2.0856,
-      "atr_ext": 0.652,
-      "atr_pct_price": 0.043,
-      "sata_score": 5,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 50.0
-    },
-    {
       "ticker": "ENR",
       "company": "Energizer",
       "sector": "Consumer Staples",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -2971,7 +2696,7 @@
       "ticker": "EVER",
       "company": "EverQuote Inc",
       "sector": "Communication Services",
-      "stage_source_asof": "2026-10-30",
+      "stage_source_asof": "2026-11-03",
       "stage_week_end": "2026-10-30",
       "stage_current": true,
       "stage": 2,
@@ -3016,9 +2741,319 @@
       "sata_change_1w": 0,
       "stage_detailed": "2X_catch_price_above_ma",
       "industry_percentile": 73.7
+    },
+    {
+      "ticker": "FCNCA",
+      "company": "First Citizens BancShares, Inc.",
+      "sector": "Financials",
+      "stage_source_asof": "2026-11-03",
+      "stage_week_end": "2026-10-30",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 10,
+      "fresh": true,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 2.911,
+      "pct_vs_ma30": 11.7,
+      "mansfield_rs": 8.37,
+      "vol_ratio": 1.19,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.375,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.6,
+        "performance": 8.0,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "margin_expansion",
+          "buyback_or_dividend",
+          "demand_acceleration"
+        ],
+        "quarter": "Q3",
+        "summary": "First Citizens reported Q3 FY2026 adjusted net income of $652 million and adjusted EPS of $55.37, with ROE of 12.24% and ROA of 1.08%. Loans rose $6.2 billion (4.1%) sequentially to lead a period of strong balance sheet expansion, while period-end deposits grew $11.8 billion (…"
+      },
+      "why": [
+        "Early in its climb — 10 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 10 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 117.749,
+      "atr_ext": 2.092,
+      "atr_pct_price": 0.05005,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": 91.6
+    },
+    {
+      "ticker": "SEI",
+      "company": "Solaris Energy Infrastructure Inc",
+      "sector": "Energy",
+      "stage_source_asof": "2026-11-03",
+      "stage_week_end": "2026-10-30",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 8,
+      "fresh": true,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 3.528,
+      "pct_vs_ma30": 5.91,
+      "mansfield_rs": 11.56,
+      "vol_ratio": 1.1,
+      "event": "trendline_recapture",
+      "gate_tier": null,
+      "blackout": true,
+      "arc_pos": 0.35,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.85,
+        "performance": 8.5,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration",
+          "supply_constraint",
+          "new_product"
+        ],
+        "quarter": "Q2",
+        "summary": "Solaris reported record Q2 2026 with revenue of ~$219M, up 12% sequentially, and adjusted EBITDA of ~$108M, up 30% sequentially, with adjusted pro forma EPS of $0.39. The company raised Q3 adjusted EBITDA guidance to $90M-$105M and introduced Q4 guidance of $100M-$120M, reflec…"
+      },
+      "why": [
+        "Early in its climb — 8 weeks up so far",
+        "Trading above its 30-week line — the trend is with it",
+        "Earnings soon — wait, don't chase"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 8 周",
+        "位于 30 周均线之上 — 趋势向好",
+        "财报临近 — 先等待，不要追高"
+      ],
+      "atr_14w": 11.2004,
+      "atr_ext": 0.352,
+      "atr_pct_price": 0.15842,
+      "sata_score": 5,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 75.0
+    },
+    {
+      "ticker": "AGYS",
+      "company": "Agilysys, Inc.",
+      "sector": "Information Technology",
+      "stage_source_asof": "2026-11-03",
+      "stage_week_end": "2026-10-30",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 9,
+      "fresh": true,
+      "sga_score": 49,
+      "ma30_slope_pct5w": 7.134,
+      "pct_vs_ma30": 20.19,
+      "mansfield_rs": 11.47,
+      "vol_ratio": 1.04,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3625,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.7,
+        "performance": 8.5,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration",
+          "new_product"
+        ],
+        "quarter": "Q2",
+        "summary": "Agilysys reported record Q2 FY2027 revenue of $93.4 million, up 17.7% YoY and 6.5% QoQ, with subscription revenue up 32.6% to a record $44.2 million (71% of recurring revenue). Adjusted EBITDA was a record $24.1 million at 25.9% of revenue, adjusted diluted EPS rose to $0.67 f…"
+      },
+      "why": [
+        "Early in its climb — 9 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 9 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 10.2714,
+      "atr_ext": 1.894,
+      "atr_pct_price": 0.0887,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 55.4
+    },
+    {
+      "ticker": "BMBL",
+      "company": "Bumble Inc",
+      "sector": "Communication Services",
+      "stage_source_asof": "2026-11-03",
+      "stage_week_end": "2026-10-30",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 2,
+      "fresh": true,
+      "sga_score": 49,
+      "ma30_slope_pct5w": 6.307,
+      "pct_vs_ma30": 77.99,
+      "mansfield_rs": 66.37,
+      "vol_ratio": 3.11,
+      "event": null,
+      "gate_tier": null,
+      "blackout": true,
+      "arc_pos": 0.275,
+      "earnings": {
+        "present": true,
+        "sentiment": -0.5,
+        "performance": 2.5,
+        "tone_word": "cautious",
+        "tags": [
+          "miss_and_cut",
+          "margin_contraction",
+          "demand_slowdown",
+          "supply_constraint"
+        ],
+        "quarter": "Q2",
+        "summary": "Second quarter revenue was $211 million (down from $248M YoY) and adjusted EBITDA was $73 million with a margin of 35% versus the high end of guidance; Q3 guidance for total revenue ($205-213M) and adjusted EBITDA margins (~28%) remains unchanged. Management cited delays in mi…"
+      },
+      "why": [
+        "Early in its climb — 2 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest",
+        "Earnings soon — wait, don't chase"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 2 周",
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "财报临近 — 先等待，不要追高"
+      ],
+      "atr_14w": 0.4807,
+      "atr_ext": 5.46,
+      "atr_pct_price": 0.08025,
+      "sata_score": 10,
+      "sata_change_1w": 0,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": 100.0
+    },
+    {
+      "ticker": "BRCC",
+      "company": "BRC Inc",
+      "sector": "Consumer Defensive",
+      "stage_source_asof": "2026-11-03",
+      "stage_week_end": "2026-10-30",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 2,
+      "fresh": true,
+      "sga_score": 49,
+      "ma30_slope_pct5w": 3.66,
+      "pct_vs_ma30": 12.72,
+      "mansfield_rs": 12.0,
+      "vol_ratio": 1.06,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.275,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.5,
+        "performance": 7.5,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "margin_expansion",
+          "demand_acceleration",
+          "demand_slowdown",
+          "macro_sensitivity"
+        ],
+        "quarter": "Q2",
+        "summary": "Revenue grew 13% to $106 million (wholesale +15%, DTC +14%), with gross margin up 15 bps to 34.1% and Adjusted EBITDA up 164% to $6.3 million. Management maintained full-year guidance of at least 8% revenue growth (~$430M) and at least 35% Adjusted EBITDA growth (~$29M), but f…"
+      },
+      "why": [
+        "Early in its climb — 2 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 2 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 1.5506,
+      "atr_ext": 0.917,
+      "atr_pct_price": 0.12307,
+      "sata_score": 6,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "EAF",
+      "company": "GrafTech International Ltd",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-11-03",
+      "stage_week_end": "2026-10-30",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 5,
+      "fresh": true,
+      "sga_score": 49,
+      "ma30_slope_pct5w": 6.956,
+      "pct_vs_ma30": 46.58,
+      "mansfield_rs": 14.89,
+      "vol_ratio": 1.53,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.3,
+        "performance": 2.5,
+        "tone_word": "reassuring",
+        "tags": [
+          "margin_contraction",
+          "demand_slowdown",
+          "guidance_raised",
+          "new_product",
+          "regulatory_headwind",
+          "macro_sensitivity"
+        ],
+        "quarter": "Q3",
+        "summary": "GrafTech reported Q3 FY2026 net sales of $140M, down ~3% YoY, on realized pricing of ~$3,900/mt (down ~7% YoY, flat QoQ), and a net loss of $47M ($1.76/share) versus a $28M loss ($1.10) a year ago, which included ~$14M of Monterrey closure charges. Adjusted EBITDA fell to $9M …"
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 2.1724,
+      "atr_ext": 1.741,
+      "atr_pct_price": 0.18256,
+      "sata_score": 8,
+      "sata_change_1w": 4,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
     }
   ],
   "warnings_stage3": [
+    {
+      "ticker": "MHO",
+      "company": "M/I Homes, Inc.",
+      "weeks_in_stage": 7,
+      "sga_score": 40
+    },
     {
       "ticker": "UE",
       "company": "Urban Edge Properties",
@@ -3026,22 +3061,46 @@
       "sga_score": 40
     },
     {
-      "ticker": "PRG",
-      "company": "PROG Holdings, Inc.",
-      "weeks_in_stage": 5,
+      "ticker": "FFIN",
+      "company": "First Financial Bankshares",
+      "weeks_in_stage": 8,
       "sga_score": 37
     },
     {
-      "ticker": "CF",
-      "company": "CF Industries",
-      "weeks_in_stage": 2,
-      "sga_score": 35
+      "ticker": "HAPN",
+      "company": "Happen Inc",
+      "weeks_in_stage": 15,
+      "sga_score": 37
     },
     {
-      "ticker": "FIVE",
-      "company": "Five Below",
-      "weeks_in_stage": 3,
-      "sga_score": 35
+      "ticker": "NEXT",
+      "company": "NextDecade Corp",
+      "weeks_in_stage": 2,
+      "sga_score": 37
+    },
+    {
+      "ticker": "EQIX",
+      "company": "Equinix",
+      "weeks_in_stage": 1,
+      "sga_score": 36
+    },
+    {
+      "ticker": "BNL",
+      "company": "Broadstone Net Lease, Inc.",
+      "weeks_in_stage": 4,
+      "sga_score": 32
+    },
+    {
+      "ticker": "SNA",
+      "company": "Snap-on",
+      "weeks_in_stage": 7,
+      "sga_score": 32
+    },
+    {
+      "ticker": "WAFD",
+      "company": "WaFd, Inc.",
+      "weeks_in_stage": 5,
+      "sga_score": 32
     },
     {
       "ticker": "MC",
@@ -3050,15 +3109,21 @@
       "sga_score": 30
     },
     {
-      "ticker": "TFIN",
-      "company": "Triumph Bancorp, Inc.",
+      "ticker": "HTH",
+      "company": "Hilltop Holdings Inc.",
+      "weeks_in_stage": 7,
+      "sga_score": 29
+    },
+    {
+      "ticker": "OLP",
+      "company": "One Liberty Properties Inc",
       "weeks_in_stage": 5,
       "sga_score": 29
     },
     {
-      "ticker": "AZZ",
-      "company": "AZZ, Inc.",
-      "weeks_in_stage": 6,
+      "ticker": "FSS",
+      "company": "Federal Signal Corporation",
+      "weeks_in_stage": 7,
       "sga_score": 28
     },
     {
@@ -3068,76 +3133,40 @@
       "sga_score": 28
     },
     {
+      "ticker": "DNLI",
+      "company": "Denali Therapeutics Inc",
+      "weeks_in_stage": 6,
+      "sga_score": 27
+    },
+    {
+      "ticker": "PLD",
+      "company": "Prologis",
+      "weeks_in_stage": 7,
+      "sga_score": 27
+    },
+    {
+      "ticker": "SW",
+      "company": "Smurfit Westrock",
+      "weeks_in_stage": 7,
+      "sga_score": 27
+    },
+    {
       "ticker": "VTR",
       "company": "Ventas",
       "weeks_in_stage": 5,
       "sga_score": 27
     },
     {
+      "ticker": "F",
+      "company": "Ford Motor Company",
+      "weeks_in_stage": 7,
+      "sga_score": 26
+    },
+    {
       "ticker": "LQDA",
       "company": "Liquidia Corporation",
       "weeks_in_stage": 1,
       "sga_score": 26
-    },
-    {
-      "ticker": "DLR",
-      "company": "Digital Realty",
-      "weeks_in_stage": 4,
-      "sga_score": 25
-    },
-    {
-      "ticker": "HASI",
-      "company": "Hannon Armstrong Sustainable Infrastructure Capital, Inc.",
-      "weeks_in_stage": 5,
-      "sga_score": 25
-    },
-    {
-      "ticker": "HTO",
-      "company": "H2O America",
-      "weeks_in_stage": 1,
-      "sga_score": 25
-    },
-    {
-      "ticker": "PENN",
-      "company": "Penn Entertainment",
-      "weeks_in_stage": 2,
-      "sga_score": 25
-    },
-    {
-      "ticker": "SBRA",
-      "company": "Sabra Health Care REIT",
-      "weeks_in_stage": 5,
-      "sga_score": 25
-    },
-    {
-      "ticker": "TXNM",
-      "company": "TXNM Energy",
-      "weeks_in_stage": 21,
-      "sga_score": 25
-    },
-    {
-      "ticker": "MRCY",
-      "company": "Mercury Systems",
-      "weeks_in_stage": 9,
-      "sga_score": 22
-    },
-    {
-      "ticker": "KMI",
-      "company": "Kinder Morgan",
-      "weeks_in_stage": 7,
-      "sga_score": 19
-    },
-    {
-      "ticker": "NOVT",
-      "company": "Novanta",
-      "weeks_in_stage": 7,
-      "sga_score": 18
-    },
-    {
-      "ticker": "BBT",
-      "company": "Beacon Financial Corp.",
-      "weeks_in_stage": 6,
-      "sga_score": 16
     }
   ],
   "sectors": [
@@ -3184,16 +3213,16 @@
       "trend": "flat"
     },
     {
-      "sector": "Healthcare",
-      "n": 341,
-      "pct_stage2": 44.6,
-      "trend": "down"
-    },
-    {
       "sector": "Energy",
       "n": 119,
       "pct_stage2": 44.5,
       "trend": "flat"
+    },
+    {
+      "sector": "Healthcare",
+      "n": 341,
+      "pct_stage2": 44.3,
+      "trend": "down"
     },
     {
       "sector": "Communication Services",
@@ -4234,8 +4263,8 @@
       86
     ],
     "ATYR": [
-      2,
-      1
+      4,
+      57
     ],
     "AU": [
       1,
@@ -10327,7 +10356,7 @@
     ],
     "NXXT": [
       4,
-      57
+      68
     ],
     "O": [
       4,
@@ -10895,7 +10924,7 @@
     ],
     "PGR": [
       2,
-      2
+      1
     ],
     "PGY": [
       2,
@@ -12510,8 +12539,8 @@
       34
     ],
     "SUPN": [
-      4,
-      13
+      3,
+      7
     ],
     "SVC": [
       4,
@@ -14239,11 +14268,6 @@
       },
       {
         "kind": "entered_stage2",
-        "ticker": "ATYR",
-        "detail": "Moved into an advancing stage"
-      },
-      {
-        "kind": "entered_stage2",
         "ticker": "AUB",
         "detail": "Moved into an advancing stage"
       },
@@ -14471,6 +14495,11 @@
         "kind": "entered_stage2",
         "ticker": "CRAI",
         "detail": "Moved into an advancing stage"
+      },
+      {
+        "kind": "entered_stage4",
+        "ticker": "CRWV",
+        "detail": "Rolled over into a declining stage"
       }
     ],
     "n": 80
@@ -29538,9 +29567,9 @@
       "event": null
     },
     "ATYR": {
-      "stage": 2,
-      "fresh": true,
-      "event": "trendline_recapture"
+      "stage": 4,
+      "fresh": false,
+      "event": null
     },
     "AU": {
       "stage": 1,
@@ -39973,7 +40002,7 @@
       "event": null
     },
     "SUPN": {
-      "stage": 4,
+      "stage": 3,
       "fresh": false,
       "event": null
     },

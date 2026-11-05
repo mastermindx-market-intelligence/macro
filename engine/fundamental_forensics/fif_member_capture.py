@@ -1437,6 +1437,19 @@ def _index_member_sizes(items: Sequence[Mapping[str, Any]]) -> dict[str, int]:
     return sizes
 
 
+def _resolve_taxonomy_stem(items: Sequence[Mapping[str, Any]], primary_stem: str) -> str:
+    """DEC:FIF-TAXONOMY-STEM-FROM-INDEX-20261102 (R1): the stem the archive index lists for
+    the five XBRL role members of a 10-K/10-Q. Ambiguity keeps the primary stem, so the
+    base refusal fires unchanged."""
+    names = {item.get("name") for item in items if isinstance(item.get("name"), str)}
+    if f"{primary_stem}.xsd" in names:
+        return primary_stem
+    schemas = sorted(name for name in names if name.lower().endswith(".xsd"))
+    if len(schemas) == 1 and schemas[0].endswith(".xsd"):
+        return schemas[0][: -len(".xsd")]
+    return primary_stem
+
+
 def _prefetch_member_ceilings(
     items: Sequence[Mapping[str, Any]],
     *,
@@ -1513,6 +1526,7 @@ def _write_package(
     statement_roles: Mapping[str, dict[str, str]] | None,
     capture_recorded_at: str,
     absent_members: Sequence[Mapping[str, str]] = (),
+    taxonomy_stem: str | None = None,
 ) -> tuple[dict[str, Any], int, int]:
     """Assemble the package in staging and rename it into place atomically.
 
@@ -1543,7 +1557,7 @@ def _write_package(
             code="member_missing_from_index",
         )
     primary_document = bound_fields["primaryDocument"]
-    stem = primary_document.rsplit(".", 1)[0]
+    stem = taxonomy_stem if taxonomy_stem is not None else primary_document.rsplit(".", 1)[0]
     role_by_name = {f"{stem}{suffix}": role for suffix, role in MEMBER_SUFFIX_ROLES}
     rows: list[dict[str, Any]] = []
     stored_count = 0
@@ -1805,19 +1819,21 @@ def capture_fif_filing_packages(
                 )
                 budget -= len(index_bytes)
                 stem = primary_name.rsplit(".", 1)[0]
+                items = _parse_archive_index(index_bytes)
+                tstem = _resolve_taxonomy_stem(items, stem) if contract_form.strip().upper() in ("10-K", "10-Q") else stem
                 # D12 + R2/R3: every ceiling knowable from the index listing
                 # fires here, BEFORE any member fetch (the index is the only
                 # fetch a refused accession makes); an optional member the
                 # index does not name is decided ABSENT at zero cost.
                 present, absent = _prefetch_member_ceilings(
-                    _parse_archive_index(index_bytes),
-                    stem=stem,
+                    items,
+                    stem=tstem,
                     budget_remaining=budget,
                     policy=policy,
                 )
                 stored: dict[str, bytes] = {}
                 for suffix, _role in present:
-                    name = f"{stem}{suffix}"
+                    name = f"{tstem}{suffix}"
                     payload = _fetch_member_bytes(
                         collector,
                         archive_root=Path(archive_root),
@@ -1836,14 +1852,14 @@ def capture_fif_filing_packages(
                 # from the filing's own schema (unchanged, required); an 8-K
                 # mints NONE and OMITS the manifest key.
                 statement_roles = (
-                    mint_statement_roles(stored[f"{stem}.xsd"])
+                    mint_statement_roles(stored[f"{tstem}.xsd"])
                     if contract_form.strip().upper() in ("10-K", "10-Q")
                     else None
                 )
                 absent_entries = [
                     {
                         "role": role,
-                        "name": f"{stem}{suffix}",
+                        "name": f"{tstem}{suffix}",
                         "reason": ABSENT_MEMBER_REASON,
                     }
                     for suffix, role in absent
@@ -1863,6 +1879,7 @@ def capture_fif_filing_packages(
                     statement_roles=statement_roles,
                     capture_recorded_at=normalized_clock,
                     absent_members=absent_entries,
+                    taxonomy_stem=tstem,
                 )
                 report["package_files_written"] += files_written
                 report["package_bytes_written"] += bytes_written
