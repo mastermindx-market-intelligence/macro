@@ -1,5 +1,108 @@
 ---
 workstream: "WS:CHAIRMAN-CONTROL-ROOM"
+session: "sol/agentos-web-sol-readonly-cognition-20260923"
+model: sol
+ended_because: ci_handoff
+mission: >
+  Preserve the September 23-24, 2026 Web-Sol cognition-return history as a dated
+  archival record. This file does not project the current Runtime, review queue,
+  source permissions or production acceptance of the historical program.
+state_before: >
+  PR 7778 held a 1,034-line historical handoff whose frontmatter still presented
+  September heads, CI runs and next actions as current. Review 5289091334 and
+  dependency return 5792305121 identified records-currentness defects; subsequent
+  September continuations added evidence without making the initial projection
+  a current November continuation.
+changed:
+  - path: "agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-23-readonly-cognition-return-r0.md"
+    what: >
+      Add an archival frontmatter and dated reading scope; retain the complete
+      original frontmatter and narrative as historical evidence. Replace active
+      next-action projection with review of this archival repair and reconciliation
+      through current canonical owners before any separate continuation.
+verified:
+  - claim: "The original historical content is retained without source alteration."
+    command: >
+      GitHub immutable file read at b9306175aee15dfb0364471e435b759e2246eaf5
+      (blob 696d12c0eeb44d30f8e251bccdf9041d9c2c3dc3), followed by exact string
+      reconstruction from the archived frontmatter and archived narrative.
+    result: >
+      Both archived segments reconstruct the complete original content exactly;
+      only the new framing and fence delimiters are additional.
+  - claim: "The candidate-owned source delta is one archival file."
+    command: >
+      GitHub compare 80136935b4d28caeda6c6a50eb385797190fdc32 to
+      b9306175aee15dfb0364471e435b759e2246eaf5 and read all 16 PR commits.
+    result: >
+      The comparison lists this file alone, added by the 16 candidate commits.
+      The integration preserves the complete current-main tree and this corrected
+      record on the original PR branch.
+  - claim: "This projection uses the existing handoff fields and enum values."
+    command: >
+      Read agentos/schema/handoff.schema.yml at
+      80136935b4d28caeda6c6a50eb385797190fdc32 and inspect this frontmatter.
+    result: >
+      Required fields and nested claim/command/result and claim/what_would_verify
+      entries are present; model sol and ended_because ci_handoff are admitted.
+      This is source inspection, not a claim that the repository validator ran.
+unverified:
+  - claim: "The repaired PR head has current hosted validation and nonauthor approval."
+    what_would_verify: >
+      Successful binding checks on the published repair head and a genuine
+      nonauthor formal GitHub review of that exact candidate.
+  - claim: "The historical Web-Sol program has current end-to-end acceptance."
+    what_would_verify: >
+      Separate current evidence from Executive OS, Agent OS and the original
+      source/effect owners, including the real acceptance path required by the
+      currently assigned mission. This archive supplies no such acceptance.
+unresolved:
+  - "The September review findings are preserved as dated evidence, not declared repaired in Runtime by this records change."
+  - "Current custody, protected denials and possible effects of the historical operations require live reconciliation before any separate action."
+next_actions:
+  - "Review this original PR 7778 repair and its exact-head hosted checks; use the incumbent Macro release controller only after its actual release gates are met."
+  - "For any separately assigned Web-Sol continuation, recover current canonical owners and source-linked state; do not execute the archived next-action lists or revive historical review carriers."
+do_not_redo:
+  - "Do not use this suffixed historical file as proof of the canonical latest Control Room handoff."
+  - "Do not restart old jobs, reviews, browser submits or publication effects from the archival narrative."
+  - "Preserve the existing Executive lifecycle, Agent OS continuity, bounded result/assignment contracts and privacy restrictions; this record creates no new owner."
+danger_areas:
+  - "Words such as current, running, accepted and next in the archived sections are relative to their September observation, not the date this archive is read."
+  - "A dated no-effect or PRESTART_CLOSED observation does not establish the present status of any independently continued operation."
+  - "Archival acceptance does not grant source rights, credentials, browser authority, Runtime mutation or production activation."
+prs: [7778]
+decisions:
+  - DEC:CCR-SOL-IDENTITY-IS-NOT-A-CHAT
+---
+
+# Archived Web-Sol cognition history — September 23-24, 2026
+
+## Reading scope and records-currentness disposition
+
+This is a historical evidence record qualified on November 5, 2026. The original
+frontmatter and narrative below retain their September observation times. Their
+head SHAs, CI states, review assignments, protected-source pins and imperative next
+actions are historical assertions. They are not a live task queue or a statement
+of current capability, custody or acceptance.
+
+The [records-currentness review](https://github.com/mastermindx-market-intelligence/macro/pull/7778#pullrequestreview-5289091334)
+and [acquisition-fence dependency return](https://github.com/mastermindx-market-intelligence/macro/pull/7778#issuecomment-5792305121)
+remain part of that evidence. This repair addresses their projection problem by
+archiving the frozen record, rather than asserting that the historical Runtime,
+browser, source or review gates are now complete. The original privacy, frame,
+UTF-8 and acquisition-fence reasoning is preserved in full.
+
+The current Macro completion assignment is recorded in
+[Mastermind issue 2028](https://github.com/mastermindx-market-intelligence/Mastermind/issues/2028#issuecomment-6653188192);
+same-carrier repair custody is recorded in
+[PR 7778](https://github.com/mastermindx-market-intelligence/macro/pull/7778#issuecomment-6653262029).
+The filename remains suffixed and archival. Current continuation must be recovered
+from the canonical owners under the current assignment.
+
+## Archived original frontmatter
+
+````yaml
+---
+workstream: "WS:CHAIRMAN-CONTROL-ROOM"
 session: "sol/web-sol-readonly-cognition-return-r0-20260923-sol-001"
 model: sol
 ended_because: ci_handoff
@@ -239,6 +342,9 @@ prs: [651, 706, 779, 811, 818, 836, 870, 890, 892, 904, 933, 936]
 decisions:
   - DEC:CCR-SOL-IDENTITY-IS-NOT-A-CHAT
 ---
+````
+
+## Archived original narrative
 
 # Handoff — read-only Web Pro cognition return R0
 
