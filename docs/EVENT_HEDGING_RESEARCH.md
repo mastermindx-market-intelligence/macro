@@ -1,13 +1,13 @@
 # Event hedging research: deterministic diagnostics and paired evaluation
 
-This is a bounded research extension of the existing Options scenario producer and Options workspace. It is not a live dealer-inventory monitor, a new market-data service, a calibrated directional model or trading authority. Parent: Macro #7925. Full delivery plan: `research/options_intelligence/2026-10-03/EVENT_HEDGING_DELIVERY_2026-11-04.md`.
+This release slice is a bounded research extension of the existing Options scenario producer and machine interface. It is not a live dealer-inventory monitor, a new market-data service, a calibrated directional model or trading authority. Parent: Macro #7925. Full delivery plan: `research/options_intelligence/2026-10-03/EVENT_HEDGING_DELIVERY_2026-11-04.md`.
 
 ## What is usable in this source slice
 
 1. Matched-window event-variance diagnostics against an explicitly supplied counterfactual.
 2. Remaining hedge-target change along two compatible endpoints from the existing whole-book SPX/SPXW repricing owner.
 3. Paired first-touch forecast scoring using existing multiclass loss functions, with missingness and event clustering retained.
-4. Explicit-input CLI modes and a display-only, bilingual research panel in the existing Options workspace.
+4. Explicit-input modes in the existing JSON scenario command; no new page or browser integration in this release slice.
 
 There is no automatic collector, scheduler, event-resolution inference, publication, probability fitting, order execution or portfolio influence. Input references and content hashes identify supplied evidence but do not independently authenticate it. A valid calculation does not certify the input source, event causality or forecasting skill.
 
@@ -23,15 +23,11 @@ python -m scripts.build_options_scenario_surface --mode event-scorecard --input 
 
 Use `--input -` for stdin and `--output PATH` for an explicit local output. The existing `surface` and `hedge-target` modes retain their semantics. Duplicate JSON members and nonfinite constants are refused.
 
-To inspect a variance or hedge-path artifact in the existing page renderer:
+## UI is unfinished, not waived
 
-```bash
-python -m scripts.build_options_command \
-  --event-hedging-input research-artifact.json \
-  --out /tmp/options-event-research.html
-```
+The initial UI candidate and its four synthetic desktop/mobile EN/ZH captures remain recoverable at commit `feaecca3d69e8296c350a9ec1676c585aad6f3a8`. They do not satisfy the complete house dark/light and interaction evidence contract. CI identified one new hard-coded corner radius; a local replacement with `var(--r-panel)` passed the design-token check, but the subsequent evidence-preparation command was explicitly denied by the tool.
 
-The input option is explicit and local. Normal scheduled builds do not acquire an event-hedging feed or show the panel unless a caller supplies an artifact. `render(..., event_hedging=artifact, now=aware_datetime)` is the same in-memory integration path used by the tests. The renderer verifies the artifact hash and non-authoritative contract, then formats values without recalculating the model. The panel is labeled a recorded research snapshot, never live flow. A caller remains responsible for any display/export entitlement.
+That denied preparation is not retried through another command, tool or worker. The page renderer, template and new view module are therefore excluded from this independent backend release. No design gate is weakened, no screenshot matrix is invented, and the total mission still owes the UI and real source-to-user proof. The existing Options page is byte-identical to the baseline in this release diff.
 
 ## Matched event variance
 
@@ -67,8 +63,8 @@ The initial source includes only synthetic metric/conformance tests. No market-p
 
 ## Verification and current gaps
 
-The focused source run completed with **783 passed, 5 skipped** across the new suites and incumbent numerical/Options consumer suites. Skips are retained rather than converted to passes. The real Options template was exercised in a local Chromium browser at 1440px and 390px, in EN and ZH, with source-details interaction and no panel overflow. Those inputs are explicitly synthetic; this is not installed or live-market proof.
+The earlier combined backend/UI candidate completed with **783 passed, 5 skipped**; that result belongs to the unchanged analytical source and the historical UI candidate, not automatically to every successor. The backend-only revision has its own focused command, test counts, source digests and selected CI import-closure receipt under `reports/event_hedging_20261104/`. Synthetic JSON examples demonstrate contracts and arithmetic only. No licensed quote corpus is included.
 
-`reports/event_hedging_20261104/` retains synthetic inputs/results, local browser evidence and the source-separation receipt. No licensed quote corpus is included.
+The original UI/browser artifacts are retained in the immutable prior commit rather than included as current release evidence. The verified source-transfer record is historical workspace-custody evidence, not proof that all of its listed files remain in this narrowed release.
 
-Still required for the complete mission: event-to-scenario composition (original EH1 worker reservation), qualified current source/contract clocks, event-surface premium estimation, inventory uncertainty, current machine/Terminal integration, registered real-data forecasts and outcomes, protected release, installation and actual source-to-user proof. No added component creates ranking, sizing, trading, automatic exits or live-alert authority.
+Still required for the complete mission: original EH1 effect reconciliation and event-to-scenario composition; qualified current source/contract clocks; event-surface premium estimation; inventory uncertainty; the existing Terminal/Mastermind and human consumers; registered real-data forecasts and prospective outcome calibration; protected release; installation and actual source-to-user proof. No added component creates ranking, sizing, trading, automatic exits or live-alert authority.

@@ -2383,7 +2383,7 @@ def _missing_stores(stores: dict) -> list[str]:
 def build_context(root: Path, stores: dict | None = None, intel_brief: dict | None = None,
                   payoff_lab: dict | None = None, skew_source: dict | None = None,
                   catalyst_links: dict | None = None,
-                  *, now: datetime | None = None, event_hedging: dict | None = None) -> dict:
+                  *, now: datetime | None = None) -> dict:
     """Assemble the whole workspace context from the committed stores.
 
     `intel_brief` is the AD-1 board's OWN artifact (site/options_intel_brief.json),
@@ -2436,10 +2436,6 @@ def build_context(root: Path, stores: dict | None = None, intel_brief: dict | No
 
     # F03-W2-4c — one plain-language sentence about the source break; None
     # when the ledger is single-source, absent, or hasn't been parsed.
-    # Optional explicit research snapshot. No automatic store or new derivation.
-    from scripts.options_event_hedging_view import build_event_hedging_view
-    hedging_view = build_event_hedging_view(event_hedging, now=clock)
-
     skew_note_pair = skew_source_note(skew_source)
     skew_source_note_en = skew_note_pair[0] if skew_note_pair else None
     skew_source_note_zh = skew_note_pair[1] if skew_note_pair else None
@@ -2457,7 +2453,6 @@ def build_context(root: Path, stores: dict | None = None, intel_brief: dict | No
         "bets": bets,
         "rail": rail,
         "aib": build_aib(intel_brief, now=clock),
-        "event_hedging_view": hedging_view,
         # F03-W2-5b · index-ETF payoff lab fold on the four index cards.  Pass-
         # through — see build_payoff_lab() above; an empty/absent payload
         # renders {} and the fold's Jinja guard `{% if lab %}` short-circuits.
@@ -2548,10 +2543,10 @@ def _sector_zh_json(stores: dict) -> str:
 def render(root: Path, stores: dict | None = None, intel_brief: dict | None = None,
            payoff_lab: dict | None = None, skew_source: dict | None = None,
            catalyst_links: dict | None = None,
-           *, now: datetime | None = None, event_hedging: dict | None = None) -> str:
+           *, now: datetime | None = None) -> str:
     """Render options.html.j2 and return the HTML string."""
     ctx = build_context(root, stores, intel_brief, payoff_lab, skew_source,
-                        catalyst_links, now=now, event_hedging=event_hedging)
+                        catalyst_links, now=now)
     env = Environment(
         loader=FileSystemLoader(str(root / "templates")),
         autoescape=True,
@@ -2571,8 +2566,6 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Build the Options workspace page.")
     ap.add_argument("--root", default=str(_REPO_ROOT), help="repo root")
     ap.add_argument("--out", default=None, help="output path (default site/options.html)")
-    ap.add_argument("--event-hedging-input", default=None,
-                    help="explicit research artifact path; no automatic live feed")
     args = ap.parse_args(argv)
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -2589,13 +2582,9 @@ def main(argv: list[str] | None = None) -> int:
         # F03-W3-2 — additive load; load_catalyst_links is fail-soft (None
         # when the envelope is missing / wrong schema / has no macro_calendar).
         catalyst_links = load_catalyst_links(root)
-        event_hedging = None
-        if args.event_hedging_input:
-            from scripts.options_event_hedging_view import load_event_hedging_artifact
-            event_hedging = load_event_hedging_artifact(args.event_hedging_input)
         html = render(root, stores=stores, intel_brief=intel_brief,
                       payoff_lab=payoff_lab, skew_source=skew_source,
-                      catalyst_links=catalyst_links, event_hedging=event_hedging)
+                      catalyst_links=catalyst_links)
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
         # write_page is the ONLY write path. The fail-soft law above covers a

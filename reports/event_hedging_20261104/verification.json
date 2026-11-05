@@ -1,34 +1,23 @@
 {
   "classification": "SELF_REVIEWED",
-  "base": "11600ba4bda1de8a7f6d1deb33394a65a0ba220b",
+  "release_scope": "backend analytical diagnostics, paired forecast scorecard and incumbent JSON CLI only",
+  "base": "affa0fd2e68723efc9e2cbc0e7c791ab70f5a53d",
+  "previous_candidate": "feaecca3d69e8296c350a9ec1676c585aad6f3a8",
   "focused_tests": {
-    "passed": 783,
-    "skipped": 5,
-    "elapsed_seconds": 127.3
+    "passed": 399,
+    "skipped": 0,
+    "elapsed_seconds": 18.17,
+    "command": "python3 -m pytest tests/test_event_hedging_diagnostics.py tests/test_event_hedging_evaluation.py tests/test_event_hedging_cli.py tests/test_intraday_greeks.py tests/test_options_scenario_surface.py tests/test_options_scenario_admission.py -q"
   },
-  "browser": "synthetic local Chromium, 1440/390px EN/ZH",
-  "checks": [
-    "no alternate pricing kernel",
-    "variance basis and valuation clocks matched",
-    "no clipped negative residual",
-    "hedge units separated from book revaluation",
-    "forecast chronology and declared event separation",
-    "abstentions retained",
-    "input hash and null semantics",
-    "existing UI unchanged when absent",
-    "no automatic publication or decision effects"
-  ],
+  "ui_release_diff": "none",
+  "ui_obligation": "unfinished; original candidate retained at previous_candidate; denied additional evidence preparation not replayed",
   "source_sha256": {
     "engine/event_hedging_diagnostics.py": "bb768cd86d615dc74057799a9a02485f6f4f6dbdbe3c098676f5ec3407fac8fb",
     "engine/event_hedging_evaluation.py": "fecb6d5905bd08b9ef9906ffd027b00ef6a78fd9adb5b4cd4b4d528487797744",
-    "scripts/options_event_hedging_view.py": "9a6d5d87d73d76a22d5255cdf26df95114abbe9a164edb854c6fbce583c2a25f",
-    "scripts/build_options_command.py": "2e65f45f86e81938545c99567ba1a84a50f0b8fda6e7df41f131f66b774fdce9",
     "scripts/build_options_scenario_surface.py": "c4acf8ed3442c1f011b8f66400d4ff1698dc8611adec6418a164f16c2dc685f5",
-    "templates/options.html.j2": "c92a775b020445615c2d80658aa9508386ddaf1546d555948c830ca7053f23b8",
-    "templates/_options_event_hedging.html.j2": "377ac23d7de5d4e718ca4449c6686f535e9fcb493090123d0b11754658a5de9c",
-    ".github/ci/legacy-jobs.yml": "c4385a9cadb931d6cf7e8eceecc87787b0fbb0ab246ae136169486c07a6b010b",
+    ".github/ci/legacy-jobs.yml": "70b84fea228e961aab082875981f4290830b5ccbfd0d87203abe97fd775b7ac4",
     "tests/test_event_hedging_diagnostics.py": "38ec4f08cfe04b52c6633305e8b50b846b1ae137359f1043c2b98a3ff931adba",
     "tests/test_event_hedging_evaluation.py": "610054a692bf863a0ee7eac07dcb83640a93fb6b38f39a253136765c57d772c4",
-    "tests/test_event_hedging_delivery.py": "bccad9c22852a63f963d57dba10fb0f4626167114bc8ade13007a9b43b0ba832"
+    "tests/test_event_hedging_cli.py": "e6c7cbae869e3250db9df7f6da49fadf907c32a8685f8cb6358ece5830210c39"
   }
 }

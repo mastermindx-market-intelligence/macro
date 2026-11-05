@@ -1,9 +1,7 @@
 {
-  "scope": "three affected incumbent jobs, not full CI",
+  "scope": "existing flow-surface job; backend-only release",
   "findings": {
-    "flow-surface": [],
-    "options-payoff-lab-consumer": [],
-    "options-estate-guards": []
+    "flow-surface": []
   },
-  "note": "derived scopes for 3/3 jobs"
+  "note": "derived scopes for 1/1 jobs"
 }
