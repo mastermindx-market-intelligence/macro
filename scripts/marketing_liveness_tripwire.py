@@ -77,6 +77,7 @@ log = logging.getLogger("marketing_liveness_tripwire")
 #: activity row elsewhere and never land here, so a `mode: "live"` row is the
 #: only honest evidence that something actually went out.
 PUBLICATIONS_REL = Path("data/marketing/publications.jsonl")
+POST_METRICS_REL = Path("data/marketing/post_metrics.jsonl")
 CONFIG_REL = Path("config/marketing.yml")
 
 #: Thresholds, in hours. Overridable under `publish.liveness` in config/marketing.yml.
@@ -237,6 +238,31 @@ def load_config(root: Path | str | None = None) -> dict[str, float]:
     return cfg
 
 
+def _metric_times_by_remote(root: Path) -> dict[str, datetime]:
+    """Newest metrics-poll attempt by provider id; fail-soft and read-only."""
+    path = root / POST_METRICS_REL
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return {}
+    out: dict[str, datetime] = {}
+    for line in lines:
+        try:
+            row = json.loads(line)
+        except (TypeError, ValueError):
+            continue
+        if not isinstance(row, dict):
+            continue
+        remote_id = str(row.get("remote_id") or "").strip()
+        when = parse_iso(row.get("polled_at"))
+        if not remote_id or when is None:
+            continue
+        prior = out.get(remote_id)
+        if prior is None or when > prior:
+            out[remote_id] = when
+    return out
+
+
 def armed_from_env(env: dict[str, str] | None = None) -> bool:
     """True when the kill-switch variable reads armed.
 
@@ -249,6 +275,88 @@ def armed_from_env(env: dict[str, str] | None = None) -> bool:
     """
     src = os.environ if env is None else env
     return str(src.get("MARKETING_PUBLISH_ENABLED", "")).strip() == "1"
+
+
+def delivery_status_annotations(root: Path) -> list[str]:
+    """Per-account delivery truth from the existing telemetry projection."""
+    from engine.marketing.telemetry import delivery_projection  # noqa: PLC0415
+
+    projection = delivery_projection(root)
+    if projection.get("error"):
+        return [f"::warning title=marketing-delivery::delivery projection unavailable"]
+    metric_times = _metric_times_by_remote(root)
+    groups: dict[str, dict] = {}
+    for item in projection.get("items") or []:
+        account = str(item.get("account") or "unknown").strip() or "unknown"
+        group = groups.setdefault(account, {
+            "accepted": 0, "provider_sent": 0, "states": {},
+            "accepted_at": None, "sent_at": None, "x_visible_at": None,
+            "metric_at": None, "warning": False, "attention": set(),
+        })
+        if item.get("provider_id"):
+            group["accepted"] += 1
+        state = str(item.get("state") or "unknown_degraded")
+        group["states"][state] = group["states"].get(state, 0) + 1
+        if state == "provider_sent":
+            group["provider_sent"] += 1
+        if state in {"provider_failed", "unknown_degraded"} or item.get("channel_ready") is False:
+            group["warning"] = True
+        if state == "provider_failed":
+            group["attention"].add("provider failed")
+        if state == "unknown_degraded":
+            group["attention"].add("delivery unknown/degraded")
+        if str(item.get("provider_status") or "") == "needs_approval":
+            group["warning"] = True
+            group["attention"].add("provider approval required")
+        if item.get("channel_ready") is False:
+            channel = item.get("channel") if isinstance(item.get("channel"), dict) else {}
+            specific = False
+            if channel.get("is_disconnected") is True:
+                group["attention"].add("channel disconnected")
+                specific = True
+            if channel.get("is_locked") is True:
+                group["attention"].add("channel locked")
+                specific = True
+            if channel.get("is_queue_paused") is True:
+                group["attention"].add("queue paused")
+                specific = True
+            if (str(item.get("scheduling_type") or "") == "notification"
+                    and channel.get("has_active_member_device") is False):
+                group["attention"].add("manual notification has no active device")
+                specific = True
+            if not specific:
+                group["attention"].add("channel not ready")
+        for source_key, target_key in (
+            ("accepted_at", "accepted_at"), ("provider_sent_at", "sent_at"),
+            ("x_visible_at", "x_visible_at")):
+            when = parse_iso(item.get(source_key))
+            if when is not None and (group[target_key] is None or when > group[target_key]):
+                group[target_key] = when
+        remote_id = str(item.get("provider_id") or "").strip()
+        metric_at = metric_times.get(remote_id)
+        if metric_at is not None and (group["metric_at"] is None or metric_at > group["metric_at"]):
+            group["metric_at"] = metric_at
+
+    def stamp(value: datetime | None) -> str:
+        return value.strftime("%Y-%m-%dT%H:%M:%SZ") if value else "unknown"
+
+    lines: list[str] = []
+    for account in sorted(groups):
+        group = groups[account]
+        states = ",".join(f"{k}:{group['states'][k]}" for k in sorted(group["states"]))
+        level = "warning" if group["warning"] else "notice"
+        attention = "; ".join(sorted(group["attention"]))
+        attention_text = f" attention={attention}" if attention else ""
+        lines.append(
+            f"::{level} title=marketing-delivery::account={account} "
+            f"accepted={group['accepted']} provider_sent={group['provider_sent']} "
+            f"last_accepted={stamp(group['accepted_at'])} "
+            f"last_provider_sent={stamp(group['sent_at'])} "
+            f"last_x_visible={stamp(group['x_visible_at'])} "
+            f"last_metric={stamp(group['metric_at'])} states={states}"
+            f"{attention_text}"
+        )
+    return lines
 
 
 # ── the rule engine (pure — this is the part the tests drive) ────────────────
@@ -369,6 +477,8 @@ def main(argv: list[str] | None = None) -> int:
     code, annotations = evaluate(now, armed, last, cfg)
 
     for line in annotations:
+        print(line, flush=True)
+    for line in delivery_status_annotations(root):
         print(line, flush=True)
 
     # Human context, deliberately NOT annotation-shaped: the stamps and

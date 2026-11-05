@@ -1,0 +1,74 @@
+--- a/engine/btc_signals.py
++++ b/engine/btc_signals.py
+@@ -731,10 +731,10 @@
+ # valuation axis: MVRV-Z, NUPL, Mayer (Tier-1 accuracy upgrade)
+ # --------------------------------------------------------------------------- #
+ def valuation(inputs: dict, cfg: dict) -> pd.DataFrame:
+-    """The missing cycle anchor. MVRV-Z = (mcap - realized_cap) / rolling_std(mcap)
+-    on a ~1-cycle window (ETF-era responsive). NUPL and Mayer are cheap orthogonal
+-    cross-checks. All ~2010-> depth, so these are calibration anchors, not
+-    confirmation. Emitted standalone — measured before any blend (§3 of the doc)."""
++    """F-MVRV cycle anchor. MVRV-Z = (mcap - realized_cap) / rolling_std(mcap)
++    on a ~1-cycle window (ETF-era responsive). NUPL is the identity 1 - 1/MVRV,
++    not an orthogonal cross-check. Mayer (close / SMA) is a separate price family.
++    Emitted standalone — measured before any blend (§3 of the doc)."""
+     idx = inputs["price"].index
+     out = pd.DataFrame(index=idx)
+     mcap, rcap = inputs.get("mcap"), inputs.get("realized_cap")
+@@ -1733,20 +1733,34 @@
+ # contrarian capitulation / euphoria overlay (Tier-1)
+ # --------------------------------------------------------------------------- #
+ def market_extreme(inputs: dict, val: pd.DataFrame, cfg: dict) -> pd.DataFrame:
+-    """Vote of orthogonal extremes — NUPL, supply-in-profit, Fear&Greed, MVRV-Z.
+-    >=min_votes in one tail flags a contrarian regime: this is what lets the
+-    dashboard tell an early-bull pullback (risk-off) from a cycle-bottom
+-    capitulation (accumulate) — the Risk Index calibration already shows the
+-    forward-return U-shape this resolves."""
++    """One vote per information family. F-MVRV (NUPL and MVRV-Z together),
++    supply-in-profit, and Fear&Greed. >=min_votes families in one tail flags a
++    contrarian regime. NUPL = 1 - 1/MVRV and MVRV-Z scales that same gap, so
++    they are one family and must not add."""
+     idx = inputs["price"].index
+     capit = pd.DataFrame(index=idx)
+     euph = pd.DataFrame(index=idx)
+ 
+-    nupl = inputs.get("nupl")
+-    if nupl is not None:
+-        n = nupl.reindex(idx).ffill()
+-        capit["nupl"] = n < cfg.get("nupl_capitulation", 0.0)
+-        euph["nupl"] = n > cfg.get("nupl_euphoria", 0.65)
++    # F-MVRV is one family. Either transform may trip the vote; they do not add.
++    # A missing observation stays missing rather than counting as a False vote.
++    nupl_s = inputs.get("nupl")
++    z_s = val["mvrv_z"] if "mvrv_z" in val else None
++    if nupl_s is not None or z_s is not None:
++        capit_f = pd.Series(False, index=idx)
++        euph_f = pd.Series(False, index=idx)
++        seen = pd.Series(False, index=idx)
++        if nupl_s is not None:
++            n = pd.to_numeric(nupl_s.reindex(idx).ffill(), errors="coerce")
++            seen = seen | n.notna()
++            capit_f = capit_f | (n < cfg.get("nupl_capitulation", 0.0))
++            euph_f = euph_f | (n > cfg.get("nupl_euphoria", 0.65))
++        if z_s is not None:
++            z = pd.to_numeric(z_s.reindex(idx), errors="coerce")
++            seen = seen | z.notna()
++            capit_f = capit_f | (z < cfg.get("z_under", 0.0))
++            euph_f = euph_f | (z > cfg.get("z_over", 3.5))
++        capit["mvrv_family"] = capit_f.where(seen)
++        euph["mvrv_family"] = euph_f.where(seen)
+     sip = inputs.get("supply_in_profit_pct")
+     if sip is not None:
+         s = sip.reindex(idx).ffill(limit=5)
+@@ -1757,11 +1771,6 @@
+         f = fg.reindex(idx).ffill(limit=3)
+         capit["fg"] = f < cfg["fg_capitulation"]
+         euph["fg"] = f > cfg["fg_euphoria"]
+-    if "mvrv_z" in val:
+-        z = val["mvrv_z"]
+-        capit["z"] = z < cfg.get("z_under", 0.0)
+-        euph["z"] = z > cfg.get("z_over", 3.5)
+-
+     out = pd.DataFrame(index=idx)
+     if capit.empty:
+         return out

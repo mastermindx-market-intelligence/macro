@@ -366,6 +366,21 @@ def compute_market_pulse_roster(hub: dict) -> list[str]:
     return ordered[:MARKET_PULSE_ROSTER_CAP]
 
 
+def load_research_implications_for_hub(root: Path) -> dict:
+    """Same envelope the Calibration Lab destination uses. Zero cards on adapter failure."""
+    empty = {"schema": "mastermind.research_implication_cards/v1", "cards": []}
+    try:
+        from engine.research_implication_card import build_research_implication_cards
+        return build_research_implication_cards(root)
+    except Exception as e:  # noqa: BLE001
+        print(
+            f"::warning title=ric-adapter::research implication cards unavailable for hub entry ({e})",
+            flush=True,
+        )
+        log.warning("research implication cards unavailable for hub entry (%s)", e)
+        return empty
+
+
 def build(write: bool = True) -> dict:
     hub = intel_hub.load_and_build(top=30)
     stamp_special_freshness(hub, config.ROOT)      # D3 — age the catalyst panel's input, loudly
@@ -472,6 +487,10 @@ def build(write: bool = True) -> dict:
         log.warning("market pulse roster: %d exceeds the %d cap (should be structurally impossible)",
                     len(market_pulse_roster), MARKET_PULSE_ROSTER_CAP)
 
+    # Same envelope the Calibration Lab destination page uses — the hub entry
+    # count must stay derived, never hardcoded.
+    research_implications = load_research_implications_for_hub(root)
+
     # render the page
     try:
         from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -482,7 +501,8 @@ def build(write: bool = True) -> dict:
         html = env.get_template("intelligence_hub.html.j2").render(
             hub=hub, built=datetime.now(timezone.utc).isoformat(), mode="intel_hub",
             qledger_chips=qledger_chips, china=china,
-            market_pulse_roster=market_pulse_roster)
+            market_pulse_roster=market_pulse_roster,
+            research_implications=research_implications)
         write_page(site / "intelligence_hub.html", html)
         log.info("built site/intelligence_hub.html — market pulse roster: %d names",
                  len(market_pulse_roster))
