@@ -665,6 +665,8 @@ _DEFAULT_META = {
     "what_en": "An automated macro signal changed state. Open the dashboard for the "
                "full read.",
     "what_zh": "一个自动宏观信号发生了状态变化。打开仪表盘查看完整解读。",
+    "detail_en": "A macro signal changed — check the dashboard read.",
+    "detail_zh": "一个宏观信号变化 — 查看仪表盘解读。",
     "anchor": "",
 }
 
@@ -1056,6 +1058,103 @@ ALERT_CONVICTION: dict[str, dict] = {
 }
 
 
+# Glance-tier one-clause rewrite of each rule's machine `message`. The stored
+# row and dlg-news keep `message` (receipt); the Alerts Centre face prints
+# `detail_*` so GEX / sigma / enum strings never sit at rest (W9 r1 / C3).
+# Unknown rules inherit _DEFAULT_META.detail_*. Frozen gex_flip_cross strings
+# are packet-verbatim.
+ALERT_DETAIL: dict[str, dict] = {
+    "gex_flip_cross": {
+        "detail_en": "Options hedging just flipped from damping moves to amplifying them — expect bigger swings both ways.",
+        "detail_zh": "期权对冲由抑制波动转为放大波动——双向波动可能加大。",
+    },
+    "transition_state_change": {
+        "detail_en": "The market's footing just changed — re-check risk; this is not a trade on its own.",
+        "detail_zh": "市场立足点刚发生变化——重新检视风险；这本身不是一笔交易。",
+    },
+    "risk_state_elevated": {
+        "detail_en": "Drawdown risk is building inside the tape — size down rather than chase leaders.",
+        "detail_zh": "盘面内部回撤风险在上升——先减仓，不要追龙头。",
+    },
+    "hidden_fragility": {
+        "detail_en": "A calm surface is masking weaker internals — size down, don't chase.",
+        "detail_zh": "平静表象掩盖了走弱的内部结构——缩小仓位，不要追高。",
+    },
+    "breadth_divergence": {
+        "detail_en": "Fewer names are carrying the index — a thinning-tape caution, not a timer.",
+        "detail_zh": "抬指数的个股在减少——属走势变薄的警示，而非择时。",
+    },
+    "corr_floor_break": {
+        "detail_en": "Stocks are starting to move together after a quiet stretch — stress already underway, not a lead.",
+        "detail_zh": "平静分化后个股开始同向波动——压力已经成形，并非领先信号。",
+    },
+    "net_liquidity_roc_flip": {
+        "detail_en": "The Fed's cash tide just changed direction — lean more or less cautious, don't trade the flip.",
+        "detail_zh": "美联储现金潮汐刚转向——据此更谨慎或放松，不要交易这次翻转。",
+    },
+    "hy_oas_widening": {
+        "detail_en": "Credit investors just priced more risk in a day — often before stocks react.",
+        "detail_zh": "信用投资者刚在一日内给风险重新定价——往往早于股市反应。",
+    },
+    "growth_confidence_floor": {
+        "detail_en": "The growth read got muddy — size down and trust the radar more than the label.",
+        "detail_zh": "增长读数变浑浊——缩小仓位，相信雷达多于标签。",
+    },
+    "inflation_confidence_floor": {
+        "detail_en": "The inflation read got muddy — size down and trust the radar more than the label.",
+        "detail_zh": "通胀读数变浑浊——缩小仓位，相信雷达多于标签。",
+    },
+    "sector_rs_cross_high": {
+        "detail_en": "A sector just started leading — this is rotation, not an instant buy.",
+        "detail_zh": "某板块刚开始领先——这是轮动，不是立即买入。",
+    },
+    "sector_rs_cross_low": {
+        "detail_en": "Money is rotating out of a sector — usually a reason to avoid, not to bottom-fish.",
+        "detail_zh": "资金正在流出某板块——通常是回避而非抄底的理由。",
+    },
+    "holdings_active_change": {
+        "detail_en": "An active manager made a notable move — information, not a recommendation to copy.",
+        "detail_zh": "主动经理出现显著动作——这是信息，不是照搬的建议。",
+    },
+    "sector_holdings_accumulation": {
+        "detail_en": "Index-fund buying is being forced into a name — check the setup, not an instant buy.",
+        "detail_zh": "指数基金买盘正被强制导向某只个股——先核对其形态，不是立即买入。",
+    },
+    "circuit_breaker_open": {
+        "detail_en": "A data feed this page relies on went dark — plumbing, not a market signal.",
+        "detail_zh": "本页依赖的某个数据源中断——这是管线提示，并非市场信号。",
+    },
+    "conditions_recession_state_change": {
+        "detail_en": "The slow recession gauge changed level — lean more or less defensive, not a timing signal.",
+        "detail_zh": "缓慢的衰退指标等级变动——据此更防御或放松，本身并非择时。",
+    },
+    "nfci_tightening": {
+        "detail_en": "Financial conditions just got more expensive across the board — a slow headwind, lean cautious.",
+        "detail_zh": "金融条件刚全面变贵——缓慢逆风，应更谨慎。",
+    },
+    "sahm_trigger": {
+        "detail_en": "The unemployment rule that has flagged every recession since 1970 just fired — defense first.",
+        "detail_zh": "自 1970 年以来标记每次衰退的失业法则刚触发——防御优先。",
+    },
+    "ebp_widening": {
+        "detail_en": "Lenders just got pickier — a slower, deeper caution than the daily credit spread.",
+        "detail_zh": "资金刚变得更挑剔——比每日信用利差更慢、更深层的警示。",
+    },
+    "drawdown_risk_high": {
+        "detail_en": "Macro stress is in the high zone — trim risk and widen stops, don't time entries.",
+        "detail_zh": "宏观压力处于高位——减仓并放宽止损，不要择时进场。",
+    },
+    "capitulation_signal": {
+        "detail_en": "Panic hit washout levels — a contrarian setup, not a guaranteed floor.",
+        "detail_zh": "恐慌达到极端——属逆向信号，并非确认见底。",
+    },
+    "event_risk": {
+        "detail_en": "A big print is close — expect two-sided noise and avoid adding risk right into it.",
+        "detail_zh": "重磅数据临近——预计双向波动，公布前不宜加仓。",
+    },
+}
+
+
 # Presentation-tier plain-words rewrite of the transition-state message: the raw
 # enum form ("Transition state WEAKENING -> TRANSITIONING (3 flags active)") is
 # machine vocabulary, banned at glance tier (docs/DESIGN_DOCTRINE.md Law 2) —
@@ -1091,7 +1190,8 @@ def alert_view(rule: str, severity: str, message: str, message_zh: str = "") -> 
     return {"rule": rule, "severity": severity, "message": message,
             "message_zh": message_zh,
             **ALERT_META.get(rule, _DEFAULT_META),
-            **ALERT_CONVICTION.get(rule, _DEFAULT_CONVICTION)}
+            **ALERT_CONVICTION.get(rule, _DEFAULT_CONVICTION),
+            **ALERT_DETAIL.get(rule, {})}
 
 
 def alert_views(alerts) -> list[dict]:

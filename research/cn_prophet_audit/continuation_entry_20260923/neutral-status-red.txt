@@ -1,0 +1,96 @@
+.FFFF                                                                    [100%]
+=================================== FAILURES ===================================
+___ test_unavailable_theme_has_neutral_status_in_row_and_hover[avoid-reduce] ___
+
+final = 'avoid', lane = 'reduce'
+
+    @pytest.mark.parametrize('final,lane', [('accumulate', 'add_on_pullback'), ('avoid', 'reduce'), ('trim', 'reduce')])
+    def test_unavailable_theme_has_neutral_status_in_row_and_hover(final, lane):
+        from bs4 import BeautifulSoup
+        ti = _continuation_fixture(final=final)
+        item = ti['act_now']['add_on_pullback'].pop()
+        item.update(action=final, action_en=final.upper())
+        ti['act_now'][lane] = [item]
+        ti['themes'][0]['observation']['aggregate_eligible'] = False
+        html = BeautifulSoup(render(_continuation_board(ti)), 'html.parser')
+        pop = html.select_one('.row-pop-decision')
+        assert pop is not None
+        assert 'Theme basket' in pop.get_text() and 'Sector pulse' not in pop.get_text()
+        assert 'Data status' in pop.get_text()
+>       assert 'DATA UNAVAILABLE' in pop.select_one('.row-pop-tag').get_text()
+E       assert 'DATA UNAVAILABLE' in 'AVOID增持'
+E        +  where 'AVOID增持' = get_text()
+E        +    where get_text = <span class="row-pop-tag"><span class="l-en">AVOID</span><span class="l-zh">增持</span></span>.get_text
+E        +      where <span class="row-pop-tag"><span class="l-en">AVOID</span><span class="l-zh">增持</span></span> = select_one('.row-pop-tag')
+E        +        where select_one = <div class="rp-src row-pop-decision" hidden="">\n<div class="row-pop-decision-hd">\n<span aria-hidden="true" class="row-...ass="l-zh">点击查看持仓与完整历史</span></span><b><span class="l-en">Open ↗</span><span class="l-zh">打开 ↗</span></b>\n</div>\n</div>.select_one
+
+tests/test_china_act_now.py:1351: AssertionError
+___ test_unavailable_theme_has_neutral_status_in_row_and_hover[trim-reduce] ____
+
+final = 'trim', lane = 'reduce'
+
+    @pytest.mark.parametrize('final,lane', [('accumulate', 'add_on_pullback'), ('avoid', 'reduce'), ('trim', 'reduce')])
+    def test_unavailable_theme_has_neutral_status_in_row_and_hover(final, lane):
+        from bs4 import BeautifulSoup
+        ti = _continuation_fixture(final=final)
+        item = ti['act_now']['add_on_pullback'].pop()
+        item.update(action=final, action_en=final.upper())
+        ti['act_now'][lane] = [item]
+        ti['themes'][0]['observation']['aggregate_eligible'] = False
+        html = BeautifulSoup(render(_continuation_board(ti)), 'html.parser')
+        pop = html.select_one('.row-pop-decision')
+        assert pop is not None
+        assert 'Theme basket' in pop.get_text() and 'Sector pulse' not in pop.get_text()
+        assert 'Data status' in pop.get_text()
+>       assert 'DATA UNAVAILABLE' in pop.select_one('.row-pop-tag').get_text()
+E       assert 'DATA UNAVAILABLE' in 'TRIM增持'
+E        +  where 'TRIM增持' = get_text()
+E        +    where get_text = <span class="row-pop-tag"><span class="l-en">TRIM</span><span class="l-zh">增持</span></span>.get_text
+E        +      where <span class="row-pop-tag"><span class="l-en">TRIM</span><span class="l-zh">增持</span></span> = select_one('.row-pop-tag')
+E        +        where select_one = <div class="rp-src row-pop-decision" hidden="">\n<div class="row-pop-decision-hd">\n<span aria-hidden="true" class="row-...ass="l-zh">点击查看持仓与完整历史</span></span><b><span class="l-en">Open ↗</span><span class="l-zh">打开 ↗</span></b>\n</div>\n</div>.select_one
+
+tests/test_china_act_now.py:1351: AssertionError
+___ test_unknown_final_recommendation_is_unavailable_not_trend_intact[None] ____
+
+final = None
+
+    @pytest.mark.parametrize('final', [None, 'unsupported'])
+    def test_unknown_final_recommendation_is_unavailable_not_trend_intact(final):
+        from bs4 import BeautifulSoup
+        ti = _continuation_fixture()
+        ti['themes'][0]['reco'] = final
+        board = _continuation_board(ti)
+        row, = board['display_lanes']['wait_pullback']
+>       assert row['theme_decision']['status'] == 'UNAVAILABLE'
+E       AssertionError: assert 'CURRENT' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         + CURRENT
+
+tests/test_china_act_now.py:1362: AssertionError
+_ test_unknown_final_recommendation_is_unavailable_not_trend_intact[unsupported] _
+
+final = 'unsupported'
+
+    @pytest.mark.parametrize('final', [None, 'unsupported'])
+    def test_unknown_final_recommendation_is_unavailable_not_trend_intact(final):
+        from bs4 import BeautifulSoup
+        ti = _continuation_fixture()
+        ti['themes'][0]['reco'] = final
+        board = _continuation_board(ti)
+        row, = board['display_lanes']['wait_pullback']
+>       assert row['theme_decision']['status'] == 'UNAVAILABLE'
+E       AssertionError: assert 'CURRENT' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         + CURRENT
+
+tests/test_china_act_now.py:1362: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, admin, app, browser, calibration, collectors, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_china_act_now.py::test_unavailable_theme_has_neutral_status_in_row_and_hover[avoid-reduce]
+FAILED tests/test_china_act_now.py::test_unavailable_theme_has_neutral_status_in_row_and_hover[trim-reduce]
+FAILED tests/test_china_act_now.py::test_unknown_final_recommendation_is_unavailable_not_trend_intact[None]
+FAILED tests/test_china_act_now.py::test_unknown_final_recommendation_is_unavailable_not_trend_intact[unsupported]
+4 failed, 1 passed, 132 deselected in 14.40s

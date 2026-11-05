@@ -1,0 +1,16 @@
+{
+  "review_kind": "parent visual inspection; not independent acceptance",
+  "source_head": "478258fd258f74ba48392cb1ae102be5d0a55b4b",
+  "fresh_inspected_images": {
+    "space-capacity-mobile/390-dark-en-production-1.png": "ba83e40154bb0c51559b5151ec2c93ae42b4b993da55c8cac55be967f56fe040",
+    "space-capacity-desktop/1440-light-zh-themes.png": "c739aeae10fa7d568a326b7fc58de86b98d5481e595f509e4ef60f5f1a803a5c"
+  },
+  "observations": [
+    "Dark mobile production panel keeps relative targets, units per year, reported throughput and missing installed capacity distinct and readable.",
+    "Light Chinese view preserves six insufficient-evidence verdicts, readable Space observations, source clocks and research-workspace hierarchy."
+  ],
+  "limitations": [
+    "Explicit local test principal does not establish installed production entitlement.",
+    "No performance or independent acceptance claim."
+  ]
+}

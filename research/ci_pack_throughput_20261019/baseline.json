@@ -1,0 +1,970 @@
+{
+  "source_main": "168c96bf9ca68427749bc70664902c343d968d9c",
+  "method": "40 latest concluded ci.yml PR runs observed 2026-10-19; run-created-to-gate is a push-latency proxy; p95 nearest rank; wall minutes are not invoiced minutes; cancelled separate",
+  "limitations": [
+    "No exact push timestamp",
+    "23 noncancelled: 19 scoped and 4 global; only 1 successful global run",
+    "Completion-conditioned sample; queued/running runs excluded",
+    "Queue created_at may include unmet dependencies",
+    "Hosted concurrency quota, billed rate and actual invoice unavailable",
+    "First failed-step completion can trail first actionable log error",
+    "Logical-job traces sampled from critical pack and pack zero only",
+    "Primary statistics exclude run 39228626106 attempt 2: reused jobs have negative created-to-start intervals; 22 first-attempt noncancelled runs remain. Original 40-run summary retained separately."
+  ],
+  "runs": [
+    {
+      "id": 39243038953,
+      "run_attempt": 1,
+      "head_sha": "d85705d9111efc16352184e588763c9841256b8a",
+      "created_at": "2026-10-19T11:13:08Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39243038953",
+      "run_to_gate_s": null,
+      "first_red_s": null,
+      "runner_minutes": 0.0
+    },
+    {
+      "id": 39242689599,
+      "run_attempt": 1,
+      "head_sha": "5179acc3fd75e88c6a3710ea71cc243d88bc4638",
+      "created_at": "2026-10-19T11:10:17Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39242689599",
+      "run_to_gate_s": 884.0,
+      "first_red_s": 881.0,
+      "runner_minutes": 65.62
+    },
+    {
+      "id": 39242206292,
+      "run_attempt": 1,
+      "head_sha": "2db240071d0fc1853536785bfbee54b1b04636ea",
+      "created_at": "2026-10-19T11:06:21Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39242206292",
+      "run_to_gate_s": 508.0,
+      "first_red_s": 506.0,
+      "runner_minutes": 7.43
+    },
+    {
+      "id": 39242154040,
+      "run_attempt": 1,
+      "head_sha": "956773b8a4e96d179838028213d38f5b6fd06a28",
+      "created_at": "2026-10-19T11:05:56Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39242154040",
+      "run_to_gate_s": null,
+      "first_red_s": null,
+      "runner_minutes": 0.0
+    },
+    {
+      "id": 39241973632,
+      "run_attempt": 1,
+      "head_sha": "022e793062d411bcb4312b23e0af28c3dacddfc0",
+      "created_at": "2026-10-19T11:04:27Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39241973632",
+      "run_to_gate_s": 387.0,
+      "first_red_s": 385.0,
+      "runner_minutes": 4.37
+    },
+    {
+      "id": 39241155041,
+      "run_attempt": 1,
+      "head_sha": "f007c9daa7f1bdd0235892f1a799292857871227",
+      "created_at": "2026-10-19T10:57:29Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39241155041",
+      "run_to_gate_s": 719.0,
+      "first_red_s": 716.0,
+      "runner_minutes": 7.03
+    },
+    {
+      "id": 39241103835,
+      "run_attempt": 1,
+      "head_sha": "7af2afaf0b6cfb94e4a1ac28966d5ce3bd9b2f0b",
+      "created_at": "2026-10-19T10:57:02Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39241103835",
+      "run_to_gate_s": 317.0,
+      "first_red_s": 314.0,
+      "runner_minutes": 1.02
+    },
+    {
+      "id": 39240600937,
+      "run_attempt": 1,
+      "head_sha": "479d7e4368f7991579f2f59cc56a4ba3edece4e8",
+      "created_at": "2026-10-19T10:52:50Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39240600937",
+      "run_to_gate_s": 1655.0,
+      "first_red_s": 1652.0,
+      "runner_minutes": 64.38
+    },
+    {
+      "id": 39239687375,
+      "run_attempt": 1,
+      "head_sha": "216ffc3ab44539aae89f7ca942dcd1009482e295",
+      "created_at": "2026-10-19T10:45:11Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39239687375",
+      "run_to_gate_s": 1005.0,
+      "first_red_s": 1003.0,
+      "runner_minutes": 11.75
+    },
+    {
+      "id": 39238690990,
+      "run_attempt": 1,
+      "head_sha": "32623da6fd301249e89ced1f254e52118bd81cf6",
+      "created_at": "2026-10-19T10:36:44Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39238690990",
+      "run_to_gate_s": 2414.0,
+      "first_red_s": null,
+      "runner_minutes": 184.45,
+      "selected_jobs": 94,
+      "scope": "scoped",
+      "plan_sha256": "0d015edf1ec359a37b2056d8e849675a119831286547af8f5656821f20844d96",
+      "tested_tree_sha": "388ae0e52e81d27d85b5b98fd404e6b6b352e4e6",
+      "base_sha": "b303c4b32d4d16401050b25d41131b49501720e5",
+      "plan_reason": "scoped to 5 changed file(s): 94/255 jobs (2 unscoped always-on, 92 scoped matches); bounded manifest job delta changed 1 selected job(s)"
+    },
+    {
+      "id": 39238499827,
+      "run_attempt": 1,
+      "head_sha": "f72dabd51c679b4a0c6430632219d9eebfebc0a1",
+      "created_at": "2026-10-19T10:35:08Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39238499827",
+      "run_to_gate_s": 1862.0,
+      "first_red_s": 818.0,
+      "runner_minutes": 151.6
+    },
+    {
+      "id": 39238397941,
+      "run_attempt": 1,
+      "head_sha": "ee0e39c6919b49fc33f649389cfe876e698d2139",
+      "created_at": "2026-10-19T10:34:17Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39238397941",
+      "run_to_gate_s": 2397.0,
+      "first_red_s": 709.0,
+      "runner_minutes": 292.32
+    },
+    {
+      "id": 39238249716,
+      "run_attempt": 1,
+      "head_sha": "20f6fe081a3864099a24e48bef90dc4c5a7b3f68",
+      "created_at": "2026-10-19T10:33:01Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39238249716",
+      "run_to_gate_s": 1439.0,
+      "first_red_s": 1436.0,
+      "runner_minutes": 55.45
+    },
+    {
+      "id": 39237548874,
+      "run_attempt": 1,
+      "head_sha": "5aa1fdd245f6aa72d93d2abe5816487fb98ba8f9",
+      "created_at": "2026-10-19T10:27:07Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39237548874",
+      "run_to_gate_s": 2453.0,
+      "first_red_s": null,
+      "runner_minutes": 144.93,
+      "selected_jobs": 83,
+      "scope": "scoped",
+      "plan_sha256": "9bb6bb6232ed1b2b69e75cd41b90e89857f3275b88476fd68c22fd062225c19b",
+      "tested_tree_sha": "be3654820cd26dd36f48d045e136b9d1915b350b",
+      "base_sha": "b303c4b32d4d16401050b25d41131b49501720e5",
+      "plan_reason": "scoped to 2 changed file(s): 83/255 jobs (2 unscoped always-on, 81 scoped matches)"
+    },
+    {
+      "id": 39236414524,
+      "run_attempt": 1,
+      "head_sha": "8611c522b163aab6d570c4510e5412391ece183a",
+      "created_at": "2026-10-19T10:17:39Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39236414524",
+      "run_to_gate_s": 4057.0,
+      "first_red_s": null,
+      "runner_minutes": 256.77,
+      "selected_jobs": 108,
+      "scope": "scoped",
+      "plan_sha256": "8e40bda1e7b49775f9d9dd1fd7a943be3acf49cf1595cd8b9d78b9db7a0588dd",
+      "tested_tree_sha": "696c3aac5b7e7609235061da5c702d42a9e97714",
+      "base_sha": "b303c4b32d4d16401050b25d41131b49501720e5",
+      "plan_reason": "scoped to 4 changed file(s): 108/255 jobs (2 unscoped always-on, 106 scoped matches); bounded manifest job delta changed 1 selected job(s)"
+    },
+    {
+      "id": 39236332532,
+      "run_attempt": 1,
+      "head_sha": "01d38cb59550c05235a1ab9a0e011e30027e78ca",
+      "created_at": "2026-10-19T10:16:59Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39236332532",
+      "run_to_gate_s": 3429.0,
+      "first_red_s": null,
+      "runner_minutes": 234.58,
+      "selected_jobs": 102,
+      "scope": "scoped",
+      "plan_sha256": "d5da4e096c6c397c86a874afa14067bd77ee0ba3000c8c0df4ed172f316d7397",
+      "tested_tree_sha": "66161a7b69d2f4da9203aa80d8d84854b988675d",
+      "base_sha": "b303c4b32d4d16401050b25d41131b49501720e5",
+      "plan_reason": "scoped to 4 changed file(s): 102/255 jobs (2 unscoped always-on, 100 scoped matches); bounded manifest job delta changed 1 selected job(s)"
+    },
+    {
+      "id": 39236263674,
+      "run_attempt": 1,
+      "head_sha": "713304f13488d4a5eb9a710b96cb0ea8e4d80e52",
+      "created_at": "2026-10-19T10:16:25Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39236263674",
+      "run_to_gate_s": 4074.0,
+      "first_red_s": null,
+      "runner_minutes": 257.63,
+      "selected_jobs": 112,
+      "scope": "scoped",
+      "plan_sha256": "52035c89273b6028060af8fa198845bfd6f5557cd5312ccc106dc5025e2f4a6b",
+      "tested_tree_sha": "48bbeafab8d5487554776ce067c85a05f2940a35",
+      "base_sha": "b303c4b32d4d16401050b25d41131b49501720e5",
+      "plan_reason": "scoped to 5 changed file(s): 112/255 jobs (2 unscoped always-on, 110 scoped matches); bounded manifest job delta changed 14 selected job(s)"
+    },
+    {
+      "id": 39235975546,
+      "run_attempt": 1,
+      "head_sha": "8725329707f401b648b872a071a26d4b16b95251",
+      "created_at": "2026-10-19T10:14:06Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39235975546",
+      "run_to_gate_s": 3196.0,
+      "first_red_s": null,
+      "runner_minutes": 321.97,
+      "selected_jobs": 255,
+      "scope": "global",
+      "plan_sha256": "7320312a882f729e35576ade0046bb3d499bc54f7fb388863eeebd531c246548",
+      "tested_tree_sha": "d741135beaaacd81f8738177160618da0d24b714",
+      "base_sha": "b303c4b32d4d16401050b25d41131b49501720e5",
+      "plan_reason": "full suite: global invalidator changed (.github/workflows/daily.yml)"
+    },
+    {
+      "id": 39235580372,
+      "run_attempt": 1,
+      "head_sha": "6bcd9cd38e7786ba29786f9cb5c447d4b7b733d3",
+      "created_at": "2026-10-19T10:10:53Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39235580372",
+      "run_to_gate_s": 2499.0,
+      "first_red_s": null,
+      "runner_minutes": 182.02,
+      "selected_jobs": 105,
+      "scope": "scoped",
+      "plan_sha256": "88f5094f1967d242b53f5cbd94fe8b57502b6b68f1a85ac2160a4a621f087cbb",
+      "tested_tree_sha": "28aeca9992b334f0c419d7c000f4a07ea619adea",
+      "base_sha": "6fa16827e0280385efabb7b723714ea496a11dde",
+      "plan_reason": "scoped to 11 changed file(s): 105/255 jobs (2 unscoped always-on, 103 scoped matches); 2 unowned path(s) did not widen (properties/research/feed.xml)"
+    },
+    {
+      "id": 39234988640,
+      "run_attempt": 1,
+      "head_sha": "ee3c9d4d50b1445d51a310d7a419e70a1d678ed4",
+      "created_at": "2026-10-19T10:06:09Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39234988640",
+      "run_to_gate_s": 1855.0,
+      "first_red_s": 1044.0,
+      "runner_minutes": 116.85
+    },
+    {
+      "id": 39234426974,
+      "run_attempt": 1,
+      "head_sha": "89d9ee9cbc980abd99a8704e068fdfa0cfcdb117",
+      "created_at": "2026-10-19T10:01:34Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39234426974",
+      "run_to_gate_s": 3458.0,
+      "first_red_s": null,
+      "runner_minutes": 236.57,
+      "selected_jobs": 124,
+      "scope": "scoped",
+      "plan_sha256": "89be2efb007a0645e3136d20483a62963fc6d9c57c3f62002104eb9cbe9777b7",
+      "tested_tree_sha": "114ece9bc7b01ae647077b79654a066d37c65181",
+      "base_sha": "6fa16827e0280385efabb7b723714ea496a11dde",
+      "plan_reason": "scoped to 22 changed file(s): 124/255 jobs (2 unscoped always-on, 122 scoped matches); 5 unowned path(s) did not widen (docs/prophet-wmko-review-20261019/api-restart-closure.log); bounded manifest job delta changed 12 selected job(s)"
+    },
+    {
+      "id": 39234350662,
+      "run_attempt": 1,
+      "head_sha": "3ecd8e102e28e88247e58025ac5a77b3acd93e2d",
+      "created_at": "2026-10-19T10:00:58Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39234350662",
+      "run_to_gate_s": 2785.0,
+      "first_red_s": null,
+      "runner_minutes": 102.12,
+      "selected_jobs": 18,
+      "scope": "scoped",
+      "plan_sha256": "38411c96c54f99704dd60cb0ff45e3d56d6c4168baedd87e096d3d53cef96a67",
+      "tested_tree_sha": "381d171e4c808e9fa55e9c3fb5061bd5d5561cb7",
+      "base_sha": "6fa16827e0280385efabb7b723714ea496a11dde",
+      "plan_reason": "scoped to 1 changed file(s): 18/255 jobs (2 unscoped always-on, 16 scoped matches)"
+    },
+    {
+      "id": 39233825272,
+      "run_attempt": 1,
+      "head_sha": "e2ec8e94a77f4b11a9ffe035627a10761870629b",
+      "created_at": "2026-10-19T09:56:41Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39233825272",
+      "run_to_gate_s": 3402.0,
+      "first_red_s": null,
+      "runner_minutes": 218.88,
+      "selected_jobs": 110,
+      "scope": "scoped",
+      "plan_sha256": "ce0a2b63e2e099abb6239f491503deba4e146fa75663330ffa3d4002a6b3024f",
+      "tested_tree_sha": "6f6117cd6a1aca0ef21fe891c3f81e35163695e7",
+      "base_sha": "9b202754536d87524d4e0494585e3e3091454ada",
+      "plan_reason": "scoped to 11 changed file(s): 110/255 jobs (2 unscoped always-on, 108 scoped matches); 1 unowned path(s) did not widen (tests/test_grade_thematic.py); bounded manifest job delta changed 1 selected job(s)"
+    },
+    {
+      "id": 39233775390,
+      "run_attempt": 1,
+      "head_sha": "9cf06e1e5a3d2f793a3c943eac9b3e1707844cea",
+      "created_at": "2026-10-19T09:56:16Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39233775390",
+      "run_to_gate_s": 3013.0,
+      "first_red_s": null,
+      "runner_minutes": 218.5,
+      "selected_jobs": 116,
+      "scope": "scoped",
+      "plan_sha256": "43e3db24aa54f367b8c2cbbb9e4ef8cc349a0cc2f182af5985db429756dbbf9e",
+      "tested_tree_sha": "a10678f1d5ceb0f4190cfde4a089b0dda73f61ce",
+      "base_sha": "9b202754536d87524d4e0494585e3e3091454ada",
+      "plan_reason": "scoped to 5 changed file(s): 116/255 jobs (2 unscoped always-on, 114 scoped matches); bounded manifest job delta changed 1 selected job(s)"
+    },
+    {
+      "id": 39233721469,
+      "run_attempt": 1,
+      "head_sha": "078b35a93d5c3f177bb11c537881852712540b67",
+      "created_at": "2026-10-19T09:55:51Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39233721469",
+      "run_to_gate_s": 3542.0,
+      "first_red_s": null,
+      "runner_minutes": 227.15,
+      "selected_jobs": 107,
+      "scope": "scoped",
+      "plan_sha256": "13840723f54b85f19a4ad859da80f18a0f4f1adfd4dc4c3ed6c9a5eda89a4010",
+      "tested_tree_sha": "4b0c3c2119a20cc8b99b57ce430303a4e4114164",
+      "base_sha": "4809947d391cd9fd915828af6c1e35a7db38abef",
+      "plan_reason": "scoped to 4 changed file(s): 107/255 jobs (2 unscoped always-on, 105 scoped matches); bounded manifest job delta changed 1 selected job(s)"
+    },
+    {
+      "id": 39233494433,
+      "run_attempt": 1,
+      "head_sha": "e68d551be9e5f98322cc1ec497026ef7ac6479cb",
+      "created_at": "2026-10-19T09:54:02Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39233494433",
+      "run_to_gate_s": 3222.0,
+      "first_red_s": 1334.0,
+      "runner_minutes": 163.35
+    },
+    {
+      "id": 39233349598,
+      "run_attempt": 1,
+      "head_sha": "840019005c5c0c906750d30c9ad95d5f8c08390e",
+      "created_at": "2026-10-19T09:52:52Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39233349598",
+      "run_to_gate_s": 3942.0,
+      "first_red_s": null,
+      "runner_minutes": 255.18,
+      "selected_jobs": 116,
+      "scope": "scoped",
+      "plan_sha256": "0e89e451bbda654769b3cb1acc0169ada070cfa948516a1988d24eff0b06f09a",
+      "tested_tree_sha": "5f42b60bed1ad17f10e693a9ca790e0fb7f44542",
+      "base_sha": "6bb5fd10bbc65bab7d7b0466991d68cbb81cd465",
+      "plan_reason": "scoped to 13 changed file(s): 116/255 jobs (2 unscoped always-on, 114 scoped matches); bounded manifest job delta changed 13 selected job(s)"
+    },
+    {
+      "id": 39233246363,
+      "run_attempt": 1,
+      "head_sha": "6bdf691801b07a049e76b3a2a054a443dfd97775",
+      "created_at": "2026-10-19T09:52:00Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39233246363",
+      "run_to_gate_s": 2684.0,
+      "first_red_s": null,
+      "runner_minutes": 188.53,
+      "selected_jobs": 107,
+      "scope": "scoped",
+      "plan_sha256": "87de1db74d0b07aba42897b9f8a3badba9a08a16d4810f854043a7146567da03",
+      "tested_tree_sha": "3c7d4fff37fa97c07b235054546e9a04e045e6ff",
+      "base_sha": "6bb5fd10bbc65bab7d7b0466991d68cbb81cd465",
+      "plan_reason": "scoped to 14 changed file(s): 107/255 jobs (2 unscoped always-on, 105 scoped matches); bounded manifest job delta changed 1 selected job(s)"
+    },
+    {
+      "id": 39233122614,
+      "run_attempt": 1,
+      "head_sha": "7abe5dcb64e95378d004bffcff786880da1c20b3",
+      "created_at": "2026-10-19T09:50:58Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39233122614",
+      "run_to_gate_s": 3129.0,
+      "first_red_s": null,
+      "runner_minutes": 227.72,
+      "selected_jobs": 107,
+      "scope": "scoped",
+      "plan_sha256": "87cb711bed4d96ce085ea2678a3f28ac042a39d06e9240bd3f23e771e84b43ff",
+      "tested_tree_sha": "46100e19d2fa5096e4a13dd3e20d2bab73520613",
+      "base_sha": "6bb5fd10bbc65bab7d7b0466991d68cbb81cd465",
+      "plan_reason": "scoped to 7 changed file(s): 107/255 jobs (2 unscoped always-on, 105 scoped matches); 2 unowned path(s) did not widen (tests/test_held_material_entitlement.py); bounded manifest job delta changed 0 selected job(s)"
+    },
+    {
+      "id": 39232626567,
+      "run_attempt": 1,
+      "head_sha": "b2ff80dfb558ea05d6c749391ca37b8ea4ad6df4",
+      "created_at": "2026-10-19T09:46:52Z",
+      "conclusion": "failure",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39232626567",
+      "run_to_gate_s": 3516.0,
+      "first_red_s": 2957.0,
+      "runner_minutes": 342.57,
+      "selected_jobs": 255,
+      "scope": "global",
+      "plan_sha256": "f6de67f89464520f376a9df55987425210a68952efc18a638cb69d7ed1e4e39c",
+      "tested_tree_sha": "550f85055a2c09311b94ccbfc9e4276c0da70ca4",
+      "base_sha": "6bb5fd10bbc65bab7d7b0466991d68cbb81cd465",
+      "plan_reason": "full suite: global invalidator changed (.github/workflows/engine-render.yml)"
+    },
+    {
+      "id": 39232473798,
+      "run_attempt": 1,
+      "head_sha": "6ad205fe1e349a53c7010b57c91f01603a19bc75",
+      "created_at": "2026-10-19T09:45:37Z",
+      "conclusion": "failure",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39232473798",
+      "run_to_gate_s": 4109.0,
+      "first_red_s": 2632.0,
+      "runner_minutes": 361.0,
+      "selected_jobs": 255,
+      "scope": "global",
+      "plan_sha256": "95184bb9eaff3e47050b07f3e87863f0b4fa91fd9ed6ff5a6ccd2bbdb7c36e45",
+      "tested_tree_sha": "538c8591041adef392f5c04b7600d053ce214b9e",
+      "base_sha": "6bb5fd10bbc65bab7d7b0466991d68cbb81cd465",
+      "plan_reason": "full suite: global invalidator changed (.github/workflows/merge-on-green.yml)"
+    },
+    {
+      "id": 39231026885,
+      "run_attempt": 1,
+      "head_sha": "5251382fedeaa57982e5b9064d890b9e2d4dacf1",
+      "created_at": "2026-10-19T09:34:00Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39231026885",
+      "run_to_gate_s": 4684.0,
+      "first_red_s": 3587.0,
+      "runner_minutes": 362.45
+    },
+    {
+      "id": 39230039622,
+      "run_attempt": 1,
+      "head_sha": "e6f13acf090e9ead932a94d01aa2088d1e165149",
+      "created_at": "2026-10-19T09:26:11Z",
+      "conclusion": "failure",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39230039622",
+      "run_to_gate_s": 2914.0,
+      "first_red_s": 2545.0,
+      "runner_minutes": 189.92,
+      "selected_jobs": 97,
+      "scope": "scoped",
+      "plan_sha256": "e72b273aa5f4583cf040dadf62cb113d7443ff9495e7473f249fbd6a6dc9f147",
+      "tested_tree_sha": "5fe564992e972cebdc5dfb5f62ecd8c5638661ac",
+      "base_sha": "ca6abbaef6bbf63a7facacaa59fb5aba93a24b7b",
+      "plan_reason": "scoped to 5 changed file(s): 97/255 jobs (2 unscoped always-on, 95 scoped matches); bounded manifest job delta changed 1 selected job(s)"
+    },
+    {
+      "id": 39229273374,
+      "run_attempt": 1,
+      "head_sha": "2ac3225bd09c3df61224d421fccddd36aa9054e0",
+      "created_at": "2026-10-19T09:20:07Z",
+      "conclusion": "failure",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39229273374",
+      "run_to_gate_s": 3753.0,
+      "first_red_s": 3691.0,
+      "runner_minutes": 231.57,
+      "selected_jobs": 106,
+      "scope": "scoped",
+      "plan_sha256": "bd52302def0c1542af3ed8eafa020e4b5069f68a2ce13a370167c08727a4eab7",
+      "tested_tree_sha": "58325032574fc489bcec6b72143e9bc1b3fc0d98",
+      "base_sha": "e4583f87a4c31837542790654ddc4d02fc14980a",
+      "plan_reason": "scoped to 9 changed file(s): 106/255 jobs (2 unscoped always-on, 104 scoped matches); 4 unowned path(s) did not widen (tests/fixtures/capital_structure/reference/g0/foreign_f3_witness_edry_f3.txt); bounded manifest job delta changed 0 selected job(s)"
+    },
+    {
+      "id": 39228917299,
+      "run_attempt": 1,
+      "head_sha": "6196fda48a8a8b47f7a61bcb047dbe103337e9f4",
+      "created_at": "2026-10-19T09:17:17Z",
+      "conclusion": "failure",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39228917299",
+      "run_to_gate_s": 7145.0,
+      "first_red_s": 912.0,
+      "runner_minutes": 481.25,
+      "selected_jobs": 256,
+      "scope": "global",
+      "plan_sha256": "8178cc38b82881d830f935f01dd8cb93c548c9eab5b7e7913615e2c19133d83a",
+      "tested_tree_sha": "c6c6fceee7537eeacc1e3c8fdddc29d9e1ebda5d",
+      "base_sha": "69dd6e774cc48223005426765e74aed193d55954",
+      "plan_reason": "full suite: global invalidator changed (.github/ci/legacy-jobs.yml)"
+    },
+    {
+      "id": 39228674574,
+      "run_attempt": 1,
+      "head_sha": "0eb21b219fc0197ff01a71b2a7645d96266c46c2",
+      "created_at": "2026-10-19T09:15:23Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39228674574",
+      "run_to_gate_s": 3491.0,
+      "first_red_s": 3489.0,
+      "runner_minutes": 259.25
+    },
+    {
+      "id": 39228626106,
+      "run_attempt": 2,
+      "head_sha": "e1465e9a673fcba40fcc213a5e8591f88fc327d7",
+      "created_at": "2026-10-19T09:15:02Z",
+      "conclusion": "success",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39228626106",
+      "run_to_gate_s": 5183.0,
+      "first_red_s": null,
+      "runner_minutes": 146.92,
+      "selected_jobs": 82,
+      "scope": "scoped",
+      "plan_sha256": "6089a80975f65cd35fea54dcc692bdba5fc1a9b796d59e9c396a9a4387ccf9e2",
+      "tested_tree_sha": "3ff71cd90f920f59bc2f1a7dacf04baa3eb75c4f",
+      "base_sha": "69dd6e774cc48223005426765e74aed193d55954",
+      "plan_reason": "scoped to 2 changed file(s): 82/255 jobs (2 unscoped always-on, 80 scoped matches)"
+    },
+    {
+      "id": 39228597930,
+      "run_attempt": 1,
+      "head_sha": "88d8e5f48dee59530288fe2a8487bd6fac2a11c1",
+      "created_at": "2026-10-19T09:14:48Z",
+      "conclusion": "failure",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39228597930",
+      "run_to_gate_s": 4232.0,
+      "first_red_s": 4178.0,
+      "runner_minutes": 180.13,
+      "selected_jobs": 93,
+      "scope": "scoped",
+      "plan_sha256": "3779c82eff77442592a17b56a3724e572d37fd9e8a97adff2ee4e552c2f09afd",
+      "tested_tree_sha": "9d4d28159ce74bbd3c5d37a746387fede727b15e",
+      "base_sha": "69dd6e774cc48223005426765e74aed193d55954",
+      "plan_reason": "scoped to 9 changed file(s): 93/256 jobs (2 unscoped always-on, 91 scoped matches); bounded manifest job delta changed 1 selected job(s)"
+    },
+    {
+      "id": 39228592753,
+      "run_attempt": 1,
+      "head_sha": "3037e67563c957cc086463b0fe9d29b580375c03",
+      "created_at": "2026-10-19T09:14:46Z",
+      "conclusion": "failure",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39228592753",
+      "run_to_gate_s": 4342.0,
+      "first_red_s": 2212.0,
+      "runner_minutes": 332.83,
+      "selected_jobs": 134,
+      "scope": "scoped",
+      "plan_sha256": "f75c163b28597e0504fb9100f122e21e2d462c54b534fa1c3da7d7653f2a7e6f",
+      "tested_tree_sha": "8b406e10e9924f8aa480918354eeeb9d1ec093ba",
+      "base_sha": "69dd6e774cc48223005426765e74aed193d55954",
+      "plan_reason": "scoped to 148 changed file(s): 134/255 jobs (2 unscoped always-on, 132 scoped matches); 1 unowned path(s) did not widen (tests/fixtures/watchlist_readonly.mjs); bounded manifest job delta changed 19 selected job(s)"
+    },
+    {
+      "id": 39228276637,
+      "run_attempt": 1,
+      "head_sha": "726adf122c3ada487acba142bf919349147775d8",
+      "created_at": "2026-10-19T09:12:15Z",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39228276637",
+      "run_to_gate_s": 7480.0,
+      "first_red_s": 1047.0,
+      "runner_minutes": 409.48
+    }
+  ],
+  "primary_strata": {
+    "all/success": {
+      "run_to_gate_s": {
+        "n": 15,
+        "p50": 3196.0,
+        "p95_nearest_rank": 4074.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "runner_minutes": {
+        "n": 15,
+        "p50": 227.15,
+        "p95_nearest_rank": 321.97
+      }
+    },
+    "all/failure": {
+      "run_to_gate_s": {
+        "n": 7,
+        "p50": 4109.0,
+        "p95_nearest_rank": 7145.0
+      },
+      "first_red_s": {
+        "n": 7,
+        "p50": 2632.0,
+        "p95_nearest_rank": 4178.0
+      },
+      "runner_minutes": {
+        "n": 7,
+        "p50": 332.83,
+        "p95_nearest_rank": 481.25
+      }
+    },
+    "all/cancelled": {
+      "run_to_gate_s": {
+        "n": 15,
+        "p50": 1655.0,
+        "p95_nearest_rank": 7480.0
+      },
+      "first_red_s": {
+        "n": 15,
+        "p50": 1003.0,
+        "p95_nearest_rank": 3587.0
+      },
+      "runner_minutes": {
+        "n": 17,
+        "p50": 64.38,
+        "p95_nearest_rank": 409.48
+      }
+    },
+    "scoped/success": {
+      "run_to_gate_s": {
+        "n": 14,
+        "p50": 3265.5,
+        "p95_nearest_rank": 4074.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "runner_minutes": {
+        "n": 14,
+        "p50": 223.015,
+        "p95_nearest_rank": 257.63
+      }
+    },
+    "scoped/failure": {
+      "run_to_gate_s": {
+        "n": 4,
+        "p50": 3992.5,
+        "p95_nearest_rank": 4342.0
+      },
+      "first_red_s": {
+        "n": 4,
+        "p50": 3118.0,
+        "p95_nearest_rank": 4178.0
+      },
+      "runner_minutes": {
+        "n": 4,
+        "p50": 210.745,
+        "p95_nearest_rank": 332.83
+      }
+    },
+    "scoped/cancelled": {
+      "run_to_gate_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "runner_minutes": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      }
+    },
+    "global/success": {
+      "run_to_gate_s": {
+        "n": 1,
+        "p50": 3196.0,
+        "p95_nearest_rank": 3196.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "runner_minutes": {
+        "n": 1,
+        "p50": 321.97,
+        "p95_nearest_rank": 321.97
+      }
+    },
+    "global/failure": {
+      "run_to_gate_s": {
+        "n": 3,
+        "p50": 4109.0,
+        "p95_nearest_rank": 7145.0
+      },
+      "first_red_s": {
+        "n": 3,
+        "p50": 2632.0,
+        "p95_nearest_rank": 2957.0
+      },
+      "runner_minutes": {
+        "n": 3,
+        "p50": 361.0,
+        "p95_nearest_rank": 481.25
+      }
+    },
+    "global/cancelled": {
+      "run_to_gate_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "runner_minutes": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      }
+    }
+  },
+  "primary_pack_stages": {
+    "queue_s": {
+      "n": 264,
+      "p50": 595.5,
+      "p95_nearest_rank": 1172.0
+    },
+    "checkout_s": {
+      "n": 264,
+      "p50": 198.0,
+      "p95_nearest_rank": 319.0
+    },
+    "execute_s": {
+      "n": 264,
+      "p50": 731.0,
+      "p95_nearest_rank": 2068.0
+    }
+  },
+  "inclusive_diagnostic_strata": {
+    "all/success": {
+      "run_to_gate_s": {
+        "n": 16,
+        "p50": 3299.0,
+        "p95_nearest_rank": 5183.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "runner_minutes": {
+        "n": 16,
+        "p50": 223.015,
+        "p95_nearest_rank": 321.97
+      }
+    },
+    "all/failure": {
+      "run_to_gate_s": {
+        "n": 7,
+        "p50": 4109.0,
+        "p95_nearest_rank": 7145.0
+      },
+      "first_red_s": {
+        "n": 7,
+        "p50": 2632.0,
+        "p95_nearest_rank": 4178.0
+      },
+      "runner_minutes": {
+        "n": 7,
+        "p50": 332.83,
+        "p95_nearest_rank": 481.25
+      }
+    },
+    "all/cancelled": {
+      "run_to_gate_s": {
+        "n": 15,
+        "p50": 1655.0,
+        "p95_nearest_rank": 7480.0
+      },
+      "first_red_s": {
+        "n": 15,
+        "p50": 1003.0,
+        "p95_nearest_rank": 3587.0
+      },
+      "runner_minutes": {
+        "n": 17,
+        "p50": 64.38,
+        "p95_nearest_rank": 409.48
+      }
+    },
+    "scoped/success": {
+      "run_to_gate_s": {
+        "n": 15,
+        "p50": 3402.0,
+        "p95_nearest_rank": 5183.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "runner_minutes": {
+        "n": 15,
+        "p50": 218.88,
+        "p95_nearest_rank": 257.63
+      }
+    },
+    "scoped/failure": {
+      "run_to_gate_s": {
+        "n": 4,
+        "p50": 3992.5,
+        "p95_nearest_rank": 4342.0
+      },
+      "first_red_s": {
+        "n": 4,
+        "p50": 3118.0,
+        "p95_nearest_rank": 4178.0
+      },
+      "runner_minutes": {
+        "n": 4,
+        "p50": 210.745,
+        "p95_nearest_rank": 332.83
+      }
+    },
+    "scoped/cancelled": {
+      "run_to_gate_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "runner_minutes": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      }
+    },
+    "global/success": {
+      "run_to_gate_s": {
+        "n": 1,
+        "p50": 3196.0,
+        "p95_nearest_rank": 3196.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "runner_minutes": {
+        "n": 1,
+        "p50": 321.97,
+        "p95_nearest_rank": 321.97
+      }
+    },
+    "global/failure": {
+      "run_to_gate_s": {
+        "n": 3,
+        "p50": 4109.0,
+        "p95_nearest_rank": 7145.0
+      },
+      "first_red_s": {
+        "n": 3,
+        "p50": 2632.0,
+        "p95_nearest_rank": 2957.0
+      },
+      "runner_minutes": {
+        "n": 3,
+        "p50": 361.0,
+        "p95_nearest_rank": 481.25
+      }
+    },
+    "global/cancelled": {
+      "run_to_gate_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      },
+      "runner_minutes": {
+        "n": 0,
+        "p50": null,
+        "p95_nearest_rank": null
+      }
+    }
+  },
+  "inclusive_diagnostic_pack_stages": {
+    "queue_s": {
+      "n": 276,
+      "p50": 567.5,
+      "p95_nearest_rank": 1172.0
+    },
+    "checkout_s": {
+      "n": 276,
+      "p50": 199.0,
+      "p95_nearest_rank": 322.0
+    },
+    "execute_s": {
+      "n": 276,
+      "p50": 704.5,
+      "p95_nearest_rank": 2068.0
+    }
+  },
+  "inclusive_diagnostic_control_stages": {
+    "ci-plan/queue_s": {
+      "n": 23,
+      "p50": 209.0,
+      "p95": 552.0
+    },
+    "ci-plan/wall_s": {
+      "n": 23,
+      "p50": 229.0,
+      "p95": 244.0
+    },
+    "contract-delta/queue_s": {
+      "n": 23,
+      "p50": 290.0,
+      "p95": 512.0
+    },
+    "contract-delta/wall_s": {
+      "n": 23,
+      "p50": 868.0,
+      "p95": 972.0
+    },
+    "ci-gate/queue_s": {
+      "n": 23,
+      "p50": 165.0,
+      "p95": 660.0
+    },
+    "ci-gate/wall_s": {
+      "n": 23,
+      "p50": 10.0,
+      "p95": 14.0
+    }
+  }
+}

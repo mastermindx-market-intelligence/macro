@@ -1,6 +1,6 @@
 {
  "schema": "dead_name_price_coverage.v3",
- "generated_utc": "2026-09-12T17:00:56.189165+00:00",
+ "generated_utc": "2026-09-26T19:29:57.927712+00:00",
  "n_dead_universe": 1081,
  "n_cik_resolved": 282,
  "n_with_prices": 424,
@@ -11,8 +11,8 @@
  },
  "delisting_reason": {
   "bankruptcy": 19,
-  "acquisition": 186,
-  "unknown": 77,
+  "acquisition": 187,
+  "unknown": 76,
   "n_classified": 282
  },
  "n_imputed_bankruptcies": 5,

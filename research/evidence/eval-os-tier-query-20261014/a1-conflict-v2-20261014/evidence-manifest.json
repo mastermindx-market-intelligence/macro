@@ -1,0 +1,35 @@
+{
+  "schema": "eval_os.a1_repair_evidence.v1",
+  "records": [
+    {
+      "source": "preview-1242.json",
+      "stored": "preview-1242.json",
+      "original_sha256": "bd287d295dcfb1b4166e96dd20ead602f1eb3a9a4a37caafe4216e96123d4353",
+      "stored_sha256": "bd287d295dcfb1b4166e96dd20ead602f1eb3a9a4a37caafe4216e96123d4353"
+    },
+    {
+      "source": "preview-1242-source-fix.log",
+      "stored": "preview-1242-source-fix.log.gz",
+      "original_sha256": "c9b43ec8d93fbaa253dbe2aabe377178088ae19aece706f65476293f5412ba62",
+      "stored_sha256": "19dcf09b89d9b19662bf041264feb340afa51b45b0607f53929dc2e9abcc51de"
+    },
+    {
+      "source": "source-only-v2.patch",
+      "stored": "source-only-v2.patch",
+      "original_sha256": "1f365e0aeb2ed772f99f8cc4828f331870261d460d578782c6d810cc429af852",
+      "stored_sha256": "1f365e0aeb2ed772f99f8cc4828f331870261d460d578782c6d810cc429af852"
+    },
+    {
+      "source": "source-only-v2-proposal.json",
+      "stored": "source-only-v2-proposal.json",
+      "original_sha256": "5bf560a6cdf6bf19dddf2ba62ec27005fe2e03de4d5e7ffa948cf6e3f769577a",
+      "stored_sha256": "5bf560a6cdf6bf19dddf2ba62ec27005fe2e03de4d5e7ffa948cf6e3f769577a"
+    },
+    {
+      "source": "source-only-v2-preview.log",
+      "stored": "source-only-v2-preview.log.gz",
+      "original_sha256": "2819b3d0cd4fcaa2c89faf85605e12bd965ac530491d564c7433a8dfe2a35534",
+      "stored_sha256": "52e7f028d662821590877f21951e60ad693996e41c027af68ac99593fda78d77"
+    }
+  ]
+}

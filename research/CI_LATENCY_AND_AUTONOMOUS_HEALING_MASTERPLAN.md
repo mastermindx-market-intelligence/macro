@@ -106,6 +106,48 @@ The route and latency programs share authority files, so they are serialized:
 9. Recompute hosted-minute projection, ordinary-PR p50/p95, simultaneous-PR queueing, and
    render/native contention. Only then assemble the private-cutover packet.
 
+## Historical proposal — 2026-09-18 horizontal-agent scaling amendment
+
+**Archive qualification, 2026-11-05.** The complete September18 amendment from
+[Macro#7330](https://github.com/mastermindx-market-intelligence/macro/pull/7330),
+source head **856e120ab156eb2d46cd4e931266c09e02bd4228**, is preserved verbatim below
+as a dated proposal and author-reported incident analysis. It was not a protected
+adoption or runtime-acceptance receipt. Imperatives inside the historical fence,
+including “contract,” “governing,” “current,” “only authorized” and “remains binding,”
+describe that proposal's intended scope at its original date; this archival
+publication does not enact them as current operating law.
+
+The source remains useful for its distinction between avoidable execution demand,
+effective slot availability, admission order, resource tails and measured burst
+capacity. Its acceptance corpus and numerical thresholds are historical proposals,
+not demonstrated performance or present grants.
+
+| Historical material below | Present interpretation of this archive |
+|---|---|
+| September18 queue, slot, runtime, memory and cache observations | Attributed observations reported by the original author; not remeasured here and not current fleet telemetry. |
+| Utilization, pickup and final-gate targets; natural14-day gauntlet | Proposed planning/acceptance criteria; this archive establishes neither current adoption nor achieved SLOs. |
+| Named PR owners, active repairs, fourth-slot sequence and incoming hardware | Historical carrier references. Current source custody, leases, holds, effects and installed admission must be recovered from their existing owners before any separately authorized action. |
+| GitHub queue ceiling, ordering and suggested slot-lane/elastic profiles | Then-described platform assumptions and experiments; current platform behavior and actual permission require their own evidence. No scheduler, runner, purchase or profile change is authorized here. |
+| Waiting, red-return and watcher language | Historical program proposal. Current protected continuation, return and effect law controls; CI/review/queued messages are not proof of a running durable executor. |
+
+For current implementation and merge decisions, consult the accepted source owners,
+including [Macro CI](https://github.com/mastermindx-market-intelligence/macro/blob/main/.github/workflows/ci.yml)
+and [merge-on-green](https://github.com/mastermindx-market-intelligence/macro/blob/main/.github/workflows/merge-on-green.yml),
+together with current protected Mastermind procedure and installed runtime admission.
+A source definition alone does not prove deployed host capability or live capacity.
+This archive creates no replacement carrier, control plane, task, release of a
+recorded hold, cancellation, replay, provider call or hardware purchase.
+
+The original PR's separate [illustrative capacity note5736803504](https://github.com/mastermindx-market-intelligence/macro/pull/7330#issuecomment-5736803504)
+is also dated. Its PR-creation rate omits repush generations, and multiplying a
+median pack time by twelve is an illustrative service-demand proxy, not a measured
+mean or tail distribution. Neither that arithmetic nor the targets below establish
+a backlog ETA, current available slots, cost advantage or completed acceptance.
+
+### Complete original amendment — historical text
+
+~~~~markdown
+
 
 ## 2026-09-18 horizontal-agent scaling hardening amendment
 
@@ -425,6 +467,7 @@ license to absorb their source, is now:
 The parent outcome is not complete when the backlog happens to drain. It is complete when
 additional coding sessions can be added without recreating a month-long CI traffic jam,
 and the accepted natural corpus proves both low latency and bounded compute amplification.
+~~~~
 
 ---
 

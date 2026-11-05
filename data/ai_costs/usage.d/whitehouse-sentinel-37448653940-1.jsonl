@@ -1,0 +1,1 @@
+{"schema":"ai_costs.usage.v1","ts":"2026-10-06T10:16:32Z","lane":"unknown","provider":"deepseek","model":"deepseek-v4-pro","key_id":"deepseek_api_key","input_tokens":175,"output_tokens":88,"cache_read_tokens":0,"cache_creation_tokens":0,"est_cost_usd":0.00015269,"cost_basis":"metered","cycle_id":"","stage":"uk_policy_brain","note":""}
