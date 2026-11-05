@@ -1680,6 +1680,69 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_m
         assert "unowned path" not in reason, reason
 
 
+def test_macro_suite_copy_law_site_scanners_run_on_the_data_gate(real_manifest_scopes) -> None:
+    """A nightly-rendered page must never red the source merge gate (S1, 2026-11-05).
+
+    ``tests/test_macro_command_copy_law.py`` holds two kinds of test: the copy
+    law over fixture-rendered or synthetic payloads (a property of the code),
+    and scanners over the committed ``site/macro_*.html`` the nightly rewrites
+    on every run (a property of the data). On 2026-11-05 the nightly committed
+    a ``macro_business_activity.html`` carrying an unpaired ``Contraction``
+    label; ``market-os-macro-suite-pages`` went red on main at 04:41Z and
+    merge-on-green's main-red circuit breaker held every ordinary merge for 18
+    hours while no open PR could have caused or cured it (Mastermind #917,
+    checkpoint 13). The split pinned here: the scanners carry ``data_gate``,
+    the code job deselects them, and the ``gate: data`` sibling runs exactly
+    them on the data-health lane after each nightly.
+    """
+    manifest = _yaml(MANIFEST)
+    suite = "tests/test_macro_command_copy_law.py"
+    code_job = manifest["jobs"]["market-os-macro-suite-pages"]
+    assert code_job["gate"] == "code"
+    code_runs = [
+        str(step.get("run") or "") for step in code_job["steps"]
+        if suite in str(step.get("run") or "")
+    ]
+    assert code_runs, "the code job no longer runs the copy-law suite"
+    for run in code_runs:
+        assert "-m \"not data_gate\"" in run or "-m 'not data_gate'" in run, run
+
+    data_job = manifest["jobs"]["market-os-macro-suite-pages-data"]
+    assert data_job["gate"] == "data"
+    assert data_job["scope"] == "exclusive"
+    data_runs = [
+        str(step.get("run") or "") for step in data_job["steps"]
+        if "pytest" in str(step.get("run") or "")
+    ]
+    assert data_runs == [f"python -m pytest {suite} -m data_gate -q"]
+    assert _job_pip_packages(data_job) == _job_pip_packages(code_job)
+    assert set(code_job["paths"]) == set(data_job["paths"]), (
+        "the data sibling declares the parent's closure; widen both together"
+    )
+
+    # The marker is real: exactly the scanners that read the committed pages
+    # carry it. A new committed-site scanner is added to this set, never to
+    # the code gate.
+    source = (ROOT / suite).read_text(encoding="utf-8")
+    marked = re.findall(
+        r"@pytest\.mark\.data_gate\s*\n(?:@pytest\.mark\.[^\n]*\n)*def (test_\w+)\(",
+        source,
+    )
+    assert sorted(marked) == sorted({
+        "test_committed_payloads_have_zero_plain_fallbacks",
+        "test_committed_rates_page_keeps_relocated_needles_inside_details",
+        "test_user_facing_numbers_have_no_machine_floats",
+        "test_zh_l_zh_spans_are_translated",
+        "test_locale_spans_have_no_machine_text",
+        "test_rendered_pages_use_ratified_null_vocabulary",
+    }), marked
+
+    jobs, _ = real_manifest_scopes
+    code_jobs = {job.job_id for job in jobs if job.gate == "code"}
+    assert "market-os-macro-suite-pages" in code_jobs
+    assert "market-os-macro-suite-pages-data" not in code_jobs
+
+
 def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """BC-2 ran only on the data gate, so nothing graded a claim before merge.
 
@@ -4728,6 +4791,11 @@ CURATED_EXCLUSIVE = {
     # hook guard moved to tests/test_render_builder_ownership.py so this
     # job's closure stays the page family rather than the whole site builder.
     "market-os-macro-suite-pages",
+    # 2026-11-05 (S1, Mastermind #917 cp13): the `gate: data` sibling that runs
+    # the copy-law scanners over the NIGHTLY-RENDERED suite pages (marked
+    # `data_gate`), so a nightly commit can never red the source merge gate.
+    # Exclusive with the parent's declaration; never selected on the code gate.
+    "market-os-macro-suite-pages-data",
     # 2026-09-05 (P0B current-head repair): the first-frame suite executes its
     # frozen Jinja/browser recipes through subprocess boundaries. Inference
     # therefore conservatively added scripts/**, site/**, and templates/**,

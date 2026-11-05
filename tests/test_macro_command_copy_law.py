@@ -656,6 +656,7 @@ FIVE_COMMAND_PAGES = (
 )
 
 
+@pytest.mark.data_gate
 def test_committed_payloads_have_zero_plain_fallbacks() -> None:
     """MA4: count BOTH fallback sentences against committed site/*.html."""
     from lib.macro_suite_labels import PLAIN_FALLBACK
@@ -938,6 +939,7 @@ def test_capture_relocated_needles_are_locale_visible_and_must_be_inside() -> No
         assert needle not in guard.reading_path_text(html)
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_committed_rates_page_keeps_relocated_needles_inside_details() -> None:
     """Companion site guard: the rebaked rates page keeps the same law.
@@ -1797,6 +1799,7 @@ def test_synthetic_partial_binds_from_dom() -> None:
         playwright_cm.stop()
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_user_facing_numbers_have_no_machine_floats() -> None:
     """E-m3: rendered suite HTML never ships ≥4 fractional digits or e±."""
@@ -1823,6 +1826,7 @@ def test_user_facing_numbers_have_no_machine_floats() -> None:
         assert guard.find_violations(html) == [], name
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_zh_l_zh_spans_are_translated() -> None:
     """M1: every .l-zh on the Macro Command hub (macro_monetary.html) + the 14 suite pages is not ASCII-letters-only."""
@@ -1867,6 +1871,7 @@ def test_zh_l_zh_spans_are_translated() -> None:
     assert ascii_hits == [], ascii_hits
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_locale_spans_have_no_machine_text() -> None:
     """E-m1: every visible text node on the Macro Command hub + 14 suite pages is plain."""
@@ -1939,6 +1944,7 @@ def test_computation_refused_uses_e2_vocabulary() -> None:
     assert "拒绝计算" not in NULL_REASON["COMPUTATION_REFUSED"]["zh"]
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_rendered_pages_use_ratified_null_vocabulary() -> None:
     """E-m2: no refused/refusal phrase on the Macro Command hub + 14 suite pages."""
