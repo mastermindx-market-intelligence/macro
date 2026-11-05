@@ -338,9 +338,9 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-04T08:22:57Z",
+    "built_at": "2026-11-04T12:04:19Z",
     "calculation_as_of": "2026-09-01",
-    "code_version": "7212673d1d3bafe34d42324236817a03d14214f5",
+    "code_version": "f3339f8144cf6b46f43e9393b7ecda9679ced746",
     "content_sha256": "faffca0bea5e2f6010d72d9801ac6c61570c22bcbaaff00c9cae63dd4685f652",
     "generation_id": "trade_flows-US-faffca0bea5e2f60",
     "producer": "engine.market_os.macro_workspaces.trade_flows",

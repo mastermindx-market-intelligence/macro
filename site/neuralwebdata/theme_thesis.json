@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
   "as_of": "2026-11-04",
-  "generated_at": "2026-11-04T12:02:01Z",
+  "generated_at": "2026-11-04T15:32:07Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -254,8 +254,8 @@
       "schema": "neuralweb.theme_thesis.v1",
       "as_of": "2026-11-04",
       "thesis_id": "semicap_equipment.v1",
-      "content_hash": "sha256:afc1c17467d80a7f403745453066c729a93427d61866c31d403b772de71d157c",
-      "prev_content_hash": "sha256:d7e0ca491e7d21b8b90e177199f1bea810f83d483ad66a6335ecaef5ff3c7de9",
+      "content_hash": "sha256:aff8f7d463a74d619b6160dd867a95938a24cc73a28b7afb9481cb360bcf34f8",
+      "prev_content_hash": "sha256:afc1c17467d80a7f403745453066c729a93427d61866c31d403b772de71d157c",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -310,7 +310,7 @@
           "rule_en": "If revision_breadth for semicap_equipment turns negative, foundry capex guidance is being cut and WFE order book is deteriorating.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.8"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.75"
         },
         {
           "id": "wfe_f2",
@@ -503,10 +503,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-03",
+      "as_of": "2026-11-04",
       "thesis_id": "robotics_automation.v1",
-      "content_hash": "sha256:3197b6d5ab19bcf54402788d1a5db1576122c1745b8a932ba6cb574a7f91433b",
-      "prev_content_hash": "sha256:2f4aef8fbad6692f8642986c29a8a3023df75416017fd510f60f0085d9bb8139",
+      "content_hash": "sha256:7d06a86f2c2c1a24efc0af8b507cac5617c36b05216cff859d6f304757137f0b",
+      "prev_content_hash": "sha256:3197b6d5ab19bcf54402788d1a5db1576122c1745b8a932ba6cb574a7f91433b",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -572,7 +572,7 @@
           "rule_en": "If reshoring basket score falls below 30 or moves to 'avoid' label, the industrial-capex driver underpinning automation demand is weakening.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=45.0"
+          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=46.0"
         },
         {
           "id": "robo_f3",
@@ -1573,7 +1573,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-11-04T12:02:01Z",
-  "inputs_hash": "sha256:0ec3546083826c3750099bd71434c962313bab136fae9115b450c3a49fd2fb12",
+  "produced_at": "2026-11-04T15:32:07Z",
+  "inputs_hash": "sha256:722ab0af456f02d2d7d6a37b0291c87911ee70a9b662bfbcfe4d37e35e31d969",
   "tier": "display"
 }

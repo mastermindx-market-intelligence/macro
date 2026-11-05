@@ -376,9 +376,9 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-04T08:22:57Z",
+    "built_at": "2026-11-04T12:04:19Z",
     "calculation_as_of": "2026-11-02",
-    "code_version": "7212673d1d3bafe34d42324236817a03d14214f5",
+    "code_version": "f3339f8144cf6b46f43e9393b7ecda9679ced746",
     "content_sha256": "742bbc1afbd647586ed31915c5eedd0df8477d840dab43e8be7bf46a2a903971",
     "generation_id": "national_debt_liabilities-US-742bbc1afbd64758",
     "producer": "engine.market_os.macro_workspaces.national_debt",

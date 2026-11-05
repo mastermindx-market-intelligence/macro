@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TTC-BULL-20260731",
-  "asof": "2026-11-03",
+  "asof": "2026-11-04",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 42.5,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 34.1,
+    "progress": 29.6,
     "pace": 0.0,
-    "retention": 100.0,
-    "overlay": 59.0
+    "retention": 82.8,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.597,
-    "dist_to_t1_r": 0.903,
-    "dist_to_t2_r": 2.403,
-    "horizon_pct_used": 195.6,
-    "p1": 0.3978,
-    "p2": 0.1989,
+    "dist_to_stop_r": 1.494,
+    "dist_to_t1_r": 1.006,
+    "dist_to_t2_r": 2.506,
+    "horizon_pct_used": 197.8,
+    "p1": 0.3294,
+    "p2": 0.1647,
     "p3": null,
-    "move_r": 0.597,
+    "move_r": 0.494,
     "mfe_r": 0.597,
     "mae_r": -0.483
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-10-21",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 88,
-  "tau": 1.9556,
+  "days_elapsed": 89,
+  "tau": 1.9778,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

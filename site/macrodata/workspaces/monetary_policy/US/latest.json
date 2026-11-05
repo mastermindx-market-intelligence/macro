@@ -318,9 +318,9 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-04T08:22:57Z",
+    "built_at": "2026-11-04T12:04:19Z",
     "calculation_as_of": "2026-11-02",
-    "code_version": "7212673d1d3bafe34d42324236817a03d14214f5",
+    "code_version": "f3339f8144cf6b46f43e9393b7ecda9679ced746",
     "content_sha256": "f78aac78955217616298dba498c86ec2485d46944ce4a7f6bb2d4f7354b3732a",
     "generation_id": "monetary_policy-US-f78aac7895521761",
     "producer": "engine.market_os.macro_workspaces.monetary_policy",

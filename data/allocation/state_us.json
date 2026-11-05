@@ -11,7 +11,6 @@
     "mag7",
     "managed_care",
     "non_ai_tech",
-    "obesity_glp1",
     "regional_banks",
     "reshoring",
     "retail",
@@ -29,8 +28,8 @@
   ],
   "held": [
     "energy_complex",
-    "big_pharma",
     "us_sector_energy",
+    "big_pharma",
     "defensives"
   ],
   "leader": "memory_storage",

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PECO-BULL-20260717",
-  "asof": "2026-11-03",
+  "asof": "2026-11-04",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 39.5,
@@ -10,21 +10,21 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 91.6,
+    "validity": 98.4,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.937,
+    "dist_to_stop_r": 0.988,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 157.8,
-    "p1": -0.0421,
-    "p2": -0.021,
+    "horizon_pct_used": 160.0,
+    "p1": -0.0081,
+    "p2": -0.004,
     "p3": null,
-    "move_r": -0.063,
+    "move_r": -0.012,
     "mfe_r": 0.068,
     "mae_r": -0.723
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-24",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 71,
-  "tau": 1.5778,
+  "days_elapsed": 72,
+  "tau": 1.6,
   "closed": true,
   "outcome": "EXPIRED"
 }
