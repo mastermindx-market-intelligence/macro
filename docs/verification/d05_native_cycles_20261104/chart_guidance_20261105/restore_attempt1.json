@@ -1,0 +1,122 @@
+{
+  "schema": "d05.chart_guidance_restore_browser.v1",
+  "fixture_only": true,
+  "candidate_renderer_sha256": "4f719b75d47c8b5e407942e847e6adb1d146e21d8c010dd227e74bb83f709a7e",
+  "cases": [
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_geometry": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+      "receipt": {
+        "status": "applied",
+        "id": null,
+        "asOf": "2026-11-02",
+        "series": "ready",
+        "publication": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+          "asOf": "2026-11-02",
+          "region": "us",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "us_sectors_11",
+            "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "verified",
+            "dna": "verified"
+          },
+          "sources": {
+            "dna": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            },
+            "narr": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            }
+          }
+        },
+        "restoration": "restored",
+        "family": "sectors",
+        "leg": "closed"
+      },
+      "restored_geometry": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+      "screenshot": {
+        "file": "1440-dark-en-restored.png",
+        "sha256": "7b9ba32cdac5ff62674c5f51dbcf18bfb2681ed001fd07550dbd7dd7c983143c"
+      },
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "zh",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_geometry": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+      "receipt": {
+        "status": "applied",
+        "id": null,
+        "asOf": "2026-11-02",
+        "series": "ready",
+        "publication": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+          "asOf": "2026-11-02",
+          "region": "us",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "us_sectors_11",
+            "sha256": "3aea35789d0b118e32e02e9d8b1f5e9db37eb2fc5200bae5b2f16b3c1660ab4b"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "verified",
+            "dna": "verified"
+          },
+          "sources": {
+            "dna": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            },
+            "narr": {
+              "reason": "fixture_only",
+              "records": 56,
+              "status": "available"
+            }
+          }
+        },
+        "restoration": "restored",
+        "family": "sectors",
+        "leg": "closed"
+      },
+      "restored_geometry": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+      "screenshot": {
+        "file": "390-light-zh-restored.png",
+        "sha256": "3ada56fe13131ce258c6c4ce51b9663187f2ffb989fb0c17232bb4b4b6da2f72"
+      },
+      "passed": false,
+      "error": "",
+      "traceback": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-r3-chart-accessibility-20261105/.pytest_cache/d05-chart-guidance-20261105/verify_restore.py\", line 49, in <module>\n    assert page.evaluate('SectorCyclesCapture().scale')=='log'\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+    }
+  ],
+  "passed": false
+}

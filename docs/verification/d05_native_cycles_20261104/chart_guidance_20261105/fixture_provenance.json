@@ -1,0 +1,265 @@
+{
+  "members_source_id": "members1-a902854d9996efbe41fe79dcce3183e9b196500fdfbb7621ae341c35780f3b8e",
+  "member_input_sha256": "fe4e7281f4da9e503575a2209328a2f1fa40e55e5351c00371bf5e755707c259",
+  "candidate_overlay": {
+    "templates/sector_cycles.js": "4f719b75d47c8b5e407942e847e6adb1d146e21d8c010dd227e74bb83f709a7e"
+  },
+  "fixture_only": true,
+  "scenario": "coherent",
+  "source_ref": "c53915f6d67078d5c0aeaf73bf85ddea1a23de03",
+  "runtime_ref": "eb807572d1c1d0645801e3bc060e1507dd374111",
+  "runtime_assets": {
+    "subsector_rotation.js": {
+      "source": "working-tree:templates/subsector_rotation.js",
+      "sha256": "454792b8248ce2daedaf0788939082c45aae396268803dcbc5c087b36312fd00"
+    },
+    "sector_cycles_series_data.js": {
+      "source": "c53915f6d67078d5c0aeaf73bf85ddea1a23de03:site/sector_cycles_series_data.js",
+      "sha256": "95db0e25e0a3173c7b486d360ccdd378c1d42cd45e3747692402d6a646674eed"
+    },
+    "sector_cycles.css": {
+      "source": "working-tree:templates/sector_cycles.css",
+      "sha256": "e255e69f2a695aca594f6cbeb3f2464cd9c8bf356050b38239f94465f95ab886"
+    },
+    "rotation_glance.css": {
+      "source": "working-tree:templates/rotation_glance.css",
+      "sha256": "ed17c4ba8a85a1a356a0129ad3fc50b160abd44f3305af5dcaad2317813e81ec"
+    },
+    "theme.css": {
+      "source": "working-tree:templates/theme.css",
+      "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+    },
+    "fonts/Inter-700.woff2": {
+      "source": "working-tree:templates/fonts/Inter-700.woff2",
+      "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+    },
+    "cycle.css": {
+      "source": "eb807572d1c1d0645801e3bc060e1507dd374111:site/cycle.css",
+      "sha256": "231bf145f094e64b082aad1a4f55ea36dc2d0cfc54493763d7dfdec65e8b6d5c"
+    },
+    "sector_cycles_narr_data.js": {
+      "source": "c53915f6d67078d5c0aeaf73bf85ddea1a23de03:site/sector_cycles_narr_data.js",
+      "sha256": "52f01e108bcb54de537fbd0e712b1ceb086690214e91a3b7886097be95afe75f"
+    },
+    "favicon.svg": {
+      "source": "working-tree:templates/favicon.svg",
+      "sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9"
+    },
+    "sector_cycles.js": {
+      "source": "candidate-overlay:templates/sector_cycles.js",
+      "sha256": "4f719b75d47c8b5e407942e847e6adb1d146e21d8c010dd227e74bb83f709a7e"
+    },
+    "sector_dossier_cycle.js": {
+      "source": "working-tree:templates/sector_dossier_cycle.js",
+      "sha256": "85673d809ec0cbd207aa3ddc14a3bf066ccdf39cbf7ad8a808b51beb28331208"
+    },
+    "time_machine.js": {
+      "source": "working-tree:templates/time_machine.js",
+      "sha256": "0c71b0e3e2a005fed78aed1d175849f8f1b16685ade285e308d517b3fffde804"
+    },
+    "live_config.js": {
+      "source": "eb807572d1c1d0645801e3bc060e1507dd374111:site/live_config.js",
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+    },
+    "sector_dossier_cycle.css": {
+      "source": "working-tree:templates/sector_dossier_cycle.css",
+      "sha256": "41cc2ceb9cf9ae03eb9d9f16c9c864fa4d5c379564c537ec8795c523686fdd8c"
+    },
+    "fonts/Inter-900.woff2": {
+      "source": "working-tree:templates/fonts/Inter-900.woff2",
+      "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e"
+    },
+    "shared_shell.css": {
+      "source": "working-tree:templates/shared_shell.css",
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+    },
+    "terminal_overlay.js": {
+      "source": "working-tree:templates/terminal_overlay.js",
+      "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+    },
+    "stock-logos.js": {
+      "source": "working-tree:templates/stock-logos.js",
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+    },
+    "fonts/Inter-400.woff2": {
+      "source": "working-tree:templates/fonts/Inter-400.woff2",
+      "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+    },
+    "macro-desk.css": {
+      "source": "working-tree:templates/macro-desk.css",
+      "sha256": "0a154674f36450059813acd831a1d99db3a42914e7084c083ee49bc1288d4acf"
+    },
+    "rotation_events.js": {
+      "source": "working-tree:templates/rotation_events.js",
+      "sha256": "b1ddf67b07865465e72d2822fa6f5cc9efe0636e2cae58c9fa8f8b2bed372296"
+    },
+    "mm_charts.js": {
+      "source": "eb807572d1c1d0645801e3bc060e1507dd374111:site/mm_charts.js",
+      "sha256": "244eb76905e552fb17cb24f69600fcbd4fd15f6c28d70f98a96774007630d031"
+    },
+    "lightweight-charts.js": {
+      "source": "working-tree:templates/lightweight-charts.js",
+      "sha256": "46fc69534ec098f095bbcd1d9a26d693d39a8b9eeff7343536765b3dd28c2bdf"
+    },
+    "subsectors.js": {
+      "source": "working-tree:templates/subsectors.js",
+      "sha256": "86b177ed33fcc995266e184c075e52dffea804185213c94ebbe05420d336dda2"
+    },
+    "dashboard-icons.css": {
+      "source": "working-tree:templates/dashboard-icons.css",
+      "sha256": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9"
+    },
+    "sector_cycles_dna_data.js": {
+      "source": "c53915f6d67078d5c0aeaf73bf85ddea1a23de03:site/sector_cycles_dna_data.js",
+      "sha256": "46b0879d8cff5928f69e739ff13becf2276c08510866d8aed1645848dcf59137"
+    },
+    "heatmap.js": {
+      "source": "working-tree:templates/heatmap.js",
+      "sha256": "0b0c7ac0ab9535d0dc8353734387608d3700c3e0c195ca2241eddb0d1fdda6b5"
+    },
+    "fonts/Inter-500.woff2": {
+      "source": "working-tree:templates/fonts/Inter-500.woff2",
+      "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+    },
+    "navigation-refresh.css": {
+      "source": "working-tree:templates/navigation-refresh.css",
+      "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+    },
+    "live.js": {
+      "source": "working-tree:templates/live.js",
+      "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+    },
+    "account.js": {
+      "source": "working-tree:templates/account.js",
+      "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+    },
+    "theme.js": {
+      "source": "working-tree:templates/theme.js",
+      "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+    },
+    "shared_shell_bridge.js": {
+      "source": "working-tree:templates/shared_shell_bridge.js",
+      "sha256": "4bbbb1ce9cbbacfc27162ffad8259d542fb100a8662031ec18aa86076e2393df"
+    },
+    "product-nav-icons.css": {
+      "source": "working-tree:templates/product-nav-icons.css",
+      "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+    },
+    "supabase.js": {
+      "source": "working-tree:templates/supabase.js",
+      "sha256": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7"
+    },
+    "sector_cycles_data.js": {
+      "source": "c53915f6d67078d5c0aeaf73bf85ddea1a23de03:site/sector_cycles_data.js",
+      "sha256": "9341a06cb5b2f7e59e13043e7694bb1131c11701110f9d70484d8c5b64d7f5cc"
+    },
+    "desk_watch.js": {
+      "source": "working-tree:templates/desk_watch.js",
+      "sha256": "503d0e535ba9fa61af6bc721e526189b163ad2582789f0678edc2fdd5ba588db"
+    },
+    "logo_config.js": {
+      "source": "working-tree:templates/logo_config.js",
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+    },
+    "forming_narratives.js": {
+      "source": "working-tree:templates/forming_narratives.js",
+      "sha256": "df6bf5cc7929fc59597eb2e0d76d0bc581b79dd2335db92f34cd596b26b58687"
+    },
+    "sector_central_data.js": {
+      "source": "c53915f6d67078d5c0aeaf73bf85ddea1a23de03:site/sector_central_data.js",
+      "sha256": "be97a36bc6fd1913cc90d222c81855e6eed96b751e5ca7e32aab19e686ea7128"
+    },
+    "si_workspace.js": {
+      "source": "working-tree:templates/si_workspace.js",
+      "sha256": "6006106e41060fea898989fe636cc9fed31ea9b41e4fa3b3e87f493a49231b62"
+    },
+    "fonts/Inter-600.woff2": {
+      "source": "working-tree:templates/fonts/Inter-600.woff2",
+      "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+    },
+    "fonts/Inter-800.woff2": {
+      "source": "working-tree:templates/fonts/Inter-800.woff2",
+      "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+    },
+    "nav_market.js": {
+      "source": "working-tree:templates/nav_market.js",
+      "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+    }
+  },
+  "inputs": {
+    "sector_cycles_data.js": "9341a06cb5b2f7e59e13043e7694bb1131c11701110f9d70484d8c5b64d7f5cc",
+    "sector_cycles_series_data.js": "95db0e25e0a3173c7b486d360ccdd378c1d42cd45e3747692402d6a646674eed",
+    "sector_cycles_narr_data.js": "52f01e108bcb54de537fbd0e712b1ceb086690214e91a3b7886097be95afe75f",
+    "sector_cycles_dna_data.js": "46b0879d8cff5928f69e739ff13becf2276c08510866d8aed1645848dcf59137",
+    "sector_central_data.js": "be97a36bc6fd1913cc90d222c81855e6eed96b751e5ca7e32aab19e686ea7128"
+  },
+  "dynamic_runtime_dependencies": {
+    "theme.js": [
+      "account.js",
+      "terminal_overlay.js"
+    ],
+    "account.js": [
+      "nav_market.js"
+    ]
+  },
+  "emitted_assets": {
+    ".d05-fixtures/members-canada.html": "6b3a782e48acfad9c6ac0359d1a33435734854dcdc4a4339bb038a26360739d9",
+    ".d05-fixtures/members-china.html": "7665acce5528db0c142eb367b885bcafb4db0e157493458cb95b4122d7699979",
+    ".d05-fixtures/members-duplicate.html": "98942f240655aca7e567f4651a962784741abd509f904b856f849e77c9c8df28",
+    ".d05-fixtures/members-empty.html": "42c9853e8d7fe5b8ace6a30cf1f8062b69c2706c0073241ae20c1eead8adf943",
+    ".d05-fixtures/members-hk.html": "5797a0d17c383fd7dfa9511d23e708d53ef061f5f284d834e0d62476dc43a851",
+    ".d05-fixtures/members-unavailable.html": "457ee545eb474c8ea27101399501ef4dbed01dc25b34b0bef0339333a03e0264",
+    "account.js": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+    "basket/us_sector_energy.html": "2ea71246b1c416febacccee7121c210041e40901af8129fd0f142f3660b1d76d",
+    "basketdata/baskets.json": "7cc782dd98cc4e8e0bf2facf6c150064df5bad1bc9d349f582f701bb3ab19625",
+    "cycle.css": "231bf145f094e64b082aad1a4f55ea36dc2d0cfc54493763d7dfdec65e8b6d5c",
+    "dashboard-icons.css": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9",
+    "desk_watch.js": "503d0e535ba9fa61af6bc721e526189b163ad2582789f0678edc2fdd5ba588db",
+    "favicon.svg": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
+    "fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+    "fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+    "fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+    "fonts/Inter-900.woff2": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
+    "forming_narratives.js": "df6bf5cc7929fc59597eb2e0d76d0bc581b79dd2335db92f34cd596b26b58687",
+    "heatmap.js": "0b0c7ac0ab9535d0dc8353734387608d3700c3e0c195ca2241eddb0d1fdda6b5",
+    "lightweight-charts.js": "46fc69534ec098f095bbcd1d9a26d693d39a8b9eeff7343536765b3dd28c2bdf",
+    "live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+    "live_config.js": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+    "logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "macro-desk.css": "0a154674f36450059813acd831a1d99db3a42914e7084c083ee49bc1288d4acf",
+    "marketdata/rotation_events.json": "49aaba793b14710c0ed84ad97dddc4b78ca16d66250d316d32f8e57a50b6425a",
+    "marketdata/sector_fragmentation.json": "7977cbcb908149b18973348e3e33a784e3cf4207a76c8094ed62a641fc141a0e",
+    "member_variants.json": "f58955e6166957d8d97929731b17740517352a5b8369b5795660333e20d4aa0c",
+    "mm_charts.js": "244eb76905e552fb17cb24f69600fcbd4fd15f6c28d70f98a96774007630d031",
+    "nav_market.js": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587",
+    "navigation-refresh.css": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+    "product-nav-icons.css": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+    "rotation_events.js": "b1ddf67b07865465e72d2822fa6f5cc9efe0636e2cae58c9fa8f8b2bed372296",
+    "rotation_glance.css": "ed17c4ba8a85a1a356a0129ad3fc50b160abd44f3305af5dcaad2317813e81ec",
+    "sector_central.html": "84b5ee195ffaa7c393246f26c5dd0e5ab1f729a18a3caaf46f94bd794dd45a9d",
+    "sector_central_data.js": "6b8b17c7d9f8e7d13abcf11099b79186bb5f89511a72f19425e0ac613bb1e32c",
+    "sector_cycles.css": "e255e69f2a695aca594f6cbeb3f2464cd9c8bf356050b38239f94465f95ab886",
+    "sector_cycles.html": "87dcab829260602639e2ea062f5ee73aab63e9a35ca369176c14423dfc0d1f78",
+    "sector_cycles.js": "4f719b75d47c8b5e407942e847e6adb1d146e21d8c010dd227e74bb83f709a7e",
+    "sector_cycles_data.js": "00a105f7f4cff3645b38790f77ef8a14c1f85aab976a2a392a9d365c20aca5ba",
+    "sector_cycles_dna_data.js": "e9aeea3cebbb1de2b4c51cf813a0ad96588b48700e3a05e9d51a3c1199d4fb26",
+    "sector_cycles_narr_data.js": "10399eac6f6e8d0a43df77af08791acec1850e84c6d2dbe87f2e68b5a8706275",
+    "sector_cycles_series_data.js": "1b9b2ef28bce4fb6c608b34c1c5a6e21b207d470cda390da88022dc7ada96cc3",
+    "sector_dossier_cycle.css": "41cc2ceb9cf9ae03eb9d9f16c9c864fa4d5c379564c537ec8795c523686fdd8c",
+    "sector_dossier_cycle.js": "85673d809ec0cbd207aa3ddc14a3bf066ccdf39cbf7ad8a808b51beb28331208",
+    "shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "shared_shell_bridge.js": "4bbbb1ce9cbbacfc27162ffad8259d542fb100a8662031ec18aa86076e2393df",
+    "si_workspace.js": "6006106e41060fea898989fe636cc9fed31ea9b41e4fa3b3e87f493a49231b62",
+    "stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "subsector_rotation.js": "454792b8248ce2daedaf0788939082c45aae396268803dcbc5c087b36312fd00",
+    "subsectors.js": "86b177ed33fcc995266e184c075e52dffea804185213c94ebbe05420d336dda2",
+    "supabase.js": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7",
+    "terminal_overlay.js": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf",
+    "theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "time_machine.js": "0c71b0e3e2a005fed78aed1d175849f8f1b16685ade285e308d517b3fffde804"
+  },
+  "intentional_missing_assets": []
+}

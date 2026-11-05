@@ -807,7 +807,7 @@
   // (no dead greyed row that reads as the user's first broken tap, esp. on mobile).
   // aria-pressed keeps the segmented buttons announced to assistive tech.
   function syncHeroControls() {
-    var modes = document.getElementById("sc-modes"), scale = document.getElementById("sc-scale");
+    clearFirstHint(); var modes = document.getElementById("sc-modes"), scale = document.getElementById("sc-scale");
     if (modes) modes.querySelectorAll(".sc-mbtn").forEach(function (b) {
       var on = b.getAttribute("data-mode") === state.mode;
       b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false");
@@ -2358,8 +2358,8 @@
     var wrap = document.querySelector(".sc-chartwrap"); if (!wrap) return;
     firstHintDone = true;
     var n = el("div", "sc-chart-hint sc-hint-tap"); n.id = "sc-firsthint";
-    n.innerHTML = L("High = stretched · low = washed-out — tap any line, chip or card for its story",
-                    "高 = 拉伸 · 低 = 超卖 — 点按任意曲线、标签或卡片查看其走势");
+    n.textContent = state.mode === "price" ? L("Rebased prices — tap any line, chip or card for its story", "再基准化价格 — 点按任意曲线、标签或卡片查看其走势")
+                    : L("High = stretched · low = washed-out — tap any line, chip or card for its story", "高 = 拉伸 · 低 = 超卖 — 点按任意曲线、标签或卡片查看其走势");
     wrap.appendChild(n);
     firstHintTimer = setTimeout(clearFirstHint, 11000);
   }

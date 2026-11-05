@@ -1,0 +1,394 @@
+{
+  "schema": "d05.chart_guidance_browser.v1",
+  "integration_parent": "e09f7c4667a5dfbf0b209ad826b4692c15c3ca10",
+  "candidate_renderer_sha256": "4f719b75d47c8b5e407942e847e6adb1d146e21d8c010dd227e74bb83f709a7e",
+  "fixture_only": true,
+  "fixture_provenance_sha256": "3191c6f69d3ebd956eba25ab93f9946e53b0f39531ae0910b4b819ebc7b35e21",
+  "cases": [
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "initial_mode": "osc",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "High = stretched · low = washed-out — tap any line, chip or card for its story",
+      "screenshot": {
+        "file": "1440-dark-en-osc.png",
+        "sha256": "4b4854555cf73e5536eb5106172cc8f1f73d5fe6fa61fbc4505b7f59c69fdd02"
+      },
+      "geometry": {
+        "initial": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+        "other": "2a12255fafba3f75c2e7388f8644431bdc1acdfde7ef0b56ed6edf8f28710fbf",
+        "returned": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda"
+      },
+      "reload_hint": "High = stretched · low = washed-out — tap any line, chip or card for its story",
+      "reload_geometry": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+      "passed": true
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "initial_mode": "price",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "Rebased prices — tap any line, chip or card for its story",
+      "screenshot": {
+        "file": "1440-dark-en-price.png",
+        "sha256": "9fe300c07310cb02aff980dfdf89734497b7965cf1306e8fe16e67fc8d44d727"
+      },
+      "geometry": {
+        "initial": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+        "other": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+        "returned": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec"
+      },
+      "reload_hint": "Rebased prices — tap any line, chip or card for its story",
+      "reload_geometry": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+      "passed": true
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "zh",
+      "initial_mode": "osc",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "高 = 拉伸 · 低 = 超卖 — 点按任意曲线、标签或卡片查看其走势",
+      "screenshot": {
+        "file": "1440-dark-zh-osc.png",
+        "sha256": "85aaabe3175068b6ca94fd5368be686a5c9d7c1f65721bc23e7e1c028b1d7d5d"
+      },
+      "geometry": {
+        "initial": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+        "other": "2a12255fafba3f75c2e7388f8644431bdc1acdfde7ef0b56ed6edf8f28710fbf",
+        "returned": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda"
+      },
+      "reload_hint": "高 = 拉伸 · 低 = 超卖 — 点按任意曲线、标签或卡片查看其走势",
+      "reload_geometry": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+      "passed": true
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "zh",
+      "initial_mode": "price",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "再基准化价格 — 点按任意曲线、标签或卡片查看其走势",
+      "screenshot": {
+        "file": "1440-dark-zh-price.png",
+        "sha256": "91544569a534997f9e161e0cee8cde6458c500df71009f8b2c954253eaabd992"
+      },
+      "geometry": {
+        "initial": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+        "other": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+        "returned": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec"
+      },
+      "reload_hint": "再基准化价格 — 点按任意曲线、标签或卡片查看其走势",
+      "reload_geometry": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+      "passed": true
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "lang": "en",
+      "initial_mode": "osc",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "High = stretched · low = washed-out — tap any line, chip or card for its story",
+      "screenshot": {
+        "file": "1440-light-en-osc.png",
+        "sha256": "c5cac6dbcd474c5200f39fb3cd53fdaa8f25179ab010781ce2ae5af40edef287"
+      },
+      "geometry": {
+        "initial": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+        "other": "2a12255fafba3f75c2e7388f8644431bdc1acdfde7ef0b56ed6edf8f28710fbf",
+        "returned": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda"
+      },
+      "reload_hint": "High = stretched · low = washed-out — tap any line, chip or card for its story",
+      "reload_geometry": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+      "passed": true
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "lang": "en",
+      "initial_mode": "price",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "Rebased prices — tap any line, chip or card for its story",
+      "screenshot": {
+        "file": "1440-light-en-price.png",
+        "sha256": "2d7fe31006135e9e33ac979c0f5a4be5627efa685fa43e4ca7668e9785002ab5"
+      },
+      "geometry": {
+        "initial": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+        "other": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+        "returned": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec"
+      },
+      "reload_hint": "Rebased prices — tap any line, chip or card for its story",
+      "reload_geometry": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+      "passed": true
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "lang": "zh",
+      "initial_mode": "osc",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "高 = 拉伸 · 低 = 超卖 — 点按任意曲线、标签或卡片查看其走势",
+      "screenshot": {
+        "file": "1440-light-zh-osc.png",
+        "sha256": "bf0706519522d4e8ac1c79df54240e77a9f8490c8b01e37896d382ba2261a250"
+      },
+      "geometry": {
+        "initial": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+        "other": "2a12255fafba3f75c2e7388f8644431bdc1acdfde7ef0b56ed6edf8f28710fbf",
+        "returned": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda"
+      },
+      "reload_hint": "高 = 拉伸 · 低 = 超卖 — 点按任意曲线、标签或卡片查看其走势",
+      "reload_geometry": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+      "passed": true
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "lang": "zh",
+      "initial_mode": "price",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "再基准化价格 — 点按任意曲线、标签或卡片查看其走势",
+      "screenshot": {
+        "file": "1440-light-zh-price.png",
+        "sha256": "771c66130384e4f13b0c5be1773f40f2031f183621797d6235fd5bcca76aa315"
+      },
+      "geometry": {
+        "initial": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+        "other": "3a42c0f36cf4baf1fea4c0edcd9a09972f5601cf42cf4fc0c0a753a37807ebda",
+        "returned": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec"
+      },
+      "reload_hint": "再基准化价格 — 点按任意曲线、标签或卡片查看其走势",
+      "reload_geometry": "7a1013fcc72b1c21c3a88db54bdd2c84cc57c6ccd2801cf15f2c6ef468fd0eec",
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "initial_mode": "osc",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "High = stretched · low = washed-out — tap any line, chip or card for its story",
+      "screenshot": {
+        "file": "390-dark-en-osc.png",
+        "sha256": "37a894d2c1e943ef2455dfc2dc93c90bf8be01879b2a41968f06fd10ef907fb6"
+      },
+      "geometry": {
+        "initial": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+        "other": "dcabd1e133622680a8f924586a57405d1a0c768eeb14040dc3edfb3ae4b50872",
+        "returned": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2"
+      },
+      "reload_hint": "High = stretched · low = washed-out — tap any line, chip or card for its story",
+      "reload_geometry": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "initial_mode": "price",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "Rebased prices — tap any line, chip or card for its story",
+      "screenshot": {
+        "file": "390-dark-en-price.png",
+        "sha256": "a2bd616032a820df903a4b8249c13a74b8996dbe8a7b3630ce1e830597fc2115"
+      },
+      "geometry": {
+        "initial": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+        "other": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+        "returned": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3"
+      },
+      "reload_hint": "Rebased prices — tap any line, chip or card for its story",
+      "reload_geometry": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "lang": "zh",
+      "initial_mode": "osc",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "高 = 拉伸 · 低 = 超卖 — 点按任意曲线、标签或卡片查看其走势",
+      "screenshot": {
+        "file": "390-dark-zh-osc.png",
+        "sha256": "4f5cc845f689fcf907d0821f9926ea27fb72aa4ea71d932ba6d429ce0a34544d"
+      },
+      "geometry": {
+        "initial": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+        "other": "dcabd1e133622680a8f924586a57405d1a0c768eeb14040dc3edfb3ae4b50872",
+        "returned": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2"
+      },
+      "reload_hint": "高 = 拉伸 · 低 = 超卖 — 点按任意曲线、标签或卡片查看其走势",
+      "reload_geometry": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "lang": "zh",
+      "initial_mode": "price",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "再基准化价格 — 点按任意曲线、标签或卡片查看其走势",
+      "screenshot": {
+        "file": "390-dark-zh-price.png",
+        "sha256": "8c47d1375c3d94a0deef7bb0128a0ed1154a1426fc19849d062cc8d2d9dc4bd8"
+      },
+      "geometry": {
+        "initial": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+        "other": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+        "returned": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3"
+      },
+      "reload_hint": "再基准化价格 — 点按任意曲线、标签或卡片查看其走势",
+      "reload_geometry": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "en",
+      "initial_mode": "osc",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "High = stretched · low = washed-out — tap any line, chip or card for its story",
+      "screenshot": {
+        "file": "390-light-en-osc.png",
+        "sha256": "19dbfe58daa283fb50b1ba1b58fd9bdb067d244a6ba9852719480b768db68eac"
+      },
+      "geometry": {
+        "initial": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+        "other": "dcabd1e133622680a8f924586a57405d1a0c768eeb14040dc3edfb3ae4b50872",
+        "returned": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2"
+      },
+      "reload_hint": "High = stretched · low = washed-out — tap any line, chip or card for its story",
+      "reload_geometry": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "en",
+      "initial_mode": "price",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "Rebased prices — tap any line, chip or card for its story",
+      "screenshot": {
+        "file": "390-light-en-price.png",
+        "sha256": "042788d9984d0e7497bf3e6620f2794acbf793a6219a4cc73418b8f13ade214d"
+      },
+      "geometry": {
+        "initial": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+        "other": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+        "returned": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3"
+      },
+      "reload_hint": "Rebased prices — tap any line, chip or card for its story",
+      "reload_geometry": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "zh",
+      "initial_mode": "osc",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "高 = 拉伸 · 低 = 超卖 — 点按任意曲线、标签或卡片查看其走势",
+      "screenshot": {
+        "file": "390-light-zh-osc.png",
+        "sha256": "3c4bcfb02a74e53522fcec90fbf41be8ffbef99ff7b8d3a5fc810f75fa45e56e"
+      },
+      "geometry": {
+        "initial": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+        "other": "dcabd1e133622680a8f924586a57405d1a0c768eeb14040dc3edfb3ae4b50872",
+        "returned": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2"
+      },
+      "reload_hint": "高 = 拉伸 · 低 = 超卖 — 点按任意曲线、标签或卡片查看其走势",
+      "reload_geometry": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "zh",
+      "initial_mode": "price",
+      "page_errors": [],
+      "missing_assets": [],
+      "initial_hint": "再基准化价格 — 点按任意曲线、标签或卡片查看其走势",
+      "screenshot": {
+        "file": "390-light-zh-price.png",
+        "sha256": "1ef73396d12638d0b540531463927b785404c35d68138962edc8b5bb2b259b43"
+      },
+      "geometry": {
+        "initial": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+        "other": "0af30959a5a142cf86931b046fb028ffb4a6be6c8c3912b6d7b2eda06d4c5db2",
+        "returned": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3"
+      },
+      "reload_hint": "再基准化价格 — 点按任意曲线、标签或卡片查看其走势",
+      "reload_geometry": "5b60be5175b85d80fae8116e341b4b982912e50a5dd6a2326753420c4ce75de3",
+      "passed": true
+    }
+  ],
+  "passed": true
+}
