@@ -571,12 +571,13 @@ a.rvx-chip{color:var(--ink-link, var(--link))}
 .rvx-hocol .nm{font-size:16px;font-weight:750;margin:4px 0 2px;line-height:1.28;letter-spacing:-.012em}
 .rvx-hocol .meta{font-size:11.5px;color:var(--muted)}
 /* Name ink is neutral; the column labels carry the handoff. A fixed green name read
-   as "down" under 红涨绿跌. */
+   as "down" under 红涨绿跌. The arrow runs from neutral to the up ink, which flips
+   with the locale, so the head marks strength in both languages. */
 .rvx-hocol .nm{color:var(--text)}
 .rvx-hoarrow{flex:none;width:54px;display:grid;place-items:center}
 .rvx-hoarrow svg{width:54px;height:28px;overflow:visible}
 .rvx-hoarrow path.ln{stroke:url(#rvxHo);stroke-width:2;fill:none;stroke-linecap:round;stroke-dasharray:58;stroke-dashoffset:58;animation:rvxHoDraw 1.1s ease-out .5s forwards}
-.rvx-hoarrow path.hd{fill:var(--rvx-lead);opacity:0;animation:rvxHoHead .3s ease-out 1.5s forwards}
+.rvx-hoarrow path.hd{fill:var(--si-ink-up, var(--up));opacity:0;animation:rvxHoHead .3s ease-out 1.5s forwards}
 @keyframes rvxHoDraw{to{stroke-dashoffset:0}} @keyframes rvxHoHead{to{opacity:1}}
 @media (max-width:900px){ .rvx-hgrid{grid-template-columns:1fr;gap:16px} .rvx-vword{font-size:31px} .rvx-hero{padding:20px} }
 /* The reveal + draw-on animations are the page's only motion; honour the OS setting.
@@ -863,7 +864,7 @@ body { font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
             <div class="nm">{{ t(_tc_tl.name, _tc_tl.name_zh) }}</div>
             <div class="meta">{{ t('was #1', '原第一') }}</div>
           </div>
-          <div class="rvx-hoarrow"><svg viewBox="0 0 46 28" aria-hidden="true"><defs><linearGradient id="rvxHo" x1="0" x2="1"><stop offset="0" stop-color="var(--rvx-weak)"/><stop offset="1" stop-color="var(--rvx-lead)"/></linearGradient></defs><path class="ln" d="M3 14 H37"/><path class="hd" d="M33 8 L43 14 L33 20 Z"/></svg></div>
+          <div class="rvx-hoarrow"><svg viewBox="0 0 46 28" aria-hidden="true"><defs><linearGradient id="rvxHo" x1="0" x2="1"><stop offset="0" stop-color="var(--muted)"/><stop offset="1" stop-color="var(--si-ink-up, var(--up))"/></linearGradient></defs><path class="ln" d="M3 14 H37"/><path class="hd" d="M33 8 L43 14 L33 20 Z"/></svg></div>
           <div class="rvx-hocol in">
             <div class="lbl">{{ t('Taking the lead', '接过领先') }}</div>
             <div class="nm">{% if _tc_lead.strength %}{{ t(_tc_lead.strength[0].name, _tc_lead.strength[0].name_zh) }}{% if _tc_lead.strength|length > 1 %} · {{ t(_tc_lead.strength[1].name, _tc_lead.strength[1].name_zh) }}{% endif %}{% else %}—{% endif %}</div>
