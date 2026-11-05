@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CRH-BULL-20261016",
-  "asof": "2026-11-03",
+  "asof": "2026-11-04",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 74.1,
-  "raw_confidence": 78.1,
-  "delta_vs_base": 14.1,
+  "management_confidence": 74.4,
+  "raw_confidence": 74.7,
+  "delta_vs_base": 14.4,
   "recommended_action": "hold",
-  "human_state": "Advancing Cleanly",
+  "human_state": "On Track",
   "components": {
     "validity": 100.0,
-    "progress": 51.7,
+    "progress": 40.0,
     "pace": 100.0,
     "retention": 50.0,
-    "overlay": 56.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.04,
-    "dist_to_t1_r": 0.46,
-    "dist_to_t2_r": 1.96,
-    "horizon_pct_used": 26.7,
-    "p1": 0.6934,
-    "p2": 0.3467,
+    "dist_to_stop_r": 1.739,
+    "dist_to_t1_r": 0.761,
+    "dist_to_t2_r": 2.261,
+    "horizon_pct_used": 28.9,
+    "p1": 0.4925,
+    "p2": 0.2463,
     "p3": null,
-    "move_r": 1.04,
+    "move_r": 0.739,
     "mfe_r": 1.04,
     "mae_r": -0.171
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-30",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 12,
-  "tau": 0.2667
+  "days_elapsed": 13,
+  "tau": 0.2889
 }
