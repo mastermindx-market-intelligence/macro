@@ -50425,6 +50425,8 @@ jobs:
       - "admin/long_hold.py"
       - "admin/macro_thesis.py"
       - "admin/marketing.py"
+      - "engine/marketing/seo_director.py"
+      - "engine/marketing/seo_search_console.py"
       - "admin/marketing_floor.py"
       - "admin/mastermind_logs.py"
       - "admin/mastermind_proxy.py"
@@ -51509,6 +51511,7 @@ jobs:
       - "templates/support.html.j2"
       - "templates/theme.css"
       - "tests/test_admin_intelligence_os.py"
+      - "tests/test_admin_seo.py"
       - "tests/test_intelligence_execution.py"
       - "admin/intelligence_execution.py"
       - "tests/test_admin_intelligence_os_ui.py"
@@ -51851,4 +51854,4 @@ jobs:
       - name: require Node for actual renderer contracts
         run: node --version
       - name: Intelligence OS API renderer source and finite measurement contracts
-        run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py -q
+        run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py tests/test_admin_seo.py -q

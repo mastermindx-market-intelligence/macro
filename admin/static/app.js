@@ -13611,12 +13611,25 @@ function seoSearchConsoleBlock(sc) {
   const coverage = s.rows_may_be_incomplete === true
     ? "Results may be incomplete. Missing URLs do not prove zero traffic."
     : "Complete URL coverage has not been verified.";
+  const observed = s.observations || {};
+  const measured = s.available === true && s.window && observed.available === true &&
+    Number.isSafeInteger(observed.rows_observed) && observed.rows_observed > 0 &&
+    [observed.clicks, observed.impressions].every(n => Number.isSafeInteger(n) && n >= 0);
+  const translated = (en, zh) => `<span data-admin-en="${esc(en)}" data-admin-zh="${esc(zh)}">${
+    esc(typeof document !== "undefined" && document.documentElement.dataset.lang === "zh" ? zh : en)}</span>`;
+  const observations = measured
+    ? `${translated("Observed clicks in retained window", "留存窗口内观测到的点击")}: ${observed.clicks} · ${
+      translated("Observed impressions", "观测到的展示")}: ${observed.impressions}`
+    : s.available === true && s.window && observed.available === true && observed.rows_observed === 0
+      ? translated("No retained observations in this window; traffic is unknown.", "此窗口没有留存观测；流量未知。")
+      : translated("Retained window observations unavailable; no zero inferred.", "留存窗口观测不可用；不能推断为零。");
   return head + `<div class="card mkt-seo-gsc">
     <div class="mkt-seo-gsc-row">
       <span class="statpill s-mut mkt-seo-gsc-chip">${esc(label)}</span>
       <span class="mkt-seo-gsc-txt">${esc(s.note || "Current connection has not been checked.")}</span>
     </div>
     ${details.map(([key, value]) => `<div class="sub muted mkt-seo-gsc-hint">${esc(key)}: ${esc(value)}</div>`).join("")}
+    <div class="sub muted mkt-seo-gsc-hint">${observations}</div>
     <div class="sub muted mkt-seo-gsc-hint">${esc(coverage)}</div>
   </div>`;
 }
