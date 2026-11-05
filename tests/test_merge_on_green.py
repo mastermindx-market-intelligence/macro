@@ -5297,6 +5297,18 @@ def _packs(status="in_progress", started=2, count=12, offset=0):
         (_first_wave(*[_census_job(f"ci-pack-{i}", "in_progress", created=216, labels=("ci-linux",)) for i in range(12)]), (0, 0, False)),
         # Self-hosted render jobs say nothing about the hosted pool.
         (_first_wave(_census_job("render", "queued", created=216, started=None, labels=("self-hosted", "macstudio"))), (0, 0, False)),
+        # MINOR-1 (round 3): the first wave is a set of JOBS, not a timestamp.
+        # `contract-delta` created one second after `ci-plan` (a second boundary)
+        # with no packs yet is still the first wave.
+        ((_census_job("ci-plan", "in_progress"), _census_job("contract-delta", "in_progress", created=1)), (0, 0, False)),
+        # A re-run of a failed `ci-plan` carries the old `contract-delta` and a
+        # new, much later `ci-plan`; still no pack exists.
+        ((_census_job("contract-delta", "completed"), _census_job("ci-plan", "in_progress", created=900)), (0, 0, False)),
+        # The pc route's trusted-ci gate jobs are hosted and later than ci-plan
+        # but the packs are still blocked behind them.
+        ((_census_job("ci-plan", "completed"), _census_job("trusted-ci / trust-gate", "in_progress", created=30), _census_job("trusted-ci / plan", "in_progress", created=30)), (0, 0, False)),
+        # `ci-gate` running after the packs is later-wave service.
+        (_first_wave(*_packs(status="completed"), _census_job("ci-gate", "in_progress", created=600)), (0, 0, True)),
         # An empty job list is no evidence either way.
         ((), (0, 0, False)),
     ],
@@ -5312,6 +5324,10 @@ def _packs(status="in_progress", started=2, count=12, offset=0):
         "slow-ci-plan-pickup",
         "runner-group-label-never-serves",
         "self-hosted-ignored",
+        "contract-delta-a-second-later-not-served",
+        "rerun-ci-plan-later-not-served",
+        "pc-route-trust-gate-not-served",
+        "ci-gate-after-packs-served",
         "empty",
     ),
 )
@@ -5327,8 +5343,22 @@ def test_run_job_evidence_requires_a_served_later_wave_and_no_refusal(jobs, expe
         [{"name": "ci-plan", "status": "completed", "labels": ["ubuntu-latest"]}],
         [{"name": "ci-plan", "status": None, "labels": ["ubuntu-latest"], "created_at": _at(0)}],
         [{"name": "ci-plan", "status": "completed", "labels": ["ubuntu-latest"], "created_at": "yesterday"}],
+        [{"status": "completed", "labels": ["ubuntu-latest"], "created_at": _at(0), "started_at": _at(2)}],
+        # NIT-2 (round 3): a running pack without `started_at` is unclean, not a
+        # fast pickup; so is a garbled one.
+        [*_first_wave(*_packs(count=11)), _census_job("ci-pack-11", "in_progress", created=216, started=None)],
+        [*_first_wave(*_packs(count=11)), {**_census_job("ci-pack-11", "in_progress", created=216), "started_at": "soon"}],
     ],
-    ids=("non-dict", "labels-not-a-list", "no-created-at", "status-not-a-string", "bad-timestamp"),
+    ids=(
+        "non-dict",
+        "labels-not-a-list",
+        "no-created-at",
+        "status-not-a-string",
+        "bad-timestamp",
+        "no-name",
+        "running-without-started-at",
+        "running-with-bad-started-at",
+    ),
 )
 def test_run_job_evidence_is_unreadable_on_any_unclean_job(jobs):
     assert MOG._run_job_evidence(jobs) is None
@@ -5399,6 +5429,8 @@ def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch
         ("jobs", (200, {"total_count": 101, "jobs": []})),
         ("jobs", (200, {"jobs": "nope"})),
         ("jobs", (200, {"total_count": 1, "jobs": ["not a job"]})),
+        # NIT-3 (round 3): a job list shorter than its own total is a short page.
+        ("jobs", (200, {"total_count": 16, "jobs": list(_first_wave(*_packs(count=2)))})),
     ):
         monkeypatch.setattr(MOG, "_request", failing(step, answer))
         assert REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now) is None, (

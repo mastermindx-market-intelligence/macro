@@ -426,17 +426,22 @@ ACTIVE_PR_PROOF_STATUSES = ("queued", "in_progress", "pending", "requested", "wa
 # ADAPTIVE_CENSUS_MATURITY_SECONDS old (the maturity filter only steers the sample
 # toward runs whose packs exist; it is never itself evidence) and widens only on
 # POSITIVE evidence that the pool is serving this repository's hosted jobs.  A run
-# is SERVED evidence only when a GitHub-hosted job created AFTER the run's first
-# wave (i.e. after the dynamic matrix resolved: a pack or a later job, never
-# `ci-plan`/`contract-delta` alone) is running, and nothing in the run shows
-# refusal.  REFUSAL evidence is any non-self-hosted job that is neither running
+# is SERVED evidence only when a GitHub-hosted LATER-WAVE job (a `ci-pack-*`
+# or `ci-gate` job, by name, created after the run's earliest job; the dynamic
+# matrix resolves only after `ci-plan` completes) is running, and nothing in
+# the run shows refusal.  First-wave jobs (`ci-plan`, `contract-delta`, a
+# re-run `ci-plan`, the pc-route `trusted-ci` gate jobs) never serve, whatever
+# their timestamps say.  REFUSAL evidence is any non-self-hosted job that is neither running
 # nor completed (queued, pending, waiting, requested; unlabelled jobs included)
 # and any job the pool took longer than ADAPTIVE_PICKUP_GRACE_SECONDS to start
 # (`started_at - created_at`, the pickup latency the job payload already carries;
-# the free pool observed 2-82 s).  Self-hosted jobs (the routinely saturated
-# macstudio render lane) are ignored by label; only labels with a GitHub-hosted
-# prefix count as served evidence, so a runner-group label can refuse but never
-# serve.  `READ_TOKEN` is repo-scoped, so other repositories' load on the shared
+# the free pool observed 2-82 s).  Jobs whose requested labels include
+# `self-hosted` are ignored (ci.yml has none today; the macstudio render lanes
+# live in other workflows and never appear in these job lists); only labels
+# with a GitHub-hosted prefix count as served evidence, so a runner-group job
+# that reports only its group label (the pc-route `trusted-pack`) can refuse
+# but never serve.  A running or completed job without a usable `started_at`,
+# or a job list shorter than its own `total_count`, makes the census unreadable.  `READ_TOKEN` is repo-scoped, so other repositories' load on the shared
 # account ceiling is visible only through its effect on this repository's own
 # jobs; a pool that fills after our packs were admitted shows up in the next
 # launched run's packs, so the ADMISSION overshoot is bounded by the cap itself
@@ -453,6 +458,7 @@ ADAPTIVE_CENSUS_JOB_PAGE = 100
 ADAPTIVE_SERVED_RUNS_FULL_HEADROOM = 2
 ADAPTIVE_PICKUP_GRACE_SECONDS = 120
 ADAPTIVE_HOSTED_LABEL_PREFIXES = ("ubuntu-", "windows-", "macos-")
+ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
 # The rotation advances by the live pull cap every bucket, so every armed pull
 # request enters the window within ceil(N / cap) buckets — ~40 minutes for a
 # 93-PR backlog. Ten minutes matches the recovery cron; the sweeper keeps NO state
@@ -3118,12 +3124,15 @@ def _run_job_evidence(jobs: list[Any]) -> tuple[int, int, bool] | None:
 
     Self-hosted jobs are ignored.  Every other job is refusal evidence when it is
     neither running nor completed, or when the pool took longer than the pickup
-    grace to start it.  Served evidence needs a GitHub-hosted job created AFTER
-    the run's first wave to be running: the first wave (`ci-plan`, and
-    `contract-delta` on pull requests) is admitted before the pack matrix exists,
-    so it says nothing about whether the pool will serve the packs.
+    grace to start it.  Served evidence needs a GitHub-hosted LATER-WAVE job (a
+    `ci-pack-*`/`ci-gate` job by name, created after the run's earliest job) to
+    be running: the first wave (`ci-plan`, `contract-delta` on pull requests, a
+    re-run `ci-plan`, the pc-route trusted-ci gate) is admitted before the pack
+    matrix exists, so it says nothing about whether the pool will serve the
+    packs, whatever its timestamps say.  A running or completed job without a
+    usable `started_at` is unclean (``None``), like a job without `created_at`.
     """
-    parsed: list[tuple[dt.datetime, dt.datetime | None, str, bool]] = []
+    parsed: list[tuple[dt.datetime, dt.datetime | None, str, bool, bool]] = []
     for job in jobs:
         if not isinstance(job, dict):
             return None
@@ -3136,24 +3145,27 @@ def _run_job_evidence(jobs: list[Any]) -> tuple[int, int, bool] | None:
         if created is None:
             return None
         status = job.get("status")
-        if not isinstance(status, str):
+        name = job.get("name")
+        if not isinstance(status, str) or not isinstance(name, str):
             return None
-        parsed.append(
-            (created, _parse_dt(job.get("started_at")), status, _github_hosted_label(labels))
-        )
+        started = _parse_dt(job.get("started_at"))
+        if started is None and status in ("in_progress", "completed"):
+            return None
+        later_wave = name.startswith(ADAPTIVE_LATER_WAVE_JOB_PREFIXES)
+        parsed.append((created, started, status, _github_hosted_label(labels), later_wave))
     if not parsed:
         return 0, 0, False
-    first_wave = min(created for created, _s, _st, _h in parsed)
+    first_wave = min(created for created, _s, _st, _h, _l in parsed)
     grace = dt.timedelta(seconds=ADAPTIVE_PICKUP_GRACE_SECONDS)
     refused = slow = 0
     served = False
-    for created, started, status, hosted in parsed:
+    for created, started, status, hosted, later_wave in parsed:
         if status not in ("in_progress", "completed"):
             refused += 1
             continue
-        if started is not None and started - created > grace:
+        if started - created > grace:
             slow += 1
-        if status == "in_progress" and hosted and created > first_wave:
+        if status == "in_progress" and hosted and later_wave and created > first_wave:
             served = True
     return refused, slow, served and refused == 0 and slow == 0
 
@@ -3206,6 +3218,7 @@ def hosted_pool_census(
             or not isinstance(jobs, list)
             or total is None
             or total > ADAPTIVE_CENSUS_JOB_PAGE
+            or total != len(jobs)
         ):
             return None
         evidence = _run_job_evidence(jobs)
