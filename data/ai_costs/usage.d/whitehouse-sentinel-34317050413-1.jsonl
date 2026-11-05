@@ -1,0 +1,1 @@
+{"schema":"ai_costs.usage.v1","ts":"2026-09-09T05:59:31Z","lane":"whitehouse","provider":"deepseek","model":"deepseek-v4-pro","key_id":"deepseek_api_key","input_tokens":2065,"output_tokens":1145,"cache_read_tokens":0,"cache_creation_tokens":0,"est_cost_usd":0.00189442,"cost_basis":"metered","cycle_id":"","stage":"whitehouse_brain","note":""}

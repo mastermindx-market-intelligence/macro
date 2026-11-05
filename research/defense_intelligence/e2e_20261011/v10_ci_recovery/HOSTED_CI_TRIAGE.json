@@ -1,0 +1,80 @@
+{
+  "schema": "defense.v10_hosted_ci_recovery.v1",
+  "observed_at": "2026-10-14T07:48:50.662590+00:00",
+  "original_head": "2779bad8673da8a9efb161456175512d68c0c2b0",
+  "tested_base": "abbded0de82ffe2d2841ba8372db3c0608304e5f",
+  "preserving_merge_head": "e664e6f02d84f7b44d01a3ee89f7c963dc89fb43",
+  "original_run": 38524304418,
+  "original_run_state": "All CI jobs observed terminal; original run has failures. No green CI claim.",
+  "repairs": [
+    {
+      "job": "contract-delta",
+      "original_failure": "templates/index.html packed136 jobs; bound135",
+      "repair": "Exact72-path exclusive group-linked-outsiders scope; canonical probe135jobs5673weight10packs."
+    },
+    {
+      "job": "public-render-fastlane",
+      "original_failure": "GovRev publication run scalar20559; guard20500",
+      "repair": "Comment-only shortening to20464; publication semantics intact."
+    },
+    {
+      "job": "research-screener",
+      "original_failure": "Committed shared-theme stamp80c7061d",
+      "repair": "Canonical fresh bake verifies1cee2e7c; only reference changed."
+    },
+    {
+      "job": "dag-conformance",
+      "original_failure": "Actual GovRev restore/research/prover modules absent from DAG and stale inline guard test",
+      "repair": "Declare actual modules; verify sourced guard artifact precedes source/use and rebuild follows rebase."
+    },
+    {
+      "job": "ci-control-plane-contracts",
+      "original_failure": "govrev-program-ontology missing curated registry; same136job probe",
+      "repair": "Register existing exclusivity; all4curated scope/closure/selection checks pass."
+    },
+    {
+      "job": "zh-filing-term",
+      "original_failure": "One SEC申报 user-facing phrase",
+      "repair": "Change exact phrase to SEC披露 in source+published asset;4affected browser states pass."
+    },
+    {
+      "job": "washout-turn-organ",
+      "original_failure": "Runtime test extracts a stripped comment from minified shared bundle",
+      "repair": "Locate exact canonical emitted block and execute those bytes with all original behavior assertions; install existing minifier in both actual suite jobs. No Prophet implementation change."
+    },
+    {
+      "job": "stock-dashboard-first-frame",
+      "original_failure": "Aggregate extension referenced old fixture receipt despite completed current browser recapture",
+      "repair": "Preserve historical extension and aggregate actual128passing browser cases after verifying61loaded assets38construction inputs16screenshots.115source tests pass."
+    },
+    {
+      "job": "defense-rail-laws",
+      "original_failure": "FMS shell tests still read moved JS from HTML",
+      "repair": "Bounded existing Fabric task defense-fms-extracted-shell-tests-01a13300-a owns onlytests/test_fms_ui.py; pending retained return."
+    },
+    {
+      "job": "govrev-company-bridge",
+      "original_failure": "Collection fails extracting real page helper obj from old HTML location",
+      "repair": "Extract same real helper functions from actual page script;33tests pass."
+    },
+    {
+      "job": "markets-regime-strip",
+      "original_failure": "Exact template/site verifier lacks rjsmin",
+      "repair": "Install pinned1.2.5 in actual isolated job;22pass8existingbrowser-skips locally."
+    },
+    {
+      "job": "unrun-import-hygiene",
+      "original_failure": "Projection guard imports SBIR schema without jsonschema",
+      "repair": "Install jsonschema in actual isolated job;11tests pass."
+    }
+  ],
+  "gates": "FMS worker return, complete new sealed proof, exact-head CI, protected merge, gated financial CAS/publication, installed proof and independent acceptance remain.",
+  "unchanged_controls": [
+    "No increased CI ceiling",
+    "No deactivated check",
+    "No original7175 edit",
+    "No lease/effect replay",
+    "No production/owner write"
+  ],
+  "original_base_replay_limitation": "DAG base replay onabbded passed conformance, then failed nightly_liveness because isolated replay origin was a local path. No guard was weakened to hide this inherited replay-environment failure."
+}
