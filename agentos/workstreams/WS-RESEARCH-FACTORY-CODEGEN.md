@@ -25,8 +25,9 @@ waves:
 next_action: >
   Release the implemented source-owned staged-cycle adapter through normal checks;
   qualify the integrated private S01 carrier and inert per-plan engine provider
-  through the same driver/review path. Preserve the existing shared cap-repair10755
-  carrier before final CI qualification of10758; no copied repair or CI waiver.
+  through the same driver/review path. Shared cap-repair10755 is merged and its
+  protected base is integrated; qualify the final10758 head without a copied repair
+  or CI waiver. Old-head review and CI do not qualify the changed candidate.
   Both new Fabric leaves failed terminally; root completed permitted local source work.
   Preserve original V4 and worktree unknown effects. Source readiness is not
   P01 runtime or scientific acceptance. After qualification, complete the actual

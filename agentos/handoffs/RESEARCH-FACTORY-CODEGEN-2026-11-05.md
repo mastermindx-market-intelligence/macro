@@ -56,9 +56,11 @@ unverified:
 - Actual P01, containment, authenticated candidate workflow and scientific acceptance
 unresolved:
 - PR10758 original CI42019121485 completed failure; observer87871 consumed. Eleven packs passed;
-  pack2 failed the shared board-cap assertion on candidate and base. Existing repair10755 owns the
-  480-to-640 cap change; no copied repair, assertion waiver or manual rerun. Review5784193453 covers
-  e563f930 only; final changed candidate requires exact-head qualification.
+  pack2 failed the shared board-cap assertion on candidate and base. Repair10755 then merged at
+  d7843f7f37b45072a17aa341c6789bcf51b295f8 after independent approval5785274257. Its protected
+  base9809bd750420ee93fa031cdc889babeb59379ae5 is integrated through the same RF branch, without
+  copying the repair or waiving assertions. Review5784193453 covers e563f930 only; the final changed
+  candidate requires its own exact-head CI and formal approval.
 - Original V4 rf-fixed-smoke-runsc-01a1333c-v4/controller62193 EFFECT_UNKNOWN after77 and1200-second budget
   breach; original grant/carrier preserved; no recovery/replay/alternate reader.
 - Original worktree operation36875c9c remainsUNKNOWN; permitted existing edd6 source workspace reused,
