@@ -203,3 +203,11 @@ def test_signup_claims_backend_failure_preserves_native_press_state(tmp_path):
     assert out["ok"] is True and len(out["quarantine"]) == 1
     assert out["signup_claims"]["status"] == "unavailable"
     assert "PRIVATE_BACKEND_PAYLOAD" not in json.dumps(out)
+
+
+def test_route_is_wired_into_the_admin_server():
+    src = (F.REPO / "admin" / "server.py").read_text(encoding="utf-8")
+    assert 'if path == "/api/press/overview":' in src
+    assert "press.overview(audience_query=users._query)" in src
+    # One route line, one import — the panel is a minimal diff by contract.
+    assert src.count("/api/press/overview") == 1

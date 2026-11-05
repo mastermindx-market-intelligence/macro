@@ -421,11 +421,3 @@ slowChannels=true;channels.innerHTML='waiting';const inverse=run();resolvePress(
 assert.equal(slot.innerHTML,'Press settled');assert.equal(channels.innerHTML,'waiting');
 resolveChannels({ok:true,note:'channels finally ready'});await inverse;assert(channels.innerHTML.includes('channels finally ready'));
 """)
-
-
-def test_route_is_wired_into_the_admin_server():
-    src = (ROOT / "admin" / "server.py").read_text(encoding="utf-8")
-    assert 'if path == "/api/press/overview":' in src
-    assert "press.overview(audience_query=users._query)" in src
-    # One route line, one import — the panel is a minimal diff by contract.
-    assert src.count("/api/press/overview") == 1
