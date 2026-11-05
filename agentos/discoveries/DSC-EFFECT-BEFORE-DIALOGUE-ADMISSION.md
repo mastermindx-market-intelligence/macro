@@ -1,5 +1,33 @@
 ---
 key: EFFECT-BEFORE-DIALOGUE-ADMISSION
+claim: >-
+  The retained 2026-08-29 mas188-pr218-ready-transition incident records the intended PR metadata effect before the pickup/admission edge required by that operation's then-current contract. A truthful late ACK reconciled the chronology but did not retroactively establish prior admission. This dated ordering defect does not create a universal Slack-ACK prerequisite for today's attended source work. The separate accidental main-file write was applied and then exactly reverted, not effect NONE.
+falsifier: >-
+  For the #6648 incident, inspect Mastermind PR #218's actual Ready mutation receipt and the cited canonical operation timestamps. An authenticated admissible pickup/admission receipt that preceded the first effect, or proof that the operation's controlling contract did not require that edge, would refute the ordering claim. For the separate accidental write, compare original93d8fd3369bf with reversal4c597d851cc0 and retain both applied/reverted commits; contrary tree or event evidence would refute the claimed exact rollback. Do not replay either mutation.
+so_what: >-
+  Apply the current operation's real effect/admission contract and preserve accurate chronology. Capability is not evidence that every required gate was satisfied. Keep late reconciliation distinct from prior authorization, and never hide an applied effect or its exact reversal.
+kind: runtime
+verified_at: 2026-08-29
+verified_by: >-
+  Historical source evidence retained on Macro #6648, original head 0f346515cac79b7d7e08f6cd4f7ed06e23997c69, exact blob 415f9a32da070822bebf096d5396a2e086fc72ca. The original observer's receipts remain quoted intact. The November5 repair verifies source preservation and qualifies interpretation; it does not claim a fresh live-session or production experiment.
+scope:
+  - WS:CHAIRMAN-CONTROL-ROOM
+  - WS:EXECUTIVE-CAPACITY-FABRIC
+  - slack:#agent-dispatch
+confidence: verified
+---
+
+# Dated incident evidence and current interpretation
+
+**2026-11-05 source reconciliation.** This preserves a historical incident and its falsifiable evidence. Original worker, review, host and repository effects remain on their exact carriers; no old failure, STOP, permission decision or capability observation is converted into today's state. Current protected law and actual owner receipts control new actions. No runtime repair, activation, canary, watcher or release authority is created by this records-only publication.
+
+## Original 2026-08-29 source — preserved verbatim
+
+The quoted artifact retains its original frontmatter, incident evidence, proposed acceptance conditions and dated continuation. Occurrences of current, live, next or permanent inside it describe that original observation/proposal, not new operational authority. The active metadata and current protected owner govern any later action.
+
+``````markdown
+---
+key: EFFECT-BEFORE-DIALOGUE-ADMISSION
 claim: >
   A transition-era GitHub-capable operator can currently apply an authorized repository/PR effect
   before the operation's required canonical dialogue pickup/admission edge is visible. A later
@@ -90,3 +118,4 @@ before modification:
 This belongs with Executive admission, RuntimeBinding/actor applicability, Agent Dialogue and
 existing owner-specific Git/ship/host guards. It does not justify a new approval database, Slack
 lifecycle store, session registry or retry plane.
+``````

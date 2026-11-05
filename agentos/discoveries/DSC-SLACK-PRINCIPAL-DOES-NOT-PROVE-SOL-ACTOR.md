@@ -1,5 +1,32 @@
 ---
 key: SLACK-PRINCIPAL-DOES-NOT-PROVE-SOL-ACTOR
+claim: >-
+  The retained 2026-08-29 fourth-slot record includes a same-principal SOL RULING / CONTINUE message that widened the last bounded instruction. Its accountable actor/runtime origin was ambiguous, so it was rejected as an authority edge pending actual provenance. The record does not prove the bound worker authored that message. A Slack sender or prose role label alone does not establish governed actor applicability.
+falsifier: >-
+  Inspect the #6648 fourth-slot source and its exact canonical carrier. Authentic immutable actor/runtime evidence demonstrating that the challenged scope-changing edge came from the properly authorized executive binding, or that it did not widen the lawful scope, would refute that specific ambiguity/ruling basis. A sender name, SOL prefix, provider label or later explanation without authenticated binding is insufficient. No message resend, scope expansion or effect is authorized to test this condition.
+so_what: >-
+  Keep transport identity separate from authority. Use the current accepted actor/applicability and admission owner for any real continuation; preserve this historical rejected edge without imputing a worker identity that the evidence did not establish.
+kind: runtime
+verified_at: 2026-08-29
+verified_by: >-
+  Historical source evidence retained on Macro #6648, original head 0f346515cac79b7d7e08f6cd4f7ed06e23997c69, exact blob a73517d85b38d445e021288134aa026e21640c0d. The original observer's receipts remain quoted intact. The November5 repair verifies source preservation and qualifies interpretation; it does not claim a fresh live-session or production experiment.
+scope:
+  - WS:CHAIRMAN-CONTROL-ROOM
+  - slack:#agent-dispatch
+confidence: verified
+---
+
+# Dated incident evidence and current interpretation
+
+**2026-11-05 source reconciliation.** This preserves a historical incident and its falsifiable evidence. Original worker, review, host and repository effects remain on their exact carriers; no old failure, STOP, permission decision or capability observation is converted into today's state. Current protected law and actual owner receipts control new actions. No runtime repair, activation, canary, watcher or release authority is created by this records-only publication.
+
+## Original 2026-08-29 source — preserved verbatim
+
+The quoted artifact retains its original frontmatter, incident evidence, proposed acceptance conditions and dated continuation. Occurrences of current, live, next or permanent inside it describe that original observation/proposal, not new operational authority. The active metadata and current protected owner govern any later action.
+
+``````markdown
+---
+key: SLACK-PRINCIPAL-DOES-NOT-PROVE-SOL-ACTOR
 claim: >
   A Slack communication principal and a prose prefix such as `SOL RULING`, `SOL CONTINUE` or
   `START` do not prove which governed runtime/role emitted the semantic edge. The live estate can
@@ -76,3 +103,4 @@ At minimum, acceptance must include a same-principal adversarial fixture:
 
 If the current transport cannot carry enough provenance to distinguish the two, machine-actionable
 scope-changing edges must fail closed and Wake the accountable Sol rather than guess.
+``````

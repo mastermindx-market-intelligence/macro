@@ -1,5 +1,33 @@
 ---
 key: AUTONOMY-CONTINUATION-OWNER-GAP-MATRIX
+claim: >-
+  The retained 2026-08-29 incident analysis mapped continuation failures to the existing Autonomous Delegation, Executive, RuntimeBinding/Operator Continuity, Agent Dialogue, Wake, Relay and OCR owners. It recorded a missing demonstrated end-to-end continuation path at that observation, rather than authorizing a new supervisor or session plane. Its AD-wave execution order is a dated proposal; it does not establish which capabilities or waves are absent, running or complete today.
+falsifier: >-
+  Read the dated matrix and source witnesses on Macro #6648 and the cited Mastermind #212/#227 revisions. The historical gap claim is refuted by an authentic production receipt from that observation epoch proving the complete exact-session return, attention, resume, actor and pre-effect path for the described incident classes, or by source evidence that the matrix misidentified an existing canonical owner. A later source merge, temporary watcher or present-day implementation cannot by itself establish that earlier production receipt.
+so_what: >-
+  Preserve the original owner map and concrete acceptance questions as historical engineering evidence. Before new work, reconcile the current protected owner, source and actual effect/acceptance state; never recommission an old AD wave from this dated sequence. Reuse existing lifecycle, identity, runtime, dialogue and attention owners.
+kind: architecture
+verified_at: 2026-08-29
+verified_by: >-
+  Historical source evidence retained on Macro #6648, original head 0f346515cac79b7d7e08f6cd4f7ed06e23997c69, exact blob d990d73905921c5f0464306a4b36209ca1297244. The original observer's receipts remain quoted intact. The November5 repair verifies source preservation and qualifies interpretation; it does not claim a fresh live-session or production experiment.
+scope:
+  - WS:CHAIRMAN-CONTROL-ROOM
+  - WS:EXECUTIVE-CAPACITY-FABRIC
+  - slack:#agent-dispatch
+confidence: verified
+---
+
+# Dated incident evidence and current interpretation
+
+**2026-11-05 source reconciliation.** This preserves a historical incident and its falsifiable evidence. Original worker, review, host and repository effects remain on their exact carriers; no old failure, STOP, permission decision or capability observation is converted into today's state. Current protected law and actual owner receipts control new actions. No runtime repair, activation, canary, watcher or release authority is created by this records-only publication.
+
+## Original 2026-08-29 source — preserved verbatim
+
+The quoted artifact retains its original frontmatter, incident evidence, proposed acceptance conditions and dated continuation. Occurrences of current, live, next or permanent inside it describe that original observation/proposal, not new operational authority. The active metadata and current protected owner govern any later action.
+
+``````markdown
+---
+key: AUTONOMY-CONTINUATION-OWNER-GAP-MATRIX
 claim: >
   The 2026-08-29 Codex/Slack autonomy incidents do not require a new supervisor/session/watch/control
   plane. Their durable fixes map onto the existing Autonomous Delegation DAG plus protected
@@ -79,3 +107,4 @@ Additional live discriminators:
 # No-rebuild boundary
 
 Do not create a Codex session registry, Slack/Linear command inbox, polling daemon, watcher database, provider-owned lifecycle, approval ledger, retry database, second Steward, second scheduler or second Agent Dialogue plane. Extend the accepted owners above.
+``````

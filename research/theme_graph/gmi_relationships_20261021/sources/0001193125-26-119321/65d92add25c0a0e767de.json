@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T18:15:26Z",
+ "accession": "0001193125-26-119321",
+ "cik": "0001280263",
+ "doc_byte_length": 4117571,
+ "doc_sha256": "deeacde656e445319dba455f66696bc4ccbee30ed2c9ef92dc4a9695c8f83852",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "amba-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 509437,
+  "byte_start": 508952,
+  "normalized": "We may face difficulties, delays and increased expense as we transition our products to new processes, such as the 2 nm process node, and potentially to new foundries. We currently depend on Samsung, as the principal foundry for our products, to transition to new processes successfully. We cannot assure you that Samsung will be able to effectively manage such transitions or that we will be able to maintain our relationship with Samsung or develop relationships with new foundries.",
+  "normalized_sha256": "b57527f95caafa955da7959c51557073edd823daa37e7416c6ac99caeb50fab1",
+  "raw": " We may face difficulties, delays and increased expense as we transition our products to new processes, such as the 2 nm process node, and potentially to new foundries. We currently depend on Samsung, as the principal foundry for our products, to transition to new processes successfully. We cannot assure you that Samsung will be able to effectively manage such transitions or that we will be able to maintain our relationship with Samsung or develop relationships with new foundries.",
+  "raw_sha256": "65d92add25c0a0e767de20c2daed132e76e97298c281d9707053058c4c4a7b01"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1280263/000119312526119321/amba-20260131.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-12T21:32:07Z",
+ "accession": "0000068505-26-000010",
+ "cik": "0000068505",
+ "doc_byte_length": 3456163,
+ "doc_sha256": "9677733b4ce5c59f050319147d59b1f98a66d724f37a0ee100a5f9e306243ced",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-12",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "msi-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 643524,
+  "byte_start": 642974,
+  "normalized": "We no longer own certain logos and other trademarks, trade names and service marks, including MOTOROLA, MOTO, MOTOROLA SOLUTIONS and the Stylized M logo and all derivatives and formatives thereof (“Motorola Marks”) and we license the Motorola Marks from Motorola Trademark Holdings, LLC (“MTH”), which is currently owned by Motorola Mobility, a subsidiary of Lenovo. Our joint use of the Motorola Marks could result in product and market confusion and negatively impact our ability to expand business under the Motorola brand.",
+  "normalized_sha256": "7e605780e0e2152f9cf47ab3e65728affdbc5b20a6cb59e2a0214ac8a818645c",
+  "raw": "We no longer own certain logos and other trademarks, trade names and service marks, including MOTOROLA, MOTO, MOTOROLA SOLUTIONS and the Stylized M logo and all derivatives and formatives thereof (&#8220;Motorola Marks&#8221;) and we license the Motorola Marks from Motorola Trademark Holdings, LLC (&#8220;MTH&#8221;), which is currently owned by Motorola Mobility, a subsidiary of Lenovo. Our joint use of the Motorola Marks could result in product and market confusion and negatively impact our ability to expand business under the Motorola brand.",
+  "raw_sha256": "5df6df6c95cb4bbcc12a332dcbc427be4e2f24fee7879d651b93d27aa5c89cf0"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/68505/000006850526000010/msi-20251231.htm",
+ "xbrl_contexts": []
+}

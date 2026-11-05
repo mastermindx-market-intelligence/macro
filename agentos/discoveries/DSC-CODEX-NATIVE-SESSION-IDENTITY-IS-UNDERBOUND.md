@@ -1,5 +1,33 @@
 ---
 key: CODEX-NATIVE-SESSION-IDENTITY-IS-UNDERBOUND
+claim: >-
+  The 2026-08-29 fourth-slot carrier recorded two pickup ACKs about forty-one seconds apart behind one Slack principal, without enough binding evidence to establish receiver uniqueness. Those ACKs demonstrate duplicate claims and identity ambiguity; they do not independently prove two distinct native conversations. Slack identity, /root, a provider label or a worktree alone is not an exclusive governed receiver binding. This is the retained incident finding, not a fresh claim about today's native runtime.
+falsifier: >-
+  Inspect Macro #6648's immutable incident record and the canonical ci-pc-fourth-slot-20260829-sol-001 receipts identified there. Evidence that both ACKs belonged to the same uniquely admitted RuntimeBinding generation, with an authenticated explanation of the duplicate and no second receiver, would refute the inferred receiver ambiguity; evidence that one ACK was not for that operation would refute the duplicate-claim attribution. Only actual binding/operation receipts count. No new collision canary, receiver or write is authorized by this falsifier.
+so_what: >-
+  Keep receiver identity distinct from transport identity and preserve the exact historical ACKs. Current assigned owners must use present canonical admission and effect rules; this record neither asserts today's defect remains open nor starts an old native-session repair or watcher.
+kind: runtime
+verified_at: 2026-08-29
+verified_by: >-
+  Historical source evidence retained on Macro #6648, original head 0f346515cac79b7d7e08f6cd4f7ed06e23997c69, exact blob 4a610ee7a8dfe2b061e8d4c67c519984a08433a3. The original observer's receipts remain quoted intact. The November5 repair verifies source preservation and qualifies interpretation; it does not claim a fresh live-session or production experiment.
+scope:
+  - WS:CHAIRMAN-CONTROL-ROOM
+  - WS:EXECUTIVE-CAPACITY-FABRIC
+  - slack:#agent-dispatch
+confidence: verified
+---
+
+# Dated incident evidence and current interpretation
+
+**2026-11-05 source reconciliation.** This preserves a historical incident and its falsifiable evidence. Original worker, review, host and repository effects remain on their exact carriers; no old failure, STOP, permission decision or capability observation is converted into today's state. Current protected law and actual owner receipts control new actions. No runtime repair, activation, canary, watcher or release authority is created by this records-only publication.
+
+## Original 2026-08-29 source — preserved verbatim
+
+The quoted artifact retains its original frontmatter, incident evidence, proposed acceptance conditions and dated continuation. Occurrences of current, live, next or permanent inside it describe that original observation/proposal, not new operational authority. The active metadata and current protected owner govern any later action.
+
+``````markdown
+---
+key: CODEX-NATIVE-SESSION-IDENTITY-IS-UNDERBOUND
 claim: >
   Transition-era Slack handoffs do not uniquely bind a native Codex reasoning session to one child
   operation. A Slack principal, `/root` working directory, provider/model label, GitHub identity, or
@@ -140,3 +168,4 @@ retry service, or provider-derived authority plane. Reuse:
 - Wake for attention/resumption;
 - existing repository/ship/self-mod/host guards for effect enforcement;
 - OCR-6 Executive Steward/Control Room for read-only attention/exception composition.
+``````

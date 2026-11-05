@@ -1,5 +1,33 @@
 ---
 key: RETURN-WITHOUT-ATTENTION-EDGE
+claim: >-
+  The retained 2026-08-29 CODEX_SESSION_COLLISION_REPAIR record describes a DECISION_REQUEST with repository effect NONE followed by a turn ending without a recorded armed return path. Chairman intervention preceded the later temporary watcher. The incident exposed a gap between return content and demonstrated continuation in that worker contract; it is not proof of current runtime liveness, a present outage or a new requirement for every attended chat to become a daemon.
+falsifier: >-
+  Inspect Macro #6648 and the cited task01a04c44-7988-7da1-a05e-9ed43da374c0 / dialogue-parent1787986955.050419 receipts. An authenticated current-generation delivery/wake/resume binding already armed before return1787987543.919809, with a proven route for the accountable response, would refute the missing-attention chronology. A later watcher alone does not prove that earlier binding. This source check grants no watcher creation, native resume or canary replay.
+so_what: >-
+  When a current worker contract promises continuation, require its actual canonical return path and report a missing path truthfully. Preserve existing Executive, RuntimeBinding, dialogue and attention ownership; do not infer background execution from a message, source record or CI result.
+kind: runtime
+verified_at: 2026-08-29
+verified_by: >-
+  Historical source evidence retained on Macro #6648, original head 0f346515cac79b7d7e08f6cd4f7ed06e23997c69, exact blob 5bd73436d5e833a74bc54bd88916daf9332f2cea. The original observer's receipts remain quoted intact. The November5 repair verifies source preservation and qualifies interpretation; it does not claim a fresh live-session or production experiment.
+scope:
+  - WS:CHAIRMAN-CONTROL-ROOM
+  - WS:EXECUTIVE-CAPACITY-FABRIC
+  - slack:#agent-dispatch
+confidence: verified
+---
+
+# Dated incident evidence and current interpretation
+
+**2026-11-05 source reconciliation.** This preserves a historical incident and its falsifiable evidence. Original worker, review, host and repository effects remain on their exact carriers; no old failure, STOP, permission decision or capability observation is converted into today's state. Current protected law and actual owner receipts control new actions. No runtime repair, activation, canary, watcher or release authority is created by this records-only publication.
+
+## Original 2026-08-29 source — preserved verbatim
+
+The quoted artifact retains its original frontmatter, incident evidence, proposed acceptance conditions and dated continuation. Occurrences of current, live, next or permanent inside it describe that original observation/proposal, not new operational authority. The active metadata and current protected owner govern any later action.
+
+``````markdown
+---
+key: RETURN-WITHOUT-ATTENTION-EDGE
 claim: >
   A native worker can currently emit a company-level BLOCKED, DECISION_REQUEST or RESULT return and
   end its reasoning turn without proving that the exact current runtime has any armed continuation
@@ -63,3 +91,4 @@ Reconcile inside existing Agent Dialogue V2/WP-TW/Wake, RuntimeBinding/Operator 
 Executive Attempt/Worker/fence authority, Agent Relay, and the autonomous-delegation AD-DLG/AD-RET
 worker-continuation decomposition. If the exact Sol-to-worker native-session resume mechanism has no
 current bounded implementation owner, preserve that as an explicit implementation gap.
+``````

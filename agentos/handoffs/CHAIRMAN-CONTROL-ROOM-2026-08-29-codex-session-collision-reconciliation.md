@@ -1,5 +1,63 @@
 ---
 workstream: WS:CHAIRMAN-CONTROL-ROOM
+session: github-pr-sweep-2028-c4
+model: sol
+ended_because: ci_handoff
+mission: >-
+  Preserve the August29 incident's six original records on Macro #6648 with truthful dated metadata, meaningful source-linked falsifiers and a valid records-publication checkpoint. This does not resume or accept the historical runtime implementation.
+state_before: >-
+  Original head 0f346515cac79b7d7e08f6cd4f7ed06e23997c69 contains five discoveries and one handoff, despite the old PR body's five-file inventory. The records contain unsupported provenance shape and an invalid handoff ending; several present-tense statements describe only August29. The additional owner-gap matrix is a genuine original addition, not unrelated source.
+changed:
+  - path: agentos/discoveries
+    what: Qualify all five original incident discoveries by observation epoch, keep each concrete falsifier, correct unsupported distinct-session/worker-origin inferences, and preserve every original file verbatim.
+  - path: agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-29-codex-session-collision-reconciliation.md
+    what: Record source publication and remaining qualification truthfully; preserve original handoff as an archived artifact.
+verified:
+  - command: GitHub immutable file reads at Macro 0f346515cac79b7d7e08f6cd4f7ed06e23997c69
+    result: Six original source blobs are retained verbatim; the owner-gap matrix is included as the sixth original path.
+  - command: GitHub compare 93d8fd3369bfd41a40e2b7d62cc62b1962c6b763...4c597d851cc01bce9f186a7654e9c266c76da657
+    result: Historical accidental write/reversal are two commits with zero changed files versus the pre-incident tree. Applied then reverted is preserved; it is not NONE.
+unverified:
+  - Current installed runtime/session behavior, native foreground capability, worker liveness and production continuation acceptance.
+  - Fresh collision, provider, authenticated browser, kill/restart or delivery canaries; none is originated by this record.
+  - Full current-store context compilation and installed bundle readback; adding records changes source hashes without proving an installed consumer.
+unresolved:
+  - Fresh applicable hosted CI, genuine eligible non-author approval and protected release for the repaired exact head.
+  - Any real live-writer, lease or unknown effect remains with its original current canonical owner; dated prose alone cannot determine its state.
+next_actions:
+  - The assigned source session should qualify this repaired original PR through current CI, eligible review and the existing protected merge controller; do not create a replacement records carrier.
+  - For any runtime continuation, consult current WS:CHAIRMAN-CONTROL-ROOM and WS:EXECUTIVE-CAPACITY-FABRIC plus actual Executive/runtime/source receipts before action. Preserve any active writer or EFFECT_UNKNOWN; never infer permission from this historical handoff.
+do_not_redo:
+  - Do not replay historical ACKs, scope-changing messages, stopped children, native foreground probes, watcher creation, PR metadata mutations or the accidental main-file write/reversal.
+  - Do not create another session, identity, lifecycle, admission, queue, retry, watcher or control plane.
+  - Do not claim that two ambiguous ACKs prove two native sessions or that the rejected same-principal message proves worker authorship.
+  - Do not treat a current source repair as admission or proof for the historical implementation workers.
+danger_areas:
+  - The quoted source uses dated current/live/next language and proposed acceptance law. Those are historical evidence, not today's liveness or instructions.
+  - This ending describes the records-publication checkpoint only; it is not worker START, durable execution, successful CI or mission completion.
+prs:
+  - 6648
+discoveries:
+  - DSC:AUTONOMY-CONTINUATION-OWNER-GAP-MATRIX
+  - DSC:CODEX-NATIVE-SESSION-IDENTITY-IS-UNDERBOUND
+  - DSC:EFFECT-BEFORE-DIALOGUE-ADMISSION
+  - DSC:RETURN-WITHOUT-ATTENTION-EDGE
+  - DSC:SLACK-PRINCIPAL-DOES-NOT-PROVE-SOL-ACTOR
+---
+
+# Incident records publication checkpoint
+
+**2026-11-05.** The original incident evidence remains intact, including ambiguous receiver/actor identity, a required-admission ordering defect, and a return without its then-required continuation proof. Historical proposed repairs remain mapped to existing owners. Current source publication does not certify any present runtime defect or operational fix.
+
+The later [August29 addendum](https://github.com/mastermindx-market-intelligence/macro/pull/6648#issuecomment-5462522173) records two distinct effects: the native foreground attempt reported no input/effect, while an accidental GitHub main-file write was applied and exactly reverted. Its commits remain visible. Root reread the recorded preimage-to-reversal comparison and confirmed two commits with no changed files. No operation was replayed to obtain this verification.
+
+## Original 2026-08-29 source — preserved verbatim
+
+The quoted artifact retains its original frontmatter, incident evidence, proposed acceptance conditions and dated continuation. Occurrences of current, live, next or permanent inside it describe that original observation/proposal, not new operational authority. The active metadata and current protected owner govern any later action.
+
+``````markdown
+---
+workstream: WS:CHAIRMAN-CONTROL-ROOM
 session: sol/codex-session-collision-reconciliation-20260829
 model: sol
 ended_because: implementation_handoff
@@ -152,3 +210,4 @@ Start from protected Mastermind `19fe09ddbe065d57292effc2544edcbf447bfcc0`, curr
 repair carrier, and the current canonical Slack child threads. The immediate company-level job is
 not to open another Codex session: it is to make the existing execution path mechanically prove
 **one child -> one current RuntimeBinding generation -> admitted effects -> typed canonical returns**.
+``````

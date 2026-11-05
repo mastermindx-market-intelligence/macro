@@ -1,0 +1,27 @@
+{
+  "kind": "LOCAL_RETAINED_FUNDS_DICTION_CHANGED_CELLS",
+  "source_head": "d4473ce7df57a82185b0abcc4a09e572a0d49631",
+  "observations": [
+    {
+      "url": "/fund_index.html",
+      "width": 390,
+      "documentWidth": 390,
+      "theme": "light",
+      "locale": "zh",
+      "text": "\u6b64\u5904\u4e3a\u5df2\u62ab\u9732\u7684\u671f\u672b\u6301\u4ed3\uff0c\u5e76\u975e\u5f53\u524d\u4ed3\u4f4d\u3002\u6253\u5f00\u7ba1\u7406\u4eba\u6863\u6848\u53ef\u67e5\u770b\u62ab\u9732\u65e5\u671f\u548c\u539f\u59cb\u6765\u6e90\uff1b\u540e\u7eed\u4fee\u8ba2\u53ef\u80fd\u66f4\u6539\u62ab\u9732\u6301\u4ed3\u3002",
+      "source": null
+    },
+    {
+      "url": "/fund_berkshire.html",
+      "width": 390,
+      "documentWidth": 390,
+      "theme": "light",
+      "locale": "zh",
+      "text": "\u5df2\u62ab\u9732\u7684\u671f\u672b\u6301\u4ed3 \u2014 \u5e76\u975e\u5f53\u524d\u4ed3\u4f4d\u3002\u672c\u89c6\u56fe\u4f7f\u7528\u539f\u59cb\u62ab\u9732\uff1b\u540e\u7eed\u4fee\u8ba2\u53ef\u80fd\u66f4\u6539\u62ab\u9732\u6301\u4ed3\uff0c\u4fee\u8ba2\u62ab\u9732\u53e6\u884c\u4fdd\u7559\u3002\n\n\u62ab\u9732\u7ba1\u7406\u4eba: Berkshire Hathaway (Buffett) \u00b7 CIK 1067983 \u00b7 13F-HR\n\nSEC \u539f\u59cb\u62ab\u9732 \u00b7 0001193125-26-352200",
+      "source": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/0001193125-26-352200-index.html"
+    }
+  ],
+  "limits": [
+    "Two affected light/ZH/mobile cells only. Original16 style cells retained at originalsource. No account/provider/entitlement/publication claim."
+  ]
+}
