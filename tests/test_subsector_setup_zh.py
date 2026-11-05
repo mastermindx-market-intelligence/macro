@@ -17,6 +17,13 @@ never 入场配置. A measured base rate is 基准率, the deck's word
 (components.prior_gloss), never 胜率: the deck reserves 胜率 for "not a win rate"
 (components.grader_caption).
 
+Lane L6.8 (O-INT vi, state matrix dossier/error R3A-74) gives the subsector chart
+a failure state of its own. A mount that throws, or a chart script that never
+arrived, puts an assertive bilingual notice with a Retry button in the chart's
+420px frame; the rest of the page stays. The notice is a neutral surface: no
+direction or health colour, no edge stripe. Its node behaviour lives in
+tests/test_product_chrome.py.
+
 Pure text checks; no node.
 """
 from __future__ import annotations
@@ -146,3 +153,33 @@ def test_deck_names_base_rate_jizhunlv_and_reserves_shenglv():
 def test_the_dossier_rule_rejects_the_base_strings(old):
     text = DOSSIER.read_text(encoding="utf-8") + "\n" + old
     assert dossier_zh_problems(text)
+
+
+CHART_FAILURE_REQUIRED = (
+    'role="alert"',
+    "L('Chart unavailable right now', '图表暂不可用')",
+    "本页的概况、成分与证据不受影响。",
+    "L('Retry', '重试')",
+    "s.src = '../chart.js';",
+    "s.onerror = () => chartUnavailable(true);",
+)
+CHART_FAILURE_BANNED_INK = ("var(--up)", "var(--down)", "var(--ok)", "var(--warn)", "var(--act)", "border-left", "color-mix")
+
+
+def test_subsector_chart_failure_is_wired_to_both_paths():
+    """The cited mount line keeps its place; a throw and a missing script both
+    reach the notice."""
+    text = SUBSECTOR.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    assert "console.error('chart mount failed', err); chartUnavailable(false);" in lines[213]
+    assert lines[214].strip() == "} else if (CHART_KEY) { chartUnavailable(false); }"
+    for s in CHART_FAILURE_REQUIRED:
+        assert s in text, s
+
+
+def test_subsector_chart_failure_notice_is_neutral():
+    text = SUBSECTOR.read_text(encoding="utf-8")
+    start = text.index(".id-chart-err{")
+    css = text[start:text.index("\n", start)]  # the notice rules end its line
+    for banned in CHART_FAILURE_BANNED_INK:
+        assert banned not in css, banned

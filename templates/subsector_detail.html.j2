@@ -55,7 +55,7 @@ a{text-decoration:none;color:inherit}
 .id-section-hd{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:2px 2px 9px}
 .id-section-hd h2{margin:0;font-size:15px}
 .id-section-hd p{margin:2px 0 0;color:var(--muted);font-size:11px}.id-section-hd>.pill{flex:none;white-space:nowrap}@media (max-width:560px){ #chart-host .bchart-legend{white-space:normal;max-width:29ch;font-size:10.5px;line-height:1.4}#chart-host .bchart-legend .t{font-size:11.5px}#chart-host .bchart-legend span{white-space:nowrap}}
-.chart-card{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:8px;margin:0}
+.chart-card{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:8px;margin:0}.id-chart-err{box-sizing:border-box;min-height:inherit;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;padding:20px;border:1px solid var(--line);border-radius:var(--r-btn,10px);background:var(--panel)}.id-chart-err .t{margin:0;font-size:14px;font-weight:700;color:var(--text)}.id-chart-err .b{margin:0;max-width:52ch;color:var(--muted);font-size:12px}.id-chart-err button{margin-top:4px;min-height:32px;padding:6px 14px;border:1px solid var(--line);border-radius:var(--r-btn,10px);background:var(--panel2);color:var(--text);font:inherit;font-size:12px;font-weight:600;cursor:pointer}
 #chart-host{width:100%;min-height:420px}
 .members-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
   table.tbl { width:100%; border-collapse:collapse; font-size:12.5px; }
@@ -211,8 +211,36 @@ function render() {
         ohlcDir: '../' + (DETAIL.ohlc_dir || 'subsectorohlc'),
         signalsDir: HAS_SIGNALS ? '../' + (DETAIL.sig_dir || 'subsector_signals') : undefined
       });
-    } catch (err) { console.error('chart mount failed', err); }
-  }
+    } catch (err) { console.error('chart mount failed', err); chartUnavailable(false); }
+  } else if (CHART_KEY) { chartUnavailable(false); }
+}
+// R3A-74 (state matrix dossier/error): a chart that cannot mount says so in its own
+// frame and keeps the 420px geometry. Identity, members and evidence are already on
+// the page and stay. Retry loads the shared chart script again when it never arrived,
+// then re-renders. A failed data fetch inside the mount is the shared chart's own
+// bilingual message, not this one.
+function chartUnavailable(refocus) {
+  const host = document.getElementById('chart-host');
+  if (!host) return;
+  host.innerHTML = '<div class="id-chart-err" role="alert"><p class="t">' + L('Chart unavailable right now', '图表暂不可用') + '</p>'
+    + '<p class="b">' + L('The identity, members and evidence on this page are unaffected.', '本页的概况、成分与证据不受影响。') + '</p>'
+    + '<button type="button">' + L('Retry', '重试') + '</button></div>';
+  const btn = host.querySelector('button');
+  btn.addEventListener('click', retryChart);
+  if (refocus) btn.focus();
+}
+function retryChart() {
+  const again = () => {
+    render();
+    const btn = document.querySelector('#chart-host .id-chart-err button');
+    if (btn) btn.focus();
+  };
+  if (window.StockChart) { again(); return; }
+  const s = document.createElement('script');
+  s.src = '../chart.js';
+  s.onload = again;
+  s.onerror = () => chartUnavailable(true);
+  document.head.appendChild(s);
 }
 // SIC-D35: the engine's entry reason and member state are English codes; each
 // renders as a short bilingual chip. The raw code stays in the tooltip.

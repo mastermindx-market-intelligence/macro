@@ -509,3 +509,97 @@ def test_subsector_detail_render_localizes_every_engine_word_in_chinese():
     # colour on the row or card.
     assert rendered.count('<span class="entry-chip">') == 2
     assert '<span class="l-en">Entry signal open</span><span class="l-zh">入场信号开启</span>' in rendered
+
+
+# O-INT vi (state matrix dossier/error, R3A-74). The harness mirrors the real DOM in
+# one respect that matters: writing #app recreates an empty #chart-host, as the
+# page's innerHTML render does.
+_CHART_FAILURE_HARNESS = r"""
+const host = {innerHTML: ''};
+const btn = {listeners: {}, focused: 0,
+  addEventListener(type, fn) { this.listeners[type] = fn; },
+  focus() { this.focused++; }};
+host.querySelector = () => host.innerHTML.includes('id-chart-err') ? btn : null;
+const app = {};
+let appHTML = '';
+Object.defineProperty(app, 'innerHTML', {get: () => appHTML, set: (v) => { appHTML = v; host.innerHTML = ''; }});
+const scripts = [];
+const logged = [];
+global.document = {
+  getElementById: (id) => id === 'app' ? app : (id === 'chart-host' ? host : {}),
+  querySelector: () => host.querySelector(),
+  addEventListener: () => {},
+  createElement: () => ({}),
+  head: {appendChild: (node) => scripts.push(node)},
+};
+global.window = MODE === 'throw' ? {StockChart: {mount() { throw new Error('boom'); }}} : {};
+console.error = (...args) => logged.push(String(args[0]));
+"""
+
+
+def _drive_subsector_chart_failure(mode: str, steps: str) -> dict:
+    from scripts import build_subsector_confluence as bsc
+
+    detail = _subsector_reason_detail("flat: sell")
+    html = bsc._env().get_template("subsector_detail.html.j2").render(
+        detail_json=json.dumps(detail, ensure_ascii=False),
+        group_name=detail["group"]["label"],
+        chart_key="semis",
+        has_signals=False,
+        back_href="../subsectors.html",
+    )
+    scripts = re.findall(r"<script(?: [^>]*)?>(.*?)</script>", html, flags=re.S)
+    js = next(block for block in scripts if "const DETAIL =" in block)
+    node = shutil.which("node")
+    assert node is not None, "node is required to execute the chart-failure state"
+    harness = (
+        f"const MODE = {json.dumps(mode)};" + _CHART_FAILURE_HARNESS + js + "\n" + steps
+        + "\nprocess.stdout.write(JSON.stringify({host: host.innerHTML, focused: btn.focused,"
+        " scripts: scripts.map((s) => s.src), logged}));\n"
+    )
+    run = subprocess.run([node, "-e", harness], capture_output=True, text=True, timeout=30)
+    assert run.returncode == 0, run.stderr
+    return json.loads(run.stdout)
+
+
+def _assert_chart_unavailable(host: str) -> None:
+    assert '<div class="id-chart-err" role="alert">' in host
+    assert '<span class="l-en">Chart unavailable right now</span><span class="l-zh">图表暂不可用</span>' in host
+    assert '<span class="l-zh">本页的概况、成分与证据不受影响。</span>' in host
+    assert '<button type="button"><span class="l-en">Retry</span><span class="l-zh">重试</span></button>' in host
+
+
+def test_subsector_chart_mount_failure_says_so_in_its_frame():
+    """A mount that throws still logs, and now also tells the reader in the chart's
+    own frame. A retry that fails again keeps the message and puts focus back on Retry."""
+    out = _drive_subsector_chart_failure("throw", "")
+    _assert_chart_unavailable(out["host"])
+    assert out["logged"] == ["chart mount failed"]
+    assert out["focused"] == 0, "the first render never steals focus"
+
+    out = _drive_subsector_chart_failure("throw", "btn.listeners.click();")
+    _assert_chart_unavailable(out["host"])
+    assert out["focused"] == 1
+    assert out["scripts"] == [], "the chart script is present; retry re-mounts, it does not reload"
+
+
+def test_subsector_missing_chart_script_retries_by_reloading_it():
+    """When the shared chart script never arrived, Retry loads it again. A second
+    failure keeps the message with focus on Retry; a load mounts the chart."""
+    out = _drive_subsector_chart_failure("missing", "")
+    _assert_chart_unavailable(out["host"])
+    assert out["logged"] == []
+
+    out = _drive_subsector_chart_failure("missing", "btn.listeners.click(); scripts[0].onerror();")
+    _assert_chart_unavailable(out["host"])
+    assert out["scripts"] == ["../chart.js"]
+    assert out["focused"] == 1
+
+    out = _drive_subsector_chart_failure(
+        "missing",
+        "btn.listeners.click();"
+        " window.StockChart = {mount(h) { h.innerHTML = '<canvas></canvas>'; }};"
+        " scripts[0].onload();",
+    )
+    assert out["host"] == "<canvas></canvas>"
+    assert out["focused"] == 0
