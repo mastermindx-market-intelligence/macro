@@ -341,11 +341,18 @@ def build_candidates(evidence: Mapping[str, Any] | None, asof: str) -> list[dict
             continue
 
         status, source = _availability(raw_ticker, evidence)
-        rows.append({
+        row = {
             "session_date": str(asof),
             "security_ref_raw": raw_ticker,
             "candidate_origin": "+".join(origins),
             "availability_status": status,
             "availability_source": source,
-        })
+        }
+        native = (evidence.get("native_families") or {}).get(raw_ticker)
+        if native:
+            from engine import hk_native_intelligence
+            for field in hk_native_intelligence.FAMILY_FIELDS:
+                if field in native:
+                    row[field] = native.get(field)
+        rows.append(row)
     return rows
