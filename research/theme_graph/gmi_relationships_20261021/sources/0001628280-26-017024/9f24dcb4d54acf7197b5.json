@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-12T12:06:26Z",
+ "accession": "0001628280-26-017024",
+ "cik": "0001306965",
+ "doc_byte_length": 10268542,
+ "doc_sha256": "aad9da70733dd4bb4741408fd2cfabf02122cc91e8735614cba319bd9235f030",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-12",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "shel-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1810320,
+  "byte_start": 1810033,
+  "normalized": "[A]We have offtake rights via a lease to 100% of the capacity (2.5 mtpa) of the Kinder Morgan-operated Elba Island liquefaction plant in Georgia, USA.",
+  "normalized_sha256": "0e32e04475b67f1e845bd48bb435519bb8041604bc6225bb59b06ae66b26aff0",
+  "raw": "[A]</span><span style=\"color:#53575a;font-family:'ShellBook',sans-serif;font-size:6pt;font-weight:400;line-height:120%;padding-left:2.85pt\">We have offtake rights via a lease to 100% of the capacity (2.5 mtpa) of the Kinder Morgan-operated Elba Island liquefaction plant in Georgia, USA.",
+  "raw_sha256": "9f24dcb4d54acf7197b5cd0ef33c705261fb5ab77e2d9eea96beed4c08c13254"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1306965/000162828026017024/shel-20251231.htm",
+ "xbrl_contexts": []
+}

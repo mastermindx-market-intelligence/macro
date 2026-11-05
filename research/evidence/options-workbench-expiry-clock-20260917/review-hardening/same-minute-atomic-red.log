@@ -1,0 +1,106 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____________ test_same_stamp_retry_without_greek_snapshot_is_atomic ____________
+
+    def test_same_stamp_retry_without_greek_snapshot_is_atomic():
+        first = append_stamp(
+            None,
+            stamp="0931", time_step="09:31",
+            net_by_strike={600.0: 1000.0},
+            spot=600.0, asof="2026-07-06T13:31:10Z",
+            cadence_sec=60, session_date="2026-07-06", root="SPY",
+            valuation_at="2026-07-06T13:31:10Z",
+            built_at="2026-07-06T13:31:11Z",
+            trade_at_first="2026-07-06T13:30:50Z",
+            trade_at_last="2026-07-06T13:31:00Z",
+            quote_at_first="2026-07-06T13:30:49Z",
+            quote_at_last="2026-07-06T13:30:59Z",
+            oi_vintage="2026-07-02",
+            greek_by_strike={
+                METRIC_GEX: {600.0: 5_000_000.0},
+                "dex": {}, "vanna": {}, "charm": {},
+            },
+            walls={"flip": 601.0, "callWall": 605.0, "putWall": 595.0},
+            coverage=1.0,
+        )
+
+        # Same HHMM retry, but the Greek stage did not produce a snapshot. Updating only
+        # net premium / frame clocks would relabel the retained Greek values with a later
+        # information set. The minute snapshot must therefore stay atomic.
+        second = append_stamp(
+            first,
+            stamp="0931", time_step="09:31",
+            net_by_strike={600.0: 1200.0},
+            spot=600.5, asof="2026-07-06T13:31:50Z",
+            cadence_sec=60, session_date="2026-07-06", root="SPY",
+            valuation_at="2026-07-06T13:31:50Z",
+            built_at="2026-07-06T13:31:51Z",
+            greek_by_strike=None, walls=None, coverage=None,
+        )
+        frame = frame_for_stamp(second, "0931")
+>       assert frame["grids"]["netprem"][0] == [1000.0]
+E       assert [1200.0] == [1000.0]
+E
+E         At index 0 diff: 1200.0 != 1000.0
+E         Use -v to get more diff
+
+tests/test_flow_surface.py:431: AssertionError
+____ test_same_stamp_successful_empty_greek_snapshot_replaces_prior_column _____
+
+    def test_same_stamp_successful_empty_greek_snapshot_replaces_prior_column():
+        first = append_stamp(
+            None,
+            stamp="0931", time_step="09:31",
+            net_by_strike={600.0: 1000.0},
+            spot=600.0, asof="2026-07-06T13:31:10Z",
+            cadence_sec=60, session_date="2026-07-06", root="SPY",
+            valuation_at="2026-07-06T13:31:10Z",
+            built_at="2026-07-06T13:31:11Z",
+            trade_at_first="2026-07-06T13:30:50Z",
+            trade_at_last="2026-07-06T13:31:00Z",
+            quote_at_first="2026-07-06T13:30:49Z",
+            quote_at_last="2026-07-06T13:30:59Z",
+            oi_vintage="2026-07-02",
+            greek_by_strike={
+                METRIC_GEX: {600.0: 5_000_000.0},
+                "dex": {}, "vanna": {}, "charm": {},
+            },
+            walls={"flip": 601.0, "callWall": 605.0, "putWall": 595.0},
+            coverage=1.0,
+        )
+
+        second = append_stamp(
+            first,
+            stamp="0931", time_step="09:31",
+            net_by_strike={600.0: 1200.0},
+            spot=600.5, asof="2026-07-06T13:31:50Z",
+            cadence_sec=60, session_date="2026-07-06", root="SPY",
+            valuation_at="2026-07-06T13:31:50Z",
+            built_at="2026-07-06T13:31:51Z",
+            trade_at_first="2026-07-06T13:31:20Z",
+            trade_at_last="2026-07-06T13:31:30Z",
+            quote_at_first=None, quote_at_last=None,
+            oi_vintage="2026-07-02",
+            # A supplied empty Greek snapshot is authoritative, unlike None/failure.
+            greek_by_strike={
+                METRIC_GEX: {},
+                "dex": {}, "vanna": {}, "charm": {},
+            },
+            walls={"flip": None, "callWall": None, "putWall": None},
+            coverage=0.0,
+        )
+        frame = frame_for_stamp(second, "0931")
+        assert frame["grids"]["netprem"][0] == [1200.0]
+>       assert frame["grids"][METRIC_GEX][0] == [0.0]
+E       assert [5000000.0] == [0.0]
+E
+E         At index 0 diff: 5000000.0 != 0.0
+E         Use -v to get more diff
+
+tests/test_flow_surface.py:488: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, agentos, browser, calibration, content, data, docs, finviz_themes, knowledge, mockups, properties, reports, requirements, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_flow_surface.py::test_same_stamp_retry_without_greek_snapshot_is_atomic
+FAILED tests/test_flow_surface.py::test_same_stamp_successful_empty_greek_snapshot_replaces_prior_column
+2 failed in 2.08s

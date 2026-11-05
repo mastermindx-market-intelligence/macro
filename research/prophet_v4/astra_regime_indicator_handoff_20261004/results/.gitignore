@@ -1,0 +1,8 @@
+# Lane outputs: parquet panels stay on the compute host and in the seat's local copy;
+# only RESULT.md, result.json, code, tests and hashes.txt are committed (03 §5, 04 §3).
+*.parquet
+*.feather
+*.pkl
+__pycache__/
+*.pyc
+.pytest_cache/

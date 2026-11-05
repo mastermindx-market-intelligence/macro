@@ -1,0 +1,40 @@
+{
+  "historical_baseline_artifact_sha256": "3bd0ae735619a0bddfcfff565003948ffc8ecc7d42900a236c4b8fb14d538e08",
+  "historical_computation_seconds": 1047.25,
+  "baseline_from_prior_real_input_phase_not_rerun_here": true,
+  "stages": [
+    {
+      "change": "native calendar aggregation",
+      "head": "b5c0fc2e1e234eefa6e6eb8e9c1a0e129d5a9a22",
+      "seconds": 889.146,
+      "cpu_seconds": 811.754,
+      "exact_public_except_runtime": true,
+      "exact_uncapped_rows": true,
+      "inputs_unchanged": true,
+      "below_600": false
+    },
+    {
+      "change": "plus unused-detail deferral",
+      "head": "1bfadc5501e40ca9730cb3df2a312f4db9982395",
+      "seconds": 629.373,
+      "cpu_seconds": 588.002,
+      "exact_public_except_runtime": true,
+      "exact_uncapped_rows": true,
+      "inputs_unchanged": true,
+      "below_600": false
+    },
+    {
+      "change": "plus vector warm-input validation",
+      "head": "788462d59e60f6ec311b46c0ff23a45f0c186793",
+      "seconds": 556.56,
+      "cpu_seconds": 513.936,
+      "exact_public_except_runtime": true,
+      "exact_uncapped_rows": true,
+      "inputs_unchanged": true,
+      "below_600": true
+    }
+  ],
+  "warning_600_seconds_met": true,
+  "early_warning_480_seconds_met": false,
+  "production": false
+}

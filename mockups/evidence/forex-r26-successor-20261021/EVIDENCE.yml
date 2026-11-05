@@ -1,0 +1,9 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/forex.html.j2
+  - templates/forex_r26_workspace.html.j2
+  - templates/forex_r26.css
+  - templates/forex_r26.js
+  - site/forex_r26.css
+  - site/forex_r26.js
+manifest: mockups/evidence/forex-r26-successor-20261021/manifest.json
