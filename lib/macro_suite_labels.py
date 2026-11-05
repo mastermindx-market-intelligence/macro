@@ -434,6 +434,21 @@ OWNER_VALUE: dict[str, dict[str, str]] = {
     "early": _pair("Early-cycle recovery", "周期早段复苏"),
     "mid": _pair("Mid-cycle", "周期中段"),
     "late": _pair("Late-cycle", "周期晚段"),
+    # Business-cycle clock phase (`engine/business_cycle.py` `_phase`, the
+    # owner's closed vocabulary {expansion, slowdown, contraction, recovery,
+    # unknown}), republished by the business_activity workspace as the
+    # categorical `business_cycle_phase`. The producer pairs each phase with
+    # its own ZH (扩张 / 放缓 / 收缩 / 复苏 / 未知) but the workspace forwards only
+    # the EN token, so `label()` had no entry and deslugged `contraction` into
+    # an untranslated "Contraction" ZH span on macro_business_activity.html
+    # (copy-law red, ci-pack-5 on main, 2026-11-05). Same pairs the engine
+    # emits; `recovery` is listed explicitly even though the ZH-parity table
+    # already repairs it, so the whole vocabulary is reviewed in one place.
+    "expansion": _pair("Expansion", "扩张"),
+    "slowdown": _pair("Slowdown", "放缓"),
+    "contraction": _pair("Contraction", "收缩"),
+    "recovery": _pair("Recovery", "复苏"),
+    "unknown": _pair("Unknown", "未知"),
 }
 
 # --- metric identities -------------------------------------------------------
@@ -2147,6 +2162,38 @@ PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
             "Starts are down 13.5% from a year ago and permits are up 2.4%. "
             "Permits minus starts is +194 thousand homes at an annual rate.",
             "开工同比下降 13.5%，许可同比上升 2.4%。许可减开工为年化 +194 千套。",
+        ),
+    ),
+    # business_activity `_detect_contradiction` (depth/breadth divergence of the
+    # owner's 3 D's recession rule). Both producer sentences spell DEPTH and
+    # BREADTH in capitals, which `machine_text_hits` reads as state tokens, so
+    # the diagnostic fell to PLAIN_FALLBACK on macro_business_activity.html
+    # (copy-law red, ci-pack-5 on main, 2026-11-05). Keys are the stable
+    # opening clause of each sentence; the reviewed pairs keep the producer's
+    # meaning (which leg fired, concentrated-vs-broad, both must fire) in
+    # plain words. The raw sentence is retained for Details by apply_plain_pair.
+    (
+        "The leading tier's 6-month momentum has crossed the calibrated "
+        "recession-risk DEPTH threshold, but BREADTH",
+        _pair(
+            "Depth has crossed the recession-risk threshold while breadth has not: "
+            "the leading tier's six-month momentum has deteriorated, but too few "
+            "leading components confirm it. Both must fire together before a "
+            "recession-risk signal is asserted.",
+            "深度已越过衰退风险阈值，但广度尚未确认：领先层的六个月动量已走弱，"
+            "但确认走弱的领先分项仍然偏少。两者须同时触发，才会断言衰退风险信号。",
+        ),
+    ),
+    (
+        "BREADTH (the share of leading legs weakening) has crossed the "
+        "calibrated recession-risk cutoff, but the leading tier's 6-month "
+        "momentum DEPTH",
+        _pair(
+            "Breadth has crossed the recession-risk cutoff while depth has not: "
+            "the weakening across leading components is broad but shallow. Both "
+            "must fire together before a recession-risk signal is asserted.",
+            "广度已越过衰退风险阈值，但深度尚未确认：领先分项的走弱面广而不深。"
+            "两者须同时触发，才会断言衰退风险信号。",
         ),
     ),
 )

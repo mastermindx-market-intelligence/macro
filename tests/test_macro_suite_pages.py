@@ -998,6 +998,62 @@ def test_bond_desk_cycle_phase_tokens_have_reviewed_pairs() -> None:
         assert labels.value_pair(token) == pair, token
 
 
+def test_business_cycle_clock_phase_tokens_have_reviewed_pairs() -> None:
+    """The clock's closed phase vocabulary renders reviewed EN/ZH (2026-11-05).
+
+    `engine/business_cycle.py` `_phase` emits {expansion, slowdown, contraction,
+    recovery, unknown}; the business_activity workspace republishes only the EN
+    token as the categorical `business_cycle_phase`. Without an OWNER_VALUE
+    entry the token deslugs to an ASCII ZH twin and the copy-law gate goes red
+    (main, ci-pack-5, macro_business_activity.html).
+    """
+    from engine.business_cycle import _phase
+
+    expected = {
+        "expansion": {"en": "Expansion", "zh": "扩张"},
+        "slowdown": {"en": "Slowdown", "zh": "放缓"},
+        "contraction": {"en": "Contraction", "zh": "收缩"},
+        "recovery": {"en": "Recovery", "zh": "复苏"},
+        "unknown": {"en": "Unknown", "zh": "未知"},
+    }
+    for token, pair in expected.items():
+        assert labels.value_pair(token) == pair, token
+    # The reviewed ZH is the engine's own pairing, not a second translation.
+    for lead, coin in ((1.0, 1.0), (-1.0, 1.0), (-1.0, -1.0), (1.0, -1.0), (None, None)):
+        en, zh = _phase(lead, coin)
+        assert expected[en]["zh"] == zh, en
+
+
+def test_business_activity_contradiction_sentences_have_reviewed_plain_pairs() -> None:
+    """Both depth/breadth divergence sentences render a reviewed pair (2026-11-05).
+
+    `_detect_contradiction` spells DEPTH and BREADTH in capitals, which the
+    machine-text guard reads as state tokens; without a PLAIN_PRODUCER entry the
+    diagnostic fell to PLAIN_FALLBACK on macro_business_activity.html (copy-law
+    red, ci-pack-5 on main). The pairs are keyed on each sentence's opening
+    clause and must themselves pass the guard.
+    """
+    from engine.market_os.macro_workspaces.business_activity import _detect_contradiction
+
+    for depth, breadth in ((True, False), (False, True)):
+        found = _detect_contradiction({
+            "recession_signal": {
+                "available": True,
+                "conditions": {"depth": depth, "breadth": breadth},
+            },
+        })
+        assert found["present"] is True
+        rewrite, original = labels.apply_plain_pair({"en": found["en"], "zh": found["zh"]})
+        assert original == {"en": found["en"], "zh": found["zh"]}
+        assert rewrite is not None and rewrite != labels.PLAIN_FALLBACK, (depth, breadth)
+        assert labels.lookup_plain_producer(found["en"]) == rewrite
+        assert not labels.machine_text_hits(rewrite["en"])
+        assert not labels.machine_text_hits(rewrite["zh"])
+        assert re.search(r"[\u4e00-\u9fff]", rewrite["zh"])
+        leg = "Depth" if depth else "Breadth"
+        assert rewrite["en"].startswith(leg + " has crossed"), rewrite["en"]
+
+
 def test_suite_section_navigation_uses_only_the_existing_shell_candidate() -> None:
     """Execute the shipped IIFE, including initial boot and accepted-location events.
 
