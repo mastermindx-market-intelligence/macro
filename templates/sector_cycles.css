@@ -191,7 +191,7 @@ html[data-theme="light"] .sc-mbtn.on, html[data-theme="light"] .sc-sbtn.on { col
 /* Cards read by CYCLE PHASE, not by the (rainbow) per-ETF accent — only the small
    identity dot keeps the ETF colour, so the grid groups visually by where each
    sector sits. --ph = phase hue, --c = ETF accent. */
-.sc-page .cyc-card::before { background: var(--ph, var(--c)); }
+.sc-page .cyc-card::before { content: none; }  /* A2_D28: no accent stripe on a container (Chairman rule; DESIGN_DOCTRINE) */
 .sc-page .cyc-card::after { background: radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--ph, var(--c)) 13%, transparent), transparent 55%); }
 .sc-page .cyc-card:hover { border-color: color-mix(in srgb, var(--ph) 48%, var(--line));
   box-shadow: 0 10px 30px color-mix(in srgb, var(--ph) 18%, transparent); }
