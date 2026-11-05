@@ -286,6 +286,27 @@ html[data-theme="light"] :is(
 
 </style>
 <style>
+
+.msp-overview{margin:0 0 20px;padding:20px 22px;border:1px solid var(--line,var(--grid));border-radius:var(--r-card,12px);background:var(--panel,var(--card))}
+.msp-glance{display:grid;grid-template-columns:minmax(110px,.7fr) minmax(0,2fr) minmax(130px,.8fr);gap:18px;align-items:center}
+.msp-glance-label{display:block;color:var(--mut);font-size:12px;margin-bottom:5px}
+.msp-glance-value{display:block;font-size:28px;font-weight:650;color:var(--ink);font-variant-numeric:tabular-nums}
+.msp-glance h2{margin:0 0 6px;font-size:19px;line-height:1.3;color:var(--ink)}
+.msp-glance p{margin:0;color:var(--mut);font-size:13px;line-height:1.5}
+.msp-observed{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--line);color:var(--mut);font-size:12px;line-height:1.6}
+.msp-observations{margin-top:12px;border-top:1px solid var(--line)}
+.msp-observations>summary{min-height:44px;padding:10px 0;cursor:pointer;font-weight:600;font-size:13px}
+.msp-observations button{min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:var(--r-btn,8px);background:var(--panel);color:var(--ink);cursor:pointer}
+.msp-observations :is(summary,button,[tabindex]):focus-visible,.msp-snapshot-details>summary:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.msp-table-scroll{max-width:100%;max-height:360px;overflow:auto;margin-top:12px;border:1px solid var(--line);border-radius:var(--r-btn,8px)}
+.msp-observations table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+.msp-observations caption{padding:12px;text-align:left;color:var(--mut)}
+.msp-observations th,.msp-observations td{padding:10px 12px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+.msp-observations th{color:var(--ink);background:var(--panel);font-weight:600}
+.msp-observations :is(th,td):first-child{text-align:left}
+.msp-week-state{margin:0 0 12px;font-weight:600;color:var(--ink);font-size:14px}
+@media(max-width:640px){.msp-overview{padding:16px 12px}.msp-glance{grid-template-columns:1fr 1fr;gap:14px}.msp-glance-reading{grid-column:1/-1;grid-row:2}.msp-glance-value{font-size:26px}.msp-glance h2{font-size:18px}}
+
 .msp-snapshot-details{margin-top:16px;border:1px solid var(--line,var(--grid));border-radius:var(--r-btn,10px);padding:0 16px}
 .msp-snapshot-details>summary{min-height:52px;align-content:center;padding:12px 0;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink)}
 .msp-snapshot-details[open]{padding-bottom:12px}
@@ -326,16 +347,48 @@ html[data-theme="light"] :is(
 
 <div class="wrap">
 
+
+{% macro exact_values(key) -%}
+<details class="msp-observations" id="{{ key }}-observations">
+  <summary id="{{ key }}-values-title">{{ t('Exact values and download', '精确数值与下载') }}</summary>
+  <p class="sec-foot">{{ t('Values match the selected chart window. Unavailable values stay blank in the CSV; zero remains zero.', '数值与所选图表窗口一致。CSV中的暂缺值保留为空，零值仍为零。') }}</p>
+  <button type="button" data-export-series="{{ key }}">{{ t('Download CSV', '下载CSV') }}</button>
+  <div class="msp-table-scroll" tabindex="0" role="region" aria-labelledby="{{ key }}-values-title">
+    <table><caption id="{{ key }}-values-caption"></caption><thead></thead><tbody></tbody></table>
+  </div>
+  <noscript>{{ t('Enable JavaScript to inspect and download the embedded chart observations.', '启用JavaScript即可查看和下载本页所含图表观测值。') }}</noscript>
+</details>
+{%- endmacro %}
+
 {# ── Page header ── #}
 <div style="margin:4px 0 18px">
   <div class="kick">{{ t('Market Structure', '市场结构') }}</div>
   <h1 style="margin:0;font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.02em">
-    {{ t('How positioning could shape market moves', '持仓结构如何影响市场波动') }}
+    {{ t('SPX market structure', '标普500市场结构') }}
   </h1>
   <p style="margin:4px 0 0;font-size:13px;color:var(--mut)">
     {{ t('Dealer hedging · systematic fund flows · stock-picking conditions · options-implied weekly range', '做市商对冲 · 系统化资金流 · 选股环境 · 期权隐含周度区间') }}
   </p>
 </div>
+
+
+<section class="msp-overview" id="msp-overview" aria-labelledby="msp-glance-title">
+  <div class="msp-glance">
+    <div><span class="msp-glance-label">{{ t('SPX · supplied index level', '标普500 · 已提供指数点位') }}</span><strong class="msp-glance-value">{% if snapshot_view.spot is not none %}{{ '%.1f'|format(snapshot_view.spot) }}{% else %}{{ t('Unavailable', '暂无数据') }}{% endif %}</strong></div>
+    <div class="msp-glance-reading">
+      <h2 id="msp-glance-title">{% if snapshot_view.regime == 'long' %}{{ t('Hedging may cushion swings', '对冲可能缓和波动') }}{% elif snapshot_view.regime == 'short' %}{{ t('Hedging may amplify swings', '对冲可能放大波动') }}{% else %}{{ t('Hedging direction unavailable', '对冲方向暂无数据') }}{% endif %}</h2>
+      <p>{% if snapshot_view.regime == 'long' %}{{ t('Dealer hedging can oppose both rises and falls.', '做市商对冲可能同时抑制上涨与下跌。') }}{% elif snapshot_view.regime == 'short' %}{{ t('Dealer hedging can reinforce both rises and falls.', '做市商对冲可能同时强化上涨与下跌。') }}{% else %}{{ t('The supplied snapshot does not establish a hedging direction.', '已有快照无法确定对冲方向。') }}{% endif %}</p>
+    </div>
+    <div><span class="msp-glance-label">{{ t('Modeled switch level', '模型切换点位') }}</span><strong class="msp-glance-value">{% if snapshot_view.flip is not none %}{{ '%.1f'|format(snapshot_view.flip) }}{% else %}{{ t('Unavailable', '暂无数据') }}{% endif %}</strong></div>
+  </div>
+  <p class="msp-observed">
+    {% if snapshot_view.observed %}{{ t('Observed', '观测日期') }} <time datetime="{{ snapshot_view.observed }}">{{ snapshot_view.observed }}</time>{% else %}{{ t('Observation date unavailable', '观测日期暂缺') }}{% endif %}
+    <span id="msp-snapshot-age" data-age-state="{{ snapshot_view.state }}" data-check-expires="{{ snapshot_view.valid_until or '' }}">
+    {% if snapshot_view.state == 'stale' %} · {{ t('Older than the latest completed session', '早于最近已完成交易日') }}{% elif snapshot_view.state == 'future' %} · {{ t('Future-dated record; timing unverified', '记录日期在未来；时间未核实') }}{% else %} · {{ t('Dated model context', '特定日期的模型背景') }}{% endif %}
+    </span>
+    {% if snapshot_view.coverage_incomplete %} · {{ t('Incomplete source history', '来源历史不完整') }}{% endif %}
+  </p>
+</section>
 
 <div class="msp-drivers" id="msp-drivers">
 {# ────────────────────── PANEL 2 — GEX HISTORY ────────────────────── #}
@@ -361,6 +414,7 @@ html[data-theme="light"] :is(
   <div class="chart-wrap" style="height:220px"><svg id="gex-chart" role="img" aria-label="Dealer options exposure history" data-chart-label-en="Dealer options exposure history" data-chart-label-zh="做市商期权敞口历史" aria-describedby="gex-range-status" viewBox="0 0 800 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
   <div class="chart-wrap" style="height:110px;margin-top:6px"><svg id="spx-flip-chart" role="img" aria-label="S&amp;P 500 and dealer flip level" data-chart-label-en="S&amp;P 500 and dealer flip level" data-chart-label-zh="标普500与做市商翻转点" aria-describedby="gex-range-status" viewBox="0 0 800 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
   <div class="sec-foot" id="gex-range-status" role="status" aria-live="polite" aria-atomic="true"></div>
+  {{ exact_values('gex') }}
   <div class="sec-foot">{{ t('GEX (dealer options exposure) bars coloured by dealer regime · SPX line against the flip level (amber dashed)', 'GEX（做市商期权敞口）柱图按做市商制度着色 · 标普500线对照翻转点（琥珀色虚线）') }}{% if gamma.series_start is not none %} · {{ t('series from', '数据自') }} {{ gamma.series_start }}{% endif %}</div>
 </div>
 {% else %}
@@ -418,10 +472,10 @@ html[data-theme="light"] :is(
     <span class="l-zh">做市商正在吸收波动</span>
   </div>
   <p class="hero-sub">
-    <span class="l-en">Hedging flows tend to push dips back up — range-bound, buy-the-dip backdrop</span>
-    <span class="l-zh">对冲资金倾向于压低回档 — 区间震荡、逢低买入的背景</span>
+    <span class="l-en">Modeled hedging tends to oppose price swings in either direction</span>
+    <span class="l-zh">模型中的对冲资金倾向于抑制两个方向的价格波动</span>
   </p>
-  <span class="stance-chip watch">{{ t('Watch — no forced action', '观望 — 无需主动出击') }}</span>
+  <span class="stance-chip watch">{{ t('Model context — hedging may cushion swings', '模型背景 — 对冲可能缓和波动') }}</span>
   {% elif gamma_regime == 'short' %}
   <div class="hero-state tone-short">
     <span class="l-en">Dealers amplifying moves</span>
@@ -431,7 +485,7 @@ html[data-theme="light"] :is(
     <span class="l-en">Swings can run further than usual — hedging flows add fuel, not brakes</span>
     <span class="l-zh">波动可能超出正常幅度 — 对冲资金火上浇油而非降速</span>
   </p>
-  <span class="stance-chip caution">{{ t('Protect gains — wider swings expected', '保护利润 — 波动幅度可能放大') }}</span>
+  <span class="stance-chip caution">{{ t('Model context — swings may be amplified', '模型背景 — 波动可能被放大') }}</span>
   {% else %}
   <div class="hero-state tone-null">
     <span class="l-en">Regime unclear</span><span class="l-zh">制度方向不明</span>
@@ -440,7 +494,7 @@ html[data-theme="light"] :is(
     <span class="l-en">Dealer positioning near the flip level — absorb/amplify balance is uncertain</span>
     <span class="l-zh">做市商持仓接近翻转点 — 吸收/放大力量暂时持平</span>
   </p>
-  <span class="stance-chip neutral">{{ t('Stand aside — watch for flip', '旁观 — 等待翻转信号') }}</span>
+  <span class="stance-chip neutral">{{ t('Direction unavailable — check the supplied switch level', '方向暂无数据 — 查看已有切换点位') }}</span>
   {% endif %}
 
   <div class="hero-meta">
@@ -532,8 +586,7 @@ html[data-theme="light"] :is(
      so the honest thing is to name the days the read skips rather than let the
      line and the day-count quietly close over them. Merged with provenance into
      ONE footnote (Law 4) — null sentence first, verbatim; provenance after a ·. #}
-  {% set _cov = gamma.coverage if (gamma.coverage and not gamma.coverage.complete) else none %}
-  {% set _miss = (((_cov.missing_recent or []) + (_cov.missing_in_regime or [])) | unique | list | sort) if _cov else [] %}
+  {% set _miss = snapshot_view.missing_dates %}
   {% set _shown = _miss[-5:] if _miss else [] %}
   {% set _more = (_miss | length - _shown | length) if _miss else 0 %}
   {% set _has_null = _miss | length > 0 %}
@@ -548,7 +601,7 @@ html[data-theme="light"] :is(
     {% if _has_prov %}
     {% if gamma.series_start is not none %}{{ t('Dealer-exposure (GEX) series from', '做市商敞口（GEX）数据自') }} {{ gamma.series_start }}{% endif %}
     {% if msp is defined and msp is not none and msp.asof is not none %} · {{ t('Artifact date', '数据文件日期') }} {{ msp.asof }}{% endif %}
-    · {{ t('Gamma snapshot observation date not supplied', '未提供伽马快照观测日期') }}
+    · {% if snapshot_view.observed %}{{ t('Gamma snapshot observed', '伽马快照观测日期') }} {{ snapshot_view.observed }}{% else %}{{ t('Gamma snapshot observation date not supplied', '未提供伽马快照观测日期') }}{% endif %}
     {% endif %}
   </div>
   {% endif %}
@@ -599,9 +652,9 @@ html[data-theme="light"] :is(
   {% else %}<span class="l-en">Systematic funds: window change unavailable.</span><span class="l-zh">系统化资金：窗口变化暂无数据。</span>{% endif %}
 </div>
 {% if _flow_known %}
-  {% if agree == 'aligned_adding' %}<span class="stance-chip watch"><span class="l-en">Watch — don't chase: systematic buying is already in the price.</span><span class="l-zh">观望——勿追涨：系统化买盘已反映在价格中。</span></span>
-  {% elif agree == 'aligned_cutting' %}<span class="stance-chip watch"><span class="l-en">Watch — systematic funds are stepping back; don't lean against it.</span><span class="l-zh">观望——系统化资金正在撤减，勿逆势加仓。</span></span>
-  {% elif agree == 'paused' or agree == 'split' %}<span class="stance-chip neutral"><span class="l-en">Stand aside — systematic flows aren't pushing either way.</span><span class="l-zh">暂不行动——系统化资金没有明确方向。</span></span>
+  {% if agree == 'aligned_adding' %}<span class="stance-chip watch"><span class="l-en">Modeled fund exposure is increasing in both strategies.</span><span class="l-zh">两类策略的模型基金敞口均在增加。</span></span>
+  {% elif agree == 'aligned_cutting' %}<span class="stance-chip watch"><span class="l-en">Modeled fund exposure is decreasing in both strategies.</span><span class="l-zh">两类策略的模型基金敞口均在减少。</span></span>
+  {% elif agree == 'paused' or agree == 'split' %}<span class="stance-chip neutral"><span class="l-en">The two fund models show no shared direction.</span><span class="l-zh">两类基金模型没有共同方向。</span></span>
   {% else %}<span class="stance-chip watch"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></span>{% endif %}
 {% else %}
 <p class="sec-foot">{{ t('Modeled window changes are unavailable; adding, cutting or a pause cannot be inferred.','模型窗口变化暂无数据；不能据此推断加仓、减仓或暂停。') }}</p>
@@ -647,6 +700,7 @@ html[data-theme="light"] :is(
   <div style="font-size:12px;color:var(--mut);margin-bottom:8px">{{ t('Vol-target fund exposure ($B) against the S&P 500 — toggle above to change window', '波动率目标基金敞口（十亿美元）对照标普500 — 切换上方按钮调整窗口') }}</div>
   <div class="chart-wrap" style="height:160px"><svg id="sys-chart" role="img" aria-label="Estimated volatility-control exposure and S&amp;P 500" data-chart-label-en="Estimated volatility-control exposure and S&amp;P 500" data-chart-label-zh="波动率控制基金估算敞口与标普500" aria-describedby="sys-range-status" viewBox="0 0 800 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
   <div class="sec-foot" id="sys-range-status" role="status" aria-live="polite" aria-atomic="true"></div>
+  {{ exact_values('sys') }}
   <div class="sec-foot">{{ t('Blue line = vol-target fund exposure · grey line = S&P 500 · model estimates, not audited fund data', '蓝线=波动率目标基金敞口 · 灰线=标普500 · 模型估算，非审计基金数据') }}</div>
 </div>
 {% endif %}
@@ -698,11 +752,11 @@ html[data-theme="light"] :is(
     </p>
   </div>
   {% if disp.cor1m_regime == 'dispersion' %}
-  <span class="stance-chip act"><span class="l-en">Get ready — conditions favour stock-picking over index bets.</span><span class="l-zh">做好准备——当前环境有利于选股而非指数操作。</span></span>
+  <span class="stance-chip act"><span class="l-en">Stocks are moving less together.</span><span class="l-zh">个股走势的同步程度较低。</span></span>
   {% elif disp.cor1m_regime == 'elevated' %}
-  <span class="stance-chip neutral"><span class="l-en">Stand aside — stocks are moving together; picks add little.</span><span class="l-zh">暂不行动——个股同涨同跌，选股意义有限。</span></span>
+  <span class="stance-chip neutral"><span class="l-en">Stocks are moving more together.</span><span class="l-zh">个股走势的同步程度较高。</span></span>
   {% elif disp.cor1m_regime == 'normal' %}
-  <span class="stance-chip watch"><span class="l-en">Watch — don't chase; conditions are middling.</span><span class="l-zh">观望——不追单，环境中性。</span></span>
+  <span class="stance-chip watch"><span class="l-en">Stock correlations are near their middle range.</span><span class="l-zh">个股相关性接近中间区间。</span></span>
   {% else %}
   <span class="stance-chip watch"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></span>
   {% endif %}
@@ -724,6 +778,7 @@ html[data-theme="light"] :is(
   {% if disp.history is not none and disp.history | length > 0 %}
   <div class="chart-wrap" style="height:130px;margin-top:12px"><svg id="cor-chart" role="img" aria-label="Implied stock correlation history" data-chart-label-en="Implied stock correlation history" data-chart-label-zh="股票隐含相关性历史" aria-describedby="cor-range-status" viewBox="0 0 800 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
   <div class="sec-foot" id="cor-range-status" role="status" aria-live="polite" aria-atomic="true"></div>
+  {{ exact_values('cor') }}
   {% endif %}
   <div class="sec-foot">{{ t('1-month implied correlation (COR1M) history; gaps are unavailable observations. Regime and percentile use the published producer reading · source: CBOE, series from 2006', '1个月隐含相关性（COR1M）历史；缺口为缺失观测。状态与百分位采用数据源已发布的读数 · 来源：CBOE，数据自2006年起') }}</div>
 </div>
@@ -751,9 +806,9 @@ html[data-theme="light"] :is(
 
 {% if vol is not none %}
 {% if vol.rv_cross_state == 'calm' %}
-<span class="stance-chip neutral"><span class="l-en">Stand aside — vol is calm; no hedge urgency.</span><span class="l-zh">暂不行动——波动率平静，无需急于对冲。</span></span>
+<span class="stance-chip neutral"><span class="l-en">Recent realized volatility is below its longer baseline.</span><span class="l-zh">近期已实现波动率低于较长期基准。</span></span>
 {% elif vol.rv_cross_state == 'stress' %}
-<span class="stance-chip caution"><span class="l-en">Protect gains — vol stress says trim risk, not add.</span><span class="l-zh">保住收益——波动率承压，宜减仓不宜加仓。</span></span>
+<span class="stance-chip caution"><span class="l-en">Recent realized volatility is above its longer baseline.</span><span class="l-zh">近期已实现波动率高于较长期基准。</span></span>
 {% else %}
 <span class="stance-chip watch"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></span>
 {% endif %}
@@ -816,23 +871,24 @@ html[data-theme="light"] :is(
 <section class="msp-driver" data-driver="week">
 <div class="sec-head">
   <span class="eyebrow">6</span>
-  <h2>{{ t('Weekly range', '本周区间') }}</h2>
+  <h2>{{ t('Weekly range', '周度区间') }}</h2>
   <span class="help" tabindex="0">?<span class="tip">
-    <span class="l-en">Where the week could reasonably land, measured from Friday's close and the volatility priced in at that close. The supplied inner (±1σ) and outer (±2σ) ranges depend on volatility and distribution assumptions. Their names are not a verified coverage rate. Flip line: the level where dealer hedging switches from absorbing to amplifying. Locked at Friday's close, fixed through the week, resets each weekend. A model estimate, not a forecast or a boundary the market must respect.</span>
-    <span class="l-zh">从周五收盘价及当时定价的波动率推算，本周价格可能落在的区间。已有内层（±1σ）与外层（±2σ）区间依赖波动率及分布假设，名称不代表经验证的覆盖率。翻转线：做市商对冲从吸收转为放大的位置。周五收盘锁定，本周内保持不变，每周末重置。这是模型估算，既非预测，也非市场必须遵守的边界。</span>
+    <span class="l-en">Range priced for the supplied week, measured from the locked reference close and its implied volatility. The supplied inner (±1σ) and outer (±2σ) ranges depend on volatility and distribution assumptions. Their names are not a verified coverage rate. Flip line: the level where dealer hedging switches from absorbing to amplifying. The locked estimate stays fixed for its dated trading week. A model estimate, not a forecast or a boundary the market must respect.</span>
+    <span class="l-zh">由锁定参考收盘价及其隐含波动率推算的指定周度区间。已有内层（±1σ）与外层（±2σ）区间依赖波动率及分布假设，名称不代表经验证的覆盖率。翻转线：做市商对冲从吸收转为放大的位置。锁定估算在注明日期的交易周内保持不变。这是模型估算，既非预测，也非市场必须遵守的边界。</span>
   </span></span>
 </div>
 
 {% if wm_view.present %}
-<div class="panel" data-weekly-range>
+<div class="panel" data-weekly-range data-week-phase="{{ wm_view.phase }}" data-week-start="{{ wm_view.starts_at or '' }}" data-week-expires="{{ wm_view.expires_at or '' }}">
+  <p class="msp-week-state" id="msp-week-state" role="status" aria-live="polite">{% if wm_view.phase == 'expired' %}{{ t('Past week · retained for reference', '历史周度区间 · 留作参考') }}{% elif wm_view.phase == 'upcoming' %}{{ t('Upcoming supplied week', '已提供的下一交易周') }}{% elif wm_view.phase == 'current' %}{{ t('Supplied range for this trading week', '本交易周已提供的区间') }}{% else %}{{ t('Week timing unverified · reference only', '周度时间未核实 · 仅供参考') }}{% endif %}</p>
   <div class="kick">{{ t('Model estimate · supplied bands only', '模型估算 · 仅显示已有区间') }}</div>
   <div class="kpi-row">
-    <div class="kpi"><b>{% if wm_view.close is not none %}{{ '%.1f'|format(wm_view.close) }}{% else %}{{ t('Unavailable', '暂无数据') }}{% endif %}</b>{{ t('Locked Friday close', '锁定周五收盘价') }}</div>
+    <div class="kpi"><b>{% if wm_view.close is not none %}{{ '%.1f'|format(wm_view.close) }}{% else %}{{ t('Unavailable', '暂无数据') }}{% endif %}</b>{{ t('Locked reference close', '锁定参考收盘价') }}</div>
     {% if finite_number(wm.implied_weekly_pct) %}<div class="kpi"><b>±{{ '%.2f'|format(wm.implied_weekly_pct) }}%</b>{{ t('weekly implied move', '隐含周度涨跌幅') }}</div>{% endif %}
   </div>
   <div class="sec-foot">
-    {% if wm.locked_at is defined and wm.locked_at %}{{ t('Locked', '锁定于') }} {{ wm.locked_at[:10] }}{% else %}{{ t('Lock date unavailable', '锁定日期暂缺') }}{% endif %}
-    {% if wm.week_start is defined and wm.week_end is defined and wm.week_start and wm.week_end %} · {{ t('covers', '覆盖') }} {{ wm.week_start }} → {{ wm.week_end }}{% endif %}
+    {% if wm_view.locked_day %}{{ t('Locked', '锁定于') }} {{ wm_view.locked_day }}{% else %}{{ t('Lock date unavailable', '锁定日期暂缺') }}{% endif %}
+    {% if wm_view.week_start and wm_view.week_end %} · {{ t('covers', '覆盖') }} {{ wm_view.week_start }} → {{ wm_view.week_end }}{% endif %}
   </div>
   {% for band in wm_view.bands %}
   <div class="msp-band-row" data-sigma="{{ band.sigma }}" data-available="{{ 'true' if band.available else 'false' }}">
@@ -855,12 +911,12 @@ html[data-theme="light"] :is(
   </svg>
   {% endif %}
   <div class="kpi-row">
-    {% if wm_view.spot is not none %}<div class="kpi"><b>{{ '%.1f'|format(wm_view.spot) }}</b>{{ t('Supplied gamma spot', '伽马数据附带现价') if wm_view.spot_live else t('Friday close reference', '周五收盘参考') }}{% if wm_view.spot_live %}<small>{{ t('Observation date not supplied', '未提供观测日期') }}</small>{% endif %}</div>{% endif %}
+    {% if wm_view.spot is not none %}<div class="kpi"><b>{{ '%.1f'|format(wm_view.spot) }}</b>{{ t('Dated SPX reference', '特定日期的标普500参考') if wm_view.spot_supplied else t('Locked close reference', '锁定收盘参考') }}{% if wm_view.spot_supplied %}<small>{% if snapshot_view.observed %}{{ snapshot_view.observed }}{% else %}{{ t('Observation date not supplied', '未提供观测日期') }}{% endif %}</small>{% endif %}</div>{% endif %}
     {% if wm_view.flip is not none %}<div class="kpi"><b>{{ '%.1f'|format(wm_view.flip) }}</b>{{ t('Flip reference supplied with this week map', '本周区间附带的翻转参考') }}</div>{% endif %}
   </div>
   <div class="sec-foot">
     {{ t('A missing band remains unavailable. Price references do not establish a new weekly range.', '缺少的区间保持暂无数据；价格参考不会据此生成新的周度区间。') }}
-    {{ t('Model estimate locked on Friday: 30-day implied volatility scaled to five sessions. The coverage assumptions are not observed probabilities or price boundaries.', '模型于周五锁定，以30天隐含波动率折算至5个交易日。覆盖假设不是实测概率，也不是价格边界。') }}
+    {{ t('Model estimate locked before the supplied week: 30-day implied volatility scaled to five sessions. The coverage assumptions are not observed probabilities or price boundaries.', '模型在指定周开始前锁定，以30天隐含波动率折算至5个交易日。覆盖假设不是实测概率，也不是价格边界。') }}
   </div>
 </div>
 {% else %}
@@ -1036,6 +1092,78 @@ function paintRangeSummary(id,history,n,availability){
     status.appendChild(span);
   });
 }
+
+var observationColumns={
+  gex:[['date','Date','日期'],['net_gex_bn','Dealer exposure ($bn)','做市商敞口（十亿美元）'],['spot','SPX (points)','标普500（点）'],['flip','Switch level (points)','切换点位（点）']],
+  sys:[['date','Date','日期'],['vc_alloc_bn','Modeled fund exposure ($bn)','基金模型敞口（十亿美元）'],['spx_close','SPX (points)','标普500（点）']],
+  cor:[['date','Date','日期'],['cor1m','Implied correlation (source units)','隐含相关性（来源单位）']]
+};
+function exactObservationRows(history,n,columns){
+  return sliceTail(Array.isArray(history)?history:[],n).map(function(row){
+    return columns.map(function(column){
+      var value=row&&row[column[0]];
+      if(column[0]==='date'){
+        if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return '';
+        var parsed=new Date(value+'T00:00:00Z');
+        return !isNaN(parsed.getTime())&&parsed.toISOString().slice(0,10)===value?value:'';
+      }
+      return finiteNumber(value)?String(value):'';
+    });
+  });
+}
+function observationsCsv(history,n,columns){
+  // Only checked ISO dates and finite numeric fields enter rows: no formula strings.
+  var rows=[columns.map(function(c){return c[1]})].concat(exactObservationRows(history,n,columns));
+  return rows.map(function(row){return row.map(function(value){return '"'+value.replace(/"/g,'""')+'"'}).join(',')}).join('\r\n')+'\r\n';
+}
+function bilingualNode(en,zh){
+  var node=document.createElement('span');
+  [['en',en],['zh',zh]].forEach(function(pair){var span=document.createElement('span');span.className='l-'+pair[0];span.textContent=pair[1];node.appendChild(span)});
+  return node;
+}
+function paintObservations(key,history,n){
+  var details=document.getElementById(key+'-observations'),columns=observationColumns[key];if(!details||!columns)return;
+  details.dataset.range=String(n);
+  var table=details.querySelector('table'),head=table.querySelector('thead'),body=table.querySelector('tbody');
+  head.textContent='';body.textContent='';
+  var summary=rangeSummary(history,n),caption=table.querySelector('caption');
+  caption.textContent='';caption.appendChild(bilingualNode(summary.en,summary.zh));
+  var header=document.createElement('tr');columns.forEach(function(c){var cell=document.createElement('th');cell.scope='col';cell.appendChild(bilingualNode(c[1],c[2]));header.appendChild(cell)});head.appendChild(header);
+  exactObservationRows(history,n,columns).forEach(function(values){
+    var row=document.createElement('tr');
+    values.forEach(function(value,i){var cell=document.createElement(i===0?'th':'td');if(i===0)cell.scope='row';if(value==='')cell.appendChild(bilingualNode('Unavailable','暂无数据'));else cell.textContent=value;row.appendChild(cell)});body.appendChild(row);
+  });
+}
+function wireObservationDownloads(){
+  var histories={gex:typeof MSP_GAMMA_HIST==='undefined'?[]:MSP_GAMMA_HIST,sys:typeof MSP_SYS_HIST==='undefined'?[]:MSP_SYS_HIST,cor:typeof MSP_COR_HIST==='undefined'?[]:MSP_COR_HIST};
+  document.querySelectorAll('[data-export-series]').forEach(function(button){
+    button.addEventListener('click',function(){
+      var key=button.dataset.exportSeries,details=document.getElementById(key+'-observations'),columns=observationColumns[key];
+      if(!details||!columns)return;
+      var csv=observationsCsv(histories[key],Number(details.dataset.range),columns);
+      var url=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'})),link=document.createElement('a');
+      link.href=url;link.download='market-structure-'+key+'.csv';document.body.appendChild(link);link.click();link.remove();
+      setTimeout(function(){URL.revokeObjectURL(url)},1000);
+    });
+  });
+}
+function refreshDatedContext(){
+  var now=Date.now(),weekly=qs('[data-weekly-range]'),status=qs('#msp-week-state');
+  if(weekly&&status){
+    var starts=Date.parse(weekly.dataset.weekStart),expires=Date.parse(weekly.dataset.weekExpires);
+    if(Number.isFinite(starts)&&Number.isFinite(expires)){
+      var phase=now>=expires?'expired':now<starts?'upcoming':'current';
+      weekly.dataset.weekPhase=phase;
+      var labels={expired:['Past week · retained for reference','历史周度区间 · 留作参考'],upcoming:['Upcoming supplied week','已提供的下一交易周'],current:['Supplied range for this trading week','本交易周已提供的区间']};
+      status.textContent='';status.appendChild(bilingualNode(labels[phase][0],labels[phase][1]));
+    }
+  }
+  var age=qs('#msp-snapshot-age');
+  if(age&&age.dataset.ageState==='dated'&&now>=Date.parse(age.dataset.checkExpires)){
+    age.textContent=' · ';age.appendChild(bilingualNode('A newer session may be missing','可能缺少较新的交易日数据'));
+  }
+}
+
 function syncChartLanguage(){
   var zh=document.documentElement.getAttribute('data-lang')==='zh';
   document.querySelectorAll('.help').forEach(function(help,i){var tip=help.querySelector('.tip');if(!tip)return;tip.id='msp-help-'+i;tip.setAttribute('role','tooltip');help.setAttribute('aria-describedby',tip.id);help.setAttribute('aria-label',zh?'查看说明':'Read context');});
@@ -1058,6 +1186,7 @@ function wireRange(sel,key,def,fn,history,statusId){
     buttons.forEach(function(b){var active=Number(b.dataset.range)===value;b.classList.toggle('on',active);b.setAttribute('aria-pressed',String(active));});
     if(persist)setRange(key,value);
     var availability=fn(value);paintRangeSummary(statusId,history,value,availability);
+    paintObservations(statusId.replace('-range-status',''),history,value);
   }
   buttons.forEach(function(b){
     // Native buttons own Enter, Space and taps; no second keyboard activation.
@@ -1070,8 +1199,10 @@ function init(){
   wireRange('#gex-range-btns','msp-gex-range',126,drawGex,typeof MSP_GAMMA_HIST==='undefined'?[]:MSP_GAMMA_HIST,'gex-range-status');
   wireRange('#sys-range-btns','msp-sys-range',252,drawSys,typeof MSP_SYS_HIST==='undefined'?[]:MSP_SYS_HIST,'sys-range-status');
   wireRange('#cor-range-btns','msp-cor-range',252,drawCor,typeof MSP_COR_HIST==='undefined'?[]:MSP_COR_HIST,'cor-range-status');
-  syncChartLanguage();
+  syncChartLanguage();wireObservationDownloads();refreshDatedContext();
 }
+window.addEventListener('pageshow',refreshDatedContext);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)refreshDatedContext()});
 document.addEventListener('langchange',syncChartLanguage);
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init)}else{init()}
 })();

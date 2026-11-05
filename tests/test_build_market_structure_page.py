@@ -113,7 +113,7 @@ def test_week_map_panel_present():
     assert wm, "fixture must carry week_map — it is the shape the builder must emit"
 
     html = _render_with_fixture()
-    assert "Locked Friday" in html and "锁定周五" in html
+    assert "Locked reference close" in html and "锁定参考收盘价" in html
     # the anchor price and both band edges must actually reach the page
     assert f'{wm["locked_close"]:.1f}' in html
     assert f'{wm["band_1sigma_lo"]:.0f}' in html
@@ -504,20 +504,20 @@ def test_m3_null_pctile_is_missing_data_sentence_never_0th(tmp_path):
 def test_p3_systematic_fund_stance_map(tmp_path):
     cases = {
         "aligned_adding": (
-            "Watch — don't chase: systematic buying is already in the price.",
-            "观望——勿追涨：系统化买盘已反映在价格中。",
+            "Modeled fund exposure is increasing in both strategies.",
+            "两类策略的模型基金敞口均在增加。",
         ),
         "aligned_cutting": (
-            "Watch — systematic funds are stepping back; don't lean against it.",
-            "观望——系统化资金正在撤减，勿逆势加仓。",
+            "Modeled fund exposure is decreasing in both strategies.",
+            "两类策略的模型基金敞口均在减少。",
         ),
         "paused": (
-            "Stand aside — systematic flows aren't pushing either way.",
-            "暂不行动——系统化资金没有明确方向。",
+            "The two fund models show no shared direction.",
+            "两类基金模型没有共同方向。",
         ),
         "split": (
-            "Stand aside — systematic flows aren't pushing either way.",
-            "暂不行动——系统化资金没有明确方向。",
+            "The two fund models show no shared direction.",
+            "两类基金模型没有共同方向。",
         ),
         None: (_STANCE_CAUTIOUS_EN, _STANCE_CAUTIOUS_ZH),
         "mystery": (_STANCE_CAUTIOUS_EN, _STANCE_CAUTIOUS_ZH),
@@ -535,16 +535,16 @@ def test_p3_systematic_fund_stance_map(tmp_path):
 def test_p3_stock_picker_stance_map(tmp_path):
     cases = {
         "dispersion": (
-            "Get ready — conditions favour stock-picking over index bets.",
-            "做好准备——当前环境有利于选股而非指数操作。",
+            "Stocks are moving less together.",
+            "个股走势的同步程度较低。",
         ),
         "elevated": (
-            "Stand aside — stocks are moving together; picks add little.",
-            "暂不行动——个股同涨同跌，选股意义有限。",
+            "Stocks are moving more together.",
+            "个股走势的同步程度较高。",
         ),
         "normal": (
-            "Watch — don't chase; conditions are middling.",
-            "观望——不追单，环境中性。",
+            "Stock correlations are near their middle range.",
+            "个股相关性接近中间区间。",
         ),
         None: (_STANCE_CAUTIOUS_EN, _STANCE_CAUTIOUS_ZH),
         "mystery": (_STANCE_CAUTIOUS_EN, _STANCE_CAUTIOUS_ZH),
@@ -562,12 +562,12 @@ def test_p3_stock_picker_stance_map(tmp_path):
 def test_p3_vol_weather_stance_map(tmp_path):
     cases = {
         "calm": (
-            "Stand aside — vol is calm; no hedge urgency.",
-            "暂不行动——波动率平静，无需急于对冲。",
+            "Recent realized volatility is below its longer baseline.",
+            "近期已实现波动率低于较长期基准。",
         ),
         "stress": (
-            "Protect gains — vol stress says trim risk, not add.",
-            "保住收益——波动率承压，宜减仓不宜加仓。",
+            "Recent realized volatility is above its longer baseline.",
+            "近期已实现波动率高于较长期基准。",
         ),
         None: (_STANCE_CAUTIOUS_EN, _STANCE_CAUTIOUS_ZH),
         "unknown": (_STANCE_CAUTIOUS_EN, _STANCE_CAUTIOUS_ZH),
@@ -859,14 +859,14 @@ def test_p8_watch_band_bullet2_agrees_with_section4_stance():
     """
     html = _render_with_fixture()
     band = _watch_band(html)
-    assert "Watch — don't chase; conditions are middling." in html
-    assert "观望——不追单，环境中性。" in html
+    assert "Stock correlations are near their middle range." in html
+    assert "个股相关性接近中间区间。" in html
     assert _WOULD_OPEN_EN in band
     assert _WOULD_OPEN_ZH in band
     assert _HOLD_EN not in band
     assert "it is there now" not in band
     assert _HOLD_ZH not in band
-    assert "Get ready — conditions favour stock-picking over index bets." not in html
+    assert "Stocks are moving less together." not in html
 
 
 def test_p8_watch_band_bullet2_hold_when_pct_at_or_below_lo(tmp_path):
@@ -884,8 +884,8 @@ def test_p8_watch_band_bullet2_hold_when_pct_at_or_below_lo(tmp_path):
     assert "第15百分位" in band
     assert _WOULD_OPEN_EN not in band
     assert _WOULD_OPEN_ZH not in band
-    assert "Get ready — conditions favour stock-picking over index bets." in html
-    assert "做好准备——当前环境有利于选股而非指数操作。" in html
+    assert "Stocks are moving less together." in html
+    assert "个股走势的同步程度较低。" in html
 
 
 def test_p8_watch_band_bullet2_null_dispersion_is_cautious(tmp_path):

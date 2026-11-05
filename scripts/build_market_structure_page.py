@@ -22,7 +22,8 @@ import json
 import logging
 import math
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, time, timedelta, timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, Undefined
@@ -67,7 +68,97 @@ def _finite_number(value: object) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
-def _weekly_display(msp: dict | None) -> dict:
+def _day(value: object) -> date | None:
+    """Read a declared ISO date, never a build-clock substitute."""
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = date.fromisoformat(value)
+        return parsed if parsed.isoformat() == value else None
+    except ValueError:
+        return None
+
+
+def _lock_day(value: object) -> date | None:
+    if not isinstance(value, str):
+        return None
+    direct = _day(value)
+    if direct is not None:
+        return direct
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00")).date()
+    except ValueError:
+        return None
+
+
+def _utc_now(now: datetime | None = None) -> datetime:
+    now = now or datetime.now(timezone.utc)
+    return now.replace(tzinfo=timezone.utc) if now.tzinfo is None else now.astimezone(timezone.utc)
+
+
+def _snapshot_display(msp: dict | None, now: datetime | None = None) -> dict:
+    """Keep the gamma observation clock independent of artifact and build clocks."""
+    now = _utc_now(now)
+    gamma = (msp or {}).get("gamma")
+    gamma = gamma if isinstance(gamma, dict) else {}
+    coverage = gamma.get("coverage")
+    coverage = coverage if isinstance(coverage, dict) else {}
+    observed = _day(coverage.get("last_obs")) or _day(gamma.get("asof"))
+    missing = set()
+    for field in ("missing_recent", "missing_in_regime"):
+        rows = coverage.get(field)
+        if isinstance(rows, list):
+            missing.update(str(day) for value in rows if (day := _day(value)) is not None)
+    state, expected, valid_until = "unknown", None, None
+    if observed is not None:
+        try:
+            from lib import nyse_calendar
+            expected = nyse_calendar.expected_last_session(now)
+            state = "stale" if observed < expected else "dated" if observed <= now.astimezone(ZoneInfo("America/New_York")).date() else "future"
+            following = nyse_calendar.sessions_between(expected + timedelta(days=1), expected + timedelta(days=14))
+            if following:
+                valid_until = datetime.combine(following[0], time(17), tzinfo=ZoneInfo("America/New_York")).isoformat()
+        except (ImportError, ValueError, OverflowError):
+            state = "unknown"
+    return {
+        "spot": gamma.get("spot") if _finite_number(gamma.get("spot")) else None,
+        "flip": gamma.get("gamma_flip") if _finite_number(gamma.get("gamma_flip")) else None,
+        "regime": gamma.get("regime") if gamma.get("regime") in ("long", "short") else None,
+        "observed": observed.isoformat() if observed else None,
+        "state": state, "expected": expected.isoformat() if expected else None,
+        "valid_until": valid_until, "missing_count": len(missing), "missing_dates": sorted(missing),
+        "coverage_incomplete": coverage.get("complete") is False or bool(missing),
+    }
+
+
+def _weekly_clock(wm: dict, now: datetime | None = None) -> dict:
+    """Qualify the supplied trading week using the existing NYSE calendar."""
+    now = _utc_now(now)
+    start, end, locked = _day(wm.get("week_start")), _day(wm.get("week_end")), _lock_day(wm.get("locked_at"))
+    result = {"phase": "unknown", "starts_at": None, "expires_at": None,
+              "week_start": str(start) if start else None, "week_end": str(end) if end else None,
+              "locked_day": str(locked) if locked else None}
+    if not (start and end and locked and locked < start <= end and (end-start).days <= 6):
+        return result
+    try:
+        from lib import nyse_calendar
+        sessions = nyse_calendar.sessions_between(start, end)
+        if not sessions:
+            return result
+        et = ZoneInfo("America/New_York")
+        begins = datetime.combine(sessions[0], time(), tzinfo=et)
+        # Use the shared calendar's conservative 17:00 ET completion convention.
+        expires = datetime.combine(sessions[-1], time(17), tzinfo=et)
+        if locked != nyse_calendar.last_session_on_or_before(start - timedelta(days=1)) or locked > nyse_calendar.expected_last_session(now):
+            return result
+        phase = "expired" if now >= expires else "upcoming" if now < begins else "current"
+        result.update(phase=phase, starts_at=begins.isoformat(), expires_at=expires.isoformat())
+    except (ImportError, ValueError, OverflowError):
+        pass
+    return result
+
+
+def _weekly_display(msp: dict | None, now: datetime | None = None) -> dict:
     """Project supplied prices into display geometry; never synthesize a band."""
     wm = (msp or {}).get("week_map")
     gamma = (msp or {}).get("gamma") or {}
@@ -85,8 +176,8 @@ def _weekly_display(msp: dict | None) -> dict:
     close = wm.get("locked_close")
     close = close if _finite_number(close) else None
     spot = gamma.get("spot") if isinstance(gamma, dict) else None
-    spot_live = _finite_number(spot)
-    spot = spot if spot_live else close
+    spot_supplied = _finite_number(spot)
+    spot = spot if spot_supplied else close
     flip = wm.get("gamma_flip")
     flip = flip if _finite_number(flip) else None
     values.extend(v for v in (close, spot, flip) if v is not None)
@@ -104,8 +195,8 @@ def _weekly_display(msp: dict | None) -> dict:
     else:
         spot_x = flip_x = None
     return {"present": True, "bands": bands, "has_band": any(b["available"] for b in bands),
-            "close": close, "spot": spot, "spot_live": spot_live, "flip": flip,
-            "spot_x": spot_x, "flip_x": flip_x}
+            "close": close, "spot": spot, "spot_supplied": spot_supplied, "flip": flip,
+            "spot_x": spot_x, "flip_x": flip_x, **_weekly_clock(wm, now)}
 
 
 def render(root: Path, fixture: Path | None = None) -> str:
@@ -129,7 +220,8 @@ def render(root: Path, fixture: Path | None = None) -> str:
 
     env.globals["finite_number"] = _finite_number
     tpl = env.get_template("market_structure.html.j2")
-    return tpl.render(msp=msp, wm_view=_weekly_display(msp))
+    now = datetime.now(timezone.utc)
+    return tpl.render(msp=msp, wm_view=_weekly_display(msp, now), snapshot_view=_snapshot_display(msp, now))
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -58,9 +58,12 @@ def make_page(browser, base, width, theme, locale):
 
 def market(browser, base):
     from scripts.build_market_structure_page import render
+    from playwright.sync_api import expect
     receipt = {"matrix": [], "edge_cases": [], "scope": "Actual owned generated page plus explicit missing-data fixtures."}
     for width, theme, locale in [(1440, "light", "en"), (1440, "dark", "zh"),
-                                  (720, "light", "en"), (390, "dark", "en"), (390, "light", "zh"), (320, "light", "en")]:
+                                  (1440, "dark", "en"), (1440, "light", "zh"),
+                                  (720, "light", "en"), (390, "dark", "en"), (390, "light", "zh"),
+                                  (390, "light", "en"), (390, "dark", "zh"), (320, "light", "en")]:
         context, page, errors = make_page(browser, base, width, theme, locale)
         page.goto(base + "/market_structure.html", wait_until="networkidle")
         page.wait_for_selector("#gex-chart rect")
@@ -78,6 +81,24 @@ def market(browser, base):
         page.reload(wait_until="networkidle")
         for key, value in [("gex", "21"), ("sys", "63"), ("cor", "9999")]:
             assert page.locator(f'#{key}-range-btns button[aria-pressed="true"]').get_attribute("data-range") == value
+        # W2.R: first useful reading, keyboard exact values, actual CSV download.
+        overview = page.locator("#msp-overview")
+        expect(overview).to_be_visible()
+        assert overview.bounding_box()["y"] < page.locator("#gex-chart").bounding_box()["y"]
+        page.locator("#gex-observations > summary").focus()
+        page.keyboard.press("Enter")
+        assert page.locator("#gex-observations").get_attribute("open") is not None
+        assert page.locator("#gex-observations tbody tr").count() == 21
+        page.locator("#gex-observations .msp-table-scroll").focus()
+        assert page.locator("#gex-observations .msp-table-scroll").evaluate("(el)=>el===document.activeElement")
+        with page.expect_download() as pending:
+            page.locator('[data-export-series="gex"]').click()
+        import csv, io
+        downloaded = list(csv.reader(io.StringIO(Path(pending.value.path()).read_text(encoding="utf-8-sig"))))
+        assert len(downloaded) == 22
+        expected_rows = page.evaluate("MSP_GAMMA_HIST.slice(-21).map(r=>[r.date,String(r.net_gex_bn),String(r.spot),String(r.flip)])")
+        assert downloaded[1:] == expected_rows
+        page.locator("#gex-observations > summary").click()
         help_button = page.locator('.msp-driver[data-driver="week"] .help')
         help_button.focus()
         assert page.get_by_role("tooltip").is_visible()  # existing shared help owner upgrades the inline fallback
@@ -101,7 +122,8 @@ def market(browser, base):
     ]
     raw["systematic"]["history"] = [{"date": "2026-10-29", "vc_alloc_bn": 0, "spx_close": 100}]
     raw["dispersion"]["history"] = [{"date": f"2026-10-{26+i}", "cor1m": v} for i, v in enumerate([2, 3, None, 0, None, 4, 4])]
-    raw["week_map"].update({"band_1sigma_lo": None, "band_1sigma_hi": None, "locked_close": None})
+    raw["week_map"].update({"band_1sigma_lo": None, "band_1sigma_hi": None, "locked_close": None,
+        "week_start": "2026-10-26", "week_end": "2026-10-30", "locked_at": "2026-10-23"})
     import tempfile
     with tempfile.TemporaryDirectory(prefix="d06-market-fixture-") as tmp:
         fixture = Path(tmp) / "partial.json"
@@ -120,6 +142,24 @@ def market(browser, base):
         assert page.locator('.wm-band [data-band="1"]').count() == 0
         assert page.locator('.wm-band [data-band="2"]').count() == 1
         assert "3/4" in page.locator("#gex-range-status").inner_text()
+        page.locator("#gex-observations > summary").click()
+        exact = page.locator("#gex-observations tbody").inner_text()
+        assert "Unavailable" in exact and "0" in exact
+        assert page.locator("[data-weekly-range]").get_attribute("data-week-phase") == "expired"
+        expect(page.locator("#msp-week-state")).to_contain_text("Past week")
+        # Simulate a retained tab crossing the supplied week end; values remain intact.
+        page.evaluate("""() => {
+          const week=document.querySelector('[data-weekly-range]');
+          week.dataset.weekStart='2000-01-03T00:00:00-05:00';
+          week.dataset.weekExpires='2000-01-07T17:00:00-05:00';
+          week.dataset.weekPhase='current';
+          const age=document.querySelector('#msp-snapshot-age');
+          age.dataset.ageState='dated';age.dataset.checkExpires='2000-01-07T17:00:00-05:00';
+          window.dispatchEvent(new Event('pageshow'));
+        }""")
+        expect(page.locator("#msp-week-state")).to_contain_text("Past week")
+        expect(page.locator("#msp-snapshot-age")).to_contain_text("newer session may be missing")
+        assert page.locator('.wm-band [data-band="2"]').count() == 1
         assert_reflow(page)
         receipt["edge_cases"].append({"case": "gaps-zero-singleton-outer-only", "image": capture(page, "market-partial-outer-only", '[data-driver="week"]')})
         raw["gamma"]["history"] = [{"date": "2026-10-29", "net_gex_bn": None, "spot": None, "flip": None}]
@@ -558,8 +598,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--only", choices=["market", "stage", "spv", "actual"], required=True)
     parser.add_argument("--stage-inputs", type=Path, help="Pinned stagedata directory for --only actual")
+    parser.add_argument("--output-dir", type=Path, help="Separate evidence directory for a new source revision")
     args = parser.parse_args()
-    global STAGE_INPUTS
+    global STAGE_INPUTS, OUT
+    if args.output_dir:
+        OUT = args.output_dir.resolve()
+        OUT.mkdir(parents=True, exist_ok=True)
     STAGE_INPUTS = args.stage_inputs
     if args.only=="actual" and not STAGE_INPUTS:
         parser.error("--stage-inputs is required for actual producer proof")

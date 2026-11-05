@@ -150,3 +150,137 @@ def test_missing_modeled_flow_is_not_an_observed_pause(tmp_path, reading, availa
         assert "window change unavailable" in section
         assert "Pausing over" not in section
         assert "holding steady over" not in section
+
+
+# W2.R continuation: source clocks, cached weeks and exact observation access.
+from datetime import datetime, timezone
+
+
+def _at(value):
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
+@pytest.mark.parametrize("instant,phase", [
+    ("2026-10-31T12:00:00Z", "upcoming"),
+    ("2026-11-02T04:59:59Z", "upcoming"),
+    ("2026-11-02T05:00:00Z", "current"),
+    ("2026-11-06T21:59:59Z", "current"),
+    ("2026-11-06T22:00:00Z", "expired"),
+    ("2026-11-09T12:00:00Z", "expired"),
+])
+def test_weekly_dates_use_new_york_sessions_and_expire_without_changing_bands(instant, phase):
+    from scripts.build_market_structure_page import _weekly_display
+    raw = {"week_map": {"week_start": "2026-11-02", "week_end": "2026-11-06",
+        "locked_at": "2026-10-30T00:00:00", "locked_close": 100,
+        "band_1sigma_lo": 95, "band_1sigma_hi": 105}}
+    before = json.dumps(raw)
+    view = _weekly_display(raw, now=_at(instant))
+    assert view["phase"] == phase
+    assert view["expires_at"] == "2026-11-06T17:00:00-05:00"
+    assert view["bands"][0]["lo"] == 95 and view["bands"][0]["hi"] == 105
+    assert not view["bands"][1]["available"]
+    assert json.dumps(raw) == before
+
+
+def test_weekly_holiday_end_uses_last_actual_session():
+    from scripts.build_market_structure_page import _weekly_clock
+    view = _weekly_clock({"week_start": "2026-03-30", "week_end": "2026-04-03",
+        "locked_at": "2026-03-27"}, now=_at("2026-04-02T21:00:00Z"))
+    assert view["phase"] == "expired"
+    assert view["expires_at"] == "2026-04-02T17:00:00-04:00"
+
+
+@pytest.mark.parametrize("changes", [
+    {"locked_at": None}, {"locked_at": "not-a-date"}, {"locked_at": "2026-11-02"},
+    {"week_start": "2026-02-30"}, {"week_end": "2026-11-01"},
+    {"week_end": "2026-12-06"}, {"week_start": False}, {"week_end": []},
+])
+def test_unverifiable_week_never_claims_current(changes):
+    from scripts.build_market_structure_page import _weekly_clock
+    record = {"week_start": "2026-11-02", "week_end": "2026-11-06", "locked_at": "2026-10-30"}
+    record.update(changes)
+    view = _weekly_clock(record, now=_at("2026-11-05T12:00:00Z"))
+    assert view["phase"] == "unknown"
+    assert view["starts_at"] is None and view["expires_at"] is None
+
+
+def test_gamma_observation_does_not_borrow_build_or_artifact_date():
+    from scripts.build_market_structure_page import _snapshot_display
+    raw = {"built_at": "2026-11-05T12:00:00Z", "asof": "2026-11-05",
+           "gamma": {"spot": 100, "gamma_flip": 101, "coverage": {"last_obs": "2026-11-03"}}}
+    view = _snapshot_display(raw, now=_at("2026-11-05T12:00:00Z"))
+    assert view["observed"] == "2026-11-03"
+    assert view["expected"] == "2026-11-04" and view["state"] == "stale"
+    assert view["valid_until"] == "2026-11-05T17:00:00-05:00"
+    raw["gamma"]["coverage"] = {}
+    assert _snapshot_display(raw, now=_at("2026-11-05T12:00:00Z"))["observed"] is None
+
+
+def test_snapshot_zero_missing_future_date_and_malformed_coverage_are_distinct():
+    from scripts.build_market_structure_page import _snapshot_display
+    raw = {"gamma": {"spot": 0, "gamma_flip": False, "asof": "2026-11-06",
+        "coverage": {"missing_recent": ["2026-11-02", None, {}, "2026-02-30"],
+                     "missing_in_regime": ["2026-11-02", "2026-11-03"]}}}
+    view = _snapshot_display(raw, now=_at("2026-11-05T12:00:00Z"))
+    assert view["spot"] == 0 and view["flip"] is None
+    assert view["state"] == "future" and view["missing_count"] == 2
+    raw["gamma"]["coverage"] = ["bad shape"]
+    assert _snapshot_display(raw)["missing_count"] == 0
+
+
+def test_spx_observation_and_switch_level_are_before_chart_and_outside_disclosure(tmp_path):
+    raw = json.loads(FIXTURE.read_text())
+    raw["gamma"]["coverage"] = {"last_obs": "2026-11-03", "complete": False}
+    raw["gamma"].update(spot=7568.9199, gamma_flip=7654.546915, regime="short")
+    fixture = tmp_path / "dated.json"
+    fixture.write_text(json.dumps(raw))
+    html = render(ROOT, fixture=fixture)
+    start = html.index('id="msp-overview"')
+    end = html.index("</section>", start)
+    overview = html[start:end]
+    assert start < html.index('id="gex-chart"') < html.index('id="msp-snapshot-details"')
+    assert "<details" not in overview
+    for expected in ("7568.9", "7654.5", "2026-11-03", "Hedging may amplify swings",
+                     "对冲可能放大波动", "Incomplete source history", "来源历史不完整"):
+        assert expected in overview
+    assert "buy-the-dip" not in html and "逢低买入" not in html
+
+
+def _observation_js(body):
+    source = (ROOT / "templates/market_structure.html.j2").read_text()
+    helpers = source[source.index("var observationColumns="):source.index("function bilingualNode(")]
+    prefix = "function finiteNumber(v){return typeof v==='number'&&Number.isFinite(v)}\n"
+    prefix += "function sliceTail(arr,n){return n>=9000?arr:arr.slice(-n)}\n"
+    result = subprocess.run(["node", "-e", prefix+helpers+body], capture_output=True,
+                            text=True, check=True, timeout=10)
+    return json.loads(result.stdout)
+
+
+def test_exact_csv_preserves_zero_and_missing_and_rejects_formula_strings():
+    import csv
+    import io
+    got = _observation_js("""
+      const rows=[
+        {date:'2026-11-02',net_gex_bn:-44.185835,spot:0,flip:null},
+        {date:'=HYPERLINK("bad")',net_gex_bn:false,spot:'7568.9',flip:Infinity},
+        {date:'2026-02-30',net_gex_bn:0,spot:7568.9199,flip:7654.546915}
+      ];
+      const before=JSON.stringify(rows);
+      console.log(JSON.stringify({csv:observationsCsv(rows,9999,observationColumns.gex),
+        exact:exactObservationRows(rows,9999,observationColumns.gex),unchanged:JSON.stringify(rows)===before}));
+    """)
+    parsed = list(csv.reader(io.StringIO(got["csv"])))
+    assert parsed[1] == ["2026-11-02", "-44.185835", "0", ""]
+    assert parsed[2] == ["", "", "", ""]
+    assert parsed[3] == ["", "0", "7568.9199", "7654.546915"]
+    assert parsed[1:] == got["exact"] and got["unchanged"]
+
+
+def test_exact_observations_follow_each_selected_window_and_source_units():
+    got = _observation_js("""
+      const rows=Array.from({length:30},(_,i)=>({date:'2026-11-02',cor1m:i===29?16.39:i}));
+      console.log(JSON.stringify({short:exactObservationRows(rows,21,observationColumns.cor),
+                                 all:exactObservationRows(rows,9999,observationColumns.cor)}));
+    """)
+    assert len(got["short"]) == 21 and len(got["all"]) == 30
+    assert got["short"][0][1] == "9" and got["short"][-1][1] == "16.39"

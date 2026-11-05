@@ -50,9 +50,9 @@ def test_systematic_stances_are_plain_language() -> None:
     src = _src()
     for required in (
         "Systematic funds: aligned",
-        "systematic buying is already in the price",
-        "systematic funds are stepping back",
-        "systematic flows aren't pushing either way",
+        "Modeled fund exposure is increasing in both strategies",
+        "Modeled fund exposure is decreasing in both strategies",
+        "The two fund models show no shared direction",
     ):
         assert required in src
     for banned in (
