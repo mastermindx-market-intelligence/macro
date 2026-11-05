@@ -1,0 +1,105 @@
+{
+  "at": "2026-10-14T12:04:40.374533+00:00",
+  "pr": {
+    "headRefOid": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+    "mergeCommit": null,
+    "mergeStateStatus": "DIRTY",
+    "mergeable": "CONFLICTING",
+    "mergedAt": null,
+    "state": "OPEN"
+  },
+  "indexed_active_pr_proofs": 11,
+  "cap": 8,
+  "runs": [
+    {
+      "createdAt": "2026-10-14T11:57:07Z",
+      "databaseId": 38560217406,
+      "event": "pull_request",
+      "headBranch": "claude/ssd-prophet-ni-w2-results-487c8342859554a9",
+      "headSha": "8f6c6532c09899ec76622042dbb109bc45ab9c69",
+      "status": "in_progress"
+    },
+    {
+      "createdAt": "2026-10-14T11:56:03Z",
+      "databaseId": 38560088901,
+      "event": "pull_request",
+      "headBranch": "claude/defense-e2e-recovery-20261012-01a13300",
+      "headSha": "3cfc492d4c321c54ef0ce1bbe079a48b4862768a",
+      "status": "in_progress"
+    },
+    {
+      "createdAt": "2026-10-14T11:54:59Z",
+      "databaseId": 38559959737,
+      "event": "pull_request",
+      "headBranch": "claude/lr-t11-t14-science-2026-10-14",
+      "headSha": "1e5c3219f8605cffe2e061aca8863e0fea0a1307",
+      "status": "in_progress"
+    },
+    {
+      "createdAt": "2026-10-14T11:49:21Z",
+      "databaseId": 38559282788,
+      "event": "pull_request",
+      "headBranch": "claude/ric-y1a-curve-accounting-2026-10-14",
+      "headSha": "c3967956e13c3c25900e4705b46d403f7ef3643a",
+      "status": "in_progress"
+    },
+    {
+      "createdAt": "2026-10-14T11:47:12Z",
+      "databaseId": 38559031774,
+      "event": "pull_request",
+      "headBranch": "claude/gmi-w15-aic-20261014",
+      "headSha": "981a8f71888cd71bfb258ff705914fac6bbff47d",
+      "status": "in_progress"
+    },
+    {
+      "createdAt": "2026-10-14T11:47:02Z",
+      "databaseId": 38559010129,
+      "event": "pull_request",
+      "headBranch": "claude/cs-v2-l0-rule-applicability",
+      "headSha": "4c5a80c22abcc63d1c63a8d9d90552aa25aca9e0",
+      "status": "in_progress"
+    },
+    {
+      "createdAt": "2026-10-14T11:46:18Z",
+      "databaseId": 38558925901,
+      "event": "pull_request",
+      "headBranch": "claude/ssd-market-memory-identity-candidate-01a1333c-a9f4076568474fba",
+      "headSha": "2b744d394a122a69ed767164a957514efa1a37bd",
+      "status": "in_progress"
+    },
+    {
+      "createdAt": "2026-10-14T11:37:30Z",
+      "databaseId": 38557882381,
+      "event": "pull_request",
+      "headBranch": "claude/ssd-market-memory-oauth-callback-01a1333c-2482aa4f7ed5b106",
+      "headSha": "0124ef20e853c5a3b9f6fb139b95531cee458304",
+      "status": "in_progress"
+    },
+    {
+      "createdAt": "2026-10-14T11:35:20Z",
+      "databaseId": 38557625187,
+      "event": "pull_request",
+      "headBranch": "claude/ssd-rv-original-generation-evidence-df8ad100448beaf8",
+      "headSha": "0fdf71e277ab90a5ba48d39f8b3f1ab14f61e35a",
+      "status": "in_progress"
+    },
+    {
+      "createdAt": "2026-10-14T11:24:01Z",
+      "databaseId": 38556289209,
+      "event": "pull_request",
+      "headBranch": "sol/manual-paper-waves-01a1101f-release-r2",
+      "headSha": "adc095a619d4260706c865838fc418c43e413af2",
+      "status": "in_progress"
+    },
+    {
+      "createdAt": "2026-10-14T10:53:01Z",
+      "databaseId": 38552665748,
+      "event": "pull_request",
+      "headBranch": "claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9",
+      "headSha": "c56923aa855b3766a2f4fe6a03eab5019fdb6b64",
+      "status": "in_progress"
+    }
+  ],
+  "direct_publish_admitted": false,
+  "scope": "read-only source-repair admission diagnosis; does not reserve a slot or grant controller custody"
+}

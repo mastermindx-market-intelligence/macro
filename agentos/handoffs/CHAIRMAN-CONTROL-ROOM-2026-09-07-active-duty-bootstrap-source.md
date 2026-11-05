@@ -4,6 +4,155 @@ session: sol/active-duty-bootstrap-20260907
 model: sol
 ended_because: ci_handoff
 mission: >
+  Preserve the September 7, 2026 bootstrap-contribution checkpoint as dated
+  evidence, reconciled on November 5 with Mastermind #518's later closure
+  without merge. Remove obsolete live review and release instructions
+  without reopening that proposal or taking over the wider workstream.
+state_before: >
+  The published handoff still described #518 as OPEN/DRAFT at b21daab4 and
+  instructed a successor to consume its review and source release. The
+  proposal later advanced to d64784ff and was closed unmerged as semantically
+  superseded by the protected active-turn owner. Historical source, review,
+  static-check and adoption evidence must remain distinct from that disposition.
+changed:
+  - path: macro:agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-07-active-duty-bootstrap-source.md
+    what: >
+      Correct this handoff's active continuation fields and source chronology.
+      Preserve the complete original 154-line checkpoint verbatim in a dated
+      historical block. Change no product source, shared workstream, generated
+      projection, runtime, policy, installation or external effect carrier.
+verified:
+  - claim: >
+      Canonical GitHub metadata read on November 5 confirms that #518 is
+      closed without merge, rather than an open source-release dependency.
+    command: >
+      GET https://api.github.com/repos/mastermindx-market-intelligence/Mastermind/pulls/518.
+    result: >
+      state=closed; merged=false; merged_at=null; final head
+      d64784fff1807e2547c3ad37f3f8a34010d312e0; closed_at
+      2026-11-04T23:37:36Z. The old b21daab4 OPEN/DRAFT instruction is historical.
+  - claim: >
+      The recorded closure rationale is semantic supersession through the
+      existing protected procedural owner, not code incorporation or merger.
+    command: >
+      GET https://api.github.com/repos/mastermindx-market-intelligence/Mastermind/issues/comments/6645252275.
+    result: >
+      The disposition identifies mandatory ACTIVE_EXECUTION under compatible
+      Mastermind pin700eef54bca4a2dc4e30d94a6b30dcfa733ad57c, preserves the
+      original branch and accepted historical review/STOP, and explicitly
+      states that the proposed test file and literal phrases were not migrated.
+      This archive attributes that assessment to its original disposition;
+      it does not rerun the tests, claim byte incorporation or grant adoption.
+  - claim: >
+      This records carrier has a known published source identity; its
+      historical host disconnect was recorded before local validation ran.
+    command: >
+      GET https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/6975;
+      GET https://api.github.com/repos/mastermindx-market-intelligence/macro/git/commits/1f575d6610e6d8938a2db4c4c75c9e9cbcba71b3;
+      GET https://api.github.com/repos/mastermindx-market-intelligence/macro/git/ref/heads/claude/active-duty-bootstrap-handoff-20260907.
+    result: >
+      At correction intake, branch and PR agreed on original published head
+      1f575d6610e6d8938a2db4c4c75c9e9cbcba71b3, tree
+      81e6f0fac8ba03daec030084df720be61c7a41c7. The body and commit say canonical
+      validation was NOT_RUN because the host surface disconnected before
+      execution, and a full native worktree census was not obtained. They
+      identify no started validator, PID or pending source-write effect.
+      This is bounded source/receipt evidence, not global writer absence.
+  - claim: >
+      The entire original checkpoint remains byte-identical historical evidence.
+    command: >
+      GitHub.fetch_file agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-07-active-duty-bootstrap-source.md
+      at original head1f575d6610e6d8938a2db4c4c75c9e9cbcba71b3;
+      verify original Git blob88c832ed93519a55f6b887bb46e5f1932a4c4e4c
+      over the exact payload retained inside the historical fence.
+    result: >
+      The original 154-line,8860-byte record and its terminal newline are
+      preserved. Historical source hashes,73 static source checks, review
+      requests, temporary-root restrictions and broader proof limits remain
+      attributed to their original dates and carriers.
+unverified:
+  - claim: >
+      The original proposal's literal tests or exact implementation were
+      incorporated into protected source or proved model compliance.
+    what_would_verify: >
+      A separate exact-source incorporation comparison or accepted behavioral
+      evaluation would be needed. The actual closure expressly does not claim
+      incorporation, and historical literal checks do not test model behavior.
+  - claim: >
+      This archival correction establishes current installed Runtime reads,
+      provider behavior or the complete unattended parent-worker journey.
+    what_would_verify: >
+      Separately authorized current real-path proof from the existing Runtime,
+      host, Cockpit, Capacity and provider owners, with original lease/effect
+      reconciliation and attributable acceptance. This archive supplies none.
+unresolved:
+  - >
+    Broader Control Room implementation, installation and provider acceptance
+    are not adjudicated by this dated source-record correction.
+  - >
+    The original incomplete native worktree census is not retroactively called
+    complete. Any future action must check its actual writer and effect scope.
+next_actions:
+  - >
+    For a newly authorized substantial task, the currently assigned receiver
+    should recover the current compatible source-law pin and existing canonical
+    owners. Do not treat #518's historical review/release waits as current work.
+  - >
+    If a new assignment depends on installed reads or parent-worker continuation,
+    reconcile the actual existing Runtime/host/Cockpit/Capacity/provider carriers
+    and their original leases or uncertain effects before acting. This record
+    creates no such assignment and no dependency on the closed proposal.
+do_not_redo:
+  - Do not reopen or rebuild #518 from this old handoff, or repeat its accepted historical review merely to clear the record.
+  - Do not claim #518 merged, that its literal tests were incorporated, or that semantic supersession establishes installed behavior.
+  - Do not use this archive to unfreeze #512's Operator alternative, relax #516's temporary-root boundaries or reopen its terminal source child.
+  - Preserve #517's historical review acceptance and its separate release/effect evidence; do not replay it without a material invalidator and current authority.
+  - Do not replay unchanged historical tests, native/provider probes, source publications or external effects from the dated block.
+  - Do not create a second record, workstream, watcher, reviewer, lifecycle, retry, queue or control plane.
+danger_areas:
+  - Historical quoted instructions are evidence and do not grant current execution authority.
+  - A historical author or owner name is not a live approver; actual active leases and uncertain effects still require reconciliation.
+  - A host surface unavailable before a command ran is not evidence that a modifying operation executed.
+  - Static source checks, formal review, source closure, merge, installation and production acceptance are distinct.
+  - The original temporary four-read profile must not be pointed at an installed service database or have its guards relaxed to simulate proof.
+---
+
+# Dated bootstrap-contribution checkpoint
+
+This November 5,2026 correction preserves the September 7 source checkpoint
+without reviving its obsolete review and release sequence. It is organizational
+continuity on the same records carrier, not a new Control Room assignment.
+
+## Reconciled source disposition
+
+[Mastermind #518](https://github.com/mastermindx-market-intelligence/Mastermind/pull/518)
+closed **without merge at2026-11-04T23:37:36Z**, final head
+`d64784fff1807e2547c3ad37f3f8a34010d312e0`.
+[Disposition6645252275](https://github.com/mastermindx-market-intelligence/Mastermind/pull/518#issuecomment-6645252275)
+records semantic supersession through the existing mandatory ACTIVE_EXECUTION
+owner and preserves the branch and accepted historical review. It explicitly
+does not claim that the proposed test file or literal text was incorporated.
+The archive neither reruns that review nor upgrades a source closure into
+model, installation, provider or production acceptance.
+
+The original #512, #516 and #517 references below retain their historical dates
+and limits. Their present external state is not inferred from old prose.
+Current assigned receivers own authorized recovery through the existing
+canonical owners and must preserve real leases, refusals and uncertain effects.
+
+## Original September 7 checkpoint — historical evidence
+
+The following complete original payload is preserved verbatim. Its source
+statuses and next actions describe that date. They are not current assignments,
+release instructions, permission grants or reasons to replay an operation.
+
+````markdown
+---
+workstream: WS:CHAIRMAN-CONTROL-ROOM
+session: sol/active-duty-bootstrap-20260907
+model: sol
+ended_because: ci_handoff
+mission: >
   Publish the previously prepared active-duty bootstrap amendment so the next Sol
   session can recover an exact reviewable source candidate instead of rebuilding it.
   Preserve the independent Runtime and installed-read delivery sequence.
@@ -152,3 +301,4 @@ installation, scheduler, message-state store or browser actuation changed.
 Current source ownership and future adoption must be reconciled through their
 existing owners. This record is organizational continuity, never execution or
 release permission.
+````

@@ -1,0 +1,8 @@
+{
+  "receipt": "mockups/evidence/intelligence-os-a1-20261012/EVIDENCE.yml",
+  "manifest_sha256": "e8600131d04be5c82e51e89f80b4b9e4a312f20c5f1bfba66605ec025d59bd88",
+  "files_copied": 65,
+  "bytes": 10883940,
+  "copy_hashes_match": true,
+  "canonical_validator_findings": []
+}
