@@ -1,5 +1,6 @@
 """Qualified nominal point comparisons retain sign, units and evidence identity."""
 from copy import deepcopy
+from decimal import Decimal
 from fractions import Fraction
 import json
 
@@ -68,7 +69,7 @@ def test_mixed_percent_and_bp_normalizes_each_once():
 
 def test_small_difference_is_not_rounded_to_false_flat():
     values=(1.0,1.0000000000000002,1.0,1.0)
-    x=run(values);expected=float(100*(Fraction(values[1])-1))
+    x=run(values);expected=float(100*(Fraction(Decimal(str(values[1])))-1))
     assert x['state']=='qualified' and x['signed_change_bp']==expected>0
     assert x['direction']=='widened'
 

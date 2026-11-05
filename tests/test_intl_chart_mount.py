@@ -182,6 +182,7 @@ class _ActualCompareTemplate:
         from pathlib import Path
         self.env=Environment(loader=FileSystemLoader(
             str(Path(__file__).resolve().parents[1]/"templates")),autoescape=True)
+        self.environment = self.env
 
     def render(self, **vm):
         if vm.get("mode")=="stocks":

@@ -11531,6 +11531,7 @@ jobs:
       - tests/test_intl_investigation_action_mount.py
       - tests/intl_investigation_action_controller.test.cjs
       - tests/fixtures/intl_workspace/boe_iudbedr_2026.xml
+      - tests/fixtures/intl_workspace/eurostat_tipsbp20_ea21.json
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11951,6 +11952,7 @@ jobs:
       - tests/test_intl_investigation_action_mount.py
       - tests/intl_investigation_action_controller.test.cjs
       - tests/fixtures/intl_workspace/boe_iudbedr_2026.xml
+      - tests/fixtures/intl_workspace/eurostat_tipsbp20_ea21.json
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
