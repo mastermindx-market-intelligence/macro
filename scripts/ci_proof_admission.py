@@ -42,6 +42,71 @@ class Admission:
     settled: bool = False
 
 
+@dataclass(frozen=True)
+class SourceAdmission(Admission):
+    """Original source-head proof for an allowlisted native target, not entry."""
+    target_ref: str = "main"
+
+
+@dataclass(frozen=True)
+class NativeAdmission(Admission):
+    """One reserved native queue original; never a dispatch or a PR refresh.
+
+    merge_sha remains the exact two-parent potential PR merge observed before
+    enqueue. The native squash commit is separately bound, never relabeled.
+    A missing queue/group/run binding retains its one reservation floor.
+    """
+    target_ref: str = "codex/merge-queue-pilot"
+    tree_sha: str = ""
+    queue_entry_id: str | None = None
+    group_head_sha: str | None = None
+
+
+def admission_role(admission):
+    return "merge_group" if isinstance(admission, NativeAdmission) else "pr_head"
+
+
+def bind_native_entry(admission, entry_id):
+    if (not isinstance(admission, NativeAdmission) or not _admission_valid(admission)
+            or not isinstance(entry_id, str) or not 0 < len(entry_id) <= 256
+            or not all(32 < ord(c) < 127 for c in entry_id)
+            or admission.queue_entry_id not in {None, entry_id}):
+        raise ValueError("native original queue entry cannot be replaced")
+    return replace(admission, queue_entry_id=entry_id)
+
+
+def bind_native_execution(admission, group, run_id, run_attempt):
+    """Caller authenticates complete native membership + exact server run.
+
+    Does not discover a run by timestamp/name. Rebuilt/retried groups require a
+    separately admitted original; this generation can bind exactly once.
+    """
+    if (not isinstance(admission, NativeAdmission) or not _admission_valid(admission)
+            or not isinstance(group, dict) or set(group) != {
+                "target_ref", "queue_entry_id", "pr_number", "source_head_sha",
+                "group_head_sha", "base_sha", "tree_sha"}
+            or not _hex(group.get("group_head_sha"), 40)
+            or (group["target_ref"], group["queue_entry_id"], group["pr_number"],
+                group["source_head_sha"], group["base_sha"], group["tree_sha"]) != (
+                admission.target_ref, admission.queue_entry_id, admission.pr_number,
+                admission.head_sha, admission.base_sha, admission.tree_sha)
+            or admission.queue_entry_id is None
+            or admission.group_head_sha not in {None, group["group_head_sha"]}):
+        raise ValueError("native execution differs from original queue admission")
+    candidate = replace(admission, group_head_sha=group["group_head_sha"])
+    return bind_run(candidate, run_id, run_attempt)
+
+
+def native_execution_identity(admission):
+    if (not isinstance(admission, NativeAdmission) or not _admission_valid(admission)
+            or admission.run_id is None):
+        raise ValueError("native original execution is not bound")
+    return dict(target_ref=admission.target_ref, queue_entry_id=admission.queue_entry_id,
+                pr_number=admission.pr_number, source_head_sha=admission.head_sha,
+                group_head_sha=admission.group_head_sha, base_sha=admission.base_sha,
+                tree_sha=admission.tree_sha)
+
+
 def _positive(value):
     return type(value) is int and value > 0
 
@@ -51,6 +116,15 @@ def _hex(value, size):
 
 
 def _admission_valid(a):
+    if isinstance(a,SourceAdmission) and a.target_ref not in {"main","codex/merge-queue-pilot"}:return False
+    if isinstance(a, NativeAdmission):
+        if (a.target_ref not in {"main", "codex/merge-queue-pilot"} or not _hex(a.tree_sha, 40)
+                or (a.queue_entry_id is not None and (not isinstance(a.queue_entry_id, str)
+                    or not 0 < len(a.queue_entry_id) <= 256
+                    or not all(32 < ord(c) < 127 for c in a.queue_entry_id)))
+                or (a.group_head_sha is not None and (not _hex(a.group_head_sha, 40) or a.queue_entry_id is None))
+                or (a.run_id is not None and a.group_head_sha is None)):
+            return False
     return (
         isinstance(a, Admission)
         and _hex(a.generation, 12)
@@ -88,13 +162,13 @@ def capacity(runs, admissions, *, census_complete, records_complete, legacy_rese
     for r in runs:
         if (not isinstance(r, Run) or not _positive(r.run_id) or not _positive(r.attempt)
                 or r.status not in ACTIVE_STATUSES | {"completed"}
-                or r.role not in {"pr_head", "main"}):
+                or r.role not in {"pr_head", "main", "merge_group"}):
             return 0
         identity = (r.attempt, r.role)
         if r.run_id in identities and identities[r.run_id] != identity:
             return 0
         identities[r.run_id] = identity
-        if r.role == "pr_head" and r.status in ACTIVE_STATUSES:
+        if r.role in {"pr_head", "merge_group"} and r.status in ACTIVE_STATUSES:
             active_ids.add(r.run_id)
     indexed_active_ids = set(active_ids) if decision is not None else None
     generations = {}
@@ -110,7 +184,7 @@ def capacity(runs, admissions, *, census_complete, records_complete, legacy_rese
             if a.run_id in bound_ids and bound_ids[a.run_id] != a.generation:
                 return 0
             bound_ids[a.run_id] = a.generation
-            if a.run_id in identities and identities[a.run_id] != (a.run_attempt, "pr_head"):
+            if a.run_id in identities and identities[a.run_id] != (a.run_attempt, admission_role(a)):
                 return 0
         if not a.settled:
             if a.run_id is None:
@@ -195,7 +269,7 @@ def settle_run(admission, run):
     if (not _admission_valid(admission) or admission.run_id is None
             or not isinstance(run, Run) or not _positive(run.run_id) or not _positive(run.attempt)
             or run.status != 'completed'
-            or run.role != 'pr_head' or run.run_id != admission.run_id
+            or run.role != admission_role(admission) or run.run_id != admission.run_id
             or run.attempt != admission.run_attempt):
         raise ValueError('no exact terminal original run')
     return replace(admission, settled=True)
@@ -207,7 +281,7 @@ def validate_execution(admission, *, subject_head, base, merge, parents, workflo
     The trusted resolver observes these values; workflow inputs and PR body text
     alone cannot establish them. There is no mutable-ref or one-parent fallback.
     """
-    if (not _admission_valid(admission)
+    if (isinstance(admission, NativeAdmission) or not _admission_valid(admission)
             or (subject_head, base, merge, workflow) != (
                 admission.head_sha, admission.base_sha, admission.merge_sha, admission.workflow_sha)
             or parents != [admission.base_sha, admission.head_sha]):
@@ -221,6 +295,32 @@ def _unique_object(pairs):
             raise ValueError('duplicate admission receipt field')
         result[key] = value
     return result
+
+
+def _bounded_receipt_payload(archive, payload_sha256, *, member_limit=32768):
+    """The incumbent one-member/one-MiB envelope, with no filesystem extraction."""
+    import hashlib,io,json,zipfile
+    if not isinstance(archive,bytes) or len(archive)>1048576:
+        raise ValueError('oversized receipt archive')
+    try:
+        with zipfile.ZipFile(io.BytesIO(archive)) as bundle:
+            entries = bundle.infolist()
+            if (len(entries) != 1 or entries[0].filename != 'ci-proof-admission.json'
+                    or entries[0].is_dir() or entries[0].file_size > member_limit):
+                raise ValueError('ambiguous or oversized admission receipt member')
+            with bundle.open(entries[0]) as member:
+                payload = member.read(member_limit + 1)
+            if len(payload) > member_limit:
+                raise ValueError('oversized admission receipt bytes')
+    except (OSError, zipfile.BadZipFile, RuntimeError) as exc:
+        raise ValueError('unreadable admission archive') from exc
+    if payload_sha256 is not None and hashlib.sha256(payload).hexdigest() != payload_sha256:
+        raise ValueError('admission receipt bytes differ from retained digest')
+    try:
+        data = json.loads(payload, object_pairs_hook=_unique_object)
+    except (ValueError, UnicodeError) as exc:
+        raise ValueError('unreadable admission receipt') from exc
+    return data
 
 
 def _controller_receipt_data(*, archive, payload_sha256, repository_id,
@@ -270,24 +370,7 @@ def _controller_receipt_data(*, archive, payload_sha256, repository_id,
             or controller.get('event') not in {
                 'workflow_run', 'schedule', 'workflow_dispatch', 'pull_request_target'}):
         raise ValueError('receipt was not produced by the exact protected controller')
-    try:
-        with zipfile.ZipFile(io.BytesIO(archive)) as bundle:
-            entries = bundle.infolist()
-            if (len(entries) != 1 or entries[0].filename != 'ci-proof-admission.json'
-                    or entries[0].is_dir() or entries[0].file_size > member_limit):
-                raise ValueError('ambiguous or oversized admission receipt member')
-            with bundle.open(entries[0]) as member:
-                payload = member.read(member_limit + 1)
-            if len(payload) > member_limit:
-                raise ValueError('oversized admission receipt bytes')
-    except (OSError, zipfile.BadZipFile, RuntimeError) as exc:
-        raise ValueError('unreadable admission archive') from exc
-    if hashlib.sha256(payload).hexdigest() != payload_sha256:
-        raise ValueError('admission receipt bytes differ from retained digest')
-    try:
-        data = json.loads(payload, object_pairs_hook=_unique_object)
-    except (ValueError, UnicodeError) as exc:
-        raise ValueError('unreadable admission receipt') from exc
+    data = _bounded_receipt_payload(archive,payload_sha256,member_limit=member_limit)
     if (not isinstance(data, dict)
             or type(data.get('repository_id')) is not int or data['repository_id'] != repository_id
             or type(data.get('controller_run_id')) is not int or data['controller_run_id'] != controller_run_id
@@ -298,19 +381,27 @@ def _controller_receipt_data(*, archive, payload_sha256, repository_id,
 
 
 def authenticate_receipt(**context):
-    """Authenticate one generation-specific prepared or bound proof receipt."""
+    """Same immutable envelope; native v2 cannot be relabeled as PR v1."""
     from dataclasses import fields
     data = _controller_receipt_data(**context)
     expected = {'schema', 'repository_id', 'controller_run_id',
                 'controller_run_attempt', 'admission'}
-    if (set(data) != expected or data['schema'] != 'mastermind.ci-proof-admission.v1'
+    classes = {'mastermind.ci-proof-admission.v1': Admission,
+               'mastermind.ci-proof-native-admission.v1': NativeAdmission,
+               'mastermind.ci-proof-source-admission.v1': SourceAdmission}
+    cls = classes.get(data.get('schema'))
+    if (set(data) != expected or cls is None
             or not isinstance(data['admission'], dict)
-            or set(data['admission']) != {f.name for f in fields(Admission)}):
+            or set(data['admission']) != {f.name for f in fields(cls)}):
         raise ValueError('admission receipt schema mismatch')
-    result = Admission(**data['admission'])
+    result = cls(**data['admission'])
     if not _admission_valid(result):
         raise ValueError('malformed admitted proof identity')
     stage = 'prepared' if result.run_id is None else 'bound'
+    if isinstance(result, NativeAdmission):
+        stage = 'native-' + ('bound' if result.run_id is not None else
+                            'queued' if result.queue_entry_id is not None else 'prepared')
+    if isinstance(result,SourceAdmission):stage='source-'+stage
     expected_name = (f"ci-proof-admission-{context['controller_run_id']}-"
                      f"{context['controller_attempt']}-{result.generation}-{stage}")
     if context['artifact'].get('name') != expected_name:
@@ -484,12 +575,24 @@ def merge_records(records):
         if old is None:
             result[record.generation] = record
             continue
-        if replace(old, run_id=None, settled=False) != replace(record, run_id=None, settled=False):
+        if type(old) is not type(record):
+            raise ValueError('admission carrier changed within generation')
+        bindings = {'run_id': None, 'settled': False}
+        if isinstance(old, NativeAdmission):
+            bindings.update(queue_entry_id=None, group_head_sha=None)
+            for key in ('queue_entry_id', 'group_head_sha'):
+                left, right = getattr(old, key), getattr(record, key)
+                if left is not None and right is not None and left != right:
+                    raise ValueError('conflicting native original binding')
+        if replace(old, **bindings) != replace(record, **bindings):
             raise ValueError('conflicting admission generation identity')
         if old.run_id is not None and record.run_id is not None and old.run_id != record.run_id:
             raise ValueError('conflicting original dispatch run')
-        result[record.generation] = replace(old, run_id=old.run_id or record.run_id,
-                                             settled=old.settled or record.settled)
+        merged = dict(run_id=old.run_id or record.run_id, settled=old.settled or record.settled)
+        if isinstance(old, NativeAdmission):
+            merged.update(queue_entry_id=old.queue_entry_id or record.queue_entry_id,
+                          group_head_sha=old.group_head_sha or record.group_head_sha)
+        result[record.generation] = replace(old, **merged)
     return list(result.values())
 
 
@@ -589,7 +692,7 @@ def compact_pr_records(pr_number, covered_through_comment_id, records, demands,
             matches = [r for r in observed_runs if isinstance(r, Run)
                        and _positive(r.run_id) and _positive(r.attempt)
                        and r.run_id == a.run_id and r.attempt == a.run_attempt
-                       and r.role == 'pr_head']
+                       and r.role == admission_role(a)]
             # An active observation always beats a terminal one during a
             # non-atomic read. Do not compact away an observed active execution.
             if any(r.status in ACTIVE_STATUSES for r in matches):
@@ -702,12 +805,86 @@ def authenticate_checkpoint(**context):
     for field, record_type, limit in (('admissions',Admission,CAP),('settled',Admission,100),('demands',Demand,1)):
         if not isinstance(value[field], list) or len(value[field]) > limit:
             raise ValueError('checkpoint lifecycle bound exceeded')
-        expected_keys = {f.name for f in fields(record_type)}
-        if any(not isinstance(row, dict) or set(row) != expected_keys for row in value[field]):
-            raise ValueError('checkpoint record schema mismatch')
-        value[field] = tuple(record_type(**row) for row in value[field])
+        converted = []
+        for row in value[field]:
+            cls = record_type
+            if record_type is Admission and isinstance(row, dict) and set(row) == {f.name for f in fields(NativeAdmission)}:
+                cls = NativeAdmission
+            elif record_type is Admission and isinstance(row,dict) and set(row)=={f.name for f in fields(SourceAdmission)}:
+                cls=SourceAdmission
+            if not isinstance(row, dict) or set(row) != {f.name for f in fields(cls)}:
+                raise ValueError('checkpoint record schema mismatch')
+            converted.append(cls(**row))
+        value[field] = tuple(converted)
     checkpoint = Checkpoint(**value)
     if (not _checkpoint_valid(checkpoint) or context['artifact'].get('name') != (
             f"ci-proof-checkpoint-{context['controller_run_id']}-{context['controller_attempt']}-{checkpoint.pr_number}")):
         raise ValueError('checkpoint identity or artifact name mismatch')
     return checkpoint
+
+
+def authenticate_producer_origin(*, archive, artifact, producer_run, repository_id,
+                                protected_producer_sha, repository, pull, source_commit):
+    """Authenticate an original producer hint, NEVER an Admission or slot.
+
+    The caller separately qualifies this exact protected producer workflow/step
+    and credential-origin source. A payload string cannot prove its token kind.
+    Artifact and run metadata, PR and exact commit are authenticated API rows.
+    No expired/absent artifact or bot-name heuristic supplies origin evidence.
+    """
+    import hashlib
+    data=_bounded_receipt_payload(archive,None)
+    if (not isinstance(data,dict) or set(data)!={'schema','repository_id','producer_origin'}
+            or data['schema']!='mastermind.ci-proof-producer-origin.v1'
+            or not _positive(repository_id) or type(data['repository_id']) is not int
+            or data['repository_id']!=repository_id):raise ValueError('producer envelope invalid')
+    origin=data['producer_origin']
+    fields={'producer_run_id','producer_run_attempt','workflow_path','workflow_ref','workflow_sha',
+        'publishing_job','publishing_step','credential_origin','pr_number','published_source_head',
+        'selected_target','original_generation','candidate_tree','projection_sha256',
+        'pr_creation_user_id','pr_creation_login'}
+    if (not isinstance(origin,dict) or set(origin)!=fields
+            or any(not _positive(origin[k]) for k in ('producer_run_id','producer_run_attempt','pr_number','pr_creation_user_id'))
+            or any(not _hex(origin[k],40) for k in ('workflow_sha','published_source_head','candidate_tree'))
+            or not _hex(origin['original_generation'],12) or not _hex(origin['projection_sha256'],64)
+            or origin['credential_origin']!='GITHUB_TOKEN'
+            or origin['selected_target'] not in {'main','codex/merge-queue-pilot'}
+            or origin['workflow_path']!='.github/workflows/commodity-sentinel.yml'
+            or origin['publishing_job']!='shock' or origin['publishing_step']!='native_publication_stage'
+            or not isinstance(repository,str) or not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+',repository)
+            or origin['workflow_ref']!=repository+'/'+origin['workflow_path']+'@refs/heads/main'
+            or origin['workflow_sha']!=protected_producer_sha):raise ValueError('producer original tuple invalid')
+    name=f"ci-proof-producer-origin-{origin['producer_run_id']}-{origin['producer_run_attempt']}-{origin['publishing_job']}-{origin['publishing_step']}-{origin['original_generation']}"
+    if (not isinstance(artifact,dict) or not _positive(artifact.get('id')) or artifact.get('name')!=name
+            or artifact.get('expired') is not False
+            or artifact.get('digest')!='sha256:'+hashlib.sha256(archive).hexdigest()
+            or not isinstance(artifact.get('workflow_run'),dict)
+            or any(type(artifact['workflow_run'].get(k)) is not int for k in ('id','repository_id'))
+            or artifact['workflow_run']['id']!=origin['producer_run_id']
+            or artifact['workflow_run']['repository_id']!=repository_id
+            or artifact['workflow_run'].get('head_sha')!=protected_producer_sha):
+        raise ValueError('producer original artifact unavailable or misbound')
+    if (not isinstance(producer_run,dict) or not _positive(producer_run.get('id'))
+            or type(producer_run.get('run_attempt')) is not int
+            or producer_run['id']!=origin['producer_run_id'] or producer_run['run_attempt']!=origin['producer_run_attempt']
+            or producer_run.get('path') not in {origin['workflow_path'],origin['workflow_path']+'@refs/heads/main',origin['workflow_path']+'@'+protected_producer_sha}
+            or producer_run.get('head_sha')!=protected_producer_sha or producer_run.get('head_branch')!='main'
+            or producer_run.get('event') not in {'schedule','push','workflow_dispatch'}
+            or type((producer_run.get('repository') or {}).get('id')) is not int
+            or producer_run['repository']['id']!=repository_id
+            or producer_run['repository'].get('full_name')!=repository):
+        raise ValueError('producer original run unavailable or misbound')
+    if (not isinstance(pull,dict) or type(pull.get('number')) is not int or pull['number']!=origin['pr_number']
+            or pull.get('state')!='open' or (pull.get('head') or {}).get('sha')!=origin['published_source_head']
+            or (pull.get('base') or {}).get('ref')!=origin['selected_target']
+            or any(type(((pull.get(k) or {}).get('repo') or {}).get('id')) is not int
+                or pull[k]['repo']['id']!=repository_id or pull[k]['repo'].get('full_name')!=repository for k in ('head','base'))
+            or type((pull.get('user') or {}).get('id')) is not int
+            or pull['user']['id']!=origin['pr_creation_user_id']
+            or pull['user'].get('login')!=origin['pr_creation_login']
+            or origin['pr_creation_user_id']!=41898282 or origin['pr_creation_login']!='github-actions[bot]'):
+        raise ValueError('producer original PR creation/source binding changed')
+    if (not isinstance(source_commit,dict) or source_commit.get('sha')!=origin['published_source_head']
+            or (source_commit.get('tree') or {}).get('sha')!=origin['candidate_tree']):
+        raise ValueError('producer published source tree changed')
+    return dict(origin)

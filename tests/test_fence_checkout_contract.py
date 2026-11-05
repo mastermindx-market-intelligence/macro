@@ -90,7 +90,7 @@ def _recording(name: str, function, calls: list):
 
 def test_same_repo_fence_checkout_is_bounded_sparse_and_blob_filtered() -> None:
     job = _document()["jobs"]["fence-pack"]
-    checkout = next(step for step in job["steps"] if step.get("uses") == "actions/checkout@v4")
+    checkout = next(step for step in job["steps"] if step.get("id") == "candidate_checkout")
     options = checkout["with"]
 
     assert options["filter"] == "blob:none"
@@ -143,6 +143,8 @@ def test_self_mod_live_check_uses_exact_synthetic_parents_and_fails_closed() -> 
     job = _document()["jobs"]["fence-pack"]
     live = _named_step(job, LIVE_CHECK_STEP)
     command = live["run"]
+    # The native path has its own bounded ancestry check; inspect legacy PR branch separately.
+    command = command[command.index('read -r MERGE_SHA TESTED_BASE_SHA SUBJECT_HEAD_SHA EXTRA_PARENT'):]
 
     assert 'git rev-list --parents -n 1 "$GITHUB_SHA"' in command
     assert "expected one synthetic merge with exactly two parents" in command
@@ -150,7 +152,7 @@ def test_self_mod_live_check_uses_exact_synthetic_parents_and_fails_closed() -> 
     merge_base = 'MERGE_BASE=$(git merge-base "$TESTED_BASE_SHA" "$SUBJECT_HEAD_SHA")'
     assert command.count(merge_base) == 2
     first_probe = command.index(merge_base)
-    fetch = command.index("git fetch")
+    fetch = command.index("git fetch", first_probe)
     second_probe = command.rindex(merge_base)
     assert first_probe < fetch < second_probe
     assert command.count("git fetch") == 1
@@ -397,7 +399,7 @@ def test_hold_wrapper_regressions_execute_inside_the_fast_fence() -> None:
 
 def test_agent_os_record_contract_runs_inside_the_existing_fast_fence() -> None:
     job = _document()["jobs"]["fence-pack"]
-    checkout = next(step for step in job["steps"] if step.get("uses") == "actions/checkout@v4")
+    checkout = next(step for step in job["steps"] if step.get("id") == "candidate_checkout")
     sparse = {
         line.strip()
         for line in str(checkout["with"]["sparse-checkout"]).splitlines()
@@ -440,3 +442,22 @@ def test_fork_self_mod_fence_runs_the_same_canonical_agent_os_validator() -> Non
     job = _document()["jobs"]["fork-self-mod-fence"]
     commands = [step.get("run") for step in job["steps"]]
     assert commands.count("python3 scripts/agentos.py validate") == 1
+
+
+def test_native_fence_authenticates_source_branch_before_candidate_and_keeps_trailers():
+    job = _document()["jobs"]["fence-pack"]
+    steps = job["steps"]
+    member = next(s for s in steps if s.get("id") == "native_membership")
+    candidate = next(s for s in steps if s.get("id") == "candidate_checkout")
+    assert steps.index(member) < steps.index(candidate)
+    assert "--source-branch-output" in member["run"]
+    assert "github.workflow_sha" in steps[0]["with"]["ref"]
+    live = _named_step(job, LIVE_CHECK_STEP)["run"]
+    assert 'BRANCH=$(cat "$RUNNER_TEMP/native-source-branch")' in live
+    assert '"$NATIVE_MERGE_BASE..$SUBJECT_HEAD_SHA"' in live
+    assert 'git diff --name-only -z "$TESTED_BASE_SHA" "$GITHUB_SHA"' in live
+    assert "group[\"tree_sha\"]" in live
+    publish = next(s for s in steps if s.get("id") == "publish")["with"]["script"]
+    assert "process.env.NATIVE_MEMBERSHIP === 'success'" in publish
+    assert "process.env.CANDIDATE_CHECKOUT === 'success'" in publish
+    assert "process.env.NATIVE_EVENT === 'true' ? value === 'success'" in publish

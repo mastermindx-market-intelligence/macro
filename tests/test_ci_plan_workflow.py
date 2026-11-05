@@ -32,6 +32,7 @@ import sys
 from typing import Any
 
 import yaml
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
@@ -111,6 +112,7 @@ def test_ci_plan_job_exists_and_publishes_bounded_identity_outputs() -> None:
         "subject_head_sha": "${{ steps.identity.outputs.subject_head_sha }}",
         "tested_base_sha": "${{ steps.identity.outputs.tested_base_sha }}",
         "semantic_role": "${{ steps.identity.outputs.semantic_role }}",
+        "native_group_json": "${{ needs.ci-admission.outputs.native_group_json }}",
         "admission_generation": "${{ steps.identity.outputs.admission_generation }}",
         "admitted_pr": "${{ needs.ci-admission.outputs.pr_number }}",
         "admitted_repository_id": "${{ needs.ci-admission.outputs.head_repository_id }}",
@@ -125,14 +127,14 @@ def _assert_native_pr_lifecycle(events):
 
 def _assert_ci_original_proof_graph(workflow):
     assert workflow['concurrency'] == {
-        'group': "ci-${{ inputs.proof_role == 'pr_head' && format('admitted-{0}-{1}', inputs.admission_generation, github.run_id) || github.event.pull_request.number || github.ref }}",
-        'cancel-in-progress': "${{ github.event_name != 'workflow_dispatch' }}",
+        'group': "ci-${{ github.event_name == 'merge_group' && format('group-{0}-{1}-{2}', github.event.merge_group.base_ref, github.sha, github.run_id) || inputs.proof_role == 'pr_head' && format('admitted-{0}-{1}', inputs.admission_generation, github.run_id) || github.event.pull_request.number || github.ref }}",
+        'cancel-in-progress': "${{ github.event_name != 'workflow_dispatch' && github.event_name != 'merge_group' }}",
     }
     resolver = workflow['jobs']['ci-admission']
-    assert resolver['if'] == "github.event_name == 'workflow_dispatch' && inputs.proof_role != ''"
+    assert resolver['if'] == "github.event_name == 'merge_group' || (github.event_name == 'workflow_dispatch' && inputs.proof_role != '')"
     plan = workflow['jobs']['ci-plan']
     assert plan['needs'] == ['ci-admission']
-    assert plan['if'] == "always() && !cancelled() && (needs.ci-admission.result == 'skipped' || needs.ci-admission.result == 'success')"
+    assert plan['if'] == "always() && !cancelled() && (needs.ci-admission.result == 'success' || (needs.ci-admission.result == 'skipped' && github.event_name != 'merge_group' && !(github.event_name == 'workflow_dispatch' && inputs.proof_role != '')))"
 
 
 def test_closed_lifecycle_events_cannot_enter_semantic_ci_concurrency() -> None:
@@ -294,7 +296,7 @@ def test_workflow_dispatch_passes_no_changed_from_so_main_stays_full_suite() -> 
     step = _plan_step()
     assert '--changed-from' not in step['run']
     assert step['env']['CI_SCOPE_ARG'] == (
-        "${{ steps.identity.outputs.semantic_role == 'pr_head' && "
+        "${{ (steps.identity.outputs.semantic_role == 'pr_head' || steps.identity.outputs.semantic_role == 'merge_group') && "
         "format('--changed-from {0}', steps.identity.outputs.tested_base_sha) || '' }}")
     identity = next(s for s in _job('ci-plan')['steps'] if s.get('id') == 'identity')
     assert identity['env']['ADMISSION_GENERATION'] == '${{ needs.ci-admission.outputs.admission_generation }}'
@@ -372,7 +374,7 @@ def test_ci_pack_is_gated_on_an_affirmative_has_work() -> None:
     assert condition == (
         "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
-        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "(github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || "
         "needs.trusted-ci.result == 'success')"
     )
@@ -485,7 +487,7 @@ def test_ci_pack_pins_the_plan_hash_and_unpins_itself_when_there_is_none() -> No
     """
     step = _pack_step()
     hosted_guard = (
-        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "(github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc')"
     )
     assert step["if"] == f"{hosted_guard} && needs.ci-plan.outputs.plan_sha != ''"
@@ -510,7 +512,7 @@ def test_pack_shell_arguments_stay_unquoted_so_an_empty_value_disappears() -> No
     assert "'$CI_SCOPE_ARG'" not in run
 
 
-def test_folded_pack_commands_fold_to_one_line_and_carry_no_comment_marker() -> None:
+def test_plan_shell_array_and_pack_commands_preserve_argument_boundaries() -> None:
     """The two folded-scalar traps this repo has already been bitten by.
 
     A `#` inside a `run: >-` scalar deletes the rest of the command, and a
@@ -520,7 +522,11 @@ def test_folded_pack_commands_fold_to_one_line_and_carry_no_comment_marker() -> 
     thing, so the only detector is the folded RESULT: exactly one line, no `#`.
     """
     run = str(_plan_step()["run"]).strip()
-    assert "\n" not in run
+    assert _plan_step()["shell"] == "bash"
+    assert 'native_args=(--native-group-json "$CI_NATIVE_GROUP_JSON")' in run
+    assert '"${native_args[@]}"' in run
+    import subprocess
+    assert subprocess.run(["bash", "-n"], input=run, text=True, capture_output=True).returncode == 0
     assert "#" not in run
     pack_run = str(_pack_step()["run"])
     assert "set -euo pipefail" in pack_run
@@ -764,7 +770,7 @@ def test_ci_pack_downloads_the_list_and_exports_only_its_path() -> None:
     )
     assert download["with"]["path"] == "${{ runner.temp }}/ci-changed-files"
     assert download["if"] == (
-        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "(github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc')"
     ), (
         "hosted execution downloads this artifact for forks and the ordinary "
@@ -892,3 +898,169 @@ def test_cancellation_survivor_check_rejects_missing_or_bypassable_veto(monkeypa
         monkeypatch.setattr(sys.modules[__name__], '_workflow', lambda: changed)
         with pytest.raises(AssertionError):
             test_only_ci_gate_may_outlive_a_cancelled_run()
+
+
+def test_native_identity_executes_exact_single_parent_tree_and_refuses_mismatch(tmp_path):
+    import json
+    import os
+    import subprocess
+    def git(*args):
+        return subprocess.check_output(["git", *args], cwd=tmp_path, text=True).strip()
+    git("init", "-q")
+    git("config", "user.name", "fixture")
+    git("config", "user.email", "fixture@example.invalid")
+    (tmp_path / "value").write_text("base")
+    git("add", "value"); git("commit", "-qm", "base")
+    base = git("rev-parse", "HEAD")
+    (tmp_path / "value").write_text("group")
+    git("add", "value"); git("commit", "-qm", "group")
+    head, tree = git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}")
+    group = dict(target_ref="codex/merge-queue-pilot", queue_entry_id="fixture-entry",
+                 pr_number=1, source_head_sha="b" * 40, group_head_sha=head, base_sha=base, tree_sha=tree)
+    command = next(s for s in _job("ci-plan")["steps"] if s.get("id") == "identity")["run"]
+    env = dict(os.environ, EVENT_NAME="merge_group", GITHUB_SHA=head, ADMITTED_MERGE=head,
+               ADMITTED_BASE=base, ADMITTED_HEAD="b" * 40, ADMISSION_GENERATION="a" * 12,
+               EXPECTED_DISPATCH_SHA="", GITHUB_RUN_ID="1", GITHUB_RUN_ATTEMPT="1")
+    for i, change in enumerate(({}, {"tree_sha": "c" * 40}, {"base_sha": "d" * 40}, {"source_head_sha": "e" * 40})):
+        output = tmp_path / f"output-{i}"
+        result = subprocess.run(["bash", "-c", command], cwd=tmp_path,
+            env=dict(env, CI_NATIVE_GROUP_JSON=json.dumps(group | change), GITHUB_OUTPUT=str(output)),
+            text=True, capture_output=True)
+        assert (result.returncode == 0) is (not change), result.stderr
+        if not change:
+            values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+            assert values["semantic_role"] == "merge_group"
+            assert values["subject_head_sha"] == "b" * 40
+            assert values["tested_base_sha"] == base
+        else:
+            assert not output.exists()
+
+
+def test_native_plan_json_is_one_argument_and_never_shell_code(tmp_path):
+    import json
+    import os
+    import subprocess
+    runner = tmp_path / "ci-plan-runner/bin/python"
+    runner.parent.mkdir(parents=True)
+    runner.write_text("#!" + sys.executable + "\nimport json,os,sys\nopen(os.environ['ARGV_FILE'],'w').write(json.dumps(sys.argv[1:]))\n")
+    runner.chmod(0o755)
+    payload = '{"queue_entry_id":"quote \" ; touch NEVER_EXECUTE ; #"}'
+    env = dict(os.environ, RUNNER_TEMP=str(tmp_path), CONTROL_ROOT="/protected", SEMANTIC_ROLE="merge_group",
+        CI_NATIVE_GROUP_JSON=payload, CI_ADMISSION_ARG="--admission-generation aaaaaaaaaaaa",
+        CI_SCOPE_ARG="--changed-from " + "b" * 40, GITHUB_OUTPUT=str(tmp_path / "out"),
+        GITHUB_RUN_ID="1", GITHUB_EVENT_NAME="merge_group", TESTED_TREE_SHA="c" * 40,
+        SUBJECT_HEAD_SHA="d" * 40, TESTED_BASE_SHA="b" * 40, ARGV_FILE=str(tmp_path / "argv"))
+    result = subprocess.run(["bash", "-c", _plan_step()["run"]], cwd=tmp_path, env=env, text=True, capture_output=True)
+    assert result.returncode == 0, result.stderr
+    args = json.loads((tmp_path / "argv").read_text())
+    assert args[args.index("--native-group-json") + 1] == payload
+    assert not (tmp_path / "NEVER_EXECUTE").exists()
+
+
+def test_group_final_authority_remains_inside_required_ci_gate():
+    gate = _job("ci-gate")
+    checkout = next(s for s in gate["steps"] if "actions/checkout@" in s.get("uses", ""))
+    assert "github.workflow_sha" in checkout["with"]["ref"]
+    final = next(s for s in gate["steps"] if "--native-final" in s.get("run", ""))
+    assert final["if"] == "always() && github.event_name == 'merge_group'"
+    assert not final.get("continue-on-error", False)
+    assert "ci-semantic-evidence.json" in final["run"]
+    assert gate["steps"].index(final) > next(i for i,s in enumerate(gate["steps"]) if s.get("id") == "semantic_reconcile")
+    assert "github.event_name != 'merge_group'" in _job("trusted-ci")["if"]
+    assert "with" not in _job("trusted-ci")
+
+
+@pytest.fixture
+def contract_merge_checkout(tmp_path):
+    """Real shallow-boundary raw commits; no provider calls or candidate Python."""
+    import json
+    import os
+    import subprocess
+    env = dict(os.environ, GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1",
+               GIT_ALLOW_PROTOCOL="", GIT_NO_LAZY_FETCH="1")
+    def git(*args, input=None):
+        return subprocess.check_output(["git", "-c", "core.hooksPath=/dev/null", *args],
+            cwd=tmp_path, env=env, input=input, text=True).strip()
+    git("init", "-q")
+    git("config", "user.name", "contract fixture")
+    git("config", "user.email", "fixture@example.invalid")
+    tree = git("mktree", input="")
+    base = git("commit-tree", tree, "-m", "base")
+    source = git("commit-tree", tree, "-p", base, "-m", "source")
+    group = git("commit-tree", tree, "-p", base, "-m", "squash")
+    merge = git("commit-tree", tree, "-p", base, "-p", source, "-m", "PR merge")
+    identity = dict(target_ref="codex/merge-queue-pilot", queue_entry_id="fixture-entry",
+        pr_number=1, source_head_sha=source, group_head_sha=group, base_sha=base, tree_sha=tree)
+    step = next(s for s in _job("contract-delta")["steps"] if s.get("id") == "contract-merge")
+    def execute(role="merge_group", mutation=None):
+        native = role == "merge_group"
+        tested = group if native else merge
+        values = dict(env, EXPECTED_PR_HEAD=source, EXPECTED_TESTED_MERGE=tested,
+            EXPECTED_TESTED_BASE=base, SEMANTIC_ROLE=role,
+            EVENT_NAME="merge_group" if native else "pull_request",
+            ADMISSION_GENERATION="a" * 12 if native else "",
+            CI_NATIVE_GROUP_JSON=json.dumps(identity) if native else "")
+        if mutation:
+            tested, values = mutation(tested, values, dict(identity), merge)
+        git("checkout", "--detach", "-q", tested)
+        (tmp_path / ".git" / "shallow").write_text(tested + "\n")
+        output = tmp_path / "contract-output"
+        values["GITHUB_OUTPUT"] = str(output)
+        result = subprocess.run(["bash", "-c", step["run"]], cwd=tmp_path,
+            env=values, text=True, capture_output=True)
+        return result, output
+    return execute, base, source
+
+
+@pytest.mark.parametrize("role", ["merge_group", "pr_head"])
+def test_contract_delta_accepts_exact_native_squash_and_ordinary_merge(contract_merge_checkout, role):
+    execute, base, source = contract_merge_checkout
+    result, output = execute(role)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert dict(line.split("=", 1) for line in output.read_text().splitlines()) == {
+        "base_sha": base, "head_sha": source}
+
+
+@pytest.mark.parametrize("case", ["two_parent_native", "base", "source", "tree", "head",
+    "missing_group", "duplicate_key", "missing_generation", "wrong_generation",
+    "wrong_event", "wrong_role", "target", "ordinary_wrong_base", "ordinary_wrong_head"])
+def test_contract_delta_refuses_misbound_native_and_ordinary_proofs(contract_merge_checkout, case):
+    import json
+    execute, _, _ = contract_merge_checkout
+    role = "pr_head" if case.startswith("ordinary_") else "merge_group"
+    def mutation(tested, values, group, merge):
+        if case == "two_parent_native":
+            tested = merge; values["EXPECTED_TESTED_MERGE"] = merge; group["group_head_sha"] = merge
+        elif case in {"base", "source", "tree", "head"}:
+            field = {"base":"base_sha", "source":"source_head_sha", "tree":"tree_sha", "head":"group_head_sha"}[case]
+            group[field] = "f" * 40
+        elif case == "target": group["target_ref"] = "untrusted-target"
+        elif case == "wrong_event": values["EVENT_NAME"] = "pull_request"
+        elif case == "wrong_role": values["SEMANTIC_ROLE"] = "main"
+        elif case == "missing_generation": values["ADMISSION_GENERATION"] = ""
+        elif case == "wrong_generation": values["ADMISSION_GENERATION"] = "unknown"
+        elif case == "ordinary_wrong_base": values["EXPECTED_TESTED_BASE"] = "f" * 40
+        elif case == "ordinary_wrong_head": values["EXPECTED_PR_HEAD"] = "f" * 40
+        if role == "merge_group": values["CI_NATIVE_GROUP_JSON"] = json.dumps(group)
+        if case == "missing_group": values["CI_NATIVE_GROUP_JSON"] = ""
+        if case == "duplicate_key": values["CI_NATIVE_GROUP_JSON"] = values["CI_NATIVE_GROUP_JSON"][:-1] + ', "base_sha":"' + group["base_sha"] + '"}'
+        return tested, values
+    result, output = execute(role, mutation)
+    assert result.returncode != 0, case
+    assert not output.exists(), case
+
+
+def test_contract_delta_consumes_only_authenticated_plan_group_outputs():
+    job = _job("contract-delta")
+    step = next(s for s in job["steps"] if s.get("id") == "contract-merge")
+    assert job["needs"] == ["ci-plan"]
+    assert "needs.ci-plan.result == 'success'" in job["if"]
+    assert step["env"]["SEMANTIC_ROLE"] == "${{ needs.ci-plan.outputs.semantic_role }}"
+    assert step["env"]["ADMISSION_GENERATION"] == "${{ needs.ci-plan.outputs.admission_generation }}"
+    assert step["env"]["CI_NATIVE_GROUP_JSON"] == "${{ needs.ci-plan.outputs.native_group_json }}"
+    assert step["env"]["EVENT_NAME"] == "${{ github.event_name }}"
+    assert 'python3 -I' in step["run"]
+    fetch = next(s for s in job["steps"] if s.get("name") == "fetch the exact tested PR merge base")
+    assert fetch["run"] == "git fetch --depth=1 origin ${{ steps.contract-merge.outputs.base_sha }}"
+    gate = next(s for s in job["steps"] if s.get("name") == "differential contract-delta gate")
+    assert '--base ${{ steps.contract-merge.outputs.base_sha }}' in gate["run"]

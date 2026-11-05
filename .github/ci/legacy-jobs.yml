@@ -1598,6 +1598,9 @@ proof_paths:
   - "scripts/resolve_ci_pr_admission.py"
   - "scripts/ci_proof_admission.py"
   - "tests/test_ci_proof_admission.py"
+  - "tests/test_ci_native_group.py"
+  - "scripts/ci_native_review_policy.py"
+  - "tests/test_ci_native_review_policy.py"
   - "tests/test_resolve_ci_pr_admission.py"
   - "tests/test_ci_admission_workflow.py"
   - "tests/test_merge_on_green_admission.py"
@@ -10650,9 +10653,11 @@ jobs:
         # regression is the first failure a reader sees rather than the id contract
         # failing for a borrowed reason; it rides this existing step because a step is
         # the masking unit (run_ci_pack.py returns on the first non-zero step) while
-        # pytest reports every file inside one step.  No dependency widened: probed at
-        # RUN time it loads only pandas/numpy/pyarrow/pyyaml — exactly this job's thin
-        # install line — and blocking plotly leaves it 12-passed.
+        # pytest reports every file inside one step. The historical thesis-ID-only
+        # probe used pandas/numpy/pyarrow/pyyaml and reported 12 passes with plotly
+        # blocked; it was not a dependency inventory for this whole job.
+        # The UK Policy Watch suite also renders the real view and requires jinja2,
+        # which is retained in the existing combined dependency install above.
         run: >
           python -m pytest
           tests/test_ai_desk.py tests/test_ai_desk_scorer.py
@@ -24024,6 +24029,7 @@ jobs:
       - "scripts/merge_on_green.py"
       - "scripts/resolve_ci_pr_admission.py"
       - "scripts/ci_proof_admission.py"
+      - "scripts/ci/push_retry.sh"
       - "scripts/ci_admission_stages.py"
       - "scripts/gh_path_filter.py"
       - "scripts/capture_ci_canary_receipt.py"
@@ -62167,6 +62173,7 @@ jobs:
       - "scripts/build_security_master.py"
       - "scripts/build_thematic_state.py"
       - "scripts/check_template_site_sync.py"
+      - "scripts/ci/push_retry.sh"
       - "scripts/ci_admission_stages.py"
       - "scripts/ci_proof_admission.py"
       - "scripts/externalize_css.py"
@@ -62231,6 +62238,12 @@ jobs:
       - "engine/seasonality/__init__.py"
       - "engine/signal_foundry/__init__.py"
       - "tests/__init__.py"
+      - "scripts/ci_authority.py"
+      - "scripts/check_runner_policy.py"
+      - "tests/test_ci_native_group.py"
+      - "scripts/ci_native_review_policy.py"
+      - "tests/test_ci_native_review_policy.py"
+      - "tests/test_ci_semantic_proof.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -62239,7 +62252,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: admission and freshness source contracts
-        run: python -m pytest tests/test_merge_on_green_admission.py tests/test_merge_on_green_freshness_ownership.py tests/test_ci_proof_admission.py tests/test_resolve_ci_pr_admission.py tests/test_ci_admission_workflow.py tests/test_ci_admission_stages.py -q
+        run: python -m pytest tests/test_merge_on_green_admission.py tests/test_merge_on_green_freshness_ownership.py tests/test_ci_proof_admission.py tests/test_resolve_ci_pr_admission.py tests/test_ci_admission_workflow.py tests/test_ci_admission_stages.py tests/test_ci_native_group.py tests/test_ci_native_review_policy.py -q
   ontology-explorer-static-contracts:
     if: ${{ false }}
     gate: code

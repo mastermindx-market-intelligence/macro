@@ -45,6 +45,7 @@ GitHub online/idle receipt, never an edit to this file alone.
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import re
 import sys
@@ -67,7 +68,7 @@ TRUSTED_AUTHORITY_CHECKOUT = (
     "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
 )
 TRUSTED_AUTHORITY_CHECKOUT_WITH = {
-    "ref": "${{ github.event.repository.default_branch }}",
+    "ref": "${{ github.workflow_sha }}",
     "fetch-depth": 1,
     "sparse-checkout": "scripts",
     "persist-credentials": False,
@@ -104,7 +105,7 @@ OPTIONS_INTEL_BROAD_LABELS = (
     "render-heavy",
 )
 SAME_REPO_PR = (
-    "github.event.pull_request.head.repo.full_name == github.repository"
+    "github.event_name != 'merge_group' && github.event.pull_request.head.repo.full_name == github.repository"
 )
 FORK_PR = (
     "github.event.pull_request.head.repo.full_name != github.repository"
@@ -253,8 +254,12 @@ def reaches_trust_gate(jobs: dict, job_id: str, seen: set[str] | None = None) ->
 
 
 # Admitted proofs execute on hosted runners; no identity inputs cross the PC call.
-def _trusted_call_is_exact(job: dict) -> bool:
-    return job == TRUSTED_CALL_JOB
+def _trusted_call_is_exact(job: dict, *, repository: str | None = None) -> bool:
+    expected=TRUSTED_CALL_JOB
+    if repository is not None:
+        if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+',repository):return False
+        expected={**expected,'uses':repository+'/.github/workflows/trusted-ci-executor.yml@main'}
+    return job == expected
 
 
 def _step_with_id(job: dict, identifier: str) -> dict:
@@ -303,6 +308,9 @@ def _admitted_execution_context_exact(document: dict, job_ids: tuple[str, ...]) 
     return True
 
 
+NATIVE_IDENTITY_BLOCK = 'if [ "$EVENT_NAME" = "merge_group" ]; then\n  python3 - <<\'NATIVE\'\nimport json, os, subprocess\ngroup = json.loads(os.environ["CI_NATIVE_GROUP_JSON"])\nassert set(group) == {"target_ref", "queue_entry_id", "pr_number", "source_head_sha", "group_head_sha", "base_sha", "tree_sha"}\ndef git(*args): return subprocess.check_output(["git", *args], text=True).strip()\nassert os.environ["ADMISSION_GENERATION"]\nassert git("rev-list", "--parents", "-n", "1", "HEAD").split() == [group["group_head_sha"], group["base_sha"]]\nassert git("rev-parse", "HEAD^{tree}") == group["tree_sha"]\nassert group["group_head_sha"] == os.environ["ADMITTED_MERGE"] == os.environ["GITHUB_SHA"]\nassert group["base_sha"] == os.environ["ADMITTED_BASE"]\nassert group["source_head_sha"] == os.environ["ADMITTED_HEAD"]\nNATIVE\n  tested_base_sha=$ADMITTED_BASE\n  subject_head_sha=$ADMITTED_HEAD\n  semantic_role=merge_group\n'
+
+
 def _admitted_caller_graph_exact(document: dict) -> bool:
     """The role/source handoff comes from authenticated protected code, not input."""
     if not _admitted_execution_context_exact(document, ("ci-admission", "ci-plan")):
@@ -314,13 +322,13 @@ def _admitted_caller_graph_exact(document: dict) -> bool:
     checkout = [s for s in resolver.get("steps", []) if s.get("uses") == "actions/checkout@v4"]
     resolve = _step_with_id(resolver, "resolve")
     output_names = {"tested_commit", "subject_head", "base", "same_repository", "pr_number",
-                    "head_repository_id", "admission_generation"}
+                    "head_repository_id", "admission_generation", "semantic_role", "native_group_json"}
     outputs = plan.get("outputs") or {}
     identity_env = identity.get("env") or {}
     identity_lines = {line.strip() for line in str(identity.get("run", "")).splitlines()}
     return (
         resolver.get("runs-on") == HOSTED
-        and resolver.get("if") == "github.event_name == 'workflow_dispatch' && inputs.proof_role != ''"
+        and resolver.get("if") == "github.event_name == 'merge_group' || (github.event_name == 'workflow_dispatch' && inputs.proof_role != '')"
         and resolver.get("permissions") == {"contents": "read", "actions": "read", "pull-requests": "read"}
         and len(resolver.get("steps", [])) == 2 and len(checkout) == 1
         and checkout[0].get("with") == {"ref": "${{ github.workflow_sha }}", "filter": "blob:none",
@@ -328,10 +336,10 @@ def _admitted_caller_graph_exact(document: dict) -> bool:
         and "if" not in checkout[0] and "if" not in resolve
         and resolve.get("run") == "python3 -I scripts/resolve_ci_pr_admission.py"
         and resolve.get("env") == {"GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
-            "GITHUB_WORKFLOW_SHA": "${{ github.workflow_sha }}", "CI_PR_ADMISSION_INPUTS": "${{ toJSON(inputs) }}"}
+            "GITHUB_WORKFLOW_SHA": "${{ github.workflow_sha }}", "GITHUB_WORKFLOW_REF": "${{ github.workflow_ref }}", "CI_PR_ADMISSION_INPUTS": "${{ toJSON(inputs) }}"}
         and resolver.get("outputs") == {k: "${{ steps.resolve.outputs." + k + " }}" for k in output_names}
         and plan.get("needs") == ["ci-admission"]
-        and plan.get("if") == "always() && !cancelled() && (needs.ci-admission.result == 'skipped' || needs.ci-admission.result == 'success')"
+        and plan.get("if") == "always() && !cancelled() && (needs.ci-admission.result == 'success' || (needs.ci-admission.result == 'skipped' && github.event_name != 'merge_group' && !(github.event_name == 'workflow_dispatch' && inputs.proof_role != '')))"
         and outputs.get("same_repository") == "${{ needs.ci-admission.outputs.same_repository || (github.event.pull_request.head.repo.full_name == github.repository && 'true' || 'false') }}"
         and outputs.get("admitted_pr") == "${{ needs.ci-admission.outputs.pr_number }}"
         and outputs.get("admitted_repository_id") == "${{ needs.ci-admission.outputs.head_repository_id }}"
@@ -341,9 +349,11 @@ def _admitted_caller_graph_exact(document: dict) -> bool:
             "ADMISSION_GENERATION": "${{ needs.ci-admission.outputs.admission_generation }}",
             "ADMITTED_MERGE": "${{ needs.ci-admission.outputs.tested_commit }}",
             "ADMITTED_BASE": "${{ needs.ci-admission.outputs.base }}",
-            "ADMITTED_HEAD": "${{ needs.ci-admission.outputs.subject_head }}"}.items())
+            "ADMITTED_HEAD": "${{ needs.ci-admission.outputs.subject_head }}",
+            "CI_NATIVE_GROUP_JSON": "${{ needs.ci-admission.outputs.native_group_json }}"}.items())
+        and NATIVE_IDENTITY_BLOCK in identity.get("run", "")
         and {
-            'if [ -n "$ADMISSION_GENERATION" ]; then',
+            'elif [ -n "$ADMISSION_GENERATION" ]; then',
             'read -r merge_sha tested_base_sha subject_head_sha extra < <(git rev-list --parents -n 1 "$tested_tree_sha")',
             'if [ "$merge_sha" != "$ADMITTED_MERGE" ] || [ "$tested_base_sha" != "$ADMITTED_BASE" ] || [ "$subject_head_sha" != "$ADMITTED_HEAD" ] || [ -n "${extra:-}" ]; then',
             'echo "admission_generation=$ADMISSION_GENERATION"',
@@ -351,10 +361,232 @@ def _admitted_caller_graph_exact(document: dict) -> bool:
     )
 
 
+def _native_controller_projection(document):
+    """Exact additional original-run binding graph, retaining the legacy guards.
+
+    This is source structure only; it grants no source-ref, queue or run authority.
+    Every added effect remains inside the incumbent serialized protected job.
+    """
+    result=copy.deepcopy(document)
+    events=result.get('on',result.get(True,{}))
+    if events.get('workflow_run') != {'workflows': ['ci', 'fences', 'integration-baseline'], 'types': ['requested', 'completed']}:return None
+    job=(result.get('jobs') or {}).get('sweep')
+    if not isinstance(job,dict):return None
+    if job.get('if') != "github.event_name != 'workflow_run' || (github.event.action == 'requested' && github.event.workflow_run.name == 'ci' && github.event.workflow_run.event == 'merge_group') || (\n  github.event.workflow_run.conclusion != ''\n  && (\n    github.event.workflow_run.name != 'fences'\n    || github.event.workflow_run.head_branch != 'main'\n    || github.event.workflow_run.event == 'push'\n  )\n)" or job.get('concurrency') != {'group': "merge-on-green-${{ github.event_name == 'workflow_run' && github.event.workflow_run.name == "
+          "'fences' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.event != "
+          "'push' && 'skip-ci-ignored' || github.event_name != 'workflow_run' && 'sweep' || "
+          "github.event.workflow_run.name == 'ci' && 'sweep' || github.event.workflow_run.conclusion == "
+          "'failure' && format('mark-{0}', github.event.workflow_run.head_sha) || "
+          "github.event.workflow_run.conclusion == 'success' && 'sweep' || 'lease-reconcile' }}",
+ 'cancel-in-progress': False}:return None
+    steps=job.get('steps')
+    if not isinstance(steps,list) or any(not isinstance(x,dict) for x in steps):return None
+    def key(x):return x.get('id',x.get('name',x.get('uses')))
+    if [key(x) for x in steps] != ['actions/checkout@v4',
+ 'install the yaml parser',
+ 'migration_prepare',
+ 'migration_intent',
+ 'migration_apply',
+ 'migration_outcome',
+ 'native_bind',
+ 'native_bound',
+ 'finalize native original binding',
+ 'reconcile original admitted completion',
+ 'admission_prepare',
+ 'admission_demands',
+ 'admission_reserve',
+ 'admission_prepared',
+ 'admission_checkpoint',
+ 'admission_dispatch',
+ 'admission_bound',
+ 'index original run then release launch pointer',
+ 'native_same_original',
+ 'native_same_bound',
+ 'finalize same-sweep native original binding',
+ 'sweep merge-on-green pull requests']:return None
+    added=[{'name': 'bind actual original native execution',
+  'id': 'native_bind',
+  'if': "!cancelled() && (github.event_name != 'workflow_run' || github.event.workflow_run.name == 'ci' || "
+        "github.event.workflow_run.conclusion == 'success')",
+  'env': {'GH_REPO': '${{ github.repository }}',
+          'READ_TOKEN': '${{ secrets.GITHUB_TOKEN }}',
+          'MERGE_TOKEN': '${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}',
+          'CI_ADMISSION_STAGE_DIR': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ '
+                                    'github.run_attempt }}'},
+  'run': 'python3 -I scripts/ci_admission_stages.py bind-native'},
+ {'name': 'seal native original execution binding',
+  'id': 'native_bound',
+  'if': "steps.native_bind.outputs.bound == 'true'",
+  'uses': 'actions/upload-artifact@v4',
+  'with': {'name': 'ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ '
+                   'steps.native_bind.outputs.generation }}-native-bound',
+           'path': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt '
+                   '}}/native-execution/ci-proof-admission.json',
+           'if-no-files-found': 'error',
+           'retention-days': 90,
+           'overwrite': False}},
+ {'name': 'finalize native original binding',
+  'if': "steps.native_bound.outcome == 'success'",
+  'env': {'GH_REPO': '${{ github.repository }}',
+          'READ_TOKEN': '${{ secrets.GITHUB_TOKEN }}',
+          'MERGE_TOKEN': '${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}',
+          'CI_ADMISSION_STAGE_DIR': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ '
+                                    'github.run_attempt }}',
+          'ARTIFACT_ID': '${{ steps.native_bound.outputs.artifact-id }}'},
+  'run': 'python3 -I scripts/ci_admission_stages.py finalize-native'},
+ {'name': 'bind enqueued native original in this sweep',
+  'id': 'native_same_original',
+  'if': "steps.admission_dispatch.outputs.receipt_suffix == 'native-queued'",
+  'env': {'GH_REPO': '${{ github.repository }}',
+          'READ_TOKEN': '${{ secrets.GITHUB_TOKEN }}',
+          'MERGE_TOKEN': '${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}',
+          'CI_ADMISSION_STAGE_DIR': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ '
+                                    'github.run_attempt }}'},
+  'run': 'python3 -I scripts/ci_admission_stages.py bind-native-wait'},
+ {'name': 'seal same-sweep native original binding',
+  'id': 'native_same_bound',
+  'if': "steps.native_same_original.outputs.bound == 'true'",
+  'uses': 'actions/upload-artifact@v4',
+  'with': {'name': 'ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ '
+                   'steps.native_same_original.outputs.generation }}-native-bound',
+           'path': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt '
+                   '}}/native-execution/ci-proof-admission.json',
+           'if-no-files-found': 'error',
+           'retention-days': 90,
+           'overwrite': False}},
+ {'name': 'finalize same-sweep native original binding',
+  'if': "steps.native_same_bound.outcome == 'success'",
+  'env': {'GH_REPO': '${{ github.repository }}',
+          'READ_TOKEN': '${{ secrets.GITHUB_TOKEN }}',
+          'MERGE_TOKEN': '${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}',
+          'CI_ADMISSION_STAGE_DIR': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ '
+                                    'github.run_attempt }}',
+          'ARTIFACT_ID': '${{ steps.native_same_bound.outputs.artifact-id }}'},
+  'run': 'python3 -I scripts/ci_admission_stages.py finalize-native'}]
+    replacements=[({'uses': 'actions/checkout@v4',
+   'with': {'ref': '${{ github.workflow_sha }}',
+            'persist-credentials': False,
+            'filter': 'blob:none',
+            'sparse-checkout': 'scripts/merge_on_green.py\n'
+                               'scripts/ci_proof_admission.py\n'
+                               'scripts/ci_admission_stages.py\n'
+                               'scripts/ci_semantic_proof.py\n'
+                               'scripts/ci_authority_paths.py\n'
+                               'scripts/gh_path_filter.py\n'
+                               'scripts/run_ci_pack.py\n'
+                               '.github/ci/legacy-jobs.yml\n'
+                               '.github/workflows\n',
+            'sparse-checkout-cone-mode': False}},
+  {'uses': 'actions/checkout@v4',
+   'with': {'ref': '${{ github.workflow_sha }}',
+            'persist-credentials': False,
+            'filter': 'blob:none',
+            'sparse-checkout': 'scripts/merge_on_green.py\n'
+                               'scripts/ci_proof_admission.py\n'
+                               'scripts/ci_admission_stages.py\n'
+                               'scripts/ci_semantic_proof.py\n'
+                               'scripts/ci_authority_paths.py\n'
+                               'scripts/ci_authority.py\n'
+                               'scripts/ci_native_review_policy.py\n'
+                               'scripts/check_runner_policy.py\n'
+                               'scripts/gh_path_filter.py\n'
+                               'scripts/run_ci_pack.py\n'
+                               '.github/ci/legacy-jobs.yml\n'
+                               '.github/workflows\n',
+            'sparse-checkout-cone-mode': False}}),
+ ({'name': 'prepare complete shared proof demand',
+   'id': 'admission_prepare',
+   'if': "!cancelled() && (github.event_name != 'workflow_run' || github.event.workflow_run.name == 'ci' || "
+         "github.event.workflow_run.conclusion == 'success')",
+   'env': {'GH_REPO': '${{ github.repository }}',
+           'READ_TOKEN': '${{ secrets.GITHUB_TOKEN }}',
+           'MERGE_TOKEN': '${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}',
+           'CI_ADMISSION_STAGE_DIR': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ '
+                                     'github.run_attempt }}'},
+   'run': 'python3 -I scripts/ci_admission_stages.py prepare'},
+  {'name': 'prepare complete shared proof demand',
+   'id': 'admission_prepare',
+   'if': "!cancelled() && steps.native_bind.outputs.bound != 'true' && (github.event_name != 'workflow_run' "
+         "|| github.event.workflow_run.name == 'ci' || github.event.workflow_run.conclusion == 'success')",
+   'env': {'GH_REPO': '${{ github.repository }}',
+           'READ_TOKEN': '${{ secrets.GITHUB_TOKEN }}',
+           'MERGE_TOKEN': '${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}',
+           'CI_ADMISSION_STAGE_DIR': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ '
+                                     'github.run_attempt }}'},
+   'run': 'python3 -I scripts/ci_admission_stages.py prepare'}),
+ ({'name': 'seal original preparation',
+   'id': 'admission_prepared',
+   'if': "steps.admission_reserve.outputs.prepared == 'true'",
+   'uses': 'actions/upload-artifact@v4',
+   'with': {'name': 'ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ '
+                    'steps.admission_reserve.outputs.generation }}-prepared',
+            'path': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt '
+                    '}}/prepared/ci-proof-admission.json',
+            'if-no-files-found': 'error',
+            'retention-days': 90,
+            'overwrite': False}},
+  {'name': 'seal original preparation',
+   'id': 'admission_prepared',
+   'if': "steps.admission_reserve.outputs.prepared == 'true'",
+   'uses': 'actions/upload-artifact@v4',
+   'with': {'name': 'ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ '
+                    'steps.admission_reserve.outputs.generation }}-${{ '
+                    "steps.admission_reserve.outputs.receipt_suffix || 'prepared' }}",
+            'path': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt '
+                    '}}/prepared/ci-proof-admission.json',
+            'if-no-files-found': 'error',
+            'retention-days': 90,
+            'overwrite': False}}),
+ ({'name': 'seal original returned proof run',
+   'id': 'admission_bound',
+   'if': "steps.admission_dispatch.outputs.bound == 'true'",
+   'uses': 'actions/upload-artifact@v4',
+   'with': {'name': 'ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ '
+                    'steps.admission_dispatch.outputs.generation }}-bound',
+            'path': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt '
+                    '}}/bound/ci-proof-admission.json',
+            'if-no-files-found': 'error',
+            'retention-days': 90,
+            'overwrite': False}},
+  {'name': 'seal original returned proof run',
+   'id': 'admission_bound',
+   'if': "steps.admission_dispatch.outputs.bound == 'true'",
+   'uses': 'actions/upload-artifact@v4',
+   'with': {'name': 'ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ '
+                    'steps.admission_dispatch.outputs.generation }}-${{ '
+                    "steps.admission_dispatch.outputs.receipt_suffix || 'bound' }}",
+            'path': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt '
+                    '}}/bound/ci-proof-admission.json',
+            'if-no-files-found': 'error',
+            'retention-days': 90,
+            'overwrite': False}})]
+    for expected in added:
+        if [x for x in steps if key(x)==key(expected)]!=[expected]:return None
+    for original,expected in replacements:
+        if [x for x in steps if key(x)==key(expected)]!=[expected]:return None
+    additions={key(x) for x in added}
+    originals={key(expected):original for original,expected in replacements}
+    job['steps']=[originals.get(key(x),x) for x in steps if key(x) not in additions]
+    events['workflow_run']={'workflows': ['ci', 'fences', 'integration-baseline'], 'types': ['completed']}
+    job['if']="github.event_name != 'workflow_run' || (\n  github.event.workflow_run.conclusion != ''\n  && (\n    github.event.workflow_run.name != 'fences'\n    || github.event.workflow_run.head_branch != 'main'\n  )\n)"
+    job['concurrency']={'group': "merge-on-green-${{ github.event_name == 'workflow_run' && github.event.workflow_run.name == "
+          "'fences' && github.event.workflow_run.head_branch == 'main' && 'skip-ci-ignored' || "
+          "github.event_name != 'workflow_run' && 'sweep' || github.event.workflow_run.name == 'ci' && "
+          "'sweep' || github.event.workflow_run.conclusion == 'failure' && format('mark-{0}', "
+          "github.event.workflow_run.head_sha) || github.event.workflow_run.conclusion == 'success' && "
+          "'sweep' || 'lease-reconcile' }}",
+ 'cancel-in-progress': False}
+    return result
+
+
 def _shared_admission_controller_r2_findings(relative: str, document: dict) -> list[Finding]:
     """Exact protected sweep composition; no pull_request_target exception."""
     bad = [Finding("R2", f"{relative}: shared admission controller boundary drifted")]
     raw = document.get("on", document.get(True, {}))
+    if isinstance(raw,dict) and (raw.get('workflow_run') or {}).get('types')==['requested','completed']:
+        document=_native_controller_projection(document)
+        if document is None:return bad
+        raw=document.get('on',document.get(True,{}))
     jobs = document.get("jobs") or {}
     if (not isinstance(raw, dict) or set(jobs) != {"sweep"}
             or set(raw) != {"workflow_run", "schedule", "workflow_dispatch"}
@@ -1418,7 +1650,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             == (
                 "!cancelled() && needs.ci-plan.result == 'success' && "
                 "needs.ci-plan.outputs.has_work == 'true' && "
-                f"({FORK_PR} || {HOSTED_ROUTE} || needs.trusted-ci.result == 'success')"
+                f"(github.event_name == 'merge_group' || {FORK_PR} || {HOSTED_ROUTE} || needs.trusted-ci.result == 'success')"
             )
             and (ci_pack.get("strategy") or {}).get("matrix")
             == "${{ fromJSON(needs.ci-plan.outputs.matrix) }}"

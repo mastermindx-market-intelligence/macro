@@ -74,6 +74,32 @@ def comment_row(node, repo, number):
                 login=author.get('login'), type=author['__typename']))
 
 
+def candidate_pr_trigger_for_target(document, target):
+    """Only immutable event/target exclusion proves native PR CI cannot start.
+
+    Path filters and the check index are never negative evidence of an original.
+    Unknown branch-filter forms hold instead of guessing no native execution.
+    """
+    if target not in {'main','codex/merge-queue-pilot'}:return None
+    if not isinstance(document,dict):raise ValueError('candidate workflow malformed')
+    events=document.get('on',document.get(True))
+    if isinstance(events,str):return events=='pull_request'
+    if isinstance(events,list):
+        if any(not isinstance(x,str) for x in events):return None
+        return 'pull_request' in events
+    if not isinstance(events,dict):return None
+    if 'pull_request' not in events:return False
+    event=events['pull_request']
+    if event is None:return True
+    if not isinstance(event,dict):return None
+    if 'branches-ignore' in event:return None
+    branches=event.get('branches')
+    if branches is None:return True
+    if (not isinstance(branches,list) or not branches or any(not isinstance(x,str)
+            or not re.fullmatch(r'[A-Za-z0-9_./-]+',x) for x in branches)):return None
+    return target in branches
+
+
 class BulkReader:
     """Fresh complete connections; pagination is local to this original read.
 
@@ -233,10 +259,7 @@ class BulkReader:
         UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,unique)
         document=yaml.load(blob['text'],Loader=UniqueLoader)
         if not isinstance(document,dict):raise ValueError('candidate workflow malformed')
-        events=document.get('on',document.get(True))
-        if isinstance(events,str):return events=='pull_request'
-        if isinstance(events,(dict,list)):return 'pull_request' in events
-        raise ValueError('candidate entrypoint unavailable')
+        return candidate_pr_trigger_for_target(document,pull['base']['ref'])
 
 
 @dataclass(frozen=True)
@@ -572,6 +595,8 @@ class Stages:
         data = dict(schema=schema, repository_id=self.context['repository_id'],
                     controller_run_id=int(self.context['current_run_id']),
                     controller_run_attempt=self.context['current_run_attempt'])
+        if kind=='admission' and 'target_ref' in value:
+            data['schema']='mastermind.ci-proof-native-admission.v1' if 'tree_sha' in value else 'mastermind.ci-proof-source-admission.v1'
         data[kind] = value
         if kind=='demands' and covered_comments is not None:
             data['schema']='mastermind.ci-proof-demands.v2'
@@ -772,12 +797,26 @@ class Stages:
             raise ValueError('legacy register changed during proof')
         return intent,description
 
+    def native_modes(self):
+        if not mog.installed_native_dispatch_ready(self.repo,self.context['protected_controller_sha']):
+            return {}
+        modes={}
+        for target in ('main','codex/merge-queue-pilot'):
+            code,branch=mog._request('GET',f'{mog.GITHUB_API}/repos/{self.repo}/branches/'+urllib.parse.quote(target,safe=''),self.read)
+            if code==404:
+                modes[target]=None
+                continue
+            if code!=200 or not isinstance(branch,dict):raise ValueError('native target visibility unknown')
+            modes[target]=mog.native_target_protection(self.repo,self.read,target,
+                repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'],allow_off=True)
+        return modes
+
     @controller_read_scope
     def migration_prepare(self):
         self.authority()
         if self.context['current_run_attempt'] != 1:
             raise ValueError('migration supports only original attempt')
-        if not mog.installed_admitted_dispatch_ready(self.repo,self.context['protected_controller_sha']):
+        if not mog.installed_admitted_dispatch_ready(self.repo,self.context['protected_controller_sha']) and not any(self.native_modes().values()):
             return dict(prepared=False)
         root=f'{mog.GITHUB_API}/repos/{self.repo}'
         code,row=mog._request('GET',root+'/labels/'+urllib.parse.quote(mog.REFRESH_LEASE_LABEL,safe=''),self.read)
@@ -905,12 +944,7 @@ class Stages:
         workflow = yaml.safe_load(raw)
         if not isinstance(workflow, dict):
             raise ValueError('candidate CI entrypoint malformed')
-        events = workflow.get('on', workflow.get(True))
-        if isinstance(events, str):
-            return events == 'pull_request'
-        if isinstance(events, (dict, list)):
-            return 'pull_request' in events
-        raise ValueError('candidate CI entrypoints unknown')
+        return candidate_pr_trigger_for_target(workflow,pull['base']['ref'])
 
     def demand_evaluation(self, pull, runs, freshness, native_pr_enabled, *, expected_ci=False):
         """Current eligibility, distinct from unavailable original proof facts."""
@@ -939,8 +973,9 @@ class Stages:
         # Readiness is the actual protected caller/callee contract, not a flag
         # or candidate claim. Foundation installation must not migrate the
         # legacy register or create demand before the bridge is installed.
+        native_modes=self.native_modes()
         if not mog.installed_admitted_dispatch_ready(
-                self.repo, self.context['protected_controller_sha']):
+                self.repo, self.context['protected_controller_sha']) and not any(native_modes.values()):
             return dict(ready=False, changed=False, count=0)
         self.initialize_empty_register()
         inventory=mog.shared_admission_inventory(self.repo,self.read)
@@ -1005,7 +1040,7 @@ class Stages:
                 if not budget.may_continue(history_reads)[0]:
                     raise ValueError('incomplete original demand history at budget boundary')
                 history_reads += 1
-            if pull.get('state') != 'open' or (pull.get('base') or {}).get('ref') != 'main':
+            if pull.get('state') != 'open' or (pull.get('base') or {}).get('ref') not in {'main','codex/merge-queue-pilot'}:
                 raise ValueError('incomplete open PR census identity')
             head = (pull.get('head') or {}).get('sha')
             if not isinstance(head, str) or not re.fullmatch('[0-9a-f]{40}', head):
@@ -1018,6 +1053,7 @@ class Stages:
         pending = contract.ordered_demands(row[3] for row in subjects.values() if row[3] is not None)
         now = datetime.now(timezone.utc).isoformat()
         learned, changed, evaluated = [], [], []
+        native_entry_numbers=set()
         stopped = False
         prefix = None
         unknown = False
@@ -1026,15 +1062,46 @@ class Stages:
             pull, own, prior, old = subjects[number]
             head = pull['head']['sha']
             fact = facts[number]
+            target=(pull.get('base') or {}).get('ref')
+            native=native_modes.get(target)
             if any(not a.settled for a in own) or any(
-                    a.head_sha == head and a.base_sha == self.context['protected_controller_sha'] for a in own):
+                    a.head_sha == head and a.base_sha == pull['base']['sha']
+                    and (native is None or isinstance(a,contract.NativeAdmission)) for a in own):
                 return 'ineligible', None
-            if fact['ci_present'] and not mog.is_sweep_candidate(pull):
+            if fact['ci_present'] and native is None and not mog.is_sweep_candidate(pull):
                 return 'ineligible', None
             if fact['native'] is None:
                 return 'unknown', None
             runs = mog.head_check_runs(self.repo, head, self.read) if fact['ci_present'] else []
-            state, kind = self.demand_evaluation(pull, runs, freshness, fact['native'], expected_ci=fact['ci_present'])
+            if native is not None and not fact['ci_present']:
+                # Authored source proof remains distinct from native entry.
+                # With native PR trigger still present, absent checks cannot
+                # certify a suppressed/unindexed original: preserve refusal.
+                if fact['native'] is not False:
+                    try:
+                        origin=mog.authenticated_producer_origin(self.repo,self.read,pull,
+                            repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'])
+                    except Exception:return 'unknown',None
+                    if origin is None:return 'unknown',None
+                state,kind='eligible','authored'
+            elif native is not None:
+                if not mog.is_sweep_candidate(pull) and not (target=='codex/merge-queue-pilot'
+                        and pull.get('draft') is False and mog.MERGE_ON_GREEN_LABEL in mog.label_names(pull)):
+                    return 'ineligible',None
+                try:
+                    from scripts import ci_authority as authority
+                    group=dict(pr_number=number,source_head_sha=head,target_ref=target)
+                    release=mog.native_current_release(self.repo,self.read,group,protection=native)
+                    loaded=mog.semantic_evidence_for_head(self.repo,head,self.read,check_runs=release['checks'])
+                    authority.native_source_entry_qualification(loaded,expected_head_sha=head,protection=native)
+                    state,kind='eligible','refresh'
+                    native_entry_numbers.add(number)
+                except Exception:
+                    return 'unknown',None
+            elif target!='main':
+                return 'ineligible',None
+            else:
+                state, kind = self.demand_evaluation(pull, runs, freshness, fact['native'], expected_ci=fact['ci_present'])
             if state != 'eligible':
                 return state, None
             if kind == 'authored' and any(a.head_sha == head for a in own):
@@ -1092,6 +1159,8 @@ class Stages:
             new_demand_time=now, selected_rank=(dict(requested_at=prefix.requested_at,
                 demand_id=prefix.demand_id, pr_number=prefix.pr_number) if not complete and prefix_complete else None))
         self.save('census', dict(context=self.context, pulls=pulls,
+            native_targets=[target for target,mode in native_modes.items() if mode is not None],
+            native_entry_numbers=sorted(native_entry_numbers),
             demands=[asdict(d) for d in demands], eligibility=eligibility))
         publish_demands = bool(changed)
         if changed or self._age_renewal_due:
@@ -1180,8 +1249,12 @@ class Stages:
             ordered_demands=[asdict(d) for d in demands])
         for demand in demands:
             decision = {}
+            pull=next((p for p in census['pulls'] if p['number']==demand.pr_number),None) if census.get('native_targets') else None
+            target=(pull.get('base') or {}).get('ref') if pull else None
+            options=({('native_target' if demand.pr_number in census.get('native_entry_numbers',[]) else 'source_target'):target}
+                if target in census.get('native_targets',[]) else {})
             result = mog.reserve_shared_admission(self.repo, self.read, self.write, demand,
-                                                  decision=decision, **self.context)
+                                                  decision=decision, **options, **self.context)
             self.emit_decision('reservation', demand=asdict(demand),
                 disposition=result.disposition, detail=result.detail, decision=decision,
                 selected=({'pr_number': result.admission.pr_number,
@@ -1200,7 +1273,10 @@ class Stages:
             age_snapshot,_=mog.read_age_frontier(self.repo,self.read,repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'])
             checkpoint = mog.prepare_shared_checkpoint(self.repo, self.read, demand.pr_number, **self.context,age_snapshot=age_snapshot)
             self.receipt('checkpoint', asdict(checkpoint), 'checkpoint')
-            return dict(prepared=True, generation=result.admission.generation, pr_number=demand.pr_number)
+            output=dict(prepared=True, generation=result.admission.generation, pr_number=demand.pr_number)
+            if isinstance(result.admission,contract.NativeAdmission):output['receipt_suffix']='native-prepared'
+            elif isinstance(result.admission,contract.SourceAdmission):output['receipt_suffix']='source-prepared'
+            return output
         return dict(prepared=False)
 
     @controller_read_scope
@@ -1215,26 +1291,94 @@ class Stages:
         if result.disposition != 'indexed':
             raise RuntimeError('original preparation did not settle: ' + result.disposition)
         decision = {}
-        result = mog.dispatch_admitted_pr_proof(self.repo, self.read, self.write, ref,
-                                              decision=decision, **self.context)
+        native=isinstance(result.admission,contract.NativeAdmission)
+        execute=mog.enqueue_native_admission if native else mog.dispatch_admitted_pr_proof
+        result = execute(self.repo, self.read, self.write, ref,decision=decision, **self.context)
         self.emit_decision('dispatch', disposition=result.disposition,
             detail=result.detail, decision=decision,
             admission=asdict(result.admission) if result.admission is not None else None)
         self.save('dispatch', dict(disposition=result.disposition, detail=result.detail))
-        if result.disposition != 'bound':
+        if result.disposition != ('queued' if native else 'bound'):
             raise RuntimeError('original dispatch did not bind: ' + result.disposition)
         self.receipt('admission', asdict(result.admission), 'bound')
-        return dict(bound=True, generation=result.admission.generation)
+        output=dict(bound=True,generation=result.admission.generation)
+        if native:output['receipt_suffix']='native-queued'
+        elif isinstance(result.admission,contract.SourceAdmission):output['receipt_suffix']='source-bound'
+        return output
 
     @controller_read_scope
-    def finalize(self, bound_artifact_id):
+    def finalize(self, bound_artifact_id, *, suffix="bound"):
         self.authority()
-        ref = self.reference('bound', bound_artifact_id)
+        ref = self.reference(suffix, bound_artifact_id)
+        admitted=mog.authenticated_admission_from_ref(self.repo,self.read,ref,
+            repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'])
+        if isinstance(admitted,contract.NativeAdmission) and admitted.run_id is None:
+            # A queued entry owns its slot and started pointer until the actual
+            # original run is bound. No lookup/absence permits enqueue replay.
+            if not admitted.queue_entry_id:raise ValueError('native queued receipt has no original entry')
+            # Upload completion is not current launch custody. Reauthenticate the
+            # conserved root and exact started generation before indexing it.
+            url=f'{mog.GITHUB_API}/repos/{self.repo}/labels/'+urllib.parse.quote(mog.REFRESH_LEASE_LABEL,safe='')
+            code,row=mog._request('GET',url,self.read)
+            if code!=200 or not isinstance(row,dict):raise ValueError('native queued register unreadable')
+            root=mog.authenticated_migration_root(self.repo,self.read,row.get('description'),
+                repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'])
+            started=mog.shared_register_text(f'a2 p={admitted.pr_number} g={admitted.generation} s=started',root)
+            if row.get('description')!=started:raise ValueError('native queued original pointer changed')
+            code,fenced=mog._request('GET',url,self.read)
+            if code!=200 or not isinstance(fenced,dict) or fenced.get('description')!=started:
+                raise ValueError('native queued original pointer changed before index')
+            ok=mog._publish_admission_reference(self.repo,self.read,self.write,admitted,ref)
+            return dict(finalized=False,disposition='queued' if ok else 'unknown')
         result = mog.finalize_shared_admission(self.repo, self.read, self.write, ref, **self.context)
         self.save('finalized', dict(disposition=result.disposition, detail=result.detail))
         if result.disposition != 'finalized':
             raise RuntimeError('original finalization did not settle: ' + result.disposition)
         return dict(finalized=True)
+
+    @controller_read_scope
+    def bind_native(self, *, wait=False):
+        self.authority()
+        inventory=mog.shared_admission_inventory(self.repo,self.read)
+        if inventory.mode=='legacy':return dict(bound=False)
+        if not inventory.complete:raise ValueError('native binding custody incomplete')
+        if inventory.launch is None:return dict(bound=False)
+        number,generation=inventory.launch
+        comments=mog.fetch_issue_comments(self.repo,number,self.read,strict=True)
+        records,_=mog.pr_admission_history(self.repo,self.read,number,comments,
+            repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'])
+        rows=[a for a in records if a.generation==generation]
+        if len(rows)!=1:return dict(bound=False)
+        queued=rows[0]
+        if not isinstance(queued,contract.NativeAdmission) or queued.run_id is not None or not queued.queue_entry_id:
+            return dict(bound=False)
+        scope=mog._MIGRATION_READ_SCOPE.get()
+        budget=scope.require_budget() if scope is not None else self.migration_budget()
+        bound=None
+        for index in range(12 if wait else 1):
+            if time.time()>=budget.deadline or not budget.may_continue(index)[0]:
+                return dict(bound=False,disposition='held',detail='original binding budget/deadline')
+            bound=mog.native_bound_original(self.repo,self.read,queued,self.context['repository_id'])
+            if bound is not None:break
+            if not wait or index==11 or time.time()+5>=budget.deadline:break
+            time.sleep(5)  # Affirmative not-yet-created original; never an effect retry.
+        if bound is None:return dict(bound=False,disposition='pending')
+        url=f'{mog.GITHUB_API}/repos/{self.repo}/labels/'+urllib.parse.quote(mog.REFRESH_LEASE_LABEL,safe='')
+        code,row=mog._request('GET',url,self.read)
+        root=mog.authenticated_migration_root(self.repo,self.read,row.get('description'),
+            repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'])
+        before=mog.shared_register_text(f'a2 p={number} g={generation} s=started',root)
+        after=mog.shared_register_text(f'a2 p={number} g={generation} s=binding',root)
+        if code!=200 or row.get('description')!=before:
+            return dict(bound=False,disposition='held')
+        code,fenced=mog._request('GET',url,self.read)
+        if code!=200 or fenced.get('description')!=before:return dict(bound=False,disposition='held')
+        code,_=mog._shared_admission_effect('PATCH',url,self.write,{'description':after})
+        if code!=200:return dict(bound=False,disposition='unknown')
+        code,row=mog._request('GET',url,self.read)
+        if code!=200 or row.get('description')!=after:return dict(bound=False,disposition='unknown')
+        self.receipt('admission',asdict(bound),'native-execution')
+        return dict(bound=True,generation=generation,receipt_suffix='native-bound')
 
     @controller_read_scope
     def complete(self, run_id=None, attempt=None):
@@ -1282,6 +1426,8 @@ class Stages:
             if code != 200 or not isinstance(pull, dict):
                 raise ValueError('current completion subject unavailable')
             for a in records:
+                if isinstance(a,contract.NativeAdmission):
+                    continue  # Native final gate belongs to its original group CI; never publish PR checks.
                 if a.run_id is None or a.head_sha != (pull.get('head') or {}).get('sha'):
                     continue
                 ref = catalog.get((a.generation, a.run_id))
@@ -1375,7 +1521,7 @@ class Stages:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('stage', choices=['prepare', 'reserve', 'dispatch', 'finalize', 'complete', 'migration-prepare', 'migration-apply'])
+    parser.add_argument('stage', choices=['prepare', 'reserve', 'dispatch', 'finalize', 'complete', 'migration-prepare', 'migration-apply', 'bind-native', 'bind-native-wait', 'finalize-native'])
     args = parser.parse_args()
     context = dict(repository_id=int(os.environ['GITHUB_REPOSITORY_ID']),
                    protected_controller_sha=os.environ['GITHUB_SHA'],
@@ -1387,6 +1533,10 @@ def main():
         result=stages.migration_prepare()
     elif args.stage == 'migration-apply':
         result=stages.migration_apply(int(os.environ['ARTIFACT_ID']))
+    elif args.stage in {'bind-native','bind-native-wait'}:
+        result=stages.bind_native(wait=args.stage=='bind-native-wait')
+    elif args.stage=='finalize-native':
+        result=stages.finalize(int(os.environ['ARTIFACT_ID']),suffix='native-execution')
     elif args.stage == 'prepare':
         import yaml
         workflow = yaml.safe_load((Path(__file__).resolve().parents[1] / '.github/workflows/ci.yml').read_text())

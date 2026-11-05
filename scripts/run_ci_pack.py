@@ -402,6 +402,7 @@ def _is_standalone_pip_install(command: str) -> bool:
 # would let a non-gating lane's plan pose as authority for a merge.
 SUPPORTED_PLAN_ROLE_EVENTS = frozenset({
     ("pr_head", "pull_request"),
+    ("merge_group", "merge_group"),
     ("main", "workflow_dispatch"),
     ("main", "workflow_run"),
     ("main", "schedule"),
@@ -2161,6 +2162,7 @@ class CIPackPlan:
     changed_files_sha256: str = field(default="", compare=False, repr=False)
     changed_files_count: int = field(default=0, compare=False, repr=False)
     admission_generation: str | None = None
+    native_group: Mapping[str, Any] | None = None
 
     @property
     def pack_count(self) -> int:
@@ -2183,7 +2185,7 @@ class CIPackPlan:
         """
         return {
             "schema": self.schema,
-            **_admission_fields(self.workflow, self.event, self.role, self.admission_generation),
+            **_admission_fields(self.workflow, self.event, self.role, self.admission_generation, self.native_group),
             "workflow_run_id": self.workflow_run_id,
             "workflow": self.workflow,
             "event": self.event,
@@ -2224,17 +2226,17 @@ class CIPackPlan:
         }
 
 
-def _admission_fields(workflow, event, role, generation=None):
+def _admission_fields(workflow, event, role, generation=None, native_group=None):
     try:
         return admission_identity_fields(workflow=workflow, event=event, role=role,
-                                         admission_generation=generation)
+                                         admission_generation=generation, native_group=native_group)
     except SemanticProofError as exc:
         raise ManifestError(str(exc)) from exc
 
 
 def _fragment_admission_fields(plan):
     if plan is not None:
-        return _admission_fields(plan.workflow, plan.event, plan.role, plan.admission_generation)
+        return _admission_fields(plan.workflow, plan.event, plan.role, plan.admission_generation, plan.native_group)
     workflow = os.environ.get("GITHUB_WORKFLOW", "ci")
     event = os.environ.get("GITHUB_EVENT_NAME", "local")
     role = os.environ.get("CI_SEMANTIC_ROLE", "main")
@@ -2242,7 +2244,14 @@ def _fragment_admission_fields(plan):
     # generation must not be relabeled onto that replay.
     generation = os.environ.get("CI_ADMISSION_GENERATION") if (
         workflow, event, role) == ("ci", "workflow_dispatch", "pr_head") else None
-    return _admission_fields(workflow, event, role, generation)
+    native_group = None
+    if (workflow, event, role) == ("ci", "merge_group", "merge_group"):
+        generation = os.environ.get("CI_ADMISSION_GENERATION")
+        try:
+            native_group = json.loads(os.environ["CI_NATIVE_GROUP_JSON"])
+        except (KeyError, ValueError) as exc:
+            raise ManifestError("native group fragment lacks verified identity") from exc
+    return _admission_fields(workflow, event, role, generation, native_group)
 
 
 def plan_hash_payload(
@@ -2264,6 +2273,7 @@ def plan_hash_payload(
     pack_weights: Iterable[int],
     semantic_jobs: Iterable[SemanticJobSpec | Mapping[str, Any]],
     admission_generation: str | None = None,
+    native_group: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Exactly what a pack must agree with ci-plan about, and nothing else.
 
@@ -2287,7 +2297,7 @@ def plan_hash_payload(
     """
     return {
         "schema": PLAN_SCHEMA,
-        **_admission_fields(workflow, event, role, admission_generation),
+        **_admission_fields(workflow, event, role, admission_generation, native_group),
         "workflow_run_id": workflow_run_id,
         "workflow": workflow,
         "event": event,
@@ -2347,6 +2357,7 @@ def build_plan(
     subject_head_sha: str | None = None,
     base_sha: str | None = None,
     admission_generation: str | None = None,
+    native_group: Mapping[str, Any] | None = None,
 ) -> CIPackPlan:
     """Decide, once, what this CI run executes.
 
@@ -2443,14 +2454,18 @@ def build_plan(
         )
     if admission_generation is None and (workflow, event, role) == ("ci", "workflow_dispatch", "pr_head"):
         admission_generation = os.environ.get("CI_ADMISSION_GENERATION")
-    _admission_fields(workflow, event, role, admission_generation)
-    if role == "pr_head" and changed is None:
+    _admission_fields(workflow, event, role, admission_generation, native_group)
+    if role == "merge_group" and (
+        native_group["group_head_sha"], native_group["source_head_sha"], native_group["base_sha"]
+    ) != (tested_tree_sha, subject_head_sha, base_sha):
+        raise ManifestError("native_group disagrees with semantic plan identity")
+    if role in {"pr_head", "merge_group"} and changed is None:
         raise ManifestError(
             "a PR semantic plan requires an exact changed-file inventory; "
             "planner uncertainty may widen compatibility execution but cannot "
             "mint authority_changed=false"
         )
-    if role == "pr_head" and changed_from != base_sha:
+    if role in {"pr_head", "merge_group"} and changed_from != base_sha:
         raise ManifestError("PR semantic plan changed_from must equal exact base_sha")
     if role == "main" and (
         changed_from is not None
@@ -2465,7 +2480,7 @@ def build_plan(
     )
     try:
         authority_changed = bool(
-            role == "pr_head"
+            role in {"pr_head", "merge_group"}
             and changed is not None
             and any(is_ci_authority_path(path) for path in changed)
         )
@@ -2487,6 +2502,7 @@ def build_plan(
     )
     hash_payload = plan_hash_payload(
         admission_generation=admission_generation,
+        native_group=native_group,
         workflow_run_id=workflow_run_id,
         workflow=workflow,
         event=event,
@@ -2506,6 +2522,7 @@ def build_plan(
     )
     return CIPackPlan(
         admission_generation=admission_generation,
+        native_group=native_group,
         schema=PLAN_SCHEMA,
         changed_from=changed_from,
         scope_mode=scope_mode,
@@ -2553,6 +2570,7 @@ def plan_from_workflow(
     subject_head_sha: str | None = None,
     base_sha: str | None = None,
     admission_generation: str | None = None,
+    native_group: Mapping[str, Any] | None = None,
     gate: str | None = None,
 ) -> CIPackPlan:
     """Load the manifest, resolve the diff, and plan — the whole decision."""
@@ -2583,6 +2601,7 @@ def plan_from_workflow(
             legacy,
             changed,
             admission_generation=admission_generation,
+        native_group=native_group,
             changed_from=changed_from,
             scope_mode=scope_mode,
             pack_count=pack_count,
@@ -2635,6 +2654,7 @@ def load_authoritative_plan(
     expect_subject_head_sha: str | None = None,
     expect_base_sha: str | None = None,
     expect_admission_generation: str | None = None,
+    expect_native_group: Mapping[str, Any] | None = None,
     gate: str | None = None,
 ) -> CIPackPlan:
     """Load the planner artifact without recomputing scope or partition.
@@ -2770,8 +2790,8 @@ def load_authoritative_plan(
     if changed_from is not None and not isinstance(changed_from, str):
         raise ManifestError("authoritative plan changed_from must be text or null")
     role = required_text("role")
-    if role not in {"pr_head", "main"}:
-        raise ManifestError("authoritative plan role must be pr_head or main")
+    if role not in {"pr_head", "main", "merge_group"}:
+        raise ManifestError("authoritative plan role must be pr_head, main or merge_group")
     event = required_text("event")
     # `workflow` is read HERE, before the role/event validation below, so the
     # same narrow main-owned diagnostic admission build_plan() grants can be
@@ -2787,8 +2807,15 @@ def load_authoritative_plan(
             f"authoritative plan role/event combination {role}/{event} is unsupported"
         )
     admission_generation = document.get("admission_generation")
-    _admission_fields(workflow, event, role, admission_generation)
-    if role == "pr_head" and changed_from != identities["base_sha"]:
+    native_group = document.get("native_group")
+    if expect_native_group is not None and native_group != expect_native_group:
+        raise ManifestError("authoritative plan native_group mismatch")
+    _admission_fields(workflow, event, role, admission_generation, native_group)
+    if role == "merge_group" and (
+        native_group["group_head_sha"], native_group["source_head_sha"], native_group["base_sha"]
+    ) != (identities["tested_tree_sha"], identities["subject_head_sha"], identities["base_sha"]):
+        raise ManifestError("native_group disagrees with semantic plan identity")
+    if role in {"pr_head", "merge_group"} and changed_from != identities["base_sha"]:
         raise ManifestError(
             "PR authoritative plan must diff and replay the same exact base SHA"
         )
@@ -2822,6 +2849,7 @@ def load_authoritative_plan(
 
     payload = plan_hash_payload(
         admission_generation=admission_generation,
+        native_group=native_group,
         workflow_run_id=required_text("workflow_run_id"),
         workflow=workflow,
         event=event,
@@ -2858,7 +2886,7 @@ def load_authoritative_plan(
             raise ManifestError("changed-file artifact count disagrees with plan")
         try:
             computed_authority_changed = bool(
-                role == "pr_head"
+                role in {"pr_head", "merge_group"}
                 and resolved_changed is not None
                 and any(is_ci_authority_path(item) for item in resolved_changed)
             )
@@ -2873,6 +2901,7 @@ def load_authoritative_plan(
 
     plan = CIPackPlan(
         admission_generation=admission_generation,
+        native_group=native_group,
         schema=PLAN_SCHEMA,
         changed_from=changed_from,
         scope_mode=scope_mode,
@@ -5914,8 +5943,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--workflow-run-id", default=None)
     parser.add_argument("--workflow-name", default=None)
     parser.add_argument("--event", default=None)
-    parser.add_argument("--role", choices=("pr_head", "main"), default=None)
+    parser.add_argument("--role", choices=("pr_head", "main", "merge_group"), default=None)
     parser.add_argument("--admission-generation", default=None)
+    parser.add_argument("--native-group-json", default=None)
+    parser.add_argument("--expect-native-group-json", default=None)
     parser.add_argument("--expect-admission-generation", default=None)
     parser.add_argument("--expect-tested-tree-sha", default=None)
     parser.add_argument("--expect-subject-head-sha", default=None)
@@ -6012,7 +6043,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("--tracked-paths-file requires --tested-tree-sha")
     if args.semantic_replay_job and not args.execute:
         parser.error("--semantic-replay-job requires --execute")
-    if args.semantic_replay_job and (args.admission_generation is not None or args.expect_admission_generation is not None):
+    if args.semantic_replay_job and (args.admission_generation is not None or args.expect_admission_generation is not None or args.native_group_json is not None or args.expect_native_group_json is not None):
         parser.error("exact-base replay cannot carry a parent admission generation")
     if args.semantic_replay_job and args.emit_semantic_fragment is None:
         parser.error("--semantic-replay-job requires --emit-semantic-fragment")
@@ -6091,6 +6122,7 @@ def main(argv: list[str] | None = None) -> int:
                 expect_subject_head_sha=args.expect_subject_head_sha,
                 expect_base_sha=args.expect_base_sha,
                 expect_admission_generation=args.expect_admission_generation,
+                expect_native_group=json.loads(args.expect_native_group_json) if args.expect_native_group_json else None,
                 gate=args.gate,
             )
         else:
@@ -6106,6 +6138,7 @@ def main(argv: list[str] | None = None) -> int:
                 event=args.event,
                 role=args.role,
                 admission_generation=args.admission_generation,
+                native_group=json.loads(args.native_group_json) if args.native_group_json else None,
                 tested_tree_sha=args.tested_tree_sha,
                 subject_head_sha=args.subject_head_sha,
                 base_sha=args.base_sha,
