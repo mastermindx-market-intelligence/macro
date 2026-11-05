@@ -1911,3 +1911,117 @@ test('Macro v2 refuses non-price return basis even with the correct generation',
   assert.equal(result.state.view,'overview');
   assert.equal(await page.locator('#macro-panel').isHidden(),true);
 }));
+
+// Shared-shell child bridge transport: the installed parent bridge appends
+// mmx_shell=1&mmx_generation=<id> to the document URL, so the strict reducer
+// must keep parsing only the product query at both query-read boundaries.
+const SHELL_TRANSPORT = '&mmx_shell=1&mmx_generation=9e1a5667-47f3-4a69-a784-b971e3ba74ba';
+
+function workspaceQuery(product = '?view=history&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=') {
+  return product + SHELL_TRANSPORT;
+}
+
+async function installShellBridge(page) {
+  await page.evaluate(() => {
+    // Mirrors the installed child bridge contract: the installed marker only
+    // exists after the frame/transport/referrer guards, the frozen public
+    // brand carries the protocol id, and active stays false until the parent
+    // INIT handshake (which never runs in this harness).
+    window['__MMX_SHARED_BRIDGE_INSTALLED__'] = true;
+    window.MMXSharedShell = Object.freeze({ __mmxBridge: 'mmx.shared-shell.v1', active: false, applyingContext: false });
+  });
+}
+
+test('installed shell transport is stripped for mount and popstate product parsing', async () => {
+  await withPage(async (page) => {
+    await installShellBridge(page);
+    const handle = await mount(page, workspaceQuery());
+    assert.equal(await page.evaluate((h) => h.getState().view, handle), 'history');
+    assert.equal(await page.evaluate((h) => h.getState().currency_basis, handle), 'usd_unhedged');
+    assert.equal(await page.textContent('[data-im-issues]'), '');
+    await page.evaluate(() => {
+      window.MMXSharedShell = Object.freeze({ __mmxBridge: 'mmx.shared-shell.v1', active: true, applyingContext: false });
+      history.pushState({ im: true }, '', '?view=overview&market=JP&pins=&horizon=1m&basis=local&return_basis=price&group=&mmx_shell=1&mmx_generation=9e1a5667-47f3-4a69-a784-b971e3ba74ba');
+      dispatchEvent(new PopStateEvent('popstate'));
+    });
+    assert.equal(await page.evaluate((h) => h.getState().view, handle), 'overview');
+    assert.equal(await page.evaluate((h) => h.getState().selected_market, handle), 'JP');
+    assert.equal(await page.evaluate((h) => h.getState().currency_basis, handle), 'local');
+    assert.equal(await page.textContent('[data-im-issues]'), '');
+    const fresh = await mount(page, '?mmx_shell=1&mmx_generation=9e1a5667-47f3-4a69-a784-b971e3ba74ba');
+    assert.equal(await page.evaluate((h) => h.getState().view, fresh), 'overview');
+    assert.equal(await page.textContent('[data-im-issues]'), '');
+  });
+});
+
+test('shell transport without an installed bridge still reports invalid state', async () => {
+  await withPage(async (page) => {
+    const handle = await mount(page, workspaceQuery());
+    assert.equal(await page.textContent('[data-im-issues]'), 'Invalid URL state restored');
+    assert.equal(await page.evaluate((h) => h.getState().view, handle), 'overview');
+    assert.equal(await page.evaluate(() => location.search), workspaceQuery());
+    await page.evaluate(() => {
+      window.__MMX_SHARED_BRIDGE_INSTALLED__ = true;
+      window.MMXSharedShell = Object.freeze({ __mmxBridge: 'mmx.foreign-shell.v9', active: false });
+    });
+    const foreign = await mount(page, workspaceQuery());
+    assert.equal(await page.textContent('[data-im-issues]'), 'Invalid URL state restored');
+    assert.equal(await page.evaluate((h) => h.getState().view, foreign), 'overview');
+  });
+});
+
+test('malformed or duplicated shell transport is not stripped under an installed bridge', async () => {
+  await withPage(async (page) => {
+    await installShellBridge(page);
+    const variants = [
+      '?view=history&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_generation=9e1a5667-47f3-4a69-a784-b971e3ba74ba',
+      '?view=history&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=0&mmx_generation=9e1a5667-47f3-4a69-a784-b971e3ba74ba',
+      '?view=history&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1',
+      '?view=history&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=x&mmx_shell=1',
+      '?view=history&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=' + 'x'.repeat(129),
+      '?view=history&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=%',
+      '?view=history&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=',
+      '?view=history&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=x&mmx_generation=y'
+    ];
+    for (const query of variants) {
+      const handle = await mount(page, query);
+      assert.equal(await page.textContent('[data-im-issues]'), 'Invalid URL state restored', query);
+      assert.equal(await page.evaluate((h) => h.getState().view, handle), 'overview', query);
+    }
+  });
+});
+
+test('shell transport stripping does not relax product validation', async () => {
+  await withPage(async (page) => {
+    await installShellBridge(page);
+    const variants = [
+      ['?bad=1&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=', 'Invalid URL state restored'],
+      ['?view=history&view=overview&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=', 'Invalid URL state restored'],
+      ['?view=overview&market=&pins=&horizon=1m&basis=bogus&return_basis=price&group=', 'Unsupported value'],
+      ['?view=hist%&market=&pins=&horizon=1m&basis=local&return_basis=price&group=', 'Invalid URL state restored'],
+      ['?view=history&market=&pins=KR%2CTW&horizon=1m&basis=local&return_basis=price&group=', 'Invalid URL state restored'],
+      ['?view=history&market=&pins=&horizon=1m&basis=local&return_basis=price&group=&mmx_unknown=1', 'Invalid URL state restored']
+    ];
+    for (const [product, issue] of variants) {
+      const handle = await mount(page, product + SHELL_TRANSPORT);
+      assert.equal(await page.textContent('[data-im-issues]'), issue, product);
+      assert.equal(await page.evaluate((h) => h.getState().view, handle), 'overview', product);
+    }
+  });
+});
+
+
+test('shell query boundary preserves raw encoded product bytes', async () => {
+  await withPage(async (page) => {
+    await installShellBridge(page);
+    await mount(page, '?view=history&market=JP&pins=KR,TW&horizon=3m&basis=local&return_basis=price&group=');
+    const baselineIssue = await page.textContent('[data-im-issues]');
+    const raw = '?v%69ew=hist%6fry&market=JP&pins=KR,TW&horizon=%33m&basis=local&return_basis=price&group=' + SHELL_TRANSPORT;
+    const handle = await mount(page, raw);
+    assert.equal(await page.evaluate((h) => h.getState().view, handle), 'history');
+    assert.equal(await page.evaluate((h) => h.getState().horizon, handle), '3m');
+    assert.equal(await page.evaluate((h) => h.getState().selected_market, handle), 'JP');
+    assert.equal(await page.textContent('[data-im-issues]'), baselineIssue);
+    assert.equal(await page.evaluate(() => location.search), raw);
+  });
+});

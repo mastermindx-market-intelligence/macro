@@ -210,6 +210,20 @@ def _policy_number(value):
         raise ValueError
 
 
+def _policy_exact_number(value):
+    """Exact rational view of an admitted number.
+
+    Ints are exact as admitted. A float is read through its declared decimal
+    text, so 0.1 means one tenth and not its binary image; the arithmetic stays
+    rational and no tolerance is applied, so a genuine small declared change
+    still reads as a change.
+    """
+    from fractions import Fraction
+    if type(value) is int:
+        return Fraction(value)
+    return Fraction(repr(value))
+
+
 def _policy_instrument(value):
     _policy_shape(value, 'economy instrument_id instrument_kind')
     for item in value.values():
@@ -293,7 +307,6 @@ def compare_policy_points(intent, observations, mapping_receipt):
     numeric answer or observation references. Original-known replay is withheld.
     """
     from copy import deepcopy
-    from fractions import Fraction
     import json
     invalid = dict(state='invalid', identity=None,
                    reasons=['invalid_policy_comparison'], missing_refs=[])
@@ -346,7 +359,8 @@ def compare_policy_points(intent, observations, mapping_receipt):
             missing.append(slot)
     if reasons:
         return unavailable(reasons, missing)
-    values = [Fraction(observations[slot]['value']) * (100 if observations[slot]['unit'] == 'percent' else 1)
+    values = [_policy_exact_number(observations[slot]['value'])
+              * (100 if observations[slot]['unit'] == 'percent' else 1)
               for slot in slots]
     if intent['period']['start'] == intent['period']['end']:
         conflicts = [slot for side, offset in (('a', 0), ('b', 2))
@@ -356,11 +370,20 @@ def compare_policy_points(intent, observations, mapping_receipt):
             return unavailable(['observation_conflict'], conflicts)
     start, end = values[0] - values[2], values[1] - values[3]
     absolute_change = abs(end) - abs(start)
+    # Preserve the existing representability bound for float-derived answers,
+    # including answers that become integral under exact decimal arithmetic.
+    binary_input = any(type(observations[slot]['value']) is float for slot in slots)
+
+    def emitted(value):
+        if binary_input:
+            float(value)  # OverflowError beyond the float range.
+        return _policy_output_number(value)
+
     try:
         result = dict(state='qualified', identity=identity,
-                      signed_start_bp=_policy_output_number(start), signed_end_bp=_policy_output_number(end),
-                      signed_change_bp=_policy_output_number(end - start),
-                      absolute_change_bp=_policy_output_number(absolute_change),
+                      signed_start_bp=emitted(start), signed_end_bp=emitted(end),
+                      signed_change_bp=emitted(end - start),
+                      absolute_change_bp=emitted(absolute_change),
                       direction='narrowed' if absolute_change < 0 else 'widened' if absolute_change > 0 else 'unchanged_at_endpoints',
                       crosses_zero=(start < 0 < end or end < 0 < start),
                       evidence_refs=[dict(slot=slot, **{key: observations[slot][key]

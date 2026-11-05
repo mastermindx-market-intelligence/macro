@@ -1256,9 +1256,11 @@
       '[data-im-macro-market],[data-im-risk-channel],[data-im-risk-row],[data-im-risk-prompt],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option,'+
       '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable]';
     selector += ',[data-im-history-panel],[data-im-history-slot],[data-im-history-prompt],[data-im-history-tabs],[data-im-scenario-field],[data-im-scenario-fields],[data-im-scenario-tab],[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-confirm-context],[data-im-scenario-confirm-reset],[data-im-scenario-result],[data-im-scenario-empty],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error],[data-im-scenario-action]';
+    selector += ',[data-gs-market],[data-gs-market-row],[data-im-investigate]';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
       if (node === root) attrs.push('data-im-enhanced');
+      if (node.matches('[data-im-investigate]')) attrs.push('href','aria-disabled');
       if (node.closest('[data-im-history-panel]')) {
         attrs.push('hidden','disabled');
         if (node.matches('[data-im-history-panel]')) attrs.push('data-horizon','data-basis','data-im-history-enhanced','data-im-history-tab');
@@ -1275,6 +1277,9 @@
       if (node.matches('[data-im-library-status]')) text = true;
       if (node.matches('[data-im-issues]')) { attrs.push('role'); text = true; }
       if (node.matches('[data-im-unavailable],[data-im-panel],[data-im-expanded-region]')) attrs.push('hidden');
+      if (node.matches('[data-im-panel]')) attrs.push('data-im-deferred-live');
+      if (node.matches('[data-gs-market]')) attrs.push('hidden');
+      if (node.matches('[data-gs-market-row]')) attrs.push('data-gs-selected');
       if (node.matches('button[data-im-action="set_view"]')) attrs.push('disabled','aria-pressed');
       if (node.matches('select[data-im-action]')) value = ['select_market','set_library_group','set_view','set_horizon','set_basis'].includes(node.getAttribute('data-im-action'));
       if (node.matches('[data-im-expansion-trigger]')) attrs.push('hidden','aria-expanded','data-im-expanded');
@@ -1303,6 +1308,7 @@
 
   function rememberNodes(controller, snapshot) {
     snapshot.forEach(function (entry) {
+      if (entry.node.closest('[data-im-deferrable="v1"]')) return;
       if (!controller.original.some(function (old) { return old.node === entry.node; })) controller.original.push(entry);
     });
   }
@@ -1345,6 +1351,9 @@
 
   function panelFor(controller, state) {
     return owned(controller.root, '[data-im-panel]').filter(function (panel) {
+      // A deferred carrier keeps its published panel identity for the view
+      // contract, but the live panel of that context is the materialized one.
+      if (panel.hasAttribute('data-im-deferred-live')) return false;
       if (!panelValid(panel, controller.config, state.source_reference, controller.bindingVersion) ||
           panel.getAttribute('data-view') !== state.view ||
           panel.getAttribute('data-horizon') !== state.horizon ||
@@ -1368,6 +1377,7 @@
       library.panel.setAttribute('data-horizon',state.horizon); library.panel.setAttribute('data-basis',state.currency_basis);
     }
     paintHistory(controller,state);
+    syncDeferred(controller, state);
     var panels = panelFor(controller, state);
     var panel = panels.length === 1 ? panels[0] : null;
     var compare = null;
@@ -1416,7 +1426,47 @@
     paintCompare(controller,compare);
     paintInspectorFallbacks(controller,state);
     paintGsMarket(controller, state);
+    paintInvestigationActions(controller, state);
     return reported;
+  }
+
+  function paintInvestigationActions(controller, state) {
+    var returnState = Object.assign({}, state, {library_group: null});
+    var serialized = controller.reducer.serializeQuery(returnState);
+    var returnUrl = serialized.ok && ['macro','risk'].includes(state.view)
+      ? 'https://www.mastermind-x.com/intl.html?' + serialized.query : null;
+    owned(controller.root, 'a[data-im-investigate]').forEach(function (link) {
+      var panel = link.closest('[data-im-panel]');
+      if (!panel || panel.hidden) return;
+      var enabled = false;
+      try {
+        var url = new URL(link.getAttribute('data-im-investigate-href'), 'https://www.mastermind-x.com');
+        var names = Array.from(url.searchParams.keys());
+        var expected = ['view','intl_context','intl_generation','intl_fingerprint','intl_field','intl_return'];
+        var field = link.getAttribute('data-im-native-field');
+        var market = typeof field === 'string' ? field.split('.')[0] : '';
+        enabled = !!returnUrl && controller.bindingVersion === 2 && panelValid(panel, controller.config, state.source_reference, 2)
+          && ['macro','risk'].includes(panel.getAttribute('data-view'))
+          && url.origin === 'https://www.mastermind-x.com' && url.pathname === '/analysis' && !url.hash && !url.username && !url.password
+          && names.length === expected.length && expected.every(function (name) { return names.filter(function (n) { return n === name; }).length === 1; })
+          && url.searchParams.get('view') === 'investigations'
+          && validGeneration(state.source_reference) && url.searchParams.get('intl_generation') === state.source_reference
+          && link.getAttribute('data-im-native-generation') === state.source_reference
+          && /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,255}$/.test(url.searchParams.get('intl_context') || '')
+          && url.searchParams.get('intl_context') === link.getAttribute('data-im-native-context')
+          && /^[0-9a-f]{64}$/.test(url.searchParams.get('intl_fingerprint') || '')
+          && url.searchParams.get('intl_fingerprint') === link.getAttribute('data-im-native-fingerprint')
+          && /^[A-Z]{2}\.[a-z][a-z0-9_]{0,63}$/.test(field || '') && controller.config.markets.includes(market)
+          && url.searchParams.get('intl_field') === field;
+        if (enabled) {
+          url.searchParams.set('intl_return', returnUrl);
+          var href = url.pathname + url.search;
+          enabled = new TextEncoder().encode(href).length <= 2048;
+          if (enabled) { link.setAttribute('href', href); link.removeAttribute('aria-disabled'); }
+        }
+      } catch (_) { enabled = false; }
+      if (!enabled) { link.removeAttribute('href'); link.setAttribute('aria-disabled','true'); }
+    });
   }
 
   function scenarioContext(state) {
@@ -1667,12 +1717,15 @@
       controller.state = state;
       controller.issues = reported;
       controller.serializedQuery = serialized.query;
+      controller.deferred.undo = null;
       return {ok:true, state:state, issues:reported, intent:null};
     } catch (error) {
+      deferredRelease(controller);
       restoreRoot(controller.root, snapshot);
       if (inspectorSnap) rehydrateInspector(controller, inspectorSnap);
       if (actionType === 'mount') throw error;
-      return {ok:false, state:previous, issues:[{code:'UI_UPDATE_FAILED', field:'workspace'}], intent:null};
+      var refused = !!(error && error.code === 'DEFERRED_PAYLOAD_REFUSED');
+      return {ok:false, state:previous, issues:[{code:refused ? 'NO_MATCHING_PANEL' : 'UI_UPDATE_FAILED', field:refused ? 'panel' : 'workspace'}], intent:null};
     }
   }
 
@@ -1698,11 +1751,64 @@
     target.focus();
   }
 
+  // Shared-shell child bridge transport: the installed parent bridge appends
+  // mmx_shell=1&mmx_generation=<id> to the document URL (shared_shell_bridge
+  // TRANSPORT_KEYS), while the strict reducer owns only the product query. The
+  // pair set is removed at the query-read boundary solely for a genuinely
+  // installed bridge: the installed marker is set only after the frame,
+  // transport and referrer guards and the frozen public brand carries the
+  // protocol id, both before DOMContentLoaded; requiring bridge.active would
+  // stay false until the parent INIT handshake and reintroduce the original
+  // rejection at mount. Anything else — no bridge, a foreign brand, malformed
+  // or duplicated transport — stays in the raw query so the reducer keeps
+  // reporting INVALID_QUERY; product bytes are preserved verbatim.
+  var SHELL_BRIDGE_PROTOCOL = 'mmx.shared-shell.v1';
+  var SHELL_TRANSPORT_KEYS = ['mmx_shell', 'mmx_generation'];
+  var SHELL_TRANSPORT_MAX_ID = 128;
+
+  function shellBridgeInstalled(controller) {
+    var win = controller.environment.window;
+    try {
+      if (win.__MMX_SHARED_BRIDGE_INSTALLED__ !== true) return false;
+      var bridge = win.MMXSharedShell;
+      if (!bridge || typeof bridge !== 'object') return false;
+      return bridge.__mmxBridge === SHELL_BRIDGE_PROTOCOL;
+    } catch (_) { return false; }
+  }
+
+  function decodeTransportPart(value) {
+    try { return decodeURIComponent(value.replace(/\+/g, ' ')); } catch (_) { return null; }
+  }
+
+  function stripShellTransport(controller) {
+    var rawQuery = controller.environment.window.location.search;
+    if (typeof rawQuery !== 'string' || !shellBridgeInstalled(controller)) return rawQuery;
+    var query = rawQuery.charAt(0) === '?' ? rawQuery.slice(1) : rawQuery;
+    if (query === '') return rawQuery;
+    var parts = query.split('&');
+    var seen = {};
+    var transport = {};
+    var kept = [];
+    for (var index = 0; index < parts.length; index += 1) {
+      var separator = parts[index].indexOf('=');
+      var key = separator === -1 ? null : decodeTransportPart(parts[index].slice(0, separator));
+      if (key === null || SHELL_TRANSPORT_KEYS.indexOf(key) === -1) { kept.push(parts[index]); continue; }
+      if (Object.prototype.hasOwnProperty.call(seen, key)) return rawQuery;
+      seen[key] = true;
+      transport[key] = decodeTransportPart(parts[index].slice(separator + 1));
+    }
+    if (seen.mmx_shell !== true || seen.mmx_generation !== true) return rawQuery;
+    if (transport.mmx_shell !== '1') return rawQuery;
+    var generation = transport.mmx_generation;
+    if (typeof generation !== 'string' || generation.length === 0 || generation.length > SHELL_TRANSPORT_MAX_ID) return rawQuery;
+    return (rawQuery.charAt(0) === '?' ? '?' : '') + kept.join('&');
+  }
+
   function popstate(controller) {
     if (!controller.live) return;
     var hadInspector = !!controller.inspector;
     if (hadInspector) visuallyCloseInspector(controller, { release: true });
-    var parsed = controller.reducer.parseQuery(controller.environment.window.location.search);
+    var parsed = controller.reducer.parseQuery(stripShellTransport(controller));
     parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed));
     var committed = commitResearch(controller, parsed, 'popstate');
     if (controller.pendingScenario) {
@@ -1718,17 +1824,329 @@
     }
   }
 
+  // ---- deferred (inert) surveillance contexts --------------------------
+  // The Dossier and Coverage contexts are published as inert JSON carriers:
+  // the canonical Jinja partial still renders the panel, the shell escapes
+  // that markup into a <script type="application/json"> carrier and this
+  // controller materializes exactly the selected context (and the selected
+  // jurisdiction) on demand. An inactive context never becomes live DOM, no
+  // carrier is parsed unless it is selected, and the nested jurisdiction
+  // articles of a materialized Dossier stay inert until they are selected.
+  // Every canonical jurisdiction is published; none is dropped.
+
+  var DEFERRED_SCHEMA = 'intl-gs-deferred.v1';
+  var DEFERRED_MARKET_SCHEMA = 'intl-gs-market.v1';
+  var DEFERRED_MAX_BYTES = 8388608;
+  var DEFERRED_PAYLOAD_KEYS = ['schema', 'view', 'context_id', 'horizon', 'basis', 'generation', 'markets', 'markup'];
+  var DEFERRED_MARKET_KEYS = ['schema', 'market_id', 'default', 'markup'];
+
+  function deferredFailure(reason) {
+    var error = new Error('International workspace deferred payload refused: ' + reason);
+    error.code = 'DEFERRED_PAYLOAD_REFUSED';
+    return error;
+  }
+
+  function deferredMarketList(node) {
+    var raw = node.getAttribute('data-im-deferred-markets');
+    if (!raw) return [];
+    var ids = raw.split(',');
+    if (ids.length > 256 || new Set(ids).size !== ids.length || ids.some(function (id) { return !/^[A-Z]{2}$/.test(id); })) throw deferredFailure('market domain');
+    return ids;
+  }
+
+  function deferredEntry(node) {
+    return {
+      placeholder: node,
+      id: node.id.endsWith('-carrier') ? node.id.slice(0, -8) : null,
+      view: node.getAttribute('data-view'),
+      horizon: node.getAttribute('data-horizon'),
+      basis: node.getAttribute('data-basis'),
+      source: node.getAttribute('data-source'),
+      generation: node.getAttribute('data-im-generation'),
+      markets: deferredMarketList(node),
+      panel: null,
+      market: null
+    };
+  }
+
+  function deferredEntries(controller) {
+    var entries = controller.deferred.entries;
+    var kept = [];
+    owned(controller.root, '[data-im-deferred]').forEach(function (node) {
+      var entry = null;
+      for (var index = 0; index < entries.length; index += 1) {
+        if (entries[index].placeholder === node) { entry = entries[index]; break; }
+      }
+      if (!node.id.endsWith('-carrier') || !node.matches('[data-im-panel][data-im-deferred="v1"]') ||
+          !['dossier', 'coverage'].includes(node.getAttribute('data-view')) ||
+          !controller.config.horizons.includes(node.getAttribute('data-horizon')) ||
+          !controller.config.bases.includes(node.getAttribute('data-basis'))) throw deferredFailure('carrier binding');
+      if (!entry) entry = deferredEntry(node);
+      else {
+        var refreshed = deferredEntry(node);
+        ['id','view','horizon','basis','source','generation','markets'].forEach(function (key) { entry[key] = refreshed[key]; });
+      }
+      kept.push(entry);
+    });
+    // A carrier that a third party removed from the document keeps its
+    // materialized panel tracked until that panel is evicted.
+    entries.forEach(function (entry) {
+      if (kept.indexOf(entry) === -1 && entry.panel && entry.panel.isConnected) kept.push(entry);
+    });
+    controller.deferred.entries = kept;
+    return kept;
+  }
+
+  function deferredBound(controller, entry, state) {
+    // A carrier whose own binding no longer matches the current source is
+    // stale, exactly like a stale panel: it is not materialized and it
+    // reports no data. A carrier that contradicts its own published identity
+    // is refused (see deferredPayload).
+    if (controller.bindingVersion === 2) {
+      return validGeneration(state.source_reference) && entry.generation === state.source_reference;
+    }
+    return entry.source === (state.source_reference === null ? '' : state.source_reference);
+  }
+
+  function deferredPayload(entry) {
+    var scripts = entry.placeholder.querySelectorAll('script[data-im-deferred-payload]');
+    var script = scripts.length === 1 ? scripts[0] : null;
+    if (!script || script.type !== 'application/json') throw deferredFailure('carrier missing');
+    var raw = script.textContent;
+    if (typeof raw !== 'string' || raw.length === 0 || raw.length > DEFERRED_MAX_BYTES) throw deferredFailure('carrier size');
+    var data;
+    try { data = JSON.parse(raw); } catch (error) { throw deferredFailure('carrier json'); }
+    if (!isPlainOwnObject(data) || Object.getOwnPropertySymbols(data).length !== 0) throw deferredFailure('carrier shape');
+    var names = Object.getOwnPropertyNames(data);
+    if (names.length !== DEFERRED_PAYLOAD_KEYS.length) throw deferredFailure('carrier keys');
+    DEFERRED_PAYLOAD_KEYS.forEach(function (key) {
+      if (!Object.prototype.hasOwnProperty.call(data, key)) throw deferredFailure('carrier key');
+    });
+    if (data.schema !== DEFERRED_SCHEMA) throw deferredFailure('carrier schema');
+    if (data.view !== entry.view || data.horizon !== entry.horizon || data.basis !== entry.basis) throw deferredFailure('carrier identity');
+    if ((data.generation || '') !== (entry.generation || '')) throw deferredFailure('carrier generation');
+    if (!Array.isArray(data.markets) || JSON.stringify(data.markets) !== JSON.stringify(entry.markets)) throw deferredFailure('carrier markets');
+    if (typeof data.context_id !== 'string' || data.context_id + '-' + entry.view !== entry.id) throw deferredFailure('carrier context');
+    if (typeof data.markup !== 'string' || data.markup.length === 0) throw deferredFailure('carrier markup');
+    return data;
+  }
+
+  // Serialized markup is parsed into an inert template: nothing in it runs.
+  // Executable script carriers, inline event handlers and javascript: URLs
+  // are removed before the nodes are adopted into the live document.
+  function deferredFragment(document, markup) {
+    var template = document.createElement('template');
+    template.innerHTML = markup;
+    var content = template.content;
+    var blocked = content.querySelectorAll('script, iframe, object, embed, base, meta, link, style');
+    for (var index = blocked.length - 1; index >= 0; index -= 1) {
+      var node = blocked[index];
+      var type = (node.getAttribute('type') || '').trim().toLowerCase();
+      if (node.tagName === 'SCRIPT' && type === 'application/json') continue;
+      if (node.parentNode) node.parentNode.removeChild(node);
+    }
+    Array.from(content.querySelectorAll('*')).forEach(function (element) {
+      Array.from(element.attributes).forEach(function (attribute) {
+        var name = attribute.name.toLowerCase();
+        var value = (attribute.value || '').replace(/[\u0000-\u0020]/g, '').toLowerCase();
+        if (name.indexOf('on') === 0 || value.indexOf('javascript:') === 0) element.removeAttribute(attribute.name);
+      });
+    });
+    return content;
+  }
+
+  function deferredPanel(document, entry, payload) {
+    var fragment = deferredFragment(document, payload.markup);
+    var panels = fragment.querySelectorAll('[data-im-panel]');
+    if (panels.length !== 1 || fragment.children.length !== 1) throw deferredFailure('panel shape');
+    var panel = panels[0];
+    if (panel !== fragment.firstElementChild || panel.id !== entry.id || !panel.hasAttribute('data-gs-panel')) throw deferredFailure('panel context');
+    if (panel.getAttribute('data-view') !== entry.view) throw deferredFailure('panel view');
+    if (panel.getAttribute('data-horizon') !== entry.horizon) throw deferredFailure('panel horizon');
+    if (panel.getAttribute('data-basis') !== entry.basis) throw deferredFailure('panel basis');
+    if ((panel.getAttribute('data-im-generation') || '') !== (entry.generation || '')) throw deferredFailure('panel generation');
+    if ((panel.getAttribute('data-source') || '') !== (entry.source || '')) throw deferredFailure('panel source');
+    return panel;
+  }
+
+  function deferredMarketPayload(script) {
+    if (script.type !== 'application/json') throw deferredFailure('market carrier type');
+    var raw = script.textContent;
+    if (typeof raw !== 'string' || raw.length === 0 || raw.length > DEFERRED_MAX_BYTES) throw deferredFailure('market carrier size');
+    var data;
+    try { data = JSON.parse(raw); } catch (error) { throw deferredFailure('market carrier json'); }
+    if (!isPlainOwnObject(data) || Object.getOwnPropertySymbols(data).length !== 0) throw deferredFailure('market carrier shape');
+    var names = Object.getOwnPropertyNames(data);
+    if (names.length !== DEFERRED_MARKET_KEYS.length) throw deferredFailure('market carrier keys');
+    DEFERRED_MARKET_KEYS.forEach(function (key) {
+      if (!Object.prototype.hasOwnProperty.call(data, key)) throw deferredFailure('market carrier key');
+    });
+    if (data.schema !== DEFERRED_MARKET_SCHEMA) throw deferredFailure('market carrier schema');
+    if (data.market_id !== script.getAttribute('data-im-gs-market-id') || !/^[A-Z]{2}$/.test(data.market_id)) throw deferredFailure('market carrier identity');
+    if (typeof data.default !== 'boolean' || data.default !== script.hasAttribute('data-im-gs-market-default')) throw deferredFailure('market default');
+    if (typeof data.markup !== 'string' || data.markup.length === 0) throw deferredFailure('market carrier markup');
+    return data;
+  }
+
+  function deferredMarketArticle(document, script, payload) {
+    var fragment = deferredFragment(document, payload.markup);
+    var articles = fragment.querySelectorAll('[data-gs-market]');
+    if (articles.length !== 1 || fragment.children.length !== 1) throw deferredFailure('market shape');
+    var article = articles[0];
+    if (article !== fragment.firstElementChild || article.tagName !== 'ARTICLE' || article.getAttribute('data-gs-market') !== payload.market_id || article.hasAttribute('data-gs-market-default') !== payload.default) throw deferredFailure('market identity');
+    return article;
+  }
+
+  function deferredEvict(entry) {
+    if (!entry.panel) return;
+    var panel = entry.panel;
+    if (panel.parentNode) panel.parentNode.removeChild(panel);
+    entry.panel = null;
+    entry.market = null;
+    entry.placeholder.removeAttribute('data-im-deferred-live');
+  }
+
+  // The whole transaction is planned before anything is written: every carrier
+  // that this state needs is parsed and checked first, so a malformed,
+  // duplicated or foreign carrier refuses without touching the live DOM.
+  function syncDeferred(controller, state) {
+    var entries = deferredEntries(controller);
+    controller.deferred.undo = null;
+    if (!entries.length) return;
+    var candidates = entries.filter(function (entry) {
+      return entry.placeholder.closest('[data-im-workspace]') === controller.root && entry.view === state.view && entry.horizon === state.horizon && entry.basis === state.currency_basis;
+    });
+    if (candidates.length > 1) throw deferredFailure('duplicate context');
+    var active = candidates.length === 1 ? candidates[0] : null;
+    if (active && !deferredBound(controller, active, state)) active = null;
+    var steps = [];
+    if (active) {
+      var panel = active.panel;
+      if (!panel) {
+        var payload = deferredPayload(active);
+        panel = deferredPanel(controller.root.ownerDocument, active, payload);
+      }
+      var market = deferredMarketPlan(controller, active, panel, state);
+      if (market) steps.push({kind: 'market', entry: active, script: market.script, article: market.article, previous: market.previous});
+      if (!active.panel) steps.push({kind: 'panel', entry: active, panel: panel});
+    }
+    entries.forEach(function (entry) { if (entry !== active) steps.push({kind: 'evict', entry: entry}); });
+    deferredApply(controller, steps);
+  }
+
+  function deferredMarketPlan(controller, entry, panel, state) {
+    var scope = panel.querySelector('[data-gs-market-scope]');
+    if (!scope) return null;
+    var scripts = Array.from(scope.querySelectorAll('script[data-im-gs-market-id]'));
+    if (!scripts.length) return null;
+    var ids = scripts.map(function (script) { return script.getAttribute('data-im-gs-market-id'); });
+    if (new Set(ids).size !== ids.length || ids.some(function (id) { return !/^[A-Z]{2}$/.test(id); })) throw deferredFailure('duplicate market');
+    if (JSON.stringify(ids) !== JSON.stringify(entry.markets)) throw deferredFailure('market domain mismatch');
+    var defaults = scripts.filter(function (script) { return script.hasAttribute('data-im-gs-market-default'); });
+    if (defaults.length !== 1) throw deferredFailure('market default cardinality');
+    var target = null;
+    if (state.selected_market) {
+      target = scripts.filter(function (script) {
+        return script.getAttribute('data-im-gs-market-id') === state.selected_market;
+      })[0] || null;
+    }
+    if (!target && state.selected_market !== null) throw deferredFailure('selected market missing');
+    if (!target) target = defaults[0];
+    if (!controller.config.markets.includes(target.getAttribute('data-im-gs-market-id'))) throw deferredFailure('market outside configured selection');
+    if (entry.market && entry.market.script === target) return null;
+    var payload = deferredMarketPayload(target);
+    var article = deferredMarketArticle(controller.root.ownerDocument, target, payload);
+    return {script: target, article: article, previous: entry.market || null};
+  }
+
+  function deferredApply(controller, steps) {
+    var undo = [];
+    controller.deferred.undo = undo;
+    steps.forEach(function (step) {
+      if (step.kind === 'evict') {
+        var entry = step.entry;
+        if (!entry.panel) return;
+        var panel = entry.panel;
+        var market = entry.market;
+        undo.push(function () {
+          var parent = entry.placeholder.parentNode;
+          if (parent && !panel.parentNode) parent.insertBefore(panel, entry.placeholder);
+          entry.panel = panel;
+          entry.market = market;
+          entry.placeholder.setAttribute('data-im-deferred-live', 'true');
+        });
+        deferredEvict(entry);
+        return;
+      }
+      if (step.kind === 'panel') {
+        var target = step.entry;
+        var placeholder = target.placeholder;
+        var parent = placeholder.parentNode;
+        if (!parent) throw deferredFailure('carrier detached');
+        undo.push(function () {
+          var panelParent = step.panel.parentNode;
+          var next = panelParent ? step.panel.nextSibling : null;
+          if (panelParent) panelParent.removeChild(step.panel);
+          var restore = placeholder.parentNode || panelParent;
+          if (restore && placeholder.parentNode !== restore) {
+            restore.insertBefore(placeholder, next && next.parentNode === restore ? next : null);
+          }
+          target.panel = null;
+          target.placeholder.removeAttribute('data-im-deferred-live');
+        });
+        parent.insertBefore(step.panel, placeholder);
+        target.panel = step.panel;
+        placeholder.setAttribute('data-im-deferred-live', 'true');
+        return;
+      }
+      if (step.kind === 'market') {
+        var owner = step.entry;
+        var previous = step.previous;
+        if (previous && previous.article && previous.article.parentNode) {
+          var previousParent = previous.article.parentNode, previousNext = previous.article.nextSibling;
+          undo.push(function () {
+            if (!previous.article.parentNode) previousParent.insertBefore(previous.article,
+              previousNext && previousNext.parentNode === previousParent ? previousNext : null);
+          });
+          previousParent.removeChild(previous.article);
+        }
+        undo.push(function () {
+          if (step.article.parentNode) step.article.parentNode.removeChild(step.article);
+          owner.market = previous || null;
+        });
+        step.script.parentNode.insertBefore(step.article, step.script);
+        owner.market = {script: step.script, article: step.article};
+      }
+    });
+  }
+
+  function deferredRelease(controller) {
+    if (!controller.deferred.undo) return;
+    var undo = controller.deferred.undo;
+    controller.deferred.undo = null;
+    try { undo.reverse().forEach(function (step) { step(); }); } catch (_) { /* the snapshot restore below owns the DOM */ }
+  }
+
   function gsMarketSeamPresent(controller) {
     // The X6 element-existence rule governs the surveillance market seam; a
     // page that carries no [data-gs-market] surface at all keeps the incumbent
     // legacy market semantics (history/macro selection never had gs elements).
-    return !!controller.root.querySelector('[data-gs-market], [data-gs-market-scope]');
+    // A deferred context carries its market surface inside the carrier, so a
+    // published carrier keeps the seam present.
+    return !!controller.root.querySelector('[data-gs-market], [data-gs-market-scope]') || deferredEntries(controller).some(function (entry) { return deferredBound(controller, entry, controller.state || {source_reference: controller.config.source_reference}); });
   }
 
   function gsMarketPresent(controller, marketId) {
-    return marketId !== null && /^[A-Z]{2}$/.test(marketId)
-      && controller.config.markets.indexOf(marketId) !== -1
-      && !!controller.root.querySelector('[data-gs-market="' + marketId + '"]');
+    if (marketId === null || !/^[A-Z]{2}$/.test(marketId)) return false;
+    if (controller.config.markets.indexOf(marketId) === -1) return false;
+    if (controller.root.querySelector('[data-gs-market="' + marketId + '"]')) return true;
+    // A deferred context publishes its jurisdictions inside the carrier; the
+    // published list is the document's own market surface, so a jurisdiction
+    // that the selected context carries is a selection even before it is
+    // materialized.
+    return deferredEntries(controller).some(function (entry) {
+      return deferredBound(controller, entry, controller.state || {source_reference: controller.config.source_reference}) && entry.markets.indexOf(marketId) !== -1;
+    });
   }
 
   // W2F-X X6: clamp a URL-parsed market to the document — a market with no
@@ -1899,6 +2317,7 @@
         });
         controller.pendingScenario=rebound;
       }
+      controller.deferred.undo = null;
       failed = false;
       return { ok: true, state: expanded.state, issues: reported, intent: { type: 'invalidate_source_bound_context' } };
     } catch (_) {
@@ -1910,6 +2329,7 @@
         controller.issues = previousIssues;
         controller.pendingScenario = previousPending;
         controller.serializedQuery = previousSerialized;
+        deferredRelease(controller);
         restoreRoot(controller.root, previousNodes);
         if (inspectorSnap) rehydrateInspector(controller, inspectorSnap);
       }
@@ -1944,7 +2364,8 @@
     };
     var controller = {
       root: root, config: config, bindingVersion: bindingVersion, configWithSource: configWithSource, reducer: reducer, environment: { window: window },
-      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null, scenarioDraft:null, pendingScenario:null
+      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null, scenarioDraft:null, pendingScenario:null,
+      deferred: {entries: [], undo: null}
     };
     controller.library = prepareLibrary(root,config);
     controller.inspectorHost = prepareInspector(controller);
@@ -1955,7 +2376,7 @@
       required(root, '[data-im-heading]').setAttribute('tabindex', '-1');
       required(root, '[data-im-issues]').setAttribute('role', 'status');
       required(root, '[data-im-unavailable]');
-      var parsed = reducer.parseQuery(window.location.search);
+      var parsed = reducer.parseQuery(stripShellTransport(controller));
       parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed));
       if (IntlWorkspaceScenario && owned(root,'[data-im-history-panel]').length) controller.scenarioDraft=IntlWorkspaceScenario.createDraft(scenarioContext(parsed.state));
       stageAndCommit(controller, parsed.state, parsed.issues, 'mount', false);
@@ -2033,6 +2454,10 @@
     ['input','compositionstart','compositionend','submit'].forEach(function (type) { controller.root.removeEventListener(type,controller.onLibraryEvent,false); });
     controller.environment.window.removeEventListener('popstate', controller.onPopstate, false);
     controller.environment.window.removeEventListener('resize', controller.onResize, false);
+    // The deferred carriers return to the canonical no-enhancement state: the
+    // materialized context leaves the DOM and the published carrier stays.
+    deferredEntries(controller).forEach(function (entry) { deferredEvict(entry); });
+    controller.deferred.entries = [];
     HANDLES.delete(controller.root);
     restoreRoot(controller.root, controller.original);
     return true;

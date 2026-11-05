@@ -223,6 +223,41 @@ def build() -> dict:
     mc = data / "neuralweb" / "mastermind_context.json"
     copy(mc, "nw_mastermind_context.json", _asof_of(_read_json(mc)), "data/neuralweb/mastermind_context.json")
 
+    # 11. International native generation, on this incumbent R2-only machine
+    # plane. Never reshape the producer's bytes or replace the full manifest
+    # from a partial International fixture. Exact source files are independent
+    # of any user account, question, Saved record or authenticated read.
+    try:
+        from lib.intl_generation_publication import read_generation_publication, publish_unavailable_generation
+        publication = read_generation_publication(data_root=data)
+        if publication.get("status") != "ready":
+            # Invalidate a stale current selector when its dependent immutable
+            # bytes are missing/corrupt. No old/current generation fallback.
+            publish_unavailable_generation(data_root=data)
+            publication = read_generation_publication(data_root=data)
+        descriptor = publication.get("descriptor")
+        if type(descriptor) is not dict:
+            raise ValueError("International descriptor unavailable")
+        source_dir = data / "intl/publication/generations"
+        if descriptor.get("state") == "ready":
+            name = descriptor["artifact_name"]
+            copy(source_dir / name, name, None, "data/intl/publication/generations/" + name)
+            generation_contract = json.loads(publication["artifact_bytes"])
+            points = generation_contract.get("policy_points_ref")
+            if points is not None:
+                point_name = points["artifact_name"]
+                copy(source_dir / point_name, point_name, None, "data/intl/publication/generations/" + point_name)
+        # Preserve the original immutable descriptor witness as well as the
+        # mutable current selector; neither acquires a build-time asof.
+        current = source_dir / "intl_generation_current.json"
+        import hashlib
+        witness = "intl_generation_descriptor_" + hashlib.sha256(current.read_bytes()).hexdigest() + ".json"
+        copy(source_dir / witness, witness, None, "data/intl/publication/generations/" + witness)
+        copy(current, "intl_generation_current.json", None,
+             "data/intl/publication/generations/intl_generation_current.json")
+    except Exception as exc:
+        log.warning("International native generation feed unavailable (%s)", type(exc).__name__)
+
     _write_json(out, "feeds_meta.json", {
         "schema_version": SCHEMA_VERSION,
         "generated_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),

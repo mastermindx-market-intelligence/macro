@@ -1,5 +1,7 @@
 """Independent disclosed pressure fields; no composite country-risk judgment."""
+import re
 from copy import deepcopy
+from datetime import date, datetime
 from math import isclose, isfinite
 
 from lib.intl_workspace_macro import (
@@ -17,6 +19,20 @@ _PERMISSIONS = {'allowed', 'unknown', 'denied'}
 _REASONS = {'stale': 'source_stale', 'failed': 'source_failed',
             'unsupported': 'method_unsupported', 'missing': 'not_supplied',
             'denied': 'value_denied', 'unknown': 'disclosure_unknown'}
+# Closed statistical-period variant for one Eurostat EA21 annual source identity.
+# It is an additional closed shape, not a relaxation: no other field, adapter,
+# country, instrument or method may enter this branch.
+_STATISTICAL_KEYS = {'method_ref', 'market_id', 'field_year', 'vintage',
+                     'observation_type', 'observation_clock_basis', 'dataset_updated_at'}
+_STATISTICAL_INSTRUMENT_ID = 'TIPSBP20/A/PC_GDP/CA/S1/S1/BAL/EXT_EA21/NSA/EA21'
+_STATISTICAL_METHOD_REF = (
+    'docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-annual-current-account'
+)
+_OFFSET_TIMESTAMP = re.compile(
+    r'^(?P<day>[0-9]{4}-[0-9]{2}-[0-9]{2})'
+    r'T(?P<clock>[0-9]{2}:[0-9]{2}:[0-9]{2})(?:\.(?P<fraction>[0-9]{1,6}))?'
+    r'(?P<zone>Z|[+-][0-9]{2}:?[0-9]{2})$'
+)
 
 
 def _unknown(field, reason='support_unavailable'):
@@ -30,8 +46,71 @@ def _nonempty(value):
     return value
 
 
+def _offset_timestamp(value):
+    """Parse an offset-aware ISO timestamp without rewriting the source string."""
+    if type(value) is not str:
+        raise ValueError
+    match = _OFFSET_TIMESTAMP.match(value)
+    if match is None:
+        raise ValueError
+    zone = match.group('zone')
+    if zone == 'Z':
+        zone = '+00:00'
+    elif ':' not in zone:
+        zone = f'{zone[:3]}:{zone[3:]}'
+    clock = match.group('clock')
+    fraction = match.group('fraction')
+    if fraction:
+        # Pad to microseconds so the parse does not depend on the runtime's
+        # accepted fractional-second precision.
+        clock = f'{clock}.{fraction.ljust(6, "0")}'
+    try:
+        moment = datetime.fromisoformat(f"{match.group('day')}T{clock}{zone}")
+    except ValueError:
+        raise ValueError from None
+    if moment.tzinfo is None or moment.utcoffset() is None:
+        raise ValueError
+    return moment
+
+
+def _statistical_annual_support(support, measure, market_id):
+    """Closed Eurostat EA21 annual statistical-period support."""
+    _exact(support, _STATISTICAL_KEYS, 'support')
+    if (support['observation_type'] != 'statistical'
+            or support['vintage'] is not None
+            or support['observation_clock_basis'] != 'period_end'):
+        raise ValueError
+    if market_id != 'EZ' or support['market_id'] != 'EZ':
+        raise ValueError
+    if support['method_ref'] != _STATISTICAL_METHOD_REF:
+        raise ValueError
+    instrument = measure['instrument']
+    if (instrument['kind'] != 'current_account' or instrument['market_id'] != 'EZ'
+            or instrument['id'] != _STATISTICAL_INSTRUMENT_ID):
+        raise ValueError
+    year = support['field_year']
+    if type(year) is not int or not 1 <= year < 9999:
+        raise ValueError
+    period = measure['period']
+    if (period is None or period['start'] != f'{year:04d}-01-01'
+            or period['end'] != f'{year+1:04d}-01-01' or period['count'] != 1
+            or period['count_basis'] != 'release_periods'):
+        raise ValueError
+    if measure['observation_at'] != f'{year:04d}-12-31':
+        raise ValueError
+    # The dataset clock is a separately supplied offset-aware source-update stamp. It is never a
+    # vintage, an observation or a calculation date; only its local calendar
+    # date is compared with the economic period end.
+    if _offset_timestamp(support['dataset_updated_at']).date() < date(year, 12, 31):
+        raise ValueError
+    return deepcopy(support)
+
+
 def _support(field, support, measure, market_id):
     instrument = measure['instrument']
+    if (field == 'annual_current_account' and type(support) is dict
+            and support.get('observation_type') == 'statistical'):
+        return _statistical_annual_support(support, measure, market_id)
     if field == 'country_credit_change':
         _exact(support, {'method_ref','scope','instrument_id','market_id','change_start','change_end'}, 'support')
         if (support['scope'] != 'country' or support['instrument_id'] != instrument['id']

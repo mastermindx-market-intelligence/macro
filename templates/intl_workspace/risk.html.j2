@@ -23,7 +23,8 @@
 {% set annual_types = {
   'actual': {'en': 'Actual', 'zh': '实际'},
   'estimate': {'en': 'Estimate', 'zh': '估计'},
-  'projection': {'en': 'Projection', 'zh': '预测'}
+  'projection': {'en': 'Projection', 'zh': '预测'},
+  'statistical': {'en': 'Annual statistic', 'zh': '年度统计'}
 } %}
 {% set us_states = {
   'quiet': {'en': 'Quiet', 'zh': '平静'},
@@ -305,14 +306,46 @@
               {{ metric_number(row.get('annual_current_account'), 'gdp') }}
               {% set annual = row.get('annual_current_account') %}
               {% if annual is mapping %}
+                <div class="intl-risk__annual-evidence">
+                {% set annual_instrument = annual.get('instrument') %}
                 {% set support = annual.get('support') %}
+                {% set statistical = support is mapping and support.get('observation_type') == 'statistical' and annual_instrument is mapping and annual_instrument.get('id') == 'TIPSBP20/A/PC_GDP/CA/S1/S1/BAL/EXT_EA21/NSA/EA21' %}
                 {% if support is mapping %}
                   {% if support.get('field_year') is not none %}<small>{{ words('Field year', '字段年份') }} {{ support.get('field_year')|e }}</small>{% endif %}
+                  {% if annual.get('observation_at') is not none %}<small>{% if statistical %}{{ words('Period ended', '统计期结束') }}{% elif annual_instrument is mapping and annual_instrument.get('id') == 'JPN.BCA_NGDPD.A' %}{{ words('Source updated', '来源更新') }}{% else %}{{ words('Observation', '观测') }}{% endif %} {{ annual.get('observation_at')|e }}</small>{% endif %}
                   {% if support.get('vintage') is not none %}<small>{{ words('Vintage', '版本') }} {{ support.get('vintage')|e }}</small>{% endif %}
+                  {% if statistical and support.get('vintage') is none %}<small>{{ words('Vintage not supplied', '未提供版本日期') }}</small>{% endif %}
                   {% if support.get('observation_type') in annual_types %}
                     <small>{{ words(annual_types[support.observation_type].en, annual_types[support.observation_type].zh) }}</small>
                   {% endif %}
                 {% endif %}
+                {% set investigation_id = row.market_id ~ '.annual_current_account' %}
+                {% set investigation = (investigation_actions|default({})).get(investigation_id) %}
+                {% if annual.get('quality') == 'qualified' and annual.get('value') is not none and investigation is mapping and investigation.get('generation') == generation and investigation.get('field_ids') == [investigation_id] %}
+                  <a href="{{ investigation.href|e }}" data-im-investigate data-im-investigate-href="{{ investigation.href|e }}" data-im-native-context="{{ investigation.context_id|e }}" data-im-native-generation="{{ investigation.generation|e }}" data-im-native-fingerprint="{{ investigation.fingerprint|e }}" data-im-native-field="{{ investigation_id|e }}">{{ words('Investigate', '调查') }}</a>
+                {% endif %}
+                {% set annual_source = annual.get('source_reference') %}
+                {% if annual_instrument is mapping and annual_instrument.get('id') == 'JPN.BCA_NGDPD.A' and annual_source is string and annual_source.startswith('https://data.imf.org/') %}
+                  <a href="{{ annual_source|e }}" target="_blank" rel="noopener">{{ words('Source: IMF World Economic Outlook', '来源：IMF《世界经济展望》') }}</a>
+                {% endif %}
+                {% set annual_evidence = (field_evidence|default({})).get('EZ.annual_current_account') %}
+                {% if statistical and annual_evidence is mapping and annual_source is string and annual_source.startswith('https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/tipsbp20?') %}
+                  <a href="{{ annual_source|e }}" target="_blank" rel="noopener">{{ words('Source: Eurostat', '来源：欧盟统计局') }} · {{ annual_evidence.requested_at[:10]|e }}</a>
+                  <details class="intl-risk__evidence">
+                    <summary>{{ words('Source and period evidence', '来源与统计期依据') }}</summary>
+                    <dl>
+                      <div><dt>{{ words('Dataset updated', '数据集更新') }}</dt><dd>{{ annual_evidence.dataset_updated_at|e }}</dd></div>
+                      <div><dt>{{ words('Counterpart area', '交易对方地区') }}</dt><dd>{{ words('Extra-euro area · EA21', '欧元区以外 · EA21') }}</dd></div>
+                      <div><dt>{{ words('Display policy', '展示规则') }}</dt><dd>{{ words('400 days after year end. This is a display limit, not a release or freshness promise.', '年末后400天。这是展示期限，不是发布或新鲜度承诺。') }}</dd></div>
+                      <div><dt>{{ words('Source request', '来源请求') }}</dt><dd>{{ annual_evidence.requested_at|e }}</dd></div>
+                      {% if annual_evidence.response_received_at is not none %}<div><dt>{{ words('Response received', '响应收到') }}</dt><dd>{{ annual_evidence.response_received_at|e }}</dd></div>{% endif %}
+                      <div><dt>{{ words('Local input verified', '本地输入验证') }}</dt><dd>{{ annual_evidence.input_verified_at|e }}</dd></div>
+                      <div><dt>{{ words('Canonical store committed', '正式存储提交') }}</dt><dd>{{ annual_evidence.committed_at|e }}</dd></div>
+                      <div><dt>{{ words('Processing', '处理说明') }}</dt><dd>{{ words('Mastermind normalizes annual period labels and owns its presentation and interpretation. Eurostat does not endorse this product.', 'Mastermind规范年度统计期标签，并对展示和解读负责。欧盟统计局不为本产品背书。') }}</dd></div>
+                    </dl>
+                  </details>
+                {% endif %}
+                </div>
               {% endif %}
             </td>
             <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-breadth">

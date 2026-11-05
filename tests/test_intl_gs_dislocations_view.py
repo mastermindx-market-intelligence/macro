@@ -793,10 +793,27 @@ def test_v21_no_network_and_no_writes(builder, fixture, monkeypatch):
 
 def test_v22_seam_files_unchanged_and_builder_registered():
     sha = _merge_base()
+    import ast
+    # Later accepted source work owns snapshot precision and native publication.
+    # Keep this view's admission/mount function and exact observation handoff
+    # frozen, rather than freezing unrelated code in both shared files.
+    def seam(source, path):
+        tree = ast.parse(source)
+        if path == MOUNT_PATH:
+            nodes = [node for node in tree.body if isinstance(node, ast.FunctionDef)
+                     and node.name == "attach_surveillance"]
+        else:
+            nodes = [node for node in ast.walk(tree) if isinstance(node, ast.Call)
+                     and isinstance(node.func, ast.Name)
+                     and node.func.id == "attach_surveillance"]
+        assert len(nodes) == 1
+        return ast.dump(nodes[0], include_attributes=False)
     for path in (MOUNT_PATH, BUILD_INTL_PATH):
-        result = subprocess.run(["git", "diff", "--quiet", sha, "--", str(path)],
-                                cwd=REPO, capture_output=True, text=True)
-        assert result.returncode == 0, f"{path} changed vs merge base"
+        relative = path.relative_to(REPO).as_posix()
+        base = subprocess.run(["git", "show", f"{sha}:{relative}"], cwd=REPO,
+                              capture_output=True, text=True, check=True).stdout
+        assert seam(base, path) == seam(path.read_text(), path), \
+            f"{path} changed the surveillance admission/observation handoff"
     mount = _load(MOUNT_PATH, "lib.intl_surveillance_mount_check")
     assert mount.BUILDERS["dislocations"] == "lib.intl_gs_dislocations_view"
     module = _load(BUILDER_PATH, "lib.intl_gs_dislocations_view_check")

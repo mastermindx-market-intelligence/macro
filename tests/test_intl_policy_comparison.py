@@ -68,9 +68,24 @@ def test_mixed_percent_and_bp_normalizes_each_once():
 
 def test_small_difference_is_not_rounded_to_false_flat():
     values=(1.0,1.0000000000000002,1.0,1.0)
-    x=run(values);expected=float(100*(Fraction(values[1])-1))
-    assert x['state']=='qualified' and x['signed_change_bp']==expected>0
+    x=run(values)
+    # declared-decimal truth: the stated change is 2e-16 percent == 2e-14 bp
+    expected=float(100*(Fraction(repr(values[1]))-Fraction(repr(1.0))))
+    assert x['state']=='qualified' and x['signed_change_bp']==expected==2e-14>0
     assert x['direction']=='widened'
+
+
+@pytest.mark.parametrize('values,start_bp,end_bp,absolute_bp,direction', [
+    ((0.1,0.5,0.5,0.9),-40,-40,0,'unchanged_at_endpoints'),
+    ((0,0.5,0.1,0.6),-10,-10,0,'unchanged_at_endpoints'),
+    ((-0.5,0.1,-0.4,0.1),-10,0,-10,'narrowed'),
+])
+def test_declared_decimal_gap_change_is_exact_not_binary_image(values,start_bp,end_bp,absolute_bp,direction):
+    x=run(values)
+    assert x['state']=='qualified'
+    assert (x['signed_start_bp'],x['signed_end_bp'])==(start_bp,end_bp)
+    assert x['absolute_change_bp']==absolute_bp
+    assert x['direction']==direction
 
 
 @pytest.mark.parametrize('values', [(10**400,10**400,10**400,10**400), (10**400,10**400+1,10**400,10**400), (1e308,1e308,1e308,1e308)])

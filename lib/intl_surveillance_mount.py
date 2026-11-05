@@ -35,7 +35,7 @@ import logging
 
 from engine import intl_global_universe as _universe
 from engine.intl_global_observation import REQUIRED_CLOCKS
-from lib.intl_gs_display import horizon_label, snapshot_display
+from lib.intl_gs_display import coarsest_precision, horizon_label, snapshot_display
 from lib.intl_macro_mount import _bound, _contexts, _validate_config
 from lib.intl_workspace_binding import binding_version
 
@@ -71,23 +71,40 @@ def _observation_counts(observations):
 def _snapshot_clocks(observations):
     """Per basis: the latest `at` among QUALIFIED observations per required
     clock, or None; hedged never has a qualified observation, so it is all
-    None. Counts only — no observation value ever leaves this projection."""
+    None. Counts only — no observation value ever leaves this projection.
+
+    Each selected instant now carries the source precision the native adapter
+    declared for it, in ``clock_precisions``: the raw ``clocks`` values and the
+    latest-instant selection are unchanged, and a tie at one instant never
+    upgrades precision — the coarsest tied precision wins, and a missing or
+    malformed precision stays unknown (None), so no cell is displayed at a
+    precision the source never declared.
+    """
     snapshot = {}
     for basis in OBSERVATION_BASES:
         entries = ((observations or {}).get("bases") or {}).get(basis) or []
         qualified = [entry for entry in entries
                      if isinstance(entry, dict) and entry.get("state") == "qualified"]
         clocks = {}
+        precisions = {}
         for clock in REQUIRED_CLOCKS:
-            instants = []
+            moments = []
             for entry in qualified:
                 moment = (entry.get("clocks") or {}).get(clock) or {}
                 at = moment.get("at") if isinstance(moment, dict) else None
                 if isinstance(at, str) and at:
-                    instants.append(at)
-            clocks[clock] = max(instants) if instants else None
-        snapshot[basis] = {"clocks": clocks, "qualified": len(qualified),
-                           "total": len(entries)}
+                    moments.append((at, moment.get("precision")
+                                     if isinstance(moment, dict) else None))
+            if moments:
+                latest = max(at for at, _precision in moments)
+                clocks[clock] = latest
+                precisions[clock] = coarsest_precision(
+                    [precision for at, precision in moments if at == latest])
+            else:
+                clocks[clock] = None
+                precisions[clock] = None
+        snapshot[basis] = {"clocks": clocks, "clock_precisions": precisions,
+                           "qualified": len(qualified), "total": len(entries)}
     return snapshot
 
 
@@ -177,7 +194,8 @@ def attach_surveillance(workspace, *, universe_loader=None, rights_loader=None,
             },
             # X5: snapshot clock instants per basis (no values), each with the
             # FX1 §13.3 display added through the single composition path
-            # (lib.intl_gs_display.snapshot_display) — raw clocks unchanged.
+            # (lib.intl_gs_display.snapshot_display) — raw clocks unchanged,
+            # and the declared source precision carried alongside each instant.
             "snapshot": snapshot_display(_snapshot_clocks(observations)),
             # FX5: one horizon vocabulary for every config horizon (IM13's
             # segmented controls and read-outs bind the same labels).

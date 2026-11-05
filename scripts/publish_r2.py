@@ -54,6 +54,7 @@ import os
 import re
 import sys
 import time
+import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -284,6 +285,38 @@ _DATA_DIR_MIN_BYTES = {"attention": 15_000_000, "index_gex_history": 600_000,
                        "options_payoff_lab": 10_000}
 _CT = {".json": "application/json", ".js": "application/javascript",
        ".html": "text/html; charset=utf-8", ".csv": "text/csv"}
+
+# ── the International generation current pointer ─────────────────────────────
+# `feeds/intl_generation_current.json` is a CURRENT-VALUE document: a consumer
+# reads it to learn WHICH immutable generation is live. It used to ride the
+# ordinary concurrent delta pass, so it could land BEFORE the generation it
+# names — a consumer could then read a pointer whose artifact was not on R2
+# yet, and (on a run where that artifact's upload failed) a pointer naming a
+# generation that never landed at all.
+#
+# The pointer is therefore PARTITIONED out of the concurrent todo and committed
+# only after its EXACT immutable dependency set is in place: the content-
+# addressed descriptor sidecar, the generation artifact, and — when the
+# generation artifact declares one — the policy-points artifact. Each of those
+# must have uploaded successfully, or be ALREADY hash-identical remote (the
+# incumbent md5/ETag delta skip). Nothing is inferred from a filename: a
+# dependency that is not in the published set is not published.
+_INTL_POINTER_DIR = "feeds"
+_INTL_CURRENT_BASENAME = "intl_generation_current.json"
+_INTL_CURRENT_SCHEMA = "intl.workspace_generation_current.v1"
+_INTL_GENERATION_SCHEMA = "intl.workspace_generation.v1"
+_INTL_POLICY_POINTS_SCHEMA = "intl.policy_points.v1"
+_INTL_GENERATION_PREFIX = "im-workspace-generation:"
+# The pointer is an index document, not a payload — 256 KiB is generous.
+_INTL_CURRENT_MAX_BYTES = 256 * 1024
+# The generation/policy artifacts are bounded too: an "artifact" larger than
+# this is not the document this contract describes.
+_INTL_ARTIFACT_MAX_BYTES = 8 * 1024 * 1024
+# A uuid4 (version nibble 4, RFC-4122 variant) after the generation prefix.
+_INTL_UUID4_RE = re.compile(
+    r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}",
+    re.IGNORECASE)
+_INTL_SHA256_RE = re.compile(r"[0-9a-f]{64}", re.IGNORECASE)
 
 # Concurrent part-uploads s3transfer runs per multipart file. This is PINNED into
 # an explicit TransferConfig at upload time (see publish()) rather than inherited
@@ -553,6 +586,226 @@ def _manifest_ok(new_count: int, remote: dict | None, floor: float = 0.5) -> tup
     return True, f"{new_count} files (was {old})"
 
 
+# ── International generation pointer: local validation ───────────────────────
+
+def _sha256_of(p: Path) -> tuple[str, int]:
+    """(hex sha256, byte length) of a local file."""
+    h = hashlib.sha256()
+    n = 0
+    with open(p, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+            n += len(chunk)
+    return h.hexdigest(), n
+
+
+def _strict_json(raw: bytes):
+    """json.loads with Python's two tolerances removed: DUPLICATE object keys
+    and the NON-FINITE constants (NaN / Infinity / -Infinity). A pointer that
+    needs either is not the document this contract describes, and accepting it
+    would let two different documents claim one generation."""
+    def _no_duplicates(pairs):
+        out = {}
+        for k, v in pairs:
+            if k in out:
+                raise ValueError(f"duplicate object key {k!r}")
+            out[k] = v
+        return out
+
+    def _no_constant(name):
+        raise ValueError(f"non-finite JSON constant {name!r}")
+
+    return json.loads(raw.decode("utf-8"), object_pairs_hook=_no_duplicates,
+                      parse_constant=_no_constant)
+
+
+def _regular_local_file(p: Path) -> bool:
+    """A regular local file — NOT a symlink. A symlinked dependency is no
+    evidence at all: its bytes live somewhere the publisher does not own, and
+    the content-addressed name says nothing about what would actually land."""
+    return p.is_file() and not p.is_symlink()
+
+
+def _bounded_local_bytes(path: Path, limit: int) -> bytes:
+    if not _regular_local_file(path):
+        raise ValueError("not a regular immutable dependency")
+    with path.open("rb") as handle:
+        raw = handle.read(limit + 1)
+    if len(raw) > limit:
+        raise ValueError("dependency byte ceiling exceeded")
+    return raw
+
+
+def _intl_pointer_plan(base: Path, current: Path, files: list[Path]) -> tuple[dict | None, str]:
+    """Validate the local International generation pointer and its EXACT
+    immutable dependency set.
+
+    Returns (plan, "") or (None, reason). The plan names the dependency files
+    that must be in place before the pointer may be committed — each one
+    content-verified here, so the publisher never has to trust a filename.
+
+    The dependency set is resolved in the POINTER'S OWN directory: the
+    contract's names (`intl_generation_descriptor_<sha>.json`,
+    `intl_generation_<uuid>_<sha>.json`, `intl_policy_points_<uuid>_<sha>.json`)
+    are a flat namespace beside the pointer.
+    """
+    if not _regular_local_file(current):
+        return None, "the current pointer is not a regular local file"
+    raw = _bounded_local_bytes(current, _INTL_CURRENT_MAX_BYTES)
+    if len(raw) > _INTL_CURRENT_MAX_BYTES:
+        return None, (f"the current pointer is {len(raw)} bytes "
+                      f"(over the {_INTL_CURRENT_MAX_BYTES}-byte ceiling)")
+    try:
+        doc = _strict_json(raw)
+    except Exception as e:  # noqa: BLE001 — any parse failure refuses the pointer
+        return None, f"the current pointer is not strict JSON ({e})"
+    if not isinstance(doc, dict):
+        return None, "the current pointer is not a JSON object"
+    if doc.get("schema") != _INTL_CURRENT_SCHEMA:
+        return None, (f"the current pointer schema {doc.get('schema')!r} is not "
+                      f"{_INTL_CURRENT_SCHEMA}")
+    state = doc.get("state")
+    if state not in ("ready", "unavailable"):
+        return None, f"the current pointer state {state!r} is neither ready nor unavailable"
+
+    # The published set of the pointer's own directory. A dependency that is
+    # merely CONSTRUCTIBLE is not published.
+    here = current.parent
+    supplied = {p.name: p for p in files if p.parent == here}
+
+    # The immutable descriptor sidecar: a byte-identical copy of the pointer
+    # under a content-addressed name. Its presence is the proof that this
+    # pointer was published as an immutable generation rather than mutated in
+    # place — and it is the WITNESS an unavailable revocation needs.
+    digest = hashlib.sha256(raw).hexdigest()
+    descriptor_name = f"intl_generation_descriptor_{digest}.json"
+    descriptor = supplied.get(descriptor_name)
+    if descriptor is None:
+        return None, f"the immutable descriptor {descriptor_name} is not in the published set"
+    if not _regular_local_file(descriptor):
+        return None, f"the immutable descriptor {descriptor_name} is not a regular local file"
+    if _bounded_local_bytes(descriptor, _INTL_CURRENT_MAX_BYTES) != raw:
+        return None, (f"the immutable descriptor {descriptor_name} does not equal the "
+                      "current pointer")
+    # The snapshot is the DEPENDENCY's own bytes as checked here (equal to the
+    # pointer's by the check above) — that is what the post-upload comparison
+    # re-reads.
+    deps = [{"name": descriptor_name, "path": descriptor,
+             "sha": hashlib.sha256(raw).hexdigest(),
+             "bytes": descriptor.stat().st_size,
+             "rel": descriptor.relative_to(base).as_posix()}]
+
+    if state == "unavailable":
+        # A REVOCATION: the pointer announces that no generation is live. It has
+        # no source dependency beyond the descriptor — the old data is exactly
+        # what is NOT required (that is the point of a revocation), so nothing
+        # else is demanded here and no fallback to the previous generation is
+        # invented.
+        for field in ("generation", "artifact_name", "artifact_sha256",
+                      "artifact_bytes", "policy_points_ref"):
+            if doc.get(field) is not None:
+                return None, f"an unavailable pointer must carry a null {field}"
+        return {"current": current, "current_raw": raw, "deps": deps}, ""
+
+    generation = doc.get("generation")
+    if (not isinstance(generation, str)
+            or not generation.startswith(_INTL_GENERATION_PREFIX)):
+        return None, (f"the current pointer generation {generation!r} is not an "
+                      f"{_INTL_GENERATION_PREFIX}<uuid4> id")
+    uuid = generation[len(_INTL_GENERATION_PREFIX):]
+    if _INTL_UUID4_RE.fullmatch(uuid) is None:
+        return None, f"the current pointer generation {generation!r} is not a uuid4"
+
+    artifact_name = doc.get("artifact_name")
+    artifact_sha = doc.get("artifact_sha256")
+    artifact_bytes = doc.get("artifact_bytes")
+    if (not isinstance(artifact_name, str) or not isinstance(artifact_sha, str)
+            or not isinstance(artifact_bytes, int) or isinstance(artifact_bytes, bool)):
+        return None, ("the ready pointer must declare artifact_name, artifact_sha256 "
+                      "and artifact_bytes")
+    if _INTL_SHA256_RE.fullmatch(artifact_sha) is None:
+        return None, f"the declared artifact_sha256 {artifact_sha!r} is not a sha256"
+    if artifact_name != f"intl_generation_{uuid}_{artifact_sha}.json":
+        return None, (f"artifact_name {artifact_name!r} is not "
+                      f"intl_generation_{uuid}_<sha256>.json for this generation")
+
+    artifact = supplied.get(artifact_name)
+    if artifact is None:
+        return None, f"the generation artifact {artifact_name} is not in the published set"
+    if not _regular_local_file(artifact):
+        return None, f"the generation artifact {artifact_name} is not a regular local file"
+    if artifact.stat().st_size > _INTL_ARTIFACT_MAX_BYTES:
+        return None, (f"the generation artifact {artifact_name} is over the "
+                      f"{_INTL_ARTIFACT_MAX_BYTES}-byte ceiling")
+    actual_sha, actual_bytes = _sha256_of(artifact)
+    if actual_sha != artifact_sha.lower() or actual_bytes != artifact_bytes:
+        return None, (f"the generation artifact {artifact_name} does not match its "
+                      "declared hash/bytes")
+    try:
+        adoc = _strict_json(_bounded_local_bytes(artifact, _INTL_ARTIFACT_MAX_BYTES))
+    except Exception as e:  # noqa: BLE001
+        return None, f"the generation artifact {artifact_name} is not strict JSON ({e})"
+    if not isinstance(adoc, dict):
+        return None, f"the generation artifact {artifact_name} is not a JSON object"
+    if adoc.get("schema") != _INTL_GENERATION_SCHEMA:
+        return None, (f"the generation artifact schema {adoc.get('schema')!r} is not "
+                      f"{_INTL_GENERATION_SCHEMA}")
+    if adoc.get("generation") != generation:
+        return None, ("the generation artifact names a different generation than the "
+                      "current pointer")
+    deps.append({"name": artifact_name, "path": artifact, "sha": actual_sha,
+                 "bytes": actual_bytes, "rel": artifact.relative_to(base).as_posix()})
+
+    ref = adoc.get("policy_points_ref")
+    if ref is not None:
+        if (not isinstance(ref, dict)
+                or set(ref) != {"artifact_name", "artifact_sha256", "artifact_bytes", "mapping_identity", "qualification_identity"}):
+            return None, ("the generation artifact's policy_points_ref must declare "
+                          "exactly artifact_name, artifact_sha256 and artifact_bytes")
+        if any(type(ref[key]) is not str or re.fullmatch("[0-9a-f]{64}", ref[key]) is None
+               for key in ("mapping_identity", "qualification_identity")):
+            return None, "the policy point qualification identities are malformed"
+        p_name = ref["artifact_name"]
+        p_sha = ref["artifact_sha256"]
+        p_bytes = ref["artifact_bytes"]
+        if (not isinstance(p_name, str) or not isinstance(p_sha, str)
+                or not isinstance(p_bytes, int) or isinstance(p_bytes, bool)):
+            return None, "the policy_points_ref fields are malformed"
+        if _INTL_SHA256_RE.fullmatch(p_sha) is None:
+            return None, f"the declared policy points sha256 {p_sha!r} is not a sha256"
+        if p_name != f"intl_policy_points_{uuid}_{p_sha}.json":
+            return None, (f"the policy points artifact_name {p_name!r} is not "
+                          f"intl_policy_points_{uuid}_<sha256>.json for this generation")
+        policy = supplied.get(p_name)
+        if policy is None:
+            return None, f"the policy points artifact {p_name} is not in the published set"
+        if not _regular_local_file(policy):
+            return None, f"the policy points artifact {p_name} is not a regular local file"
+        if policy.stat().st_size > _INTL_ARTIFACT_MAX_BYTES:
+            return None, (f"the policy points artifact {p_name} is over the "
+                          f"{_INTL_ARTIFACT_MAX_BYTES}-byte ceiling")
+        p_actual_sha, p_actual_bytes = _sha256_of(policy)
+        if p_actual_sha != p_sha.lower() or p_actual_bytes != p_bytes:
+            return None, (f"the policy points artifact {p_name} does not match its "
+                          "declared hash/bytes")
+        try:
+            pdoc = _strict_json(_bounded_local_bytes(policy, _INTL_ARTIFACT_MAX_BYTES))
+        except Exception as e:  # noqa: BLE001
+            return None, f"the policy points artifact {p_name} is not strict JSON ({e})"
+        if not isinstance(pdoc, dict):
+            return None, f"the policy points artifact {p_name} is not a JSON object"
+        if pdoc.get("schema") != _INTL_POLICY_POINTS_SCHEMA:
+            return None, (f"the policy points schema {pdoc.get('schema')!r} is not "
+                          f"{_INTL_POLICY_POINTS_SCHEMA}")
+        if pdoc.get("generation") != generation:
+            return None, ("the policy points artifact names a different generation "
+                          "than the current pointer")
+        deps.append({"name": p_name, "path": policy, "sha": p_actual_sha,
+                     "bytes": p_actual_bytes, "rel": policy.relative_to(base).as_posix()})
+
+    return {"current": current, "current_raw": raw, "deps": deps}, ""
+
+
 def _index_gex_history_store_override(dirs) -> Path | None:
     """Local directory for index_gex_history, or None to keep the default.
 
@@ -666,17 +919,53 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
             continue
         remote = _remote_etags(s3, bucket, d + "/")
         todo, guarded = [], 0
+        # The International current pointer, if this dir carries one. It is
+        # PARTITIONED out of the concurrent todo: it is a current-value index,
+        # not payload, and it may only be committed once its exact immutable
+        # dependency set is in place (see _intl_pointer_plan).
+        intl_candidates: list[tuple[Path, str, bool]] = []
         for p in files:
             key = f"{d}/{p.relative_to(base).as_posix()}"
             etag, rsize = remote.get(key, (None, None))
+            if d == _INTL_POINTER_DIR and p.name == _INTL_CURRENT_BASENAME:
+                # The name is contract-reserved in this plane, so EVERY match is
+                # a pointer candidate (the dependencies resolve in the
+                # candidate's own directory). Two of them is ambiguous — the
+                # pointer is then not advanced at all, loudly.
+                intl_candidates.append((p, key, etag != _md5(p)))
+                continue
             if etag == _md5(p):
                 skip += 1
             elif _append_only_guarded(d, p.stat().st_size, rsize):
                 guarded += 1
             else:
                 todo.append((p, key))
+        intl_current: tuple[Path, str] | None = None
+        intl_plan: dict | None = None
+        intl_why = ""
+        intl_blocked = False
+        if intl_candidates:
+            if len(intl_candidates) > 1:
+                intl_blocked = True
+                intl_why = (f"{len(intl_candidates)} {_INTL_CURRENT_BASENAME} files in the "
+                            "feeds tree — the pointer is ambiguous")
+            else:
+                _p, _key, _changed = intl_candidates[0]
+                if _changed:
+                    intl_current = (_p, _key)
+                    try:
+                        intl_plan, intl_why = _intl_pointer_plan(base, _p, files)
+                    except (OSError, ValueError) as e:
+                        # the tree moved under us — refuse the pointer, never
+                        # crash the run
+                        intl_plan = None
+                        intl_why = f"the current pointer set could not be read ({e})"
+                    if intl_plan is None:
+                        intl_blocked = True
+                else:
+                    skip += 1   # already hash-identical remote: nothing to commit
         log.info("%s: %d files — %d changed, %d unchanged, %d guarded", d, len(files),
-                 len(todo), len(files) - len(todo) - guarded, guarded)
+                 len(todo) + sum(1 for c in intl_candidates if c[2]), skip, guarded)
         if guarded:
             log.warning("%s: %d local file(s) SMALLER than their R2 object — append-only "
                         "store, short-window checkout? NOT uploaded; publish from the "
@@ -685,6 +974,14 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
                   "shorter-than-remote local file(s) skipped", flush=True)
         if dry_run:
             up += len(todo)
+            if intl_current is not None:
+                if intl_plan is None:
+                    log.info("%s: current pointer would NOT be advanced — %s", d, intl_why)
+                else:
+                    up += 1
+                    log.info("%s: current pointer would be committed once its %d "
+                             "immutable dependency(ies) are in place", d,
+                             len(intl_plan["deps"]))
             continue
 
         def _up(pk):
@@ -722,6 +1019,60 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
             print(f"::warning title=publish_r2 upload failures::{d}: {len(failures)} of "
                   f"{len(todo)} changed file(s) failed to upload — left for the next "
                   "run's delta pass", flush=True)
+        # The current pointer advances ONLY now — after the concurrent ordinary
+        # uploads have settled. Its dependency set must have no failures, and
+        # each dependency's bytes must still be the ones the pointer names (a
+        # file rewritten mid-run would make the pointer name a MIXED
+        # generation). A dependency that was not uploaded in this run was
+        # skipped by the incumbent delta, i.e. it is ALREADY hash-identical
+        # remote; nothing is inferred from a filename.
+        if intl_current is not None and not intl_blocked:
+            failed_keys = set(failures)
+            for dep in intl_plan["deps"]:
+                dep_key = f"{d}/{dep['rel']}"
+                if dep_key in failed_keys:
+                    intl_why = f"its dependency {dep['rel']} failed to upload"
+                    intl_blocked = True
+                    break
+                try:
+                    dep_sha, dep_bytes = _sha256_of(dep["path"])
+                except OSError as e:
+                    intl_why = f"its dependency {dep['rel']} could not be read ({e})"
+                    intl_blocked = True
+                    break
+                if dep_sha != dep["sha"] or dep_bytes != dep["bytes"]:
+                    intl_why = (f"its dependency {dep['rel']} changed on disk during the "
+                                "run — committing would name a mixed generation")
+                    intl_blocked = True
+                    break
+            if not intl_blocked:
+                # The incumbent retry semantics, applied to the pointer itself.
+                snapshot_name = None
+                try:
+                    if _bounded_local_bytes(intl_current[0], _INTL_CURRENT_MAX_BYTES) != intl_plan["current_raw"]:
+                        raise ValueError("current pointer changed during dependency publication")
+                    # Upload the validated bytes, so a concurrent local rewrite
+                    # cannot change this pointer between verification/retries.
+                    with tempfile.NamedTemporaryFile(dir=base, prefix=".intl-current-", suffix=".json", delete=False) as snapshot:
+                        snapshot_name = snapshot.name
+                        snapshot.write(intl_plan["current_raw"])
+                    if _up((Path(snapshot_name), intl_current[1])) is None:
+                        up += 1
+                        log.info("%s: current pointer committed after exact dependencies", d)
+                    else:
+                        intl_why = f"{intl_current[1]} failed to upload"
+                        intl_blocked = True
+                except (OSError, ValueError) as exc:
+                    intl_why = str(exc)
+                    intl_blocked = True
+                finally:
+                    if snapshot_name is not None:
+                        Path(snapshot_name).unlink(missing_ok=True)
+        if intl_blocked:
+            failed += 1
+            log.error("%s: current pointer NOT advanced — %s", d, intl_why)
+            print(f"::warning title=publish_r2 intl current pointer::{d}: {intl_why} "
+                  "— the current pointer was NOT advanced", flush=True)
         # Manifest goes up LAST, after every file it lists is in place. The public
         # r2.dev host has no LIST endpoint, so bulk mirrors (e.g. the Mastermind bot's
         # vendored-feed R2 leg) need an authoritative name list to sync and prune against.
@@ -738,6 +1089,10 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
         if failures:
             log.info("%s: manifest untouched (%d upload failure(s) — every file it "
                      "lists must be in place first)", d, len(failures))
+            continue
+        if intl_blocked:
+            log.info("%s: manifest untouched (the current pointer was not advanced — "
+                     "the manifest lists it)", d)
             continue
         names = sorted(p.relative_to(base).as_posix() for p in files)
         ok, why = (True, "forced") if force_manifest else \

@@ -1,0 +1,645 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<Envelope xmlns="http://www.gesmes.org/xml/2002-08-01">
+
+ 				<Cube xmlns="https://web.prod.iadb.ext.az.cloud.bankofengland.co.uk/website/agg_series" SCODE="IUDBEDR" DESC="Official Bank Rate" COUNTRY="" CONCAT="Official Bank Rate ">
+						<Cube FREQ_NAME="Daily" FREQ_CODE="D" FREQ_ORD="1"/><SERIES_COM>Prior to May 2012 the Official Bank rate was published to two decimal places but has since been changed to four decimal places for consistency.</SERIES_COM><SERIES_COM>On the 16th September 1992, the UK leaves the European Exchange Rate Mechanism.  The minimum lending rate was raised to 12%, and planned to be raised to 15% (with effect from 17th September 1992; but never implemented). Please see:
+http://www.bankofengland.co.uk/archive/Documents/historicpubs/qb/1992/qb92q4382398.pdf for further explanation of changes implement to the minimum lending rate on &amp;quot;Black Wednesday&amp;quot;.</SERIES_COM><Cube SERIES_DEF="notes and definitions for Wholesale:Bank of England base rate" DEF_LOC="http://www.bankofengland.co.uk/statistics/pages/iadb/notesiadb/wholesale_baserate.aspx"/>
+						<Cube CAT_NAME="INSTRUMENTS" CAT_VAL="RBASER" VAL_DESC="Official Bank Rate" CAT_ORD="7"/>
+					<Cube FIRST_OBS="1975-01-02" LAST_OBS="2026-11-02"/>
+										<Cube TIME="2026-01-02" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-05 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-05" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-06 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-06" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-07 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-07" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-08 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-08" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-09 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-09" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-12 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-12" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-13 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-13" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-14 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-14" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-15 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-15" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-16 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-16" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-19 10:25:56">
+								</Cube>
+								
+										<Cube TIME="2026-01-19" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-20 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-20" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-21 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-21" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-22 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-22" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-23 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-23" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-26 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-26" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-27 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-27" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-28 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-28" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-29 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-29" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-01-30 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-01-30" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-02 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-02" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-03 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-03" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-04 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-04" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-05 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-05" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-06 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-06" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-09 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-09" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-10 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-10" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-11 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-11" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-12 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-12" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-13 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-13" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-16 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-16" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-17 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-17" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-18 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-18" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-19 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-19" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-20 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-20" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-23 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-23" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-24 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-24" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-25 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-25" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-26 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-26" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-02-27 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-02-27" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-02 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-02" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-03 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-03" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-04 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-04" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-05 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-05" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-06 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-06" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-09 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-09" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-10 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-10" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-11 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-11" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-12 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-12" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-13 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-13" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-16 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-16" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-17 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-17" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-18 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-18" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-19 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-19" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-20 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-20" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-23 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-23" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-24 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-24" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-25 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-25" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-26 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-26" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-27 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-27" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-30 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-30" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-03-31 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-03-31" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-01 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-01" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-02 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-02" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-07 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-07" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-08 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-08" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-09 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-09" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-10 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-10" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-13 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-13" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-14 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-14" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-15 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-15" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-16 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-16" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-17 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-17" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-20 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-20" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-21 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-21" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-22 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-22" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-23 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-23" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-24 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-24" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-27 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-27" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-28 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-28" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-29 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-29" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-04-30 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-04-30" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-01 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-01" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-05 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-05" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-06 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-06" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-07 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-07" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-08 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-08" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-11 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-11" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-12 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-12" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-13 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-13" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-14 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-14" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-15 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-15" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-18 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-18" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-19 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-19" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-20 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-20" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-21 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-21" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-22 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-22" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-26 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-26" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-27 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-27" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-28 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-28" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-05-29 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-05-29" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-01 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-01" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-02 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-02" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-03 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-03" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-04 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-04" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-05 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-05" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-08 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-08" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-09 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-09" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-10 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-10" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-11 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-11" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-12 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-12" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-15 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-15" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-16 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-16" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-17 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-17" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-18 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-18" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-19 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-19" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-22 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-22" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-23 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-23" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-24 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-24" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-25 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-25" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-26 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-26" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-29 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-29" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-06-30 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-06-30" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-01 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-01" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-02 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-02" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-03 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-03" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-06 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-06" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-07 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-07" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-08 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-08" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-09 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-09" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-10 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-10" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-13 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-13" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-14 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-14" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-15 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-15" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-16 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-16" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-17 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-17" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-20 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-20" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-21 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-21" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-22 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-22" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-23 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-23" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-24 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-24" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-27 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-27" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-28 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-28" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-29 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-29" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-30 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-07-30" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-07-31 09:36:39">
+								</Cube>
+								
+										<Cube TIME="2026-07-31" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-03 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-03" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-04 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-04" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-05 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-05" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-06 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-06" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-07 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-07" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-10 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-10" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-11 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-11" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-12 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-12" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-13 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-13" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-14 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-14" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-17 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-17" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-18 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-18" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-19 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-19" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-20 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-20" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-21 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-21" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-24 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-24" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-25 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-25" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-26 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-26" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-27 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-27" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-08-28 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-08-28" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-01 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-01" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-02 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-02" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-03 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-03" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-04 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-04" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-07 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-07" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-08 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-08" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-09 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-09" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-10 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-10" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-11 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-11" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-14 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-14" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-15 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-15" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-16 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-16" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-17 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-17" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-18 10:22:56">
+								</Cube>
+								
+										<Cube TIME="2026-09-18" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-21 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-21" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-22 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-22" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-23 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-23" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-24 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-24" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-25 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-25" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-28 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-28" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-29 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-29" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-09-30 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-09-30" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-01 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-01" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-02 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-02" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-05 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-05" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-06 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-06" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-07 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-07" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-08 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-08" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-09 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-09" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-12 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-12" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-13 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-13" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-14 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-14" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-15 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-15" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-16 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-16" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-19 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-19" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-20 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-20" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-21 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-21" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-22 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-22" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-23 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-23" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-26 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-26" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-27 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-27" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-28 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-28" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-29 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-29" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-10-30 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-10-30" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-11-02 09:30:00">
+								</Cube>
+								
+										<Cube TIME="2026-11-02" OBS_VALUE="3.75" OBS_CONF="N"  LAST_UPDATED="2026-11-03 09:30:00">
+								</Cube>
+								</Cube>
+</Envelope>

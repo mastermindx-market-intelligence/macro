@@ -206,3 +206,352 @@ The official sidecar's `source_updated` is an observation-date alias.
 is an independently known policy publication time: `calculation_at` and an
 unknown release period remain null. Qualification here means permitted and
 within the adopted observation-age tolerance, with that limitation visible.
+
+
+## Byte-bound Japan yield and native annual current-account composition
+
+The normal International publisher reads two additional independently qualified
+field materializations. Their existence never supplies disclosure permission.
+`intl.field_publication.<field>` is an explicit adopted publisher policy with
+`status`, `policy_ref`, `metadata` and `value_permission`; no policy is enabled by
+this implementation. The trusted publisher binds an adopted policy to the exact
+field and receipt digest before the existing projections may expose a value.
+
+For `JP.yield_10y`, the existing configured FRED series is `IRLTLT01JPM156N`
+(OECD Japan long-term government yield, monthly percent, not seasonally
+adjusted). `intl.macro.jp_yield_capture: true` opts into retaining the response
+already obtained by the incumbent collector; it does not authorize a new request.
+No setting is enabled here. Only the post-successful-store callback may retain
+response/cache agreement evidence. The response month-start label stays an
+observation-month label, never a daily close or publication timestamp. The
+existing45-day observation-age tolerance is measured from that original label;
+unknown source publication/revision dates stay null. Values are pass-through,
+so calculation time is null. Current source access/disclosure must be independently
+established; this source change does not clear an observed provider refusal.
+
+The incumbent `ImfWeoAdapter.fetch()` accepts an optional already-acquired native
+edition through `imf_weo.native_current_account: {workbook: <data-relative path>,
+receipt: <data-relative path>}`. The acquisition receipt binds the actual workbook
+hash, original IMF URL and received instant. It selects exactly
+`JPN.BCA_NGDPD.A`; the existing alias remains `current_account_pct_gdp`.
+Canonical `store.upsert` replaces supplied overlapping values and preserves
+old-only rows. Only rows covered by this exact response receive the new edition
+evidence. Native Japan is excluded from the same pass's DataMapper writes.
+No native input is configured by this change. Failed source/store validation
+cannot issue a new successful materialization receipt.
+
+The native annual parser preserves `LATEST_ACTUAL_ANNUAL_DATA`, field-specific
+`COUNTRY_UPDATE_DATE`, edition `PUBLICATION_DATE`/`UPDATE_DATE`, source methodology
+and the raw `START_END_MONTHS_OF_REPORTING_YEAR` value, including null. Later
+years are staff estimates under the WEO FAQ; the actual-year boundary does not
+create a separate forecast/projection threshold. The displayed field selects
+the latest source-labelled actual, never the legacy maximum year across unrelated
+debt/fiscal/current-account rows.
+
+The [October2026 WEO Database Appendix, Data Conventions, page3](https://data.imf.org/-/media/iData/External-Storage/Documents/C4182C5C54794FC48892DE8F6C74FF82/en/October-2026-WEO-Database-Appendix.pdf#page=3)
+states that data refer to calendar years, with the stated TableF exceptions for
+national accounts and government finance. This external-account/BPM6 measure
+uses that documented calendar-year convention: year2025 maps to
+2025-01-01 through2026-01-01 solely as the existing annual field interval. This
+is not a claim that a blank reporting-month cell supplied those dates.
+
+The annual measure carries the source country-series update date under the
+existing `observation_at` slot and labels it **Source updated / 来源更新** in the
+Risk cell. Edition publication remains the separate vintage, field year remains
+the economic annual period, and `calculation_at` is null for the pass-through
+value. Qualification requires source update ≤ edition publication ≤ actual
+response receipt ≤ successful materialization ≤ evaluation, preserving the
+source date's day precision. The incumbent annual200-day tolerance is measured
+from the country-series update date. A missing source-update date withholds
+qualification. Neither evaluation nor publication is substituted for it.
+
+The actual October2026 workbook's Japan2025 actual was used for an internal
+source/store/builder/render check. That check and fixture publisher decisions
+are not commercial redistribution admission. Native data access, source rights,
+scientific interpretation, protected release and authenticated beta behavior
+remain separate facts. Existing ECB admission and all unrelated fields retain
+their current contracts.
+
+## Official Eurostat EA21 GDP and HICP
+
+The native publication path admits exactly two Eurostat series. GDP uses
+`NAMQ_10_GDP / Q / CLV_PCH_SM / SCA / B1GQ / EA21`; its unit is already the
+change against the same quarter a year earlier. HICP uses the current
+`PRC_HICP_MINR / M / RCH_A / TOTAL / EA21` series under ECOICOP 2. The archived
+MANR dataset is not a current substitute. HICP is labeled as harmonized CPI,
+rather than silently changing the meaning of the generic CPI family.
+
+`IntlMacroAdapter` collects these configured official series on its ordinary
+eligible run. It stores separate `EZ_gdp_yoy_official` and
+`EZ_hicp_yoy_official` columns. In particular, the native GDP rate never enters
+the incumbent GDP-level `pct_change` calculation. The strict JSON-stat parser
+validates the returned dimension sets, selected codes and their positions;
+`TOTAL` is selected even when a retained HICP response contains other categories.
+Original time labels, source status flags and missingness remain in the capture.
+
+The optional `native_input: {response: <data-relative-path>, receipt:
+<data-relative-path>}` on either official-series entry imports a retained
+successful response instead of acquiring it again. The import requires the exact
+source URL, successful acquisition status and response digest. It uses the same
+normal collector, canonical upsert and post-store callback as a current HTTP
+response. It is not a manual bypass of the producer or disclosure boundary.
+The callback consumes pending source evidence before capture; capture failure
+leaves the successful numerical store intact and does not replay acquisition.
+Readers check the original content-addressed receipt, original response and
+current canonical parquet, including response coverage. Missing dependent blobs
+are source failures, not evidence that no source was supplied.
+
+The economic observation clock is the last civil day of the original period:
+`2026-Q3` becomes the half-open interval `2026-07-01` to `2026-10-01`, with
+`observation_at=2026-09-30`; `2026-09` becomes `2026-09-01` to `2026-10-01`,
+with the same September 30 period end. The consumer labels this clock **Period
+ended / 统计期结束** and shows the original quarter or month. These normalized
+dates are neither publication times nor an assertion that a quarterly value was
+observed at its start. Pass-through YoY values have `calculation_at=null`.
+
+The dataset's original offset-aware `updated` timestamp is a separate typed
+source clock in immutable capture and the Macro envelope's optional
+`field_evidence` projection. It is never put into the economic observation slot
+or represented as an individual release vintage. The projection binds the exact
+field, instrument, source reference and evidence digest to the permitted measure.
+Missing or denied metadata supplies no dynamic source link, update timestamp or
+attribution. Other adapters retain their existing clock labels and contracts.
+The original HTTP response receipt clock remains unknown when a retained receipt
+did not record it; an actual local input-verification clock does not replace it.
+The required ordering is dataset update ≤ original source request ≤ local input
+verification ≤ successful canonical commit ≤ evaluation. A known HTTP receipt
+must additionally fall between its request and local verification.
+
+The principal adopts application display recency tolerances of **120 days after
+the economic quarter end for GDP** and **75 days after the economic month end for
+HICP**. Values beyond those bounds are stale. These are conservative Mastermind
+display policies, not Eurostat release promises, latest-vintage claims or
+point-in-time reconstruction. Updating unrelated dataset metadata cannot renew
+an old economic period's recency.
+
+The scoped publication decision follows [Eurostat's data reuse conditions](https://ec.europa.eu/eurostat/help/copyright-notice)
+for these Eurostat-produced EA21 statistical series. Point-of-use disclosure names
+Eurostat, links the exact source data, retains the source-request/access-day
+trace, and states that Mastermind normalizes period labels and owns its
+presentation, translation and interpretation. The [HICP metadata](https://ec.europa.eu/eurostat/cache/metadata/en/prc_hicp_esms.htm)
+identify the harmonized index and current classification. This decision grants
+nothing for IMF commercial publication, refused OECD access, other datasets or
+unrelated countries. The builder adopts only the explicit source-specific policy
+in `intl.field_publication`; readable data and a successful request are not grants.
+Installation, publisher generation and authenticated Shared Shell acceptance remain
+separate from collector/store and source-composition evidence.
+
+## Optional trusted Investigation packet projection
+
+`_publication_workspace` may receive an explicit `investigation_request` and an
+empty caller-owned `investigation_sink` together. The normal publisher supplies
+neither. The optional sink receives only an in-memory projection; it is never
+inserted into template state, persisted, or used as an Investigation admission.
+The existing `intl_investigation_owner` bridge is reused from the accepted source
+rather than introducing another caller or Saved store.
+
+The request explicitly supplies all nine owner context strings, the exact
+selected measure IDs, requirements/prerequisites, presentation labels, whole-read
+disposition, membership enumeration and any authorized historical prior. Native
+market, horizon, basis, price-return basis and binding version must match the
+actual workspace; the current result preserves its actual generation. Binding
+version is represented as `"2"` and period identity as the native horizon token.
+Missing owner, query, cohort or temporal policy is a contract failure, never a
+value inferred from navigation. An absent prior remains null. Complete membership
+requires an explicit full requested-domain enumeration; partial absence is never
+a removal. Exclusion, correction and tombstones require explicit facts.
+
+The projection captures each reader's original materialization identity and the
+exact publisher decision already passed to field admission before presentation
+mounts remove permission/support metadata. Content identity binds field, source,
+receipt and admitted content. Qualification identity separately binds the actual
+adopted policy/decision and its field/receipt scope. A readable receipt, arbitrary
+hash, generation nonce or nonempty list cannot grant disclosure or readiness.
+Missing policy identity remains null. Only qualified, finite, permitted values
+with an exact supported unit can carry an interpretation. Unsupported is
+unavailable; stale, denied and failed values do not carry a qualified number.
+
+Native typed periods and distinct source clocks remain in the permitted sidecar.
+For compatibility with the accepted bridge's string period slot, a typed period
+uses deterministic JSON serialization; this does not create an observation
+instant. Source update, economic observation, vintage, request, receipt, local
+verification, successful store commit and calculation remain distinct. Missing
+clocks stay null. `observedAtByMeasureId` uses only the qualified admitted field's
+`observation_at`. Caller saved-record and generation/rights clocks must be actual
+supplied values or explicit null; build time is not a substitute. Denied or
+unknown metadata supplies no dynamic source or clock sidecar.
+
+This producer contract supplies no receiver mounting, authentication, International
+Saved admission, durable write, publication permission, installation or activation.
+Those remain separate existing consumer and release obligations.
+
+## Official Eurostat EA21 annual current account
+
+The additional annual Risk source is `TIPSBP20`, selected by the complete native
+identity `A / PC_GDP / CA / S1 / S1 / BAL / EXT_EA21 / NSA / EA21`, in returned
+axis order. `EXT_EA21` is the extra-euro-area21 counterpart; a returned
+`WRL_REST`, `EXT_EU27_2020` or `EXT_EA20` category is not a substitute. EA21 is
+the source's current composition of 21 countries, not a reconstruction of point-in-time
+historical membership. `PC_GDP` already means percentage of GDP. The native annual
+value is passed through without a ratio, annualization or forecast classification.
+
+The native source supplies annual labels and a dataset update timestamp. It does
+not supply an individual observation-release clock, a revision vintage or an
+actual/estimate/projection classification. The accepted support variant therefore
+uses `observation_type=statistical`, `vintage=null` and
+`observation_clock_basis=period_end`. For field year 2025, the economic interval is
+`2025-01-01` to `2026-01-01` and `observation_at=2025-12-31`. Dataset update stays
+a separate offset-aware clock. It is never copied into observation or vintage.
+The original actual/estimate/projection support contract remains unchanged.
+
+This source's explicit application display tolerance is 400 days after the economic
+year end. It is a conservative period-based display policy, not a vendor release
+schedule, freshness promise or latest-vintage claim. Newer dataset metadata cannot
+renew the economic year. Source update, actual request/receipt, local input
+verification, successful canonical commit and evaluation remain separately bound
+and ordered in the immutable materialization. Pass-through calculation time stays
+null. Missing publication policy or denied metadata withholds dynamic source and
+clock evidence through the same existing boundary.
+
+The consumer labels this source as an annual statistic, shows the economic period
+end and explicitly retains an unknown vintage. Permitted disclosure names Eurostat
+and the exact native source; it does not call this an IMF actual, an EA20 statistic,
+a Japan field or a composite country-risk verdict. The exact source-scoped
+Eurostat statistical reuse decision and existing commercial/nonresponsibility
+conditions apply. This branch supplies no permission for the separate IMF field.
+
+
+## Official BoE Bank Rate admission
+
+The incumbent configured `IntlMacroAdapter` official override `GB_bank_rate_official`
+collects only Bank of England IUDBEDR, the daily Official Bank Rate in percent.
+It is a nominal administered policy point (`bank_rate`), distinct from the
+existing SONIA carry leg, a market rate or a range midpoint. The source is the
+Bank's native IADB revised-data XML endpoint, with one calendar-year request.
+An explicit data-relative `native_input: {response, receipt}` on that configured
+series imports the exact retained official edition through the same ordinary
+collector, successful `store.upsert` and post-store evidence path without a fetch.
+It validates original successful acquisition status/hash/URL, the native series
+and requested dates, and request ≤ response receipt ≤ local verification ≤
+successful commit ≤ evaluation. Post-store evidence failure is contained by the
+existing base adapter and never retries acquisition.
+
+The immutable capture binds original XML and current canonical stored bytes.
+A reader checks the selector against its original content-addressed sidecar and
+revalidates native observed rows against storage. Historical cache rows outside
+the native response do not become authenticated source observations, and an
+explicit withheld native row cannot expose an older stored value. Exact dated
+policy comparison requires actual endpoint membership; it never fills or picks
+a nearest date. Current display reuses the existing daily 12-day application
+age rule. Deliberately selected historical endpoints are separately labeled
+latest-vintage reads, with no original-known claim or current-display age loan.
+
+Economic observation dates remain dates. Per-row `LAST_UPDATED` is retained as
+raw source text with **unknown timezone**, not converted to UTC or substituted
+for publication time. Revision-vintage, independent release and numerical
+calculation clocks remain null where not supplied. Collection/commit/build clocks
+are distinct. Acquisition success supplies no disclosure decision.
+
+The source-specific publication policy is scoped to Bank-origin IUDBEDR under
+[the Bank's database terms](https://www.bankofengland.co.uk/legal), which grant
+Open Government Licence reuse for the database subject to listed exclusions.
+This binding does not extend to FX, SONIA or third-party series. Required
+attribution is “Source: Bank of England. Contains public sector information
+licensed under the Open Government Licence v3.0.” Link the Bank's terms and the
+licence at point of use; imply no endorsement. The publisher adopts the policy
+only for the exact field and immutable receipt. Metadata or value permission
+that is missing, unknown or denied cannot be inferred from that notice, a source
+URL, a successful request or the stored numbers.
+
+The existing `engine.intl_rates.compare_policy_points` remains the numerical
+owner for ECB deposit facility versus BoE official Bank Rate comparisons. Both
+source labels and fixed dates must be explicit. A supported nominal-point mapping
+is an application method decision, not an assertion of identical operating
+frameworks or an economic stance comparison. No Saved admission, user identity,
+authentication, source-generation installation or permission to apply SQL is
+created by this producer contract.
+
+
+## Official ECB BoE policy comparison
+
+The native source composition invokes the unchanged
+`engine.intl_rates.compare_policy_points` through
+`lib.intl_policy_publication.compare_native_policy_points`. Only the explicit
+`intl-ecb-boe-nominal-policy-point-v1` mapping of ECB deposit facility and BoE
+Official Bank Rate is adopted here. The separate
+`intl.policy_comparison_publication` policy binds method, exact pair, selected
+fixed dates and actual ECB materialization/BoE receipt identity. Unknown or denied
+mapping/source permission, incompatible identity or any missing exact endpoint
+withholds every comparison number and reference. Current field freshness remains
+independent of a deliberately historical latest-vintage comparison.
+
+The retained actual-source fixed-date proof is 2026-08-28 to 2026-09-30.
+Exact qualified native endpoint membership is required for a selected date pair;
+no horizon, nearest-row search or user URL supplies an observation. The normal
+producer never supplies a principal, Saved ID, revision or user question. The
+existing native controlled preview owns authenticated same-record context and
+all Save/reopen/undo operations. A source result is not native admission, an
+authenticated preview, an installed feed or a Saved write. No date-pair grid or
+client-side arithmetic is introduced. The existing authenticated Macro service
+family is the callable host; source wiring does not activate or restart it.
+
+## International generation feeds and native policy preview
+
+The incumbent `build_intl` publisher exports only its admitted native field
+contracts, before presentation mounts drop their permission evidence. The
+`intl.workspace_generation.v1` artifact carries the actual workspace nonce,
+explicit native contexts and field roster, original source clocks, receipt-bound
+content/qualification identities, and policy section digests. Negative rows have
+explicit null content, qualification and policy identities and no dynamic value,
+source URL or source clock. An empty configured context has no invented fields.
+Public artifacts contain no account, question, private Saved state or user query.
+The existing optional private `IntlResolvedPacket` sink remains independent.
+
+Local source files live under `data/intl/publication/generations/`. The existing
+`build_feeds` plane copies them byte for byte to flat `site/feeds/` names:
+`intl_generation_<uuid>_<sha256>.json`, its hash-bound
+`intl_generation_descriptor_<sha256>.json` witness, and
+`intl_generation_current.json`. A missing or failed build declares unavailable;
+readers do not substitute an earlier generation. The existing R2 publisher
+uploads exact immutable dependencies before committing the validated current
+bytes. An unrelated feed failure still withholds the full feed manifest but does
+not prevent an otherwise complete International pointer or revocation. A partial
+fixture must use the incumbent no-manifest path and never replace a full manifest.
+
+An optional `policy_points_ref` names one same-generation immutable
+`intl_policy_points_<uuid>_<sha256>.json` with its byte length, mapping identity
+and source qualification identity. This is the original ECB deposit-facility and
+BoE Bank Rate daily evidence, including explicitly withheld original rows,
+separate collection/store clocks and unknown provider publication/vintage clocks.
+It is not a grid of comparisons. The exact native instrument references are
+`EZ.policy_rate` and `GB.policy_rate`; their instrument IDs remain
+`deposit_facility` and `bank_rate`. This projection requires the separately
+configured `intl.policy_comparison_publication` decision above and both source
+policies. A readable file or successful acquisition is not that decision.
+
+The existing authenticated FastAPI service exposes
+`POST /api/macro/policy-preview`. It accepts generation/fingerprint and the native
+settings selectors, authenticates before source reads, and returns private,
+no-store responses. It maps `revision_policy` explicitly to the unchanged Python
+comparator's `vintage_policy`. Only exact supplied fixed dates and latest-vintage
+source points can qualify this source mapping; missing dates, owner horizons and
+original-known requests remain unavailable. The service computes no client-side
+or alternate arithmetic, stores no Saved record, and returns no credential.
+
+The service reads the existing deployment-owned R2 origin with the same
+precedence as the incumbent feed plane: `R2_PUBLIC_BASE` when present, otherwise
+`r2_data_plane.public_base` through the existing narrow `lib.config.load` reader. It appends only fixed flat feed names beneath
+`/feeds/`. Reads are bounded, HTTPS-only and request-local, with no redirects,
+retry, stale cache, arbitrary request URL or Git/filesystem fallback. It verifies
+the exact pinned generation and referenced points, checks the fresh current
+policies, and rechecks the current descriptor before returning a result. R2
+publication does not imply that these gitignored feeds exist in `site.served`.
+
+A qualified release therefore includes the generated International page, its
+immutable generation/point feeds before the current descriptor, and the API code
+and mount through the normal `app/deploy/update.sh` service path. That updater's
+existing verified `macro-api` restart includes the exact policy reader/comparator
+import closure, including source-only helper changes. Source checks, local
+transport doubles, feed publication, service restart, authenticated native use
+and protected installation remain separate proof boundaries. No new service,
+credential, Caddy JSON route, SQL activation or second data plane is introduced.

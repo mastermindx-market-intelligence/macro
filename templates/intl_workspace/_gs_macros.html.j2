@@ -158,33 +158,38 @@
 </header>
 {%- endmacro %}
 
-{# W2F-X X5: the §10.0 snapshot bar bound to one basis — four contract clock
-   cells (label + the latest qualified clock instant, or "—" plus the no-
-   qualified-observation copy), the Mode | Basis | Horizon read-out as
-   segmented read-only labels, and the alignment note. The usd_hedged basis
-   shows the Abstain state instead of a basis label. snapshot is the mount's
+{# W2F-X X5: the §10.0 snapshot bar bound to one basis — four clock cells
+   (label + the latest qualified clock instant shown in its DECLARED source
+   precision, or "—" plus the reason there is no visible value), the Mode |
+   Basis | Horizon read-out as segmented read-only labels, and a short note
+   on how the dates are timed. The usd_hedged basis shows the Abstain state
+   instead of a basis label. snapshot is the mount's
    workspace['surveillance']['snapshot'][basis] block, composed through
    lib.intl_gs_display.snapshot_display: only the clock_display entries are
    printed (FX1 — the machine instant lives in <time datetime>, the visible
-   value is the §13.3 form; a raw `clocks` value is never printed). horizon
-   is {"id","en","zh"} built by horizon_label (FX5 — one vocabulary shared
-   with the fixture segmented control and IM13). #}
+   value is the §13.3 form in the declared precision: an exact instant, an
+   "Available by" bound, or a calendar date with no invented time; a raw
+   `clocks` value is never printed). horizon is {"id","en","zh"} built by
+   horizon_label (FX5 — one vocabulary shared with the fixture segmented
+   control and IM13). #}
 {% macro gs_snapshot(snapshot, basis, horizon) -%}
 {%- set entry = (snapshot or {}).get(basis, {}) -%}
 {%- set display_clocks = entry.get('clock_display') or {} -%}
-{%- set clock_labels = [('observation', ('Reference period', '参考区间')),
+{%- set clock_labels = [('observation', ('Observation', '观测')),
                         ('source_publication', ('Source available', '来源可得')),
-                        ('ingestion', ('Acquired + qualified', '采集并合格')),
-                        ('computation', ('Published', '发布'))] -%}
+                        ('ingestion', ('Acquired', '采集')),
+                        ('computation', ('Calculated', '计算'))] -%}
 {%- set basis_copy = {'local': ('Local', '本币'),
                       'usd_unhedged': ('USD · Unhedged', '美元 · 未对冲'),
                       'usd_hedged': ('USD · Hedged', '美元 · 已对冲')}.get(basis, (basis, basis)) -%}
 <div class="intl-gs__snapshot">
   {%- for key, pair in clock_labels %}
   {%- set shown = display_clocks.get(key) %}
+  {%- set visible = shown.get('en') if shown else None %}
   <span class="intl-gs__snapclock">
     <span class="intl-gs__snapclock__label">{{ t(pair[0], pair[1]) }}</span>
-    {%- if shown %}<time class="intl-gs__snapclock__value intl-gs__num" datetime="{{ shown.datetime }}">{{ t(shown.en, shown.zh) }}</time>
+    {%- if visible %}<time class="intl-gs__snapclock__value intl-gs__num" datetime="{{ shown.datetime }}">{{ t(shown.en, shown.zh) }}</time>
+    {%- elif shown %}<span class="intl-gs__snapclock__value intl-gs__num intl-gs__num--muted">—</span><span class="intl-gs__snapclock__empty">{{ t('Precision not confirmed', '精度未确认') }}</span>
     {%- else %}<span class="intl-gs__snapclock__value intl-gs__num intl-gs__num--muted">—</span><span class="intl-gs__snapclock__empty">{{ t('No qualified observation', '无合格观测') }}</span>{% endif %}
   </span>
   {% endfor -%}
@@ -193,7 +198,7 @@
     <span class="intl-gs__snapctl"><span class="intl-gs__snapctl__label">{{ t('Basis', '口径') }}</span>{% if basis == 'usd_hedged' %}<span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt">{{ t(basis_copy[0], basis_copy[1]) }}</span></span> {{ gs_chip(t('Hedged basis not supported', '不支持对冲口径'), 'muted-dashed') }}{% else %}<span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt is-active">{{ t(basis_copy[0], basis_copy[1]) }}</span></span>{% endif %}</span>
     <span class="intl-gs__snapctl"><span class="intl-gs__snapctl__label">{{ t('Horizon', '区间') }}</span><span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt is-active intl-gs__num">{{ t(horizon.en, horizon.zh) }}</span></span></span>
   </span>
-  <span class="intl-gs__snapshot__note">{{ t('Clocks follow the four-clock observation contract; each cell is the latest qualified observation of this basis.', '时钟遵循四时钟观测合同；每个单元格均为该口径最近一次合格观测。') }}</span>
+  <span class="intl-gs__snapshot__note">{{ t('Each date has its own meaning. Date-only readings and availability bounds are shown as supplied.', '各日期含义不同；仅有日期或可得时间上限时，按来源原样标明。') }}</span>
 </div>
 {%- endmacro %}
 
