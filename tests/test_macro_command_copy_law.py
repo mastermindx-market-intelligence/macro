@@ -535,20 +535,23 @@ def test_business_depth_breadth_caution_keeps_original_source() -> None:
 
 
 def test_business_contradiction_diagnostic_uses_reviewed_pair_without_mutating_source() -> None:
-    """The real source's breadth/depth alert has reviewed copy, not a fallback."""
-    import json
+    """Business caution uses the fixed reviewed producer contract, not a daily snapshot."""
     from copy import deepcopy
     from lib import macro_suite_view
-    from lib.macro_suite_labels import PLAIN_FALLBACK, lookup_plain_producer
+    from lib.macro_suite_labels import PLAIN_FALLBACK, PLAIN_PRODUCER, lookup_plain_producer
 
-    path = DATA_ROOT / "workspaces" / "business_activity" / "US" / "latest.json"
-    if not path.is_file():
-        pytest.skip("business_activity source is sparse-omitted")
-    snapshot = json.loads(path.read_text(encoding="utf-8"))
+    raw_en = next(key for key, _ in PLAIN_PRODUCER
+                  if key.startswith("BREADTH (the share of leading legs weakening)"))
+    raw = {
+        "present": True,
+        "kind": "depth_breadth_divergence",
+        "components": ["leading_tier_momentum_6m", "leading_tier_diffusion"],
+        "en": raw_en,
+        "zh": "广度已达阈值，但深度尚未确认；两者必须同时触发。",
+    }
+    snapshot = {"availability": {"contradiction": raw}}
     original = deepcopy(snapshot)
-    raw = snapshot["availability"]["contradiction"]
-    assert raw["present"] is True and raw["kind"] == "depth_breadth_divergence"
-    expected = lookup_plain_producer(raw["en"])
+    expected = lookup_plain_producer(raw_en)
     assert expected is not None and expected != PLAIN_FALLBACK
 
     context = macro_suite_view._context(snapshot, BUILT_AT)
@@ -556,7 +559,8 @@ def test_business_contradiction_diagnostic_uses_reviewed_pair_without_mutating_s
     assert rendered == expected
     assert "not deep enough to confirm recession risk" in rendered["en"]
     assert "广度与深度必须同时达到各自阈值" in rendered["zh"]
-    diagnostics = macro_suite_view._diagnostics(snapshot, context, {}, {})
+    diagnostics = macro_suite_view._diagnostics(
+        snapshot, context, {"comparable": True}, {})
     assert diagnostics[0]["title"]["en"] == "Contradictory signals"
     assert diagnostics[0]["body"] == expected
     assert snapshot == original  # source truth is never rewritten for customer copy
