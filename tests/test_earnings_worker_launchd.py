@@ -4,14 +4,17 @@ import contextlib
 import json
 import os
 import plistlib
+import re
 import shutil
 import stat
 import subprocess
+import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import yaml
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -131,6 +134,47 @@ def test_bootstrap_render_contract_replaces_only_the_env_path():
     assert 'plistlib.dump(payload, handle, sort_keys=False)' in source
     assert 'EARNINGS_ENV_FILE must be an absolute path' in source
     assert 'EARNINGS_ENV_FILE must live outside ~/Documents' in source
+
+
+@pytest.mark.parametrize("env_file", [
+    "/approved/earnings/.env",
+    "/approved/earnings path & <binding>/.env",
+])
+def test_bootstrap_renderer_executes_the_real_template_binding(tmp_path, env_file):
+    source = BOOTSTRAP.read_text(encoding="utf-8")
+    match = re.search(r"render_plist\(\) \{.*?<<'PY'\n(.*?)\nPY", source, re.S)
+    assert match, "bootstrap must expose its actual plist renderer"
+    output = tmp_path / "rendered.plist"
+    result = subprocess.run(
+        [sys.executable, "-", str(PLIST), str(output), env_file, "__EARNINGS_ENV_FILE__"],
+        input=match.group(1), text=True, capture_output=True, check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    expected = plistlib.loads(PLIST.read_bytes())
+    expected["ProgramArguments"][1] = env_file
+    assert plistlib.loads(output.read_bytes()) == expected
+
+
+@pytest.mark.parametrize("corruption", ["missing_arguments", "prebound_environment"])
+def test_bootstrap_renderer_refuses_a_malformed_or_prebound_template(tmp_path, corruption):
+    source = BOOTSTRAP.read_text(encoding="utf-8")
+    match = re.search(r"render_plist\(\) \{.*?<<'PY'\n(.*?)\nPY", source, re.S)
+    assert match
+    template = tmp_path / "invalid.plist"
+    payload = plistlib.loads(PLIST.read_bytes())
+    if corruption == "missing_arguments":
+        payload.pop("ProgramArguments")
+    else:
+        payload["ProgramArguments"][1] = "/unexpected/default.env"
+    template.write_bytes(plistlib.dumps(payload))
+    output = tmp_path / "must-not-exist.plist"
+    result = subprocess.run(
+        [sys.executable, "-", str(template), str(output), "/approved/earnings/.env", "__EARNINGS_ENV_FILE__"],
+        input=match.group(1), text=True, capture_output=True, check=False,
+    )
+    assert result.returncode != 0
+    assert "ERROR: earnings LaunchAgent" in result.stderr
+    assert not output.exists()
 
 
 def test_plist_model_matches_the_config_openai_compat_default():

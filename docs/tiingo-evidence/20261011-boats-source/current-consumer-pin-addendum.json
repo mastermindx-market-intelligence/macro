@@ -1,0 +1,13 @@
+{
+  "consumer_source_commit": "3e8fe8adad84a043a3454c1214bc886c42e872b1",
+  "current_consumer_review_sha256": "338dab0066e196246f6200c9edd2dc7d05f718653fe49094bf5cffa188849e05",
+  "current_external_fixture_sha256": "3cb4a72f3cbb44433438be1f5912c0e0fe670e1a1bd92a63113e065f3c1cb027",
+  "current_registry_sha256": "510710eb0ef0065af81563ef6c443d694cbbf97c64b737d78c08925648cf05d5",
+  "current_source_hosted_ci_proven": false,
+  "delta": "Consumer commit/hash refreshed and unchanged intelligence anchor relocated from 2518 to 2520. Dispositions, rights, key families, field allowlists, cache/order/clocks and top-level policy unchanged. Historical census identity preserved. Existing global i18n restored and feature-copy helper accepted independently.",
+  "deterministic_registry_tests_passed": 21,
+  "installed_boats_consumer_proven": false,
+  "prior_final_registry_review_sha256": "adc1f0390fbd306cdd25619f6e0bb08747e821f0d06b7387fadd3fa50d23d012",
+  "schema": "tiingo_boats_registry_consumer_pin_addendum.v1",
+  "source_qualification_only": true
+}

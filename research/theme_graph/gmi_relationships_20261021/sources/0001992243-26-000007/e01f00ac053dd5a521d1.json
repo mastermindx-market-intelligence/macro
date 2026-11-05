@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T20:44:53Z",
+ "accession": "0001992243-26-000007",
+ "cik": "0001992243",
+ "doc_byte_length": 2064981,
+ "doc_sha256": "9dcda3888df8da599a4743038ec3357e066ef76f5e6ccb1af7d29cc45123870f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "t1-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1952203,
+  "byte_start": 1950610,
+  "normalized": "IP License Agreement, dated as of December 23, 2024, by and between Trina Solar Co., Ltd. and T1 Energy Inc. (formerly known as FREYR Battery, Inc.) (incorporated by reference to Exhibit 10.8 to the Current Report on Form 8-K filed with the SEC on December 27, 2024) .",
+  "normalized_sha256": "45915f4cab4f4dd5285b55a56116e72ad91ce3c70e7be8fb22b58cb91669ab17",
+  "raw": "IP License Agreement, dated as of December 23, 2024, by and between Trina Solar Co., Ltd. and </a><a style=\"-sec-extract:exhibit;color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\" href=\"https://www.sec.gov/Archives/edgar/data/1992243/000121390024113074/ea022566801ex10-8_freyrbat.htm\">T1 Energy Inc. (formerly kno</a><a style=\"-sec-extract:exhibit;color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\" href=\"https://www.sec.gov/Archives/edgar/data/1992243/000121390024113074/ea022566801ex10-8_freyrbat.htm\">wn as </a><a style=\"-sec-extract:exhibit;color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\" href=\"https://www.sec.gov/Archives/edgar/data/1992243/000121390024113074/ea022566801ex10-8_freyrbat.htm\">FREYR Battery, Inc.</a><a style=\"-sec-extract:exhibit;color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\" href=\"https://www.sec.gov/Archives/edgar/data/1992243/000121390024113074/ea022566801ex10-8_freyrbat.htm\">)</a><a style=\"-sec-extract:exhibit;color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\" href=\"https://www.sec.gov/Archives/edgar/data/1992243/000121390024113074/ea022566801ex10-8_freyrbat.htm\"> (incorporated by reference to Exhibit 10.8 to the Current Report on Form 8-K filed with the SEC on December 27, 2024) .",
+  "raw_sha256": "e01f00ac053dd5a521d1d260e1481e686094f259a1db3a672c3f913f4982e393"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1992243/000199224326000007/t1-20251231.htm",
+ "xbrl_contexts": []
+}

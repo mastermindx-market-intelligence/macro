@@ -1,0 +1,18 @@
+{
+  "schema": "tiingo.original_carrier_public_relay_status_only_diagnosis/v1",
+  "source_file_sha256": "e183bdb799539c86add3453add0884c5a4791c8448e0343e9a447c8d3cb4fb46",
+  "status": 403,
+  "actual_native_session": null,
+  "immediate_exit_no_session_allocated": true,
+  "actual_exit_code": 0,
+  "actual_terminal_chunk": "b4ebfc",
+  "actual_terminal_consumed": true,
+  "url": "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/live_flow/ext_quotes.json",
+  "observed_at_utc": "2026-10-14T03:27:41.213370+00:00",
+  "response_body_read": false,
+  "finite_publisher_started": false,
+  "R2_PUT_requests": 0,
+  "Tiingo_requests": 0,
+  "no_alternate_access_route_used": true,
+  "explicit_denial_preserved": true
+}
