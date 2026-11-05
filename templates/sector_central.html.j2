@@ -1677,7 +1677,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     }
     return {cls:'closed', en:'LAST SESSION', zh:'上一交易时段', asofStr:asofStr, live:false};
   }
-
+  function _tapeOlderNote(pulse){ var h=document.querySelector('.rvx-hero[data-si-as-of]'), pg=h?String(h.getAttribute('data-si-as-of')||'').slice(0,10):'', tp=String((pulse&&(pulse.as_of_quotes||pulse.as_of_utc))||'').slice(0,10), a=Date.parse(pg), b=Date.parse(tp); if(!isFinite(a)||!isFinite(b)||(a-b)<=5*864e5) return ''; return ' <span class="mr-chip mr-chip-stale" data-tip-en="Observation is no longer current." data-tip-zh="观测已过期。">'+L('Older evidence shown','显示较早证据')+'</span>'; }
   // ── Tape band v3: ranked leader/laggard columns + complex row + expander ──
   function renderTapeStrip(pulse){
     var band=document.getElementById('ftr-tape-band');
@@ -1689,7 +1689,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     if(tokEl){ tokEl.className='dtp-token '+st.cls; }
     if(tokLbl){ tokLbl.innerHTML=L(esc(st.en),esc(st.zh)); }
     var asofEl=document.getElementById('ftr-tape-asof');
-    if(asofEl){ asofEl.innerHTML=st.asofStr?L('as of '+esc(st.asofStr),'截至 '+esc(st.asofStr)):''; }
+    if(asofEl){ asofEl.innerHTML=(st.asofStr?L('as of '+esc(st.asofStr),'截至 '+esc(st.asofStr)):'')+_tapeOlderNote(pulse); }
     if(st.live){ band.classList.add('live-mode'); } else { band.classList.remove('live-mode'); }
 
     var bodyEl=document.getElementById('ftr-dtp-body');
@@ -1886,7 +1886,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     if(tokEl){ tokEl.className='ftr-strip-token'+(st.live?' live':''); }
     if(dotEl){ dotEl.className='ftr-strip-dot'+(st.live?'':' no-anim'); }
     if(tokLbl){ tokLbl.innerHTML=L(esc(st.en),esc(st.zh)); }
-    if(asofEl){ asofEl.innerHTML=st.asofStr?L(esc(st.asofStr),esc(st.asofStr)):''; }
+    if(asofEl){ asofEl.innerHTML=(st.asofStr?L(esc(st.asofStr),esc(st.asofStr)):'')+_tapeOlderNote(pulse); }
     var all=(pulse.baskets||[]).filter(function(b){return b.live_ew_chg_pct!=null&&b.tape_rank!=null;});
     all.sort(function(a,b){return b.tape_rank-a.tape_rank;});
     var leadEl=document.getElementById('ftr-strip-leaders');
