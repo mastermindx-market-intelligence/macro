@@ -1,0 +1,40 @@
+{
+  "observed_at": "2026-10-14T16:59:59.511156+00:00",
+  "head_before": "c2e685a0a6ad512bc6e20aa6bcef2673e2f62981",
+  "files": {
+    "data/research_vault/catalog.json": {
+      "present": true,
+      "sha256": "681b944fef3ff8ada4c15c820abfce7b51c961b80ad6aca95678fcf47825e043",
+      "bytes": 3533459,
+      "total": 2907,
+      "matching_rows": 0,
+      "row": null
+    },
+    "data/research_vault/excerpts.json": {
+      "present": true,
+      "sha256": "2d8762b43a39b5ee6bf8bfaf0c977fb15129187fdc734fca5c9a9578500553b7",
+      "bytes": 11147769,
+      "paragraphs": 0,
+      "characters": 0
+    },
+    "site/research/crop-progress-october-13-2026-ogress.html": {
+      "present": false
+    },
+    "site.served/research/crop-progress-october-13-2026-ogress.html": {
+      "present": false
+    },
+    "site/research_vault.html": {
+      "present": true,
+      "sha256": "beb09d8de5029f3964f050c37f40ab900343405bfb0387079688f29913d12c22",
+      "bytes": 88650
+    },
+    "site.served/research_vault.html": {
+      "present": true,
+      "sha256": "beb09d8de5029f3964f050c37f40ab900343405bfb0387079688f29913d12c22",
+      "bytes": 88650
+    }
+  },
+  "writes": 0,
+  "head_after": "c2e685a0a6ad512bc6e20aa6bcef2673e2f62981",
+  "stable_head": true
+}

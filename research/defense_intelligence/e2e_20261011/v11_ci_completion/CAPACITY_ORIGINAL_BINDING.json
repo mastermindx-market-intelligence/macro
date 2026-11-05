@@ -1,0 +1,28 @@
+{
+  "schema": "mastermind.original_delivery_binding.v1",
+  "run_id": "defense-t0-capacity-core-01a13300-a",
+  "root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "parent": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "host": "ubuntu1",
+  "mode": "glm",
+  "requested_model": "glm-5.3-flash",
+  "cwd": "~",
+  "artifact_names": [
+    "public-capacity.patch",
+    "validation.json"
+  ],
+  "sources": {
+    "packet": {
+      "path": "/Users/chriswong/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/state/remote_sub/defense-t0-capacity-core-01a13300-a.packet.w7_vllfz",
+      "sha256": "6bce74d9583ed392ee8bfb6a3ca712c995666f21610a34ce12f61795777ad061"
+    },
+    "log": {
+      "path": "/Users/chriswong/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/state/remote_sub/defense-t0-capacity-core-01a13300-a.log",
+      "sha256": "fead48baab7e56dd7d765e14a784d6faed4346522779ef4f663f6b47d488bd6e"
+    },
+    "support": {
+      "path": "/Users/chriswong/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/state/remote_sub/defense-t0-capacity-core-01a13300-a.support.json",
+      "sha256": "edc233071cb0d6a800dfba97e1a2a904a0a4ec54554ba473ac551611e8182fdd"
+    }
+  }
+}

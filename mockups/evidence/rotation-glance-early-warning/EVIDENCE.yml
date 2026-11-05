@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/rotation_glance.css
+  - site/rotation_glance.css
+manifest: mockups/evidence/rotation-glance-early-warning/manifest.json

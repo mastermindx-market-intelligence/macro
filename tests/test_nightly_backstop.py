@@ -233,7 +233,7 @@ def test_blind_index_falls_through_to_run_evidence(index):
 
 def test_workflow_checks_out_the_index_the_skip_reads():
     text = WORKFLOW.read_text()
-    assert "site/prophet/index.json" in text, (
+    assert "site/prophet/index.json" in text, (  # ci-trigger-closure: data — workflow text needle, never opened
         "the STORE CURRENT skip reads site/prophet/index.json; a sparse checkout "
         "without it makes the skip permanently blind and every latch night a "
         "five-hour duplicate bake"

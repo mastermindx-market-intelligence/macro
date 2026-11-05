@@ -8,13 +8,17 @@
 
 ---
 
+## Observation boundary
+
+This amendment's source and coverage observations are dated 2026-08-28. Its 2026-11-05 fold into the parent design, matrix, ontology and specimen preserves the authority rule without refreshing coverage, rights, market facts or installed capability. Resolve current owner evidence at execution; no illustrative specimen here binds an admitted identity row/receipt.
+
 ## 1. Why this amendment exists
 
-SNI-1 was initially written against the older Company Intelligence identity vocabulary. Before SNI-1A code began, current-main archaeology found a newer accepted estate-wide identity contract:
+SNI-1 was initially written against the older Company Intelligence identity vocabulary. Before SNI-1A code began, the 2026-08-28 source inspection found an accepted estate-wide identity contract:
 
 - `config/identity_seams.yml` declares `lib/dataos/identity.py` plus `data/reference/security_master.parquet`, `vendor_aliases.parquet`, `issuer_master.parquet` and migration receipts as the canonical Data OS issuer/security/listing identity authority.
 - `contracts/evidence_foundation/README.md` requires `ISS:` / `SEC:` / listing identities to come from that produced Data OS master and separately names Earnings `company_identity.v1` as the lawful PIT CIK↔listing/security bridge where that bridge is supported.
-- V4-D2B2-CN-HK already admitted the current source-supported China/HK listing population into Data OS. The current receipt reports 147/147 targeted HK listings resolved, while the accepted D2B2 contract deliberately leaves CN/HK `issuer_id` null / `NO_ISSUER_EVIDENCE` because no accepted CN/HK issuer-evidence class exists.
+- The V4-D2B2-CN-HK receipt sampled on 2026-08-28 reported 147/147 targeted HK listings resolved. That admission deliberately left CN/HK `issuer_id` null / `NO_ISSUER_EVIDENCE` and added no CN/HK issuer-evidence class. This bounded, dated receipt does not prove today's coverage or admission of each illustrative counter, and does not establish a continuing estate-wide absence of issuer evidence.
 - `DEC:MARKET-OS-B1A-IDENTITY-GATE-OWNER-BACKED-CHAIN` separately records that no general namespace renderer exists between every owner-native identity grammar and Data OS, and that a narrow owner-backed chain must refuse rather than invent a bridge.
 
 Therefore any SNI text that calls `company_identity.v1` the universal canonical issuer/security/listing owner is superseded by this amendment.
@@ -125,13 +129,13 @@ Reference relationships:
 
 ---
 
-## 4. Current HK identity state and product consequence
+## 4. HK identity state observed 2026-08-28 and product consequence
 
-The current Data OS receipt is strong enough to establish that the targeted HK listing population is admitted at the listing/security grain: `resolved_total.hk = 147`, `target_n.hk = 147`, with current SFC/HKEX evidence.
+The Data OS receipt inspected on 2026-08-28 reported admission of its targeted HK listing population at listing/security grain: `resolved_total.hk = 147`, `target_n.hk = 147`, with SFC/HKEX evidence in that receipt. An aggregate population count does not bind a particular example counter to an admitted row.
 
-It is **not** sufficient to claim canonical HK issuer resolution. The accepted D2B2 handoff explicitly says CN/HK rows entered with `issuer_id=None / issuer_state=NO_ISSUER_EVIDENCE`, and no CN/HK issuer-evidence class was added.
+It is **not** sufficient to claim canonical HK issuer resolution. The sampled accepted D2B2 handoff says those CN/HK rows entered with `issuer_id=None / issuer_state=NO_ISSUER_EVIDENCE`, and that admission added no CN/HK issuer-evidence class. A later owner receipt may change coverage; SNI must verify that actual receipt rather than infer either resolution or permanent absence.
 
-Therefore the first Alibaba/Tencent twin must be able to render a state such as:
+When exact listing/security admission is independently bound but canonical issuer evidence remains unresolved, the first Alibaba/Tencent twin must be able to render a state such as:
 
 ```text
 listing/security: canonical Data OS identity available
@@ -140,7 +144,7 @@ Data OS canonical issuer: unresolved
 SNI counter relationship: source-backed descriptive relationship available
 ```
 
-That is an honest finished state, not a reason to create another issuer registry.
+That is an honest identity rendering when its stated owner evidence is bound; it does not complete the overall product. The unbound illustrative JSON fixture retains null listing, security and issuer IDs instead. Neither case authorizes another issuer registry.
 
 ---
 
@@ -190,15 +194,15 @@ read instead:
 
 > Data OS owns canonical issuer/security/listing identities when admitted; owner-native/PIT bridges preserve their own identity and clock semantics; SNI owns only source-receipted relationship records and typed unresolved states.
 
-This amendment takes precedence for SNI-1A and all later implementation plans until the parent documents are mechanically folded into the same wording.
+This amendment remains the identity interpretation for SNI-1A and later plans. The 2026-11-05 repair folds that interpretation into the parent design, owner/source matrix, ontology and illustrative JSON fixture. Descriptive label fields do not allocate canonical IDs; only actual admitted rows and exact owner receipts can populate the nullable canonical fields.
 
 ---
 
 ## 8. Evidence
 
-- `config/identity_seams.yml` — current declared Data OS identity master and CN/HK admission semantics.
+- `config/identity_seams.yml` — Data OS identity master and CN/HK admission semantics inspected on 2026-08-28.
 - `lib/dataos/identity.py` — canonical ID allocator/reader vocabulary; explicitly states mint-once-and-store authority.
-- `data/reference/_receipt.json` — current generated identity receipt, including 147/147 HK target listing resolution.
+- `data/reference/_receipt.json` — generated identity receipt inspected on 2026-08-28, including the bounded 147/147 HK target listing observation.
 - `agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-20-D2B2.md` — accepted CN/HK admission implementation and explicit no-HK-issuer-evidence boundary.
 - `contracts/evidence_foundation/README.md` — cross-owner identity reuse and PIT bridge law.
 - `agentos/decisions/DEC-MARKET-OS-B1A-IDENTITY-GATE-OWNER-BACKED-CHAIN.md` — no-general-renderer boundary and owner-backed-chain precedent.
@@ -207,4 +211,4 @@ This amendment takes precedence for SNI-1A and all later implementation plans un
 
 ## 9. Exact next action
 
-After PR #6613 lands with this amendment, register the approved `single-name-intelligence` semantic program and durable workstream, then execute the separately reviewed SNI-1A plan for the **pure relationship contract only**. No owner reads, Data OS mutation, issuer repair, reference-twin compiler, product route or forecast belongs in SNI-1A.
+First qualify the current published PR #6613 head and verify its actual protected-main acceptance. Then the assigned receiver resolves the semantic registry decision using current `config/mastermind_programs.yml`, derives actual registry facts, and reconciles the existing stacked #6615 carrier before registration/workstream creation or a separately admitted SNI-1A **pure relationship contract** start. Preserve actual live writers and uncertain effects; old named seats or PRECOMMISSION packets do not establish current approval, START or release. No owner reads, Data OS mutation, issuer repair, reference-twin compiler, product route or forecast belongs in SNI-1A.

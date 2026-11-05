@@ -12,6 +12,26 @@
 
 ---
 
+## Reading boundary — identity amendment folded 2026-11-05
+
+The capability ledger, source availability, market observations, rights, correction
+states, carrier references and original procedure pins below retain their
+2026-08-28 observation epoch. They are not a fresh estate census or execution grant.
+The [accepted identity amendment](2026-08-28-sni1-identity-authority-amendment.md)
+is folded into the independent identity descriptions and example fixture here.
+Data OS owns admitted canonical issuer/security/listing identity; Company
+Intelligence supplies its bounded owner-native/PIT bridge. SNI supplies descriptive
+relationships only. A missing exact admitted row/owner receipt means null canonical
+IDs with typed unresolved state, even when a ticker, CIK or relationship is known.
+The fixture binds no such receipt and makes no current coverage or rights claim.
+
+Architecture approval was recorded in [PR #6613 comment 5452251749](https://github.com/mastermindx-market-intelligence/macro/pull/6613#issuecomment-5452251749).
+The current repaired head needs its actual review and delivery qualification; that
+record and the former expected-head landing instruction do not release a new head.
+Program registration and the existing stacked #6615 implementation plans remain
+separate gates. No workstream, source acquisition, runtime or implementation starts
+from this documentation repair.
+
 ## 0. Executive decision
 
 SNI-1 freezes the **smallest trustworthy reference-twin contract** that can make Alibaba and Tencent feel like continuously monitored individual organisms without building another identity, event, market-data, filing, capital, options, China, evidence, or forecast system.
@@ -79,11 +99,12 @@ A schema file and green tests alone will be `BUILT_NOT_PROVEN`, not completion.
 
 ---
 
-## 2. Current canonical capability ledger
+## 2. Canonical capability ledger observed 2026-08-28
 
 | Capability | State | SNI-1 treatment |
 |---|---|---|
-| `company_identity.v1` issuer/listing resolver | `BUILT_NOT_PROVEN` as broad production identity | Reuse as the current canonical identity owner; do not fork it. Add only a derived relationship projection for multi-counter securities. |
+| Data OS stored issuer/security/listing master, read through `lib/dataos/identity.py` | Canonical identity only where exact admitted rows and owner receipts are bound | Reuse the master; this unbound design fixture supplies no admission proof and retains null canonical IDs. |
+| `company_identity.v1` issuer/listing resolver | `BUILT_NOT_PROVEN` as broadly observed on 2026-08-28 | Reuse only its owner-native/PIT CIK, alias and event bridge at supported precision; it is not the estate-wide canonical master. |
 | Alibaba SEC/HKEX/IR source identity | `PROVEN_LIVE` source availability | Alibaba CIK `0001577552`; BABA and 9988/89988 mechanics are officially documented. |
 | Tencent HKEX/IR source identity | `PROVEN_LIVE` source availability | Tencent CIK `0001293451` exists as an SEC entity identity; primary company reporting remains HKEX/issuer material, not SEC company-event coverage. |
 | BABA Stock Identity W1 Atlas | `PROVEN_LIVE` descriptive artifact | Consume the current fingerprint/state/episode references, retaining provisional `epoch_0` and zero authority. |
@@ -104,9 +125,9 @@ A schema file and green tests alone will be `BUILT_NOT_PROVEN`, not completion.
 | qledger/Evaluation OS | `PROVEN_LIVE` house apparatus | SNI-1 does not write forecasts. Later SNI forecast families must register here. |
 | `mastermind.single_name.reference_twin/v1` | `NOT_BUILT` | This is the new bounded SNI-1 capability. |
 
-### 2.1 Adjacent active ownership
+### 2.1 Adjacent ownership observed 2026-08-28
 
-- Macro PR #6529 is the current Stock Identity W3→final recovery carrier. SNI-1 must not touch `engine/stock_identity/**`, its research law, partitions, ruler, epoch, SIF, or prospective ownership.
+- Macro PR #6529 was the Stock Identity W3→final recovery carrier in the dated inspection. Resolve later custody at its canonical owner before any implementation; SNI-1 must not touch `engine/stock_identity/**`, its research law, partitions, ruler, epoch, SIF, or prospective ownership.
 - Options Alpha has a separate recovery architecture. SNI reads its accepted artifacts but does not manufacture a browser-side options signal.
 - Capital Structure remains its own issuer-capital owner.
 - China/HK native-data owners retain their stores, buses, collectors, qledger families, and source laws.
@@ -117,7 +138,7 @@ A schema file and green tests alone will be `BUILT_NOT_PROVEN`, not completion.
 
 ### 3.1 Why the existing two-level vocabulary is insufficient for HK multi-counter names
 
-The current Company Intelligence identity layer correctly separates issuer and listing alias, but its `security_id_for(mic, ticker)` naturally creates a distinct security identifier for every ticker.
+The Company Intelligence layer inspected on 2026-08-28 separates issuer and listing alias. Its `security_id_for(mic, ticker)` may derive a per-ticker owner-native string; neither that derivation nor MIC/ticker normalization proves admission into the Data OS stored master. Exact canonical IDs require the admitted owner row and receipt. This vocabulary alone does not express economic equivalence across counters.
 
 For Hong Kong dual-counter securities, that is not always the economic truth:
 
@@ -140,39 +161,41 @@ issuer
 #### `issuer_ref`
 
 ```text
-company_id
+canonical_issuer_id: Data OS ISS id | null
+issuer_resolution_state
+owner_native_issuer_refs[]
 legal_name
 reporting_currency
 fiscal_year_end
 incorporation_jurisdiction
 external_ids
-canonical_identity_ref
+canonical_identity_ref: lib/dataos/identity.py
 ```
 
-Current reference IDs:
+External/owner-native reference anchors observed 2026-08-28 (not Data OS canonical issuer IDs):
 
 - Alibaba Group Holding Limited: `cik:0001577552`
 - Tencent Holdings Limited: `cik:0001293451`
 
-A CIK is an identity anchor, not proof that the SEC is the primary company-event source. Tencent’s primary result/issuer disclosure path remains HKEX/issuer materials.
+A CIK is an external/owner-native identity anchor, not a Data OS `ISS:` admission receipt or proof that the SEC is the primary company-event source. Tencent’s primary result/issuer disclosure path remains HKEX/issuer materials. Preserve each bridge's owner, exact receipt and native precision; without an admitted issuer row, `canonical_issuer_id` remains null with `identity_unresolved`.
 
 #### `economic_security`
 
 ```text
-security_group_id
+descriptive_group_label
 issuer_ref
 security_kind: ordinary_share | ads | other
 share_class
 base_unit
-conversion_relationships[]
-canonical_security_refs[]
+conversion_relationships[]: target_descriptive_group_label + source-receipted relation
+canonical_security_refs[]: exact owner-supplied/admitted references only
 ```
 
 #### `trading_counter`
 
 ```text
-counter_id
-security_group_id
+observed_counter_label
+descriptive_group_label
 mic
 stock_code_or_ticker
 trading_currency
@@ -181,8 +204,13 @@ session_template
 is_primary_display_counter
 valid_from
 valid_to
-canonical_listing_ref
+canonical_listing_id: Data OS listing id | null
+canonical_security_id: Data OS SEC id | null
+identity_resolution_state
+owner_receipt_ref: exact admitted-row receipt | null
 ```
+
+`descriptive_group_label`, `observed_counter_label` and `selected_counter_label` are local display/example labels, not a new canonical identifier namespace. Canonical references are supplied by the existing owner after exact admission verification; unbound fields remain null with typed unresolved state. The graph preserves source-backed economic relationships without proving Data OS admission of its members.
 
 ### 3.3 Reference identity graph
 
@@ -211,7 +239,7 @@ Tencent Holdings (cik:0001293451)
 5. An ADS is not the ordinary share, even when fungible.
 6. Cross-venue basis is descriptive until separately studied and promoted.
 7. Missing/ambiguous mapping produces `identity_unresolved`; no fallback ticker guess.
-8. SNI-1 does not rewrite `company_identity.v1`; it emits a relationship overlay and records the canonical refs it composed.
+8. SNI-1 does not rewrite the Data OS master or `company_identity.v1`; it emits a descriptive relationship overlay, retains the bridge's native precision and binds only exact owner-admitted canonical references. No receipt means null/unresolved.
 
 ---
 
@@ -238,7 +266,7 @@ spec_hash
 generation_id
 generated_at
 as_of
-selected_counter_id
+selected_counter_label
 issuer
 securities[]
 counter_relationships[]
@@ -818,7 +846,7 @@ SNI-1 does not:
 
 These are named future dockets, not missing requirements:
 
-1. Whether `company_identity.v1` should eventually natively represent economic security versus trading counter rather than consume SNI’s relationship overlay.
+1. Whether the canonical Data OS identity owner should absorb economic-security/counter relationships after accepting their semantics; any `company_identity.v1` extension remains within that bridge's owner-native/PIT boundary.
 2. Whether Tencent-specific off-hours evidence can be sourced lawfully and with sufficient quality to improve on a KWEB proxy.
 3. Whether HKEX historical full-book securities and stock-options data produce useful incremental research value over the current house stack.
 4. Whether first-party CCASS adds enough identity, history, correction, and rights value over the Eastmoney Southbound plane.
@@ -831,7 +859,7 @@ None of these blocks the SNI-1 contract.
 
 ## 17. Source anchors
 
-Official/current anchors used by this design include:
+Official source anchors recorded by the 2026-08-28 design include:
 
 - Alibaba investor FAQ: BABA ADSs represent eight ordinary shares; 9988 HKD and 89988 RMB counters; bidirectional fungibility; Hong Kong dual-primary status.  
   `https://www.alibabagroup.com/en-US/faqs-investor-information`
@@ -869,4 +897,4 @@ Official/current anchors used by this design include:
 - The implementation is decomposed into five bounded verticals.
 - No `TBD`, hidden placeholder, or undefined completion claim remains.
 
-**Review gate:** implementation planning begins only after the Chairman approves this written SNI-1 design and any requested amendments are folded into the same carrier.
+**Review and execution gates:** the August architecture approval and this amendment fold do not establish release of the current head. Qualify the current published PR #6613 head through its actual source, CI and eligible nonauthor release gates. After protected-main acceptance, resolve the semantic registry gate and the existing stacked #6615 plan under current custody before any SNI-1A start; a PRECOMMISSION plan is not START.

@@ -1,0 +1,41 @@
+{
+  "schema": "research.source_owner_packet_manifest.v1",
+  "status": "FROZEN_BOUNDED_READ_ONLY_ESTATE_FINDING",
+  "freeze_clock_observed_utc": "2026-10-09T12:17:33Z",
+  "head": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+  "source_pin_count": 35,
+  "reported_process_count": 15,
+  "all_reported_pids_exited": true,
+  "contents": [
+    {
+      "path": "lanes/source_owner_interface_census_v1/FINDINGS.md",
+      "bytes": 12922,
+      "sha256": "e14fe4557826aa4750f438dacdade7a8f95038b779c1bd3fd5b4b31f9a12e1ef"
+    },
+    {
+      "path": "lanes/source_owner_interface_census_v1/PROCESS_AND_EFFECT_RECEIPT.json",
+      "bytes": 4484,
+      "sha256": "effa51990d13b76449dd0c6ee4f4db00e549e95334c2f285e1fee05af6183605"
+    },
+    {
+      "path": "lanes/source_owner_interface_census_v1/READBACK_VALIDATION.json",
+      "bytes": 642,
+      "sha256": "e28efb4aa2aaaad66f4db349b8c56fa4de4cf2cd41fa84fdc950a0366ff254b1"
+    },
+    {
+      "path": "lanes/source_owner_interface_census_v1/SCOPE_AND_CENSUS.json",
+      "bytes": 4815,
+      "sha256": "75cc57200a49b0daa4a0d368f8b5b98af3fa48174515800216c72b440e448a8c"
+    },
+    {
+      "path": "lanes/source_owner_interface_census_v1/SOURCE_PINS.json",
+      "bytes": 21149,
+      "sha256": "234633f44f9a90e07511b7ef8e98fb7f4ccf5a4d2a251e28929729e6b0e04393"
+    }
+  ],
+  "previous_feasibility_manifest_sha256": "018bae578c11daa75e37dd117b9a75967c88da238a15421279d322a706da04d6",
+  "environment_detail_disclosed": true,
+  "predictive_admission": false,
+  "production_admission": false,
+  "manifest_self_hash": "Excluded; final bytes hashed for handoff"
+}

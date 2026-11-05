@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-06-15T21:09:27Z",
+ "accession": "0001628280-26-043303",
+ "cik": "0001807794",
+ "doc_byte_length": 1712551,
+ "doc_sha256": "d4896817099c692f1d1d25678807cb8ef76df37ab45e96915cdab183cb1c6955",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-06-15",
+ "form": "10-K",
+ "period_of_report": "2026-05-02",
+ "primary_document": "crdo-20260502.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 418053,
+  "byte_start": 417523,
+  "normalized": "These risks could harm our international operations, delay new product releases, increase our operating costs and hinder our ability to grow our operations and business and, consequently, our business, financial condition and results of operations could suffer. For example, we rely on TSMC in Taiwan as the foundry for all of our semiconductor products. If political tensions between the PRC and Taiwan were to increase further, it could disrupt our business and adversely affect our financial condition and results of operation.",
+  "normalized_sha256": "e539da03929fd0eee5f3eda2c4ebb03ebe7d1d8a7c022adc029c8e9e52b666ff",
+  "raw": "These risks could harm our international operations, delay new product releases, increase our operating costs and hinder our ability to grow our operations and business and, consequently, our business, financial condition and results of operations could suffer. For example, we rely on TSMC in Taiwan as the foundry for all of our semiconductor products. If political tensions between the PRC and Taiwan were to increase further, it could disrupt our business and adversely affect our financial condition and results of operation.",
+  "raw_sha256": "e539da03929fd0eee5f3eda2c4ebb03ebe7d1d8a7c022adc029c8e9e52b666ff"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1807794/000162828026043303/crdo-20260502.htm",
+ "xbrl_contexts": []
+}

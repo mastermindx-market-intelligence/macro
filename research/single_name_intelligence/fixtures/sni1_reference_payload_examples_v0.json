@@ -3,6 +3,19 @@
   "reference_only": true,
   "not_production_truth": true,
   "generated_for_design_at": "2026-08-28T09:55:00Z",
+  "identity_reading_boundary": {
+    "amendment_ref": "docs/superpowers/specs/2026-08-28-sni1-identity-authority-amendment.md",
+    "canonical_owner_ref": "lib/dataos/identity.py",
+    "observation_epoch": "2026-08-28T09:55:00Z",
+    "owner_receipt_bound": false,
+    "descriptive_labels_only": true,
+    "notes": [
+      "Historical design examples only: not production, not current coverage, and not a rights proof.",
+      "Every capability, correction and rights statement in this fixture retains its 2026-08-28 epoch; nothing is refreshed or re-observed.",
+      "No identity authority and no trade authority is expressed or granted here; all original top-authority flags remain false.",
+      "Only an actual admitted stored Data OS row plus its exact owner receipt, bound by the existing owner, could populate canonical ids; none is bound to this illustrative specimen, so all canonical ids are null and no syntactically plausible ids were derived."
+    ]
+  },
   "authority": {
     "can_rank": false,
     "can_size": false,
@@ -15,50 +28,71 @@
     {
       "schema": "mastermind.single_name.reference_twin/v1-draft",
       "issuer": {
-        "company_id": "cik:0001577552",
+        "owner_native_issuer_refs": [
+          {
+            "owner_ref": "engine/company_intelligence/identity.py",
+            "id": "cik:0001577552",
+            "receipt_ref": null,
+            "state": "illustrative_not_owner_verified"
+          }
+        ],
         "legal_name": "Alibaba Group Holding Limited",
         "reporting_currency": "CNY",
         "fiscal_year_end": "03-31",
-        "canonical_identity_ref": "engine/company_intelligence/identity.py"
+        "canonical_identity_ref": "lib/dataos/identity.py",
+        "canonical_issuer_id": null,
+        "issuer_resolution_state": "unresolved"
       },
       "economic_securities": [
         {
-          "security_group_id": "ordinary_share:alibaba",
+          "descriptive_group_label": "ordinary_share:alibaba",
           "security_kind": "ordinary_share",
           "share_class": "ordinary",
           "trading_counters": [
             {
-              "counter_id": "xhkg:9988",
+              "observed_counter_label": "xhkg:9988",
               "mic": "XHKG",
               "ticker": "9988",
               "trading_currency": "HKD",
-              "market_calendar": "XHKG"
+              "market_calendar": "XHKG",
+              "canonical_listing_id": null,
+              "canonical_security_id": null,
+              "identity_resolution_state": "unresolved",
+              "owner_receipt_ref": null
             },
             {
-              "counter_id": "xhkg:89988",
+              "observed_counter_label": "xhkg:89988",
               "mic": "XHKG",
               "ticker": "89988",
               "trading_currency": "CNY",
-              "market_calendar": "XHKG"
+              "market_calendar": "XHKG",
+              "canonical_listing_id": null,
+              "canonical_security_id": null,
+              "identity_resolution_state": "unresolved",
+              "owner_receipt_ref": null
             }
           ]
         },
         {
-          "security_group_id": "ads:alibaba:baba",
+          "descriptive_group_label": "ads:alibaba:baba",
           "security_kind": "ads",
           "share_class": "ADS",
           "trading_counters": [
             {
-              "counter_id": "xnys:BABA",
+              "observed_counter_label": "xnys:BABA",
               "mic": "XNYS",
               "ticker": "BABA",
               "trading_currency": "USD",
-              "market_calendar": "XNYS"
+              "market_calendar": "XNYS",
+              "canonical_listing_id": null,
+              "canonical_security_id": null,
+              "identity_resolution_state": "unresolved",
+              "owner_receipt_ref": null
             }
           ],
           "conversion_relationships": [
             {
-              "target_security_group_id": "ordinary_share:alibaba",
+              "target_descriptive_group_label": "ordinary_share:alibaba",
               "relationship": "ads_represents_ordinary_shares",
               "ads_units": 1,
               "ordinary_share_units": 8,
@@ -68,7 +102,7 @@
           ]
         }
       ],
-      "selected_counter_id": "xhkg:9988",
+      "selected_counter_label": "xhkg:9988",
       "as_of": "2026-08-28T09:55:00Z",
       "material_changes": [
         {
@@ -94,21 +128,56 @@
         "currency": "CNY",
         "period": "three_months_ended_2026-06-30",
         "observations": [
-          {"metric_key": "ali.group.revenue", "value": 268953, "unit": "RMB_million", "yoy_pct": 9},
-          {"metric_key": "ali.ecom.segment_revenue", "value": 205862, "unit": "RMB_million", "yoy_pct": 4},
-          {"metric_key": "ali.cloud.segment_revenue", "value": 48437, "unit": "RMB_million", "yoy_pct": 45},
-          {"metric_key": "ali.ai_apps.segment_revenue", "value": 3338, "unit": "RMB_million", "yoy_pct": 16},
-          {"metric_key": "ali.cloud.ai_related_product_revenue", "value": 12376, "unit": "RMB_million"},
-          {"metric_key": "ali.group.capex", "value": 67678, "unit": "RMB_million", "yoy_pct": 75},
-          {"metric_key": "ali.group.cash_liquid_investments", "value": 474505, "unit": "RMB_million"}
+          {
+            "metric_key": "ali.group.revenue",
+            "value": 268953,
+            "unit": "RMB_million",
+            "yoy_pct": 9
+          },
+          {
+            "metric_key": "ali.ecom.segment_revenue",
+            "value": 205862,
+            "unit": "RMB_million",
+            "yoy_pct": 4
+          },
+          {
+            "metric_key": "ali.cloud.segment_revenue",
+            "value": 48437,
+            "unit": "RMB_million",
+            "yoy_pct": 45
+          },
+          {
+            "metric_key": "ali.ai_apps.segment_revenue",
+            "value": 3338,
+            "unit": "RMB_million",
+            "yoy_pct": 16
+          },
+          {
+            "metric_key": "ali.cloud.ai_related_product_revenue",
+            "value": 12376,
+            "unit": "RMB_million"
+          },
+          {
+            "metric_key": "ali.group.capex",
+            "value": 67678,
+            "unit": "RMB_million",
+            "yoy_pct": 75
+          },
+          {
+            "metric_key": "ali.group.cash_liquid_investments",
+            "value": 474505,
+            "unit": "RMB_million"
+          }
         ],
         "source_ref": "https://www.alibabagroup.com/en-US/document-2026456290057781248"
       },
       "owner_views": {
         "identity": {
-          "capability_state": "BUILT_NOT_PROVEN",
-          "owner_ref": "engine/company_intelligence/identity.py",
-          "coverage_state": "reference_identity_resolved",
+          "capability_state": "SPEC_ONLY",
+          "capability_scope": "this unbound illustrative view, not a capability assessment of the Data OS estate",
+          "owner_ref": "lib/dataos/identity.py",
+          "coverage_state": "identity_unresolved",
+          "owner_receipt_ref": null,
           "authority": "context_only"
         },
         "stock_identity": {
@@ -162,6 +231,34 @@
           "plain_en": "No SNI forecast is published in the reference-twin phase.",
           "plain_zh": "参考数字孪生阶段不发布SNI预测。",
           "fill_condition": "A later forecast family is preregistered and prospectively accepted."
+        },
+        {
+          "reason_code": "identity_unresolved",
+          "field_path": "issuer.canonical_issuer_id",
+          "plain_en": "The exact Data OS owner receipt is not bound to this illustrative specimen, so the canonical issuer id stays unresolved in this draft.",
+          "plain_zh": "确切的Data OS属主回执尚未绑定到此说明性样本，因此规范发行人ID在此草稿中保持未解析。",
+          "fill_condition": "An actual admitted Data OS row plus its exact owner receipt is bound by the existing owner and validated at its native precision."
+        },
+        {
+          "reason_code": "identity_unresolved",
+          "field_path": "economic_securities.0.trading_counters.0",
+          "plain_en": "The exact Data OS owner receipt is not bound to this illustrative specimen, so this counter's canonical listing id and canonical security id stay unresolved in this draft.",
+          "plain_zh": "确切的Data OS属主回执尚未绑定到此说明性样本，因此该交易柜台的规范上市ID与规范证券ID在此草稿中保持未解析。",
+          "fill_condition": "An actual admitted Data OS row plus its exact owner receipt is bound by the existing owner and validated at its native precision."
+        },
+        {
+          "reason_code": "identity_unresolved",
+          "field_path": "economic_securities.0.trading_counters.1",
+          "plain_en": "The exact Data OS owner receipt is not bound to this illustrative specimen, so this counter's canonical listing id and canonical security id stay unresolved in this draft.",
+          "plain_zh": "确切的Data OS属主回执尚未绑定到此说明性样本，因此该交易柜台的规范上市ID与规范证券ID在此草稿中保持未解析。",
+          "fill_condition": "An actual admitted Data OS row plus its exact owner receipt is bound by the existing owner and validated at its native precision."
+        },
+        {
+          "reason_code": "identity_unresolved",
+          "field_path": "economic_securities.1.trading_counters.0",
+          "plain_en": "The exact Data OS owner receipt is not bound to this illustrative specimen, so this counter's canonical listing id and canonical security id stay unresolved in this draft.",
+          "plain_zh": "确切的Data OS属主回执尚未绑定到此说明性样本，因此该交易柜台的规范上市ID与规范证券ID在此草稿中保持未解析。",
+          "fill_condition": "An actual admitted Data OS row plus its exact owner receipt is bound by the existing owner and validated at its native precision."
         }
       ],
       "evidence_health": {
@@ -174,37 +271,54 @@
     {
       "schema": "mastermind.single_name.reference_twin/v1-draft",
       "issuer": {
-        "company_id": "cik:0001293451",
+        "owner_native_issuer_refs": [
+          {
+            "owner_ref": "engine/company_intelligence/identity.py",
+            "id": "cik:0001293451",
+            "receipt_ref": null,
+            "state": "illustrative_not_owner_verified"
+          }
+        ],
         "legal_name": "Tencent Holdings Limited",
         "reporting_currency": "CNY",
         "fiscal_year_end": "12-31",
-        "canonical_identity_ref": "engine/company_intelligence/identity.py",
+        "canonical_identity_ref": "lib/dataos/identity.py",
+        "canonical_issuer_id": null,
+        "issuer_resolution_state": "unresolved",
         "primary_company_event_source": "HKEX_and_issuer"
       },
       "economic_securities": [
         {
-          "security_group_id": "ordinary_share:tencent",
+          "descriptive_group_label": "ordinary_share:tencent",
           "security_kind": "ordinary_share",
           "share_class": "ordinary",
           "trading_counters": [
             {
-              "counter_id": "xhkg:700",
+              "observed_counter_label": "xhkg:700",
               "mic": "XHKG",
               "ticker": "700",
               "trading_currency": "HKD",
-              "market_calendar": "XHKG"
+              "market_calendar": "XHKG",
+              "canonical_listing_id": null,
+              "canonical_security_id": null,
+              "identity_resolution_state": "unresolved",
+              "owner_receipt_ref": null
             },
             {
-              "counter_id": "xhkg:80700",
+              "observed_counter_label": "xhkg:80700",
               "mic": "XHKG",
               "ticker": "80700",
               "trading_currency": "CNY",
-              "market_calendar": "XHKG"
+              "market_calendar": "XHKG",
+              "canonical_listing_id": null,
+              "canonical_security_id": null,
+              "identity_resolution_state": "unresolved",
+              "owner_receipt_ref": null
             }
           ]
         }
       ],
-      "selected_counter_id": "xhkg:700",
+      "selected_counter_label": "xhkg:700",
       "as_of": "2026-08-28T09:55:00Z",
       "material_changes": [
         {
@@ -230,23 +344,68 @@
         "currency": "CNY",
         "period": "three_months_ended_2026-06-30",
         "observations": [
-          {"metric_key": "tencent.group.revenue", "value": 204785, "unit": "RMB_million", "yoy_pct": 11},
-          {"metric_key": "tencent.group.gross_profit", "value": 118433, "unit": "RMB_million", "yoy_pct": 13},
-          {"metric_key": "tencent.vas.revenue", "value": 98414, "unit": "RMB_million", "yoy_pct": 8},
-          {"metric_key": "tencent.marketing.revenue", "value": 43565, "unit": "RMB_million", "yoy_pct": 22},
-          {"metric_key": "tencent.fbs.revenue", "value": 60286, "unit": "RMB_million", "yoy_pct": 9},
-          {"metric_key": "tencent.wechat_weixin.combined_mau", "value": 1439, "unit": "million_users", "yoy_pct": 2},
-          {"metric_key": "tencent.qq.mobile_mau", "value": 520, "unit": "million_users", "yoy_pct": -2},
-          {"metric_key": "tencent.group.net_cash", "value": 58191, "unit": "RMB_million"},
-          {"metric_key": "tencent.group.capex", "value": 52784, "unit": "RMB_million"}
+          {
+            "metric_key": "tencent.group.revenue",
+            "value": 204785,
+            "unit": "RMB_million",
+            "yoy_pct": 11
+          },
+          {
+            "metric_key": "tencent.group.gross_profit",
+            "value": 118433,
+            "unit": "RMB_million",
+            "yoy_pct": 13
+          },
+          {
+            "metric_key": "tencent.vas.revenue",
+            "value": 98414,
+            "unit": "RMB_million",
+            "yoy_pct": 8
+          },
+          {
+            "metric_key": "tencent.marketing.revenue",
+            "value": 43565,
+            "unit": "RMB_million",
+            "yoy_pct": 22
+          },
+          {
+            "metric_key": "tencent.fbs.revenue",
+            "value": 60286,
+            "unit": "RMB_million",
+            "yoy_pct": 9
+          },
+          {
+            "metric_key": "tencent.wechat_weixin.combined_mau",
+            "value": 1439,
+            "unit": "million_users",
+            "yoy_pct": 2
+          },
+          {
+            "metric_key": "tencent.qq.mobile_mau",
+            "value": 520,
+            "unit": "million_users",
+            "yoy_pct": -2
+          },
+          {
+            "metric_key": "tencent.group.net_cash",
+            "value": 58191,
+            "unit": "RMB_million"
+          },
+          {
+            "metric_key": "tencent.group.capex",
+            "value": 52784,
+            "unit": "RMB_million"
+          }
         ],
         "source_ref": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0812/2026081200296.pdf"
       },
       "owner_views": {
         "identity": {
-          "capability_state": "BUILT_NOT_PROVEN",
-          "owner_ref": "engine/company_intelligence/identity.py",
-          "coverage_state": "reference_identity_resolved",
+          "capability_state": "SPEC_ONLY",
+          "capability_scope": "this unbound illustrative view, not a capability assessment of the Data OS estate",
+          "owner_ref": "lib/dataos/identity.py",
+          "coverage_state": "identity_unresolved",
+          "owner_receipt_ref": null,
           "authority": "context_only"
         },
         "hk_official_filings": {
@@ -310,6 +469,27 @@
           "plain_en": "No SNI forecast is published in the reference-twin phase.",
           "plain_zh": "参考数字孪生阶段不发布SNI预测。",
           "fill_condition": "A later forecast family is preregistered and prospectively accepted."
+        },
+        {
+          "reason_code": "identity_unresolved",
+          "field_path": "issuer.canonical_issuer_id",
+          "plain_en": "The exact Data OS owner receipt is not bound to this illustrative specimen, so the canonical issuer id stays unresolved in this draft.",
+          "plain_zh": "确切的Data OS属主回执尚未绑定到此说明性样本，因此规范发行人ID在此草稿中保持未解析。",
+          "fill_condition": "An actual admitted Data OS row plus its exact owner receipt is bound by the existing owner and validated at its native precision."
+        },
+        {
+          "reason_code": "identity_unresolved",
+          "field_path": "economic_securities.0.trading_counters.0",
+          "plain_en": "The exact Data OS owner receipt is not bound to this illustrative specimen, so this counter's canonical listing id and canonical security id stay unresolved in this draft.",
+          "plain_zh": "确切的Data OS属主回执尚未绑定到此说明性样本，因此该交易柜台的规范上市ID与规范证券ID在此草稿中保持未解析。",
+          "fill_condition": "An actual admitted Data OS row plus its exact owner receipt is bound by the existing owner and validated at its native precision."
+        },
+        {
+          "reason_code": "identity_unresolved",
+          "field_path": "economic_securities.0.trading_counters.1",
+          "plain_en": "The exact Data OS owner receipt is not bound to this illustrative specimen, so this counter's canonical listing id and canonical security id stay unresolved in this draft.",
+          "plain_zh": "确切的Data OS属主回执尚未绑定到此说明性样本，因此该交易柜台的规范上市ID与规范证券ID在此草稿中保持未解析。",
+          "fill_condition": "An actual admitted Data OS row plus its exact owner receipt is bound by the existing owner and validated at its native precision."
         }
       ],
       "evidence_health": {

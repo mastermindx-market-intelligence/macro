@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/policy_watch.html.j2
+manifest: mockups/evidence/mo-f02-2/manifest.json

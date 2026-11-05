@@ -11,14 +11,16 @@ answer: >
   SNI may create only source-receipted descriptive relationship records such as
   same_economic_security and represents_units_of; it may not mint canonical ISS:/SEC:/listing IDs.
 rationale: >
-  Current config/identity_seams.yml declares lib/dataos/identity.py and the stored
-  security/issuer/listing master as the canonical identity spine, and Evidence Foundation
-  already binds cross-owner identities to that master. The current CN/HK admission proves
-  147/147 targeted HK listings/security identities are admitted while deliberately leaving
-  HK issuer IDs unresolved because no accepted HK issuer-evidence class exists. Treating
-  company_identity.v1 as the universal identity master would contradict newer canonical
-  law; letting SNI fill the HK issuer gap would create the duplicate identity plane the
-  program is explicitly forbidden to build. The economic-security/counter distinction is
+  The identity authority inspected on 2026-08-28 declares lib/dataos/identity.py and the
+  stored security/issuer/listing master as the canonical identity spine; Evidence
+  Foundation binds cross-owner identities to that master. The sampled D2B2 receipt
+  reported 147/147 targeted HK listings/security identities admitted, with HK issuer IDs
+  unresolved and no HK issuer-evidence class added in that admission. This is a dated,
+  bounded observation, not proof of today's issuer coverage or of admission for every
+  illustrative counter. Exact stored rows and owner receipts remain necessary.
+  Treating company_identity.v1 as the universal identity master would contradict that
+  authority chain; letting SNI fill an unproven issuer gap would create the duplicate
+  identity plane the program is explicitly forbidden to build. The economic-security/counter distinction is
   still necessary, but it belongs as an evidence-backed relationship projection until the
   canonical identity owner chooses to absorb that concept.
 alternatives:
@@ -39,7 +41,7 @@ alternatives:
       them without claiming canonical identity authority.
 evidence:
   - "config/identity_seams.yml — master.reader=lib/dataos/identity.py; canonical security/issuer/listing artifacts and id conventions"
-  - "data/reference/_receipt.json — china_hk_admission resolved_total.hk=147 / target_n.hk=147"
+  - "data/reference/_receipt.json — 2026-08-28 sampled china_hk_admission resolved_total.hk=147 / target_n.hk=147; population receipt, not an example-specific issuer/counter binding"
   - "agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-20-D2B2.md — HK admission and explicit issuer_id=None / NO_ISSUER_EVIDENCE boundary"
   - "contracts/evidence_foundation/README.md — ISS:/SEC:/listing identity comes from Data OS master; company_identity.v1 is a PIT bridge"
   - "agentos/decisions/DEC-MARKET-OS-B1A-IDENTITY-GATE-OWNER-BACKED-CHAIN.md — no-general-namespace-renderer and owner-backed-chain precedent"
@@ -53,6 +55,15 @@ reversibility: costly
 decided_by: ceo-sol
 decided_at: 2026-08-28
 ---
+
+## Observation and current execution boundary
+
+The decision date and sampled source evidence remain 2026-08-28. The 2026-11-05
+amendment fold does not refresh coverage, rights, installed capability or production
+acceptance. Later owner evidence may supersede the sampled coverage without changing
+the rule that SNI cannot mint canonical identity. The current published PR #6613 head
+requires its actual source, CI and eligible nonauthor release qualification; the old
+expected-head landing instruction is not reused.
 
 ## Operating consequence
 

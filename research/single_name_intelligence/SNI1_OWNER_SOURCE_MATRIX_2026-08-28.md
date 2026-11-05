@@ -5,6 +5,8 @@
 **Parent design:** `docs/superpowers/specs/2026-08-28-sni1-reference-twin-design.md`  
 **Pickup:** Macro `0863c549f728c718bbe82cc883e89843c0eb710a`  
 
+**Reading boundary (2026-11-05 identity fold):** Capability, coverage, rights, correction and owner-state observations below describe the 2026-08-28 inspection. They are not a current estate census. The [accepted identity amendment](../../docs/superpowers/specs/2026-08-28-sni1-identity-authority-amendment.md) governs canonical Data OS admission; Company Intelligence remains an owner-native/PIT bridge. Labels and source CIKs do not prove that an exact canonical row/receipt is bound.
+
 This matrix answers one question for every reference-twin field:
 
 > Which existing Mastermind owner supplies it, at what clock and semantic precision, and what must SNI render when that owner cannot yet supply it?
@@ -32,19 +34,19 @@ It is deliberately not a list of every available dataset. A source belongs only 
 
 | SNI field | Canonical owner/source | Current state | Native clock | Semantic precision | SNI treatment | Gap / typed absence |
 |---|---|---:|---|---|---|---|
-| `issuer.company_id` | `engine/company_intelligence/identity.py` | `BUILT_NOT_PROVEN` broadly | alias validity date | Legal issuer identity, CIK-anchored | Read canonical `company_id`; bind external IDs and source receipts | `identity_unresolved` when owner cannot resolve |
-| Alibaba legal issuer | SEC filer CIK `0001577552`; Alibaba IR/HKEX | `PROVEN_LIVE` source identity | SEC accepted time / HKEX publication | Legal issuer and foreign private issuer | `cik:0001577552` | none for reference issuer |
-| Tencent legal issuer | SEC entity CIK `0001293451`; HKEX issuer | `PROVEN_LIVE` source identity | SEC filing clock / HKEX publication | Legal entity identity; SEC is not Tencent’s primary results corpus | `cik:0001293451` plus HKEX external IDs | no claim of SEC company-event completeness |
-| `economic_security` | No native canonical object yet; derived from identity + official listing mechanics | `NOT_BUILT` | relationship effective date | Same economic security across multiple counters | SNI relationship overlay only | `counter_relationship_unresolved` |
-| Alibaba ordinary share | Alibaba IR FAQ + HKEX counters | source `PROVEN_LIVE` | effective listing/counter date | One ordinary-share security, HKD/RMB counters | group `9988` and `89988` under one security | none if source receipts current |
+| `issuer.canonical_issuer_id` + `owner_native_issuer_refs[]` | Data OS stored master via `lib/dataos/identity.py`; Company Intelligence only for its owner-native/PIT bridge | Exact admission must be bound per subject; fixture is unresolved | owner admission/receipt clock plus bridge's native alias validity | Data OS `ISS:` distinct from CIK/owner-native evidence | Consume exact admitted issuer row and receipt; preserve external/bridge refs separately | `identity_unresolved` / null when this binding is absent |
+| Alibaba legal issuer | SEC filer CIK `0001577552`; Alibaba IR/HKEX | `PROVEN_LIVE` source identity observed 2026-08-28 | SEC accepted time / HKEX publication | Legal issuer and foreign private issuer; external identity only | retain `cik:0001577552` as owner-native/external evidence | canonical `identity_unresolved` / null without exact Data OS issuer admission receipt |
+| Tencent legal issuer | SEC entity CIK `0001293451`; HKEX issuer | `PROVEN_LIVE` source identity observed 2026-08-28 | SEC filing clock / HKEX publication | Legal entity identity; SEC is not Tencent’s primary results corpus | retain `cik:0001293451` plus HKEX external refs | canonical `identity_unresolved` / null without exact Data OS issuer admission receipt; no SEC event-completeness claim |
+| `economic_security` | No native canonical economic-counter object found in the 2026-08-28 inspection; recheck actual owner before implementation | `NOT_BUILT` as observed then | relationship effective date | Same economic security across multiple counters | source-receipted SNI relationship overlay/descriptive labels only | `counter_relationship_unresolved`; canonical IDs separately unresolved without admission |
+| Alibaba ordinary share | Alibaba IR FAQ + HKEX counters | source `PROVEN_LIVE` as observed 2026-08-28 | effective listing/counter date | One ordinary-share security, HKD/RMB counters | describe `9988` and `89988` as one economic-security relationship | relationship requires source receipts; each canonical ID remains unresolved without exact Data OS admission |
 | Alibaba ADS | Alibaba IR/SEC | source `PROVEN_LIVE` | ADS/listing effective date | Distinct ADS security; one ADS = eight ordinary shares | distinct security, linked by conversion | `unsupported_unit_conversion` without ratio receipt |
-| Tencent ordinary share | Tencent HKEX result/issuer page | source `PROVEN_LIVE` | counter effective date | One ordinary-share security, 700 HKD and 80700 RMB counters | one economic security, two counters | none if current issuer receipt available |
-| `trading_counter` | Company identity listing alias + SNI relation overlay | `PARTIAL` | alias validity window | MIC/ticker/currency/session | compose counter object | `identity_unresolved` or `counter_relationship_unresolved` |
+| Tencent ordinary share | Tencent HKEX result/issuer page | source `PROVEN_LIVE` as observed 2026-08-28 | counter effective date | One ordinary-share security, 700 HKD and 80700 RMB counters | describe one economic-security relationship, two counters | relationship requires source receipts; each canonical ID remains unresolved without exact Data OS admission |
+| `trading_counter` | Data OS admitted listing/security rows + accepted owner-native/PIT bridge + source-receipted SNI relation | Receipt-bound state per counter; unbound fixture unresolved | admission/owner receipt and alias validity window | observed MIC/ticker/currency/session separate from canonical IDs | compose observed descriptor; canonical listing/security IDs only from exact admitted owner evidence | `identity_unresolved` / null or `counter_relationship_unresolved` |
 | Market calendar/session | `lib.hk_calendar`, U.S. market calendar owners | `PROVEN_LIVE` house infrastructure | session/calendar publication | Venue session identity | reference exact counter calendar | `owner_unavailable` |
 
 ### Identity finding
 
-`security_id_for(mic, ticker)` is appropriate for canonical ticker resolution but cannot by itself express that two Hong Kong stock codes are counters of one economic security. SNI must not overwrite that owner. It emits `same_economic_security_as` / `counter_group_id` relationships and should return a future amendment request to the canonical identity owner only after the reference contract proves the need.
+`security_id_for(mic, ticker)` and symbol normalization can produce owner-native or syntactically plausible strings; neither proves Data OS stored-master admission. Use exact admitted rows and owner receipts for canonical IDs, preserving the bridge's native precision. SNI may express source-receipted `same_economic_security` / `represents_units_of` relationships using descriptive group/counter labels, never a second canonical namespace. The canonical Data OS owner may absorb those semantics only through its own accepted amendment; no SNI helper silently fills an unresolved identity.
 
 ---
 

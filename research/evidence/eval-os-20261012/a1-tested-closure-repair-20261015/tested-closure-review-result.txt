@@ -1,0 +1,53 @@
+# C1 Read-Only Audit — source634750adc150 / PR6651 A1 dependency correction
+
+**Scope:** Packet-only review of a nine-path additive correction to `.github/ci/legacy-jobs.yml`. No network, children, writes, or integration. Subject-pool openai; this is a finite additive YAML audit.
+
+## 1. Path-set equivalence (JSON `missing` ↔ patch `paths_added`)
+
+| # | JSON `missing` | Patch `paths_added` | Match |
+|---|---|---|---|
+| 1 | `engine/sector_intelligence/consumer_cyclical_display.py` | `engine/sector_intelligence/consumer_cyclical_display.py` | ✅ |
+| 2 | `engine/sector_intelligence/consumer_cyclical_projection.py` | `engine/sector_intelligence/consumer_cyclical_projection.py` | ✅ |
+| 3 | `engine/sector_intelligence/consumer_cyclical_shared_contract.py` | `engine/sector_intelligence/consumer_cyclical_shared_contract.py` | ✅ |
+| 4 | `engine/sector_intelligence/finance_case_signal.py` | `engine/sector_intelligence/finance_case_signal.py` | ✅ |
+| 5 | `engine/sector_intelligence/finance_page_signal.py` | `engine/sector_intelligence/finance_page_signal.py` | ✅ |
+| 6 | `engine/sector_intelligence/finance_projection.py` | `engine/sector_intelligence/finance_projection.py` | ✅ |
+| 7 | `engine/sector_intelligence/finance_watching.py` | `engine/sector_intelligence/finance_watching.py` | ✅ |
+| 8 | `engine/sector_intelligence/finance_witness_hints.py` | `engine/sector_intelligence/finance_witness_hints.py` | ✅ |
+| 9 | `scripts/build_consumer_cyclical_plnt_page.py` | `scripts/build_consumer_cyclical_plnt_page.py` | ✅ |
+
+All nine entries are byte-identical between the diagnosis JSON and the patch. No path substitution, no path omission, no path duplication.
+
+## 2. Bounded additive declaration (semantics preservation)
+
+- `only_changed_file: .github/ci/legacy-jobs.yml` — single-file surface. ✅
+- No `-` removal lines anywhere in the hunk (`@@ -7517,6 +7517,15 @@` shows 9 added, 0 removed). ✅
+- Insertion site is inside an existing `paths:` block immediately after the `scope: exclusive` marker — no new key introduced, no key removed, no indentation drift. ✅
+- `all_319_job_definitions_prior_paths_order_limits_preserved: true` is consistent with the visible diff: no `jobs:` line touched, no `runs-on:`/`timeout-minutes`/`strategy.matrix`/permissions touched, no path removal. ✅
+- The nine added entries are inserted **above** the first existing entry (`collectors/biocatalyst/__init__.py`), preserving the alphabetical/insertion order of every pre-existing path. No reordering. ✅
+
+## 3. Diagnosis structural consistency
+
+- `RED_REPRODUCED` on isolated copy of exact hosted tested tree, with `a1_closure_paths: 1202` and exactly nine `missing` entries — set is finite and countable, matches patch exactly. ✅
+- `matches_hosted_annotations: true` — diagnostic and hosted annotations agree. ✅
+- The patch SHA (`d635bed6…`) is consistent with a single hunk changing one file. ✅
+
+## 4. Verdict
+
+**No blocker found in patch form or path-set equivalence.**
+
+The patch is a correct, bounded, single-file, purely additive expansion of one `paths:` list under the A1 `qledger-cluster-honest-ci` job. No job definition, order, prior path, suite, or limit is altered. The nine paths added to source-controlled `legacy-jobs.yml` are the same nine paths missing in the hosted tested-tree closure.
+
+## 5. Required qualifications carried forward (out of C1 scope, not blockers here)
+
+The following items remain C2/C3 concerns and **must remain with the OpenAI parent**; I do not claim them:
+
+1. **Source-tree focus qualification is RUNNING, not PASSED** (`tested-closure-source-repair.json` shows patch produced and applied to isolated tree; whole-closure / strict-packing / focus qualification outcomes not yet returned in this packet).
+2. **Exact-hosted-tree-plus-patch qualification is RUNNING, not PASSED** (same status).
+3. **Current-base revalidation, source revalidation, and capacity revalidation** after merge of the changing merge tree — parent owns.
+5. **Actual test execution**, current-main read-only preview, fresh admission, publish, check, and merge — parent owns.
+6. **The `base3f62+headba848` merge-tree qualification** beyond the head-only closure that previously qualified as zero — the parent must independently qualify the changing merge tree, not rely on head-only closure.
+
+## 6. Concrete defect or missing verification
+
+**None found in patch scope.** The correction as proposed is consistent with the diagnosed closure miss and does not perturb any protected control surface visible in the packet. The only outstanding gates are the running qualifications and parent-owned revalidation, both of which I have flagged as C2/C3 carry-forwards rather than C1 defects.

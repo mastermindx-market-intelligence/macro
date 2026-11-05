@@ -1,0 +1,25 @@
+{
+  "built_at": "2026-09-04T00:00:00Z",
+  "june": {
+    "RSAFS": [["2025-06-01", 660000.0], ["2026-06-01", 680000.0]],
+    "UMCSENT": null,
+    "TOTALSL": null,
+    "REVOLSL": null,
+    "NONREVSL": null,
+    "PSAVERT": null,
+    "DSPIC96": null,
+    "DRCCLACBS": null,
+    "DRSFRMACBS": null
+  },
+  "july": {
+    "RSAFS": [["2025-06-01", 660000.0], ["2026-06-01", 680000.0], ["2026-07-01", 700000.0]],
+    "UMCSENT": null,
+    "TOTALSL": null,
+    "REVOLSL": null,
+    "NONREVSL": null,
+    "PSAVERT": null,
+    "DSPIC96": null,
+    "DRCCLACBS": null,
+    "DRSFRMACBS": null
+  }
+}

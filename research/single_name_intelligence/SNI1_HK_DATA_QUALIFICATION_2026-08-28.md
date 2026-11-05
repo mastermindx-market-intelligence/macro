@@ -5,6 +5,8 @@
 **Reference names:** Alibaba 9988/89988 and Tencent 700/80700  
 **Parent design:** `docs/superpowers/specs/2026-08-28-sni1-reference-twin-design.md`  
 
+**Reading boundary (2026-11-05 identity fold):** Every house-capability, source, rights and correction observation in this docket remains dated 2026-08-28, alongside the explicit price epoch below. No value, source URL or recommendation is refreshed by this repair. At execution, inspect the existing owners and current rights evidence; the identity amendment does not grant data acquisition or product acceptance.
+
 This docket asks a narrower question than “what HK data exists?”
 
 > Which additional Hong Kong observations could materially improve the Alibaba/Tencent reference twins, what does Mastermind already possess, and which source should be qualified first under honest cost, rights, clock, and product-value constraints?

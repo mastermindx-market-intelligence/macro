@@ -4,6 +4,8 @@
 **Authority:** descriptive source/measurement architecture only; no directional, valuation, forecast, rank, gate, size, or trade authority  
 **Parent design:** `docs/superpowers/specs/2026-08-28-sni1-reference-twin-design.md`  
 
+**Reading boundary (2026-11-05 identity fold):** All financial values, reporting structures, source observations and capability language retain their 2026-08-28 epoch. This repair does not refresh or independently verify them. CIKs are external/owner-native references, distinct from Data OS canonical `ISS:` identity; the [accepted amendment](../../docs/superpowers/specs/2026-08-28-sni1-identity-authority-amendment.md) governs exact owner admission and typed unresolved state.
+
 This ontology defines the company-specific facts, series, event families, and version boundaries required for the first two Single-Name Intelligence reference organisms.
 
 It is not a company thesis. It is the grammar that allows future facts, comparisons, research questions, and forecasts to refer to the same thing over time.
@@ -16,7 +18,7 @@ Every registered metric has this shape:
 
 ```text
 metric_key
-issuer_id
+issuer_subject: canonical_issuer_id | null + owner_native_issuer_refs[]
 ontology_version
 display_name_en
 display_name_zh
@@ -40,6 +42,8 @@ coverage_state
 authority
 ```
 
+The metric's issuer subject preserves each owner-native bridge and its source clock. An external CIK or descriptive economic-security label cannot fill `canonical_issuer_id`. Bind an actual admitted Data OS row and exact owner receipt before resolving it; null here describes this unbound specimen, not an estate-wide inability to resolve the issuer.
+
 ### 1.1 Laws
 
 1. A metric is not identified only by its screen label.
@@ -58,7 +62,9 @@ authority
 ## 2. Identity
 
 ```text
-issuer_id: cik:0001577552
+owner_native_issuer_ref: cik:0001577552
+canonical_issuer_id: null  # no exact Data OS admission receipt bound in this specimen
+issuer_resolution_state: unresolved
 legal_name: Alibaba Group Holding Limited
 reporting_currency: CNY/RMB
 fiscal_year_end: March 31
@@ -268,7 +274,9 @@ The reference twin must show:
 ## 7. Identity
 
 ```text
-issuer_id: cik:0001293451
+owner_native_issuer_ref: cik:0001293451
+canonical_issuer_id: null  # no exact Data OS admission receipt bound in this specimen
+issuer_resolution_state: unresolved
 legal_name: Tencent Holdings Limited
 reporting_currency: CNY/RMB
 fiscal_year_end: December 31

@@ -23,6 +23,9 @@ owns_paths:
   - ".github/workflows/trusted-ci-executor.yml"
   - "ops/runner-host/**"
   - "tests/test_runner_policy.py"
+  - "scripts/check_runner_policy.py"
+  - "scripts/check_runner_queue_hostage.py"
+  - "tests/test_runner_queue_hostage.py"
   - "tests/test_ci_canary_tools.py"
   - "tests/test_ci_canary_workflows.py"
 depends_on: []
@@ -107,6 +110,7 @@ discoveries:
   - DSC:PERSISTENT-RUNNER-TEMP-PACKS-CAN-BREACH-THE-HOST-DISK-GUARD
   - DSC:REUSABLE-WORKFLOW-CALL-AND-HOST-HOOK-USE-DIFFERENT-REF-SHAPES
   - DSC:SEALED-PC-CI-REPLAY-AND-PORTABILITY-NEED-EXPLICIT-RUNTIME-BINDINGS
+  - DSC:DELABELLING-AN-ONLINE-RUNNER-IS-INVISIBLE-TO-EVERY-LIVENESS-INSTRUMENT
 artifacts:
   - research/RUNNER_FLEET_RESILIENCE_ARCHITECTURE_FREEZE_2026-08-20.md
   - research/RUNNER_FLEET_RESILIENCE_M0_ADVERSARIAL_AMENDMENT_2026-08-20.md
@@ -116,12 +120,34 @@ artifacts:
   - agentos/discoveries/DSC-PRIVATE-CI-HOSTED-MINUTES-REQUIRE-TWO-LEVER-CUTOVER.md
   - agentos/discoveries/DSC-PERSISTENT-RUNNER-TEMP-PACKS-CAN-BREACH-THE-HOST-DISK-GUARD.md
   - agentos/discoveries/DSC-REUSABLE-WORKFLOW-CALL-AND-HOST-HOOK-USE-DIFFERENT-REF-SHAPES.md
+  - research/RENDER_LANE_OUTAGE_2026_09_25_POSTMORTEM.md
+  - scripts/check_runner_queue_hostage.py
+  - agentos/discoveries/DSC-DELABELLING-AN-ONLINE-RUNNER-IS-INVISIBLE-TO-EVERY-LIVENESS-INSTRUMENT.md
 landmines:
   - >
-    pc-render-1 (the W3-accepted runner identity) is no longer in the repo
-    runner registry; render-linux is currently carried by pc-render-2/3/4
-    (census 2026-08-25). Do not cite pc-render-1 as live render capacity
-    without a fresh census.
+    `render-linux` has ZERO carriers as of the 2026-09-25 live census, and that is
+    the current cause of the wedged page-bake lanes. The 2026-08-25 census in this
+    slot said the opposite of today's state in BOTH halves and is superseded:
+    pc-render-1 is back and is org runner id 15, online and idle, but its custom
+    labels were stripped to `{self-hosted, Linux, X64}` inside
+    2026-09-23T12:05:04Z-12:05:09Z; pc-render-2/3/4 are absent from the live pool
+    entirely. Re-census before citing ANY render capacity - the direction of this
+    landmine has now flipped twice in a month. See
+    DSC:DELABELLING-AN-ONLINE-RUNNER-IS-INVISIBLE-TO-EVERY-LIVENESS-INSTRUMENT and
+    research/RENDER_LANE_OUTAGE_2026_09_25_POSTMORTEM.md.
+  - >
+    A runner can lose a label while staying `online`/`idle` under its original id,
+    so "the host is up" and "the label is declared" are both compatible with a lane
+    that can never run. The only positive observation of absence is live job state:
+    `queued`, no `runner_name`, self-hosted `runs-on`, past any honest wait. That is
+    `scripts/check_runner_queue_hostage.py`; `check_runner_policy.py` R11-R15 are
+    declaration hygiene and cannot see a death nobody wrote down.
+  - >
+    On a wedged coalescing lane the `cancelled` runs are NOT a `cancel-in-progress`
+    livelock. render.yml and engine-render.yml have carried
+    `cancel-in-progress: false` since the 2026-07-17 starvation postmortem; a
+    superseded PENDING run concludes `cancelled` exactly as a killed in-flight run
+    does. Check `startedAt`/`runner_name` before diagnosing.
   - >
     `parked` is not an exclusion label; positive label matching still routes jobs to
     that listener. See .github/runner-policy.yml.
@@ -303,3 +329,102 @@ fences, merge control and untrusted independence while also reducing execution
 amplification or other avoidable hosted work, then re-measuring the billing API with
 explicit headroom below the allowance. See
 DSC:PRIVATE-CI-HOSTED-MINUTES-REQUIRE-TWO-LEVER-CUTOVER.
+
+## Fourth PC CI slot — code substrate landed, host unproven — 2026-09-01
+
+Operation `ci-pc-fourth-slot-recovery-20260901-sol-001` (issue #6714, C3R-A) completed
+frozen plan `docs/superpowers/plans/2026-08-26-pc-ci-fourth-slot-resource-isolation.md`
+Tasks 1-5 as a source-only carrier. The merged-substrate review has since made
+the current capability state
+`FOURTH_SLOT_CODE_SUBSTRATE = BUILT_NOT_PROVEN / RELEASE_BLOCKED`.
+
+Read that state literally. There is no `pc-ci-4` registration, no
+`/opt/mastermind-ci/runner-4`, no `mastermind-ci.slice` unit on any host, and no
+fourth listener. Live capacity remains exactly three slots, trusted execution remains
+`max-parallel: 3`, and `ci-linux` remains carried by exactly `pc-ci-1..3`. Landing
+this does not mean a fourth runner exists, peak capacity increased, a four-slot canary
+passed, or final capacity was accepted.
+
+The durable structural change is that live capacity and code capability are now
+separate vocabulary in `.github/runner-policy.yml`, and rule R14 in
+`scripts/check_runner_policy.py` refuses every way they could quietly merge — a fifth
+slot, an invented carrier name, a pending block on another pool, `ci-linux` in
+`pending_labels`, or `pc-ci-4` entering any `carried_by` roster. Before R14, appending
+`pc-ci-4` to `label_registry.ci-linux.carried_by` passed the policy guard clean.
+
+The second durable property is that aggregate slice evidence refuses rather than
+substitutes: a candidate outside the exact direct-service hierarchy
+`/mastermind.slice/mastermind-ci.slice/<unit>.service` produces
+`refused` with no metric values, and the receipt reducer reports aggregates only when
+every sample in the window carried status exactly `bound` and named one cgroup.
+
+Render's exclusion is bounded evidence, not a host proof. What source establishes is
+that the slice sets no `KillMode` and that `actions-runner-ci.service.template` is
+the only CHECKED-IN unit carrying `Slice=mastermind-ci.slice`. The render listener's
+unit is not in the repository, so its exclusion from the slice is a C3R-B host
+observation, not something this carrier proved.
+
+Sequence from here is unchanged and strictly ordered: C3R-B performs the privileged
+host installation and the four-slot acceptance after a fresh census and explicit
+authorization for the organization runner registration; only after C3R-B is accepted
+may a separate promotion carrier add the live `ci-linux` carrier and move
+trusted-executor `max-parallel` from 3 to 4.
+
+The predecessor child #6640 remains terminal `SOL CLOSED / STOP`, closed
+`not_planned`. It has no PR and no remote branch, and none of its bytes were used;
+every accepted byte here was re-derived from current main.
+
+Continuation detail, including the `do_not_redo` list and the bootstrap hazard of
+shipping the slice-joined unit to a host without the slice unit installed, is in
+`agentos/handoffs/WS-RUNNER-FLEET-RESILIENCE-2026-09-01.md`.
+
+## C3R-A merged-substrate false-proof repair — 2026-09-01
+
+PR #6718 merged as `b260d28a6efbfb4593dfcc453731f71703252ac0`
+while review `5084468618` remained `CHANGES_REQUESTED`. A staged real-host attempt
+then proved the actual systemd hierarchy and parent aggregation node. Only
+`pc-ci-1` was attempted; its new unit refused for about 96 seconds and was restored
+to exact prior bytes. `pc-ci-2` and `pc-ci-3` were never touched. The remaining
+helper and inert slice bytes on the host are not acceptance evidence.
+
+Exact-head review `5085372259` on PR #6728 preserves those two valid discoveries
+but identifies six release blockers: non-direct membership, incomplete parent-limit
+proof, fail-open strict PSI, a disconnected strict preflight, unsafe deltas across
+invalid windows, and cleanup escape through a symlinked allowlisted root. The same
+carrier now repairs all six plus malformed R14 pending-label inputs under
+discriminating RED-first tests. Candidate and parent cgroup identities are distinct
+and frozen; exact limits are carried into the existing receipt; every invalid window
+clears all numeric acceptance fields; and slots=4 has one blocking no-checkout
+root-owned preflight before fanout while slots 1/3 remain unchanged.
+
+The release boundary remains literal: PR #6728 stays DRAFT / HOLD-FOR-SOL and the
+binding change-request review is not dismissed by the worker. Live production stays
+exactly `pc-ci-1..3`, trusted execution stays `max-parallel: 3`, and no registration,
+label/group, service, cgroup, cache, credential, dispatch, render, or production
+effect is authorized. Current-head CI and an independent exact-head source approval
+still cannot substitute for the separately authorized C3R-B real-host proof.
+
+## C3R-A fourth-candidate route repair — 2026-09-03
+
+Current-head release adjudication found one remaining end-to-end contradiction:
+pending `pc-ci-4` must remain free of production label `ci-linux`, but the four-slot
+preflight and every pack previously required that label. Operation
+`ci-c3ra-fourth-canary-route-repair-20260903-sol-001` keeps the same PR #6728,
+branch, label inventory, and 12-path footprint while binding the existing
+diagnostic-only `ci-linux-canary` route to the fourth-candidate journey.
+
+For `slots=4`, the no-checkout parent-envelope preflight and exactly the selected
+primary pack use `ci-linux-canary`; the other three selected packs use `ci-linux`.
+The primary output is parsed as a canonical numeric value and bound to the first
+selected-pack identity, so missing, malformed, or inconsistent identity fails
+closed. Slots 1 and 3, all four hosted/compare/failure legs, the independent
+`render-linux` reservation, and production trusted execution at `max-parallel: 3`
+remain unchanged.
+
+This is source capability only. C3R-B still owns every host and GitHub label effect:
+after drain and exact identity proof it temporarily transfers `ci-linux-canary`
+from exact `pc-ci-1` to exact `pc-ci-4`, proves `pc-ci-4` still lacks `ci-linux`,
+runs one diagnostic, and restores the label on every exit. An ambiguous response is
+`EFFECT_UNKNOWN` and blocks dispatch, retry, and promotion. This source operation
+performs none of those acts; PR #6728 remains DRAFT / HOLD-FOR-SOL and the maximum
+claim remains `FOURTH_SLOT_CODE_SUBSTRATE = BUILT_NOT_HOST_PROVEN`.

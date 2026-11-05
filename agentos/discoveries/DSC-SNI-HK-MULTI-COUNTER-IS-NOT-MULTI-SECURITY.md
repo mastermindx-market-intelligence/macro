@@ -39,6 +39,14 @@ scope:
 confidence: verified
 ---
 
+## Dated evidence
+
+The `verified_at` date and source anchors describe the 2026-08-28 inspection.
+The 2026-11-05 amendment fold does not rerun the discovery's falsifier or assert
+that the current Data OS master still lacks every relation described here.
+Future composition must inspect the actual owner contract and bind exact admitted
+rows and receipts; the unbound example fixture leaves canonical IDs null.
+
 ## Boundary
 
 This discovery does not authorize a new identity database, a new canonical issuer/security ID,

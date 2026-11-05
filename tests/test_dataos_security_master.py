@@ -75,6 +75,8 @@ SATS_ID = "SEC:US-XNAS-SATS"
 
 MMC_RENAME = date(2026, 1, 14)
 SATS_RENAME = date(2026, 6, 24)
+PSKY_ID = "SEC:US-XNAS-PSKY"
+SKYD_RENAME = date(2026, 10, 6)
 
 
 # ── committed artifacts ───────────────────────────────────────────────────────
@@ -104,6 +106,8 @@ def table(aliases: pd.DataFrame) -> VendorAliasTable:
             "security_id": row["security_id"],
             "valid_from": BUILD._normalize_bound(row["valid_from"]),
             "valid_to": BUILD._normalize_bound(row["valid_to"]),
+            **{c: row.get(c) for c in BUILD.OPTIONAL_ALIAS_COLUMNS},
+            **{c: row.get(c) for c in ("attempt_id", "alias_family_id", "alias_revision_id")},
         }
         for row in aliases.to_dict("records")
     ]
@@ -180,6 +184,66 @@ def test_the_membership_key_DID_move_for_echostar_and_the_table_says_so(
     # called EchoStar SATS, and a table that answers "ECHO" has re-labelled the past.
     assert table.vendor_symbol_for("membership", SATS_ID, date(2026, 1, 1)) == "SATS"
     assert table.vendor_symbol_for("membership", SATS_ID, SATS_RENAME) == "ECHO"
+
+
+# ── THE PSKY BOUNDARY (Skydance, Nasdaq->NYSE listing transfer 2026-10-06) ────
+def test_psky_and_skyd_are_one_security_across_the_venue_transfer(
+    table: VendorAliasTable,
+) -> None:
+    """The production blocker this rename exists for, expressed as an assertion.
+
+    The 2026-10-09 S&P roster re-fetch (data/breadth/constituents.parquet) lists SKYD
+    while the stored/PIT side still keys PSKY, so the membership space needs BOTH legs
+    of the dated pair or the roster resolve fail-closes as ``membership_alias_unresolved``
+    (scripts/build_qbus_news_universe.py, exit 2).  ONE stable id before and after
+    2026-10-06: the Nasdaq->NYSE listing transfer (SEC EDGAR CIK 0002041610, 8-K
+    accession 0001104659-26-113913, Items 2.01/5.03) is joined onto the EXISTING
+    ``SEC:US-XNAS-PSKY`` row by the exact-listing-key SECURITY_SUPERSESSIONS entry —
+    never a second mint.
+    """
+    assert table.resolve("membership", "PSKY", date(2026, 10, 5)) == PSKY_ID
+    assert table.resolve("membership", "SKYD", SKYD_RENAME) == PSKY_ID
+    assert table.resolve("membership", "SKYD", date(2026, 10, 11)) == PSKY_ID
+
+    # DIFFERENTLY either side — same half-open convention as MMC/SATS: valid_from
+    # INCLUSIVE, valid_to EXCLUSIVE, so the boundary day itself answers SKYD.
+    assert table.resolve("membership", "PSKY", SKYD_RENAME) is None
+    assert table.resolve("membership", "PSKY", date(2026, 10, 11)) is None
+    assert table.resolve("membership", "SKYD", date(2026, 10, 5)) is None
+
+    # `yahoo` is dated because Yahoo follows the exchange spelling.
+    assert table.resolve("yahoo", "PSKY", date(2026, 10, 5)) == PSKY_ID
+    assert table.resolve("yahoo", "SKYD", date(2026, 10, 11)) == PSKY_ID
+    assert table.resolve("yahoo", "PSKY", date(2026, 10, 11)) is None
+
+
+def test_psky_store_and_fetch_keys_did_not_move(table: VendorAliasTable) -> None:
+    """The #4622-protocol store-key migration is a separate act: ``data/stocks/`` and
+    the fetch seam still key PSKY, so the current-catalog spaces keep their committed
+    open PSKY rows for every date and the builder mints no SKYD rows there (the
+    chain-member ratification gate in ``build_alias_rows``)."""
+    for on in (date(2026, 10, 5), SKYD_RENAME, date(2026, 10, 11)):
+        assert table.vendor_symbol_for("store", PSKY_ID, on) == "PSKY"
+        assert table.resolve("store", "PSKY", on) == PSKY_ID
+    assert table.resolve("store", "SKYD", date(2026, 10, 11)) is None
+    assert table.resolve("yahoo_fetch", "SKYD", date(2026, 10, 11)) is None
+
+
+def test_psky_master_keeps_one_row_and_the_registry_joins_the_transfer(
+    master: pd.DataFrame,
+) -> None:
+    rows = master[master["inception_code"].isin(["PSKY", "SKYD"])]
+    assert len(rows) == 1, "never a second stable id for the renamed listing"
+    assert rows.iloc[0]["security_id"] == PSKY_ID
+    entries = {e.listing_key: e for e in BUILD.SECURITY_SUPERSESSIONS}
+    assert entries["US-XNYS-PSKY"].canonical_id == PSKY_ID
+    assert entries["US-XNYS-PSKY"].on == SKYD_RENAME
+    assert "0001104659-26-113913" in entries["US-XNYS-PSKY"].evidence
+
+
+def test_unmodelled_renames_stay_empty_after_the_psky_event() -> None:
+    fixups, migrations = BUILD.load_config_maps()
+    assert BUILD.unmodelled_renames(fixups, migrations) == []
 
 
 # ── THE TWO CLOCKS ────────────────────────────────────────────────────────────
@@ -507,14 +571,20 @@ def test_ibit_resolves_to_the_trusts_own_cik(master: pd.DataFrame) -> None:
 
 
 def test_no_issuer_evidence_rows_retain_their_legacy_value(master: pd.DataFrame) -> None:
-    """AEP/CTRA/TPH (measured misses) and FISV (current symbol FI misses the map) —
-    spec §11: legacy issuer_id retained, aggregation-forbidden, self-heals later."""
+    """CTRA/TPH (measured misses) and FISV (current symbol FI misses the map) —
+    spec §11: legacy issuer_id retained, aggregation-forbidden, self-heals later.
+    AEP left this exemplar set 2026-08: the self-heal the docstring promised
+    actually happened (a later CIK map carries AEP -> 0000004904), so it is
+    asserted below in its healed state instead — the spec's own §11 end-state."""
     rows = master.set_index("inception_code")
-    for code in ("AEP", "CTRA", "TPH", "FISV"):
+    for code in ("CTRA", "TPH", "FISV"):
         row = rows.loc[code]
         assert row["issuer_state"] == "NO_ISSUER_EVIDENCE", code
         assert row["issuer_id"] == f"ISS:{row['listing_key']}", code
         assert row["issuer_cik"] is None or pd.isna(row["issuer_cik"]), code
+    aep = rows.loc["AEP"]
+    assert aep["issuer_state"] == "RESOLVED"
+    assert aep["issuer_cik"] == "0000004904"
 
 
 def test_rddt_enters_resolved_from_current_seeds(master: pd.DataFrame) -> None:
@@ -1009,6 +1079,99 @@ def test_allowlist_never_gates_adoption_of_an_already_established_group() -> Non
     assert by_id["SEC:US-XNAS-JOINER"]["issuer_id"] == "ISS:US-XNAS-ANCHOR"
 
 
+def _refused_row(code: str, cik: str, issuer: str | None) -> dict:
+    """An existing row the FIX 5 gate already refused: EVIDENCE_CONFLICT, CIK stamped."""
+    return {
+        "security_id": f"SEC:US-XNAS-{code}", "issuer_id": issuer,
+        "issuer_state": "EVIDENCE_CONFLICT", "issuer_cik": cik,
+        "issuer_evidence_snapshot": "2026-10-05",
+        "listing_key": f"US-XNAS-{code}", "mic": "XNAS", "inception_code": code,
+        "_existed_before": True,
+    }
+
+
+def test_a_refused_null_issuer_group_forms_once_its_cik_is_ratified() -> None:
+    """#9570: CENT/CENTA were refused into EVIDENCE_CONFLICT with issuer_id NULL.  The
+    allowlist ratification is the review the gate asked for, and with no committed
+    value there is nothing for mint-once to protect, so the group forms."""
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "CENTRAL GARDEN & PET CO"), "CENTA": (cik, "CENTRAL GARDEN & PET CO")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    by_id = {r["security_id"]: r for r in out_rows}
+    assert {r["issuer_state"] for r in out_rows} == {"RESOLVED"}
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] == by_id["SEC:US-XNAS-CENTA"]["issuer_id"]
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] is not None
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_evidence_snapshot"] == "2026-10-15"
+    assert {m["old_issuer_id"] for m in migrations} == {None}
+    # Idempotent: the second pass sees RESOLVED rows and changes nothing.
+    again, again_m = BUILD.apply_issuer_correction(
+        out_rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert again == out_rows and again_m == []
+
+
+def test_the_real_allowlist_ratifies_central_garden() -> None:
+    assert "0000887733" in BUILD._load_issuer_group_allowlist()
+
+
+def test_a_refused_group_stays_conflicted_without_ratification() -> None:
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "X"), "CENTA": (cik, "X")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset())
+    assert {r["issuer_state"] for r in out_rows} == {"EVIDENCE_CONFLICT"}
+    assert all(r["issuer_id"] is None for r in out_rows)
+    assert all(r["issuer_evidence_snapshot"] == "2026-10-05" for r in out_rows), "untouched"
+    assert migrations == []
+
+
+def test_a_conflict_carrying_a_committed_issuer_never_reopens_even_when_ratified() -> None:
+    """Mint-once still binds: a conflict row with a committed issuer_id is never
+    revisited by a ratification, because forming the group would rewrite that value."""
+    cik = "0009999997"
+    rows = [_refused_row("LEGA", cik, "ISS:US-XNAS-LEGA"), _refused_row("LEGB", cik, "ISS:US-XNAS-LEGB")]
+    before = [dict(r) for r in rows]
+    cik_map = {"LEGA": (cik, "X"), "LEGB": (cik, "X")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert out_rows == before
+    assert migrations == []
+
+
+def test_a_mixed_refused_group_never_reopens_partially() -> None:
+    """Review finding 2: when one conflicted sibling carries a committed issuer_id, a
+    reopen of only the null members would mint a SECOND issuer_id for one CIK (the
+    committed sibling is not RESOLVED, so adoption never sees it).  All stay put."""
+    cik = "0009999996"
+    rows = [_refused_row("MIXA", cik, "ISS:US-XNAS-MIXA"),
+            _refused_row("MIXB", cik, None), _refused_row("MIXC", cik, None)]
+    before = [dict(r) for r in rows]
+    cik_map = {c: (cik, "X") for c in ("MIXA", "MIXB", "MIXC")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert out_rows == before
+    assert migrations == []
+
+
+def test_a_ratified_reopen_whose_sibling_left_the_map_resolves_alone() -> None:
+    """Review finding 3: a reopened row missing from the weekly map goes to
+    NO_ISSUER_EVIDENCE (CIK cleared); the remaining member resolves as a single-member
+    group, which the allowlist never gates."""
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "CENTRAL GARDEN & PET CO")}
+    out_rows, _m = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    by_id = {r["security_id"]: r for r in out_rows}
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_state"] == "RESOLVED"
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] is not None
+    assert by_id["SEC:US-XNAS-CENTA"]["issuer_state"] == "NO_ISSUER_EVIDENCE"
+    assert by_id["SEC:US-XNAS-CENTA"]["issuer_id"] is None
+    assert not by_id["SEC:US-XNAS-CENTA"]["issuer_cik"]
+
+
 # ── V4-D2B1-R1: VMRK duplicate-mint supersession + pending-transition fence ────
 # research/prophet_v4/d2/D2B1_R1_FROZEN_CONTRACT_2026-08-20.md — the EQR->VMRK rename
 # (SEC EDGAR CIK 0000906107, 8-K accession 0001140361-26-033377, Item 5.03) produced a
@@ -1051,8 +1214,22 @@ def test_h9_705_rows_tombstone_byte_frozen_except_two_columns(master: pd.DataFra
     `country` != "US"); V4-D2B2-US (this contract) admits ~508 more US rows on top
     of the 705 this test was originally written to pin — the byte-freeze assertions
     below still pin the SAME pre-existing VMRK tombstone row untouched by either
-    wave, only the total-US-row-count changes."""
-    assert len(master[master["country"] == "US"]) == 705 + 508
+    wave, only the total-US-row-count changes.  +1 (2026-08-28): LEG minted from
+    its new config/delisted_symbols.yml exit row (acquired by Somnigroup, 25-NSE
+    accession 0000876661-26-000712) — the EQR->VMRK migration PR.  A FLOOR pin
+    since that PR: it also unwedged the nightly artifact refresh (which had been
+    restoring last-good artifacts on the store/VMRK VendorAliasPruneConflict
+    since ~08-20), so the committed master advances with lawful admissions again
+    and an exact count would rot on the next one; the floor still catches the
+    regression this test exists for — rows silently DISAPPEARING — and the loose
+    ceiling catches its mirror, a duplicate-mint regression phantom-minting rows
+    en masse (fine-grained admission accounting is the receipt tests' job)."""
+    n_us = len(master[master["country"] == "US"])
+    # Ceiling widened 2026-10-07 (DEC:ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07):
+    # load_universe() now admits the S&P 400/600 breadth constituents forward-only;
+    # the A8 dry run puts US rows at 1939 (+721 admissions, +1 CBOE input drift).
+    # The floor is unchanged; the +120 duplicate-mint headroom now sits above 1939.
+    assert 705 + 508 + 1 <= n_us <= 1939 + 120
     tomb = master[master["security_id"] == "SEC:US-XNYS-VMRK"].iloc[0]
     assert tomb["issuer_state"] == "NO_ISSUER_EVIDENCE"
     assert pd.isna(tomb["issuer_id"])
@@ -1091,24 +1268,76 @@ def test_receipt_carries_the_security_axis_block(receipt: dict, master: pd.DataF
     assert sec["era"] == "security_supersession_duplicate_mint_v1"
     assert sec["state_counts"]["ACTIVE"] == int((master["security_state"].isna()).sum())
     assert sec["state_counts"]["SUPERSEDED_DUPLICATE_MINT"] == 1
-    assert receipt["pending_transition_refusals"] == []
-    # AMENDMENT ruling 3 (M1): listing_continuity is no longer unconditionally empty
-    # post-repair — the fence-scoped (plain-string) half IS empty except for a WBS
-    # gap (VERIFIED pre-existing and unrelated to D2B2-US: an UNMODIFIED rebuild at
-    # this same pin already reports WBS unaccounted — a symbol-directory/committed-
-    # master staleness gap between the WBS row's own bake and the current
-    # snapshot, not a regression this contract introduced). The GOLD row (a
-    # registered DISCLOSED_IDENTITY_EXCEPTIONS entry, excluded from the fence
-    # itself) is a typed, EXPLAINED entry — never silently dropped.
-    assert receipt["listing_continuity"] == [
-        "WBS", {"code": "GOLD", "explained": "identity_exception"},
-    ]
+    # Refusal-producing intake is a valid owner result. Every retained fence
+    # decision must be typed, refer to real lost rows, and leave its key unminted.
+    by_id = master.set_index("security_id").to_dict("index")
+    active = master[master["security_state"].isna()]
+    pending = receipt["pending_transition_refusals"]
+    assert len({(r["symbol"], r["listing_key"]) for r in pending}) == len(pending)
+    continuity = receipt["listing_continuity"]
+    plain = [r for r in continuity if isinstance(r, str)]
+    explained = [r for r in continuity if isinstance(r, dict)]
+    assert len(plain) == len(set(plain))
+    assert len(explained) == len({r["code"] for r in explained})
+    assert len(plain) + len(explained) == len(continuity)
+    exceptions = BUILD._exception_by_inception_code()
+    for row in explained:
+        assert set(row) == {"code", "explained"}
+        assert row["explained"] == "identity_exception"
+        assert row["code"] in exceptions
+        assert row["code"] not in plain
+    for row in pending:
+        assert set(row) == {"symbol", "listing_key", "lost_rows", "reason", "snapshot_date"}
+        assert row["reason"].startswith("pending-transition fence:")
+        assert row["snapshot_date"] == receipt["cik_map_snapshot"]
+        assert row["listing_key"] not in set(active["listing_key"])
+        lost = row["lost_rows"]
+        assert lost and len(lost) == len(set(lost))
+        assert set(lost) <= set(by_id)
+        # The receipt reports CURRENT symbols while immutable IDs retain their
+        # inception codes (e.g. DOMO→HUCK and YYGH→YFOR). Compare the same
+        # naming domain without removing any member from the lost-row fence.
+        assert {BUILD._current_symbol_of_row(by_id[sec]) for sec in lost} == set(plain)
+        assert all(pd.isna(by_id[sec]["security_state"]) for sec in lost)
+    for probe in receipt.get("prospective_reference", {}).get("probes", {}).values():
+        if probe.get("code") == "canonical_identity_refused":
+            assert probe["owner_refusals"]
+            # Original dated probe refusals remain evidence even when no new
+            # reference mint is attempted on an ordinary rerun.
+            # A later BOUND direct-registrant observation (#9465, SPY) is the
+            # independent evidence the refusal asked for; it may mint the key,
+            # and the dated refusal stays recorded beside it.
+            bound = {
+                obs["listing_key"]: obs.get("observed_on", "")
+                for obs in receipt.get("direct_registrant_intake", {}).get("observations", {}).values()
+                if obs.get("status") == "BOUND"
+            }
+            for row in probe["owner_refusals"]:
+                observed_on = bound.get(row["listing_key"], "")
+                if observed_on > row.get("snapshot_date", "9999"):
+                    minted = active[active["listing_key"] == row["listing_key"]]
+                    assert len(minted) == 1
+                    # The mint must come from that observation, not an
+                    # earlier ordinary path.
+                    assert str(minted.iloc[0]["ingested_at"])[:10] >= observed_on
+                    continue
+                assert row["listing_key"] not in set(active["listing_key"])
+                if "lost_rows" in row:
+                    assert row["reason"].startswith("pending-transition fence:")
+                    assert row["lost_rows"] and set(row["lost_rows"]) <= set(by_id)
+                    assert date.fromisoformat(row["snapshot_date"]) <= date.fromisoformat(receipt["cik_map_snapshot"])
+                else:
+                    assert row["security_state"] == "SUPERSEDED_DUPLICATE_MINT"
     assert receipt["resurrection_refusals"] == []
-    # AMENDMENT ruling 4 (M3) / ruling 6 (M5) — the two new disclosure blocks are
-    # present and empty in the healthy post-repair state (no unregistered rename
-    # duplicate exists, and no alias row needed pruning this run).
+    # AMENDMENT ruling 4 (M3) / ruling 6 (M5) — the two new disclosure blocks: no
+    # unregistered rename duplicate exists, and the only lawful prune class is the
+    # AMENDMENT §2 same-id refinement (the PSKY->SKYD first regen prunes exactly the
+    # two committed open PSKY rows this way, receipted; idempotent, so the set is
+    # empty again on every later run — the pin below holds either way).
     assert receipt["unregistered_rename_duplicates"] == []
-    assert receipt["vendor_alias_prunes"] == []
+    prunes = receipt["vendor_alias_prunes"]
+    assert all(p["prune_class"] == "same_id_refinement" for p in prunes)
+    assert all(p["security_id"] == PSKY_ID for p in prunes)
 
 
 # H1 — race replay WITHOUT the RenameEvent: the fence refuses the VMRK mint.
@@ -1280,9 +1509,10 @@ def test_h8_a_resolution_hitting_a_tombstone_is_a_typed_refusal_not_a_resurrecti
 # registry; a RenameEvent-implied bare-code match on a DIFFERENT venue must NEVER
 # auto-tombstone (the reviewer's cross-MIC scenario) — it is disclosed instead.
 def test_m3_the_registry_matches_the_committed_vmrk_entry_exactly() -> None:
-    assert len(BUILD.SECURITY_SUPERSESSIONS) == 1
-    entry = BUILD.SECURITY_SUPERSESSIONS[0]
-    assert entry.listing_key == "US-XNYS-VMRK"
+    assert len(BUILD.SECURITY_SUPERSESSIONS) == 4  # + PSKY (10-11), KHC/ET transfers (10-18)
+    entry = next(
+        e for e in BUILD.SECURITY_SUPERSESSIONS if e.listing_key == "US-XNYS-VMRK"
+    )
     assert entry.canonical_id == EQR_ID
     assert "0001140361-26-033377" in entry.evidence
 
@@ -1543,6 +1773,7 @@ def test_m5_a_row_pointing_at_a_superseded_id_is_pruned_and_receipted() -> None:
     assert kept == []
     assert len(pruned) == 1
     assert pruned[0]["security_id"] == "SEC:US-XNYS-VMRK"
+    assert pruned[0]["prune_class"] == "superseded_tombstone"
 
 
 def test_m5_reproduce_then_kill_the_silent_active_id_replacement() -> None:
@@ -1580,6 +1811,210 @@ def test_m5_a_non_overlapping_row_for_the_same_active_id_is_kept() -> None:
     kept, pruned = BUILD._prune_stale_aliases(existing, fresh, frozenset())
     assert kept == existing
     assert pruned == []
+
+
+# ── AMENDMENT §2 same-id-refinement carve-out (implemented 2026-08-29) — a fresh
+# DATED family pointing at the SAME still-active security_id, carrying the
+# committed row's own vendor_symbol and exactly tiling the full time axis, is a
+# lawful REFINEMENT of a committed open-bounded row: pruned, receipted, never
+# raised. Every other overlap shape still falls through to the fail-closed raise.
+def test_m5_lawful_same_id_refinement_prunes_the_committed_row() -> None:
+    sec = "SEC:US-TEST-REFINE"
+    existing = [_alias_dict("yahoo", "AAPL", sec, None, None)]
+    fresh = [
+        AliasRow("yahoo", "AAPL", sec, None, date(2099, 1, 1)),
+        AliasRow("yahoo", "ZZZ", sec, date(2099, 1, 1), None),
+    ]
+    kept, pruned = BUILD._prune_stale_aliases(existing, fresh, frozenset())
+    assert kept == []
+    assert len(pruned) == 1
+    assert pruned[0]["security_id"] == sec
+    assert pruned[0]["prune_class"] == "same_id_refinement"
+
+
+def test_m5_an_undated_replacement_row_still_raises() -> None:
+    """Condition (c) — a single UNDATED replacement row is not a citable
+    refinement; the carve-out never excuses it."""
+    sec = "SEC:US-TEST-UNDATED"
+    existing = [_alias_dict("yahoo", "AAPL", sec, None, None)]
+    fresh = [AliasRow("yahoo", "ZZZ", sec, None, None)]
+    with pytest.raises(BUILD.VendorAliasPruneConflict):
+        BUILD._prune_stale_aliases(existing, fresh, frozenset())
+
+
+def test_m5_a_gap_in_the_family_still_raises() -> None:
+    """Condition (e) — a family that does not exactly meet (a gap between the two
+    dated legs) fails the tiling requirement and still raises."""
+    sec = "SEC:US-TEST-GAP"
+    existing = [_alias_dict("yahoo", "AAPL", sec, None, None)]
+    fresh = [
+        AliasRow("yahoo", "AAPL", sec, None, date(2099, 1, 1)),
+        AliasRow("yahoo", "ZZZ", sec, date(2099, 6, 1), None),
+    ]
+    with pytest.raises(BUILD.VendorAliasPruneConflict):
+        BUILD._prune_stale_aliases(existing, fresh, frozenset())
+
+
+def test_m5_a_different_security_id_still_raises() -> None:
+    """Condition (b) — a fresh dated family pointing at a DIFFERENT active
+    security_id, overlapping the committed row only via vendor_symbol, must still
+    raise: the carve-out only ever excuses a SAME-id family."""
+    sec = "SEC:US-TEST-SAMEVENDOR"
+    other_sec = "SEC:US-TEST-OTHERID"
+    existing = [_alias_dict("yahoo", "AAPL", sec, None, None)]
+    fresh = [
+        AliasRow("yahoo", "AAPL", other_sec, None, date(2099, 1, 1)),
+        AliasRow("yahoo", "ZZZ", other_sec, date(2099, 1, 1), None),
+    ]
+    with pytest.raises(BUILD.VendorAliasPruneConflict):
+        BUILD._prune_stale_aliases(existing, fresh, frozenset())
+
+
+def test_m5_a_family_missing_the_committed_symbol_still_raises() -> None:
+    """Condition (d) — a perfectly tiling dated family that never carries the
+    committed row's own vendor_symbol fails symbol continuity and still raises."""
+    sec = "SEC:US-TEST-NOSYMBOL"
+    existing = [_alias_dict("yahoo", "AAPL", sec, None, None)]
+    fresh = [
+        AliasRow("yahoo", "FOO", sec, None, date(2099, 1, 1)),
+        AliasRow("yahoo", "BAR", sec, date(2099, 1, 1), None),
+    ]
+    with pytest.raises(BUILD.VendorAliasPruneConflict):
+        BUILD._prune_stale_aliases(existing, fresh, frozenset())
+
+
+def test_m5_a_fully_dated_committed_row_still_raises() -> None:
+    """Condition (a) — a FULLY DATED committed row contradicted by fresh evidence
+    is a history rewrite, never a refinement, even against a perfectly tiling fresh
+    family with a different boundary."""
+    sec = "SEC:US-TEST-DATEDCOMMIT"
+    existing = [_alias_dict("yahoo", "MMC", sec, None, "2026-01-14")]
+    fresh = [
+        AliasRow("yahoo", "MMC", sec, None, date(2026, 2, 1)),
+        AliasRow("yahoo", "MRSH", sec, date(2026, 2, 1), None),
+    ]
+    with pytest.raises(BUILD.VendorAliasPruneConflict):
+        BUILD._prune_stale_aliases(existing, fresh, frozenset())
+
+
+def test_m5_chained_refinement_prunes_only_the_open_ended_link() -> None:
+    """A rename already modelled once (OLD -> NEW, committed dated) gets a SECOND
+    fresh rename layered on top (NEW -> NEWER): only the open-ended committed NEW
+    row is a lawful same-id refinement; the dated OLD row is untouched (ordinary
+    identical dedup, not even examined for a conflict) and nothing raises."""
+    sec = "SEC:US-TEST-CHAIN"
+    on1 = date(2026, 1, 1)
+    on2 = date(2026, 6, 1)
+    existing = [
+        _alias_dict("yahoo", "OLD", sec, None, on1.isoformat()),
+        _alias_dict("yahoo", "NEW", sec, on1.isoformat(), None),
+    ]
+    fresh = [
+        AliasRow("yahoo", "OLD", sec, None, on1),
+        AliasRow("yahoo", "NEW", sec, on1, on2),
+        AliasRow("yahoo", "NEWER", sec, on2, None),
+    ]
+    kept, pruned = BUILD._prune_stale_aliases(existing, fresh, frozenset())
+    assert len(kept) == 1
+    assert kept[0]["vendor_symbol"] == "OLD"
+    assert len(pruned) == 1
+    assert pruned[0]["vendor_symbol"] == "NEW"
+    assert pruned[0]["prune_class"] == "same_id_refinement"
+
+
+# ── same-day fix packet (2026-08-29 review: 1 BLOCKER + 3 MAJOR + 4 MINOR) ─────
+def test_m5_probe_a_era_blind_symbol_anywhere_no_longer_excuses_a_prune() -> None:
+    """MAJOR (era-blind symbol continuity -> live-mapping deletion). The OLD rule
+    ("some row, ANYWHERE in the family, carries the committed symbol") let a
+    family whose EARLY leg happened to share the committed row's symbol excuse
+    pruning a row that, at ITS OWN start date, the family actually maps to a
+    DIFFERENT live symbol. Committed ``(yahoo, ABC, sec, 2020-01-01, None)``
+    against a family whose leg covering 2020-01-01 is ``DEF`` (the ``ABC`` leg
+    only ever covered up to 2010-01-01) must still raise — the start-anchored
+    rule looks at the family row COVERING the committed row's own start, not at
+    "does ABC appear anywhere"."""
+    sec = "SEC:US-TEST-PROBEA"
+    existing = [_alias_dict("yahoo", "ABC", sec, "2020-01-01", None)]
+    fresh = [
+        AliasRow("yahoo", "ABC", sec, None, date(2010, 1, 1)),
+        AliasRow("yahoo", "DEF", sec, date(2010, 1, 1), None),
+    ]
+    with pytest.raises(BUILD.VendorAliasPruneConflict):
+        BUILD._prune_stale_aliases(existing, fresh, frozenset())
+
+
+def test_m5_a_zero_width_family_row_is_rejected_outright_in_both_orders() -> None:
+    """MINOR (order-dependent tiling — NIT 2 re-point, 2026-08-29 review). This
+    EXACT ``[a, z, b]`` shape (an open-start leg ``a``, a ZERO-WIDTH row ``z``
+    sitting precisely at the boundary, an open-end leg ``b``) is the one that
+    genuinely discriminated the pre-fix predicate: the OLD sort key
+    (``valid_from`` only, no width rejection) tied ``z`` and ``b`` at the SAME
+    ``valid_from``, so a stable sort preserved INPUT order. Feeding them as
+    ``[a, z, b]`` let ``z``'s degenerate "meets on both sides at the same instant"
+    chain through as a LAWFUL tiling (``a.valid_to == z.valid_from == z.valid_to
+    == b.valid_from`` all equal ``on1``, so the old exact-meet loop never noticed
+    ``z`` was zero-width) — a real false-positive prune. Feeding the SAME family
+    reversed, ``[b, z, a]``, put ``b`` before ``z`` in the tie, whose chain
+    (``a -> b`` meets, then ``b``'s open ``valid_to`` vs ``z``'s ``valid_from``)
+    does NOT meet, so the old code raised instead: the OLD verdict for one
+    semantic family literally depended on which order the caller happened to
+    pass it in. The width check now rejects ``z`` outright regardless of
+    position, and the deterministic ``(valid_from, valid_to)`` sort removes the
+    tie entirely — both orders now return a non-``None`` (not lawful) reason,
+    and both still raise end to end through :func:`BUILD._prune_stale_aliases`."""
+    sec = "SEC:US-TEST-ZEROWIDTH"
+    on1 = date(2026, 1, 1)
+    a = AliasRow("yahoo", "X", sec, None, on1)
+    z = AliasRow("yahoo", "WEIRD", sec, on1, on1)  # zero width
+    b = AliasRow("yahoo", "ZZZ", sec, on1, None)
+    ex_row = AliasRow("yahoo", "X", sec, None, None)
+
+    forward = [a, z, b]
+    backward = list(reversed(forward))  # == [b, z, a]
+    assert BUILD._is_lawful_same_id_refinement(ex_row, forward) is not None
+    assert BUILD._is_lawful_same_id_refinement(ex_row, backward) is not None
+
+    existing = [_alias_dict("yahoo", "X", sec, None, None)]
+    with pytest.raises(BUILD.VendorAliasPruneConflict):
+        BUILD._prune_stale_aliases(existing, forward, frozenset())
+    with pytest.raises(BUILD.VendorAliasPruneConflict):
+        BUILD._prune_stale_aliases(existing, backward, frozenset())
+
+
+def test_m5_every_lawfully_refined_committed_row_is_pruned_not_just_the_first() -> None:
+    """Multiplicity: a single fresh family can lawfully refine MORE than one
+    committed open-ended row in the same run — every one of them is pruned, not
+    just the first encountered in ``existing``."""
+    sec = "SEC:US-TEST-MULTI"
+    existing = [
+        _alias_dict("yahoo", "ABC", sec, None, None),
+        _alias_dict("yahoo", "GHI", sec, "2020-01-01", None),
+    ]
+    fresh = [
+        AliasRow("yahoo", "ABC", sec, None, date(2020, 1, 1)),
+        AliasRow("yahoo", "GHI", sec, date(2020, 1, 1), date(2030, 1, 1)),
+        AliasRow("yahoo", "ZZZ", sec, date(2030, 1, 1), None),
+    ]
+    kept, pruned = BUILD._prune_stale_aliases(existing, fresh, frozenset())
+    assert kept == []
+    assert len(pruned) == 2
+    assert {p["vendor_symbol"] for p in pruned} == {"ABC", "GHI"}
+    assert all(p["prune_class"] == "same_id_refinement" for p in pruned)
+
+
+def test_m5_a_different_security_id_conflict_names_the_offending_row() -> None:
+    """MINOR (opaque raise). When the disqualifying overlap is a fresh row naming
+    a DIFFERENT security_id, the raised message names THAT row (not merely the
+    first-seen overlap) so an operator reading the nightly log can tell which
+    fresh row is the actual intruder."""
+    sec = "SEC:US-TEST-FOREIGN"
+    other_sec = "SEC:US-TEST-FOREIGNOTHER"
+    existing = [_alias_dict("yahoo", "AAPL", sec, None, None)]
+    fresh = [AliasRow("yahoo", "AAPL", other_sec, None, None)]
+    with pytest.raises(BUILD.VendorAliasPruneConflict) as excinfo:
+        BUILD._prune_stale_aliases(existing, fresh, frozenset())
+    assert other_sec in str(excinfo.value)
+    assert "DIFFERENT security_id" in str(excinfo.value)
 
 
 # H3 — a hostile future map EQR->0000931182 (live-real, per E3: SEC's company_tickers
@@ -1802,11 +2237,16 @@ def test_every_alias_points_at_a_security_the_master_carries(
 def test_emitted_columns_are_exactly_the_registry_schema(dataset_id: str, path: Path) -> None:
     """The registry is the CONTRACT, not a description of whatever the builder emitted.
 
-    Equality in both directions on purpose: a missing column breaks a consumer, and an
-    extra undeclared one is a field nobody agreed to maintain.
+    Equality in both directions, with one explicit additive migration: existing
+    alias files may omit nullable alias_kind and are then entirely ordinary aliases.
+    New writes emit the full schema (test_dataos_options_root pins that contract).
+    No other missing or extra column is admitted here.
     """
     declared = list(load_registry().get(dataset_id).schema)
     emitted = list(pd.read_parquet(path).columns)
+    if dataset_id == "reference.vendor_aliases" and "alias_kind" not in emitted:
+        assert load_registry().get(dataset_id).schema["alias_kind"]["nullable"] is True
+        declared.remove("alias_kind")
     assert emitted == declared
 
 
@@ -1824,10 +2264,17 @@ def test_every_produced_row_names_a_real_store_and_a_real_producer() -> None:
         if contract.status is not DatasetStatus.PRODUCED:
             continue
         storage = str(contract.storage)
+        if "<HEAD.generation_id>" in storage:
+            from engine.us_candidate_episode import load_candidate_episode_store_snapshot
+            prefix = "data/us_prophet_rank/episodes/generations/<HEAD.generation_id>/"
+            assert storage.startswith(prefix), f"unrecognized HEAD owner: {storage}"
+            snapshot = load_candidate_episode_store_snapshot(ROOT / "data/us_prophet_rank/episodes")
+            storage = storage.replace("<HEAD.generation_id>", snapshot.generation_id)
+        assert "<" not in storage and ">" not in storage, f"unknown storage token: {storage}"
         literal = storage.split("{", 1)[0]
-        target = ROOT / (literal if literal.endswith("/") else literal)
-        if "{" in storage:
-            target = ROOT / Path(literal).parent
+        target = ROOT / literal
+        if "{" in storage and not literal.endswith("/"):
+            target = target.parent
         assert target.exists(), f"{contract.dataset_id}: storage {storage!r} does not exist"
 
         producer = str(contract.producer)
@@ -1988,6 +2435,7 @@ def test_the_committed_artifact_is_not_stale_against_the_current_seeds(
     """
     shutil.copy(MASTER_PATH, tmp_path / BUILD.MASTER_NAME)
     shutil.copy(ALIASES_PATH, tmp_path / BUILD.ALIASES_NAME)
+    shutil.copy(RECEIPT_PATH, tmp_path / BUILD.RECEIPT_NAME)
     BUILD.build(tmp_path)
 
     rebuilt_master = pd.read_parquet(tmp_path / BUILD.MASTER_NAME)
@@ -2303,36 +2751,90 @@ def test_nightly_restores_last_good_on_an_unmodelled_rename(
     assert (tmp_path / BUILD.RECEIPT_NAME).read_bytes() == before_receipt
 
 
+def test_nightly_takes_the_lawful_same_id_refinement_path_on_a_dated_rename(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys,
+) -> None:
+    """AMENDMENT §2 same-id-refinement carve-out, end to end through the nightly
+    seam (implemented 2026-08-29).
+
+    The SAME fixture that used to be the standing MAJOR-regression conflict pin
+    below (a NEW dated RenameEvent on AAPL, a real committed security whose
+    `yahoo`/`membership` alias rows are open-bounded, valid_from=valid_to=None) now
+    takes the LAWFUL path: the fresh dated pair carries AAPL's own vendor_symbol
+    and exactly tiles the full axis, so the two committed open rows are pruned as
+    a lawful refinement rather than raising.
+    """
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    before_aliases = (tmp_path / BUILD.ALIASES_NAME).read_bytes()
+
+    fake_event = BUILD.RenameEvent(
+        old="AAPL", new="ZZZFUTURENAME", on=date(2099, 1, 1),
+        vendors=(BUILD.VENDOR_YAHOO, BUILD.VENDOR_MEMBERSHIP),
+        evidence="fixture: a lawful same-id refinement on a stable security",
+    )
+    monkeypatch.setattr(BUILD, "RENAME_EVENTS", BUILD.RENAME_EVENTS + (fake_event,))
+
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    out = capsys.readouterr().out
+    assert "security-master-vendor-alias-refinement-prune" in out, (
+        "the dedicated refinement-prune annotation must fire"
+    )
+    assert "security-master-nightly-prune-conflict" not in out, (
+        "a lawful refinement must never ALSO raise the curation-required warning"
+    )
+    assert (tmp_path / BUILD.ALIASES_NAME).read_bytes() != before_aliases, (
+        "aliases must REGENERATE (the committed open rows were pruned and replaced "
+        "by the fresh dated pair), not restore to last-good"
+    )
+    receipt = json.loads((tmp_path / BUILD.RECEIPT_NAME).read_text())
+    refinement_prunes = [
+        r for r in receipt["vendor_alias_prunes"] if r["prune_class"] == "same_id_refinement"
+    ]
+    assert len(refinement_prunes) == 2, "the yahoo AND membership open AAPL rows both refine"
+    assert {r["vendor"] for r in refinement_prunes} == {"yahoo", "membership"}
+    assert all("ingested_at" in r and r["ingested_at"] for r in refinement_prunes), (
+        "NIT: the pruned row's own ingested_at must be carried into the receipt"
+    )
+    assert not (tmp_path / "_nightly_prune_conflict_streak.json").exists(), (
+        "a lawful run is a SUCCESS path — no streak file is ever written"
+    )
+
+
 def test_nightly_restores_last_good_on_a_vendor_alias_prune_conflict(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys,
 ) -> None:
-    """AMENDMENT §3 (2026-08-20, re-verification) — MAJOR regression fix.
+    """AMENDMENT §3 (2026-08-20, re-verification) — MAJOR regression fix, re-pinned
+    2026-08-29 against the AMENDMENT §2 carve-out's RESIDUAL fail-closed classes.
 
     ``VendorAliasPruneConflict`` used to subclass ``SystemExit`` (a ``BaseException``
     sibling to ``Exception``), so it ESCAPED :func:`BUILD.run_nightly_refresh`'s
     ``except Exception`` handler entirely: the seam's "always returns 0" invariant
     broke, ``_restore_artifacts`` never ran, and NOT ONE ``::warning`` was printed —
-    silent process-exit-1, on exactly the future dated-rename path AMENDMENT §2
-    documents will fire (the `store` space has no VMRK answer until the same-id
-    refinement carve-out lands, and ANY future dated RenameEvent on a name whose
-    committed alias rows are still open-bounded now hits this same conflict).
+    silent process-exit-1.
 
-    Forces it the way the reviewer did: a NEW dated RenameEvent on AAPL (a real
-    committed security whose `yahoo`/`membership` alias rows are open-bounded,
-    valid_from=valid_to=None) — the fresh build tries to date-split those open rows,
-    which collides with the committed open rows under AMENDMENT ruling 6 (M5)'s
-    fail-closed law.
+    The dated-rename shape this test used to force (a fresh RenameEvent on a stable
+    security) is now the LAWFUL same-id-refinement path (see the test above) — it no
+    longer reaches this handler. What STILL reaches it: a fresh alias row that
+    overlaps a committed open row but is not excused by the carve-out — here, an
+    UNDATED row for an already-committed ACTIVE security_id, forced by wrapping
+    :func:`BUILD.build_alias_rows` to append one extra fresh row alongside its real
+    output (fails carve-out condition (c) — the family the injected row belongs to
+    also contains a fully-open row, so it is never a citable refinement).
     """
     assert BUILD.run_nightly_refresh(tmp_path) == 0
     before = {name: (tmp_path / name).read_bytes() for name in BUILD._NIGHTLY_ARTIFACT_NAMES}
     before_receipt = (tmp_path / BUILD.RECEIPT_NAME).read_bytes()
 
-    fake_event = BUILD.RenameEvent(
-        old="AAPL", new="ZZZFUTURENAME", on=date(2099, 1, 1),
-        vendors=(BUILD.VENDOR_YAHOO, BUILD.VENDOR_MEMBERSHIP),
-        evidence="fixture: forcing a vendor_alias_prune_conflict on a stable security",
-    )
-    monkeypatch.setattr(BUILD, "RENAME_EVENTS", BUILD.RENAME_EVENTS + (fake_event,))
+    aliases_df = pd.read_parquet(tmp_path / BUILD.ALIASES_NAME)
+    conflicting_id = aliases_df.loc[aliases_df["vendor"] == "yahoo", "security_id"].iloc[0]
+    real_build_alias_rows = BUILD.build_alias_rows
+
+    def _wrapped(resolutions, ids):
+        rows = list(real_build_alias_rows(resolutions, ids))
+        rows.append(AliasRow("yahoo", "ZZZUNDATED", conflicting_id, None, None))
+        return rows
+
+    monkeypatch.setattr(BUILD, "build_alias_rows", _wrapped)
 
     assert BUILD.run_nightly_refresh(tmp_path) == 0, (
         "the nightly seam must ALWAYS return 0 — a VendorAliasPruneConflict is a "
@@ -2351,6 +2853,317 @@ def test_nightly_restores_last_good_on_a_vendor_alias_prune_conflict(
     assert (tmp_path / BUILD.RECEIPT_NAME).read_bytes() == before_receipt, (
         "generated_at must NOT be re-stamped"
     )
+
+
+def test_nightly_prune_conflict_streak_escalates_after_three_consecutive_refusals(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys,
+) -> None:
+    """DSC falsifier escalation: a STANDING conflict used to wedge the nightly
+    artifact refresh silently for 8 days (2026-08-20 -> 08-28) — the seam kept
+    returning 0 with the same dedicated ``::warning`` every night and nothing ever
+    got louder. A THIRD+ consecutive refusal on the same ``out_dir`` now also fires
+    ``security-master-nightly-prune-conflict-stuck`` as a bare ``::error``; the seam
+    still ALWAYS returns 0 (AMENDMENT §3's invariant is unconditional)."""
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+
+    aliases_df = pd.read_parquet(tmp_path / BUILD.ALIASES_NAME)
+    conflicting_id = aliases_df.loc[aliases_df["vendor"] == "yahoo", "security_id"].iloc[0]
+    real_build_alias_rows = BUILD.build_alias_rows
+
+    def _wrapped(resolutions, ids):
+        rows = list(real_build_alias_rows(resolutions, ids))
+        rows.append(AliasRow("yahoo", "ZZZUNDATED", conflicting_id, None, None))
+        return rows
+
+    monkeypatch.setattr(BUILD, "build_alias_rows", _wrapped)
+    streak_path = tmp_path / "_nightly_prune_conflict_streak.json"
+
+    for expected_n in (1, 2):
+        assert BUILD.run_nightly_refresh(tmp_path) == 0
+        out = capsys.readouterr().out
+        assert "security-master-nightly-prune-conflict-stuck" not in out, (
+            f"run {expected_n}: must not escalate before the 3rd consecutive refusal"
+        )
+        state = json.loads(streak_path.read_text())
+        assert state["consecutive"] == expected_n
+
+    first_conflict_at = json.loads(streak_path.read_text())["first_conflict_at"]
+
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    out = capsys.readouterr().out
+    assert "::error" in out
+    assert "security-master-nightly-prune-conflict-stuck" in out
+    assert "3" in out
+    assert first_conflict_at in out
+    state = json.loads(streak_path.read_text())
+    assert state["consecutive"] == 3
+    assert state["first_conflict_at"] == first_conflict_at, (
+        "first_conflict_at is preserved across the streak, not re-stamped per run"
+    )
+    for name in BUILD._NIGHTLY_ARTIFACT_NAMES:
+        assert (tmp_path / name).exists(), "artifacts stay restored throughout the streak"
+
+    monkeypatch.setattr(BUILD, "build_alias_rows", real_build_alias_rows)
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    assert not streak_path.exists(), "a SUCCESS run clears the streak sidecar"
+
+
+def test_nightly_prune_conflict_streak_survives_an_intervening_generic_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys,
+) -> None:
+    """The streak counts refusals with no intervening SUCCESSFUL refresh, not
+    literal-consecutive nights: conflict, conflict, then an unrelated GENERIC build
+    failure (which neither increments nor clears the sidecar — it is not a prune
+    conflict and not a success), then the SAME conflict again -> the streak still
+    reads 3 and the ::error fires, worded around "no intervening successful
+    refresh" rather than "consecutive"."""
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+
+    aliases_df = pd.read_parquet(tmp_path / BUILD.ALIASES_NAME)
+    conflicting_id = aliases_df.loc[aliases_df["vendor"] == "yahoo", "security_id"].iloc[0]
+    real_build_alias_rows = BUILD.build_alias_rows
+
+    def _conflicting(resolutions, ids):
+        rows = list(real_build_alias_rows(resolutions, ids))
+        rows.append(AliasRow("yahoo", "ZZZUNDATED", conflicting_id, None, None))
+        return rows
+
+    streak_path = tmp_path / "_nightly_prune_conflict_streak.json"
+
+    monkeypatch.setattr(BUILD, "build_alias_rows", _conflicting)
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    assert json.loads(streak_path.read_text())["consecutive"] == 1
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    assert json.loads(streak_path.read_text())["consecutive"] == 2
+    capsys.readouterr()  # drain the first two runs' output before the isolated check below
+
+    real_build = BUILD.build
+
+    def _generic_failure(*args, **kwargs):
+        raise RuntimeError("fixture: an unrelated generic build failure")
+
+    monkeypatch.setattr(BUILD, "build", _generic_failure)
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    out = capsys.readouterr().out
+    assert "security-master-nightly-prune-conflict" not in out, (
+        "a generic failure is NOT a prune conflict and must not use that title"
+    )
+    assert json.loads(streak_path.read_text())["consecutive"] == 2, (
+        "a generic failure neither increments nor clears the streak sidecar"
+    )
+
+    monkeypatch.setattr(BUILD, "build", real_build)
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    out = capsys.readouterr().out
+    state = json.loads(streak_path.read_text())
+    assert state["consecutive"] == 3
+    assert "::error" in out
+    assert "security-master-nightly-prune-conflict-stuck" in out
+    assert "no intervening successful refresh" in out
+    assert "consecutive" not in out.split("::error")[1].split("\n")[0], (
+        "the escalation message text drops the word 'consecutive' per the fix "
+        "packet — the JSON field name may keep it, the PROSE may not"
+    )
+
+
+def test_nightly_prune_conflict_streak_restarts_on_a_different_conflict(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys,
+) -> None:
+    """A DIFFERENT conflict (different exception text — a different row now
+    colliding) is a fresh clock for the MATCHING-TEXT counter: ``consecutive``
+    restarts at 1 rather than inflating a count describing two unrelated
+    problems. Only two total refusals here (A, then B) so the separate MONOTONIC
+    counter stays under its own escalation threshold too — this test isolates
+    the text-restart behavior; the monotonic counter's own escalation (which
+    fires on a 3rd refusal even when the text keeps changing) is pinned
+    separately below."""
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+
+    aliases_df = pd.read_parquet(tmp_path / BUILD.ALIASES_NAME)
+    yahoo_ids = aliases_df.loc[aliases_df["vendor"] == "yahoo", "security_id"]
+    conflicting_id_a = yahoo_ids.iloc[0]
+    conflicting_id_b = yahoo_ids.iloc[1]
+    assert conflicting_id_a != conflicting_id_b
+    real_build_alias_rows = BUILD.build_alias_rows
+
+    def _conflict_a(resolutions, ids):
+        rows = list(real_build_alias_rows(resolutions, ids))
+        rows.append(AliasRow("yahoo", "ZZZCONFLICTA", conflicting_id_a, None, None))
+        return rows
+
+    def _conflict_b(resolutions, ids):
+        rows = list(real_build_alias_rows(resolutions, ids))
+        rows.append(AliasRow("yahoo", "ZZZCONFLICTB", conflicting_id_b, None, None))
+        return rows
+
+    streak_path = tmp_path / "_nightly_prune_conflict_streak.json"
+
+    monkeypatch.setattr(BUILD, "build_alias_rows", _conflict_a)
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    state = json.loads(streak_path.read_text())
+    assert state["consecutive"] == 1
+    assert state["refusals_since_last_success"] == 1
+
+    monkeypatch.setattr(BUILD, "build_alias_rows", _conflict_b)
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    out = capsys.readouterr().out
+    assert "::error" not in out
+    state = json.loads(streak_path.read_text())
+    assert state["consecutive"] == 1, "a different conflict restarts the streak at 1"
+    assert state["refusals_since_last_success"] == 2, (
+        "the monotonic counter still advances even though the text changed"
+    )
+
+
+def test_nightly_prune_conflict_streak_escalates_on_alternating_conflicts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys,
+) -> None:
+    """NEW MINOR (2026-08-29 re-review): two DIFFERENT conflicts recurring in
+    ALTERNATION (A, B, A, ...) would hold the text-matching ``consecutive``
+    counter at 1 forever — genuinely wedged, but the original single-counter
+    design never escalated. The separate MONOTONIC
+    ``refusals_since_last_success`` counter (incremented on every refusal
+    regardless of text) now catches this: on the 3rd alternating refusal it
+    reaches 3 and escalates, with wording that says the conflict text has
+    varied (distinct from the same-text ``consecutive`` escalation message)."""
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+
+    aliases_df = pd.read_parquet(tmp_path / BUILD.ALIASES_NAME)
+    yahoo_ids = aliases_df.loc[aliases_df["vendor"] == "yahoo", "security_id"]
+    conflicting_id_a = yahoo_ids.iloc[0]
+    conflicting_id_b = yahoo_ids.iloc[1]
+    assert conflicting_id_a != conflicting_id_b
+    real_build_alias_rows = BUILD.build_alias_rows
+
+    def _conflict_a(resolutions, ids):
+        rows = list(real_build_alias_rows(resolutions, ids))
+        rows.append(AliasRow("yahoo", "ZZZCONFLICTA", conflicting_id_a, None, None))
+        return rows
+
+    def _conflict_b(resolutions, ids):
+        rows = list(real_build_alias_rows(resolutions, ids))
+        rows.append(AliasRow("yahoo", "ZZZCONFLICTB", conflicting_id_b, None, None))
+        return rows
+
+    streak_path = tmp_path / "_nightly_prune_conflict_streak.json"
+    first_refusal_at = None
+
+    for night, patch in enumerate([_conflict_a, _conflict_b, _conflict_a], start=1):
+        monkeypatch.setattr(BUILD, "build_alias_rows", patch)
+        assert BUILD.run_nightly_refresh(tmp_path) == 0
+        out = capsys.readouterr().out
+        state = json.loads(streak_path.read_text())
+        if night == 1:
+            first_refusal_at = state["first_refusal_at"]
+        assert state["refusals_since_last_success"] == night
+        assert state["consecutive"] == 1, "alternating text never lets consecutive exceed 1"
+        assert state["first_refusal_at"] == first_refusal_at, (
+            "first_refusal_at is preserved across the whole monotonic streak, "
+            "independent of the text-matching restarts"
+        )
+        if night < 3:
+            assert "::error" not in out, f"night {night}: must not escalate before the 3rd"
+        else:
+            assert "::error" in out
+            assert "security-master-nightly-prune-conflict-stuck" in out
+            assert "3 nightly prune-conflict refusals (conflict text has varied)" in out
+            assert "no intervening successful refresh" in out
+            assert first_refusal_at in out
+
+
+@pytest.mark.parametrize(
+    "payload_bytes",
+    [
+        b"\x00not valid json{{{",
+        b"null",
+        b"[]",
+        b"3",
+        b'"stuck"',
+        b'{"consecutive": {"a": 1}}',
+    ],
+    ids=["garbage-bytes", "json-null", "json-list", "json-number", "json-string",
+         "dict-with-non-int-consecutive"],
+)
+def test_nightly_prune_conflict_streak_survives_a_corrupt_sidecar(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys, payload_bytes: bytes,
+) -> None:
+    """BLOCKER (2026-08-29 fix packet, sidecar type escape): a parsed streak payload
+    that is not usable state must NEVER raise or exit non-zero — that would break
+    AMENDMENT §3's pinned always-return-0 invariant. This covers not only outright
+    corrupt bytes but perfectly VALID JSON that is not itself an object (``null``,
+    a list, a bare number, a bare string — all legal JSON, none of them usable
+    dict state, so ``.get`` calls in the handler would raise ``AttributeError`` on
+    them if not guarded) and a dict whose own ``consecutive`` field is itself a
+    non-int (e.g. an accidentally-nested object). Every one of these is treated as
+    "no prior streak": the handler rewrites the sidecar as consecutive=1 and the
+    seam still returns 0."""
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+
+    aliases_df = pd.read_parquet(tmp_path / BUILD.ALIASES_NAME)
+    conflicting_id = aliases_df.loc[aliases_df["vendor"] == "yahoo", "security_id"].iloc[0]
+    real_build_alias_rows = BUILD.build_alias_rows
+
+    def _wrapped(resolutions, ids):
+        rows = list(real_build_alias_rows(resolutions, ids))
+        rows.append(AliasRow("yahoo", "ZZZUNDATED", conflicting_id, None, None))
+        return rows
+
+    monkeypatch.setattr(BUILD, "build_alias_rows", _wrapped)
+    streak_path = tmp_path / "_nightly_prune_conflict_streak.json"
+    streak_path.write_bytes(payload_bytes)
+
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    state = json.loads(streak_path.read_text())
+    assert state["consecutive"] == 1
+
+
+@pytest.mark.parametrize(
+    "invalid_count", [True, False, -5, 0], ids=["bool-true", "bool-false", "negative", "zero"]
+)
+def test_nightly_prune_conflict_streak_rejects_a_non_positive_or_boolean_count(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys, invalid_count,
+) -> None:
+    """NIT 1 (2026-08-29 re-review): ``bool`` is a subclass of ``int`` in Python
+    (``isinstance(True, int)`` is ``True``, and ``True + 1 == 2``), so a naive
+    ``isinstance(x, int)`` guard would silently accept a JSON ``true``/``false``
+    sidecar value as a real streak count. Zero and negative values are likewise
+    never a legitimate PRIOR count (every real streak starts at 1). This pins
+    :func:`BUILD._valid_streak_count` end to end: a sidecar carrying a MATCHING
+    conflict text (so the text-comparison alone would otherwise treat it as a
+    continuing streak) but an invalid ``consecutive``/``refusals_since_last_
+    success`` value must still restart BOTH counters at 1, never silently
+    incrementing a non-numeric or non-positive prior value."""
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+
+    aliases_df = pd.read_parquet(tmp_path / BUILD.ALIASES_NAME)
+    conflicting_id = aliases_df.loc[aliases_df["vendor"] == "yahoo", "security_id"].iloc[0]
+    real_build_alias_rows = BUILD.build_alias_rows
+
+    def _wrapped(resolutions, ids):
+        rows = list(real_build_alias_rows(resolutions, ids))
+        rows.append(AliasRow("yahoo", "ZZZUNDATED", conflicting_id, None, None))
+        return rows
+
+    monkeypatch.setattr(BUILD, "build_alias_rows", _wrapped)
+
+    # Learn the EXACT conflict text this fixture raises, then plant a sidecar
+    # carrying that SAME text alongside the invalid counter value under test.
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    streak_path = tmp_path / "_nightly_prune_conflict_streak.json"
+    conflict_text = json.loads(streak_path.read_text())["conflict"]
+    streak_path.write_text(json.dumps({
+        "consecutive": invalid_count,
+        "refusals_since_last_success": invalid_count,
+        "first_conflict_at": "2020-01-01T00:00:00",
+        "first_refusal_at": "2020-01-01T00:00:00",
+        "last_conflict_at": "2020-01-01T00:00:00",
+        "conflict": conflict_text,
+    }))
+
+    assert BUILD.run_nightly_refresh(tmp_path) == 0
+    state = json.loads(streak_path.read_text())
+    assert state["consecutive"] == 1
+    assert state["refusals_since_last_success"] == 1
 
 
 def test_vendor_alias_prune_conflict_is_a_plain_exception_not_systemexit() -> None:
@@ -2521,8 +3334,8 @@ def test_receipt_carries_era_migrations_total_alongside_this_run(receipt: dict,
 def test_an_unresolved_name_mints_nothing() -> None:
     """A venue this repo cannot evidence produces a REPORT line, never a guessed id."""
     resolutions = [
-        BUILD.Resolution("CBOE", None, None, None, "fixture", None,
-                         "exchange code 'Z' has no MIC in KNOWN_MICS"),
+        BUILD.Resolution("FAKEZ", None, None, None, "fixture", None,
+                         "exchange code 'Q' has no MIC in KNOWN_MICS"),
     ]
     rows, ids, notes, refusals, pending, lost, exc_lost, gmi_refusals = BUILD.mint_master_rows(
         resolutions, [], "2026-08-13T00:00:00"
@@ -2773,7 +3586,7 @@ def test_cn_hk_rows_country_agrees_with_their_own_mic(master: pd.DataFrame) -> N
 
 # ── US existing identity fixtures unchanged (boundary "US existing identity
 #    fixtures remain behaviorally unchanged") ────────────────────────────────────
-def test_us_coverage_is_unchanged_by_the_cn_hk_admission(receipt: dict) -> None:
+def test_us_coverage_scope_holds_through_lawful_admissions(receipt: dict) -> None:
     """The CN/HK admission stage runs entirely additively (a SEPARATE US-rows-only
     input to `mint_master_rows`, see build()'s `existing_us_rows` split) — the
     `coverage` block stays scoped to the same legacy curated universe either way
@@ -2783,10 +3596,27 @@ def test_us_coverage_is_unchanged_by_the_cn_hk_admission(receipt: dict) -> None:
     WBS newly unresolved — a pre-existing, unrelated symbol-directory staleness
     gap).  `issuer.state_counts.RESOLVED` DOES move — the D2B2-US wave (this
     contract) admits ~508 new US securities with CIK-evidenced issuers on top of
-    the pre-existing 699."""
-    assert receipt["coverage"]["total"] == 712
-    assert receipt["coverage"]["resolved"] == 702
-    assert receipt["coverage"]["unresolved"] == 10
+    the pre-existing 699.  713/703 floors since 2026-08-28: LEG entered the
+    curated universe through its config/delisted_symbols.yml exit row (basket-
+    membership/exit-ledger churn, exactly the drift class the note above
+    scopes), and the same PR unwedged the nightly artifact refresh, so exact
+    counts rot with the next lawful admission — floors keep the downward bite
+    (coverage silently SHRINKING is the defect this pins against)."""
+    # Ceilings widened 2026-10-07 (DEC:ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07):
+    # the curated universe gains the S&P 400/600 constituents (A8 dry run: 1620/1633
+    # resolved, 13 unresolved; the newly unresolved are CWEN-A and HLX, admitted with no
+    # security row, and QRVO, under the pre-existing KHC pending-transition fence that
+    # the unpatched rebuild also shows).  Unresolved widened 13 -> 16 (2026-10-11,
+    # PSKY->SKYD regen): TCBI joined the unresolved set through 2026-10-09
+    # symbol-directory drift (the snapshot lists it on exchange code 'F', which is
+    # not in lib/dataos/identity.KNOWN_MICS) and BLFS because it is ABSENT from the
+    # 2026-10-08 and 2026-10-09 snapshots entirely (listed on Nasdaq through
+    # 2026-10-07), on top of the A8-expected CWEN-A/HLX/QRVO.
+    assert 713 <= receipt["coverage"]["total"] <= 1633 + 120
+    assert receipt["coverage"]["resolved"] >= 703
+    assert receipt["coverage"]["unresolved"] <= 16
+    assert receipt["coverage"]["total"] == (
+        receipt["coverage"]["resolved"] + receipt["coverage"]["unresolved"])
     assert receipt["issuer"]["state_counts"]["RESOLVED"] >= 699
     assert receipt["security"]["state_counts"]["SUPERSEDED_DUPLICATE_MINT"] == 1
 
@@ -2853,14 +3683,23 @@ def test_gmi_us_preferred_refused_never_minted() -> None:
     assert [r["code"] for r in gmi_refusals] == ["not_common_equity_preferred"]
 
 
-# 4: unsupported venue — real committed data, single expected instance (CBOE/Z), and
-# the closed MIC list is asserted unchanged (widening it is out of scope, §4/§13).
-def test_gmi_us_unsupported_venue_real_data_cboe(receipt: dict) -> None:
-    assert BUILD.EXCHANGE_MIC == {"NASDAQ": "XNAS", "N": "XNYS", "A": "XASE"}
-    block = receipt["us_gmi_admission"]
-    cboe = [r for r in block["refusals_this_run"] if r["symbol"] == "CBOE"]
-    assert len(cboe) == 1
-    assert cboe[0]["code"] == "unsupported_venue"
+# 4: Cboe BZX (otherlisted exchange code Z) is a real US equities venue.  The
+# canonical identity seam maps it to ISO 10383 MIC BATS; CBOE must resolve rather
+# than remaining the one current S&P member with no security identity.
+def test_cboe_bzx_exchange_code_z_resolves_to_bats_mic() -> None:
+    assert BUILD.EXCHANGE_MIC["Z"] == "BATS"
+    rows = BUILD.resolve_universe(
+        {"CBOE": {}},
+        {},
+        {"CBOE": "Z"},
+        "2026-10-05",
+    )
+    assert len(rows) == 1
+    row = rows[0]
+    assert row.reason is None
+    assert row.venue_mapped is True
+    assert row.listing_key is not None
+    assert row.listing_key.render() == "US-BATS-CBOE"
 
 
 # 5: listing present, CIK absent -> no_registrant_cik (fixture — empirically zero
@@ -2878,12 +3717,52 @@ def test_gmi_us_no_registrant_cik_fixture() -> None:
     assert [r["code"] for r in gmi_refusals] == ["no_registrant_cik"]
 
 
-# 6: CIK present, listing absent -> not_listed_cik_present (real-data EA).
-def test_gmi_us_not_listed_cik_present_real_data_ea(receipt: dict) -> None:
+# 6: CIK evidence changes the typed refusal, never manufactures a listing.
+@pytest.mark.parametrize("has_cik, expected", [
+    (True, "not_listed_cik_present"), (False, "not_listed_no_cik"),
+])
+def test_gmi_us_missing_listing_cik_refusal_build_fixture(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, has_cik: bool, expected: str,
+) -> None:
+    monkeypatch.setattr(BUILD, "load_universe", lambda: {})
+    monkeypatch.setattr(BUILD, "load_delisted", lambda: {})
+    monkeypatch.setattr(BUILD, "load_directory", lambda: ({}, {}, "2026-10-07", None))
+    cik = {"FAKECIK": ("0009999999", "Fixture Co")} if has_cik else {}
+    monkeypatch.setattr(BUILD, "load_cik_map", lambda: (cik, "2026-10-07", None, frozenset()))
+    monkeypatch.setattr(BUILD, "load_config_maps", lambda: ({}, {}))
+    monkeypatch.setattr(BUILD, "load_gmi_us_seeds", lambda: [
+        {"symbol": "FAKECIK", "node_id": "co:us:FAKECIK"}])
+    monkeypatch.setattr(BUILD, "load_cn_hk_seeds", lambda: [])
+    monkeypatch.setattr(BUILD, "load_cninfo_evidence", lambda: ({}, None))
+    monkeypatch.setattr(BUILD, "load_hk_shorts_evidence", lambda: ({}, None))
+    result = BUILD.build(tmp_path, allow_missing_evidence=True)
+    block = result["us_gmi_admission"]
+    assert block["target_n"] == block["refused_this_run"] == 1
+    assert block["resolved_total"] == block["resolved_this_run"] == 0
+    assert block["disclosed_exclusions"] == []
+    assert [(r["symbol"], r["code"]) for r in block["refusals_this_run"]] == [("FAKECIK", expected)]
+    assert pd.read_parquet(tmp_path / BUILD.MASTER_NAME).empty
+    assert pd.read_parquet(tmp_path / BUILD.ALIASES_NAME).empty
+
+
+def test_gmi_us_missing_listing_refusals_match_receipt_bound_evidence(receipt: dict) -> None:
+    directory, _, day, directory_path = BUILD.load_directory()
+    cik, cik_day, cik_path, ambiguous = BUILD.load_cik_map()
+    assert day == receipt["symbol_directory_snapshot"]
+    assert cik_day == receipt["cik_map_snapshot"]
+    assert BUILD._sha256(directory_path) == receipt["inputs"][BUILD._relpath(BUILD.SYMBOL_DIR_SNAPSHOTS)]
+    assert BUILD._sha256(cik_path) == receipt["inputs"][BUILD._relpath(BUILD.CIK_MAP_DIR)]
+    assert BUILD._sha256(BUILD.DELISTED_LEDGER) == receipt["inputs"][BUILD._relpath(BUILD.DELISTED_LEDGER)]
+    delisted = BUILD.load_delisted()
     block = receipt["us_gmi_admission"]
-    ea = [r for r in block["refusals_this_run"] if r["symbol"] == "EA"]
-    assert len(ea) == 1
-    assert ea[0]["code"] == "not_listed_cik_present"
+    rows = block["refusals_this_run"]
+    assert len({r["symbol"] for r in rows}) == len(rows) == block["refused_this_run"]
+    assert block["resolved_total"] + len(rows) + len(block["disclosed_exclusions"]) == block["target_n"]
+    for row in rows:
+        if row["code"] in {"not_listed_cik_present", "not_listed_no_cik"}:
+            symbol = row["symbol"]
+            assert symbol not in directory and symbol not in delisted and symbol not in ambiguous
+            assert (symbol in cik) == (row["code"] == "not_listed_cik_present")
 
 
 # 7: neither rail -> not_listed_no_cik (real-data exemplar from the 21).
@@ -3157,11 +4036,14 @@ def test_gmi_us_accounting_completeness_real_data(receipt: dict) -> None:
         )
     # AMENDMENT R13 — every resolved_not_rederivable entry names a code and a
     # real, currently-active security_id (a staleness fact, never a fabricated
-    # or dangling reference); WBS and SATS are the known real-data instances.
+    # or dangling reference); SATS is the known real-data instance. WBS left
+    # this bucket when its 2026-08-20 acquisition exit was ledgered
+    # (config/delisted_symbols.yml): an exited listing is no longer a target.
     not_rederivable_codes = {d["code"] for d in block["resolved_not_rederivable"]}
     for d in block["resolved_not_rederivable"]:
         assert d["code"] and d["security_id"]
-    assert {"WBS", "SATS"} <= not_rederivable_codes
+    assert "SATS" in not_rederivable_codes
+    assert "WBS" not in not_rederivable_codes
     # A code can never appear in more than one of the four buckets.
     refused_codes = {r["symbol"] for r in block["refusals_this_run"]}
     disclosed_codes = {d["symbol"] for d in block["disclosed_exclusions"]}
@@ -3183,27 +4065,43 @@ def test_gmi_us_accounting_completeness_real_data(receipt: dict) -> None:
 
 # 15: regression pins — CN 984 + HK 147 + the pre-existing 705 US rows byte-identical
 # after the expansion run; legacy `coverage` block semantics unchanged (712-scope).
-def test_gmi_us_regression_pins_cn_hk_and_legacy_us_unchanged(
+def test_gmi_us_regression_bands_cn_hk_and_legacy_us(
     master: pd.DataFrame, receipt: dict,
 ) -> None:
-    assert len(master[master["country"] == "CN"]) == 984
-    assert len(master[master["country"] == "HK"]) == 147
-    assert receipt["coverage"]["total"] == 712
-    assert receipt["coverage"]["resolved"] == 702
-    assert receipt["coverage"]["unresolved"] == 10
+    # CN 984 -> 1005: the CN seed lanes kept admitting names after the D2B2-US
+    # bake (the committed artifact had already drifted to 1002 before the
+    # 2026-08-28 regeneration; this test was red against it), +3 more absorbed
+    # by that regeneration (002195/300088/300926).  US-side coverage moved
+    # 712->713 with LEG's exit-ledger admission, and the same PR unwedged the
+    # nightly artifact refresh — BANDS instead of exact counts: the floor fails
+    # on populations silently shrinking, the loose ceiling on a cross-scope wave
+    # mass-minting rows into a market it does not own (the "unchanged" bite the
+    # old exact pin carried), while lawful admissions no longer rot the pin.
+    n_cn = len(master[master["country"] == "CN"])
+    n_hk = len(master[master["country"] == "HK"])
+    assert 1005 <= n_cn <= 1005 + 180
+    assert 147 <= n_hk <= 147 + 60
+    # Ceilings widened 2026-10-07 (DEC:ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07):
+    # the curated universe gains the S&P 400/600 constituents (A8 dry run: 1620/1633
+    # resolved, 13 unresolved; the newly unresolved are CWEN-A and HLX, admitted with no
+    # security row, and QRVO, under the pre-existing KHC pending-transition fence that
+    # the unpatched rebuild also shows).  Unresolved widened 13 -> 16 (2026-10-11,
+    # PSKY->SKYD regen): TCBI joined the unresolved set through 2026-10-09
+    # symbol-directory drift (the snapshot lists it on exchange code 'F', which is
+    # not in lib/dataos/identity.KNOWN_MICS) and BLFS because it is ABSENT from the
+    # 2026-10-08 and 2026-10-09 snapshots entirely (listed on Nasdaq through
+    # 2026-10-07), on top of the A8-expected CWEN-A/HLX/QRVO.
+    assert 713 <= receipt["coverage"]["total"] <= 1633 + 120
+    assert receipt["coverage"]["resolved"] >= 703
+    assert receipt["coverage"]["unresolved"] <= 16
 
 
-# 16: idempotency + run-2 stability — AMENDMENT R9 corrected law.  §8/§9.16's
-# original "fence fired zero times on run 2" was wrongly phrased: the pin's own
-# steady state carries `listing_continuity: [WBS, GOLD-identity-exception]` (WBS
-# is a pre-existing, unrelated symbol-directory staleness gap — VERIFIED present
-# on an unmodified rebuild at this pin, §9 item 4/6/7's own real-data fixtures).
-# The CORRECT law: run 2's `listing_continuity` is IDENTICAL to run 1's (the
-# expected steady set, not empty), zero pending-transition/resurrection
-# refusals, `resolved_this_run == 0`, byte-identical artifacts.
+# 16: ordinary reruns preserve artifacts and every evidenced refusal. A stable
+# pending transition is not permission to mint it or to erase its receipt.
 def test_gmi_us_idempotent_run_2_stability_real_data(tmp_path: Path) -> None:
     shutil.copy(MASTER_PATH, tmp_path / BUILD.MASTER_NAME)
     shutil.copy(ALIASES_PATH, tmp_path / BUILD.ALIASES_NAME)
+    shutil.copy(RECEIPT_PATH, tmp_path / BUILD.RECEIPT_NAME)
     issuer_master = ROOT / "data" / "reference" / BUILD.ISSUER_MASTER_NAME
     issuer_migrations = ROOT / "data" / "reference" / BUILD.ISSUER_MIGRATIONS_NAME
     security_migrations = ROOT / "data" / "reference" / BUILD.SECURITY_MIGRATIONS_NAME
@@ -3211,27 +4109,15 @@ def test_gmi_us_idempotent_run_2_stability_real_data(tmp_path: Path) -> None:
         if src.exists():
             shutil.copy(src, tmp_path / src.name)
 
+    artifact_names = (BUILD.MASTER_NAME, BUILD.ALIASES_NAME, BUILD.ISSUER_MASTER_NAME,
+                      BUILD.ISSUER_MIGRATIONS_NAME, BUILD.SECURITY_MIGRATIONS_NAME)
     run1 = BUILD.build(tmp_path)
-    before_master = (tmp_path / BUILD.MASTER_NAME).read_bytes()
-    before_aliases = (tmp_path / BUILD.ALIASES_NAME).read_bytes()
-
+    before = {name: (tmp_path / name).read_bytes() for name in artifact_names}
     run2 = BUILD.build(tmp_path)
-    after_master = (tmp_path / BUILD.MASTER_NAME).read_bytes()
-    after_aliases = (tmp_path / BUILD.ALIASES_NAME).read_bytes()
-
-    assert after_master == before_master
-    assert after_aliases == before_aliases
-    # R9: run 2's steady-state listing_continuity is IDENTICAL to run 1's own
-    # (self-consistent, R10 — never hardcode the exact WBS/GOLD shape here; the
-    # dedicated real-data fixtures elsewhere already pin that shape).
-    assert run2["listing_continuity"] == run1["listing_continuity"]
-    assert run1["listing_continuity"], (
-        "this pin is known to carry a non-empty steady-state listing_continuity "
-        "(WBS + the GOLD identity exception) — an empty list here means the "
-        "fixture assumption drifted, not that the law changed"
-    )
-    assert run2["pending_transition_refusals"] == []
-    assert run2["resurrection_refusals"] == []
+    assert {name: (tmp_path / name).read_bytes() for name in artifact_names} == before
+    for field in ("listing_continuity", "pending_transition_refusals", "resurrection_refusals",
+                  "unregistered_rename_duplicates", "vendor_alias_prunes", "prospective_reference"):
+        assert run2.get(field) == run1.get(field)
     gmi1, gmi2 = run1["us_gmi_admission"], run2["us_gmi_admission"]
     assert gmi2["resolved_this_run"] == 0
     assert gmi2["refusals_this_run"] == gmi1["refusals_this_run"]
@@ -3438,6 +4324,7 @@ def test_r4b_transition_from_pin_baseline_matches_r2_shape(
     out_dir.mkdir()
     baseline_master.to_parquet(out_dir / BUILD.MASTER_NAME, index=False)
     baseline_aliases.to_parquet(out_dir / BUILD.ALIASES_NAME, index=False)
+    shutil.copy(RECEIPT_PATH, out_dir / BUILD.RECEIPT_NAME)
 
     receipt = BUILD.build(out_dir)
     block = receipt["us_gmi_admission"]
@@ -3456,3 +4343,132 @@ def test_r4b_transition_from_pin_baseline_matches_r2_shape(
     }
     rebuilt_symbols = {r["symbol"] for r in block["refusals_this_run"]}
     assert rebuilt_symbols == committed_symbols
+
+
+def test_dated_store_pair_emits_only_for_the_renamed_security() -> None:
+    """AMENDMENT ruling 9 (m3) reuse gate: the `dated` map is keyed by SYMBOL and this
+    repo tracks live ticker reuse, so the dated current-catalog pair must attach only
+    to the security the RenameEvent actually renamed. A stranger security whose
+    current store key merely REUSES the event's old string keeps a plain open row —
+    without the gate it would have its open row closed at a boundary it never crossed
+    and gain a post-boundary row under a symbol it never carried."""
+    from lib.dataos.identity import ListingKey
+
+    resolutions = [
+        # the genuinely renamed security (inception EQR, current key VMRK)
+        BUILD.Resolution("VMRK", ListingKey("US", "XNYS", "EQR"), "EQR", "VMRK",
+                         "fixture", date(1993, 8, 12)),
+        # a hostile stranger: a DIFFERENT security whose current store key is the
+        # reused string "EQR" (post-grace re-mint on another venue)
+        BUILD.Resolution("EQR", ListingKey("US", "XNAS", "EQR2"), "EQR2", "EQR",
+                         "fixture", date(2030, 1, 2)),
+    ]
+    ids = {"VMRK": "SEC:US-XNYS-EQR", "EQR": "SEC:US-XNAS-EQR2"}
+    rows = BUILD.build_alias_rows(resolutions, ids)
+    store = [r for r in rows if r.vendor == BUILD.VENDOR_STORE]
+
+    renamed = {(r.vendor_symbol, r.valid_from, r.valid_to)
+               for r in store if r.security_id == "SEC:US-XNYS-EQR"}
+    assert renamed == {("EQR", None, date(2026, 8, 18)),
+                       ("VMRK", date(2026, 8, 18), None)}
+    stranger = [r for r in store if r.security_id == "SEC:US-XNAS-EQR2"]
+    assert [(r.vendor_symbol, r.valid_from, r.valid_to) for r in stranger] == [
+        ("EQR", None, None)]
+
+
+def test_a_notation_variant_key_no_rename_mentions_keeps_its_open_current_catalog_rows() -> None:
+    """F1 (skyd-review-20261011-r1, BLOCKER): the current-catalog chain-member gate
+    must not eat a NOTATION VARIANT.  ``_inception_code`` returns the directory's DOT
+    spelling for any key no rename mentions, so ``MOG-A`` (directory symbol ``MOG.A``)
+    measured ``res.key != res.inception_code`` — a "chain member" by that test alone —
+    and the #8828 gate suppressed its fresh open ``store``/``yahoo_fetch`` rows with
+    nothing in the log reporting it.  MOG-A had no committed rows to carry it (admitted
+    by #8626), so both TRUE rows were dropped from the artifact.  The gate now
+    suppresses only a non-root key a DATED RenameEvent names that no record ratifies
+    (SKYD); a notation variant no rename mentions keeps origin/main's behaviour."""
+    from lib import ticker_aliases
+    from lib.dataos.identity import ListingKey
+
+    resolutions = [
+        # modelled on the real MOG-A row (snapshot 2026-10-09: Moog Inc. Class A,
+        # NYSE, symbol MOG.A): the universe's dash key, the directory's dot code.
+        BUILD.Resolution("MOG-A", ListingKey("US", "XNYS", "MOG.A"), "MOG.A", "MOG.A",
+                         "fixture", date(2026, 10, 9)),
+    ]
+    ids = {"MOG-A": "SEC:US-XNYS-MOG.A"}
+    rows = BUILD.build_alias_rows(resolutions, ids)
+    current = {
+        (r.vendor, r.vendor_symbol): (r.security_id, r.valid_from, r.valid_to)
+        for r in rows
+        if r.vendor in (BUILD.VENDOR_STORE, BUILD.VENDOR_YAHOO_FETCH)
+    }
+    # MOG-A is this security's ONLY resolution — no prior current-catalog row exists —
+    # so both rows must be emitted fresh and OPEN, exactly as origin/main's
+    # `prior is None or is_root` gate emitted them.
+    assert current == {
+        ("store", "MOG-A"): ("SEC:US-XNYS-MOG.A", None, None),
+        ("yahoo_fetch", ticker_aliases.fetch_symbol("MOG-A")): (
+            "SEC:US-XNYS-MOG.A", None, None),
+    }
+    VendorAliasTable(rows)  # and the fixture table is unambiguous
+
+
+# ── SAME-SYMBOL VENUE TRANSFERS (KHC Nasdaq->NYSE 2026-09-14, ET NYSE->TXSE 2026-10-05)
+# A transfer re-derives US-{to}-{sym} while the committed row keeps its inception
+# venue; the exact-key SECURITY_SUPERSESSIONS pair joins it onto the ONE canonical
+# row (no mint, no fence-lost entry), exactly as the PSKY cross-venue rename does.
+def test_txse_exchange_code_f_resolves_to_txse_mic() -> None:
+    assert BUILD.EXCHANGE_MIC["F"] == "TXSE"
+    rows = BUILD.resolve_universe({"TXS": {}}, {}, {"TXS": "F"}, "2026-10-05")
+    assert len(rows) == 1
+    assert rows[0].reason is None
+    assert rows[0].listing_key is not None
+    assert rows[0].listing_key.render() == "US-TXSE-TXS"
+
+
+def _active_row(mic: str, code: str, cik: str) -> dict:
+    return {
+        "security_id": f"SEC:US-{mic}-{code}", "issuer_id": f"ISS:US-{mic}-{code}",
+        "issuer_state": "RESOLVED", "issuer_cik": cik,
+        "issuer_evidence_snapshot": "2026-08-18", "listing_key": f"US-{mic}-{code}",
+        "country": "US", "mic": mic, "inception_code": code,
+        "effective_at": "2023-05-09T00:00:00", "ingested_at": "2026-08-13T00:00:00",
+        "security_state": None, "superseded_by": None,
+    }
+
+
+@pytest.mark.parametrize(
+    ("sym", "from_mic", "to_mic", "cik"),
+    [("ET", "XNYS", "TXSE", "0001276187"), ("KHC", "XNAS", "XNYS", "0001637459")],
+)
+def test_venue_transfer_joins_the_canonical_row_never_mints(
+    sym: str, from_mic: str, to_mic: str, cik: str,
+) -> None:
+    canonical = f"SEC:US-{from_mic}-{sym}"
+    existing = [_active_row(from_mic, sym, cik)]
+    resolutions = [_res(sym, to_mic, sym)]
+    rows, ids, notes, refusals, pending, lost, exc_lost, gmi_refusals = BUILD.mint_master_rows(
+        resolutions, existing, "2026-10-18T00:00:00", cik_map={sym: (cik, sym)},
+    )
+    assert ids.get(sym) == canonical, "the transfer joins the ONE canonical row"
+    assert not any(r["security_id"] == f"SEC:US-{to_mic}-{sym}" for r in rows)
+    assert lost == [] and exc_lost == [] and pending == [] and refusals == []
+    entry = next(e for e in BUILD.SECURITY_SUPERSESSIONS
+                 if e.listing_key == f"US-{to_mic}-{sym}")
+    assert entry.canonical_id == canonical
+
+
+def test_unpaired_venue_transfer_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    bad = BUILD.VenueTransfer(symbol="ZZZT", from_mic="XNYS", to_mic="TXSE",
+                              on=date(2026, 10, 5), evidence="fixture")
+    monkeypatch.setattr(BUILD, "VENUE_TRANSFERS", BUILD.VENUE_TRANSFERS + (bad,))
+    with pytest.raises(ValueError, match="ZZZT"):
+        BUILD._venue_transfer_covered_keys()
+
+
+def test_huck_and_yfor_renames_are_modelled() -> None:
+    pairs = {(e.old, e.new): e.on for e in BUILD.RENAME_EVENTS}
+    assert pairs[("DOMO", "HUCK")] == date(2026, 9, 24)
+    assert pairs[("YYGH", "YFOR")] == date(2026, 9, 2)
+    fixups, migrations = BUILD.load_config_maps()
+    assert BUILD.unmodelled_renames(fixups, migrations) == []
