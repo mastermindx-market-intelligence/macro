@@ -51,6 +51,7 @@ import pandas as pd
 from lib.intl_boe_source import parse_bank_rate_xml
 from lib.intl_macro_publication import (
     _read_stable_once,
+    _observe_native_path,
     _reject_duplicate_keys,
     _reject_nonstandard_constant,
 )
@@ -512,6 +513,7 @@ def read_boe_materialization(data_root):
     directory = root / DIRECTORY
     pointer = directory / "current.json"
     try:
+        _observe_native_path(pointer)
         pointer.lstat()
     except FileNotFoundError:
         return _missing_result()

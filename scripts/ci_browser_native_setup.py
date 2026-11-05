@@ -7,6 +7,7 @@ cache service, journal, restart protocol or authority to retry unknown effects.
 from __future__ import annotations
 
 import base64
+from contextlib import contextmanager
 from dataclasses import dataclass
 import hashlib
 import json
@@ -110,6 +111,128 @@ def failed_download_summaries(records) -> list[list]:
     return rows
 
 
+TIMING_PREFIX = "CI_NATIVE_ACQUISITION_TIMING="
+# Completion-only phase attribution emitted by the UNPRIVILEGED adapter to its
+# own stderr. Fixed enum; never a child result field, never parsed by any stage
+# contract, and never emitted inside a privileged stage/bootstrap/child channel.
+TIMING_PHASES = ("capture", "bootstrap", "update", "resolve", "download", "install",
+                 "complete", "cleanup-downloads", "cleanup", "browser")
+_TIMING_OUTCOMES = ("passed", "failed", "timed_out")
+_TIMING_SETTLEMENTS = ("settled", "unknown")
+
+
+def _diag_now():
+    """Diagnostic-only nanosecond clock; independent of deadline arithmetic."""
+    return time.monotonic_ns()
+
+
+def _timing_sink():
+    return sys.stderr
+
+
+def _diag_elapsed_ms(started_ns, ended_ns):
+    """Nonnegative integer only for valid monotonic observations; else None."""
+    if type(started_ns) is not int or type(ended_ns) is not int:
+        return None
+    delta = ended_ns - started_ns
+    return delta // 1000000 if delta >= 0 else None
+
+
+def _emit_timing(record):
+    """One bounded diagnostic line to the adapter's own stderr; never fatal."""
+    try:
+        stream = _timing_sink()
+        stream.write(TIMING_PREFIX + json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n")
+        stream.flush()
+    except Exception:
+        pass  # a diagnostic sink failure can never suppress or replace original flow
+
+
+def _emit_phase(phase, *, archive_index=None, elapsed_ms=None, observation="unobserved",
+                outcome=None, settlement=None):
+    if type(phase) is not str or phase not in TIMING_PHASES:
+        return
+    if archive_index is not None and (type(archive_index) is not int or not 0 <= archive_index < 128):
+        return
+    if phase == "download" and archive_index is None:
+        return
+    elapsed_ms = elapsed_ms if type(elapsed_ms) is int and elapsed_ms >= 0 else None
+    observation = observation if type(observation) is str and observation in ("returned", "raised", "unobserved") else "unobserved"
+    outcome = outcome if type(outcome) is str and outcome in _TIMING_OUTCOMES else None
+    settlement = settlement if type(settlement) is str and settlement in _TIMING_SETTLEMENTS else None
+    record = {"phase": phase, "elapsed_ms": elapsed_ms, "observation": observation,
+              "outcome": outcome, "settlement": settlement}
+    if archive_index is not None:
+        record["archive_index"] = archive_index
+    _emit_timing(record)
+
+
+def _emit_inventory(plan):
+    """Frozen summary only after make_download_plan validated the whole transaction.
+
+    Counts and byte totals only: no URI, hash, filename or package enumeration,
+    and no valid-zero inventory for missing/invalid resolution.
+    """
+    try:
+        _emit_timing({"phase": "inventory", "archive_count": len(plan.transaction),
+                      "archive_bytes": sum(archive.size for archive in plan.transaction)})
+    except Exception:
+        pass
+
+
+class _PhaseTimer:
+    """Completion-only phase attribution that cannot alter original control flow."""
+
+    __slots__ = ("phase", "archive_index", "started_ns", "observation", "outcome", "settlement")
+
+    def __init__(self, phase, archive_index=None):
+        self.phase, self.archive_index = phase, archive_index
+        try:
+            self.started_ns = _diag_now()
+        except Exception:
+            self.started_ns = None
+        self.observation, self.outcome, self.settlement = "unobserved", None, None
+
+    def returned(self, outcome, settlement=None):
+        self.observation = "returned"
+        self.outcome = outcome if type(outcome) is str and outcome in _TIMING_OUTCOMES else None
+        self.settlement = settlement if type(settlement) is str and settlement in _TIMING_SETTLEMENTS else None
+
+    def raised(self, error=None):
+        self.observation = "raised"  # never claims passed/settled
+        try:
+            outcome = getattr(error, "outcome", None)
+            self.outcome = outcome if type(outcome) is str and outcome in ("failed", "timed_out") else None
+        except Exception:
+            self.outcome = None  # metadata failure cannot replace the original exception
+
+    def finish(self):
+        try:
+            try:
+                elapsed = _diag_elapsed_ms(self.started_ns, _diag_now())
+            except Exception:
+                elapsed = None
+            _emit_phase(self.phase, archive_index=self.archive_index, elapsed_ms=elapsed,
+                        observation=self.observation, outcome=self.outcome, settlement=self.settlement)
+        except Exception:
+            pass
+
+
+@contextmanager
+def _phase_timing(phase, *, archive_index=None):
+    timer = _PhaseTimer(phase, archive_index)
+    try:
+        try:
+            yield timer
+        except BaseException as error:
+            timer.raised(error)
+            raise
+        if timer.observation == "unobserved":
+            timer.observation = "returned"
+    finally:
+        timer.finish()
+
+
 @dataclass
 class Pending:
     process: object
@@ -124,9 +247,27 @@ class NativeAptBackend:
         self.root, self.command_env, self.plan = root, command_env, plan
         self.records = {}
         self.handles = {}
+        self.download_timing = {}  # diagnostic-only launch timestamps, never a ledger
 
     def now(self):
         return time.monotonic()
+
+    def _finish_download(self, index, *, observation, outcome=None, settlement=None):
+        """Emit this index's completion once; no repeated or synthesized settle."""
+        try:
+            if type(index) is not int or not 0 <= index < 128:
+                return
+            state = self.download_timing.get(index)
+            if state is None or state["emitted"]:
+                return
+            state["emitted"] = True
+            elapsed = _diag_elapsed_ms(state["started_ns"], _diag_now())
+            _emit_phase("download", archive_index=index, elapsed_ms=elapsed, observation=observation,
+                        outcome=outcome, settlement=settlement)
+        except Exception:
+            # Diagnostic failure must not mask a process observation or exception.
+            _emit_phase("download", archive_index=index, observation=observation,
+                        outcome=outcome, settlement=settlement)
 
     def argv(self, mode: str, deadline: float, index=None):
         return ("sudo", "-n", "--", "/usr/bin/python3", "-I",
@@ -134,57 +275,82 @@ class NativeAptBackend:
                 *((str(index),) if index is not None else ()))
 
     def stage(self, mode: str, deadline: float):
-        try:
-            code, raw = observe_command(self.argv(mode, deadline), deadline=deadline, command_env=self.command_env)
-        except NativeUnknown as error:
-            self.handles[mode] = error.child_pid
-            raise
-        result = parsed_result(code, raw, mode=mode)
-        self.records[mode] = result
-        return result
+        with _phase_timing(mode) as timer:
+            try:
+                code, raw = observe_command(self.argv(mode, deadline), deadline=deadline, command_env=self.command_env)
+            except NativeUnknown as error:
+                self.handles[mode] = error.child_pid
+                raise
+            result = parsed_result(code, raw, mode=mode)
+            self.records[mode] = result
+            timer.returned(result["outcome"], result["settlement"])
+            return result
 
     def launch(self, index, argv, deadline):
         # Core validates the native selector; privileged stage independently
         # uses the immutable root-owned archive inventory for the same index.
         if time.monotonic() >= deadline:
             raise NativeUnknown("TOTAL_DEADLINE")
-        process = subprocess.Popen(self.argv("download", deadline, index), env=self.command_env,
-                                   stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT, close_fds=True)
+        try:
+            if (type(index) is int and type(self.plan.transaction) is tuple and
+                    0 <= index < len(self.plan.transaction) <= 128):
+                self.download_timing.setdefault(index, {"started_ns": None, "emitted": False})
+                self.download_timing[index]["started_ns"] = _diag_now()
+        except Exception:
+            pass
+        try:
+            process = subprocess.Popen(self.argv("download", deadline, index), env=self.command_env,
+                                       stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                       stderr=subprocess.STDOUT, close_fds=True)
+        except BaseException:
+            self._finish_download(index, observation="raised")
+            raise
         self.handles[index] = process.pid
         return Pending(process, bytearray())
 
     def collect(self, children, deadline):
         observations = {}
-        with selectors.DefaultSelector() as events:
-            for index, child in children.items():
-                if child is None:
-                    raise NativeUnknown("LAUNCH_RESPONSE_UNKNOWN")
-                if not child.eof:
-                    events.register(child.process.stdout, selectors.EVENT_READ, index)
-            while not observations:
-                remaining = deadline - time.monotonic()
-                if remaining <= 0:
-                    return {i: ChildResult("timed_out", "unknown") for i in children}
-                for key, _ in events.select(min(remaining, 0.05)):
-                    child = children[key.data]
-                    data = os.read(key.fileobj.fileno(), 65536)
-                    if not data:
-                        child.eof = True; events.unregister(key.fileobj)
-                    else:
-                        child.output.extend(data)
-                        if len(child.output) > LIMIT:
-                            raise NativeUnknown("NATIVE_OUTPUT_LIMIT", child.process.pid)
+        try:
+            with selectors.DefaultSelector() as events:
                 for index, child in children.items():
-                    code = child.process.poll()
-                    if code is None or not child.eof:
-                        continue
-                    child.process.wait(timeout=0)
-                    child.process.stdout.close()
-                    result = parsed_result(code, bytes(child.output), mode="download", index=index)
-                    self.records[index] = result
-                    observations[index] = ChildResult(result["outcome"], result["settlement"])
-        return observations
+                    if child is None:
+                        raise NativeUnknown("LAUNCH_RESPONSE_UNKNOWN")
+                    if not child.eof:
+                        events.register(child.process.stdout, selectors.EVENT_READ, index)
+                while not observations:
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        for index in children:
+                            # Deadline observation only; a synthesized child is
+                            # never reported settled.
+                            self._finish_download(index, observation="unobserved",
+                                                  outcome="timed_out", settlement="unknown")
+                        return {i: ChildResult("timed_out", "unknown") for i in children}
+                    for key, _ in events.select(min(remaining, 0.05)):
+                        child = children[key.data]
+                        data = os.read(key.fileobj.fileno(), 65536)
+                        if not data:
+                            child.eof = True; events.unregister(key.fileobj)
+                        else:
+                            child.output.extend(data)
+                            if len(child.output) > LIMIT:
+                                raise NativeUnknown("NATIVE_OUTPUT_LIMIT", child.process.pid)
+                    for index, child in children.items():
+                        code = child.process.poll()
+                        if code is None or not child.eof:
+                            continue
+                        child.process.wait(timeout=0)
+                        child.process.stdout.close()
+                        result = parsed_result(code, bytes(child.output), mode="download", index=index)
+                        self.records[index] = result
+                        self._finish_download(index, observation="returned",
+                                              outcome=result["outcome"], settlement=result["settlement"])
+                        observations[index] = ChildResult(result["outcome"], result["settlement"])
+            return observations
+        except BaseException:
+            for index in children:
+                self._finish_download(index, observation="raised")
+            raise
 
     def verify_archive(self, index, archive):
         if archive != self.plan.transaction[index] or self.records[index].get("outcome") != "passed":
@@ -301,16 +467,20 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di
         if python is None:
             raise AcquisitionRefused("DEPENDENCY_PYTHON_ABSENT")
         capture = Path(__file__).with_name("ci_browser_dependency_capture.py")
-        code, raw = observe_command((python, str(capture), "playwright"), deadline=deadline, command_env=command_env)
-        prefix = b"CI_BROWSER_DEPENDENCY_INPUTS="
-        if code != 0 or not raw.startswith(prefix):
-            raise AcquisitionRefused("DEPENDENCY_SOURCE_UNQUALIFIED")
-        source = json.loads(raw[len(prefix):])
-        host = platform.freedesktop_os_release()
-        qualified_direct_packages(distribution_version=source["observed_version"], driver_version=source["driver_version"],
-                                  bundle_sha256=source["input_sha256"]["driver_bundle"], os_id=host.get("ID"),
-                                  os_version=host.get("VERSION_ID"), machine=platform.machine())
-        root = bootstrap_root(packet, command_env, deadline)
+        with _phase_timing("capture") as capture_timer:
+            code, raw = observe_command((python, str(capture), "playwright"), deadline=deadline, command_env=command_env)
+            prefix = b"CI_BROWSER_DEPENDENCY_INPUTS="
+            if code != 0 or not raw.startswith(prefix):
+                raise AcquisitionRefused("DEPENDENCY_SOURCE_UNQUALIFIED")
+            source = json.loads(raw[len(prefix):])
+            host = platform.freedesktop_os_release()
+            qualified_direct_packages(distribution_version=source["observed_version"], driver_version=source["driver_version"],
+                                      bundle_sha256=source["input_sha256"]["driver_bundle"], os_id=host.get("ID"),
+                                      os_version=host.get("VERSION_ID"), machine=platform.machine())
+            capture_timer.returned("passed" if code == 0 else "failed")
+        with _phase_timing("bootstrap") as bootstrap_timer:
+            root = bootstrap_root(packet, command_env, deadline)
+            bootstrap_timer.returned("passed")
         backend = NativeAptBackend(root, command_env, None)
         backend.deadline = deadline
         update = backend.stage("update", deadline)
@@ -320,6 +490,7 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di
         if resolved["outcome"] != "passed" or resolved["settlement"] != "settled":
             raise NativeUnknown("RESOLUTION_UNPROVEN", resolved.get("child_pid"), resolved["outcome"])
         backend.plan = make_download_plan(tuple(Archive(**row) for row in resolved["archives"]))
+        _emit_inventory(backend.plan)
         result = acquire_and_install(backend.plan, backend, deadline=deadline)
         installation = result.installation
         if result.initial_download_failure is not None:
@@ -335,7 +506,10 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di
         if remaining <= 0:
             return {"outcome": "timed_out", "returncode": None, "failure_signature": None,
                     "timeout_settlement": "not_started", "detail": "native packages applied; original total exhausted before browser acquisition" + original_attempt_detail}
-        observation = browser_stream("python -m playwright install chromium", env=command_env, timeout_seconds=remaining)
+        with _phase_timing("browser") as browser_timer:
+            observation = browser_stream("python -m playwright install chromium", env=command_env, timeout_seconds=remaining)
+            browser_timer.returned(getattr(observation, "outcome", None),
+                                   "unknown" if getattr(observation, "timeout_settlement", None) == "unknown" else None)
         browser_outcome = observation.outcome
         if observation.outcome == "passed" and observation.timeout_settlement != "unknown" and result.initial_download_failure is None:
             cleaned = backend.stage("cleanup", deadline)

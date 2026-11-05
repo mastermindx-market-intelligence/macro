@@ -16649,8 +16649,8 @@ jobs:
       # step named it, so the guard for that fix was itself dark from the hour
       # it landed. Same class the unrun-* lanes close; caught by
       # scripts/audit_unrun_tests.py on the very next census.
-      - name: render-lane scope contract (intl must stay in the publish scopes)
-        run: python -m pytest tests/test_render_intl_scope.py -q
+      - name: render-lane intl scope and durable publication contracts
+        run: python -m pytest tests/test_render_intl_scope.py tests/test_intl_durable_publication.py tests/test_render_intl_durable.py tests/test_intl_durable_native_inputs.py tests/test_intl_native_read_observer.py -q
       # A run: scalar over GitHub's length cap makes GitHub DE-REGISTER the workflow.
       # render.yml vanished from the registry on 2026-07-27 (#3826) and the express lane
       # was dead ~1h. yaml.safe_load, check_workflow_yaml.py and actionlint ALL pass on an

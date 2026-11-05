@@ -638,7 +638,12 @@ def _cgl_compact_summary(artifact: dict | None) -> dict | None:
 
 
 
-def main(*, retained_library_receipt=None) -> int:
+def main(*, retained_library_receipt=None, publication_result=None) -> int:
+    # Optional same-invocation observation for the opt-in durable render caller.
+    # The normal renderer keeps its existing resilient return semantics. A caller
+    # must never infer successful publication from that exit status or an old file.
+    if publication_result is not None:
+        publication_result.clear()
     # Verify reuse before engine/render writes can change the bound input tree.
     # A failed receipt never silently falls back to another stock analysis.
     try:
@@ -1471,6 +1476,15 @@ def main(*, retained_library_receipt=None) -> int:
         )
         write_page(site / "intl.html", macro_html)
         write_page(site / "intl_stocks.html", stocks_html)
+        # Observe the actual normal write_page output (including its incumbent
+        # Shared Shell/data-base transforms), not the pre-transform template.
+        if publication_result is not None:
+            from hashlib import sha256
+            published_pages = {
+                "site/" + name: sha256((site / name).read_bytes()).hexdigest()
+                for name in ("intl.html", "intl_stocks.html")
+            }
+        published_descriptor = None
         try:
             from lib.intl_generation_publication import publish_generation, publish_unavailable_generation
             if generation_sink.get("contract") is not None:
@@ -1479,9 +1493,9 @@ def main(*, retained_library_receipt=None) -> int:
                 if points is not None and contract.get("policy_points_ref") is None:
                     from lib.intl_policy_publication import publish_policy_points
                     contract["policy_points_ref"] = publish_policy_points(data_root=config.data_dir(), contract=points)
-                publish_generation(data_root=config.data_dir(), contract=contract)
+                published_descriptor = publish_generation(data_root=config.data_dir(), contract=contract)
             else:
-                publish_unavailable_generation(data_root=config.data_dir())
+                published_descriptor = publish_unavailable_generation(data_root=config.data_dir())
         except Exception as exc:
             # A file/publication failure never re-runs a collector. Dependent
             # native readers remain unavailable until exact bytes are served.
@@ -1516,6 +1530,12 @@ def main(*, retained_library_receipt=None) -> int:
             "contagion_state": contagion_state,
         }
         (idir / "hub.json").write_text(json.dumps(_hub_payload, indent=2))
+        if publication_result is not None:
+            publication_result.update(
+                risk_publication=_risk_publication,
+                descriptor=published_descriptor,
+                pages=published_pages,
+            )
     except Exception as e:  # noqa: BLE001
         log.error("intl page render failed (%s); skipping", e)
         return 0

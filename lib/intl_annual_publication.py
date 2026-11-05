@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from lib.intl_macro_publication import _read_stable_once, _reject_duplicate_keys
+from lib.intl_macro_publication import _read_stable_once, _reject_duplicate_keys, _observe_native_path
 
 SERIES = "JPN.BCA_NGDPD.A"
 CACHE = Path("imf_weo") / "BCA_NGDPD_JPN.parquet"
@@ -165,6 +165,7 @@ def read_current_account_materialization(*, data_root):
     pointer = root / DIRECTORY / "current.json"
     verified_receipt_sha = None
     try:
+        _observe_native_path(pointer)
         pointer.lstat()
     except FileNotFoundError:
         return {"status": "missing"}

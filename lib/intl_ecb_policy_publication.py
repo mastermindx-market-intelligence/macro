@@ -9,7 +9,7 @@ from io import BytesIO
 import json
 import math
 import pandas as pd
-from lib.intl_macro_publication import _read_stable_once, _reject_duplicate_keys, _reject_nonstandard_constant
+from lib.intl_macro_publication import _read_stable_once, _reject_duplicate_keys, _reject_nonstandard_constant, _observe_native_path
 from lib.intl_boe_publication import _sha, _json, _utc, _put, _publish
 
 COLUMN = 'ez_depo_rate'
@@ -89,7 +89,9 @@ def capture_ecb_policy_commit(*,data_root,returned,response_bytes,source_url,
 
 def read_ecb_policy_materialization(*,data_root):
     root=Path(data_root);directory=root/DIRECTORY;pointer=directory/'current.json';digest=None
-    try:pointer.lstat()
+    try:
+        _observe_native_path(pointer)
+        pointer.lstat()
     except FileNotFoundError:return {'status':'missing','receipt':None,'receipt_sha256':None,'parsed':None}
     except OSError:return {'status':'failed','receipt':None,'receipt_sha256':None,'parsed':None}
     try:

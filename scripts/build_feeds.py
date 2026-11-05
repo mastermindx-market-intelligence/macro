@@ -70,7 +70,7 @@ def _asof_of(obj) -> str | None:
     return None
 
 
-def build() -> dict:
+def build(*, render_only: bool = False) -> dict:
     """Assemble every feed; returns {artifact_name: asof|None} for the meta."""
     out = _feeds_dir()
     data = config.data_dir()
@@ -133,23 +133,33 @@ def build() -> dict:
     # 6. event calendar — first persistent artifact (engine/event_calendar.py was
     #    render-inline only). asof = the schedule-pull date: calendar data IS
     #    forward-looking; freshness means "assembled today".
-    try:
-        from engine import event_calendar as ec
-        today = datetime.now(timezone.utc).date()
-        cal = {
-            "schema_version": SCHEMA_VERSION,
-            "asof": today.isoformat(),
-            "horizon_days": EVENT_HORIZON_D,
-            "us_macro": ec.us_macro_events(today, EVENT_HORIZON_D),
-            "high_impact": ec.high_impact_strip(today, EVENT_HORIZON_D),
-            "commodity": ec.commodity_events(today, EVENT_HORIZON_D),
-            "is_context_only": True,
-        }
-        _write_json(out, "event_calendar.json", cal)
-        note("event_calendar.json", cal["asof"], "engine/event_calendar.py")
-    except Exception as e:  # noqa: BLE001
-        log.warning("feed event_calendar.json failed: %s — skipped", e)
-
+    if render_only:
+        # The default normal feed builder retains acquisition behavior. The
+        # explicit durable render cannot obtain a calendar release/auction feed:
+        # retain an existing calendar's actual bytes/asof, or omit it honestly.
+        retained_calendar = out / "event_calendar.json"
+        retained_value = _read_json(retained_calendar)
+        if isinstance(retained_value, dict):
+            # Preserve the incumbent producer provenance as well as the old
+            # payload/asof. This invocation did not pull or reassemble it.
+            note("event_calendar.json", _asof_of(retained_value), "engine/event_calendar.py")
+    else:
+        try:
+            from engine import event_calendar as ec
+            today = datetime.now(timezone.utc).date()
+            cal = {
+                "schema_version": SCHEMA_VERSION,
+                "asof": today.isoformat(),
+                "horizon_days": EVENT_HORIZON_D,
+                "us_macro": ec.us_macro_events(today, EVENT_HORIZON_D),
+                "high_impact": ec.high_impact_strip(today, EVENT_HORIZON_D),
+                "commodity": ec.commodity_events(today, EVENT_HORIZON_D),
+                "is_context_only": True,
+            }
+            _write_json(out, "event_calendar.json", cal)
+            note("event_calendar.json", cal["asof"], "engine/event_calendar.py")
+        except Exception as e:  # noqa: BLE001
+            log.warning("feed event_calendar.json failed: %s — skipped", e)
     # 7. intl spillover — the per-market intl radars (engine/risk_radar_intl)
     #    were RENDER-INLINE only (computed inside build_china/build_hk, never
     #    persisted); this makes them a durable plane. snapshot() never raises

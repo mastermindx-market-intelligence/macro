@@ -18,7 +18,7 @@ import re
 
 import pandas as pd
 
-from lib.intl_macro_publication import _read_stable_once, _reject_duplicate_keys
+from lib.intl_macro_publication import _read_stable_once, _reject_duplicate_keys, _observe_native_path
 from lib.intl_yield_publication import _json, _sha, _utc, _put
 from lib.intl_eurostat_source import parse_eurostat_series
 
@@ -183,6 +183,7 @@ def read_eurostat_materialization(*, field, data_root):
     pointer = directory / "current.json"
     verified_digest = None
     try:
+        _observe_native_path(pointer)
         pointer.lstat()
     except FileNotFoundError:
         return {"status": "missing"}

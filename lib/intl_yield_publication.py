@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from lib.intl_macro_publication import _read_stable_once, _reject_duplicate_keys
+from lib.intl_macro_publication import _read_stable_once, _reject_duplicate_keys, _observe_native_path
 
 COLUMN = "JP_yield_10y"
 SOURCE_ID = "IRLTLT01JPM156N"
@@ -134,6 +134,7 @@ def read_jp_yield_materialization(*, data_root):
     pointer = root / DIRECTORY / "current.json"
     verified_receipt_sha = None
     try:
+        _observe_native_path(pointer)
         pointer.lstat()
     except FileNotFoundError:
         return {"status": "missing"}
