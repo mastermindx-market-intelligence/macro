@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 #: The exact metadata the inspection is allowed to publish.
 PUBLISHED = {"provider", "model", "cap_id", "capability_id", "cost_basis",
-             "workload_policy"}
+             "workload_policy", "transport_identity"}
 
 
 def test_inspection_publishes_the_real_selected_identity_without_a_credential(binding):

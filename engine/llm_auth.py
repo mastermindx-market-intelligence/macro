@@ -371,7 +371,8 @@ def is_fabric_selection(providers: list[dict]) -> bool:
     return False
 
 
-def build_fabric_provider(factory, *, request_id: str, workload_cfg=None) -> dict:
+def build_fabric_provider(factory, *, request_id: str, workload_cfg=None,
+                          prior_admission_possible: bool = False) -> dict:
     """Compose one server-injected, turn-scoped client without discovering keys.
 
     The existing service container owns the immutable factory. It must construct a
@@ -386,6 +387,8 @@ def build_fabric_provider(factory, *, request_id: str, workload_cfg=None) -> dic
     from engine.provider_production_modes import ApplicationFabricFactory
 
     owned_factory = type(factory) is ApplicationFabricFactory
+    if type(prior_admission_possible) is not bool or prior_admission_possible and not owned_factory:
+        raise FabricProviderError("fabric_restoration_unqualified")
     if "MM_PROVIDER_APPLICATION_MODE" in os.environ:
         selected_mode, _ = _application_mode({})
         if not owned_factory or factory.mode_id != selected_mode:
@@ -398,7 +401,8 @@ def build_fabric_provider(factory, *, request_id: str, workload_cfg=None) -> dic
     workload = None
     try:
         if owned_factory:
-            bound, workload = factory._bind_with_workload(workload_cfg)
+            bound, workload = factory._bind_with_workload(workload_cfg, operation_id=request_id,
+                prior_admission_possible=prior_admission_possible)
         else:
             bound = factory()
     except Exception:
@@ -417,8 +421,11 @@ def build_fabric_provider(factory, *, request_id: str, workload_cfg=None) -> dic
         **bound, "name": "fabric", "exclusive": True, "cred": "server-injected",
         "env_var": "", "_fabric_request_id": request_id, "_fabric_step": 0,
         "_fabric_pending": False, "_fabric_failure": None,
-        "_fabric_usage_known": True, "_fabric_input": 0, "_fabric_output": 0,
+        "_fabric_usage_known": not prior_admission_possible, "_fabric_input": 0, "_fabric_output": 0,
         "_fabric_known_responses": 0,
+        "_fabric_usage_observations": [], "_fabric_observed_ids": set(),
+        "_fabric_callback_lock": threading.Lock(),
+        "_fabric_prior_admission_possible": prior_admission_possible,
     }
     provider["client"] = _FabricConsumerClient(bound["client"], provider)
     # The TRUSTED caller's declared spend sink travels with the bound
@@ -477,11 +484,52 @@ def fabric_request_kwargs(provider: dict, kwargs: dict) -> dict:
     out["request_id"] = f"{provider['_fabric_request_id']}:brain:{provider['_fabric_step']}"
     provider["_fabric_step"] += 1
     provider["_fabric_pending"] = True
+    provider["_fabric_pending_request_id"] = out["request_id"]
     return out
+
+
+def _fabric_observed_usage(provider: dict, usage, model, request_id) -> None:
+    """Retain one original observation in the existing operation's counters.
+
+    This is bounded in-memory response bookkeeping, not a second usage ledger.
+    Partial counts remain metadata; only complete pairs produce ledger deltas.
+    """
+    if request_id != provider.get("_fabric_pending_request_id"):
+        return
+    seen = provider.setdefault("_fabric_observed_ids", set())
+    if request_id in seen:
+        return
+    seen.add(request_id)
+    values = [getattr(usage, name, None) for name in ("input_tokens", "output_tokens")]
+    values = [v if type(v) is int and 0 <= v <= 10 ** 12 else None for v in values]
+    model = model if isinstance(model, str) and _FABRIC_ID.fullmatch(model) else None
+    provider["_fabric_last_observation"] = {"request_id": request_id, "serving_model": model,
+        "input_tokens": values[0], "output_tokens": values[1]}
+    if all(v is not None for v in values):
+        provider["_fabric_input"] += values[0]
+        provider["_fabric_output"] += values[1]
+        provider["_fabric_known_responses"] += 1
+        provider.setdefault("_fabric_usage_observations", []).append((model, *values))
+    else:
+        provider["_fabric_usage_known"] = False
 
 
 def fabric_failure(provider: dict, exc: Exception) -> FabricProviderError:
     """Stop this turn without poisoning a process-wide account or another turn."""
+    from engine.fabric_inference_client import FabricInferenceError
+
+    # A late original observation must survive a prior local-close error.
+    # Repeated propagation through wrapper/make_call cannot append it twice.
+    if isinstance(exc, FabricInferenceError):
+        if exc.observed_usage is not None:
+            _fabric_observed_usage(provider, exc.observed_usage,
+                exc.serving_model, exc.request_id)
+        if exc.disposition in {"terminal", "terminal_receipt_only"}:
+            provider["_fabric_pending"] = False
+        if exc.disposition == "terminal_receipt_only":
+            provider["_fabric_usage_known"] = False
+        if exc.disposition is not None:
+            provider["_fabric_native_disposition"] = exc.disposition
     if provider.get("_fabric_failure") is not None:
         return provider["_fabric_failure"]
     unknown = bool(getattr(exc, "effect_unknown", provider.get("_fabric_pending", False)))
@@ -525,14 +573,8 @@ def fabric_response(provider: dict, response) -> None:
             raise FabricProviderError("fabric_response_invalid", effect_unknown=True)
     if len(tools) != len(set(tools)) or bool(tools) != (stop == "tool_use"):
         raise FabricProviderError("fabric_tool_response_invalid", effect_unknown=True)
-    usage = getattr(response, "usage", None)
-    values = [getattr(usage, name, None) for name in ("input_tokens", "output_tokens")]
-    if all(type(value) is int and value >= 0 for value in values):
-        provider["_fabric_input"] += values[0]
-        provider["_fabric_output"] += values[1]
-        provider["_fabric_known_responses"] += 1
-    else:
-        provider["_fabric_usage_known"] = False
+    _fabric_observed_usage(provider, getattr(response, "usage", None), response.model,
+                           provider.get("_fabric_pending_request_id"))
     provider["_fabric_pending"] = False
     # Keep usage from a completed empty response, but prohibit hidden recovery.
     if not text_present and not tools:
@@ -553,10 +595,24 @@ def fabric_usage(provider: dict) -> dict:
 def _fabric_usage_delta(provider, before):
     if provider["_fabric_known_responses"] == before[2]:
         return None
+    observations = provider.get("_fabric_usage_observations", [])[before[2]:]
+    grouped = {}
+    for model, input_tokens, output_tokens in observations:
+        totals = grouped.setdefault(model, [0, 0])
+        totals[0] += input_tokens
+        totals[1] += output_tokens
+    partial = fabric_usage(provider)["usage_state"] != "known"
+    # A callback may complete a bound-model step before a mismatched-model
+    # terminal. Attribute each group to its actually observed model, without
+    # changing the immutable provider binding or creating another ledger.
+    groups = tuple(SimpleNamespace(input_tokens=values[0], output_tokens=values[1],
+        partial_unknown=partial, serving_model=model) for model, values in grouped.items())
     return SimpleNamespace(
         input_tokens=provider["_fabric_input"] - before[0],
         output_tokens=provider["_fabric_output"] - before[1],
-        partial_unknown=fabric_usage(provider)["usage_state"] != "known",
+        partial_unknown=partial,
+        serving_model=next(iter(grouped)) if len(grouped) == 1 else None,
+        observations=groups if len(groups) > 1 else (),
     )
 
 
@@ -628,7 +684,12 @@ class _FabricMessages:
 
 class _FabricConsumerClient:
     def __init__(self, client, provider):
+        self._client = client
         self.messages = _FabricMessages(client, provider)
+
+    def close(self):
+        close = getattr(self._client, "close", None)
+        return close() if callable(close) else None
 
 
 # Ordinary consumers cache selection recipes, never live Fabric turn clients.
@@ -675,12 +736,22 @@ def _shared_fabric_providers(cfg: dict, *, mode_id: str, source: str) -> list[di
 
 
 def close_fabric_provider(provider: dict) -> None:
-    """Close this local binding without declaring the upstream effect settled."""
-    if not is_fabric_provider(provider) or provider.get("_fabric_recipe"):
+    """Invalidate locally and forward the original native close exactly once."""
+    if (not is_fabric_provider(provider) or provider.get("_fabric_recipe")
+            or provider.get("_fabric_closed")):
         return
     if provider.get("_fabric_pending"):
         fabric_failure(provider, FabricProviderError("fabric_operation_unsettled", effect_unknown=True))
     provider["_fabric_closed"] = True
+    try:
+        result = provider["client"].close()
+        if (type(result) is dict and set(result) == {"disposition", "closed", "effect_unknown", "attempted"}
+                and result["disposition"] in {"local_only", "refused", "pending", "effect_unknown", "closed"}
+                and all(type(result[k]) is bool for k in ("closed", "effect_unknown", "attempted"))):
+            provider["_fabric_close"] = dict(result)
+    except Exception:
+        provider["_fabric_close"] = {"disposition": "effect_unknown", "closed": False,
+            "effect_unknown": True, "attempted": True}
 
 
 class ProviderOperation:
@@ -703,7 +774,7 @@ class ProviderOperation:
         return self._providers
 
     def close(self) -> None:
-        """Invalidate retained local Fabric references, without claiming lease release."""
+        """Close the original binding; only its native receipt can prove release."""
         if self._closed:
             return
         self._closed = True
@@ -721,15 +792,27 @@ class ProviderOperation:
 
 
 def begin_operation(providers, *, operation_id: str | None = None,
-                    context: str = "") -> ProviderOperation:
+                    context: str = "", prior_admission_possible: bool = False) -> ProviderOperation:
     """Bind the current trusted selection once, outside the caller's retry loop."""
     providers = list(providers or [])
-    is_fabric_selection(providers)
+    selected = is_fabric_selection(providers)
+    if type(prior_admission_possible) is not bool:
+        raise FabricProviderError("fabric_restoration_unqualified")
     recipes = [p for p in providers if p.get("_fabric_recipe")]
     if not recipes:
         # A cached native client cannot bypass a host that now requires Fabric.
         if APPLICATION_MODE_ENV in os.environ and not is_fabric_selection(providers):
             raise FabricProviderError("fabric_selection_changed")
+        if selected:
+            original_id = providers[0].get("_fabric_request_id")
+            if (not isinstance(original_id, str) or not _FABRIC_ID.fullmatch(original_id)
+                    or operation_id is not None and operation_id != original_id):
+                raise FabricProviderError("fabric_operation_identity_mismatch")
+            if prior_admission_possible and not providers[0].get("_fabric_prior_admission_possible"):
+                raise FabricProviderError("fabric_restoration_mismatch")
+            operation_id = original_id
+        elif prior_admission_possible:
+            raise FabricProviderError("fabric_restoration_unqualified")
         return ProviderOperation(providers, operation_id=str(operation_id or ""),
                                  context=context)
     if len(recipes) != 1 or len(providers) != 1:
@@ -752,7 +835,8 @@ def begin_operation(providers, *, operation_id: str | None = None,
     except Exception:
         raise FabricProviderError("fabric_owner_unavailable") from None
     # The ONE existing binder performs the real owner/policy/capability checks.
-    provider = build_fabric_provider(factory, request_id=op_id, workload_cfg=selected_cfg)
+    provider = build_fabric_provider(factory, request_id=op_id, workload_cfg=selected_cfg,
+        prior_admission_possible=prior_admission_possible)
     for key in ("usage_lane", "usage_stage"):
         if cfg.get(key):
             provider[key] = str(cfg[key])
@@ -873,6 +957,15 @@ def make_call(
 
         any_tried = True
         _t0 = time.time()
+        _fabric_callback_guard = None
+        if is_fabric_provider(p):
+            _fabric_callback_guard = p["_fabric_callback_lock"]
+            if not _fabric_callback_guard.acquire(blocking=False):
+                # The original callback alone owns its usage snapshot and
+                # settlement. A retained reference cannot race a second delta
+                # capture while that callback finishes. No waiting or retry.
+                raise FabricProviderError("fabric_callback_in_progress",
+                    effect_unknown=bool(p.get("_fabric_pending")))
         _fabric_before = (p.get("_fabric_input", 0), p.get("_fabric_output", 0),
                           p.get("_fabric_known_responses", 0))
         try:
@@ -944,6 +1037,9 @@ def make_call(
                 context, name, env_var, type(exc).__name__, exc,
             )
             continue
+        finally:
+            if _fabric_callback_guard is not None:
+                _fabric_callback_guard.release()
 
     # All providers exhausted
     if last_exc is not None:
@@ -1032,6 +1128,11 @@ def _capture_usage(p: dict, usage_obj, context: str) -> None:
         if str(p.get("usage_sink") or "").lower() == "none":
             return
 
+        if is_fabric_provider(p) and getattr(usage_obj, "observations", ()):
+            for observation in usage_obj.observations:
+                _capture_usage(p, observation, context)
+            return
+
         in_tok = int(getattr(usage_obj, "input_tokens", 0) or 0)
         out_tok = int(getattr(usage_obj, "output_tokens", 0) or 0)
         cr_tok = int(getattr(usage_obj, "cache_read_input_tokens", 0) or 0)
@@ -1053,7 +1154,8 @@ def _capture_usage(p: dict, usage_obj, context: str) -> None:
         else:
             key_id = None
 
-        model = p.get("model") or None
+        model = getattr(usage_obj, "serving_model", p.get("model")) if is_fabric_provider(p) else p.get("model")
+        model = model or None
         cycle_id = str(p.get("usage_cycle_id") or "")
         stage = str(p.get("usage_stage") or context or "")
 

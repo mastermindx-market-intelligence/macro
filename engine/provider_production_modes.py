@@ -75,6 +75,7 @@ CONTRACT
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import math
@@ -672,6 +673,7 @@ class _ApplicationFabricTransport:
     capability_id: str
     qualified: bool = False
     application_allowed: bool = False
+    protocol: str = "openai_chat_v1"
 
 
 # The only inspected application HTTP implementation is the existing
@@ -838,6 +840,8 @@ class ApplicationFabricFactory:
                     ("fabric",), (),
                 )
         transport = mode.transport
+        if transport.protocol not in {"openai_chat_v1", "native_application_v1"}:
+            _application_refuse("fabric_application_protocol_invalid")
         if not mode.enabled:
             _application_refuse("fabric_application_disabled")
         if transport.qualified is not True or mode.qualification != PROFILE_QUALIFIED_CANARY:
@@ -866,13 +870,19 @@ class ApplicationFabricFactory:
             "capability_id": transport.capability_id,
             "cost_basis": transport.cost_basis,
             "workload_policy": decision.receipt(),
+            # Commit the private source recipe without publishing its endpoint
+            # or secret-reference name. This contains no credential value.
+            "transport_identity": hashlib.sha256(json.dumps({
+                **{key: getattr(transport, key) for key in _APPLICATION_IDENTITY_FIELDS},
+                "protocol": transport.protocol,
+            }, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest(),
         }
 
     @staticmethod
     def _commit_inspection(identity: Mapping[str, Any]) -> str:
         # A snapshot only narrows an already eligible owner. It grants nothing.
         fields = {"provider", "model", "cap_id", "capability_id", "cost_basis",
-                  "workload_policy"}
+                  "workload_policy", "transport_identity"}
         if type(identity) is not dict or set(identity) != fields:
             _application_refuse("fabric_application_inspection_invalid")
         try:
@@ -908,21 +918,34 @@ class ApplicationFabricFactory:
             _application_refuse("fabric_application_identity_changed")
         return identity
 
-    def _bind_with_workload(self, caller_cfg: Mapping[str, Any] | None = None):
+    def _bind_with_workload(self, caller_cfg: Mapping[str, Any] | None = None,
+                            *, operation_id: str | None = None,
+                            prior_admission_possible: bool = False):
         """Internal composition returns the exact policy receipt with the client."""
         mode, transport, decision = self._eligibility(caller_cfg)
         if (self._inspection_commitment is not None
                 and self._inspection_commitment != self._commit_inspection(
                     self._inspection_identity(transport, decision))):
             _application_refuse("fabric_application_identity_changed")
+        from engine.fabric_inference_client import (
+            FabricInferenceClient, NATIVE_PROTOCOL, validate_native_operation_id,
+        )
+
+        native = transport.protocol == NATIVE_PROTOCOL
+        if type(prior_admission_possible) is not bool or prior_admission_possible and not native:
+            _application_refuse("fabric_application_restoration_invalid")
+        if native:
+            # Original identity is part of the trusted owner join. A caller
+            # cannot omit/rewrite it and still touch the service credential.
+            validate_native_operation_id(operation_id)
         credential = _resolve_credential(mode, None)
         if credential is None:
             _application_refuse("fabric_application_unconfigured")
 
-        from engine.fabric_inference_client import FabricInferenceClient
-
         client = FabricInferenceClient(
             base_url=transport.base_url, proxy_token=credential, model=transport.model,
+            **({"protocol": NATIVE_PROTOCOL, "operation_id": operation_id,
+                "prior_admission_possible": prior_admission_possible} if native else {}),
         )
         return ({"client": client, "model": transport.model,
                  "provider": transport.provider_id, "cost_basis": transport.cost_basis,

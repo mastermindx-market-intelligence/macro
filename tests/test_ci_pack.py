@@ -5469,9 +5469,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Trusted application-owner composition at 26f62c1a adds six measured weight
 # seconds: 137/5930, 137/5945, 131/5686; all ten packs, no new selected jobs.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_944),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_959),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_700),
+    ("templates/index.html", 137, 5_953),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_709),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5479,6 +5479,13 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Native application client (2026-11-05): canonical head closure/packing
+    measured index137/5953, free137/5968 and Prophet131/5709, all ten packs,
+    zero missing closure paths or unrun suites. The existing Fabric step now
+    fetches the closed immutable native fixture and runs two additional
+    suites, adding nine estimated weight seconds with no selected-job entrants.
+    Preserve every job-count, pack, runtime and admission bound.
 
     Cached Brain callbacks and Translation (2026-11-05): canonical head
     closure/packing functions measured index137/5944, free137/5959 and

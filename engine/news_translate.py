@@ -670,6 +670,7 @@ def _fabric_cache_identity(inspected: dict, mode_id: str, cfg: dict, target: str
         str(inspected.get("cap_id") or ""),
         str(inspected.get("capability_id") or ""),
         str(inspected.get("cost_basis") or ""),
+        str(inspected.get("transport_identity") or ""),
         ",".join(str(p) for p in profiles),
         str(policy.get("policy_revision") or ""),
         str(policy.get("policy_hash") or ""),
