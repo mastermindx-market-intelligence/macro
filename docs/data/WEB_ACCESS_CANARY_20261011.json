@@ -1,0 +1,261 @@
+{
+  "schema_version": "mastermind.web_data_source_verification/v1",
+  "source_candidate_only": true,
+  "operation_id": "web-data-lab-access-20261011-c4-001",
+  "base_commit": "c12ecb86c312542a5f00f9d6e419cdc3542a3503",
+  "focused_regression": {
+    "passed": 296,
+    "failed": 0,
+    "seconds": 5.01,
+    "python": "3.14.7",
+    "scope": "five new suites plus existing Lab, Lab CLI and TrialLedger",
+    "full_suite_run": false
+  },
+  "independent_review": "No release-blocking findings remained after source delta verification.",
+  "receipts": [
+    {
+      "request": {
+        "action": "read",
+        "ref": "macro_snapshot:stocks/AMD.parquet",
+        "columns": [
+          "Date",
+          "close",
+          "volume"
+        ],
+        "time_column": "Date",
+        "start": "2026-10-01",
+        "end": "2026-10-08",
+        "limit": 10
+      },
+      "exit_code": 0,
+      "raw_response_sha256": "e6ad43765c69e98a2846a2a80270c8088b599713ce466d1d37d8143b0ade16d1",
+      "observed_at": "2026-10-11T01:55:44.054931+00:00",
+      "source": {
+        "ref": "macro_snapshot:stocks/AMD.parquet",
+        "root_alias": "macro_snapshot",
+        "relative_path": "stocks/AMD.parquet",
+        "evidence_kind": "unqualified_snapshot",
+        "limitations": "Concrete local Macro checkout data. File presence does not establish current production freshness or point-in-time reconstruction.",
+        "file_bytes": 305155,
+        "file_version": "statv1:85d6bc7d3bf61042f98ec4131c2e97b8a87504198d34fd40b0044127d57dccbe",
+        "file_version_basis": "device_inode_size_mtime_ctime_not_content_hash",
+        "content_sha256": null,
+        "filesystem_mtime": "2026-10-09T06:17:52.386838+00:00",
+        "filesystem_mtime_is_data_freshness": false,
+        "registry_admission": "NOT_INFERRED_FROM_FILE_PRESENCE"
+      },
+      "query": {
+        "ref": "macro_snapshot:stocks/AMD.parquet",
+        "file_version": "statv1:85d6bc7d3bf61042f98ec4131c2e97b8a87504198d34fd40b0044127d57dccbe",
+        "columns": [
+          "Date",
+          "close",
+          "volume"
+        ],
+        "time_column": "Date",
+        "start": "2026-10-01",
+        "end": "2026-10-08",
+        "equals": null,
+        "offset": 0,
+        "limit": 10
+      },
+      "query_receipt_sha256": "bcb0f396ef43819aff420ea1ba0949f765992a762992928677b29d6393d2c5a5",
+      "rows_returned": 6,
+      "row_positions": [
+        11730,
+        11731,
+        11732,
+        11733,
+        11734,
+        11735
+      ],
+      "scan_complete": true,
+      "scanned_rows": 11736,
+      "rows_sha256": "4b6218c62e0dfa63d7c60cfe91584469bc7e647cd55c92ffb040add3e0a967e2",
+      "source_rows_omitted_from_git": true
+    },
+    {
+      "request": {
+        "action": "read",
+        "ref": "macro_snapshot:options_flow/summary_AMD.parquet",
+        "columns": [
+          "__index_level_0__",
+          "spot",
+          "premium_mn"
+        ],
+        "time_column": "__index_level_0__",
+        "start": "2026-08-10",
+        "limit": 5
+      },
+      "exit_code": 0,
+      "raw_response_sha256": "43cd01a4dc7acc01282366eb641ffc86e4cf5a96fc091830716994ec670c5e85",
+      "observed_at": "2026-10-11T01:55:44.378676+00:00",
+      "source": {
+        "ref": "macro_snapshot:options_flow/summary_AMD.parquet",
+        "root_alias": "macro_snapshot",
+        "relative_path": "options_flow/summary_AMD.parquet",
+        "evidence_kind": "unqualified_snapshot",
+        "limitations": "Concrete local Macro checkout data. File presence does not establish current production freshness or point-in-time reconstruction.",
+        "file_bytes": 14230,
+        "file_version": "statv1:ebede9facf566b83fe12ca213ee3f37ad7341edeff8be8e433ed437cb444d848",
+        "file_version_basis": "device_inode_size_mtime_ctime_not_content_hash",
+        "content_sha256": null,
+        "filesystem_mtime": "2026-09-20T12:02:51.057694+00:00",
+        "filesystem_mtime_is_data_freshness": false,
+        "registry_admission": "NOT_INFERRED_FROM_FILE_PRESENCE"
+      },
+      "query": {
+        "ref": "macro_snapshot:options_flow/summary_AMD.parquet",
+        "file_version": "statv1:ebede9facf566b83fe12ca213ee3f37ad7341edeff8be8e433ed437cb444d848",
+        "columns": [
+          "__index_level_0__",
+          "spot",
+          "premium_mn"
+        ],
+        "time_column": "__index_level_0__",
+        "start": "2026-08-10",
+        "end": null,
+        "equals": null,
+        "offset": 0,
+        "limit": 5
+      },
+      "query_receipt_sha256": "8d020555c3798a9cf537c9a99c9e2c6750c53bea9a6609e7c03eac186c3c7103",
+      "rows_returned": 2,
+      "row_positions": [
+        143,
+        144
+      ],
+      "scan_complete": true,
+      "scanned_rows": 145,
+      "rows_sha256": "f2ed6943ebde76d1a0558999bf6aa8ac73b175c5ff0d30314d0292aebd369b92",
+      "source_rows_omitted_from_git": true
+    },
+    {
+      "request": {
+        "action": "lab_run",
+        "request": {
+          "signal_id": "high52w_new",
+          "refs": [
+            "macro_snapshot:stocks/AMD.parquet"
+          ],
+          "horizon_bars": 21,
+          "cost_bps": 5.0,
+          "n_configs_searched": 1
+        },
+        "time_column": "Date",
+        "column_map": {
+          "close": "close",
+          "high": "high",
+          "low": "low",
+          "volume": "volume"
+        },
+        "start": "2019-01-01",
+        "end": "2026-10-08",
+        "expected_versions": {
+          "macro_snapshot:stocks/AMD.parquet": "statv1:85d6bc7d3bf61042f98ec4131c2e97b8a87504198d34fd40b0044127d57dccbe"
+        }
+      },
+      "exit_code": 2,
+      "raw_response_sha256": "93c1a2d6ca540f94d2416378930ed7734700ec889c3ee833468646a6089f7db4",
+      "result": {
+        "schema_version": "mastermind.data_workspace/v1",
+        "error": "UNREVIEWED_SIGNAL_INPUTS",
+        "error_type": "WebLabError"
+      }
+    },
+    {
+      "request": {
+        "action": "lab_run",
+        "request": {
+          "signal_id": "golden_cross_7_35",
+          "refs": [
+            "macro_snapshot:stocks/AMD.parquet"
+          ],
+          "horizon_bars": 21,
+          "cost_bps": 5.0,
+          "n_configs_searched": 1
+        },
+        "bar_frequency": "daily",
+        "time_column": "Date",
+        "column_map": {
+          "close": "close",
+          "high": "high",
+          "low": "low",
+          "volume": "volume"
+        },
+        "start": "2019-01-01",
+        "end": "2026-10-08",
+        "expected_versions": {
+          "macro_snapshot:stocks/AMD.parquet": "statv1:85d6bc7d3bf61042f98ec4131c2e97b8a87504198d34fd40b0044127d57dccbe"
+        }
+      },
+      "exit_code": 0,
+      "raw_response_sha256": "b0b5e465c701121f737d5887c1364b6876e61f8a187eeb764167caa125938da1",
+      "run": {
+        "schema_version": "mastermind.web_lab_run/v1",
+        "run_id": "run-20261011T020126Z-fb8182118559",
+        "state": "SUCCEEDED",
+        "exit_code": 0,
+        "request_sha256": "df409ddfa35f2c32585810b6e52baa6e8556aadd7e1119325efe61b9ddff8012",
+        "process_id": 2095,
+        "failure_code": null,
+        "completed_at": "2026-10-11T02:01:27.680806+00:00",
+        "execution": "synchronous_bounded_existing_lab_recipe",
+        "wall_limit_seconds": 60,
+        "artifact_files": [
+          "request.json",
+          "status.json",
+          "worker.stdout",
+          "worker.stderr",
+          "result.json"
+        ],
+        "ledger_owner": "engine.trial_ledger.TrialLedger.with_declared_budget",
+        "production_ledger_written": false
+      },
+      "sources": [
+        {
+          "ref": "macro_snapshot:stocks/AMD.parquet",
+          "root_alias": "macro_snapshot",
+          "relative_path": "stocks/AMD.parquet",
+          "evidence_kind": "unqualified_snapshot",
+          "limitations": "Concrete local Macro checkout data. File presence does not establish current production freshness or point-in-time reconstruction.",
+          "file_bytes": 305155,
+          "file_version": "statv1:85d6bc7d3bf61042f98ec4131c2e97b8a87504198d34fd40b0044127d57dccbe",
+          "file_version_basis": "device_inode_size_mtime_ctime_not_content_hash",
+          "content_sha256": null,
+          "filesystem_mtime": "2026-10-09T06:17:52.386838+00:00",
+          "filesystem_mtime_is_data_freshness": false,
+          "registry_admission": "NOT_INFERRED_FROM_FILE_PRESENCE",
+          "loaded_rows": 1953,
+          "scanned_rows": 11736,
+          "first_stored_time": "2019-01-02T00:00:00",
+          "last_stored_time": "2026-10-08T00:00:00",
+          "column_map": {
+            "close": "close",
+            "high": "high",
+            "low": "low",
+            "volume": "volume"
+          },
+          "time_column": "Date",
+          "date_bounds": {
+            "start": "2019-01-01",
+            "end": "2026-10-08"
+          },
+          "price_basis": "preserved as stored; no rebasing, filling or corporate-action repair"
+        }
+      ],
+      "temporary_ledger_artifacts": [
+        {
+          "file": "_declbudget_418ab3b270d6.jsonl",
+          "bytes": 153,
+          "sha256": "b045880a1e3e51dedc6c43e0c961f6e13716e19f39fc800f56786d5ce8b1ad56",
+          "owner": "engine.trial_ledger.TrialLedger.with_declared_budget"
+        }
+      ],
+      "canonical_verdict": "NO-EDGE",
+      "research_only": true,
+      "production_ledger_written": false,
+      "full_result_location": "web_test_runs:run-20261011T020126Z-fb8182118559/result.json"
+    }
+  ]
+}

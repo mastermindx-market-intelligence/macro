@@ -1,0 +1,25 @@
+{
+  "schema": "news.activation.parser_repair.v1",
+  "written_at": "2026-10-20T17:15:59.093570+00:00",
+  "previous_script_sha256": "b53382dfd62ec6f00b457fc1f465722bbd6536c0f6c1f8758de471ade55b47ae",
+  "production_observation_source": "/root message, 2026-10-20, after normal news source update",
+  "previous_preview_refusal": "loaded_environment_files_drift:macro-api.service",
+  "previous_preview_effects": "No activation effects or phase carrier reported by /root",
+  "cause": "dict construction collapsed repeated systemctl EnvironmentFiles properties and retained only the second file",
+  "repair": "Preserve all EnvironmentFiles values in encountered order; keep duplicates so the existing exact expected-list equality refuses them. Reject duplicates of single-valued service properties.",
+  "exact_list_guard_unchanged": true,
+  "critical_source_and_prepared_receipt_pins_unchanged": true,
+  "tests": "Repeated-key production format and combined-line compatibility pass; duplicate/missing/reordered/unexpected environment file paths refuse; duplicate single-valued property refuses.",
+  "next_act": "Parent must review and retransfer the new script hash before rerunning default preview; apply only after preview qualifies.",
+  "unrelated_hold": "W2C remains untouched; no updater/W2C edit or bypass.",
+  "new_script_sha256": "4f6b515ad32295b3b2ba6a896801cb32afbac5904ed8de9d30585720cda84428",
+  "new_tests_sha256": "fbba3d0a421591d5b95ea92d8fd072ceb16fd9d0e94f098349145d0de68bfa6d",
+  "review_receipt_sha256": "71721d157da8ca64c04b47eb88a152c6d989717033fa0c2aeabe6065e306a60a",
+  "test_receipt_sha256": "fe028bb491a374d0cdbc81f97081aef0032009e68a922498bcd71a00a6c9ac5d",
+  "effects": {
+    "remote_edits": 0,
+    "remote_executions": 0,
+    "provider_calls": 0,
+    "live_writes": 0
+  }
+}

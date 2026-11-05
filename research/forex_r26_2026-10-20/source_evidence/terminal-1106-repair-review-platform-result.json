@@ -1,0 +1,21 @@
+{
+  "schema": "forex_r26.repair_review_platform_result.v1",
+  "run_id": "forex-r26-0038-repair-review-20261021-sol-001",
+  "root_id": "forex-r26-native-completion-20261020-sol-001",
+  "review_subject": "mastermind-terminal#1106@6faed070170ae3f65cfe029fe75b18d4ee7ecc9b",
+  "controller_pid": 28879,
+  "controller_return": "RECORDED",
+  "controller_reason": "continuation_evidence_unqualified",
+  "lineage_state": "VERIFIED_TERMINAL",
+  "rc": 1,
+  "review_verdict": null,
+  "final_response": "UNCONFIRMED",
+  "observed_provider_http_status": 429,
+  "retry_allowed": false,
+  "execution_absence_proven": false,
+  "accepted": false,
+  "exact_adapter_response_sha256": "610b5ddef9d7dd6a55841c0ff2b45928a68b1906000d341b5fab0e130c99dfc7",
+  "response_bytes": 690,
+  "redaction": "Account/key label and temporary adapter path not republished; exact canonical result remains with Fabric.",
+  "disposition": "No independent repair verdict. Preserve same run/root and unqualified continuation; do not retry, replace, change account/provider or create a native duplicate. Original source acceptance and independent work remain separate."
+}

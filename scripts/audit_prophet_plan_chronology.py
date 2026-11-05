@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
-"""Reconstruct Prophet plan publication and price-basis chronology.
+"""Reconstruct Prophet plan source-recording and price-basis chronology.
 
 This is an audit instrument: it never rewrites raw plans or the outcome ledger, and may
 only append validated correction-overlay receipts. It joins four independent facts:
 
-* the immutable plan file and its ``asof`` publication/run date;
+* the immutable plan file and its ``asof`` run date;
 * the Git commit that first added that plan;
 * the creation commit's exact origination receipt (or its legacy ``us_standouts``
   artifact before receipts existed); and
 * the ticker's stored daily closes.
 
-The result deliberately separates a plan's publication date from the market session
-whose close supplied ``entry``.  Missing or non-unique price evidence stays unknown;
-the script never guesses a date merely because it is near the run date.
+The result separates the plan run, origination capture and Git recording clocks from
+the market session whose close supplied ``entry``. None proves accepted publication,
+user exposure or an executable fill. This audit does not yet join those owners'
+receipts, so those clocks remain explicitly unresolved, not absent systemwide.
+Missing or non-unique price evidence stays unknown; the script never guesses a date
+merely because it is near the run date.
 
 This instrument also refuses to "correct" ``signal_date`` from a price match. T1,
 T2 and T3 have different causal clocks, and old compact boards did not persist all
@@ -28,7 +31,7 @@ import json
 import subprocess
 import sys
 from collections.abc import Iterable
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from io import BytesIO
 from pathlib import Path, PurePosixPath
@@ -82,7 +85,7 @@ def first_add(repo: Path, relative: str) -> tuple[str, str] | None:
     if not text:
         return None
     # Defensive: an unusual delete/re-add history can produce more than one A record;
-    # the oldest one is the publication origin.
+    # the oldest one is the source-recording origin, not proof of served publication.
     commit, committed_at = text.splitlines()[-1].split("\t", 1)
     return commit, committed_at
 
@@ -161,11 +164,11 @@ def match_latest_price_basis(
 
 
 def session_lag(price_basis: date, recorded_on: date) -> int:
-    """Completed market sessions after the price bar through the publication day."""
-    publication_session = last_session_on_or_before(recorded_on)
-    if publication_session <= price_basis:
+    """Completed market sessions after the price bar through the plan run date."""
+    run_session = last_session_on_or_before(recorded_on)
+    if run_session <= price_basis:
         return 0
-    return len(sessions_between(price_basis + timedelta(days=1), publication_session))
+    return len(sessions_between(price_basis + timedelta(days=1), run_session))
 
 
 def _load_closes(path: Path) -> list[tuple[date, float]]:
@@ -487,6 +490,7 @@ def _receipt_board_at_creation(
                 "sha256": hashlib.sha256(blob).hexdigest(),
                 "source": source,
                 "origin": origin,
+                "recorded_utc": receipt.get("recorded_utc"),
             })
 
     if len(matches) != 1:
@@ -530,6 +534,40 @@ def _receipt_board_at_creation(
     return matched
 
 
+def _clock_evidence(
+    plan_run_date: Any, first_committed_at: Any, origination_recorded_utc: Any = None,
+) -> dict[str, Any]:
+    """Disclose this audit's clock coverage without promoting source clocks to fills.
+
+    A receipt's capture time is retained exactly, including later capture of older
+    source facts. Legacy missing timestamps stay null. An explicit malformed time
+    cannot become evidence. This function grants no publication or trading authority.
+    """
+    if origination_recorded_utc is not None:
+        try:
+            if not isinstance(origination_recorded_utc, str):
+                raise ValueError
+            stamp = datetime.fromisoformat(origination_recorded_utc)
+            if stamp.tzinfo is None or stamp.utcoffset() is None:
+                raise ValueError
+        except ValueError as exc:
+            raise OriginationReceiptError(
+                "origination recorded_utc must be a timestamp with an explicit timezone"
+            ) from exc
+    return {
+        "plan_run_date": plan_run_date,
+        "first_committed_at": first_committed_at,
+        "origination_recorded_utc": origination_recorded_utc,
+        "accepted_publication_at": None,
+        "first_user_exposure_at": None,
+        "executable_fill_at": None,
+        "publication_status": "UNRESOLVED",
+        "publication_reason": "accepted_publication_receipt_not_joined",
+        "fill_status": "UNRESOLVED",
+        "fill_reason": "executable_fill_evidence_not_joined",
+    }
+
+
 def audit_plan(repo: Path, plan_path: Path) -> dict[str, Any]:
     relative = plan_path.relative_to(repo).as_posix()
     added = first_add(repo, relative)
@@ -556,7 +594,7 @@ def audit_plan(repo: Path, plan_path: Path) -> dict[str, Any]:
     board_last_marker = board_signal.get("last") or {}
     board_signal_tier = str(board_signal.get("tier_cascade") or "") or None
     board_source_marker_date = _canonical_date(board_last_marker.get("date"))
-    publication_session = last_session_on_or_before(recorded_on)
+    run_session = last_session_on_or_before(recorded_on)
     board_staleness = standouts.get("staleness") or {}
     board_price_basis = _canonical_date(board_staleness.get("price_through"))
     embedded_mixed_vintage = bool(
@@ -568,7 +606,7 @@ def audit_plan(repo: Path, plan_path: Path) -> dict[str, Any]:
     # ``as_of`` is wrapper/publication metadata. Compare the ranked-price watermark to
     # the last completed session, then preserve the embedded panel warning.
     mixed_vintage = embedded_mixed_vintage or bool(
-        board_price_basis != publication_session.isoformat()
+        board_price_basis != run_session.isoformat()
     )
 
     source: Path | None = None
@@ -646,7 +684,7 @@ def audit_plan(repo: Path, plan_path: Path) -> dict[str, Any]:
         # over a CURRENT store whose historical bars may since have been adjusted.
         if (
             not mixed_vintage
-            and board_price_basis == publication_session.isoformat()
+            and board_price_basis == run_session.isoformat()
             and board_difference is not None
             and board_difference <= decimal_tolerance(Decimal(plan["entry"]))
         ):
@@ -724,6 +762,10 @@ def audit_plan(repo: Path, plan_path: Path) -> dict[str, Any]:
         "recorded_at": recorded_on.isoformat(),
         "first_commit": commit,
         "first_committed_at": committed_at,
+        "clock_evidence": _clock_evidence(
+            recorded_on.isoformat(), committed_at,
+            receipt.get("recorded_utc") if receipt is not None else None,
+        ),
         "board_as_of": standouts.get("as_of"),
         "board_price_basis": board_price_basis,
         "board_mixed_vintage": mixed_vintage,
@@ -780,6 +822,12 @@ def build_report(repo: Path, start: date, end: date) -> dict[str, Any]:
         "plan_count": len(rows),
         "integrity_counts": dict(sorted(counts.items())),
         "admission_integrity_counts": dict(sorted(admission_counts.items())),
+        "clock_qualification": {
+            "scope": "audited_rows_only",
+            "publication_unresolved_count": len(rows),
+            "fill_unresolved_count": len(rows),
+            "proves_user_exposure": False,
+        },
         "quarantine_recommended_count": sum(
             1 for row in rows if row["quarantine_recommended"]
         ),
@@ -796,10 +844,17 @@ def build_report(repo: Path, start: date, end: date) -> dict[str, Any]:
 
 
 def _correction_evidence(row: dict[str, Any], *, audit_receipt: str) -> dict[str, Any]:
+    # Rebuild the boundary rather than trusting a caller-supplied qualification.
+    # Older audit rows have no capture clock; their Git/run dates cannot supply one.
+    clocks = row.get("clock_evidence") or {}
     evidence = {
         "audit_receipt": audit_receipt,
         "first_commit": row["first_commit"],
         "first_committed_at": row["first_committed_at"],
+        "clock_evidence": _clock_evidence(
+            row.get("recorded_at"), row["first_committed_at"],
+            clocks.get("origination_recorded_utc"),
+        ),
         "board_as_of": row["board_as_of"],
         "board_mixed_vintage": row["board_mixed_vintage"],
         "board_row_signal_tier": row.get("board_row_signal_tier"),
@@ -844,7 +899,7 @@ def _integrity_disposition(row: dict[str, Any]) -> tuple[str, str]:
     if status == "stale_price_basis":
         return (
             "quarantined",
-            ("outage-era plan was published after its entry-price session; "
+            ("outage-era plan run is later than its entry-price session; "
             "the hypothetical timely plan geometry cannot be reconstructed"),
         )
     if status in {"price_basis_unknown", "price_basis_unverified_current_fallback"}:
@@ -856,7 +911,7 @@ def _integrity_disposition(row: dict[str, Any]) -> tuple[str, str]:
     if status == "price_current_board_mixed_vintage":
         return (
             "audited_mixed_vintage",
-            ("entry price matches the publication session, but board inputs were "
+            ("entry price matches the run-date session, but board inputs were "
             "explicitly mixed-vintage"),
         )
     return (
@@ -900,7 +955,7 @@ def build_plan_corrections(
             (
                 "recorded_at",
                 str(raw.get("asof"))[:10],
-                "raw plan asof and its first-add commit prove the publication run date",
+                "raw plan asof records the run date; Git recording does not prove user exposure",
             ),
             ("integrity_status", status, "chronology audit disposition"),
             ("integrity_reason", reason, "chronology audit disposition"),

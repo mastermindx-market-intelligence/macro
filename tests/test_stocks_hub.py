@@ -362,6 +362,36 @@ def _pp_band(board_asof: str = "2026-07-02"):
     return hub.pressure_band(_pp(), board_asof=board_asof)
 
 
+def test_pressure_event_research_preserves_native_tuple_and_dossier():
+    from urllib.parse import parse_qs, urlsplit
+    rows = [{'date':'2026-01-02','ticker':'CZR','side':'down'},
+            {'date':'2026-01-01','ticker':'NOFILE','side':'up'}]
+    band = hub.pressure_band({'open_events':rows}, linkable=frozenset({'CZR'}))
+    for row, projected in zip(rows, band['open']):
+        link = urlsplit(projected['research_href'])
+        assert link.path == '../ontology.html' and link.fragment == 'ox-research'
+        assert parse_qs(link.query) == {'research_'+key:[value] for key,value in row.items()}
+    assert band['open'][0]['href'] == 'CZR.html'
+    assert band['open'][1]['href'] is None
+
+
+@pytest.mark.parametrize('change',[
+    {'date':None},{'date':'2026-02-30'},{'date':'0000-01-01'},
+    {'ticker':'czr'},{'ticker':'CZR<script>'},{'side':None},{'side':'unknown'},
+])
+def test_pressure_event_research_never_uses_display_defaults(change):
+    row = {'date':'2026-01-02','ticker':'CZR','side':'down',**change}
+    band = hub.pressure_band({'open_events':[row]})
+    assert band['open'][0]['research_href'] is None
+
+
+def test_pressure_event_research_duplicate_native_tuple_is_ambiguous():
+    row = {'date':'2026-01-02','ticker':'CZR','side':'down'}
+    band = hub.pressure_band({'open_events':[row], 'recently_resolved':[dict(row)]})
+    assert band['open'][0]['research_href'] is None
+    assert band['resolved'][0]['research_href'] is None
+
+
 def _pp_strings(node, out=None):
     """Every user-facing string the band emits, at any depth."""
     out = [] if out is None else out

@@ -1,0 +1,747 @@
+{
+  "admissibility": {
+    "campaign_return_report": "not_run_by_scope",
+    "episode_only_descriptive_underlying_analysis": "admissible_only_if_all_validator_error_counts_are_zero_and_results_keep_research_only_proxy_labels",
+    "historical_pit_beyond_retained_episode_and_price_receipt_clocks": "not_established_by_this_audit",
+    "option_pnl_analysis": "not_admissible"
+  },
+  "as_of": "2026-10-02T08:15:00Z",
+  "commit": "dc4fd0766709188cba8d16a9fc16479c0e9c110f",
+  "coverage_census": {
+    "bounds": {
+      "fail_matured_unlabelled_share": 0.3,
+      "fail_source_dependent_share": 0.1,
+      "max_census_sessions": 32,
+      "max_census_tickers": 64,
+      "warn_matured_unlabelled_share": 0.1,
+      "warn_source_dependent_share": 0.03
+    },
+    "by_session": [
+      {
+        "episodes": 384,
+        "matured_unlabelled": 83,
+        "session_date": "2026-08-10"
+      },
+      {
+        "episodes": 307,
+        "matured_unlabelled": 72,
+        "session_date": "2026-08-11"
+      },
+      {
+        "episodes": 515,
+        "matured_unlabelled": 82,
+        "session_date": "2026-08-12"
+      },
+      {
+        "episodes": 2197,
+        "matured_unlabelled": 333,
+        "session_date": "2026-08-20"
+      },
+      {
+        "episodes": 494,
+        "matured_unlabelled": 64,
+        "session_date": "2026-08-21"
+      },
+      {
+        "episodes": 482,
+        "matured_unlabelled": 105,
+        "session_date": "2026-08-24"
+      },
+      {
+        "episodes": 409,
+        "matured_unlabelled": 71,
+        "session_date": "2026-08-25"
+      },
+      {
+        "episodes": 475,
+        "matured_unlabelled": 67,
+        "session_date": "2026-08-26"
+      },
+      {
+        "episodes": 789,
+        "matured_unlabelled": 185,
+        "session_date": "2026-08-27"
+      },
+      {
+        "episodes": 384,
+        "matured_unlabelled": 70,
+        "session_date": "2026-08-28"
+      },
+      {
+        "episodes": 466,
+        "matured_unlabelled": 61,
+        "session_date": "2026-08-31"
+      },
+      {
+        "episodes": 539,
+        "matured_unlabelled": 126,
+        "session_date": "2026-09-01"
+      },
+      {
+        "episodes": 589,
+        "matured_unlabelled": 186,
+        "session_date": "2026-09-02"
+      },
+      {
+        "episodes": 842,
+        "matured_unlabelled": 245,
+        "session_date": "2026-09-03"
+      },
+      {
+        "episodes": 769,
+        "matured_unlabelled": 48,
+        "session_date": "2026-09-04"
+      }
+    ],
+    "classes": {
+      "horizon_not_matured": 0,
+      "no_admissible_price_source": 1556,
+      "source_dependent_pending": 242
+    },
+    "computed_at": "2026-10-02T08:15:00Z",
+    "evidence_mode": "ledger_inference",
+    "ok": true,
+    "schema": "options.signal_episode_outcome_coverage_census/v1",
+    "shares": {
+      "matured_unlabelled_share": 0.1864951768488746,
+      "source_dependent_share": 0.025101130588113266,
+      "structural_gap_share": 0.16139404626076134
+    },
+    "source_dependent_tickers": [
+      {
+        "episodes": 62,
+        "ticker": "AMD"
+      },
+      {
+        "episodes": 42,
+        "ticker": "AVGO"
+      },
+      {
+        "episodes": 22,
+        "ticker": "PLTR"
+      },
+      {
+        "episodes": 21,
+        "ticker": "GEV"
+      },
+      {
+        "episodes": 17,
+        "ticker": "CRM"
+      },
+      {
+        "episodes": 9,
+        "ticker": "ORCL"
+      },
+      {
+        "episodes": 9,
+        "ticker": "PCG"
+      },
+      {
+        "episodes": 8,
+        "ticker": "SOXX"
+      },
+      {
+        "episodes": 7,
+        "ticker": "CAT"
+      },
+      {
+        "episodes": 7,
+        "ticker": "CRWD"
+      },
+      {
+        "episodes": 6,
+        "ticker": "ANET"
+      },
+      {
+        "episodes": 6,
+        "ticker": "DE"
+      },
+      {
+        "episodes": 5,
+        "ticker": "GE"
+      },
+      {
+        "episodes": 5,
+        "ticker": "LMT"
+      },
+      {
+        "episodes": 3,
+        "ticker": "LRCX"
+      },
+      {
+        "episodes": 2,
+        "ticker": "AMAT"
+      },
+      {
+        "episodes": 2,
+        "ticker": "KLAC"
+      },
+      {
+        "episodes": 2,
+        "ticker": "VST"
+      },
+      {
+        "episodes": 1,
+        "ticker": "CEG"
+      },
+      {
+        "episodes": 1,
+        "ticker": "ETN"
+      },
+      {
+        "episodes": 1,
+        "ticker": "IBM"
+      },
+      {
+        "episodes": 1,
+        "ticker": "PANW"
+      },
+      {
+        "episodes": 1,
+        "ticker": "PWR"
+      },
+      {
+        "episodes": 1,
+        "ticker": "VRT"
+      },
+      {
+        "episodes": 1,
+        "ticker": "XLC"
+      }
+    ],
+    "structural_gap_tickers": [
+      {
+        "episodes": 414,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-11",
+          "2026-08-12",
+          "2026-08-20",
+          "2026-08-21",
+          "2026-08-24",
+          "2026-08-25",
+          "2026-08-26",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "ticker": "DELL"
+      },
+      {
+        "episodes": 217,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-11",
+          "2026-08-20",
+          "2026-08-24",
+          "2026-08-25",
+          "2026-08-26",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "ticker": "LITE"
+      },
+      {
+        "episodes": 209,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-11",
+          "2026-08-12",
+          "2026-08-20",
+          "2026-08-21",
+          "2026-08-24",
+          "2026-08-25",
+          "2026-08-26",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "ticker": "NBIS"
+      },
+      {
+        "episodes": 101,
+        "sessions": [
+          "2026-08-11",
+          "2026-08-12",
+          "2026-08-20",
+          "2026-08-24",
+          "2026-08-26",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "ticker": "SNOW"
+      },
+      {
+        "episodes": 96,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-11",
+          "2026-08-12",
+          "2026-08-20",
+          "2026-08-24",
+          "2026-08-25",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03"
+        ],
+        "ticker": "CRWV"
+      },
+      {
+        "episodes": 88,
+        "sessions": [
+          "2026-08-11",
+          "2026-08-12",
+          "2026-08-20",
+          "2026-08-21",
+          "2026-08-24",
+          "2026-08-25",
+          "2026-08-27",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03"
+        ],
+        "ticker": "SMCI"
+      },
+      {
+        "episodes": 63,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-11",
+          "2026-08-20",
+          "2026-08-21",
+          "2026-08-25",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "ticker": "NOW"
+      },
+      {
+        "episodes": 53,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-11",
+          "2026-08-20",
+          "2026-08-21",
+          "2026-08-24",
+          "2026-08-25",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-04"
+        ],
+        "ticker": "ASTS"
+      },
+      {
+        "episodes": 47,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-11",
+          "2026-08-20",
+          "2026-08-21",
+          "2026-08-24",
+          "2026-08-25",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-03"
+        ],
+        "ticker": "COHR"
+      },
+      {
+        "episodes": 35,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-20",
+          "2026-08-24",
+          "2026-08-25",
+          "2026-08-26",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "ticker": "CBRS"
+      },
+      {
+        "episodes": 32,
+        "sessions": [
+          "2026-08-11",
+          "2026-08-20",
+          "2026-08-24",
+          "2026-08-26",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "ticker": "CIEN"
+      },
+      {
+        "episodes": 29,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-20",
+          "2026-08-24",
+          "2026-08-28",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "ticker": "ADBE"
+      },
+      {
+        "episodes": 23,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-20",
+          "2026-08-21",
+          "2026-08-24",
+          "2026-08-25",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-09-03"
+        ],
+        "ticker": "ARM"
+      },
+      {
+        "episodes": 19,
+        "sessions": [
+          "2026-08-20",
+          "2026-08-21",
+          "2026-08-27",
+          "2026-08-28"
+        ],
+        "ticker": "SLV"
+      },
+      {
+        "episodes": 17,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-11",
+          "2026-08-12",
+          "2026-08-20",
+          "2026-08-24",
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03"
+        ],
+        "ticker": "GLW"
+      },
+      {
+        "episodes": 14,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-20",
+          "2026-08-24",
+          "2026-08-26",
+          "2026-08-27",
+          "2026-09-04"
+        ],
+        "ticker": "MPWR"
+      },
+      {
+        "episodes": 13,
+        "sessions": [
+          "2026-08-20",
+          "2026-08-25",
+          "2026-08-26",
+          "2026-08-27"
+        ],
+        "ticker": "INTU"
+      },
+      {
+        "episodes": 12,
+        "sessions": [
+          "2026-08-12",
+          "2026-08-20",
+          "2026-08-21",
+          "2026-08-25",
+          "2026-08-31",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "ticker": "RKLB"
+      },
+      {
+        "episodes": 11,
+        "sessions": [
+          "2026-08-11",
+          "2026-08-12",
+          "2026-08-20",
+          "2026-08-28"
+        ],
+        "ticker": "DDOG"
+      },
+      {
+        "episodes": 9,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-12",
+          "2026-08-20",
+          "2026-08-24",
+          "2026-09-03"
+        ],
+        "ticker": "NET"
+      },
+      {
+        "episodes": 9,
+        "sessions": [
+          "2026-08-11",
+          "2026-08-20",
+          "2026-08-24",
+          "2026-08-28"
+        ],
+        "ticker": "TLT"
+      },
+      {
+        "episodes": 8,
+        "sessions": [
+          "2026-08-27"
+        ],
+        "ticker": "NEE"
+      },
+      {
+        "episodes": 8,
+        "sessions": [
+          "2026-08-20",
+          "2026-08-27",
+          "2026-09-02"
+        ],
+        "ticker": "WDAY"
+      },
+      {
+        "episodes": 5,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-20",
+          "2026-09-03"
+        ],
+        "ticker": "FAST"
+      },
+      {
+        "episodes": 5,
+        "sessions": [
+          "2026-08-11",
+          "2026-08-20",
+          "2026-09-03"
+        ],
+        "ticker": "TER"
+      },
+      {
+        "episodes": 4,
+        "sessions": [
+          "2026-08-11",
+          "2026-08-25",
+          "2026-08-26",
+          "2026-09-04"
+        ],
+        "ticker": "OKLO"
+      },
+      {
+        "episodes": 3,
+        "sessions": [
+          "2026-08-10",
+          "2026-08-21"
+        ],
+        "ticker": "FIX"
+      },
+      {
+        "episodes": 3,
+        "sessions": [
+          "2026-08-24",
+          "2026-08-27"
+        ],
+        "ticker": "NRG"
+      },
+      {
+        "episodes": 2,
+        "sessions": [
+          "2026-08-12",
+          "2026-08-20"
+        ],
+        "ticker": "TLN"
+      },
+      {
+        "episodes": 1,
+        "sessions": [
+          "2026-08-24"
+        ],
+        "ticker": "DUK"
+      },
+      {
+        "episodes": 1,
+        "sessions": [
+          "2026-08-20"
+        ],
+        "ticker": "EMR"
+      },
+      {
+        "episodes": 1,
+        "sessions": [
+          "2026-09-01"
+        ],
+        "ticker": "GNRC"
+      },
+      {
+        "episodes": 1,
+        "sessions": [
+          "2026-08-12"
+        ],
+        "ticker": "HEI"
+      },
+      {
+        "episodes": 1,
+        "sessions": [
+          "2026-08-20"
+        ],
+        "ticker": "HYG"
+      },
+      {
+        "episodes": 1,
+        "sessions": [
+          "2026-08-27"
+        ],
+        "ticker": "ROK"
+      },
+      {
+        "episodes": 1,
+        "sessions": [
+          "2026-09-01"
+        ],
+        "ticker": "URI"
+      }
+    ],
+    "totals": {
+      "episodes": 9641,
+      "labelled": 7843,
+      "labelled_complete": 7314,
+      "labelled_terminal_incomplete": 529,
+      "matured": 9641,
+      "matured_unlabelled": 1798,
+      "unlabelled": 1798
+    },
+    "tripwires": [
+      {
+        "id": "matured_unlabelled_share",
+        "level": "warning",
+        "message": "1798/9641 matured episodes carry no H+60 label (18.6%); outcomes_h60.jsonl is not the episode population",
+        "observed": 0.1864951768488746,
+        "threshold": 0.1
+      },
+      {
+        "id": "structural_price_source_gap",
+        "level": "warning",
+        "message": "36 ticker(s) have never produced a complete H+60 label (1556 episode(s)); these are outside the intraday price universe and no future run of the current lane can resolve them",
+        "observed": 36.0,
+        "threshold": 0.0
+      }
+    ],
+    "truncated": {
+      "by_session": 0,
+      "source_dependent_tickers": 0,
+      "structural_gap_tickers": 0
+    }
+  },
+  "coverage_census_elapsed_seconds": 0.045,
+  "coverage_mode": "ledger_inference",
+  "frozen_contract_validation": {
+    "episodes": {
+      "elapsed_seconds": 0.048,
+      "error_count": 0,
+      "error_samples": [],
+      "rows": 9641,
+      "validated": 9641
+    },
+    "h60_join": {
+      "elapsed_seconds": 0.074,
+      "error_count": 0,
+      "error_samples": [],
+      "rows": 7843,
+      "validated": 7843
+    },
+    "session_join": {
+      "elapsed_seconds": 0.416,
+      "error_count": 0,
+      "error_samples": [],
+      "rows": 30327,
+      "validated": 30327
+    }
+  },
+  "full_scan_cost": {
+    "notes": "Full JSONL parse plus frozen semantic joins; no campaign/M1/archive/parquet read and no return aggregation.",
+    "total_logical_input_bytes": 131370914,
+    "total_rows_scanned": 47811
+  },
+  "inputs": {
+    "episodes": {
+      "bytes": 15013207,
+      "path": "data/options_signal_episode/episodes.jsonl",
+      "rows": 9641,
+      "sha256": "20120ddeff5983248ec404afaa65d3414c36ed1011936638c84e4ada52f50940"
+    },
+    "h60": {
+      "bytes": 15886486,
+      "path": "data/options_signal_episode/outcomes_h60.jsonl",
+      "rows": 7843,
+      "sha256": "18fb5dd5deb5114b1d55778eb6c3a4632207d58fa0aead63154653b4f7d7d67e"
+    },
+    "session": {
+      "logical_bytes": 100471221,
+      "path": "data/options_signal_episode/outcomes_session.jsonl",
+      "physical_parts": 0,
+      "rows": 30327,
+      "sha256": "fc02c3f6d224ada2179f89fcf09d63866567e4132d6d6738ccc90c012c9b6311"
+    }
+  },
+  "schema": "options.science.canonical_quality_audit/v1",
+  "scope": {
+    "campaign_quarantine_excluded_ordinals": "24579-28423",
+    "campaign_rows_read": false,
+    "m1_archive_access": false,
+    "outcome_return_statistics": false
+  },
+  "source_blobs": {
+    "data/options_signal_episode/episodes.jsonl": "79277635aeb5578a346727e9e2cb34be6d19bcfe",
+    "data/options_signal_episode/outcomes_h60.jsonl": "a5242c60f81e2ca591bc3dc6a687e6b78ff6dc8c",
+    "data/options_signal_episode/outcomes_session.jsonl": "c73ec6998a03b193e219dffa62f668e9eb426420",
+    "engine/options_episode_coverage.py": "f5df2c9ad6978f86e6d90b742d1c999365557cb4",
+    "engine/options_signal_episode_contract.py": "22e97d1e589ad7e18dc0e235d554d494e31eca1e",
+    "engine/session_digest.py": "ab6123652ccff38de3f8276dda3a2b485db3dd1a",
+    "lib/nyse_calendar.py": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3"
+  }
+}

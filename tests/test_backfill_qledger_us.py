@@ -392,6 +392,21 @@ class TestRadarBackfill:
         assert by_subj["housing"]["scope"]["key"] == "XHB"
 
 
+    def test_claim_store_is_read_once_per_radar_batch(self, src_root, monkeypatch):
+        """Regression: radar backfill must not rescan the durable claims ledger per row."""
+        original = q.load_claims
+        calls = 0
+
+        def counted(root=None):
+            nonlocal calls
+            calls += 1
+            return original(root)
+
+        monkeypatch.setattr(q, "load_claims", counted)
+        backfill_radar(src_root)
+        assert calls == 1
+
+
 # ---------------------------------------------------------------------------
 # integration: POLICY backfill
 # ---------------------------------------------------------------------------
@@ -471,6 +486,21 @@ class TestPolicyBackfill:
         assert all(c["timestamp_quality"] == "DISCLOSURE_DATE" for c in claims)
 
 
+    def test_claim_store_is_read_once_per_policy_batch(self, priceable_only_smh, monkeypatch):
+        """Regression: policy backfill must not rescan the durable claims ledger per thesis."""
+        original = q.load_claims
+        calls = 0
+
+        def counted(root=None):
+            nonlocal calls
+            calls += 1
+            return original(root)
+
+        monkeypatch.setattr(q, "load_claims", counted)
+        backfill_policy(priceable_only_smh)
+        assert calls == 1
+
+
 # ---------------------------------------------------------------------------
 # cross-desk: mixed backfill + idempotency
 # ---------------------------------------------------------------------------
@@ -541,3 +571,96 @@ class TestCrossDesk:
         assert len(dark) >= 1
         assert all(c["status"] == "open" for c in dark)
         assert all(c["direction"] == 0 for c in dark)
+
+
+def test_radar_batch_registration_errors_are_not_reported_as_success(src_root, monkeypatch):
+    import scripts.backfill_qledger_us as b
+    def errors(claims, root):
+        return [{"status":"error","error":"synthetic"} for _ in claims]
+    monkeypatch.setattr(b, "register_batch", errors)
+    with pytest.raises(RuntimeError, match="batch.*incomplete"):
+        b.backfill_radar(src_root)
+
+def test_policy_batch_registration_errors_are_not_reported_as_success(priceable_only_smh, monkeypatch):
+    import scripts.backfill_qledger_us as b
+    def errors(claims, root):
+        return [{"status":"error","error":"synthetic"} for _ in claims]
+    monkeypatch.setattr(b, "register_batch", errors)
+    with pytest.raises(RuntimeError, match="batch.*incomplete"):
+        b.backfill_policy(priceable_only_smh)
+
+def test_radar_partial_batch_results_are_not_reported_as_success(src_root, monkeypatch):
+    import scripts.backfill_qledger_us as b
+    monkeypatch.setattr(b, "register_batch", lambda claims, root: [])
+    with pytest.raises(RuntimeError, match="batch.*incomplete"):
+        b.backfill_radar(src_root)
+
+def test_radar_persisted_rejected_rows_are_still_valid_receipts(src_root, monkeypatch):
+    import scripts.backfill_qledger_us as b
+    monkeypatch.setattr(b, "register_batch", lambda claims, root: [{"status":"rejected"} for _ in claims])
+    assert b.backfill_radar(src_root) == 4
+
+
+def test_altdata_batch_registration_errors_are_not_reported_as_success(src_root, monkeypatch):
+    """The ALTDATA caller cannot ignore per-claim error slots from register_batch."""
+    import scripts.backfill_qledger_us as b
+
+    def failed_slot(claims, root):
+        return [{"status": "error", "error": "synthetic"} for _ in claims]
+
+    monkeypatch.setattr(b, "register_batch", failed_slot)
+    with pytest.raises(RuntimeError, match="qledger altdata batch registration incomplete"):
+        b.backfill_altdata(src_root)
+
+
+def test_altdata_partial_batch_results_are_not_reported_as_success(src_root, monkeypatch):
+    """Short or missing receipts mean not every input claim was accounted for."""
+    import scripts.backfill_qledger_us as b
+
+    monkeypatch.setattr(b, "register_batch", lambda claims, root: [])
+    with pytest.raises(RuntimeError, match="qledger altdata batch registration incomplete"):
+        b.backfill_altdata(src_root)
+
+
+@pytest.mark.parametrize("adapter", ["backfill_radar", "backfill_policy", "backfill_altdata"])
+@pytest.mark.parametrize("bad_receipt", [{}, {"status": None}, {"status": "mystery"},
+                                        {"status": ""}, {"status": False}, {"status": []}])
+def test_all_adapters_refuse_malformed_batch_statuses(priceable_only_smh, monkeypatch, adapter, bad_receipt):
+    """A correctly sized list is not success when its native result status is absent/invalid."""
+    import scripts.backfill_qledger_us as b
+    root = priceable_only_smh
+    calls = []
+    def malformed(claims, root):
+        calls.append(len(claims))
+        return [dict(bad_receipt) for _ in claims]
+    monkeypatch.setattr(b, "register_batch", malformed)
+    with pytest.raises(RuntimeError, match="batch registration incomplete"):
+        getattr(b, adapter)(root)
+    assert calls and calls[0] > 0
+    assert not (root / "data/qledger/claims.jsonl").exists()
+
+
+@pytest.mark.parametrize("native_status", [q.STATUS_OPEN, q.STATUS_REJECTED, q.STATUS_GRADED])
+def test_native_batch_status_controls_do_not_add_a_new_identity_requirement(native_status):
+    """Keep native open/graded/rejected receipts; do not add a new claim-id promise."""
+    import scripts.backfill_qledger_us as b
+    rows = [{"status": native_status}]
+    assert b._require_complete_batch(rows, 1, "synthetic") is None
+    assert rows == [{"status": native_status}]
+
+
+def test_radar_existing_graded_claims_remain_valid_idempotent_batch_results(src_root):
+    """Real register_batch returns the first persisted row, including native graded status."""
+    import scripts.backfill_qledger_us as b
+    assert b.backfill_radar(src_root) == 4
+    claims_path = src_root / "data/qledger/claims.jsonl"
+    rows = q.load_claims(src_root)
+    assert rows and all(row["status"] == q.STATUS_OPEN for row in rows)
+    # This test owns only its temporary synthetic ledger; no historical outcome is reissued.
+    for row in rows:
+        row["status"] = q.STATUS_GRADED
+    _write_jsonl(claims_path, rows)
+    before = claims_path.read_bytes()
+    assert b.backfill_radar(src_root) == 4
+    assert claims_path.read_bytes() == before
+    assert [row["claim_id"] for row in q.load_claims(src_root)] == [row["claim_id"] for row in rows]

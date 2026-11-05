@@ -1,0 +1,67 @@
+{
+  "status": "ACCEPTED_SCOPED_LOCAL_PUBLICATION",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_hashes": {
+    "lib/intl_risk_mount.py": "ebd94049ac1a2b8d6f57beffd9e775b5c6571bbe2db693f789ea52f4e4a58fc0",
+    "scripts/build_intl.py": "ff66a5deec716d70ca7b030436110e076381fafaca64b704126dfe5f0f025c09",
+    "templates/intl.html.j2": "8e1a7ca18a3da61f9f09568042b35905740a148d918df5717e901b4a411e2750",
+    "templates/intl_workspace/shell.html.j2": "a1ee9f20045a54bfe78c92d4680b7dcec2a65a520d7235a14eff6ba6a175c29c",
+    "templates/intl_workspace/risk.html.j2": "d5368422992e59cc6fed72fe42d81b08025bbd3bcefcef4f6b2d37dcef012f0a",
+    "templates/intl_workspace_risk.css": "5f21f98f0604c86876fd2d693e542094c85c8107da127b409c0b2865726a816e",
+    "tests/test_intl_risk_mount.py": "f02b0698e1af62a31c11dff1e61b6bdf79c87c24a2e8f7e22f480dd601813be3",
+    "tests/test_intl_risk_publication_build.py": "f366ed96ee5b3bff6b4b33031c1f5bb2d84279d46bd4b66400faaef05f3d1d5e",
+    "tests/test_intl_workspace_risk_render.py": "a56491db51d67b625566b98066655e3903902cc4ea551b91e7cbe8806aded300",
+    "tests/test_intl_workspace_risk_ui_independent.py": "5e0371d2ac87dba57c4fed223f8b83dea35b28604ae67e35836ecd850f63a792",
+    "tests/fixtures/intl_workspace/risk_render.json": "941d36c53b65b78718deacba41712e8631e18b72422061c4460510498f91a84d"
+  },
+  "review": {
+    "run_id": "paper-01a1101f-im05-ui-mount-review-r2",
+    "verdict": "PASS_SCOPED",
+    "artifact_sha256": "d39d9ae72a5d95eb9626fa91eaf5ffa9441bc1207529ba1156b40b2b32c8d94a",
+    "parent_reproduction": "159 passed: 44 render,17 real mount,35 section,63 independent. 62 behavioral independent checks retained in product; manifest identity check retained in frozen evidence."
+  },
+  "review_repairs": [
+    "Raw partial could turn padded javascript URLs or hash into live actions and admit data URLs. Twenty parent RED cases now pass; closed local path/fragment validation retains real permitted actions.",
+    "Initial capsule missed existing engine/mount dependencies. Final capsule supplied all actual mount dependencies and preflight passed121 tests; no package error counted as worker quality.",
+    "Stub-only v1 overflow finding rejected by actual +/-10**400/zero reproduction, independently corroborated. Malformed/nonfinite input still fails closed.",
+    "Actual assembler dictionary schema integrated; qualified US statement retained with both direct links and fallback; domain semantics and bilingual copy corrected."
+  ],
+  "local_validation": {
+    "foundation_before_final_three_v1_cases": 984,
+    "new_v1_real_cases": 3,
+    "render_and_publication": 222,
+    "additional_independent_ui": 62,
+    "controller_browser_job": 136,
+    "actual_risk_browser_matrix": 40,
+    "canonical_images": 32,
+    "focus_checks": 16,
+    "focus_outline": "2px, visible, correct active element in all16",
+    "design_added_blocking": 0,
+    "runtime_style_guard": "PASS"
+  },
+  "normal_publication": {
+    "receipt": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM05_NORMAL_MAIN_R5.log",
+    "output_pages": 3,
+    "intl_html_sha256": "419170ed402307733bced0cd6498fbf1cdeaea3ffb860621270e35a51907249c",
+    "blocked_effects": [],
+    "inputs": "Copies of60 existing inputs plus13 prior generated artifacts;58 of60 originals retain hashes, hub/latest are normal generated outputs within isolated proof directory. No remote writes."
+  },
+  "visual": {
+    "manifest": "mockups/evidence/paper-international-risk/states/manifest.json",
+    "manifest_sha256": "6389ce050f4eab5456fd52b6117d5ec16fb522ca2b81a94d3ffb756c44576b15",
+    "browser_receipt_sha256": "aeb066a46326cb0f200063bba98d41f33cdfe84d24886253a66d0c4b9260002d",
+    "parent_inspected": [
+      "positive-dark-en-1440",
+      "positive-light-zh-390",
+      "normal-light-en-1440",
+      "positive-light-zh-320-200text"
+    ],
+    "ruling": "Scoped visual acceptance: dark nested graphite instruments; light white/hairline material. Declared semantic hierarchy and mobile/200% reflow retained. Normal source-unavailable state stays explicit."
+  },
+  "behavior": "Risk sections attach to the same existing publication generation. Macro/Risk failures isolated. Builder reuses already computed Risk Desk/CGL and supplies empty measures/support/summary eligibility/destinations, so it cannot grant new fields by rendering. V1 retains admitted currency but withholds new pressure/summary.",
+  "limits": [
+    "Local copied-input publication and synthetic admitted positive fixture only; no deployed/authenticated acceptance.",
+    "Six retained domain descriptors are not six fully qualified domain projectors.",
+    "Real equity clocks/rights, other data owners, remaining views, CI/merge/release and subsequent served normal publication remain open."
+  ]
+}

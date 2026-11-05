@@ -1,0 +1,8 @@
+# MO-PAID-006 PAGE R1 — official policy statements dossier card on the international_macro country pages.
+# Cells captured by scripts/capture_page_evidence.py --site-dir against a scratch copy of origin/main site/
+# whose euro_area/united_kingdom/japan pages were re-rendered from THIS branch's template with fixture dossiers
+# (two synthetic routes: united_kingdom--no-stance.html, euro_area--outage.html — see README.md).
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/international_macro.html.j2
+manifest: mockups/evidence/mo-paid-006-dossier-page/manifest.json

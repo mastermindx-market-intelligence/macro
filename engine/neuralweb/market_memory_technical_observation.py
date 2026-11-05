@@ -1433,7 +1433,7 @@ def _previous_frozen_v1_session(value: date) -> date:
     )
 
 
-def _read_spy_parquet(body: bytes) -> pd.DataFrame:
+def _open_spy_parquet(body: bytes):
     try:
         parquet_file = pq.ParquetFile(io.BytesIO(body))
         metadata = parquet_file.metadata
@@ -1492,6 +1492,12 @@ def _read_spy_parquet(body: bytes) -> pd.DataFrame:
                 raise MarketMemoryTechnicalObservationError(
                     "SPY parquet exceeds its uncompressed byte bound"
                 )
+    return parquet_file
+
+
+def _read_spy_parquet(body: bytes) -> pd.DataFrame:
+    parquet_file = _open_spy_parquet(body)
+    metadata = parquet_file.metadata
     try:
         table = parquet_file.read(use_threads=False)
         if (
@@ -1572,6 +1578,11 @@ def _validated_spy_rows(
             raise MarketMemoryTechnicalObservationError("SPY low is above its bar")
         closes.append(prices["close"])
 
+    _validate_spy_date_coverage(dates, anchor=anchor)
+    return dates, closes
+
+
+def _validate_spy_date_coverage(dates, *, anchor):
     if len(dates) != anchor["n_rows"]:
         raise MarketMemoryTechnicalObservationError(
             "SPY parquet row count differs from the manifest anchor"
@@ -1599,7 +1610,6 @@ def _validated_spy_rows(
         raise MarketMemoryTechnicalObservationError(
             "SPY source lacks the exact last 21 consecutive frozen XNYS sessions"
         )
-    return dates, closes
 
 
 def _artifact_ref(
@@ -1659,21 +1669,7 @@ def _snapshot_id(*, source_observation_id: str, state: Mapping[str, Any]) -> str
     return "mmtechsnap_" + _sha256(_canonical_bytes(core))
 
 
-def project_current_spy_raw_close_ratio(
-    inputs: PinnedTechnicalInputs,
-) -> TechnicalSnapshotBundle:
-    """Purely project the current endpoint from exact remote and Git inputs."""
-
-    if type(inputs) is not PinnedTechnicalInputs:
-        raise MarketMemoryTechnicalObservationError(
-            "technical inputs must use the frozen PinnedTechnicalInputs boundary"
-        )
-    checked_fetched = _validated_fetched(inputs.fetched)
-    checked_sources = _validated_pinned_sources(inputs.pinned_sources)
-    manifest = _validate_manifest(checked_fetched.manifest_body)
-    anchor = manifest["store"]["anchor"]
-    dates, closes = _validated_spy_rows(checked_fetched.spy_body, anchor=anchor)
-
+def _source_observation_from_inputs(checked_fetched, checked_sources, anchor, dates):
     manifest_validator = _headers_validator(
         checked_fetched.manifest_headers,
         expected_content_type="application/json",
@@ -1718,6 +1714,29 @@ def project_current_spy_raw_close_ratio(
         "limitations": copy.deepcopy(_LIMITATIONS),
         "authority": _authority_v1(),
     }
+    return source_observation
+
+
+def project_current_spy_raw_close_ratio(
+    inputs: PinnedTechnicalInputs,
+) -> TechnicalSnapshotBundle:
+    """Purely project the current endpoint from exact remote and Git inputs."""
+
+    if type(inputs) is not PinnedTechnicalInputs:
+        raise MarketMemoryTechnicalObservationError(
+            "technical inputs must use the frozen PinnedTechnicalInputs boundary"
+        )
+    checked_fetched = _validated_fetched(inputs.fetched)
+    checked_sources = _validated_pinned_sources(inputs.pinned_sources)
+    manifest = _validate_manifest(checked_fetched.manifest_body)
+    anchor = manifest["store"]["anchor"]
+    dates, closes = _validated_spy_rows(checked_fetched.spy_body, anchor=anchor)
+
+    source_observation = _source_observation_from_inputs(
+        checked_fetched, checked_sources, anchor, dates
+    )
+    session = source_observation["session"]
+    source_observation_id = source_observation["source_observation_id"]
     source_observation_bytes = _canonical_bytes(source_observation)
 
     start_close = closes[-21]
@@ -1776,6 +1795,43 @@ def project_current_spy_raw_close_ratio(
         feature_object=feature_object,
         feature_object_bytes=feature_object_bytes,
     )
+
+
+def read_source_bar_metadata(inputs: PinnedTechnicalInputs) -> dict[str, Any]:
+    """Authenticate date coverage without decoding any numerical value column.
+
+    This pure helper grants no access. The private store owner authenticates
+    persisted membership and calls the current named policy before invoking it.
+    """
+    if type(inputs) is not PinnedTechnicalInputs:
+        raise MarketMemoryTechnicalObservationError("frozen technical inputs required")
+    fetched = _validated_fetched(inputs.fetched)
+    sources = _validated_pinned_sources(inputs.pinned_sources)
+    manifest = _validate_manifest(fetched.manifest_body)
+    anchor = manifest["store"]["anchor"]
+    parquet = _open_spy_parquet(fetched.spy_body)
+    try:
+        table = parquet.read(columns=["date"], use_threads=False)
+        if table.num_rows != parquet.metadata.num_rows or table.column_names != ["date"]:
+            raise MarketMemoryTechnicalObservationError("date projection shape differs")
+        values = table.column("date").to_pylist()
+        if any(type(value) is not datetime or value.tzinfo is not None
+               or value.time() != datetime.min.time() for value in values):
+            raise MarketMemoryTechnicalObservationError("canonical naive midnight dates required")
+        dates = [value.date() for value in values]
+        if dates != sorted(set(dates)):
+            raise MarketMemoryTechnicalObservationError("unique ordered dates required")
+        _validate_spy_date_coverage(dates, anchor=anchor)
+    except MarketMemoryTechnicalObservationError:
+        raise
+    except Exception as exc:
+        raise MarketMemoryTechnicalObservationError("date projection cannot be decoded") from exc
+    source = _source_observation_from_inputs(fetched, sources, anchor, dates)
+    config = _canary_config_v1()
+    return {"source_observation": source, "bar_sessions": [value.isoformat() for value in dates],
+            "subject": {"symbol": config["symbol"], **copy.deepcopy(config["subject"])},
+            "calendar": copy.deepcopy(config["calendar"]),
+            "price_basis": copy.deepcopy(_PRICE_BASIS), "transform_version": TRANSFORM_VERSION}
 
 
 def build_current_spy_raw_close_ratio(

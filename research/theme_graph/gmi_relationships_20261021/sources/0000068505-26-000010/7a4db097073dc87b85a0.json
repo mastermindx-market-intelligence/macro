@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-12T21:32:07Z",
+ "accession": "0000068505-26-000010",
+ "cik": "0000068505",
+ "doc_byte_length": 3456163,
+ "doc_sha256": "9677733b4ce5c59f050319147d59b1f98a66d724f37a0ee100a5f9e306243ced",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-12",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "msi-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 531446,
+  "byte_start": 530999,
+  "normalized": "We no longer own certain logos and other trademarks, trade names and service marks, including MOTOROLA, MOTO, MOTOROLA SOLUTIONS and the Stylized M logo and all derivatives thereof (“Motorola Marks”) and, since 2010, we have licensed the Motorola Marks from Motorola Trademark Holdings, LLC. which is currently owned by Motorola Mobility. For a description of the risks we face related to intellectual property, refer to “Part I.",
+  "normalized_sha256": "83b45773adb75923bed85f8bc4b0dd744c4267bcf182fef325231cdf85b32f4d",
+  "raw": "We no longer own certain logos and other trademarks, trade names and service marks, including MOTOROLA, MOTO, MOTOROLA SOLUTIONS and the Stylized M logo and all derivatives thereof (&#8220;Motorola Marks&#8221;) and, since 2010, we have licensed the Motorola Marks from Motorola Trademark Holdings, LLC. which is currently owned by Motorola Mobility. For a description of the risks we face related to intellectual property, refer to &#8220;Part I.",
+  "raw_sha256": "7a4db097073dc87b85a055f7b9c92f99a3d94ef4f6b85d171219aba954f6e69c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/68505/000006850526000010/msi-20251231.htm",
+ "xbrl_contexts": []
+}

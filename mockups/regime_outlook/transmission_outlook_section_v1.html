@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup — Outlook section for transmission.html (v1, for ratification)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   PAGE STUB — copied from templates/transmission.html.j2 so the section
+   is judged in place. NOT part of the deliverable.
+   ===================================================================== */
+:root{
+  --blue:#285FFF; --indigo:#4559DC; --ink:#0B1733; --text:#344054; --muted:#4C5A6C;
+  --faint:#5F6A7A; --red:#D30B0B; --amber:#F5AD42; --green:#1a7f43; --teal:#1F8A70;
+  --grid:#EAECF0; --card:#FFFFFF; --bg:#F7F8FA;
+  --ch-rates:#4559DC; --ch-infl:#B45309; --ch-usd:#0F766E;
+}
+html[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--grid:#2a2f3a;--ink:#e8edf4;--text:#d7dce3;--muted:#8b93a1;--faint:#828b9c;--red:#e06464;
+  --ch-rates:#8b96f8;--ch-infl:#fbbf24;--ch-usd:#2dd4bf}
+*{box-sizing:border-box}
+html:not([data-lang="zh"]) .l-zh{display:none}
+html[data-lang="zh"] .l-en{display:none}
+html[data-lang="zh"] body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",Inter,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--blue);text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 60px}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
+.tx-hero{padding:26px 0 4px}
+.tx-brand{font-weight:800;font-size:26px;color:var(--ink);letter-spacing:-.02em}
+.tx-sub{color:var(--muted);font-size:14px;margin:4px 0 0}
+.sec-head{display:flex;align-items:baseline;gap:10px;font-size:12px;font-weight:800;color:var(--ink);text-transform:uppercase;letter-spacing:.07em;margin:34px 0 4px}
+.sec-head .sh-dot{width:8px;height:8px;border-radius:3px;background:var(--sh-c,var(--faint));display:inline-block;align-self:center}
+.sec-sub{font-size:13px;color:var(--muted);margin:0 0 14px}
+.txq{position:relative;display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;
+  border:1px solid var(--grid);color:var(--muted);font-size:11px;font-weight:700;cursor:help;flex:none}
+.txq .txq-tip{display:none;position:absolute;top:22px;left:-8px;z-index:30;width:270px;padding:10px 12px;border-radius:11px;
+  background:var(--card);border:1px solid var(--grid);box-shadow:0 12px 30px -12px rgba(9,17,40,.35);
+  font-size:12px;font-weight:500;color:var(--text);line-height:1.5;text-transform:none;letter-spacing:0}
+.txq:hover .txq-tip,.txq:focus .txq-tip{display:block}
+.stub{border:1px dashed var(--grid);border-radius:14px;padding:12px 16px;color:var(--faint);font-size:12.5px;margin-top:14px}
+
+/* =====================================================================
+   SECTION CSS — THE PINNED DELIVERABLE (.mx-ol-*).
+   Moves to governed CSS with the include partial in slice E2.
+   Colour comes only from the page's existing variables; reading marks
+   are told apart by SHAPE, never by green/red, because "fits" is not
+   "good" and "does not fit" is not "bad".
+   ===================================================================== */
+.mx-ol{
+  --ol-mark:var(--ink);
+  --ol-quiet:var(--faint);
+  --ol-spine:var(--grid);
+  --ol-well:var(--card);
+  --ol-shadow:0 1px 2px rgba(11,23,51,.04),0 10px 26px -18px rgba(11,23,51,.22);
+  --ol-stamp:var(--faint);
+  --ol-warn:#8A5A00;
+  --ol-mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+}
+/* DARK TREATMENT — command center: depth from luminance, not shadow. */
+html[data-theme="dark"] .mx-ol{
+  --ol-quiet:#6f7889;
+  --ol-spine:#353b48;
+  --ol-well:#12151a;
+  --ol-shadow:none;
+  --ol-stamp:#8b93a1;
+  --ol-warn:#e0a030;
+}
+
+/* ---- marks: one shape per reading ---- */
+.mx-ol-mk{display:inline-block;width:9px;height:9px;border-radius:50%;flex:none}
+.mx-ol-mk.is-fit{background:var(--ol-mark)}
+.mx-ol-mk.is-not{border:1.5px solid var(--ol-mark)}
+.mx-ol-mk.is-mix{border:1.5px solid var(--ol-mark);background:linear-gradient(90deg,var(--ol-mark) 50%,transparent 50%)}
+.mx-ol-mk.is-flat{height:2px;border-radius:1px;background:var(--ol-quiet)}
+.mx-ol-mk.is-unk{border:1.5px dotted var(--ol-quiet)}
+html[data-theme="dark"] .mx-ol-mk.is-fit{box-shadow:0 0 0 3px rgba(232,237,244,.09)}
+html[data-theme="dark"] .mx-ol-mk.is-not,html[data-theme="dark"] .mx-ol-mk.is-mix{border-color:#aab3c2}
+html[data-theme="dark"] .mx-ol-mk.is-mix{background:linear-gradient(90deg,#aab3c2 50%,transparent 50%)}
+
+.mx-ol-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.mx-ol-stamp{font-family:var(--ol-mono);font-size:11px;color:var(--ol-stamp);letter-spacing:0;white-space:nowrap}
+html[data-lang="zh"] .mx-ol-eyebrow{letter-spacing:.04em}
+
+/* ---- NOW ---- */
+.mx-ol-now{background:var(--card);border:1px solid var(--grid);border-radius:18px;padding:22px 24px;box-shadow:var(--ol-shadow);
+  display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:8px 36px}
+html[data-theme="dark"] .mx-ol-now{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 46%),var(--card)}
+.mx-ol-now-top{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px}
+.mx-ol-line{font-size:21px;font-weight:800;letter-spacing:-.018em;line-height:1.3;color:var(--ink);margin:8px 0 12px}
+.mx-ol-stance{display:inline-block;padding:5px 13px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--ink);
+  border:1px solid var(--ink);background:transparent}
+html[data-theme="dark"] .mx-ol-stance{border-color:#aab3c2}
+.mx-ol-sowhat{font-size:13.5px;color:var(--text);margin:10px 0 0;max-width:44ch}
+.mx-ol-fams{list-style:none;margin:6px 0 0;padding:0}
+.mx-ol-fams li{display:grid;grid-template-columns:132px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid var(--grid);font-size:13px}
+.mx-ol-fams li:first-child{border-top:0}
+.mx-ol-fams .f-n{font-weight:700;color:var(--ink)}
+.mx-ol-fams .f-v{color:var(--text)}
+.mx-ol-gap{grid-column:1 / -1;margin:8px 0 0;padding-top:12px;border-top:1px solid var(--grid);font-size:12.5px;color:var(--muted)}
+.mx-ol-gap b{color:var(--ink);font-weight:700}
+
+/* ---- WHAT CHANGED ---- */
+.mx-ol-chg{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:16px 0 0}
+.mx-ol-chip{display:inline-flex;align-items:baseline;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--grid);background:var(--card);font-size:12.5px;color:var(--ink);font-weight:600}
+.mx-ol-chip .k{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.mx-ol-chip.is-quiet{color:var(--muted);font-weight:500}
+
+/* ---- PATHS ---- */
+.mx-ol-group{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:28px 0 10px}
+.mx-ol-group h3{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.01em;margin:0}
+.mx-ol-group p{font-size:12.5px;color:var(--muted);margin:0}
+.mx-ol-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.mx-ol-card{background:var(--card);border:1px solid var(--grid);border-radius:18px;padding:18px 18px 14px;box-shadow:var(--ol-shadow);display:flex;flex-direction:column}
+.mx-ol-card h4{font-size:15.5px;font-weight:700;line-height:1.32;color:var(--ink);letter-spacing:-.008em;margin:8px 0 14px}
+
+/* the ledger — the one signature element: for and against, side by side */
+.mx-ol-ledger{position:relative;display:grid;grid-template-columns:1fr 1fr;background:var(--ol-well);border:1px solid var(--grid);border-radius:12px}
+.mx-ol-ledger::before{content:"";position:absolute;left:50%;top:12px;bottom:12px;width:1px;background:var(--ol-spine)}
+html[data-theme="dark"] .mx-ol-ledger{border-color:#232833;box-shadow:inset 0 1px 0 rgba(0,0,0,.45)}
+html[data-theme="dark"] .mx-ol-ledger::before{background:linear-gradient(180deg,transparent,var(--ol-spine) 18%,var(--ol-spine) 82%,transparent)}
+.mx-ol-side{padding:12px 14px 10px;min-width:0}
+.mx-ol-side h5{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink);margin:0 0 8px}
+html[data-lang="zh"] .mx-ol-side h5{letter-spacing:.04em}
+.mx-ol-rows{list-style:none;margin:0;padding:0}
+.mx-ol-rows li{display:grid;grid-template-columns:9px minmax(0,1fr);gap:9px;align-items:baseline;font-size:13px;line-height:1.42;color:var(--text);padding:3px 0}
+.mx-ol-rows li .mx-ol-mk{position:relative;top:-1px}
+.mx-ol-rows b{color:var(--ink);font-weight:700}
+.mx-ol-none{font-size:12.5px;color:var(--ol-quiet);margin:0;padding:3px 0}
+.mx-ol-straddle{grid-column:1 / -1;display:flex;justify-content:center;padding:2px 12px 12px;position:relative}
+.mx-ol-straddle .mx-ol-rows{background:var(--ol-well);border:1px solid var(--grid);border-radius:10px;padding:6px 12px;max-width:92%}
+html[data-theme="dark"] .mx-ol-straddle .mx-ol-rows{border-color:#2c323e}
+.mx-ol-straddle .tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+
+.mx-ol-watch{margin:12px 2px 0}
+.mx-ol-watch h5{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+html[data-lang="zh"] .mx-ol-watch h5{letter-spacing:.04em}
+.mx-ol-watch .mx-ol-rows li{color:var(--muted)}
+.mx-ol-watch .mx-ol-rows b{color:var(--text)}
+
+.mx-ol-ev{padding-top:12px}
+.mx-ol-ev summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);padding:4px 0;border-radius:6px}
+.mx-ol-ev summary::-webkit-details-marker{display:none}
+.mx-ol-ev summary::before{content:"▸";font-size:10px;transition:transform .2s}
+.mx-ol-ev[open] summary::before{transform:rotate(90deg)}
+.mx-ol-ev summary:hover{color:var(--ink)}
+.mx-ol-evh{font-size:12px;color:var(--muted);margin:6px 0 0}
+.mx-ol-evl{list-style:none;margin:6px 0 0;padding:0}
+.mx-ol-evl li{padding:9px 0;border-top:1px solid var(--grid)}
+.mx-ol-evl .need{font-size:12.5px;font-weight:600;line-height:1.4;color:var(--ink)}
+.mx-ol-evl .got{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin-top:3px;font-size:12px;color:var(--muted)}
+.mx-ol-evl .got .r{display:inline-flex;align-items:center;gap:6px;color:var(--ink);font-weight:700}
+.mx-ol-evl .got .mx-ol-stamp{margin-left:auto}
+
+/* ---- HISTORY · EXPOSURES · WATCH ---- */
+.mx-ol-foot{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,5fr);gap:16px;margin-top:28px}
+.mx-ol-panel{background:var(--card);border:1px solid var(--grid);border-radius:18px;padding:18px 20px;box-shadow:var(--ol-shadow)}
+.mx-ol-panel h3{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.01em;margin:6px 0 8px}
+.mx-ol-panel p{font-size:13px;margin:0 0 8px}
+.mx-ol-panel .why{color:var(--muted);font-size:12.5px}
+.mx-ol-ident{list-style:none;margin:0;padding:0}
+.mx-ol-ident li{padding:9px 0;border-top:1px solid var(--grid);font-size:13px}
+.mx-ol-ident li:first-child{border-top:0;padding-top:2px}
+.mx-ol-basis{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border:1px solid var(--grid);border-radius:6px;padding:1px 6px;margin-right:6px}
+.mx-ol-cal{list-style:none;margin:0;padding:0}
+.mx-ol-cal li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid var(--grid);font-size:13px}
+.mx-ol-cal li:first-child{border-top:0}
+.mx-ol-cal .is-stale{color:var(--ol-warn);font-weight:600}
+.mx-ol-sub{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:14px 0 2px}
+html[data-lang="zh"] .mx-ol-sub{letter-spacing:.04em}
+.mx-ol-caveat{font-size:12.5px;color:var(--muted);margin:16px 2px 0}
+
+/* ---- degraded states: never styled as a current read ---- */
+.mx-ol-banner{display:none;border:1px dashed var(--ol-quiet);border-radius:14px;padding:12px 16px;font-size:13px;color:var(--text);margin-bottom:14px}
+.mx-ol-banner b{color:var(--ink)}
+.mx-ol-updating{display:none;border:1px dashed var(--ol-quiet);border-radius:18px;padding:28px 24px;text-align:left}
+.mx-ol-updating h3{font-size:17px;font-weight:800;color:var(--ink);margin:0 0 4px}
+.mx-ol-updating p{font-size:13px;color:var(--muted);margin:0}
+.mx-ol[data-state="previous"] .mx-ol-banner{display:block}
+.mx-ol[data-state="previous"] .mx-ol-now,.mx-ol[data-state="previous"] .mx-ol-card,.mx-ol[data-state="previous"] .mx-ol-panel{border-style:dashed;box-shadow:none}
+.mx-ol[data-state="updating"] .mx-ol-body{display:none}
+.mx-ol[data-state="updating"] .mx-ol-updating{display:block}
+.mx-ol .only-first{display:none}
+.mx-ol[data-state="first"] .only-first{display:inline-flex}
+.mx-ol[data-state="first"] .not-first{display:none}
+
+/* ---- responsive ---- */
+@media(max-width:1080px){.mx-ol-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mx-ol-foot{grid-template-columns:1fr 1fr}.mx-ol-foot .mx-ol-panel:first-child{grid-column:1 / -1}}
+@media(max-width:940px){.mx-ol-now{grid-template-columns:1fr}}
+@media(max-width:700px){
+  .mx-ol-grid,.mx-ol-foot{grid-template-columns:1fr}
+  .mx-ol-now{padding:18px 16px}.mx-ol-line{font-size:19px}
+  .mx-ol-fams li{grid-template-columns:1fr auto}.mx-ol-fams .f-v{grid-column:1 / -1;order:3}
+  .mx-ol-ledger{grid-template-columns:1fr}.mx-ol-ledger::before{display:none}
+  .mx-ol-side + .mx-ol-side{border-top:1px solid var(--ol-spine)}
+  .mx-ol-straddle{justify-content:flex-start;padding:10px 14px 12px;border-top:1px solid var(--ol-spine)}
+  .mx-ol-straddle .mx-ol-rows{border:0;padding:0;max-width:none;background:transparent}
+}
+@media(prefers-reduced-motion:reduce){.mx-ol-ev summary::before{transition:none}}
+
+/* =====================================================================
+   MOCKUP CHROME — controls and notes. NOT part of the page.
+   ===================================================================== */
+.mk-bar{position:sticky;top:0;z-index:50;background:#0B1733;color:#fff;font:600 12px/1.3 Inter,system-ui,sans-serif;padding:8px 16px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.mk-bar .t{font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-right:auto}
+.mk-bar span.g{display:inline-flex;gap:4px;align-items:center}
+.mk-bar button{font:inherit;color:#fff;background:transparent;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 10px;cursor:pointer}
+.mk-bar button[aria-pressed="true"]{background:#fff;color:#0B1733;border-color:#fff}
+.mk-notes{margin-top:44px;border-top:2px solid var(--ink);padding-top:14px;font-size:13px;color:var(--text)}
+.mk-notes h2{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink);margin:0 0 8px}
+.mk-notes li{margin:4px 0}
+</style>
+</head>
+<body>
+
+<div class="mk-bar" role="region" aria-label="Mockup controls">
+  <span class="t">Mockup · outlook section · v1 · for ratification</span>
+  <span class="g">Theme <button data-set="theme" data-v="light" aria-pressed="true">Light</button><button data-set="theme" data-v="dark" aria-pressed="false">Dark</button></span>
+  <span class="g">Language <button data-set="lang" data-v="en" aria-pressed="true">EN</button><button data-set="lang" data-v="zh" aria-pressed="false">中文</button></span>
+  <span class="g">State <button data-set="state" data-v="current" aria-pressed="true">Current read</button><button data-set="state" data-v="first" aria-pressed="false">First read</button><button data-set="state" data-v="previous" aria-pressed="false">Previous read</button><button data-set="state" data-v="updating" aria-pressed="false">Being updated</button></span>
+</div>
+
+<div class="wrap">
+  <header class="tx-hero">
+    <div class="tx-brand">🔀 <span class="l-en">Transmission</span><span class="l-zh">传导</span></div>
+    <p class="tx-sub"><span class="l-en">How rates, inflation and the dollar push on every asset we track.</span><span class="l-zh">利率、通胀与美元如何推动我们跟踪的每一类资产。</span></p>
+  </header>
+  <div class="stub"><span class="l-en">Existing sections stay as they are: headline, what changed, the three channels, the pressure map, how a shock travels.</span><span class="l-zh">现有板块保持不变：标题结论、最新变化、三条渠道、压力图、冲击如何传导。</span></div>
+
+  <!-- ================================================================
+       THE SECTION (one include partial in E2). Everything inside renders
+       from the regime_outlook projection and nothing else.
+       ================================================================ -->
+  <div class="sec-head" id="outlook"><span class="sh-dot" style="--sh-c:var(--ink)"></span>
+    <span class="l-en">Where this could go</span><span class="l-zh">接下来可能怎么走</span>
+    <span class="txq" tabindex="0">?<span class="txq-tip">
+      <span class="l-en">Each card is one possible path. Evidence that fits it today sits on the left, evidence that does not fit sits on the right, and evidence that points both ways sits on the line between. A row is not a vote: groups of evidence overlap, and cards cannot be compared by counting rows.</span>
+      <span class="l-zh">每张卡片是一条可能的路径。今天与之相符的证据在左，不相符的在右，两边都有指向的证据落在中线上。每一行不是一票：各组证据相互重叠，不能靠数行数来比较不同卡片。</span>
+    </span></span>
+  </div>
+  <p class="sec-sub"><span class="l-en">Possible paths from here, and what today's evidence says about each. Windows, not certainties — re-drawn nightly.</span><span class="l-zh">从这里出发的几条可能路径，以及今天的证据对每一条怎么说。是观察窗口，不是定论——每晚重绘。</span></p>
+
+  <section class="mx-ol" data-state="current" aria-labelledby="outlook">
+
+    <div class="mx-ol-updating">
+      <h3><span class="l-en">This read is being updated</span><span class="l-zh">读数更新中</span></h3>
+      <p><span class="l-en">Tonight's read is not ready yet. Nothing is shown here until it is. The rest of the page is unaffected.</span><span class="l-zh">今晚的读数尚未就绪，就绪前这里不显示任何内容。页面其余部分不受影响。</span></p>
+    </div>
+
+    <div class="mx-ol-body">
+      <div class="mx-ol-banner">
+        <b><span class="l-en">Previous read.</span><span class="l-zh">上一期读数。</span></b>
+        <span class="l-en">Prepared Thu 1 Oct, after the US close. A newer read is being prepared.</span>
+        <span class="l-zh">于10月1日（周四）美股收盘后生成。新一期读数正在准备中。</span>
+      </div>
+
+      <!-- ===== NOW ===== -->
+      <div class="mx-ol-now">
+        <div class="mx-ol-now-top">
+          <span class="mx-ol-eyebrow"><span class="l-en">Now</span><span class="l-zh">现在</span></span>
+          <span class="mx-ol-stamp"><span class="l-en">read prepared Fri 2 Oct 2026 · after the US close</span><span class="l-zh">读数生成于 2026年10月2日（周五）· 美股收盘后</span></span>
+        </div>
+        <div>
+          <p class="mx-ol-line"><span class="l-en">Long-term yields are rising while core inflation cools. Jobs are firm; market breadth is thin.</span><span class="l-zh">长端收益率上行，核心通胀降温。就业稳健，市场广度偏弱。</span></p>
+          <span class="mx-ol-stance"><span class="l-en">Watch — don't chase</span><span class="l-zh">观察——不追</span></span>
+          <p class="mx-ol-sowhat"><span class="l-en">Today's evidence does not yet separate the paths below. Use them as a checklist of what to look for, not as a forecast.</span><span class="l-zh">今天的证据还分不出下面这些路径。把它们当作一份观察清单，而不是预测。</span></p>
+        </div>
+        <ul class="mx-ol-fams">
+          <li><span class="f-n"><span class="l-en">Core inflation</span><span class="l-zh">核心通胀</span></span><span class="f-v"><span class="l-en">above target, and cooling</span><span class="l-zh">高于目标，正在降温</span></span><span class="mx-ol-stamp"><span class="l-en">2 Oct snapshot</span><span class="l-zh">10月2日快照</span></span></li>
+          <li><span class="f-n"><span class="l-en">Treasury yields</span><span class="l-zh">国债收益率</span></span><span class="f-v"><span class="l-en">real yields and the term premium are rising; inflation expectations are steady</span><span class="l-zh">实际收益率与期限溢价上行；通胀预期平稳</span></span><span class="mx-ol-stamp"><span class="l-en">2 Oct snapshot</span><span class="l-zh">10月2日快照</span></span></li>
+          <li><span class="f-n"><span class="l-en">Rate pricing</span><span class="l-zh">利率定价</span></span><span class="f-v"><span class="l-en">the market prices rate rises over the next 12 months</span><span class="l-zh">市场定价未来12个月加息</span></span><span class="mx-ol-stamp"><span class="l-en">as of 2 Oct</span><span class="l-zh">截至10月2日</span></span></li>
+          <li><span class="f-n"><span class="l-en">Jobs</span><span class="l-zh">就业</span></span><span class="f-v"><span class="l-en">firm</span><span class="l-zh">稳健</span></span><span class="mx-ol-stamp"><span class="l-en">2 Oct snapshot</span><span class="l-zh">10月2日快照</span></span></li>
+          <li><span class="f-n"><span class="l-en">Credit and funding</span><span class="l-zh">信用与融资</span></span><span class="f-v"><span class="l-en">financial conditions are loose — but the credit-stress flag is on</span><span class="l-zh">金融条件宽松——但信用压力信号已亮起</span></span><span class="mx-ol-stamp"><span class="l-en">as of 2 Oct</span><span class="l-zh">截至10月2日</span></span></li>
+          <li><span class="f-n"><span class="l-en">Market breadth</span><span class="l-zh">市场广度</span></span><span class="f-v"><span class="l-en">weak, with the index near its high</span><span class="l-zh">偏弱，而指数接近高位</span></span><span class="mx-ol-stamp"><span class="l-en">as of 2 Oct</span><span class="l-zh">截至10月2日</span></span></li>
+          <li><span class="f-n"><span class="l-en">Market leaders</span><span class="l-zh">领涨股</span></span><span class="f-v"><span class="l-en">intact (the tracked AI-hardware group)</span><span class="l-zh">完好（所跟踪的AI硬件组合）</span></span><span class="mx-ol-stamp"><span class="l-en">as of 2 Oct</span><span class="l-zh">截至10月2日</span></span></li>
+        </ul>
+        <p class="mx-ol-gap">
+          <span class="l-en"><b>Shown as numbers only, no verdict yet:</b> dollar, oil, wages and services, dispersion, correlation, volatility. <b>No published read yet:</b> inflation mix, real activity, earnings, positioning, later data, long-bond supply and demand, concentration, leader turnover, earnings revisions. "Snapshot" means the month a figure refers to is not published yet.</span>
+          <span class="l-zh"><b>仅显示数值、暂无判断：</b>美元、原油、工资与服务、分化度、相关性、波动率。<b>暂无已发布读数：</b>通胀构成、实体经济、企业盈利、持仓、后续数据、长债供需、集中度、领涨更替、盈利预期修正。“快照”表示该数据所对应的月份尚未公布。</span>
+        </p>
+      </div>
+
+      <!-- ===== WHAT CHANGED ===== -->
+      <div class="mx-ol-chg">
+        <span class="mx-ol-eyebrow"><span class="l-en">What changed</span><span class="l-zh">最新变化</span></span>
+        <span class="mx-ol-stamp not-first"><span class="l-en">since Thu 1 Oct</span><span class="l-zh">相较10月1日（周四）</span></span>
+        <span class="mx-ol-chip not-first"><span class="k"><span class="l-en">Read changed</span><span class="l-zh">判断变化</span></span><span class="l-en">Real yields: steady → rising</span><span class="l-zh">实际收益率：平稳 → 上行</span></span>
+        <span class="mx-ol-chip not-first"><span class="k"><span class="l-en">New data</span><span class="l-zh">新数据</span></span><span class="l-en">Jobs</span><span class="l-zh">就业</span></span>
+        <span class="mx-ol-chip is-quiet not-first"><span class="k"><span class="l-en">Timing only</span><span class="l-zh">仅时间更新</span></span><span class="l-en">Credit and funding — same read, newer date</span><span class="l-zh">信用与融资——读数不变，日期更新</span></span>
+        <span class="mx-ol-chip is-quiet only-first"><span class="l-en">First read — nothing to compare with yet.</span><span class="l-zh">首期读数——暂无可比较的上一期。</span></span>
+      </div>
+
+      <!-- ===== PATHS · fixed order: five on rates and inflation, then four inside the stock market ===== -->
+      <div class="mx-ol-group">
+        <span class="mx-ol-eyebrow"><span class="l-en">Paths</span><span class="l-zh">路径</span></span>
+        <p><span class="l-en">Nine possible paths, always in the same order. More than one can be true at once.</span><span class="l-zh">九条可能的路径，顺序固定。可以同时有多条成立。</span></p>
+      </div>
+      <div class="mx-ol-grid">
+
+        <article class="mx-ol-card">
+          <span class="mx-ol-eyebrow"><span class="l-en">Rates and inflation</span><span class="l-zh">利率与通胀</span></span>
+          <h4><span class="l-en">Inflation eases without jobs or credit weakening.</span><span class="l-zh">通胀回落，就业与信用不走弱。</span></h4>
+          <div class="mx-ol-ledger">
+            <div class="mx-ol-side"><h5><span class="l-en">Why this fits</span><span class="l-zh">相符之处</span></h5>
+              <ul class="mx-ol-rows">
+                <li><i class="mx-ol-mk is-fit"></i><span><b><span class="l-en">Core inflation</span><span class="l-zh">核心通胀</span></b> <span class="l-en">— the recent pace is below the 12-month pace</span><span class="l-zh">——近期增速低于12个月增速</span></span></li>
+                <li><i class="mx-ol-mk is-fit"></i><span><b><span class="l-en">Jobs</span><span class="l-zh">就业</span></b> <span class="l-en">— the read is firm</span><span class="l-zh">——读数稳健</span></span></li>
+              </ul></div>
+            <div class="mx-ol-side"><h5><span class="l-en">What does not fit</span><span class="l-zh">不相符之处</span></h5>
+              <ul class="mx-ol-rows">
+                <li><i class="mx-ol-mk is-not"></i><span><b><span class="l-en">Treasury yields</span><span class="l-zh">国债收益率</span></b> <span class="l-en">— real yields are rising, not falling</span><span class="l-zh">——实际收益率在上行，而非回落</span></span></li>
+              </ul></div>
+            <div class="mx-ol-straddle"><ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-mix"></i><span><span class="tag"><span class="l-en">Mixed</span><span class="l-zh">有分歧</span></span><b><span class="l-en">Credit and funding</span><span class="l-zh">信用与融资</span></b> <span class="l-en">— conditions are loose, but the stress flag is on</span><span class="l-zh">——金融条件宽松，但压力信号已亮起</span></span></li>
+            </ul></div>
+          </div>
+          <div class="mx-ol-watch"><h5><span class="l-en">What we are watching</span><span class="l-zh">我们在观察</span></h5>
+            <ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-unk"></i><span><b><span class="l-en">Inflation mix</span><span class="l-zh">通胀构成</span></b> <span class="l-en">— no published read yet</span><span class="l-zh">——暂无已发布读数</span></span></li>
+            </ul></div>
+          <details class="mx-ol-ev">
+            <summary><span class="l-en">Evidence and dates</span><span class="l-zh">证据与日期</span></summary>
+            <p class="mx-ol-evh"><span class="l-en">What the path needs, what today's read says, and where it comes from.</span><span class="l-zh">路径需要什么、今天的读数怎么说、出自哪里。</span></p>
+            <ul class="mx-ol-evl">
+              <li><div class="need"><span class="l-en">Core inflation's recent pace is below its 12-month pace</span><span class="l-zh">核心通胀近期增速低于12个月增速</span></div>
+                <div class="got"><span class="r"><i class="mx-ol-mk is-fit"></i><span class="l-en">fits</span><span class="l-zh">相符</span></span><span><span class="l-en">cooling · rates and inflation model</span><span class="l-zh">降温 · 利率与通胀模型</span></span><span class="mx-ol-stamp"><span class="l-en">2 Oct snapshot</span><span class="l-zh">10月2日快照</span></span></div></li>
+              <li><div class="need"><span class="l-en">Inflation expectations are drifting down</span><span class="l-zh">通胀预期在下移</span></div>
+                <div class="got"><span class="r"><i class="mx-ol-mk is-flat"></i><span class="l-en">says nothing either way</span><span class="l-zh">不构成区分</span></span><span><span class="l-en">steady · rates and inflation model</span><span class="l-zh">平稳 · 利率与通胀模型</span></span><span class="mx-ol-stamp"><span class="l-en">2 Oct snapshot</span><span class="l-zh">10月2日快照</span></span></div></li>
+              <li><div class="need"><span class="l-en">The jobs read is firm</span><span class="l-zh">就业读数稳健</span></div>
+                <div class="got"><span class="r"><i class="mx-ol-mk is-fit"></i><span class="l-en">fits</span><span class="l-zh">相符</span></span><span><span class="l-en">firm · market conditions model</span><span class="l-zh">稳健 · 市场状况模型</span></span><span class="mx-ol-stamp"><span class="l-en">2 Oct snapshot</span><span class="l-zh">10月2日快照</span></span></div></li>
+              <li><div class="need"><span class="l-en">The credit-stress flag is off</span><span class="l-zh">信用压力信号未亮起</span></div>
+                <div class="got"><span class="r"><i class="mx-ol-mk is-not"></i><span class="l-en">does not fit</span><span class="l-zh">不相符</span></span><span><span class="l-en">on · market conditions model</span><span class="l-zh">已亮起 · 市场状况模型</span></span><span class="mx-ol-stamp"><span class="l-en">as of 2 Oct</span><span class="l-zh">截至10月2日</span></span></div></li>
+              <li><div class="need"><span class="l-en">Financial conditions are loose</span><span class="l-zh">金融条件宽松</span></div>
+                <div class="got"><span class="r"><i class="mx-ol-mk is-fit"></i><span class="l-en">fits</span><span class="l-zh">相符</span></span><span><span class="l-en">loose · market conditions model</span><span class="l-zh">宽松 · 市场状况模型</span></span><span class="mx-ol-stamp"><span class="l-en">as of 2 Oct</span><span class="l-zh">截至10月2日</span></span></div></li>
+              <li><div class="need"><span class="l-en">Real yields are falling</span><span class="l-zh">实际收益率在回落</span></div>
+                <div class="got"><span class="r"><i class="mx-ol-mk is-not"></i><span class="l-en">does not fit</span><span class="l-zh">不相符</span></span><span><span class="l-en">rising · rates and inflation model</span><span class="l-zh">上行 · 利率与通胀模型</span></span><span class="mx-ol-stamp"><span class="l-en">2 Oct snapshot</span><span class="l-zh">10月2日快照</span></span></div></li>
+              <li><div class="need"><span class="l-en">Inflation is easing across its parts</span><span class="l-zh">通胀各分项普遍回落</span></div>
+                <div class="got"><span class="r"><i class="mx-ol-mk is-unk"></i><span class="l-en">not yet known</span><span class="l-zh">暂未知</span></span><span><span class="l-en">no published read to use yet</span><span class="l-zh">暂无可用的已发布读数</span></span></div></li>
+            </ul>
+          </details>
+        </article>
+
+        <article class="mx-ol-card">
+          <span class="mx-ol-eyebrow"><span class="l-en">Rates and inflation</span><span class="l-zh">利率与通胀</span></span>
+          <h4><span class="l-en">Yields fall because activity and financing weaken.</span><span class="l-zh">收益率回落，源于经济与融资走弱。</span></h4>
+          <div class="mx-ol-ledger">
+            <div class="mx-ol-side"><h5><span class="l-en">Why this fits</span><span class="l-zh">相符之处</span></h5>
+              <p class="mx-ol-none"><span class="l-en">Nothing on this side today.</span><span class="l-zh">今天此侧暂无。</span></p></div>
+            <div class="mx-ol-side"><h5><span class="l-en">What does not fit</span><span class="l-zh">不相符之处</span></h5>
+              <ul class="mx-ol-rows">
+                <li><i class="mx-ol-mk is-not"></i><span><b><span class="l-en">Treasury yields</span><span class="l-zh">国债收益率</span></b> <span class="l-en">— real yields are rising, not falling</span><span class="l-zh">——实际收益率在上行，而非回落</span></span></li>
+                <li><i class="mx-ol-mk is-not"></i><span><b><span class="l-en">Jobs</span><span class="l-zh">就业</span></b> <span class="l-en">— the read is firm, not cooling</span><span class="l-zh">——读数稳健，而非降温</span></span></li>
+              </ul></div>
+            <div class="mx-ol-straddle"><ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-mix"></i><span><span class="tag"><span class="l-en">Mixed</span><span class="l-zh">有分歧</span></span><b><span class="l-en">Credit and funding</span><span class="l-zh">信用与融资</span></b> <span class="l-en">— the stress flag is on, but conditions are loose</span><span class="l-zh">——压力信号已亮起，但金融条件宽松</span></span></li>
+            </ul></div>
+          </div>
+          <div class="mx-ol-watch"><h5><span class="l-en">What we are watching</span><span class="l-zh">我们在观察</span></h5>
+            <ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-unk"></i><span><b><span class="l-en">Real activity, earnings, the dollar</span><span class="l-zh">实体经济、企业盈利、美元</span></b> <span class="l-en">— no read to use yet</span><span class="l-zh">——暂无可用读数</span></span></li>
+            </ul></div>
+          <details class="mx-ol-ev"><summary><span class="l-en">Evidence and dates</span><span class="l-zh">证据与日期</span></summary></details>
+        </article>
+
+        <article class="mx-ol-card">
+          <span class="mx-ol-eyebrow"><span class="l-en">Rates and inflation</span><span class="l-zh">利率与通胀</span></span>
+          <h4><span class="l-en">Price pressure spreads or persists.</span><span class="l-zh">价格压力扩散或持续。</span></h4>
+          <div class="mx-ol-ledger">
+            <div class="mx-ol-side"><h5><span class="l-en">Why this fits</span><span class="l-zh">相符之处</span></h5>
+              <ul class="mx-ol-rows">
+                <li><i class="mx-ol-mk is-fit"></i><span><b><span class="l-en">Rate pricing</span><span class="l-zh">利率定价</span></b> <span class="l-en">— the market prices rate rises over 12 months</span><span class="l-zh">——市场定价未来12个月加息</span></span></li>
+              </ul></div>
+            <div class="mx-ol-side"><h5><span class="l-en">What does not fit</span><span class="l-zh">不相符之处</span></h5>
+              <p class="mx-ol-none"><span class="l-en">Nothing on this side today.</span><span class="l-zh">今天此侧暂无。</span></p></div>
+            <div class="mx-ol-straddle"><ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-mix"></i><span><span class="tag"><span class="l-en">Mixed</span><span class="l-zh">有分歧</span></span><b><span class="l-en">Core inflation</span><span class="l-zh">核心通胀</span></b> <span class="l-en">— above target, but the recent pace is cooling</span><span class="l-zh">——高于目标，但近期增速在降温</span></span></li>
+              <li><i class="mx-ol-mk is-flat"></i><span><span class="tag"><span class="l-en">Neither way</span><span class="l-zh">不构成区分</span></span><b><span class="l-en">Treasury yields</span><span class="l-zh">国债收益率</span></b> <span class="l-en">— inflation expectations are steady</span><span class="l-zh">——通胀预期平稳</span></span></li>
+            </ul></div>
+          </div>
+          <div class="mx-ol-watch"><h5><span class="l-en">What we are watching</span><span class="l-zh">我们在观察</span></h5>
+            <ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-unk"></i><span><b><span class="l-en">Wages and services, inflation mix, oil</span><span class="l-zh">工资与服务、通胀构成、原油</span></b> <span class="l-en">— no read to use yet</span><span class="l-zh">——暂无可用读数</span></span></li>
+            </ul></div>
+          <details class="mx-ol-ev"><summary><span class="l-en">Evidence and dates</span><span class="l-zh">证据与日期</span></summary></details>
+        </article>
+
+        <article class="mx-ol-card">
+          <span class="mx-ol-eyebrow"><span class="l-en">Rates and inflation</span><span class="l-zh">利率与通胀</span></span>
+          <h4><span class="l-en">Long-term yields rise for reasons beyond the expected rate path.</span><span class="l-zh">长端收益率上行，且超出预期利率路径所能解释。</span></h4>
+          <div class="mx-ol-ledger">
+            <div class="mx-ol-side"><h5><span class="l-en">Why this fits</span><span class="l-zh">相符之处</span></h5>
+              <ul class="mx-ol-rows">
+                <li><i class="mx-ol-mk is-fit"></i><span><b><span class="l-en">Treasury yields</span><span class="l-zh">国债收益率</span></b> <span class="l-en">— the term premium and real yields are both rising</span><span class="l-zh">——期限溢价与实际收益率同步上行</span></span></li>
+              </ul></div>
+            <div class="mx-ol-side"><h5><span class="l-en">What does not fit</span><span class="l-zh">不相符之处</span></h5>
+              <p class="mx-ol-none"><span class="l-en">Nothing on this side today.</span><span class="l-zh">今天此侧暂无。</span></p></div>
+          </div>
+          <div class="mx-ol-watch"><h5><span class="l-en">What we are watching</span><span class="l-zh">我们在观察</span></h5>
+            <ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-unk"></i><span><b><span class="l-en">Long-bond supply and demand</span><span class="l-zh">长债供需</span></b> <span class="l-en">— no published read yet</span><span class="l-zh">——暂无已发布读数</span></span></li>
+              <li><i class="mx-ol-mk is-unk"></i><span><b><span class="l-en">Rate pricing</span><span class="l-zh">利率定价</span></b> <span class="l-en">— whether the expected rate path explains the rise is not measured yet</span><span class="l-zh">——预期利率路径能否解释这一上行，尚未测量</span></span></li>
+            </ul></div>
+          <details class="mx-ol-ev"><summary><span class="l-en">Evidence and dates</span><span class="l-zh">证据与日期</span></summary></details>
+        </article>
+
+        <article class="mx-ol-card">
+          <span class="mx-ol-eyebrow"><span class="l-en">Rates and inflation</span><span class="l-zh">利率与通胀</span></span>
+          <h4><span class="l-en">Yields reverse, but the fundamentals have not confirmed it.</span><span class="l-zh">收益率出现反转，但基本面尚未确认。</span></h4>
+          <div class="mx-ol-ledger">
+            <div class="mx-ol-side"><h5><span class="l-en">Why this fits</span><span class="l-zh">相符之处</span></h5>
+              <p class="mx-ol-none"><span class="l-en">Nothing on this side today.</span><span class="l-zh">今天此侧暂无。</span></p></div>
+            <div class="mx-ol-side"><h5><span class="l-en">What does not fit</span><span class="l-zh">不相符之处</span></h5>
+              <ul class="mx-ol-rows">
+                <li><i class="mx-ol-mk is-not"></i><span><b><span class="l-en">Treasury yields</span><span class="l-zh">国债收益率</span></b> <span class="l-en">— the 10-year is stretched at a high, not turning</span><span class="l-zh">——10年期处于高位拉伸，而非转向</span></span></li>
+              </ul></div>
+          </div>
+          <div class="mx-ol-watch"><h5><span class="l-en">What we are watching</span><span class="l-zh">我们在观察</span></h5>
+            <ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-unk"></i><span><b><span class="l-en">Positioning, later data, market breadth</span><span class="l-zh">持仓、后续数据、市场广度</span></b> <span class="l-en">— no read to use yet</span><span class="l-zh">——暂无可用读数</span></span></li>
+            </ul></div>
+          <details class="mx-ol-ev"><summary><span class="l-en">Evidence and dates</span><span class="l-zh">证据与日期</span></summary></details>
+        </article>
+
+
+        <article class="mx-ol-card">
+          <span class="mx-ol-eyebrow"><span class="l-en">Inside the stock market</span><span class="l-zh">股市内部</span></span>
+          <h4><span class="l-en">A narrow group keeps carrying the index.</span><span class="l-zh">少数股票继续撑起指数。</span></h4>
+          <div class="mx-ol-ledger">
+            <div class="mx-ol-side"><h5><span class="l-en">Why this fits</span><span class="l-zh">相符之处</span></h5>
+              <ul class="mx-ol-rows">
+                <li><i class="mx-ol-mk is-fit"></i><span><b><span class="l-en">Market breadth</span><span class="l-zh">市场广度</span></b> <span class="l-en">— the index is near its high while few stocks hold their long-term trend</span><span class="l-zh">——指数接近高位，而守住长期趋势的股票很少</span></span></li>
+              </ul></div>
+            <div class="mx-ol-side"><h5><span class="l-en">What does not fit</span><span class="l-zh">不相符之处</span></h5>
+              <p class="mx-ol-none"><span class="l-en">Nothing on this side today.</span><span class="l-zh">今天此侧暂无。</span></p></div>
+            <div class="mx-ol-straddle"><ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-mix"></i><span><span class="tag"><span class="l-en">Mixed</span><span class="l-zh">有分歧</span></span><b><span class="l-en">Credit and funding</span><span class="l-zh">信用与融资</span></b> <span class="l-en">— conditions are loose, but the stress flag is on</span><span class="l-zh">——金融条件宽松，但压力信号已亮起</span></span></li>
+            </ul></div>
+          </div>
+          <div class="mx-ol-watch"><h5><span class="l-en">What we are watching</span><span class="l-zh">我们在观察</span></h5>
+            <ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-unk"></i><span><b><span class="l-en">Concentration, leader turnover</span><span class="l-zh">集中度、领涨更替</span></b> <span class="l-en">— no published read yet</span><span class="l-zh">——暂无已发布读数</span></span></li>
+            </ul></div>
+          <details class="mx-ol-ev"><summary><span class="l-en">Evidence and dates</span><span class="l-zh">证据与日期</span></summary></details>
+        </article>
+
+        <article class="mx-ol-card">
+          <span class="mx-ol-eyebrow"><span class="l-en">Inside the stock market</span><span class="l-zh">股市内部</span></span>
+          <h4><span class="l-en">More stocks join in, with fundamentals behind them.</span><span class="l-zh">更多股票跟上，且有基本面支撑。</span></h4>
+          <div class="mx-ol-ledger">
+            <div class="mx-ol-side"><h5><span class="l-en">Why this fits</span><span class="l-zh">相符之处</span></h5>
+              <p class="mx-ol-none"><span class="l-en">Nothing on this side today.</span><span class="l-zh">今天此侧暂无。</span></p></div>
+            <div class="mx-ol-side"><h5><span class="l-en">What does not fit</span><span class="l-zh">不相符之处</span></h5>
+              <ul class="mx-ol-rows">
+                <li><i class="mx-ol-mk is-not"></i><span><b><span class="l-en">Market breadth</span><span class="l-zh">市场广度</span></b> <span class="l-en">— breadth reads weak, not strong</span><span class="l-zh">——广度读数偏弱，而非强劲</span></span></li>
+              </ul></div>
+          </div>
+          <div class="mx-ol-watch"><h5><span class="l-en">What we are watching</span><span class="l-zh">我们在观察</span></h5>
+            <ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-unk"></i><span><b><span class="l-en">Dispersion, earnings revisions</span><span class="l-zh">分化度、盈利预期修正</span></b> <span class="l-en">— no read to use yet</span><span class="l-zh">——暂无可用读数</span></span></li>
+            </ul></div>
+          <details class="mx-ol-ev"><summary><span class="l-en">Evidence and dates</span><span class="l-zh">证据与日期</span></summary></details>
+        </article>
+
+        <article class="mx-ol-card">
+          <span class="mx-ol-eyebrow"><span class="l-en">Inside the stock market</span><span class="l-zh">股市内部</span></span>
+          <h4><span class="l-en">Leadership rotates while the market stays healthy.</span><span class="l-zh">领涨轮换，市场整体仍健康。</span></h4>
+          <div class="mx-ol-ledger">
+            <div class="mx-ol-side"><h5><span class="l-en">Why this fits</span><span class="l-zh">相符之处</span></h5>
+              <ul class="mx-ol-rows">
+                <li><i class="mx-ol-mk is-fit"></i><span><b><span class="l-en">Market leaders</span><span class="l-zh">领涨股</span></b> <span class="l-en">— the tracked AI-hardware leaders are intact</span><span class="l-zh">——所跟踪的AI硬件领涨股完好</span></span></li>
+              </ul></div>
+            <div class="mx-ol-side"><h5><span class="l-en">What does not fit</span><span class="l-zh">不相符之处</span></h5>
+              <p class="mx-ol-none"><span class="l-en">Nothing on this side today.</span><span class="l-zh">今天此侧暂无。</span></p></div>
+          </div>
+          <div class="mx-ol-watch"><h5><span class="l-en">What we are watching</span><span class="l-zh">我们在观察</span></h5>
+            <ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-unk"></i><span><b><span class="l-en">Leader turnover, breadth inside themes</span><span class="l-zh">领涨更替、主题内部广度</span></b> <span class="l-en">— no published read yet</span><span class="l-zh">——暂无已发布读数</span></span></li>
+            </ul></div>
+          <details class="mx-ol-ev"><summary><span class="l-en">Evidence and dates</span><span class="l-zh">证据与日期</span></summary></details>
+        </article>
+
+        <article class="mx-ol-card">
+          <span class="mx-ol-eyebrow"><span class="l-en">Inside the stock market</span><span class="l-zh">股市内部</span></span>
+          <h4><span class="l-en">Weakness elsewhere reaches the leaders.</span><span class="l-zh">其他板块的疲弱蔓延到领涨股。</span></h4>
+          <div class="mx-ol-ledger">
+            <div class="mx-ol-side"><h5><span class="l-en">Why this fits</span><span class="l-zh">相符之处</span></h5>
+              <p class="mx-ol-none"><span class="l-en">Nothing on this side today.</span><span class="l-zh">今天此侧暂无。</span></p></div>
+            <div class="mx-ol-side"><h5><span class="l-en">What does not fit</span><span class="l-zh">不相符之处</span></h5>
+              <ul class="mx-ol-rows">
+                <li><i class="mx-ol-mk is-not"></i><span><b><span class="l-en">Market leaders</span><span class="l-zh">领涨股</span></b> <span class="l-en">— the tracked leaders are intact, not cracking</span><span class="l-zh">——所跟踪的领涨股完好，并未破位</span></span></li>
+              </ul></div>
+            <div class="mx-ol-straddle"><ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-mix"></i><span><span class="tag"><span class="l-en">Mixed</span><span class="l-zh">有分歧</span></span><b><span class="l-en">Credit and funding</span><span class="l-zh">信用与融资</span></b> <span class="l-en">— the stress flag is on, but conditions are loose</span><span class="l-zh">——压力信号已亮起，但金融条件宽松</span></span></li>
+            </ul></div>
+          </div>
+          <div class="mx-ol-watch"><h5><span class="l-en">What we are watching</span><span class="l-zh">我们在观察</span></h5>
+            <ul class="mx-ol-rows">
+              <li><i class="mx-ol-mk is-unk"></i><span><b><span class="l-en">Correlation</span><span class="l-zh">相关性</span></b> <span class="l-en">— shown as a number only; no verdict yet</span><span class="l-zh">——仅显示数值；暂无判断</span></span></li>
+            </ul></div>
+          <details class="mx-ol-ev"><summary><span class="l-en">Evidence and dates</span><span class="l-zh">证据与日期</span></summary></details>
+        </article>
+      </div>
+
+      <p class="mx-ol-caveat"><span class="l-en">Paths overlap and are not ranked. Each row is a group of evidence, not an independent witness, so cards cannot be compared by counting rows.</span><span class="l-zh">各路径可以同时成立，且不分先后。每一行是一组证据，而非相互独立的佐证，因此不能靠数行数来比较不同卡片。</span></p>
+
+      <!-- ===== HISTORY · EXPOSURES · WATCH ===== -->
+      <div class="mx-ol-foot">
+        <div class="mx-ol-panel">
+          <span class="mx-ol-eyebrow"><span class="l-en">History</span><span class="l-zh">历史</span></span>
+          <h3><span class="l-en">No history yet</span><span class="l-zh">暂无历史</span></h3>
+          <p class="why"><span class="l-en">We only show history that can be rebuilt from what was known at the time. That record starts with this read, so there is nothing honest to show before it.</span><span class="l-zh">我们只展示能够按“当时已知信息”重建的历史。这份记录从本期读数开始，在此之前没有可以如实呈现的内容。</span></p>
+        </div>
+        <div class="mx-ol-panel">
+          <span class="mx-ol-eyebrow"><span class="l-en">Exposures</span><span class="l-zh">影响</span></span>
+          <h3><span class="l-en">If–then, not forecasts</span><span class="l-zh">是“如果…那么…”，不是预测</span></h3>
+          <ul class="mx-ol-ident">
+            <li><span class="mx-ol-basis"><span class="l-en">Arithmetic</span><span class="l-zh">算术关系</span></span><span class="l-en">If yields rise, existing bonds lose value — and longer bonds lose more.</span><span class="l-zh">如果收益率上行，存量债券价格下跌——期限越长，跌幅越大。</span></li>
+            <li><span class="mx-ol-basis"><span class="l-en">Arithmetic</span><span class="l-zh">算术关系</span></span><span class="l-en">If inflation cools while yields hold, the after-inflation return on cash and bonds goes up.</span><span class="l-zh">如果通胀降温而收益率不变，现金与债券扣除通胀后的回报上升。</span></li>
+          </ul>
+          <p class="why" style="margin-top:8px"><span class="l-en">No stock, theme or position size is named here until that link has been measured. For measured links, see the pressure map above.</span><span class="l-zh">在相关联系经过测量之前，这里不会点名任何股票、主题或仓位大小。已测量的联系见上方压力图。</span></p>
+        </div>
+        <div class="mx-ol-panel">
+          <span class="mx-ol-eyebrow"><span class="l-en">Watch</span><span class="l-zh">关注</span></span>
+          <h3><span class="l-en">What could change the read</span><span class="l-zh">哪些因素可能改变读数</span></h3>
+          <div class="mx-ol-sub"><span class="l-en">Next scheduled releases</span><span class="l-zh">接下来的数据发布</span></div>
+          <ul class="mx-ol-cal">
+            <li><span><span class="l-en">Consumer prices</span><span class="l-zh">消费者物价</span></span><span class="mx-ol-stamp"><span class="l-en">Wed 14 Oct</span><span class="l-zh">10月14日 周三</span></span></li>
+            <li><span><span class="l-en">Core PCE inflation</span><span class="l-zh">核心PCE通胀</span></span><span class="mx-ol-stamp"><span class="l-en">Fri 30 Oct</span><span class="l-zh">10月30日 周五</span></span></li>
+            <li><span><span class="l-en">Jobs report</span><span class="l-zh">就业报告</span></span><span class="mx-ol-stamp"><span class="l-en">Fri 6 Nov</span><span class="l-zh">11月6日 周五</span></span></li>
+          </ul>
+          <div class="mx-ol-sub"><span class="l-en">Inputs running behind</span><span class="l-zh">滞后的输入</span></div>
+          <ul class="mx-ol-cal">
+            <li><span><span class="l-en">Oil shock read</span><span class="l-zh">原油冲击读数</span></span><span class="mx-ol-stamp is-stale"><span class="l-en">last updated 18 Sep</span><span class="l-zh">最后更新 9月18日</span></span></li>
+            <li><span><span class="l-en">Corporate bond stress gauge</span><span class="l-zh">公司债压力指标</span></span><span class="mx-ol-stamp is-stale"><span class="l-en">last updated 1 Jul</span><span class="l-zh">最后更新 7月1日</span></span></li>
+            <li><span><span class="l-en">Fed path note</span><span class="l-zh">美联储路径说明</span></span><span class="mx-ol-stamp is-stale"><span class="l-en">written 13 Jul</span><span class="l-zh">撰写于 7月13日</span></span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="stub"><span class="l-en">Existing section continues below: "If this holds for three months", then the study shelf.</span><span class="l-zh">下方接现有板块：“若持续三个月”，然后是研究资料架。</span></div>
+
+  <div class="mk-notes">
+    <h2>Mockup notes — not part of the page</h2>
+    <ul>
+      <li><b>Real:</b> every reading on the nine cards and in "Now" is the 2 October 2026 read of the frozen mapping (contract revision 3.1, Appendix A.6). Card order is the contract's fixed order.</li>
+      <li><b>Sample:</b> the "What changed" chips, the release dates under "Watch", and the "Previous read" date. The live section reads these from the projection.</li>
+      <li><b>Proposed position:</b> after "How a shock travels", before "If this holds for three months". One include line on the page.</li>
+      <li><b>Light</b> is the research workspace: white cards, hairlines, soft shadow, ledger on white. <b>Dark</b> is the command centre: no shadows, the ledger is a recessed well, filled marks carry a faint halo, the centre line fades at both ends.</li>
+      <li><b>No green or red anywhere:</b> "fits" is not "good". Readings differ by mark shape, so the section also reads correctly in the Chinese colour convention and for colour-blind readers.</li>
+      <li>Open "Evidence and dates" on the first card to see how each row traces to its source and date. Only that card is filled in; the other eight use the same rows.</li>
+      <li><b>Cut on purpose:</b> a row of summary marks in each card's corner. It made the nine cards easy to compare at a glance, which is the one thing this section must not invite.</li>
+      <li><b>For you to decide:</b> the section's position on the page; the title "Where this could go"; whether "What changed" lives here or stays only in the page's existing strip.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+/* mockup chrome only — the section itself needs no script */
+document.querySelectorAll('.mk-bar button').forEach(function(b){
+  b.addEventListener('click',function(){
+    var k=b.dataset.set,v=b.dataset.v;
+    if(k==='state'){document.querySelector('.mx-ol').dataset.state=v;}
+    else{document.documentElement.setAttribute('data-'+k,v);}
+    document.querySelectorAll('.mk-bar button[data-set="'+k+'"]').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+  });
+});
+(function(){var q=new URLSearchParams(location.search);['theme','lang','state'].forEach(function(k){var v=q.get(k);if(v){var b=document.querySelector('.mk-bar button[data-set="'+k+'"][data-v="'+v+'"]');if(b)b.click();}});
+ if(q.get('chrome')==='0'){document.querySelector('.mk-bar').style.display='none';}})();
+</script>
+</body>
+</html>

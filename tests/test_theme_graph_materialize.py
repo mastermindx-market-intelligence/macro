@@ -26,7 +26,7 @@ import pandas as pd
 import pytest
 import yaml
 
-from engine.theme_graph import identity, materialize, store
+from engine.theme_graph import identity, local_sources, materialize, store
 from lib import config
 
 CONTRACTS = Path(__file__).resolve().parents[1] / "contracts" / "theme_graph"
@@ -136,6 +136,14 @@ def tree(tmp_path, monkeypatch):
     _write(root / "baskets" / "membership.json", _us_doc())
     _write(root / "baskets_china" / "membership.json", _cn_doc())
     _write(root / "baskets_china_ths" / "membership.json", _ths_doc())
+    pd.DataFrame([
+        {"snapshot_date": THS_DOC_DATE, "suite": "baskets_china_ths",
+         "basket_id": f"thsc{KNOWN_CODE}", "ticker": "600001.SS",
+         "source_shape": "membership"},
+        {"snapshot_date": THS_DOC_DATE, "suite": "baskets_china_ths",
+         "basket_id": f"thsc{KNOWN_CODE}", "ticker": "600002.SS",
+         "source_shape": "membership"},
+    ]).to_parquet(root / "baskets_china_ths" / "membership_history.parquet", index=False)
     _write(root / "baskets_china_ths" / "concept_map.json", {
         "asof": CMAP_ASOF,
         "map": {"测试概念": KNOWN_CODE, "另一概念": "900002", "第三概念": "900003"},
@@ -154,12 +162,16 @@ RAW_SNAPSHOT = (SNAP_DATE, {"测试概念": [{"ticker": "600001.SS", "name": "�
 
 
 def _build(tree, *, era="reconstruction", belief_time="2026-08-11",
+           computed_at="2026-08-11T00:00:00Z",
            raw_snapshot=RAW_SNAPSHOT, **kw):
     root, xwalk = tree
+    ths_history = kw.pop("ths_history", None)
+    if ths_history is None:
+        ths_history = pd.read_parquet(root / "baskets_china_ths" / "membership_history.parquet")
     return materialize.build(era=era, belief_time=belief_time,
-                             computed_at="2026-08-11T00:00:00Z",
+                             computed_at=computed_at,
                              data_dir=root, crosswalk_path=xwalk,
-                             raw_snapshot=raw_snapshot, **kw)
+                             raw_snapshot=raw_snapshot, ths_history=ths_history, **kw)
 
 
 def _by_type(view, edge_type):
@@ -170,6 +182,137 @@ def _edge(view, edge_type, src, dst):
     hits = [e for e in _by_type(view, edge_type) if e["src"] == src and e["dst"] == dst]
     assert len(hits) == 1, f"expected exactly one {edge_type} {src}->{dst}, got {hits}"
     return hits[0]
+
+
+def test_ths_owner_history_keeps_first_observed_boundary_and_reappearance():
+    """D2C: owner snapshots, never today's membership, define THS PIT intervals.
+
+    Dump-shaped rows are REFUSED by default — their concept→basket resolution used
+    the current map, so admitting them would backdate a mapping we do not historically
+    possess. The filter lives inside ``ths_membership_intervals`` so every caller
+    inherits it.
+    """
+    history = pd.DataFrame([
+        {"snapshot_date": "2026-06-30", "basket_id": "thsc900001",
+         "ticker": "600001.SS", "source_shape": "ths_concept_dump"},
+        {"snapshot_date": "2026-07-08", "basket_id": "thsc900001",
+         "ticker": "600002.SS", "source_shape": "membership"},
+        {"snapshot_date": "2026-07-15", "basket_id": "thsc900001",
+         "ticker": "600001.SS", "source_shape": "membership"},
+        {"snapshot_date": "2026-07-15", "basket_id": "thsc900001",
+         "ticker": "600002.SS", "source_shape": "membership"},
+    ])
+
+    intervals = local_sources.ths_membership_intervals(history)
+
+    assert [(iv.basket_id, iv.ticker, iv.valid_from, iv.valid_to,
+             iv.source_shape) for iv in intervals] == [
+        ("thsc900001", "600002.SS", "2026-07-08", None, "membership"),
+        ("thsc900001", "600001.SS", "2026-07-15", None, "membership"),
+    ], "ths_concept_dump rows must be refused by the default shape filter"
+
+    # Explicit opt-in still admits dump rows for intentional exercises.
+    with_dumps = local_sources.ths_membership_intervals(
+        history, shapes=frozenset({"membership", "ths_concept_dump"}))
+    assert any(iv.source_shape == "ths_concept_dump" for iv in with_dumps)
+
+
+def test_ths_owner_history_staggered_multi_basket_collection_never_fabricates_exits():
+    """A date collected for basket A but not basket B must be a GAP for B, never
+    an absence that closes/reopens B's interval (the presence axis is PER-BASKET,
+    not the global set of snapshot dates)."""
+    history = pd.DataFrame([
+        {"snapshot_date": "2026-06-30", "basket_id": "B",
+         "ticker": "X", "source_shape": "membership"},
+        {"snapshot_date": "2026-07-01", "basket_id": "A",
+         "ticker": "Y", "source_shape": "membership"},
+        {"snapshot_date": "2026-07-08", "basket_id": "B",
+         "ticker": "X", "source_shape": "membership"},
+    ])
+
+    intervals = local_sources.ths_membership_intervals(history)
+
+    assert [(iv.basket_id, iv.ticker, iv.valid_from, iv.valid_to)
+            for iv in intervals] == [
+        ("B", "X", "2026-06-30", None),
+        ("A", "Y", "2026-07-01", None),
+    ], ("neither basket was ever observed absent — a staggered collection date "
+        "for the OTHER basket must never fabricate an exit")
+
+
+def test_ths_graph_never_leaks_a_later_member_back_into_an_earlier_snapshot(tree):
+    """D2C mutation guard: current membership must not fill an older PIT vintage."""
+    root, _xwalk = tree
+    history = pd.DataFrame([
+        {"snapshot_date": "2026-06-30", "basket_id": f"thsc{KNOWN_CODE}",
+         "ticker": "600001.SS", "source_shape": "membership"},
+        {"snapshot_date": "2026-07-08", "basket_id": f"thsc{KNOWN_CODE}",
+         "ticker": "600001.SS", "source_shape": "membership"},
+        {"snapshot_date": "2026-07-08", "basket_id": f"thsc{KNOWN_CODE}",
+         "ticker": "600002.SS", "source_shape": "membership"},
+        {"snapshot_date": "2026-07-15", "basket_id": f"thsc{KNOWN_CODE}",
+         "ticker": "600003.SS", "source_shape": "ths_concept_dump"},
+    ])
+    history.to_parquet(root / "baskets_china_ths" / "membership_history.parquet", index=False)
+
+    view = _build(tree)
+    basket = f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+    early = _edge(view, "MEMBER_OF", "co:cn:600001.SS", basket)
+    later = _edge(view, "MEMBER_OF", "co:cn:600002.SS", basket)
+    assert early["valid_from"] == "2026-06-30"
+    assert later["valid_from"] == "2026-07-08"
+    assert later["valid_from"] > early["valid_from"]
+    assert not [edge for edge in view.edges if edge["src"] == "co:cn:600003.SS"], (
+        "a raw concept dump has a current-basis concept-to-basket mapping and cannot "
+        "become a historical graph membership")
+    assert view.per_suite["baskets_china_ths"]["excluded_source_shapes"] == [
+        "ths_concept_dump"]
+
+
+def test_ths_graph_declines_current_membership_when_owner_history_is_absent(tree):
+    view = _build(tree, ths_history=pd.DataFrame())
+    assert not [edge for edge in _by_type(view, "MEMBER_OF")
+                if edge["dst"].startswith("basket:baskets_china_ths:")]
+    report = view.per_suite["baskets_china_ths"]
+    assert report["member_edges"] == 0
+    # m1: degraded path still emits the full key set consumers inspect.
+    for key in ("closed_member_edges", "skipped_unidentifiable", "tracks_edges",
+                "membership_published_at", "seed_constant", "unlabelled_nodes", "note"):
+        assert key in report
+    assert report["closed_member_edges"] == 0
+    assert report["tracks_edges"] == 0
+    assert report["membership_published_at"] == THS_DOC_DATE
+    assert report["seed_constant"] == CN_SEED
+    assert report["note"]
+
+
+def test_ths_per_suite_keeps_coverage_disclosure_fields(tree):
+    """M1: membership_published_at / seed_constant / tracks_edges stay cited."""
+    view = _build(tree)
+    report = view.per_suite["baskets_china_ths"]
+    assert report["membership_published_at"] == THS_DOC_DATE
+    assert report["seed_constant"] == CN_SEED
+    assert report["tracks_edges"] == 0
+    assert "closed_member_edges" in report
+    assert "skipped_unidentifiable" in report
+    assert "unlabelled_nodes" in report
+    assert report["note"] is None
+    ths_member = _edge(view, "MEMBER_OF", "co:cn:600001.SS",
+                       f"basket:baskets_china_ths:thsc{KNOWN_CODE}")
+    assert ths_member["date_provenance"] == "membership_pit"
+
+
+def test_ths_canonical_join_delays_a_mapping_receipted_after_the_crosswalk(tree):
+    root, _xwalk = tree
+    doc = _ths_doc()
+    doc["version"] = "2026-07-10"  # after the crosswalk's 2026-07-09 receipt
+    _write(root / "baskets_china_ths" / "membership.json", doc)
+    view = _build(tree)
+    edges = [edge for edge in _by_type(view, "EXPRESSES")
+             if edge["src"] == f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+             and edge["dst"] == "theme:solar"]
+    assert len(edges) == 1
+    assert edges[0]["valid_from"] == edges[0]["evidence_time"] == "2026-07-10"
 
 
 # ---------------------------------------------------------------------------
@@ -250,20 +393,16 @@ def test_crosswalk_derived_edges_declare_their_own_provenance(tree):
 # 3. Evidence: corroboration adds, never replaces
 # ---------------------------------------------------------------------------
 
-def test_a_ths_member_the_raw_dump_also_shows_carries_a_second_receipt(tree):
+def test_a_raw_ths_concept_dump_never_backdates_a_basket_membership(tree):
     view = _build(tree)
     ths_basket = f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
     covered = _edge(view, "MEMBER_OF", "co:cn:600001.SS", ths_basket)
     uncovered = _edge(view, "MEMBER_OF", "co:cn:600002.SS", ths_basket)
-    assert len(covered["evidence_refs"]) == 2
-    assert len(uncovered["evidence_refs"]) == 1
-    assert set(uncovered["evidence_refs"]) < set(covered["evidence_refs"]), (
-        "corroboration must ADD a receipt beside the membership document's, not swap it")
-    ev = {e["evidence_id"]: e for e in view.evidence}
-    extra = ev[(set(covered["evidence_refs"]) - set(uncovered["evidence_refs"])).pop()]
-    assert extra["kind"] == "scrape" and extra["published_at"] == SNAP_DATE
-    # ...and the edge's own provenance still describes where valid_from came from.
-    assert covered["date_provenance"] == "seed_constant"
+    assert len(covered["evidence_refs"]) == len(uncovered["evidence_refs"]) == 1
+    assert covered["confidence_basis"] == "membership_pit.ths.v1"
+    refs = {e["evidence_id"]: e for e in view.evidence}
+    assert all(refs[eid]["source_ref"].endswith(f"@{THS_DOC_DATE}")
+               for eid in covered["evidence_refs"])
 
 
 def test_without_a_raw_snapshot_the_membership_receipt_stands_alone(tree):
@@ -536,3 +675,1412 @@ def test_the_reserved_exposure_axes_are_declared_null(tree):
     for e in view.edges:
         for f in store.RESERVED_EDGE_FIELDS:
             assert e[f] is None
+
+
+def test_ths_membership_doc_generation_closes_when_pit_edges_arrive(tree):
+    """B1: a stored membership_doc.v1 THS MEMBER_OF generation must close on cutover.
+
+    The PIT re-key mints disjoint edge_ids; without an explicit close of the prior
+    generation, ``changed_edges`` leaves both open. Assert no company/basket pair ends
+    with two open MEMBER_OF edges, and that orphans absent from the PIT also close.
+    """
+    root, _xwalk = tree
+    basket = f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+
+    def _doc_edge(src: str) -> dict:
+        row = {
+            "edge_id": f"member_of:{src}->{basket}@{CN_SEED}",
+            "type": "MEMBER_OF", "src": src, "dst": basket,
+            "valid_from": CN_SEED, "valid_to": None,
+            "evidence_time": THS_DOC_DATE, "belief_time": "2026-06-01",
+            "era": "reconstruction", "source_class": "scrape",
+            "date_provenance": "seed_constant",
+            "evidence_refs": ["ev:deadbeefdeadbeef"],
+            "confidence_basis": "membership_doc.v1",
+            "computed_at": "2026-06-01T00:00:00Z",
+            "engine_version": store.ENGINE_VERSION,
+        }
+        for field in store.RESERVED_EDGE_FIELDS:
+            row[field] = None
+        return row
+
+    prior = [_doc_edge("co:cn:600001.SS"), _doc_edge("co:cn:600099.SS")]
+    store.write_edges(prior, lane="nightly")
+
+    view = _build(tree, era="observed", belief_time="2026-08-12")
+    history = pd.read_parquet(root / "baskets_china_ths" / "membership_history.parquet")
+    pit_birth = materialize.ths_membership_pit_birth(history)
+    assert pit_birth == THS_DOC_DATE
+
+    closings = materialize.supersede_ths_membership_doc_edges(
+        store.read_edges(), valid_to=pit_birth, belief_time="2026-08-12",
+        era="observed", computed_at="2026-08-12T00:00:00Z")
+    assert {c["edge_id"] for c in closings} == {e["edge_id"] for e in prior}
+    assert all(c["valid_to"] == pit_birth for c in closings)
+    assert all(c["evidence_refs"] == ["ev:deadbeefdeadbeef"] for c in closings), (
+        "parquet-backed evidence refs must stay flat identifiers, never one stringified array")
+
+    computed = list(view.edges) + closings
+    delta = materialize.changed_edges(computed, store.read_edges())
+    store.write_edges(delta, lane="nightly")
+
+    latest = store.read_edges()
+    ths = latest[
+        (latest["type"] == "MEMBER_OF")
+        & latest["dst"].astype(str).str.startswith("basket:baskets_china_ths:")
+    ]
+    open_ths = ths[ths["valid_to"].isna()]
+    assert not open_ths.duplicated(subset=["src", "dst"]).any(), (
+        "no company/basket pair may carry two open MEMBER_OF edges after cutover")
+    for eid in (e["edge_id"] for e in prior):
+        row = latest[latest["edge_id"] == eid].iloc[0]
+        assert row["valid_to"] == pit_birth
+    pit_open = open_ths[open_ths["confidence_basis"] == "membership_pit.ths.v1"]
+    assert set(pit_open["src"]) == {"co:cn:600001.SS", "co:cn:600002.SS"}
+    # Generation cutover is a named full-family close — shrink wall must waive it.
+    assert materialize.source_shrink_refusals(
+        delta, pd.DataFrame(prior), allow={materialize.THS_FAMILY}) == []
+    # Without the waiver the wall refuses (sanity that we are not greening vacuously).
+    refusals = materialize.source_shrink_refusals(closings, pd.DataFrame(prior), allow=())
+    assert refusals and materialize.THS_FAMILY in refusals[0]
+
+
+def test_ths_membership_doc_generation_retracts_rather_than_backdates(tree):
+    """Review BLOCKER 1 (residual): the cutover must RETRACT the legacy interval, not
+    end-date it — a latest-belief reader must never see the 2021 seed date asserted as
+    a true membership up to the PIT birth date."""
+    root, _xwalk = tree
+    basket = f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+    row = {
+        "edge_id": f"member_of:co:cn:600001.SS->{basket}@{CN_SEED}",
+        "type": "MEMBER_OF", "src": "co:cn:600001.SS", "dst": basket,
+        "valid_from": CN_SEED, "valid_to": None,
+        "evidence_time": THS_DOC_DATE, "belief_time": "2026-06-01",
+        "era": "reconstruction", "source_class": "scrape",
+        "date_provenance": "seed_constant",
+        "evidence_refs": ["ev:deadbeefdeadbeef"],
+        "confidence_basis": "membership_doc.v1",
+        "computed_at": "2026-06-01T00:00:00Z",
+        "engine_version": store.ENGINE_VERSION,
+    }
+    for field in store.RESERVED_EDGE_FIELDS:
+        row[field] = None
+    stored = pd.DataFrame([row])
+
+    closings = materialize.supersede_ths_membership_doc_edges(
+        stored, valid_to=THS_DOC_DATE, belief_time="2026-08-12",
+        era="observed", computed_at="2026-08-12T00:00:00Z",
+        pit_pairs={("co:cn:600001.SS", basket)})
+    assert len(closings) == 1
+    closed = closings[0]
+    # Degenerate interval: no valid-time span is asserted for the un-observed era.
+    assert closed["valid_from"] == closed["valid_to"] == THS_DOC_DATE
+    # An as-of query anywhere in [2021-seed, PIT-birth) must find nothing active:
+    # a half-open [valid_from, valid_to) interval with valid_from == valid_to is
+    # empty by construction, so no pre-PIT effective date can ever match it.
+    for asof in (CN_SEED, "2023-01-01", "2026-06-29"):
+        assert not (closed["valid_from"] <= asof < closed["valid_to"]), (
+            f"retracted edge must not read as active at pre-PIT asof={asof}")
+
+
+def test_ths_membership_doc_generation_never_closes_a_pit_uncovered_pair(tree):
+    """Review MAJOR 1: a stored pair the PIT plane never re-observed must be left
+    open as a disclosed coverage gap, never fabricated into a closed exit."""
+    root, _xwalk = tree
+    basket = f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+
+    def _doc_edge(src: str) -> dict:
+        row = {
+            "edge_id": f"member_of:{src}->{basket}@{CN_SEED}",
+            "type": "MEMBER_OF", "src": src, "dst": basket,
+            "valid_from": CN_SEED, "valid_to": None,
+            "evidence_time": THS_DOC_DATE, "belief_time": "2026-06-01",
+            "era": "reconstruction", "source_class": "scrape",
+            "date_provenance": "seed_constant",
+            "evidence_refs": ["ev:deadbeefdeadbeef"],
+            "confidence_basis": "membership_doc.v1",
+            "computed_at": "2026-06-01T00:00:00Z",
+            "engine_version": store.ENGINE_VERSION,
+        }
+        for field in store.RESERVED_EDGE_FIELDS:
+            row[field] = None
+        return row
+
+    covered, uncovered = "co:cn:600001.SS", "co:cn:600099.SS"
+    stored = pd.DataFrame([_doc_edge(covered), _doc_edge(uncovered)])
+
+    closings = materialize.supersede_ths_membership_doc_edges(
+        stored, valid_to=THS_DOC_DATE, belief_time="2026-08-12",
+        era="observed", computed_at="2026-08-12T00:00:00Z",
+        pit_pairs={(covered, basket)})
+    closed_srcs = {c["src"] for c in closings}
+    assert closed_srcs == {covered}, (
+        "only the PIT-covered pair may be retracted; the uncovered pair is a "
+        "disclosed coverage gap, not a fabricated exit")
+
+
+def test_ths_canonical_join_delays_when_concept_map_asof_is_later_than_crosswalk(tree):
+    """Review BLOCKER 2: every required clock delays the canonical one-hop join.
+
+    The mapping remains useful once knowable, but it can never be backdated before
+    the current concept map that resolved the source-local code.
+    """
+    root, _xwalk = tree
+    late_cmap_asof = "2026-08-29"  # after XWALK_DATE (2026-07-09)
+    _write(root / "baskets_china_ths" / "concept_map.json", {
+        "asof": late_cmap_asof,
+        "map": {"测试概念": KNOWN_CODE, "另一概念": "900002", "第三概念": "900003"},
+    })
+    view = _build(tree)  # membership doc stays at THS_DOC_DATE (2026-06-30)
+    edges = [edge for edge in _by_type(view, "EXPRESSES")
+             if edge["src"] == f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+             and edge["dst"] == "theme:solar"]
+    assert len(edges) == 1
+    assert edges[0]["valid_from"] == edges[0]["evidence_time"] == late_cmap_asof
+
+
+# D2C actual nightly-orchestrator proof
+
+def _d2c_run_fixture(tree, monkeypatch):
+    from scripts import build_theme_graph as bake
+
+    root, xwalk = tree
+    actual_build = materialize.build
+
+    def fixture_build(**kwargs):
+        return actual_build(
+            **kwargs, data_dir=root, crosswalk_path=xwalk,
+            finviz_seed_path=root / "absent-seed.json",
+            finviz_history_path=root / "absent-history.jsonl",
+            finviz_live_tree_path=root / "absent-live.json",
+            substrate_dir=root,
+        )
+
+    monkeypatch.setattr(materialize, "build", fixture_build)
+    monkeypatch.setattr(materialize, "utc_today", lambda: "2026-08-12")
+    monkeypatch.setattr(materialize, "utc_now_stamp", lambda: "2026-08-12T01:00:00Z")
+    monkeypatch.setattr(bake, "_newest_raw_snapshot", lambda: None)
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    return bake, root
+
+
+def _legacy_ths_edge(symbol="600001.SS"):
+    src = f"co:cn:{symbol}"
+    dst = f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+    row = {
+        "edge_id": materialize.edge_id_for("MEMBER_OF", src, dst, CN_SEED),
+        "type": "MEMBER_OF", "src": src, "dst": dst,
+        "valid_from": CN_SEED, "valid_to": None,
+        "evidence_time": THS_DOC_DATE, "belief_time": "2026-08-01",
+        "era": "reconstruction", "source_class": "scrape",
+        "date_provenance": "seed_constant",
+        "evidence_refs": ["ev:deadbeefdeadbeef"],
+        "confidence_basis": "membership_doc.v1",
+        "computed_at": "2026-08-01T01:00:00Z",
+        "engine_version": store.ENGINE_VERSION,
+    }
+    row.update({field: None for field in store.RESERVED_EDGE_FIELDS})
+    return row
+
+
+def _file_hashes(root):
+    from hashlib import sha256
+
+    return {
+        str(path.relative_to(root)): sha256(path.read_bytes()).hexdigest()
+        for path in root.rglob("*") if path.is_file()
+    }
+
+
+def test_d2c_run_retracts_only_pit_covered_legacy_and_preserves_history(tree, monkeypatch, capsys):
+    bake, _root = _d2c_run_fixture(tree, monkeypatch)
+    covered, uncovered = _legacy_ths_edge(), _legacy_ths_edge("600099.SS")
+    assert store.write_edges([covered, uncovered], lane="nightly") == 2
+    history_before = store.read_edges(latest_belief=False)
+
+    assert bake.run(backfill=False, force_backfill=False) == 0
+
+    latest = store.read_edges()
+    closed = latest[latest["edge_id"] == covered["edge_id"]].iloc[0]
+    assert closed["valid_from"] == closed["valid_to"] == THS_DOC_DATE
+    still_open = latest[latest["edge_id"] == uncovered["edge_id"]].iloc[0]
+    assert still_open["valid_from"] == CN_SEED and pd.isna(still_open["valid_to"])
+    active = latest[(latest["type"] == "MEMBER_OF") & latest["valid_to"].isna()]
+    assert len(active[(active["src"] == covered["src"])
+                      & (active["dst"] == covered["dst"])]) == 1
+    retained = store.read_edges(latest_belief=False)
+    old_rows = retained[retained["belief_time"] == "2026-08-01"].reset_index(drop=True)
+    old_records = old_rows.astype(object).where(pd.notna(old_rows), None).to_dict("records")
+    before_records = (history_before.astype(object)
+                      .where(pd.notna(history_before), None).to_dict("records"))
+    assert old_records == before_records
+    assert store.read_meta()["rows_appended"]["edges"] > 0
+    receipts = [json.loads(line[len(bake._WITNESS_MARKER):])
+                for line in capsys.readouterr().out.splitlines()
+                if line.startswith(bake._WITNESS_MARKER)]
+    assert len(receipts) == 1
+    assert receipts[0]["meta_computed_at"] == store.read_meta()["computed_at"]
+    assert receipts[0]["meta_sha256"] == _file_hashes(store.meta_path().parent)["_meta.json"]
+
+
+def test_d2c_run_swallowed_ths_producer_error_returns_failure_without_writes(tree, monkeypatch, capsys):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
+    before = _file_hashes(root)
+
+    def broken_plane(_self):
+        raise ValueError("controlled THS producer failure")
+
+    monkeypatch.setattr(materialize._Builder, "build_ths_membership_history", broken_plane)
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(root) == before
+    assert bake._WITNESS_MARKER not in capsys.readouterr().out
+
+
+def test_d2c_run_corrupt_existing_ths_history_fails_closed_without_writes(
+        tree, monkeypatch):
+    """Unreadable owner history is a hard refusal, never an empty-history claim."""
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
+    history_path = root / "baskets_china_ths" / "membership_history.parquet"
+    history_path.write_bytes(b"not a parquet file")
+    before = _file_hashes(root)
+
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(root) == before
+
+
+def test_d2c_run_swallowed_ths_association_plane_error_returns_failure_without_writes(
+        tree, monkeypatch):
+    """The load-bearing THS association plane may not degrade to an empty canonical join."""
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
+    before = _file_hashes(root)
+
+    def broken_plane(_self):
+        raise ValueError("controlled THS association failure")
+
+    monkeypatch.setattr(materialize._Builder, "build_ths_plane", broken_plane)
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(root) == before
+
+
+def test_crosswalk_discloses_known_ths_code_without_canonical_basket_join(tree):
+    """Known vocabulary is not the same as a successfully materialized basket join."""
+    root, _xwalk = tree
+    membership_path = root / "baskets_china_ths" / "membership.json"
+    membership = json.loads(membership_path.read_text(encoding="utf-8"))
+    del membership["baskets"][f"thsc{KNOWN_CODE}"]["ths_concept"]
+    _write(membership_path, membership)
+
+    view = _build(tree)
+    receipt = view.per_suite["crosswalk"]
+    assert receipt["ths_codes_mapped"] == 1
+    assert receipt["ths_codes_with_canonical_basket_join"] == 0
+    assert receipt["ths_codes_without_canonical_basket_join"] == 1
+
+
+def test_d2c_run_empty_pit_never_retracts_or_auto_waives(tree, monkeypatch):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    legacy = _legacy_ths_edge()
+    assert store.write_edges([legacy], lane="nightly") == 1
+    history_path = root / "baskets_china_ths" / "membership_history.parquet"
+    pd.read_parquet(history_path).iloc[:0].to_parquet(history_path, index=False)
+    actual_wall = materialize.source_shrink_refusals
+    observed_allow = []
+
+    def observe_wall(*args, **kwargs):
+        observed_allow.append(set(kwargs.get("allow", ())))
+        return actual_wall(*args, **kwargs)
+
+    monkeypatch.setattr(materialize, "source_shrink_refusals", observe_wall)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    assert observed_allow == [set()]
+    latest = store.read_edges()
+    old = latest[latest["edge_id"] == legacy["edge_id"]].iloc[0]
+    assert old["valid_from"] == CN_SEED and pd.isna(old["valid_to"])
+    assert not (latest["confidence_basis"] == "membership_pit.ths.v1").any()
+
+
+def test_d2c_run_off_lane_preserves_every_fixture_and_store_byte(tree, monkeypatch, capsys):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
+    before = _file_hashes(root)
+    monkeypatch.setenv("COLLECT_LANE", "render")
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    assert _file_hashes(root) == before
+    assert bake._WITNESS_MARKER not in capsys.readouterr().out
+
+
+def test_d2c_run_identical_second_night_appends_no_edge_belief(tree, monkeypatch):
+    bake, _root = _d2c_run_fixture(tree, monkeypatch)
+    assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    first = store.read_edges(latest_belief=False)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    pd.testing.assert_frame_equal(store.read_edges(latest_belief=False), first)
+    assert store.read_meta()["rows_appended"]["edges"] == 0
+
+
+def test_d2c_run_snapshot_version_advance_keeps_one_live_canonical_expression(
+        tree, monkeypatch):
+    """A later receipt may re-key the join, but must supersede the prior live edge."""
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+
+    src = f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+    dst = "theme:solar"
+    first_latest = store.read_edges()
+    first = first_latest[(first_latest["type"] == "EXPRESSES")
+                         & (first_latest["src"] == src)
+                         & (first_latest["dst"] == dst)
+                         & first_latest["valid_to"].isna()]
+    assert len(first) == 1
+    first_edge_id = str(first.iloc[0]["edge_id"])
+
+    membership_path = root / "baskets_china_ths" / "membership.json"
+    membership = json.loads(membership_path.read_text(encoding="utf-8"))
+    membership["version"] = "2026-07-20"
+    _write(membership_path, membership)
+    monkeypatch.setattr(materialize, "utc_today", lambda: "2026-08-13")
+    monkeypatch.setattr(materialize, "utc_now_stamp", lambda: "2026-08-13T01:00:00Z")
+
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    latest = store.read_edges()
+    active = latest[(latest["type"] == "EXPRESSES")
+                    & (latest["src"] == src)
+                    & (latest["dst"] == dst)
+                    & latest["valid_to"].isna()]
+    assert len(active) == 1, (
+        "a re-receipted basket→canonical mapping must close the superseded edge "
+        "instead of accumulating one live path per collection")
+    replacement = active.iloc[0]
+    assert str(replacement["edge_id"]) != first_edge_id
+    assert replacement["valid_from"] == replacement["evidence_time"] == "2026-07-20"
+
+    superseded = latest[latest["edge_id"] == first_edge_id]
+    assert len(superseded) == 1
+    assert superseded.iloc[0]["valid_from"] == XWALK_DATE
+    assert superseded.iloc[0]["valid_to"] == "2026-07-20"
+    beliefs = store.read_edges(latest_belief=False)
+    old_beliefs = beliefs[beliefs["edge_id"] == first_edge_id]
+    assert len(old_beliefs) == 2, "opening and later closing beliefs must both survive"
+    assert old_beliefs["valid_to"].isna().sum() == 1
+    assert (old_beliefs["valid_to"] == "2026-07-20").sum() == 1
+
+
+def test_d2c_run_same_day_canonical_rekey_refuses_without_writes(tree, monkeypatch):
+    """Daily belief keys cannot represent open-and-close for one edge on one date."""
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    membership_path = root / "baskets_china_ths" / "membership.json"
+    membership = json.loads(membership_path.read_text(encoding="utf-8"))
+    membership["version"] = "2026-07-20"
+    _write(membership_path, membership)
+    before = _file_hashes(root)
+
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(root) == before
+
+
+def test_d2c_run_ths_cutover_never_waives_another_family_shrink(tree, monkeypatch):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
+    _write(root / "baskets" / "membership.json", _us_doc(removed="2026-08-11"))
+    before = _file_hashes(store.store_dir())
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(store.store_dir()) == before
+
+
+def test_ths_local_theme_canonical_edge_never_predates_concept_map(tree):
+    """The code-based vocabulary edge cannot predate the map that minted the node."""
+    root, _xwalk = tree
+    late_cmap_asof = "2026-08-29"
+    _write(root / "baskets_china_ths" / "concept_map.json", {
+        "asof": late_cmap_asof,
+        "map": {"测试概念": KNOWN_CODE, "另一概念": "900002", "第三概念": "900003"},
+    })
+    view = _build(tree)
+    src = f"ltheme:ths:{KNOWN_CODE}"
+    edges = [edge for edge in _by_type(view, "EXPRESSES")
+             if edge["src"] == src and edge["dst"] == "theme:solar"]
+    assert not edges or all(edge["valid_from"] >= late_cmap_asof for edge in edges), (
+        "local-theme vocabulary resolution must not be backdated before concept-map knowledge")
+
+
+def test_ths_basket_canonical_edge_delays_to_latest_required_receipt(tree):
+    """A later concept-map receipt delays the one-hop basket mapping, not erases it."""
+    root, _xwalk = tree
+    late_cmap_asof = "2026-08-29"
+    _write(root / "baskets_china_ths" / "concept_map.json", {
+        "asof": late_cmap_asof,
+        "map": {"测试概念": KNOWN_CODE, "另一概念": "900002", "第三概念": "900003"},
+    })
+    view = _build(tree)
+    src = f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+    edges = [edge for edge in _by_type(view, "EXPRESSES")
+             if edge["src"] == src and edge["dst"] == "theme:solar"]
+    assert len(edges) == 1, "the canonical one-hop mapping must become usable once knowable"
+    assert edges[0]["valid_from"] == edges[0]["evidence_time"] == late_cmap_asof
+
+
+# R1: validate every prior destination before the first graph publication write.
+@pytest.mark.parametrize("name,columns", [
+    ("nodes", store.NODE_COLUMNS), ("edges", store.EDGE_COLUMNS),
+    ("evidence", store.EVIDENCE_COLUMNS), ("capability", store.CAPABILITY_COLUMNS),
+    ("identity_resolution", store.IDENTITY_RESOLUTION_COLUMNS),
+    ("node_lifecycle", store.NODE_LIFECYCLE_COLUMNS),
+])
+@pytest.mark.parametrize("damage", ["unreadable", "missing_columns"])
+def test_d2c_r1_all_destination_preflight_preserves_all_bytes(tree, monkeypatch, name, columns, damage):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    # Start with a complete legitimate generation, then damage exactly one destination.
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    path = store.store_dir() / f"{name}.parquet"
+    if damage == "unreadable":
+        path.write_bytes(b"retained corrupt destination")
+    else:
+        pd.DataFrame({"unrelated": [1]}).to_parquet(path, index=False)
+    before = _file_hashes(root)
+    writes = []
+    monkeypatch.setattr(store, "_atomic_write_parquet", lambda *args: writes.append(args))
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert writes == []
+    assert _file_hashes(root) == before
+
+
+@pytest.mark.parametrize("contents", ["not JSON", "[]", "{}"])
+def test_d2c_r1_invalid_existing_metadata_refuses_before_writes(tree, monkeypatch, contents):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    store.meta_path().write_text(contents)
+    before = _file_hashes(root)
+    writes = []
+    monkeypatch.setattr(store, "_atomic_write_parquet", lambda *args: writes.append(args))
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert writes == []
+    assert _file_hashes(root) == before
+
+
+
+def test_d2c_r1_metadata_claiming_missing_history_refuses_before_writes(tree, monkeypatch):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    assert json.loads(store.meta_path().read_text())["counts"]["nodes"] > 0
+    store.nodes_path().unlink()
+    before = _file_hashes(root)
+    writes = []
+    monkeypatch.setattr(store, "_atomic_write_parquet", lambda *args: writes.append(args))
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert writes == []
+    assert _file_hashes(root) == before
+
+
+def _complete_collection_for(doc, day, basket):
+    from engine import basket_membership_pit as pit
+    generation = pit.collection_generation_sha(doc)
+    members = [slot for slot in pit._members_from_membership(doc) if slot[0] == basket]
+    receipt = {
+        "schema": "basket_membership_collection/v2", "suite": pit.SUITE_THS,
+        "basket_id": basket, "source_ref": f"data/{pit.SUITE_THS}/membership.json",
+        "generation_id": generation[:16], "generation_sha256": generation,
+        "collection_state": "COMPLETE", "source_clock_grain": "instant",
+        "observed_at": day + "T08:00:00Z", "known_at": day + "T09:00:00Z",
+        "member_count": len(members), "members_sha": pit._sha_of(members),
+        "authority_caps": {"may_rank": False, "may_size": False,
+                           "may_gate": False, "may_escalate": False},
+    }
+    receipt["collection_id"] = pit.collection_id(receipt)
+    return receipt
+
+
+def test_nightly_complete_empty_updates_current_but_keeps_old_known_membership(tree, monkeypatch):
+    import datetime as dt
+    from engine import basket_membership_pit as pit
+    from engine.theme_graph import ontology
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    initial = store.read_edges(latest_belief=False)
+    path = root / pit.SUITE_THS / "membership.json"
+    doc = json.loads(path.read_text())
+    basket = f"thsc{KNOWN_CODE}"
+    doc["baskets"][basket]["members"] = []
+    _write(path, doc)
+    value = _complete_collection_for(doc, "2026-08-13", basket)
+    assert pit.append_snapshot(pit.SUITE_THS, asof="2026-08-13", lane="asia",
+                               collection_receipts=[value])["written"]
+    monkeypatch.setattr(materialize, "utc_today", lambda: "2026-08-14")
+    monkeypatch.setattr(materialize, "utc_now_stamp", lambda: "2026-08-14T01:00:00Z")
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    ledger = store.read_edges(latest_belief=False)
+    # Parquet schema union may change pandas null storage (None vs nan), never
+    # the preserved row meanings. JSON records retain all values and typed nulls.
+    assert ledger[ledger["belief_time"] == "2026-08-12"].to_json(
+        orient="records") == initial.to_json(orient="records")
+    src = "co:cn:600001.SS"
+    before, ignored = ontology._collapse_relevant_edges(
+        ledger.to_dict("records"), node_id=src, asof=dt.date(2026, 8, 13),
+        knowledge_cutoff=dt.date(2026, 8, 12))
+    after, _ = ontology._collapse_relevant_edges(
+        ledger.to_dict("records"), node_id=src, asof=dt.date(2026, 8, 13),
+        knowledge_cutoff=dt.date(2026, 8, 14))
+    assert ignored > 0
+    assert any(r["type"] == "MEMBER_OF" and r["dst"] == f"basket:{pit.SUITE_THS}:{basket}"
+               for r in before)
+    assert not any(r["type"] == "MEMBER_OF" and r["dst"] == f"basket:{pit.SUITE_THS}:{basket}"
+                   for r in after)
+    current = pit.members_asof(basket, "2026-08-13", suite=pit.SUITE_THS)
+    assert current["members"] == [] and current["pit"]
+    receipt_meta = store.read_meta()["per_suite"][pit.SUITE_THS]
+    assert receipt_meta["collection_records"] == 1
+    assert receipt_meta["collection_scope"] == "PER_BASKET_ONLY"
+
+
+def test_shrink_guard_explains_only_exact_owner_closure_and_retains_collateral(tree):
+    from engine import basket_membership_pit as pit
+    root, _ = tree
+    prior = _build(tree)
+    history = pd.read_parquet(root / pit.SUITE_THS / "membership_history.parquet")
+    doc = json.loads((root / pit.SUITE_THS / "membership.json").read_text())
+    basket = f"thsc{KNOWN_CODE}"
+    doc["baskets"][basket]["members"] = []
+    receipt = _complete_collection_for(doc, "2026-08-13", basket)
+    rows = pit._qualified_rows(doc, "2026-08-13", pit.SUITE_THS, [receipt])
+    history = pd.concat([history, pd.DataFrame(rows)], ignore_index=True)
+    current = _build(tree, ths_history=history, belief_time="2026-08-14",
+                     computed_at="2026-08-14T01:00:00Z")
+    changes = materialize.changed_edges(current.edges, pd.DataFrame(prior.edges))
+    assert materialize.source_shrink_refusals(changes, pd.DataFrame(prior.edges))
+    assert materialize.source_shrink_refusals(
+        changes, pd.DataFrame(prior.edges), owner_membership_history=history) == []
+    # A forged closure cannot borrow a genuine receipt for a different interval.
+    forged = dict(next(r for r in changes if r["type"] == "MEMBER_OF"
+                       and r["confidence_basis"] == "membership_pit.ths.v1"))
+    forged["valid_to"] = "2026-08-12"
+    assert materialize.source_shrink_refusals(
+        [forged], pd.DataFrame(prior.edges), max_shrink=0,
+        owner_membership_history=history)
+    collateral = dict(next(r for r in prior.edges if r["type"] == "MEMBER_OF"
+                           and r["dst"].startswith("basket:baskets:")))
+    collateral["valid_to"] = "2026-08-13"
+    assert materialize.source_shrink_refusals(
+        changes + [collateral], pd.DataFrame(prior.edges), max_shrink=0,
+        owner_membership_history=history)
+
+
+def test_graph_refuses_collection_known_after_exact_build_emission(tree):
+    from engine import basket_membership_pit as pit
+    root, _ = tree
+    doc = json.loads((root / pit.SUITE_THS / "membership.json").read_text())
+    basket = f"thsc{KNOWN_CODE}"
+    rows = pit._qualified_rows(doc, "2026-08-13", pit.SUITE_THS,
+                               [_complete_collection_for(doc, "2026-08-13", basket)])
+    view = _build(tree, ths_history=pd.DataFrame(rows))
+    error = view.local_plane.get("build_ths_membership_history", {}).get("error")
+    assert error and "after graph knowledge/emission clock" in error
+    assert not any(e["confidence_basis"] == "membership_pit.ths.v1" for e in view.edges)
+
+
+def test_legacy_cutover_never_excuses_unexplained_same_family_closure(tree, monkeypatch):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    legacy = _legacy_ths_edge()
+    collateral = _legacy_ths_edge("600099.SS")
+    collateral.update(
+        edge_id=materialize.edge_id_for("MEMBER_OF", collateral["src"],
+                                       collateral["dst"], THS_DOC_DATE),
+        valid_from=THS_DOC_DATE, confidence_basis="membership_pit.ths.v1",
+        date_provenance="membership_pit")
+    assert store.write_edges([legacy, collateral], lane="nightly") == 2
+    actual_build = materialize.build
+
+    def contaminated_computation(**kwargs):
+        view = actual_build(**kwargs)
+        unexplained = dict(collateral)
+        unexplained.update(valid_to="2026-08-10", belief_time="2026-08-12",
+                           evidence_time="2026-08-10", computed_at="2026-08-12T01:00:00Z")
+        view.edges.append(unexplained)
+        return view
+
+    monkeypatch.setattr(materialize, "build", contaminated_computation)
+    before = _file_hashes(root)
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(root) == before
+
+
+class _TrustedRelationActionFixture:
+    """Explicitly preaccepted controlled owner records; never a natural resolver."""
+    def __init__(self, rows):
+        import copy
+        self.receipts = {}
+        for row in rows:
+            receipt = {key: copy.deepcopy(row[key]) for key in (
+                "event_sha256", "action", "prior_relation", "new_destination",
+                "source_receipt", "ratified_by", "evidence_refs")}
+            receipt.update(schema="gmi.probation_owner_action_read/v1",
+                           owner="theme_graph.probation", status="ACCEPTED",
+                           receipt_ref="controlled:independent-owner-action:" + row["event_sha256"],
+                           reason=None, accepted_at=row["adjudicated_at"],
+                           known_at=row["known_at"], valid_from=row["adjudicated_at"], valid_to=None)
+            self.receipts[row["event_sha256"]] = receipt
+
+    def read_relation_action(self, *, event_sha256, knowledge_cutoff):
+        import copy
+        return copy.deepcopy(self.receipts.get(event_sha256, {
+            "schema": "gmi.probation_owner_action_read/v1",
+            "owner": "theme_graph.probation", "status": "REJECTED",
+            "receipt_ref": None, "reason": "not in the separately preaccepted fixture population"}))
+
+
+def _relation_event(tree, old, *, action="RELATION_WITHDRAW", target=None,
+                    effective="2026-08-13T00:00:00Z", known="2026-08-13T14:00:00Z",
+                    reason="curation"):
+    from engine.theme_graph import probation
+    _root, source_path = tree
+    row = dict(
+        schema="gmi.probation_relation_event/v2", action=action, status="ratified",
+        ratified_by="controlled-authorized-curator", created_at="2026-08-12T00:00:00Z",
+        adjudicated_at=known, known_at=known, effective_at=effective,
+        prior_relation={key: old[key] for key in ("edge_id", "type", "src", "dst", "valid_from")},
+        new_destination=target, source_receipt=probation.relation_source_receipt(source_path),
+        evidence_refs=["controlled:curation-receipt"], reason=reason,
+        authority_caps=dict(may_rank=False, may_size=False, may_gate=False, may_escalate=False))
+    digest = probation.relation_event_digest(row)
+    row.update(event_sha256=digest, event_id="relation-event:" + digest)
+    return row
+
+
+@pytest.mark.parametrize("action,reason", [("RELATION_WITHDRAW", "curation"),
+    ("DESTINATION_CHANGE", "curation"), ("RELATION_WITHDRAW", "retirement"),
+    ("DESTINATION_CHANGE", "merge")])
+@pytest.mark.parametrize("receipt_scope", ["basket_only", "paired"])
+def test_explicit_ontology_lifecycle_changes_old_relation_only_after_owner_event(tree, monkeypatch, action, reason, receipt_scope):
+    import datetime as dt
+    from engine.theme_graph import ontology, probation
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    old = store.read_edges()
+    old = old[(old["type"] == "EXPRESSES") & old["dst"].eq("theme:solar")
+              & old["src"].str.startswith("basket:baskets_china_ths:")].iloc[0].to_dict()
+    source = tree[1]
+    doc = yaml.safe_load(source.read_text())
+    if action == "RELATION_WITHDRAW":
+        doc["themes"][0]["ths_concept_ids"] = []
+        target = None
+    else:
+        doc["themes"][0]["id"] = "replacement"
+        doc["themes"][0]["theme_node_id"] = "theme:replacement"
+        doc["date"] = "2026-08-13"  # the changed mapping is newly curated, not backdated
+        target = "theme:replacement"
+    source.write_text(yaml.safe_dump(doc))
+    old_local = store.read_edges()
+    old_local = old_local[(old_local["type"] == "EXPRESSES") & old_local["dst"].eq("theme:solar")
+                          & old_local["src"].str.startswith("ltheme:ths:")].iloc[0].to_dict()
+    events = [_relation_event(tree, old, action=action, target=target, reason=reason)]
+    if receipt_scope == "paired":
+        events.append(_relation_event(tree, old_local, action=action, target=target, reason=reason))
+    event_path = root / "theme_graph" / "probation" / "relation_events.v2.jsonl"
+    event_path.parent.mkdir(parents=True, exist_ok=True)
+    event_path.write_text("".join(json.dumps(event) + "\n" for event in events))
+    trusted_owner = _TrustedRelationActionFixture(events)
+    monkeypatch.setattr(bake, "_relation_action_owner_reader", lambda: trusted_owner)
+    monkeypatch.setattr(bake, "_relation_event_sources", lambda: (event_path, source), raising=False)
+    monkeypatch.setattr(materialize, "utc_today", lambda: "2026-08-14")
+    monkeypatch.setattr(materialize, "utc_now_stamp", lambda: "2026-08-14T01:00:00Z")
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    ledger = store.read_edges(latest_belief=False)
+    before, _ = ontology._collapse_relevant_edges(
+        ledger.to_dict("records"), node_id=old["src"], asof=dt.date(2026, 8, 14),
+        knowledge_cutoff=dt.date(2026, 8, 13))
+    after, _ = ontology._collapse_relevant_edges(
+        ledger.to_dict("records"), node_id=old["src"], asof=dt.date(2026, 8, 14),
+        knowledge_cutoff=dt.date(2026, 8, 14))
+    assert any(row["edge_id"] == old["edge_id"] for row in before)
+    assert not any(row["edge_id"] == old["edge_id"] for row in after)
+    if target:
+        assert any(row["type"] == "EXPRESSES" and row["dst"] == target for row in after)
+    local_before, _ = ontology._collapse_relevant_edges(
+        ledger.to_dict("records"), node_id=old_local["src"], asof=dt.date(2026, 8, 14),
+        knowledge_cutoff=dt.date(2026, 8, 13))
+    local_after, _ = ontology._collapse_relevant_edges(
+        ledger.to_dict("records"), node_id=old_local["src"], asof=dt.date(2026, 8, 14),
+        knowledge_cutoff=dt.date(2026, 8, 14))
+    assert any(row["edge_id"] == old_local["edge_id"] for row in local_before)
+    assert any(row["edge_id"] == old_local["edge_id"] for row in local_after) == (receipt_scope == "basket_only")
+    evidence = store.read_evidence()
+    for event in events:
+        actual = evidence[evidence["source_ref"].str.endswith(event["event_id"])]
+        assert len(actual) == 1
+        assert actual.iloc[0]["published_at"] == event["known_at"]
+        assert actual.iloc[0]["effective_at"] == event["effective_at"]
+        accepted = trusted_owner.receipts[event["event_sha256"]]
+        owner_evidence = evidence[evidence["source_ref"].eq(accepted["receipt_ref"])]
+        assert len(owner_evidence) == 1
+        assert owner_evidence.iloc[0]["published_at"] == accepted["known_at"]
+        assert owner_evidence.iloc[0]["effective_at"] == accepted["accepted_at"]
+    before_replay = store.read_edges(latest_belief=False)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    assert len(store.read_edges(latest_belief=False)) == len(before_replay)
+
+
+@pytest.mark.parametrize("effective,build_day,build_clock", [
+    ("2026-08-13T12:00:00Z", "2026-08-14", "2026-08-14T01:00:00Z"),
+    ("2026-08-13T00:00:00Z", "2026-08-13", "2026-08-13T15:00:00Z")])
+def test_unrepresentable_ontology_event_refuses_nightly_without_overwrite(tree, monkeypatch, effective, build_day, build_clock):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    old = store.read_edges()
+    old = old[(old["type"] == "EXPRESSES") & old["dst"].eq("theme:solar")
+              & old["src"].str.startswith("basket:baskets_china_ths:")].iloc[0].to_dict()
+    source = tree[1]
+    doc = yaml.safe_load(source.read_text())
+    doc["themes"][0]["ths_concept_ids"] = []
+    source.write_text(yaml.safe_dump(doc))
+    event = _relation_event(tree, old, effective=effective)
+    event_path = root / "theme_graph" / "probation" / "relation_events.v2.jsonl"
+    event_path.parent.mkdir(parents=True, exist_ok=True)
+    event_path.write_text(json.dumps(event) + "\n")
+    trusted_owner = _TrustedRelationActionFixture([event])
+    monkeypatch.setattr(bake, "_relation_action_owner_reader", lambda: trusted_owner)
+    monkeypatch.setattr(bake, "_relation_event_sources", lambda: (event_path, source), raising=False)
+    monkeypatch.setattr(materialize, "utc_today", lambda: build_day)
+    monkeypatch.setattr(materialize, "utc_now_stamp", lambda: build_clock)
+    before = _file_hashes(root)
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(root) == before
+
+
+@pytest.mark.parametrize("fault", ["unratified", "wrong_relation", "source_mismatch", "malformed_source"])
+def test_ontology_owner_refusal_preserves_every_prior_graph_artifact(tree, monkeypatch, fault):
+    from engine.theme_graph import probation
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    stored = store.read_edges()
+    old = stored[(stored["type"] == "EXPRESSES") & stored["dst"].eq("theme:solar")
+                 & stored["src"].str.startswith("basket:baskets_china_ths:")].iloc[0].to_dict()
+    source = tree[1]
+    doc = yaml.safe_load(source.read_text())
+    doc["themes"][0]["ths_concept_ids"] = []
+    source.write_text(yaml.safe_dump(doc))
+    event = _relation_event(tree, old)
+    if fault == "unratified":
+        event["status"] = "proposed"
+    elif fault == "wrong_relation":
+        event["prior_relation"]["src"] = "basket:baskets_china_ths:not-this-basket"
+        prior = event["prior_relation"]
+        prior["edge_id"] = materialize.edge_id_for(
+            prior["type"], prior["src"], prior["dst"], prior["valid_from"])
+    elif fault == "source_mismatch":
+        event["source_receipt"]["sha256"] = "0" * 64
+    elif fault == "malformed_source":
+        source.write_text("themes: null\n")
+    digest = probation.relation_event_digest(event)
+    event.update(event_sha256=digest, event_id="relation-event:" + digest)
+    event_path = root / "theme_graph" / "probation" / "relation_events.v2.jsonl"
+    event_path.parent.mkdir(parents=True, exist_ok=True)
+    event_path.write_text(json.dumps(event) + "\n")
+    trusted_owner = _TrustedRelationActionFixture([event])
+    monkeypatch.setattr(bake, "_relation_action_owner_reader", lambda: trusted_owner)
+    monkeypatch.setattr(bake, "_relation_event_sources", lambda: (event_path, source))
+    monkeypatch.setattr(materialize, "utc_today", lambda: "2026-08-14")
+    monkeypatch.setattr(materialize, "utc_now_stamp", lambda: "2026-08-14T01:00:00Z")
+    before = _file_hashes(root)
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(root) == before
+
+
+@pytest.fixture
+def nightly_witness_fixture(tmp_path, monkeypatch, capsys):
+    """Synthetic receipt bytes only: this fixture never runs a graph build."""
+    from scripts import build_theme_graph as bake
+
+    root = tmp_path / "checkout"
+    sources = (
+        "scripts/build_theme_graph.py", "scripts/check_theme_graph_contracts.py",
+        "scripts/ci/daily_engine_regional_desk_builders.sh", ".github/workflows/daily.yml",
+    )
+    for name in sources:
+        path = root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("# synthetic source: " + name + "\n")
+    monkeypatch.setattr(bake, "__file__", str(root / "scripts/build_theme_graph.py"))
+    git_calls = []
+
+    def head(args, **kwargs):
+        git_calls.append((args, kwargs["cwd"]))
+        return "1" * 40 + "\n"
+
+    monkeypatch.setattr(bake.subprocess, "check_output", head)
+    scratch = tmp_path / "runner"
+    scratch.mkdir()
+    output = scratch / "step-output"
+    for key, value in {
+        "RUNNER_TEMP": str(scratch), "GITHUB_OUTPUT": str(output),
+        "GITHUB_REPOSITORY": "fixture/theme-graph", "GITHUB_RUN_ID": "123",
+        "GITHUB_RUN_ATTEMPT": "1", "GITHUB_JOB": "engine",
+        "GITHUB_EVENT_NAME": "schedule", "GITHUB_SHA": "2" * 40,
+        "GITHUB_WORKFLOW_REF": "fixture/theme-graph/.github/workflows/daily.yml@refs/heads/main",
+        "WITNESS_TEST_SECRET": "must-not-be-captured",
+    }.items():
+        monkeypatch.setenv(key, value)
+    directory = Path(bake.start_nightly_witness())
+    assert directory.is_dir()
+    monkeypatch.setenv("THEME_GRAPH_WITNESS_ID", directory.name)
+    graph = root / "data/theme_graph"
+    names = (
+        "nodes.parquet", "node_lifecycle.parquet", "edges.parquet", "evidence.parquet",
+        "capability.parquet", "identity_resolution.parquet", "probation/proposals.jsonl",
+    )
+    for name in names:
+        path = graph / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"synthetic hash input: " + name.encode())
+    meta = dict(computed_at="2026-10-07T08:00:17Z", lane="nightly", mode="nightly",
+                era="observed", belief_time="2026-10-07")
+    _write(graph / "_meta.json", meta)
+    monkeypatch.setattr(bake.store, "meta_path", lambda: graph / "_meta.json")
+    bake._emit_meta_write_receipt(meta, "2026-10-07T08:00:10Z")
+    marker = capsys.readouterr().out
+    band = scratch / "band"
+    band.mkdir()
+    for slug in ("theme_graph", "theme_graph_guard"):
+        (band / f"{slug}.rc").write_text("0\n")
+        (band / f"{slug}.sec").write_text("8\n")
+        (band / f"{slug}.log").write_text(
+            "synthetic builder\n" + marker if slug == "theme_graph"
+            else "::notice title=fixture::historical snapshots, not breaches\n")
+    (band / "unrelated.log").write_text("must-not-be-captured")
+    return bake, directory, band, graph, output, git_calls, sources, names
+
+
+def test_nightly_witness_retains_exact_receipts_and_separate_clocks(nightly_witness_fixture):
+    bake, directory, band, graph, output, git_calls, sources, names = nightly_witness_fixture
+    before = _file_hashes(graph)
+    bake.finish_nightly_witness(str(directory), str(band))
+    manifest = json.loads((directory / "manifest.json").read_text())
+    assert manifest["capture_status"] == "complete"
+    assert manifest["acceptance"] == "not_evaluated"
+    assert manifest["errors"] == []
+    assert manifest["actual_head_sha"] == "1" * 40
+    assert manifest["run_identity"]["GITHUB_SHA"] == "2" * 40  # never substitute event SHA
+    assert git_calls == [(["git", "rev-parse", "HEAD"], graph.parents[1])]
+    assert set(manifest["source_files"]) == set(sources)
+    expected = {f"{slug}.{suffix}" for slug in ("theme_graph", "theme_graph_guard")
+                for suffix in ("log", "rc", "sec")}
+    assert set(manifest["files"]) == expected | {"_meta.json"}
+    assert set(manifest["graph_output_files"]) == set(names)
+    for name in expected:
+        assert (directory / name).read_bytes() == (band / name).read_bytes()
+    assert (directory / "_meta.json").read_bytes() == (graph / "_meta.json").read_bytes()
+    receipt = manifest["post_write_receipt"]
+    assert receipt["materialization_computed_at"] == "2026-10-07T08:00:10Z"
+    assert receipt["meta_computed_at"] == "2026-10-07T08:00:17Z"
+    assert receipt["meta_sha256"] == _file_hashes(graph)["_meta.json"]
+    assert _file_hashes(graph) == before
+    assert output.read_text() == f"theme_graph_witness={directory}\n"
+    assert all(b"must-not-be-captured" not in path.read_bytes() for path in directory.iterdir())
+
+
+@pytest.mark.parametrize("fault,reason", [
+    ("missing_rc", "receipt_unavailable:theme_graph_guard.rc"),
+    ("nonzero_rc", "nonzero_or_invalid_rc:theme_graph"),
+    ("invalid_seconds", "invalid_seconds:theme_graph_guard"),
+    ("missing_marker", "post_write_marker_missing_or_ambiguous"),
+    ("stale_marker", "post_write_marker_metadata_mismatch"),
+    ("meta_changed", "post_write_marker_metadata_mismatch"),
+    ("guard_breach", "guard_warning_or_error"),
+    ("missing_output", "graph_output_unavailable:nodes.parquet"),
+])
+def test_nightly_witness_never_promotes_incomplete_evidence(nightly_witness_fixture, fault, reason):
+    bake, directory, band, graph, *_ = nightly_witness_fixture
+    if fault == "missing_rc":
+        (band / "theme_graph_guard.rc").unlink()
+    elif fault == "nonzero_rc":
+        (band / "theme_graph.rc").write_text("7\n")
+    elif fault == "invalid_seconds":
+        (band / "theme_graph_guard.sec").write_text("?\n")
+    elif fault == "missing_marker":
+        (band / "theme_graph.log").write_text("caught builder exception, rc remained zero\n")
+    elif fault == "stale_marker":
+        log_path = band / "theme_graph.log"
+        log_path.write_text(log_path.read_text().replace(directory.name, "old-attempt"))
+    elif fault == "meta_changed":
+        (graph / "_meta.json").write_text('{"computed_at":"different"}\n')
+    elif fault == "guard_breach":
+        (band / "theme_graph_guard.log").write_text("::warning title=fixture::breach\n")
+    else:
+        (graph / "nodes.parquet").unlink()
+    bake.finish_nightly_witness(str(directory), str(band))
+    manifest = json.loads((directory / "manifest.json").read_text())
+    assert manifest["capture_status"] == "incomplete"
+    assert manifest["acceptance"] == "not_evaluated"
+    assert reason in manifest["errors"]
+
+
+def test_nightly_witness_start_never_reuses_a_previous_capture(nightly_witness_fixture):
+    bake, directory, band, _graph, output, *_ = nightly_witness_fixture
+    bake.finish_nightly_witness(str(directory), str(band))
+    fresh = Path(bake.start_nightly_witness())
+    assert fresh != directory
+    assert set(path.name for path in fresh.iterdir()) == {"manifest.json"}
+    assert json.loads((fresh / "manifest.json").read_text())["capture_status"] == "incomplete"
+    assert output.read_text().splitlines()[-1] == f"theme_graph_witness={fresh}"
+
+
+def test_nightly_witness_caught_builder_exception_has_no_success_marker(monkeypatch, capsys):
+    from scripts import build_theme_graph as bake
+
+    def explode(**kwargs):
+        raise RuntimeError("synthetic builder exception")
+
+    monkeypatch.setattr(bake, "run", explode)
+    assert bake.main([]) == 0  # preserve the existing advisory policy
+    assert bake._WITNESS_MARKER not in capsys.readouterr().out
+
+
+def test_nightly_witness_capture_precedes_barrier_and_upload_precedes_tail():
+    root = Path(__file__).resolve().parents[1]
+    band = (root / "scripts/ci/daily_engine_regional_desk_builders.sh").read_text()
+    guard_call = 'brun theme_graph_guard "theme graph contract guard (check_theme_graph_contracts)" scripts.check_theme_graph_contracts'
+    assert band.index("  brun baskets_snapshot ") < band.index("print(start_nightly_witness())") < band.index('  brun theme_graph "')
+    assert band.index(guard_call) < band.index("finish_nightly_witness(*sys.argv[1:])") < band.index("\nwait\n")
+    assert guard_call + " --strict" not in band
+    daily = yaml.safe_load((root / ".github/workflows/daily.yml").read_text())
+    steps = daily["jobs"]["engine"]["steps"]
+    band_index = next(i for i, step in enumerate(steps) if step.get("id") == "regional_desk_builders")
+    upload = steps[band_index + 1]
+    assert upload["uses"] == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+    assert "always()" in upload["if"]
+    assert "steps.regional_desk_builders.outputs.theme_graph_witness != ''" in upload["if"]
+    assert upload["continue-on-error"] is True
+    assert upload["with"]["path"] == "${{ steps.regional_desk_builders.outputs.theme_graph_witness }}"
+    assert "github.run_attempt" in upload["with"]["name"]
+    assert upload["with"]["retention-days"] == 14
+    assert steps[band_index + 2]["name"] == "checkpoint core engine outputs to main (durable before tail desks)"
+
+
+
+def test_dated_curation_absence_without_event_does_not_withdraw_relation(tree, monkeypatch):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    old = store.read_edges()
+    relation = old[(old["type"] == "EXPRESSES") & old["dst"].eq("theme:solar")
+                   & old["src"].str.startswith("basket:baskets_china_ths:")].iloc[0]
+    source = tree[1]
+    doc = yaml.safe_load(source.read_text())
+    doc["date"] = "2026-08-13"
+    doc["themes"][0]["ths_concept_ids"] = []
+    source.write_text(yaml.safe_dump(doc))
+    monkeypatch.setattr(bake, "_relation_event_sources",
+                        lambda: (root / "missing-relation-events.v2.jsonl", source))
+    monkeypatch.setattr(materialize, "utc_today", lambda: "2026-08-14")
+    monkeypatch.setattr(materialize, "utc_now_stamp", lambda: "2026-08-14T01:00:00Z")
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    current = store.read_edges()
+    found = current[current["edge_id"].eq(relation["edge_id"])]
+    assert len(found) == 1 and materialize._null(found.iloc[0]["valid_to"])
+
+
+@pytest.mark.parametrize("known_clock,expected_same_day", [
+    ("2026-08-13T09:00:00Z", 1), ("2026-08-13T00:00:00Z", 0)])
+def test_new_collection_daily_knowledge_boundary_preserves_prior_then_admits_next_day(
+        tree, monkeypatch, known_clock, expected_same_day):
+    from engine import basket_membership_pit as pit
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    source = root / pit.SUITE_THS / "membership.json"
+    doc = json.loads(source.read_text())
+    basket = f"thsc{KNOWN_CODE}"
+    doc["baskets"][basket]["members"] = []
+    _write(source, doc)
+    receipt = _complete_collection_for(doc, "2026-08-13", basket)
+    receipt["known_at"] = known_clock
+    if known_clock.endswith("T00:00:00Z"):
+        receipt["observed_at"] = known_clock
+    receipt["collection_id"] = pit.collection_id(receipt)
+    assert pit.append_snapshot(pit.SUITE_THS, asof="2026-08-13", lane="asia",
+                               collection_receipts=[receipt])["written"]
+    monkeypatch.setattr(materialize, "utc_today", lambda: "2026-08-13")
+    monkeypatch.setattr(materialize, "utc_now_stamp", lambda: "2026-08-13T15:00:00Z")
+    before = _file_hashes(root)
+    assert bake.run(backfill=False, force_backfill=False) == expected_same_day
+    if expected_same_day:
+        assert _file_hashes(root) == before
+    monkeypatch.setattr(materialize, "utc_today", lambda: "2026-08-14")
+    monkeypatch.setattr(materialize, "utc_now_stamp", lambda: "2026-08-14T01:00:00Z")
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    actual = store.read_edges()
+    basket_node = identity.basket_node_id(pit.SUITE_THS, basket)
+    memberships = actual[(actual["type"] == "MEMBER_OF") & actual["dst"].eq(basket_node)]
+    assert len(memberships) and memberships["valid_to"].eq("2026-08-13").all()
+
+
+def test_qualified_reappearance_actual_build_store_and_known_cutoffs(tree, monkeypatch):
+    import datetime as dt
+    from engine import basket_membership_pit as pit
+    from engine.theme_graph import ontology
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    # Controlled owner initialization, no preexisting graph publication.
+    history_path = root / pit.SUITE_THS / "membership_history.parquet"
+    history_path.unlink()
+    source = root / pit.SUITE_THS / "membership.json"
+    doc = json.loads(source.read_text())
+    basket = f"thsc{KNOWN_CODE}"
+    symbol = "600001.SS"
+    doc["baskets"][basket]["members"] = [dict(ticker=symbol, added=None, removed="2026-10-03")]
+
+    def observed(day, removed):
+        doc["version"] = day
+        doc["baskets"][basket]["members"][0]["removed"] = removed
+        _write(source, doc)
+        value = _complete_collection_for(doc, day, basket)
+        value["observed_at"] = value["known_at"] = day + "T00:00:00Z"
+        value["collection_id"] = pit.collection_id(value)
+        assert pit.append_snapshot(pit.SUITE_THS, asof=day, lane="asia",
+                                   collection_receipts=[value])["written"]
+        monkeypatch.setattr(materialize, "utc_today", lambda: day)
+        monkeypatch.setattr(materialize, "utc_now_stamp", lambda: day + "T01:00:00Z")
+        assert bake.run(backfill=False, force_backfill=False) == 0
+
+    observed("2026-10-01", "2026-10-03")
+    observed("2026-10-02", None)
+    before = store.read_edges(latest_belief=False)
+    history_key = ["edge_id", "belief_time"]
+    before_encoded = before.sort_values(history_key).to_json(orient="records")
+    before_keys = set(zip(before["edge_id"], before["belief_time"]))
+    before_artifact = store.edges_path().read_bytes()
+    retained_artifact = root / "prior-edges.controlled-evidence"
+    retained_artifact.write_bytes(before_artifact)
+    assert pit.members_asof(basket, "2026-10-03")["members"] == []
+    observed("2026-10-04", None)
+    assert pit.members_asof(basket, "2026-10-04")["members"] == [symbol]
+    assert pit.members_asof(basket, "2026-10-03")["members"] == []
+    ledger = store.read_edges(latest_belief=False)
+    preserved = ledger[[key in before_keys for key in zip(ledger["edge_id"], ledger["belief_time"])]]
+    assert len(preserved) == len(before)
+    assert preserved.sort_values(history_key).to_json(orient="records") == before_encoded
+    assert retained_artifact.read_bytes() == before_artifact  # immutable fixture evidence, not current-file equality
+    basket_node = identity.basket_node_id(pit.SUITE_THS, basket)
+    for effective, known, expected in [("2026-10-02", "2026-10-02", True),
+                                        ("2026-10-03", "2026-10-02", False),
+                                        ("2026-10-03", "2026-10-04", False),
+                                        ("2026-10-04", "2026-10-02", False),
+                                        ("2026-10-04", "2026-10-04", True)]:
+        read, _ = ontology._collapse_relevant_edges(
+            ledger.to_dict("records"), node_id=basket_node,
+            asof=dt.date.fromisoformat(effective), knowledge_cutoff=dt.date.fromisoformat(known))
+        memberships = [row for row in read if row["type"] == "MEMBER_OF"
+                       and row["dst"] == basket_node]
+        assert bool(memberships) == expected, (effective, known)
+    current = store.read_edges()
+    actual = current[(current["type"] == "MEMBER_OF") & current["dst"].eq(basket_node)]
+    assert sorted(zip(actual["valid_from"], actual["valid_to"].fillna(""))) == [
+        ("2026-10-01", "2026-10-03"), ("2026-10-04", "")]
+
+
+@pytest.mark.parametrize("owner_verdict", ["UNWIRED", "REJECTED", "REVOKED", "STALE", "ECHO"])
+def test_supplied_action_without_resolved_authority_refuses_actual_build(tree, monkeypatch, owner_verdict):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    stored = store.read_edges()
+    old = stored[(stored["type"] == "EXPRESSES") & stored["dst"].eq("theme:solar")
+                 & stored["src"].str.startswith("basket:baskets_china_ths:")].iloc[0].to_dict()
+    source = tree[1]
+    doc = yaml.safe_load(source.read_text())
+    doc["themes"][0]["ths_concept_ids"] = []
+    source.write_text(yaml.safe_dump(doc))
+    event = _relation_event(tree, old)
+    path = root / "theme_graph/probation/relation_events.v2.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(event) + "\n")
+    monkeypatch.setattr(bake, "_relation_event_sources", lambda: (path, source))
+    if owner_verdict == "UNWIRED":
+        # Chairman gate #5 (2026-10-06) wires the probation owner's own ledger
+        # resolver into the normal builder, so "unwired" is now a simulated
+        # condition: a None reader must still refuse rather than accept.
+        monkeypatch.setattr(bake, "_relation_action_owner_reader", lambda: None)
+    else:
+        reader = _TrustedRelationActionFixture([])
+        reader.receipts[event["event_sha256"]] = (event if owner_verdict == "ECHO" else dict(
+            schema="gmi.probation_owner_action_read/v1", owner="theme_graph.probation",
+            status=owner_verdict, receipt_ref=None, reason="controlled actual owner refusal"))
+        monkeypatch.setattr(bake, "_relation_action_owner_reader", lambda: reader)
+    monkeypatch.setattr(materialize, "utc_today", lambda: "2026-08-14")
+    monkeypatch.setattr(materialize, "utc_now_stamp", lambda: "2026-08-14T01:00:00Z")
+    before = _file_hashes(root)
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(root) == before
+
+
+def test_native_tracks_emitter_feeds_selected_house_display_without_etf_identity(tree):
+    from types import SimpleNamespace
+    from engine.theme_graph.security_navigation import compose_security_hierarchy
+    from tests.test_theme_graph_hierarchy_paths import _selected_security_row
+    document = yaml.safe_load(tree[1].read_text())
+    document['hierarchy'] = {'categories': [{'id':'theme:energy','name_en':'Energy',
+        'name_zh':'能源','asserted_on':materialize.HIERARCHY_EPOCH}], 'micro_themes': [],
+        'parents': [{'parent':'theme:energy','child':'theme:solar','asserted_on':materialize.HIERARCHY_EPOCH}]}
+    tree[1].write_text(yaml.safe_dump(document))
+    native = _build(tree, belief_time='2026-10-08', computed_at='2026-10-08T00:00:00Z')
+    view = SimpleNamespace(read_nodes=lambda: native.nodes, read_edges=lambda: native.edges,
+        read_evidence=lambda: native.evidence, read_node_lifecycle=lambda: [])
+    result = compose_security_hierarchy(view, [_selected_security_row()],
+        identity_kind='security', identity_id='SEC:US-XNAS-AAA',
+        asof='2026-10-09', knowledge_cutoff='2026-10-09T12:00:00Z')
+    references = result['etf_tracking']['references']
+    assert [(r['symbol'],r['basket_node_id']) for r in references] == [('TAN','basket:baskets:solar_us')], result
+    ref = references[0]
+    native_edge = next(e for e in native.edges if e['edge_id'] == ref['edge_id'])
+    assert ref['clocks'] == {k:native_edge[k] for k in ref['clocks']}
+    assert ref['era'] == 'reconstruction' and ref['date_provenance'] == 'seed_constant'
+    assert ref['evidence'][0]['published_at'] == US_DOC_DATE
+    assert result['etf_tracking']['security_identity']['status'] == 'unavailable'
+    assert all(not n.get('name_en') for n in native.nodes if n['node_id'] == ref['etf_node_id'])
+# ---------------------------------------------------------------------------
+# 11. Activity-history fold wiring (ORCH-PIPE 2026-10-21, lane B1)
+# ---------------------------------------------------------------------------
+
+_ACT_KNOWLEDGE_AT = "2026-08-10T09:00:00Z"
+_ACT_COMPUTED_AT = "2026-08-11T00:00:00Z"
+
+
+def _activity_event(*, source: str, target: str, use: str = "GRANTED",
+                    decision: str = "ACCEPT", knowledge_at: str = _ACT_KNOWLEDGE_AT,
+                    effective_at: dict | None = None,
+                    event_sha256: str | None = None) -> dict:
+    """An honestly digested GRANTED+ACCEPT APPEND by default — built exactly the way
+    tests/test_theme_graph_activity_membership_history.py's ``_event`` helper does:
+    ``membership_id`` via ``activity_membership_id`` and ``event_sha256`` recomputed
+    via ``activity_history_event_digest``. Owner-binding hexes are synthetic: the
+    projection tests bind projection mechanics, not C01 lineage (that owner file has
+    its own suite)."""
+    scope = {"product": "fixture HBM stack", "platform": "fixture platform",
+             "counterparty_issuer_id": "ISS:US-FIXTURE",
+             "segment": {"value": None, "state": "UNDISCLOSED"}}
+    event = {
+        "schema": materialize.ACTIVITY_HISTORY_EVENT_SCHEMA,
+        "action": "APPEND",
+        "membership_id": materialize.activity_membership_id(
+            source_node_id=source, target_node_id=target,
+            species="planned_product_integration", scope=scope),
+        "species": "planned_product_integration",
+        "endpoints": {"source_node_id": source, "target_node_id": target,
+                      "direction": "SOURCE_TO_TARGET"},
+        "scope": scope,
+        "role": "component_supplier",
+        "lifecycle": "planned",
+        "evidence_lineage": {
+            "proposal_id": "actprop:" + "a" * 24,
+            # activity_membership_history.v1 (sibling PR #9975) constrains fact_id to
+            # ^(integration|activity):[0-9a-f]{64}$ — stay inside that shape.
+            "fact_id": "integration:" + "0" * 64, "fact_revision": 1,
+            "source_sha256": "b" * 64, "span_text_sha256": "c" * 64,
+            "owner_bindings": {"spec": "d" * 64, "purpose": "e" * 64,
+                               "adoption": "f" * 64},
+        },
+        "use_qualification": {"graph_membership_use": use},
+        "curation": {"curator": "named-curator:fixture", "decision": decision,
+                     "decided_at": knowledge_at, "receipt_sha256": "0" * 64},
+        "observation": None,
+        "supersedes_event_sha256": None,
+        "clocks": {"knowledge_at": knowledge_at,
+                   "effective_at": effective_at or {"value": None,
+                                                    "state": "UNDISCLOSED"},
+                   "recorded_at": knowledge_at},
+    }
+    digest = event_sha256 or materialize.activity_history_event_digest(event)
+    return {"event_id": "actevt:" + digest[:24], "event_sha256": digest, **event}
+
+
+def _activity_endpoints(tree):
+    view = _build(tree)
+    return view, next(n["node_id"] for n in view.nodes if n["kind"] == "company"), \
+        next(n["node_id"] for n in view.nodes if n["kind"] == "theme")
+
+
+def test_activity_events_none_and_empty_leave_the_view_byte_identical(tree):
+    baseline = _build(tree)
+    view = _build(tree, activity_events=None)
+    for kind in ("nodes", "edges", "evidence"):
+        assert (json.dumps(getattr(baseline, kind), sort_keys=True)
+                == json.dumps(getattr(view, kind), sort_keys=True))
+    assert view.activity_refusals == [] and view.activity_fold == {}
+
+    empty = _build(tree, activity_events=[])
+    for kind in ("nodes", "edges", "evidence"):
+        assert (json.dumps(getattr(baseline, kind), sort_keys=True)
+                == json.dumps(getattr(empty, kind), sort_keys=True))
+    assert empty.activity_refusals == []
+    assert empty.activity_fold["current"] == 0
+    assert empty.activity_fold["projected_edges"] == 0
+
+
+def test_granted_activity_append_projects_one_member_of_edge_and_receipt(tree):
+    import jsonschema
+
+    view, src, dst = _activity_endpoints(tree)
+    event = _activity_event(source=src, target=dst)
+    wired = _build(tree, activity_events=[event])
+    assert wired.activity_refusals == []
+    assert wired.activity_fold["projected_edges"] == 1
+    assert wired.activity_fold["projected_evidence"] == 1
+    (edge,) = [e for e in wired.edges if e["src"] == src and e["dst"] == dst]
+    assert edge["type"] == "MEMBER_OF"
+    assert edge["date_provenance"] == "activity_history"
+    assert edge["confidence_basis"] == "activity_history.v1"
+    assert set(edge) == set(store.EDGE_COLUMNS)
+    # The event's effective clock is UNDISCLOSED: valid_from falls back to the
+    # knowledge date, and the receipt's effective_at stays null (publication IS the
+    # event).
+    assert edge["valid_from"] == _ACT_KNOWLEDGE_AT[:10]
+    assert edge["evidence_time"] == edge["valid_from"]
+    (receipt,) = [r for r in wired.evidence if r["evidence_id"] in edge["evidence_refs"]]
+    assert receipt["kind"] == "operator_curation"
+    assert set(receipt) == set(store.EVIDENCE_COLUMNS)
+    assert receipt["source_ref"] == event["event_id"]
+    assert receipt["published_at"] == event["curation"]["decided_at"][:10]
+    assert receipt["effective_at"] is None
+    assert receipt["provider"] is None and receipt["claim_type"] is None
+    assert (receipt["licensing_internal_ok"], receipt["licensing_display_ok"],
+            receipt["licensing_redistribution_ok"]) == (True, False, False)
+    assert edge["evidence_refs"] == [receipt["evidence_id"]]
+    edges_schema = json.loads((CONTRACTS / "edges.v1.schema.json").read_text(
+        encoding="utf-8"))
+    evidence_schema = json.loads((CONTRACTS / "evidence.v1.schema.json").read_text(
+        encoding="utf-8"))
+    jsonschema.Draft202012Validator(edges_schema).validate(edge)
+    jsonschema.Draft202012Validator(evidence_schema).validate(receipt)
+    # The projected belief adds an edge, never a node, and moves no other row.
+    assert (json.dumps(view.nodes, sort_keys=True)
+            == json.dumps(wired.nodes, sort_keys=True))
+    assert len(wired.edges) == len(view.edges) + 1
+
+
+def test_known_effective_clock_sets_valid_from_and_receipt_effective_at(tree):
+    _, src, dst = _activity_endpoints(tree)
+    event = _activity_event(source=src, target=dst,
+                            effective_at={"value": "2026-08-01", "state": "KNOWN"})
+    wired = _build(tree, activity_events=[event])
+    (edge,) = [e for e in wired.edges if e["src"] == src and e["dst"] == dst]
+    assert edge["valid_from"] == "2026-08-01"
+    assert edge["evidence_time"] == "2026-08-01"
+    (receipt,) = [r for r in wired.evidence if r["evidence_id"] in edge["evidence_refs"]]
+    assert receipt["effective_at"] == "2026-08-01"
+
+
+def test_not_granted_activity_append_projects_nothing_and_records_refusal(tree):
+    _, src, dst = _activity_endpoints(tree)
+    event = _activity_event(source=src, target=dst, use="NOT_GRANTED")
+    wired = _build(tree, activity_events=[event])
+    assert not [e for e in wired.edges if e["src"] == src and e["dst"] == dst]
+    assert [(r["code"], r["reason"]) for r in wired.activity_refusals] == [
+        ("GRAPH_MEMBERSHIP_USE_NOT_GRANTED", "GRAPH_MEMBERSHIP_USE_NOT_GRANTED")]
+    assert wired.activity_refusals[0]["membership_id"] == event["membership_id"]
+    assert wired.activity_fold["refused"] == 1
+    assert wired.activity_fold["projected_edges"] == 0
+
+
+def test_activity_endpoint_absent_is_refused_and_never_mints_a_node(tree):
+    view, _, dst = _activity_endpoints(tree)
+    event = _activity_event(source="co:us:ABSENTCO", target=dst)
+    wired = _build(tree, activity_events=[event])
+    assert (json.dumps(wired.nodes, sort_keys=True)
+            == json.dumps(view.nodes, sort_keys=True))
+    (refusal,) = [r for r in wired.activity_refusals
+                  if r["code"] == "ACTIVITY_ENDPOINT_NODE_ABSENT"]
+    assert refusal["missing"] == ["co:us:ABSENTCO"]
+    assert refusal["membership_id"] == event["membership_id"]
+    assert refusal["event_sha256"] == event["event_sha256"]
+    assert wired.activity_fold["projected_edges"] == 0
+
+
+def test_activity_edge_collision_is_refused_for_the_whole_group(tree):
+    view, src, dst = _activity_endpoints(tree)
+    event = _activity_event(source=src, target=dst)
+    fold = materialize.apply_activity_membership_events([event],
+                                                        knowledge_cutoff=_ACT_COMPUTED_AT)
+    node_ids = {n["node_id"] for n in view.nodes}
+    edges, evidence, refusals = materialize.project_activity_memberships(
+        fold, events=[event], belief_time="2026-08-11", era="reconstruction",
+        computed_at=_ACT_COMPUTED_AT, node_ids=node_ids, edge_ids=set())
+    assert len(edges) == 1 and len(evidence) == 1 and refusals == []
+    collided_edges, collided_evidence, collided_refusals = (
+        materialize.project_activity_memberships(
+            fold, events=[event], belief_time="2026-08-11", era="reconstruction",
+            computed_at=_ACT_COMPUTED_AT, node_ids=node_ids,
+            edge_ids={edges[0]["edge_id"]}))
+    assert collided_edges == [] and collided_evidence == []
+    assert [r["code"] for r in collided_refusals] == [
+        "ACTIVITY_EDGE_COLLIDES_WITH_EXISTING"]
+    assert collided_refusals[0]["edge_id"] == edges[0]["edge_id"]
+    assert collided_refusals[0]["membership_ids"] == [event["membership_id"]]
+
+
+def test_invalid_activity_event_refuses_the_fold_without_raising(tree):
+    view, src, dst = _activity_endpoints(tree)
+    event = _activity_event(source=src, target=dst, event_sha256="a" * 64)
+    wired = _build(tree, activity_events=[event])  # must NOT raise
+    for kind in ("nodes", "edges", "evidence"):
+        assert (json.dumps(getattr(view, kind), sort_keys=True)
+                == json.dumps(getattr(wired, kind), sort_keys=True))
+    assert [r["code"] for r in wired.activity_refusals] == ["ACTIVITY_FOLD_REFUSED"]
+    assert wired.activity_refusals[0]["reason"] == "EVENT_DIGEST_MISMATCH"
+    assert wired.activity_fold == {}
+
+
+def test_only_activity_history_edges_may_join_company_to_theme(tree):
+    """ORCH-PIPE evidence-grain ruling (2026-10-21): a curated, receipted activity
+    membership is a first-class evidence-grain fact, not a composition — so the only
+    company->theme edges this store may ever carry are the activity_history ones."""
+    _, src, dst = _activity_endpoints(tree)
+    event = _activity_event(source=src, target=dst)
+    wired = _build(tree, activity_events=[event])
+    joins = [e for e in wired.edges
+             if e["src"].startswith("co:") and e["dst"].startswith("theme:")]
+    assert joins
+    assert {e["date_provenance"] for e in joins} == {"activity_history"}
+
+
+def test_activity_projection_is_deterministic(tree):
+    _, src, dst = _activity_endpoints(tree)
+    events = [_activity_event(source=src, target=dst),
+              _activity_event(source=src, target=dst,
+                              knowledge_at="2026-08-10T12:00:00Z")]
+    forward = _build(tree, activity_events=list(events), computed_at=_ACT_COMPUTED_AT)
+    backward = _build(tree, activity_events=list(reversed(events)),
+                      computed_at=_ACT_COMPUTED_AT)
+    assert json.dumps(forward.edges, sort_keys=True) == json.dumps(
+        backward.edges, sort_keys=True)
+    assert json.dumps(forward.evidence, sort_keys=True) == json.dumps(
+        backward.evidence, sort_keys=True)
+    assert json.dumps(forward.activity_refusals, sort_keys=True) == json.dumps(
+        backward.activity_refusals, sort_keys=True)
+
+
+def test_activity_history_reader_absent_blank_and_malformed_lines(
+        tmp_path, monkeypatch, capsys):
+    from scripts import build_theme_graph as bake
+
+    monkeypatch.setattr(bake.store, "probation_path",
+                        lambda: tmp_path / "probation" / "proposals.jsonl")
+    # Absent ledger -> None, no output (today's production state).
+    assert bake._activity_history_events() is None
+    assert capsys.readouterr().out == ""
+    ledger = tmp_path / "probation" / "activity_history_events.jsonl"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    ledger.write_text(json.dumps({"schema": "x"}) + "\n\n"
+                      + json.dumps({"schema": "y"}) + "\n", encoding="utf-8")
+    assert bake._activity_history_events() == [{"schema": "x"}, {"schema": "y"}]
+    assert capsys.readouterr().out == ""
+    # ANY malformed line refuses the WHOLE ledger, with a line-start ::warning.
+    ledger.write_text(json.dumps({"schema": "x"}) + "\n\nnot json\n",
+                      encoding="utf-8")
+    assert bake._activity_history_events() is None
+    warning = [ln for ln in capsys.readouterr().out.splitlines()
+               if ln.startswith("::")]
+    assert len(warning) == 1
+    assert warning[0].startswith("::warning title=theme graph activity history refused::")
+    assert f"{ledger}:3" in warning[0]
+    # A line that parses but is not a JSON object is malformed too.
+    ledger.write_text("[1, 2]\n", encoding="utf-8")
+    assert bake._activity_history_events() is None

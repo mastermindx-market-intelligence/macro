@@ -416,6 +416,20 @@ def test_the_shipped_config_carries_the_block():
 
 # ── 7. END TO END through main() — annotations reach stdout, code is the exit ─
 
+def _seed_delivery_item(root, *, account: str, remote_id: str, at: str):
+    from engine.marketing.outbox import enqueue, make_item, transition
+
+    when = tw.parse_iso(at)
+    item = make_item(account=account, kind="signal", text=f"{account} delivery",
+                     as_of=at[:10], provenance="test", now=when)
+    enqueue(item, root=root, max_per_account_day=99)
+    transition(item["id"], "approved", actor="t", root=root)
+    transition(item["id"], "posting", actor="t", root=root)
+    transition(item["id"], "posted", actor="publisher", root=root,
+               receipt={"backend": "buffer", "external_id": remote_id, "at": at})
+    return item["id"]
+
+
 def test_main_prints_the_annotation_at_column_zero(tmp_path, capsys, monkeypatch):
     """capsys, not caplog: an annotation that goes through logging is invisible
     to GitHub, and that is the defect this whole module exists to end."""
@@ -450,6 +464,90 @@ def test_main_is_green_and_quiet_when_the_lane_is_healthy(tmp_path, capsys, monk
 
     assert code == 0
     assert out.startswith("::notice title=marketing-liveness::ok")
+
+
+def test_main_reports_delivery_truth_per_account_without_news_masking_flagship(
+        tmp_path, capsys, monkeypatch):
+    (tmp_path / "data" / "marketing").mkdir(parents=True)
+    (tmp_path / "data" / "marketing" / "publications.jsonl").write_text(
+        json.dumps({"mode": "live", "published_at": "2026-08-10T19:30:00Z"}) + "\n",
+        encoding="utf-8")
+    _seed_delivery_item(
+        tmp_path, account="flagship", remote_id="buf-flag", at="2026-08-10T18:30:00Z")
+    _seed_delivery_item(
+        tmp_path, account="mastermind_news", remote_id="buf-news", at="2026-08-10T19:00:00Z")
+    delivery = {
+        "schema": "marketing.provider_delivery/v1", "read_ok": True,
+        "state": "provider_sent", "provider_id": "buf-news",
+        "provider_sent": True, "provider_sent_at": "2026-08-10T19:05:00Z",
+        "observed_at": "2026-08-10T19:10:00Z", "error": None,
+    }
+    (tmp_path / "data" / "marketing" / "post_metrics.jsonl").write_text(
+        json.dumps({"remote_id": "buf-news", "account": "mastermind_news",
+                    "polled_at": "2026-08-10T19:10:00Z", "ok": True,
+                    "metrics": {"impressions": 10}, "delivery": delivery}) + "\n",
+        encoding="utf-8")
+    monkeypatch.setenv("MARKETING_PUBLISH_ENABLED", "1")
+
+    assert tw.main(["--root", str(tmp_path), "--now", "2026-08-10T20:00:00Z"]) == 0
+    lines = [line for line in capsys.readouterr().out.splitlines()
+             if "title=marketing-delivery::" in line]
+    assert any("account=flagship" in line and "provider_sent=0" in line
+               and "last_provider_sent=unknown" in line for line in lines)
+    assert any("account=mastermind_news" in line and "provider_sent=1" in line
+               and "last_metric=2026-08-10T19:10:00Z" in line for line in lines)
+
+
+def test_delivery_summary_names_manual_notification_block_in_plain_words(tmp_path):
+    _seed_delivery_item(
+        tmp_path, account="flagship", remote_id="buf-manual", at="2026-08-10T18:30:00Z")
+    metrics = tmp_path / "data" / "marketing" / "post_metrics.jsonl"
+    metrics.parent.mkdir(parents=True, exist_ok=True)
+    delivery = {
+        "schema": "marketing.provider_delivery/v1", "read_ok": True,
+        "state": "accepted_unconfirmed", "provider_id": "buf-manual",
+        "provider_status": "scheduled", "scheduling_type": "notification",
+        "provider_sent": False, "provider_sent_at": None,
+        "channel_ready": False,
+        "channel": {"id": "chan-1", "is_disconnected": False, "is_locked": False,
+                    "is_queue_paused": False, "has_active_member_device": False},
+        "observed_at": "2026-08-10T19:10:00Z", "error": None,
+    }
+    metrics.write_text(json.dumps({
+        "remote_id": "buf-manual", "account": "flagship",
+        "polled_at": "2026-08-10T19:10:00Z", "ok": True,
+        "metrics": {}, "delivery": delivery}) + "\n", encoding="utf-8")
+
+    line = tw.delivery_status_annotations(tmp_path)[0]
+
+    assert line.startswith("::warning title=marketing-delivery::")
+    assert "manual notification has no active device" in line
+
+
+def test_delivery_summary_treats_provider_approval_as_actionable_warning(tmp_path):
+    _seed_delivery_item(
+        tmp_path, account="flagship", remote_id="buf-approval", at="2026-08-10T18:30:00Z")
+    metrics = tmp_path / "data" / "marketing" / "post_metrics.jsonl"
+    metrics.parent.mkdir(parents=True, exist_ok=True)
+    delivery = {
+        "schema": "marketing.provider_delivery/v1", "read_ok": True,
+        "state": "accepted_unconfirmed", "provider_id": "buf-approval",
+        "provider_status": "needs_approval", "scheduling_type": None,
+        "provider_sent": False, "provider_sent_at": None,
+        "channel_ready": True,
+        "channel": {"id": "chan-1", "is_disconnected": False, "is_locked": False,
+                    "is_queue_paused": False, "has_active_member_device": True},
+        "observed_at": "2026-08-10T19:10:00Z", "error": None,
+    }
+    metrics.write_text(json.dumps({
+        "remote_id": "buf-approval", "account": "flagship",
+        "polled_at": "2026-08-10T19:10:00Z", "ok": True,
+        "metrics": {}, "delivery": delivery}) + "\n", encoding="utf-8")
+
+    line = tw.delivery_status_annotations(tmp_path)[0]
+
+    assert line.startswith("::warning title=marketing-delivery::")
+    assert "provider approval required" in line
 
 
 def test_main_refuses_an_unparseable_now(tmp_path):

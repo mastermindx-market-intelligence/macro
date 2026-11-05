@@ -62,6 +62,12 @@ sys.path.insert(0, str(ROOT))
 
 from lib import config, nyse_calendar  # noqa: E402
 
+# `data_gate` (registered in tests/conftest.py) marks every test here that reads a real
+# store under data/ or site/, directly or through the code under test. Those verdicts can
+# change without any code change, so the code gate deselects them (-m "not data_gate" in
+# the workflow-yaml legacy job) and the data gate runs them (-m data_gate in
+# engine-render-guards). Everything unmarked is a function of the tree alone.
+
 # 2026-07-24 Fri (session), 07-25 Sat, 07-26 Sun, 07-27 Mon (session)
 FRI, SAT, SUN, MON = "2026-07-24", "2026-07-25", "2026-07-26", "2026-07-27"
 
@@ -286,6 +292,7 @@ WEEKEND_BEARING = {
 }
 
 
+@pytest.mark.data_gate
 @pytest.mark.parametrize("rel", sorted(WEEKEND_BEARING))
 def test_the_premise_holds_on_the_real_stores(rel):
     """If these stores ever stop carrying weekend rows the fixes become no-ops — which is
@@ -314,6 +321,7 @@ def test_the_premise_holds_on_the_real_stores(rel):
           f"({n_dates - n_sessions} fabricated)")
 
 
+@pytest.mark.data_gate
 def test_the_filtered_latest_row_is_always_a_session():
     """The single assertion every one of these fixes exists to make true."""
     p = config.data_dir() / "options_skew" / "snapshots.parquet"
@@ -348,6 +356,14 @@ def _summary_frame(dates: list[str], iv30_by_date: dict[str, float] | None = Non
         index=pd.to_datetime(dates))
 
 
+# stamp_options_state falls back to the disk loaders for the two W-C snapshot stores
+# (data/options_skew, data/options_ivspread) unless the caller injects a frame or a
+# loader. No stamp test in this file asserts on a skew or ivspread column, so each one
+# injects empty loaders: the stamp then reads nothing under data/, and the test can run
+# unmarked on the code gate.
+_NO_SNAPSHOT_STORES = {"_skew_loader": lambda: None, "_ivspread_loader": lambda: None}
+
+
 class TestStampFunnelDropsWeekendRows:
     """engine/options_stamp.stamp_options_state — feeds opt_* LEDGER columns."""
 
@@ -358,12 +374,14 @@ class TestStampFunnelDropsWeekendRows:
         dates = [FRI, SAT, SUN]
         frame = _summary_frame(dates, {FRI: 0.30, SAT: 0.99, SUN: 0.98})
         s = stamp_options_state(SUN, "FOO", read_summary=lambda t: frame,
-                                chain_dates=[], read_chain=lambda d: None)
+                                chain_dates=[], read_chain=lambda d: None,
+                                **_NO_SNAPSHOT_STORES)
         assert s["opt_iv30"] == pytest.approx(0.30), (
             f"the stamp read a non-session row (iv30={s['opt_iv30']}); Friday's 0.30 is "
             "the only legitimate value for a Sunday as_of"
         )
 
+    @pytest.mark.data_gate
     def test_the_positional_five_session_lookback_spans_five_sessions(self):
         """_vanna_hedge_5d_from_summary / _DOI_WINDOW take POSITIONAL lookbacks that are
         USED as trading-day changes. With weekend rows in, iloc[-6] is ~3 sessions back.
@@ -472,7 +490,8 @@ class TestStampFunnelDropsWeekendRows:
         monkeypatch.setattr(os_mod.nyse_calendar, "session_rows",
                             lambda df, col=None, **kw: df)
         s = os_mod.stamp_options_state(SUN, "FOO", read_summary=lambda t: frame,
-                                       chain_dates=[], read_chain=lambda d: None)
+                                       chain_dates=[], read_chain=lambda d: None,
+                                       **_NO_SNAPSHOT_STORES)
         assert s["opt_iv30"] == pytest.approx(0.98), (
             "premise failed: without the filter the stamp should read the Sunday row"
         )
@@ -555,6 +574,7 @@ def _stamp_over(window: list[date], series: list[float], ticker: str = "FOO") ->
         chain_dates=list(window),
         read_chain=lambda d: (_gap_chain_frame(ticker, call_oi=by_date[d], expiries=expiries)
                               if d in by_date else None),
+        **_NO_SNAPSHOT_STORES,
     )
 
 
@@ -667,6 +687,7 @@ class TestChainGapsAreNotSessionSpacing:
         )
 
 
+@pytest.mark.data_gate
 class TestLedgerPathReadersDropWeekendRows:
     """The two ledger-writing call paths in scripts/stamp_options_state.py bypass the
     funnel and call engine.options_stamp._default_read_summary DIRECTLY (:199 vanna,
@@ -746,6 +767,7 @@ class TestLedgerPathReadersDropWeekendRows:
             assert not bad, f"{name} loader returned non-session dates {bad}"
 
 
+@pytest.mark.data_gate
 class TestScreenerGexSummaryDropsWeekendRows:
     """scripts/build_options_screener._load_gex_summary — the canonical #F3-17 fix; its
     output sets each row's `asof` and drives iv_rank's n_obs."""

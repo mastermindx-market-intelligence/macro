@@ -8,9 +8,11 @@ question: >
   happens to the cross-repo parity fixture that pinned the other one?
 answer: >
   Population sigma (ddof=0) is canonical for the CHARTED "Bollinger Bands"
-  indicator. indicatorMath.bollingerBands() now defaults to it and is the single
-  owner; ChartPanel's inlined stddev() is deleted and all three of its BB
-  consumers call the owner. The Macro Python `_bb_bands()` contract is NOT
+  indicator. Companion Terminal PR #637 proposes indicatorMath.bollingerBands()
+  as the single owner with that default; its candidate deletes ChartPanel's
+  inlined stddev() and routes all three BB consumers through the owner. That
+  Terminal PR is still open, so this record does not claim protected or deployed
+  adoption. The Macro Python `_bb_bands()` contract is NOT
   changed and its fixture (tests/fixtures/tech_parity/expected_bollinger.json)
   is NOT regenerated — it is re-scoped and renamed as what it always actually
   was: the sample-sigma EVENT-SIGNAL bands behind engine/bollinger_event_signals.py,
@@ -23,25 +25,28 @@ rationale: >
   had a test. Terminal lib/indicators.ts:127 ships IND_DEFS.bb.source — the
   read-only Pine shown by the chart's "Source code..." button (lib/indicators.ts:39)
   — and it reads `dev = mult * ta.stdev(close, length)`. Pine's ta.stdev is
-  population, both on TradingView and in the Terminal's own interpreter
-  (lib/pine-engine/runtime.ts:481 divides by len). Four other Terminal modules had
+  population in the companion's tested two-argument call
+  (lib/pine-engine/runtime.ts:481 divides by len). This is a qualified internal
+  implementation witness, not a general external-platform conformance claim.
+  Four other Terminal modules had
   already chosen population deliberately and said so in comments
   (suites/trend/marketDashboard.ts:247 "population sigma, like ta.stdev";
   intradayMath.ts ttmSqueeze, which explicitly says it follows ChartPanel "not
   indicatorMath"; suites/rsix/rsiChannels.ts; indicatorMath volbox). The lone
   ddof=1 outlier traces to pandas' `.std()` DEFAULT inside an event-signal module,
-  never to a charting contract — and the same fixture family already aligns RSI to
-  Pine ("SMA-seeded RMA, same as Pine ta.rsi"). So the rendered values were right
-  and the tested library was wrong; the fix moved the library, leaving user-visible
-  bands unchanged. Changing the Python instead would have moved live Macro event
+  never to a charting contract. The companion's recorded fixture comparison
+  supports moving the library to the existing charted contract; the candidate
+  leaves the rendered band values unchanged. This record does not establish
+  unrelated RSI or EMA parity. Changing the Python instead would have moved live Macro event
   signals across bb_upper_rejection / bb_lower_rejection and their backtests to
   repair a Terminal-side naming error — a far larger blast radius, in the wrong repo.
 alternatives:
   - option: Change ChartPanel to sample sigma (ddof=1) so the chart matches the fixture
     why_not: >
       It would put the displayed chart in conflict with its own published
-      "Source code..." definition, with Pine ta.stdev, with TradingView, and with
-      the four Terminal modules that already match population on purpose. It also
+      "Source code..." definition as exercised by the qualified two-argument
+      interpreter call, and with the four documented Terminal population-sigma
+      consumers. It also
       changes what users see to satisfy a contract that was never about the chart.
   - option: Change Macro `_bb_bands()` to population and regenerate the fixture
     why_not: >
@@ -58,7 +63,8 @@ alternatives:
       Leaves both old implementations live and creates a third. The point is one
       owner, with the duplicate deleted.
 evidence:
-  - "Terminal PR mastermindx-market-intelligence/mastermind-terminal#637"
+  - "Terminal PR mastermindx-market-intelligence/mastermind-terminal#637; OPEN/unmerged on 2026-11-05 at b9a3c2950492945300af463a9aff5d4c3d0ac298"
+  - "Numeric and test observations below are retained from the September 18 companion report; no rerun or current deployment is claimed."
   - "Terminal lib/indicators.ts:127 IND_DEFS.bb.source = `dev = mult * ta.stdev(close, length)`; lib/indicators.ts:39 documents it as user-visible via 'Source code...'"
   - "Terminal lib/pine-engine/runtime.ts:481 — ta.stdev returns Math.sqrt(sum / len), population"
   - "Terminal lib/suites/trend/marketDashboard.ts:247 — `const sd = Math.sqrt(ss / BB_LEN); // population sigma, like ta.stdev`"
@@ -79,6 +85,22 @@ reversibility: costly
 decided_by: 079518c4-0e18-47db-919f-fce689123898
 decided_at: 2026-09-18
 ---
+
+## Record scope — qualified November 5, 2026
+
+This record preserves the September 18 formula decision and reported measurements.
+[Terminal PR 637](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/637)
+remains open at `b9a3c2950492945300af463a9aff5d4c3d0ac298`.
+Its proposed owner/call-site changes and reported tests are candidate evidence,
+not proof that protected Terminal or a served application has adopted them.
+Merging this Macro record changes neither repository's indicator code.
+
+The internal Pine interpreter is a distinct implementation witness for the exact
+published Bollinger definition and finite fixture tested. Its presence does not
+certify external Pine behavior for every function, argument mode or input history.
+The [Pine execution model](https://www.tradingview.com/pine-script-docs/language/execution-model/)
+also makes evaluation scope and historical buffers material to function behavior.
+No general EMA, missing-value or warmup parity follows from this Bollinger test.
 
 There were never two versions of one indicator here — there were two indicators wearing
 one name.
@@ -105,5 +127,9 @@ Naming them separately costs one `ddof` argument and keeps both honest. The Ribb
 divergence in the same fixture family is deliberately NOT resolved by this decision: the
 Terminal already calls the shared `trendRibbon()` from its chart, so it has no equivalent
 render-path drift, and its fix is unbounded (shared `ema()`, live Macro signals, and no
-clean oracle — the Terminal's Pine `ta.ema` is first-value seeded while TradingView's is
-SMA-seeded, a third convention). It stays an open successor problem.
+qualified external oracle). The companion interpreter's `ta.ema` initializes
+from the first valid source value, but the Bollinger fixture does not establish
+the intended external platform/version's EMA initialization, warmup or missing-value
+semantics. The earlier unconditional external SMA-seeding comparison is withdrawn.
+A version-specific, bar-by-bar witness is required before asserting that parity
+or changing either live owner. Ribbon stays an open successor problem.

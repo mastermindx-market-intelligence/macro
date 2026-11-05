@@ -1,0 +1,112 @@
+{
+  "operation": "commodities-release-jitter-proof-20260917-sol-001",
+  "base": "3daf739affa12a43a6b3a0feb3b4c57154587756",
+  "observed_main": "12b655150582d9be39bfd2779b33338d154c565f",
+  "source_identity": {
+    "base": "3daf739affa12a43a6b3a0feb3b4c57154587756",
+    "files": {
+      "tests/test_push_retry.py": "8b288c5361e1167e2fadffd5bee62809709c3477",
+      "scripts/ci/push_retry.sh": "15dcf175576e4453dc2570c2977ecbafd8ad15c4",
+      "scripts/workflow_run_source.py": "b55fe2447f6a50dc6f6d160537961e77145078cb"
+    },
+    "kind": "isolated test-only proof; no working tree, production or retry-policy edits"
+  },
+  "root_cause_reproduction": {
+    "kind": "existing actual Bash function seeded diagnostic",
+    "seeds": [
+      57,
+      7976
+    ],
+    "attempt": 1,
+    "samples_per_class": 60,
+    "contention_sum": 308,
+    "conflict_sum": 462,
+    "existing_ratio_threshold": 1.5,
+    "existing_test_passes": false,
+    "production_library_blob": "15dcf175576e4453dc2570c2977ecbafd8ad15c4",
+    "basis": "Valid random samples can violate a mean assertion even when the intended expectation differs; not a claim to recover the precise original CI RNG state"
+  },
+  "full_suite_result": "79 passed, zero failures",
+  "full_suite_log": "........................................................................ [ 91%]\n.......                                                                  [100%]\n79 passed in 70.89s (0:01:10)\n",
+  "mutation_proof": {
+    "kind": "real unchanged Bash policy in isolated mutant copies; negative controls for test-only repair",
+    "production_library_sha256": "920b0aa0aee3c2c6c02217ecdea8ac33efa2df30a8f729d3ab80e767d29831e4",
+    "results": [
+      {
+        "mutation": "contention_uses_slow_ladder",
+        "detected": true,
+        "failing_contracts": [
+          "expectation",
+          "endpoints-contention-1",
+          "endpoints-contention-3",
+          "endpoints-contention-5"
+        ],
+        "unexpected_errors": []
+      },
+      {
+        "mutation": "conflict_uses_fast_ladder",
+        "detected": true,
+        "failing_contracts": [
+          "expectation",
+          "endpoints-rebase-conflict-1",
+          "endpoints-rebase-conflict-3",
+          "endpoints-rebase-conflict-5",
+          "endpoints-rebase-conflict-8"
+        ],
+        "unexpected_errors": []
+      },
+      {
+        "mutation": "runtime_jitter_removed",
+        "detected": true,
+        "failing_contracts": [
+          "endpoints-contention-1",
+          "endpoints-rebase-conflict-1",
+          "endpoints-contention-3",
+          "endpoints-rebase-conflict-3",
+          "endpoints-contention-5",
+          "endpoints-rebase-conflict-5",
+          "endpoints-contention-8",
+          "endpoints-rebase-conflict-8"
+        ],
+        "unexpected_errors": []
+      },
+      {
+        "mutation": "upper_jitter_endpoint_lost",
+        "detected": true,
+        "failing_contracts": [
+          "endpoints-contention-1",
+          "endpoints-rebase-conflict-1",
+          "endpoints-contention-3",
+          "endpoints-rebase-conflict-3",
+          "endpoints-contention-5",
+          "endpoints-rebase-conflict-5",
+          "endpoints-contention-8",
+          "endpoints-rebase-conflict-8"
+        ],
+        "unexpected_errors": []
+      },
+      {
+        "mutation": "contention_cap_raised",
+        "detected": true,
+        "failing_contracts": [
+          "endpoints-contention-8"
+        ],
+        "unexpected_errors": []
+      },
+      {
+        "mutation": "deadline_cap_removed",
+        "detected": true,
+        "failing_contracts": [
+          "deadline"
+        ],
+        "unexpected_errors": []
+      }
+    ],
+    "detected": 6,
+    "production_modified": false
+  },
+  "production_retry_policy_changed": false,
+  "model_or_allocations_changed": false,
+  "production_proven": false,
+  "current_main_integration": "Owned test/library blobs match; full-source proof is against pinned base, not a current-main merge verdict."
+}

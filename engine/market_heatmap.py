@@ -387,16 +387,32 @@ def build_market_heatmap(
     if constituents is None or constituents.empty:
         return _empty_payload(market, cfg, generated_utc)
 
-    perf = us.daily_returns(closes, asof=asof)
+    observation_view = None
+    if market == "china" and (asof is not None or (closes is not None and not closes.empty)):
+        from engine.china_heatmap_observations import build_china_observations
+
+        observation_view = build_china_observations(
+            closes, constituents.index, asof=asof, facts_builder=_market_facts,
+        )
+        perf = observation_view["returns"]
+    else:
+        perf = us.daily_returns(closes, asof=asof)
 
     closes_sorted = closes.sort_index() if closes is not None and not closes.empty else closes
     asof_date = ""
     if closes_sorted is not None and not closes_sorted.empty:
         asof_date = pd.Timestamp(asof or closes_sorted.index[-1]).strftime("%Y-%m-%d")
 
+    if observation_view is not None:
+        asof_date = observation_view["asof"]
+
     rows: list[dict] = []
     for sym, row in constituents.iterrows():
-        sector = str(row.get("sector") or "").strip()
+        raw_sector = row.get("sector")
+        if market == "china" and (pd.isna(raw_sector) or not str(raw_sector).strip()):
+            sector = "A-share"
+        else:
+            sector = str(raw_sector or "").strip()
         if not sector:
             continue
         rows.append({
@@ -407,15 +423,15 @@ def build_market_heatmap(
         })
 
     sizes, size_basis = _float_sizes(rows, caps, weights)
-    facts = _market_facts(closes_sorted, asof)
+    facts = observation_view["facts"] if observation_view is not None else _market_facts(closes_sorted, asof)
 
     tiles: list[dict] = []
     for r in rows:
         sym = r["t"]
         p = dict(perf.get(sym, {}))
-        # Drop names with no return data at all — an uncolorable tile is a dead
-        # grey square (e.g. an index constituent whose price series is absent);
-        # omit it rather than render a meaningless blank.
+        # China carries explicit nulls plus observation reasons, retaining an
+        # unavailable member without inventing a zero or an older-session move.
+        # Other markets retain their existing omit-empty-return behavior.
         if not p:
             continue
         tile = {
@@ -428,15 +444,18 @@ def build_market_heatmap(
         if r["name_zh"] and r["name_zh"] != r["name"]:
             tile["name_zh"] = r["name_zh"]
         tile.update(facts.get(str(sym), {}))
+        if observation_view is not None:
+            tile["observation"] = observation_view["observations"][sym]
         tiles.append(tile)
 
     # A timeframe lights up only once enough constituents carry it (keeps a
     # thinly-covered window greyed instead of rendering a mostly-grey map).
-    n = len(tiles) or 1
+    n = (len(constituents) if observation_view is not None else len(tiles)) or 1
     counts: dict[str, int] = {}
     for tile in tiles:
-        for k in tile["perf"]:
-            counts[k] = counts.get(k, 0) + 1
+        for k, value in tile["perf"].items():
+            if value is not None:
+                counts[k] = counts.get(k, 0) + 1
     timeframes = [
         {**tf, "available": (counts.get(tf["key"], 0) / n) >= us.MIN_COVERAGE}
         for tf in us.TIMEFRAMES
@@ -477,6 +496,7 @@ def build_market_heatmap(
         "tiles": tiles,
         "n_tiles": len(tiles),
         "size_basis": size_basis,
+        **({"observation_coverage": observation_view["coverage"]} if observation_view is not None else {}),
         # Whole-board 涨跌家数 for the SAME session as the tiles, when we have it.
         # Absent (or stale) → the front-end counts tiles, as it always did.
         **({"board_breadth": board} if board else {}),
@@ -698,6 +718,7 @@ def page_summary(payload: Mapping | None) -> dict | None:
         "tf": tf,
         "asof": str(payload.get("asof") or ""),
         "n_tiles": int(payload.get("n_tiles") or len(tiles)),
+        **({"observation_coverage": payload["observation_coverage"]} if payload.get("observation_coverage") else {}),
         "stance": _stance(pct_up, med or 0.0, secs),
         "pct_up": round(pct_up),
         "median": _fmt_pc(med),

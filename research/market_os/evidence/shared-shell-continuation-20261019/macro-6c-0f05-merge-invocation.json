@@ -1,0 +1,15 @@
+{
+  "started_at": "2026-10-20T04:40:47.488311+00:00",
+  "head": "6c0f54d2a5acabaf3df7a01aa3f604c9edf22e36",
+  "incoming": "0f058428717ac7c96c11e5a3ebc960db6a61edab",
+  "base": "f54eeb09f3473e091ea55416a8dcad9196603e60",
+  "command": [
+    "git",
+    "merge",
+    "--no-ff",
+    "--no-commit",
+    "0f058428717ac7c96c11e5a3ebc960db6a61edab"
+  ],
+  "source": "original shared-shell-r27",
+  "candidate_receipt_sha256": "2b31e61342cc17b990d77ac83b162a4941ba11bd1d0df59fc7967c5dc2df75e4"
+}

@@ -1,0 +1,304 @@
+"""Non-finite producer numbers must drop the field, not the nomination pass."""
+from __future__ import annotations
+
+import json
+import math
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+import pytest
+
+from engine.entry_radar.contracts import Nomination, NominationError, ProducerRead
+from engine.entry_radar.nomination_bus import NominationBus
+from engine.entry_radar.producers.base import finite_or_none
+from engine.entry_radar.producers import read_flow_pulse, read_group_pulse, read_ipo_calendar, read_us_standouts
+from engine.entry_radar.spool import NominationSpool, tap_hot_tape_events
+from engine.entry_radar.universe import load_config
+
+ROOT = Path(__file__).resolve().parents[1]
+NOW = datetime(2026, 8, 14, 14, 30, tzinfo=timezone.utc)
+YESTERDAY = NOW - timedelta(days=1)
+ASOF = "2026-08-14T02:10:00Z"
+
+
+def _cfg():
+    return load_config(ROOT)
+
+
+def _nomination(**kw) -> Nomination:
+    base = dict(
+        ticker="ZZTOP",
+        source_id="basketdata:linked_outsiders",
+        source_family="special_situation",
+        reason_code="filing.linked_counterparty",
+        reason_text="ZZTOP named as a counterparty in a material 8-K",
+        observed_at=NOW,
+        source_asof=YESTERDAY,
+        source_rank=3,
+        source_value=1.0,
+        source_horizon="event",
+        ttl_until=NOW + timedelta(hours=36),
+        evidence_ref="linked_outsiders.json#semis/ZZTOP",
+        data_quality="ok",
+    )
+    base.update(kw)
+    return Nomination(**base)
+
+
+def _standouts_doc():
+    return {
+        "as_of": ASOF,
+        "rank_by": "eq",
+        "buy": [
+            {
+                "ticker": "NVDA",
+                "name": "NVIDIA",
+                "alpha": 2.31,
+                "state": "go",
+                "label": "Buy",
+                "score_rank": 1,
+            }
+        ],
+        "watch": [],
+        "leaders": [],
+        "laggards": [],
+    }
+
+
+def _reject_nonstandard_constants(_value: str) -> None:
+    raise ValueError("non-standard json constant")
+
+
+def test_finite_or_none():
+    assert finite_or_none(None) is None
+    assert finite_or_none(True) is None
+    assert finite_or_none("x") is None
+    assert finite_or_none(float("nan")) is None
+    assert finite_or_none(float("inf")) is None
+    assert finite_or_none(float("-inf")) is None
+    assert finite_or_none(3) == 3.0
+    assert finite_or_none("2.5") == 2.5
+    import numpy as np
+
+    assert finite_or_none(np.float64(1.5)) == 1.5
+
+
+def test_nomination_refuses_non_finite_source_value():
+    for bad in (float("nan"), float("inf"), "not-a-number"):
+        with pytest.raises(NominationError, match="source_value"):
+            _nomination(source_value=bad)
+
+
+def test_nomination_refuses_bool_source_value():
+    with pytest.raises(NominationError, match="source_value"):
+        _nomination(source_value=True)
+
+
+def test_nomination_accepts_numpy_scalars():
+    import numpy as np
+
+    n32 = _nomination(source_value=np.float32(1.5))
+    assert type(n32.source_value) is float and n32.source_value == 1.5
+    n64 = _nomination(source_value=np.int64(3))
+    assert type(n64.source_value) is int and n64.source_value == 3
+    nf = _nomination(source_value=np.float64(2.5))
+    assert type(nf.source_value) is float
+    for n in (n32, n64, nf):
+        json.dumps(n.to_dict(), allow_nan=False)
+
+
+def test_builtin_numbers_are_stored_unchanged():
+    assert type(_nomination(source_value=3).source_value) is int
+    assert type(_nomination(source_value=2.5).source_value) is float
+    assert _nomination(source_value=None).source_value is None
+
+
+def test_nomination_refuses_string_source_value():
+    with pytest.raises(NominationError, match="source_value"):
+        _nomination(source_value="1.5")
+
+
+def test_nomination_refuses_non_finite_float_rank():
+    with pytest.raises(NominationError, match="source_rank"):
+        _nomination(source_rank=float("nan"))
+
+
+def test_hot_tape_event_with_nan_change_keeps_the_nomination():
+    events = [
+        {"ticker": "AAA", "kind": "surge", "change_pct": float("nan")},
+        {"ticker": "BBB", "kind": "surge", "change_pct": 2.5},
+    ]
+    noms = tap_hot_tape_events(events, source_asof=NOW, now=NOW)
+    assert len(noms) == 2
+    by_ticker = {n.ticker: n for n in noms}
+    assert by_ticker["AAA"].source_value is None
+    assert by_ticker["BBB"].source_value == 2.5
+
+
+def test_board_row_with_infinite_rank_keeps_the_nomination(tmp_path):
+    doc = _standouts_doc()
+    doc["buy"][0]["score_rank"] = float("inf")
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(doc, allow_nan=True), encoding="utf-8")
+    read = read_us_standouts(path, now=NOW, cfg=_cfg())
+    assert len(read.nominations) == 1
+    nom = read.nominations[0]
+    assert nom.ticker == "NVDA"
+    assert isinstance(nom.source_rank, int)
+    assert not isinstance(nom.source_rank, float)
+
+
+def test_basket_block_with_nan_ret_keeps_the_nomination(tmp_path):
+    path = tmp_path / "pulse.json"
+    path.write_text(
+        json.dumps(
+            {
+                "semis": {
+                    "as_of": ASOF,
+                    "direction": {
+                        "strongest": {"ticker": "ZZTOP", "ret": float("nan")},
+                    },
+                }
+            },
+            allow_nan=True,
+        ),
+        encoding="utf-8",
+    )
+    read = read_group_pulse(path, now=NOW, cfg=_cfg())
+    assert len(read.nominations) == 1
+    assert read.nominations[0].source_value is None
+
+
+def test_ipo_row_with_nan_value_keeps_the_nomination():
+    result = read_ipo_calendar(
+        rows=[
+            {
+                "ticker": "NEWCO",
+                "status": "priced",
+                "priced_date": "2026-08-10",
+                "offer_value_usd": float("nan"),
+                "as_of": ASOF,
+            }
+        ],
+        now=NOW,
+        cfg=_cfg(),
+    )
+    assert len(result.read.nominations) == 1
+    assert result.read.nominations[0].source_value is None
+
+
+def test_board_row_with_nan_value_keeps_the_nomination(tmp_path):
+    doc = _standouts_doc()
+    doc["buy"][0]["alpha"] = float("nan")
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(doc, allow_nan=True), encoding="utf-8")
+
+    baseline = _standouts_doc()
+    baseline["buy"][0]["alpha"] = 2.31
+    base_path = tmp_path / "baseline.json"
+    base_path.write_text(json.dumps(baseline), encoding="utf-8")
+
+    nan_read = read_us_standouts(path, now=NOW, cfg=_cfg())
+    ok_read = read_us_standouts(base_path, now=NOW, cfg=_cfg())
+    assert len(nan_read.nominations) == len(ok_read.nominations) == 1
+    assert nan_read.nominations[0].source_value is None
+    assert ok_read.nominations[0].source_value == 2.31
+
+
+def test_flow_pulse_row_with_nan_rvol_keeps_the_nomination(tmp_path):
+    path = tmp_path / "flow_pulse.json"
+    path.write_text(
+        json.dumps(
+            {
+                "schema": "flow_pulse.v1",
+                "as_of": "2026-08-14T14:00:00Z",
+                "stale": False,
+                "tickers": [{"ticker": "ZZTOP", "rvol_tod": float("nan")}],
+            },
+            allow_nan=True,
+        ),
+        encoding="utf-8",
+    )
+    got = read_flow_pulse(path, now=NOW, cfg=_cfg())
+    assert len(got.read.nominations) == 1
+    assert got.read.nominations[0].source_value is None
+
+
+def test_spool_writes_a_pass_holding_a_numpy_scalar_nomination(tmp_path):
+    import numpy as np
+
+    nom = _nomination(source_value=np.float32(1.5))
+    read = ProducerRead(source_id="test:scalar", status="ok", nominations=(nom,))
+    spool = NominationSpool(local_dir=tmp_path, prefix="t")
+    bus = NominationBus(spool=spool)
+    assert bus.ingest_read(read, now=NOW) == 1
+    assert bus.spool_keys
+    blob = (tmp_path / bus.spool_keys[0]).read_text(encoding="utf-8")
+    payload = json.loads(blob, parse_constant=_reject_nonstandard_constants)
+    assert payload["nominations"][0]["source_value"] == 1.5
+
+
+def test_spool_accepts_a_pass_that_had_a_nan_row(tmp_path):
+    doc = _standouts_doc()
+    doc["buy"][0]["alpha"] = float("nan")
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(doc, allow_nan=True), encoding="utf-8")
+    read = read_us_standouts(path, now=NOW, cfg=_cfg())
+
+    spool = NominationSpool(local_dir=tmp_path, prefix="t")
+    bus = NominationBus(spool=spool)
+    assert bus.ingest_read(read, now=NOW) == 1
+    assert bus.spool_keys
+    blob = (tmp_path / bus.spool_keys[0]).read_text(encoding="utf-8")
+    json.loads(blob, parse_constant=_reject_nonstandard_constants)
+    payload = json.loads(blob)
+    assert payload["n_nominations"] == 1
+
+
+def test_finite_or_none_never_raises_on_a_huge_integer_or_a_numpy_bool():
+    import numpy as np
+
+    assert finite_or_none(10**400) is None
+    assert finite_or_none(np.bool_(True)) is None
+    assert finite_or_none(np.array([True])) is None
+    assert finite_or_none(np.array([1.0, 2.0])) is None
+    assert finite_or_none(np.int64(4)) == 4.0
+
+
+def test_nomination_refuses_an_integer_too_large_for_a_float():
+    with pytest.raises(NominationError, match="source_value"):
+        _nomination(source_value=10**400)
+
+
+def test_nomination_refuses_numpy_bool_source_value():
+    import numpy as np
+
+    with pytest.raises(NominationError, match="source_value"):
+        _nomination(source_value=np.bool_(True))
+
+
+def test_the_helper_has_one_home_in_the_contracts_module():
+    from engine.entry_radar import contracts, spool
+    from engine.entry_radar.producers import base
+
+    assert base.finite_or_none is contracts.finite_or_none
+    assert spool.finite_or_none is contracts.finite_or_none
+
+
+def test_the_spool_imports_nothing_from_the_engine_but_the_contracts_module():
+    """Other lanes import the spool, and their CI scope names contracts.py and spool.py only.
+
+    Any other engine import here — at the top or inside a function — pulls that module into
+    every one of those lanes' import closure, and their scope stops covering it.
+    """
+    import ast
+
+    tree = ast.parse((ROOT / "engine" / "entry_radar" / "spool.py").read_text(encoding="utf-8"))
+    imported = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom):
+            imported.add("." * node.level + (node.module or ""))
+        elif isinstance(node, ast.Import):
+            imported.update(alias.name for alias in node.names)
+    inside = sorted(name for name in imported if name.startswith(("engine", ".")))
+    assert inside == ["engine.entry_radar.contracts"], inside

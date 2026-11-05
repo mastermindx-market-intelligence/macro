@@ -51,11 +51,16 @@ an event signal.
 It is **not** the contract for the Bollinger Bands the Terminal draws on a chart. Those are
 **population sigma (ddof=0)**, because the Terminal publishes `ta.stdev(close, length)` to
 its own users as the indicator's definition (`terminal/lib/indicators.ts` `IND_DEFS.bb.source`,
-shown by the chart's "Source code…" button) and Pine's `ta.stdev` is population. On this
-fixture the two differ by up to 0.24% of band value — ~2,000x the tolerance below.
+shown by the chart's "Source code…" button) and the companion's qualified two-argument interpreter call uses population
+sigma. The September 18 companion report measured a difference of up to 0.24%
+of band value on this fixture — approximately 2,000x the relative tolerance above.
 
-So the Terminal calls `bollingerBands(bars, len, mult, /* ddof */ 1)` **explicitly** when
-asserting against this fixture, and its charted bands are pinned separately in
-`terminal/lib/__tests__/bollingerRenderParity.test.ts` against the published Pine source.
+Companion [Terminal PR 637](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/637)
+requests `bollingerBands(bars, len, mult, /* ddof */ 1)` **explicitly** when
+asserting against this fixture. Its candidate separately checks charted bands in
+`terminal/lib/__tests__/bollingerRenderParity.test.ts` against the published
+definition and qualified internal interpreter. That PR remained open on
+November 5, 2026 at `b9a3c2950492945300af463a9aff5d4c3d0ac298`;
+this scope note does not claim protected or deployed Terminal adoption.
 Do not "reconcile" the two by regenerating this fixture or by changing `_bb_bands()`.
 Decision of record: `DEC:TERMINAL-CHARTED-BOLLINGER-IS-POPULATION-SIGMA`.

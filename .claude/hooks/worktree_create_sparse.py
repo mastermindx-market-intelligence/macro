@@ -11,7 +11,8 @@ WHAT IT DOES
 ------------
 1. `git fetch --prune origin main`, so every session starts on fresh origin/main
    (house law: branch off fresh origin/main, never a squash-merged branch).
-2. `git worktree add --no-checkout -b worktree-<name>`.
+2. `git worktree add --no-checkout -b claude/<name>` (an existing legacy
+   `worktree-<name>` branch is attached instead — see BRANCH NAME below).
 3. Applies the sparse profile from `config/sparse_worktree.json` — every tracked
    top-level directory EXCEPT the heavy generated ones (`data/`, `site/`,
    `mockups/`, `verify_shots/`).
@@ -52,6 +53,43 @@ remains undeletable (see CLAUDE.md § Shared workspace).
 ``scripts/worktree_gc.py`` expands its repo-relative roots under every host
 checkout for the same reason — a tree the sweeper cannot see is a tree it can
 never reclaim.
+
+BRANCH NAME (2026-10-09)
+------------------------
+New trees are minted on `claude/<name>`. The hook used to mint
+`worktree-<name>`, but `.claude/hooks/ship_loop_guard.py` admits a delivery root
+only when it is a linked worktree on a `claude/*` branch
+(`_delivery_root_admission`) and files `unsafe_branch` on Stop otherwise — so
+every tree this hook planted started in a state its own guard quarantined, and
+the operator had to hand-create a `claude/*` branch before any work could ship.
+A `worktree-<name>` branch that already exists (a tree minted before the switch,
+or the legacy zsh hook's half-finished spawn) is still attached exactly as
+before: branches and worktrees are never renamed or deleted HERE. The rename is
+the ship-loop guard's job (`_adopt_native_session_branch`, 2026-10-10): it moves
+an unpublished `worktree-<name>` in `.claude/worktrees/<name>` to `claude/<name>`
+at SessionStart or the first effectful tool call — which also heals trees minted
+by a host checkout whose copy of this hook predates the switch.
+
+SSD PLACEMENT (2026-10-10)
+--------------------------
+When the host carries the Mastermind external-storage policy
+(`~/.config/mastermind/worktree-storage.json`; override
+`MASTERMIND_WORKTREE_STORAGE_POLICY`), the mint is delegated to the host helper
+`~/.local/lib/mastermind/worktree-storage/worktree_storage.py create` (override
+`MASTERMIND_WORKTREE_STORAGE_HELPER`). It plants the tree on the SSD at
+`<root>/claude/<repo-key>/<name>-<key>` on branch `claude/ssd-<name>-<key>`,
+sparse, locked and receipted — a shape `ship_loop_guard.py` admits by
+construction, and it handles `pr-<N>` itself. The user-level WorktreeCreate
+hook DEFERS to any project hook, so before this delegation every Claude tree
+launched from a macro checkout planted on internal disk despite the SSD policy,
+and a tree minted by a host checkout whose hook copy predates `claude/<name>`
+started quarantined — a blocker a Meta-CEO seat handed back to the Chairman on
+2026-10-10, the ruling that produced this section
+(`DEC:ADMIN-BLOCKERS-ARE-SELF-REMEDIED-NEVER-HANDED-TO-THE-OPERATOR`). A helper
+refusal is FINAL: the storage law forbids an internal-disk fallback, so the
+refusal and its cause are relayed to stderr and the spawn aborts. Without a
+policy file the internal mint below is unchanged. The hermetic tests point the
+policy override at a nonexistent path.
 
 IDEMPOTENT ON PURPOSE
 ---------------------
@@ -129,6 +167,27 @@ def ref_exists(repo_root: Path, ref: str) -> bool:
     """True when ``ref`` resolves in this repository."""
     return subprocess.run(
         ("git", "-C", str(repo_root), "show-ref", "--verify", "--quiet", ref),
+        capture_output=True, check=False,
+    ).returncode == 0
+
+
+def session_branch(repo_root: Path, name: str) -> str:
+    """The branch a session worktree named ``name`` lives on.
+
+    ``claude/<name>`` for a new mint — the only namespace the ship-loop guard
+    admits — unless a legacy ``worktree-<name>`` branch already exists, which is
+    kept and attached rather than renamed.
+    """
+    legacy = f"worktree-{name}"
+    if ref_exists(repo_root, f"refs/heads/{legacy}"):
+        return legacy
+    return f"claude/{name}"
+
+
+def is_valid_branch(repo_root: Path, branch: str) -> bool:
+    """True when ``branch`` is a legal branch name (``git check-ref-format``)."""
+    return subprocess.run(
+        ("git", "-C", str(repo_root), "check-ref-format", f"refs/heads/{branch}"),
         capture_output=True, check=False,
     ).returncode == 0
 
@@ -623,6 +682,73 @@ def _warn_if_reused_worktree_looks_full(dest: Path, repo_root: Path) -> None:
         pass
 
 
+STORAGE_POLICY_ENV = "MASTERMIND_WORKTREE_STORAGE_POLICY"
+STORAGE_HELPER_ENV = "MASTERMIND_WORKTREE_STORAGE_HELPER"
+DEFAULT_STORAGE_POLICY = Path.home() / ".config" / "mastermind" / "worktree-storage.json"
+DEFAULT_STORAGE_HELPER = (
+    Path.home() / ".local" / "lib" / "mastermind" / "worktree-storage" / "worktree_storage.py"
+)
+
+
+def storage_policy_path() -> Path:
+    return Path(os.environ.get(STORAGE_POLICY_ENV) or DEFAULT_STORAGE_POLICY).expanduser()
+
+
+def storage_helper_path() -> Path:
+    return Path(os.environ.get(STORAGE_HELPER_ENV) or DEFAULT_STORAGE_HELPER).expanduser()
+
+
+def delegate_to_storage_helper(payload: dict, name: str, cwd: str) -> int | None:
+    """Plant on the external SSD through the host storage helper when a policy exists.
+
+    Returns ``None`` when no host policy is installed (the internal mint below
+    continues) and an exit status otherwise. A helper refusal is FINAL: the
+    global storage law forbids falling back to internal disk when the SSD is
+    unavailable, so the refusal is relayed with its cause and the spawn aborts.
+    The helper prints the created path on its last stdout line, exactly the
+    contract this hook owes the harness.
+    """
+    policy = storage_policy_path()
+    helper = storage_helper_path()
+    if not policy.is_file():
+        return None
+    if not helper.is_file():
+        return fail(
+            f"host storage policy {policy} is installed but its helper {helper} is "
+            "missing; the SSD placement law forbids an internal-disk fallback -- "
+            "restore ~/.local/lib/mastermind/worktree-storage/ and rerun"
+        )
+    request = {"cwd": cwd, "name": name}
+    session_id = payload.get("session_id")
+    if isinstance(session_id, str) and session_id:
+        request["session_id"] = session_id
+    log(f"delegating placement to the host storage helper (policy {policy})")
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(helper), "--config", str(policy), "create"],
+            input=json.dumps(request),
+            capture_output=True,
+            text=True,
+            timeout=600,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return fail(f"host storage helper did not run: {exc}")
+    for line in proc.stderr.splitlines():
+        if line.strip():
+            print(line, file=sys.stderr)
+    lines = [ln.strip() for ln in proc.stdout.splitlines() if ln.strip()]
+    dest = lines[-1] if lines else ""
+    if proc.returncode != 0 or not dest:
+        return fail(
+            f"host storage helper refused the mint (exit {proc.returncode}); there is "
+            "no internal-disk fallback by design -- read the cause above (mount, "
+            "free space, policy, receipt), fix it, and rerun the mint yourself"
+        )
+    print(dest)
+    return 0
+
+
 def main() -> int:
     if shutil.which("git") is None:
         return fail("git is unavailable")
@@ -645,6 +771,9 @@ def main() -> int:
         toplevel = Path(git(Path(cwd), "rev-parse", "--path-format=absolute", "--show-toplevel"))
     except RuntimeError:
         return fail("cwd is not inside a git worktree")
+    delegated = delegate_to_storage_helper(payload, name, cwd)
+    if delegated is not None:
+        return delegated
     # `repo_root` is the checkout every git command below runs in AND the folder
     # the worktree is planted under. Both are satisfied by the session's own
     # host: `fetch`, `worktree add` and `worktree remove` are repo-global, so any
@@ -652,7 +781,9 @@ def main() -> int:
     repo_root = resolve_host(toplevel, common, common.parent)
     worktree_root = repo_root / ".claude" / "worktrees"
     dest = worktree_root / name
-    branch = f"worktree-{name}"
+    branch = session_branch(repo_root, name)
+    if not is_valid_branch(repo_root, branch):
+        return fail(f"worktree name does not form a valid branch: {branch}")
 
     if dest.exists():
         # A sibling wiring (the legacy zsh hook) may have created it already.

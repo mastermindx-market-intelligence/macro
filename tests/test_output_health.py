@@ -13,6 +13,7 @@ THREE OF THESE TESTS ARE MUTATION TARGETS (18/19/20 of the commission). They are
 from __future__ import annotations
 
 import ast
+import io
 import json
 import subprocess
 import sys
@@ -1169,9 +1170,13 @@ def test_22_the_resolver_imports_no_ranking_gating_or_sizing_module():
     cli_allowed = {
         "__future__", "argparse", "json", "subprocess", "sys", "datetime", "pathlib",
         "typing", "yaml", "engine.output_health", "scripts.build_intelligence_registry",
-        "scripts.freshness_sentinel",
+        "scripts.freshness_sentinel", "engine.postmortem",
     }
     assert _imported_modules(REPO / "scripts" / "build_output_health.py") <= cli_allowed
+    cli_tree = ast.parse((REPO / "scripts" / "build_output_health.py").read_text())
+    postmortem_imports = [n for n in ast.walk(cli_tree)
+                         if isinstance(n, ast.ImportFrom) and n.module == "engine.postmortem"]
+    assert [[a.name for a in n.names] for n in postmortem_imports] == [["classify_source_findings"]]
 
 
 # ---------------------------------------------------------------------------
@@ -1586,3 +1591,470 @@ def test_every_state_bearing_record_names_the_plane_that_decided_it():
             assert row["decided_by"] is None
         else:
             assert row["decided_by"] in OH.DECIDED_BY_VALUES, row
+
+
+# T5 source/data findings consume the canonical T4 view; no outcome ledger.
+def _finding_view(doc, observations):
+    return OH.resolve_output_health(synapse=doc, registry=registry_for(doc),
+                                    observations=observations, now=NOW)
+
+
+def _source_findings(view):
+    from engine.postmortem import classify_source_findings
+    return classify_source_findings(view)
+
+
+def test_source_findings_malformed_content_is_data_issue_with_blindness_preserved():
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(parse_error="content does not parse (JSONDecodeError)")})
+    result = _source_findings(view)
+    finding = next(x for x in result["observations"] if x["artifact_id"] == "b")
+    assert finding["classification"] == "data_issue"
+    assert finding["output"]["assessment_status"] == "could_not_look"
+    assert finding["output"]["state"] is None
+    assert result["evaluation_status"] == "not_assessed"
+    assert result["count_unit"] == "health_observations"
+
+
+@pytest.mark.parametrize("detail", [
+    "content is 99999999 bytes (cap 8388608) — not read", "permission denied",
+    "watermark_unreadable_format", "jsonl store has no rows", "unknown error",
+])
+def test_source_findings_parse_code_alone_does_not_prove_bad_data(detail):
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(parse_error=detail)})
+    result = _source_findings(view)
+    assert not any(x["classification"] == "data_issue" for x in result["observations"])
+    assert any(x["classification"] == "unclassified" for x in result["observations"])
+
+
+def test_source_findings_exact_stale_input_retains_both_source_clocks():
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof=OLD)})
+    result = _source_findings(view)
+    finding = next(x for x in result["observations"] if x["classification"] == "stale_feature")
+    assert (finding["artifact_id"], finding["source_artifact_id"]) == ("a", "b")
+    assert finding["reason_code"] == "required_input_stale:b"
+    assert finding["source"]["source_asof"] == OLD
+    assert finding["source"]["age_hours"] > finding["source"]["freshness_sla_hours"]
+    assert finding["output"]["source_asof"] == FRESH
+    own = [x for x in result["observations"] if x["artifact_id"] == "b"]
+    assert own and all(x["classification"] == "unclassified" for x in own)
+
+
+@pytest.mark.parametrize("change", ["upper", "missing_source", "duplicate_source", "unowned", "no_sla", "unassessed", "clock_mismatch"])
+def test_source_findings_stale_relationship_requires_exact_observed_source(change):
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof=OLD)})
+    a, b = sorted(view["outputs"], key=lambda r: r["artifact_id"])
+    if change == "upper": a["dependency_bound"] = "upper"
+    elif change == "missing_source": view["outputs"].remove(b)
+    elif change == "duplicate_source": view["outputs"].append(dict(b))
+    elif change == "unowned": b["engine_id"] = None
+    elif change == "no_sla": b["freshness_sla_hours"] = None
+    elif change == "unassessed": b["state"] = None
+    elif change == "clock_mismatch": b["observed_at"] = "2026-08-13T12:00:00+00:00"
+    result = _source_findings(view)
+    assert not any(x["classification"] == "stale_feature" for x in result["observations"])
+    assert any(x["classification"] == "unclassified" for x in result["observations"])
+
+
+def test_source_findings_healthy_empty_and_unavailable_remain_distinct():
+    assert _source_findings(_finding_view(two_artifact_estate(), {"a": obs(), "b": obs()}))["observations"] == []
+    result = _source_findings(_finding_view(two_artifact_estate(), {"a": obs(), "b": obs(exists=False)}))
+    assert result["unavailable_output_count"] == 2
+    assert result["unclassified_observation_count"] > 0
+    assert all(x["classification"] == "unclassified" for x in result["observations"])
+
+
+def test_source_findings_group_members_do_not_become_independent_trials():
+    import copy
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof=OLD)})
+    before = copy.deepcopy(view)
+    result = _source_findings(view)
+    assert view == before
+    assert sum(x["observation_count"] for x in result["groups"]) == len(result["observations"])
+    assert all(x["count_unit"] == "health_observations" for x in result["groups"])
+    assert "failure_rate" not in result
+    assert "authority" not in json.dumps(result)
+
+
+def test_source_findings_cli_uses_single_existing_build(monkeypatch, capsys):
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof=OLD)})
+    calls = []
+    def build(*args, **kwargs):
+        calls.append(kwargs)
+        return view
+    monkeypatch.setattr(CLI, "build", build)
+    assert CLI.main(["--source-findings", "--now", NOW.isoformat()]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result == _source_findings(view)
+    assert len(calls) == 1
+    assert any(x["classification"] == "stale_feature" for x in result["observations"])
+
+
+def test_source_findings_cli_rejects_summary_combination():
+    with pytest.raises(SystemExit) as exc:
+        CLI.main(["--source-findings", "--summary"])
+    assert exc.value.code == 2
+
+
+@pytest.mark.parametrize("field,value", [
+    ("source_asof", "not-a-clock"), ("source_asof", "2026-08-01T06:00:00"),
+    ("age_hours", float("inf")), ("age_hours", True),
+    ("freshness_sla_hours", float("nan")), ("freshness_sla_hours", True),
+])
+def test_source_findings_rejects_unusable_content_clock(field, value):
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof=OLD)})
+    next(r for r in view["outputs"] if r["artifact_id"] == "b")[field] = value
+    assert not any(x["classification"] == "stale_feature" for x in _source_findings(view)["observations"])
+
+
+def test_source_findings_rejects_non_timestamp_observation_epoch():
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof=OLD)})
+    view["generated"]["observed_at"] = "not-an-epoch"
+    for row in view["outputs"]: row["observed_at"] = "not-an-epoch"
+    with pytest.raises(ValueError, match="observation time"):
+        _source_findings(view)
+
+
+def test_source_findings_preserves_owner_naive_clock_coercion():
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof="2026-08-01T06:00:00")})
+    item = next(x for x in _source_findings(view)["observations"] if x["classification"] == "stale_feature")
+    assert item["source"]["source_asof"] == "2026-08-01T06:00:00"
+    assert "naive_watermark_coerced_utc" in item["source"]["reason_codes"]
+
+
+def test_source_findings_rejects_malformed_source_reason_collection():
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof="2026-08-01T06:00:00")})
+    next(r for r in view["outputs"] if r["artifact_id"] == "b")["reason_codes"] = "prefix_naive_watermark_coerced_utc_suffix"
+    assert not any(x["classification"] == "stale_feature" for x in _source_findings(view)["observations"])
+
+
+class _PrewarmBoundedPipe(io.BytesIO):
+    """Reject aggregate/unbounded reads and optionally model short pipe reads."""
+
+    def __init__(self, body, *, short_reads=False):
+        super().__init__(body)
+        self.short_reads = short_reads
+        self.read_sizes = []
+
+    def read(self, size=-1):
+        assert 0 < size <= 64 * 1024, "prewarm retained an unbounded body read"
+        self.read_sizes.append(size)
+        return super().read(min(size, 3) if self.short_reads else size)
+
+    def readline(self, size=-1):
+        assert 0 < size <= 4097, "prewarm retained unbounded protocol framing"
+        return super().readline(size)
+
+
+class _PrewarmGitProcess:
+    def __init__(self, wire, *, code=0, short_reads=False, ignore_terminate=False):
+        self.stdin = io.BytesIO()
+        self.stdout = _PrewarmBoundedPipe(wire, short_reads=short_reads)
+        self.code = code
+        self.returncode = None
+        self.terminated = False
+        self.killed = False
+        self.ignore_terminate = ignore_terminate
+
+    def poll(self):
+        return self.returncode
+
+    def wait(self, timeout=None):
+        if timeout is not None and self.ignore_terminate and not self.killed:
+            raise subprocess.TimeoutExpired("fixture git", timeout)
+        self.returncode = self.code
+        return self.code
+
+    def terminate(self):
+        self.terminated = True
+
+    def kill(self):
+        self.killed = True
+
+
+def _prewarm_blob_wire(body, kind=b"blob"):
+    return b"a" * 40 + b" " + kind + b" " + str(len(body)).encode() + b"\n" + body + b"\n"
+
+
+def _install_prewarm_process(monkeypatch, process):
+    def popen(command, **kwargs):
+        assert command == ["git", "cat-file", "--batch"]
+        assert kwargs["stdin"] == subprocess.PIPE
+        assert kwargs["stdout"] == subprocess.PIPE
+        assert kwargs["stderr"] == subprocess.DEVNULL
+        return process
+
+    def whole_capture_forbidden(*args, **kwargs):
+        raise AssertionError("whole batch capture is not a bounded prewarm")
+
+    monkeypatch.setattr(CLI.subprocess, "Popen", popen)
+    monkeypatch.setattr(CLI.subprocess, "run", whole_capture_forbidden)
+    CLI.reset_caches()
+
+
+def test_prewarm_stream_drains_oversize_without_retaining_it_and_keeps_alignment(monkeypatch, tmp_path):
+    wire = (
+        _prewarm_blob_wire(b"L" * (2 * 64 * 1024 + 7))
+        + _prewarm_blob_wire(b"one\r\ntwo\rthree\n")
+        + b"HEAD:data/c-missing missing\n"
+        + _prewarm_blob_wire(b"")
+        + _prewarm_blob_wire(b"\xff")
+        + _prewarm_blob_wire(b"tree bytes", kind=b"tree")
+    )
+    process = _PrewarmGitProcess(wire)
+    _install_prewarm_process(monkeypatch, process)
+    monkeypatch.setattr(CLI, "PREWARM_SIZE_CAP", 32)
+    rels = ["data/a-large", "data/b-small", "data/c-missing", "data/d-empty", "data/e-binary", "data/f-tree"]
+    assert CLI._prewarm_head_contents(tmp_path, rels) == 3
+    assert CLI._READ_CACHE == {
+        (str(tmp_path), "data/b-small"): ("one\ntwo\nthree\n", "git"),
+        (str(tmp_path), "data/c-missing"): (None, "absent"),
+        (str(tmp_path), "data/d-empty"): (None, "absent"),
+    }
+    assert max(process.stdout.read_sizes) == 64 * 1024
+    assert process.stdin.closed and process.stdout.closed
+    assert process.returncode == 0 and not process.terminated
+
+
+def test_prewarm_stream_handles_short_reads(monkeypatch, tmp_path):
+    process = _PrewarmGitProcess(_prewarm_blob_wire(b"abc\r\ndef\rghi"), short_reads=True)
+    _install_prewarm_process(monkeypatch, process)
+    assert CLI._prewarm_head_contents(tmp_path, ["data/small"]) == 1
+    assert CLI._READ_CACHE[(str(tmp_path), "data/small")] == ("abc\ndef\nghi", "git")
+
+
+@pytest.mark.parametrize("bad_wire", [
+    b"unterminated header",
+    b"x" * 4097 + b"\n",
+    b"not-an-oid blob 3\nabc\n",
+    b"a" * 40 + b" blob -1\n",
+    b"a" * 40 + b" blob nope\n",
+    b"a" * 40 + b" blob 5\nabc",
+    b"a" * 40 + b" blob 3\nabcX",
+    b"HEAD:different missing\n",
+])
+def test_prewarm_stream_declines_bad_framing_without_partial_cache(monkeypatch, tmp_path, bad_wire):
+    process = _PrewarmGitProcess(_prewarm_blob_wire(b"valid") + bad_wire)
+    _install_prewarm_process(monkeypatch, process)
+    sentinel = (str(tmp_path), "already-cached")
+    CLI._READ_CACHE[sentinel] = ("keep", "worktree")
+    assert CLI._prewarm_head_contents(tmp_path, ["data/a-valid", "data/b-bad"]) == 0
+    assert CLI._READ_CACHE == {sentinel: ("keep", "worktree")}
+    assert process.stdin.closed and process.stdout.closed
+    assert process.terminated and process.returncode is not None
+
+
+def test_prewarm_stream_nonzero_exit_publishes_nothing(monkeypatch, tmp_path):
+    process = _PrewarmGitProcess(_prewarm_blob_wire(b"valid"), code=1)
+    _install_prewarm_process(monkeypatch, process)
+    assert CLI._prewarm_head_contents(tmp_path, ["data/a"]) == 0
+    assert not CLI._READ_CACHE
+    assert process.returncode == 1
+    assert process.stdin.closed and process.stdout.closed
+
+
+def test_prewarm_stream_reaps_aborted_git_that_ignores_termination(monkeypatch, tmp_path):
+    process = _PrewarmGitProcess(b"bad\n", ignore_terminate=True)
+    _install_prewarm_process(monkeypatch, process)
+    assert CLI._prewarm_head_contents(tmp_path, ["data/a"]) == 0
+    assert process.terminated and process.killed and process.returncode is not None
+    assert process.stdin.closed and process.stdout.closed
+
+
+def test_prewarm_stream_real_git_preserves_the_per_path_results(monkeypatch, tmp_path):
+    root = _git_fixture_root(tmp_path)
+    bodies = {"a.json": b"L" * 129, "b.json": b"alpha\r\nbeta\rcharlie\n",
+              "empty.json": b"", "binary.json": b"\xff"}
+    for name, body in bodies.items():
+        (root / "data" / name).write_bytes(body)
+    subprocess.run(["git", "add", "-A"], cwd=root, check=True)
+    subprocess.run(["git", "-c", "user.name=t4", "-c", "user.email=t4@example.com",
+                    "commit", "-qm", "stream fixture"], cwd=root, check=True)
+    for name in bodies:
+        (root / "data" / name).unlink()
+    rels = [f"data/{name}" for name in bodies] + ["data/missing.json"]
+    CLI.reset_caches()
+    expected = {rel: CLI.read_tracked(root, Path(rel)) for rel in rels}
+    CLI.reset_caches()
+    monkeypatch.setattr(CLI, "PREWARM_SIZE_CAP", 64)
+    assert CLI._prewarm_head_contents(root, rels) == 3
+    assert (str(root), "data/a.json") not in CLI._READ_CACHE
+    assert (str(root), "data/binary.json") not in CLI._READ_CACHE
+    assert {rel: CLI.read_tracked(root, Path(rel)) for rel in rels} == expected
+
+
+@pytest.mark.parametrize("failure_at", ["launch", "write", "read"])
+def test_prewarm_stream_io_failure_leaves_cache_and_reaps_started_child(monkeypatch, tmp_path, failure_at):
+    process = _PrewarmGitProcess(_prewarm_blob_wire(b"valid"))
+    _install_prewarm_process(monkeypatch, process)
+
+    def unavailable(*args, **kwargs):
+        raise OSError("fixture I/O failure")
+
+    if failure_at == "launch":
+        monkeypatch.setattr(CLI.subprocess, "Popen", unavailable)
+    elif failure_at == "write":
+        monkeypatch.setattr(process.stdin, "write", unavailable)
+    else:
+        monkeypatch.setattr(process.stdout, "read", unavailable)
+    sentinel = (str(tmp_path), "already-cached")
+    CLI._READ_CACHE[sentinel] = ("keep", "worktree")
+    assert CLI._prewarm_head_contents(tmp_path, ["data/a"]) == 0
+    assert CLI._READ_CACHE == {sentinel: ("keep", "worktree")}
+    if failure_at != "launch":
+        assert process.stdin.closed and process.stdout.closed
+        assert process.terminated and process.returncode is not None
+
+
+class _ContentBoundedText(io.StringIO):
+    def __init__(self, text, *, failure=None, close_failure=False):
+        super().__init__(text)
+        self.failure = failure
+        self.close_failure = close_failure
+        self.read_sizes = []
+        self.consumed = 0
+
+    def read(self, size=-1):
+        assert 0 < size <= min(CLI.CONTENT_READ_CAP + 1, 64 * 1024), "unbounded artifact capture"
+        self.read_sizes.append(size)
+        if self.failure is not None and self.consumed:
+            raise self.failure
+        result = super().read(min(size, 3))  # short reads must not become EOF
+        self.consumed += len(result)
+        return result
+
+    def close(self):
+        super().close()
+        if self.close_failure:
+            self.close_failure = False
+            raise OSError("fixture close")
+
+
+def _install_content_process(monkeypatch, process):
+    def popen(command, **kwargs):
+        assert command == ["git", "show", "HEAD:data/target.json"]
+        assert kwargs["stdout"] == subprocess.PIPE
+        assert kwargs["stderr"] == subprocess.DEVNULL
+        assert kwargs["text"] is True
+        return process
+    monkeypatch.setattr(CLI.subprocess, "Popen", popen)
+    monkeypatch.setattr(CLI.subprocess, "run", lambda *a, **k: pytest.fail("whole artifact capture"))
+    CLI.reset_caches()
+
+
+def test_content_fallback_sparse_oversize_stops_before_retaining_whole_body(monkeypatch, tmp_path):
+    monkeypatch.setattr(CLI, "CONTENT_READ_CAP", 8)
+    process = _PrewarmGitProcess(b"", ignore_terminate=True)
+    process.stdout = _ContentBoundedText("x" * 100)
+    _install_content_process(monkeypatch, process)
+    result, error = CLI._content_text(tmp_path, "data/target.json")
+    assert result is None and "cap" in error
+    assert process.stdout.consumed == 9
+    assert process.stdout.closed and process.terminated and process.killed
+    assert process.returncode == 0 and not CLI._READ_CACHE
+
+
+def test_content_fallback_post_stat_growth_is_bounded_in_bytes(monkeypatch, tmp_path):
+    monkeypatch.setattr(CLI, "CONTENT_READ_CAP", 8)
+    path = tmp_path / "data/target.json"
+    path.parent.mkdir(parents=True)
+    path.write_bytes(b"x")
+    original = Path.open
+    opened = []
+    class Limited(io.BytesIO):
+        def read(self, size=-1):
+            assert 0 < size <= 9, "unbounded post-stat growth read"
+            return super().read(size)
+    def grow(candidate, mode="r", *args, **kwargs):
+        if candidate == path and "r" in mode:
+            stream = Limited(b"x" * 100)
+            opened.append(stream)
+            return stream
+        return original(candidate, mode, *args, **kwargs)
+    monkeypatch.setattr(Path, "open", grow)
+    monkeypatch.setattr(CLI.subprocess, "Popen", lambda *a, **k: pytest.fail("oversize disk must not fall back"))
+    CLI.reset_caches()
+    result, error = CLI._content_text(tmp_path, "data/target.json")
+    assert result is None and "bytes" in error and "cap" in error
+    assert len(opened) == 1 and opened[0].closed and not CLI._READ_CACHE
+
+
+def test_content_fallback_real_git_keeps_character_newline_and_missing_policies(monkeypatch, tmp_path):
+    root = _git_fixture_root(tmp_path)
+    raw = {"multibyte": ("é" * 8).encode(), "newlines": b"a\r\n" * 4,
+           "exact": b"x" * 8, "oversize": b"x" * 9, "empty": b"", "decode": b"\xff"}
+    for key, value in raw.items():
+        (root / "data" / (key + ".json")).write_bytes(value)
+    subprocess.run(["git", "add", "data"], cwd=root, check=True)
+    subprocess.run(["git", "-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "bounded artifact inputs"], cwd=root, check=True, capture_output=True)
+    for key in raw:
+        (root / "data" / (key + ".json")).unlink()
+    monkeypatch.setattr(CLI, "CONTENT_READ_CAP", 8)
+    CLI.reset_caches()
+    for key in raw:
+        text, error = CLI._content_text(root, "data/" + key + ".json")
+        if key == "oversize":
+            assert text is None and "chars" in error and "cap" in error
+        elif key in {"empty", "decode"}:
+            assert (text, error) == (None, None)
+        else:
+            assert error is None
+            assert text == raw[key].decode().replace("\r\n", "\n").replace("\r", "\n")
+        assert not CLI._READ_CACHE
+    assert CLI._content_text(root, "data/absent.json") == (None, None)
+    # Ordinary configuration transport keeps its original eager, uncapped contract.
+    assert CLI.read_tracked(root, Path("data/oversize.json")) == ("x" * 9, "git")
+
+
+@pytest.mark.parametrize("failure", ["read", "decode", "nonzero", "launch", "close"])
+def test_content_fallback_failed_git_discards_prefix_and_reaps(monkeypatch, tmp_path, failure):
+    monkeypatch.setattr(CLI, "CONTENT_READ_CAP", 8)
+    process = _PrewarmGitProcess(b"", code=1 if failure == "nonzero" else 0)
+    error = OSError("fixture read") if failure in {"read", "close"} else (UnicodeDecodeError("utf-8", b"\xff", 0, 1, "fixture") if failure == "decode" else None)
+    process.stdout = _ContentBoundedText("valid", failure=error, close_failure=failure == "close")
+    _install_content_process(monkeypatch, process)
+    if failure == "launch":
+        def fail(*a, **k): raise OSError("fixture launch")
+        monkeypatch.setattr(CLI.subprocess, "Popen", fail)
+    assert CLI._content_text(tmp_path, "data/target.json") == (None, None)
+    assert not CLI._READ_CACHE
+    if failure != "launch": assert process.stdout.closed and process.returncode is not None
+    if failure in {"read", "decode", "close"}: assert process.terminated
+
+
+def test_content_fallback_worktree_and_warmed_cache_keep_preference_and_cleanup(monkeypatch, tmp_path):
+    monkeypatch.setattr(CLI, "CONTENT_READ_CAP", 8)
+    path = tmp_path / "data/target.json"
+    path.parent.mkdir(parents=True)
+    path.write_bytes("é\r\na\r".encode())
+    monkeypatch.setattr(CLI.subprocess, "Popen", lambda *a, **k: pytest.fail("worktree/cache preference"))
+    CLI.reset_caches()
+    assert CLI._content_text(tmp_path, "data/target.json") == ("é\na\n", None)
+    path.write_bytes(("é" * 4).encode())  # exact8 disk bytes, only4 chars
+    assert CLI._content_text(tmp_path, "data/target.json") == ("é" * 4, None)
+    path.write_bytes(("é" * 4 + "a").encode())  #9 disk bytes is refused
+    key = (str(tmp_path), "data/target.json")
+    CLI._READ_CACHE[key] = ("cached", "git")
+    text, error = CLI._content_text(tmp_path, "data/target.json")
+    assert text is None and "bytes" in error and "cap" in error
+    assert key not in CLI._READ_CACHE
+    path.write_bytes(b"")
+    assert CLI._content_text(tmp_path, "data/target.json") == ("", None)
+    path.unlink()
+    for value in [("cached", "git"), (None, "absent")]:
+        key = (str(tmp_path), "data/target.json")
+        CLI._READ_CACHE[key] = value
+        assert CLI._content_text(tmp_path, "data/target.json") == (value[0], None)
+        assert key not in CLI._READ_CACHE
+
+
+def test_content_fallback_bad_worktree_still_uses_complete_head(monkeypatch, tmp_path):
+    monkeypatch.setattr(CLI, "CONTENT_READ_CAP", 8)
+    path = tmp_path / "data/target.json"
+    path.parent.mkdir(parents=True)
+    path.write_bytes(b"\xff")
+    process = _PrewarmGitProcess(b"")
+    process.stdout = _ContentBoundedText("head\n")
+    _install_content_process(monkeypatch, process)
+    assert CLI._content_text(tmp_path, "data/target.json") == ("head\n", None)
+    assert process.stdout.closed and process.returncode == 0
+    assert not CLI._READ_CACHE

@@ -15,7 +15,9 @@ Deliverable: data/edgar/statements_quarterly.parquet
           contract_liabilities (ContractWithCustomerLiabilityCurrent →
                                 ContractWithCustomerLiability → DeferredRevenueCurrent
                                 → DeferredRevenue),
-          as_of (ISO timestamp)
+          as_of (ISO timestamp),
+          period_start (date string, companyfacts duration start of the first flow
+          series; None for instant-only rows)
 
   LHB-R6 additions (2026-07-12): receivables, inventory, payables, contract_liabilities.
     receivables and inventory chains are kept tag-consistent with collectors/edgar_facts.py
@@ -52,6 +54,20 @@ USAGE
   universe and populate the new columns:
     python -m scripts.backfill_edgar_quarterly --force
 
+  ENRICHMENT MODE (FIF A44, 2026-11-01) — append-only period_start backfill:
+    python -m scripts.backfill_edgar_quarterly --enrich-period-start [--tickers T ...]
+        [--max N] [--pace 0.5] [--user-agent UA] [--dry-run]
+  Re-fetches companyfacts for the store's tickers and appends ONLY the
+  period_start column (the duration start already retained by _quarterly /
+  _statements_quarterly since P1-b).  No value, row, row order or other column
+  is refreshed: a row receives its start only when the recomputed
+  (fiscal_year, fiscal_quarter) key exists AND the recomputed period_end
+  equals the stored one as an ISO day; every other enriched row is left None
+  and tickers that are not re-fetched keep what they already carry.  This is
+  the narrow route for stores written before the producer gained period_start
+  — a full --force re-crawl would rewrite every value and add new quarters,
+  which changes inputs to other engines.
+
 DOWNSTREAM
 ----------
 Wire nothing downstream yet (§7 W0.6c: "Wire nothing downstream.").
@@ -63,6 +79,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -216,18 +233,24 @@ def _quarterly(entries: list, instant: bool = False) -> list[dict]:
 
         key = (int(fy), fq)
         rank = (filed, end)
+        # FIF P1-b (I2): retain the companyfacts duration start alongside the
+        # flow value. Instant concepts contribute no start by construction.
+        start = e.get("start") if not instant else None
         if key not in best or rank > best[key][0]:
-            best[key] = (rank, float(val), end, filed)
+            best[key] = (rank, float(val), end, filed, start)
 
     result = []
-    for (fy, fq), (_, val, end, filed) in sorted(best.items()):
-        result.append({"fy": fy, "fq": fq, "period_end": end, "filed": filed, "val": val})
+    for (fy, fq), (_, val, end, filed, start) in sorted(best.items()):
+        result.append({
+            "fy": fy, "fq": fq, "period_end": end, "filed": filed,
+            "period_start": start, "val": val,
+        })
     return result
 
 
 def _concept_q(usgaap: dict, names: list[str], unit: str = "USD",
                instant: bool = False) -> dict[tuple, dict]:
-    """Merge fallback chain → {(fy, fq): {val, period_end, filed}}."""
+    """Merge fallback chain → {(fy, fq): {val, period_end, filed, period_start}}."""
     combined: dict[tuple, dict] = {}
     for nm in names:
         node = usgaap.get(nm)
@@ -240,14 +263,15 @@ def _concept_q(usgaap: dict, names: list[str], unit: str = "USD",
             key = (rec["fy"], rec["fq"])
             combined.setdefault(key, {"val": rec["val"],
                                       "period_end": rec["period_end"],
-                                      "filed": rec["filed"]})
+                                      "filed": rec["filed"],
+                                      "period_start": rec.get("period_start")})
     return combined
 
 
-def _statements_quarterly(cik: int, ua: str) -> list[dict]:
-    """Per-fiscal-quarter rows for one filer."""
+def _statements_quarterly(cik: int, ua: str, pace_s: float = PACE_S) -> list[dict]:
+    """Per-fiscal-quarter rows for one filer (pace_s: post-fetch sleep)."""
     data = _get_json(FACTS_URL.format(cik), ua)
-    time.sleep(PACE_S)
+    time.sleep(pace_s)
     if not data:
         return []
     usgaap = (data.get("facts") or {}).get("us-gaap") or {}
@@ -274,10 +298,16 @@ def _statements_quarterly(cik: int, ua: str) -> list[dict]:
         all_keys.update(s.keys())
 
     rows = []
+    # FIF P1-b (I2): the row's period_start is the retained companyfacts
+    # duration start of the flow series consulted in the existing iteration
+    # order — first non-null wins. Instant-only rows keep None; nothing is
+    # ever derived from a fiscal calendar.
+    flow_keys = frozenset(FLOW_Q) | frozenset(REPURCHASE_Q)
     for (fy, fq) in sorted(all_keys):
         row: dict = {"fiscal_year": fy, "fiscal_quarter": fq}
         period_end = None
         filed = None
+        period_start = None
         for key, s in series.items():
             entry = s.get((fy, fq))
             if entry:
@@ -286,6 +316,10 @@ def _statements_quarterly(cik: int, ua: str) -> list[dict]:
                     period_end = entry["period_end"]
                 if filed is None:
                     filed = entry["filed"]
+                if period_start is None and key in flow_keys:
+                    start = entry.get("period_start")
+                    if start:
+                        period_start = start
             else:
                 row[key] = None
         # Derive missing combos
@@ -303,6 +337,7 @@ def _statements_quarterly(cik: int, ua: str) -> list[dict]:
             row["net_debt"] = (ltd or 0.0) + (cur or 0.0) - (csh or 0.0)
         row["period_end"] = period_end
         row["filed"] = filed
+        row["period_start"] = period_start
         rows.append(row)
     return rows
 
@@ -450,6 +485,130 @@ def run(
     }
 
 
+def enrich_period_start(
+    *,
+    store: Path | None = None,
+    tickers: list[str] | None = None,
+    max_tickers: int | None = None,
+    pace_s: float = 0.5,
+    ua: str | None = None,
+    dry_run: bool = False,
+) -> dict:
+    """Append the companyfacts duration start to the existing quarterly store.
+
+    FIF A44 exact-start binding — append-only, NO value refresh.  For each of
+    the store's distinct tickers (sorted; filtered by `tickers`, truncated by
+    `max_tickers`) the companyfacts view is re-fetched and a stored row
+    receives `period_start` (10-char ISO day, Python str) only when the
+    recomputed (fiscal_year, fiscal_quarter) key exists AND the recomputed
+    period_end equals the stored period_end as an ISO day (`str(x)[:10]` on
+    both sides).  Every other enriched row is None; tickers that are not
+    re-fetched (no CIK, fetch failure, filtered out) keep what they already
+    carry.  No row is added, dropped, deduplicated or re-sorted, and no other
+    column is touched.  A store that already carries period_start is only
+    overwritten on the rows of fetched tickers (idempotent rerun).
+
+    pace_s enforces the SEC fair-access floor (≤ 2 requests/s): values below
+    0.5 raise ValueError before any fetch.
+    """
+    if pace_s < 0.5:
+        raise ValueError(
+            f"pace_s={pace_s} is below the 0.5 s SEC fair-access floor")
+    if ua is None:
+        ua = config.load().get("edgar", {}).get("user_agent",
+                                               "macro-dashboard-research bot@example.com")
+    store_p = Path(store) if store is not None else _out_path()
+    if not store_p.exists():
+        return {"error": "no_store"}
+    df = pd.read_parquet(store_p)
+    if df.empty or "ticker" not in df.columns:
+        return {"error": "no_store"}
+
+    universe = sorted(str(t) for t in df["ticker"].unique())
+    if tickers is not None:
+        wanted = {str(t) for t in tickers}
+        universe = [t for t in universe if t in wanted]
+    if max_tickers:
+        universe = universe[:max_tickers]
+
+    cik_map = _cik_map()
+    counts: dict = {
+        "tickers_seen": len(universe),
+        "fetched": 0,
+        "no_cik": 0,
+        "fetch_failed": 0,
+        "rows_with_start": 0,
+        "rows_end_mismatch": 0,
+        "rows_key_missing": 0,
+        "rows_no_start": 0,
+    }
+
+    # Ticker by ticker: {ticker: {(fy, fq): (period_end, period_start)}}
+    fetched: dict[str, dict[tuple, tuple]] = {}
+    for ticker in universe:
+        cik = cik_map.get(ticker)
+        if cik is None:
+            counts["no_cik"] += 1
+            log.debug("edgar_quarterly: no CIK for %s", ticker)
+            continue
+        rows = _statements_quarterly(cik, ua, pace_s=pace_s)
+        if not rows:
+            counts["fetch_failed"] += 1
+            log.debug("edgar_quarterly: no data for %s", ticker)
+            continue
+        counts["fetched"] += 1
+        fetched[ticker] = {
+            (int(r["fiscal_year"]), int(r["fiscal_quarter"])):
+                (r["period_end"], r["period_start"])
+            for r in rows
+        }
+
+    if "period_start" not in df.columns:
+        df["period_start"] = pd.Series([None] * len(df), index=df.index,
+                                       dtype="object")
+    starts = list(df["period_start"])
+    tick_col = df["ticker"].tolist()
+    fy_col = df["fiscal_year"].tolist()
+    fq_col = df["fiscal_quarter"].tolist()
+    pe_col = df["period_end"].tolist()
+    for i in range(len(df)):
+        view = fetched.get(str(tick_col[i]))
+        if view is None:
+            continue
+        key = (int(fy_col[i]), int(fq_col[i]))
+        if key not in view:
+            counts["rows_key_missing"] += 1
+            starts[i] = None
+            continue
+        end_r, start_r = view[key]
+        if str(end_r)[:10] != str(pe_col[i])[:10]:
+            counts["rows_end_mismatch"] += 1
+            starts[i] = None
+            continue
+        s = str(start_r)[:10] if isinstance(start_r, str) and start_r else None
+        if s and re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
+            starts[i] = s
+            counts["rows_with_start"] += 1
+        else:
+            counts["rows_no_start"] += 1
+            starts[i] = None
+    df["period_start"] = pd.Series(starts, index=df.index, dtype="object")
+
+    counts["rows"] = len(df)
+    counts["store"] = str(store_p)
+    counts["dry_run"] = dry_run
+    if not dry_run:
+        df.to_parquet(store_p, index=False)
+        log.info("edgar_quarterly: enriched period_start on %d/%d rows "
+                 "(%d fetched tickers) → %s",
+                 counts["rows_with_start"], len(df), counts["fetched"], store_p)
+    else:
+        log.info("edgar_quarterly: dry-run — %d/%d rows would carry period_start "
+                 "(%d fetched tickers)", counts["rows_with_start"], len(df),
+                 counts["fetched"])
+    return counts
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--max", type=int, default=None,
@@ -460,7 +619,31 @@ def main() -> int:
                     help="restrict to specific ticker(s)")
     ap.add_argument("--estimate", action="store_true",
                     help="print projected completion time without fetching")
+    ap.add_argument("--enrich-period-start", action="store_true",
+                    help="append companyfacts period_start to the existing store "
+                         "(append-only; no value refresh)")
+    ap.add_argument("--pace", type=float, default=0.5,
+                    help="seconds between companyfacts fetches (enrichment only; "
+                         "minimum 0.5 per SEC fair access)")
+    ap.add_argument("--user-agent", dest="user_agent", default=None,
+                    help="User-Agent for enrichment (default: config edgar.user_agent)")
+    ap.add_argument("--dry-run", dest="dry_run", action="store_true",
+                    help="compute the period_start enrichment but do not write the store")
     args = ap.parse_args()
+
+    if args.enrich_period_start:
+        if args.force or args.estimate:
+            log.error("--enrich-period-start is append-only and cannot be "
+                      "combined with --force or --estimate")
+            return 2
+        result = enrich_period_start(tickers=args.tickers,
+                                     max_tickers=args.max,
+                                     pace_s=args.pace,
+                                     ua=args.user_agent,
+                                     dry_run=args.dry_run)
+        import json
+        print(json.dumps(result, indent=2))
+        return 0 if "error" not in result else 1
 
     if args.estimate:
         cik_map = _cik_map()

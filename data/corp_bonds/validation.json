@@ -1,61 +1,64 @@
 {
-  "as_of": "2026-09-10",
+  "as_of": "2026-11-03",
   "price_convention": "clean",
   "criteria": {
     "a": {
       "status": "PASS",
       "probe1": {
         "verdict": "clean",
-        "tiebreak_fired": false,
-        "slope": -0.1483,
-        "hc1_se": 0.0235,
+        "tiebreak_fired": true,
+        "slope": -0.4064,
+        "hc1_se": 0.0509,
         "n_joined": 1749,
-        "median_diff": -1.218,
-        "median_accrued": 1.1619,
-        "median_resid": -2.4134,
-        "tiebreak_dirty_median_bp": null,
-        "tiebreak_clean_median_bp": null,
-        "date_gap_days": 57,
+        "median_diff": -2.216,
+        "median_accrued": 0.94,
+        "median_resid": -3.2814,
+        "tiebreak_dirty_median_bp": 50.98,
+        "tiebreak_clean_median_bp": 35.63,
+        "date_gap_days": 112,
         "note": "verdict keys on slope because level diffs (median_diff) absorb the date-gap market move; median_resid = diff - accrued"
       },
       "probe2": {
-        "accrued_coefficient": -0.0234,
+        "accrued_coefficient": 0.1252,
         "hc1_95ci": [
-          -0.0446,
-          -0.0021
+          0.1092,
+          0.1412
         ],
-        "n": 291340,
+        "n": 510195,
         "detail": "cross-sectional OLS of price_dirty_raw on [1, coupon, tenor, coupon*tenor, accrued]"
       }
     },
     "b": {
+      "_fail_detail": {
+        "LQD": "median_bp=53.29 > 25.0"
+      },
       "LQD": {
-        "status": "PASS",
+        "status": "FAIL",
         "n": 20,
         "n_joined": 1758,
-        "median_bp": 17.29,
-        "p90_bp": 29.73,
-        "share_within_25bp": 0.75,
+        "median_bp": 53.29,
+        "p90_bp": 138.43,
+        "share_within_25bp": 0.0,
         "bins_occupied": 5,
-        "date_gap_days": 57,
+        "date_gap_days": 112,
         "gating": true
       },
       "HYG": {
         "status": "PASS",
         "n": 20,
-        "n_joined": 553,
-        "median_bp": 14.41,
-        "p90_bp": 142.67,
-        "share_within_25bp": 0.55,
+        "n_joined": 534,
+        "median_bp": 44.08,
+        "p90_bp": 192.16,
+        "share_within_25bp": 0.1,
         "bins_occupied": 5,
-        "date_gap_days": 57,
+        "date_gap_days": 112,
         "gating": false
       },
-      "status": "PASS"
+      "status": "FAIL"
     },
     "c": {
       "status": "PASS",
-      "latest_diff_bp": 18.58,
+      "latest_diff_bp": 20.15,
       "overlaps": [
         {
           "as_of": "2026-07-10",
@@ -266,6 +269,162 @@
           "g_spread_bp_pw": 62.42,
           "baml_oas_bp": 81.0,
           "diff_bp": 18.58
+        },
+        {
+          "as_of": "2026-09-09",
+          "g_spread_bp_pw": 61.67,
+          "baml_oas_bp": 81.0,
+          "diff_bp": 19.33
+        },
+        {
+          "as_of": "2026-09-10",
+          "g_spread_bp_pw": 61.08,
+          "baml_oas_bp": 80.0,
+          "diff_bp": 18.92
+        },
+        {
+          "as_of": "2026-09-11",
+          "g_spread_bp_pw": 59.46,
+          "baml_oas_bp": 80.0,
+          "diff_bp": 20.54
+        },
+        {
+          "as_of": "2026-09-14",
+          "g_spread_bp_pw": 58.09,
+          "baml_oas_bp": 80.0,
+          "diff_bp": 21.91
+        },
+        {
+          "as_of": "2026-09-15",
+          "g_spread_bp_pw": 61.1,
+          "baml_oas_bp": 80.0,
+          "diff_bp": 18.9
+        },
+        {
+          "as_of": "2026-09-16",
+          "g_spread_bp_pw": 57.96,
+          "baml_oas_bp": 78.0,
+          "diff_bp": 20.04
+        },
+        {
+          "as_of": "2026-09-17",
+          "g_spread_bp_pw": 58.29,
+          "baml_oas_bp": 78.0,
+          "diff_bp": 19.71
+        },
+        {
+          "as_of": "2026-09-18",
+          "g_spread_bp_pw": 57.61,
+          "baml_oas_bp": 77.0,
+          "diff_bp": 19.39
+        },
+        {
+          "as_of": "2026-09-21",
+          "g_spread_bp_pw": 56.69,
+          "baml_oas_bp": 77.0,
+          "diff_bp": 20.31
+        },
+        {
+          "as_of": "2026-09-22",
+          "g_spread_bp_pw": 58.04,
+          "baml_oas_bp": 77.0,
+          "diff_bp": 18.96
+        },
+        {
+          "as_of": "2026-09-24",
+          "g_spread_bp_pw": 60.19,
+          "baml_oas_bp": 79.0,
+          "diff_bp": 18.81
+        },
+        {
+          "as_of": "2026-09-29",
+          "g_spread_bp_pw": 62.45,
+          "baml_oas_bp": 84.0,
+          "diff_bp": 21.55
+        },
+        {
+          "as_of": "2026-09-30",
+          "g_spread_bp_pw": 58.5,
+          "baml_oas_bp": 84.0,
+          "diff_bp": 25.5
+        },
+        {
+          "as_of": "2026-10-01",
+          "g_spread_bp_pw": 63.71,
+          "baml_oas_bp": 86.0,
+          "diff_bp": 22.29
+        },
+        {
+          "as_of": "2026-10-02",
+          "g_spread_bp_pw": 62.57,
+          "baml_oas_bp": 85.0,
+          "diff_bp": 22.43
+        },
+        {
+          "as_of": "2026-10-05",
+          "g_spread_bp_pw": 60.77,
+          "baml_oas_bp": 84.0,
+          "diff_bp": 23.23
+        },
+        {
+          "as_of": "2026-10-06",
+          "g_spread_bp_pw": 63.94,
+          "baml_oas_bp": 83.0,
+          "diff_bp": 19.06
+        },
+        {
+          "as_of": "2026-10-07",
+          "g_spread_bp_pw": 62.9,
+          "baml_oas_bp": 82.0,
+          "diff_bp": 19.1
+        },
+        {
+          "as_of": "2026-10-13",
+          "g_spread_bp_pw": 64.26,
+          "baml_oas_bp": 83.0,
+          "diff_bp": 18.74
+        },
+        {
+          "as_of": "2026-10-19",
+          "g_spread_bp_pw": 67.36,
+          "baml_oas_bp": 87.0,
+          "diff_bp": 19.64
+        },
+        {
+          "as_of": "2026-10-20",
+          "g_spread_bp_pw": 68.27,
+          "baml_oas_bp": 87.0,
+          "diff_bp": 18.73
+        },
+        {
+          "as_of": "2026-10-21",
+          "g_spread_bp_pw": 67.77,
+          "baml_oas_bp": 88.0,
+          "diff_bp": 20.23
+        },
+        {
+          "as_of": "2026-10-22",
+          "g_spread_bp_pw": 70.73,
+          "baml_oas_bp": 89.0,
+          "diff_bp": 18.27
+        },
+        {
+          "as_of": "2026-10-29",
+          "g_spread_bp_pw": 72.13,
+          "baml_oas_bp": 89.0,
+          "diff_bp": 16.87
+        },
+        {
+          "as_of": "2026-10-30",
+          "g_spread_bp_pw": 72.39,
+          "baml_oas_bp": 94.0,
+          "diff_bp": 21.61
+        },
+        {
+          "as_of": "2026-11-02",
+          "g_spread_bp_pw": 73.85,
+          "baml_oas_bp": 94.0,
+          "diff_bp": 20.15
         }
       ],
       "threshold_bp": 30.0
@@ -300,17 +459,17 @@
       }
     }
   },
-  "overall": "PASS",
+  "overall": "FAIL",
   "sample_metadata": {
     "LQD": {
       "as_of": "2026-07-13",
       "n_rows": 3132,
-      "date_gap_days": 57
+      "date_gap_days": 112
     },
     "HYG": {
       "as_of": "2026-07-13",
       "n_rows": 1323,
-      "date_gap_days": 57
+      "date_gap_days": 112
     }
   },
   "notes": [

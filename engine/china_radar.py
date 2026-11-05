@@ -82,10 +82,13 @@ def _sig_credit_impulse():
         cur = float(impulse.iloc[-1])
         sd = float(impulse.tail(36).std(ddof=0))
         strength = min(1.0, abs(cur) / (2 * sd)) if sd > 1e-9 else 0.4
+        last = impulse.index[-1]
+        asof = str(last.date()) if hasattr(last, "date") else None   # never fabricate a date
         return {"value": round(cur * 100, 1), "dir": 1 if cur > 0 else (-1 if cur < 0 else 0),
                 "strength": round(strength, 2),
                 "detail_en": f"TSF impulse {cur*100:+.1f}% (6m chg of 12m sum)",
-                "detail_zh": f"社融脉冲 {cur*100:+.1f}%（12月滚动和的6月变化）"}
+                "detail_zh": f"社融脉冲 {cur*100:+.1f}%（12月滚动和的6月变化）",
+                **({"data_asof": asof} if asof else {})}
     except Exception:  # noqa: BLE001
         return None
 
@@ -96,8 +99,11 @@ def _sig_pboc_easing():
         lpr = store.read("china_macro", "lpr_rate")
         rrr = store.read("china_macro", "rrr")
         lpr_chg = 0.0
+        legs: list = []          # last index of each series actually read (ISO date strings)
         if lpr is not None and "lpr_1y" in lpr.columns:
             s = lpr["lpr_1y"].dropna()
+            if len(s) and hasattr(s.index[-1], "date"):
+                legs.append(str(s.index[-1].date()))
             cutoff = s.index.max() - pd.Timedelta(days=365)
             past = s[s.index <= cutoff]
             if not past.empty:
@@ -105,14 +111,18 @@ def _sig_pboc_easing():
         rrr_chg = 0.0
         if rrr is not None and "rrr_change" in rrr.columns:
             r = rrr["rrr_change"].dropna()
+            if len(r) and hasattr(r.index[-1], "date"):
+                legs.append(str(r.index[-1].date()))
             cutoff = r.index.max() - pd.Timedelta(days=365)
             rrr_chg = float(r[r.index >= cutoff].sum())
         easing = -(lpr_chg * 100) - (rrr_chg * 20)   # bp + RRR-pp scaled; >0 = easing
         strength = min(1.0, abs(easing) / 40.0)
+        asof = max(legs) if legs else None      # the NEWEST leg read; None when neither was
         return {"value": round(easing, 1), "dir": 1 if easing > 1 else (-1 if easing < -1 else 0),
                 "strength": round(strength, 2),
                 "detail_en": f"12m easing score {easing:+.0f} (LPR {lpr_chg*100:+.0f}bp, RRR {rrr_chg:+.2f}pp)",
-                "detail_zh": f"12月宽松分 {easing:+.0f}（LPR {lpr_chg*100:+.0f}基点，准备金 {rrr_chg:+.2f}pp）"}
+                "detail_zh": f"12月宽松分 {easing:+.0f}（LPR {lpr_chg*100:+.0f}基点，准备金 {rrr_chg:+.2f}pp）",
+                **({"data_asof": asof} if asof else {})}
     except Exception:  # noqa: BLE001
         return None
 
@@ -131,9 +141,12 @@ def _sig_pmi():
         above = cur - 50.0
         strength = min(1.0, (abs(above) + abs(chg3)) / 2.0)
         d = 1 if (above > 0 and chg3 >= 0) else (-1 if (above < 0 and chg3 <= 0) else (1 if chg3 > 0 else -1))
+        last = s.index[-1]
+        asof = str(last.date()) if hasattr(last, "date") else None   # never fabricate a date
         return {"value": round(cur, 1), "dir": d, "strength": round(strength, 2),
                 "detail_en": f"Mfg PMI {cur:.1f} ({chg3:+.1f} 3m)",
-                "detail_zh": f"制造业PMI {cur:.1f}（3月{chg3:+.1f}）"}
+                "detail_zh": f"制造业PMI {cur:.1f}（3月{chg3:+.1f}）",
+                **({"data_asof": asof} if asof else {})}
     except Exception:  # noqa: BLE001
         return None
 
@@ -158,10 +171,13 @@ def _sig_ppi():
         cur = float(s.iloc[-1])
         chg3 = float(s.iloc[-1] - s.iloc[-4])
         strength = min(1.0, abs(chg3) / 2.0)
+        last = s.index[-1]
+        asof = str(last.date()) if hasattr(last, "date") else None   # never fabricate a date
         return {"value": round(cur, 1), "dir": 1 if chg3 > 0 else (-1 if chg3 < 0 else 0),
                 "strength": round(strength, 2),
                 "detail_en": f"PPI YoY {cur:+.1f}% ({chg3:+.1f} 3m, reflation tilt)",
-                "detail_zh": f"PPI同比 {cur:+.1f}%（3月{chg3:+.1f}，再通胀倾向）"}
+                "detail_zh": f"PPI同比 {cur:+.1f}%（3月{chg3:+.1f}，再通胀倾向）",
+                **({"data_asof": asof} if asof else {})}
     except Exception:  # noqa: BLE001
         return None
 
@@ -179,11 +195,14 @@ def _sig_southbound():
         cur = float(flow20.iloc[-1])
         mu, sd = float(flow20.tail(252).mean()), float(flow20.tail(252).std(ddof=0))
         z = _winz((cur - mu) / sd) if sd > 1e-9 else 0.0
+        last = s.index[-1]
+        asof = str(last.date()) if hasattr(last, "date") else None   # never fabricate a date
         return {"value": round(cur / 1e8, 1) if abs(cur) > 1e6 else round(cur, 1),
                 "dir": 1 if z > 0.3 else (-1 if z < -0.3 else 0),
                 "strength": round(min(1.0, abs(z) / 2.0), 2),
                 "detail_en": f"Southbound 20d flow z {z:+.2f}",
-                "detail_zh": f"南向20日净流入 z {z:+.2f}"}
+                "detail_zh": f"南向20日净流入 z {z:+.2f}",
+                **({"data_asof": asof} if asof else {})}
     except Exception:  # noqa: BLE001
         return None
 
@@ -210,16 +229,38 @@ def _sector_flow_boards():
     return out
 
 
-def _sector_flow_signal(board: str, boards: dict):
+def _sector_flow_signal(board: str, boards: dict, asof: str | None = None):
     """signal-A from a sector's own 东财 net-flow rate (daily). Deadbanded so a small move stays
-    silent. None when the board is absent."""
+    silent. None when the board is absent. `asof` = the snapshot's own trade date (optional)."""
     rate = boards.get(board)
     if rate is None:
         return None
     d = 1 if rate > 1.0 else (-1 if rate < -1.0 else 0)
     return {"value": round(rate, 2), "dir": d, "strength": round(min(1.0, abs(rate) / 3.0), 2),
             "detail_en": f"Sector net-flow {rate:+.1f}% (东财 board, daily)",
-            "detail_zh": f"板块净流入 {rate:+.1f}%（东财行业板块，当日）"}
+            "detail_zh": f"板块净流入 {rate:+.1f}%（东财行业板块，当日）",
+            **({"data_asof": asof} if isinstance(asof, str) and asof else {})}
+
+
+def _sector_flow_asof() -> str | None:
+    """Snapshot date (YYYY-MM-DD) of the 东财 sector moneyflow parquet, else None.
+
+    Reads ONLY the trade_date column of the same snapshot `_sector_flow_boards()` uses, so a
+    sector-flow reading can carry its own date. Never fabricates: any failure/absence → None."""
+    try:
+        import pandas as pd
+        from lib import config
+        p = config.data_dir() / "tushare" / "moneyflow_sector.parquet"
+        if not p.exists():
+            return None
+        s = pd.read_parquet(p, columns=["trade_date"])["trade_date"].dropna()
+        if s.empty:
+            return None
+        ts = pd.to_datetime(str(s.max()), errors="coerce")
+        return None if pd.isna(ts) else str(ts.date())
+    except Exception as e:  # noqa: BLE001
+        log.debug("china_radar sector-flow asof failed (%s)", e)
+        return None
 
 
 # Sector ETF → 东财 industry board (exact name) for the sector-flow radar pairs. Reuses the radar's
@@ -695,6 +736,7 @@ def _build_row(cv, key, sen, szh, etf, sec_en, sec_zh, sig, thesis,
         "signal_value": sig.get("value"), "signal_dir": sig.get("dir"),
         "signal_detail_en": sig.get("detail_en"), "signal_detail_zh": sig.get("detail_zh"),
         "price_rs": rs_pct, "price_rs_z": rs_z,
+        **({"data_asof": sig.get("data_asof")} if sig.get("data_asof") else {}),
         "reliability": {"hit_rate": hr, "n_resolved": int(n_res), "basis": basis},
         "candidates": _candidates(etf, sign, conv_map) if sign != "in_line" else [],
         "thesis": thesis, "hypothesis_en": hyp_en, "hypothesis_zh": hyp_zh,
@@ -829,8 +871,9 @@ def scan(asof: date | str | None = None) -> dict | None:
         # sector-flow pairs (GATED Tushare): each sector's OWN 东财 net-flow vs its price RS.
         # Absent without a token / cache → simply no sector-flow rows.
         boards = _sector_flow_boards()
+        flow_asof = _sector_flow_asof() if boards else None
         for etf, sec_en, sec_zh, board in _SECTOR_FLOW_MAP:
-            sig = _sector_flow_signal(board, boards)
+            sig = _sector_flow_signal(board, boards, asof=flow_asof)
             if sig is None:
                 continue
             rows.append(_build_row(cv, "sector_flow", "Sector net-flow", "板块净流入",

@@ -1,0 +1,45 @@
+diff --git a/scripts/build_crypto.py b/scripts/build_crypto.py
+--- a/scripts/build_crypto.py
++++ b/scripts/build_crypto.py
+@@ -109,6 +109,9 @@ def _state_zh(state: str) -> str:
+         "Alt participation broad": "山寨参与广泛",
+         "Bitcoin-led": "比特币主导",
+         "Mixed participation": "参与度混合",
++        "ETH leading on relative trend": "相对趋势上以太坊领先",
++        "BTC leading on relative trend": "相对趋势上比特币领先",
++        "Mixed relative trend": "相对趋势混合",
+         "Broad": "广泛",
+         "Narrow": "狭窄",
+         "Mixed": "混合",
+@@ -510,10 +513,20 @@ def build(site_dir: Path | None = None) -> Path:
+             "dominance_state": market.get("dominance_state"),
+             "fear_state": market.get("fear_state"),
+             "breadth_state": breadth.get("state"),
++            "cap_move": (market.get("cap_attribution") or {}).get("kind"),
++            "cap_splices": (market.get("cap_basis") or {}).get("splices") or [],
+         },
+         "flows": {
+             key: value.get("state") for key, value in (market.get("flows") or {}).items()
+         },
++        "flow_kinds": {
++            key: {
++                "kind": value.get("kind"),
++                "observation": value.get("observation"),
++                "expected_cadence": value.get("expected_cadence"),
++            }
++            for key, value in (market.get("flows") or {}).items()
++        },
+         "heat": {
+             key: value.get("state") for key, value in (market.get("heat") or {}).items()
+         },
+@@ -550,8 +563,8 @@ def build(site_dir: Path | None = None) -> Path:
+         height=218,
+         accent="var(--crypto)",
+         value_fmt="${:,.2f}T",
+-        aria_en="Derived total crypto market cap with descriptive class-regime bands",
+-        aria_zh="衍生加密总市值及描述性市场阶段",
++        aria_en="Total crypto market capitalization. Regime bands skip a basis-splice level gap.",
++        aria_zh="加密总市值。阶段带不计口径切换造成的水平跳变。",
+     )
+     for flow in market["flows"].values():
+         flow["state_zh"] = _state_zh(flow["state"])

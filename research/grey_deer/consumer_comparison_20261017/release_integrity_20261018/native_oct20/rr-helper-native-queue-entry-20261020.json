@@ -1,0 +1,107 @@
+{
+  "started_at": "2026-10-20T03:29:21.375577+00:00",
+  "head": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+  "pr": 1610,
+  "repository": "mastermindx-market-intelligence/Mastermind",
+  "steps": [
+    {
+      "command": [
+        "gh",
+        "pr",
+        "view",
+        "1610",
+        "--repo",
+        "mastermindx-market-intelligence/Mastermind",
+        "--json",
+        "headRefOid,state,isDraft,autoMergeRequest"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"autoMergeRequest\":null,\"headRefOid\":\"7b5ccfffef4e90b89496751dd7bc0f55b711ed25\",\"isDraft\":true,\"state\":\"OPEN\"}\n",
+      "stderr": "",
+      "completed_at": "2026-10-20T03:29:21.876228+00:00"
+    },
+    {
+      "command": [
+        "gh",
+        "pr",
+        "ready",
+        "1610",
+        "--repo",
+        "mastermindx-market-intelligence/Mastermind"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "\u2713 Pull request mastermindx-market-intelligence/Mastermind#1610 is marked as \"ready for review\"\n",
+      "completed_at": "2026-10-20T03:29:23.051200+00:00"
+    },
+    {
+      "command": [
+        "gh",
+        "pr",
+        "view",
+        "1610",
+        "--repo",
+        "mastermindx-market-intelligence/Mastermind",
+        "--json",
+        "headRefOid,state,isDraft"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"headRefOid\":\"7b5ccfffef4e90b89496751dd7bc0f55b711ed25\",\"isDraft\":false,\"state\":\"OPEN\"}\n",
+      "stderr": "",
+      "completed_at": "2026-10-20T03:29:23.572544+00:00"
+    },
+    {
+      "command": [
+        "gh",
+        "pr",
+        "merge",
+        "1610",
+        "--repo",
+        "mastermindx-market-intelligence/Mastermind",
+        "--squash",
+        "--match-head-commit",
+        "7b5ccfffef4e90b89496751dd7bc0f55b711ed25"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "! The merge strategy for master is set by the merge queue\n",
+      "completed_at": "2026-10-20T03:29:26.081223+00:00"
+    },
+    {
+      "command": [
+        "gh",
+        "api",
+        "graphql",
+        "-f",
+        "query=query { repository(owner:\"mastermindx-market-intelligence\", name:\"Mastermind\") { pullRequest(number:1610) { number state isDraft headRefOid mergedAt mergeCommit { oid } autoMergeRequest { enabledAt } mergeQueueEntry { id state position } } } }"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"data\":{\"repository\":{\"pullRequest\":{\"number\":1610,\"state\":\"OPEN\",\"isDraft\":false,\"headRefOid\":\"7b5ccfffef4e90b89496751dd7bc0f55b711ed25\",\"mergedAt\":null,\"mergeCommit\":null,\"autoMergeRequest\":null,\"mergeQueueEntry\":{\"id\":\"MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA\",\"state\":\"QUEUED\",\"position\":3}}}}}",
+      "stderr": "",
+      "completed_at": "2026-10-20T03:29:26.581601+00:00"
+    }
+  ],
+  "production_action": false,
+  "after": {
+    "data": {
+      "repository": {
+        "pullRequest": {
+          "number": 1610,
+          "state": "OPEN",
+          "isDraft": false,
+          "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+          "mergedAt": null,
+          "mergeCommit": null,
+          "autoMergeRequest": null,
+          "mergeQueueEntry": {
+            "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+            "state": "QUEUED",
+            "position": 3
+          }
+        }
+      }
+    }
+  },
+  "status": "NATIVE_MERGE_REQUEST_RETURNED",
+  "completed_at": "2026-10-20T03:29:26.582524+00:00"
+}

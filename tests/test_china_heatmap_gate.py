@@ -23,7 +23,7 @@ So the conversion is a CONTENT build, and this module guards both halves:
 
 Runs in the `unrun-page-guards` CI job (full venv: the engine imports pandas).
 The Caddy↔policy byte-equality half is pinned by tests/test_site_access_boundary.py
-and the wall mirror by tests/test_regwall.py, both in `tier-gate`.
+and the wall mirror by tests/test_regwall.py, in their own CI jobs beside `tier-gate`.
 
 Spec: research/seo_supercharge/W2_HEATMAP_ETFS_PREVIEW_SPEC.md Part A + §R.
 """
@@ -220,6 +220,223 @@ def test_summary_mirrors_the_js_arithmetic():
     assert [r["code"] for r in b["gainers"]] == [r["code"] for r in s["gainers"]]
 
 
+def test_ssr_observation_coverage_is_validated_and_bilingual():
+    """The crawler-visible disclosure must use the current-membership denominator
+    and must fail closed when the accounting does not reconcile."""
+    summary = _shell_summary(scope={
+        "en": "Map sample · 4 names",
+        "zh": "本图样本 · 4 只",
+    })
+    summary["tf"] = "1D"
+    summary["observation_coverage"] = {
+        "basis": "current_membership",
+        "membership_count": 1706,
+        "current_observation_count": 1700,
+        "timeframes": {
+            "1D": {
+                "denominator": 1706,
+                "valid_count": 1700,
+                "missing_count": 6,
+                "fraction": 1700 / 1706,
+            }
+        },
+    }
+    html = _render("china", summary=summary, gated=False)
+    assert "This map: 1700 / 1706 names have observed endpoint pairs · 6 unavailable." in html
+    assert "本图：1700 / 1706 个标的具备有效区间行情 · 6 个不可用。" in html
+
+    broken = dict(summary)
+    broken["observation_coverage"] = {
+        **summary["observation_coverage"],
+        "membership_count": 1705,
+    }
+    bad_html = _render("china", summary=broken, gated=False)
+    assert "Observation coverage unavailable." in bad_html
+    assert "观测覆盖率不可用。" in bad_html
+
+
+def test_publisher_writes_one_coherent_json_and_ssr_page(tmp_path, monkeypatch):
+    """The close-cycle publisher must advance the browser payload and crawler copy together."""
+    pd = pytest.importorskip("pandas")
+    from scripts import build_market_heatmap as publisher
+
+    tickers = ["A.SS", "B.SS", "C.SS", "D.SS"]
+    constituents = pd.DataFrame(
+        {
+            "name": ["Alpha", "Bravo", "Charlie", "Delta"],
+            "sector": ["Technology", "Technology", "Financial Services", "Financial Services"],
+        },
+        index=pd.Index(tickers, name="ticker"),
+    )
+    closes = pd.DataFrame(
+        {
+            "A.SS": [100.0, 102.0],
+            "B.SS": [100.0, 99.0],
+            "C.SS": [100.0, float("nan")],
+            "D.SS": [100.0, 100.0],
+        },
+        index=pd.to_datetime(["2026-09-18", "2026-09-21"]),
+    )
+    caps = {ticker: float(4 - i) * 1e9 for i, ticker in enumerate(tickers)}
+    names_zh = {"A.SS": "甲", "B.SS": "乙", "C.SS": "丙", "D.SS": "丁"}
+    monkeypatch.setitem(
+        publisher._LOADERS,
+        "china",
+        lambda: (constituents, closes, caps, {}, names_zh),
+    )
+    monkeypatch.setattr(publisher, "_board_breadth", lambda market: None)
+
+    payload = publisher.publish(
+        "china", tmp_path, generated_utc="2026-09-21 09:15",
+    )
+    payload_path = tmp_path / "marketdata" / "china_heatmap.json"
+    page_path = tmp_path / "china_heatmap.html"
+    assert json.loads(payload_path.read_text(encoding="utf-8")) == payload
+    html = page_path.read_text(encoding="utf-8")
+    assert payload["asof"] == "2026-09-21"
+    assert payload["observation_coverage"]["timeframes"]["1D"] == {
+        "valid_count": 3,
+        "missing_count": 1,
+        "denominator": 4,
+        "fraction": 0.75,
+    }
+    assert "This map: 3 / 4 names have observed endpoint pairs · 1 unavailable." in html
+    assert "本图：3 / 4 个标的具备有效区间行情 · 1 个不可用。" in html
+    assert 'data-hm-gated="1"' in html
+    assert '"url":"marketdata/china_heatmap.json"' in html
+
+    # A failed sibling feed may leave only the last-good JSON. The same owner
+    # must render that exact file rather than inventing a second payload path.
+    page_path.unlink()
+    publisher.render_page("china", None, tmp_path)
+    assert page_path.read_text(encoding="utf-8") == html
+
+    # A page-render failure must leave the prior pair byte-for-byte intact; the
+    # Asia lane may continue, but it must not commit only a newer JSON payload.
+    prior_json = payload_path.read_bytes()
+    prior_page = page_path.read_bytes()
+    publisher.publish("china", tmp_path, generated_utc="2026-09-21 09:15")
+    assert payload_path.read_bytes() == prior_json
+    assert page_path.read_bytes() == prior_page
+
+    # Two-file replacement is not natively atomic. If the page replace fails
+    # after the JSON replace, the publisher must roll the JSON back before
+    # returning, rather than leaving the browser and SSR on different sessions.
+    real_replace = publisher.os.replace
+    refused_page = False
+
+    def _replace_with_second_path_refusal(source, target):
+        nonlocal refused_page
+        if Path(target) == page_path and not refused_page:
+            refused_page = True
+            raise OSError("page replace refused")
+        return real_replace(source, target)
+
+    monkeypatch.setattr(publisher.os, "replace", _replace_with_second_path_refusal)
+    with pytest.raises(OSError, match="page replace refused"):
+        publisher.publish("china", tmp_path, generated_utc="2026-09-21 09:16")
+    assert refused_page
+    assert payload_path.read_bytes() == prior_json
+    assert page_path.read_bytes() == prior_page
+    assert not list(tmp_path.rglob("*.tmp"))
+    assert not list(tmp_path.rglob("*.bak"))
+    monkeypatch.setattr(publisher.os, "replace", real_replace)
+
+    monkeypatch.setattr(
+        publisher,
+        "render_page",
+        lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("render refused")),
+    )
+    with pytest.raises(RuntimeError, match="render refused"):
+        publisher.publish("china", tmp_path, generated_utc="2026-09-21 09:16")
+    assert payload_path.read_bytes() == prior_json
+    assert page_path.read_bytes() == prior_page
+    assert not list(tmp_path.rglob("*.tmp"))
+
+
+def test_cli_threads_stable_generation_label_to_publish_retry(monkeypatch):
+    from scripts import build_market_heatmap as publisher
+
+    seen = {}
+
+    def _publish(market, site=None, *, generated_utc=None, env=None):
+        seen.update(market=market, site=site, generated_utc=generated_utc, env=env)
+        return {}
+
+    monkeypatch.setattr(publisher, "publish", _publish)
+    assert publisher.main([
+        "--market", "china", "--render-page",
+        "--generated-utc", "2026-09-22 10:05",
+    ]) == 0
+    assert seen == {
+        "market": "china",
+        "site": None,
+        "generated_utc": "2026-09-22 10:05",
+        "env": None,
+    }
+
+
+def test_asia_close_and_full_site_share_the_same_heatmap_page_owner():
+    build_site = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    asia_close = (ROOT / ".github" / "workflows" / "asia-close.yml").read_text(encoding="utf-8")
+    assert "render_pages as render_market_heatmap_pages" in build_site
+    assert "render_market_heatmap_pages(_hm_payloads, site=site, env=env)" in build_site
+    assert '_hm_tmpl = env.get_template("market_heatmap.html.j2")' not in build_site
+
+    command = "python -m scripts.build_market_heatmap --market china --render-page"
+    assert asia_close.count(command) == 2
+    start = asia_close.index(
+        "- name: publish China heatmap from the settled close (payload + matching SSR shell)"
+    )
+    end = asia_close.index(
+        "- name: CN Prophet Live arming pass (settled-close trigger pack -> R2)"
+    )
+    publish_step = asia_close[start:end]
+    assert asia_close.index(
+        "- name: build china a-share dashboard (spine — serial head, every CN surface reads it)"
+    ) < start < end
+    assert "timeout-minutes: 5" in publish_step
+    assert "continue-on-error: true" in publish_step
+    assert command in publish_step
+    assert "CHINA_HEATMAP_GENERATED_UTC=$(date -u '+%Y-%m-%d %H:%M')" in publish_step
+    assert "printf 'CHINA_HEATMAP_GENERATED_UTC=%s\\n'" in publish_step
+    assert '>> "$GITHUB_ENV"' in publish_step
+    assert '--generated-utc "$CHINA_HEATMAP_GENERATED_UTC"' in publish_step
+    assert publish_step.index("CHINA_HEATMAP_GENERATED_UTC=$(date -u") < publish_step.index(command)
+    assert 'exit "$rc"' in publish_step
+    assert "exit 0" not in publish_step
+
+    commit_step = asia_close[asia_close.index("- name: commit engine outputs"):]
+    fallback = "CHINA_HEATMAP_GENERATED_UTC=\"${CHINA_HEATMAP_GENERATED_UTC:-$(date -u '+%Y-%m-%d %H:%M')}\""
+    assert commit_step.count(fallback) == 1
+    assert commit_step.index(fallback) < commit_step.index("while push_attempt; do")
+    assert 'site/marketdata/china_heatmap.json' not in commit_step[
+        commit_step.index("while push_attempt; do"):commit_step.index("python -m scripts.inject_data_base", commit_step.index("while push_attempt; do"))
+    ]
+
+    pull = asia_close.index("git pull --rebase --autostash -X theirs origin main")
+    repair = asia_close.index(command, end)
+    normalize = asia_close.index("python -m scripts.inject_data_base", repair)
+    push = asia_close.index("if push_do; then echo \"pushed asia engine outputs", repair)
+    repair_block = asia_close[repair:normalize]
+    assert pull < repair < normalize < push
+    assert '--generated-utc "$CHINA_HEATMAP_GENERATED_UTC"' in repair_block
+    assert "post-rebase China heatmap coherence repair failed" in repair_block
+    assert "push_abort_rebase" in repair_block and "push_backoff" in repair_block
+    assert "continue" in repair_block
+
+    cleanup = asia_close.index("find site site/marketdata -maxdepth 1 -type f")
+    stage = asia_close.index("git add data/ site/", cleanup)
+    cleanup_block = asia_close[cleanup:stage]
+    assert cleanup < stage
+    for suffix in (
+        ".china_heatmap.html.*.tmp", ".china_heatmap.html.*.bak",
+        ".china_heatmap.json.*.tmp", ".china_heatmap.json.*.bak",
+    ):
+        assert suffix in cleanup_block
+    assert "-delete" in cleanup_block
+
+
 def test_minus_sign_is_the_typographic_minus_not_a_hyphen():
     """heatmap.js prints U+2212. A hyphen here would make the SSR and the live
     copy differ by one glyph on every negative number on the page."""
@@ -401,7 +618,7 @@ def test_shipped_shell_carries_the_summary_and_the_gate():
     assert "tier-wall" not in html
     # Real numbers, not empty containers.
     assert re.search(r'<div class="hx-bleg"><span class="hx-up">▲ [\d,]+</span>', html)
-    assert re.search(r'<div class="hx-pulse-read">\s*<span class="l-en"><b>\d+%</b>', html)
+    assert re.search(r'<div class="hx-pulse-read">\s*<span class="l-en">(?:Whole board: )?<b>\d+%</b>', html)
     assert html.count('class="hx-sec"') >= 5
     assert html.count('class="hx-row"') == 10       # 5 gainers + 5 losers
 
@@ -440,9 +657,15 @@ def test_tile_map_carries_the_free_market_facts():
     assert len(with_px) / len(tiles) > 0.95, "most tiles carry no last price"
     assert len(with_p200) / len(tiles) > 0.8, "most tiles carry no 200-day distance"
     assert all(t["px"] > 0 for t in with_px)
-    # The card renders both from the tile, with the per-ticker file only as the
-    # fallback for maps whose tiles do not carry them (the US map).
-    assert re.search(r"var p2 = t\.p200 != null \? t\.p200 : tech\.pct_vs_200dma", HEATMAP_JS)
+    # The card renders both facts directly from the tile. The per-ticker file
+    # remains a fallback for maps whose tiles do not carry them, but an enhanced
+    # China observation snapshot must not mix in an unbound nightly 200-day fact.
+    assert re.search(
+        r'var p2 = t\.p200 != null \? t\.p200 : '
+        r'\(\(data\.market === ["\']china["\'] && t\.observation\) '
+        r'\? null : tech\.pct_vs_200dma\);',
+        HEATMAP_JS,
+    )
     assert re.search(r"var px = t\.px != null", HEATMAP_JS)
     assert "hm-c-meta" not in TEMPLATE_SRC          # built by the card, not the page
 
@@ -542,3 +765,106 @@ def test_new_copy_is_glance_tier_and_bilingual():
         i = html.index(frag)
         window = html[i:i + 1400]
         assert 'class="l-en"' in window and 'class="l-zh"' in window, frag
+
+
+def _shell_summary(*, scope):
+    """A page_summary-shaped dict. No engine import and no site file."""
+    return {
+        "stance": {"tone": "down", "en": "Broad decline", "zh": "普跌"},
+        "pct_up": 16,
+        "median": "−3.12%",
+        "asof": "session",
+        "tf": "1D",
+        "median_tone": "down",
+        "median_word": {"en": "Tilted lower", "zh": "偏弱"},
+        "breadth": {
+            "adv": "1",
+            "dec": "2",
+            "adv_w": 30.0,
+            "flat_w": 10.0,
+            "dec_w": 60.0,
+            "scope": scope,
+        },
+        "up_sectors": [{"en": "Energy", "zh": "能源"}],
+        "down_sectors": [{"en": "Banks", "zh": "银行"}],
+        "top": {"en": "Energy", "zh": "能源", "pc": "+1.20%", "tone": "up"},
+        "bot": {"en": "Banks", "zh": "银行", "pc": "−2.40%", "tone": "down"},
+        "gainers": [],
+        "losers": [],
+        "sectors": [],
+    }
+
+
+def _render_copy(summary, n_tiles):
+    """Render the shared heatmap template without engine or site bytes."""
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=True)
+    mk = {
+        "seo_title": "Heatmap",
+        "seo_desc": "A sector map.",
+        "key": "china",
+        "icon": "*",
+        "h1_en": "Heatmap",
+        "h1_zh": "热力图",
+        "sub_en": "Tiles.",
+        "sub_zh": "方块。",
+        "label_en": "China",
+        "label_zh": "A股",
+        "json": "marketdata/china_heatmap.json",
+        "foot_en": "Research context.",
+        "foot_zh": "研究参考。",
+    }
+    return env.get_template("market_heatmap.html.j2").render(
+        mk=mk, summary=summary, gated=False, n_tiles=n_tiles, siblings=None,
+    )
+
+
+def _pulse_region(html):
+    match = re.search(r'<div class="hx-pulse-read">(.*?)</div>', html, re.S)
+    assert match, "pulse did not render"
+    return match.group(1)
+
+
+def test_pulse_splits_board_from_map():
+    """Advance rate is the whole board; sector ranks are this map's price move."""
+    summary = _shell_summary(scope={
+        "en": "Shanghai + Shenzhen A-shares traded",
+        "zh": "沪深全市场",
+    })
+    pulse = _pulse_region(_render_copy(summary, 1740))
+    assert "Whole board:" in pulse
+    assert "On this map (1,740 names):" in pulse
+    assert "全市场：" in pulse
+    assert "本图（1,740 只）：" in pulse
+    assert "资金流向" not in pulse
+    en_head = re.search(r'<span class="l-en">(.*?)</span>', pulse, re.S).group(1)
+    zh_head = re.search(r'<span class="l-zh">(.*?)</span>', pulse, re.S).group(1)
+    assert "全市场：" not in en_head
+    assert "Whole board:" not in zh_head
+
+    fallback = _shell_summary(scope={
+        "en": "Map sample · 4 names",
+        "zh": "本图样本 · 4 只",
+    })
+    fb = _pulse_region(_render_copy(fallback, 1740))
+    assert "Whole board:" not in fb
+    assert "全市场：" not in fb
+    assert "On this map (1,740 names):" in fb
+    assert "本图（1,740 只）：" in fb
+
+    bare = _pulse_region(_render_copy(_shell_summary(scope=None), 1740))
+    assert "Whole board:" not in bare
+    assert "全市场：" not in bare
+    assert "On this map (1,740 names):" in bare
+    assert "本图（1,740 只）：" in bare
+
+
+def test_js_pulse_names_the_map():
+    """The repaint must name the map with n_tiles, not the board count."""
+    assert "On this map (' + fmtInt(data.n_tiles)" in HEATMAP_JS
+    assert "'本图（' + fmtInt(data.n_tiles)" in HEATMAP_JS
+    assert "var board = sm.scope && sm.scope.whole;" in HEATMAP_JS
+    assert "(board ? 'Whole board: ' : '')" in HEATMAP_JS
+    assert "(board ? '全市场：' : '')" in HEATMAP_JS
+    assert "资金流向：' + lead" not in HEATMAP_JS
+    assert "This map:" in HEATMAP_JS
+    assert "本图：" in HEATMAP_JS

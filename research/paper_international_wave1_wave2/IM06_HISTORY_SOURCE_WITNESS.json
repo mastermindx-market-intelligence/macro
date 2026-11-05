@@ -1,0 +1,72 @@
+{
+  "state": "VERIFIED_SOURCE_COVERAGE_LIMIT",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "worker_id": "paper-01a1101f-im06-history-source-witness-r1",
+  "execution": "Parent after two pre-effect no-eligible-worker admissions; child never started",
+  "tests": [
+    "copied artifact count and bounds exact",
+    "old-only pre-window date is retained",
+    "new non-null overlap wins and new date appended",
+    "missing interior date and explicit fresh null retain old values",
+    "exact sidecar method writes newer metadata independently of failed later upsert",
+    "static exact source order: provenance in fetch before base upsert"
+  ],
+  "retained_artifact": {
+    "rows": 434,
+    "first": "1990-07-01",
+    "last": "2026-08-01",
+    "pre_request_cutoff_rows": 114,
+    "source_meta_fields": [
+      "last_observation",
+      "provider",
+      "release_period_semantics",
+      "requested_at",
+      "source_id",
+      "source_updated",
+      "source_url",
+      "status",
+      "unit"
+    ]
+  },
+  "source_comparison": {
+    "old_artifact_sha256": "9493337b8a5537965048f8d4aba29a09798706f3861c3c56f8034a29160fa36a",
+    "source_updated": "2026-10-08T11:00:00+0200",
+    "old_rows": 434,
+    "current_rows": 320,
+    "common_rows": 320,
+    "equal_value_rows": 320,
+    "current_first": "2000-01-01",
+    "current_last": "2026-08-01"
+  },
+  "unwitnessed_rows": 114,
+  "different_value_count": 0,
+  "current_response": {
+    "requested_at": "2026-10-09T02:37:11.032419+00:00",
+    "received_at": "2026-10-09T02:37:11.951978+00:00",
+    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_m?lang=en&geo=EA21&s_adj=SA&age=TOTAL&unit=PC_ACT&sex=T&sinceTimePeriod=1990-01",
+    "status": 200,
+    "bytes": 22140,
+    "sha256": "a817b9ed936de04040eb65df5ae3527a803f617a220a66897fe1e74966033253",
+    "source_updated": "2026-10-08T11:00:00+0200",
+    "scope": "Same existing public series endpoint, extended range only to test retained 1990-1999 rows. No original-known or production admission."
+  },
+  "conclusion": "Current series-level metadata does not prove the provider/date/value origin of every retained history row, including dates inside the most recent request range. No historical provider origin is inferred.",
+  "minimum_missing_witness": "A retained exact response identity plus parsed date/value coverage and the committed artifact identity linked to the successful owner write. This verifies response membership/current-vintage values, not original-known vintages, rights, or historical origin of unmatched rows.",
+  "proof_limits": [
+    "Actual store.upsert executed only in isolated temporary store",
+    "Exact _write_provenance method AST-extracted; full collector not executed",
+    "Call ordering in full collector/base established statically",
+    "No network, canonical data writes, provenance grants or permission changes",
+    "Current official query is parent-owned read-only acquisition at the existing public endpoint",
+    "Exact current value match does not prove historical acquisition origin, original-known vintage, rights or score methodology",
+    "No replacement historical provider inferred; no retained rows deleted; production values remain withheld"
+  ],
+  "evidence": {
+    "im06-history-source-witness-r1/work/verify.py": "91e77b87f2bad58e8b4da99cf4fcdd094d7d774a3fe10544b895eb3947ca0c6a",
+    "im06-history-source-witness-r1/work/WITNESS.json": "34e08260984ee1b71ddb9d18faa6d295d9be82d3a26be3a7016e1353b21d1e86",
+    "im06-history-source-witness-r1/compare_current.py": "ad88de9e15491ea22afad5922c8f834b706b914b18768f80c73bb309c2f69af7",
+    "im06-history-source-witness-r1/current-official-response/response.json": "53e348adb2daeb6d3a6f239b4b5b37e6481b194d4606211afb2a761bbeed6da1",
+    "im06-history-source-witness-r1/current-official-full-range/response.json": "a817b9ed936de04040eb65df5ae3527a803f617a220a66897fe1e74966033253",
+    "im06-history-source-witness-r1/current-official-full-range/COMPARISON.json": "751862f33fd758f52081062cb7db577c5e34a3c431215ec47fdf030cbb6abbf9"
+  }
+}

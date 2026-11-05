@@ -120,8 +120,11 @@ UID = "11111111-1111-1111-1111-111111111111"
 # READ — list join (name + email + tier), filters, search
 # ===========================================================================
 def _rows_query(sqls):
-    """The paged SELECT that joins the tables and returns user columns (not the count/summary)."""
-    return next(s for s in sqls if "coalesce(e.tier,'free') as tier" in s)
+    """The paged SELECT that joins the tables and returns user columns (not the count/summary).
+
+    Reads are intentionally concurrent, so SQL arrival order is not a contract.
+    """
+    return next(s for s in sqls if "select u.id::text as user_id" in s)
 
 
 def test_list_users_joins_name_email_tier(monkeypatch):

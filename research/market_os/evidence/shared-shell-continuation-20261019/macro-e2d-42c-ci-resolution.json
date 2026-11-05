@@ -1,0 +1,419 @@
+{
+  "observed_at": "2026-10-20T10:29:55.777824+00:00",
+  "base": "92c51f1ff800b36fc63e7869243945996ac7315c",
+  "head": "e2d10f933587f58be8716505529a37f8839901f7",
+  "incoming": "42c859546ececa797b400db0adeb8c5a22f96832",
+  "manifest_conflicts_resolved": 12,
+  "manifest_jobs": 330,
+  "new_jobs": [
+    "stock-liquidity-profile"
+  ],
+  "parent_ids_order_and_fields_preserved": true,
+  "paths_both_parent_order_and_exact_multiplicity": true,
+  "changed_path_lists": [
+    {
+      "job": "bea-gvc-current-descriptive-consumer",
+      "base": 878,
+      "head": 880,
+      "main": 883,
+      "combined": 885
+    },
+    {
+      "job": "c19-wp32-integrated-answer-correction-denial-pins",
+      "base": 874,
+      "head": 876,
+      "main": 879,
+      "combined": 881
+    },
+    {
+      "job": "c19-wp22-dhi-traversal",
+      "base": 889,
+      "head": 891,
+      "main": 894,
+      "combined": 896
+    },
+    {
+      "job": "c19-wp31-incremental-information",
+      "base": 111,
+      "head": 113,
+      "main": 111,
+      "combined": 113
+    },
+    {
+      "job": "am-edition-producer",
+      "base": 42,
+      "head": 44,
+      "main": 42,
+      "combined": 44
+    },
+    {
+      "job": "conviction-profile",
+      "base": 652,
+      "head": 653,
+      "main": 658,
+      "combined": 659
+    },
+    {
+      "job": "options-matrix-code",
+      "base": 123,
+      "head": 125,
+      "main": 123,
+      "combined": 125
+    },
+    {
+      "job": "flow-surface",
+      "base": 505,
+      "head": 505,
+      "main": 508,
+      "combined": 508
+    },
+    {
+      "job": "international-workspace-foundation",
+      "base": 298,
+      "head": 299,
+      "main": 298,
+      "combined": 299
+    },
+    {
+      "job": "international-workspace-browser",
+      "base": 318,
+      "head": 319,
+      "main": 318,
+      "combined": 319
+    },
+    {
+      "job": "fif-kernel-guards",
+      "base": 929,
+      "head": 931,
+      "main": 939,
+      "combined": 941
+    },
+    {
+      "job": "cycle-consistency",
+      "base": 84,
+      "head": 86,
+      "main": 84,
+      "combined": 86
+    },
+    {
+      "job": "intelligence-registry",
+      "base": 246,
+      "head": 247,
+      "main": 250,
+      "combined": 251
+    },
+    {
+      "job": "push-retry-policy",
+      "base": 67,
+      "head": 69,
+      "main": 67,
+      "combined": 69
+    },
+    {
+      "job": "transmission-chains",
+      "base": 136,
+      "head": 138,
+      "main": 136,
+      "combined": 138
+    },
+    {
+      "job": "options-payoff-lab-consumer",
+      "base": 19,
+      "head": 21,
+      "main": 19,
+      "combined": 21
+    },
+    {
+      "job": "finance-intelligence",
+      "base": 75,
+      "head": 77,
+      "main": 75,
+      "combined": 77
+    },
+    {
+      "job": "consumer-cyclical-economic-change",
+      "base": 45,
+      "head": 47,
+      "main": 45,
+      "combined": 47
+    },
+    {
+      "job": "research-screener",
+      "base": 23,
+      "head": 24,
+      "main": 23,
+      "combined": 24
+    },
+    {
+      "job": "leader-radar-unit",
+      "base": 47,
+      "head": 49,
+      "main": 47,
+      "combined": 49
+    },
+    {
+      "job": "validated-claims-contract",
+      "base": 194,
+      "head": 196,
+      "main": 194,
+      "combined": 196
+    },
+    {
+      "job": "sanctions-map-page",
+      "base": 46,
+      "head": 48,
+      "main": 46,
+      "combined": 48
+    },
+    {
+      "job": "itr-turn-rotation",
+      "base": 250,
+      "head": 251,
+      "main": 250,
+      "combined": 251
+    },
+    {
+      "job": "nw-lobe-unfreeze",
+      "base": 1084,
+      "head": 1085,
+      "main": 1090,
+      "combined": 1091
+    },
+    {
+      "job": "lr-rotation-evidence-modes",
+      "base": 99,
+      "head": 101,
+      "main": 99,
+      "combined": 101
+    },
+    {
+      "job": "research-vault",
+      "base": 406,
+      "head": 407,
+      "main": 406,
+      "combined": 407
+    },
+    {
+      "job": "biocatalyst-serving",
+      "base": 576,
+      "head": 576,
+      "main": 580,
+      "combined": 580
+    },
+    {
+      "job": "biocatalyst-worker",
+      "base": 18,
+      "head": 20,
+      "main": 18,
+      "combined": 20
+    },
+    {
+      "job": "biocatalyst-history",
+      "base": 365,
+      "head": 365,
+      "main": 368,
+      "combined": 368
+    },
+    {
+      "job": "crypto-assistant-context",
+      "base": 857,
+      "head": 859,
+      "main": 862,
+      "combined": 864
+    },
+    {
+      "job": "crypto-vector-r2-organs",
+      "base": 396,
+      "head": 397,
+      "main": 399,
+      "combined": 400
+    },
+    {
+      "job": "defense-rail-laws",
+      "base": 344,
+      "head": 344,
+      "main": 346,
+      "combined": 346
+    },
+    {
+      "job": "govrev-program-ontology",
+      "base": 97,
+      "head": 99,
+      "main": 97,
+      "combined": 99
+    },
+    {
+      "job": "unrun-government-revenue-candidate-projection",
+      "base": 368,
+      "head": 368,
+      "main": 370,
+      "combined": 370
+    },
+    {
+      "job": "washout-turn-organ",
+      "base": 953,
+      "head": 954,
+      "main": 958,
+      "combined": 959
+    },
+    {
+      "job": "unrun-picks-boards",
+      "base": 923,
+      "head": 923,
+      "main": 928,
+      "combined": 928
+    },
+    {
+      "job": "earnings-economic-source-selection",
+      "base": 49,
+      "head": 51,
+      "main": 49,
+      "combined": 51
+    },
+    {
+      "job": "earnings-economic-dossier",
+      "base": 74,
+      "head": 76,
+      "main": 74,
+      "combined": 76
+    },
+    {
+      "job": "unrun-macro-panels",
+      "base": 52,
+      "head": 52,
+      "main": 54,
+      "combined": 54
+    },
+    {
+      "job": "unrun-government-revenue-grader",
+      "base": 366,
+      "head": 366,
+      "main": 368,
+      "combined": 368
+    },
+    {
+      "job": "research-price-panel",
+      "base": 1057,
+      "head": 1059,
+      "main": 1060,
+      "combined": 1062
+    },
+    {
+      "job": "leadership-rotation-countercases",
+      "base": 204,
+      "head": 206,
+      "main": 204,
+      "combined": 206
+    },
+    {
+      "job": "dataos-identity-seams",
+      "base": 57,
+      "head": 57,
+      "main": 59,
+      "combined": 59
+    },
+    {
+      "job": "ticker-news-qbus",
+      "base": 891,
+      "head": 893,
+      "main": 896,
+      "combined": 898
+    },
+    {
+      "job": "market-os-macro-workspaces",
+      "base": 35,
+      "head": 37,
+      "main": 35,
+      "combined": 37
+    },
+    {
+      "job": "market-os-macro-suite-pages",
+      "base": 79,
+      "head": 81,
+      "main": 79,
+      "combined": 81
+    },
+    {
+      "job": "markets-regime-strip",
+      "base": 68,
+      "head": 69,
+      "main": 68,
+      "combined": 69
+    },
+    {
+      "job": "dashboard-render-contract",
+      "base": 191,
+      "head": 191,
+      "main": 194,
+      "combined": 194
+    },
+    {
+      "job": "market-ontology-f09-usgs-mcs",
+      "base": 8,
+      "head": 8,
+      "main": 9,
+      "combined": 9
+    },
+    {
+      "job": "skew-accrual-lane",
+      "base": 80,
+      "head": 82,
+      "main": 80,
+      "combined": 82
+    },
+    {
+      "job": "mining-economic-dossier",
+      "base": 69,
+      "head": 71,
+      "main": 69,
+      "combined": 71
+    },
+    {
+      "job": "industrials-result-cash",
+      "base": 75,
+      "head": 77,
+      "main": 75,
+      "combined": 77
+    },
+    {
+      "job": "pb-d-event-quality",
+      "base": 33,
+      "head": 35,
+      "main": 33,
+      "combined": 35
+    }
+  ],
+  "test_conflicts_resolved": 2,
+  "test_executable_AST_identical_to_incoming": true,
+  "retained_incoming_ceilings": {
+    "templates/index.html": [
+      136,
+      5822,
+      10
+    ],
+    "scripts/build_free_content.py": [
+      134,
+      5697,
+      10
+    ],
+    "engine/prophet/plan_book.py": [
+      130,
+      5600,
+      10
+    ]
+  },
+  "all_both_parent_histories_preserved": true,
+  "fresh_selector_or_test_run": false,
+  "files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "bytes": 1931118,
+      "sha256": "221c0c1ad74d9d8e65e7596428fd14c453a55bf8caa9a35debff89b43640dd45"
+    },
+    {
+      "path": "tests/test_ci_pack.py",
+      "bytes": 375580,
+      "sha256": "96e6548805d3b33f5d42aec9b8a66fa8813bed108edf439ef00213878b23f352"
+    }
+  ]
+}

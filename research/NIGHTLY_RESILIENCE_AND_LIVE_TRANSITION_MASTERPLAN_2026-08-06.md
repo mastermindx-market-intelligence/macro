@@ -212,6 +212,96 @@ survivor of that `resample().apply` pattern is
 `engine/entry_primitives.py:796`. Any further stock_library trim must be
 profiled against CURRENT main; the 08-06 capture is void.
 
+**W2/W3 CONTINUATION — 2026-09-26/27 current-main re-profile and active repairs.**
+This update supersedes only the assumption that the August post-trim
+`stock_library` steady state is still representative. It does **not** reopen the
+production-verified subsector-rotation fix above, raise any timeout, or change the
+Part B authority/display split.
+
+Fresh production evidence now isolates three different cost mechanisms:
+
+1. **QLedger tail: repeated full-ledger reads, not insufficient timeout.** Scheduled
+   runs `36133476434` and `36206135675` both drove `collect_tail` against its
+   200-minute cap, with `qledger-ccw` consuming about **186.7 minutes**. The
+   claims ledger is about 95 MB. `backfill_radar()` and `backfill_policy()`
+   called single-claim `register()` per source row, and every call reloaded the
+   durable claims ledger. The bounded repair is PR **#8042**, exact head
+   `48eb4970c549af3e5f2c0f2a7ad0fe0d97496c2c`: reuse the existing
+   `register_batch()` path so RADAR/POLICY each pay one ledger read + one append
+   pass. No new checkpoint/store/control plane and no timeout increase. The PR is
+   READY + `merge-on-green`; source completion is still conditional on its
+   exact-head proof workflows, and production acceptance still requires a later
+   ordinary nightly timing receipt.
+
+2. **`stock_library/revisions`: append-only history multiplied into every new
+   observation.** In scheduled timing rows, the `revisions` section grew from
+   **447.7s on 2026-08-29** to **2654.9s on 2026-09-26** while the source owner
+   retained the frozen 200-name drip and `collectors/equity_revisions.py` had no
+   source change after 2026-08-26. The current prospective observation artifact is
+   about 29.7 MB; the latest observed batch emitted **10,976 observations** from
+   200 attempts. The old `_apply_lineage()` filtered the full historical
+   DataFrame across six lineage columns for every emitted observation and then
+   stable-sorted the matching subset; observation/attempt ID sets were also rebuilt
+   inside the loops. The semantics-preserving repair is PR **#8064**, exact head
+   `7d14676c329dda30acf5ad85f7773c34bcb9eee1`: build one immutable
+   pre-session latest-lineage index plus one-time ID sets. The frozen SRC-A1
+   provider, cadence, clocks, IDs, append/supersede law, fiscal-rollover law,
+   rights state, schemas and legacy `latest/history` semantics are unchanged.
+   The PR is READY + `merge-on-green`; production timing is not yet accepted.
+
+3. **Seasonality: the expensive null recomputation is upstream historical-vintage
+   churn, not a broken selection cache.** The committed selection directory holds
+   about 2,625 caches, and the cache key intentionally hashes complete-year daily
+   returns so current partial-year movement cannot bust it. Yet the 2026-09-25 and
+   2026-09-26 nightlies recomputed **1,576** and **1,584** symbols respectively
+   (roughly 87–91 minutes). Tree comparison shows **1,565 of the 1,580 caches
+   changed on 09-26 were the same caches changed on 09-25 (99.1% overlap)**.
+   Sampled raw panel hashes changed inside that cohort while AAPL/SPY stayed
+   stable, so the market-neutral layer is not the cause. The upstream writer is
+   the #7235 daily Yahoo archive refresh: on 09-26 its explicit
+   `--refresh-all` path full-refetched roughly **5,337/5,347** unmaintained
+   archives with `period=max`, while the canonical Yahoo collector's basis guard
+   found only about 30 names requiring a true rebase.
+
+The third finding is **not authorization to rewrite #7235 in place**. #7235's
+accepted review explicitly froze full-history extraction/basis and “no
+short-history price splice.” The next source change therefore requires a
+separate contract amendment. The bounded candidate design is: keep the same
+daily eligible population, writer, schedule and 480s budget; refresh with the
+canonical collector's `1mo` probe; run the existing `store.basis_shifted`
+guard; full-refetch `period=max` only for genuine basis shifts/no-overlap; if
+that heal fails, keep the old archive untouched and do not claim refresh.
+Acceptance must prove both basis integrity and that repeated complete-year
+seasonality cache churn collapses to genuine historical-vintage changes.
+
+**Current engine baseline.** Run `36206135675` / engine job
+`108339204111` consumed about **289 minutes** against the 300-minute cap. The
+~97.3-minute regional-builder band was dominated by
+`build_stock_seasonality` at **5,240s**. The ~102.9-minute core engine band was
+dominated by `build_site`; its current `stock_library` timing was about
+**4610.5s**, of which revisions **2654.9s**, output writes **826.6s**,
+merge-loop enrichment **529.8s**, setup context **300.1s**, and technical
+fanout only **84.9s**. This replaces the stale August hotspot ranking for W3
+planning; do not optimize the old `resample().apply` path again.
+
+**Proof / continuation law.** Scheduled run `36283591439` (2026-09-27,
+`daily 30 22 * * *`) began before either new carrier could merge and is the
+clean final pre-fix control; it cannot be used as acceptance for #8042/#8064.
+After each carrier merges through the existing merge-on-green controller, use
+the next ordinary scheduled nightly that actually contains that merge:
+- #8042: verify qledger/collect-tail runtime and durable claim semantics; the PR
+  target is qledger-ccw below 170m with real headroom, not a raised cap.
+- #8064: verify unchanged SRC-A1 artifact semantics and a material collapse from
+  the recent ~2.3–3.0ks `revisions` band before considering any provider/client
+  optimization.
+- Yahoo/seasonality: only after an explicitly reviewed #7235 contract amendment;
+  require a natural-run fall in repeated `null_recomputed` churn, not a synthetic
+  benchmark alone.
+
+Do not create a second Yahoo writer, revision store, qledger, scheduler, retry
+plane, or checkpoint plane to solve these costs. Fix the multiplicative work in
+the existing owners.
+
 **W4 — Disk program on the M1.** Execute the ranked plan (operator sudo
 required for ranks 0/3): TM snapshots ~80G → `tmutil disable` decision →
 macOS Install Data 12G → `git gc` runner-1's 29G `.git` → theta store 60G to

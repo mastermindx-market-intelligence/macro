@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-18T21:55:17Z",
+ "accession": "0000215466-26-000004",
+ "cik": "0000215466",
+ "doc_byte_length": 3547169,
+ "doc_sha256": "cc814e3c24419e09f2864e6f257ae3afcabacd26e94779a7bec9453ab6a4359e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-18",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cde-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3338089,
+  "byte_start": 3336390,
+  "normalized": "The Franco-Nevada Gold Stream Agreement supersedes an earlier arrangement made in January 2009 in which Franco-Nevada purchased a royalty covering 50% of the gold produced by Coeur Mexicana from its Palmarejo silver and gold mine in Mexico in exchange for total consideration of $78.0 million, consisting of $75.0 million in cash plus a warrant to acquire Franco-Nevada Common Shares that was then-valued at $3.0 million (the “Prior Gold Stream Agreement”). The Prior Gold Stream Agreement was terminated in 2014 and its minimum ounce delivery requirement satisfied in 2016, after which sales under the Franco-Nevada Gold Stream Agreement commenced. Under the Franco-Nevada Gold Stream Agreement, Coeur Mexicana received a $22.0 million deposit toward future deliveries.",
+  "normalized_sha256": "aa8461e0b0c07aeef73f1f4bb789525353ade057f71e1d1d02b56dc6812a4855",
+  "raw": "&#160;The Franco-Nevada Gold Stream Agreement supersedes an earlier arrangement made in January 2009 in which Franco-Nevada purchased a royalty covering <ix:nonFraction unitRef=\"number\" contextRef=\"c-397\" decimals=\"2\" name=\"cde:LifeOfMineProductionPercentage\" scale=\"-2\" id=\"f-1789\">50</ix:nonFraction>% of the gold produced by Coeur Mexicana from its Palmarejo silver and gold mine in Mexico in exchange for total consideration of $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-398\" decimals=\"-5\" name=\"us-gaap:BusinessCombinationConsiderationTransferred1\" format=\"ixt:num-dot-decimal\" scale=\"6\" id=\"f-1790\">78.0</ix:nonFraction>&#160;million, consisting of $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-398\" decimals=\"-5\" name=\"us-gaap:PaymentsToAcquireBusinessesGross\" format=\"ixt:num-dot-decimal\" scale=\"6\" id=\"f-1791\">75.0</ix:nonFraction>&#160;million in cash plus a warrant to acquire Franco-Nevada Common Shares that was then-valued at $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-398\" decimals=\"-5\" name=\"us-gaap:BusinessCombinationConsiderationTransferredEquityInterestsIssuedAndIssuable\" format=\"ixt:num-dot-decimal\" scale=\"6\" id=\"f-1792\">3.0</ix:nonFraction>&#160;million (the &#8220;Prior Gold Stream Agreement&#8221;). The Prior Gold Stream Agreement was terminated in 2014 and its minimum ounce delivery requirement satisfied in 2016, after which sales under the Franco-Nevada Gold Stream Agreement commenced. Under the Franco-Nevada Gold Stream Agreement, Coeur Mexicana received a $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-396\" decimals=\"-5\" name=\"cde:Deposittobereceivedundergoldstreamagreement\" scale=\"6\" id=\"f-1793\">22.0</ix:nonFraction> million deposit toward future deliveries.",
+  "raw_sha256": "c76cc7a2e11d78be7d3bbce2c5f2ed84c2c6e30a73827e18520790c22cab25e9"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/215466/000021546626000004/cde-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,29 @@
+{
+  "created_at_utc": "2026-10-09T12:07:32.746860+00:00",
+  "files": [
+    {
+      "byte_length": 1170,
+      "path": "lanes/source_diagnostic_policy_adoption_v1/ADOPTION_VALIDATION.json",
+      "sha256": "3c5b371b868ca66a8352fc7d03b462fe72fad5b817ad82878e0bb27a9531dc9d"
+    },
+    {
+      "byte_length": 501,
+      "path": "lanes/source_diagnostic_policy_adoption_v1/NUMERIC_CLARIFICATION_CONTROL.json",
+      "sha256": "d6c19a783783c60ea506fe829e15ed90e06c7f6db27719fadd61b7085d1d95e1"
+    },
+    {
+      "byte_length": 9593,
+      "path": "lanes/source_diagnostic_policy_adoption_v1/POLICY_ADOPTION.json",
+      "sha256": "645a20a39842d9c5a03b4ff39a37280d1aa02c32ef545c061d0aa959f06e0016"
+    },
+    {
+      "byte_length": 7155,
+      "path": "lanes/source_diagnostic_policy_adoption_v1/PRINCIPAL_ADOPTION.md",
+      "sha256": "1c2d9c72ad7ea969a5b41294845bb55d4fcb0158802b74e5ccff815e36264783"
+    }
+  ],
+  "real_source_admission": false,
+  "schema": "research.gmi.wp02.principal_adoption_manifest/v1",
+  "self_excluded": true,
+  "status": "FROZEN_FOR_NARROW_INDEPENDENT_DELTA_REVIEW"
+}

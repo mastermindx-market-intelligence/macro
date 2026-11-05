@@ -1,0 +1,153 @@
+{
+  "admission": {
+    "admitted": [
+      "alpha",
+      "insider_cluster",
+      "news_burst",
+      "off_high",
+      "smartmoney_add",
+      "sue_fresh",
+      "tier_cascade"
+    ],
+    "dropped": [
+      {
+        "column": "gex_confirm_verdict",
+        "coverage": 0.304348,
+        "family": "F5_FLOW_POSITIONING",
+        "presence_floor": 0.5,
+        "reason": "below_presence_floor"
+      }
+    ],
+    "frame_dates": 1,
+    "frame_rows": 69
+  },
+  "as_of": "2026-10-01",
+  "claim_limits": [
+    "No upstream cohort/cascade source exclusion was performed.",
+    "This run's zero GEX member contribution does not prove a globally options-free incumbent.",
+    "Code blobs match the repository source named by the render commit; executed binary/container provenance is not attested.",
+    "Source inputs, real consumer receipt, browser deployment, historical availability and predictive quality are not proved by score replay.",
+    "Removing all F5 removes non-GEX evidence and is not the GEX-specific result.",
+    "Same as_of dates can identify different artifact revisions and populations."
+  ],
+  "emit": {
+    "at_utc": "2026-10-03T08:15:30+00:00",
+    "pair_id": "f9f4108104c84918bacc5ff06805be40",
+    "writer": "build_stock_library"
+  },
+  "families": [
+    "F1_TECHNICAL_CONFLUENCE",
+    "F2_MOMENTUM_EXTENSION",
+    "F4_CATALYST_EVENT",
+    "F5_FLOW_POSITIONING",
+    "F8_ATTENTION_CROWDING"
+  ],
+  "forbidden_missing_to_neutral_mutation": {
+    "gex_admitted_after_invalid_replacement": true,
+    "max_abs_rank_displacement": 10,
+    "mean_abs_rank_displacement": 1.5072463768115942,
+    "rows_moved": 40,
+    "rows_with_changed_published_score": 69,
+    "rows_with_changed_raw_score": 69,
+    "synthetic_only": true,
+    "top30_added": [
+      "MYRG",
+      "TJX",
+      "WH"
+    ],
+    "top30_names_replaced": 3,
+    "top30_removed": [
+      "EME",
+      "LFUS",
+      "STAA"
+    ],
+    "top30_symmetric_difference": 6
+  },
+  "gex_member": {
+    "admitted": false,
+    "coverage": 0.30434782608695654,
+    "distinct_oriented_values": 3,
+    "minimum_nonnull_for_this_pool": 35,
+    "missing": 48,
+    "nonnull": 21,
+    "presence_floor": 0.5,
+    "raw_verdict_counts": {
+      "caution": 11,
+      "confirm": 3,
+      "missing": 48,
+      "neutral": 7
+    },
+    "reason": "below_presence_floor",
+    "zero_filled": false
+  },
+  "input_extract_sha256": "af00367aeb4ba9fa64569eacfcac98926e5dcf46f863e1e99348d5d81938972e",
+  "members_collapsed": [],
+  "remove_entire_f5_family_fixed_pool": {
+    "max_abs_rank_displacement": 11,
+    "mean_abs_rank_displacement": 1.536231884057971,
+    "rows_moved": 42,
+    "rows_with_changed_published_score": 68,
+    "rows_with_changed_raw_score": 69,
+    "top30_added": [
+      "MYRG",
+      "RS"
+    ],
+    "top30_names_replaced": 2,
+    "top30_removed": [
+      "LFUS",
+      "STAA"
+    ],
+    "top30_symmetric_difference": 4
+  },
+  "remove_gex_member_fixed_pool": {
+    "max_abs_rank_displacement": 0,
+    "mean_abs_rank_displacement": 0.0,
+    "rows_moved": 0,
+    "rows_with_changed_published_score": 0,
+    "rows_with_changed_raw_score": 0,
+    "top30_added": [],
+    "top30_names_replaced": 0,
+    "top30_removed": [],
+    "top30_symmetric_difference": 0
+  },
+  "rows": 69,
+  "same_date_archived_observation": {
+    "coverage_blob": "d9ddf422dd104eaab798190fab273cac17261508",
+    "gex_coverage": 0.370968,
+    "gex_status": "below_presence",
+    "join_by_date_alone_permitted": false,
+    "observation_fingerprint": "cf0059c8da553ea5ad07bdf8cc4ce8252ca504e78dcea17b164b39f37fe3627b",
+    "rows": 62,
+    "same_as_latest_board": false,
+    "source": {
+      "path": "data/us_prophet_rank/w3/coverage/2026-10/2026-10-01.parquet",
+      "read_method": "GitHub base64, SHA1 Git blob identity verified; read-only pandas/pyarrow decode on M2",
+      "ref": "3d9969c15bba0f57b64da7592c0731cc8a0f2eac",
+      "repository": "mastermindx-market-intelligence/macro",
+      "session_source_blob": "62632d8863122450e4ae169406f75b8c8cde202b"
+    }
+  },
+  "schema": "options.research.gex_run_audit.v1",
+  "scope": "One published artifact and its fixed buy pool; fit-free arithmetic replay only",
+  "source": {
+    "emitter_source_commit_named_in_publication_message": "82f03b5249c3db297d7b33b7d0e89572eff21fc6",
+    "executed_binary_attestation": "UNKNOWN",
+    "extraction": "Raw source values preserved for C1 extraction fields, exact published scores/ranks, and published member/family display contributions. Nested fields not used by extraction and unrelated display text omitted.",
+    "git_blob_sha": "bae9b8dac3b1cfefe9912e58c3d524f8c2007a1d",
+    "path": "site/factordata/us_standouts.json",
+    "publication_commit": "75e82a871b0d2e67eae7d27c273f60c8817ec321",
+    "repository": "mastermindx-market-intelligence/macro",
+    "selection": "Latest board at the pinned main, before examining any outcome.",
+    "snapshot_ref": "3d9969c15bba0f57b64da7592c0731cc8a0f2eac"
+  },
+  "source_module_git_blob": "210e070103b36f10bbbf19981420a17bb9fdc4fc",
+  "verification": {
+    "admission_receipt_matches": true,
+    "all_family_display_contributions_match": true,
+    "all_member_percentiles_match": true,
+    "duplicate_collapse_receipt_matches": true,
+    "published_ranks_match": true,
+    "published_scores_match": true,
+    "whole_family_LOFO_matches_published": true
+  }
+}

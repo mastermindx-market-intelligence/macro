@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-03-31T20:06:52Z",
+ "accession": "0001104659-26-037706",
+ "cik": "0001951222",
+ "doc_byte_length": 5523011,
+ "doc_sha256": "0cce91aa4fda1161c07cc338f0e8a1391b21e40d6de6f3ae380609ef733002e7",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "laes-20251231x20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3242011,
+  "byte_start": 3240948,
+  "normalized": "International cables designer and manufacturer 11",
+  "normalized_sha256": "edd3f62dda7656e0a3ce14da25b6dd0c62e2dda88e7daaa7d12dd9f4f07031f3",
+  "raw": "International cables designer and manufacturer</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:2.31%;background:#cceeff;border-bottom:1px solid #000000;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;margin:0pt 0pt 0.05pt 0pt;\">&#160;</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:8.48%;background:#cceeff;border-bottom:1px solid #000000;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;text-align:right;margin:0pt 3pt 0.05pt 0pt;\"> <ix:nonFraction unitRef=\"Unit_Standard_pure_K4SUfXb-5Eik809CIGUJDA\" contextRef=\"Duration_1_1_2025_To_12_31_2025_srt_MajorCustomersAxis_laes_InternationalCablesDesignerAndManufacturerMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_AccountsReceivableMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_qk2MIaYKl0C8KEWUe0dbQw\" decimals=\"2\" format=\"ixt:num-dot-decimal\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"Tc_QPTu2xLfwkiYHLARULofTQ_5_2\">11",
+  "raw_sha256": "579b01d07ca77fcea63513471f4cf692af668e758f5485a9e2374bcf0a9a92b2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/laes-20251231x20f.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 301706,
+   "byte_start": 300733,
+   "context_ref": "Duration_1_1_2025_To_12_31_2025_srt_MajorCustomersAxis_laes_InternationalCablesDesignerAndManufacturerMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_AccountsReceivableMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_qk2MIaYKl0C8KEWUe0dbQw",
+   "raw": "<xbrli:context id=\"Duration_1_1_2025_To_12_31_2025_srt_MajorCustomersAxis_laes_InternationalCablesDesignerAndManufacturerMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_AccountsReceivableMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_qk2MIaYKl0C8KEWUe0dbQw\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001951222</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">laes:InternationalCablesDesignerAndManufacturerMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "72f7446bc1b9b87984e9387888264c4b4443ee160dc8c135111e9b685f36382c"
+  }
+ ]
+}

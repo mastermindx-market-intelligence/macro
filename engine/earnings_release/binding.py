@@ -48,6 +48,9 @@ AUTHORITY = "context_only"
 
 _AMENDMENT_RE = re.compile(r"/A\b", re.I)
 _ISO_DATE_RE = re.compile(r"\A\d{4}-\d{2}-\d{2}\Z")
+# R189: text holding a lone surrogate is the decoding of no bytes, so it is not a release body (it raises when
+# the body is encoded to be hashed); it is refused with the other bodies that are not text.
+_LONE_SURROGATE = re.compile("[\ud800-\udfff]")
 
 
 class BindingError(ValueError):
@@ -260,7 +263,7 @@ def bind_release_document(
     extractor emits carries a span receipt that was replayed against these exact
     bytes before it was returned.
     """
-    if not isinstance(body, str) or not body.strip():
+    if not isinstance(body, str) or not body.strip() or _LONE_SURROGATE.search(body):
         raise BindingError("release body must be non-empty text")
     key = FilingKey(cik=normalize_cik(cik), accession=normalize_accession(accession))
     form_text = str(form or "").strip() or "8-K"

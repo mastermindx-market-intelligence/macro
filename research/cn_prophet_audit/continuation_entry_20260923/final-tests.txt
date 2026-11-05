@@ -1,0 +1,19 @@
+........................................................................ [ 66%]
+...................................F.                                    [100%]
+=================================== FAILURES ===================================
+_______ test_continuation_respects_member_observation_coverage_and_date ________
+
+    def test_continuation_respects_member_observation_coverage_and_date():
+        for observation in ({'effective_as_of': '2026-09-18', 'aggregate_eligible': True},
+                            {'effective_as_of': '2026-09-21', 'aggregate_eligible': False}):
+            ti = _continuation_fixture()
+            ti['themes'][0]['observation'] = observation
+>           assert not _continuation_board(ti)['display_lanes']['buy_now']
+E           AssertionError: assert not [{'kind': 'THEME', 'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', ...}]
+
+tests/test_china_act_now.py:1244: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, admin, app, browser, calibration, collectors, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_china_act_now.py::test_continuation_respects_member_observation_coverage_and_date
+1 failed, 108 passed in 11.81s

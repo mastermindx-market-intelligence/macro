@@ -1,0 +1,62 @@
+{
+  "schema": "forex_r26.source_policy_consultation.v1",
+  "source_sha256": "c77b9cd6736cbe2b4aa519d87f4d63d7f88480270eab109170fa20a50f7923fd",
+  "method": "isolated execution of exact existing evaluator AST; synthetic values only; no source feed admitted",
+  "cases": {
+    "explicit_source_assertions": {
+      "outcome": "met",
+      "withheld_reasons": [],
+      "activation": "not_performed",
+      "authority": "condition_observation_only"
+    },
+    "saved_feed_null": {
+      "outcome": "withheld",
+      "withheld_reasons": [
+        "missing_quote_convention",
+        "observation_convention_mismatch"
+      ],
+      "activation": "not_performed",
+      "authority": "condition_observation_only"
+    },
+    "before_verified_availability": {
+      "outcome": "withheld",
+      "withheld_reasons": [
+        "ineligible_observation_clock"
+      ],
+      "activation": "not_performed",
+      "authority": "condition_observation_only"
+    },
+    "duplicate_revision_window": {
+      "outcome": "withheld",
+      "withheld_reasons": [
+        "ambiguous_bar_revision_or_identity"
+      ],
+      "activation": "not_performed",
+      "authority": "condition_observation_only"
+    },
+    "gap": {
+      "outcome": "withheld",
+      "withheld_reasons": [
+        "unsupported_or_nonconsecutive_4h_slots"
+      ],
+      "activation": "not_performed",
+      "authority": "condition_observation_only"
+    },
+    "at_expiry": {
+      "outcome": "withheld",
+      "withheld_reasons": [
+        "latest_observation_stale_or_unknown"
+      ],
+      "activation": "not_performed",
+      "authority": "condition_observation_only"
+    }
+  },
+  "evidence_provenance": {
+    "agent": "/root/source_policy_review",
+    "original_process_pid": 52021,
+    "retained_output_reread": true,
+    "original_execution_timestamp": "NOT_RECORDED",
+    "completed_exit_code": 0,
+    "scope": "Bounded native read-only policy consultation; not Terminal1106 review or feed admission"
+  }
+}

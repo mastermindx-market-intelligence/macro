@@ -49,11 +49,15 @@ is forbidden in site artifacts (enforced by check_validated_claims.py).
 from __future__ import annotations
 
 import argparse
+import copy
+import gzip
+import hashlib
 import json
 import logging
 import math
 import os
 import sys
+import tempfile
 from collections.abc import Iterable
 from datetime import date, datetime
 from pathlib import Path
@@ -121,6 +125,478 @@ STATES_DIR     = SITE_PROPHET / "states"
 INDEX_PATH     = SITE_PROPHET / "index.json"
 LEDGER_DIR     = _REPO / "data" / "prophet"
 LEDGER_PATH    = LEDGER_DIR / "ledger.jsonl"
+
+
+def _freeze_origination_source_board(
+    board_path: str | Path | None = None,
+) -> tuple[dict[str, Any], str, str]:
+    """Persist the exact board bytes under the existing Prophet provenance root.
+
+    ``us_standouts.json`` is a live product artifact with several lawful render
+    publishers, so it cannot itself be owned by the narrow Prophet checkpoint.
+    Prophet instead binds its index to this content-addressed immutable gzip copy.
+    The filename hashes the raw bytes; zero-mtime gzip bounds repository growth
+    while decompression recovers the exact source. Reusing the same raw bytes
+    is idempotent, and a hash-path collision fails closed.
+    """
+    path = Path(STANDOUTS_PATH if board_path is None else board_path)
+    if path.is_symlink():
+        raise RuntimeError(f"refusing symlinked Prophet source board: {path}")
+    try:
+        raw = path.read_bytes()
+    except FileNotFoundError as exc:
+        raise RuntimeError(f"Prophet source board missing: {path}") from exc
+    except OSError as exc:
+        raise RuntimeError(f"Prophet source board unreadable: {path}: {exc}") from exc
+    try:
+        doc = json.loads(raw)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"Prophet source board is not valid JSON: {path}: {exc}") from exc
+    if not isinstance(doc, dict):
+        raise RuntimeError(f"Prophet source board must be a JSON object: {path}")
+
+    sha256 = hashlib.sha256(raw).hexdigest()
+    compressed = gzip.compress(raw, compresslevel=9, mtime=0)
+    source_dir = LEDGER_DIR / "origination_sources"
+    source_dir.mkdir(parents=True, exist_ok=True)
+    snapshot = source_dir / f"{sha256}.json.gz"
+
+    def _read_snapshot_raw() -> bytes:
+        if snapshot.is_symlink():
+            raise RuntimeError(f"refusing symlinked Prophet source snapshot: {snapshot}")
+        try:
+            return gzip.decompress(snapshot.read_bytes())
+        except (OSError, EOFError) as exc:
+            raise RuntimeError(
+                f"Prophet source snapshot collision at {snapshot}: unreadable gzip payload"
+            ) from exc
+
+    if snapshot.exists():
+        if _read_snapshot_raw() != raw:
+            raise RuntimeError(
+                f"Prophet source snapshot collision at {snapshot}: raw bytes differ"
+            )
+    else:
+        temporary: Path | None = None
+        try:
+            fd, temporary_name = tempfile.mkstemp(
+                prefix=f".{sha256}.", suffix=".tmp", dir=source_dir
+            )
+            temporary = Path(temporary_name)
+            with os.fdopen(fd, "wb") as handle:
+                handle.write(compressed)
+                handle.flush()
+                os.fsync(handle.fileno())
+            try:
+                os.link(temporary, snapshot)
+            except FileExistsError:
+                if _read_snapshot_raw() != raw:
+                    raise RuntimeError(
+                        f"Prophet source snapshot collision at {snapshot}: concurrent raw bytes differ"
+                    )
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+
+    repo_root = LEDGER_DIR.parents[1]
+    try:
+        relative = snapshot.relative_to(repo_root).as_posix()
+    except ValueError as exc:
+        raise RuntimeError(
+            f"Prophet provenance root {source_dir} is outside repository root {repo_root}"
+        ) from exc
+    return doc, sha256, relative
+
+
+class _PlanCandidateSourceRefused(ValueError):
+    """One fixed Plan source read refused; the exception carries its typed code."""
+
+
+def _canonical_plan_source_identity(plan_id: str) -> tuple[str, str, str]:
+    """Parse a plan id into its canonical ``_make_id`` identity, refusing the rest."""
+    from engine.prophet_bridge import _make_id  # noqa: PLC0415
+
+    parts = plan_id.rsplit("-", 2)
+    if len(parts) != 3 or not all(parts):
+        raise _PlanCandidateSourceRefused("PLAN_IDENTITY_UNAVAILABLE")
+    ticker, direction, stamped = parts
+    if len(stamped) != 8 or any(character not in "0123456789" for character in stamped):
+        raise _PlanCandidateSourceRefused("PLAN_IDENTITY_UNAVAILABLE")
+    try:
+        formation_date = date.fromisoformat(
+            f"{stamped[:4]}-{stamped[4:6]}-{stamped[6:]}").isoformat()
+    except ValueError as exc:
+        raise _PlanCandidateSourceRefused("PLAN_IDENTITY_UNAVAILABLE") from exc
+    if _make_id(ticker, direction, formation_date) != plan_id:
+        raise _PlanCandidateSourceRefused("PLAN_IDENTITY_UNAVAILABLE")
+    return ticker, direction, formation_date
+
+
+def _plan_source_path_identity(path: Path, *, symlink_reason: str,
+                               unavailable_reason: str) -> tuple:
+    """Capture every owned path component without resolving away symlinks."""
+    import stat
+
+    if not path.is_absolute():
+        raise _PlanCandidateSourceRefused(unavailable_reason)
+    identities = []
+    try:
+        for component in (*reversed(path.parents), path):
+            info = component.lstat()
+            if stat.S_ISLNK(info.st_mode):
+                raise _PlanCandidateSourceRefused(symlink_reason)
+            kind = stat.S_IFMT(info.st_mode)
+            if (component == path and not stat.S_ISREG(info.st_mode)
+                    or component != path and not stat.S_ISDIR(info.st_mode)):
+                raise _PlanCandidateSourceRefused(unavailable_reason)
+            identities.append((info.st_dev, info.st_ino, kind))
+    except OSError as exc:
+        raise _PlanCandidateSourceRefused(unavailable_reason) from exc
+    return tuple(identities)
+
+
+def read_plan_candidate_source(
+    plan_id: str,
+    *,
+    expected_plan_sha256: str | None = None,
+    expected_candidate_generation_id: str | None = None,
+) -> dict[str, Any]:
+    """Fixed Plan-owner read of ONE plan's genuine original producer source.
+
+    Source-only and detached. The read is fixed to the incumbent module owners:
+    the canonical raw Plan at ``PLANS_DIR/<id>.json`` and the ONE content-addressed
+    original source snapshot under ``LEDGER_DIR/origination_sources`` — no repo,
+    path or caller Plan/owner JSON parameter ever names the source, and no
+    filesystem path is ever returned as authority. The reader re-derives the
+    frozen original-producer binding from the retained snapshot bytes with the
+    real producer callable, requires the plan's stamped ``source_origin`` to be
+    exactly that binding at the same original ordinal and row receipt, checks the
+    original Plan terms against that one original source row with the incumbent
+    identity semantics, and resolves the ONE original source event through the
+    shared private producer core (``scripts/build_stock_library.py``) against the
+    complete captured UCV byte inventory and the actual B1 snapshot and token.
+
+    The envelope separates facts that must never be conflated: the ORIGINAL
+    ``source_relation_status`` (was this plan's exact source row natively bound,
+    under which key/receipt/clocks) is kept apart from the typed
+    ``current_action_status``, which is always ``UNAVAILABLE`` here. A bound and
+    even ACTIVE relation never grants a trade action, renewed eligibility, B4, a
+    next-session nomination or an entry, and no current-decision qualification is
+    readable through a source-only read. A genuinely later terminal or superseded
+    episode still leaves the exact original relation inspectable with its actual
+    native lifecycle; retraction, correction and suppression stay explicit and are
+    never silently converted to absence or availability.
+
+    Whole-read final checks cover the actual Plan raw bytes, the compressed source
+    bytes, the complete UCV part inventory/receipts, the actual B1 token/generation
+    and symlink/path identity; any change discards the assembled relation. The
+    optional ``expected_plan_sha256``/``expected_candidate_generation_id`` pins are
+    equality checks without retries. ``generated_at`` is the actual read completion
+    instant observed once after the last consistency check — no new source clock,
+    decision-session relabeling, retry or freshness renewal exists here. The reader
+    never writes the Plan, raw sources, native ledger or HEAD, never invokes
+    origination or runtime, never emits a receipt and never fetches a provider;
+    ordinary receipt emission stays DISABLED.
+    """
+    from datetime import timezone
+    import zlib
+    from engine.prophet_bridge import _make_id, _normalise_iso_date
+    from engine.options_structure import validate_trade_plan  # noqa: PLC0415
+    from scripts.build_stock_library import (  # noqa: PLC0415
+        _OriginalSelectionNativeRefused,
+        _read_original_selection_native_relation,
+        _today_source_instant,
+        today_selection_source_binding,
+    )
+
+    _PLAN_SOURCE_READ_SCHEMA = "prophet.plan_candidate_source_read/v1"
+    _PLAN_SOURCE_CURRENT_DECISION_QUALIFICATION_UNAVAILABLE = (
+        "PLAN_CURRENT_DECISION_QUALIFICATION_UNAVAILABLE"
+    )
+    _PLAN_SOURCE_CLOCK_FIELDS = (
+        "source_emitted_at", "source_session", "formation_date", "plan_recorded_at",
+        "native_known_at", "native_recorded_at", "generation_recorded_at",
+    )
+
+    def refuse(code: str) -> _PlanCandidateSourceRefused:
+        return _PlanCandidateSourceRefused(code)
+
+    def empty_clocks() -> dict[str, Any]:
+        return {field: None for field in _PLAN_SOURCE_CLOCK_FIELDS}
+
+    try:
+        if (not isinstance(plan_id, str) or not plan_id
+                or "/" in plan_id or "\\" in plan_id
+                or any(ord(c) < 32 or ord(c) == 127 for c in plan_id)
+                or plan_id in {".", ".."}):
+            raise refuse("PLAN_IDENTITY_UNAVAILABLE")
+        ticker, direction, formation_date = _canonical_plan_source_identity(plan_id)
+        started_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+        # ── the canonical raw Plan, through the owned path only ────────────────
+        plans_dir = Path(PLANS_DIR)
+        plan_path = plans_dir / f"{plan_id}.json"
+        # The canonical identity above leaves no separator, so the owned read
+        # path is exactly the fixed plans root plus this one file; every
+        # component of that owned path must be a real directory entry.
+        def plan_path_identity():
+            return _plan_source_path_identity(
+                plan_path, symlink_reason="PLAN_PATH_SYMLINK_UNAVAILABLE",
+                unavailable_reason="PLAN_READ_UNAVAILABLE")
+        plan_path_token = plan_path_identity()
+        try:
+            raw = plan_path.read_bytes()
+        except OSError as exc:
+            raise refuse("PLAN_READ_UNAVAILABLE") from exc
+        plan_sha256 = "sha256:" + hashlib.sha256(raw).hexdigest()
+        if expected_plan_sha256 is not None and expected_plan_sha256 != plan_sha256:
+            raise refuse("PLAN_SHA256_MISMATCH")
+        try:
+            plan = json.loads(raw)
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise refuse("PLAN_MALFORMED_UNAVAILABLE") from exc
+        if not isinstance(plan, dict):
+            raise refuse("PLAN_MALFORMED_UNAVAILABLE")
+        try:
+            invalid = validate_trade_plan(plan)
+        except (ValueError, TypeError, KeyError) as exc:
+            raise refuse("PLAN_INVALID_UNAVAILABLE") from exc
+        if invalid:
+            raise refuse("PLAN_INVALID_UNAVAILABLE")
+        if plan.get("id") != plan_id:
+            raise refuse("PLAN_IDENTITY_UNAVAILABLE")
+
+        # ── the plan's stamped original origin ─────────────────────────────────
+        origin = plan.get("source_origin")
+        if not isinstance(origin, dict):
+            # An old plan with no original source_origin has nothing to read;
+            # that source is explicitly unavailable here, never inferred.
+            raise refuse("PLAN_SOURCE_ORIGIN_UNAVAILABLE")
+        stamped_binding = origin.get("source_binding")
+        if not isinstance(stamped_binding, dict):
+            raise refuse("PLAN_SOURCE_BINDING_UNAVAILABLE")
+        source_sha256 = stamped_binding.get("source_sha256")
+        if (not isinstance(source_sha256, str) or not source_sha256.startswith("sha256:")
+                or len(source_sha256) != 71
+                or any(character not in "0123456789abcdef" for character in source_sha256[7:])):
+            raise refuse("PLAN_SOURCE_BINDING_UNAVAILABLE")
+
+        # ── the ONE content-addressed original source snapshot ─────────────────
+        source_dir = Path(LEDGER_DIR) / "origination_sources"
+        snapshot_path = source_dir / f"{source_sha256[7:]}.json.gz"
+        def source_path_identity():
+            return _plan_source_path_identity(
+                snapshot_path, symlink_reason="PLAN_SOURCE_SNAPSHOT_SYMLINK_UNAVAILABLE",
+                unavailable_reason="PLAN_SOURCE_SNAPSHOT_UNAVAILABLE")
+        source_path_token = source_path_identity()
+        try:
+            compressed = snapshot_path.read_bytes()
+        except OSError as exc:
+            raise refuse("PLAN_SOURCE_SNAPSHOT_UNAVAILABLE") from exc
+        try:
+            raw_source = gzip.decompress(compressed)
+        except (OSError, EOFError, zlib.error) as exc:
+            raise refuse("PLAN_SOURCE_SNAPSHOT_UNAVAILABLE") from exc
+        if hashlib.sha256(raw_source).hexdigest() != source_sha256[7:]:
+            raise refuse("PLAN_SOURCE_SNAPSHOT_DIGEST_MISMATCH")
+        try:
+            source_doc = json.loads(raw_source)
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise refuse("PLAN_SOURCE_MALFORMED_UNAVAILABLE") from exc
+        if not isinstance(source_doc, dict):
+            raise refuse("PLAN_SOURCE_MALFORMED_UNAVAILABLE")
+        # The actual producer derivation over the exact retained bytes is the
+        # authority: the stamped binding must equal it — exact raw SHA, pair,
+        # session, selection receipt and every ordered ordinal/row receipt.
+        try:
+            actual_binding = today_selection_source_binding(raw_source)
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            raise refuse("PLAN_SOURCE_BINDING_UNAVAILABLE") from exc
+        if actual_binding != stamped_binding:
+            raise refuse("PLAN_SOURCE_BINDING_MISMATCH")
+        try:
+            if (_today_source_instant(source_doc["emit"]["at_utc"])
+                    > _today_source_instant(started_at)):
+                raise refuse("PLAN_SOURCE_CLOCK_UNAVAILABLE")
+        except (ValueError, TypeError, KeyError) as exc:
+            raise refuse("PLAN_SOURCE_CLOCK_UNAVAILABLE") from exc
+        board_rows = source_doc.get("buy")
+        selection_index = origin.get("selection_index")
+        # The incumbent Plan validator already checks ordinal/receipt shape;
+        # exact binding equality above carries that proof to these source bytes.
+        # These local checks are defense in depth, not separately witnessed codes.
+        if (isinstance(selection_index, bool) or not isinstance(selection_index, int)
+                or not isinstance(board_rows, list)
+                or not 0 <= selection_index < len(board_rows)):
+            raise refuse("PLAN_SOURCE_ORDINAL_UNAVAILABLE")
+        if origin.get("row_receipt") != actual_binding["ordered_rows"][selection_index]["row_receipt"]:
+            raise refuse("PLAN_SOURCE_ROW_RECEIPT_MISMATCH")
+
+        # ── original Plan terms against that exact original source row ─────────
+        # Incumbent identity semantics only. This is identity validation, never a
+        # new candidate ticker join: the native source binding below stays the
+        # only authority for the original source event.
+        source_row = board_rows[selection_index]
+        entry_signal = source_row.get("entry_signal")
+        spot = entry_signal.get("spot") if isinstance(entry_signal, dict) else None
+        try:
+            original_entry = round(float(spot), 4)
+            plan_entry = float(plan.get("entry"))
+        except (TypeError, ValueError) as exc:
+            raise refuse("PLAN_SOURCE_ROW_MISMATCH") from exc
+        hold = source_row.get("hold") or {}
+        if not isinstance(hold, dict):
+            raise refuse("PLAN_SOURCE_ROW_MISMATCH")
+        original_ticker = str(source_row.get("ticker") or "").strip().upper()
+        original_formation = _normalise_iso_date(hold.get("anchor") or source_doc.get("as_of"))
+        if (not original_ticker or original_formation is None
+                or _make_id(original_ticker, "BULL", original_formation) != plan_id
+                or ticker != original_ticker or direction != "BULL"
+                or plan.get("asset") != original_ticker
+                or plan.get("direction") != direction
+                or plan.get("formation_date") != original_formation
+                or not math.isfinite(original_entry) or not math.isfinite(plan_entry)
+                or plan_entry != original_entry):
+            raise refuse("PLAN_SOURCE_ROW_MISMATCH")
+
+        # The source owner acquires its own native inputs and yields facts only.
+        # Exiting this context rechecks those inputs at the same interleaving
+        # point between our two Plan/original-source guard groups below.
+        with _read_original_selection_native_relation(
+                raw_source, selection_index=selection_index, started_at=started_at,
+                expected_candidate_generation_id=expected_candidate_generation_id) as facts:
+            # Original source relation first — a separate fact from any current
+            # lifecycle, and never convertible into a current trade action.
+            relation_status = "BOUND"
+            relation_reasons: list[str] = []
+            action_reasons = [_PLAN_SOURCE_CURRENT_DECISION_QUALIFICATION_UNAVAILABLE]
+            if facts["status"] != "AVAILABLE":
+                relation_reasons = (list(facts["reason_codes"] or [])
+                                    or ["PLAN_SOURCE_RESOLUTION_UNAVAILABLE"])
+                relation_status = {
+                    "CANDIDATE_SOURCE_UNAVAILABLE": "UNAVAILABLE",
+                    "CANDIDATE_SOURCE_AMBIGUOUS": "AMBIGUOUS",
+                    "CANDIDATE_SOURCE_SUPPRESSED": "SUPPRESSED",
+                    "CANDIDATE_SOURCE_RETRACTED": "RETRACTED",
+                    "ROW_PROVENANCE_UNAVAILABLE": "UNAVAILABLE",
+                    "ROW_PROVENANCE_MISMATCH": "UNAVAILABLE",
+                    "CANDIDATE_RECONCILIATION_PENDING": "PENDING",
+                    "CANDIDATE_EPISODE_AMBIGUOUS": "AMBIGUOUS",
+                    # A genuinely later terminal/superseded episode leaves the
+                    # ORIGINAL relation exactly bound and inspectable.
+                    "CANDIDATE_EPISODE_TERMINAL": "BOUND",
+                }.get(relation_reasons[0], "UNAVAILABLE")
+                if relation_status != "PENDING":
+                    action_reasons.append(relation_reasons[0])
+                if relation_status == "BOUND":
+                    relation_reasons = []
+            lifecycle = (dict(facts["episode_lifecycle"])
+                         if facts["episode_lifecycle"] is not None else None)
+            native_identity = (dict(facts["native_identity"])
+                               if facts["native_identity"] is not None else None)
+            # Native refusal codes remain explicit; this consumer may only withhold.
+            assessment_reasons = list(facts["assessment_codes"])
+            if assessment_reasons:
+                native_identity = None
+                action_reasons[:0] = assessment_reasons
+            source_emit = source_doc.get("emit")
+            clocks = {
+                "source_emitted_at": source_emit.get("at_utc") if isinstance(source_emit, dict) else None,
+                "source_session": actual_binding.get("market_session"),
+                "formation_date": formation_date,
+                "plan_recorded_at": plan.get("recorded_at"),
+                **facts["native_clocks"],
+            }
+            origin_out = {
+                "selection_index": selection_index,
+                "row_receipt": origin.get("row_receipt"),
+                "source_event_id": facts.get("source_event_id"),
+                "source_receipt": facts.get("source_receipt"),
+            }
+
+            # First consumer guard group, before the native owner rechecks on exit.
+            try:
+                if plan_path.read_bytes() != raw:
+                    raise refuse("PLAN_SNAPSHOT_CHANGED")
+                if plan_path_identity() != plan_path_token:
+                    raise refuse("PLAN_PATH_CHANGED")
+                if source_path_identity() != source_path_token:
+                    raise refuse("PLAN_SOURCE_PATH_CHANGED")
+                if snapshot_path.read_bytes() != compressed:
+                    raise refuse("PLAN_SOURCE_SNAPSHOT_CHANGED")
+            except _PlanCandidateSourceRefused:
+                raise
+            except (OSError, ValueError, TypeError) as exc:
+                raise refuse("PLAN_SOURCE_RECHECK_UNAVAILABLE") from exc
+
+        # Second consumer guard group, after the native owner's final check.
+        try:
+            if plan_path.read_bytes() != raw:
+                raise refuse("PLAN_SNAPSHOT_CHANGED")
+            if snapshot_path.read_bytes() != compressed:
+                raise refuse("PLAN_SOURCE_SNAPSHOT_CHANGED")
+            if plan_path_identity() != plan_path_token:
+                raise refuse("PLAN_PATH_CHANGED")
+            if source_path_identity() != source_path_token:
+                raise refuse("PLAN_SOURCE_PATH_CHANGED")
+        except _PlanCandidateSourceRefused:
+            raise
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("PLAN_SOURCE_RECHECK_UNAVAILABLE") from exc
+
+        # Read completion is observed once, after every owner input above is
+        # gathered and every final raw/part/HEAD guard has held. No clock here
+        # renews, relabels or replaces any original source or native clock.
+        completed_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        if facts["has_assessment"]:
+            try:
+                after_completion = (_today_source_instant(facts["assessment_asof"])
+                                    > _today_source_instant(completed_at))
+            except (TypeError, ValueError):
+                after_completion = True
+            if after_completion:
+                native_identity = None
+                action_reasons.insert(0, "ASSESSMENT_AFTER_READ_COMPLETION_UNAVAILABLE")
+
+        return {
+            "schema": _PLAN_SOURCE_READ_SCHEMA,
+            "plan_id": plan_id,
+            "read_status": "AVAILABLE",
+            "reason_codes": [],
+            "plan_sha256": plan_sha256,
+            "source_relation_status": relation_status,
+            "source_relation_reasons": relation_reasons,
+            "current_action_status": "UNAVAILABLE",
+            "current_action_reasons": action_reasons,
+            "source_origin": origin_out,
+            "source_binding": copy.deepcopy(actual_binding),
+            "native_identity": native_identity,
+            "episode_lifecycle": lifecycle,
+            "clocks": clocks,
+            "generated_at": completed_at,
+        }
+    except (_PlanCandidateSourceRefused, _OriginalSelectionNativeRefused) as exc:
+        code = exc.args[0] if exc.args else "PLAN_SOURCE_READ_UNAVAILABLE"
+        return {
+            "schema": _PLAN_SOURCE_READ_SCHEMA,
+            "plan_id": plan_id if isinstance(plan_id, str) else str(plan_id),
+            "read_status": "UNAVAILABLE",
+            "reason_codes": [code],
+            "plan_sha256": None,
+            "source_relation_status": "UNAVAILABLE",
+            "source_relation_reasons": [code],
+            "current_action_status": "UNAVAILABLE",
+            "current_action_reasons": [
+                _PLAN_SOURCE_CURRENT_DECISION_QUALIFICATION_UNAVAILABLE,
+            ],
+            "source_origin": None,
+            "source_binding": None,
+            "native_identity": None,
+            "episode_lifecycle": None,
+            "clocks": empty_clocks(),
+            "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        }
+
 
 # R2_INDEX_KEY is GONE ON PURPOSE (DEC:B1-PROPHET-PUBLIC-SPLIT).  The full
 # Prophet plan book (site/prophet/index.json) is premium/private and must
@@ -634,6 +1110,85 @@ def _load_closed_outcomes() -> dict[str, str]:
         except Exception:
             pass
     return outcomes
+
+
+def _reconcile_same_build_closures(
+    entries: list[dict[str, Any]], closed_outcomes: dict[str, str]
+) -> None:
+    """Align the published index with the just-advanced canonical ledger.
+
+    This is a display-only, in-memory projection. It never advances the ledger,
+    edits immutable plans, grades an outcome, or infers a close from phase. A
+    newly-closed row needs closed bilingual pulse/copy in THIS build.
+
+    A terminal row's profit-plan targets remain as historical geometry on the
+    immutable plan, but ACTIVE/PENDING profit-taking instructions must not
+    survive in the index -- including rows closed before this build.
+    """
+    for entry in entries:
+        plan_id = str(entry.get("id") or "")
+        if not plan_id or plan_id not in closed_outcomes:
+            continue
+        if not entry.get("closed"):
+            outcome = closed_outcomes[plan_id]
+            entry["closed"] = True
+            entry["pulse"], entry["pulse_zh"] = _plan_pulse(
+                entry.get("clock_age_days"), entry.get("phase"), None,
+                closed=True, outcome=outcome,
+            )
+            entry["what_to_do_now"], entry["what_to_do_now_zh"] = (
+                _closed_state_lines(outcome)
+            )
+        # Closed-state guidance is withheld even for a row already marked
+        # closed before today's advancement. Historical target levels stay on
+        # targets[] and the immutable original plan, never regraded here.
+        entry["recommended_action"] = None
+        state = entry.get("state")
+        if isinstance(state, dict):
+            state["recommended_action"] = None
+        if entry.get("profit_plan"):
+            entry["profit_plan"] = []
+        if entry.get("profit_plan_zh"):
+            entry["profit_plan_zh"] = []
+
+
+
+def _reconcile_closed_state_sidecars(
+    entries: list[dict[str, Any]], closed_outcomes: dict[str, str]
+) -> None:
+    """Withhold stale live actions in state sidecars after nightly ledger close.
+
+    The management engine wrote these mutable state/v1 projections before the
+    canonical ledger's final advancement. Keep historical geometry/accumulators
+    intact, but let no on-disk sidecar claim the plan is still actionable once
+    the ledger has closed it. No plan or ledger is written here.
+    """
+    for entry in entries:
+        plan_id = str(entry.get("id") or "")
+        if (not plan_id or not entry.get("closed")
+                or plan_id not in closed_outcomes
+                or "/" in plan_id or "\\" in plan_id):
+            continue
+        path = STATES_DIR / f"{plan_id}.json"
+        state = _read_json(path)
+        if (not isinstance(state, dict)
+                or state.get("schema") != "prophet.management_state/v1"
+                or str(state.get("id") or "") != plan_id):
+            continue
+        projected = dict(state)
+        projected["closed"] = True
+        projected["outcome"] = closed_outcomes[plan_id]
+        projected["recommended_action"] = None
+        projected["human_state"] = "Closed"
+        if isinstance(state.get("reliability"), dict):
+            projected["reliability"] = {
+                **state["reliability"],
+                "recommended_action": (
+                    "withheld — canonical forward ledger has closed this plan"
+                ),
+            }
+        if projected != state:
+            _write_json(path, projected)
 
 
 def _load_closed_ids() -> set[str]:
@@ -1674,6 +2229,11 @@ def _degraded_index_entry(
         "thesis_zh": plan.get("thesis_zh") or "",
         "horizon_days": plan.get("horizon_days"),
         "stage_tilt": plan.get("stage_tilt"),
+        # Prospective source_origin, carried through EXACTLY as the new plan
+        # carries it.  A historical plan without one stays without the key (no
+        # invented null field), and no plan file is rewritten here.
+        **({"source_origin": plan["source_origin"]}
+           if "source_origin" in plan else {}),
     }
 
 
@@ -1812,6 +2372,36 @@ def _load_macro_stance(asof: str) -> str | None:
         return None
 
 
+def _load_origination_source_binding(
+    *, source_board_sha256: str, source_board_doc: dict[str, Any]
+) -> dict[str, Any]:
+    """Derive the original producer binding from the RETAINED frozen snapshot.
+
+    Decompresses ONLY the content-addressed gzip copy this builder already stored
+    under ``LEDGER_DIR/origination_sources``, re-verifies the raw bytes and the
+    parsed document against the already-frozen board, and hands those exact raw
+    bytes to the frozen original-producer callable.  The moving ``STANDOUTS_PATH``
+    is never read here, so a source board that moves or is rewritten after the
+    freeze cannot alter the binding.  Any failure raises; the caller treats
+    provenance as optional and ships the plans unstamped.
+    """
+    snapshot = LEDGER_DIR / "origination_sources" / f"{source_board_sha256}.json.gz"
+    if snapshot.is_symlink():
+        raise RuntimeError(f"refusing symlinked Prophet source snapshot: {snapshot}")
+    raw = gzip.decompress(snapshot.read_bytes())
+    if hashlib.sha256(raw).hexdigest() != source_board_sha256:
+        raise RuntimeError(
+            "retained Prophet source snapshot does not hash to the frozen board "
+            f"{source_board_sha256}")
+    if json.loads(raw) != source_board_doc:
+        raise RuntimeError(
+            "retained Prophet source snapshot does not parse to the frozen board")
+    from scripts.build_stock_library import (  # noqa: PLC0415
+        today_selection_source_binding,
+    )
+    return today_selection_source_binding(raw)
+
+
 def _load_futures_chg(asof: str) -> dict | None:
     """Prior close-to-close % change for SPY/QQQ from the yahoo price store.
 
@@ -1893,7 +2483,22 @@ def main() -> None:
 
     asof: str = args.date
     log.info("build_prophet: starting — asof=%s publish=%s", asof, args.publish)
-    _standouts_doc = _read_json(STANDOUTS_PATH) or {}
+    (
+        _standouts_doc,
+        source_board_sha256,
+        source_board_snapshot_path,
+    ) = _freeze_origination_source_board(STANDOUTS_PATH)
+    # Prospective Plan source_origin (pre-B1 prerequisite, display metadata).
+    # Derived ONLY from the retained frozen snapshot above; any failure leaves the
+    # new plans unstamped and leaves legacy selection/admission byte-identical.
+    try:
+        source_binding: dict[str, Any] | None = _load_origination_source_binding(
+            source_board_sha256=source_board_sha256,
+            source_board_doc=_standouts_doc,
+        )
+    except Exception as e:  # noqa: BLE001 — provenance is optional, never fatal
+        log.warning("build_prophet: plan source_origin unavailable (%s)", e)
+        source_binding = None
     _source_staleness = (
         _standouts_doc.get("staleness")
         if isinstance(_standouts_doc.get("staleness"), dict) else {}
@@ -1973,6 +2578,8 @@ def main() -> None:
     intake_stats: dict[str, Any] = {}
     new_plans = originate_plans(
         standouts_path=STANDOUTS_PATH,
+        standouts_doc=_standouts_doc,
+        source_binding=source_binding,
         asof=asof,
         existing_ids=existing_ids,
         thetadata_store=thetadata_store,
@@ -2003,17 +2610,15 @@ def main() -> None:
     # original set already contains tonight's new ids and would suppress everything C0
     # tried to mirror. existing_plans itself is untouched.
     #
-    # The standouts artifact is loaded HERE and passed in-memory, so the arena provably
-    # slices the same world the live origination did rather than re-reading a file that
-    # another lane could have rewritten in between. C0's plan ids are checked against the
-    # live ids as the harness-validity pin.
+    # The exact source board was frozen once at the start of this build.  Arena gets an
+    # isolated deep copy of that object, so an ABA rewrite of the mutable product board
+    # cannot make the shadow harness slice different bytes than live origination.
+    # C0's plan ids are checked against the live ids as the harness-validity pin.
     try:
         from engine.prophet_arena import run_arena  # noqa: PLC0415
 
-        with STANDOUTS_PATH.open(encoding="utf-8") as _f:
-            _arena_standouts = json.load(_f)
         _arena_board = run_arena(
-            _arena_standouts,
+            copy.deepcopy(_standouts_doc),
             asof=asof,
             existing_ids=set(existing_plans.keys()),
             active_keys=active_keys,
@@ -2059,10 +2664,8 @@ def main() -> None:
     shadow_rows: list[dict] = []
     shadow_written = 0
     try:
-        with STANDOUTS_PATH.open(encoding="utf-8") as _f:
-            _shadow_standouts = json.load(_f)
         shadow_rows = legacy_shadow_rows(
-            _shadow_standouts,
+            copy.deepcopy(_standouts_doc),
             asof=asof,
             existing_ids=set(existing_plans.keys()),
             active_keys=active_keys,
@@ -2376,6 +2979,11 @@ def main() -> None:
             # DERIVED tonight, never stored on the plan.
             "entry_zone_state": zone_state,
             "early_turn": plan.get("early_turn"),
+            # Prospective source_origin, carried through EXACTLY as the plan
+            # carries it; a historical plan without one ships without the key
+            # (no invented null field).
+            **({"source_origin": plan["source_origin"]}
+               if "source_origin" in plan else {}),
         })
 
     # ── 3b. Advance ledger (nightly-only — idempotent close-event writer) ────────
@@ -2385,6 +2993,19 @@ def main() -> None:
     # plans/index after a partial or failed ledger advance would split the system's
     # clocks; let the build fail so the guarded checkpoint withholds the whole delta.
     advance_ledger(actionable_plans, asof)
+
+    # This run may have closed plans AFTER the index rows were assembled from the
+    # pre-advance ledger. Re-read the same canonical ledger (never infer closures
+    # from management phase), then project its new closes onto those in-memory
+    # publication rows before computing lifecycle counts and writing index.json.
+    # Only a newly-closed row changes; all previously-closed/open rows retain
+    # their existing representation. The forward ledger remains the sole owner.
+    closed_outcomes_after_advance = _load_closed_outcomes()
+    _reconcile_same_build_closures(active_entries, closed_outcomes_after_advance)
+    # State sidecars were written before ledger advancement. They are mutable
+    # projections too: a newly closed plan must not publish a contradictory
+    # per-plan live recommendation after index.json is marked closed.
+    _reconcile_closed_state_sidecars(active_entries, closed_outcomes_after_advance)
 
     # ── 3c. Forward-ledger quarantine (derived, then disclosed) ──────────────────
     # Runs AFTER advance_ledger so tonight's closes are judged by the same rule as
@@ -2499,6 +3120,20 @@ def main() -> None:
         log.info("build_prophet: lifecycle `watch` cell WITHHELD — the intake published "
                  "no early_turn_watch roster (key-absence, not zero)")
 
+    # P1 leader-observation receipt. The full ticker roster remains owned by
+    # site/anticipationdata/us_leader_pullback.json and the protected US page payload;
+    # index.json receives source clocks and aggregate counts only. This read happens
+    # after every plan/lifecycle decision above and cannot alter their bytes or order.
+    from engine.us_leader_pullback_coverage import (  # noqa: PLC0415
+        load_prophet_observations,
+        prophet_observation_summary,
+    )
+    _leader_observations = load_prophet_observations(
+        site_root=_REPO / "site",
+        reference_session=source_asof,
+    )
+    _leader_observation_summary = prophet_observation_summary(_leader_observations)
+
     index: dict[str, Any] = {
         "schema": "prophet.index/v1",
         # Compatibility run clock.  Freshness sentinels MUST use source_asof below:
@@ -2511,13 +3146,16 @@ def main() -> None:
         "source_unknown": source_unknown,
         "source_basis": source_basis,
         "source_mixed_vintage": source_mixed_vintage,
+        "source_board_sha256": source_board_sha256,
+        "source_board_snapshot_path": source_board_snapshot_path,
+        "source_board_snapshot_encoding": "gzip",
         "cadence": "nightly-EOD",
         "authority_tier": "display",
         # ANTICIPATION §6.2 A1 — the selection rule tonight's plans were originated
         # under.  Stamped at the top level as well as on every plan so a reader (and a
         # later side-by-side) never has to infer the era from a date.
         "selection_era": SELECTION_ERA,
-        "gate_go": _read_standouts_gate_go(),
+        "gate_go": _read_standouts_gate_go(_standouts_doc),
         "plan_count": len(all_plans),
         # MISNOMER, deliberately preserved: `active_count` (and `plans[]`) count every
         # plan the management engine could state, INCLUDING forward-ledger-closed ones.
@@ -2541,6 +3179,7 @@ def main() -> None:
         "lifecycle_counts": _life_counts,
         "lifecycle_live_total": _life_live_total,
         "lifecycle_grand_total": _life_grand_total,
+        "leader_observation_summary": _leader_observation_summary,
         # P6 — the order `plans[]` actually ships in, stated where the reader can check
         # it against the `_priority_score` on every row.
         "plans_sort_key": (
@@ -2605,11 +3244,13 @@ def main() -> None:
             # admission helpers (entry_status / admission_class) and returns the
             # per-name view. Additive and display tier: it reports the gate above, it
             # never moves it. This call site — unlike build_site's — knows tonight's
-            # origination run, so it can also disclose the `plan_not_built` cohort.
+            # origination run AND its failure record, so it can also disclose the
+            # `validation_failed` and `plan_not_built` cohorts.
             "receipts": refusal_receipts(
                 _standouts_doc,
                 active_keys,
                 {str(p.get("asset") or "") for p in new_plans},
+                validation_failures=intake_stats.get("validation_failures"),
             ),
             # The receipt that separates "the organ saw these names and none qualified"
             # from "the organ saw none of them" — a bare zero admission count cannot.
@@ -2800,8 +3441,10 @@ def main() -> None:
     return active_entries
 
 
-def _read_standouts_gate_go() -> bool:
-    """Read gate_go from standouts for the index."""
+def _read_standouts_gate_go(standouts_doc: dict[str, Any] | None = None) -> bool:
+    """Read ``gate_go`` from a supplied frozen board or the legacy path fallback."""
+    if isinstance(standouts_doc, dict):
+        return bool(standouts_doc.get("gate_go", False))
     try:
         with STANDOUTS_PATH.open(encoding="utf-8") as f:
             return bool(json.load(f).get("gate_go", False))

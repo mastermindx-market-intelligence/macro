@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-24T21:17:35Z",
+ "accession": "0001193125-26-067039",
+ "cik": "0000026058",
+ "doc_byte_length": 5248029,
+ "doc_sha256": "5037d30798b317ad55ccd1372d4a9748b41875cf99ccf976ef7c91368a1a597f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cts-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1832206,
+  "byte_start": 1830161,
+  "normalized": "Cummins, Inc. 8.4% 11.7%",
+  "normalized_sha256": "f25d71ebf0cda662c2dd7b31efd8ea8f1aabb30c121a06057fc0430502183217",
+  "raw": "Cummins, Inc.</span></p></td>\n           <td style=\"padding-top:0.01in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;\"><p style=\"font-size:11pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:left;\"><span style=\"white-space:pre-wrap;font-family:'Calibri',sans-serif;font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n           <td style=\"padding-top:0.01in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_19ba1ebd-924e-4694-b645-1ffbd8893e90\" contextRef=\"C_641a93b1-b366-4cfd-b53d-0b4e1fd0e2d9\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"INF\" format=\"ixt:num-dot-decimal\">8.4</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">%</span></p></td>\n           <td style=\"padding-top:0.01in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n           <td style=\"padding-top:0.01in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_0a10a9b8-82fc-4a73-a264-64dfc2ecebe3\" contextRef=\"C_5da2ebba-5a4c-4288-b909-40e2e69b06bb\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"INF\" format=\"ixt:num-dot-decimal\">11.7</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">%",
+  "raw_sha256": "9af89381ce0ba2be443b0ff13d300eac6fa62e50fc061703d85b971aadc1f3d4"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/26058/000119312526067039/cts-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 166586,
+   "byte_start": 165892,
+   "context_ref": "C_5da2ebba-5a4c-4288-b909-40e2e69b06bb",
+   "raw": "<xbrli:context id=\"C_5da2ebba-5a4c-4288-b909-40e2e69b06bb\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000026058</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">cts:CumminsIncMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "3a290d06779d434fd9717878072e3095d981dbc2a18eb0c290f6a9085bb11e8f"
+  }
+ ]
+}

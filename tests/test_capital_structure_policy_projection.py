@@ -7,6 +7,12 @@ import pytest
 
 import scripts.build_capital_structure_page as page_builder
 
+
+@pytest.fixture(autouse=True)
+def isolated_page_data(tmp_path, monkeypatch):
+    # The policy projector resolves inputs independently of render(root).
+    monkeypatch.setattr("lib.config.data_dir", lambda: tmp_path / "data")
+
 _BANNED_SCORE = re.compile(
     r"\bbuy\b|\bsell\b|bullish|bearish|upgrade|downgrade|\brank\b|\bscore\b|看多|看空|评分",
     re.IGNORECASE,

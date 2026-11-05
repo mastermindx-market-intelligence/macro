@@ -1,0 +1,129 @@
+{
+  "source_id": "usitc-2026-10-13-337-ta-1473",
+  "probe_sha256": "fd55d7438da0cd8574228cdf62a5ea4344e215a519e0b591f3e94cf0e1ca1eda",
+  "cases": [
+    {
+      "name": "accepted_render",
+      "passed": true,
+      "state": "REPORT_FILES_VERIFIED",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "both_pages_pending",
+      "passed": true,
+      "state": "PENDING_INCUMBENT_RENDER",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "served_pending",
+      "passed": true,
+      "state": "PENDING_INCUMBENT_RENDER",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "site_pending",
+      "passed": true,
+      "state": "PENDING_INCUMBENT_RENDER",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "source_drift",
+      "passed": true,
+      "refused": "render source drift: scripts/build_research_pages.py",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "served_mismatch",
+      "passed": true,
+      "refused": "site/site.served mismatch",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "wrong_canonical",
+      "passed": true,
+      "refused": "wrong canonical link",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "freshened_date",
+      "passed": true,
+      "refused": "article date/url drift",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "wrong_author",
+      "passed": true,
+      "refused": "source attribution drift",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "invented_issuer",
+      "passed": true,
+      "refused": "invented issuer association",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "changed_excerpt",
+      "passed": true,
+      "refused": "rendered excerpt drift or wrong gate placement",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "excerpt_under_gate",
+      "passed": true,
+      "refused": "paywall metadata mismatch",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "single_gate_wrong_placement",
+      "passed": true,
+      "refused": "rendered excerpt drift or wrong gate placement",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "lost_observation_attribution",
+      "passed": true,
+      "refused": "attributed observation teaser drift",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "wrong_cta",
+      "passed": true,
+      "refused": "wrong acquisition route",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "wrong_paywall",
+      "passed": true,
+      "refused": "paywall metadata mismatch",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "private_pdf_link",
+      "passed": true,
+      "refused": "private/direct PDF link",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "catalog_summary_drift",
+      "passed": true,
+      "refused": "accepted summary drift",
+      "inputs_unchanged": true
+    },
+    {
+      "name": "stored_excerpt_drift",
+      "passed": true,
+      "refused": "accepted excerpt drift",
+      "inputs_unchanged": true
+    }
+  ],
+  "passed": 19,
+  "audit_violations": [],
+  "retained_inputs_unchanged": true,
+  "fixture_only": true,
+  "production_writes": 0,
+  "provider_calls": 0,
+  "browser_accepted": false,
+  "publication": false,
+  "cutover": false
+}

@@ -82,7 +82,7 @@ universe:
     - managed_care
     - obesity_glp1
     - us_sector_health
-  distinct_ticker_count: 70
+  distinct_ticker_count: 71
   derivation: union_of_declared_basket_members_read_at_validation_time
 
 review_policy:
@@ -1037,6 +1037,7 @@ unmapped_universe_tickers:
   - HSIC
   - HUM
   - IDXX
+  - ILMN
   - IQV
   - LH
   - MCK

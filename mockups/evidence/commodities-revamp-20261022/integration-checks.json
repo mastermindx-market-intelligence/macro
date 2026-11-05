@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-10-22T07:29:50.057000+00:00",
+  "accepted_base": "64ef5131a5f50fb65f0ad25a049a457e18258495",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_commodity_presentation_render.py",
+        "--basetemp",
+        "/tmp/commodities-integration-tests-20261022"
+      ],
+      "exit_code": 0,
+      "output_tail": "...                                                                      [100%]\n3 passed in 9.16s\n"
+    },
+    {
+      "command": [
+        "node",
+        "tests/test_commodity_workspace_ui.js"
+      ],
+      "exit_code": 0,
+      "output_tail": "PASS default overview and dated evidence\nPASS commodity selection hides overview hero and keeps URL context\nPASS company continuation preserves owner fields and the current investigation\nPASS relationships carries a selected explanation without treating it as evidence\nPASS changing explanation changes the mechanism and its evidence questions together\nPASS company return transport is bounded, single-encoded and idempotent\nPASS research exposes explanation and requires a session window\nPASS per-commodity draft preserves its explanation and exact numeric condition\nPASS export includes a recoverable evidence appendix and stays inactive\nPASS Gold export retains its regional proxy and excludes petroleum context\nPASS incompatible or incomplete imports do not silently change their semantics\nPASS import restores the same explanation into relationships and research\nPASS a stale import preserves the active investigation\nPASS malformed assets and deeply nested imports reject without changing the investigation\nPASS a delayed earlier import cannot overwrite the most recent file selection\nPASS a rejected outdated file read cannot clear the newer import status\nPASS comparison selection is bounded to four without losing the chosen assets\nPASS comparison uses the selected exact publisher window\nPASS gold physical handoff opens its real owner panel\nPASS return restores the selected commodity and closes advanced analytics\nPASS company return follows Gold and the selected comparison window\nPASS partial coverage has a real selected-commodity fallback\nPASS Chinese native controls show Chinese labels\nPASS keyboard tabs move selection and focus together\nPASS browser history restores the previous view\nPASS direct hash and repeated language renders keep the exact company return\nPASS rendered DOM has no duplicate IDs or event errors\nRESULT 27 rendered-DOM journeys passed; this is not a visual-layout proof.\n"
+    },
+    {
+      "command": [
+        "node",
+        "tests/test_commodity_workspace_presentation.js"
+      ],
+      "exit_code": 0,
+      "output_tail": "PASS signed shared scale, null/zero distinction, empty selection, draft context and language\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_commodity_publication.py",
+        "--accepted-ref",
+        "64ef5131a5f50fb65f0ad25a049a457e18258495"
+      ],
+      "exit_code": 0,
+      "output_tail": "{\"accepted_commit\": \"64ef5131a5f50fb65f0ad25a049a457e18258495\", \"action\": \"kept\", \"candidate_commit\": null, \"fingerprint\": \"abddd18cdb9bd9572731485abf4a9bcce083c2d9196cc6d89e4d12c28bdc76a4\", \"freshness_verified\": false, \"page\": \"site/commodities.html\", \"page_sha256\": \"62c7bc9d71b5501491637121f9e994d06386def4c7ff50e669b53d4a0e360818\", \"projection_revision\": 6, \"repair_reason\": null, \"schema\": \"mmx.commodities.publication_guard.v1\"}\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/verify_commodity_workspace_browser.py",
+        "--receipt",
+        "mockups/evidence/commodities-revamp-20261022/integration-browser-journey.json"
+      ],
+      "exit_code": 0,
+      "output_tail": "{\"scope\": \"anonymous local rendered page\", \"production_verified\": false, \"assistant_scope\": \"anonymous local widget; no prompt submitted\", \"unobstructed_desktop_returns\": 20, \"available_company_continuations\": 0, \"research_as_of\": \"2026-10-21\", \"workspace_fingerprint\": \"abddd18cdb9bd9572731485abf4a9bcce083c2d9196cc6d89e4d12c28bdc76a4\", \"fresh_document_import\": {\"separate_browser_context\": true, \"exact_export_round_trip\": true, \"threshold\": 0, \"window_sessions\": 20, \"monitoring_active\": false}, \"unobstructed_mobile_returns\": 20, \"company_return_transport\": {\"scope\": \"intercepted first-party-origin fixture; authenticated Terminal unverified\", \"requested_href\": \"https://app.mastermind-x.com/analysis?symbol=A&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-20&mo_security=SEC%3AUS-XNYS-A&from=macro&ret=https%3A%2F%2Fwww.mastermind-x.com%2Fcommodities.html%23cw%2Frelationships%2Fgold%3Fwindow%3D60%26compare%3Doil%252Cgold%26hypothesis%3Drates\", \"return_url\": \"https://www.mastermind-x.com/commodities.html#cw/relationships/gold?window=60&compare=oil%2Cgold&hypothesis=rates\", \"restored\": true}, \"passed\": true, \"checks\": [\"canonical typography and documented panel radius resolve\", \"failed assistant load remains visible and retryable through the inline entry\", \"keyboard retry opens shared Brain, reuses mounted owner and returns focus on close\", \"overview numeric values remain unobstructed at desktop scroll positions\", \"primary and session returns retain numeric hierarchy instead of caption styling\", \"dated physical synthesis preserves broad inventory tightness, release uncertainty and independent inflation check\", \"physical evidence navigation preserves the selected explanation and keyboard focus\", \"oil supply selection carries a conditional mechanism and evidence questions\", \"changing explanation changes the investigation\", \"research headings show only the chosen language and context follows the draft lookback\", \"real research export retains dated physical evidence and fits its import limit\", \"real download preserves exact condition, hypothesis and inactive monitoring\", \"exported research restores in a fresh document with exact condition and complete evidence\", \"an expired historical draft reopens with an explicit inactive expiry disclosure\", \"changing commodity removes the oil explanation and petroleum claims\", \"Gold proxy retains its exact published timestamp, percentage units and price interpretation\", \"comparison window changes actual bar geometry on one shared signed scale\", \"real file import restores the same investigation\", \"browser history preserves investigation context\", \"partial coverage clears stale support and invalidation text\", \"Chinese mobile investigation retains meaning without horizontal overflow\", \"light mobile view retains the investigation and layout\", \"Chinese mobile physical evidence retains all stock cards and dates without page overflow\", \"overview numeric values remain unobstructed at mobile scroll positions\", \"mobile direct routes reveal the active tab and comparison choices are not clipped\", \"no uncaught browser errors\", \"first-party company link opens with unchanged identity fields and exact Macro return\", \"decoded company return restores commodity, tab, window, comparisons and hypothesis\"], \"browser_errors\": []}\n"
+    }
+  ]
+}

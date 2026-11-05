@@ -465,3 +465,78 @@ def test_builds_and_validates_from_real_owner_artifact() -> None:
     assert snap["headline"]["state_id"] is None  # always, by design
     assert snap["generation"]["calculation_as_of"] == (regime.get("business_cycle") or {}).get("asof")
     assert snap["authority"]["can_size"] is False
+
+
+# --------------------------------------------------------------------------- #
+# MSJ-BA-1: the 0.667 catch rate is leave-one-out on a small modern set
+# --------------------------------------------------------------------------- #
+_CATCH_TRANSFORMATION = (
+    "out-of-sample (leave-one-recession-out) catch rate on ~3 "
+    "endogenous modern recessions; tiny sample, see caveat"
+)
+_CATCH_SAMPLE_EN = (
+    "About 3 modern recessions, leave-one-out. The sample is small."
+)
+_CATCH_SAMPLE_ZH = "约 3 次现代衰退，留一法。样本很小。"
+
+
+def _render_catch_metric(
+    transformation: str | None,
+    metric_id: str = "recession_signal_oos_catch_rate",
+) -> str:
+    """One-metric shell card. The snapshot is built here; no site/ or data/."""
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+    from lib import macro_suite_view
+
+    snapshot = {
+        "metrics": {"items": [{
+            "metric_id": metric_id,
+            "transformation": transformation,
+            "status": "PRESENT",
+        }]},
+    }
+    view = macro_suite_view.build_view(
+        snapshot,
+        page_built_at="2026-10-31T00:00:00Z",
+        artifact={
+            "path": "x",
+            "sha256": "y",
+            "bytes": 1,
+            "manifest_path": "z",
+            "min_client_contract": "v1",
+        },
+    )
+    env = Environment(
+        loader=FileSystemLoader(str(ROOT / "templates")),
+        autoescape=True,
+        undefined=StrictUndefined,
+    )
+    shell = env.get_template("_macro_suite_shell.html.j2")
+    return str(shell.module.component_metrics(view))
+
+
+def test_oos_catch_rate_names_the_small_modern_sample() -> None:
+    shown = _render_catch_metric(_CATCH_TRANSFORMATION)
+    en_span = f'<span class="l-en">{_CATCH_SAMPLE_EN}</span>'
+    zh_span = f'<span class="l-zh">{_CATCH_SAMPLE_ZH}</span>'
+    assert en_span in shown
+    assert zh_span in shown
+    assert "mq-metric-sample" in shown
+    assert "tiny sample, see caveat" not in shown
+    hidden = _render_catch_metric(None)
+    assert "mq-metric-sample" not in hidden
+
+
+def test_sample_note_stays_off_when_the_producer_does_not_record_it() -> None:
+    # The note restates what the producer wrote, so each half must be there.
+    assert "mq-metric-sample" not in _render_catch_metric(
+        "out-of-sample catch rate on ~3 endogenous modern recessions"
+    )
+    assert "mq-metric-sample" not in _render_catch_metric(
+        "out-of-sample catch rate; tiny sample, see caveat"
+    )
+    # Any other metric carrying the same words gets no note.
+    assert "mq-metric-sample" not in _render_catch_metric(
+        _CATCH_TRANSFORMATION, metric_id="recession_signal_in_sample_catch_rate"
+    )

@@ -596,6 +596,15 @@ def _bucket(status: str) -> str:
         return "skipped_no_smtp"
     if status in ("suppressed", "queued"):
         return "skipped"
+    if status == mailer.EFFECT_UNKNOWN:
+        # No bucket means "we do not know", and no campaign column means it either
+        # (adding one is the unproven-schema mistake this estate has already paid for).
+        # It lands in `failed` because that is the only bucket that cannot overstate
+        # what happened: it never inflates sent_n and never claims a delivery. The log
+        # line is how the distinction survives.
+        log.warning("marketing: a send returned %s — counted as failed, but the "
+                    "message may have been delivered", status)
+        return "failed"
     return "failed"
 
 
@@ -956,11 +965,11 @@ def drain_parked() -> dict:
     rows: list[dict] = []
     try:
         rows += _pg("GET", "email_log?status=eq.queued&detail=eq.suppression_lookup_failed"
-                           "&select=idem_key,template,class,to_email,user_id"
+                           "&select=idem_key,template,class,to_email,user_id,status,detail"
                            f"&order=created_at.asc&limit={_PARKED_LIMIT}") or []
         if mailer.is_configured():
             rows += _pg("GET", "email_log?status=eq.skipped_no_smtp"
-                               "&select=idem_key,template,class,to_email,user_id"
+                               "&select=idem_key,template,class,to_email,user_id,status,detail"
                                f"&order=created_at.asc&limit={_PARKED_LIMIT}") or []
     except Exception as exc:  # noqa: BLE001
         log.warning("marketing: parked query failed (%s)", type(exc).__name__)
@@ -1007,7 +1016,21 @@ def _complete_parked(row: dict, out: dict) -> None:
     to_email = str(row.get("to_email") or "")
     user_id = row.get("user_id") or None
     template = str(row.get("template") or "")
+    source_status = str(row.get("status") or "")
+    source_detail = row.get("detail")
     if not (idem_key and to_email):
+        out["skipped"] += 1
+        return
+    if source_status == "queued":
+        if source_detail != "suppression_lookup_failed":
+            out["skipped"] += 1
+            return
+        expected_detail = "suppression_lookup_failed"
+    elif source_status == "skipped_no_smtp":
+        # Status alone is a sufficient compare-and-swap guard here: the winning marker
+        # changes it to queued, so a concurrent or stale worker matches zero rows.
+        expected_detail = None
+    else:
         out["skipped"] += 1
         return
     if not _leg_armed(template):
@@ -1020,8 +1043,14 @@ def _complete_parked(row: dict, out: dict) -> None:
         out["skipped"] += 1          # still unavailable — the row waits for the next wake
         return
     if reason:
-        mailer._ledger_finish(idem_key, "suppressed", reason)
-        out["suppressed"] += 1
+        if mailer._ledger_finish_if_current(
+                idem_key, "suppressed", reason,
+                expected_status=source_status, expected_detail=expected_detail):
+            out["suppressed"] += 1
+        else:
+            # A concurrent worker changed the row, or the ledger could not acknowledge
+            # this transition.  In either case, this stale snapshot owns no outcome.
+            out["skipped"] += 1
         return
 
     built = _rebuild(idem_key, template, str(user_id) if user_id else None)
@@ -1033,8 +1062,14 @@ def _complete_parked(row: dict, out: dict) -> None:
     if not mailer.is_configured():
         # Terminal, but no longer final: the row is picked up again by the second select
         # in drain_parked the moment a relay exists.
-        mailer._ledger_finish(idem_key, "skipped_no_smtp", "MAIL_SMTP_* unset")
-        out["skipped_no_smtp"] += 1
+        if mailer._ledger_finish_if_current(
+                idem_key, "skipped_no_smtp", "MAIL_SMTP_* unset",
+                expected_status=source_status, expected_detail=expected_detail):
+            out["skipped_no_smtp"] += 1
+        else:
+            # Never erase a concurrent SMTP_ATTEMPTED marker: that marker may describe
+            # a delivery whose transport result is unknowable and must not be reoffered.
+            out["skipped"] += 1
         return
 
     subject, html, text = built
@@ -1043,7 +1078,28 @@ def _complete_parked(row: dict, out: dict) -> None:
         msg = mailer._build_message(
             to_email=to_email, subject=subject, html=html, text=text,
             cls="marketing", headers=_marketing_headers(identity))
-        mailer._smtp_send(msg)
+        mailer._smtp_send(
+            msg,
+            before_data=lambda: mailer._ledger_mark_attempting(
+                idem_key, expected_status=source_status, expected_detail=expected_detail),
+        )
+    except mailer.MarkerUnwritable:
+        # DATA was never entered. Keep the original parked detail so the selector can
+        # safely retry this row on a later wake after the ledger recovers.
+        log.warning("marketing: parked %s attempt marker unwritable -- not sent", idem_key)
+        out["failed"] += 1
+        _pace("failed")
+        return
+    except mailer.TransportUncertain as exc:
+        # The durable SMTP_ATTEMPTED marker already records the last knowable fact.
+        # Leave it untouched: the parked selector only admits
+        # detail='suppression_lookup_failed', so this row is quarantined from replay
+        # even if a later terminal ledger PATCH would fail.
+        log.warning("marketing: parked %s EFFECT UNKNOWN after %s — not resent, "
+                    "not recorded as delivered", idem_key, exc)
+        out["failed"] += 1
+        _pace("failed")
+        return
     except Exception as exc:  # noqa: BLE001
         mailer._ledger_finish(idem_key, "failed", type(exc).__name__)
         out["failed"] += 1

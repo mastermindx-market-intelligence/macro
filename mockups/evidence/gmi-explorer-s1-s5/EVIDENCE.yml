@@ -1,0 +1,15 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_gmi_base.html.j2
+  - templates/_gmi_head.html.j2
+  - templates/_gmi_macros.html.j2
+  - templates/gmi.css
+  - templates/gmi.js
+  - templates/theme.css
+  - templates/gmi_map.html.j2
+  - templates/gmi_index.html.j2
+  - templates/gmi_issuer.html.j2
+  - templates/gmi_relationships.html.j2
+  - templates/gmi_coverage.html.j2
+  - templates/gmi_states.html.j2
+manifest: mockups/evidence/gmi-explorer-s1-s5/manifest.json

@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/mm_brain.js
+  - site/mm_brain.js
+  - site/theme.js
+manifest: mockups/evidence/brain-composer-notice-removal-20260921/manifest.json
