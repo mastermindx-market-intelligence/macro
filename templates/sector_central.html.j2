@@ -3260,7 +3260,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     var sub = (s.kind==='basket' ? (s.etf_proxy?esc(s.etf_proxy)+' · ':'') : (esc(s.ticker||'')+' · ')) + esc(lang()==='zh'?(s.group_zh||s.group):s.group);
     var chips=[];
     // Phase chip: RS rank (63d) moved to hover tip (XSR-R2 ONE-rank law — fast-lens rank is THE displayed rank).
-    var rsHover = (cy.rs_21d_rank||cy.rs_rank) ? ' data-tip-en="63d RS rank: #'+(cy.rs_21d_rank||cy.rs_rank)+' (slow clock — see fast tape below)" data-tip-zh="63日RS排名：第'+(cy.rs_21d_rank||cy.rs_rank)+'位（慢时钟——见下方快线）"' : '';
+    var rsHover = cy.rs_rank ? ' data-tip-en="63d RS rank: #'+cy.rs_rank+' (slow clock — see fast tape below)" data-tip-zh="63日RS排名：第'+cy.rs_rank+'位（慢时钟——见下方快线）"' : '';  // SIC-D33: the tip names the 63d rank, so it shows the 63d rank
     if(cy.phaseLabel||cy.phase) chips.push('<span class="chip2"'+rsHover+'>'+esc(cy.phaseLabel||cy.phase)+'</span>');
     // XSR-W1b: fast-tape board rail — ordinal display (#2 of 11) + plain-word state.
     // Internal enum names (TURN SIGNALED, RALLY ON, etc.) NEVER appear at tier 1 —

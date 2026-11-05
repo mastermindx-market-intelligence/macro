@@ -71,6 +71,18 @@ def test_forward_log_appends_and_dedupes(tmp_path, monkeypatch):
     assert len(df) == 2
 
 
+
+def test_rank_rs_stamps_both_lenses():
+    """SIC-D33: rs_rank stays the 63d lens; rs_21d_rank ranks the 21d value the
+    card shows. A missing value is left unranked, never ranked last."""
+    items = [{"now": {"rs_63d": 4.0, "rs_21d": -1.0}},
+             {"now": {"rs_63d": 9.0, "rs_21d": 2.5}},
+             {"now": {"rs_63d": None, "rs_21d": 6.0}},
+             {"now": {"rs_63d": -3.0, "rs_21d": None}}]
+    ccc._rank_rs(items)
+    assert [s["now"].get("rs_rank") for s in items] == [2, 1, None, 3]
+    assert [s["now"].get("rs_21d_rank") for s in items] == [3, 2, 1, None]
+
 # ------------------------------------------------------------ data-dependent ----
 
 @pytest.mark.skipif(not HAVE_DATA, reason="china_sectors data plane absent")

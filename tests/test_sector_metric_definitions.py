@@ -140,6 +140,16 @@ def _src(rel: str) -> str:
     return (ROOT / rel).read_text(encoding="utf-8")
 
 
+def test_central_rank_tip_shows_the_lens_it_names():
+    """SIC-D33: the phase-chip tip says "63d RS rank", so it carries rs_rank (63d),
+    never the 21d rank that the fast tape below already shows."""
+    line = next(ln for ln in _src("templates/sector_central.html.j2").splitlines()
+                if "var rsHover" in ln)
+    assert "63d RS rank: #'+cy.rs_rank+'" in line
+    assert "63日RS排名：第'+cy.rs_rank+'位" in line
+    assert "rs_21d_rank" not in line
+
+
 def test_grader_horizons_are_21_63_126_trading_bars():
     assert _HORIZONS_D == (21, 63, 126)
 
