@@ -351,6 +351,8 @@ jobs:
           GH_REPO: ${{ github.repository }}
           READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          # Native enqueue must generate merge_group events; no job-token fallback.
+          NATIVE_ENQUEUE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN }}
           CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
           ARTIFACT_ID: ${{ steps.admission_demands.outputs.artifact-id }}
         run: python3 -I scripts/ci_admission_stages.py reserve
@@ -384,6 +386,8 @@ jobs:
           GH_REPO: ${{ github.repository }}
           READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          # Native enqueue must generate merge_group events; no job-token fallback.
+          NATIVE_ENQUEUE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN }}
           CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
           ARTIFACT_ID: ${{ steps.admission_prepared.outputs.artifact-id }}
           CHECKPOINT_ARTIFACT_ID: ${{ steps.admission_checkpoint.outputs.artifact-id }}

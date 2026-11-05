@@ -684,6 +684,8 @@ def _shared_admission_controller_r2_findings(relative: str, document: dict) -> l
     }
     for index,(stage,guard,extra) in calls.items():
         step=steps[index]
+        if stage in {"reserve", "dispatch"}:
+            extra = {**extra, "NATIVE_ENQUEUE_TOKEN": "${{ secrets.ADMIN_GH_TOKEN }}"}
         if (step.get("run") != "python3 -I scripts/ci_admission_stages.py " + stage
                 or step.get("env") != {**common, **extra} or step.get("if") != guard
                 or set(step) - {"name", "id", "if", "env", "run"}):

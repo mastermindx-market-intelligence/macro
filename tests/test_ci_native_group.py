@@ -389,11 +389,12 @@ def test_native_inactive_check_is_target_symmetric(target,inactive,active):
     assert not mog.is_non_binding_check(active,base_ref=target)
     assert not mog.is_non_binding_check(inactive,base_ref='unqualified')
 
-def test_two_ready_native_sources_reserve_sequential_actual_target_snapshots(monkeypatch):
+@pytest.mark.parametrize('issuer_case',['stable','changed_before_reserve'])
+def test_two_ready_native_sources_reserve_sequential_actual_target_snapshots(monkeypatch,issuer_case):
     from scripts import merge_on_green as mog
     from scripts import ci_proof_admission as c
     from dataclasses import replace
-    state={'base':BASE,'number':7,'head':SOURCE,'records':[],'register':'a2 idle r=10','queue':[]}
+    state={'base':BASE,'number':7,'head':SOURCE,'records':[],'register':'a2 idle r=10','queue':[],'issuer_reads':0}
     active=tuple(c.Run(100+i,1,'in_progress','pr_head') for i in range(7))
     monkeypatch.setattr(mog,'_shared_controller_authority',lambda *a,**k:True)
     protection=authority.native_protection_contract(rules_fixture(),repository_id=42,protected_source_sha='6'*40)
@@ -405,6 +406,11 @@ def test_two_ready_native_sources_reserve_sequential_actual_target_snapshots(mon
     monkeypatch.setattr(authority,'native_source_entry_qualification',lambda *a,**k:None)
     def request(method,url,token,body=None):
         assert method in {'GET','POST'}
+        if url==mog.GITHUB_API+'/user':
+            assert token=='existing-pat';state['issuer_reads']+=1
+            return 200,{'id':999 if issuer_case=='changed_before_reserve' and state['issuer_reads']==2 else 123,'login':'native-issuer','type':'User'}
+        if url==mog.GITHUB_API+'/repos/'+REPO:
+            assert token=='existing-pat';return 200,{'id':42,'full_name':REPO,'permissions':{'push':True}}
         if '/labels/' in url:return 200,{'description':state['register']}
         if '/pulls/' in url:return 200,dict(number=state['number'],state='open',mergeable=True,
             head={'sha':state['head']},base={'ref':TARGET,'sha':state['base'],'repo':{'id':42}},merge_commit_sha='5'*40)
@@ -420,8 +426,11 @@ def test_two_ready_native_sources_reserve_sequential_actual_target_snapshots(mon
     def effect(method,url,token,body):
         assert method=='PATCH';effects.append(body);state['register']=body['description'];return 200,{}
     monkeypatch.setattr(mog,'_request',request);monkeypatch.setattr(mog,'_shared_admission_effect',effect)
-    context=dict(repository_id=42,protected_controller_sha='6'*40,current_run_id='9',current_run_attempt=1,native_target=TARGET)
+    context=dict(repository_id=42,protected_controller_sha='6'*40,current_run_id='9',current_run_attempt=1,native_target=TARGET,native_enqueue_token="existing-pat")
     first=mog.reserve_shared_admission(REPO,'read','write',c.Demand(7,SOURCE,'refresh','2026-11-05T00:00:00+00:00','a'*12),**context)
+    if issuer_case=='changed_before_reserve':
+        assert first.disposition=='held' and effects==[]
+        return
     assert first.disposition=='prepared' and first.admission.base_sha==BASE and len(effects)==1
     state['records']=[first.admission];state['number']=8;state['head']='f'*40
     second_demand=c.Demand(8,'f'*40,'refresh','2026-11-05T00:00:01+00:00','b'*12)
@@ -1222,3 +1231,171 @@ def test_real_policy_adapter_joins_authenticated_app_intent_and_original_source_
     evidence=proof.reconcile_evidence(plan,[old._fragment(plan=plan)])
     authority.native_source_entry_qualification(proof.load_semantic_evidence(evidence,advertised=True),
         expected_head_sha=SOURCE,protection=protection)
+
+# Native queue creation must use the existing event-generating user credential,
+# independently of producer-origin proof and the legacy job-token fallback.
+def _native_issuer_provider(monkeypatch, *, user=None, repository=None, status=200):
+    from scripts import merge_on_green as mog
+    calls=[]
+    user={'id':123,'login':'native-issuer','type':'User'} if user is None else user
+    repository={'id':42,'full_name':REPO,'permissions':{'push':True}} if repository is None else repository
+    def request(method,url,token,body=None,**kwargs):
+        calls.append((method,url,token))
+        assert method=='GET' and token=='existing-pat'
+        if url==mog.GITHUB_API+'/user':return status,user
+        assert url==mog.GITHUB_API+'/repos/'+REPO
+        return status,repository
+    monkeypatch.setattr(mog,'_request',request)
+    return calls
+
+def test_native_enqueue_actual_user_credential_qualification(monkeypatch):
+    from scripts import merge_on_green as mog
+    calls=_native_issuer_provider(monkeypatch)
+    expected={'repository_id':42,'issuer_id':123,'issuer_login':'native-issuer'}
+    assert mog.native_enqueue_issuer(REPO,'job-token','existing-pat',repository_id=42)==expected
+    assert mog.native_enqueue_issuer(REPO,'job-token','existing-pat',repository_id=42,expected=expected)==expected
+    assert len(calls)==4
+
+@pytest.mark.parametrize('case',['missing','job_token','bot','boolean_id','wrong_repo','wrong_id','no_push','unknown','changed_user','changed_login','missing_expected_field'])
+def test_native_enqueue_issuer_refuses_fallback_and_ambiguous_identity(monkeypatch,case):
+    from scripts import merge_on_green as mog
+    user={'id':123,'login':'native-issuer','type':'User'}
+    repository={'id':42,'full_name':REPO,'permissions':{'push':True}}
+    expected={'repository_id':42,'issuer_id':123,'issuer_login':'native-issuer'}
+    token='existing-pat';status=200
+    if case=='missing':token=''
+    if case=='job_token':token='job-token'
+    if case=='bot':user.update(type='Bot',login='github-actions[bot]')
+    if case=='boolean_id':user['id']=True
+    if case=='wrong_repo':repository['full_name']='outsider/macro'
+    if case=='wrong_id':repository['id']=43
+    if case=='no_push':repository['permissions']['push']=False
+    if case=='unknown':status=403
+    if case=='changed_user':expected['issuer_id']=999
+    if case=='changed_login':expected['issuer_login']='different-user'
+    if case=='missing_expected_field':expected.pop('issuer_id')
+    calls=_native_issuer_provider(monkeypatch,user=user,repository=repository,status=status)
+    with pytest.raises(ValueError):
+        mog.native_enqueue_issuer(REPO,'job-token',token,repository_id=42,expected=expected)
+    if case in ('missing','job_token'):assert calls==[]
+
+@pytest.mark.parametrize('boundary',['reserve','enqueue'])
+def test_native_missing_event_issuer_prevents_original_mutations(monkeypatch,boundary):
+    from scripts import merge_on_green as mog
+    from scripts import ci_proof_admission as c
+    monkeypatch.setattr(mog,'_shared_controller_authority',lambda *a,**k:True)
+    mutations=[]
+    monkeypatch.setattr(mog,'_shared_admission_effect',lambda *a,**k:mutations.append(a))
+    monkeypatch.setattr(mog,'_request',lambda *a,**k:pytest.fail('missing issuer must refuse before provider reads'))
+    context=dict(repository_id=42,protected_controller_sha='6'*40,current_run_id='9',current_run_attempt=1)
+    if boundary=='reserve':
+        result=mog.reserve_shared_admission(REPO,'job-token','job-token',c.Demand(7,SOURCE,'refresh','2026-11-05T00:00:00+00:00','a'*12),native_target=TARGET,**context)
+    else:
+        result=mog.enqueue_native_admission(REPO,'job-token','job-token',{'controller_run_id':9,'controller_attempt':1},**context)
+    assert result.disposition=='held' and mutations==[]
+
+def test_native_workflow_credential_is_separate_without_fallback():
+    import yaml
+    root=Path(__file__).resolve().parents[1]
+    doc=yaml.safe_load((root/'.github/workflows/merge-on-green.yml').read_text())
+    stages={step.get('run','').split()[-1]:step for job in doc['jobs'].values() for step in job.get('steps',[])
+            if 'python3 -I scripts/ci_admission_stages.py ' in step.get('run','')}
+    for name in ('reserve','dispatch'):
+        assert stages[name]['env']['NATIVE_ENQUEUE_TOKEN']=='${{ secrets.ADMIN_GH_TOKEN }}'
+        assert stages[name]['env']['MERGE_TOKEN']=='${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}'
+
+@pytest.mark.parametrize('case',['positive','changed_principal','read_failure','expiry','lost_enqueue'])
+def test_native_original_enqueue_uses_qualified_issuer_without_retry(monkeypatch,case):
+    from scripts import merge_on_green as mog
+    from scripts import ci_proof_admission as c
+    from types import SimpleNamespace
+    admitted=c.NativeAdmission('a'*12,7,SOURCE,BASE,'5'*40,'6'*40,target_ref=TARGET,tree_sha=TREE)
+    expected={'repository_id':42,'issuer_id':123,'issuer_login':'native-issuer'}
+    state={'register':'a2 p=7 g='+admitted.generation+' s=prepared r=10','users':0,'effects':[]}
+    monkeypatch.setattr(mog,'_shared_controller_authority',lambda *a,**k:True)
+    monkeypatch.setattr(mog,'authenticated_admission_from_ref',lambda *a,**k:admitted)
+    monkeypatch.setattr(mog,'native_target_protection',lambda *a,**k:{'protected_source_sha':'6'*40})
+    monkeypatch.setattr(mog,'shared_proof_workload',lambda *a,**k:mog.SharedProofWorkload(True,(),(admitted,)))
+    monkeypatch.setattr(mog,'native_empty_target',lambda *a,**k:None)
+    monkeypatch.setattr(mog,'native_current_release',lambda *a,**k:{'pull':{'base':{'sha':BASE},'merge_commit_sha':'5'*40},'checks':[],'node_id':'PR_7'})
+    monkeypatch.setattr(mog,'semantic_evidence_for_head',lambda *a,**k:object())
+    monkeypatch.setattr(authority,'native_source_entry_qualification',lambda *a,**k:None)
+    monkeypatch.setattr(mog,'authenticated_migration_root',lambda *a,**k:10)
+    def request(method,url,token,body=None):
+        assert method=='GET'
+        if url==mog.GITHUB_API+'/user':
+            assert token=='existing-pat';state['users']+=1
+            if state['users']==2 and case=='read_failure':return 503,{}
+            return 200,{'id':999 if state['users']==2 and case=='changed_principal' else 123,'login':'native-issuer','type':'User'}
+        if url==mog.GITHUB_API+'/repos/'+REPO:
+            assert token=='existing-pat';return 200,{'id':42,'full_name':REPO,'permissions':{'push':True}}
+        assert '/labels/' in url and token=='job-token'
+        return 200,{'description':state['register']}
+    def effect(method,url,token,body):
+        state['effects'].append((method,token))
+        if method=='PATCH':
+            assert token=='legacy-write';state['register']=body['description'];return 200,{}
+        assert method=='POST' and url==mog.GITHUB_API+'/graphql' and token=='existing-pat'
+        assert body['variables']['input']=={'pullRequestId':'PR_7','expectedHeadOid':SOURCE,'jump':False}
+        if case=='lost_enqueue':raise TimeoutError('test-owned lost response')
+        return 200,{'data':{'enqueuePullRequest':{'mergeQueueEntry':{'id':'MQE_original','position':1}}}}
+    monkeypatch.setattr(mog,'_request',request);monkeypatch.setattr(mog,'_shared_admission_effect',effect)
+    scope=SimpleNamespace(require_budget=lambda:SimpleNamespace(deadline=mog.time.time()+(10 if case=='expiry' else 500)))
+    slot=mog._MIGRATION_READ_SCOPE.set(scope)
+    try:
+        result=mog.enqueue_native_admission(REPO,'job-token','legacy-write',{'controller_run_id':9,'controller_attempt':1},repository_id=42,protected_controller_sha='6'*40,current_run_id='9',current_run_attempt=1,native_enqueue_token='existing-pat',expected_issuer=expected)
+    finally:mog._MIGRATION_READ_SCOPE.reset(slot)
+    if case=='positive':
+        assert result.disposition=='queued' and result.admission.queue_entry_id=='MQE_original'
+        assert state['effects']==[('PATCH','legacy-write'),('POST','existing-pat')]
+    elif case=='expiry':assert result.disposition=='held' and state['effects']==[]
+    else:
+        assert result.disposition=='unknown' and 's=started' in state['register']
+        assert state['effects']==([('PATCH','legacy-write'),('POST','existing-pat')] if case=='lost_enqueue' else [('PATCH','legacy-write')])
+
+@pytest.mark.parametrize('case',['same_original','missing','changed_context','changed_generation'])
+def test_native_stage_dispatch_conserves_original_public_issuer_binding(tmp_path,monkeypatch,case):
+    from scripts import ci_admission_stages as stages
+    from scripts import merge_on_green as mog
+    from scripts import ci_proof_admission as c
+    from types import SimpleNamespace
+    admitted=c.NativeAdmission('a'*12,7,SOURCE,BASE,'5'*40,'6'*40,target_ref=TARGET,tree_sha=TREE)
+    context=dict(repository_id=42,protected_controller_sha='6'*40,current_run_id='9',current_run_attempt=1)
+    instance=stages.Stages(REPO,'job-token','legacy-write','',context,tmp_path,native_enqueue_token='existing-pat')
+    monkeypatch.setattr(instance,'authority',lambda:None)
+    monkeypatch.setattr(instance,'reference',lambda *a:{})
+    monkeypatch.setattr(instance,'index',lambda *a:None)
+    monkeypatch.setattr(instance,'receipt',lambda *a:None)
+    monkeypatch.setattr(instance,'emit_decision',lambda *a,**k:None)
+    monkeypatch.setattr(mog,'authenticated_checkpoint_from_ref',lambda *a,**k:SimpleNamespace(pr_number=7))
+    monkeypatch.setattr(mog,'publish_prepared_shared_admission',lambda *a,**k:mog.AdmissionDispatchResult('indexed',admitted))
+    expected={'repository_id':42,'issuer_id':123,'issuer_login':'native-issuer'}
+    binding=dict(context=dict(context),generation=admitted.generation,issuer=expected)
+    if case=='changed_context':binding['context']['current_run_id']='10'
+    if case=='changed_generation':binding['generation']='b'*12
+    if case!='missing':instance.save('native-issuer',binding)
+    calls=[]
+    def enqueue(*a,**k):
+        calls.append(k)
+        assert k['native_enqueue_token']=='existing-pat' and k['expected_issuer']==expected
+        return mog.AdmissionDispatchResult('queued',c.bind_native_entry(admitted,'MQE_original'))
+    monkeypatch.setattr(mog,'enqueue_native_admission',enqueue)
+    if case=='same_original':
+        result=stages.Stages.dispatch.__wrapped__(instance,1,2)
+        assert result['bound'] is True and result['receipt_suffix']=='native-queued' and len(calls)==1
+        assert 'existing-pat' not in (tmp_path/'native-issuer.json').read_text()
+    else:
+        with pytest.raises((ValueError,FileNotFoundError)):stages.Stages.dispatch.__wrapped__(instance,1,2)
+        assert calls==[]
+
+@pytest.mark.parametrize('stage',['reserve','dispatch'])
+@pytest.mark.parametrize('replacement',[None,'${{ secrets.GITHUB_TOKEN }}','${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}'])
+def test_runner_policy_refuses_native_enqueue_fallback_or_missing_binding(stage,replacement):
+    import yaml
+    from scripts import check_runner_policy as policy
+    document=yaml.safe_load((Path(__file__).resolve().parents[1]/'.github/workflows/merge-on-green.yml').read_text())
+    assert policy._shared_admission_controller_r2_findings('.github/workflows/merge-on-green.yml',copy.deepcopy(document))==[]
+    step=next(s for job in document['jobs'].values() for s in job.get('steps',[]) if s.get('run')=='python3 -I scripts/ci_admission_stages.py '+stage)
+    if replacement is None:step['env'].pop('NATIVE_ENQUEUE_TOKEN')
+    else:step['env']['NATIVE_ENQUEUE_TOKEN']=replacement
+    assert policy._shared_admission_controller_r2_findings('.github/workflows/merge-on-green.yml',document)

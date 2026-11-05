@@ -4251,9 +4251,39 @@ def _shared_controller_authority(repo, token, *, repository_id, protected_contro
         return False
 
 
+def native_enqueue_issuer(repo, read_token, native_token, *, repository_id, expected=None):
+    """Qualify the existing user credential; never infer event delivery from enqueue.
+
+    The protected workflow supplies ADMIN_GH_TOKEN separately, without a job-token
+    fallback. Authenticated /user plus the same credential's repository grant bind
+    the actual principal. The same original stage keeps only this public identity,
+    never token bytes; enqueue rechecks it. Actual group delivery is runtime proof.
+    """
+    if (not isinstance(native_token,str) or not native_token.strip()
+            or native_token == read_token or type(repository_id) is not int or repository_id<=0):
+        raise ValueError('native event-generating issuer unavailable')
+    status,user=_request('GET',GITHUB_API+'/user',native_token)
+    if (status!=200 or not isinstance(user,dict) or user.get('type')!='User'
+            or type(user.get('id')) is not int or user['id']<=0
+            or not isinstance(user.get('login'),str)
+            or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9-]{0,38}',user['login'])):
+        raise ValueError('native authenticated user issuer unavailable')
+    status,repository=_request('GET',GITHUB_API+'/repos/'+repo,native_token)
+    if (status!=200 or not isinstance(repository,dict)
+            or type(repository.get('id')) is not int or repository['id']!=repository_id
+            or repository.get('full_name')!=repo
+            or not isinstance(repository.get('permissions'),dict)
+            or repository['permissions'].get('push') is not True):
+        raise ValueError('native issuer repository grant unavailable')
+    identity=dict(repository_id=repository_id,issuer_id=user['id'],issuer_login=user['login'])
+    if expected is not None and (not isinstance(expected,dict) or identity!=expected):
+        raise ValueError('native original issuer changed or incomplete')
+    return identity
+
+
 def reserve_shared_admission(repo, read_token, write_token, demand, *, repository_id,
                              protected_controller_sha, current_run_id, current_run_attempt,
-                             decision=None, native_target=None, source_target=None):
+                             decision=None, native_target=None, source_target=None, native_enqueue_token=None):
     """Prepare one exact synthetic-merge proof in the incumbent serialized lane.
 
     Both authored and stale-base demand use the actual current merge object. A
@@ -4274,6 +4304,9 @@ def reserve_shared_admission(repo, read_token, write_token, demand, *, repositor
         return AdmissionDispatchResult("held", detail="protected caller/callee admission bridge not installed")
     try:
         native_protection = None
+        if native_target is not None:
+            issuer=native_enqueue_issuer(repo,read_token,native_enqueue_token,repository_id=repository_id)
+            if decision is not None:decision['native_issuer']=issuer
         if source_target is not None:
             if native_target is not None:raise ValueError('source proof cannot be queue entry')
             native_target_protection(repo,read_token,source_target,
@@ -4354,6 +4387,11 @@ def reserve_shared_admission(repo, read_token, write_token, demand, *, repositor
     if status != 200 or not isinstance(fenced, dict) or fenced.get("description") != original_register:
         return AdmissionDispatchResult("held", detail="original launch register changed")
     description = shared_register_text(f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared",shared_register_parts(original_register)[1])
+    if native_target is not None:
+        try:
+            native_enqueue_issuer(repo,read_token,native_enqueue_token,repository_id=repository_id,expected=issuer)
+        except Exception:
+            return AdmissionDispatchResult('held',detail='native original issuer changed before reservation')
     try:
         status, _ = _shared_admission_effect("PATCH", register_url, write_token, {"description": description})
         if status != 200:
@@ -4505,7 +4543,8 @@ def finalize_shared_admission(repo, read_token, write_token, reference, *, repos
 
 
 def enqueue_native_admission(repo, read_token, write_token, reference, *, repository_id,
-                             protected_controller_sha, current_run_id, current_run_attempt, decision=None):
+                             protected_controller_sha, current_run_id, current_run_attempt, decision=None,
+                             native_enqueue_token=None, expected_issuer=None):
     """One expected-head enqueue from the SAME prepared slot; no mutation retry.
 
     The original PATCH start intent precedes the only mutation. A lost entry ID
@@ -4520,6 +4559,8 @@ def enqueue_native_admission(repo, read_token, write_token, reference, *, reposi
         return AdmissionDispatchResult('held',detail='not original native preparation owner')
     admitted=None
     try:
+        if not isinstance(expected_issuer,dict):raise ValueError('native original issuer binding missing')
+        native_enqueue_issuer(repo,read_token,native_enqueue_token,repository_id=repository_id,expected=expected_issuer)
         admitted=authenticated_admission_from_ref(repo,read_token,reference,
             repository_id=repository_id,protected_controller_sha=protected_controller_sha)
         if (not isinstance(admitted,proof_admission.NativeAdmission) or admitted.queue_entry_id is not None
@@ -4562,8 +4603,9 @@ def enqueue_native_admission(repo, read_token, write_token, reference, *, reposi
         code,row=_request('GET',url,read_token)
         if code!=200 or row.get('description')!=started:
             return AdmissionDispatchResult('unknown',admitted,'native enqueue intent readback unsettled')
+        native_enqueue_issuer(repo,read_token,native_enqueue_token,repository_id=repository_id,expected=expected_issuer)
         mutation='mutation($input:EnqueuePullRequestInput!){enqueuePullRequest(input:$input){mergeQueueEntry{id position}}}'
-        code,result=_shared_admission_effect('POST',GITHUB_API+'/graphql',write_token,
+        code,result=_shared_admission_effect('POST',GITHUB_API+'/graphql',native_enqueue_token,
             {'query':mutation,'variables':{'input':{'pullRequestId':release['node_id'],
                 'expectedHeadOid':admitted.head_sha,'jump':False}}})
         # Even a GraphQL error can accompany partial effects. No absence/error

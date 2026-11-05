@@ -563,10 +563,11 @@ def controller_read_scope(function):
 
 
 class Stages:
-    def __init__(self, repo, read_token, write_token, checks_token, context, directory):
+    def __init__(self, repo, read_token, write_token, checks_token, context, directory, *, native_enqueue_token=""):
         self.repo, self.read, self.write, self.checks = repo, read_token, write_token, checks_token
         self.context = context
         self.directory = Path(directory)
+        self.native_enqueue_token = native_enqueue_token
 
     def authority(self):
         if not mog._shared_controller_authority(self.repo, self.read, **self.context):
@@ -1253,6 +1254,7 @@ class Stages:
             target=(pull.get('base') or {}).get('ref') if pull else None
             options=({('native_target' if demand.pr_number in census.get('native_entry_numbers',[]) else 'source_target'):target}
                 if target in census.get('native_targets',[]) else {})
+            if 'native_target' in options:options['native_enqueue_token']=self.native_enqueue_token
             result = mog.reserve_shared_admission(self.repo, self.read, self.write, demand,
                                                   decision=decision, **options, **self.context)
             self.emit_decision('reservation', demand=asdict(demand),
@@ -1267,6 +1269,11 @@ class Stages:
             self.save('reservation', dict(disposition=result.disposition, detail=result.detail))
             if result.disposition != 'prepared':
                 raise RuntimeError('UNKNOWN original reservation; no next candidate')
+            if isinstance(result.admission,contract.NativeAdmission):
+                # SAME protected job, original generation only. This public identity
+                # cannot mint an admission; the immutable receipt remains authority.
+                self.save('native-issuer',dict(context=self.context,generation=result.admission.generation,
+                    issuer=decision['native_issuer']))
             self.receipt('admission', asdict(result.admission), 'prepared')
             # Same original complete-history producer seals compaction before
             # dispatch. Its index lands only after immutable artifact readback.
@@ -1293,7 +1300,13 @@ class Stages:
         decision = {}
         native=isinstance(result.admission,contract.NativeAdmission)
         execute=mog.enqueue_native_admission if native else mog.dispatch_admitted_pr_proof
-        result = execute(self.repo, self.read, self.write, ref,decision=decision, **self.context)
+        options={}
+        if native:
+            binding=self.load('native-issuer')
+            if binding.get('context')!=self.context or binding.get('generation')!=result.admission.generation:
+                raise ValueError('native original issuer context changed')
+            options=dict(native_enqueue_token=self.native_enqueue_token,expected_issuer=binding.get('issuer'))
+        result = execute(self.repo, self.read, self.write, ref,decision=decision, **options, **self.context)
         self.emit_decision('dispatch', disposition=result.disposition,
             detail=result.detail, decision=decision,
             admission=asdict(result.admission) if result.admission is not None else None)
@@ -1528,7 +1541,8 @@ def main():
                    current_run_id=os.environ['GITHUB_RUN_ID'],
                    current_run_attempt=int(os.environ['GITHUB_RUN_ATTEMPT']))
     stages = Stages(os.environ['GH_REPO'], os.environ['READ_TOKEN'], os.environ['MERGE_TOKEN'],
-                    os.environ.get('CHECKS_TOKEN', ''), context, os.environ['CI_ADMISSION_STAGE_DIR'])
+                    os.environ.get('CHECKS_TOKEN', ''), context, os.environ['CI_ADMISSION_STAGE_DIR'],
+                    native_enqueue_token=os.environ.get('NATIVE_ENQUEUE_TOKEN',''))
     if args.stage == 'migration-prepare':
         result=stages.migration_prepare()
     elif args.stage == 'migration-apply':
