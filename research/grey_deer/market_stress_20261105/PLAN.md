@@ -4,12 +4,12 @@ Workstream: WS:GREY-DEER-RISK-INTELLIGENCE; program market-regime-risk.
 Protected procedure: Mastermind@d3d96e44f6fbf48ceb8f2f6e8a453b2156bd60ad
 Acquired Macro source: 20959c5e8183f44678df4dbfc26ac246665ba2bf
 Source carrier: sol/web-macro-market-stress-20261105-c3
-Status: investigation and implementation; not production acceptance. PLAN_NOT_ORG_LINKED until the existing workstream's legitimate writer records this artifact.
+Status: investigation and implementation; not production acceptance. PLAN_NOT_ORG_LINKED pending this assigned session's existing Agent OS continuity update.
 
 ## Original outcome and DONE_WHEN
 Explain the November 4 rebound / November 5 selloff mismatch from retained point-in-time evidence; identify actual software failures; implement truthful and prompt existing-path risk presentation. Users must distinguish the settled descriptive score, current measured deterioration, unresolved fragility, and unavailable data. Research alone, a patch, a green test or a PR is not completion. Source/CI/release and actual authenticated long-open-browser evidence are separately owed.
 
-## P1: Forensics (in progress)
+## P1: Forensics (source and postclose production mismatch established; intraday history unresolved)
 Reproduce score contributions and timestamps; inspect existing live quote -> build_risk_state -> risk envelope -> dashboard flow, scheduled publication, consumer refusal/fallback and stale handling. Reconstruct claims release identity. Explain initiating catalyst versus amplification, with causal uncertainty and no hindsight prediction claim. Store evidence and source identities here.
 
 Verified initial findings:
@@ -21,7 +21,7 @@ Verified initial findings:
 - Direct unauthenticated origin payload request returned401. This is authentication, not proof the live publisher is broken.
 - Workspace acquisition ambiguous return reconciled through incumbent mmx-workspace status: clean exact acquired head, same operation/branch/workspace. No duplicate acquisition.
 
-## P2: Repair (ready after evidenced defect)
+## P2: Repair (market-state candidate implemented; claims lane in verification)
 Extend incumbent producers/consumers only. Preserve measured history, validated construction and authority booleans. Fail visibly on expired/missing essential observation clocks; freshness is evaluated by consumer time, not build time. Carry unresolved fragility visibly through relief rallies. Any current observed stress/pending escalation must use existing descriptive/registered paths and original instrument units. Do not fabricate numerical risk odds, blend a new universal score, change calibrated thresholds to fit this event, or turn risk data into trade authority.
 
 Existing independent carriers remain intact:

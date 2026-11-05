@@ -129,15 +129,32 @@ For any genuinely new research candidate, use the existing science owner and pre
 
 Scenario stress tests can be useful immediately without claiming forecast accuracy: estimate what concurrent shocks to correlated exposures would do under an explicitly hypothetical scenario. They do not originate or size trades.
 
-## 10. Delivery and unresolved evidence
-The source audit and two bounded implementation commissions remain under this operation. Worker controller creation is not worker START or an accepted patch. Original run IDs and held effects are recorded in the continuation; no duplicate execution or bypass of #9428/#9435 effects is authorized.
+## 10. Implemented containment and qualification
+
+The parent implemented the bounded repair in the existing managed C3 workspace after the paid freshness builder `macro-stress-freshness-containment-20261105-c3-01` returned a terminal host-temperature admission refusal. It was not redispatched.
+
+Changed existing paths:
+- `scripts/build_risk_state.py`: refresh the existing VIX percentile from the spliced VIX series with the same configured lookback and shared percentile function used nightly. Publish the existing quote admission budget. Require clocked SPY, QQQ, IWM and both existing volatility inputs before `live_active` can certify a current calculation; expose missing inputs and truthful live/partial/carried component bases. The existing envelope consumes that same eligibility flag.
+- `templates/risk_state_live.js` and byte-identical `site/risk_state_live.js`: expire current guidance by browser time, separately check artifact age and source-observation age, and reject old-session/live-clock failures. Show the unchanged numerical snapshot with its date and an explicit unavailable assessment. Update both the hero and What To Do Now. Retain an already displayed newer session when the producer falls back after close. HTTP, JSON and network failures cannot leave guidance current indefinitely; fresh observations restore the normal existing presentation.
+- Existing CI-wired `tests/test_risk_state_live_session_floor.py`: add production-shaped regressions and a producer-to-envelope eligibility test. No new score engine or test lane.
+
+Qualification at this boundary:
+- Original focused source suite after materializing its omitted site assets: **61 passed**.
+- Final focused candidate (session-floor, copy-sync, participation-copy, existing live-envelope suites): **168 passed**, no skips, in10.91s. `node --check` and `git diff --check` passed.
+- `consumer_replay.json` executes the original and repaired JavaScript against the actual captured production payload. Before:57/Mixed with “Trade small. Stay selective.” After: the same57 and identical path with “Current risk assessment unavailable” and explicit November4 historical date. This is a controlled Node DOM replay, not a deployed browser claim.
+- Tests also exercise partial equity/volatility coverage, a naive critical quote clock, current source data, genuine VIX percentile shock response, the unchanged two-tick debounce, postclose rollback prevention, expiry while a page remains open, HTTP/JSON/network failure and recovery.
+- The connected authenticated production browser remains usable. A loopback preview on the separate source computer was not reachable from that browser; its temporary server was stopped. Visual and actual production acceptance remain owed after release.
+
+The paid read-only audit `macro-stress-live-audit-20261105-c3-01` returned successfully and was accepted after parent source/evidence review. Response digest: `7d73a28051d5dca9a75882f98816d16bc8dc599a6ae1bb3d2b0c93fdc33e9091`. Its illustrative crash scores are scenarios, not a November5 intraday replay. The parent did not adopt its suggestion to conflate the artifact and quote freshness budgets.
+
+The claims worker `macro-stress-claims-identity-20261105-c3-01` returned a local-only candidate at `27898dfecdbe86c4007815b27e8eab4239665f5e`; it was not pushed or deployed. Response digest: `a81e478ba248182bf90763d0e607ac6055fcf25e7c3fcb20ca1bbb0efc655194`. Its artifact resides under a path outside the installed generic artifact export contract; no path guard was widened and no alternate read was used to bypass it. Parent owns verification/integration of this distinct lane. #9435 remains an independent armed carrier and its effects are not taken over.
 
 Owed before claiming live repair:
-- consume and inspect exact patches, integrate only disjoint authorized changes;
-- failing-before/passing-after producer and actual-JS regressions;
 - required exact-head hosted CI and the existing protected release controller;
 - merged source and actual served client/producer bytes;
-- authenticated long-open browser with postclose, stale/missing input and fresh-recovery behavior;
-- retain historical observations and label any remaining research/runtime limitations explicitly.
+- authenticated long-open browser proof of current/historical labeling;
+- exact claims repair verification and deployed receipt correction;
+- original intraday payload history, if retained, to distinguish which failure operated during regular trading hours;
+- the existing source/hazard consumer integration and scientific evidence gates for predictive improvements.
 
-The market explanation is evidence-qualified. The immediate engineering failures are actionable. A tested patch, green CI, merge, deployment and the user-visible accepted outcome remain different states.
+The measured-score repair changes source truthfulness and current-assessment availability. It does not validate a crash forecast, promote Radar82 to a probability, change risk weights/thresholds, release an old hold, or grant trading authority. A tested patch, green CI, merge, deployment and the accepted user outcome remain distinct.
