@@ -528,7 +528,8 @@ def test_pinned_focus_and_compared_ids_survive_phase_filter():
 # BASE lines (1-based) the Cycles wave replaces 1:1 inside the line-neutral region.
 # A2_D30 adds 204/206/207/1055/1056 (stance chip -> stamped doctrine face); stanceHTML
 # leaves the frozen list and is pinned by tests/test_sector_cycles_doctrine_stance.py.
-WAVE_SEAM_LINES = {95, 204, 206, 207, 258, 274, 647, 648, 1055, 1056, 1167, 1192, 1207,
+# SIC-D33 (L6.5n) adds 1053: the card RS chip prints the signed value its ink qualifies.
+WAVE_SEAM_LINES = {95, 204, 206, 207, 258, 274, 647, 648, 1053, 1055, 1056, 1167, 1192, 1207,
                    1208, 1209, 1212, 1223, 1231, 1232, 1233, 1234, 1235, 1236, 1258,
                    1259, 1811}
 WAVE_FROZEN_FNS = ("mountTurnRecord", "projPast", "applyVisibility",
@@ -556,3 +557,35 @@ def test_wave_lock_base_region_and_named_functions():
     assert changed <= WAVE_SEAM_LINES, sorted(changed - WAVE_SEAM_LINES)
     for name in WAVE_FROZEN_FNS:
         assert _extract_js_fn(base, name) == _extract_js_fn(cur, name), name
+
+
+# ------------------------------------------------------------- SIC-D33 card RS chip
+
+def _rs_chip_src(nw):
+    text = _text("sector_cycles.js")
+    line = next(l for l in text.splitlines() if l.strip().startswith("var rsTxt ="))
+    return ("var nw = " + json.dumps(nw) + ";\n"
+            "var rs = nw.rs_21d != null ? nw.rs_21d : nw.rs_63d;\n"
+            + line + "\nconsole.log(JSON.stringify(rsTxt));")
+
+
+@needs_node
+@pytest.mark.parametrize("nw, cls, label", [
+    ({"rs_21d": 2.1, "rs_21d_rank": 3, "rs_63d": -1.0, "rs_rank": 7}, "t-up", "RS +2.1% #3"),
+    ({"rs_21d": -0.4, "rs_21d_rank": 9, "rs_63d": 3.0, "rs_rank": 1}, "t-down", "RS -0.4% #9"),
+    ({"rs_63d": -4.2, "rs_rank": 11}, "t-down", "RS -4.2% #11"),
+    ({"rs_21d": 1.5, "rs_63d": 2.0, "rs_rank": 2}, "t-up", "RS +1.5% #—"),
+])
+def test_card_rs_chip_colours_a_signed_value_not_a_rank(nw, cls, label):
+    """SIC-D33: the chip printed only a rank but took up/down ink from the sign of
+    RS, so under ZH (red = up) a page read 'RS #1..#9' red and 'RS #11' green. The
+    chip now prints the signed value the ink qualifies, and the rank comes from the
+    same lens (21d rank with the 21d value, 63d rank with the 63d value)."""
+    html = _node(_rs_chip_src(nw))
+    assert ('class="cc-tilt ' + cls + '"') in html
+    assert html.endswith(">" + label + "</span>")
+
+
+@needs_node
+def test_card_rs_chip_is_empty_without_a_value():
+    assert _node(_rs_chip_src({"rs_rank": 4})) == ""

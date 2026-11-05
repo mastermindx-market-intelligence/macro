@@ -1050,7 +1050,7 @@
       card.style.setProperty("--ph", phaseHue(nw.phase)); // card chrome reads by CYCLE PHASE
       if (isBasketRec(s) && basketShown[s.id]) card.classList.add("sel");
       var rs = nw.rs_21d != null ? nw.rs_21d : nw.rs_63d;   // fast lens when stamped (2026-07 audit)
-      var rsTxt = rs == null ? "" : ('<span class="cc-tilt ' + (rs >= 0 ? "t-up" : "t-down") + '">RS #' + (nw.rs_21d_rank || nw.rs_rank || "—") + '</span>');
+      var rsTxt = rs == null ? "" : ('<span class="cc-tilt ' + (rs >= 0 ? "t-up" : "t-down") + '">RS ' + (rs >= 0 ? "+" : "") + rs + '% #' + ((nw.rs_21d != null ? nw.rs_21d_rank : nw.rs_rank) || "—") + '</span>');  // SIC-D33: the ink qualifies the signed value; the rank pairs with its own lens
       var nextTxt = cardNextTxt(s.proj);
       var sigHTML = "";  // A2_D30: the raw engine BUY/SELL chip duplicated the stance; retired
       // A2_D30: (was the SELL arm of the retired raw signal chip)
