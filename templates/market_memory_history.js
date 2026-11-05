@@ -4,6 +4,7 @@
   const $ = id => document.getElementById(id);
   const ui = { ready:false, outcomesDecoded:false, outcomesVisible:false, error:null };
   const text = (en,zh) => document.documentElement.dataset.lang === 'zh' ? zh : en;
+  let revealGeneration=0;
   let corpus=null, outcomes=null, macro=null, macroIndex=null, dayIndex=new Map(), outcomeIndex=null, dates=[];
   let filings=null,filingsIndex=null,filingsOffset=0,filingsDay=null;
   let transcripts=null,transcriptsIndex=null,transcriptsOffset=0,transcriptsDay=null;
@@ -11,7 +12,8 @@
   const fmt = (v,unit='%') => v===null || v===undefined ? '—' : (v>0?'+':'')+v.toFixed(2)+unit;
   const reason = (r,key) => r.missing && r.missing[key] || '';
   function failure(error) {
-    ui.error=String(error && error.message || error);
+    ui.error=ui.error||String(error && error.message || error);
+    hideOutcomes(true);
     $('mmh-status').textContent=text('Historical evidence could not be opened. Verify the original artifact.','无法打开历史依据。请核验原始文件。');
     $('mmh-provenance').textContent=ui.error;
     ['mmh-date','mmh-symbol','mmh-prev','mmh-next','mmh-reveal'].forEach(id => $(id).disabled=true);
@@ -58,7 +60,7 @@
         const why=reason(row,key);if(why)cell.setAttribute('aria-label',text('Unavailable: ','不可用：')+why);tr.append(cell);}
       tbody.append(tr);}
   }
-  function hideOutcomes(){ui.outcomesVisible=false;$('mmh-outcomes').hidden=true;$('mmh-reveal').textContent=text('Reveal later outcomes','显示后续表现');}
+  function hideOutcomes(cancelPending){if(cancelPending)revealGeneration+=1;ui.outcomesVisible=false;$('mmh-outcomes').hidden=true;$('mmh-reveal').textContent=text('Reveal later outcomes','显示后续表现');}
   function renderMacro(day) {
     if(!macro)return;
     $('mmh-macro').hidden=false;
@@ -122,6 +124,7 @@
     $('mmh-transcripts-prev').textContent=text('Previous calls','上一页会议');$('mmh-transcripts-next').textContent=text('Next calls','下一页会议');
   }
   function render() {
+    if(ui.error){failure(ui.error);return;}
     if(!corpus)return;
     const day=$('mmh-date').value, rows=objects(corpus,dayIndex,day), total=corpus.metadata.coverage.selected_proxy_count;
     $('mmh-selected-date').textContent=day||'—';
@@ -147,9 +150,9 @@
     if(ui.outcomesVisible && outcomes){populate($('mmh-outcomes-table').tBodies[0],objects(outcomes,outcomeIndex,day),[['forward_return_1ob_pct','%'],['forward_return_5ob_pct','%'],['forward_return_21ob_pct','%'],['forward_return_63ob_pct','%'],['forward_max_drawdown_21ob_pct','%']]);$('mmh-reveal').textContent=text('Hide later outcomes','隐藏后续表现');}
     else hideOutcomes();
   }
-  function step(direction){const current=$('mmh-date').value;const candidates=dates.filter(d=>direction<0?d<current:d>current);if(!candidates.length)return;$('mmh-date').value=direction<0?candidates[candidates.length-1]:candidates[0];hideOutcomes();render();}
-  $('mmh-date').addEventListener('change',()=>{hideOutcomes();render();});
-  $('mmh-symbol').addEventListener('change',()=>{hideOutcomes();render();});
+  function step(direction){const current=$('mmh-date').value;const candidates=dates.filter(d=>direction<0?d<current:d>current);if(!candidates.length)return;$('mmh-date').value=direction<0?candidates[candidates.length-1]:candidates[0];hideOutcomes(true);render();}
+  $('mmh-date').addEventListener('change',()=>{hideOutcomes(true);render();});
+  $('mmh-symbol').addEventListener('change',()=>{hideOutcomes(true);render();});
   $('mmh-prev').addEventListener('click',()=>step(-1));$('mmh-next').addEventListener('click',()=>step(1));
   $('mmh-theme').addEventListener('click',()=>{const html=document.documentElement;html.dataset.theme=html.dataset.theme==='light'?'dark':'light';$('mmh-theme').textContent=html.dataset.theme==='light'?text('Dark','深色'):text('Light','浅色');});
   $('mmh-language').addEventListener('click',()=>{const html=document.documentElement;html.dataset.lang=html.dataset.lang==='zh'?'en':'zh';html.lang=html.dataset.lang; $('mmh-language').textContent=html.lang==='zh'?'English':'中文';$('mmh-theme').textContent=html.dataset.theme==='light'?text('Dark','深色'):text('Light','浅色');render();});
@@ -157,9 +160,9 @@
   $('mmh-filings-next').addEventListener('click',()=>{const day=$('mmh-date').value;if(filings&&filingsOffset+50<(filingsIndex.get(day)||[]).length){filingsOffset+=50;renderFilings(day);}});
   $('mmh-transcripts-prev').addEventListener('click',()=>{transcriptsOffset=Math.max(0,transcriptsOffset-50);$('mmh-transcript-request').hidden=true;renderTranscripts($('mmh-date').value);});
   $('mmh-transcripts-next').addEventListener('click',()=>{const day=$('mmh-date').value;if(transcripts&&transcriptsOffset+50<(transcriptsIndex.get(day)||[]).length){transcriptsOffset+=50;$('mmh-transcript-request').hidden=true;renderTranscripts(day);}});
-  $('mmh-reveal').addEventListener('click',async()=>{if(ui.outcomesVisible){hideOutcomes();return;}const day=$('mmh-date').value;try{
-    if(!outcomes){outcomes=await decode('mmh-outcomes-data');if(outcomes.manifest_sha256!==corpus.manifest_sha256)throw new Error('Outcomes belong to another archive');outcomeIndex=index(outcomes);ui.outcomesDecoded=true;}
-    if(day!==$('mmh-date').value)return;ui.outcomesVisible=true;$('mmh-outcomes').hidden=false;render();
+  $('mmh-reveal').addEventListener('click',async()=>{if(ui.error)return;if(ui.outcomesVisible){hideOutcomes(true);return;}const generation=revealGeneration;const day=$('mmh-date').value;try{
+    if(!outcomes){const decoded=await decode('mmh-outcomes-data');if(ui.error)return;if(decoded.manifest_sha256!==corpus.manifest_sha256)throw new Error('Outcomes belong to another archive');const decodedIndex=index(decoded);outcomes=decoded;outcomeIndex=decodedIndex;ui.outcomesDecoded=true;}
+    if(generation!==revealGeneration||day!==$('mmh-date').value)return;ui.outcomesVisible=true;$('mmh-outcomes').hidden=false;render();
   }catch(error){failure(error);}});
   window.__MM_HISTORY_VIEW__=Object.freeze({status:()=>({...ui,marketDate:$('mmh-date').value,visibleRows:$('mmh-table').tBodies[0].rows.length})});
   (async()=>{try{corpus=await decode('mmh-data');dayIndex=index(corpus);dates=Array.from(dayIndex.keys()).sort();
