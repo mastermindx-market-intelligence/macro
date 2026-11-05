@@ -1,5 +1,17 @@
 # D04 — resumed design and implementation, 2026-11-04 UTC
 
+## Active implementation — November 4, 2026 (America/Chicago)
+
+Chairman renewed the implementation mandate: advance D04 toward completion, resolve gates and use the available authorized tools/fleet. The existing release holds remain. Current protected source is **`70187bb1660e8a7c3038271bb9f8924b5e525cb0`**, INDEX 1.0.1 / bootstrap-major 1 compatible. Same-pin applicable laws were loaded; unchanged companions retain their prior read, and material ACTIVE_EXECUTION / RECONCILE_STATE changes were consumed. Paper law will be refreshed at this pin before any new Paper action.
+
+**CI gate cleared:** source #10719 remains exactly `3acd4fb0efe00793fc9987f1a6e45a512b26e5dd`, open/Draft/unmerged. Both [ci 41903893475](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41903893475) and [fences 41903893354](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41903893354) completed **success**. ci-plan, contract-delta, all 12 packs and ci-gate passed; fence-pack passed. Four conditional jobs skipped. No rerun was needed. Original m2studio workspace/branch and publisher readback remain clean, local=remote, APPLIED.
+
+**Next ready product phase — remaining A063 expanded-Theme rendering cost.** Profile the demonstrated 0.8–1.0 second rebuild at supplied density to distinguish JavaScript/DOM replacement from style/layout work; repair the causal cost within the existing standalone US renderer. Preserve all 2,339 member contexts, missing/zero semantics, EN/ZH, keyboard focus, exact native history/return and active disclosure state. Do not rebuild accepted Map/List features or alter shared observers/Terminal without causal evidence. DONE_WHEN: a reproducible before/after receipt on the changed source shows the useful improvement, affected journeys/retention and actual screenshots pass, and same-owner publication is reconciled.
+
+In parallel, bounded native reasoning checks refresh F01/F02/D23 qualification and identify the next independent product journey; they have no source-write or release authority. Exact CI verification returned and was accepted/STOP. Root remains sole source writer. Direct execution reason: PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD for causal performance diagnosis and tightly coupled return invariants; no Fable escalation is required. The original separate Fabric state-test commission remains frozen at its prior unknown effect and is not replayed.
+
+**State: MORE_WORK_EXISTS — attended implementation continues after this save.** This current section supersedes the older queued-CI/next-poll/turn-boundary wording below. Accepted Confluence, complete List access, prior lifecycle proof and the 10-route/113-capability/24-alias/49-basket package remain DO_NOT_REDO absent material invalidation. All 75 whole-programme cases remain unpromoted.
+
 ## Current continuation — searchable US Lists and measured lifecycle repair
 
 The “Resume discovery package” session was recovered under protected Mastermind **`700eef54bca4a2dc4e30d94a6b30dcfa733ad57c`**. INDEX 1.0.1 / bootstrap-major 1 is compatible. Prior accepted discovery-package and Confluence work were retained. Current Web self-QA applies; release holds and platform rules remain binding.
