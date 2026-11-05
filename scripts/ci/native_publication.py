@@ -185,7 +185,7 @@ def _require_path(value: object, field: str) -> str:
         raise MalformedEvidenceError("%s contains control characters: %r" % (field, value))
     if value.startswith("/") or value.endswith("/"):
         raise MalformedEvidenceError("%s must be a relative path: %r" % (field, value))
-    if value[1] == ":":
+    if len(value) > 1 and value[1] == ":":
         raise MalformedEvidenceError("%s must not carry a drive prefix: %r" % (field, value))
     segments = value.split("/")
     for segment in segments:

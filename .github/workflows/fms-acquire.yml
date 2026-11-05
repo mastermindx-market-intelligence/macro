@@ -107,7 +107,7 @@ jobs:
           git commit -m "fms-acquire: official 36(b) notification acquisition $(date -u +%FT%H:%MZ)"
           # Preserve this acquisition across unrelated branch movement. Never
           # rerun source effects or blindly replay an uncertain Git push.
-          python -B -m scripts.ci.fms_persist \
+          python3 -B -m scripts.ci.fms_persist \
             --branch "$FMS_TARGET_REF" \
             --receipt "$RUNNER_TEMP/fms-persist-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
           echo "projection_changed=true" >> "$GITHUB_OUTPUT"

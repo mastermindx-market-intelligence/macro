@@ -44,7 +44,15 @@ LIB = REPO_ROOT / "scripts" / "ci" / "push_retry.sh"
 
 def run_sh(body: str, *, env: dict | None = None, cwd: Path | None = None) -> subprocess.CompletedProcess:
     """Source the library into a `bash -e` shell (GitHub's shell) and run `body`."""
-    script = f'. "{LIB}"\n' + textwrap.dedent(body)
+    # Legacy retry tests fake Git effects independently of native authority.
+    # Keep that explicit seam offline; native routing/settlement has its own
+    # real-Git/fake-server suite, and native shell statuses are tested below.
+    script = f'. "{LIB}"\n' + '''python3() {
+      if [ "$1" = -P ] && [ "$2" = -m ] && [ "$3" = scripts.ci.native_queue_push ]; then return 80; fi
+      if [ "$1" = -m ] && [ "$2" = scripts.ci.native_queue_push ]; then return 80; fi
+      command python3 "$@"
+    }
+    ''' + textwrap.dedent(body)
     full_env = {**os.environ, **(env or {})}
     return subprocess.run(
         ["bash", "-eo", "pipefail", "-c", script],
@@ -1918,7 +1926,10 @@ def _lane_fixture(tmp_path: Path, rejects: int = 0, collision: bool = False):
     stub = tmp_path / "bin"
     stub.mkdir()
     for name in ("python", "python3"):
-        (stub / name).write_text('#!/usr/bin/env bash\nexit 0\n')
+        (stub / name).write_text('#!/usr/bin/env bash\n'
+            'if [ "$1" = -P ]; then shift; fi\n'
+            'if [ "$1" = -m ] && [ "$2" = scripts.ci.native_queue_push ]; then exit 80; fi\n'
+            'exit 0\n')
         (stub / name).chmod(0o755)
     if rejects:
         counter = tmp_path / "n"
@@ -2573,7 +2584,10 @@ def _backfill_fixture(tmp_path: Path, always_reject: bool = False):
     stub = tmp_path / "bin"
     stub.mkdir()
     for name in ("python", "python3"):
-        (stub / name).write_text("#!/usr/bin/env bash\nexit 0\n")
+        (stub / name).write_text("#!/usr/bin/env bash\n"
+            'if [ "$1" = -P ]; then shift; fi\n'
+            'if [ "$1" = -m ] && [ "$2" = scripts.ci.native_queue_push ]; then exit 80; fi\n'
+            "exit 0\n")
         (stub / name).chmod(0o755)
     if always_reject:
         real_git = subprocess.run(["which", "git"], capture_output=True, text=True).stdout.strip()
@@ -3043,7 +3057,7 @@ def test_commodity_workflow_uses_shared_publication_completion(tmp_path, publica
     )
     step = next(
         step for step in workflow["jobs"]["shock"]["steps"]
-        if step.get("name") == "rebuild commodities + commit (only on shock-state change)"
+        if step.get("id") == "native_publication_stage"
     )
     body = step["run"]
     marker = "PUSH_MAX_ATTEMPTS=5" if "PUSH_MAX_ATTEMPTS=5" in body else "for i in 1 2 3 4 5; do"
@@ -3072,7 +3086,8 @@ def test_commodity_workflow_uses_shared_publication_completion(tmp_path, publica
     '''
     result = run_sh(
         textwrap.dedent(setup) + "\n" + loop,
-        env={"CALL_LOG": str(log), "PUBLICATION_PENDING": str(publication_pending).lower()},
+        env={"CALL_LOG": str(log), "PUBLICATION_PENDING": str(publication_pending).lower(),
+             "GITHUB_OUTPUT": str(tmp_path / 'outputs')},
         cwd=tmp_path,
     )
     assert result.returncode == (75 if publication_pending else 0), (result.stdout, result.stderr)
@@ -3270,6 +3285,8 @@ def _caller_py_stub(stub: Path, qledger_publish_rc: int) -> None:
     for name in ("python", "python3"):
         (stub / name).write_text(
             "#!/usr/bin/env bash\n"
+            'if [ "$1" = -P ]; then shift; fi\n'
+            'if [ "$1" = -m ] && [ "$2" = scripts.ci.native_queue_push ]; then exit 80; fi\n'
             'case "$*" in\n'
             f"  *qledger_publication*publish-candidate*) exit {qledger_publish_rc} ;;\n"
             "esac\n"

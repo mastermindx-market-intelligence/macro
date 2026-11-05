@@ -1487,7 +1487,7 @@ jobs:
                 push_won
                 exit 0
               fi
-              git update-ref -d "$PUBLISH_REF"
+              if push_publish_ref_may_delete; then git update-ref -d "$PUBLISH_REF"; fi
               if [ "${PUSH_FAIL_CLASS:-}" = "push-error" ]; then
                 echo "::error title=rendered site publisher denied::non-contention push rejection (typically GH013 repository rules); not retrying"
                 exit 1

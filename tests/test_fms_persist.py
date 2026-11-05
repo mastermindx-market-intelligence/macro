@@ -147,3 +147,51 @@ def test_transplant_preserves_original_acquisition_author(fixture):
  author=run(root,'show','-s','--format=%an|%ae|%aI','HEAD');advance(peer)
  assert m.persist(root,'main',out)==0
  assert run(origin,'show','-s','--format=%an|%ae|%aI','main')==author
+
+
+def test_native_group_conserves_acquisition_over_unrelated_base_without_effects(fixture,monkeypatch):
+ root,origin,peer,out=fixture;candidate,base=m.validate_acquisition(root)
+ advance(peer);group_base=m.remote_head(root,'refs/heads/main',m.origin(root))
+ integrated=m.prepare(root,base,candidate,group_base,out)
+ before=(run(root,'rev-parse','HEAD'),run(root,'status','--porcelain'))
+ real=m.git
+ def reads_only(where,*args,**kw):
+  assert args[0] in {'rev-list','merge-base','diff','ls-tree','show'},args
+  return real(where,*args,**kw)
+ monkeypatch.setattr(m,'git',reads_only)
+ result=m.validate_native_group(root,candidate,group_base,integrated)
+ assert result['candidate']==candidate and result['group_commit']==integrated
+ assert len(result['projection_sha256'])==64
+ assert before==(run(root,'rev-parse','HEAD'),run(root,'status','--porcelain'))
+ assert not out.exists()
+
+
+@pytest.mark.parametrize('path',[m.FMS_FILES[1],'scripts/changed.py','config/government_revenue/révenue.yaml'])
+def test_native_group_refuses_material_base_movement(fixture,path):
+ root,origin,peer,out=fixture;candidate,base=m.validate_acquisition(root)
+ (peer/Path(path).parent).mkdir(parents=True,exist_ok=True);advance(peer,path,'other original\n')
+ group_base=m.remote_head(root,'refs/heads/main',m.origin(root))
+ with pytest.raises(m.Refusal,match='concurrent_fms_or_source_change'):
+  m.validate_native_group(root,candidate,group_base,candidate)
+
+
+@pytest.mark.parametrize('mutation',['projection','source','mode'])
+def test_native_group_refuses_changed_integrated_projection_or_source(fixture,mutation):
+ root,origin,peer,out=fixture;candidate,base=m.validate_acquisition(root)
+ path=root/(m.FMS_FILES[1] if mutation!='source' else 'scripts/changed.py')
+ path.parent.mkdir(parents=True,exist_ok=True)
+ if mutation=='mode':path.chmod(0o755)
+ else:path.write_text('substituted integration\n')
+ run(root,'add','.');run(root,'commit','-m','wrong integrated tree')
+ group=run(root,'rev-parse','HEAD')
+ with pytest.raises(m.Refusal,match='native_group_changed|fms_artifact_not_regular'):
+  m.validate_native_group(root,candidate,base,group)
+
+
+def test_native_group_does_not_accept_changed_original_append_only_source(fixture):
+ root,origin,peer,out=fixture
+ (root/m.FMS_FILES[1]).write_text('rewritten original\n')
+ run(root,'add','.');run(root,'commit','--amend','--no-edit');candidate=run(root,'rev-parse','HEAD')
+ base=run(root,'rev-parse','HEAD^')
+ with pytest.raises(m.Refusal,match='append_only'):
+  m.validate_native_group(root,candidate,base,candidate)

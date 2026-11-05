@@ -86,6 +86,7 @@ push_retry_init() {
   # and captured output; only a new explicit init clears the receipt.
   PUSH_TERMINAL_RC=0
   PUSH_TERMINAL_OUTPUT=""
+  PUSH_NATIVE_STATE=""
   PUSH_ATTEMPT_ANCHOR_VALID=0
   PUSH_ATTEMPT_ANCHOR_GIT_DIR=""
   PUSH_ATTEMPT_ANCHOR_BRANCH=""
@@ -118,7 +119,7 @@ push_qledger_preflight() {
   library_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P) || return 1
   # Prefer the explicit Python 3 executable over a legacy system python.
   if command -v python3 >/dev/null 2>&1; then py=python3; else py=python; fi
-  PYTHONPATH="$library_root${PYTHONPATH:+:$PYTHONPATH}" "$py" \
+  PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$library_root" "$py" -P \
     -m scripts.ci.qledger_publication --repo "$(pwd -P)" --boundary "$boundary" "$@"
 }
 
@@ -361,6 +362,33 @@ push_do() {
     for qledger_arg in "$@"; do qledger_args+=("--push-arg=$qledger_arg"); done
     push_qledger_guard publish-candidate "${qledger_args[@]}" || return $?
   fi
+  # Native publication is selected BEFORE any direct push. Exit 80 is only
+  # affirmative legacy classification; every unavailable/denied result holds.
+  local library_root py native_rc=0
+  local -a native_args=()
+  library_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P) || return 76
+  if command -v python3 >/dev/null 2>&1; then py=python3; else py=python; fi
+  for qledger_arg in "$@"; do native_args+=("--push-arg=$qledger_arg"); done
+  PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$library_root" "$py" -P -m scripts.ci.native_queue_push \
+    publish --root "$(pwd -P)" --deadline "${PUSH_DEADLINE:-0}" "${native_args[@]}" || native_rc=$?
+  # This source interface stages native intent (77); its separate read-only
+  # settle command proves publication. An unexpected bare zero is not evidence.
+  if [ "$native_rc" -eq 0 ]; then native_rc=76; fi
+  if [ "$native_rc" -ne 80 ]; then
+    PUSH_TERMINAL_RC="$native_rc"
+    PUSH_NATIVE_STATE=retained
+    PUSH_FAIL_CLASS=native-held
+    PUSH_STOP="native publication held; original candidate retained, no direct fallback or retry"
+    if [ "$native_rc" -eq 77 ]; then
+      PUSH_NATIVE_STATE=pending
+      PUSH_FAIL_CLASS=native-pending
+      PUSH_STOP="original native intent pending protected publication"
+      if [ -n "${GITHUB_OUTPUT:-}" ]; then
+        printf 'native_deadline=%s\n' "${PUSH_DEADLINE:-0}" >> "$GITHUB_OUTPUT"
+      fi
+    fi
+    return "$native_rc"
+  fi
   if [ -n "${PUSH_ALARM}" ]; then
     out=$(perl -e 'alarm shift @ARGV; exec @ARGV or die' -- "${PUSH_ALARM}" git push "$@" 2>&1) || rc=$?
   else
@@ -373,6 +401,14 @@ push_do() {
   fi
   push_classify "$rc" "$out"
   return "$rc"
+}
+
+push_native_pending() {
+  [ "${PUSH_NATIVE_STATE:-}" = pending ] && [ "${PUSH_TERMINAL_RC:-0}" -eq 77 ]
+}
+
+push_publish_ref_may_delete() {
+  [ -z "${PUSH_NATIVE_STATE:-}" ]
 }
 
 # Replay one generated commit onto a newer main using tree metadata only.

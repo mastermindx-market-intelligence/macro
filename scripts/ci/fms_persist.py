@@ -22,7 +22,8 @@ class Refusal(ValueError):
     pass
 
 def git(root, *args, env=None, timeout=30):
-    return subprocess.run(['git', '-C', str(root), *args], env={**os.environ, **(env or {}), 'GIT_OPTIONAL_LOCKS':'0'},
+    return subprocess.run(['git', '-C', str(root), *args], env={**os.environ, **(env or {}), 'GIT_OPTIONAL_LOCKS':'0',
+                          'GIT_NO_REPLACE_OBJECTS':'1', 'GIT_NO_LAZY_FETCH':'1'},
                           capture_output=True, timeout=timeout)
 
 def need(root, *args, env=None):
@@ -77,9 +78,15 @@ def artifact_entry(root,candidate,name):
     if mode!='100644' or kind!='blob' or path!=name:raise Refusal('fms_artifact_not_regular_file')
     return mode,oid
 
-def validate_acquisition(root):
-    if need(root,'status','--porcelain','--untracked-files=all').strip():raise Refusal('acquisition_commit_not_clean')
-    line=need(root,'rev-list','--parents','-n','1','HEAD').decode().split()
+def validate_acquisition_commit(root, candidate):
+    """Read-only original acquisition contract, also usable by trusted fences.
+
+    The caller authenticates the producer and original source head. This
+    function neither infers producer identity nor admits/queues a candidate.
+    """
+    if not isinstance(candidate,str) or not re.fullmatch('[0-9a-f]{40}',candidate):
+        raise Refusal('immutable_acquisition_commit_required')
+    line=need(root,'rev-list','--parents','-n','1',candidate).decode().split()
     if len(line)!=2:raise Refusal('one_acquisition_parent_required')
     candidate,base=line
     changed=set(changed_paths(root,base,candidate))
@@ -90,10 +97,43 @@ def validate_acquisition(root):
         if not current.startswith(prior):raise Refusal('append_only_fms_source_changed')
     return candidate,base
 
-def prepare(root,base,candidate,remote,out):
+def validate_source_movement(root,base,remote):
     if not ancestor(root,base,remote):raise Refusal('selected_branch_no_longer_descends_from_acquisition_base')
     changed=changed_paths(root,base,remote)
     if any(p in FMS_FILES or p.startswith(SOURCE_PREFIXES) for p in changed):raise Refusal('concurrent_fms_or_source_change_requires_reconciliation')
+
+def validate_native_group(root,candidate,group_base,group_commit):
+    """Conserve one original acquisition in an authenticated native group.
+
+    Core must bind candidate/group/base to its ORIGINAL NativeAdmission and
+    provider group proof before using this result. It must call this fence
+    before merge, not infer safety from the later publisher witness. No network,
+    mutable checkout/index, receipt, acquisition or publication effects occur.
+    """
+    for identity in (group_base,group_commit):
+        if not isinstance(identity,str) or not re.fullmatch('[0-9a-f]{40}',identity):
+            raise Refusal('immutable_native_group_identity_required')
+    candidate,base=validate_acquisition_commit(root,candidate)
+    validate_source_movement(root,base,group_base)
+    projection={name:artifact_entry(root,candidate,name) for name in FMS_FILES}
+    if any(artifact_entry(root,group_commit,name)!=entry for name,entry in projection.items()):
+        raise Refusal('native_group_changed_original_fms_projection')
+    # Changes introduced by integration outside the four sealed files must be
+    # unrelated too; an unauthenticated caller cannot substitute a group tree
+    # containing a source change while presenting a clean group_base.
+    changed=changed_paths(root,group_base,group_commit)
+    if any(p not in FMS_FILES and p.startswith(SOURCE_PREFIXES) for p in changed):
+        raise Refusal('native_group_changed_original_fms_source')
+    return {'candidate':candidate,'acquisition_base':base,'group_base':group_base,
+            'group_commit':group_commit,'projection_sha256':hashlib.sha256(
+                json.dumps(projection,sort_keys=True,separators=(',',':')).encode()).hexdigest()}
+
+def validate_acquisition(root):
+    if need(root,'status','--porcelain','--untracked-files=all').strip():raise Refusal('acquisition_commit_not_clean')
+    return validate_acquisition_commit(root,need(root,'rev-parse','HEAD').decode().strip())
+
+def prepare(root,base,candidate,remote,out):
+    validate_source_movement(root,base,remote)
     if remote==base:return candidate
     # An isolated temporary index preserves the actual checkout/index and writers.
     with tempfile.TemporaryDirectory(dir=out.parent,prefix='fms-index-') as temp:

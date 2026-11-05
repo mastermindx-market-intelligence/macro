@@ -42,10 +42,30 @@ jobs:
       # also written by vector-sentinel + daily, and committing it here would make
       # `git pull --rebase` conflict on the per-run timestamp line. The home hub feed
       # picks up the new alert on the next daily run; the commodities timeline updates now.
-      - name: rebuild commodities + commit (only on shock-state change)
+      - name: Stage commodity commit and publication intent
+        id: native_publication_stage
         if: steps.sentinel.outputs.rc == '10'
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+          # Capture repository-owned execution bytes from the original protected
+          # workflow SHA BEFORE rebase can replace files in the candidate tree.
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          native_code_root="${RUNNER_TEMP%/}/native-publication-code-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
+          mkdir -m 700 -- "$native_code_root"
+          mkdir -p -- "$native_code_root/scripts/ci"
+          GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show \
+            "$GITHUB_WORKFLOW_SHA:scripts/ci/native_publication_source.sh" \
+            > "$native_code_root/scripts/ci/native_publication_source.sh"
+          case "$(GIT_NO_REPLACE_OBJECTS=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_publication_source.sh)" in
+            100644*) : ;; *) exit 76 ;;
+          esac
+          . "$native_code_root/scripts/ci/native_publication_source.sh"
+          native_publication_capture_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"
+          . "$native_code_root/scripts/ci/push_retry.sh"
           python -m scripts.build_commodities
           git config user.name "dashboard-bot"
           git config user.email "actions@users.noreply.github.com"
@@ -90,7 +110,13 @@ jobs:
               | while IFS= read -r f; do rm -f -- "$f" || true; done
             if git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
               if push_do; then
+                echo "publication=published" >> "$GITHUB_OUTPUT"
                 push_won
+                exit 0
+              elif push_native_pending; then
+                # This step stages an intent. Ordinary push_do stayed nonzero;
+                # the final read-only gate alone may report native publication.
+                echo "publication=pending" >> "$GITHUB_OUTPUT"
                 exit 0
               fi
             fi
@@ -99,3 +125,28 @@ jobs:
           done
           push_lost
           exit 1
+
+      - name: Retain original commodity publication origin
+        id: native_publication_origin
+        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected commodity publication
+        id: native_publication
+        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
