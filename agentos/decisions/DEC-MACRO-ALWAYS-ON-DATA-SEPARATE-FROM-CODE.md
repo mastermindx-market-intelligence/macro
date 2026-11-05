@@ -62,3 +62,35 @@ Accurate stale/unknown reporting is useful delivery, but it is not independent l
 Sector production. The master plan's L4b-L7 and authenticated browser proofs remain
 open. Reconsider the transport/capacity choices only after measured scale or recovery
 limits, or a changed source contract, establish a concrete need.
+
+
+## Input ownership and publication ruling, November 5
+
+The source census and parent qualifications are recorded in
+[the input/runtime audit](../../research/market_os/ALWAYS_ON_MACRO_INPUT_RUNTIME_AUDIT_2026-11-05.md).
+The current `compute()` reads global inputs and time and must not be called pure merely
+because it has no direct output write. Extract declared inputs and an explicit effective
+date before runtime use; keep builder ledger, grade, research-log and notification effects
+with their existing writers.
+
+The first independent daily canary must advance named close-derived fields from an
+accepted completed-session history, preserving adjustment, revision and coverage semantics.
+Fresh close-derived values do not refresh unrelated research/context. Fence all old
+collection writers for a transferred lineage; Git builders may consume a selected immutable
+snapshot as compatibility transport but may not silently become a second producer.
+
+Where free/paid representations must agree, extend the existing publisher with immutable
+generation artifacts and one atomic current-manifest promotion. Per-file renames alone are
+insufficient. Resolve one manifest per request and use explicit tier projections through
+existing auth/BFF controls. A new `/live/` path is not evidence of correct entitlement.
+Do not create a redundant quote/basket-pulse wrapper or a parallel publication owner.
+
+The existing `DEC:VPS-MACRO-GIT-STORE-KEPT-TIER-NIGHTLY-REPACK-AND-PULL-GUARD`
+explicitly reserved off-Git publication for a pipeline decision. The current Chairman
+assignment authorizes this transition, while its fixed shallow-history, issuer ancestry,
+pull guard and maintenance rules remain. No re-shallowing, clone replacement, new queue,
+unqualified storage owner or infrastructure purchase follows from this ruling.
+
+Source delivery now includes Macro #10780 and Terminal #1311. They do not establish
+installation or acceptance. The native Brief/Watches/action-board gaps, independent
+producer path and authenticated beta open-tab proof remain required.

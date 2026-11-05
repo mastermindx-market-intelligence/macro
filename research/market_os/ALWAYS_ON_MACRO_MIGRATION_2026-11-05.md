@@ -1,7 +1,7 @@
 # Always-on Macro and Shared Shell migration
 
 Date: 2026-11-05.
-Status: ARCHITECTURE DEFINED; INITIAL IMPLEMENTATION LOCALLY QUALIFIED; production migration remains open.
+Status: IMPLEMENTATION IN PROGRESS; Macro #10780 and Terminal #1311 published; producer transfer and production acceptance remain open.
 Tracking issue: https://github.com/mastermindx-market-intelligence/macro/issues/10779
 Operation: `macro-always-on-shared-shell-20261105-c3`.
 Source carrier: `sol/web-macro-always-on-shared-shell-20261105-c3`.
@@ -9,11 +9,12 @@ Product continuity: existing `WS:MARKET-OS`; existing Data OS, live orchestratio
 Protected procedure pin: Mastermind `49c2e1d93e5e080b1671c98087a845e5beb09dd5`, skillpack 1.0.1, bootstrap-major 1 compatible.
 Architecture source pins: Macro `e39ec45902c1a2bb28507beb851593be6e422167`; Terminal `f9d3280a2a3ff28dd925b128231702b836c8a247`.
 Production observations: [bounded evidence](ALWAYS_ON_MACRO_EVIDENCE_2026-11-05.json).
+Input ownership and qualified source audit: [parent adjudication](ALWAYS_ON_MACRO_INPUT_RUNTIME_AUDIT_2026-11-05.md).
 Initial durable plan commit: `c7f9671d72329e3c33cccced276e969b2515d1e5`.
 
 ## 1. Chairman outcome and governing predecessors
 
-Make the entire Macro product continuously current at each source's legitimate cadence, independently of HTML builds, GitHub availability and code-release success, while adopting the existing application shell at **beta.mastermind-x.com**. The original user journey, information hierarchy, evidence, research, company drill-down, watch/portfolio separation and account rules survive the migration. Sector Intelligence displaying November 3 data on November 5 is the first end-to-end consumer. The Chairman explicitly authorizes architecture, a durable master plan and implementation initiation.
+Make the entire Macro product continuously current at each source's legitimate cadence, independently of HTML builds, GitHub availability and code-release success, while adopting the existing application shell at **beta.mastermind-x.com**. The original user journey, information hierarchy, evidence, research, company drill-down, watch/portfolio separation and account rules survive the migration. Sector Intelligence displaying November 3 data on November 5 is the first end-to-end consumer. The Chairman explicitly authorizes architecture, a durable master plan and implementation, followed by the instruction to initiate implementation and complete the full migration.
 
 This extends existing work; it does not create another scheduler, data platform, identity service, registry, queue or shell:
 
@@ -143,7 +144,7 @@ During migration, the existing 30-minute sentinel cadence is the first independe
 
 ## 6. Scope and ordered execution
 
-The existing compiled page registry at the Macro source pin has **353 entries: Macro 314, Terminal 32, Mastermind 7**. It includes marketing/internal routes and is not a count of 353 independently live products. All entries currently have the descriptive owner value “unowned”; this is a metadata mapping gap, not evidence that the actual domain/runtime owners do not exist. Use this registry as the denominator, map each admitted route to a family and real source owner, and preserve its original route/design/acceptance. Do not create a second page registry or silently shrink scope to the first working tab.
+The existing compiled page registry at the Macro source pin has **353 entries: Macro 314, Terminal 32, Mastermind 7**. It includes marketing/internal routes and is not a count of 353 independently live products. All entries currently have the descriptive owner value “unowned”; the v1 registry intentionally leaves this placeholder and reserves empty `data_sources` for v2. These fields are not an authoritative runtime owner/freshness map and do not show that actual domain/runtime owners are absent. Use this registry as the denominator, map each admitted route to a family and real source owner, and preserve its original route/design/acceptance. Do not create a second page registry or silently shrink scope to the first working tab.
 
 The L labels below are editorial plan nodes, not Executive Jobs or a new ranked queue.
 
@@ -195,20 +196,44 @@ No broad production failure injection is authorized merely to test the architect
 
 ## 8. Implementation and evidence ledger
 
-Completed in this source carrier:
+### Source delivery
 
-- Initial master plan committed, pushed and exact-byte read back at `c7f9671d72329e3c33cccced276e969b2515d1e5`; issue #10779 created.
-- Production HTTP and origin served-generation diagnosis recorded in the linked JSON evidence.
-- Sector gate now accepts an explicit served root and immutable in-memory reads; build CLI contract stays fail-closed.
-- Existing sentinel gains `sector_intelligence`, observes two bounded byte snapshots, and uses the same source/calendar/hash rules. Unknown observations feed existing blindness handling; conclusive old data remains stale even if another field is missing.
-- Only allowlisted status, reason and source age enter the public health projection. Detailed errors and premium/internal hashes remain in private facts. The observer never calls a builder or repairs data.
-- Focused validation: `python3 -m pytest tests/test_freshness_sentinel.py -q` — **142 passed**. Existing Sector semantic/date/HTML gate subset — **12 passed**. Diff whitespace check passed. Hosted CI, merge, installation and signed-in browser acceptance are separate pending stages.
+- Initial plan committed and exact-byte read back at `c7f9671d72329e3c33cccced276e969b2515d1e5`. Issue [#10779](https://github.com/mastermindx-market-intelligence/macro/issues/10779) is pinned, with GraphQL `isPinned: true` readback.
+- Macro [#10780](https://github.com/mastermindx-market-intelligence/macro/pull/10780), first implementation head `0c4c28e4a3e1ba0b1dde3ebdd9774355822f1527`: Sector checker reads an explicit served root or immutable in-memory bytes; the existing sentinel observes two bounded snapshots and reuses source/calendar/hash rules. Detailed private payloads/hashes stay out of public health output. No builder or repair is called.
+- Monitor qualification: **142 sentinel tests and 12 existing Sector semantic/date/HTML tests passed**; Agent OS validation had zero errors. Hosted CI identified five missing import-closure paths in four existing exclusive jobs. The returned worker correction is integrated as five additive paths in `.github/ci/legacy-jobs.yml`; no gate, scope mode, ceiling or test is removed. Parent verification of the integrated manifest returned **zero uncovered jobs and zero uncovered paths**; Agent OS again validated 2,073 records with zero errors (187 existing warnings), and diff whitespace checks passed. Its parent placement differs from the worker's serialized blob, so the worker's file hash is not claimed as the integrated file hash.
+- Terminal [#1311](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1311), exact head `26a8bbec0859959d48f97fcbc06c289dbf66ffd2`: the existing Sector workspace revalidates all active feeds every 60 seconds while visible and immediately on visibility resume. Per-feed/context coalescing, abort/timeouts and owner checks prevent overlap and obsolete-account responses. The existing five-second quote owner stays intact; source dates are not replaced by browser receipt time. Existing failure clearing remains; broader last-accepted-content policy is still open.
+- Consumer qualification: **78 focused unit tests, 12 Playwright cases at three viewports, and TypeScript validation passed**. Eighteen screenshots and a scoped receipt are committed under `docs/pr-crops/sector-always-on-refresh-20261105/` in that Terminal head. Hosted unit/type, quote, ingest and PostgreSQL checks succeeded at the latest observation; end-to-end shards were still running. Fixture-browser proof is not production proof.
 
-Fabric evidence:
+### Actual installed baseline
 
-- `macro-always-on-20261105-c3-shell-audit-01`: terminal rc75 admission refusal, `host_temperature_at_or_above_limit`, no task execution; retry not authorized. Independent bounded source work continued directly under the existing no-eligible-worker exception.
-- `macro-always-on-20261105-c3-sector-audit-01`: original controller PID 62474, latest observed ACTIVE_OR_WAITING, worker state UNKNOWN, result unavailable and root unverified. Preserve the original effect; no duplicate audit or claim of running durable execution.
-- A native principal architecture consultation challenged publication, clock, ownership and failure semantics. It is advisory judgment, not a formal GitHub approval.
+Read-only origin observations on November 5 around 23:37 UTC found both services running with clean tracked source checkouts:
+
+| Target | Installed source/deployment ID | Shared-shell status |
+|---|---|---|
+| Production Terminal | `db06eacd8938cf44588d3906bca95bfd7122b74b` | disabled |
+| Beta Terminal | `3930ce93bb1ed6f3d66ba1ae4cac7e441995ba78` | enabled; `mmx.shared-shell.v1` |
+
+These are baseline observations, not installation of #1311. Beta already has its separate service, port, checkout and release receipts. Its existing `terminal-build.sh --target beta --target-sha <merged-full-sha>` owner performs future upgrades; do not bootstrap a second beta service or bypass its source/receipt fences.
+
+The connected browser attempt timed out during beta navigation. The bounded tab-state reconciliation returned `INVALID_ARGUMENT`; authenticated production browser proof is unresolved. No alternate browser, account, sign-in workaround or fixture was substituted.
+
+### Fabric and parent adjudication
+
+- Sector source audit `macro-always-on-20261105-c3-sector-audit-01`: terminal rc0, complete return consumed and accepted as bounded diagnosis; exact last-writer attribution remains unproved.
+- Input/runtime audit `macro-always-on-20261105-c3-input-runtime-01`: terminal rc0, 20,309-byte complete return consumed and accepted as qualified source evidence. The linked parent adjudication qualifies its source facts and rejects its purity, unique-cause and redundant-wrapper overclaims. It is source evidence, not release or production acceptance.
+- CI closure `macro-always-on-20261105-c3-ci-closure-01`: terminal rc0, 3,406-byte complete return consumed; worker's local-only commit `81b0677716b5527e0fee4ad8a0c9ed74b256da09` reported three focused CI tests passing. Parent integrates equivalent exact path additions under the verified law pin and verifies the actual resulting manifest. No sibling live worktree is adopted.
+- Action-writer repair `macro-always-on-20261105-c3-action-writer-01`: original controller PID 6964; latest observation ACTIVE_OR_WAITING, root unverified, worker state UNKNOWN. Preserve its original carrier; no duplicate writer implementation.
+- Shell audit, Terminal refresh and estate census runs ended in pre-task thermal admission refusal (rc75, retry disallowed). Eligible parent source work continued under the authorized unavailable-worker exception; those requests were not replayed.
+- Pure-core request `macro-always-on-20261105-c3-sector-pure-core-01`, controller PID 98784: retained status `REQUEST_REFUSED_BEFORE_LAUNCH`; controller exited rc75, root remains unverified and result retrieval returned `ROOT_UNVERIFIED`. No implementation return or running-worker claim; do not invent a thermal cause from rc75 alone or replay the request.
+- Native architecture consultation is advisory judgment about publication and input ownership, not formal GitHub approval.
+
+### Next independent daily slice
+
+The first new producer slice must advance named close-derived Sector fields from a newly completed session through the existing runtime to an open native beta view without a Git data commit or frontend deploy. The price history owner must retain adjustment, revision and coverage semantics. Existing builders become snapshot consumers for the transferred lineage only after all old writer paths are fenced.
+
+An explicit input boundary must include the cycle spine, context, close history, membership, raw/narrative rotation and evaluation date. `compute()` currently reads these from global files and the clock; lack of direct writes does not make it pure. Tests must detect undeclared repository fallback and ledger/grader effects. Baseline research dates remain separate until their producers also migrate.
+
+The existing Git-store maintenance decision explicitly leaves off-Git publication to a pipeline decision; the Chairman's current assignment supplies that direction. Existing fixed shallow-history, issuer ancestry, pull-guard and maintenance requirements remain in force. This change does not authorize re-shallowing or replacing the data/control owner.
 
 ## 9. Acceptance and next action
 
@@ -216,4 +241,4 @@ Fabric evidence:
 
 Whole-program acceptance requires a reconciled registry/family denominator, truthful source clocks and coverage, independent collection/materialization/publication, bounded fault isolation, real browser journeys and durable proof for every admitted family. Accepted static/editorial exceptions must be explicit.
 
-Next on this carrier: publish the locally qualified L4a implementation and source-linked decision through normal required CI/release; verify the installed sentinel on the actual served generation. In parallel with legitimate CI waits, finalize the L4b side-effect/input boundary and L4c writer-transfer patch against the existing owners. Do not enable a five-minute copy of the current builder. After the Sector canary is production-proven, admit the next family through its existing carrier and acceptance rules.
+Next on this carrier: complete the exact CI-closure repair on Macro #10780, then use each repository's established protected release path and verify installation. Continue the original action-writer carrier and the explicit-input/producer-transfer work. Terminal #1311 must reach the existing beta deployment owner at its eventual merged SHA; signed-in open-tab proof and the remaining native journeys are still required. Do not enable a five-minute copy of the current builder. After the independent Sector canary is production-proven, migrate each remaining family through its existing carrier and acceptance rules.

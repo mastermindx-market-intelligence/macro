@@ -91,5 +91,61 @@
       "Any new code merged, installed, or live.",
       "Independent live Sector production."
     ]
+  },
+  "source_delivery": {
+    "macro": {
+      "pr": 10780,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10780",
+      "initial_implementation_head": "0c4c28e4a3e1ba0b1dde3ebdd9774355822f1527",
+      "status": "published; CI repair in progress; not merged or installed"
+    },
+    "terminal": {
+      "pr": 1311,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1311",
+      "head": "26a8bbec0859959d48f97fcbc06c289dbf66ffd2",
+      "status": "published; hosted e2e pending; not merged or installed",
+      "focused_unit_passed": 78,
+      "playwright_passed": 12,
+      "viewports": [
+        "1440x900",
+        "820x1180",
+        "390x844"
+      ],
+      "typescript_exit": 0,
+      "evidence_path": "docs/pr-crops/sector-always-on-refresh-20261105/README.md",
+      "production_browser_acceptance": false
+    }
+  },
+  "terminal_installed_baseline": {
+    "observation_window_utc": "2026-11-05 approximately 23:37; minute precision retained from session receipt",
+    "method": "Read-only service, tracked Git status, deployment marker and localhost shared-shell status via existing SSH identity; no secret values inspected.",
+    "production": {
+      "service": "terminal.service",
+      "active": true,
+      "tracked_source_clean": true,
+      "deployment_id": "db06eacd8938cf44588d3906bca95bfd7122b74b",
+      "shared_shell_enabled": false
+    },
+    "beta": {
+      "service": "terminal-beta.service",
+      "active": true,
+      "tracked_source_clean": true,
+      "deployment_id": "3930ce93bb1ed6f3d66ba1ae4cac7e441995ba78",
+      "shared_shell_enabled": true,
+      "protocol": "mmx.shared-shell.v1"
+    },
+    "limits": "Baseline only; neither target contains PR 1311's implementation."
+  },
+  "input_runtime_audit": {
+    "run_id": "macro-always-on-20261105-c3-input-runtime-01",
+    "response_sha256": "adf6e96d9c9c11ed67895615497d8551b2b93b0858cfaaa6a320745180fde7f4",
+    "response_bytes": 20309,
+    "scope": "Source-only census, with explicit parent qualifications; not production or release acceptance.",
+    "adjudication": "ALWAYS_ON_MACRO_INPUT_RUNTIME_AUDIT_2026-11-05.md"
+  },
+  "browser_proof": {
+    "status": "blocked_on_connected_browser_observation",
+    "attempt": "Existing browser plugin beta navigation timed out; bounded tab-state read returned INVALID_ARGUMENT.",
+    "limits": "No authenticated route, signed-in account or open-tab production refresh was established. Local Playwright cases are fixture tests."
   }
 }

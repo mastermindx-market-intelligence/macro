@@ -15160,6 +15160,7 @@ jobs:
       - "lib/intl_gs_observations.py"
       - engine/postmortem.py
       - research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md
+      - "scripts/check_sector_intelligence_freshness.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16309,6 +16310,8 @@ jobs:
       - "site/crypto.html"
       - "site/vector.html"
       - "tests/test_crypto_observations_contract.py"
+      - "scripts/__init__.py"
+      - "scripts/check_sector_intelligence_freshness.py"
     # scripts/ci/push_retry.sh is the shared retry policy that EVERY lane's commit→push
     # step sources (render, engine-render, daily ×13, closing-bell, asia-close ×2,
     # weekly, earlyclose). It exists because render.yml run 30167139398 (2026-07-25)
@@ -37810,6 +37813,7 @@ jobs:
       - "engine/theme_graph/materialize.py"
       # W2F-X closure widening: the observation seam widened these import closures
       - "engine/intl_global_observation.py"
+      - "scripts/check_sector_intelligence_freshness.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -51840,6 +51844,7 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "scripts/check_sector_intelligence_freshness.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
