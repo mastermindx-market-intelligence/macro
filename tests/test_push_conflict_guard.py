@@ -455,7 +455,7 @@ def _autostash_pull_steps() -> list[tuple[str, str]]:
         doc = yaml.safe_load(wf_path.read_text(encoding="utf-8"))
         for job_name, job in (doc.get("jobs") or {}).items():
             for step in job.get("steps", []):
-                code = _code(step.get("run") or "")
+                code = _code(resolve_run_source(step.get("run") or "",REPO_ROOT))
                 if "pull --rebase --autostash" in code:
                     out.append((f"{wf_path.name}:{job_name}:{step.get('name')}", code))
     return out

@@ -267,3 +267,37 @@ def test_native_first_stage_unknown_has_no_legacy_push_or_second_acquisition(fix
  assert run(origin,'rev-parse','main')==before
  with pytest.raises(m.Refusal,match='receipt_identity'):
   m.persist(root,'main',out,native_deadline=m.time.time()+120)
+
+
+def test_group_reader_charges_existing_calls_and_one_original_monotonic_deadline(fixture,monkeypatch):
+ root,origin,peer,out=fixture;candidate,base=m.validate_acquisition(root)
+ now=[100.0];calls=[]
+ monkeypatch.setattr(m.time,'monotonic',lambda:now[0])
+ def reader(where,*args,timeout):
+  calls.append((args,timeout));result=m.git(where,*args,timeout=timeout)
+  now[0]+=2
+  return result
+ with pytest.raises(m.Refusal,match='original_group_deadline_expired'):
+  m.validate_native_group(root,candidate,base,candidate,git_read=reader,deadline=105.0)
+ assert [timeout for args,timeout in calls]==[5.0,3.0,1.0]
+ assert not out.exists()
+
+
+def test_group_reader_never_resets_or_falls_back_after_original_budget_refusal(fixture):
+ root,origin,peer,out=fixture;candidate,base=m.validate_acquisition(root);calls=[]
+ def reader(where,*args,timeout):
+  calls.append(args)
+  if len(calls)>1:raise m.Refusal('original_core_read_budget_exhausted')
+  return m.git(where,*args,timeout=timeout)
+ with pytest.raises(m.Refusal,match='original_core_read_budget_exhausted'):
+  m.validate_native_group(root,candidate,base,candidate,git_read=reader,deadline=m.time.monotonic()+30)
+ assert len(calls)==2 and not out.exists()
+
+
+def test_group_reader_requires_actual_original_deadline_before_any_read(fixture):
+ root,origin,peer,out=fixture;candidate,base=m.validate_acquisition(root)
+ def never(*args,**kw):pytest.fail('new read/allowance must not be invented')
+ with pytest.raises(m.Refusal,match='original_group_deadline_required'):
+  m.validate_native_group(root,candidate,base,candidate,git_read=never)
+ with pytest.raises(m.Refusal,match='original_group_deadline_expired'):
+  m.validate_native_group(root,candidate,base,candidate,git_read=never,deadline=m.time.monotonic()-1)

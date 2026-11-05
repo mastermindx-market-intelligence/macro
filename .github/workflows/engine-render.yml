@@ -1126,5 +1126,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
-            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
-          echo "published=true" >> "$GITHUB_OUTPUT"
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE" --write-output

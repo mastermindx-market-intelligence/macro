@@ -39,7 +39,7 @@ LEGACY, PENDING, UNKNOWN, REFUSED = 80, 77, 75, 76
 REPOSITORY = 'mastermindx-market-intelligence/macro'
 LABEL = 'merge-on-green'
 GUARD_PATHS = (
-    'scripts/ci_authority.py', 'scripts/ci_admission_stages.py',
+    'scripts/ci_authority.py', 'scripts/ci_authority_paths.py', 'scripts/ci_admission_stages.py',
     'scripts/ci_native_review_policy.py', 'scripts/ci_proof_admission.py',
     'scripts/merge_on_green.py', '.github/workflows/ci.yml',
     '.github/workflows/fences.yml', '.github/workflows/ci-authority.yml',
@@ -423,7 +423,7 @@ def publication(api, root, origin):
                'projection_sha256': origin['projection_sha256'], 'pr_number': origin['pr_number']}
 
 
-def producer_identity(head, digest, *, require_staging_step=True):
+def producer_identity(head, digest, *, require_staging_step=True,publishing_step=None):
     """Closed producer source tuples; each also needs the trusted core join."""
     credential=os.environ.get('NATIVE_PUBLICATION_TOKEN_ORIGIN')
     if credential=='GITHUB_TOKEN':
@@ -431,6 +431,8 @@ def producer_identity(head, digest, *, require_staging_step=True):
                      'acquire': '.github/workflows/fms-acquire.yml',
                      'render': '.github/workflows/public-render.yml',
                      'cortex': '.github/workflows/daily.yml',
+                     'collect': '.github/workflows/daily.yml',
+                     'causal': '.github/workflows/daily.yml',
                      'capital_structure': '.github/workflows/daily.yml',
                      'collect_tail': '.github/workflows/daily.yml',
                      'factor_series': '.github/workflows/daily.yml',
@@ -451,16 +453,28 @@ def producer_identity(head, digest, *, require_staging_step=True):
     else:raise PublicationHeld('producer_original_credential_not_bound')
     job = os.environ.get('GITHUB_JOB')
     workflow = producers.get(job)
+    allowed_steps={step}
+    if credential=='GITHUB_TOKEN' and job=='collect':
+        allowed_steps={'native_publication_stage','native_publication_salvage_stage'}
+    if credential=='GITHUB_TOKEN' and job=='engine':
+        allowed_steps={'native_publication_stage','native_publication_leader_stage',
+            'native_publication_prophet_stage','native_publication_shadow_stage',
+            'native_publication_core_stage','native_publication_chronicle_stage'}
+    if credential=='GITHUB_TOKEN' and job=='causal':
+        allowed_steps={'native_publication_stage','native_publication_foundry_stage'}
+    if credential=='GITHUB_TOKEN' and job=='asia':
+        allowed_steps={'native_publication_stage','native_publication_engine_stage'}
+    step=os.environ.get('NATIVE_PUBLICATION_PUBLISHING_STEP') if require_staging_step else (publishing_step or step)
     if (os.environ.get('GITHUB_REPOSITORY') != REPOSITORY
             or os.environ.get('GITHUB_REF') != 'refs/heads/main'
             or workflow is None
-            or (require_staging_step and os.environ.get('NATIVE_PUBLICATION_PUBLISHING_STEP') != step)
+            or step not in allowed_steps
             or os.environ.get('GITHUB_WORKFLOW_REF') != REPOSITORY + '/' + workflow + '@refs/heads/main'):
         raise PublicationHeld('producer_original_source_not_allowlisted')
     run = positive(int(os.environ.get('GITHUB_RUN_ID', '0')))
     attempt = positive(int(os.environ.get('GITHUB_RUN_ATTEMPT', '0')))
     workflow_sha = sha(os.environ.get('GITHUB_WORKFLOW_SHA'))
-    generation = hashlib.sha256(canonical([REPOSITORY, run, attempt, job, head, digest])).hexdigest()[:12]
+    generation = hashlib.sha256(canonical([REPOSITORY, run, attempt, job, step, head, digest])).hexdigest()[:12]
     locator = dict(run_id=run, run_attempt=attempt, job=job,
                    step=step, generation=generation)
     return locator, workflow, workflow_sha
@@ -616,7 +630,7 @@ def settle(api, root, path, deadline, *, clock=time.time, sleep=time.sleep, on_p
             or str(origin['producer_run_attempt']) != os.environ.get('GITHUB_RUN_ATTEMPT')):
         raise PublicationHeld('settlement_original_run_attempt_changed')
     locator, workflow, workflow_sha = producer_identity(origin['published_source_head'], origin['projection_sha256'],
-                                                       require_staging_step=False)
+        require_staging_step=False,publishing_step=origin['publishing_step'])
     if (origin['original_generation'] != locator['generation']
             or origin['workflow_path'] != workflow or origin['workflow_sha'] != workflow_sha
             or origin['publishing_job'] != locator['job'] or origin['publishing_step'] != locator['step']
@@ -668,6 +682,8 @@ def main(argv=None):
     parser.add_argument('--push-arg', action='append', default=[])
     parser.add_argument('--record')
     parser.add_argument('--deadline', type=float, default=0)
+    parser.add_argument('--write-output',action='store_true',
+        help='emit actual protected merge source only AFTER original settlement')
     args = parser.parse_args(argv)
     try:
         root = Path(args.root).resolve()
@@ -678,7 +694,11 @@ def main(argv=None):
             return status
         if not args.record or args.deadline <= 0:
             raise PublicationHeld('original_record_and_budget_required')
-        return settle(GitHub(root, args.deadline), root, args.record, args.deadline)
+        def published_outputs(receipt):
+            with Path(os.environ['GITHUB_OUTPUT']).open('a') as output:
+                output.write('source_sha='+sha(receipt['merge_sha'])+'\npublished=true\n')
+        return settle(GitHub(root, args.deadline), root, args.record, args.deadline,
+                      on_published=published_outputs if args.write_output else None)
     except EffectUnknown as error:
         print('::error::original native publication effect remains unknown: ' + str(error), file=sys.stderr)
         return UNKNOWN

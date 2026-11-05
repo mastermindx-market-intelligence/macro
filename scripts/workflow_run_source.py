@@ -64,6 +64,7 @@ __all__ = [
     "WorkflowRunSourceError",
     "resolve_run_source",
     "resolved_workflow_text",
+    "pinned_workflow_shell",
 ]
 
 #: Literal provenance marker an extracted script must carry.
@@ -95,6 +96,38 @@ class WorkflowRunSourceError(RuntimeError):
     """An indirection that cannot be resolved. Never swallow this."""
 
 
+_PINNED_SOURCE_RE=re.compile(
+    r'^# SOURCE-PINNED-WORKFLOW-SHELL: (scripts/ci/[A-Za-z0-9_.-]+\.sh) ([A-Za-z_][A-Za-z0-9_-]{0,127})$',re.M)
+
+
+def pinned_workflow_shell(path: str, step: str) -> str:
+    """Exact original-Git shell loader; metadata is not admission authority.
+
+    A later publisher in one job must not execute a script from a checkout
+    changed by an earlier legacy rebase. The literal workflow body loads ONLY
+    its original workflow-SHA object, once, into its private original step file.
+    Keeping this template here lets the existing source guards see the actual
+    script, without hiding any prefix/suffix commands behind a loose marker.
+    """
+    if (not re.fullmatch(r'scripts/ci/[A-Za-z0-9_.-]+\.sh',path)
+            or not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_-]{0,127}',step)):
+        raise WorkflowRunSourceError('unsafe original workflow shell identity')
+    return f'''# SOURCE-PINNED-WORKFLOW-SHELL: {path} {step}
+set -euo pipefail
+umask 077
+[[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{{40}}$ ]]
+[ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+case "${{RUNNER_TEMP:-}}" in /*) : ;; *) exit 76 ;; esac
+case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- {path})" in
+  100644*|100755*) : ;; *) exit 76 ;;
+esac
+NATIVE_PUBLISHER_SCRIPT="${{RUNNER_TEMP%/}}/native-publication-shell-${{GITHUB_RUN_ID}}-${{GITHUB_RUN_ATTEMPT}}-${{GITHUB_JOB}}-{step}.sh"
+(set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:{path}" > "$NATIVE_PUBLISHER_SCRIPT")
+chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+bash "$NATIVE_PUBLISHER_SCRIPT"
+'''
+
+
 def resolve_run_source(run: str, repo_root: Path) -> str:
     """Return the shell source a workflow step effectively runs.
 
@@ -114,6 +147,15 @@ def resolve_run_source(run: str, repo_root: Path) -> str:
         return run
 
     stripped = run.strip()
+    pinned=_PINNED_SOURCE_RE.search(stripped)
+    if pinned:
+        rel,step=pinned.groups()
+        if stripped!=pinned_workflow_shell(rel,step).strip():
+            raise WorkflowRunSourceError('original shell loader changed or hides additional commands')
+        # Existing extraction provenance and missing-file checks apply too.
+        return resolve_run_source('bash '+rel,repo_root)
+    if 'native-publication-shell-' in stripped:
+        raise WorkflowRunSourceError('original shell loader lacks its exact source marker')
     # Multi-line bodies are never a pure indirection; bail before the regex so
     # a body that merely BEGINS with such a call can't be mistaken for one.
     if "\n" in stripped:
@@ -152,6 +194,9 @@ def resolve_run_source(run: str, repo_root: Path) -> str:
 _RUN_CALL_LINE_RE = re.compile(
     r"^(?P<indent>[ \t]*)run:[ \t]+(?P<call>bash[ \t]+scripts/ci/[^\n]*?)[ \t]*$"
 )
+_BLOCK_RUN_RE=re.compile(
+    r'^(?P<indent>[ \t]*)run:[ \t]+\|[-+]?[ \t]*\n'
+    r'(?P<body>(?:(?P=indent)  [^\n]*\n|[ \t]*\n)*)',re.M)
 
 
 def resolved_workflow_text(wf_path: Path, repo_root: Path) -> str:
@@ -171,6 +216,16 @@ def resolved_workflow_text(wf_path: Path, repo_root: Path) -> str:
     Same fail-closed contract as :func:`resolve_run_source`.
     """
     text = Path(wf_path).read_text(encoding="utf-8")
+    def original_shell_block(match):
+        pad=match['indent']+'  '
+        body='\n'.join(line[len(pad):] if line.startswith(pad) else line
+                       for line in match['body'].splitlines())+'\n'
+        pinned=_PINNED_SOURCE_RE.search(body)
+        if pinned is None and 'native-publication-shell-' not in body:
+            return match[0]
+        resolve_run_source(body,repo_root)  # exact loader/provenance, fail closed
+        return match['indent']+'run: bash '+pinned.group(1)+'\n'
+    text=_BLOCK_RUN_RE.sub(original_shell_block,text)
     out: list[str] = []
     for line in text.splitlines(keepends=True):
         match = _RUN_CALL_LINE_RE.match(line.rstrip("\n"))

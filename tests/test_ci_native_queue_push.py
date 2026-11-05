@@ -482,7 +482,8 @@ def test_explicit_app_rest_reference_never_falls_back_or_repurposes_render_heade
         m.GitHub(root)
 
 
-@pytest.mark.parametrize('mutation', ['helper', 'import', 'local-action'])
+@pytest.mark.parametrize('mutation', ['helper', 'import', 'local-action',
+                                      'frame-helper','frame-import','frame-extra'])
 def test_actual_post_rebase_execution_uses_original_git_source_frame(tmp_path, mutation):
     """Execute the protected loader and shared helper across a real rebase.
 
@@ -495,7 +496,8 @@ def test_actual_post_rebase_execution_uses_original_git_source_frame(tmp_path, m
     git(root, 'init', '-q', '-b', 'main')
     git(root, 'config', 'user.name', 'fixture')
     git(root, 'config', 'user.email', 'fixture@example.invalid')
-    paths = set(m.GUARD_PATHS) | {'scripts/__init__.py', 'scripts/ci/push_retry.sh',
+    listed=subprocess.run(['bash','-c',f'. "{base / "scripts/ci/native_publication_source.sh"}"; _native_publication_source_paths'],check=True,capture_output=True,text=True).stdout.splitlines()
+    paths = set(listed) | set(m.GUARD_PATHS) | {'scripts/__init__.py', 'scripts/ci/push_retry.sh',
         'scripts/ci/native_queue_push.py', 'scripts/ci/native_publication.py',
         'scripts/ci/native_publication_origin.py', 'scripts/ci/native_publication_source.sh',
         'scripts/ci/fms_persist.py', 'scripts/ci/govrev_source_binding.py',
@@ -539,8 +541,18 @@ def test_actual_post_rebase_execution_uses_original_git_source_frame(tmp_path, m
     git(root, 'remote', 'add', 'origin', str(tmp_path / 'not-contacted.git'))
     runner = tmp_path / 'runner'
     runner.mkdir()
+    drift=''
+    if mutation.startswith('frame-'):
+        name={'frame-helper':'scripts/ci/native_queue_push.py',
+              'frame-import':'engine/qledger_store.py','frame-extra':'json.py'}[mutation]
+        drift=f'''chmod u+w "$native_code_root/{name}" 2>/dev/null || true
+printf '%s\\n' "raise RuntimeError('MUTATED_FRAME_EXECUTED')" > "$native_code_root/{name}"
+chmod 400 "$native_code_root/{name}"
+'''
     body = prefix + r'''
       git rebase integration
+      native_publication_verify_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"
+    '''+drift+r'''
       git() { if [ "$1" = push ]; then echo LOCAL_FIXTURE_WRITE; return 0; fi; command git "$@"; }
       push_retry_init fixture
       push_attempt
@@ -551,6 +563,11 @@ def test_actual_post_rebase_execution_uses_original_git_source_frame(tmp_path, m
         env={**os.environ, 'GITHUB_WORKSPACE': str(root), 'GITHUB_WORKFLOW_SHA': source_sha,
              'GITHUB_SHA': source_sha, 'GITHUB_RUN_ID': '42', 'GITHUB_RUN_ATTEMPT': '1',
              'GITHUB_JOB': 'shock', 'RUNNER_TEMP': str(runner)}, capture_output=True, text=True)
+    if mutation.startswith('frame-'):
+        assert result.returncode==76,result.stdout+result.stderr
+        assert 'MUTATED_FRAME_EXECUTED' not in result.stdout+result.stderr
+        assert 'LOCAL_FIXTURE_WRITE' not in result.stdout
+        return
     assert result.returncode == 0, result.stdout + result.stderr
     assert 'ORIGINAL_SOURCE_FRAME_SUCCEEDED' in result.stdout
     assert 'LOCAL_FIXTURE_WRITE' in result.stdout
@@ -565,3 +582,49 @@ def test_actual_post_rebase_execution_uses_original_git_source_frame(tmp_path, m
         unsafe = subprocess.run(['python3', '-m', 'scripts.ci.native_queue_push', 'publish'],
             cwd=root, env={**os.environ, 'PYTHONPATH': str(frame)}, capture_output=True, text=True)
         assert unsafe.returncode != m.LEGACY and 'MUTATED_' in unsafe.stderr
+
+
+def test_actual_private_authority_import_requires_captured_dependency_without_ambient_fallback(tmp_path):
+    base=Path(__file__).resolve().parents[1]
+    loader=base/'scripts/ci/native_publication_source.sh'
+    listed=subprocess.run(['bash','-c',f'. "{loader}"; _native_publication_source_paths'],
+        check=True,capture_output=True,text=True).stdout.splitlines()
+    root=tmp_path/'source';root.mkdir();git(root,'init','-q')
+    git(root,'config','user.name','fixture');git(root,'config','user.email','fixture@example.invalid')
+    for name in listed+['scripts/ci/native_publication_source.sh']:
+        target=root/name;target.parent.mkdir(parents=True,exist_ok=True)
+        original=base/name
+        # An absent future core guard is inert metadata in this supplier-only
+        # tree. The actual authority/paths executable bytes MUST exist/import.
+        target.write_bytes(original.read_bytes() if original.is_file() else b'# inert unexecuted metadata\n')
+    git(root,'add','.');git(root,'commit','-qm','original supplier source')
+    source_sha=git(root,'rev-parse','HEAD');runner=tmp_path/'runner';runner.mkdir()
+    frame=runner/'native-publication-code-123-1-shock'
+    env={**os.environ,'GITHUB_WORKFLOW_SHA':source_sha,'GITHUB_SHA':source_sha,
+        'RUNNER_TEMP':str(runner),'GITHUB_RUN_ID':'123','GITHUB_RUN_ATTEMPT':'1','GITHUB_JOB':'shock',
+        'PYTHONPATH':str(frame),'PYTHONDONTWRITEBYTECODE':'1','PRIVATE_FRAME':str(frame)}
+    capture=f'''umask 077
+mkdir -m700 "{frame}"
+mkdir -p "{frame}/scripts/ci"
+git show "$GITHUB_WORKFLOW_SHA:scripts/ci/native_publication_source.sh" > "{frame}/scripts/ci/native_publication_source.sh"
+. "{frame}/scripts/ci/native_publication_source.sh"
+native_publication_capture_source "{frame}" "$GITHUB_WORKFLOW_SHA"
+'''
+    captured=subprocess.run(['bash','-eo','pipefail','-c',capture],cwd=root,env=env,capture_output=True,text=True)
+    assert captured.returncode==0,captured.stderr
+    code='''import os
+from pathlib import Path
+from scripts import ci_authority,ci_authority_paths
+frame=Path(os.environ['PRIVATE_FRAME']).resolve()
+assert Path(ci_authority.__file__).resolve()==frame/'scripts/ci_authority.py'
+assert Path(ci_authority_paths.__file__).resolve()==frame/'scripts/ci_authority_paths.py'
+assert ci_authority.canonical_repo_path('scripts/ci_authority.py')=='scripts/ci_authority.py'
+'''
+    positive=subprocess.run(['python3','-P','-c',code],cwd=root,env=env,capture_output=True,text=True)
+    assert positive.returncode==0,positive.stderr
+    (frame/'scripts/ci_authority_paths.py').unlink()
+    (root/'scripts/ci_authority_paths.py').write_text("raise RuntimeError('AMBIENT_DEPENDENCY_EXECUTED')\n")
+    negative=subprocess.run(['python3','-P','-c','from scripts import ci_authority'],
+        cwd=root,env=env,capture_output=True,text=True)
+    assert negative.returncode!=0 and 'ModuleNotFoundError' in negative.stderr
+    assert 'AMBIENT_DEPENDENCY_EXECUTED' not in negative.stderr

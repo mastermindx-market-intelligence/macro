@@ -114,9 +114,17 @@ _push_terminal_failure() {
 # unconditionally legacy. Explicit native APIs are tested separately; there is
 # no environment or filesystem activation switch in this command.
 push_qledger_preflight() {
-  local boundary="$1" library_root py
+  local boundary="$1" library_root py native_runner_temp="${RUNNER_TEMP:-}"
   shift
   library_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P) || return 1
+  case "$library_root" in
+    "${native_runner_temp%/}"/native-publication-code-*)
+      # Verify the complete original frame BEFORE importing QLedger or the
+      # publisher. Rebased checkout code cannot add an import/bytecode shadow.
+      declare -F native_publication_verify_source >/dev/null || return 76
+      native_publication_verify_source "$library_root" "${GITHUB_WORKFLOW_SHA:-}" || return 76
+      ;;
+  esac
   # Prefer the explicit Python 3 executable over a legacy system python.
   if command -v python3 >/dev/null 2>&1; then py=python3; else py=python; fi
   PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$library_root" "$py" -P \
@@ -424,7 +432,16 @@ except Exception:sys.exit(76)
 push_native_do() {
   # Same guarded publisher, affirmative OFF does NOT perform a legacy push.
   # Callers may then enter their unchanged legacy synchronization loop.
-  PUSH_NATIVE_ONLY=1 push_do "$@"
+  local rc=0
+  PUSH_NATIVE_ONLY=1 push_do "$@" || rc=$?
+  if [ "$rc" -eq 80 ] && [ "${GITHUB_ACTIONS:-}" = true ] \
+      && [ "${GITHUB_REPOSITORY:-}" = mastermindx-market-intelligence/macro ] \
+      && [ -n "${GITHUB_ENV:-}" ]; then
+    # A subsequent publishing step in this SAME job must not activate native
+    # intent after an earlier legacy rebase changed its checkout executables.
+    printf 'NATIVE_PUBLICATION_EXPECT_OFF=1\n' >> "$GITHUB_ENV" || return 76
+  fi
+  return "$rc"
 }
 
 push_native_pending() {

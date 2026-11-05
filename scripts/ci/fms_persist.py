@@ -26,8 +26,8 @@ def git(root, *args, env=None, timeout=30):
                           'GIT_NO_REPLACE_OBJECTS':'1', 'GIT_NO_LAZY_FETCH':'1'},
                           capture_output=True, timeout=timeout)
 
-def need(root, *args, env=None):
-    r=git(root,*args,env=env)
+def need(root, *args, env=None,reader=None):
+    r=reader(root,*args) if reader is not None else git(root,*args,env=env)
     if r.returncode: raise Refusal('git_read_or_local_preparation_failed')
     return r.stdout
 
@@ -62,23 +62,23 @@ def remote_head(root,ref,binding):
     need(root,'cat-file','-e',sha+'^{commit}')
     return sha
 
-def ancestor(root,older,newer):
-    return git(root,'merge-base','--is-ancestor',older,newer).returncode==0
+def ancestor(root,older,newer,*,reader=None):
+    return (reader or git)(root,'merge-base','--is-ancestor',older,newer).returncode==0
 
-def changed_paths(root,older,newer):
+def changed_paths(root,older,newer,*,reader=None):
     # NUL-delimited paths bypass Git C-quoting; no-renames exposes both the
     # source deletion and destination addition, including moves out of closure.
     return tuple(os.fsdecode(p) for p in need(root,'diff','--name-only','-z',
-                 '--no-renames',older,newer).split(b'\0') if p)
+                 '--no-renames',older,newer,reader=reader).split(b'\0') if p)
 
-def artifact_entry(root,candidate,name):
-    entry=need(root,'ls-tree',candidate,'--',name).decode().strip().split()
+def artifact_entry(root,candidate,name,*,reader=None):
+    entry=need(root,'ls-tree',candidate,'--',name,reader=reader).decode().strip().split()
     if len(entry)!=4:raise Refusal('fms_artifact_missing_in_acquisition')
     mode,kind,oid,path=entry
     if mode!='100644' or kind!='blob' or path!=name:raise Refusal('fms_artifact_not_regular_file')
     return mode,oid
 
-def validate_acquisition_commit(root, candidate):
+def validate_acquisition_commit(root, candidate,*,reader=None):
     """Read-only original acquisition contract, also usable by trusted fences.
 
     The caller authenticates the producer and original source head. This
@@ -86,42 +86,61 @@ def validate_acquisition_commit(root, candidate):
     """
     if not isinstance(candidate,str) or not re.fullmatch('[0-9a-f]{40}',candidate):
         raise Refusal('immutable_acquisition_commit_required')
-    line=need(root,'rev-list','--parents','-n','1',candidate).decode().split()
+    line=need(root,'rev-list','--parents','-n','1',candidate,reader=reader).decode().split()
     if len(line)!=2:raise Refusal('one_acquisition_parent_required')
     candidate,base=line
-    changed=set(changed_paths(root,base,candidate))
+    changed=set(changed_paths(root,base,candidate,reader=reader))
     if not changed or not changed<=set(FMS_FILES):raise Refusal('acquisition_commit_outside_four_files')
-    for name in FMS_FILES:artifact_entry(root,candidate,name)
+    for name in FMS_FILES:artifact_entry(root,candidate,name,reader=reader)
     for name in FMS_FILES[:2]:
-        prior=need(root,'show',base+':'+name);current=need(root,'show',candidate+':'+name)
+        prior=need(root,'show',base+':'+name,reader=reader);current=need(root,'show',candidate+':'+name,reader=reader)
         if not current.startswith(prior):raise Refusal('append_only_fms_source_changed')
     return candidate,base
 
-def validate_source_movement(root,base,remote):
-    if not ancestor(root,base,remote):raise Refusal('selected_branch_no_longer_descends_from_acquisition_base')
-    changed=changed_paths(root,base,remote)
+def validate_source_movement(root,base,remote,*,reader=None):
+    if not ancestor(root,base,remote,reader=reader):raise Refusal('selected_branch_no_longer_descends_from_acquisition_base')
+    changed=changed_paths(root,base,remote,reader=reader)
     if any(p in FMS_FILES or p.startswith(SOURCE_PREFIXES) for p in changed):raise Refusal('concurrent_fms_or_source_change_requires_reconciliation')
 
-def validate_native_group(root,candidate,group_base,group_commit):
+def validate_native_group(root,candidate,group_base,group_commit,*,git_read=None,deadline=None):
     """Conserve one original acquisition in an authenticated native group.
 
     Core must bind candidate/group/base to its ORIGINAL NativeAdmission and
     provider group proof before using this result. It must call this fence
     before merge, not infer safety from the later publisher witness. No network,
     mutable checkout/index, receipt, acquisition or publication effects occur.
+
+    Optional git_read(root,*args,timeout=remaining) returns CompletedProcess
+    with BYTE stdout. Core charges EACH call to its SAME original read budget
+    and supplies its absolute MONOTONIC deadline. No allowance, materialization,
+    fetch, implicit lazy fetch or replacement-object admission is created here.
+    The default retains the existing local-Git API for original callers.
     """
     for identity in (group_base,group_commit):
         if not isinstance(identity,str) or not re.fullmatch('[0-9a-f]{40}',identity):
             raise Refusal('immutable_native_group_identity_required')
-    candidate,base=validate_acquisition_commit(root,candidate)
-    validate_source_movement(root,base,group_base)
-    projection={name:artifact_entry(root,candidate,name) for name in FMS_FILES}
-    if any(artifact_entry(root,group_commit,name)!=entry for name,entry in projection.items()):
+    if git_read is not None and deadline is None:raise Refusal('original_group_deadline_required')
+    if deadline is not None and (type(deadline) not in (int,float) or not math.isfinite(deadline)):
+        raise Refusal('original_group_deadline_invalid')
+    def bounded_read(where,*args):
+        if not args or args[0] not in ('rev-list','merge-base','diff','ls-tree','show'):
+            raise Refusal('native_group_read_only_scope_required')
+        remaining=30 if deadline is None else min(30,deadline-time.monotonic())
+        if remaining<=0:raise Refusal('original_group_deadline_expired')
+        result=(git_read or git)(where,*args,timeout=remaining)
+        if deadline is not None and time.monotonic()>=deadline:raise Refusal('original_group_deadline_expired')
+        if type(result.returncode) is not int or not isinstance(result.stdout,bytes):
+            raise Refusal('native_group_git_read_result_unqualified')
+        return result
+    candidate,base=validate_acquisition_commit(root,candidate,reader=bounded_read)
+    validate_source_movement(root,base,group_base,reader=bounded_read)
+    projection={name:artifact_entry(root,candidate,name,reader=bounded_read) for name in FMS_FILES}
+    if any(artifact_entry(root,group_commit,name,reader=bounded_read)!=entry for name,entry in projection.items()):
         raise Refusal('native_group_changed_original_fms_projection')
     # Changes introduced by integration outside the four sealed files must be
     # unrelated too; an unauthenticated caller cannot substitute a group tree
     # containing a source change while presenting a clean group_base.
-    changed=changed_paths(root,group_base,group_commit)
+    changed=changed_paths(root,group_base,group_commit,reader=bounded_read)
     if any(p not in FMS_FILES and p.startswith(SOURCE_PREFIXES) for p in changed):
         raise Refusal('native_group_changed_original_fms_source')
     return {'candidate':candidate,'acquisition_base':base,'group_base':group_base,
@@ -242,7 +261,8 @@ def settle_native(root,out):
         if not ancestor(root,merge,observed):raise Refusal('protected_fms_merge_not_observed')
         line=need(root,'rev-list','--parents','-n','1',merge).decode().split()
         if len(line)!=2:raise Refusal('protected_fms_squash_parent_required')
-        validate_native_group(root,candidate,line[1],merge)
+        validate_native_group(root,candidate,line[1],merge,
+            deadline=time.monotonic()+max(0,deadline-time.time()))
         if any(artifact_entry(root,candidate,name)!=artifact_entry(root,observed,name) for name in FMS_FILES):
             raise Refusal('protected_fms_generation_superseded')
         if origin(root)!=rec['origin_sha256']:raise Refusal('origin_binding_changed')

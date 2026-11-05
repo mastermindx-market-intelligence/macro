@@ -176,7 +176,8 @@ def test_workflow_contract_no_floating_main_or_shell_input_interpolation():
 @pytest.mark.parametrize("push_ok,drift", [(True, False), (True, True), (False, False)])
 def test_actual_daily_success_branch_emits_only_the_pushed_unchanged_commit(tmp_path, push_ok, drift):
     steps = load_workflow("daily.yml")["jobs"]["collect"]["steps"]
-    run = next(s["run"] for s in steps if s.get("id") == "pushdata")
+    from scripts.workflow_run_source import resolve_run_source
+    run = resolve_run_source(next(s["run"] for s in steps if s.get("id") == "native_publication_stage"),BASE)
     start = run.index("GOVREV_PUSH_SOURCE_SHA=")
     end = run.index("\n    fi", start) + len("\n    fi")
     block = run[start:end]
