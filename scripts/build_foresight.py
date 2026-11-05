@@ -108,8 +108,12 @@ def main() -> int:
         # Fetches the openFDA drug/shortages endpoint (keyless, bounded, non-fatal).
         # The cascade reads the cache; this drip keeps it fresh.
         try:
-            from collectors.fda_shortages import fetch_shortages
+            from collectors.fda_shortages import (
+                _shortages_path, fetch_shortages, format_observation_receipt,
+                read_shortage_observation,
+            )
             fetch_shortages()
+            log.info(format_observation_receipt(read_shortage_observation(path=_shortages_path())))
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("fda_shortages drip failed (non-fatal): %s", e)
     # W1b: policy catalyst calendar — pre-compute before the cascade so policy_reg can be
@@ -270,7 +274,11 @@ def main() -> int:
         from engine.baskets import compute_baskets as _compute_baskets
         baskets_payload = _compute_baskets() or {}
         activity = compute_real_activity(baskets_payload, news=True)
-        divergence_board = compute_divergence_board(cascade, activity, write_ledger=True)
+        from engine.research_vault.divergence_handoff import compute_with_capture
+        divergence_board = compute_with_capture(
+            cascade, activity, repo_root=Path(__file__).resolve().parent.parent,
+            compute=compute_divergence_board,
+        )
         if divergence_board:
             log.info(
                 "divergence board: %d themes in cross-section, quadrants=%s",

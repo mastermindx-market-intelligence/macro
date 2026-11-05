@@ -1,4 +1,57 @@
 ---
+workstream: WS:EVAL-OS-EVIDENCE-VIEW
+session: github-pr-sweep-2028-c4
+model: sol
+ended_because: ci_handoff
+mission: >-
+  Preserve the A1 release/visual-proof history while replacing obsolete future-source routing for already-merged PR6651 with current accepted-source and actual consumer-evidence reconciliation. Do not reopen terminal children or infer product completion from source merge.
+state_before: >-
+  The original5f75ba5240b3 handoff still says6651 is open/draft at036d and no visual matrix exists. Canonical6651 merged2026-10-24 as4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e. Current acceptance record A32 already banks eight synthetic local browser contexts/42states, and A39 separately banks pre-release natural-owner progression. These do not themselves establish current post-merge deployment, authenticated account/operator or later natural-run acceptance.
+changed:
+  - path: agentos/handoffs/EVAL-OS-A1-RELEASE-VISUAL-PROOF-2026-08-30.md
+    what: Preserve the full historical handoff verbatim with explicit current source and accepted-evidence boundaries.
+  - path: agentos/workstreams/WS-EVAL-OS-EVIDENCE-VIEW.md
+    what: Update only A1/top-level next actions and one artifact pointer, plus a dated source-state paragraph; retain A1in_progress, owners, scientific/product boundaries and all prior evidence.
+verified:
+  - command: GitHub canonical PR6651 read
+    result: Merged2026-10-24T02:58:49Z as4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e fromda16cb4587cac774b9f76b9a455564e85dd6d7be.
+  - command: Read research/EVAL_OS_ACCEPTANCE_RECORD_2026-10-12.md A32/A39 and mockups/evidence/intelligence-os-a1-20261012/EVIDENCE.yml at mainfe0693fe579c
+    result: Retained acceptance explicitly separates eight-context/42-state synthetic local browser proof and pre-release natural-owner progression from production/operator and post-release proof. This is source evidence consumption, not a rerun.
+unverified:
+  - Current installed/served source and authenticated selected-store API-to-painted-page behavior; reconcile any already-existing canonical receipts before new effects or proof.
+  - Current post-release natural-owner progression and actual operator comprehension; the read records alone do not establish these outcomes.
+  - Full current-store/installed-context compilation and any new browser/provider/runtime execution.
+unresolved:
+  - Reconcile current actual release/consumer evidence and any remaining gap through the existing A1/program owner; preserve original experience UNKNOWN and lost CLI-review effects until their original owner settles them.
+  - Exact repaired-head hosted CI, eligible non-author approval and protected records release.
+next_actions:
+  - Reuse the merged6651 source and banked A32/A39 evidence. Check current installed/served identity, authenticated admin API-to-paint, lawful dark/light EN/ZH desktop/mobile evidence, later natural progression and operator acceptance against their existing canonical receipts before considering any new proof.
+  - Preserve any actual live writer, original unknown effect, consumed admission or terminal child. Historical WAITING_CAPACITY and receiver labels do not establish today's placement or require a new worker.
+  - Qualify this original records PR through current CI and genuine non-author review; neither this handoff nor a source merge starts P1, changes clocks or grants deployment/financial authority.
+do_not_redo:
+  - Do not reopen6651, recreate or resume terminal original/recovery children, redo accepted synthetic/browser/source tests solely to change their date, or repeat an uncertain review/experience effect.
+  - Do not restore older CI-manifest/deployment code or overwrite newer owner changes from the dated release-base narrative.
+  - Do not create another admin product, evidence/score store, engine registry, promotion authority, queue, watcher or clock.
+danger_areas:
+  - The historical open/draft/HOLD/futuremerge and WAITING_CAPACITY statements are dated source evidence only; the obsolete A1-open collision premise is closed by the actual merge.
+  - Pre-release local synthetic and natural-owner acceptance are distinct from installed authenticated post-release/operator proof. Reconcile/reuse actual existing receipts; do not blanket-assert every proof is missing.
+prs:
+  - 6689
+  - 6651
+---
+
+# A1 source release and consumer-proof reconciliation
+
+**2026-11-05.** [PR #6651](https://github.com/mastermindx-market-intelligence/macro/pull/6651) is merged. The original/recovery children and historical release-base work remain terminal history. The current evidence-view workstream and [A32/A39 acceptance record](../../research/EVAL_OS_ACCEPTANCE_RECORD_2026-10-12.md) preserve accepted synthetic browser and pre-release natural-owner evidence. This records repair does not assert that the original visual matrix never existed, and it does not equate those receipts with current authenticated production/operator acceptance.
+
+Read and reuse existing canonical installation, served-asset, account, visual and natural-run receipts before any new work; preserve the original unknown experience/review effects. A1 remains in progress at program level, and P1 remains a separate acceptance scope without an asserted START.
+
+## Original A1 release and visual-proof handoff
+
+Exact original blob `ff6505eb3c8a58b12fecd7b978a8f5d107d01d52`. This is a verbatim historical artifact. Its open/draft, current, placement, hold and future-action language belongs to that observation epoch; the current reconciliation governs interpretation and grants no execution authority.
+
+``````markdown
+---
 workstream: "WS:EVAL-OS-EVIDENCE-VIEW"
 session: sol/eval-os-a1-release-visual-proof-20260830
 model: sol
@@ -159,3 +212,4 @@ P1 `eval-os-p1-promotion-integrity-acceptance-20260830-sol-001` remains held whi
 E1 forward accrual is already PROVEN_LIVE from natural scheduled production. A1 neither reopens E1 nor resolves the deferred general-clock cohort-authority gap.
 
 Only explicit Sol STOP closes this fresh child after it is commissioned. This records-only scope by itself creates no watcher, receiver, START, implementation effect, merge, deploy, or production state.
+``````

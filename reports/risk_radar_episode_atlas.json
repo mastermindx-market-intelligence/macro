@@ -2,10 +2,11 @@
   "episodes": [
     {
       "name": "2018Q4 selloff",
+      "reference_date": "2018-09-20",
       "onset": "2018-09-20",
-      "onset_source": "detect_events",
+      "onset_source": "fixed_named_anchor",
       "hint_date": "2018-09-20",
-      "spy_peak_close": 260.6,
+      "spy_peak_close": 259.29,
       "max_drawdown_63d": -0.1543,
       "legs": [
         {
@@ -288,37 +289,6 @@
           "error": null
         },
         {
-          "leg": "global_breadth",
-          "coverage_start": "1997-03-14",
-          "is_validated_tier": false,
-          "states": {
-            "T-21": {
-              "pctile": 0.9405,
-              "elevated": true
-            },
-            "T-5": {
-              "pctile": 0.9772,
-              "elevated": true
-            },
-            "T-1": {
-              "pctile": 0.9147,
-              "elevated": true
-            },
-            "T0": {
-              "pctile": 0.8948,
-              "elevated": true
-            },
-            "T+5": {
-              "pctile": 0.8899,
-              "elevated": true
-            }
-          },
-          "first_elevated": "2018-06-21",
-          "left_censored": true,
-          "classification": "EARLY",
-          "error": null
-        },
-        {
           "leg": "jpy_carry",
           "coverage_start": "1994-01-26",
           "is_validated_tier": false,
@@ -351,7 +321,7 @@
         },
         {
           "leg": "nh_contraction",
-          "coverage_start": "1993-01-29",
+          "coverage_start": "1994-02-09",
           "is_validated_tier": false,
           "states": {
             "T-21": {
@@ -685,14 +655,131 @@
       "gate": {
         "T-5": false,
         "T0": false
+      },
+      "warning_path": {
+        "offsets": {
+          "T-21": {
+            "date": "2018-08-21",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T-5": {
+            "date": "2018-09-13",
+            "state": "calm",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T-1": {
+            "date": "2018-09-19",
+            "state": "calm",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T0": {
+            "date": "2018-09-20",
+            "state": "watch",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T+5": {
+            "date": "2018-09-27",
+            "state": "calm",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          }
+        },
+        "persistence": {
+          "T-21..T0": {
+            "start": "2018-08-21",
+            "through": "2018-09-20",
+            "sessions_total": 22,
+            "sessions_known": 22,
+            "warning_sessions": 8,
+            "loud_sessions": 0,
+            "warning_fraction": 0.3636,
+            "loud_fraction": 0.0,
+            "consecutive_warning_to_t0": 0
+          },
+          "T-5..T0": {
+            "start": "2018-09-13",
+            "through": "2018-09-20",
+            "sessions_total": 6,
+            "sessions_known": 6,
+            "warning_sessions": 0,
+            "loud_sessions": 0,
+            "warning_fraction": 0.0,
+            "loud_fraction": 0.0,
+            "consecutive_warning_to_t0": 0
+          }
+        },
+        "forward_outcomes": {
+          "base_px": 259.29,
+          "fwd_dd": {
+            "h5": -0.0081,
+            "h10": -0.0096,
+            "h21": -0.0687
+          },
+          "hit": {
+            "h5": {
+              "dd5": false,
+              "dd8": false
+            },
+            "h10": {
+              "dd5": false,
+              "dd8": false
+            },
+            "h21": {
+              "dd5": true,
+              "dd8": false
+            }
+          },
+          "any_dd5_within_h21": true
+        }
       }
     },
     {
       "name": "COVID-2020",
+      "reference_date": "2020-02-19",
       "onset": "2020-02-19",
-      "onset_source": "detect_events",
+      "onset_source": "fixed_named_anchor",
       "hint_date": "2020-02-19",
-      "spy_peak_close": 309.2,
+      "spy_peak_close": 307.64,
       "max_drawdown_63d": -0.3372,
       "legs": [
         {
@@ -975,37 +1062,6 @@
           "error": null
         },
         {
-          "leg": "global_breadth",
-          "coverage_start": "1997-03-14",
-          "is_validated_tier": false,
-          "states": {
-            "T-21": {
-              "pctile": 0.0268,
-              "elevated": false
-            },
-            "T-5": {
-              "pctile": 0.2817,
-              "elevated": false
-            },
-            "T-1": {
-              "pctile": 0.2808,
-              "elevated": false
-            },
-            "T0": {
-              "pctile": 0.1696,
-              "elevated": false
-            },
-            "T+5": {
-              "pctile": 0.7331,
-              "elevated": true
-            }
-          },
-          "first_elevated": "2020-02-25",
-          "left_censored": false,
-          "classification": "LATE",
-          "error": null
-        },
-        {
           "leg": "jpy_carry",
           "coverage_start": "1994-01-26",
           "is_validated_tier": false,
@@ -1038,7 +1094,7 @@
         },
         {
           "leg": "nh_contraction",
-          "coverage_start": "1993-01-29",
+          "coverage_start": "1994-02-09",
           "is_validated_tier": false,
           "states": {
             "T-21": {
@@ -1058,8 +1114,8 @@
               "elevated": false
             },
             "T+5": {
-              "pctile": 0.0,
-              "elevated": false
+              "pctile": null,
+              "elevated": null
             }
           },
           "first_elevated": null,
@@ -1372,14 +1428,131 @@
       "gate": {
         "T-5": false,
         "T0": false
+      },
+      "warning_path": {
+        "offsets": {
+          "T-21": {
+            "date": "2020-01-17",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T-5": {
+            "date": "2020-02-11",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T-1": {
+            "date": "2020-02-18",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T0": {
+            "date": "2020-02-19",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T+5": {
+            "date": "2020-02-26",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 11,
+              "signals_total": 13,
+              "subscores_known": 6,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          }
+        },
+        "persistence": {
+          "T-21..T0": {
+            "start": "2020-01-17",
+            "through": "2020-02-19",
+            "sessions_total": 22,
+            "sessions_known": 22,
+            "warning_sessions": 22,
+            "loud_sessions": 0,
+            "warning_fraction": 1.0,
+            "loud_fraction": 0.0,
+            "consecutive_warning_to_t0": 22
+          },
+          "T-5..T0": {
+            "start": "2020-02-11",
+            "through": "2020-02-19",
+            "sessions_total": 6,
+            "sessions_known": 6,
+            "warning_sessions": 6,
+            "loud_sessions": 0,
+            "warning_fraction": 1.0,
+            "loud_fraction": 0.0,
+            "consecutive_warning_to_t0": 6
+          }
+        },
+        "forward_outcomes": {
+          "base_px": 307.64,
+          "fwd_dd": {
+            "h5": -0.0793,
+            "h10": -0.1244,
+            "h21": -0.2911
+          },
+          "hit": {
+            "h5": {
+              "dd5": true,
+              "dd8": false
+            },
+            "h10": {
+              "dd5": true,
+              "dd8": true
+            },
+            "h21": {
+              "dd5": true,
+              "dd8": true
+            }
+          },
+          "any_dd5_within_h21": true
+        }
       }
     },
     {
       "name": "2022 bear market",
+      "reference_date": "2022-01-03",
       "onset": "2022-01-03",
-      "onset_source": "detect_events",
+      "onset_source": "fixed_named_anchor",
       "hint_date": "2022-01-03",
-      "spy_peak_close": 450.64,
+      "spy_peak_close": 448.37,
       "max_drawdown_63d": -0.1287,
       "legs": [
         {
@@ -1662,37 +1835,6 @@
           "error": null
         },
         {
-          "leg": "global_breadth",
-          "coverage_start": "1997-03-14",
-          "is_validated_tier": false,
-          "states": {
-            "T-21": {
-              "pctile": 0.8472,
-              "elevated": true
-            },
-            "T-5": {
-              "pctile": 0.6915,
-              "elevated": false
-            },
-            "T-1": {
-              "pctile": 0.6875,
-              "elevated": false
-            },
-            "T0": {
-              "pctile": 0.7212,
-              "elevated": true
-            },
-            "T+5": {
-              "pctile": 0.7579,
-              "elevated": true
-            }
-          },
-          "first_elevated": "2021-10-04",
-          "left_censored": true,
-          "classification": "EARLY",
-          "error": null
-        },
-        {
           "leg": "jpy_carry",
           "coverage_start": "1994-01-26",
           "is_validated_tier": false,
@@ -1725,12 +1867,12 @@
         },
         {
           "leg": "nh_contraction",
-          "coverage_start": "1993-01-29",
+          "coverage_start": "1994-02-09",
           "is_validated_tier": false,
           "states": {
             "T-21": {
-              "pctile": 0.0,
-              "elevated": false
+              "pctile": null,
+              "elevated": null
             },
             "T-5": {
               "pctile": 0.7143,
@@ -1745,8 +1887,8 @@
               "elevated": false
             },
             "T+5": {
-              "pctile": 0.0,
-              "elevated": false
+              "pctile": null,
+              "elevated": null
             }
           },
           "first_elevated": null,
@@ -2059,14 +2201,131 @@
       "gate": {
         "T-5": false,
         "T0": false
+      },
+      "warning_path": {
+        "offsets": {
+          "T-21": {
+            "date": "2021-12-02",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 11,
+              "signals_total": 13,
+              "subscores_known": 6,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T-5": {
+            "date": "2021-12-27",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T-1": {
+            "date": "2021-12-31",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T0": {
+            "date": "2022-01-03",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T+5": {
+            "date": "2022-01-10",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 11,
+              "signals_total": 13,
+              "subscores_known": 6,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          }
+        },
+        "persistence": {
+          "T-21..T0": {
+            "start": "2021-12-02",
+            "through": "2022-01-03",
+            "sessions_total": 22,
+            "sessions_known": 22,
+            "warning_sessions": 22,
+            "loud_sessions": 0,
+            "warning_fraction": 1.0,
+            "loud_fraction": 0.0,
+            "consecutive_warning_to_t0": 22
+          },
+          "T-5..T0": {
+            "start": "2021-12-27",
+            "through": "2022-01-03",
+            "sessions_total": 6,
+            "sessions_known": 6,
+            "warning_sessions": 6,
+            "loud_sessions": 0,
+            "warning_fraction": 1.0,
+            "loud_fraction": 0.0,
+            "consecutive_warning_to_t0": 6
+          }
+        },
+        "forward_outcomes": {
+          "base_px": 448.37,
+          "fwd_dd": {
+            "h5": -0.0255,
+            "h10": -0.0444,
+            "h21": -0.0973
+          },
+          "hit": {
+            "h5": {
+              "dd5": false,
+              "dd8": false
+            },
+            "h10": {
+              "dd5": false,
+              "dd8": false
+            },
+            "h21": {
+              "dd5": true,
+              "dd8": true
+            }
+          },
+          "any_dd5_within_h21": true
+        }
       }
     },
     {
       "name": "SVB March-2023",
+      "reference_date": "2023-02-02",
       "onset": "2023-02-02",
-      "onset_source": "peak_override",
+      "onset_source": "fixed_named_anchor",
       "hint_date": "2023-02-02",
-      "spy_peak_close": 399.55,
+      "spy_peak_close": 397.53,
       "max_drawdown_63d": -0.0754,
       "legs": [
         {
@@ -2349,37 +2608,6 @@
           "error": null
         },
         {
-          "leg": "global_breadth",
-          "coverage_start": "1997-03-14",
-          "is_validated_tier": false,
-          "states": {
-            "T-21": {
-              "pctile": 0.4226,
-              "elevated": false
-            },
-            "T-5": {
-              "pctile": 0.1696,
-              "elevated": false
-            },
-            "T-1": {
-              "pctile": 0.1657,
-              "elevated": false
-            },
-            "T0": {
-              "pctile": 0.1647,
-              "elevated": false
-            },
-            "T+5": {
-              "pctile": 0.2391,
-              "elevated": false
-            }
-          },
-          "first_elevated": "2022-11-01",
-          "left_censored": true,
-          "classification": "EARLY",
-          "error": null
-        },
-        {
           "leg": "jpy_carry",
           "coverage_start": "1994-01-26",
           "is_validated_tier": false,
@@ -2412,33 +2640,12 @@
         },
         {
           "leg": "nh_contraction",
-          "coverage_start": "1993-01-29",
+          "coverage_start": "1994-02-09",
           "is_validated_tier": false,
-          "states": {
-            "T-21": {
-              "pctile": 0.0,
-              "elevated": false
-            },
-            "T-5": {
-              "pctile": 0.0,
-              "elevated": false
-            },
-            "T-1": {
-              "pctile": 0.0,
-              "elevated": false
-            },
-            "T0": {
-              "pctile": 0.0,
-              "elevated": false
-            },
-            "T+5": {
-              "pctile": 0.0,
-              "elevated": false
-            }
-          },
+          "states": {},
           "first_elevated": null,
           "left_censored": false,
-          "classification": "SILENT",
+          "classification": "NO DATA",
           "error": null
         },
         {
@@ -2746,14 +2953,131 @@
       "gate": {
         "T-5": false,
         "T0": false
+      },
+      "warning_path": {
+        "offsets": {
+          "T-21": {
+            "date": "2023-01-03",
+            "state": "risk-off",
+            "gate": "open",
+            "coverage": {
+              "signals_known": 11,
+              "signals_total": 13,
+              "subscores_known": 6,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T-5": {
+            "date": "2023-01-26",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 11,
+              "signals_total": 13,
+              "subscores_known": 6,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T-1": {
+            "date": "2023-02-01",
+            "state": "watch",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 11,
+              "signals_total": 13,
+              "subscores_known": 6,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T0": {
+            "date": "2023-02-02",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 11,
+              "signals_total": 13,
+              "subscores_known": 6,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T+5": {
+            "date": "2023-02-09",
+            "state": "watch",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 11,
+              "signals_total": 13,
+              "subscores_known": 6,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          }
+        },
+        "persistence": {
+          "T-21..T0": {
+            "start": "2023-01-03",
+            "through": "2023-02-02",
+            "sessions_total": 22,
+            "sessions_known": 22,
+            "warning_sessions": 14,
+            "loud_sessions": 1,
+            "warning_fraction": 0.6364,
+            "loud_fraction": 0.0455,
+            "consecutive_warning_to_t0": 1
+          },
+          "T-5..T0": {
+            "start": "2023-01-26",
+            "through": "2023-02-02",
+            "sessions_total": 6,
+            "sessions_known": 6,
+            "warning_sessions": 2,
+            "loud_sessions": 0,
+            "warning_fraction": 0.3333,
+            "loud_fraction": 0.0,
+            "consecutive_warning_to_t0": 1
+          }
+        },
+        "forward_outcomes": {
+          "base_px": 397.53,
+          "fwd_dd": {
+            "h5": -0.0232,
+            "h10": -0.0232,
+            "h21": -0.0529
+          },
+          "hit": {
+            "h5": {
+              "dd5": false,
+              "dd8": false
+            },
+            "h10": {
+              "dd5": false,
+              "dd8": false
+            },
+            "h21": {
+              "dd5": true,
+              "dd8": false
+            }
+          },
+          "any_dd5_within_h21": true
+        }
       }
     },
     {
       "name": "Aug-2024 yen-carry",
+      "reference_date": "2024-07-16",
       "onset": "2024-07-16",
-      "onset_source": "detect_events",
+      "onset_source": "fixed_named_anchor",
       "hint_date": "2024-07-16",
-      "spy_peak_close": 553.22,
+      "spy_peak_close": 550.43,
       "max_drawdown_63d": -0.0841,
       "legs": [
         {
@@ -3036,37 +3360,6 @@
           "error": null
         },
         {
-          "leg": "global_breadth",
-          "coverage_start": "1997-03-14",
-          "is_validated_tier": false,
-          "states": {
-            "T-21": {
-              "pctile": 0.4385,
-              "elevated": false
-            },
-            "T-5": {
-              "pctile": 0.4524,
-              "elevated": false
-            },
-            "T-1": {
-              "pctile": 0.4563,
-              "elevated": false
-            },
-            "T0": {
-              "pctile": 0.4573,
-              "elevated": false
-            },
-            "T+5": {
-              "pctile": 0.4623,
-              "elevated": false
-            }
-          },
-          "first_elevated": null,
-          "left_censored": false,
-          "classification": "SILENT",
-          "error": null
-        },
-        {
           "leg": "jpy_carry",
           "coverage_start": "1994-01-26",
           "is_validated_tier": false,
@@ -3099,7 +3392,7 @@
         },
         {
           "leg": "nh_contraction",
-          "coverage_start": "1993-01-29",
+          "coverage_start": "1994-02-09",
           "is_validated_tier": false,
           "states": {
             "T-21": {
@@ -3433,6 +3726,122 @@
       "gate": {
         "T-5": false,
         "T0": false
+      },
+      "warning_path": {
+        "offsets": {
+          "T-21": {
+            "date": "2024-06-13",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T-5": {
+            "date": "2024-07-09",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T-1": {
+            "date": "2024-07-15",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T0": {
+            "date": "2024-07-16",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          },
+          "T+5": {
+            "date": "2024-07-23",
+            "state": "caution",
+            "gate": "closed",
+            "coverage": {
+              "signals_known": 12,
+              "signals_total": 13,
+              "subscores_known": 7,
+              "subscores_total": 7,
+              "tier_a_subscores_known": 4,
+              "tier_a_subscores_total": 4
+            }
+          }
+        },
+        "persistence": {
+          "T-21..T0": {
+            "start": "2024-06-13",
+            "through": "2024-07-16",
+            "sessions_total": 22,
+            "sessions_known": 22,
+            "warning_sessions": 22,
+            "loud_sessions": 0,
+            "warning_fraction": 1.0,
+            "loud_fraction": 0.0,
+            "consecutive_warning_to_t0": 22
+          },
+          "T-5..T0": {
+            "start": "2024-07-09",
+            "through": "2024-07-16",
+            "sessions_total": 6,
+            "sessions_known": 6,
+            "warning_sessions": 6,
+            "loud_sessions": 0,
+            "warning_fraction": 1.0,
+            "loud_fraction": 0.0,
+            "consecutive_warning_to_t0": 6
+          }
+        },
+        "forward_outcomes": {
+          "base_px": 550.43,
+          "fwd_dd": {
+            "h5": -0.0281,
+            "h10": -0.0468,
+            "h21": -0.0841
+          },
+          "hit": {
+            "h5": {
+              "dd5": false,
+              "dd8": false
+            },
+            "h10": {
+              "dd5": false,
+              "dd8": false
+            },
+            "h21": {
+              "dd5": true,
+              "dd8": true
+            }
+          },
+          "any_dd5_within_h21": true
+        }
       }
     }
   ],
@@ -3573,21 +3982,6 @@
       "note": ""
     },
     {
-      "leg": "global_breadth",
-      "coverage_start": "1997-03-14",
-      "is_validated_tier": false,
-      "episodes_with_data": 5,
-      "counts": {
-        "EARLY": 3,
-        "JUST-IN-TIME": 0,
-        "LATE": 1,
-        "SILENT": 1,
-        "NO DATA": 0
-      },
-      "flag_all_late_or_silent": false,
-      "note": ""
-    },
-    {
       "leg": "jpy_carry",
       "coverage_start": "1994-01-26",
       "is_validated_tier": false,
@@ -3604,15 +3998,15 @@
     },
     {
       "leg": "nh_contraction",
-      "coverage_start": "1993-01-29",
+      "coverage_start": "1994-02-09",
       "is_validated_tier": false,
-      "episodes_with_data": 5,
+      "episodes_with_data": 4,
       "counts": {
         "EARLY": 0,
         "JUST-IN-TIME": 0,
         "LATE": 0,
-        "SILENT": 5,
-        "NO DATA": 0
+        "SILENT": 4,
+        "NO DATA": 1
       },
       "flag_all_late_or_silent": true,
       "note": "All episodes with data: late or silent \u2014 worth a second look"
@@ -3854,14 +4248,14 @@
   },
   "provenance": {
     "script": "scripts/research/risk_radar_episode_atlas.py",
-    "generated": "2026-07-14T19:21:58.907008+00:00",
+    "generated": "2026-09-22T01:11:09.951394+00:00",
     "sigs_shape": [
-      8419,
-      14
+      8467,
+      13
     ],
     "sigs_date_range": [
       "1993-01-29",
-      "2026-07-13"
+      "2026-09-18"
     ],
     "legs": [
       "credit_oas_roc",
@@ -3873,7 +4267,6 @@
       "growth_defensives",
       "growth_cyc_def",
       "vol_term",
-      "global_breadth",
       "jpy_carry",
       "nh_contraction",
       "corr_floor_break",
@@ -3889,9 +4282,8 @@
       "growth_defensives": "2000-01-20",
       "growth_cyc_def": "2000-01-20",
       "vol_term": "2011-12-30",
-      "global_breadth": "1997-03-14",
       "jpy_carry": "1994-01-26",
-      "nh_contraction": "1993-01-29",
+      "nh_contraction": "1994-02-09",
       "corr_floor_break": "2006-01-03",
       "ai_breadth_divergence": "2025-05-28"
     },
@@ -3906,6 +4298,10 @@
       "fwd": 63,
       "min_gap": 40
     },
+    "warning_path_protocol": "research/grey_deer/RISK_RADAR_EPISODE_WARNING_PATH_PREREG_2026-09-21.md",
+    "anchor_policy": "fixed_named_hint_date_no_peak_optimization",
+    "warning_definition": "caution_or_higher",
+    "loud_definition": "elevated_or_risk-off",
     "n_named_episodes": 5,
     "n_total_detect_events": 48,
     "is_validated_tier_note": "Gate-passed reproduces the engine's internal _is_validated flag (leg lift >= 1.20 in the committed risk_radar_backtest evidence gate); it is the engine's own tier name, not a promotion claim by this study.",
