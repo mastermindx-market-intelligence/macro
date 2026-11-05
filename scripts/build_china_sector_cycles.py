@@ -94,6 +94,20 @@ def _basket_cycle_map(data: dict) -> dict:
     return out
 
 
+def _page_ctx(data: dict) -> dict | None:
+    """The head context the server prints: the as-of date, and the generation only if stamped.
+
+    None when the US projection cannot be imported or raises; the head then falls back to
+    the client-side date, so a failure here costs the no-JS date, never the build.
+    """
+    try:
+        from scripts.build_sector_cycles import cycles_page_ctx
+        return cycles_page_ctx(data, require_generation=False)
+    except Exception as e:  # noqa: BLE001 — the head falls back to the client-side date
+        log.warning("china_sector_cycles: page context skipped: %s", e)
+        return None
+
+
 def main() -> int:
     root = config.ROOT
     try:
@@ -169,13 +183,7 @@ def main() -> int:
         env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
     except Exception:  # noqa: BLE001 — degrade to English-only rather than crash the build
         env.globals.update(td=lambda en: en, tr=lambda en: en, t=lambda en, zh="": en)
-    try:                                       # the server prints the date; the generation only if stamped
-        from scripts.build_sector_cycles import cycles_page_ctx
-        cycles_ctx = cycles_page_ctx(data, require_generation=False)
-    except Exception as e:  # noqa: BLE001 — the head falls back to the client-side date
-        log.warning("china_sector_cycles: page context skipped: %s", e)
-        cycles_ctx = None
-    html = env.get_template("sector_cycles_china.html.j2").render(cycles_ctx=cycles_ctx)
+    html = env.get_template("sector_cycles_china.html.j2").render(cycles_ctx=_page_ctx(data))
     write_page(site / "sector_cycles_china.html", html, encoding="utf-8")
 
     for asset in PAGE_ASSETS:

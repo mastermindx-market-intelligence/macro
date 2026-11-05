@@ -366,6 +366,30 @@ def test_a_missing_date_prints_the_placeholder_the_client_fills(template):
     assert '<span id="sc-asof">…</span>' in _render(template, "no_date")
 
 
+def test_china_builder_prints_the_date_without_script():
+    """The China builder's own guarded import, not a copy of it: a renamed or broken
+    projection would otherwise fall back to the client date in silence."""
+    from scripts import build_china_sector_cycles as cn
+    ctx = cn._page_ctx(FIXTURES["aligned"])
+    assert ctx is not None
+    html = _env().get_template(CN).render(cycles_ctx=ctx)
+    assert '<span id="sc-asof">2026-11-03</span>' in html
+
+
+def test_china_builder_degrades_to_the_client_date(monkeypatch, caplog):
+    from scripts import build_china_sector_cycles as cn
+    from scripts import build_sector_cycles as us
+
+    def boom(*a, **k):
+        raise RuntimeError("projection down")
+
+    monkeypatch.setattr(us, "cycles_page_ctx", boom)
+    with caplog.at_level("WARNING"):
+        assert cn._page_ctx(FIXTURES["aligned"]) is None
+    assert "page context skipped" in caplog.text
+    assert '<span id="sc-asof">…</span>' in _env().get_template(CN).render(cycles_ctx=None)
+
+
 @pytest.mark.parametrize("fixture, gen, words", [
     ("aligned", "aligned", ("Up to date", "已是最新")),
     ("incompatible", "incompatible_generation", ("History is from a different day", "历史来自不同日期")),
