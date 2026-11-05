@@ -13072,3 +13072,7 @@
 {"id":"ob-2026-11-05-cb694c9f76","from":"approved","to":"posting","at":"2026-11-05T21:07:50Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-11-05-cb694c9f76","from":"posting","to":"posted","at":"2026-11-05T21:07:52Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aecf027cf99e575e90cdc13","external_url":null,"at":"2026-11-05T21:07:44Z","booked_at":"2026-11-05T21:07:44Z"}}
 {"id":"ob-2026-11-05-cff4e8ef5e","from":"approved","to":"quarantined","at":"2026-11-05T21:07:52Z","actor":"publisher","note":"orphaned context brief: alert is unresolved","receipt":null}
+{"id":"ob-2026-11-05-11d52e3ae4","from":"queued","to":"approved","at":"2026-11-05T21:13:20Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-05-3cdd1fcc9f","from":"queued","to":"approved","at":"2026-11-05T21:13:20Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-05-11d52e3ae4","from":"approved","to":"quarantined","at":"2026-11-05T21:13:23Z","actor":"publisher","note":"voice laws (queue vintage): number soup (5 numbers: 9.88%, 217.2, 22.11%, 278.86, 9.85, budget 4 for this shape and kind): every number after the first has to be what the one before it is measured against, not a new claim","receipt":null}
+{"id":"ob-2026-11-05-3cdd1fcc9f","from":"approved","to":"quarantined","at":"2026-11-05T21:13:23Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
