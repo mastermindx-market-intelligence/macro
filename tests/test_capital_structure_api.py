@@ -81,9 +81,8 @@ else:
         check=False,
     )
     assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == (
-        "UNKNOWN_RUNTIME_ROUTER_MOUNTED_PARSER_REJECTED"
-    )
+    # Serving startup may also announce that optional observability is disabled.
+    assert "UNKNOWN_RUNTIME_ROUTER_MOUNTED_PARSER_REJECTED" in result.stdout.splitlines()
 
 
 @pytest.fixture()
@@ -314,6 +313,11 @@ def test_routes_declare_always_on_site_full_and_production_mounts_them() -> None
         f"{PREFIX}/issuers/{{issuer_id}}/state",
         f"{PREFIX}/issuers/{{issuer_id}}/state/registration",
         f"{PREFIX}/issuers/{{issuer_id}}/scenarios/evaluate",
+        f"{PREFIX}/issuers/{{issuer_id}}/scenarios/saved",
+        f"{PREFIX}/issuers/{{issuer_id}}/scenarios/saved/{{saved_id}}",
+        f"{PREFIX}/issuers/{{issuer_id}}/scenarios/saved/{{saved_id}}/export.{{fmt}}",
+        f"{PREFIX}/issuers/{{issuer_id}}/scenarios/evaluate/export.{{fmt}}",
+        f"{PREFIX}/issuers/{{issuer_id}}/changes",
         f"{PREFIX}/issuers/{{issuer_id}}/evidence/{{manifest_id}}/{{span_id}}",
     }
     for route in api.router.routes:

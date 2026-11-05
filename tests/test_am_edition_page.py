@@ -1606,3 +1606,37 @@ def test_empty_calendar_footer_copy_matches_the_calendar_panel(tmp_path):
     assert "No scheduled US releases today." in text
     assert "2 reading(s) are unresolved." in _am_footer_text(html)
     assert "could not be loaded" not in text
+
+
+# ── W25-L20 / F3: the research-watch meta strip prints check_by ───────────
+
+
+def test_research_watch_page_prints_check_by(tmp_path):
+    """F3: a research_watch row carrying `check_by` renders the date
+    with the EN label "check by" and the ZH label 核查日 in the meta
+    strip. Date only — no overdue/expired wording."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[1]["rows"][0]["check_by"] = "2026-08-28"
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    text = _strip_html(_panel_html(html, "Research watch"))
+    assert "2026-08-28" in text
+    assert "check by" in text
+    assert "核查日" in text
+
+
+def test_research_watch_check_by_absent_renders_nothing(tmp_path):
+    """F3 guard: rows with NO `check_by` key, and rows with
+    `check_by: None`, render nothing — no "check by", no 核查日, no
+    literal "None" — while the condition text still shows."""
+    for with_none in (False, True):
+        blocks = _make_fresh_blocks(tmp_path)
+        if with_none:
+            blocks[1]["rows"][0]["check_by"] = None
+        payload = _build_payload(tmp_path, blocks)
+        html = _render_am_edition(payload)
+        text = _strip_html(_panel_html(html, "Research watch"))
+        assert "check by" not in text, with_none
+        assert "核查日" not in text, with_none
+        assert "None" not in text, with_none
+        assert "Watch when the dollar breaks its 20-day range." in text

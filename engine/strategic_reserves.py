@@ -269,12 +269,12 @@ def merge_gold_row(cfg: dict, total_s: pd.Series | None, exgold_s: pd.Series | N
 GOLD_CAVEAT = {
     "en": ("Tonnes are curated from the World Gold Council / IMF IFS (no clean keyless "
            "feed exists) and updated periodically; the gold value and share-of-reserves "
-           "are live from the World Bank (annual, valued at market). Central-bank gold "
+           "are annual World Bank data (valued at market). Central-bank gold "
            "is the one official-reserve series with documented forward content — sustained "
            "official buying has historically carried gold higher — but this remains a "
            "context read, not a trade signal."),
     "zh": ("吨位数据来自世界黄金协会／IMF IFS 的人工整理（无干净的免密钥数据源），定期更新；"
-           "黄金价值与占储备比例为世界银行实时数据（年度，按市价计）。央行黄金是官方储备中"
+           "黄金价值与占储备比例为世界银行年度披露数据（按市价计）。央行黄金是官方储备中"
            "唯一具有可考前瞻性的序列——持续的官方增持历史上推动金价上行——但这仍是背景参考，"
            "而非交易信号。"),
 }

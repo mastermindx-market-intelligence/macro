@@ -21,6 +21,7 @@ Environment=CODEX_ACCOUNT_HOMES=/var/lib/macro-codex:/var/lib/macro-codex-2:/var
 Environment=CODEX_PROVIDER_ENABLED=1
 Environment=BIOCATALYST_PUBLIC_ROOT=/var/lib/macro-biocatalyst/public
 Environment=MARKET_MEMORY_CONTEXT_STORE_DIR=/var/lib/macro-market-memory/public
+Environment=MEDTECH_PUBLIC_ROOT=/srv/medtech/public
 # Ticker News read plane. These are paths only; the provider credential remains
 # isolated in /etc/macro-ticker-news.env and is explicitly hidden below.
 Environment=MM_TICKER_NEWS_DB=/var/lib/macro-ticker-news/qbus.sqlite3
@@ -73,7 +74,12 @@ StateDirectoryMode=0700
 # MAIL_LIFECYCLE_INTERVAL_SEC=21600  # sweeper wake interval (floor 60s); 6h default
 # MAIL_SITE_BASE=https://www.mastermind-x.com   # host used in email links (PIN §7)
 # Full setup: docs/ops/email-support-setup.md
-ExecStart=/opt/macro-api/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+# First adoption may still execute the predecessor updater. Create only the
+# fixed empty anchors before the API's mandatory mount namespace is constructed.
+ExecStartPre=+/usr/bin/python3 -I /opt/macro/app/deploy/medtech-prereqs.py
+# Compile the measured bootstrap buffer directly; neither it nor the allowlisted
+# F04 imports may silently execute an older .pyc. No source/path evidence is public.
+ExecStart=/opt/macro-api/.venv/bin/python3 -B -c "import sys; p='/opt/macro/app/runtime_attestation.py'; f=open(p,'rb'); b=f.read(262145); f.close(); 0<len(b)<=262144 or sys.exit('F04_BOOTSTRAP_BOUND'); c=compile(b,p,'exec',dont_inherit=True); exec(c,{'__name__':'__main__','__file__':p,'_BOOTSTRAP_SOURCE':b,'_BOOTSTRAP_CODE':c})"
 Restart=always
 RestartSec=2
 # Light hardening (still runs as root for MVP simplicity; tighten to a dedicated
@@ -122,6 +128,11 @@ ReadOnlyPaths=/var/lib/macro-company-intelligence/artifacts
 InaccessiblePaths=/var/lib/macro-company-intelligence/publisher
 # Provider credentials belong only to macro-ticker-news.service.
 InaccessiblePaths=-/etc/macro-ticker-news.env
+
+# MedTech roots exist before validation/restart, even while the writer is dark.
+# Missing mounts fail closed; the worker verifies the running API namespace.
+ReadOnlyPaths=/srv/medtech/public
+InaccessiblePaths=/srv/medtech/private
 
 [Install]
 WantedBy=multi-user.target

@@ -293,7 +293,56 @@ waves:
       proof matches; one original selected-set match has two changed definitions.
       Natural39330880213 confirms reuse in noncritical pack8. Two other runs
       have potential reuse on critical packs; inspect before attributing savings.
-      Publish accumulated report; retain implementation, no causal claim.
+      Report9801 merged368c4c3a660215a0bf4809c9b8ff5e65098f413a;6blobs verified.
+      Fixed00:55 snapshot45runs/31eligible completions(29success,2failure),
+      7pending/7cancelled. ScopedN27 p50/p951966/2863sec, wall186.47/278.23min;
+      zero original/weighted proof matches. Both targeted critical-pack logs show
+      reuse, without counterfactual saved seconds. FIF alone critical9times and
+      control-plane alone8times; no outer-shard expansion justified.
+      PR9479/9797 failures are candidate-specific with passing isolated bases;
+      preserve their carriers. Hold the cohort fixed. Six slowest scoped successes
+      are FIF-alone critical. Exact-source72tests pass403.73sec; focused profile
+      identifies repeated ASCII and direct-text scans in the SEC parser.
+      Fourth trial replaces the byte loop with isascii and uses the existing
+      event index before the unchanged owner filter; no semantic/proof/shard change.
+      Parser214tests pass, new scan regression fails before, two complete filing
+      outputs match. Alternating local CPU0.8960 to0.6836sec is descriptive only.
+      Same72tests pass335.45sec vs403.73before. PR9813 merged9c7df3786fc3856fbb692da301584b4b443ab66d
+      at2026-10-20T04:57:13Z; seven blobs verified. Final39364786931 passes
+      96jobs/299proof units/zero infrastructure findings and all active checks.
+      Three green trial FIF commands1581.75/2093.14/1573.07sec show variation.
+      Next: separate natural parser cohort with exact parser plus planner blobs
+      and merge ancestry; earlier00:55 cohort remains fixed.
+      Fixed parser05:54 cohort16runs has5qualified completions(3success2failure),
+      11pending/0cancelled/0reruns. Success p50/p951860/2218sec,wall228.50/252.18min;
+      failure first-step-completion950.5/1002sec. Zero original-baseline proof matches.
+      Exact secondary pairs differ in outcome; one artifact-upload failure and one
+      AgentOS candidate/base-signature mismatch, with existing repair carriers retained.
+      No causal fleet30percent or cost-neutrality claim.
+      Report9850 merged6793c010048996193d3d98876b486910c7982e3c;75selected jobs,
+      active gates and6authored blobs verified. Fixed07:54 parser snapshot57runs:
+      36qualified completions(29success7failure),18pending3cancelled. ScopedN24
+      success p50/p951895/2553sec,wall177.675/253.95min;zero baseline proof matches.
+      Three103job successful treatments share ONE old-parser control. Gate times
+      2066/2581/2553sec versus2007control; summed wall lower, no causal claim.
+      Treated FIF commands1594.096/2151.041/2089.544sec versus1329.857control;
+      treated2681passes versus2680control. Primary command dominates; image and
+      Python labels agree among treatments but physical performance is uncontrolled.
+      Retain12packs/two weights/parser source. Next source slice requires qualified
+      residual profiling and current FIF carrier custody; no speculative shards.
+  - id: W-ACCELERATION-20261104
+    title: Cross-repo minute-level CI plan and runner assessment (Mastermind #917)
+    status: in_progress
+    note: >
+      Fable CEO receiver session 6e051448 adjudicated the measured CI speed
+      options for Mastermind, Macro and Terminal on 2026-11-04. All three
+      repositories are public; Macro PR CI is hosted; the sweeper is bounded
+      by MAX_IN_FLIGHT_PR_PROOFS after a check-definition commit stales every
+      armed green, not by its cron. First packet delivered as Mastermind
+      PR 2044 (six-shard re-pin). Macro-side next actions X1 (scoped
+      staleness rule), X2 (adaptive in-flight cap) and X3 (native queue
+      premise re-test) are sequenced after PR 10652 and PR 10682.
+      Current continuation: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-11-04-ACCELERATION.md.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.

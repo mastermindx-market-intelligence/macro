@@ -211,7 +211,8 @@
             "fif_packet_id",
             "institutional_catalog_generation_id",
             "govrev_event_id",
-            "mm_outcome_record_id"
+            "mm_outcome_record_id",
+            "drl_event_key"
           ]
         },
         "key": {"type": "string", "minLength": 1, "maxLength": 1024}

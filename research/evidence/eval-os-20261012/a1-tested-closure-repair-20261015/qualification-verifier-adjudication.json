@@ -1,0 +1,10 @@
+{
+  "observed_at": "2026-10-15T07:25:13.546942+00:00",
+  "source": "hosted-closure-qualification.json",
+  "issue": "Verifier v2 reused the monotonic start variable for the text hunk offset; elapsed_seconds is invalid.",
+  "invalid_field": "elapsed_seconds",
+  "retained_value": -209630.17,
+  "adjudication": "Keep original receipt unchanged; duration UNKNOWN. Three controls, full canonical closure and strict-packing results are unaffected, as no assertion or calculation uses elapsed time. Source-mode duration is unaffected.",
+  "v3_repair": "Rename text index to hunk_start for future executions. No accepted qualification repeated and no source-clock reset.",
+  "other_preflight_issue": "v1 compared git-diff headers across different baselines, failed before tests, then v2 correctly compared exact resulting manifest; original failure retained."
+}

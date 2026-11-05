@@ -46,6 +46,13 @@ def _bench_scorecard(prof_key: str, bt: dict, b6040: dict | None) -> tuple[dict,
     return sc, "S&P 500", "标普500", bt.get("hodl_eq")
 
 
+def _flat_alloc_vm(alloc: list[dict]) -> list[dict]:
+    """Universe assets with no row in the last rebalance, in ``M.ASSETS`` order."""
+    held = {a["asset"] for a in alloc}
+    return [{"asset": a, "label_en": M.ASSET_LABEL[a][0], "label_zh": M.ASSET_LABEL[a][1]}
+            for a in M.ASSETS if a not in held]
+
+
 def _detail_vm(prof_key: str, res: dict, built: str) -> dict:
     prof = M.PROFILES[prof_key]
     bt = res["scorecard"]
@@ -61,6 +68,7 @@ def _detail_vm(prof_key: str, res: dict, built: str) -> dict:
         "as_of": res["asof"], "built": built,
         "exposure_title_en": "Current allocation", "exposure_title_zh": "当前配置",
         "alloc": alloc, "alloc_max": alloc_max, "gross_now": res["gross_now"],
+        "flat_alloc": _flat_alloc_vm(alloc),
         "lev_now": res["gross_now"], "lev_color": C["blue"], "lev_label_en": "", "lev_label_zh": "",
         "factors": [], "sc": sc,
         "bench_label_en": bench_en, "bench_label_zh": bench_zh,
