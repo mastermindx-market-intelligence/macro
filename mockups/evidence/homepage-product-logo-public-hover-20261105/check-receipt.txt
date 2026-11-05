@@ -1,0 +1,34 @@
+# Visual-evidence guard — before / after receipt
+
+Gate: `scripts/check_ui_visual_evidence.py` (unchanged). Scope: the PR's own source delta.
+
+```
+git diff --no-color 80136935b4d28caeda6c6a50eb385797190fdc32 e559fed9941635fe4932ac41ddd75a6ca0070738 > pr6988-base-to-head.diff
+python3 scripts/check_ui_visual_evidence.py --diff-file pr6988-base-to-head.diff --repo-root .
+```
+
+## BEFORE — the new owning receipt is absent (the CI41997028286 pack3/job127151632741 failure)
+
+```
+::error title=ui-visual-evidence::mockups/evidence/homepage-product-logo/EVIDENCE.yml: material hover CSS changed, but manifest 'mockups/evidence/homepage-product-logo/manifest.json' declares no --force-state NAME:hover(.selector); REST screenshots cannot prove the hover presentation
+```
+
+exit status: 1
+
+## AFTER — with `mockups/evidence/homepage-product-logo-public-hover-20261105/EVIDENCE.yml` present
+
+```
+(no findings)
+```
+
+exit status: 0
+
+## Focused checks run alongside
+
+```
+python3 -m pytest tests/test_public_chrome.py            -> 7 passed
+python3 -m pytest tests/test_check_ui_visual_evidence.py -> 74 passed
+python3 scripts/capture_page_evidence.py --self-check   -> ok (findings: [])
+```
+
+`tests/test_check_ui_visual_evidence.py` first showed 1 failure in this worktree; that failure was `FileNotFoundError: .github/ci/legacy-jobs.yml` — a sparse-checkout artifact, not a defect. After `.github/` was materialised the same file passes 74/74.
