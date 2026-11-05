@@ -1,5 +1,39 @@
 # D04 — resumed design and implementation, 2026-11-04 UTC
 
+## Active continuation — Theme rendering published; Top Picks implementation started
+
+**Disposition: MORE_WORK_EXISTS — attended Pro execution continues in this session.** Protected law pin remains `70187bb1660e8a7c3038271bb9f8924b5e525cb0`. The following supersedes older active-status/CI/next-lane statements below; historical receipts retain their own source.
+
+### Delivered source increment
+
+Original US Heatmap operation `d04-us-heatmap-return-20261104`, branch `sol/web-d04-us-heatmap-return-20261104`, held Draft [#10719](https://github.com/mastermindx-market-intelligence/macro/pull/10719), now has published head **`3b3d65c8b5484a6735dd1c8cf3e296a6b8ae0c7e`**. Publisher reconciled APPLIED, clean, local=remote; no unresolved source publication effect.
+
+Theme query-only rendering reuses existing nodes and invalidates its view-local cache on full render/retirement. Comparable 4× CPU expanded query 512.4→121.0 ms, clear 678.2→175.6 ms. Same 26-action maximum 678.2→292.5 ms; median did not improve. 90 semantic comparisons, 45 browser cases/29 screenshots, 89 Node and 84 Python tests pass; clean 1440/390/320 retention checks have zero node/listener/document growth. Source/design/runtime/visual gates pass; root inspected screenshots and diff. [Exact-head method](https://github.com/mastermindx-market-intelligence/macro/blob/3b3d65c8b5484a6735dd1c8cf3e296a6b8ae0c7e/mockups/evidence/d04-us-heatmap-return-20261104/THEME_QUERY_REUSE.md).
+
+Current fences **41961298420 success**; ci **41961298405 in progress** at the bounded observation. Parent 3acd ci41903893475/fences41903893354 are green. No pending-check promotion to success. Root retains repair ownership; no watcher invented.
+
+### Next bounded phase now active
+
+Standalone Top Picks `/discovery.html` controls → existing stock link → native Back. Repair hidden stretch-filter leakage, use raw source-sector identity rather than rank-dependent index, add accessible selection semantics and source-qualified view/focus/scroll recovery. Preserve Buy zone, global/sector rankings, all analytical axes, producer ordering and destination grammar. Yield to existing Terminal/shared-shell ownership; no account saving or protocol extension.
+
+Original new operation **`d04-top-picks-return-20261104`** acquired exact macro base **`d18d83019f3972c9bd915c736210176c7bd0b6b5`**, branch **`sol/web-d04-top-picks-return-20261104`**, workspace **`/Volumes/Mastermind 2/agent-workspaces/macro/web/d04-top-picks-return-20261104`**. Initial acquire returned WORKSPACE_ACQUISITION_UNQUALIFIED/EFFECT_UNKNOWN while materialization continued. Same-operation owner status subsequently proved clean, unchanged acquired base, original workspace path; publisher independently reads clean exact head. Acquisition reconciled; no retry, replacement, re-home or manual index repair occurred.
+
+Named source files and current AGENTS were inspected. Latest main change does not alter Top Picks inputs; focused open-carrier census found no overlap. Source workspace/guides are verified. Root is the only writer. Delegate/direct choice: PRINCIPAL_JUDGMENT and LOWER_TOTAL_OVERHEAD for history-owner, source-identity and focus invariants. Native children performed bounded source/CI/dependency reasoning and returned; no source effects delegated or formal approval claimed.
+
+Paper inspection used actual catalog 03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4, exact target reads and screenshots: MASTERMIND PAGES 01M2WGNCX9475G79JRKJTCM08P / p-H-1 / YAJ-1; Terminal 01M3NSZGE8JWN2EZCSF0DT05RM / p-N-1 / SOG-0. These are retained discovery/return references, not approved Top Picks composition. No Paper mutation; no foreground switch. File-size warning on MASTERMIND PAGES observed; no edit is attempted there.
+
+DONE_WHEN for this phase: actual source and generated page preserve local selection/filter/qualified row context through supported native return, handle changed/missing/invalid state truthfully, preserve foreign state and later user focus, opt out under existing shell/overlay ownership, pass scoped browser/keyboard/touch/EN-ZH/dark-light/phone checks, self-QA and source gates, publish the original held draft with exact evidence.
+
+### Preserved boundaries and exact next action
+
+Accepted Confluence #10705 and discovery package are DO_NOT_REDO. All 75 programme cases remain unpromoted; 25 inherited conditions remain. F01/F02/D23 owner gates do not block this standalone source phase; no shared-shell full-state, final F02 freeze, persistence or production claim.
+
+Original optional Fabric commission `d04-us-heatmap-return-20261104-state-tests` remains historical EFFECT_UNKNOWN/CONTROLLER_NOT_BOUND with no proven START/result; no replay/replacement. Source tools had one transient connection failure during a wording correction; exact original-file read proved no effect, then the correction was applied once. No unresolved new document/source effect remains.
+
+Holds remain: Draft; no Ready/un-draft, enqueue, auto-merge, held relabel, merge, deploy or purchase. Next: implement and prove Top Picks on the reconciled workspace; observe/repair only concrete current Heatmap CI failures in parallel.
+
+---
+
 ## Active implementation — November 4, 2026 (America/Chicago)
 
 Chairman renewed the implementation mandate: advance D04 toward completion, resolve gates and use the available authorized tools/fleet. The existing release holds remain. Current protected source is **`70187bb1660e8a7c3038271bb9f8924b5e525cb0`**, INDEX 1.0.1 / bootstrap-major 1 compatible. Same-pin applicable laws were loaded; unchanged companions retain their prior read, and material ACTIVE_EXECUTION / RECONCILE_STATE changes were consumed. Paper law will be refreshed at this pin before any new Paper action.
