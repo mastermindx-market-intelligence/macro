@@ -575,18 +575,30 @@ def test_unknown_clock_phase_is_a_typed_absence_not_a_present_reading() -> None:
 
 def test_business_cycle_phase_vocabulary_matches_the_producer() -> None:
     """The closed vocabulary is checked against the producer, not against the
-    constant under test: the four sign quadrants of `engine.business_cycle._phase`
-    are the phases, and a None leg is its refusal. `engine.business_cycle` imports
-    numpy, which the workspace job's environment does not install (#10774 CI,
-    pack market-os-macro-workspaces), so this pin runs where the engine's own
-    dependencies exist and skips, visibly, where they do not."""
-    pytest.importorskip("numpy")
-    from engine.business_cycle import _phase
-    from engine.market_os.macro_workspaces import business_activity as mod
+    constant under test: the literal pairs `engine.business_cycle._phase`
+    returns are the phases, and `unknown` is its refusal. The producer module
+    imports numpy and the collectors, which the workspace job's environment
+    never installs and whose import closure its curated scope must not carry
+    (#10774 contract-delta: 18 uncovered files), so the pin reads the
+    producer's SOURCE through the AST rather than importing it. The one file
+    it reads is declared in the job's `paths:`, so a clock change re-proves
+    the workspace."""
+    import ast
 
-    assert _phase(None, 1.0) == ("unknown", "未知")
-    producer_phases = {_phase(lead, coin)[0] for lead in (1.0, -1.0) for coin in (1.0, -1.0)}
-    assert producer_phases == mod.BUSINESS_CYCLE_PHASES
+    source = (ROOT / "engine" / "business_cycle.py").read_text(encoding="utf-8")
+    phase_fn = next(
+        node for node in ast.walk(ast.parse(source))
+        if isinstance(node, ast.FunctionDef) and node.name == "_phase"
+    )
+    vocabulary: dict[str, str] = {}
+    for node in ast.walk(phase_fn):
+        if isinstance(node, ast.Return) and isinstance(node.value, ast.Tuple):
+            en, zh = (elt.value for elt in node.value.elts)
+            assert isinstance(en, str) and isinstance(zh, str), ast.dump(node)
+            vocabulary[en] = zh
+    assert vocabulary.pop("unknown") == "未知", vocabulary
+    assert set(vocabulary) == business_activity.BUSINESS_CYCLE_PHASES, vocabulary
+    assert all(not zh.isascii() for zh in vocabulary.values()), vocabulary
 
 
 def test_recession_signal_state_tokens_have_reviewed_zh_pairs() -> None:
