@@ -42,14 +42,14 @@
     "lean": "unclear",
     "confidence": "low",
     "checks": {
-      "catalyst": "The catalyst is not legible: an FOMC statement is listed, but no actual policy/rate shift or hard-data surprise is described.",
-      "premium": "Most fear premium appears left to unwind; only 2 of 7 legs have flipped and the snap is still building rather than confirmed.",
-      "washout": "Capitulation is flagged as recent, supporting a real washout, though fear built is moderate rather than extreme.",
-      "follow_through": "Next-session confirmation looks doubtful because only VIX and its term structure have turned while broader cross-asset legs remain unconfirmed amid mixed tech and oil pressure."
+      "catalyst": "Catalyst is not legible: the headlines mention an FOMC statement and post-midterm easing but reveal no actual policy shift, signed deal, or hard-data surprise.",
+      "premium": "Only part of the fear premium appears unwound; VIX and its term structure have flipped, but just 2 of 7 legs confirm and the snap is still building.",
+      "washout": "A real washout is plausible because recent capitulation is flagged and fear built reached 0.65, although it was not extreme.",
+      "follow_through": "Next-session confirmation is doubtful because breadth is narrow and mixed AI/semiconductor and oil pressures remain; more cross-asset legs must flip before durability is credible."
     },
-    "read": "There is evidence of a genuine washout, but the relief lacks breadth and its catalyst cannot be classified as structural or verbal. Treat durability as unclear until more cross-asset legs confirm or the catalyst becomes explicit.",
+    "read": "The move comes from a credible but moderate washout, yet its catalyst is unclear and confirmation is confined to volatility. Treat durability as unresolved until broader risk assets validate the reversal.",
     "model": "deepseek-v4-pro",
-    "generated_at": "2026-11-05T07:46:11.755711+00:00",
+    "generated_at": "2026-11-05T10:04:12.743520+00:00",
     "degraded_reason": null,
     "disclaimer": "AI durability read \u2014 context only, never scored or sized. The snap detector is coincident; this is a fallible judgement on whether the relief is structural or a dead-cat, not a trade recommendation."
   }

@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-11-05",
-  "generated_utc": "2026-11-05T07:24:17.918831+00:00",
+  "generated_utc": "2026-11-05T09:50:21.743029+00:00",
   "n_tickers": 2052,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -3641,6 +3641,31 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "JBGS": {
+      "ticker": "JBGS",
+      "channels": [
+        "short_squeeze"
+      ],
+      "weighted_score": 0.3,
+      "days_to_earnings": 5,
+      "next_earnings": "2026-11-10",
+      "days_to_cover": 14.4,
+      "si_change_pct": 5.8,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "CRWV": {
+      "ticker": "CRWV",
+      "channels": [],
+      "weighted_score": 0,
+      "days_to_earnings": 5,
+      "next_earnings": "2026-11-10",
+      "earnings_surprise_pct": 13.2,
+      "convergence_score": 0,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "AVAH": {
       "ticker": "AVAH",
       "channels": [
@@ -4170,18 +4195,6 @@
       "weighted_score": 0.3,
       "days_to_cover": 14.8,
       "si_change_pct": 1.6,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "JBGS": {
-      "ticker": "JBGS",
-      "channels": [
-        "short_squeeze"
-      ],
-      "weighted_score": 0.3,
-      "days_to_cover": 14.4,
-      "si_change_pct": 5.8,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
