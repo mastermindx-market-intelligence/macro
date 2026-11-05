@@ -23,8 +23,8 @@ a{text-decoration:none;color:inherit}
 .pill.tactical,.pill.late{color:var(--ink-orange,var(--orange))}
 .pill.neutral{color:var(--muted)}
 .tier{display:inline-flex;align-items:center;font-weight:800;font-size:10px;padding:3px 7px;border-radius:var(--r-ctl,8px);color:var(--bg);white-space:nowrap}
-.tier.T1{background:var(--up)}.tier.T2{background:var(--ok)}.tier.T3{background:var(--info)}.tier.T4{background:var(--g-mid)}.tier.none{background:var(--g-mid);color:var(--muted)}
-.action{color:var(--text);font-size:13px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--link);border-radius:var(--r-btn,10px);padding:10px 12px;margin:10px 0}
+.tier.T1{background:var(--text);color:var(--bg)}.tier.T2{background:var(--ok)}.tier.T3{background:var(--info)}.tier.T4{background:var(--g-mid)}.tier.none{background:var(--g-mid);color:var(--muted)}
+.action{color:var(--text);font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-btn,10px);padding:10px 12px;margin:10px 0}.warn-ink{color:var(--ink-warn,var(--warn));font-weight:600}.reason-chip,.state-chip,.entry-chip{display:inline-flex;align-items:center;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:var(--panel2);color:var(--text);white-space:nowrap}.state-chip{font-weight:600;color:var(--muted)}.entry-chip{margin-left:4px}.m-zh{color:var(--muted);font-weight:400;font-size:.85em}.m-read{color:var(--muted);font-size:11px}.id-muted-p{margin:6px 0 0;color:var(--muted)}
 .id-hero{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.75fr);gap:12px;margin:4px 0 12px}
 .id-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);padding:18px}
 .id-eyebrow{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--link)}
@@ -63,10 +63,10 @@ a{text-decoration:none;color:inherit}
   table.tbl td { padding:7px 9px; border-bottom:1px solid var(--line); white-space:nowrap; }
   table.tbl tr:hover td { background:var(--panel); }
   .tk { font-weight:700; } .num { font-variant-numeric:tabular-nums; } .pos{ color:var(--ink-up, var(--up)); } .neg{ color:var(--ink-down, var(--down)); }
-  tr.buyable td { background:color-mix(in srgb,var(--up) 7%,transparent); }
+  tr.buyable td { background:var(--panel2); }
 .member-cards{display:none;gap:8px}
 .member-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:11px}
-.member-card.buyable{border-color:var(--up)}
+.member-card.buyable{border-color:var(--line)}
 .member-card-top,.member-card-foot{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .member-card-foot{align-items:center;margin-top:8px}
 .member-symbol{font-size:14px;font-weight:800}
@@ -150,23 +150,23 @@ function render() {
   const actionEn = regEn !== '—' ? regEn : '';
   const actionZh = regZh !== '—' ? regZh : '';
   const actionRead = actionEn ? L(esc(actionEn), esc(actionZh)) : L('No current action note is available for this group.', '该组暂无当前行动说明。');
-  const reasonRead = e.reason ? esc(e.reason) : L('No additional entry blocker is published.', '暂无额外入场阻断说明。');
+  const reasonRead = e.reason ? REASON_L(e.reason) : L('No additional entry blocker is published.', '暂无额外入场阻断说明。');
   const setupState = e.tier ? tierB(e.tier) : '—';
   const confidenceLabel = reliability === 'low' ? L('Low', '低') : reliability === 'med' ? L('Medium', '中') : reliability === 'high' ? L('High', '高') : L('Unknown', '未知');
   const coverage = nMembers && nPriced !== nMembers ? nPriced + ' / ' + nMembers : String(nPriced || nMembers || '—'); const stale = (function () { var a = Date.parse(String(g.as_of || '') + 'T00:00:00Z'), b = Date.parse(String(DETAIL.generated_utc || '').slice(0, 10) + 'T00:00:00Z'); return isFinite(a) && isFinite(b) && (b - a) / 864e5 > 5; })(); const zhNow = !!(document.documentElement && document.documentElement.getAttribute('data-lang') === 'zh');
-  const titleZh = g.label_zh ? ' <span style="color:var(--muted);font-weight:600;font-size:.58em">' + esc(g.label_zh) + '</span>' : '';
+  const titleZh = esc(g.label_zh || g.label);
 
   let h = '<section class="id-hero" id="overview">'
     + '<div class="id-card"><div class="id-eyebrow">' + pageIdentity + '</div>'
-    + '<h1 class="id-title">' + esc(g.label) + titleZh + '</h1>'
-    + '<div class="id-subtitle"><span>' + esc(g.sector_zh || g.sector || '—') + '</span><span>·</span><span>' + kindLabel + '</span></div>'
+    + '<h1 class="id-title">' + L(esc(g.label), titleZh) + '</h1>'
+    + '<div class="id-subtitle"><span>' + L(esc(g.sector || '—'), esc(g.sector_zh || g.sector || '—')) + '</span><span>·</span><span>' + kindLabel + '</span></div>'
     + '<div class="id-meta"><span class="pill ' + (stale ? 'late' : 'neutral') + '"' + (stale ? ' title="' + esc(zhNow ? '观测已过期。' : 'Observation is no longer current.') + '"' : '') + '>' + L('as of','截至') + ' ' + esc(g.as_of || '—') + (stale ? ' · ' + L('Older evidence shown','显示较早证据') : '') + '</span><span class="pill neutral">' + coverage + ' ' + L('members','成分') + '</span><span class="pill neutral">' + L('equal weight','等权') + '</span>' + thin + '</div></div>'
     + '<div class="id-card id-decision"><div class="id-decision-top"><div><div class="id-decision-label">' + L('Current read','当前研判') + '</div><div class="id-decision-read">' + actionRead + '</div></div><div class="id-badges">' + badge + ' ' + reg + '</div></div>'
     + '<div class="id-decision-grid"><div class="id-mini"><div class="k">' + L('Entry','入场') + '</div><div class="v">' + setupState + '</div></div><div class="id-mini"><div class="k">' + L('Freshness','新鲜度') + '</div><div class="v">' + (stale ? L('Older evidence shown','显示较早证据') : L('Up to date','已是最新')) + '</div></div>'
     + '<div class="id-mini"><div class="k">' + L('Coverage','覆盖') + '</div><div class="v">' + coverage + '</div></div><div class="id-mini"><div class="k">' + L('Method','方法') + '</div><div class="v">' + L('Equal-weight','等权') + '</div></div></div></div></section>';
 
   h += '<section class="id-group-read"><div class="id-group-read-copy"><h2>' + L('Group read','整体读数') + '</h2><p>' + actionRead + ' · ' + reasonRead + '</p></div><div class="id-callout">' + (reliability === 'low' ? L('Judge members individually','请逐一判断成分股') : setupState) + '</div></section>';
-  if (reliability === 'low') h += '<div class="action" style="border-left-color:var(--orange)">' + L('⚠ Low-confidence: fewer than 6 priced members means this equal-weight read can be driven by 1–2 stocks. The aggregate stays descriptive; judge the members individually.', '⚠ 低可信：有价成分少于6只时，等权读数可能由1-2只个股主导。整体读数仅供描述，请逐一判断成分股。') + '</div>';
+  if (reliability === 'low') h += '<div class="action">' + L('<span class="warn-ink">⚠ Low-confidence</span>: fewer than 6 priced members means this equal-weight read can be driven by 1–2 stocks. The aggregate stays descriptive; judge the members individually.', '<span class="warn-ink">⚠ 低可信</span>：有价成分少于6只时，等权读数可能由1-2只个股主导。整体读数仅供描述，请逐一判断成分股。') + '</div>';
 
   h += '<nav class="id-nav" aria-label="Detail sections"><a href="#overview">' + L('Overview','概览') + '</a><a href="#structure">' + L('Structure','结构') + '</a><a href="#members">' + L('Members','成分') + '</a><a href="#evidence">' + L('Evidence','证据') + '</a></nav>';
 
@@ -186,14 +186,14 @@ function render() {
     h += '<section id="members"><div class="id-section-hd"><div><h2>' + L('Members','成分') + '</h2><p>' + L('Who is actually carrying the group — same source rows, adapted to the viewport.','谁在真正带动该组——同一数据源，按屏幕宽度适配。') + '</p></div><span class="pill neutral">' + ms.length + ' ' + L('shown','只') + '</span></div>';
     h += '<div class="members-table-wrap"><table class="tbl"><thead><tr><th>' + L('Ticker','代码') + '</th><th>' + L('Price','价格') + '</th><th>' + L('Own setup','自身形态') + '</th><th>' + L('20d','20日') + '</th><th>' + L('vs group','相对本组') + '</th><th>' + L('Read','研判') + '</th></tr></thead><tbody>';
     h += ms.map(m => {
-      const zh = m.name_zh ? ' <span style="color:var(--muted);font-weight:400;font-size:.85em">' + esc(m.name_zh) + '</span>' : '';
-      const behaves = behavesPill(m);
-      return '<tr class="' + (m.stock_buyable ? 'buyable' : '') + '"><td class="tk"><a href="' + (DETAIL.stock_base || '../stock.html#') + encodeURIComponent(m.ticker) + '">' + esc(m.ticker) + '</a>' + zh + '</td><td class="num">' + (m.price == null ? '–' : Number(m.price).toFixed(2)) + '</td><td>' + tierB(m.stock_tier) + '</td><td>' + sgn(m.ret_20d) + '</td><td>' + sgn(m.vs_basket) + '</td><td style="color:var(--muted);font-size:11px">' + esc(m.stock_state || '') + behaves + '</td></tr>';
+      const zh = m.name_zh ? ' <span class="m-zh">' + esc(m.name_zh) + '</span>' : '';
+      const st = STATE_L(m.stock_state); const behaves = st ? behavesPill(m) : behavesPill(m).replace(/^ · /, '');
+      return '<tr class="' + (m.stock_buyable ? 'buyable' : '') + '"><td class="tk"><a href="' + (DETAIL.stock_base || '../stock.html#') + encodeURIComponent(m.ticker) + '">' + esc(m.ticker) + '</a>' + zh + '</td><td class="num">' + (m.price == null ? '–' : Number(m.price).toFixed(2)) + '</td><td>' + tierB(m.stock_tier) + entryChip(m) + '</td><td>' + sgn(m.ret_20d) + '</td><td>' + sgn(m.vs_basket) + '</td><td class="m-read">' + st + behaves + '</td></tr>';
     }).join('');
     h += '</tbody></table></div>';
-    h += '<div class="member-cards">' + ms.map(m => '<article class="member-card ' + (m.stock_buyable ? 'buyable' : '') + '"><div class="member-card-top"><div><a class="member-symbol" href="' + (DETAIL.stock_base || '../stock.html#') + encodeURIComponent(m.ticker) + '">' + esc(m.ticker) + '</a><div class="member-name">' + esc(m.name_zh || '') + '</div></div><div class="member-return">' + sgn(m.ret_20d) + '<div class="member-price">' + L('Price','价格') + ' ' + (m.price == null ? '–' : Number(m.price).toFixed(2)) + '</div></div></div><div class="member-card-foot"><div>' + tierB(m.stock_tier) + '</div><div class="member-read">' + esc(m.stock_state || '') + ' · ' + L('vs group','相对本组') + ' ' + sgn(m.vs_basket) + behavesPill(m) + '</div></div></article>').join('') + '</div></section>';
+    h += '<div class="member-cards">' + ms.map(m => '<article class="member-card ' + (m.stock_buyable ? 'buyable' : '') + '"><div class="member-card-top"><div><a class="member-symbol" href="' + (DETAIL.stock_base || '../stock.html#') + encodeURIComponent(m.ticker) + '">' + esc(m.ticker) + '</a><div class="member-name">' + esc(m.name_zh || '') + '</div></div><div class="member-return">' + sgn(m.ret_20d) + '<div class="member-price">' + L('Price','价格') + ' ' + (m.price == null ? '–' : Number(m.price).toFixed(2)) + '</div></div></div><div class="member-card-foot"><div>' + tierB(m.stock_tier) + entryChip(m) + '</div><div class="member-read">' + (m.stock_state ? STATE_L(m.stock_state) + ' · ' : '') + L('vs group','相对本组') + ' ' + sgn(m.vs_basket) + behavesPill(m) + '</div></div></article>').join('') + '</div></section>';
   } else {
-    h += '<section id="members"><div class="id-card"><div class="id-eyebrow">' + L('Members','成分') + '</div><p style="margin:6px 0 0;color:var(--muted)">' + L('Member detail is unavailable for this group.','该组暂无成分股明细。') + '</p></div></section>';
+    h += '<section id="members"><div class="id-card"><div class="id-eyebrow">' + L('Members','成分') + '</div><p class="id-muted-p">' + L('Member detail is unavailable for this group.','该组暂无成分股明细。') + '</p></div></section>';
   }
 
   h += '<section class="id-evidence" id="evidence"><div class="id-section-hd"><div><h2>' + L('Evidence & data quality','证据与数据质量') + '</h2><p>' + L('Freshness, coverage and method stay in one predictable place.','新鲜度、覆盖率与方法集中在一个固定位置。') + '</p></div></div><div class="id-evidence-grid">'
@@ -214,6 +214,53 @@ function render() {
     } catch (err) { console.error('chart mount failed', err); }
   }
 }
+// SIC-D35: the engine's entry reason and member state are English codes; each
+// renders as a short bilingual chip. The raw code stays in the tooltip.
+const REASON_EXACT = {
+  'held but topped/rolled-over — no longer a fresh entry': ['Rolled over', '已回落'],
+  'held but risen for many days (cross 2+ ticks ago) — no longer a fresh entry': ['Already ran', '已经拉升'],
+  'held confirmation': ['Confirmed, not fresh', '已确认，非新信号'],
+  'held buy-filter confirmation': ['Confirmed, not fresh', '已确认，非新信号'],
+  'buy fired; forward confirmation pending': ['Waiting on confirmation', '等待确认'],
+  'buy blocked by filter: counter-trend, no 200-reclaim/hold': ['Still below trend', '仍在趋势下方'],
+  'buy blocked by filter: counter-trend, held but no 200-reclaim': ['Not back above trend', '尚未收复趋势'],
+  'buy blocked by filter: counter-trend, reclaimed 200 but no next-bar hold': ['Reclaim failed', '收复失败'],
+  'buy blocked by filter: failed next-bar hold': ['Reclaim failed', '收复失败'],
+  'buy blocked by filter: failed reclaim-and-hold': ['Reclaim failed', '收复失败'],
+  'buy blocked by filter: veto: bearish divergence': ['Momentum diverging', '动能背离'],
+  'buy blocked by filter: counter-trend, reclaim waived (basket washout)': ['Washout waiver', '超卖豁免'],
+  'forming master already topping — not a fresh entry': ['Already topping', '已见顶'],
+  'forming master risen for many days — not a fresh entry': ['Already ran', '已经拉升'],
+  'flat: sell': ['No open entry signal', '暂无开放入场信号'],
+  'flat: cut': ['No open entry signal', '暂无开放入场信号'],
+  'flat: no buy signal': ['No open entry signal', '暂无开放入场信号'],
+  'no signal': ['No signal yet', '暂无信号'],
+  'insufficient history': ['Not enough history', '历史数据不足'],
+  'engine error': ['Signal unavailable', '信号暂不可用']
+};
+const REASON_L = r => {
+  const raw = String(r == null ? '' : r).trim();
+  let p = REASON_EXACT[raw];
+  if (!p) {
+    const t = /^tier (T[1-4])\b/.exec(raw);
+    if (t) p = ['Setup active · ' + t[1], '形态生效 · ' + t[1]];
+    else if (raw.indexOf('forward confirmation pending') >= 0) p = ['Waiting on confirmation', '等待确认'];
+    else if (raw.indexOf('early advance-warning') === 0) p = ['Early warning only', '仅早期预警'];
+    else if (raw.indexOf('fresh entry') >= 0) p = ['Not a fresh entry', '非新入场'];
+    else if (raw.indexOf('buy blocked by filter: ') === 0) p = ['Held out by a filter', '被过滤条件拦下'];
+    else if (raw.indexOf('flat: ') === 0) p = ['No open entry signal', '暂无开放入场信号'];
+    else p = ['Other entry condition', '其他入场条件'];
+  }
+  const tip = raw.replace(/\s*\(weight[^)]*\)/, '');
+  return '<span class="reason-chip" title="' + esc(tip) + '">' + L(p[0], p[1]) + '</span>';
+};
+const STATE_EXACT = {'long-bias': ['Momentum up', '动量偏多'], 'short-bias': ['Momentum down', '动量偏空'], 'mixed': ['Mixed momentum', '动量分歧']};
+const STATE_L = st => {
+  if (st == null || st === '') return '';
+  const p = STATE_EXACT[st];
+  return p ? '<span class="state-chip">' + L(p[0], p[1]) + '</span>' : '<span class="state-chip" title="' + esc(st) + '">' + L(esc(st), '其他读数') + '</span>';
+};
+const entryChip = m => m.stock_buyable ? '<span class="entry-chip">' + L('Entry signal open', '入场信号开启') + '</span>' : '';
 render();
 document.addEventListener('langchange', render);
 </script>

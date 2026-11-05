@@ -39897,6 +39897,10 @@ jobs:
       - "engine/signal_gate.py"
       - "engine/signal_quality.py"
       - "engine/subsector_confluence.py"
+      # SIC-D35: tests/test_subsector_confluence.py holds the engine's Chinese
+      # names in parity with these two maps.
+      - "engine/sp500_heatmap.py"
+      - "templates/heatmap.js"
       - "engine/subsector_rotation.py"
       - "engine/subsector_rotation_alerts.py"
       - "engine/subsector_scan.py"

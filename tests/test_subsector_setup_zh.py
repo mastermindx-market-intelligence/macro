@@ -4,6 +4,11 @@ On a no-sizing surface the Chinese for a chart setup is 形态, the deck's own
 rendering (copy_deck.json brief.lane_sub_get_ready), never 配置, which reads
 as an allocation or position configuration.
 
+Lane L6.5h (SIC-D35/D38) adds the dossier colour rules: an entry state is never
+carried by a market-direction colour (red/green flip under ZH), and no container
+takes an edge stripe. The node render of the localized engine words lives in
+tests/test_product_chrome.py, next to the page's existing render harness.
+
 Pure text checks; no node.
 """
 from __future__ import annotations
@@ -62,3 +67,24 @@ def test_the_rule_rejects_the_base_strings(old):
     text = SUBSECTOR.read_text(encoding="utf-8") + "\n" + old
     assert any(FORBIDDEN in p for p in setup_zh_problems(text))
     assert setup_zh_problems(old)
+
+
+@pytest.mark.parametrize(
+    "banned",
+    [
+        "border-left",
+        "color-mix",
+        ".tier.T1{background:var(--up)",
+        ".member-card.buyable{border-color:var(--up)",
+        "esc(e.reason)",
+        "esc(m.stock_state",
+    ],
+)
+def test_subsector_template_keeps_state_off_direction_colour(banned):
+    assert banned not in SUBSECTOR.read_text(encoding="utf-8")
+
+
+def test_subsector_template_names_engine_words_in_chinese():
+    text = SUBSECTOR.read_text(encoding="utf-8")
+    for zh in ("动量偏多", "动量偏空", "动量分歧", "已回落", "等待确认", "入场信号开启"):
+        assert zh in text, zh

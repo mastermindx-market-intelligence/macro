@@ -436,3 +436,76 @@ def test_subsector_detail_adapts_visible_identity_without_builder_fork():
     assert 'L("Theme Intelligence", "主题情报")' in html
     assert 'L("Sector Intelligence", "板块情报")' in html
     assert 'L("Subsector Intelligence", "子行业情报")' in html
+
+
+# SIC-D35: every entry reason the engine publishes (engine/signal_gate.py), with the
+# Chinese the page must show for it. The census reasons are the ones live in
+# site/marketdata/subsector_confluence.json on 2026-11-05.
+_SUBSECTOR_REASON_ZH = {
+    "held but topped/rolled-over — no longer a fresh entry": "已回落",
+    "flat: sell": "暂无开放入场信号",
+    "buy blocked by filter: counter-trend, held but no 200-reclaim": "尚未收复趋势",
+    "buy blocked by filter: failed next-bar hold": "收复失败",
+    "buy fired; forward confirmation pending": "等待确认",
+    "buy blocked by filter: counter-trend, no 200-reclaim/hold": "仍在趋势下方",
+    "flat: cut": "暂无开放入场信号",
+    "buy blocked by filter: counter-trend, reclaimed 200 but no next-bar hold": "收复失败",
+    "buy blocked by filter: veto: bearish divergence": "动能背离",
+    "held confirmation": "已确认，非新信号",
+    "held buy-filter confirmation": "已确认，非新信号",
+    "held but risen for many days (cross 2+ ticks ago) — no longer a fresh entry": "已经拉升",
+    "forming master already topping — not a fresh entry": "已见顶",
+    "forming master risen for many days — not a fresh entry": "已经拉升",
+    "early advance-warning (no open buy)": "仅早期预警",
+    "early advance-warning (last buy was filtered out)": "仅早期预警",
+    "flat: no buy signal": "暂无开放入场信号",
+    "insufficient history": "历史数据不足",
+    "engine error": "信号暂不可用",
+    "tier T2 (weight 0.6)": "形态生效 · T2",
+    "forward confirmation pending": "等待确认",
+}
+
+
+def _subsector_reason_detail(reason: str) -> dict:
+    return {
+        "kind": "subsector",
+        "group": {
+            "key": "semis", "basket_id": "semis", "label": "Semiconductors", "label_zh": "半导体",
+            "sector": "Technology", "sector_zh": "科技", "n_members": 3, "n_priced": 3,
+            "reliability": "med", "as_of": "2026-11-04", "class": "forming",
+            "entry": {"tier": "T1", "buyable": True, "reason": reason, "ticks": 0},
+            "members": [
+                {"ticker": "AAA", "name_zh": "甲", "price": 10.0, "stock_tier": "T1",
+                 "ret_20d": 1.0, "vs_basket": 0.5, "stock_state": "long-bias", "stock_buyable": True},
+                {"ticker": "BBB", "name_zh": "乙", "price": 11.0, "stock_tier": "T4",
+                 "ret_20d": -1.0, "vs_basket": -0.5, "stock_state": "short-bias", "stock_buyable": False},
+                {"ticker": "CCC", "name_zh": "丙", "price": 12.0, "stock_tier": None,
+                 "ret_20d": 0.0, "vs_basket": 0.0, "stock_state": "mixed", "stock_buyable": False},
+            ],
+        },
+    }
+
+
+def test_subsector_detail_render_localizes_every_engine_word_in_chinese():
+    for reason, zh in _SUBSECTOR_REASON_ZH.items():
+        rendered = _execute_subsector_detail_render(_subsector_reason_detail(reason))
+        read = rendered.split('class="id-group-read"', 1)[1].split("</section>", 1)[0]
+        chip = read.split('class="reason-chip"', 1)[1].split("</span></span>", 1)[0]
+        assert f'<span class="l-zh">{zh}</span>' in chip + "</span>", reason
+        assert "其他入场条件" not in chip, reason
+        # The English engine code reaches the reader only as a tooltip, never as text.
+        assert f">{reason}<" not in read, reason
+        # The engine's tier reason carries a weight; the page never shows one.
+        assert "(weight" not in rendered and "weight 0.6" not in rendered, reason
+
+    rendered = _execute_subsector_detail_render(_subsector_reason_detail("flat: sell"))
+    assert '<h1 class="id-title"><span class="l-en">Semiconductors</span><span class="l-zh">半导体</span></h1>' in rendered
+    assert '<span class="l-en">Technology</span><span class="l-zh">科技</span>' in rendered
+    for en, zh in (("Momentum up", "动量偏多"), ("Momentum down", "动量偏空"), ("Mixed momentum", "动量分歧")):
+        assert f'<span class="l-en">{en}</span><span class="l-zh">{zh}</span>' in rendered
+    for code in ("long-bias", "short-bias", ">mixed<"):
+        assert code not in rendered, code
+    # SIC-D38: an open entry signal is a neutral labelled chip, never a market-direction
+    # colour on the row or card.
+    assert rendered.count('<span class="entry-chip">') == 2
+    assert '<span class="l-en">Entry signal open</span><span class="l-zh">入场信号开启</span>' in rendered
