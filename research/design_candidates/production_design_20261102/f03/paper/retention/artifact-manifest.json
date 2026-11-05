@@ -5,9 +5,9 @@
   "files": [
     {
       "path": "CONTINUITY.md",
-      "bytes": 34924,
-      "sha256": "e9d4af095cb30a041e789d10401795b1ce96bcb25291afb474d78a03a6d0d0b6",
-      "git_blob_sha": "7a96e8d7ef4430588242260cf3c6a1d06fe129b7"
+      "bytes": 34967,
+      "sha256": "8367468250af3ddfb664d982513b0d3319feb38e0acfca9d5d5f4749fa115f95",
+      "git_blob_sha": "dafa2d7754fce0d20ee2a8f23979597477bb50c4"
     },
     {
       "path": "CONTRACT.md",
@@ -1397,9 +1397,9 @@
     },
     {
       "path": "paper/retention/native-backup-method-qualification-20261104.json",
-      "bytes": 6689,
-      "sha256": "99cfb5874db5527b5d0e9b620437b4d5d42895758b2af42c3b976b73e03cac54",
-      "git_blob_sha": "0e52ad632271471d7b8c650427fe992d4f0edcd5"
+      "bytes": 12294,
+      "sha256": "59f4da864139203fa558445f9d56facf2bbe1e8146079ae3edcfd02e5b72f84e",
+      "git_blob_sha": "d1f2ec990b52edbab6c601f0e4f48390295c6a3a"
     },
     {
       "path": "paper/retention/native-file-pair-assessment-20261104.json",
@@ -1505,9 +1505,9 @@
     },
     {
       "path": "paper/retention/plugin-readback-repair-20261104.json",
-      "bytes": 3564,
-      "sha256": "78be0378efbfee6718614cb171204c67289ece4900093be264dca33f0b769b54",
-      "git_blob_sha": "957c51d8d610c0fef489d8345894fd7246feef4d"
+      "bytes": 10514,
+      "sha256": "dcd34710b0c01371a9f08a291a554a1d324bcc96c922142bcba4bf47d9e10ad8",
+      "git_blob_sha": "d71a543df767badce7fc111d03b3dac6ae4cfe6f"
     },
     {
       "path": "paper/retention/resource-capability-preflight-20261104.json",
@@ -1747,5 +1747,8 @@
   "current_plugin_native_comparison_raw": "paper/retention/plugin-native-comparison-20261104.raw.json",
   "current_plugin_native_comparison_assessment": "paper/retention/plugin-native-comparison-assessment-20261104.json",
   "current_plugin_native_comparison_replay": "tools/replay_plugin_native_comparison.py",
-  "current_plugin_native_comparison_tests": "tools/test_replay_plugin_native_comparison.py"
+  "current_plugin_native_comparison_tests": "tools/test_replay_plugin_native_comparison.py",
+  "current_plugin_readback_source_head": "97df1b5c15f9a08a82f4cf644aed96e79ca7d6bd",
+  "current_plugin_ci_run_id": 41959383220,
+  "current_plugin_ci_conclusion": "success"
 }

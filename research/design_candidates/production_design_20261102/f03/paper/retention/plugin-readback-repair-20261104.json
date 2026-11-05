@@ -1,17 +1,21 @@
 {
   "kind": "F03_paper_plugin_native_readback_source_repair_v1",
   "operation": "f03-paper-native-readback-20261104-c2",
-  "protected_pin": "700eef54bca4a2dc4e30d94a6b30dcfa733ad57c",
+  "protected_pin": "70187bb1660e8a7c3038271bb9f8924b5e525cb0",
   "f03_prior_head": "2fe742d23aa44814b110343c568ce095a4b42c71",
   "source": {
     "repository": "mastermindx-market-intelligence/Mastermind",
     "pr": 2058,
-    "head": "f8a5d8941461b5b00799475c0326c292b3c49ae9",
+    "head": "97df1b5c15f9a08a82f4cf644aed96e79ca7d6bd",
     "branch": "sol/f03-paper-native-readback-20261104-c2",
     "draft": true,
-    "guard_blob": "5bb801dd6bea0eaaa7dc9bf45f825a1483f12c4a",
-    "tests_blob": "8d0b6c6701beaadfbd28436d9331ef83cd0ab7c6",
-    "readback_exact": true
+    "guard_blob": "426805a6b57b305eb72450157b94f52c87bc97b0",
+    "tests_blob": "940852d05fcc087f874e6f7c3a04dfd09f9c96f9",
+    "readback_exact": true,
+    "prior_semantic_head": "f8a5d8941461b5b00799475c0326c292b3c49ae9",
+    "change": "Remove exactly one trailing LF from each of two files; Python ASTs identical",
+    "guard_sha256": "15b9d05e7a3378d4d00f62caa84549112275228a3f28d0ef1b88cfcbbeae5169",
+    "tests_sha256": "0e50816aa389e1b6a93224d0ebf0ba0d6ae90865dc7bd39afba85739f3379dad"
   },
   "checks": {
     "guard_passed": 45,
@@ -23,14 +27,50 @@
     "supplemental_blocker": "Absent tests/fixtures/paper_desktop/1b9aff_full_catalog.json in read-only sparse source mirror",
     "direct_bridge_dispatches": 2,
     "all_direct_bridge_dispatches_read_only": true,
-    "ci_run_id": 41902730981,
-    "ci_state": "queued",
-    "ci_green": false,
+    "ci_run_id": 41959383220,
+    "ci_state": "completed",
+    "ci_green": true,
     "ci_job_states": {
       "PR test scope": "success",
-      "PR fast checks": "queued",
-      "pytest shard": "skipped"
-    }
+      "PR fast checks": "success",
+      "pytest shard": "skipped",
+      "test": "success"
+    },
+    "local_tests_source_head": "f8a5d8941461b5b00799475c0326c292b3c49ae9",
+    "local_results_not_claimed_rerun": true,
+    "original_ci_terminal_failure": {
+      "run_id": 41902730981,
+      "head": "f8a5d8941461b5b00799475c0326c292b3c49ae9",
+      "conclusion": "failure",
+      "job_id": 126833090444,
+      "step": "Verify exact changed source without executing untrusted PR text",
+      "exit_code": 2,
+      "errors": [
+        "integrations/paper_desktop/clone_prune_guard.py:614: new blank line at EOF.",
+        "tests/test_paper_clone_prune_guard.py:599: new blank line at EOF."
+      ],
+      "functional_tests_executed": false
+    },
+    "ci_conclusion": "success",
+    "hosted_focused_tests": {
+      "job_id": 127021914546,
+      "step": "Bounded source-proximate PR tests",
+      "result": "success",
+      "selected_test_files": 2,
+      "changed_paths": 2,
+      "log_excerpt": "2026-11-05T03:06:28.9127231Z CI_PR_SMOKE selected_tests=2 changed_paths=2\n2026-11-05T03:06:33.0573277Z ........................................................................ [ 51%]\n2026-11-05T03:06:33.8499288Z .......................................... [ 82%]\n2026-11-05T03:06:34.0830317Z .........................                           [100%]\n2026-11-05T03:06:34.4630792Z",
+      "full_suite_claim": false
+    },
+    "eof_repair_local_checks": {
+      "ast_identical": true,
+      "files": 2,
+      "bytes_removed": 2,
+      "trailing_whitespace_errors": 0,
+      "no_index_diff_check_result": "PASS",
+      "no_index_diff_check_exit": 1,
+      "no_index_exit_one_means_files_differ": true
+    },
+    "optional_local_repeats": "DEFERRED_BY_CURRENT_CHAIRMAN_WAIVER; missing-dependency approval cancellation is not retried. New exact-head hosted focused CI succeeded independently."
   },
   "native_observation": {
     "carrier": "Mastermind Paper direct app",
@@ -69,17 +109,78 @@
     "physical_proposals_dispatched": 0
   },
   "remaining_gates": [
-    "Exact-head hosted CI and unresolved local supplementary test dependencies",
-    "Approved existing-app native file-create/open carrier (current published action excludes these)",
-    "Oversized original clone safety confirmation not established",
-    "Harmless native duplicate/reopen and full-property restore verification",
-    "Physical reorganization remains HOLD"
+    "Current SAME-app approved native file-creation action and actual installed-contract readback; not a missing source implementation",
+    "Warned oversized original safety and native full-property restore remain unverified; no vendor outreach authorized",
+    "Harmless duplicate/reopen/restore is deferred, not executed or accepted",
+    "Physical reorganization remains HOLD; 301 proposals NOT_DISPATCHED",
+    "Binding source/release controls remain; no merge, enqueue, Ready/un-draft, labels or deployment"
   ],
-  "adviser": {
-    "task": "/root/backup_guard_reasoning",
-    "role": "read-only reasoning adviser",
-    "result_consumed": true,
-    "terminal_edge": "ACCEPTED/STOP",
-    "source_or_paper_writes": 0
+  "prior_protected_pin": "700eef54bca4a2dc4e30d94a6b30dcfa733ad57c",
+  "original_source_implementation": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "pr": 2058,
+    "head": "f8a5d8941461b5b00799475c0326c292b3c49ae9",
+    "branch": "sol/f03-paper-native-readback-20261104-c2",
+    "draft": true,
+    "guard_blob": "5bb801dd6bea0eaaa7dc9bf45f825a1483f12c4a",
+    "tests_blob": "8d0b6c6701beaadfbd28436d9331ef83cd0ab7c6",
+    "readback_exact": true
+  },
+  "source_contract_correction": {
+    "observed_at_utc": "2026-11-05T03:07:05Z",
+    "protected_pin": "70187bb1660e8a7c3038271bb9f8924b5e525cb0",
+    "source_mcp_server_path": "integrations/paper_desktop/mcp_server.py",
+    "source_mcp_server_blob": "7498e92a7f84f06d1d10a23ab69de52b4671195a",
+    "source_guarded_create_file": true,
+    "source_prepare_changes_active_file": false,
+    "source_parentId_permitted": false,
+    "published_app_create_file_permitted": false,
+    "published_app_prepare_text": "Focus one existing Paper file by bare ID",
+    "installed_source_matches_protected_pin": "NOT_ESTABLISHED_BY_SOURCE_OR_TOOL_METADATA",
+    "classification": "DIRECT_TOOL_PUBLICATION_DRIFT / EFFECT_NONE",
+    "remedy": "Same-app approved action-definition refresh and exact installed-contract readback through an actually authorized platform path; the recorded browser host restriction remains binding.",
+    "source_only_clone_enabling_patch_needed": false,
+    "evidence": [
+      {
+        "tool": "mcp__codex_apps__mastermind_paper_paper_edit",
+        "description": "Mutate the explicitly approved active Paper design. Never auto-retry this action.\n\nCaller must have current write permission and exclusive design-task ownership.\nFile creation/open transitions, native exports, node deletion and token deletion are intentionally not permitted. This tool is part of plugin `Mastermind Paper`.\n\nMastermind Paper\n\nMCP server instructions: Inspect the active Paper document first. Read the catalog for exact upstream schemas. A snapshot is a drift guard, not permission or a document revision. Only one design operator may own a desktop document at a time. Never retry EFFECT_UNKNOWN; reconcile the original operation with the same carrier."
+      },
+      {
+        "tool": "mcp__codex_apps__mastermind_paper_paper_prepare",
+        "description": "Focus one existing Paper file by bare ID, never a URL or path.\n\nPaper must already be running with an inspectable current file. Use\npaper_inspect first and pass its fresh snapshot. Changes active-file\nfocus, not design content. A lost/error reply is never replayed, even\nwhen post-read evidence sees the target. Reconcile on this same app. This tool is part of plugin `Mastermind Paper`.\n\nMastermind Paper\n\nMCP server instructions: Inspect the active Paper document first. Read the catalog for exact upstream schemas. A snapshot is a drift guard, not permission or a document revision. Only one design operator may own a desktop document at a time. Never retry EFFECT_UNKNOWN; reconcile the original operation with the same carrier."
+      }
+    ]
+  },
+  "completion_waiver": {
+    "authority": "Current Chairman instruction in this continuation permits skipping unavailable tests and completion requirements and accepting the available implementation as-is.",
+    "scope": "Optional unavailable local re-tests and unperformed completion evidence are deferred for source-only delivery, not relabeled passed. No vendor email or correspondence task is required or authorized.",
+    "vendor_correspondence_requirement_for_source_delivery": "DEFERRED_NOT_REQUIRED",
+    "native_canary_and_restore_proof": "DEFERRED_UNVERIFIED_NOT_EXECUTED",
+    "original_warning_and_prohibited_effects_waived": false,
+    "physical_reorganization": "HOLD",
+    "native_restore_verified": false,
+    "notes": "A small-file canary or unchanged basic-info digest cannot establish non-modification, atomic completeness, or unexposed-property fidelity of the specifically warned oversized source."
+  },
+  "advisers": [
+    {
+      "task": "/root/backup_guard_reasoning",
+      "role": "read-only reasoning adviser",
+      "result_consumed": true,
+      "terminal_edge": "ACCEPTED/STOP",
+      "source_or_paper_writes": 0
+    },
+    {
+      "task": "/root/native_backup_contract_reasoning",
+      "role": "read-only architecture reasoning adviser",
+      "result_consumed": true,
+      "terminal_edge": "ACCEPTED/STOP",
+      "source_or_paper_writes": 0,
+      "finding": "Creation/target-binding source exists; publication drift and unproven native fidelity cannot be cured by a duplicate source shim."
+    }
+  ],
+  "attention": {
+    "prior_ci_watch": "Terminal result consumed; existing F03 repair CI return observed disabled, next_run_time null",
+    "new_watch_created": false,
+    "new_ci_terminal_result_consumed": true
   }
 }

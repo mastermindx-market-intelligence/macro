@@ -8,7 +8,7 @@
   "purpose": "Qualify a lossless editable native Paper backup before ANY physical file/folder reorganization; no Paper mutations authorized in this phase",
   "candidate": {
     "method": "Paper-native whole-file duplication",
-    "native_upstream_tool": "create_file({cloneFileId, name, parentId})",
+    "native_upstream_tool": "create_file({cloneFileId, name})",
     "native_tool_available_in_paper_desktop_0_5_18": true,
     "dashboard_duplicate_feature_documented": true,
     "authoritative_refs": [
@@ -18,12 +18,13 @@
     ],
     "exact_target_original_file_id": "01M2WGNCX9475G79JRKJTCM08P",
     "allowed_action_now": "OBSERVE_AND_SPECIFY_ONLY",
-    "not_executed": true
+    "not_executed": true,
+    "guarded_argument_boundary": "Protected bridge accepts cloneFileId OR bridge-only sourceFileId, plus name; parentId is intentionally rejected. Upstream optional inputs are not automatically authorized."
   },
   "grounds": [
     "Original get_basic_info continues to emit a data-loss warning, so clone safety for this oversized source is unproven.",
     "Existing historical native copy has 57 pages vs 62 in source; specifically misses p-27-0, p-26-1, p-25-0, p-29-0 and p-28-0; cannot be accepted as complete backup.",
-    "33-tool Desktop catalog exposes create_file with cloneFileId, but the guarded current adapter does not admit file creation/open transitions; visible upstream schema is not authority.",
+    "The observed upstream catalog exposes create_file with cloneFileId. Protected source already supports guarded creation through existing paper_edit, while this session's published app definition explicitly excludes file creation/open transitions. Installed implementation and workspace approval are separate; tool visibility is not authority.",
     "Current upstream catalog has no create_folder, move_resources, archive_resources or unarchive_resources tool. move_nodes operates within a file and is not cross-file resource movement.",
     "Export to JSX, PNG, SVG, PDF or HTML/re-paste is not a fidelity-preserving native project backup; Paper's HTML import documentation describes style and input conversions.",
     "No vendor-attested atomic/complete clone behavior under the original's large-file warning; no verified native restore, revision-history, links, permissions or comment preservation."
@@ -40,48 +41,67 @@
     ],
     "original_only_pages": 5,
     "original_only_artboards": 46,
-    "current_D06_meta_only_boards": 6,
+    "current_D06_meta_only_boards": 0,
     "existing_original_only_40_JSX_captures_not_native_backup": true,
     "separate_F03_directory_boards_absent_historical_copy": 7,
     "current_minimum_missing_artboard_placements": 53,
     "parent_folder": "01M2VVZT0YA4WK46WT5VD72YTQ",
-    "source_warning": "Warning: Your file is too large. Further changes will result in data loss. Please start a new file."
+    "source_warning": "Warning: Your file is too large. Further changes will result in data loss. Please start a new file.",
+    "historical_D06_meta_only_boards_at_initial_observation": 6,
+    "current_D06_full_JSX_and_native_tree_boards": 6,
+    "current_original_only_full_JSX_and_native_tree_boards": 46,
+    "current_original_only_page_reported_nodes": 6755,
+    "current_source_capture": "paper/retention/original-only-d06-code-capture-20261104.json"
   },
   "safe_qualification_gates": [
     {
       "gate": "VENDOR_OVERSIZE_COPY_SAFETY",
       "required": "Explicit Paper confirmation that full-file native duplication of this warned oversized source is read-only toward the original and will not truncate or silently omit pages/layers/assets; disclose supported size ceiling and failure semantics.",
-      "passed": false
+      "passed": false,
+      "blocks_source_only_delivery": false,
+      "blocks_native_backup_or_reorganization_acceptance": true
     },
     {
       "gate": "AUTHORIZED_NATIVE_CARRIER",
-      "required": "A separately authorized original Paper native carrier that admits cloneFileId in a verified destination parent; current guarded adapter disallows it. No tool-route workaround for denied effects.",
-      "passed": false
+      "required": "Current approved definitions for the SAME existing Mastermind Paper app must admit guarded create_file, with exact source ID, snapshot, operation ID, and destination readback. Source capability is already implemented; installed source and approval still require actual readback. No parentId, replacement app, alternate carrier, or denied-route workaround.",
+      "passed": false,
+      "blocks_source_only_delivery": false,
+      "blocks_native_backup_or_reorganization_acceptance": true
     },
     {
       "gate": "HARMLESS_CANARY",
       "required": "After a separately authorized Paper resource-write phase, test native duplicate/reopen/compare on an independently owned small scratch file first; do not touch either original.",
-      "passed": false
+      "passed": false,
+      "blocks_source_only_delivery": false,
+      "blocks_native_backup_or_reorganization_acceptance": true
     },
     {
       "gate": "FULL_SOURCE_SNAPSHOT",
       "required": "At an immutable observation window, enumerate all original page IDs/order, artboard IDs and complete native trees; pin token/theme, assets, vector paths, comments, prototype links and access metadata with source hashes/receipts.",
-      "passed": false
+      "passed": false,
+      "blocks_source_only_delivery": false,
+      "blocks_native_backup_or_reorganization_acceptance": true
     },
     {
       "gate": "NATIVE_CLONE_READBACK",
       "required": "After vendor confirmation and authorized action, compare clone with source across all 62 current pages and every board/node, tokens, typography, SVG/path/data, assets, links, comments, revision/history and permissions; prove round-trip reopening and visual pairs. Any missing property = HOLD.",
-      "passed": false
+      "passed": false,
+      "blocks_source_only_delivery": false,
+      "blocks_native_backup_or_reorganization_acceptance": true
     },
     {
       "gate": "RESTORE_PATH",
       "required": "Demonstrate Paper-native editable restore or verified full clone as independent file without mutating original; compare after fresh reopen, not just create_file success.",
-      "passed": false
+      "passed": false,
+      "blocks_source_only_delivery": false,
+      "blocks_native_backup_or_reorganization_acceptance": true
     },
     {
       "gate": "REORGANIZATION_CAPABILITY",
-      "required": "Separately qualify actual folder/create/move/archive support, destination ownership and one-writer leases; 301 planned actions remain NOT_DISPATCHED until then.",
-      "passed": false
+      "required": "Separately qualify actual folder/create/move/archive support, exact source/destination authority, and target-scoped custody/effects; 301 planned actions remain NOT_DISPATCHED. Do not invent a file-wide or page-wide lease.",
+      "passed": false,
+      "blocks_source_only_delivery": false,
+      "blocks_native_backup_or_reorganization_acceptance": true
     }
   ],
   "do_not_substitute": [
@@ -91,7 +111,7 @@
     "native duplicate_nodes inside oversized original",
     "browser or shell route around guarded adapter"
   ],
-  "outcome": "Source-only fail-closed native pair verifier and direct readback prove the historical 57-page copy incomplete despite matching token digest. No genuinely safe tested Paper-native backup/restore is yet certified; vendor oversized-copy contract, native resource-write carrier and harmless scratch canary remain missing. Preserve both originals and all 301 physical HOLD rows. Email outreach prohibited.",
+  "outcome": "Source-retention implementation may advance with explicitly deferred optional checks and no vendor outreach. Native backup/restore remains NOT QUALIFIED: the current published app excludes creation, warned-source safety and full native restore fidelity are unverified, and physical operations remain prohibited/HOLD. Protected source already implements guarded creation; no duplicate clone shim is justified. Preserve all originals, the non-equivalent historical copy, and all 301 NOT_DISPATCHED proposals.",
   "effects": "0 Paper-native writes, 0 clone attempts, 0 folder moves, 0 resource actions, 0 emails, 0 purchases. PR #10631 Draft/HOLD.",
   "latest_read_only_qualification": {
     "observed_date_utc": "2026-11-04",
@@ -115,6 +135,45 @@
     "method_state": "NOT_QUALIFIED_DO_NOT_EXECUTE",
     "vendor_email_sent": false,
     "canary_executed": false,
-    "restore_verified": false
+    "restore_verified": false,
+    "latest_metadata_assessment": "paper/retention/native-file-pair-assessment-v2-20261104.json",
+    "hermetic_tests_passed_at_latest_source_receipt": 15,
+    "current_source_repair_pr": 2058,
+    "current_source_repair_head": "97df1b5c15f9a08a82f4cf644aed96e79ca7d6bd"
+  },
+  "source_contract_correction": {
+    "observed_at_utc": "2026-11-05T03:07:05Z",
+    "protected_pin": "70187bb1660e8a7c3038271bb9f8924b5e525cb0",
+    "source_mcp_server_path": "integrations/paper_desktop/mcp_server.py",
+    "source_mcp_server_blob": "7498e92a7f84f06d1d10a23ab69de52b4671195a",
+    "source_guarded_create_file": true,
+    "source_prepare_changes_active_file": false,
+    "source_parentId_permitted": false,
+    "published_app_create_file_permitted": false,
+    "published_app_prepare_text": "Focus one existing Paper file by bare ID",
+    "installed_source_matches_protected_pin": "NOT_ESTABLISHED_BY_SOURCE_OR_TOOL_METADATA",
+    "classification": "DIRECT_TOOL_PUBLICATION_DRIFT / EFFECT_NONE",
+    "remedy": "Same-app approved action-definition refresh and exact installed-contract readback through an actually authorized platform path; the recorded browser host restriction remains binding.",
+    "source_only_clone_enabling_patch_needed": false,
+    "evidence": [
+      {
+        "tool": "mcp__codex_apps__mastermind_paper_paper_edit",
+        "description": "Mutate the explicitly approved active Paper design. Never auto-retry this action.\n\nCaller must have current write permission and exclusive design-task ownership.\nFile creation/open transitions, native exports, node deletion and token deletion are intentionally not permitted. This tool is part of plugin `Mastermind Paper`.\n\nMastermind Paper\n\nMCP server instructions: Inspect the active Paper document first. Read the catalog for exact upstream schemas. A snapshot is a drift guard, not permission or a document revision. Only one design operator may own a desktop document at a time. Never retry EFFECT_UNKNOWN; reconcile the original operation with the same carrier."
+      },
+      {
+        "tool": "mcp__codex_apps__mastermind_paper_paper_prepare",
+        "description": "Focus one existing Paper file by bare ID, never a URL or path.\n\nPaper must already be running with an inspectable current file. Use\npaper_inspect first and pass its fresh snapshot. Changes active-file\nfocus, not design content. A lost/error reply is never replayed, even\nwhen post-read evidence sees the target. Reconcile on this same app. This tool is part of plugin `Mastermind Paper`.\n\nMastermind Paper\n\nMCP server instructions: Inspect the active Paper document first. Read the catalog for exact upstream schemas. A snapshot is a drift guard, not permission or a document revision. Only one design operator may own a desktop document at a time. Never retry EFFECT_UNKNOWN; reconcile the original operation with the same carrier."
+      }
+    ]
+  },
+  "completion_waiver": {
+    "authority": "Current Chairman instruction in this continuation permits skipping unavailable tests and completion requirements and accepting the available implementation as-is.",
+    "scope": "Optional unavailable local re-tests and unperformed completion evidence are deferred for source-only delivery, not relabeled passed. No vendor email or correspondence task is required or authorized.",
+    "vendor_correspondence_requirement_for_source_delivery": "DEFERRED_NOT_REQUIRED",
+    "native_canary_and_restore_proof": "DEFERRED_UNVERIFIED_NOT_EXECUTED",
+    "original_warning_and_prohibited_effects_waived": false,
+    "physical_reorganization": "HOLD",
+    "native_restore_verified": false,
+    "notes": "A small-file canary or unchanged basic-info digest cannot establish non-modification, atomic completeness, or unexposed-property fidelity of the specifically warned oversized source."
   }
 }
