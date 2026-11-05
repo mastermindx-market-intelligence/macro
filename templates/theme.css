@@ -3476,3 +3476,60 @@ html[data-theme="light"] .mrs-pop{
 body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--elevated .sg-wx{color:var(--ink-warn, var(--warn));}
 body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--elevated .sx-vw-tier{color:var(--ink-warn, var(--warn));}
 .nowrap{white-space:nowrap}
+
+/* ===== GMI explorer extension (SPECS §5; additive; consumed only by gmi.css) ===== */
+/* ---------- B. GMI extension tokens (derived only) ------------------------------ */
+:root{
+  --gmi-mark:       color-mix(in srgb, var(--text) 78%, transparent);  /* admitted: solid ink   */
+  --gmi-mark-faint: color-mix(in srgb, var(--text) 44%, transparent);  /* outlines              */
+  --gmi-hatch:      color-mix(in srgb, var(--text) 40%, transparent);  /* acceptance-set hatch  */
+  --gmi-held:       var(--info);                                       /* held ring (redundant to shape) */
+  --gmi-hair:       color-mix(in srgb, var(--text) 9%, transparent);   /* dark hairline         */
+  --gmi-step:       color-mix(in srgb, var(--text) 2.5%, transparent); /* dark luminance step   */
+  --gmi-elev:       inset 0 1px 0 rgba(255,255,255,.035), 0 1px 0 rgba(0,0,0,.35);
+  --gmi-select:     0 0 0 1px var(--link), 0 0 22px -8px color-mix(in srgb, var(--link) 70%, transparent);
+  --gmi-hero-wash:  radial-gradient(120% 160% at 0% 0%, color-mix(in srgb, var(--info) 9%, transparent), transparent 62%);
+  --gmi-glow-held:  0 0 0 3px color-mix(in srgb, var(--info) 16%, transparent), 0 0 14px 0 color-mix(in srgb, var(--info) 55%, transparent);
+  --gmi-tray:       none;                                              /* side sheet: dark = luminance only */
+  --gmi-cell:14px; --gmi-cell-gap:5px;
+}
+html[data-theme="light"]{
+  --gmi-mark:       color-mix(in srgb, var(--text) 86%, transparent);
+  --gmi-mark-faint: color-mix(in srgb, var(--text) 40%, transparent);
+  --gmi-hatch:      color-mix(in srgb, var(--text) 30%, transparent);
+  --gmi-held:       var(--ink-info);
+  --gmi-hair:       var(--line);
+  --gmi-step:       transparent;
+  --gmi-elev:       0 1px 2px rgba(20,30,50,.06), 0 8px 24px -16px rgba(20,32,64,.22);
+  --gmi-select:     0 0 0 2px var(--link);
+  --gmi-hero-wash:  none;
+  --gmi-glow-held:  0 0 0 3px color-mix(in srgb, var(--ink-info) 14%, transparent);
+  --gmi-tray:       inset 0 1px 2px rgba(20,30,50,.05);                 /* light: a recessed tray */
+}
+@media (max-width:640px){ :root{ --gmi-cell:10px; --gmi-cell-gap:3px; } }
+
+/* --- port-round tokens (lane table): every colour decision stays a theme token --- */
+:root{
+  --gmi-btn-lift:   none;
+  --gmi-rail:       color-mix(in srgb, var(--text) 10%, transparent);
+  --gmi-hist-bar:   color-mix(in srgb, var(--text) 26%, transparent);
+  --gmi-hist-glow:  0 0 18px -6px color-mix(in srgb, var(--text) 60%, transparent);
+  --gmi-track:      color-mix(in srgb, var(--text) 7%, transparent);
+  --gmi-stack-2:    color-mix(in srgb, var(--text) 22%, transparent);
+  --gmi-ladder-1:   color-mix(in srgb, var(--text) 48%, transparent);
+  --gmi-ladder-2:   color-mix(in srgb, var(--text) 34%, transparent);
+  --gmi-ladder-3:   color-mix(in srgb, var(--text) 22%, transparent);
+  --gmi-ladder-ink-theme: color-mix(in srgb, var(--text) 82%, transparent);
+  --gmi-ladder-ink-cat:   color-mix(in srgb, var(--text) 62%, transparent);
+  --r-gmi-focus:4px; --r-gmi-xs:1px; --r-gmi-sm:2px; --r-gmi-md:3px; --r-gmi-kbd:5px; --r-gmi-tag:6px;
+  --r-gmi-dot:50%; --r-gmi-bar-top:3px 3px 0 0;
+  --gmi-cell-key:12px; --gmi-cell-xl:20px; --gmi-cell-strip:6px; --gmi-cell-mini:8px;
+  --gmi-chain-slot:24px; --gmi-chain-edge-none:0px; --gmi-chain-rail:22px; --gmi-chain-edge:40px;
+  --gmi-pip:12px; --gmi-pip-anchor:22px; --gmi-pip-void:10px; --gmi-pip-cat:9px;
+}
+html[data-theme="light"]{
+  --gmi-btn-lift:   0 1px 2px rgba(20,30,50,.06);
+  --gmi-hist-bar:   color-mix(in srgb, var(--text) 18%, var(--panel));
+  --gmi-hist-glow:  none;
+}
+/* ===== end GMI explorer extension ===== */

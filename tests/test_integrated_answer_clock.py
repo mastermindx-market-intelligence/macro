@@ -33,10 +33,16 @@ from app.integrated_answer import router as integrated_answer_router
 from engine.company_theme_exposure.views import build_bundle, write_generation
 from engine.k3e_expectation_surface import QueryRefusal
 from tests.test_company_theme_exposure import _company_tree, _crosswalk, _membership
+from tests.test_integrated_answer_v0 import pin_capital_structure_leg
 
 NOW = "2026-10-11T12:00:00Z"
 FINANCIAL_ROUTE = "/api/forensics/v1/financial/query"
 PUBLICATION_ROUTE = "/api/forensics/v1/attested-history/latest"
+
+
+@pytest.fixture(autouse=True)
+def _pin_capital_structure_leg(monkeypatch: pytest.MonkeyPatch) -> None:
+    pin_capital_structure_leg(monkeypatch)
 
 DEFECT_D1_REASON = (
     "DEFECT C19-WP16-D1: financial leg as_of echoes the literal request cutoff "
