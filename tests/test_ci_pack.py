@@ -1697,37 +1697,42 @@ def test_macro_suite_copy_law_site_scanners_run_on_the_data_gate(real_manifest_s
     """
     manifest = _yaml(MANIFEST)
     suite = "tests/test_macro_command_copy_law.py"
+    sibling = "tests/test_macro_command_p4_copy.py"
     code_job = manifest["jobs"]["market-os-macro-suite-pages"]
     assert code_job["gate"] == "code"
-    code_runs = [
-        str(step.get("run") or "") for step in code_job["steps"]
-        if suite in str(step.get("run") or "")
-    ]
-    assert code_runs, "the code job no longer runs the copy-law suite"
-    for run in code_runs:
-        assert "-m \"not data_gate\"" in run or "-m 'not data_gate'" in run, run
+    for scanner in (suite, sibling):
+        code_runs = [
+            str(step.get("run") or "") for step in code_job["steps"]
+            if scanner in str(step.get("run") or "")
+        ]
+        assert code_runs, f"the code job no longer runs {scanner}"
+        for run in code_runs:
+            assert "-m \"not data_gate\"" in run or "-m 'not data_gate'" in run, run
 
     data_job = manifest["jobs"]["market-os-macro-suite-pages-data"]
     assert data_job["gate"] == "data"
     assert data_job["scope"] == "exclusive"
     data_runs = [
         str(step.get("run") or "") for step in data_job["steps"]
-        if "pytest" in str(step.get("run") or "")
+        if suite in str(step.get("run") or "")
     ]
-    assert data_runs == [f"python -m pytest {suite} -m data_gate -q"]
+    assert data_runs == [f"python -m pytest {suite} {sibling} -m data_gate -q"]
     assert _job_pip_packages(data_job) == _job_pip_packages(code_job)
     assert set(code_job["paths"]) == set(data_job["paths"]), (
         "the data sibling declares the parent's closure; widen both together"
     )
 
-    # The marker is real: exactly the scanners that read the committed pages
-    # carry it. A new committed-site scanner is added to this set, never to
-    # the code gate.
-    source = (ROOT / suite).read_text(encoding="utf-8")
-    marked = re.findall(
-        r"@pytest\.mark\.data_gate\s*\n(?:@pytest\.mark\.[^\n]*\n)*def (test_\w+)\(",
-        source,
-    )
+    # The marker is real: every test whose verdict reads the committed
+    # site/macro_*.html (or couples it to the nightly macrodata) carries it;
+    # the template-bound halves of the split M2 and trace-row tests stay on
+    # the code gate. A new committed-site scanner is added to this set,
+    # never to the code gate.
+    marked: list[str] = []
+    for scanner in (suite, sibling):
+        marked += re.findall(
+            r"@pytest\.mark\.data_gate\s*\n(?:@pytest\.mark\.[^\n]*\n)*def (test_\w+)\(",
+            (ROOT / scanner).read_text(encoding="utf-8"),
+        )
     assert sorted(marked) == sorted({
         "test_committed_payloads_have_zero_plain_fallbacks",
         "test_committed_rates_page_keeps_relocated_needles_inside_details",
@@ -1735,6 +1740,11 @@ def test_macro_suite_copy_law_site_scanners_run_on_the_data_gate(real_manifest_s
         "test_zh_l_zh_spans_are_translated",
         "test_locale_spans_have_no_machine_text",
         "test_rendered_pages_use_ratified_null_vocabulary",
+        "test_details_use_locale_pairing_not_lang_attributes",
+        "test_composites_disclose_composition_law_in_plain_words",
+        "test_trace_row_present_iff_trace_ref",
+        "test_committed_monetary_policy_page_keeps_restored_rows",
+        "test_rendered_sections_have_no_repeated_visible_sentence",
     }), marked
 
     jobs, _ = real_manifest_scopes

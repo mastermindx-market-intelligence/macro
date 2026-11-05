@@ -1963,10 +1963,8 @@ def test_rendered_pages_use_ratified_null_vocabulary() -> None:
     assert hits == [], hits
 
 
-@pytest.mark.needs_full_checkout("site")
-def test_details_use_locale_pairing_not_lang_attributes() -> None:
-    """M2: Details text uses .l-en/.l-zh; suite templates have no lang= locale switch."""
-    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+def test_suite_templates_have_no_lang_locale_switch() -> None:
+    """M2, template half: suite templates have no lang= locale switch (code gate)."""
     suite_templates = list((ROOT / "templates").glob("macro_*.html.j2"))
     suite_templates.append(ROOT / "templates" / "_macro_suite_shell.html.j2")
     lang_hits = []
@@ -1977,6 +1975,13 @@ def test_details_use_locale_pairing_not_lang_attributes() -> None:
                 text):
             lang_hits.append(f"{path.name}:{match.group(0)[:80]}")
     assert lang_hits == [], lang_hits
+
+
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
+def test_details_use_locale_pairing_not_lang_attributes() -> None:
+    """M2, committed-page half: Details text pairs .l-en/.l-zh on every nightly page."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
     pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
     present = [name for name in pages if (ROOT / "site" / name).is_file()]
     assert len(present) >= 14, present
@@ -2339,6 +2344,7 @@ COMPOSITE_COUNT_BY_PAGE = {
 }
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_composites_disclose_composition_law_in_plain_words() -> None:
     """M1: every composite on the 15 pages paints the N disclosure rows, EN+ZH."""
@@ -2567,8 +2573,18 @@ def test_owner_display_pair_falls_back_without_raising(capsys) -> None:
     assert "engine.brand_new_desk" in warning
 
 
+def test_shell_template_paints_trace_row_only_with_trace_ref() -> None:
+    """Template half (code gate): the shell paints mq-trace only under trace_ref."""
+    src = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(
+        encoding="utf-8")
+    assert "{%- if item.trace_ref %}" in src
+    assert "mq-trace" in src
+
+
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_trace_row_present_iff_trace_ref() -> None:
+    """Committed-page half: the nightly page paints one trace row per trace_ref."""
     import json
     path = DATA_ROOT / "workspaces" / "financial_conditions" / "US" / "latest.json"
     snap = json.loads(path.read_text(encoding="utf-8"))
@@ -2579,10 +2595,6 @@ def test_trace_row_present_iff_trace_ref() -> None:
     traces = re.findall(r'<p class="mq-trace">', html)
     expected = sum(1 for item in items if item.get("trace_ref"))
     assert len(traces) == expected
-    src = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(
-        encoding="utf-8")
-    assert "{%- if item.trace_ref %}" in src
-    assert "mq-trace" in src
 
 
 _RESTORED_ROW_PAIRS = (
@@ -2620,6 +2632,7 @@ def test_restored_row_families_on_non_composite_page() -> None:
     _assert_one_lineage_kind(baked, "value_correction")
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_committed_monetary_policy_page_keeps_restored_rows() -> None:
     """Companion site guard for the committed monetary page.
