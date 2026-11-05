@@ -591,3 +591,185 @@ test('review: a newly staged question fences an already pending ordinary resume'
  const r=actualResume(false);r.ctx.resumeStoredRun();await settle();r.ctx.historyOpenGeneration++;
  r.ctx.optionsQuestion.active=()=>true;r.finish();await settle();assert.equal(r.calls.open,0);assert.equal(r.calls.attach,0);
 });
+
+/* ── matched withdrawal AFTER the one POST (finding 10710comment6652598570) ──
+ * Deferred-transport tests: the single POST hangs on an unresolved promise so
+ * the in-flight window is real. A withdrawal that matches the flight's
+ * reference AND owner AND generation fences the late answer — it never
+ * aborts, retries or claims "nothing was sent", and busy holds until the
+ * original request settles. Foreign/old references and late settlements
+ * never clear anything or paint a newer generation. */
+test('inflight: a matching withdrawal after the POST fences the late answer and holds busy', async () => {
+  let finish;
+  const env = makeEnv({ transport: () => new Promise(r => { finish = r; }) });
+  const c = createOptionsQuestion(env);
+  const ref = validReference();
+  assert.equal(c.stage(ref), true);
+  assert.equal(c.send('q'), true);
+  await settle();
+  assert.equal(env.__calls.transport.length, 1, 'exactly one POST before the withdrawal');
+  const flightGen = c.generation();
+  assert.equal(c.busy(), true, 'the original request is still in flight');
+  assert.equal(c.clear(ref), false, 'nothing is staged to clear after dispatch');
+  assert.equal(c.withdrawInFlight(ref), true, 'the matched in-flight withdrawal is accepted');
+  assert.equal(c.generation(), flightGen + 1, 'the withdrawal fences by generation, not by abort');
+  assert.equal(c.withdrawInFlight(ref), false, 'a duplicate withdrawal cannot fence again');
+  assert.equal(c.generation(), flightGen + 1, 'generation moved exactly once');
+  assert.equal(c.busy(), true, 'busy holds until the original request settles');
+  finish({ ok: true, status: 200, bodyText: sseDoc(['data: {"type":"delta","text":"late answer"}', 'data: {"type":"done"}']) });
+  await settle();
+  assert.equal(c.busy(), false, 'busy releases only with the original settlement');
+  const outcome = env.__calls.outcomes[0];
+  assert.equal(outcome.kind, 'reply', 'the flight settles as a reply — never as withdrawn');
+  assert.notEqual(outcome.generation, c.generation(), 'the fenced answer carries the stale generation so the widget drops it');
+  assert.equal(env.__calls.transport.length, 1, 'no abort, no retry, no second POST');
+});
+test('inflight: before dispatch the seam refuses and the pre-send clear still aborts with zero POST', async () => {
+  let releaseAuth;
+  const captured = [];
+  const env = makeEnv({
+    authorize: () => new Promise(resolve => { releaseAuth = resolve; }),
+    transport: init => { captured.push(init); return Promise.resolve({ ok: true, status: 200, bodyText: sseDoc(['data: {"type":"done"}']) }); }
+  });
+  const c = createOptionsQuestion(env);
+  const ref = validReference();
+  assert.equal(c.stage(ref), true);
+  assert.equal(c.send('q'), true);
+  assert.equal(c.withdrawInFlight(ref), false, 'nothing is dispatched yet — withdrawal is the staged clear');
+  assert.equal(c.clear(ref), true, 'the pre-send withdrawal still aborts before any POST');
+  releaseAuth({ 'Content-Type': 'application/json' });
+  await settle();
+  assert.equal(captured.length, 0, 'zero POST');
+  assert.equal(env.__calls.outcomes[0].kind, 'withdrawn');
+  assert.equal(env.__calls.outcomes[0].generation, c.generation(), 'the withdrawn note paints at the current generation');
+});
+test('inflight: a foreign reference neither clears nor fences the in-flight flight', async () => {
+  let finish;
+  const env = makeEnv({ transport: () => new Promise(r => { finish = r; }) });
+  const c = createOptionsQuestion(env);
+  c.stage(validReference());
+  assert.equal(c.send('q'), true);
+  await settle();
+  const gen = c.generation();
+  const foreign = validReference();
+  foreign.selection = '{"schema":"options_matrix_selection.v1","v":9}';
+  assert.equal(c.clear(foreign), false);
+  assert.equal(c.withdrawInFlight(foreign), false, 'a foreign selection cannot fence the flight');
+  assert.equal(c.generation(), gen, 'generation untouched');
+  finish({ ok: true, status: 200, bodyText: sseDoc(['data: {"type":"delta","text":"kept"}', 'data: {"type":"done"}']) });
+  await settle();
+  const outcome = env.__calls.outcomes[0];
+  assert.equal(outcome.kind, 'reply');
+  assert.equal(outcome.generation, c.generation(), 'the unfenced answer still paints at the current generation');
+  assert.equal(c.busy(), false);
+});
+test('inflight: another principal and a torn-down scope cannot fence; a new generation is unaffected', async () => {
+  const finishes = [];
+  let owner = 'user-A';
+  const env = makeEnv({ principal: () => owner, transport: () => new Promise(r => finishes.push(r)) });
+  const c = createOptionsQuestion(env);
+  c.stage(validReference());
+  assert.equal(c.send('q'), true);
+  await settle();
+  owner = 'user-B';
+  assert.equal(c.withdrawInFlight(validReference()), false, 'only the flight owner can withdraw in flight');
+  assert.equal(c.busy(), true, 'the refused withdrawal left the flight intact');
+  owner = 'user-A';
+  c.reset();
+  assert.equal(c.withdrawInFlight(validReference()), false, 'a reset leaves no flight to withdraw');
+  assert.equal(c.busy(), false);
+  assert.equal(c.stage(validReference()), true, 'fresh staging opens a new generation');
+  assert.equal(c.send('q2'), true);
+  await settle();
+  finishes[0]({ ok: true, status: 200, bodyText: sseDoc(['data: {"type":"delta","text":"stale"}', 'data: {"type":"done"}']) });
+  await settle();
+  assert.equal(c.busy(), true, 'the stale settlement cannot unlock the newer flight');
+  const staleOutcome = env.__calls.outcomes[0];
+  assert.notEqual(staleOutcome.generation, c.generation(), 'the stale settlement never paints a newer generation');
+  assert.equal(c.withdrawInFlight(validReference()), true, 'the matched withdrawal fences the CURRENT flight');
+  const fencedGen = c.generation();
+  finishes[1]({ ok: true, status: 200, bodyText: sseDoc(['data: {"type":"delta","text":"late"}', 'data: {"type":"done"}']) });
+  await settle();
+  assert.equal(c.busy(), false, 'the fenced flight still releases busy at its own settlement');
+  assert.notEqual(env.__calls.outcomes[1].generation, fencedGen, 'the fenced answer is dropped by generation');
+});
+test('inflight: after the fenced settlement the lane accepts a fresh stage at the new generation', async () => {
+  const finishes = [];
+  const env = makeEnv({ transport: () => new Promise(r => finishes.push(r)) });
+  const c = createOptionsQuestion(env);
+  c.stage(validReference());
+  assert.equal(c.send('q'), true);
+  await settle();
+  assert.equal(c.withdrawInFlight(validReference()), true);
+  finishes[0]({ ok: true, status: 200, bodyText: sseDoc(['data: {"type":"done"}']) });
+  await settle();
+  assert.equal(c.busy(), false);
+  assert.equal(c.active(), true, 'the lane stays until an explicit exit');
+  assert.equal(c.stage(validReference()), true, 'fresh staging works at the newer generation');
+  assert.equal(c.send('again'), true);
+  await settle();
+  assert.equal(env.__calls.transport.length, 2);
+  finishes[1]({ ok: true, status: 200, bodyText: sseDoc(['data: {"type":"delta","text":"fresh"}', 'data: {"type":"done"}']) });
+  await settle();
+  assert.equal(c.busy(), false);
+  assert.equal(env.__calls.outcomes[1].kind, 'reply');
+  assert.equal(env.__calls.outcomes[1].generation, c.generation(), 'the new flight paints at the newest generation');
+});
+function actualOutcomeHandler() {
+  const a = source.indexOf('  function handleOptionsOutcome(outcome)');
+  const b = source.indexOf('  function sendOptionsQuestionTurn(text)', a);
+  assert.ok(a >= 0 && b > a, 'options outcome handler region not found');
+  const calls = { painted: [], appended: [], stick: 0, syncSend: 0, syncOptionsExit: 0 };
+  const ctx = {
+    appendMsg: (role, text) => { calls.appended.push([role, text]); return { querySelector: () => null }; },
+    paintOptionsNote: kind => { calls.painted.push(kind); },
+    stickAfter: () => { calls.stick++; },
+    syncSend: () => { calls.syncSend++; },
+    syncOptionsExit: () => { calls.syncOptionsExit++; },
+    optionsQuestion: { generation: () => 2 }
+  };
+  vm.createContext(ctx);
+  vm.runInContext(source.slice(a, b), ctx);
+  return { handleOptionsOutcome: ctx.handleOptionsOutcome, calls };
+}
+test('dom: a fenced outcome never paints but still releases busy controls', () => {
+  const h = actualOutcomeHandler();
+  h.handleOptionsOutcome({ generation: 1, kind: 'reply', text: 'late answer' });
+  assert.equal(h.calls.appended.length, 0, 'the fenced answer never paints');
+  assert.equal(h.calls.painted.length, 0, 'no note rides a fenced answer');
+  assert.equal(h.calls.syncSend, 1, 'busy releases visually after the original settlement even when fenced');
+  assert.equal(h.calls.syncOptionsExit, 1, 'the exit control re-syncs with the settled flight');
+  h.handleOptionsOutcome({ generation: 2, kind: 'reply', text: 'kept answer' });
+  assert.deepEqual(h.calls.appended[0], ['assistant', 'kept answer'], 'a current answer paints');
+  assert.equal(h.calls.syncSend, 2);
+  h.handleOptionsOutcome({ generation: 2, kind: 'withdrawn' });
+  assert.deepEqual(h.calls.painted, ['withdrawn'], 'a current note still paints');
+});
+function actualWithdrawalRouter() {
+  const a = source.indexOf('  function applyOptionsWithdrawal(reference)');
+  const b = source.indexOf('  optqExit.addEventListener', a);
+  assert.ok(a >= 0 && b > a, 'matched withdrawal router not found in the wiring');
+  const calls = { clear: [], fence: [] };
+  const ctx = {
+    optionsQuestion: {
+      clear: r => { calls.clear.push(r); return false; },
+      withdrawInFlight: r => { calls.fence.push(r); return false; }
+    }
+  };
+  vm.createContext(ctx);
+  vm.runInContext(source.slice(a, b), ctx);
+  return { applyOptionsWithdrawal: ctx.applyOptionsWithdrawal, optionsQuestion: ctx.optionsQuestion, calls };
+}
+test('dom: withdrawal router clears the stage first, then fences the in-flight flight', () => {
+  const w = actualWithdrawalRouter();
+  assert.equal(w.applyOptionsWithdrawal('ref'), false, 'neither seam applies');
+  assert.deepEqual(w.calls.clear, ['ref']); assert.deepEqual(w.calls.fence, ['ref']);
+  w.calls.clear.length = 0; w.calls.fence.length = 0;
+  w.optionsQuestion.clear = () => true;
+  assert.equal(w.applyOptionsWithdrawal('ref2'), true, 'the staged clear wins and short-circuits');
+  assert.deepEqual(w.calls.fence, [], 'a cleared stage must not also fence');
+});
+test('dom: clearOptionsQuestion routes through the matched withdrawal seam', () => {
+  assert.ok(source.indexOf('if (!applyOptionsWithdrawal(reference)) return false;') > 0,
+    'clearOptionsQuestion must route through applyOptionsWithdrawal');
+});

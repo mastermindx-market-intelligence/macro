@@ -118,3 +118,38 @@ def test_terminal_cookie_proxy_requires_explicit_current_account(review_page,dec
         expect(page.locator('.mmb-scroll')).to_contain_text('request outcome could not be confirmed')
         assert page.evaluate('window.__posts.length')==0
     assert page.evaluate('window.__expectedOwners')==([] if decision=='missing' else ['fixture-principal'])
+
+
+@pytest.mark.parametrize('settlement',['reply','network'])
+def test_exact_inflight_withdrawal_fences_late_paint_and_releases_busy(review_page,settlement):
+    page=review_page
+    page.evaluate("""() => {
+      const previous=window.fetch;
+      window.fetch=(url,opts={})=>{
+        if(opts.method!=='POST')return previous(url,opts);
+        window.__posts.push(JSON.parse(opts.body));
+        return new Promise((resolve,reject)=>{window.__finishQuestion=resolve;window.__failQuestion=reject;});
+      };
+    }""")
+    assert page.evaluate('(r)=>MMBrain.submitOptionsQuestion(r)',REF)
+    page.locator('textarea').fill('Original selected contract')
+    page.locator('textarea').press('Control+Enter')
+    page.wait_for_function('window.__posts.length===1')
+    foreign=dict(REF,selection='foreign-selection')
+    assert page.evaluate('(r)=>MMBrain.clearOptionsQuestion(r)',foreign) is False
+    assert page.evaluate('(r)=>MMBrain.clearOptionsQuestion(r)',REF) is True
+    assert page.evaluate('(r)=>MMBrain.submitOptionsQuestion(r)',foreign) is False
+    expect(page.locator('#mmb-optq-exit')).to_be_disabled()
+    expect(page.locator('.mmb-scroll')).not_to_contain_text('nothing was sent')
+    if settlement=='reply':
+        page.evaluate("""()=>window.__finishQuestion(new Response('data: {"type":"delta","text":"STALE PRIVATE ANSWER"}\\n\\ndata: {"type":"done"}\\n\\n'))""")
+    else:
+        page.evaluate("()=>window.__failQuestion(Error('inert transport failure'))")
+    expect(page.locator('#mmb-optq-exit')).to_be_enabled()
+    expect(page.locator('.mmb-msg.assistant')).to_have_count(0)
+    expect(page.locator('.mmb-scroll')).not_to_contain_text('nothing was sent')
+    expect(page.locator('.mmb-scroll')).not_to_contain_text('request outcome could not be confirmed')
+    assert page.evaluate('window.__posts.length')==1
+    assert page.evaluate('(r)=>MMBrain.submitOptionsQuestion(r)',foreign) is True
+    assert page.evaluate('(r)=>MMBrain.clearOptionsQuestion(r)',REF) is False
+    expect(page.locator('#mmb-optq')).to_be_visible()

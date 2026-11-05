@@ -4565,6 +4565,27 @@
         dropStaged();
         return true;
       },
+      /* withdrawInFlight(reference): a withdrawal that arrives AFTER the one
+         POST for this exact question has been dispatched. Nothing can be
+         un-sent, so it never aborts, retries or re-labels the request, busy
+         holds until the original request settles, and no "nothing was sent"
+         outcome is produced. It only fences the late answer: generation moves
+         past the flight's, so the settled outcome drops exactly like any
+         other stale one. Accepted only on an exact match of the flight's
+         reference identity, owner AND current generation — a foreign or
+         stale reference, another principal, or a duplicate withdrawal leaves
+         the flight untouched. */
+      withdrawInFlight: function (reference) {
+        if (!flight || !flight.dispatched) return false;
+        var owner = ownerNow();
+        if (!owner || owner !== flight.owner || flight.gen !== generation) return false;
+        var identity;
+        try { identity = canonicalEnvelope(reference); } catch (e) { return false; }
+        if (identity !== flight.identity) return false;
+        generation++;
+        activeIdentity = null;
+        return true;
+      },
       /* reset(): the principal changed or the owning scope was torn down —
          drop the staged reference and fence anything awaiting the auth seam. */
       reset: function () {
@@ -4595,8 +4616,11 @@
           context: { lang: env.lang() === 'zh' ? 'zh' : 'en' }
         };
         var body = JSON.stringify(request);
-        var reservation = { identity: staged.identity, owner: owner };
         var gen = generation;
+        /* The flight's own identity/owner/generation snapshot: a withdrawal
+           AFTER the POST must match all three, and `dispatched` separates the
+           pre-send withdrawal (stillValid abort) from the in-flight fence. */
+        var reservation = { identity: staged.identity, owner: owner, gen: gen, dispatched: false };
         pending = reservation; flight = reservation; busy = true;
         var claim = {
           identity: reservation.identity,
@@ -4638,6 +4662,7 @@
           var attempt;
           try { attempt = env.transport({ headers: headers, body: claim.body }); }
           catch (e) { claim.release(); emit({ kind: 'network' }); return; }
+          reservation.dispatched = true;   /* the one POST is out — a matched withdrawal may now fence, never abort */
           Promise.resolve(attempt).then(function (res) {
             claim.release();
             emit(settleQuestionResponse(res));
@@ -4670,6 +4695,15 @@
     if (!optionsQuestion) return;
     optqExit.style.display = optionsQuestion.active() ? '' : 'none';
     optqExit.disabled = optionsQuestion.busy();
+  }
+  /* One withdrawal entry for the lane: the still-staged reference clears
+     (pre-send — the send aborts before any POST); a matching already-
+     dispatched question only fences its late answer. Foreign or stale
+     references do neither. */
+  function applyOptionsWithdrawal(reference) {
+    if (!optionsQuestion) return false;
+    if (optionsQuestion.clear(reference)) return true;
+    return optionsQuestion.withdrawInFlight(reference);
   }
   optqExit.addEventListener('click', function () {
     if (optionsQuestion.busy()) return;
@@ -4711,14 +4745,19 @@
   }
   function handleOptionsOutcome(outcome) {
     if (!outcome || typeof outcome !== 'object') return;
-    /* An outcome from before a reset/principal change never paints. */
-    if (typeof outcome.generation === 'number' && outcome.generation !== optionsQuestion.generation()) return;
-    if (outcome.kind === 'reply' && outcome.text) {
-      var answer = appendMsg('assistant', outcome.text);
-      var regenerateButton = answer.querySelector('.mmb-regen'); if (regenerateButton) regenerateButton.remove();
-    }   /* incumbent safe renderer */
-    else paintOptionsNote(outcome.kind === 'reply' ? 'empty' : (outcome.kind || 'unknown'));
-    stickAfter(); syncSend(); syncOptionsExit();
+    /* An outcome from before a reset/principal change/withdrawal fence never
+       paints — but its flight has now settled, so the busy controls release
+       with the original settlement even when the answer itself is fenced. */
+    var current = typeof outcome.generation !== 'number' || outcome.generation === optionsQuestion.generation();
+    if (current) {
+      if (outcome.kind === 'reply' && outcome.text) {
+        var answer = appendMsg('assistant', outcome.text);
+        var regenerateButton = answer.querySelector('.mmb-regen'); if (regenerateButton) regenerateButton.remove();
+      }   /* incumbent safe renderer */
+      else paintOptionsNote(outcome.kind === 'reply' ? 'empty' : (outcome.kind || 'unknown'));
+      stickAfter();
+    }
+    syncSend(); syncOptionsExit();
   }
   function sendOptionsQuestionTurn(text) {
     if (!optionsQuestion.send(text)) { paintOptionsNote('refused'); return; }
@@ -4785,7 +4824,7 @@
       return true;
     },
     clearOptionsQuestion: function (reference) {
-      if (!optionsQuestion.clear(reference)) return false;
+      if (!applyOptionsWithdrawal(reference)) return false;
       ta.value = ""; autosize(); syncSend(); updateCounter(); syncOptionsExit(); return true;
     },
     mounted: true };
