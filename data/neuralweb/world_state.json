@@ -1049,7 +1049,7 @@
       "tiers": {
         "leading": {
           "asof": "2026-11-30",
-          "index": 94.25342049259837,
+          "index": 94.25342049259838,
           "mom6": -0.6292524196325218,
           "trend": 0.3308080463886444,
           "diffusion": 33.333333333333336,
@@ -5235,7 +5235,7 @@
     ],
     "freshness": {
       "asof": "2026-11-04",
-      "built_at": "2026-11-05T07:23:43Z",
+      "built_at": "2026-11-05T09:49:49Z",
       "age_days": 1,
       "age_sessions": 1,
       "max_age_sessions": 1,
@@ -5275,11 +5275,11 @@
     "date": "2026-11-04"
   },
   "rotation": {
-    "asof": "2026-11-03",
+    "asof": "2026-11-04",
     "regime": {
       "n_active_complexes": 0,
       "breadth": null,
-      "vix_regime": 0.8214,
+      "vix_regime": 0.4226,
       "rotation_tag": {
         "tag": "quiet",
         "tag_zh": "平静",
@@ -5427,7 +5427,7 @@
               0.0857
             ],
             [
-              "mean_reversion_rubber_band",
+              "basing_accumulator",
               0.0429
             ]
           ],
@@ -5698,7 +5698,7 @@
       "by_tier": {},
       "by_direction": {}
     },
-    "n_onset_watchlist": 4
+    "n_onset_watchlist": 8
   },
   "liquidity": {
     "liquidity_overlay": "contracting"
@@ -5755,7 +5755,7 @@
   },
   "alerts": {
     "asof": "2026-11-04",
-    "generated_utc": "2026-11-05 07:38",
+    "generated_utc": "2026-11-05 10:00",
     "total": 60,
     "critical": 2,
     "major": 1,
@@ -5767,8 +5767,8 @@
     "style_regime": "mixed",
     "style_regime_pending": null,
     "style_regime_hold_days": 10,
-    "factor_leader": "low_beta",
-    "factor_leader_ic": -0.0151,
+    "factor_leader": "composite",
+    "factor_leader_ic": -0.0072,
     "etf_pulse_summary": "IWF/IWD_20d=-0.1422; QQQ/SPY_20d=-0.0734; IWM/SPY_20d=+0.0362",
     "ratio_iwf_iwd_20d": -0.14224222322761793,
     "ratio_qqq_spy_20d": -0.07341802844449663,
@@ -6404,7 +6404,7 @@
     "display_only": true
   },
   "commodity_context": {
-    "asof": "2026-11-03",
+    "asof": "2026-11-04",
     "regime": "Goldilocks",
     "favored": [
       "Gold",
@@ -6415,34 +6415,34 @@
         "label": "Gold",
         "trend": "down",
         "action": "SELL",
-        "conviction": -34.2
+        "conviction": -18.8
       },
       {
         "label": "Silver",
         "trend": "up",
         "action": "SELL",
-        "conviction": -25.3
+        "conviction": -23.9
       },
       {
         "label": "Copper",
         "trend": "up",
         "action": "SELL",
-        "conviction": -25.6
+        "conviction": -31.2
       },
       {
         "label": "Oil · WTI",
         "trend": "up",
         "action": "SELL",
-        "conviction": -14.2
+        "conviction": -14.6
       }
     ],
     "index": {
-      "mtf_grade": "AVOID",
-      "ladder_state": "BOTTOM WATCH",
-      "shock_state": "washout",
-      "impulse": -2.351,
-      "chg_1m_pct": -7.1,
-      "headline": "Downtrend confirmed across timeframes"
+      "mtf_grade": "CAUTION",
+      "ladder_state": "COUNTERTREND BOUNCE",
+      "shock_state": "normal",
+      "impulse": -2.152,
+      "chg_1m_pct": -6.8,
+      "headline": "Unconfirmed turn within a bearish bigger picture"
     },
     "breadth": {
       "n_members": 17,
@@ -6456,20 +6456,14 @@
         {
           "name": "silver",
           "label": "Silver",
-          "state": "Washout bottom forming",
-          "score": 57.1
+          "state": "Basing — early bottom signs",
+          "score": 42.9
         },
         {
           "name": "platinum",
           "label": "Platinum",
-          "state": "Washing out — high risk",
-          "score": 57.1
-        },
-        {
-          "name": "palladium",
-          "label": "Palladium",
-          "state": "Washing out — high risk",
-          "score": 61.9
+          "state": "Basing — early bottom signs",
+          "score": 42.9
         },
         {
           "name": "wheat",
@@ -6482,12 +6476,12 @@
     "ratios": {
       "copper_gold": {
         "value": 0.0016,
-        "chg_20d_pct": 0.54,
+        "chg_20d_pct": -0.93,
         "dir": "flat"
       },
       "gold_silver": {
-        "value": 80.1973,
-        "chg_20d_pct": 16.01,
+        "value": 77.9859,
+        "chg_20d_pct": 10.8,
         "dir": "up"
       }
     },
@@ -7281,10 +7275,10 @@
     "revision": "settled",
     "source_session": "2026-11-04",
     "as_of": "2026-11-04",
-    "observed_at": "2026-11-05T11:19:07Z",
-    "produced_at": "2026-11-05T11:19:07Z",
+    "observed_at": "2026-11-05T13:32:18Z",
+    "produced_at": "2026-11-05T13:32:18Z",
     "stale_after": null,
-    "bundle_id": "189fa1ef074aae80",
+    "bundle_id": "3f6ef7d354be392c",
     "measured_state": {
       "as_of": "2026-11-04",
       "role": "slow_confirmed_trend",
@@ -7840,7 +7834,7 @@
               "weight": 0.16
             }
           },
-          "logged_at": "2026-11-05T07:46:25+00:00",
+          "logged_at": "2026-11-05T10:04:20+00:00",
           "raw_score": 57,
           "score": 57,
           "score_caps": [],
@@ -7982,7 +7976,7 @@
             "weight": 0.16
           }
         },
-        "logged_at": "2026-11-05T07:46:25+00:00",
+        "logged_at": "2026-11-05T10:04:20+00:00",
         "raw_score": 57,
         "score": 57,
         "score_caps": [],
@@ -8335,14 +8329,14 @@
   },
   "thematic_state": {
     "available": true,
-    "as_of": "2026-11-04",
+    "as_of": "2026-11-05",
     "n_themes": 18,
     "stage_counts": {
       "WATCH": 13,
-      "PRECIPICE": 4,
-      "BROADENING": 1
+      "PRECIPICE": 3,
+      "BROADENING": 2
     },
-    "n_falsifiers_fired": 7,
+    "n_falsifiers_fired": 8,
     "falsifiers_fired": [
       {
         "theme_id": "nuclear_power",
@@ -8371,9 +8365,13 @@
       {
         "theme_id": "ag_fertilizer",
         "falsifier_id": "ag_f1"
+      },
+      {
+        "theme_id": "space_satellite",
+        "falsifier_id": "sat_f1"
       }
     ],
-    "n_stale_legs": 7,
+    "n_stale_legs": 5,
     "noteworthy": [
       {
         "theme_id": "nuclear_power",
@@ -8387,17 +8385,17 @@
       },
       {
         "theme_id": "defense_aerospace",
-        "reason": "stage=PRECIPICE",
-        "stage": "PRECIPICE"
+        "reason": "stage=BROADENING",
+        "stage": "BROADENING"
       },
       {
         "theme_id": "glp1_obesity",
-        "reason": "stage=BROADENING, tight_bottleneck+stale",
+        "reason": "stage=BROADENING",
         "stage": "BROADENING"
       },
       {
         "theme_id": "space_satellite",
-        "reason": "stage=PRECIPICE, tight_bottleneck+stale",
+        "reason": "falsifier_fired, stage=PRECIPICE, tight_bottleneck+stale",
         "stage": "PRECIPICE"
       },
       {
@@ -8429,7 +8427,7 @@
   "live_overlay": {
     "source": "data/regime/latest.json:freshness",
     "asof": "2026-11-04",
-    "built_at": "2026-11-05T07:23:43Z",
+    "built_at": "2026-11-05T09:49:49Z",
     "age_days": 1,
     "stale": false
   },
@@ -9724,8 +9722,8 @@
     "regime_outlook": {
       "schema_version": "regime_outlook.v1",
       "scope": "US",
-      "analysis_cutoff": "2026-11-05T11:18:46.910561+00:00",
-      "built_at": "2026-11-05T11:18:46.917694+00:00",
+      "analysis_cutoff": "2026-11-05T13:32:07.413110+00:00",
+      "built_at": "2026-11-05T13:32:07.416539+00:00",
       "mapping_version": "VERDICT_MAPPING_V2",
       "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
       "inputs": {
@@ -9736,7 +9734,7 @@
         },
         "R": {
           "path": "data/regime/latest.json",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
           "read_status": "available"
         },
         "M": {
@@ -9761,7 +9759,7 @@
         },
         "C": {
           "path": "data/commodity/latest.json",
-          "sha256": "1407c69be39d723e51e237026e6be2e74507775d80ffd12d6fd1040da2c864c7",
+          "sha256": "155242d7fdee3c7e6109791f1bc7c54f2b2f302517a0a1d8e0de3755aed95987",
           "read_status": "available"
         }
       },
@@ -10379,7 +10377,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/labor_nowcast/read",
-            "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+            "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-04",
             "precision": "date",
@@ -10416,7 +10414,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/financial_conditions/state",
-            "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+            "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-30",
             "precision": "date",
@@ -10453,7 +10451,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/complacency/breadth_div",
-            "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+            "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-11-04",
             "precision": "date",
@@ -10490,7 +10488,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/label",
-            "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+            "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-04",
             "precision": "date",
@@ -10527,7 +10525,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-            "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+            "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-04",
             "precision": "date",
@@ -10707,7 +10705,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-            "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+            "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-04",
             "precision": "date",
@@ -10781,16 +10779,16 @@
           "source": {
             "artifact": "C",
             "pointer": "/assets/oil/trend",
-            "sha256": "1407c69be39d723e51e237026e6be2e74507775d80ffd12d6fd1040da2c864c7",
+            "sha256": "155242d7fdee3c7e6109791f1bc7c54f2b2f302517a0a1d8e0de3755aed95987",
             "clock_semantics": "owner_snapshot_date",
-            "as_of": "2026-11-03",
+            "as_of": "2026-11-04",
             "precision": "date",
-            "age_calendar_days": 2,
+            "age_calendar_days": 1,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
             "expected_us_session": "2026-11-04",
-            "session_relation": "older_than_completed_session",
+            "session_relation": "same_completed_session",
             "reference_period": null
           }
         },
@@ -10929,7 +10927,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/financial_conditions/trend",
-            "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+            "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-30",
             "precision": "date",
@@ -10966,7 +10964,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-            "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+            "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-04",
             "precision": "date",
@@ -12271,6 +12269,26 @@
           }
         },
         {
+          "evidence_id": "C.assets.oil.trend",
+          "change_kind": "clock_only",
+          "from": {
+            "values": {
+              "trend": "up"
+            },
+            "owner_verdict": null,
+            "status": "partial",
+            "as_of": "2026-11-03"
+          },
+          "to": {
+            "values": {
+              "trend": "up"
+            },
+            "owner_verdict": null,
+            "status": "partial",
+            "as_of": "2026-11-04"
+          }
+        },
+        {
           "evidence_id": "D.state",
           "change_kind": "unattributed",
           "from": {
@@ -12383,13 +12401,13 @@
     "data/market_state/latest.json": "2026-11-04",
     "data/regime/latest.json": "2026-11-04",
     "data/breadth/breadth.parquet": "2026-11-04",
-    "site/basketdata/oracle_state.json": "2026-11-03",
+    "site/basketdata/oracle_state.json": "2026-11-04",
     "data/run_status.json": "2026-11-05T06:19:55.148259+00:00",
     "site/factordata/alerts_triage.json": "2026-11-04",
     "data/neuralweb/liquidity_plumbing.json": "2026-10-14",
     "data/rebalance_pulse/latest.json": "2026-11-03",
     "site/chinastatedata/market_state.json": null,
-    "data/neuralweb/theme_state.json": "2026-11-04",
+    "data/neuralweb/theme_state.json": "2026-11-05",
     "data/transmission/latest.json": "2026-11-03",
     "data/rates_command/latest.json": "2026-11-03",
     "data/forex/latest.json": "2026-11-04",
@@ -12397,7 +12415,7 @@
     "data/china_regime/latest.json": "2026-11-04",
     "data/hk_regime/latest.json": "2026-11-04",
     "data/canada_regime/latest.json": "2026-10-14",
-    "data/commodity/latest.json": "2026-11-03",
+    "data/commodity/latest.json": "2026-11-04",
     "site/intelligence/briefing.json": "2026-11-04",
     "data/crossasset/latest.json": "2026-11-04",
     "data/intl_risk/latest.json": null,
@@ -12412,7 +12430,7 @@
   },
   "schema_version": 1,
   "produced_by": "engine/neuralweb/world_state.py",
-  "produced_at": "2026-11-05T11:19:10Z",
-  "inputs_hash": "sha256:32a1d000cc9f9c25c4775eec6e9464c0bee7ab1066c615cc971f37c228f1707e",
+  "produced_at": "2026-11-05T13:32:20Z",
+  "inputs_hash": "sha256:c23617db89dffcc36afcd9efc68cfe0ac0d3696ec89c6768030cabcc3da2de45",
   "tier": "infrastructure"
 }

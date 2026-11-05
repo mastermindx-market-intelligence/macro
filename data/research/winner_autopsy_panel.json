@@ -1,6 +1,6 @@
 {
   "schema": "winner_autopsy_panel.v1",
-  "generated_at": "2026-11-05T11:26:47Z",
+  "generated_at": "2026-11-05T13:36:54Z",
   "display_only": true,
   "horizon_role": "hold_thesis",
   "census": {
@@ -23316,7 +23316,7 @@
         }
       },
       {
-        "ticker": "GTN.A",
+        "ticker": "GTN-A",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -23333,7 +23333,7 @@
         }
       },
       {
-        "ticker": "GTN-A",
+        "ticker": "GTN.A",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -31632,14 +31632,14 @@
         }
       },
       {
-        "ticker": "TCMFF",
+        "ticker": "SYHO",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 2.64,
-        "excess_42d_pp": 46.24,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.28,
+        "excess_42d_pp": 152.19,
+        "new_high_63d": true,
+        "dollar_vol_z21": 0.0,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -31649,14 +31649,31 @@
         }
       },
       {
-        "ticker": "MOTS",
+        "ticker": "ADHC",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 2.64,
-        "excess_42d_pp": 102.19,
-        "new_high_63d": true,
-        "dollar_vol_z21": -0.11,
+        "excess_42d_pp": 27.19,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.62,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "TCMFF",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 2.64,
+        "excess_42d_pp": 46.24,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.28,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -31683,31 +31700,14 @@
         }
       },
       {
-        "ticker": "SYHO",
+        "ticker": "MOTS",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 2.64,
-        "excess_42d_pp": 152.19,
+        "excess_42d_pp": 102.19,
         "new_high_63d": true,
-        "dollar_vol_z21": 0.0,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "ADHC",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 2.64,
-        "excess_42d_pp": 27.19,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.62,
+        "dollar_vol_z21": -0.11,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -38823,7 +38823,7 @@
         }
       },
       {
-        "ticker": "PBR-A",
+        "ticker": "PBR.A",
         "sector": "",
         "benchmark": "SPY",
         "state": "failed",
@@ -38840,7 +38840,7 @@
         }
       },
       {
-        "ticker": "PBR.A",
+        "ticker": "PBR-A",
         "sector": "",
         "benchmark": "SPY",
         "state": "failed",
