@@ -32935,6 +32935,7 @@ jobs:
       - "tests/test_government_revenue_reader_identity.py"
       - "tests/test_government_revenue_api.py"
       - "tests/test_government_revenue_api_auth.py"
+      - "tests/test_government_revenue_serving_observability.py"
       - "templates/government-revenue-briefcase.js"
       - "templates/government-revenue-briefcase-ui.js"
       - "tests/test_government_revenue_defense_owner_adapter.py"
@@ -33092,7 +33093,7 @@ jobs:
       - name: Complete owner snapshot restoration and mutation fences
         run: python -m pytest tests/test_restore_event_workspace_owner.py tests/test_restore_defense_market_owner.py tests/test_financial_owner_symlink_guard.py -q
       - name: Tenant isolation and immutable reader selection
-        run: python -m pytest tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_reader_identity.py tests/test_government_revenue_api.py tests/test_government_revenue_api_auth.py -q
+        run: python -m pytest tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_reader_identity.py tests/test_government_revenue_api.py tests/test_government_revenue_api_auth.py tests/test_government_revenue_serving_observability.py -q
       - name: Qualified issuer segment facts and owner refresh
         run: python -m pytest tests/test_government_revenue_defense_owner_adapter.py tests/test_defense_refresh_cohort.py tests/test_defense_reported_financial_profiles.py tests/test_defense_space_profiles.py -q
       - name: Adverse evidence, ownership terms and complete source retention
