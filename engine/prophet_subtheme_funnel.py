@@ -27,7 +27,8 @@ from pathlib import Path
 from typing import Any
 
 
-SCHEMA = "prophet_miss_audit.subtheme_funnel/v1"
+# This observer has its own schema identity; it never consumes the audit.
+SCHEMA = "prophet_subtheme_funnel/v1"
 TREE_REL = "data/themes_heatmap/themes_tree.json"
 VISIBLE_LANES = ("buy", "watch", "leaders", "ran")
 
