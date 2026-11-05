@@ -6,7 +6,9 @@ as an allocation or position configuration.
 
 Lane L6.5h (SIC-D35/D38) adds the dossier colour rules: an entry state is never
 carried by a market-direction colour (red/green flip under ZH), and no container
-takes an edge stripe. The node render of the localized engine words lives in
+takes an edge stripe. A setup tier is a grade, not a health or wayfinding
+state: T1-T4 step down in ink weight and fill, never in hue, so a green T2 can
+not read as a falling price on a ZH page. The node render of the localized engine words lives in
 tests/test_product_chrome.py, next to the page's existing render harness.
 
 Pure text checks; no node.
@@ -75,6 +77,8 @@ def test_the_rule_rejects_the_base_strings(old):
         "border-left",
         "color-mix",
         ".tier.T1{background:var(--up)",
+        ".tier.T2{background:var(--ok)",
+        ".tier.T3{background:var(--info)",
         ".member-card.buyable{border-color:var(--up)",
         "esc(e.reason)",
         "esc(m.stock_state",
