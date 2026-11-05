@@ -69,3 +69,70 @@ def test_the_base_line_is_gone():
 )
 def test_the_checker_rejects_a_stripe(bad):
     assert stripe_problems(bad)
+
+
+# --- L6.5: the rule covers every container on the Cycles pages, not only the cards ----
+# The L6.4 capture's stripe audit flagged three containers that the card-only check could
+# not see: the turns/legs rows (.sc-leg), the projected-turn box (.sc-fcast) and the DNA
+# group (.sc-dna); the shared .cyc-fhead edge is suppressed on .sc-page hosts.
+WAVE_CSS = sorted((ROOT / "templates").glob("sector_cycles*.css"))
+FHEAD_OVERRIDE = ".sc-page .cyc-fhead { border-left: 0; padding-left: 0; }"
+
+_EDGE = re.compile(r"border-(left|top|right|bottom)\s*:\s*([^;]*)")
+_EDGE_COLOR = re.compile(r"border-(left|top|right|bottom)-color\s*:")
+
+
+def edge_stripes(css: str) -> list[str]:
+    """Single-edge borders of 2px or more in a visible colour, on any selector.
+
+    Two shapes are marks, not containers, and are allowed: a CSS triangle (another edge
+    of the same rule is transparent) and a zero-width needle (`width: 0`).
+    """
+    problems = []
+    for sel, body in _RULE.findall(re.sub(r"/\*.*?\*/", "", css, flags=re.S)):
+        sel = " ".join(sel.split())
+        edges = _EDGE.findall(body)
+        glyph = any("transparent" in v for _, v in edges) or re.search(r"(?<![-\w])width\s*:\s*0(px)?\s*(;|$)", body)
+        if _EDGE_COLOR.search(body) and not glyph:
+            problems.append(f"edge colour override: {sel}")
+        for side, val in edges:
+            m = re.match(r"\s*([0-9.]+)px", val)
+            if not m or float(m.group(1)) < 2 or "transparent" in val or glyph:
+                continue
+            problems.append(f"{side} {m.group(1)}px edge: {sel}")
+    return problems
+
+
+@pytest.mark.parametrize("css", WAVE_CSS, ids=lambda p: p.name)
+def test_no_wave_stylesheet_paints_an_edge_stripe(css):
+    assert edge_stripes(css.read_text(encoding="utf-8")) == []
+
+
+def test_the_shared_focus_head_edge_is_suppressed():
+    assert FHEAD_OVERRIDE in CSS.read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        ".sc-leg { border: 1px solid var(--line); border-left: 3px solid var(--lc, var(--muted)); }",
+        ".sc-fcast.pk { border-left-color: var(--down); }",
+        ".sc-dna { border-left: 3px solid color-mix(in srgb, var(--link) 55%, var(--line)); }",
+        ".x { border-top: 2px solid var(--warn); }",
+    ],
+)
+def test_the_edge_checker_rejects_a_stripe(bad):
+    assert edge_stripes(bad)
+
+
+@pytest.mark.parametrize(
+    "ok",
+    [
+        ".cyc-legend .lm-pk { border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 7px solid var(--warn); }",
+        ".sc-sig-bar i { display: block; height: 100%; width: 0; border-right: 2px solid var(--text); }",
+        ".scf .scf-sec { border-top: 1px solid var(--line); }",
+        ".sc-page .cyc-fhead { border-left: 0; padding-left: 0; }",
+    ],
+)
+def test_the_edge_checker_allows_marks_and_hairlines(ok):
+    assert edge_stripes(ok) == []
