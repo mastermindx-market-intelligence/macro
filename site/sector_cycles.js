@@ -201,10 +201,10 @@
     bullish: "st-bull", bearish: "st-bear", caution: "st-caut",
     anticipatory: "st-antic", neutral: "st-neu"
   };
-  function stanceLabel(nw) { return curLang() === "zh" ? (nw.stance_zh || nw.stance) : nw.stance; }
+  function stanceLabel(nw) { return curLang() === "zh" ? (nw.doctrine_stance_zh || "") : (nw.doctrine_stance_en || ""); }  // A2_D30: stamped doctrine only; engine nw.stance stays provenance (SIC-ADJ-01)
   function stanceHTML(nw) {
-    if (!nw || !nw.stance) return "";
-    var cls = TONE_CLS[nw.tone] || "st-neu";
+    if (!nw || !nw.doctrine_stance) return scStanceUnavailable();
+    var cls = scDoctrineInkCls(nw.doctrine_ink);
     return '<span class="cc-stance ' + cls + '" title="' +
       L("Resolved stance · engine", "综合策略 · 引擎") + '">' + stanceLabel(nw) + '</span>';
   }
@@ -1052,8 +1052,8 @@
       var rs = nw.rs_21d != null ? nw.rs_21d : nw.rs_63d;   // fast lens when stamped (2026-07 audit)
       var rsTxt = rs == null ? "" : ('<span class="cc-tilt ' + (rs >= 0 ? "t-up" : "t-down") + '">RS #' + (nw.rs_21d_rank || nw.rs_rank || "—") + '</span>');
       var nextTxt = cardNextTxt(s.proj);
-      var sigHTML = nw.signal === "BUY" ? '<span class="cc-sig buy">' + L("BUY", "买入") + '</span>'
-        : nw.signal === "SELL" ? '<span class="cc-sig sell">' + L("SELL", "卖出") + '</span>' : "";
+      var sigHTML = "";  // A2_D30: the raw engine BUY/SELL chip duplicated the stance; retired
+      // A2_D30: (was the SELL arm of the retired raw signal chip)
       // W3.6: the resolved stance is the only action-toned text (D1 §2.2); the amber
       // "clocks disagree" chip replaces contradictory badge pairs when the clocks diverge.
       var stanceTag = stanceHTML(nw), divTag = divergenceHTML(nw);
@@ -2579,6 +2579,8 @@
     if (ch && ch.scrollIntoView) ch.scrollIntoView({ behavior: "smooth", block: "center" });
     return true;
   };
+  function scDoctrineInkCls(ink) { return ({ ok: "st-ok", warn: "st-caut", muted: "st-neu" })[ink] || "st-neu"; }
+  function scStanceUnavailable() { return '<span class="cc-stance-na">' + L("Stance unavailable", "立场不可用") + '</span>'; }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 })();

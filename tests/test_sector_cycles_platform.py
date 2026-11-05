@@ -481,9 +481,12 @@ def test_pinned_focus_and_compared_ids_survive_phase_filter():
 # ------------------------------------------------------------- wave lock
 
 # BASE lines (1-based) the Cycles wave replaces 1:1 inside the line-neutral region.
-WAVE_SEAM_LINES = {95, 258, 274, 647, 648, 1167, 1192, 1207, 1208, 1209, 1212, 1223,
-                   1231, 1232, 1233, 1234, 1235, 1236, 1258, 1259, 1811}
-WAVE_FROZEN_FNS = ("mountTurnRecord", "projPast", "stanceHTML", "applyVisibility",
+# A2_D30 adds 204/206/207/1055/1056 (stance chip -> stamped doctrine face); stanceHTML
+# leaves the frozen list and is pinned by tests/test_sector_cycles_doctrine_stance.py.
+WAVE_SEAM_LINES = {95, 204, 206, 207, 258, 274, 647, 648, 1055, 1056, 1167, 1192, 1207,
+                   1208, 1209, 1212, 1223, 1231, 1232, 1233, 1234, 1235, 1236, 1258,
+                   1259, 1811}
+WAVE_FROZEN_FNS = ("mountTurnRecord", "projPast", "applyVisibility",
                    "turnRecordText", "fmtMon", "cardNextTxt", "detailNextLabel", "isMobile")
 
 

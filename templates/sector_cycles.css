@@ -716,3 +716,6 @@ html[data-lang="zh"] .scf .scf-na { font-style:normal; }
   .scf.cyc-prov summary::before,
   .scf .cyc-prov summary::before { transition:none; }
 }
+/* A2_D30 doctrine ink — stamped doctrine_ink "ok"; tint/hairline via the html-scope --wash-ok/--ring-ok tokens (no inline colour function) */
+.cc-stance.st-ok { color: var(--ink-ok, var(--ok)); border-color: var(--ring-ok, var(--line)); background: var(--wash-ok, transparent); }
+.cc-stance-na { font-size: 11px; color: var(--muted); }
