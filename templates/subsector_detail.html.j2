@@ -156,6 +156,11 @@ function render() {
   const coverage = nMembers && nPriced !== nMembers ? nPriced + ' / ' + nMembers : String(nPriced || nMembers || '—');
   const titleZh = g.label_zh ? ' <span style="color:var(--muted);font-weight:600;font-size:.58em">' + esc(g.label_zh) + '</span>' : '';
 
+  const benchLabel = typeof DETAIL.benchmark_label === 'string' ? DETAIL.benchmark_label.trim() : '';
+  const benchTicker = typeof DETAIL.benchmark === 'string' ? DETAIL.benchmark.trim() : '';
+  const benchText = benchLabel || benchTicker;
+  const benchNote = DETAIL.benchmark_meta === true ? ' · ' + L('RS benchmark: ' + (benchText ? esc(benchText) : 'Not published'), '相对强弱基准：' + (benchText ? esc(benchText) : '未发布')) : '';
+
   let h = '<section class="id-hero" id="overview">'
     + '<div class="id-card"><div class="id-eyebrow">' + pageIdentity + '</div>'
     + '<h1 class="id-title">' + esc(g.label) + titleZh + '</h1>'
@@ -199,7 +204,7 @@ function render() {
   h += '<section class="id-evidence" id="evidence"><div class="id-section-hd"><div><h2>' + L('Evidence & data quality','证据与数据质量') + '</h2><p>' + L('Freshness, coverage and method stay in one predictable place.','新鲜度、覆盖率与方法集中在一个固定位置。') + '</p></div></div><div class="id-evidence-grid">'
     + '<div class="id-evidence-cell"><div class="k">' + L('Freshness','新鲜度') + '</div><div class="v">' + esc(g.as_of || '—') + ' · ' + L('EOD daily','日终每日') + '</div></div>'
     + '<div class="id-evidence-cell"><div class="k">' + L('Coverage','覆盖') + '</div><div class="v">' + coverage + '</div></div>'
-    + '<div class="id-evidence-cell"><div class="k">' + L('Method','方法') + '</div><div class="v">' + L('Equal-weight · current membership','等权 · 当前成分') + '</div></div>'
+    + '<div class="id-evidence-cell"><div class="k">' + L('Method','方法') + '</div><div class="v">' + L('Equal-weight · current membership','等权 · 当前成分') + benchNote + '</div></div>'
     + '<div class="id-evidence-cell"><div class="k">' + L('Reliability','可信度') + '</div><div class="v">' + confidenceLabel + '</div></div></div></section>';
   h += '<div class="foot">' + L('Descriptive, current-membership and survivorship-tinted — not an out-of-sample backtest. Calendar 3D buckets; leak-free cascade. Confirm before acting; this page does not size or originate a trade.','描述性、基于当前成分且含幸存者偏差——非样本外回测。日历三日分桶；无未来函数级联。行动前请确认；本页不决定仓位，也不发起交易。') + '</div>';
 

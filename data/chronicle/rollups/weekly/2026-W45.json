@@ -11,9 +11,15 @@
     {
       "clusters": [
         {
-          "n_events": 21,
+          "n_events": 24,
           "source": "prophet_ledger",
           "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "earnings_call",
+          "theme": "earnings",
           "top_events": []
         },
         {

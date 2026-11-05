@@ -1,0 +1,12 @@
+{
+  "Bonds_entire_document_current_protected_except_reviewed_CSS_slot": true,
+  "old_href": "assets/css/ebe31e14.css?v=ebe31e14",
+  "reviewed_href": "assets/css/de1c4f80.css?v=de1c4f80",
+  "immutable_old_RED_log": {
+    "path": "mockups/evidence/business-activity-depth-20261103/regression-red.log",
+    "sha256": "734a2d7a6d7011f7ff8426cc87b4b1d51ba659c94d8ec954256653830b94c2d0",
+    "byte_exact_a43": true,
+    "whitespace_preserved": true
+  },
+  "all_other_owned_diff_whitespace_clear": true
+}

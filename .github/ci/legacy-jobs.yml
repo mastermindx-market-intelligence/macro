@@ -5860,6 +5860,29 @@ jobs:
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
         run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_quote_native_metadata.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_catalyst_attach.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q tests/test_entry_radar_live_pack_script.py tests/test_entry_radar_pack_spool.py
 
+  p08-synthetic-composition:
+    if: ${{ false }}  # executed inside the ordinary PR code pack
+    gate: code
+    scope: exclusive
+    # Research-only fixture composition; does not reopen the Q02 E1/E2 campaign.
+    paths:
+      - "engine/__init__.py"
+      - "engine/options_american_exercise.py"
+      - "research/options_estate/p08_synthetic_composition.py"
+      - "research/options_estate/P08_SYNTHETIC_COMPOSITION.md"
+      - "tests/test_p08_synthetic_composition.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest numpy scipy
+      - name: P08 synthetic composition and adoption boundaries
+        run: python -m pytest tests/test_p08_synthetic_composition.py -q
+
   quant-q02-american-exercise:
     if: ${{ false }}
     gate: code
@@ -21630,6 +21653,31 @@ jobs:
       - name: grader-manifest test suite
         run: python -m pytest tests/test_grader_manifest.py -q
 
+  meta-ceo-fabric-contracts:
+    if: ${{ false }}
+    gate: code
+    # C0/C1/C2 paid-Fabric adoption guidance is tested independently without
+    # broadening the self-mod-fence job selected by unrelated code PRs.
+    scope: exclusive
+    paths:
+      - AGENTS.md
+      - CLAUDE.md
+      - docs/CODEX_META_CEO_FABRIC.md
+      - scripts/__init__.py
+      - scripts/fabric_harness_attribution.py
+      - tests/test_meta_ceo_fabric_contract.py
+      - tests/test_fabric_harness_attribution.py
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install deterministic regression dependency
+        run: pip install pytest
+      - name: Assigned Meta-CEO and Fabric parent-attribution contracts
+        run: python -m pytest tests/test_meta_ceo_fabric_contract.py tests/test_fabric_harness_attribution.py -q
+
   self-mod-fence:
     if: ${{ false }}
     gate: code
@@ -22057,7 +22105,7 @@ jobs:
         # writes to was dark too, which is how _capture_usage could bill free
         # Ollama calls to the Claude subscription lane unnoticed.  It guards the
         # same waterfall as the files beside it — keep it in this step.
-        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py tests/test_provider_capacity_v2_cli.py -q
+        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py tests/test_provider_capacity_v2_cli.py tests/test_provider_native_enablement.py -q
       - name: V10 key economy suite (enabled-set, header capture, usage snapshot)
         run: python -m pytest tests/test_key_pool_economy.py -q
       - name: cortex provider routing + tool loop suite
@@ -39523,6 +39571,10 @@ jobs:
       - "engine/theme_graph/__init__.py"
       - "engine/classification_axes/__init__.py"
       - "scripts/build_subsector_rotation.py"
+      # P12.T52: actual render-index/metadata consumer fixture read closure.
+      - "scripts/build_subsector_confluence.py"
+      - "templates/subsector_detail.html.j2"
+      - "engine/bar_derive.py"
       - "scripts/check_template_site_sync.py"
       - "scripts/worktree_sparse.py"
       - "site/chat.html"
