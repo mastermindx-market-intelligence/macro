@@ -8,7 +8,7 @@ Complete D05 Sectors, Themes & Rotation: 13 canonical routes, 174 capability row
 
 Source-law pin: `Mastermind@f374289eb74587eaa755f5bc8e5a3252d00850e0`. Review: **SELF_REVIEWED** under the attended Web waiver; formal GitHub approvals and release holds remain binding.
 
-Original implementation branch: `claude/d05-native-cycles-20261104`, [Macro #10703](https://github.com/mastermindx-market-intelligence/macro/pull/10703). This phase's parent is `1f050a234311a8c2a90d325b048159ebf2fe2386`; publication remains the original expected-head, non-force Git Database carrier.
+Original implementation branch: `claude/d05-native-cycles-20261104`, [Macro #10703](https://github.com/mastermindx-market-intelligence/macro/pull/10703). This phase's parent is `ceff73c10fa34563e64a54aa3bd38fc4d3823869`; publication remains the original expected-head, non-force Git Database carrier.
 
 ## Completed in this continuation
 
@@ -16,10 +16,12 @@ Original implementation branch: `claude/d05-native-cycles-20261104`, [Macro #107
 - Adopted the exact existing quote-capacity repair: 480 → 600, all 415 exact-parent symbols retained, 185 slots available; 13 affected tests pass. Parent ci-pack-4 later passes.
 - Fixed China native-sector return routing, honest missing-read copy, opaque phone sheet/sticky navigation, and the accessible localized close button. 58 source tests and three actual browser variants pass; nine captures preserved.
 - Fixed standalone Price/Linear history and reload through the existing chart URL/history owner. Combined source suites: 73 pass; two actual browser cases verify matching rendered price-chart geometry after Back and reload; eight captures preserved.
+- Verified the concurrent citation-only repair at ceff73c1 with all 13 unchanged copy-deck tests; preserved it without a duplicate source mutation.
+- Registered canonical China Central visual evidence: 16 real Chromium captures across desktop/mobile × EN/ZH × dark/light × rest/hover; unchanged incremental visual guard returns zero findings, with zero page errors or outer document overflow. All final screenshots were inspected. Optional archived-data 404s and full-acceptance gaps remain disclosed.
 - Retained all earlier qualified US native Cycles/Dossier/Members/Company work. Historical test totals overlap and are not summed.
 - Preserved original dirty source workspaces, target custody, held publisher effects, source/auth boundaries and accepted Paper candidates.
 
-[CI repair](CI_RECOVERY_20261105.md) · [China return/mobile repair](china_archive_20261105/README.md) · [Price/Linear history repair](china_history_20261105/README.md).
+[CI repair](CI_RECOVERY_20261105.md) · [China return/mobile repair](china_archive_20261105/README.md) · [Price/Linear history repair](china_history_20261105/README.md) · [Canonical China visual receipt](../../../mockups/evidence/d05-china-central-20261105/README.md).
 
 ## Exact outstanding gates
 
@@ -44,6 +46,6 @@ File `01M6FAXA774QT1VRDMAG7DFQ2W`, page `p-3-0`; 12 boards / 1,448 nodes. Snapsh
 
 No paid Fabric root/grant was recovered. Original programme issue #7646 / `sector-central-redesign-20260921-sol-001` is not substituted for a Fabric root. The bounded Executive roots read returned INVALID_ARGUMENT and established no execution authority. No new root, runner or watcher was created.
 
-Native reasoning child completed its bounded ownership analysis and stopped. It identified the existing chart URL owner for the successful presentation repair; it is not a GitHub approval or a running implementation worker.
+Native reasoning child completed bounded ownership, visual-gate predicate and exact-head CI analysis and stopped. It identified the existing chart URL owner and the required real hover evidence. The ceff73 CI/fences reads were pending/queued with no available additional failure. The child is not a GitHub approval or a running implementation worker.
 
 DO_NOT_REDO: accepted 12-board design package, earlier qualified US journey, exact Dossier restored captures, quote repair, and current regional proofs absent material source change. Continue only safe independent work; preserve refused/unknown original effects. The existing CI observer may be retargeted to the final exact head without duplication. Scheduled observation is not durable implementation execution.
