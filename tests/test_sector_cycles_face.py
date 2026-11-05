@@ -492,3 +492,83 @@ def test_export_surface_is_pinned():
         "phaseAge", "clocks", "hazard", "hazardChip", "rhythm", "readFace", "prov", "card", "timing", "rsTrail",
         "turnInspector", "trendRisk", "evidence", "methods", "focus"])
     assert re.search(r"SC_FACE = \{ version: 'sc-face\.v1' \}", SRC)
+
+
+# ---- D31: light-theme series ink and selected chips -------------------------------------------------
+
+_LIGHT = ':is(html[data-theme="light"].sc-page:not(.sc-intl), html[data-theme="light"] .sc-page)'
+_ANY = ':is(html.sc-page:not(.sc-intl), html .sc-page)'
+
+
+def _lum(hx: str) -> float:
+    r, g, b = (int(hx[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    f = lambda c: c / 12.92 if c <= .04045 else ((c + .055) / 1.055) ** 2.4  # noqa: E731
+    return .2126 * f(r) + .7152 * f(g) + .0722 * f(b)
+
+
+def _mix(a: str, b: str, p: float) -> str:
+    return "#" + "".join("%02x" % round(int(a[i:i + 2], 16) * p + int(b[i:i + 2], 16) * (1 - p))
+                         for i in (1, 3, 5))
+
+
+def _ratio(a: str, b: str) -> float:
+    hi, lo = sorted((_lum(a), _lum(b)), reverse=True)
+    return (hi + .05) / (lo + .05)
+
+
+def _accents() -> list[str]:
+    src = (ROOT / "engine" / "sector_cycles.py").read_text(encoding="utf-8")
+    return re.findall(r'"accent": "(#[0-9a-f]{6})"', src)
+
+
+def _dim(hx: str, k: float) -> str:
+    return "#" + "".join("%02x" % round(int(hx[i:i + 2], 16) * k) for i in (1, 3, 5))
+
+
+def _d31_block(css: str) -> str:
+    return css[css.index("/* light-theme series ink (D31)."):css.index("/* clickable narrative bands")]
+
+
+def test_light_series_ink_keeps_every_sector_line_legible_on_white():
+    css = CSS.read_text(encoding="utf-8")
+    assert _LIGHT + " .mmc-series :is(.mmc-hist, .mmc-proj, .mmc-mk) { filter: brightness(.6); }" in css
+    accents = _accents()
+    assert len(accents) == 11
+    # WCAG 1.4.11 graphical objects: brightness() multiplies each sRGB channel, so the focused
+    # line (stroke-opacity 1) clears 3:1 on the light panel for every sector.
+    worst = min(_ratio(_dim(a, .6), "#ffffff") for a in accents)
+    assert worst >= 3.0, worst
+    # and the raw accent did not, which is why the filter exists
+    assert min(_ratio(a, "#ffffff") for a in accents) < 3.0
+    # the key dots take the same ink, so the legend matches the line
+    assert re.search(re.escape(_LIGHT) + r" :is\(\.cyc-chip \.dot, [^)]*\) \{ filter: brightness\(\.6\); \}", css)
+
+
+def test_light_dimmed_lines_stay_visible_and_dark_is_untouched():
+    css = CSS.read_text(encoding="utf-8")
+    dim = re.search(re.escape(_LIGHT) + r" \.mmc-series\.is-dim \{ opacity: ([.\d]+); \}", css)
+    assert dim and float(dim.group(1)) >= .25
+    unf = re.search(re.escape(_LIGHT) + r" \.mmc-series:not\(\.is-focus\) :is\(\.mmc-hist, \.mmc-proj\) "
+                    r"\{ stroke-opacity: ([.\d]+); \}", css)
+    assert unf and float(unf.group(1)) >= .8
+    # every light series rule is scoped to light and keeps the international page out
+    for line in css.splitlines():
+        if ("mmc-series" in line or "brightness" in line) and 'data-theme="light"' in line:
+            assert line.startswith(_LIGHT), line
+    # the design system bans colour functions on new lines; the block uses none
+    block = _d31_block(css)
+    for fn in ("color-mix(", "rgb(", "rgba(", "hsl(", "oklch(", "#"):
+        assert fn not in block, fn
+
+
+def test_selected_chips_carry_page_ink_on_an_accent_tint():
+    css = CSS.read_text(encoding="utf-8")
+    on = _ANY + " :is(.cyc-chip.on, .sc-bchip.on) {\n  color: var(--text); background: var(--panel); border-color: var(--c); font-weight: 700;"
+    assert on in css
+    tint = _ANY + " :is(.cyc-chip.on, .sc-bchip.on)::before {\n  content: \"\"; position: absolute; inset: 0; z-index: -1;"
+    assert tint in css and "background: var(--c); opacity: .2;" in css
+    # a .2 accent layer over the panel is a 20% mix; the label clears 4.5:1 for every accent in both themes
+    for panel, text in (("#181b21", "#d7dce3"), ("#ffffff", "#1c2430")):
+        assert min(_ratio(text, _mix(a, panel, .20)) for a in _accents()) >= 4.5
+    # the old white-on-accent label is what the override replaces
+    assert min(_ratio("#ffffff", _mix(a, "#000000", 88 / 94)) for a in _accents()) < 3.0

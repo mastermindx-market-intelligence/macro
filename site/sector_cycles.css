@@ -134,6 +134,31 @@ html[data-theme="light"] .sc-mbtn.on, html[data-theme="light"] .sc-sbtn.on { col
    mm_charts CSS only reveals peak/trough glyphs on focus — exactly what we want. */
 .sc-page .mmc-series.is-focus .mmc-mk-peak, .sc-page .mmc-series.is-focus .mmc-mk-trough { opacity: 1; }
 
+/* light-theme series ink (D31). The sector accents are dark-tuned 400 tones: on white
+   the XLB lime line sat at 1.5:1 and the dimmed comparison lines (.12) all but vanished.
+   In light each line, marker and key dot is darkened by brightness(.6), a straight sRGB
+   multiply that keeps the hue (focused 4.1-7.0:1 on white, XLB lowest); the markers' panel
+   halo darkens with them into a thin grey keyline. Unfocused lines rise to .82 and dimmed
+   ones to .28 so the comparison set still reads behind the focused line. The position and
+   cycle-clock dots keep their panel rings and are left as they are. Dark is unchanged; the
+   international page (.sc-intl) keeps its own palette. */
+:is(html[data-theme="light"].sc-page:not(.sc-intl), html[data-theme="light"] .sc-page) .mmc-series :is(.mmc-hist, .mmc-proj, .mmc-mk) { filter: brightness(.6); }
+:is(html[data-theme="light"].sc-page:not(.sc-intl), html[data-theme="light"] .sc-page) .mmc-series:not(.is-focus) :is(.mmc-hist, .mmc-proj) { stroke-opacity: .82; }
+:is(html[data-theme="light"].sc-page:not(.sc-intl), html[data-theme="light"] .sc-page) .mmc-series.is-dim { opacity: .28; }
+:is(html[data-theme="light"].sc-page:not(.sc-intl), html[data-theme="light"] .sc-page) :is(.cyc-chip .dot, .sc-bchip .dot, .mini-chip .dot, .sc-lead-nm .dot, .sc-sdot, .cyc-fhead .cyc-ftitle::before) { filter: brightness(.6); }
+/* Selected sector chips (D31): white text on a 400-tone accent fill fell to about 1.5:1 on the
+   lime and amber sectors in both themes. A selected chip now sits on the panel with its accent
+   laid underneath as a .2 tint and a full accent border (darkened in light, like the lines), with
+   bold text in the page ink, so the label reads in either theme and the selected state rests on
+   weight and border as well as hue. The international page keeps its chips. */
+:is(html.sc-page:not(.sc-intl), html .sc-page) :is(.cyc-chip.on, .sc-bchip.on) {
+  color: var(--text); background: var(--panel); border-color: var(--c); font-weight: 700; position: relative; isolation: isolate; }
+:is(html.sc-page:not(.sc-intl), html .sc-page) :is(.cyc-chip.on, .sc-bchip.on)::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--c); opacity: .2; pointer-events: none; }
+:is(html.sc-page:not(.sc-intl), html .sc-page) :is(.cyc-chip.on, .sc-bchip.on) .dot { background: var(--c); box-shadow: none; }
+:is(html[data-theme="light"].sc-page:not(.sc-intl), html[data-theme="light"] .sc-page) :is(.cyc-chip.on, .sc-bchip.on)::after {
+  content: ""; position: absolute; inset: -1px; border: 1px solid var(--c); border-radius: inherit; filter: brightness(.6); pointer-events: none; }
+
 /* clickable narrative bands (focused sector, price mode) */
 .sc-page .mmc-vband { cursor: pointer; transition: opacity .2s ease; }
 .sc-page .mmc-vband:hover { opacity: .2 !important; }
