@@ -13910,7 +13910,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             <span>{{ t('Greed','贪婪') }}</span>
             <span>{{ t('Euphoria','欣喜') }}</span>
           </div>
-          <div class="rkc-mood-note">{{ t('Read both lenses as context; neither is a validated trade signal.','两把尺均为背景参考，都不是经验证的交易信号。') }}</div>
+          <div class="rkc-mood-note">{{ t('Read both lenses as context, not as trade signals.','两把尺仅供背景参考，均非交易信号。') }}</div>
           {# Disagreement line (only when both present and |A-B| >= 25) #}
           {% if _fe_sc is not none and _fg_val is not none and (_fe_sc - _fg_val)|abs >= 25 %}
           <div class="rsx-disagree">

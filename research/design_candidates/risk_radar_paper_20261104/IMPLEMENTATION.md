@@ -210,3 +210,14 @@ actual merge/publication and both requested live consumers pass browser proof.
 No release label, protected-branch merge or deployment has been performed here.
 
 Paid worker return reconciliation is complete: Fabric now reports TERMINAL / ACCEPTED, accepted_by=reviewer, acceptance_reason=VALIDATED_OUTCOME for the original run. The reviewed response digest is a4b78a2f94538b6f6edaa35b976bac1edc5bd16e0af1084f1899c20f4ac8a2b3. Parent acceptance follows the documented repairs and final browser verification; it is not a formal GitHub approval or a release receipt. No replacement run was dispatched.
+
+
+## 2026-11-04 — same-carrier terminal CI repair
+
+The currently assigned session resumes the original operation, workspace and PR #10739 at published head `179d54e9634c0833672a57323d655e35c822e45c`. Hosted run `41908268475` is terminal: nine packs passed; packs 1, 4 and 11 failed. No pending source mutation or active implementation writer was displaced. Direct repair reason: `LOWER_TOTAL_OVERHEAD` / `CRITICAL_PATH_SHORTCUT` for one bilingual disclaimer and its obsolete assertion, not a new implementation wave.
+
+Pack 1 requires the removed sentiment-sizing claim in `test_method_and_scare_classes_are_exclusive`; pack 11 misclassifies the disclaimer "neither is a validated trade signal". Replace it with "Read both lenses as context, not as trade signals." and its Chinese equivalent; update the regression to require those words and reject the old sizing copy. Preserve structural assertions and all calculation, source-clock, missingness and trade-authority boundaries. The changed regression failed first, then passed after the copy repair. The unchanged source claims guard passes after materializing its exact HEAD allowlist dependency; no allowlist entry or scanner rule changed.
+
+The local two-file regression attempt returned 42 passed, 4 skipped and 2 setup errors: the sparse checkout lacks the Yahoo market-data store needed by the two unrelated real-feature fixtures. Do not run collectors, fabricate data or claim those tests passed. The Chairman permits accepting such unavailable ancillary validation; hosted required checks remain separate. The existing 175-browser-check and 32-cell visual evidence is retained at its original source and is not claimed freshly recaptured for this disclaimer change. Refresh the affected static evidence source binding before publication.
+
+Pack 4 timed out in the separate ontology browser job after substantial installation and passing test work. Its unsettled-command/infrastructure classification is retained; do not blindly replay the original command or suppress its failed verdict. Diagnose the existing budget/owner before any workflow edit. Independent GitHub review and independent release action, covering publication and both live-site acceptance remain open. No merge, enqueue, PR-state change, deployment or purchase is authorized by this repair record.
