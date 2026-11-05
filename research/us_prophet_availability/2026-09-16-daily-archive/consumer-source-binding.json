@@ -1,0 +1,36 @@
+{
+  "base": "bd93ee84583e6c6bea2b342bbf38cba0b9eb23e9",
+  "v2_source": "0e57dc01e494475802c62fc664924236544abb90",
+  "staged_opt_in_only": true,
+  "registry_unchanged": true,
+  "production": false,
+  "input_and_source_bindings": [
+    {
+      "path": "data/baskets/membership.json",
+      "source": "bd93ee84583e6c6bea2b342bbf38cba0b9eb23e9",
+      "sha256": "b968e9812f60494bd02bbc0d5ad4b8dc67dcb90a939426728e9db6befba9678a"
+    },
+    {
+      "path": "site/basketdata/us_basket_turn.json",
+      "source": "bd93ee84583e6c6bea2b342bbf38cba0b9eb23e9",
+      "sha256": "b4346caf908379aa65a9a2f1af2a6e582343f051a5742b3ada681cf9d567ca1b"
+    },
+    {
+      "path": "data/run_status.json",
+      "source": "bd93ee84583e6c6bea2b342bbf38cba0b9eb23e9",
+      "sha256": "63804389970907864981e8dc04f44cea844b82e5ecf353c6d8e38fe4868baf95"
+    },
+    {
+      "path": "engine/us_candidate_episode_intake.py",
+      "source": "0e57dc01e494475802c62fc664924236544abb90",
+      "preimage_sha256": "c08addea7f08a19ceff17ecf6d9aa7bedabc1c6faf3222d893db8a3e816577ed",
+      "sha256": "4ab2cabbdf90712f55a2357da7a95b7507bd770c887ecd989eab4ad34b981200"
+    },
+    {
+      "path": "scripts/build_turn_watch.py",
+      "source": "0e57dc01e494475802c62fc664924236544abb90",
+      "preimage_sha256": "45a1f0c6ad2b2357bdbceef9c271640425415e2cf7385a1c18876b271ced8db8",
+      "sha256": "f6cb509e851d8065268837df3eae163ef540d4a9c8b615be80572f2161f49375"
+    }
+  ]
+}

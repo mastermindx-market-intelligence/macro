@@ -1,0 +1,60 @@
+{# F09 descriptive industry stages; never a mass balance or scoring input. #}
+{% set pf = petroleum_flow|default({}, true) %}
+<section class="panel cm-context" id="petroleum-flow" aria-labelledby="pf-heading">
+  <h2 id="pf-heading">{{ t('US petroleum: production to product supply', '美国石油：从生产到产品供应') }}</h2>
+  <p class="cm-deck">{{ t('Three industry stages, measured in the same week. These are aggregate quantities, not traced movements of the same barrels.',
+                          '同一周的三个产业环节。这些是行业总量，并非同一批原油的流向追踪。') }}</p>
+{% if pf.state|default('unavailable') in ['available', 'stale'] %}
+  <p class="cm-meta">
+    {{ t('Week ending', '截至该周') }} <time datetime="{{ pf.common_period }}">{{ pf.common_period }}</time> ·
+    {{ t('Thousand barrels per day', '千桶/日') }}
+  </p>
+  <p class="cm-meta">
+{% if pf.state == 'stale' %}
+    <strong>{{ t('Stale · historical context', '已过时 · 历史背景') }}</strong> —
+{% endif %}
+    {{ t('Observation age', '观测距今') }} {{ pf.age_days }} {{ t('days', '天') }} ·
+    {{ t('Evaluated', '评估日期') }} <time datetime="{{ pf.evaluated_on }}">{{ pf.evaluated_on }}</time>.
+    {{ t('The source is stale after 9 days.', '超过 9 天即视为来源过时。') }}
+  </p>
+  <dl class="cm-rows">
+    <div class="cm-row">
+      <dt>{{ t('1 · Production', '1 · 生产') }}</dt>
+      <dd><p>{{ t('US crude field production', '美国原油田产量') }}:
+        <strong>{{ "{:,.0f}".format(pf['values'].crude_production) }}</strong></p></dd>
+    </div>
+    <div class="cm-row">
+      <dt>{{ t('2 · Processing', '2 · 加工') }}</dt>
+      <dd><p>{{ t('Refinery crude inputs', '炼油厂原油投入量') }}:
+        <strong>{{ "{:,.0f}".format(pf['values'].refinery_inputs) }}</strong></p>
+        <p class="cm-period">{{ t('Includes imported crude; it is not a subset of US field production.',
+                                 '包含进口原油，并非美国原油产量的子集。') }}</p></dd>
+    </div>
+    <div class="cm-row">
+      <dt>{{ t('3 · Product supply', '3 · 产品供应') }}</dt>
+      <dd><p>{{ t('Gasoline supplied', '汽油供应量') }}:
+        <strong>{{ "{:,.0f}".format(pf['values'].gasoline_supplied) }}</strong> ·
+        {{ t('Distillate supplied', '馏分油供应量') }}:
+        <strong>{{ "{:,.0f}".format(pf['values'].distillate_supplied) }}</strong></p>
+        <p class="cm-period">{{ t('Products supplied approximates consumption through disappearance from primary supplies. These two products are not the entire output.',
+                                 '产品供应量以初级供应环节的流出量近似消费量。这两种产品并非全部产出。') }}</p></dd>
+    </div>
+  </dl>
+{% else %}
+  <p class="cm-meta">{{ t('No common verified week is available for all three stages. Missing coverage is unknown, not zero.',
+                          '三个环节暂无共同且有效的周度数据。缺失覆盖意味着未知，并不代表零。') }}</p>
+{% endif %}
+  <details class="cm-source">
+    <summary>{{ t('Sources, timing and limits', '来源、时间与局限') }}</summary>
+    <ul>
+      <li><a href="https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&amp;s=WCRFPUS2&amp;f=W" target="_blank" rel="noopener noreferrer">{{ t('EIA · US crude field production', 'EIA · 美国原油田产量') }}</a></li>
+      <li><a href="https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&amp;s=WCRRIUS2&amp;f=W" target="_blank" rel="noopener noreferrer">{{ t('EIA · refinery crude inputs', 'EIA · 炼油厂原油投入量') }}</a></li>
+      <li><a href="https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&amp;s=WGFUPUS2&amp;f=W" target="_blank" rel="noopener noreferrer">{{ t('EIA · gasoline products supplied', 'EIA · 汽油产品供应量') }}</a></li>
+      <li><a href="https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&amp;s=WDIUPUS2&amp;f=W" target="_blank" rel="noopener noreferrer">{{ t('EIA · distillate products supplied', 'EIA · 馏分油产品供应量') }}</a></li>
+    </ul>
+    <p class="cm-meta">{{ t('Each quantity uses the latest week shared by all four stored series. Weeks are not mixed or forward-filled. Observation dates are not release dates: publication, retrieval and first-known times are not retained in this store, and past values may be revised.',
+                            '各项数量取自四条已存序列共有的最近一周，不混用日期，也不向前填充。观测日期并非发布日期：此存储未保留发布、获取与首次知悉时间，历史数值可能修订。') }}</p>
+    <p class="cm-meta">{{ t('This is physical-flow context, not a reconciled mass balance, conversion yield, price forecast or position recommendation.',
+                            '此处为实物流量背景，并非已核对的物料平衡、转化率、价格预测或仓位建议。') }}</p>
+  </details>
+</section>

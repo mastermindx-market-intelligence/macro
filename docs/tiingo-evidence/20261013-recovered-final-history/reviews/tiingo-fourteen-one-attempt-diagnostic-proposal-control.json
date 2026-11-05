@@ -1,0 +1,214 @@
+{
+  "schema": "tiingo.fourteen_one_attempt_diagnostic_proposal_control/v1",
+  "recorded_at_utc": "2026-10-14T03:41:00.991925+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "reviewer": "01a13462-0222-7131-a4c7-4442ae8e62bd",
+  "ruling": "CONDITIONAL_PASS_CONCRETE_FOURTEEN_ONE_LATER_ATTEMPT_PROPOSAL; NOT_YET_IMPLEMENTATION_OR_EXECUTION_ACCEPTANCE",
+  "answer": "Absence of the originalURLError.reason class alone is not a human-only permission boundary. The settled generic failures do not establish an explicit refusal. Existing assigned end-to-end capture authority can cover a separately recorded, at-most-one later unchanged request for each exact missingwindow after current source/custody/quota/resource and actual toolgates qualify. No new discretionary userapproval is required solely to repair missing diagnostic detail.",
+  "governing_instructions": [
+    {
+      "source": "Current user-supplied AGENTS.md, Deliver the assigned outcome",
+      "quote": "The assignment permits ordinary in-scope investigation, reversible design choices, source edits, tests and repair under the actual tool/resource grants.",
+      "application": "The proposed unchanged licensed data reads remain within the standing historicalcapture mission."
+    },
+    {
+      "source": "Current user-supplied AGENTS.md, Preserve real controls and prove the result",
+      "quote": "An explicit permission or safety refusal ends that effect's retry.",
+      "application": "Requires observed refusal. None is retained for the fourteen originalURLError failures; do not invent one from absent exception detail. All known actualdenials remainexcluded."
+    },
+    {
+      "source": "Current user-supplied AGENTS.md, Administrative blockers / EXACT_HUMAN_GATE",
+      "quote": "EXACT_HUMAN_GATE requires evidence, not a retry quota",
+      "application": "Missing oldcause evidence is epistemic uncertainty, not evidence of a required humanconsent action."
+    },
+    {
+      "source": "Current user-supplied AGENTS.md, six execution invariants",
+      "quote": "EFFECT_UNKNOWN -> same-carrier reconciliation; never blind retry/failover",
+      "application": "Nine retained contributing operations are explicitlysettled and the error arose in fetch_json_bytes before archive.store_response. The proposal does not replay an unresolved writer/PUT/dispatch. Any current unresolved effect invalidates admission."
+    }
+  ],
+  "retained_facts": {
+    "all_nine_contributing_result_phases_rechecked_settled": true,
+    "three_original_proven_timeouts": [
+      "DVTC",
+      "LFYC",
+      "LIBHB"
+    ],
+    "eleven_original_underliers_still_unknown": [
+      "CHEOY",
+      "DTZZF",
+      "DUA",
+      "DUAVF",
+      "DUBS",
+      "DVHL",
+      "DVSPF",
+      "LDHOF",
+      "LDHUF",
+      "LDKYQ",
+      "LDSSF"
+    ],
+    "collector54b_HTTPError_separate_from_generic_URLError": true,
+    "collect_one_sequence": "request_path -> fetch_json_bytes -> archive.store_response; retained generictransportfailure occurs before a response is stored by this call.",
+    "old_unknown_cause_will_not_be_reconstructed_by_new_request": true
+  },
+  "prior_ruling_clarification": "Prior4ec9d447 classification accurately distinguished3proven timeouts from11unclassified cases and granted no retry from classificationalone. It did not establish a new human-only hold. This fresh concrete proposal supplies an independently scoped nextaction; acceptance of that proposal does not relabel original11 as timeouts or erase their failures.",
+  "conditional_scope": {
+    "symbols": [
+      "CHEOY",
+      "DTZZF",
+      "DUA",
+      "DUAVF",
+      "DUBS",
+      "DVHL",
+      "DVSPF",
+      "DVTC",
+      "LDHOF",
+      "LDHUF",
+      "LDKYQ",
+      "LDSSF",
+      "LFYC",
+      "LIBHB"
+    ],
+    "maximum_additional_requests_per_exactwindow": 1,
+    "maximum_total_additional_admissions": 14,
+    "original_window_identities": [
+      {
+        "symbol": "CHEOY",
+        "request_path": "/tiingo/daily/CHEOY/prices?endDate=2026-10-09&startDate=2009-09-16",
+        "original_run_id": "eod-5000-wave7",
+        "original_result_sha256": "7d9c7d2cf2a89206efc89056b86e11e5728dc3e47fc75417fbc2d12ab35cb4a6"
+      },
+      {
+        "symbol": "DTZZF",
+        "request_path": "/tiingo/daily/DTZZF/prices?endDate=2026-10-09&startDate=2023-06-29",
+        "original_run_id": "eod-5000-wave8",
+        "original_result_sha256": "62274460ee424a21e141d581d8679ad750b13e3eeeaad9e8a8ff78e9ab72d001"
+      },
+      {
+        "symbol": "DUA",
+        "request_path": "/tiingo/daily/DUA/prices?endDate=2015-03-25&startDate=2006-11-01",
+        "original_run_id": "eod-5000-wave8",
+        "original_result_sha256": "62274460ee424a21e141d581d8679ad750b13e3eeeaad9e8a8ff78e9ab72d001"
+      },
+      {
+        "symbol": "DUAVF",
+        "request_path": "/tiingo/daily/DUAVF/prices?endDate=2026-10-09&startDate=2017-10-04",
+        "original_run_id": "eod-5000-wave8",
+        "original_result_sha256": "62274460ee424a21e141d581d8679ad750b13e3eeeaad9e8a8ff78e9ab72d001"
+      },
+      {
+        "symbol": "DUBS",
+        "request_path": "/tiingo/daily/DUBS/prices?endDate=2026-10-09&startDate=2023-06-14",
+        "original_run_id": "eod-5000-wave8",
+        "original_result_sha256": "62274460ee424a21e141d581d8679ad750b13e3eeeaad9e8a8ff78e9ab72d001"
+      },
+      {
+        "symbol": "DVHL",
+        "request_path": "/tiingo/daily/DVHL/prices?endDate=2020-03-25&startDate=2013-11-13",
+        "original_run_id": "eod-5000-wave8",
+        "original_result_sha256": "22141a140c334c9f63d85f6968582f20c3335c6f5c92ccc4cb6e5e8d767c8726"
+      },
+      {
+        "symbol": "DVSPF",
+        "request_path": "/tiingo/daily/DVSPF/prices?endDate=2026-10-09&startDate=2007-08-03",
+        "original_run_id": "eod-5000-wave8",
+        "original_result_sha256": "471f64ebee0137868cf523e78e0a5b9475c1b093d9ddff063209cd387fd93d73"
+      },
+      {
+        "symbol": "DVTC",
+        "request_path": "/tiingo/daily/DVTC/prices?endDate=2026-10-09&startDate=2017-10-19",
+        "original_run_id": "eod-5000-wave8",
+        "original_result_sha256": "05f4621d19f24bcb4a0b26ab125f1ecb50c94c75b31a18614bcfb166b22e289d"
+      },
+      {
+        "symbol": "LDHOF",
+        "request_path": "/tiingo/daily/LDHOF/prices?endDate=2026-10-09&startDate=2014-11-17",
+        "original_run_id": "eod-wave13-new-unreserved-20261012-01a12ab6",
+        "original_result_sha256": "1f3a1087638b48a33250f3153def1bd46e55e4eb2fd086a9b7d9dca61a1c9b20"
+      },
+      {
+        "symbol": "LDHUF",
+        "request_path": "/tiingo/daily/LDHUF/prices?endDate=2026-10-09&startDate=2022-04-07",
+        "original_run_id": "eod-wave13-new-unreserved-20261012-01a12ab6",
+        "original_result_sha256": "1f3a1087638b48a33250f3153def1bd46e55e4eb2fd086a9b7d9dca61a1c9b20"
+      },
+      {
+        "symbol": "LDKYQ",
+        "request_path": "/tiingo/daily/LDKYQ/prices?endDate=2019-04-24&startDate=2014-03-31",
+        "original_run_id": "eod-wave13-new-unreserved-20261012-01a12ab6",
+        "original_result_sha256": "1f3a1087638b48a33250f3153def1bd46e55e4eb2fd086a9b7d9dca61a1c9b20"
+      },
+      {
+        "symbol": "LDSSF",
+        "request_path": "/tiingo/daily/LDSSF/prices?endDate=2020-10-02&startDate=2018-02-22",
+        "original_run_id": "eod-wave13-original-unadmitted-continuation01-20261012-01a12ab6",
+        "original_result_sha256": "0ec8f3bd5fa5876d9d2ea01bfc15f7f578b54d025dd2b24878942b32fba9cc50"
+      },
+      {
+        "symbol": "LFYC",
+        "request_path": "/tiingo/daily/LFYC/prices?endDate=2017-09-14&startDate=2001-01-04",
+        "original_run_id": "eod-wave13-original-unadmitted-continuation02-serial92-20261012-01a12ab6",
+        "original_result_sha256": "ec650a5732a2c90252499a95afc577c220025d7bf2c67556bcc6bb91abec443a"
+      },
+      {
+        "symbol": "LIBHB",
+        "request_path": "/tiingo/daily/LIBHB/prices?endDate=2017-06-14&startDate=1972-06-01",
+        "original_run_id": "eod-wave13-original-unadmitted-continuation03-serial50-20261012-01a12ab6",
+        "original_result_sha256": "7c06590cbdca195af3f2afb6e2404eecace54d11edd6416e19ef7749276b6cc6"
+      }
+    ],
+    "same_provider_origin_key_TLS_headers_collector_ingest_archive_and_exec_carrier": true,
+    "collector_sha256": "54b694af53a940f8ea1148215b0a3ccfcfa5313270286b04a99c72d7dc004fa6",
+    "ingest_sha256": "ef52fd2f90842c85a362254dae219a2593fed024b340a38fa5333a50e06981e6",
+    "archive_UUID": "7EE5D196-8BB6-4E6D-B1D7-AFEA5DEB172A",
+    "capture_floor_GiB": 80,
+    "max_inflight": 4,
+    "rolling_admission_window_seconds": 5,
+    "failure_policy": "First new failure stops all further admissions then drains only alreadyadmitted calls. Atomic/serialized admission check must prevent races after failure. No automatic retry of failed or notadmitted slots. A new explicit refusal freezes affectedscope and cannot be routedaround; the bounded batch stops irrespective of failurecategory."
+  },
+  "actual_gates_owed": [
+    "Exact prepared source review showing14 literal originalwindows, exclusion of accepted/knownHTTP403/404/qualityheld windows and absence of hidden retry/extension/failover.",
+    "Current sourcehashes, selected imports/runtime, exact unchanged credentialbinding without logging credentials, true originalarchiveUUID/root/resourcefloor and request-budget headroom.",
+    "Current positively reconciled known conflicting writers/leases; no unsettled operation/effect duplicated; accepted snapshot determines genuinelymissing windows without rawreader rescan.",
+    "Fresh intended signed-account quota and totalbudget for14admissions; preserve current providerrestrictions and any actual toolreview.",
+    "Durable distinct later-attempt identity joined to each originalfailedwindow; immutable originalreceipts/results preserved; exclusive guards stop duplicate laterattempt after ambiguous command outcome.",
+    "Credential-free exceptionclass/contextclass/reasonclass plus integererrno/TLSverifycode/HTTPstatus capture from actual new exception. Do not log errorURLs, raw exceptionstrings, tokens, headers or bodies fordiagnosis.",
+    "Actual admitted/settled/failed/notadmitted partition and rawreceipt/readerqualification required; settledrc alone doesnot prove dataacceptance. Later ordinary failures receive no automatic secondattempt under this proposal."
+  ],
+  "known_holds_unchanged": {
+    "EOD_HTTP403": [
+      "EA",
+      "DVYA",
+      "DVXB",
+      "DVVDF"
+    ],
+    "EOD_HTTP404": [
+      "DTV_1"
+    ],
+    "source_quality_quarantine": [
+      "RBGPF",
+      "SCNG",
+      "WTFNF"
+    ],
+    "public_relay_HTTP403": {
+      "receipt": "tiingo-finite-public-relay-status-only-diagnosis01.json",
+      "sha256": "e183bdb799539c86add3453add0884c5a4791c8448e0343e9a447c8d3cb4fb46",
+      "frozen": true,
+      "no_alternate_access_or_publication_route": true
+    }
+  },
+  "distinction_from_public_relay_status_diagnosis": "Both rely on an unclassified failure rather than an observed refusal, but this proposal is broader: successful EOD responses may be archived as assigned capture, not merely status-onlyreads. That requires source/resource/custody/captureacceptance gates. The nowobserved publicR2403 is unrelated and remainsfrozen; noR2request/PUT/BOATSpublisher is included.",
+  "human_confirmation_required_solely_for_missing_old_reason": false,
+  "implementation_accepted": false,
+  "provider_execution_authorized_by_receipt": false,
+  "review_effects": {
+    "provider_network_requests": 0,
+    "credential_reads": 0,
+    "rawreader_rescans": 0,
+    "source_runtime_mutations": 0,
+    "workers": 0,
+    "local_metadata_only": true
+  },
+  "prior_classification_sha256": "4ec9d4472e3a0b4a984ab23b1d09990887c9e578d89349d32c18e51ac429c577",
+  "tool_chunk": "406d0b"
+}

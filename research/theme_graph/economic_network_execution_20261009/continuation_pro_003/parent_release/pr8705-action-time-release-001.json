@@ -1,0 +1,17 @@
+{
+  "status": "ACTION_TIME_RELEASE_READY",
+  "observed_at": "2026-10-09T10:51:40.964608+00:00",
+  "pr": 8705,
+  "head": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+  "base": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+  "protected_mastermind": "7d82b9adb839d54e4ab25378ca333e498dd83fcc",
+  "binding_verdict": "clean",
+  "anchors": "clean",
+  "comments": 4,
+  "release_comment": 6079407943,
+  "recorded_hold": null,
+  "reviews": [],
+  "unresolved_threads": 0,
+  "full_release_receipt_sha256": "d2b5de0a1869c782c574c5378292ab8834afea203644900d8fb1fa102a5e67ac",
+  "merge_performed": false
+}

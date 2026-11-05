@@ -1,0 +1,74 @@
+{
+  "schema": "research.gmi.wp02.ci_enrollment_proposal/v1",
+  "status": "RECOMMENDED_NOT_APPLIED",
+  "job_id": "gmi-source-diagnostic-kernel",
+  "source_head": "7c1463015b8f1a3296f09d12a8052112939b4c25",
+  "upstream_comparison": "40ebaebdbcd57eedaa627623f1cfd1860ff3ee3a",
+  "expected_job_count_before": 254,
+  "expected_job_count_after": 255,
+  "expected_job_weight": 4,
+  "runtime_path_count": 32,
+  "paths": [
+    "engine/__init__.py",
+    "engine/basket_breadth_divergence.py",
+    "engine/catalyst_tone.py",
+    "engine/desk_ledger.py",
+    "engine/gdelt_client.py",
+    "engine/marketing/__init__.py",
+    "engine/marketing/accounts.py",
+    "engine/marketing/authority.py",
+    "engine/marketing/chart_render.py",
+    "engine/marketing/charter.py",
+    "engine/marketing/claims.py",
+    "engine/marketing/cmo.py",
+    "engine/marketing/departments.py",
+    "engine/marketing/economics.py",
+    "engine/marketing/events.py",
+    "engine/marketing/ledgers.py",
+    "engine/marketing/logo_cache.py",
+    "engine/marketing/opportunity_bus.py",
+    "engine/marketing/publication.py",
+    "engine/marketing/state.py",
+    "engine/master_brain.py",
+    "lib/__init__.py",
+    "lib/config.py",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/source_diagnostic.py",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/synthetic_example.py",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_policy_adoption_v1/POLICY_ADOPTION.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_policy_v2/RECOMMENDED_SELECTION_POLICY.json",
+    "scripts/__init__.py",
+    "scripts/worktree_sparse.py",
+    "tests/__init__.py",
+    "tests/conftest.py",
+    "tests/test_gmi_source_diagnostic_kernel.py"
+  ],
+  "direct_runtime_inputs": [
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/source_diagnostic.py",
+      "sha256": "80b12ec299e861d24c0c23f88805a475f44099af894fbea7d787296c72681d8f",
+      "reason": "Dynamically loaded implementation; exact CLI subprocess target"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/synthetic_example.py",
+      "sha256": "37db957fff940f2e9557e36586c07ee4a1a3ea534d9b3e36a5c96630b1a5aa78",
+      "reason": "Dynamically loaded artificial fixture factory"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_policy_v2/RECOMMENDED_SELECTION_POLICY.json",
+      "sha256": "d41422d76219b1c5d3a3c9cbb19a1bc3124433031200b09499033bd4dc30d522",
+      "reason": "Exact policy bytes read during test collection"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_policy_adoption_v1/POLICY_ADOPTION.json",
+      "sha256": "645a20a39842d9c5a03b4ff39a37280d1aa02c32ef545c061d0aa959f06e0016",
+      "reason": "Exact adoption bytes read during test collection"
+    },
+    {
+      "path": "tests/test_gmi_source_diagnostic_kernel.py",
+      "sha256": "2c9d575614de6e41c1463ff252010e92711b21e8389034df698842c73e59bc05",
+      "reason": "Sole canonical pytest invocation target"
+    }
+  ],
+  "shared_runtime_inputs_file": "FROZEN_SHARED_IMPORT_CLOSURE.json",
+  "no_native_kernel_or_ci_execution_claim": true
+}

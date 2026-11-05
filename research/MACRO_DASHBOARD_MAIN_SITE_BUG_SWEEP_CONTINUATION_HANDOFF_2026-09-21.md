@@ -1,3 +1,38 @@
+# Archived Macro dashboard bug-sweep handoff
+
+## Qualification recorded 2026-11-05 UTC
+
+This file preserves a historical handoff labelled **2026-09-21**, committed on **2026-09-22**. The complete original payload below is historical evidence. Its status labels, procedure pin, source locations, runtime statements, `DO_NOT_REDO` judgments and imperative resume instructions describe that checkpoint; they do not establish current law, source custody, execution authority or today's deployed behavior. This archival reconciliation does not resume the dashboard repair mission.
+
+Original source: Macro PR [#7660](https://github.com/mastermindx-market-intelligence/macro/pull/7660), commit `fb88d328b82b1ad1a105e5851faa28669411b245`, Git blob `f77e1bf99897895575f2ead7ca7e41d2dcaabbf9`. The payload is preserved byte-for-byte, including its terminal LF, inside the four-tilde fence below. Qualifications are outside that payload.
+
+### Later canonical source dispositions
+
+These are GitHub PR observations on 2026-11-05, not fresh production or browser verification.
+
+| Carrier | Verified source disposition | Scope of this observation |
+|---|---|---|
+| Macro [#7503](https://github.com/mastermindx-market-intelligence/macro/pull/7503) | Merged 2026-09-21 14:24:09 UTC as `c125178ed4e146e4cc15a4caa5586c790df0a13d`; final head `d1586a7f49a77519ceb40f27842499ff989816fd` | Confirms source integration. The original production-acceptance claim points to dated comment `5762130416`; it is not repeated here as current live proof. |
+| Terminal [#700](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/700) | Merged 2026-09-21 14:09:56 UTC as `749576c537284df43772d3cfd3fdd75ad7194a2d`; final head `4917aaf1f44e9cd8a1dab4d55baaa64038e2f1fb` | Confirms the historical source repair. It does not establish today's local symlink target or preview availability. |
+| Macro [#7505](https://github.com/mastermindx-market-intelligence/macro/pull/7505) | Merged 2026-09-23 11:00:22 UTC as `5683fdc6751ffc7c029781340d9272e358634902`; final head `4ba93f57b90a7d4bccb7e04481088670224d457a` | The original OPEN/REQUEST_CHANGES status and instruction to repair and merge it are obsolete. This merge does not resolve the exact separate local commits described below. |
+| Macro [#7626](https://github.com/mastermindx-market-intelligence/macro/pull/7626) | Open and unmerged at `64e4f946cc235d9703aecd1ce84b4b058f81b08c` | The earlier local browser results and hosted-failure attribution remain dated evidence. No fresh CI, current-base repair, asset regeneration, deployment or live acceptance is established here. |
+
+### Preserve the separate local-work and blocked-request boundary
+
+The later [continuation comment `5772274152`](https://github.com/mastermindx-market-intelligence/macro/pull/7660#issuecomment-5772274152), dated 2026-09-22, reports work on the original #7505 carrier, distinct from this records branch:
+
+- Last then-verified remote head `7103943acada39b97d60874a21c74d45edbf22b6`; unpushed regression commit `531ee39131f8be1943292f6b4589a2507dc4938b`; retained local merge `542098b87da1c457d263c0dc9576a72b27cb076f`, with parents `[531ee39131f8be1943292f6b4589a2507dc4938b, 1e767a2f5b43f302b0e1068c9a7e60b12aeb98ee]`.
+- A clean local readback and retention-locked original worktree were reported then. This archive does not re-observe that worktree, release it, establish current writer/process state, or prove those exact local commits were published or incorporated. The later #7505 merge alone is insufficient for any of those claims.
+- The template/site sync check refused because the sparse worktree lacked complete trees. The candidate-relative whitespace qualification had not run. The subsequent compound qualification/preflight request was blocked by OpenAI and was not retried, split, rerouted or delegated. The comment explicitly reported no ambiguous modifying effect from that blocked request; preserve that distinction rather than inventing a new `EFFECT_UNKNOWN`.
+- The reported local test results, source preservation and checkpoint digest remain attributed to that dated receipt. They are not new execution receipts. No old command or denied qualification is replayed by this record.
+
+If future authorized work depends on those local artifacts or on #7626, the **currently assigned receiver** must reconcile the original carrier, exact source identities and actual access/effect constraints under current protected law. Historical actor names are not a new approval gate. Preserve real holds and effects; do not create a replacement carrier, duplicate publication, or alternate route around the blocked operation. The historical repair sequence below is non-operative and is not an instruction to reopen or re-merge #7505.
+
+This change only qualifies and preserves one historical research record. It changes no product code, source score, threshold, CI policy, runtime registration, deployment or trading authority, and does not transfer custody of the original implementation workspaces.
+
+## Original handoff — verbatim historical payload
+
+~~~~markdown
 # Macro Dashboard main-site bug sweep — continuation handoff — 2026-09-21
 
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION  
@@ -125,3 +160,4 @@ None at this checkpoint. The records-only checkpoint branch was created successf
 ## Resume instruction
 
 > Continue the Macro-dashboard main-site bug sweep from `research/MACRO_DASHBOARD_MAIN_SITE_BUG_SWEEP_CONTINUATION_HANDOFF_2026-09-21.md`. Re-pin protected procedure and current sources first. Start with the existing #7505 carrier and its REQUEST_CHANGES blockers; do not redo #7503 or the Terminal preview-link repair.
+~~~~

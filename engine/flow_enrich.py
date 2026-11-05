@@ -5,10 +5,9 @@ Takes a list of live_flow.feed/v1 event dicts (from feed_current.json) and
 emits a list of enriched events per the flow.enrich/v1 schema (§5 of spec).
 
 Detectors (all deterministic, no LLM):
-  MULTI_LEG    — event.swept=True (poller's sweep-heuristic flag is the closest
-                 available proxy; has_multileg/spread_type/cluster_type are NOT
-                 emitted by live_flow.py — confirmed via engine/live_flow.py:699).
-                 When MULTI_LEG fires, direction_discounted=True (direction ambiguous).
+  PACKAGE      — intentionally unavailable on live_flow.feed/v1. The current
+                 event.swept flag is single-contract multi-print urgency and MUST
+                 NOT be relabeled MULTI_LEG or used to infer package structure.
   LADDER       — repeated contract appearing across multiple strikes (same root/right/exp)
   REPEAT_HITTER — same root appears in >= 3 distinct events in the session
   SIZE_VS_OI   — size > OI (vol_gt_oi == True with premium >= $500k floor)
@@ -34,7 +33,7 @@ Thresholds (trailing-sessions percentiles, spec §3):
 
 HOUSE LAWS (binding):
   - Display-tier only; no user-facing "signal" or "validated" strings.
-  - direction_discounted=True whenever MULTI_LEG fires (direction ambiguous on spreads).
+  - swept is urgency only; no current field proves a multi-leg package or authorizes package-based direction discounting.
   - ELITE session_tier requires both q >= elite threshold AND premium >= $1M.
   - EARNINGS_WINDOW detector skipped (no PIT-clean earnings source consumable inline).
   - OI data comes from event field vol_gt_oi (OI[t-1] law already honoured upstream).
@@ -249,23 +248,24 @@ def compute_q_score(event: dict) -> dict:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def detect_multi_leg(event: dict, _session_events: list[dict]) -> bool:
-    """MULTI_LEG: event is flagged as a sweep by the poller (swept=True).
+    """Return False until the canonical event carries qualified package evidence.
 
-    The live_flow.py poller (engine/live_flow.py:699) emits `swept` (bool) as
-    its spread/multi-print heuristic flag (>= 3 prints, >= 2 exchanges, <= 2s
-    span). The fields has_multileg, spread_type, and cluster_type are NOT in
-    the live feed — using them caused 0 MULTI_LEG fires on all real sessions.
+    `live_flow.feed/v1` currently emits one exact-contract event plus a `swept`
+    urgency flag. That flag means repeated prints across venues in a short window;
+    it does not identify common-order legs, customer intent, or a package.
 
-    When this detector fires, direction_discounted is set True in the envelope,
-    indicating the direction read is ambiguous (spread or accumulated sweep).
+    Keep the function as a compatibility seam for callers/tests, but fail closed.
+    A later package implementation must introduce a separately reviewed,
+    source-qualified state contract rather than reinterpreting `swept`.
     """
-    return bool(event.get("swept"))
+    _ = event
+    return False
 
 
 def detect_ladder(event: dict, session_events: list[dict]) -> bool:
     """LADDER: the same root+right+exp appears across >= 3 distinct strike levels.
 
-    Indicates accumulation or a structured ladder of strikes on one expiry.
+    Describes a strike pattern, without identifying position intent.
     """
     root  = event.get("root", "")
     right = event.get("right", "")
@@ -342,7 +342,9 @@ def detect_z_outlier(event: dict, _session_events: list[dict]) -> bool:
 # ── detector registry (ordered for badge output) ─────────────────────────────
 
 _DETECTORS: list[tuple[str, Any]] = [
-    ("MULTI_LEG",     detect_multi_leg),
+    # No MULTI_LEG detector is registered: current live-flow events have no
+    # qualified package-association field. The raw swept flag remains pass-through
+    # urgency evidence for consumers that label it honestly.
     ("LADDER",        detect_ladder),
     ("REPEAT_HITTER", detect_repeat_hitter),
     ("SIZE_VS_OI",    detect_size_vs_oi),
@@ -354,37 +356,33 @@ _DETECTORS: list[tuple[str, Any]] = [
 # ── bilingual badge rationale strings (spec §4: every badge carries why/why_zh) ─
 
 _BADGE_WHY: dict[str, tuple[str, str]] = {
-    "MULTI_LEG":     (
-        "Sweep flag active — direction is ambiguous; treat as spread or accumulated order.",
-        "探测到扫单标志——方向不明确，视为价差单或累积订单。",
-    ),
     "LADDER":        (
-        "Same expiry appears across 3+ distinct strikes — possible staged accumulation.",
-        "同一到期日出现3个以上不同行权价——可能为梯形建仓。",
+        "Same underlying, option type and expiry across 3+ distinct strikes this session; opening or accumulation is not established.",
+        "本时段同一标的、期权类型与到期日横跨至少3个不同行权价；无法据此判定开仓或加仓。",
     ),
     "REPEAT_HITTER": (
-        "This root appeared in 3+ separate events this session — conviction reload pattern.",
-        "本交易日该标的出现3次以上独立流量事件——疑似反复加仓。",
+        "This underlying appeared in 3+ separate events this session; repeated trades do not identify opening or closing.",
+        "本交易日该标的出现至少3次独立流量事件；重复成交无法区分开仓或平仓。",
     ),
     "SIZE_VS_OI":    (
-        "Today's volume exceeds prior open interest — new positioning, cannot hide in existing OI.",
-        "今日成交量超过昨日未平仓量——新建头寸，无法隐入现有持仓。",
+        "Volume exceeds prior-day open interest on an event with premium >=$500K; the comparison does not identify opening or closing.",
+        "成交量超过前一日持仓量，且事件权利金≥50万美元；该比较无法区分开仓或平仓。",
     ),
     "WHALE":         (
-        "Single-event premium $1M+ (with z-score or $3M hard floor) — large capital commitment.",
-        "单笔权利金超过100万美元（含z分数条件或300万美元硬门槛）——大额资金投入。",
+        "Premium >=$3M, or >=$1M with an inferred buy lean and premium z-score >=2; the lean does not confirm the buyer or trade intent.",
+        "权利金≥300万美元；或≥100万美元、推断为买方倾向且权利金z分数≥2；该倾向不确认买方身份或交易意图。",
     ),
     "FRESH":         (
-        "Volume exceeds OI at ATM/near-OTM with 1–45 DTE — likely fresh directional positioning.",
-        "ATM/近虚值期权成交量超过未平仓量，剩余期限1–45天——疑似新建方向性头寸。",
+        "Volume exceeds prior-day open interest at ATM/near-OTM with 1–45 DTE; this does not identify opening or closing.",
+        "平值或近虚值期权成交量超过前一日持仓量，距到期1–45天；该比较无法区分开仓或平仓。",
     ),
     "Z_OUTLIER":     (
         "Premium z-score ≥ 3 vs 252-session baseline — unusually large for this root.",
         "权利金z分数≥3（相对252个交易日基准）——该标的权利金规模异常偏大。",
     ),
     "OI_CONFIRMED":  (
-        "Yesterday's flow confirmed: this contract built open interest overnight.",
-        "昨日流量获确认：该合约隔夜增加了未平仓量。",
+        "Legacy open-interest badge; the current source does not establish which trades opened or closed positions.",
+        "历史持仓量标记；当前数据源无法确认哪些成交属于开仓或平仓。",
     ),
 }
 
@@ -604,7 +602,9 @@ def build_enrich_envelope(
             q_score  = q_result["q_score"]
             q_tier   = q_result["q_tier"]
 
-            # Detectors
+            # Detectors. Package-based direction discounting is deliberately
+            # unavailable until a qualified package-association contract exists;
+            # `swept` is single-contract urgency only.
             badges: list[str] = []
             direction_discounted = False
             for badge_name, detector_fn in _DETECTORS:
@@ -614,8 +614,6 @@ def build_enrich_envelope(
                     fires = False
                 if fires:
                     badges.append(badge_name)
-                    if badge_name == "MULTI_LEG":
-                        direction_discounted = True
 
             # Tier from thresholds (spec §3: elite requires q >= threshold AND premium >= $1M)
             premium_val = float(ev.get("premium", 0) or 0)

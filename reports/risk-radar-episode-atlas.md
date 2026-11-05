@@ -2,7 +2,7 @@
 
 **Purpose:** Descriptive replay of the US risk radar's leg readings through five major historical risk episodes. This is display-tier context — base rates, coverage limitations stated explicitly, no promotion/kill language. Findings are descriptive, not authority.
 
-Generated: 2026-09-21T05:43:24.832092+00:00
+Generated: 2026-09-22T01:11:09.951394+00:00
 Signals date range: 1993-01-29 to 2026-09-18 (n_trading_days=8467)
 
 ## Headline Warning Persistence at Fixed Reference Dates
@@ -14,7 +14,7 @@ These are reconstructed historical states under the committed engine and histori
 | 2018Q4 selloff | caution | calm | calm | watch | closed | 8/22 | 0/22 | 0 | -6.9% |
 | COVID-2020 | caution | caution | caution | caution | closed | 22/22 | 0/22 | 22 | -29.1% |
 | 2022 bear market | caution | caution | caution | caution | closed | 22/22 | 0/22 | 22 | -9.7% |
-| SVB March-2023 | risk-off | caution | caution | caution | closed | 18/22 | 2/22 | 10 | -5.3% |
+| SVB March-2023 | risk-off | caution | watch | caution | closed | 14/22 | 1/22 | 1 | -5.3% |
 | Aug-2024 yen-carry | caution | caution | caution | caution | closed | 22/22 | 0/22 | 22 | -8.4% |
 
 ## Coverage: First Non-NaN Date per Leg
@@ -37,6 +37,8 @@ Legs with no data at a historical episode are marked NO DATA — this is NOT the
 | vol_term | 2011-12-30 | No |  |
 | jpy_carry | 1994-01-26 | No |  |
 | nh_contraction | 1994-02-09 | No |  |
+| corr_floor_break | 2006-01-03 | No |  |
+| ai_breadth_divergence | 2025-05-28 | No | No data for any named episode |
 
 ## All detect_events Onsets (depth >= 8%, fwd=63d, min_gap=40)
 
@@ -109,11 +111,11 @@ n=48 onsets on SPY (1993-2026). Named episodes are flagged.
 
 | Offset | Date | Headline state | Context gate | Signal coverage | Tier-A subscore coverage |
 |--------|------|----------------|--------------|-----------------|--------------------------|
-| T-21 | 2018-08-21 | caution | closed | 11/11 | 4/4 |
-| T-5 | 2018-09-13 | calm | closed | 11/11 | 4/4 |
-| T-1 | 2018-09-19 | calm | closed | 11/11 | 4/4 |
-| T0 | 2018-09-20 | watch | closed | 11/11 | 4/4 |
-| T+5 | 2018-09-27 | calm | closed | 11/11 | 4/4 |
+| T-21 | 2018-08-21 | caution | closed | 12/13 | 4/4 |
+| T-5 | 2018-09-13 | calm | closed | 12/13 | 4/4 |
+| T-1 | 2018-09-19 | calm | closed | 12/13 | 4/4 |
+| T0 | 2018-09-20 | watch | closed | 12/13 | 4/4 |
+| T+5 | 2018-09-27 | calm | closed | 12/13 | 4/4 |
 
 - **T-21..T0:** caution+ 8/22 (36.4%); elevated+ 0/22 (0.0%); consecutive caution+ sessions ending at T0 = 0.
 - **T-5..T0:** caution+ 0/6 (0.0%); elevated+ 0/6 (0.0%); consecutive caution+ sessions ending at T0 = 0.
@@ -132,6 +134,8 @@ n=48 onsets on SPY (1993-2026). Named episodes are flagged.
 | vol_term | N | 2011-12-30 | 0.522 | 0.196 | 0.611 | 0.526 | 0.681 | 2018-06-25 | EARLY |
 | jpy_carry | N | 1994-01-26 | 0.720 | 0.371 | 0.375 | 0.376 | 0.381 | — | SILENT |
 | nh_contraction | N | 1994-02-09 | 0.550 | 0.282 | 0.318 | 0.316 | 0.381 | — | SILENT |
+| corr_floor_break | N | 2006-01-03 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | — | SILENT |
+| ai_breadth_divergence | N | 2025-05-28 | — | — | — | — | — | — | NO DATA |
 
 *Pctile values are 0-1 causal trailing-504d percentiles. Asterisk (*) = elevated (at or above leg threshold). T0 = onset date.*
 
@@ -162,11 +166,11 @@ _The trajectory above is the raw un-gated max Tier-A subscore; the engine's head
 
 | Offset | Date | Headline state | Context gate | Signal coverage | Tier-A subscore coverage |
 |--------|------|----------------|--------------|-----------------|--------------------------|
-| T-21 | 2020-01-17 | caution | closed | 11/11 | 4/4 |
-| T-5 | 2020-02-11 | caution | closed | 11/11 | 4/4 |
-| T-1 | 2020-02-18 | caution | closed | 11/11 | 4/4 |
-| T0 | 2020-02-19 | caution | closed | 11/11 | 4/4 |
-| T+5 | 2020-02-26 | caution | closed | 10/11 | 4/4 |
+| T-21 | 2020-01-17 | caution | closed | 12/13 | 4/4 |
+| T-5 | 2020-02-11 | caution | closed | 12/13 | 4/4 |
+| T-1 | 2020-02-18 | caution | closed | 12/13 | 4/4 |
+| T0 | 2020-02-19 | caution | closed | 12/13 | 4/4 |
+| T+5 | 2020-02-26 | caution | closed | 11/13 | 4/4 |
 
 - **T-21..T0:** caution+ 22/22 (100.0%); elevated+ 0/22 (0.0%); consecutive caution+ sessions ending at T0 = 22.
 - **T-5..T0:** caution+ 6/6 (100.0%); elevated+ 0/6 (0.0%); consecutive caution+ sessions ending at T0 = 6.
@@ -185,6 +189,8 @@ _The trajectory above is the raw un-gated max Tier-A subscore; the engine's head
 | vol_term | N | 2011-12-30 | 0.016 | 0.363 | 0.371 | 0.220 | 0.996* | 2020-01-27 | EARLY |
 | jpy_carry | N | 1994-01-26 | 0.413 | 0.421 | 0.423 | 0.424 | 0.429 | 2020-01-03 | EARLY |
 | nh_contraction | N | 1994-02-09 | 0.040 | 0.004 | 0.009 | 0.014 | — | — | SILENT |
+| corr_floor_break | N | 2006-01-03 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | — | SILENT |
+| ai_breadth_divergence | N | 2025-05-28 | — | — | — | — | — | — | NO DATA |
 
 *Pctile values are 0-1 causal trailing-504d percentiles. Asterisk (*) = elevated (at or above leg threshold). T0 = onset date.*
 
@@ -215,11 +221,11 @@ _The trajectory above is the raw un-gated max Tier-A subscore; the engine's head
 
 | Offset | Date | Headline state | Context gate | Signal coverage | Tier-A subscore coverage |
 |--------|------|----------------|--------------|-----------------|--------------------------|
-| T-21 | 2021-12-02 | caution | closed | 10/11 | 4/4 |
-| T-5 | 2021-12-27 | caution | closed | 11/11 | 4/4 |
-| T-1 | 2021-12-31 | caution | closed | 11/11 | 4/4 |
-| T0 | 2022-01-03 | caution | closed | 11/11 | 4/4 |
-| T+5 | 2022-01-10 | caution | closed | 10/11 | 4/4 |
+| T-21 | 2021-12-02 | caution | closed | 11/13 | 4/4 |
+| T-5 | 2021-12-27 | caution | closed | 12/13 | 4/4 |
+| T-1 | 2021-12-31 | caution | closed | 12/13 | 4/4 |
+| T0 | 2022-01-03 | caution | closed | 12/13 | 4/4 |
+| T+5 | 2022-01-10 | caution | closed | 11/13 | 4/4 |
 
 - **T-21..T0:** caution+ 22/22 (100.0%); elevated+ 0/22 (0.0%); consecutive caution+ sessions ending at T0 = 22.
 - **T-5..T0:** caution+ 6/6 (100.0%); elevated+ 0/6 (0.0%); consecutive caution+ sessions ending at T0 = 6.
@@ -238,6 +244,8 @@ _The trajectory above is the raw un-gated max Tier-A subscore; the engine's head
 | vol_term | N | 2011-12-30 | 0.841 | 0.101 | 0.052 | 0.091 | 0.554 | 2021-12-01 | EARLY |
 | jpy_carry | N | 1994-01-26 | 0.905* | 0.401 | 0.404 | 0.405 | 0.407 | 2021-12-01 | EARLY |
 | nh_contraction | N | 1994-02-09 | — | 0.714 | 0.476 | 0.452 | — | — | SILENT |
+| corr_floor_break | N | 2006-01-03 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | — | SILENT |
+| ai_breadth_divergence | N | 2025-05-28 | — | — | — | — | — | — | NO DATA |
 
 *Pctile values are 0-1 causal trailing-504d percentiles. Asterisk (*) = elevated (at or above leg threshold). T0 = onset date.*
 
@@ -268,14 +276,14 @@ _The trajectory above is the raw un-gated max Tier-A subscore; the engine's head
 
 | Offset | Date | Headline state | Context gate | Signal coverage | Tier-A subscore coverage |
 |--------|------|----------------|--------------|-----------------|--------------------------|
-| T-21 | 2023-01-03 | risk-off | open | 10/11 | 4/4 |
-| T-5 | 2023-01-26 | caution | closed | 10/11 | 4/4 |
-| T-1 | 2023-02-01 | caution | closed | 10/11 | 4/4 |
-| T0 | 2023-02-02 | caution | closed | 10/11 | 4/4 |
-| T+5 | 2023-02-09 | caution | closed | 10/11 | 4/4 |
+| T-21 | 2023-01-03 | risk-off | open | 11/13 | 4/4 |
+| T-5 | 2023-01-26 | caution | closed | 11/13 | 4/4 |
+| T-1 | 2023-02-01 | watch | closed | 11/13 | 4/4 |
+| T0 | 2023-02-02 | caution | closed | 11/13 | 4/4 |
+| T+5 | 2023-02-09 | watch | closed | 11/13 | 4/4 |
 
-- **T-21..T0:** caution+ 18/22 (81.8%); elevated+ 2/22 (9.1%); consecutive caution+ sessions ending at T0 = 10.
-- **T-5..T0:** caution+ 6/6 (100.0%); elevated+ 0/6 (0.0%); consecutive caution+ sessions ending at T0 = 6.
+- **T-21..T0:** caution+ 14/22 (63.6%); elevated+ 1/22 (4.5%); consecutive caution+ sessions ending at T0 = 1.
+- **T-5..T0:** caution+ 2/6 (33.3%); elevated+ 0/6 (0.0%); consecutive caution+ sessions ending at T0 = 1.
 - **Canonical grader forward max loss:** h5=-2.3%, h10=-2.3%, h21=-5.3%.
 
 | Leg | Gate-passed | Coverage Start | T-21 pctile | T-5 pctile | T-1 pctile | T0 pctile | T+5 pctile | First Elevated | Classification |
@@ -291,6 +299,8 @@ _The trajectory above is the raw un-gated max Tier-A subscore; the engine's head
 | vol_term | N | 2011-12-30 | 0.889 | 0.877 | 0.706 | 0.686 | 0.869 | 2022-11-01 ⟵ left-censored: already elevated at window open | EARLY |
 | jpy_carry | N | 1994-01-26 | 0.984* | 0.913* | 0.018 | 0.807 | 0.040 | 2022-11-10 | EARLY |
 | nh_contraction | N | 1994-02-09 | — | — | — | — | — | — | NO DATA |
+| corr_floor_break | N | 2006-01-03 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | — | SILENT |
+| ai_breadth_divergence | N | 2025-05-28 | — | — | — | — | — | — | NO DATA |
 
 *Pctile values are 0-1 causal trailing-504d percentiles. Asterisk (*) = elevated (at or above leg threshold). T0 = onset date.*
 
@@ -323,11 +333,11 @@ _The trajectory above is the raw un-gated max Tier-A subscore; the engine's head
 
 | Offset | Date | Headline state | Context gate | Signal coverage | Tier-A subscore coverage |
 |--------|------|----------------|--------------|-----------------|--------------------------|
-| T-21 | 2024-06-13 | caution | closed | 11/11 | 4/4 |
-| T-5 | 2024-07-09 | caution | closed | 11/11 | 4/4 |
-| T-1 | 2024-07-15 | caution | closed | 11/11 | 4/4 |
-| T0 | 2024-07-16 | caution | closed | 11/11 | 4/4 |
-| T+5 | 2024-07-23 | caution | closed | 11/11 | 4/4 |
+| T-21 | 2024-06-13 | caution | closed | 12/13 | 4/4 |
+| T-5 | 2024-07-09 | caution | closed | 12/13 | 4/4 |
+| T-1 | 2024-07-15 | caution | closed | 12/13 | 4/4 |
+| T0 | 2024-07-16 | caution | closed | 12/13 | 4/4 |
+| T+5 | 2024-07-23 | caution | closed | 12/13 | 4/4 |
 
 - **T-21..T0:** caution+ 22/22 (100.0%); elevated+ 0/22 (0.0%); consecutive caution+ sessions ending at T0 = 22.
 - **T-5..T0:** caution+ 6/6 (100.0%); elevated+ 0/6 (0.0%); consecutive caution+ sessions ending at T0 = 6.
@@ -346,10 +356,12 @@ _The trajectory above is the raw un-gated max Tier-A subscore; the engine's head
 | vol_term | N | 2011-12-30 | 0.077 | 0.218 | 0.421 | 0.304 | 0.712 | 2024-04-15 ⟵ left-censored: already elevated at window open | EARLY |
 | jpy_carry | N | 1994-01-26 | 0.429 | 0.429 | 0.429 | 0.429 | 0.939* | 2024-07-17 | LATE |
 | nh_contraction | N | 1994-02-09 | 0.059 | 0.121 | 0.076 | 0.056 | 0.046 | — | SILENT |
+| corr_floor_break | N | 2006-01-03 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 2024-04-15 ⟵ left-censored: already elevated at window open | EARLY |
+| ai_breadth_divergence | N | 2025-05-28 | — | — | — | — | — | — | NO DATA |
 
 *Pctile values are 0-1 causal trailing-504d percentiles. Asterisk (*) = elevated (at or above leg threshold). T0 = onset date.*
 
-**Left-censored note (bubble_leadership, vol_term):** A T-63 first_elevated date is a lower bound on lead, not a measured onset-anticipation — the leg was already elevated when the lookback window opened. EARLY counts including these rows are marked with ⟵.
+**Left-censored note (bubble_leadership, vol_term, corr_floor_break):** A T-63 first_elevated date is a lower bound on lead, not a measured onset-anticipation — the leg was already elevated when the lookback window opened. EARLY counts including these rows are marked with ⟵.
 
 **Max Tier-A subscore trajectory (0-100) at selected offsets:**
 
@@ -383,6 +395,8 @@ n = 5 named episodes. Counts reflect how many times each leg fell in each classi
 | vol_term | N | 2011-12-30 | 5 (2 left-censored⟵) | 0 | 0 | 0 | 0 |  |
 | jpy_carry | N | 1994-01-26 | 3 | 0 | 1 | 1 | 0 |  |
 | nh_contraction | N | 1994-02-09 | 0 | 0 | 0 | 4 | 1 | YES — worth a second look |
+| corr_floor_break | N | 2006-01-03 | 1 (1 left-censored⟵) | 0 | 0 | 4 | 0 |  |
+| ai_breadth_divergence | N | 2025-05-28 | 0 | 0 | 0 | 0 | 5 |  |
 
 *Legs flagged 'All-Late-or-Silent' had no EARLY or JIT readings in any episode for which data existed. This is descriptive context, not a kill — other factors may limit historical data coverage (e.g., leg born post-2020), or the mechanism may be genuinely reactive rather than leading.*
 
