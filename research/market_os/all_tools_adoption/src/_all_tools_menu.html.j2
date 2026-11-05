@@ -1,0 +1,49 @@
+{# Shared product-header enhancement; include once after _site_nav's closing nav.
+   Default is OFF. The source navigation remains authoritative and usable with no JS.
+   Assets must join the existing copy, serving and visual-review owners before opt-in. #}
+{% if all_tools_enabled is defined and all_tools_enabled is sameas true %}
+<div data-mmx-all-tools>
+  <link rel="stylesheet" href="{{ NP }}all_tools.css?v=1">
+  <button class="mmx-tools-trigger" type="button" data-tools-open hidden
+    aria-haspopup="dialog" aria-controls="mmx-all-tools" aria-expanded="false">All tools</button>
+  <dialog id="mmx-all-tools" class="mmx-tools" aria-labelledby="mmx-all-tools-title">
+    <div class="mmx-tools-shell">
+      <header class="mmx-tools-header">
+        <div>
+          <h2 id="mmx-all-tools-title" data-tools-title tabindex="-1" data-en="All tools" data-zh="所有工具">All tools</h2>
+          <p data-en="Go straight to the right workspace." data-zh="直接进入需要的工作台。">Go straight to the right workspace.</p>
+        </div>
+        <div class="mmx-tools-search">
+          <label class="mmx-tools-search-label" for="mmx-tools-query" data-en="Find a workspace, not a ticker." data-zh="查找工作台，而非股票代码。">Find a workspace, not a ticker.</label>
+          <div class="mmx-tools-search-box">
+            <input id="mmx-tools-query" data-tools-query type="search" autocomplete="off" spellcheck="false" placeholder="Find a tool or topic…">
+            <button class="mmx-tools-icon-button" data-tools-clear type="button" aria-label="Clear tool search" hidden>
+              <svg viewBox="0 0 18 18" aria-hidden="true"><path d="m5 5 8 8m0-8-8 8"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="mmx-tools-icon-button mmx-tools-close" data-tools-close type="button" aria-label="Close all tools">
+          <svg viewBox="0 0 18 18" aria-hidden="true"><path d="m5 5 8 8m0-8-8 8"/></svg>
+        </button>
+      </header>
+      <div class="mmx-tools-categories" data-tools-categories role="group" aria-label="Tool categories"></div>
+      <div class="mmx-tools-body" data-tools-scroll>
+        <div class="mmx-tools-results" data-tools-results></div>
+        <aside class="mmx-tools-aside">
+          <p class="mmx-tools-eyebrow" data-en="YOUR NEXT WORKSPACE" data-zh="下一个工作台">YOUR NEXT WORKSPACE</p>
+          <h3 data-en="Less searching. More understanding." data-zh="少一点寻找，多一点理解。">Less searching. More understanding.</h3>
+          <p data-en="Start with the current section, or search every available category." data-zh="从当前栏目开始，或搜索全部可用分类。">Start with the current section, or search every available category.</p>
+          <div class="mmx-tools-context" data-tools-context></div>
+          <p data-en="Opening tools does not change your market, filters or saved work." data-zh="打开工具菜单不会改变市场、筛选条件或已保存内容。">Opening tools does not change your market, filters or saved work.</p>
+        </aside>
+      </div>
+      <p class="mmx-tools-status" data-tools-status role="status" aria-live="polite" aria-atomic="true"></p>
+      <footer class="mmx-tools-footer">
+        <button data-tools-all type="button" data-en="Browse all destinations →" data-zh="浏览全部目的地 →">Browse all destinations →</button>
+        <span data-tools-count></span>
+      </footer>
+    </div>
+  </dialog>
+  <script src="{{ NP }}all_tools.js?v=1"></script>
+</div>
+{% endif %}

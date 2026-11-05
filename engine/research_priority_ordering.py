@@ -1,0 +1,214 @@
+"""Uncalibrated research-priority ordering (MO-DELTA-006).
+
+A reading order over theme nodes, computed only from already-recorded evidence
+dates and a within-date row count. This module is PURE: it never consults a
+clock, the network, the disk, or another process. Given identical frozen inputs
+it returns identical JSON-safe values.
+
+Authority ceiling is research_priority_only. Calibrated fields stay held.
+"""
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Sequence
+
+SCHEMA = "mastermind.research_priority_ordering.v1"
+ORDERING_RULE_ID = "evidence_recency_then_daily_count_then_name"
+AUTHORITY_CEILING = "research_priority_only"
+LEDGER_ROW = "MO-DELTA-006"
+MAX_ITEMS = 12                      # rendered cap; see §2.11
+DOES_NOT_CLAIM: tuple[str, ...] = (
+    "probability", "confidence", "conviction", "expected impact",
+    "expected return", "priced-in percentage", "direction", "rank", "score",
+    "gate", "size", "trade instruction",
+)
+#: Store columns this module refuses to read. Every one is held behind K5 + Eval-OS
+#: by MO-DELTA-006. Named here so the guard test can assert the refusal mechanically.
+HELD_COLUMNS: frozenset[str] = frozenset({
+    "economic_share", "trading_beta", "attention_share",
+    "economic_share_formula_id", "trading_beta_formula_id", "attention_share_formula_id",
+    "economic_share_display", "trading_beta_display", "attention_share_display",
+    "confidence_basis",
+})
+#: Payload key names that may never exist at any depth of the emitted JSON.
+FORBIDDEN_PAYLOAD_KEYS: frozenset[str] = frozenset({
+    "rank", "ranking", "score", "priority_value", "probability", "prob",
+    "confidence", "conviction", "certainty", "expected_impact", "expected_return",
+    "expected_value", "priced_in", "priced_pct", "priced_percent", "direction",
+    "directional", "edge", "percentile", "zscore", "z_score", "weight", "weighted",
+    "gate", "sizing", "position_size", "upside", "downside", "win_rate",
+    "opportunity_score", "conviction_score", "impact",
+})
+
+_DATE_HEAD = re.compile(r"^(\d{4})-(\d{2})-(\d{2})")
+_ALLOWED_STATES = frozenset({"ok", "empty", "unavailable"})
+
+
+@dataclass(frozen=True, slots=True)
+class ThemeEvidence:
+    """One theme node's already-read, current-belief evidence facts.
+
+    Every field is an ADDRESS or an OBSERVED FACT. There is no measure here.
+    """
+    node_id: str
+    name_en: str
+    name_zh: str
+    recorded_dates: tuple[str, ...]   # 'YYYY-MM-DD' per current-view edge; may be empty
+
+
+@dataclass(frozen=True, slots=True)
+class PriorityItem:
+    position: int | None           # 1-based place in the dated order. None when undated.
+    node_id: str
+    name_en: str
+    name_zh: str
+    last_recorded_date: str | None  # None => the undated bucket
+    statements_recorded: int        # rows recorded on last_recorded_date; 0 when undated
+
+
+def _as_calendar_date(value: str) -> str | None:
+    """Return YYYY-MM-DD or None. Malformed input is skipped, never coerced."""
+    text = (value or "").strip()
+    match = _DATE_HEAD.match(text)
+    if not match:
+        return None
+    year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
+    try:
+        datetime(year, month, day)
+    except ValueError:
+        return None
+    return f"{year:04d}-{month:02d}-{day:02d}"
+
+
+def order_items(themes: Sequence[ThemeEvidence]) -> tuple[PriorityItem, ...]:
+    """Apply §2.1's rule. Total, permutation-invariant, no measure computed."""
+    dated: list[tuple[str, int, str, str, ThemeEvidence]] = []
+    undated: list[ThemeEvidence] = []
+    for theme in themes:
+        usable: list[str] = []
+        for raw in theme.recorded_dates:
+            parsed = _as_calendar_date(str(raw) if raw is not None else "")
+            if parsed is not None:
+                usable.append(parsed)
+        if not usable:
+            undated.append(theme)
+            continue
+        last = max(usable)
+        count = sum(1 for item in usable if item == last)
+        dated.append((last, count, theme.name_en, theme.node_id, theme))
+
+    # Date and count descend; name and node_id ascend. One total key, no input order.
+    dated.sort(key=lambda row: ((-_date_key(row[0])), -row[1], row[2], row[3]))
+    undated.sort(key=lambda theme: (theme.name_en, theme.node_id))
+
+    out: list[PriorityItem] = []
+    for last, count, _name, _nid, theme in dated:
+        out.append(
+            PriorityItem(
+                position=len(out) + 1,
+                node_id=theme.node_id,
+                name_en=theme.name_en,
+                name_zh=theme.name_zh,
+                last_recorded_date=last,
+                statements_recorded=count,
+            )
+        )
+    for theme in undated:
+        out.append(
+            PriorityItem(
+                position=None,
+                node_id=theme.node_id,
+                name_en=theme.name_en,
+                name_zh=theme.name_zh,
+                last_recorded_date=None,
+                statements_recorded=0,
+            )
+        )
+    return tuple(out)
+
+
+def _date_key(value: str) -> int:
+    year, month, day = value.split("-")
+    return int(year) * 10000 + int(month) * 100 + int(day)
+
+
+def max_recorded_date(items: Sequence[PriorityItem]) -> str | None:
+    """The latest evidence date actually present in `items`, or None.
+
+    This is the ONLY lawful source of the page's `asof` (seat ruling R1): it is
+    measured from the same rows that produced every `last_recorded_date` shown,
+    so the closing 'Evidence recorded up to ...' line cannot outrun the list
+    beneath it. Undated themes contribute nothing. Pure: no clock is consulted.
+    """
+    dates = [
+        item.last_recorded_date
+        for item in items
+        if item.last_recorded_date
+    ]
+    return max(dates) if dates else None
+
+
+def to_payload(items: Sequence[PriorityItem], *, asof: str | None, state: str) -> dict:
+    """JSON-safe payload per §2.4. `state` is supplied by the caller; this module
+    never asks a clock and never decides whether a store exists.
+
+    `asof` is derived from `max_recorded_date(items)` itself so a caller
+    (including `compose()`) cannot re-bind it. It is None whenever there is no
+    evidence date to report — an unreadable store, an empty one, or a population
+    with no dated theme. The page omits the line entirely in that case rather
+    than printing a dash (seat ruling R1). The caller `asof` argument is kept
+    for signature stability and then ignored.
+
+    The ordered list holds at most MAX_ITEMS dated themes. Undated themes are
+    never part of that slice: every undated name travels with the payload.
+    """
+    if state not in _ALLOWED_STATES:
+        state = "unavailable"
+    seq = tuple(items)
+    dated = tuple(item for item in seq if item.last_recorded_date)
+    undated = tuple(item for item in seq if not item.last_recorded_date)
+    n_dated = len(dated)
+    n_undated = len(undated)
+    n_total = n_dated + n_undated
+    shown: tuple[PriorityItem, ...] = dated[:MAX_ITEMS] + undated
+    derived_asof = max_recorded_date(seq)
+    _ = asof  # signature-stable; compose cannot re-bind the horizon
+    if state in {"empty", "unavailable"}:
+        shown = ()
+        n_total = 0
+        n_dated = 0
+        n_undated = 0
+        derived_asof = None
+    elif not seq:
+        state = "empty"
+        shown = ()
+        n_total = 0
+        n_dated = 0
+        n_undated = 0
+        derived_asof = None
+    asof = _as_calendar_date(str(derived_asof)) if derived_asof is not None else None
+    return {
+        "schema": SCHEMA,
+        "ordering_rule_id": ORDERING_RULE_ID,
+        "authority_ceiling": AUTHORITY_CEILING,
+        "ledger_row": LEDGER_ROW,
+        "asof": asof,
+        "state": state,
+        "max_items": MAX_ITEMS,
+        "n_total": n_total,
+        "n_dated": n_dated,
+        "n_undated": n_undated,
+        "items": [
+            {
+                "position": item.position,
+                "node_id": item.node_id,
+                "name_en": item.name_en,
+                "name_zh": item.name_zh,
+                "last_recorded_date": item.last_recorded_date,
+                "statements_recorded": item.statements_recorded,
+            }
+            for item in shown
+        ],
+    }

@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-19T12:04:22.053795+00:00",
+  "head": "0905751badd88752cbab19ffedac51e610488035",
+  "target": "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd",
+  "fetched_main": "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd",
+  "preview": {
+    "args": [
+      "merge-tree",
+      "--write-tree",
+      "--name-only",
+      "--messages",
+      "0905751badd88752cbab19ffedac51e610488035",
+      "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd"
+    ],
+    "exit": 1,
+    "stdout": "0c80d48f81406970cc3990c01bb4c635062e4e24\n.github/ci/legacy-jobs.yml\nsite/etfs.html\nsite/special_situations.html\nsite/us_stocks.html\n\nAuto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAuto-merging site/canada.html\nAuto-merging site/canada_stock.html\nAuto-merging site/china.html\nAuto-merging site/china_lookup.html\nwarning: Cannot merge binary files: site/etfs.html (0905751badd88752cbab19ffedac51e610488035 vs. fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd)\nAuto-merging site/etfs.html\nCONFLICT (content): Merge conflict in site/etfs.html\nAuto-merging site/factors.html\nAuto-merging site/hk_stocks.html\nAuto-merging site/intl_stock.html\nAuto-merging site/macro.html\nAuto-merging site/markets.html\nAuto-merging site/news.html\nAuto-merging site/reference.html\nAuto-merging site/sector_central.html\nAuto-merging site/signal_lab.html\nwarning: Cannot merge binary files: site/special_situations.html (0905751badd88752cbab19ffedac51e610488035 vs. fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd)\nAuto-merging site/special_situations.html\nCONFLICT (content): Merge conflict in site/special_situations.html\nAuto-merging site/stock.html\nAuto-merging site/stocks/index.html\nwarning: Cannot merge binary files: site/us_stocks.html (0905751badd88752cbab19ffedac51e610488035 vs. fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\n",
+    "stderr": ""
+  },
+  "incoming_since_fc44": "M\tengine/valuation_assumptions.py\nM\ttests/test_valuation_event_bridge.py\n"
+}

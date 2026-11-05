@@ -1,0 +1,441 @@
+{
+  "schema": "news_impact.endpoints.v1",
+  "authority": "context_only",
+  "prophet_flags": {
+    "may_rank": false,
+    "may_size": false,
+    "may_gate": false,
+    "prophet_authority": false
+  },
+  "owner_status": "PROPOSED-OWNER-FREEZES",
+  "contract_sha256_prefix": "3edc7139",
+  "masterplan_section": "11",
+  "freeze_sections": ["6", "7"],
+  "bootstrap_seed": 20261012,
+  "bootstrap_reps": 9999,
+  "interval_coverage": 0.95,
+  "sample": {
+    "n_historical": 600,
+    "per_template": 200,
+    "templates": [
+      "capital_allocation_event.v1",
+      "demand_guidance_contract_event.v1",
+      "strategic_product_partnership_event.v1"
+    ],
+    "folds": ["f1", "f2", "f3", "f4", "f5"],
+    "prospective": "sealed_extra_slice",
+    "group_id_rule": "(company_id, template, event_date_utc ± 2d)",
+    "cluster_dimensions": ["source_event_group_id", "calendar_period", "issuer_landmark"],
+    "polarity_per_template": {
+      "positive": 90,
+      "negative": 50,
+      "ambiguous": 30,
+      "no_change": 30
+    }
+  },
+  "labeling_kit": {
+    "families": 2,
+    "third_family_adjudication": true,
+    "span_replay": "engine.company_intelligence.documents.verify_span",
+    "label_is": "what_the_source_says_at_the_cited_span",
+    "self_rated_certainty_is_label": false
+  },
+  "normalisation": {
+    "value": "Decimal after stripping grouping separators; scale words applied only when present as whole words in claimed_quote; never inferred from unit or magnitude",
+    "unit_map": {
+      "usd": "USD",
+      "us$": "USD",
+      "$": "USD",
+      "dollars": "USD",
+      "dollar": "USD",
+      "eur": "EUR",
+      "€": "EUR",
+      "gbp": "GBP",
+      "£": "GBP",
+      "shares": "shares",
+      "share": "shares",
+      "percent": "percent",
+      "%": "percent",
+      "pct": "percent",
+      "pp": "percent",
+      "units": "units",
+      "unit": "units"
+    },
+    "percent_rule": "15 percent stays 15 with unit=percent; converting to 0.15 mismatches",
+    "basis": "string equality; T2 metric-keyed consts from freeze F3",
+    "t2_basis_const": {
+      "revenue": "total",
+      "backlog": "total",
+      "units": "total",
+      "eps": "per_share",
+      "bookings": "incremental",
+      "other": "unconstrained"
+    },
+    "period": "(year, quarter|null, period_kind, calendar_end|null); FY is not Q4; null quarter is not 4",
+    "negation": "boolean equality"
+  },
+  "baselines": [
+    {
+      "baseline_id": "current_news_stack",
+      "consumes": ["title", "domain", "author", "body_optional", "engine.news_common.is_low_value", "engine.news_events.classify_event", "engine.news_event_ledger.read"],
+      "emits_packet": false,
+      "population": "same sample_manifest case_id set; silent skip forbidden"
+    },
+    {
+      "baseline_id": "deterministic_materiality_price_factor",
+      "consumes": ["current_news_stack_inputs", "pit_price_factor_tables_licensed"],
+      "emits_packet": false,
+      "population": "same sample_manifest case_id set",
+      "price_threshold_source": "registration file, frozen before returns"
+    },
+    {
+      "baseline_id": "cheap_extractor_no_frontier",
+      "consumes": ["body", "frozen_templates", "phase1_validator"],
+      "emits_packet": true,
+      "population": "same sample_manifest case_id set"
+    },
+    {
+      "baseline_id": "proposed_cascade",
+      "consumes": ["cheap_extractor", "frontier_on_deferred_quarantined_or_classify_disagreement"],
+      "emits_packet": true,
+      "population": "same sample_manifest case_id set"
+    },
+    {
+      "baseline_id": "frontier_only_audit",
+      "consumes": ["frontier_model"],
+      "emits_packet": true,
+      "population": "manifest rows with audit_flag true only; off-subset metrics null_printed"
+    }
+  ],
+  "ablations": [
+    { "switch": "novelty", "removes": "reads of novelty_z, echo counts, prior packets in the group" },
+    { "switch": "source_independence", "removes": "independence constraint; mirrors may count as independent confirmation when switch is off" },
+    { "switch": "economics", "removes": "channel_hint, baseline, economic_claim_class from the packet" },
+    { "switch": "group_transfer", "removes": "transfer_edges and real counterparty ids" },
+    { "switch": "strategic_milestones", "removes": "independently_observed_milestone novelty path" },
+    { "switch": "price_conditioned", "removes": "contemporaneous return/factor gates" }
+  ],
+  "undecidable_at_600": {
+    "metric_id": "unsupported_ticker_to_supplier_count",
+    "reason": "zero-event claim; dependence-aware interval cannot certify zero at n_eff << 600 (T3 ~20 clusters)",
+    "n_independent_groups_needed": 3000,
+    "n_cases_after_deff": { "low": 4000, "high": 8000, "icc": "0.05-0.2", "mean_cluster_size": "3-8" }
+  },
+  "too_small_at_600": [
+    "unsupported_ticker_to_supplier_count",
+    "critical_numeric_correctness_auto_published on T3 stratum",
+    "pair_precision on T3",
+    "pair_recall on T3",
+    "period_matched_revision_hit",
+    "reported_operating_change_agree",
+    "actual_buyback_execution",
+    "preregistered_strategic_milestone",
+    "net_return_horizon",
+    "group_relative_return",
+    "drawdown_window",
+    "multi_quarter_strategic_payoff"
+  ],
+  "families": [
+    {
+      "family": "fact_integrity",
+      "predictive_weight": "qa_only",
+      "why_qa_only": "Historical extraction QA; models can know famous amounts even from old documents (masterplan §11).",
+      "metrics": [
+        {
+          "metric_id": "critical_numeric_correctness_auto_published",
+          "formula": "mean(grade_critical_numeric==correct) over critical numeric slots of auto_published packets",
+          "unit_of_analysis": "slot_in_case_in_group",
+          "label": "field_mark plus gold quantity; two families, third-family adjudication, span replay",
+          "interval_method": "cluster_bootstrap_percentile on group_id; two_way_cluster_cgm on issuer when n_issuers>=20",
+          "proposed_bar": 0.98,
+          "proposed_bar_applies_to": "auto_published only",
+          "decidable_at_600": "straddle_risk; T3_stratum_no"
+        },
+        {
+          "metric_id": "critical_numeric_correctness_all_dispositions",
+          "formula": "same mean over all packets regardless of disposition",
+          "unit_of_analysis": "slot_in_case_in_group",
+          "label": "field_mark plus gold quantity",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": null,
+          "decidable_at_600": "diagnostic"
+        },
+        {
+          "metric_id": "absence_correctness",
+          "formula": "mean(gold form==absent and system reason equals gold reason)",
+          "unit_of_analysis": "slot",
+          "label": "field_mark / gold absence reason exact enum",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": null,
+          "decidable_at_600": "diagnostic"
+        },
+        {
+          "metric_id": "span_replay_pass_rate",
+          "formula": "mean(documents.verify_span succeeds) on auto_published present quantities",
+          "unit_of_analysis": "span",
+          "label": "system evidence spans; owner verify_span",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": 1.0,
+          "decidable_at_600": "construction_kill_on_any_fail"
+        },
+        {
+          "metric_id": "correction_replay_success",
+          "formula": "mean(sys.supersedes_fact_id==gold.supersedes_fact_id and successor critical numerics correct) among gold novelty==corrected_fact",
+          "unit_of_analysis": "case_correction_subset",
+          "label": "gold novelty, supersedes_fact_id, field marks",
+          "interval_method": "cluster_bootstrap_percentile; often not_estimable",
+          "proposed_bar": "success_on_subset",
+          "decidable_at_600": "descriptive"
+        },
+        {
+          "metric_id": "disposition_accounting_complete",
+          "formula": "1 iff every manifest case_id has exactly one system_output and accounting parts sum to manifest_n",
+          "unit_of_analysis": "receipt",
+          "label": "none",
+          "interval_method": "not_a_rate",
+          "proposed_bar": true,
+          "decidable_at_600": true
+        }
+      ]
+    },
+    {
+      "family": "clustering_integrity",
+      "predictive_weight": "qa_only",
+      "why_qa_only": "Pair and novelty grades are extraction/routing QA on historical items.",
+      "metrics": [
+        {
+          "metric_id": "pair_precision",
+          "formula": "among system-joined unordered pairs, share that share gold group_id",
+          "unit_of_analysis": "unordered_pair",
+          "label": "manifest group_id",
+          "interval_method": "cluster by gold group_id and calendar week",
+          "proposed_bar": null,
+          "decidable_at_600": "T3_too_small"
+        },
+        {
+          "metric_id": "pair_recall",
+          "formula": "among gold pairs in the same group, share system-joined",
+          "unit_of_analysis": "gold_pair",
+          "label": "manifest group_id",
+          "interval_method": "cluster by gold group_id and calendar week",
+          "proposed_bar": null,
+          "decidable_at_600": "T3_too_small"
+        },
+        {
+          "metric_id": "false_event_merge_rate",
+          "formula": "share of system clusters that mix >=2 gold groups",
+          "unit_of_analysis": "system_cluster",
+          "label": "manifest group_id",
+          "interval_method": "cluster_bootstrap on system cluster ids",
+          "proposed_bar": null,
+          "decidable_at_600": "reporting"
+        },
+        {
+          "metric_id": "missed_novel_term_rate",
+          "formula": "share of gold novelty in {new_magnitude_timing_commitment_counterparty, independently_observed_milestone, corrected_fact} assigned by system to new_reporting_of_old_fact or commentary",
+          "unit_of_analysis": "case",
+          "label": "gold novelty",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": null,
+          "decidable_at_600": "reporting"
+        },
+        {
+          "metric_id": "root_source_independence_hold",
+          "formula": "1 minus share of groups where >=2 auto_published packets are both new_magnitude_timing_commitment_counterparty; observable stand-in for masterplan §11 no duplicate mirror-driven confidence increments; no confidence field is emitted",
+          "unit_of_analysis": "group",
+          "label": "gold group_id plus system novelty",
+          "interval_method": "group-level clopper_pearson_diagnostic plus cluster bootstrap",
+          "proposed_bar": 0,
+          "decidable_at_600": "descriptive_cannot_certify_zero"
+        }
+      ]
+    },
+    {
+      "family": "routing_quality",
+      "predictive_weight": "qa_only",
+      "why_qa_only": "Routing labels are source-text decisions; historical famous events are known to models.",
+      "metrics": [
+        {
+          "metric_id": "material_event_routing_recall",
+          "formula": "hits / labeled_material; hit requires published disposition, matching template, and not TAM-as-revenue_demand",
+          "unit_of_analysis": "case",
+          "label": "routing_label, template, demand_stage; two families plus third",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": 0.95,
+          "decidable_at_600": "maybe_overall_T3_no"
+        },
+        {
+          "metric_id": "cost_at_fixed_recall",
+          "formula": "median tokens_in+tokens_out among constructions that reach recall>=0.95 on f1-f4, evaluated on f5; null if none reach it",
+          "unit_of_analysis": "run",
+          "label": "routing_label",
+          "interval_method": "not_a_case_rate",
+          "proposed_bar": null,
+          "decidable_at_600": "null_if_unreached"
+        },
+        {
+          "metric_id": "strategic_nonnumeric_coverage",
+          "formula": "share of labeled-material T3 cases with stated_quantity.form==absent that are auto_published or reviewed_published",
+          "unit_of_analysis": "case",
+          "label": "routing_label plus template T3 plus absence",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": null,
+          "decidable_at_600": "reporting"
+        },
+        {
+          "metric_id": "reject_audit_miss_rate",
+          "formula": "share of gold routing_label==reject that the system auto_publishes",
+          "unit_of_analysis": "case",
+          "label": "routing_label",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": null,
+          "decidable_at_600": "reporting"
+        },
+        {
+          "metric_id": "defer_disposition_match",
+          "formula": "share of gold routing_label==defer with system disposition==deferred; a match rate, not a probability field",
+          "unit_of_analysis": "case",
+          "label": "routing_label",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": null,
+          "decidable_at_600": "reporting"
+        }
+      ]
+    },
+    {
+      "family": "economic_reasoning",
+      "predictive_weight": "qa_only",
+      "why_qa_only": "Independent reviewers adjudicate whether a proposed mechanism follows from source-backed facts. LLM self-confidence is not the label (masterplan §11).",
+      "metrics": [
+        {
+          "metric_id": "mechanism_follows_from_source",
+          "formula": "share of published packets whose channel_hint is in the gold allowed_hints set",
+          "unit_of_analysis": "case",
+          "label": "third-family allowed_hints subset of channel_hint enum",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": null,
+          "decidable_at_600": "reporting_only"
+        },
+        {
+          "metric_id": "negative_channel_represented",
+          "formula": "share of gold-negative published packets with negated==true or revision_direction in {cut,withdrawn,cancelled} or event_kind in {delay,withdrawal} or commitment_status==withdrawn",
+          "unit_of_analysis": "case",
+          "label": "polarity plus packet fields",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": null,
+          "decidable_at_600": "reporting_only"
+        },
+        {
+          "metric_id": "contrary_quote_present_when_required",
+          "formula": "share of T3 published packets with gold economic_claim_class in {option_path, moat_duration_claim} that carry non-null contrary_mechanism_quote",
+          "unit_of_analysis": "case",
+          "label": "gold economic_claim_class",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": null,
+          "decidable_at_600": "reporting_only"
+        }
+      ]
+    },
+    {
+      "family": "business_outcomes",
+      "predictive_weight": "prospective_primary",
+      "why_qa_only_on_historical": "Famous historical operating outcomes are known to current models. Historical slices print as qa_only. Missing outcomes remain missing.",
+      "metrics": [
+        {
+          "metric_id": "period_matched_revision_hit",
+          "formula": "among cases with a later licensed revision for the same issuer-period, share whose revision_direction sign agrees",
+          "unit_of_analysis": "issuer_period",
+          "label": "licensed revision file or typed absence if rights missing",
+          "interval_method": "cluster by issuer and calendar period",
+          "proposed_bar": null,
+          "decidable_at_600": false
+        },
+        {
+          "metric_id": "reported_operating_change_agree",
+          "formula": "sign agreement with later reported operating metric named in the gold packet period",
+          "unit_of_analysis": "issuer_period",
+          "label": "filing-derived operating change or null",
+          "interval_method": "cluster by issuer and calendar period",
+          "proposed_bar": null,
+          "decidable_at_600": false
+        },
+        {
+          "metric_id": "actual_buyback_execution",
+          "formula": "T1 share_repurchase later executed_amount in filings versus packet commitment",
+          "unit_of_analysis": "issuer_program",
+          "label": "filing execution or null",
+          "interval_method": "issuer cluster",
+          "proposed_bar": null,
+          "decidable_at_600": false
+        },
+        {
+          "metric_id": "preregistered_strategic_milestone",
+          "formula": "share of T3 gold independently_observed_milestone that later appears in a primary filing or release",
+          "unit_of_analysis": "case",
+          "label": "later primary source or null",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": null,
+          "decidable_at_600": false
+        }
+      ]
+    },
+    {
+      "family": "market_outcomes",
+      "predictive_weight": "prospective_primary",
+      "why_qa_only_on_historical": "Current LLMs can know famous historical returns. Strongest predictive weight is prospective. No price target is emitted. Delistings are preserved.",
+      "metrics": [
+        {
+          "metric_id": "net_return_horizon",
+          "formula": "mean net return of pre-registered security_id at delays 1d, 5d, 21d using PIT listing alias; ticker is never the key",
+          "unit_of_analysis": "issuer_event",
+          "label": "PIT total return or null if delisted",
+          "interval_method": "cluster by event-week and issuer",
+          "proposed_bar": null,
+          "decidable_at_600": false
+        },
+        {
+          "metric_id": "group_relative_return",
+          "formula": "net_return_horizon minus pre-registered economic-group simple average on the same window",
+          "unit_of_analysis": "issuer_event",
+          "label": "PIT total return or null",
+          "interval_method": "cluster by event-week and issuer",
+          "proposed_bar": null,
+          "decidable_at_600": false
+        },
+        {
+          "metric_id": "drawdown_window",
+          "formula": "min cumulative net return on the 21d window",
+          "unit_of_analysis": "issuer_event",
+          "label": "PIT total return or null",
+          "interval_method": "cluster by event-week and issuer",
+          "proposed_bar": null,
+          "decidable_at_600": false
+        },
+        {
+          "metric_id": "coverage_rate",
+          "formula": "share of published material cases for which a return could be computed",
+          "unit_of_analysis": "case",
+          "label": "listing presence",
+          "interval_method": "cluster_bootstrap_percentile on group_id",
+          "proposed_bar": null,
+          "decidable_at_600": "reporting"
+        }
+      ]
+    }
+  ],
+  "grading_functions": {
+    "critical_numeric_correctness": "value, unit, basis, period, negation equal after normalisation; absence_correct when typed absence matches; unevidenced when present number fails verify_span",
+    "material_event_routing_recall": "labeled material events reaching the correct template and not TAM-as-earnings-demand",
+    "unsupported_ticker_to_supplier_assertion": "any transfer edge without a cited span whose replayed text names both parties"
+  },
+  "leakage_rules": [
+    "fold=prospective iff group.min(seendate) > t_prospective pinned in registration",
+    "prospective labels absent in mode tune and select",
+    "prospective system_outputs forbidden in mode tune",
+    "prompt corpus hashed; hit on prospective case_id or source_sha256 fails audit",
+    "model vintage date <= t_prospective when known; vintage_unknown printed",
+    "endpoints_sha256 must match registration",
+    "f1-f3 develop, f4 select among registered constructions, f5 confirm QA, prospective scored once in mode lock",
+    "business and market labels for prospective join later by case_id; selecting after reading those returns fails outcome_conditioned_selection"
+  ]
+}
