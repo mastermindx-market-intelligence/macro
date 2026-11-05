@@ -1862,7 +1862,7 @@ def _seo_director_state() -> dict:
 
 
 def _seo_search_console(repo: Path) -> dict:
-    """Read the last collector result; this is not a live authentication check."""
+    """Read the last result. Age is its reporting as_of, not a collection clock."""
     result = {
         "connected": None,
         "available": None,
@@ -1884,8 +1884,8 @@ def _seo_search_console(repo: Path) -> dict:
         return result
     result.update({
         "available": state["available"], "as_of": as_of.isoformat(), "age_days": age,
-        "note": ("Last recorded collection succeeded." if state["available"] else
-                 "Last recorded collection was unavailable.")
+        "note": ("Last recorded result is available." if state["available"] else
+                 "Last recorded result was unavailable.")
                 + " Current connection has not been checked.",
     })
     # Allowlist display metadata; never forward service-account/credential fields.
@@ -1925,7 +1925,7 @@ def seo(root=None) -> dict:
     honest day-0 state — never an error, never a fake-healthy zero.
 
     Search Console reads the retained search_console_state.json result, with its
-    collection date and coverage limits. Current connection remains unknown:
+    reporting as_of date and coverage limits. Current connection remains unknown:
     a historical successful collection is not a live credential check.
 
     Response keys: ok, available, note?, as_of, health_score, census, sitemap,

@@ -308,6 +308,7 @@ def test_gsc_renderer_preserves_snapshot_limits_and_escapes_metadata(empty_root)
     run = subprocess.run([node, "-e", code], capture_output=True, text=True, check=True)
     rendered = json.loads(run.stdout)
     assert "Retained collection" in rendered[0] and "2000-11-01" in rendered[0]
+    assert "Snapshot as of" in rendered[0] and "Last collection:" not in rendered[0]
     assert "10" in rendered[0] and "Requested window" in rendered[0]
     assert "Missing URLs do not prove zero traffic" in rendered[0]
     assert "Current connection has not been checked" in rendered[0]

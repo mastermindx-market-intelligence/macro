@@ -13601,7 +13601,7 @@ function seoSearchConsoleBlock(sc) {
   const label = s.available === true ? "Retained collection" :
     s.available === false ? "Last collection unavailable" : "No collection record";
   const details = [];
-  if (s.as_of) details.push(["Last collection", s.as_of +
+  if (s.as_of) details.push(["Snapshot as of", s.as_of +
     (Number.isInteger(s.age_days) ? ` (${s.age_days} days ago)` : "")]);
   if (s.property) details.push(["Property", s.property]);
   if (s.window && s.window.start && s.window.end)
