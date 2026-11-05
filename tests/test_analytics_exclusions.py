@@ -81,13 +81,39 @@ def test_excluded_cte_contains_emails_and_location(monkeypatch):
     assert "'::1'" in cte
 
 
-def test_excluded_cte_empty_config_is_valid_and_matches_nothing(monkeypatch):
+def test_excluded_cte_empty_config_still_hides_registered_operator(monkeypatch):
     monkeypatch.setattr(a, "_load_exclusions",
                         lambda: {"emails": [], "locations": [], "ips": [], "visitor_ids": [], "bots": {}, "geo_overrides": []})
     cte = a._excluded_cte()
-    assert "auth.users where false" in cte
+    # The exact operator account is excluded even when the optional private config is absent.
+    assert "lower(email) in (\'admin@mastermind-x.com\')" in cte
     assert "ip_geo where false" in cte
     assert "as ip where false" in cte      # empty excl_ips
+
+
+def test_operator_email_is_merged_with_private_exclusions_without_duplicates(monkeypatch):
+    monkeypatch.setattr(a, "_load_exclusions", lambda: {
+        "emails": ["other@example.com", "admin@mastermind-x.com"],
+        "locations": [], "ips": [], "visitor_ids": [], "bots": {}, "geo_overrides": [],
+    })
+    cte = a._excluded_cte()
+    assert "lower(email) in ('admin@mastermind-x.com','other@example.com')" in cte
+    assert cte.count("'admin@mastermind-x.com'") == 1
+
+
+def test_implicit_operator_link_does_not_exclude_other_registered_accounts(monkeypatch):
+    monkeypatch.setattr(a, "_load_exclusions", lambda: {
+        "emails": [], "locations": [], "ips": [], "visitor_ids": [],
+        "bots": {}, "geo_overrides": [],
+    })
+    cte = a._excluded_cte()
+    # An explicit seed is still hidden; otherwise a shared fingerprint/IP only
+    # hides a linked cookie when it has no authenticated *other* account owner.
+    assert "excluded as (select visitor_id from excl_seed" in cte
+    assert "union select l.visitor_id from excl_link l" in cte
+    assert "where not exists (select 1 from public.analytics_events e3" in cte
+    assert "e3.visitor_id = l.visitor_id" in cte
+    assert "e3.user_id not in (select id from excl_users)" in cte
 
 
 # ---- surface functions: SQL generation (network monkeypatched) -------------

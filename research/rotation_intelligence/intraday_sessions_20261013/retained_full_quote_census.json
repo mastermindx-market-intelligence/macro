@@ -1,0 +1,140 @@
+{
+  "active_basket_member_count": 702,
+  "anchor_clocks": {
+    "SPY": {
+      "basis": "regular",
+      "currency": "USD",
+      "delayMin": 277.5,
+      "source": "yahoo",
+      "ts": 1792008000000,
+      "tsSynthetic": null
+    },
+    "XLB": {
+      "basis": "regular",
+      "currency": "USD",
+      "delayMin": 277.7,
+      "source": "yahoo",
+      "ts": 1792008000000,
+      "tsSynthetic": null
+    },
+    "XLC": {
+      "basis": "regular",
+      "currency": "USD",
+      "delayMin": 277.7,
+      "source": "yahoo",
+      "ts": 1792008000000,
+      "tsSynthetic": null
+    },
+    "XLE": {
+      "basis": "regular",
+      "currency": "USD",
+      "delayMin": 277.7,
+      "source": "yahoo",
+      "ts": 1792008000000,
+      "tsSynthetic": null
+    },
+    "XLF": {
+      "basis": "regular",
+      "currency": "USD",
+      "delayMin": 277.7,
+      "source": "yahoo",
+      "ts": 1792008000000,
+      "tsSynthetic": null
+    },
+    "XLI": {
+      "basis": "regular",
+      "currency": "USD",
+      "delayMin": 277.7,
+      "source": "yahoo",
+      "ts": 1792008000000,
+      "tsSynthetic": null
+    },
+    "XLK": {
+      "basis": "regular",
+      "currency": "USD",
+      "delayMin": 277.7,
+      "source": "yahoo",
+      "ts": 1792008000000,
+      "tsSynthetic": null
+    },
+    "XLP": {
+      "basis": "regular",
+      "currency": "USD",
+      "delayMin": 277.7,
+      "source": "yahoo",
+      "ts": 1792008000000,
+      "tsSynthetic": null
+    },
+    "XLRE": {
+      "basis": "regular",
+      "currency": "USD",
+      "delayMin": 277.7,
+      "source": "yahoo",
+      "ts": 1792008000000,
+      "tsSynthetic": null
+    },
+    "XLU": {
+      "basis": "regular",
+      "currency": "USD",
+      "delayMin": 277.7,
+      "source": "yahoo",
+      "ts": 1792008000000,
+      "tsSynthetic": null
+    },
+    "XLV": {
+      "basis": "regular",
+      "currency": "USD",
+      "delayMin": 277.7,
+      "source": "yahoo",
+      "ts": 1792008000000,
+      "tsSynthetic": null
+    },
+    "XLY": {
+      "basis": "regular",
+      "currency": "USD",
+      "delayMin": 277.7,
+      "source": "yahoo",
+      "ts": 1792008000000,
+      "tsSynthetic": null
+    }
+  },
+  "members_with_quote_objects": 700,
+  "membership_commit": "f2e58641ec339052484758ce16a5481435e4f8bf",
+  "membership_sha256": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae",
+  "missing_anchors": [],
+  "n_quotes": 2166,
+  "observed_at": "2026-10-15T03:05:02.153773+00:00",
+  "parent_commit_count": 0,
+  "present_anchors": [
+    "SPY",
+    "XLB",
+    "XLC",
+    "XLE",
+    "XLF",
+    "XLI",
+    "XLK",
+    "XLP",
+    "XLRE",
+    "XLU",
+    "XLV",
+    "XLY"
+  ],
+  "proof_kind": "real_retained_quote_schema_and_coverage_only_not_backtest",
+  "quote_object_coverage_is_not_rotation_qualification": true,
+  "response_bytes": 400756,
+  "response_sha256": "ef51fdd92bccd72e721af7452f2379e107cb1131e677b9626319d6d3550b772b",
+  "retained_snapshot_history_commits": 1,
+  "root_keys": [
+    "asof",
+    "meta",
+    "quotes",
+    "sessions",
+    "source",
+    "ts"
+  ],
+  "snapshot_commit": "99f656615250e527aec8bcc2389a08b2e658ea90",
+  "source_type_counts": {
+    "tencent": 171,
+    "yahoo": 1995
+  }
+}

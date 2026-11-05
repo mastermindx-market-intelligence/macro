@@ -8,6 +8,7 @@ counted as ``SKIPPED_SEEN`` and left untouched.
 from __future__ import annotations
 
 import time
+import math
 from dataclasses import dataclass, field
 
 from . import db
@@ -30,12 +31,16 @@ class DiscoverResult:
     total_scanned: int = 0
     healed: int = 0
     excluded: int = 0
+    heal_attempted: int = 0
+    heal_deferred: int = 0
+    heal_elapsed_s: float = 0.0
 
     def summary(self) -> str:
         return (
             f"scanned={self.total_scanned} new={self.discovered_new} "
             f"skipped_seen={self.skipped_seen} excluded={self.excluded} "
-            f"healed={self.healed}"
+            f"healed={self.healed} heal_attempted={self.heal_attempted} "
+            f"heal_deferred={self.heal_deferred} heal_elapsed_s={self.heal_elapsed_s:.3f}"
         )
 
 
@@ -68,7 +73,20 @@ def discover(
     backfill: bool = False,
     fetch_summary: bool = True,
     heal_limit: int = 50,
+    heal_budget_s: float | None = None,
 ) -> DiscoverResult:
+    # Optional old-row healing must not consume every scanned item's /extra
+    # request before the first download tick. Keep the successful-heal quota,
+    # but bound attempts by that same quota and accumulated optional call work.
+    # This is a soft admission budget: one admitted request can overrun it;
+    # the existing client's timeout/retry law remains unchanged. New papers,
+    # discovery coverage and latest-feed merging are outside this budget.
+    # None keeps existing manual/narrow admission semantics; the wide trickle
+    # caller explicitly opts in, with no new environment/configuration knob.
+    if heal_budget_s is not None and (isinstance(heal_budget_s, bool)
+            or not isinstance(heal_budget_s, (int, float))
+            or not math.isfinite(heal_budget_s) or heal_budget_s < 0):
+        raise ValueError("heal_budget_s must be a finite nonnegative number")
     now = int(time.time())
     limit = limit or cfg.max_articles_per_run
 
@@ -113,7 +131,17 @@ def discover(
         need_title = looks_truncated(cur_title)
         if not (need_summary or need_title):
             return
-        extra = client.item_extra(blob_id) or {}
+        if (heal_budget_s is not None
+                and (result.heal_attempted >= heal_limit
+                     or result.heal_elapsed_s >= heal_budget_s)):
+            result.heal_deferred += 1
+            return
+        result.heal_attempted += 1
+        started = time.monotonic()
+        try:
+            extra = client.item_extra(blob_id) or {}
+        finally:
+            result.heal_elapsed_s += max(0.0, time.monotonic() - started)
         updates: dict = {}
         if need_summary:
             s = extra.get("summary")

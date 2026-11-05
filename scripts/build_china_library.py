@@ -93,6 +93,89 @@ def stock_tradability_ok(
     return None
 
 
+def load_tradability_metadata() -> dict[str, dict]:
+    """Read-only mktcap / name / ST-flag maps for the tradability screen (P6).
+
+    Exactly the best-effort load ``main()`` ran inline before this extraction —
+    same files, precedence, placeholder removal, Tushare overlay and moneyflow
+    latest-row ST flags; never fatal, writes nothing. Shared with the CN live
+    pack's tradability gate so both paths answer one owner.
+    """
+    mktcap_by: dict[str, float] = {}
+    name_zh_by: dict[str, str] = {}
+    name_en_by: dict[str, str] = {}
+    _PLACEHOLDER_MCAP = 30.0     # china_universe seeds CSI/config extras with a 30.0亿 sentinel; 46% of
+    #                              members carry it exactly. It is NOT a real cap — feeding it into
+    #                              Altman-Z distress zones / P-S coloring fabricates readings from a
+    #                              constant. Thread the sentinel to UNKNOWN (masterplan §W6-CN fix 5).
+    try:
+        mp = config.data_dir() / "china_search" / "members.parquet"
+        if mp.exists():
+            mdf = pd.read_parquet(mp)
+            if mdf.index.name == "ticker" and "ticker" not in mdf.columns:
+                mdf = mdf.reset_index()
+            tcol = "ticker" if "ticker" in mdf.columns else mdf.columns[0]
+            if "mktcap_yi" in mdf.columns:
+                mktcap_by = {str(r[tcol]): float(r["mktcap_yi"])
+                             for _, r in mdf.iterrows()
+                             if pd.notna(r.get("mktcap_yi")) and float(r["mktcap_yi"]) != _PLACEHOLDER_MCAP}
+            if "name_zh" in mdf.columns:
+                name_zh_by = {str(r[tcol]): str(r["name_zh"])
+                              for _, r in mdf.iterrows() if pd.notna(r.get("name_zh"))}
+            if "name_en" in mdf.columns:
+                name_en_by = {str(r[tcol]): str(r["name_en"])
+                              for _, r in mdf.iterrows() if pd.notna(r.get("name_en"))}
+        # prefer real per-name caps from Tushare valuation total_mv_yi (asof-gated so a frozen
+        # gated plane can't reintroduce stale caps) — fills exactly the placeholder-dropped names.
+        try:
+            from engine.tushare_freshness import prefer_tushare as _prefer_tv
+            tv = pd.read_parquet(config.data_dir() / "tushare" / "valuation.parquet")
+            chosen, _src = _prefer_tv(tv if "total_mv_yi" in tv.columns else None,
+                                      pd.read_parquet(config.data_dir() / "china_a_val" / "pe.parquet")
+                                      if (config.data_dir() / "china_a_val" / "pe.parquet").exists() else None)
+            if _src == "tushare" and chosen is not None and "total_mv_yi" in chosen.columns:
+                real = {str(r["ticker"]): float(r["total_mv_yi"])
+                        for _, r in chosen.iterrows()
+                        if pd.notna(r.get("ticker")) and pd.notna(r.get("total_mv_yi")) and float(r["total_mv_yi"]) > 0}
+                mktcap_by = {**real, **mktcap_by}     # real caps fill the placeholder gaps; keep any Sina real caps
+                log.info("china mktcap: filled %d names from Tushare total_mv_yi (placeholders dropped)", len(real))
+        except Exception as _te:  # noqa: BLE001 — Tushare cap overlay is additive
+            log.debug("china tushare mktcap overlay skipped (%s)", _te)
+    except Exception as e:  # noqa: BLE001
+        log.debug("china mktcap/name load failed: %s", e)
+
+    # ST/*ST/退 delisting-risk flags from a field that ACTUALLY CARRIES the prefix.
+    # ADVERSARIAL CHECK (masterplan §W6-CN fix 5): the Sina-sourced members.parquet name_zh
+    # strips the ST prefix entirely (0/1494 matches), so the name_zh-keyed ST screen was
+    # SILENTLY BLIND — a known-ST name in the universe (600777.SS) reads as "新潮能源" here while
+    # Tushare moneyflow carries it as "*ST新潮". Source ST status from the Tushare moneyflow name
+    # field (512 ST names on its latest snapshot) which preserves the prefix. Asof-gated so a
+    # frozen gated plane cannot resurrect a name that has since been un-ST'd or delisted.
+    st_flag_by: dict[str, bool] = {}
+    try:
+        from engine.tushare_freshness import frame_asof as _tf_asof
+        mfp = config.data_dir() / "tushare" / "moneyflow.parquet"
+        if mfp.exists():
+            mf = pd.read_parquet(mfp)
+            if "name" in mf.columns and "ticker" in mf.columns:
+                # keep only the latest snapshot row per ticker (the current ST status)
+                if "trade_date" in mf.columns:
+                    mf = mf.sort_values("trade_date").drop_duplicates("ticker", keep="last")
+                for _, r in mf.iterrows():
+                    nm = str(r.get("name", ""))
+                    if nm:
+                        st_flag_by[str(r["ticker"])] = is_st(nm, None)
+                _n_st = sum(1 for v in st_flag_by.values() if v)
+                log.info("china ST screen: sourced %d ST/*ST/退 flags from Tushare moneyflow "
+                         "(through %s); Sina name_zh dropped the prefix (0 matches)",
+                         _n_st, _tf_asof(mf))
+    except Exception as _se:  # noqa: BLE001 — additive; falls back to name_zh screen
+        log.debug("china ST-flag source unavailable (%s)", _se)
+
+    return {"mktcap_by": mktcap_by, "name_zh_by": name_zh_by,
+            "name_en_by": name_en_by, "st_flag_by": st_flag_by}
+
+
 def universe_price_adjustment() -> dict[str, str]:
     """Per-name basis map for the CN store (yfinance ``auto_adjust=True``).
 
@@ -2106,45 +2189,51 @@ def _attach_eligible_coiled_fire(
 
 
 def _refresh_context_drips() -> None:
-    """Refresh additive China context only on data-owning lanes.
-
-    ``render.yml`` and ``CHINA_FAST_RENDER`` are site-only rebakes: they must
-    reuse committed caches and must not make AkShare/Eastmoney/Tushare network
-    calls whose writes are discarded.  The normal nightly leaves both flags
-    unset and therefore retains the existing drip behavior unchanged.
-    """
-    import os
-
+    """Refresh additive context outside the established render-only modes."""
     if (
         os.environ.get("RENDER_NO_DRIP") == "1"
         or os.environ.get("CHINA_FAST_RENDER") == "1"
     ):
-        log.info("china context drips: no-network rerender; reusing committed caches")
+        log.info("china context drips: render-only mode; reusing committed caches")
         return
 
+    # Refresh the additive A-share CONTEXT caches that power the US-parity per-stock panels
+    # (analyst consensus / earnings-disclosure calendar / own-history valuation percentile /
+    # per-name margin financing). Keyless akshare/Eastmoney drips — best-effort, idempotent
+    # within a day, capped where per-name. GFW-reachable from CI only; a blocked source just
+    # leaves its cache (stale or absent) and the page hides that panel. Mirrors the US
+    # build_stock_library equity_profile drip — keeps the fetch out of the workflow YAML.
     import importlib
-
     _val_cap = int((config.load().get("china") or {}).get("valuation_per_build", 60))
     for _mod, _kw in (("collectors.china_analyst", {}),
                       ("collectors.china_earnings", {}),
                       ("collectors.china_margin_detail", {}),
                       ("collectors.china_valuation", {"max_new": _val_cap}),
-                      ("collectors.china_comment", {}),
-                      ("collectors.china_lhb", {}),
-                      ("collectors.china_block_trades", {}),
-                      ("collectors.china_zt_pool", {}),
-                      ("collectors.china_buyback", {}),
-                      ("collectors.china_pledge", {}),
-                      ("collectors.china_unlocks", {}),
-                      ("collectors.china_preannounce", {}),
-                      ("collectors.china_st", {}),
-                      ("collectors.tushare_valuation", {}),
-                      ("collectors.tushare_margin", {}),
-                      ("collectors.tushare_moneyflow", {}),
-                      ("collectors.tushare_chips", {}),
-                      ("collectors.tushare_broker", {}),
-                      ("collectors.tushare_forecast", {}),
-                      ("collectors.tushare_history", {})):
+                      # US-parity alt-data feeds (snapshot refreshers, idempotent within a UTC day)
+                      ("collectors.china_comment", {}),       # 千股千评 attention / inst-participation / main-force cost
+                      ("collectors.china_lhb", {}),           # 龙虎榜 Dragon-Tiger smart/hot-money + institutional seats
+                      ("collectors.china_block_trades", {}),  # 大宗交易 block premium/discount
+                      ("collectors.china_zt_pool", {}),       # 涨停板 limit-up momentum / sector breadth
+                      ("collectors.china_buyback", {}),       # 回购 corporate buybacks
+                      ("collectors.china_pledge", {}),        # 股权质押 forced-sell tail risk
+                      ("collectors.china_unlocks", {}),       # 限售股 restricted-share unlock queue
+                      ("collectors.china_preannounce", {}),   # 业绩预告 earnings pre-announcements
+                      # china_inquiry has been FULLY RETIRED (W4 review fix): inquiry letters are
+                      # now sourced exclusively from collectors/china_filings.py →
+                      # data/china_filings/filings.parquet (category=='inquiry_letter').
+                      # The engine's read-fallback to the frozen data/china_inquiry/inquiry.parquet
+                      # stays in place to surface honest asof staleness if filings degrades.
+                      ("collectors.china_st", {}),            # ST board snapshot + history + goodwill
+                      # PREMIUM Tushare feeds — GATED on TUSHARE_TOKEN (each refresh() self-no-ops
+                      # without the token, so CI / keyless builds are unaffected). See
+                      # research/TUSHARE_INTEGRATION.md.
+                      ("collectors.tushare_valuation", {}),   # daily_basic per-name PE/PB/turnover/mv
+                      ("collectors.tushare_margin", {}),      # margin_detail per-name 融资余额
+                      ("collectors.tushare_moneyflow", {}),   # moneyflow_dc per-name + sector 主力资金 (push2 replacement)
+                      ("collectors.tushare_chips", {}),       # cyq_perf 筹码胜率 holder cost-basis
+                      ("collectors.tushare_broker", {}),      # broker_recommend 券商金股 pick tally
+                      ("collectors.tushare_forecast", {}),    # forecast 业绩预告 + report_rc revision
+                      ("collectors.tushare_history", {})):    # daily-grid flow/chips history → china_validation
         try:
             importlib.import_module(_mod).refresh(**_kw)
         except Exception as e:  # noqa: BLE001 — additive context, never fatal
@@ -2205,77 +2294,14 @@ def main(alpha: dict | None = None) -> dict | None:
         (fdir / "china_alpha.json").write_text(
             json.dumps(alpha, separators=(",", ":"), default=str))
 
-    # market caps (亿) for the fundamentals valuation pass + Chinese names (for the ST screen) — best-effort
-    mktcap_by: dict[str, float] = {}
-    name_zh_by: dict[str, str] = {}
-    name_en_by: dict[str, str] = {}
-    _PLACEHOLDER_MCAP = 30.0     # china_universe seeds CSI/config extras with a 30.0亿 sentinel; 46% of
-    #                              members carry it exactly. It is NOT a real cap — feeding it into
-    #                              Altman-Z distress zones / P-S coloring fabricates readings from a
-    #                              constant. Thread the sentinel to UNKNOWN (masterplan §W6-CN fix 5).
-    try:
-        mp = config.data_dir() / "china_search" / "members.parquet"
-        if mp.exists():
-            mdf = pd.read_parquet(mp)
-            if mdf.index.name == "ticker" and "ticker" not in mdf.columns:
-                mdf = mdf.reset_index()
-            tcol = "ticker" if "ticker" in mdf.columns else mdf.columns[0]
-            if "mktcap_yi" in mdf.columns:
-                mktcap_by = {str(r[tcol]): float(r["mktcap_yi"])
-                             for _, r in mdf.iterrows()
-                             if pd.notna(r.get("mktcap_yi")) and float(r["mktcap_yi"]) != _PLACEHOLDER_MCAP}
-            if "name_zh" in mdf.columns:
-                name_zh_by = {str(r[tcol]): str(r["name_zh"])
-                              for _, r in mdf.iterrows() if pd.notna(r.get("name_zh"))}
-            if "name_en" in mdf.columns:
-                name_en_by = {str(r[tcol]): str(r["name_en"])
-                              for _, r in mdf.iterrows() if pd.notna(r.get("name_en"))}
-        # prefer real per-name caps from Tushare valuation total_mv_yi (asof-gated so a frozen
-        # gated plane can't reintroduce stale caps) — fills exactly the placeholder-dropped names.
-        try:
-            from engine.tushare_freshness import prefer_tushare as _prefer_tv
-            tv = pd.read_parquet(config.data_dir() / "tushare" / "valuation.parquet")
-            chosen, _src = _prefer_tv(tv if "total_mv_yi" in tv.columns else None,
-                                      pd.read_parquet(config.data_dir() / "china_a_val" / "pe.parquet")
-                                      if (config.data_dir() / "china_a_val" / "pe.parquet").exists() else None)
-            if _src == "tushare" and chosen is not None and "total_mv_yi" in chosen.columns:
-                real = {str(r["ticker"]): float(r["total_mv_yi"])
-                        for _, r in chosen.iterrows()
-                        if pd.notna(r.get("ticker")) and pd.notna(r.get("total_mv_yi")) and float(r["total_mv_yi"]) > 0}
-                mktcap_by = {**real, **mktcap_by}     # real caps fill the placeholder gaps; keep any Sina real caps
-                log.info("china mktcap: filled %d names from Tushare total_mv_yi (placeholders dropped)", len(real))
-        except Exception as _te:  # noqa: BLE001 — Tushare cap overlay is additive
-            log.debug("china tushare mktcap overlay skipped (%s)", _te)
-    except Exception as e:  # noqa: BLE001
-        log.debug("china mktcap/name load failed: %s", e)
-
-    # ST/*ST/退 delisting-risk flags from a field that ACTUALLY CARRIES the prefix.
-    # ADVERSARIAL CHECK (masterplan §W6-CN fix 5): the Sina-sourced members.parquet name_zh
-    # strips the ST prefix entirely (0/1494 matches), so the name_zh-keyed ST screen was
-    # SILENTLY BLIND — a known-ST name in the universe (600777.SS) reads as "新潮能源" here while
-    # Tushare moneyflow carries it as "*ST新潮". Source ST status from the Tushare moneyflow name
-    # field (512 ST names on its latest snapshot) which preserves the prefix. Asof-gated so a
-    # frozen gated plane cannot resurrect a name that has since been un-ST'd or delisted.
-    st_flag_by: dict[str, bool] = {}
-    try:
-        from engine.tushare_freshness import frame_asof as _tf_asof
-        mfp = config.data_dir() / "tushare" / "moneyflow.parquet"
-        if mfp.exists():
-            mf = pd.read_parquet(mfp)
-            if "name" in mf.columns and "ticker" in mf.columns:
-                # keep only the latest snapshot row per ticker (the current ST status)
-                if "trade_date" in mf.columns:
-                    mf = mf.sort_values("trade_date").drop_duplicates("ticker", keep="last")
-                for _, r in mf.iterrows():
-                    nm = str(r.get("name", ""))
-                    if nm:
-                        st_flag_by[str(r["ticker"])] = is_st(nm, None)
-                _n_st = sum(1 for v in st_flag_by.values() if v)
-                log.info("china ST screen: sourced %d ST/*ST/退 flags from Tushare moneyflow "
-                         "(through %s); Sina name_zh dropped the prefix (0 matches)",
-                         _n_st, _tf_asof(mf))
-    except Exception as _se:  # noqa: BLE001 — additive; falls back to name_zh screen
-        log.debug("china ST-flag source unavailable (%s)", _se)
+    # market caps (亿) for the fundamentals valuation pass + Chinese names (for the ST
+    # screen) — best-effort, read-only (extracted into load_tradability_metadata, shared
+    # with the CN live pack's tradability gate; nightly behaviour unchanged)
+    _trad_meta = load_tradability_metadata()
+    mktcap_by = _trad_meta["mktcap_by"]
+    name_zh_by = _trad_meta["name_zh_by"]
+    name_en_by = _trad_meta["name_en_by"]
+    st_flag_by = _trad_meta["st_flag_by"]
 
     # live China net-liquidity regime — the single macro conviction modifier on the
     # ladder (CN has no macro_risk/VIX leg, unlike the US build)
@@ -4904,6 +4930,19 @@ def main(alpha: dict | None = None) -> dict | None:
                      len(_ripening_rows) + len(_ripening_falling), _rn)
         except Exception as _re:  # noqa: BLE001 — ledger is additive, never fatal
             log.warning("W1-B ripening ledger failed (%s)", _re)
+        # Library provenance only: the ONE W3C selection finalizer is later in
+        # build_china, after served reasons/fallback/board_since. This prospective
+        # generation belongs to the existing library invocation, never a render retry.
+        try:
+            import uuid as _w3c_uuid
+            from datetime import datetime as _w3c_dt, timezone as _w3c_tz
+            from engine.theme_graph.selection_cohort_publication import source_handoff
+            wide["w3c_source"] = source_handoff(
+                generation_id=_w3c_uuid.uuid4().hex,
+                availability="PARTIAL" if failed else "VALID",
+                available_at=_w3c_dt.now(_w3c_tz.utc).isoformat())
+        except Exception as _w3c_source_e:  # noqa: BLE001 — existing source publication survives
+            log.warning("W3C library provenance unavailable (%s)", _w3c_source_e)
         # Serialize BEFORE opening the file; on TypeError name the offending key path
         # (a bare "keys must be str..." from json.dumps is unlocatable in CI logs —
         # that anonymity is what let the 07-13 tuple-key crash run for 3 sessions).
@@ -5038,6 +5077,16 @@ def main(alpha: dict | None = None) -> dict | None:
             )
             wide["track_ledger"] = None
         setups = wide
+        # Honest zero-universe outage: this is NOT a valid finalized empty cohort.
+        try:
+            import uuid as _w3c_uuid
+            from datetime import datetime as _w3c_dt, timezone as _w3c_tz
+            from engine.theme_graph.selection_cohort_publication import source_handoff
+            wide["w3c_source"] = source_handoff(
+                generation_id=_w3c_uuid.uuid4().hex, availability="OUTAGE",
+                available_at=_w3c_dt.now(_w3c_tz.utc).isoformat())
+        except Exception as _w3c_source_e:  # noqa: BLE001 — preserve incumbent outage publication
+            log.warning("W3C outage provenance unavailable (%s)", _w3c_source_e)
         _standouts_path = site / "factordata" / "china_standouts.json"
         _standouts_payload = json.dumps(
             wide,
