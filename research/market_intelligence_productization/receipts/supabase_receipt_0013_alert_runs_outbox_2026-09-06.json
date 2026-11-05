@@ -1,0 +1,91 @@
+{
+ "label": "0013_alert_runs_outbox",
+ "sql_file": "0013_alert_runs_outbox.sql",
+ "applied_at": "2026-09-07T00:18:39Z",
+ "apply_status": 201,
+ "apply_result": "ok",
+ "pre": {
+  "alert_runs": [
+   {
+    "reg": null
+   }
+  ],
+  "alert_outbox": [
+   {
+    "reg": null
+   }
+  ]
+ },
+ "post": {
+  "tables": {
+   "alert_runs": [
+    {
+     "reg": "alert_runs"
+    }
+   ],
+   "alert_outbox": [
+    {
+     "reg": "alert_outbox"
+    }
+   ]
+  },
+  "indexes": {
+   "alert_runs_lane_run_id": [
+    {
+     "indexname": "alert_runs_lane_run_id"
+    }
+   ],
+   "alert_runs_started_at": [
+    {
+     "indexname": "alert_runs_started_at"
+    }
+   ],
+   "alert_outbox_fire_event_id": [
+    {
+     "indexname": "alert_outbox_fire_event_id"
+    }
+   ],
+   "alert_outbox_user_status": [
+    {
+     "indexname": "alert_outbox_user_status"
+    }
+   ]
+  },
+  "policies": {
+   "alert_runs_select_authenticated": [
+    {
+     "polname": "alert_runs_select_authenticated"
+    }
+   ],
+   "alert_runs_service_role_all": [
+    {
+     "polname": "alert_runs_service_role_all"
+    }
+   ],
+   "alert_outbox_select_owner": [
+    {
+     "polname": "alert_outbox_select_owner"
+    }
+   ],
+   "alert_outbox_service_role_all": [
+    {
+     "polname": "alert_outbox_service_role_all"
+    }
+   ]
+  },
+  "rls": {
+   "alert_runs": [
+    {
+     "relrowsecurity": true
+    }
+   ],
+   "alert_outbox": [
+    {
+     "relrowsecurity": true
+    }
+   ]
+  },
+  "functions": {}
+ },
+ "method": "Supabase Management API POST /v1/projects/{ref}/database/query (README raw fallback; scripts/supabase_apply.py parser bug terminal#516)"
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000320193-23-000077",
+    "expected_period_end": "2023-07-01",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "8158000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_positive",
+    "pack_id": "PK04",
+    "polarity": "positive",
+    "reason": "aapl-20230701.htm | us-gaap:ContractWithCustomerLiabilityCurrent @ c-24 | 'Deferred revenue 8,158 7,912' | Current deferred revenue at 2023-07-01; condensed consolidated balance sheet current liabilities, in millions.",
+    "section_family": "contract_liability",
+    "split": "held_out",
+    "target_id": "contract_liability_current",
+    "target_kind": "extract",
+    "trial_id": "PK04|0000320193-23-000077|extract|contract_liability_current"
+  },
+  {
+    "accession": "0000320193-23-000077",
+    "expected_period_end": "2023-07-01",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "81797000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_positive",
+    "pack_id": "PK04",
+    "polarity": "positive",
+    "reason": "aapl-20230701.htm | us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax @ c-21 | 'Total net sales 81,797 82,959' | Total net sales for the three months ended 2023-07-01; condensed consolidated statement of operations, in millions.",
+    "section_family": "revenue",
+    "split": "held_out",
+    "target_id": "revenue",
+    "target_kind": "extract",
+    "trial_id": "PK04|0000320193-23-000077|extract|revenue"
+  }
+]

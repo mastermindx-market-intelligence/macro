@@ -1,0 +1,1030 @@
+{
+  "document_kind": "research_delivery_snapshot_not_canonical_runtime_state",
+  "created_at": "2026-09-16T06:50:58.645832+00:00",
+  "program": "WS:EXECUTIVE-CAPACITY-FABRIC",
+  "operation": "agent-fabric-end-to-end-fable-integration-20260913-sol-001",
+  "carrier": "C0BSBM78V1N/1789324397.992989",
+  "new_root": false,
+  "protected_mastermind": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+  "default_macro": "459eafb838d9944e58e6a65413e282f2a13826ef",
+  "terminal": "NOT_ENTERED_IN_THIS_SCOPE / not inspected",
+  "skillpack": {
+    "schema": "mastermind.sol_skillpack.v1",
+    "version": "1.0.1",
+    "minimum_bootstrap_major": 1,
+    "loaded_commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+    "compatibility": "compatible",
+    "pro_mode_receipt": "Task fit CROSS_SYSTEM_ARCHITECTURE; no fabricated duration, actual mode not self-attested, formal complete exception not established here; no mode or runtime authority changed"
+  },
+  "procedures": [
+    {
+      "path": "docs/sol_skills/INDEX.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "bc7adf334d16c1695030c9b04cd7fc5753818dbc",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/sol_skills/INDEX.md"
+    },
+    {
+      "path": "docs/sol_skills/COLD_START.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "95b5dd5c72d9e503f7fdfe73b2e965aa5f42ee46",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/sol_skills/COLD_START.md"
+    },
+    {
+      "path": "docs/sol_skills/ACTIVE_EXECUTION.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "f150da3912965230347ae457aa2b20e48843249b",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/sol_skills/ACTIVE_EXECUTION.md"
+    },
+    {
+      "path": "docs/sol_skills/RECONCILE_STATE.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "1373b72a13fb4a084b0331eb2bcf2d4a680d9738",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/sol_skills/RECONCILE_STATE.md"
+    },
+    {
+      "path": "docs/sol_skills/COMMISSION_WAVE.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "83b5ad3c95cf533aa9d501c324723f5b003e56cc",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/sol_skills/COMMISSION_WAVE.md"
+    },
+    {
+      "path": "docs/sol_skills/WORKER_AVENUE_ROUTING.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "5c0820beedbf14e32a3342c745e36f75463cdfaa",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/sol_skills/WORKER_AVENUE_ROUTING.md"
+    },
+    {
+      "path": "docs/sol_skills/REVIEW_RETURN.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "18577b498d2763f9993d92ad9632a0e8e1e977c3",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/sol_skills/REVIEW_RETURN.md"
+    },
+    {
+      "path": "docs/sol_skills/CLOSEOUT.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "e1be4043665ea68399917209014f864e4dac61f7",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/sol_skills/CLOSEOUT.md"
+    },
+    {
+      "path": "docs/sol_skills/WATCHER_ACTION_LOOP.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "b30c36e2704d2fb4bf7c97032ea8deec21f0a5bc",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/sol_skills/WATCHER_ACTION_LOOP.md"
+    },
+    {
+      "path": "docs/sol_skills/WEB_CEO_DELEGATION.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "886f5d6fbded2abbe48e4bd20c16be6453a12a7e",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/sol_skills/WEB_CEO_DELEGATION.md"
+    },
+    {
+      "path": "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "21ac0d28c3ca36d4fefdfc501453f3338636df0d",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md"
+    },
+    {
+      "path": "docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "255c32b5aad8bfedfab6ebaadef0166b64c8aa7c",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md"
+    },
+    {
+      "path": "docs/EXECUTIVE_CHAT_NATIVE_SOL_HIERARCHY_LAW.md",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "blob": "e1f5d9f5fab1c06167e7bb8180ce20945fa15b84",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/EXECUTIVE_CHAT_NATIVE_SOL_HIERARCHY_LAW.md"
+    }
+  ],
+  "sources": {
+    "S01": {
+      "kind": "current_user_commission",
+      "title": "ASTRA PRO COMMISSION supplied attachment",
+      "scope": "research, architecture and final incumbent Fable handoff; no implementation"
+    },
+    "S02": {
+      "kind": "protected_source",
+      "repository": "Mastermind",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "tree": "15462d3cff4a9f50fd46f572a832db5a4ee6ed5a",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/commit/0fe8074ff953b2ced9025ed40f0f66019c759967"
+    },
+    "S03": {
+      "kind": "default_branch_source",
+      "repository": "macro",
+      "commit": "459eafb838d9944e58e6a65413e282f2a13826ef",
+      "tree": "25c8a42fa87ecc7f3f69f7957ba827bdf2920595",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/commit/459eafb838d9944e58e6a65413e282f2a13826ef",
+      "note": "REST protected=false; do not infer absence of rulesets"
+    },
+    "S04": {
+      "kind": "same_pin_procedure",
+      "commit": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "schema": "mastermind.sol_skillpack.v1",
+      "version": "1.0.1",
+      "bootstrap": 1,
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/sol_skills/INDEX.md"
+    },
+    "S05": {
+      "kind": "transport_semantic_evidence",
+      "operation": "agent-fabric-end-to-end-fable-integration-20260913-sol-001",
+      "carrier": "C0BSBM78V1N/1789324397.992989",
+      "last_known_transfer_edge": "1789538596.826349",
+      "repair_return": "1789537338.714919",
+      "note": "Root delta now contains six-field677 repair, W1-H4 freeze,653 same-carrier repair and685 review intake. No concrete Claude8 pickup recovered. Slack is transport, not lifecycle.",
+      "latest_controlling_repair_edge": "1789540416.767189"
+    },
+    "S06": {
+      "kind": "native_read",
+      "path": "~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/HANDOFF_SEAT_TRANSFER_2026-09-16.md",
+      "note": "Read on Studio; historical instructions are advisory, explicitly corrected by this current commission"
+    },
+    "S07": {
+      "kind": "candidate_and_fresh_ci",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/677",
+      "head": "8bd1935c4f462cc52dde433483eece2eb15eff02",
+      "test_run": 35058446734,
+      "test_job": 104673446685,
+      "ci": "test+CodeQL+3 analyses completed success; directly queried",
+      "review": "R9 historical approval superseded for release by S30; R18-B4 remains accepted, six-field binding repair mandatory"
+    },
+    "S08": {
+      "kind": "protected_code_read",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/control_plane/executive_service.py",
+      "blob": "1898e9bcefa9d14e3e44e0c756b0a7250411a570",
+      "ranges": [
+        "1980-2045",
+        "5990-6065"
+      ],
+      "fact": "Generic production command checks raw ceo_submit_armed; primary App v2 uses App transport arm. Neither currently uses the shared receipt/current-binding guard; existing frozen W1-H4 is S31."
+    },
+    "S09": {
+      "kind": "candidate",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/653",
+      "head": "959b37b329c44d81874dc23944746a5bd594e3b7",
+      "fact": "Installed-read source repair remains held; S33 identifies six deterministic current-base failures and same-carrier repair requirement"
+    },
+    "S10": {
+      "kind": "organizational_record",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/459eafb838d9944e58e6a65413e282f2a13826ef/agentos/workstreams/WS-EXECUTIVE-CAPACITY-FABRIC.md",
+      "fact": "HF1 B/C/D open statements stale; H0 source released but native repair/P0/CF2-I remain held in record"
+    },
+    "S11": {
+      "kind": "dated_native_prestage",
+      "path": "incumbent kit/orch/fabric/H0_PRESTAGE_PACKET_2026-09-16.md",
+      "fixed_macro_commit": "dcdd939c45b23abce5ba04f95e330ac914a3904b",
+      "repair_merge": "229aebce5e8d0c1c7372f5fead9c24516b027cc1",
+      "transport_sha256": "2a623319ff2f4881f3a36f7cc60e3415ff16cd9c281f90c18fc412fe38719465",
+      "transport_bytes": 22410240579,
+      "bundle_pin": "7642aea155d2817219135b24246b55c1d7611c66",
+      "bundle_sha256": "e9e2c0ca55e76f99703468c538940e2840ad7c6576a9ad0fac6e7bbf63614913",
+      "state": "inert prestage only; not current H0/P0 acceptance; root-only old source path unverified"
+    },
+    "S12": {
+      "kind": "protected_code_read",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/control_plane/worker_adapter.py",
+      "blob": "2a0d2ab3687191befa834dd557da6ae26393d7f0",
+      "fact": "Codex implementation; external Claude-compatible class; no native Anthropic descriptor; ACP descriptor unimplemented"
+    },
+    "S13": {
+      "kind": "protected_profile_read",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/config/subscription_provider_profiles.v1.json",
+      "blob": "7a617875319e799cf3f7cec04a7af94149c4d823",
+      "fact": "GLM/Alibaba/MiniMax autonomous=false, interactive_only=true, unattended=false, production_backend=false"
+    },
+    "S14": {
+      "kind": "protected_substrate",
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/630",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/655"
+      ],
+      "fact": "Hermetic pair and Runtime union contract protected; real host service binding/activation separate"
+    },
+    "S15": {
+      "kind": "protected_code_read",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/control_plane/executive_coo_policy.py",
+      "blob": "c2e53097a9e5ba377368338941316830dc1a6257",
+      "fact": "fanout8/depth1/repair2/review2/children16; reviewed step reserves9; two reviewed steps total19"
+    },
+    "S16": {
+      "kind": "source_and_research",
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/643",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/637"
+      ],
+      "fact": "CCTX0 protected; native compaction implementation not evidenced; N1-N18 design on current research carrier"
+    },
+    "S17": {
+      "kind": "no_orphan_reconciliation",
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/Mastermind/blob/0fe8074ff953b2ced9025ed40f0f66019c759967/docs/superpowers/specs/2026-08-29-autonomous-delegation-current-source-reconciliation.md",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/681"
+      ],
+      "fact": "AD-RET2 sustained semantic yield remains distinct from terminal RESULT and consultation; no live no-orphan canary recovered"
+    },
+    "S18": {
+      "kind": "web_continuity_substrate",
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/609",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/629",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/651",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/656"
+      ],
+      "fact": "Source obligations/precursors/projections do not prove exact unattended Web re-entry"
+    },
+    "S19": {
+      "kind": "remote_transport",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/650",
+      "head": "a4e9bfc0a9565c7005dafa8840f486b690c364be",
+      "fact": "Draft; eight current changed files vs seven initial body paths; no installed remote Attempt proof"
+    },
+    "S20": {
+      "kind": "physical_host_owners",
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/638",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/644",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/682",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/683"
+      ],
+      "fact": "Separate recovery, observation, physical BEGIN and placement; no new scheduler"
+    },
+    "S21": {
+      "kind": "operator_projection",
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/664",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/646",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/623",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/675",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/678"
+      ],
+      "fact": "Protected read/projection source; production visibility and consumption not established"
+    },
+    "S22": {
+      "kind": "native_claude_owners",
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/455",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/662",
+        "https://github.com/mastermindx-market-intelligence/macro/pull/7162",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/676",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/684"
+      ],
+      "fact": "PF1 native worker absent; Family B B0 held; native browser fixture not native account admission"
+    },
+    "S23": {
+      "kind": "provider_control_candidates",
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/pull/7103",
+        "https://github.com/mastermindx-market-intelligence/macro/pull/7143",
+        "https://github.com/mastermindx-market-intelligence/macro/pull/7116",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/pull/671"
+      ],
+      "fact": "Shared resources, observation and economics previews; holds and currentness gates not waived"
+    },
+    "S24": {
+      "kind": "service_consumers",
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/pull/7179",
+        "https://github.com/mastermindx-market-intelligence/macro/pull/7185",
+        "https://github.com/mastermindx-market-intelligence/macro/pull/7192"
+      ],
+      "fact": "Workload policy, SDK invocation defect, installed-vs-loaded observation; not production adoption"
+    },
+    "S25": {
+      "kind": "current_native_access",
+      "fact": "Remote Desktop Commander reports Studio/MacBook/WSL/Mini online, Windows endpoint offline. Studio bounded read commands succeeded as uid501. This is not broker/realm/Capacity readiness."
+    },
+    "S26": {
+      "kind": "connector_lane",
+      "fact": "Prior Executive call actually returned401/manual reauthentication. Current tool discovery did not yield Executive read action; focused Mastermind plugin search returned empty. No current Runtime row/claim census, no raw-socket bypass."
+    },
+    "S27": {
+      "kind": "current_browser_candidate",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/684",
+      "head": "9d47bbecfe11e626fe45de88ba5a57c9624758ca",
+      "fact": "Five native fixture cases; fake provider; 936-character fill telemetry; actual production-provider surface not tested"
+    },
+    "S28": {
+      "kind": "config_adoption_candidate",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7192",
+      "head": "94f1f90bee100f5bb6f5afb41df7c4463aa4f505",
+      "fact": "Six paths; one cache; actual HTTP auth fixture tests; no deployment; conflicting current mergeability vs older clean body requires refresh"
+    },
+    "S29": {
+      "kind": "native_kit_observation",
+      "path": "/Volumes/Mastermind/agent-evidence/sol-live-fabric-native-observation-20260916-001.md",
+      "fact": "Dated actual kit observation; duplicate status-writer shapes, mutating snapshot GC, ephemeral Go home, missing explicit parent/output linkage; not Executive proof"
+    },
+    "S30": {
+      "kind": "current_exact_head_repair_ruling",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/677#issuecomment-5693096670",
+      "created_at": "2026-09-16T06:33:05Z",
+      "head": "8bd1935c4f462cc52dde433483eece2eb15eff02",
+      "fact": "R18-B4 accepted; six-field live-binding defect remains; same-child REQUEST_REPAIR, FULL_REREVIEW_REQUIRED, no release"
+    },
+    "S31": {
+      "kind": "frozen_next_owner_architecture",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5693198894",
+      "created_at": "2026-09-16T06:43:20Z",
+      "design_ref": "w1h4-ceo-submit-runtime-authority-composition-20260916-sol-001",
+      "fact": "NOT_STARTED; one injected current-facts guard at both App v2 and generic submit entrances; depends on accepted/protected677, terminal STOP/writer release and653 settled Phase1C custody"
+    },
+    "S32": {
+      "kind": "other_owner_readonly_host_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5693227883",
+      "fact": "Latest owner reports live control4c148709f52ff036d71dd212abd2688212d91ed0, App46bea20832a8f0d01559eb8bfb0e9b1406774956, sockets/processes present, ceo-submit-state-v1.json absent. This Astra did not repeat native host probe; deeper query was platform-blocked and not bypassed."
+    },
+    "S33": {
+      "kind": "current_base_repair_ruling",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/653#issuecomment-5693279557",
+      "created_at": "2026-09-16T06:50:57Z",
+      "head": "959b37b329c44d81874dc23944746a5bd594e3b7",
+      "fact": "Six deterministic failures in CI35040156376 and shadow35040156400: incomplete closed config fixtures, ancestry-contaminated identity scan, obsolete status assertion; incumbent repair required, W1-H4 excluded"
+    },
+    "S34": {
+      "kind": "source_custody_census_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5693255119",
+      "fact": "653 is real adjacent Phase1C writer;124 inherited listing has current-identical runtime blobs; W1-H4 cannot race653"
+    },
+    "S35": {
+      "kind": "environment_storage_candidate",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/685",
+      "head": "b1d2012ab5ca2565af40a66635d3f2507cf4b5b6",
+      "fact": "Three existing-owner paths; bounded UUID/free-space preflight, not reservation;47 tests reported; source-continuity auth unavailable; disclosed nesting stress write blocked, no alternative retry"
+    }
+  },
+  "external_primary_sources": {
+    "E01": {
+      "url": "https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan",
+      "accessed": "2026-09-16",
+      "page_date": "2026-06-16",
+      "implication": "The June15 notice PAUSES separate SDK credits. Older text below it is historical. Do not create a separate monthly SDK wallet on that proposal."
+    },
+    "E02": {
+      "url": "https://code.claude.com/docs/en/legal-and-compliance",
+      "accessed": "2026-09-16",
+      "implication": "Native subscription authentication is not permission to intermediate credentials or use personal credentials as a customer-facing product backend; evaluate actual supported native mode and current internal gates."
+    },
+    "E03": {
+      "url": "https://platform.minimax.io/subscribe/token-plan",
+      "accessed": "2026-09-16",
+      "implication": "Interactive developer plan; provider recommends pay-as-you-go for production. This recommendation is not represented as a blanket legal ban. Internal unattended disarm remains controlling."
+    },
+    "E04": {
+      "url": "https://opencode.ai/docs/go/",
+      "accessed": "2026-09-16",
+      "implementation_commit": "e03db9bc6908f75c9334d8aa997deeaac81c0298",
+      "implementation_urls": [
+        "https://github.com/anomalyco/opencode/blob/e03db9bc6908f75c9334d8aa997deeaac81c0298/packages/console/core/src/quota.ts",
+        "https://github.com/anomalyco/opencode/blob/e03db9bc6908f75c9334d8aa997deeaac81c0298/packages/console/app/src/lib/lite-usage.ts"
+      ],
+      "implication": "Shared underlying windows and model debit multipliers. Model-equivalent allowances are not independent balances. Optional paid balance overflow needs separate budget approval.",
+      "upstream": "https://github.com/anomalyco/opencode/tree/e03db9bc6908f75c9334d8aa997deeaac81c0298"
+    },
+    "E05": {
+      "url": "https://learn.chatgpt.com/docs/app-server",
+      "accessed": "2026-09-16",
+      "implication": "thread/compact/start returns immediately; contextCompaction item and terminal turn notifications must establish completion under current exact native version."
+    },
+    "E06": {
+      "url": "https://help.openai.com/en/articles/20001143",
+      "accessed": "2026-09-16",
+      "implication": "Workspace Agent API triggers start published workspace-agent runs. This source does not prove an API for unattended continuation of an arbitrary existing Personal ChatGPT conversation."
+    },
+    "E07": {
+      "url": "https://agentclientprotocol.com/updates",
+      "accessed": "2026-09-16",
+      "implication": "Session resume and close stabilization does not upgrade the installed qualified SDK. Negotiate actual advertised capabilities and test exact version/late cancellation notifications."
+    },
+    "E08": {
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/security-considerations",
+      "accessed": "2026-09-16",
+      "implication": "Resource/audience binding and no token passthrough support keeping original Executive OAuth boundary; a401 does not authorize another identity."
+    },
+    "E09": {
+      "url": "https://tailscale.com/docs/features/access-control/grants",
+      "accessed": "2026-09-16",
+      "implication": "Tailnet policy can restrict network/application access; reachability alone does not certify reviewed MH1 mTLS/Attempt authorization."
+    }
+  },
+  "protected_do_not_redo": [
+    {
+      "repository": "Mastermind",
+      "pr": 575,
+      "merge_sha": "91dbdf876f1f1ea10d24342b9d4ea49ba081bfcc",
+      "capability": "ACP provider-free qualification",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/575",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 576,
+      "merge_sha": "cb95ae8bf76382df14d1017691e4ccc0b6356f7c",
+      "capability": "Provider-neutral broker",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/576",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 577,
+      "merge_sha": "ef4682c8b998a9ca522b4690fadf938aa57029ad",
+      "capability": "Codex subscription realm substrate",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/577",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 578,
+      "merge_sha": "d6beb70f1b6278a5d656a8b88384c9e2936332ef",
+      "capability": "External subscription profiles",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/578",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 579,
+      "merge_sha": "3a8cc8b007c4573bd01efd909bf6d0e786c71663",
+      "capability": "Guarded ACP worker receipts",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/579",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 581,
+      "merge_sha": "27a5d893ca28f7006c1007dffa51e677c9c7a4ab",
+      "capability": "Claude-compatible external-provider worker",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/581",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 583,
+      "merge_sha": "7868e2c2727a8871f64f387de9ce00dc6a67cff9",
+      "capability": "Provider-plan/harness binding",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/583",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 591,
+      "merge_sha": "8e25bb32601ef5f40a689da6d6f24149e79e31fa",
+      "capability": "Active execution procedure",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/591",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 594,
+      "merge_sha": "6a02b6af8a1b8856ad231582af284513a5aa7502",
+      "capability": "Economics preview composition",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/594",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 599,
+      "merge_sha": "0ae0ad3c8729e4ffea1ee6cf342bff633708a744",
+      "capability": "Five-tool Executive composition",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/599",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 602,
+      "merge_sha": "51b815ab9527e15c9218b049f622dc4d3e0bfbc4",
+      "capability": "Attended Workbench action/read tools",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/602",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 609,
+      "merge_sha": "2aa28559a857461fd674fae52d2904116b854891",
+      "capability": "Hermetic Web-parent re-entry precursor",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/609",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 610,
+      "merge_sha": "6f77fb69494958cd984f3c03d4f8f9cc2b20b878",
+      "capability": "Hermetic native round trip",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/610",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 611,
+      "merge_sha": "f4730cc65436d86500ef827c24493f83a7e41def",
+      "capability": "Consultation contract",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/611",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 615,
+      "merge_sha": "46b6cf16769532caf8b23ffd20d25a5b7304c1cc",
+      "capability": "Hermetic consultation runtime",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/615",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 622,
+      "merge_sha": "25ea63b7b6076e71717cb67037d95d26888f6d41",
+      "capability": "Go effect-safe transport kernel",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/622",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 623,
+      "merge_sha": "fdf6d19afd24eb125ecff4af5234e4dec6082f1e",
+      "capability": "Live conversation projection source",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/623",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 628,
+      "merge_sha": "935f8d05d7f855f810c5f14c005ab845305f235f",
+      "capability": "Heterogeneous named degradation guards",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/628",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 629,
+      "merge_sha": "bffe2ca8506346ea278c8ee469bf1ac30a4de008",
+      "capability": "Offline CEO obligation source",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/629",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 630,
+      "merge_sha": "1ee9b8b36882d175dfebdda74446e516d7f9812c",
+      "capability": "Hermetic heterogeneous pair / plan v2",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/630",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 632,
+      "merge_sha": "e1f752a58df8f874efa12e30957d911627a0c4f8",
+      "capability": "Web CEO delegation source",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/632",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 638,
+      "merge_sha": "42c2688df57007319cb0af231cf5ed29da505ad4",
+      "capability": "Host recovery readiness",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/638",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 641,
+      "merge_sha": "4709b9483182c20153868dac164e1f621aac505c",
+      "capability": "Modern Workbench MCP discovery",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/641",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 643,
+      "merge_sha": "bb96e8381870c864720318293462c4332ab7d453",
+      "capability": "CCTX-0 checkpoint authority",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/643",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 645,
+      "merge_sha": "4d1f45bf600afc2d264a74852c69887084aa52ff",
+      "capability": "MiniMax unarmed binding truth",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/645",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 646,
+      "merge_sha": "e2f74915e0591734c4776e28ae66174e4f2dc963",
+      "capability": "Hermetic operating-context projection",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/646",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 652,
+      "merge_sha": "f249802eab3695ff24c9a903798899466c444252",
+      "capability": "Go spec-only realm",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/652",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 654,
+      "merge_sha": "19b6111891ffd742ceec7c96f437a2a890847c92",
+      "capability": "Production CEO boolean fence",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/654",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 655,
+      "merge_sha": "36f74c02edc938f7f5c41f38743f93ee34be2b2b",
+      "capability": "Runtime host work-placement-union contract",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/655",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 664,
+      "merge_sha": "a9e6e1667abecdff500bced40c9816c1611c3dd7",
+      "capability": "Read-only Fabric job projector",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/664",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 667,
+      "merge_sha": "8de062fb3b5a327466cd98cda0dc7d44b8fd229d",
+      "capability": "CEO armed flag config composition",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/667",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 675,
+      "merge_sha": "7642aea155d2817219135b24246b55c1d7611c66",
+      "capability": "Visible-turn maintenance",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/675",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 678,
+      "merge_sha": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+      "capability": "Stale-generation full-key cleanup",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/678",
+      "ceiling": "source protection; NOT inferred production proof"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 679,
+      "merge_sha": "f590c068880dbb848bda90b80b73dbcb6688d6fc",
+      "capability": "Web CEO Skillpack enrollment",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/679",
+      "ceiling": "source protection; NOT inferred production proof"
+    }
+  ],
+  "active_candidates": [
+    {
+      "repository": "Mastermind",
+      "pr": 677,
+      "head": "8bd1935c4f462cc52dde433483eece2eb15eff02",
+      "branch": "claude/w1h3-ceo-submit-arm-transaction",
+      "base_branch": "master",
+      "custody": "SAME_CHILD_WRITER / REQUEST_REPAIR / no terminal writer release",
+      "review_ci_evidence": "Exact-head test/security SUCCESS; historical R9 approval superseded for release by S30; R18-B4 accepted, six live-binding drift controls fail",
+      "next_gate": "Existing writer repairs six-field shared binding verification; fresh exact-head review before source release, then existing W1-H4",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/677",
+      "installed_live_identity": "UNKNOWN / not established by this source census",
+      "latest_ruling": "REQUEST_REPAIR six live binding fields; R18-B4 accepted; no Ready/release; S30"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 653,
+      "head": "959b37b329c44d81874dc23944746a5bd594e3b7",
+      "branch": "sol/executive-mcp-complete-readpath-20260914-sol-001",
+      "base_branch": "master",
+      "custody": "Incumbent separate source owner",
+      "review_ci_evidence": "S33: repository35040156376 and shadow35040156400 fail same six current-base cases; CodeQL green; SAME_CARRIER_REPAIR",
+      "next_gate": "Incumbent semantic/fixture repair, both gates and fresh non-author review; settle Phase1C for W1-H4",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/653",
+      "installed_live_identity": "S32 separate-owner host receipt: App46bea20832a8f0d01559eb8bfb0e9b1406774956; no accepted current653 install",
+      "latest_ruling": "S33 current-base repair, six deterministic test failures; W1-H4 excluded"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 633,
+      "head": "8ca1475586acd6195de918d1e6ca551b42b03e7c",
+      "branch": "UNKNOWN / branch not revalidated",
+      "base_branch": "master",
+      "custody": "Incumbent client/auth operation; EFFECT_UNKNOWN",
+      "review_ci_evidence": "Exact authorization effect remains unreconciled in latest recovered record",
+      "next_gate": "Authorized Auth0 tenant evidence; no re-registration",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/633",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 650,
+      "head": "a4e9bfc0a9565c7005dafa8840f486b690c364be",
+      "branch": "sol/mh1-r0-remote-broker-20260914",
+      "base_branch": "master",
+      "custody": "Active same-carrier source owner; Draft/HOLD",
+      "review_ci_evidence": "Head advanced; body still cites initial proof; old reviews do not certify current head",
+      "next_gate": "Current eight-path diff/review/CI; remote install then actual Attempt proof",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/650",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 684,
+      "head": "9d47bbecfe11e626fe45de88ba5a57c9624758ca",
+      "branch": "sol/web-claude-browser-fleet-client-20260915-sol-001",
+      "base_branch": "master",
+      "custody": "ChatGPT2 source owner; independent review intake unassigned at cutoff",
+      "review_ci_evidence": "90 source tests and five native fake-provider browser cases reported; not live account proof",
+      "next_gate": "Independent exact-head review; full real-provider/guarded-resource qualification later",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/684",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 676,
+      "head": "7e6a35b66e8ec42a3263fcb7c06379d68bbc474c",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "master",
+      "custody": "Sol source writer; principal-side STOP is not branch-writer release",
+      "review_ci_evidence": "APPROVE_AS_SPEC_ONLY; Draft/HOLD",
+      "next_gate": "Native PF1 + Family B; no new native adapter owner",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/676",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 671,
+      "head": "0cdb3ba422a5d678d9cf0cbe5098b98d2a210752",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "master",
+      "custody": "Sol source writer; Draft/HOLD",
+      "review_ci_evidence": "R3 accepted as SPEC_ONLY by root ruling",
+      "next_gate": "Release gates; Provider Control/economics runtime adoption separately",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/671",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 665,
+      "head": "ac2552504b31dc818ac4514827d8935fa2444b56",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "master",
+      "custody": "PARKED incumbent",
+      "review_ci_evidence": "No activation authority",
+      "next_gate": "Real realm-owner producer, fresh capacity and workload-policy gate",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/665",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 662,
+      "head": "fc5bbcf15a4fc929618ef9c93a897b66aa218e36",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "master",
+      "custody": "Family-B original paired review owner",
+      "review_ci_evidence": "B0 not accepted; B1+ not started",
+      "next_gate": "Pair with Macro7162; currentness/auth/economic domains qualified",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/662",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 455,
+      "head": "0a368935ece318c1b7f3301337f75d3a58d61006",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "master",
+      "custody": "PF1 retained source owner/carrier",
+      "review_ci_evidence": "Provider-free protocol falsifier HOLD",
+      "next_gate": "Native Anthropic worker and lawful realm; no takeover from dead-PID inference",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/455",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 637,
+      "head": "756544f1aba7051f763322058dbdc1aae7e560aa",
+      "branch": "sol/orchestrator-native-harness-parity-20260914",
+      "base_branch": "master",
+      "custody": "Research carrier; implementation not started by this packet",
+      "review_ci_evidence": "Draft/HOLD records",
+      "next_gate": "CCTX-1 exact-native compaction / refusal / notification ownership",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/637",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 651,
+      "head": "0d8904898a0c0049ea3568cef9bd10224a108bd6",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "master",
+      "custody": "Existing Web context projection owner",
+      "review_ci_evidence": "Draft source",
+      "next_gate": "Exact Web responsibility return/succession proof",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/651",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 681,
+      "head": "de190b2c7e878fd5a4cf6ecb2fc58b34b058ee74",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "master",
+      "custody": "Existing consultation/Wake writer",
+      "review_ci_evidence": "Draft repair",
+      "next_gate": "Protect canonical consultation integrity before composing dependent return work",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/681",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 682,
+      "head": "1e4a831162eb74841a8bdd374f48f0a6a8e0ae39",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "master",
+      "custody": "Existing HP1A physical BEGIN writer",
+      "review_ci_evidence": "Draft",
+      "next_gate": "Fresh host evidence bound to actual physical BEGIN",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/682",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 683,
+      "head": "5b3f398aa5ba18bbb3a1cd52d540432bef948c3a",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "master",
+      "custody": "Existing FP1A Darwin observation writer",
+      "review_ci_evidence": "Draft",
+      "next_gate": "Real host observations feed existing physical-resource owner",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/683",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 644,
+      "head": "f71ccee7d2956fa4b96019b44a45a22c0390f849",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "master",
+      "custody": "Fleet FP0 architecture owner",
+      "review_ci_evidence": "Draft records",
+      "next_gate": "Existing physical claim/reservation and MH1, not a second scheduler",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/644",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "Mastermind",
+      "pr": 663,
+      "head": "f8af4ccd2a110ad89ba97bd4caf740c4e5a4e591",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "master",
+      "custody": "Existing SCF readiness writer",
+      "review_ci_evidence": "Draft",
+      "next_gate": "Secret-free capability readiness; no get_secret service",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/663",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "macro",
+      "pr": 7192,
+      "head": "94f1f90bee100f5bb6f5afb41df7c4463aa4f505",
+      "branch": "claude/vps-config-adoption-20260916-sol",
+      "base_branch": "main",
+      "custody": "ChatGPT1/Sol source writer; independent review intake",
+      "review_ci_evidence": "Draft; 25 dedicated/341 regression cases reported; mergeability readings conflict",
+      "next_gate": "Current-base integration then existing target-process adoption readback",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7192",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "macro",
+      "pr": 7185,
+      "head": "d931d1797b2d0863dd16516f5481b8389d27844d",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "main",
+      "custody": "Same source writer; platform-blocked edit is not routed around",
+      "review_ci_evidence": "R1 release conclusion invalidated by actual SDK seed defect; source unchanged",
+      "next_gate": "Authorized repair boundary; current source push naturally triggers binding CI",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7185",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "macro",
+      "pr": 7179,
+      "head": "889174901bdaabba44a8f60f3179ff7bd32c8061",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "main",
+      "custody": "Sol W0 source writer",
+      "review_ci_evidence": "Draft/HOLD; R2 source review; CI pack completion not proven here",
+      "next_gate": "Protect workload policy before adopting dependent Brief profile",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7179",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "macro",
+      "pr": 7181,
+      "head": "dcb6710523996020f3360bca3e7d18bee5374aeb",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "main",
+      "custody": "Existing Fable Agent OS records lane",
+      "review_ci_evidence": "Open non-draft; reported docs release allowance is not acted on here",
+      "next_gate": "Current binding gates; then extend same workstream without a parallel correction carrier",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7181",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "macro",
+      "pr": 7114,
+      "head": "7f68d90d3c5453dc7b2f6adb8fcca379fbd06a0b",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "main",
+      "custody": "Custody recorded in incumbent kit; do not take",
+      "review_ci_evidence": "Draft/HOLD",
+      "next_gate": "Profile compilation does not implement/activate native worker",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7114",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "macro",
+      "pr": 7116,
+      "head": "4d7ddfd24a5f02b91375c074efdefc3b77a04c1a",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "sol/provider-subscription-catalog-20260913",
+      "custody": "WRITE_WITHHELD",
+      "review_ci_evidence": "Stacked on provider-subscription catalog; Draft",
+      "next_gate": "No live allocator or claim evidence from preview arithmetic",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7116",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "macro",
+      "pr": 7103,
+      "head": "6ce16e745064825969e70f15ce5e1aeb813179b4",
+      "branch": "sol/provider-subscription-catalog-20260913",
+      "base_branch": "main",
+      "custody": "Sol source owner RELEASE_HOLD",
+      "review_ci_evidence": "Draft",
+      "next_gate": "Provider-native windows/catalog; no activation",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7103",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "macro",
+      "pr": 7143,
+      "head": "facf7074dbbe58a3a9ffef4eae0ca92c97031634",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "sol/provider-subscription-catalog-20260913",
+      "custody": "Existing Go observation owner",
+      "review_ci_evidence": "Draft stacked on held7103",
+      "next_gate": "Real shared-resource observation, not per-model wallets",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7143",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "macro",
+      "pr": 7142,
+      "head": "fe4dd5b142b15ca74be93a2773e9660df6db3250",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "main",
+      "custody": "Sol source owner RELEASE_HOLD",
+      "review_ci_evidence": "Draft",
+      "next_gate": "No separate account-selection authority",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7142",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "repository": "macro",
+      "pr": 7162,
+      "head": "814a58d2c20088d4c440c6d661547caccd135b0a",
+      "branch": "source branch not separately revalidated",
+      "base_branch": "main",
+      "custody": "Paired Family-B architecture owner",
+      "review_ci_evidence": "B0 not accepted",
+      "next_gate": "Same review as Mastermind662",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7162",
+      "installed_live_identity": "UNKNOWN / not established by this source census"
+    },
+    {
+      "pr": 685,
+      "head": "b1d2012ab5ca2565af40a66635d3f2507cf4b5b6",
+      "branch": "sol/web-agent-environment-storage-admission-20260915-sol-001",
+      "state": "OPEN / DRAFT / HOLD",
+      "operation": "agent-environment-storage-admission-20260915-sol-001",
+      "custody": "incumbent Sol source writer retained",
+      "evidence": [
+        "S35"
+      ],
+      "repository": "Mastermind",
+      "base_branch": "master",
+      "review_ci_evidence": "independent review intake; no reviewer binding verified; get_pr_info mergeable=true; exact required integrated CI not independently verified",
+      "installed_live_identity": "launcher unchanged; candidate-only real storage observation not fleet adoption",
+      "next_gate": "Independent source review; Source Continuity authentication; exact-head CI; separately authorized accepted install",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/685"
+    }
+  ],
+  "reconciled_through": "2026-09-16T06:50:57Z GitHub ruling plus subsequent root storage intake; full delta tail read during final synthesis",
+  "latest_p0": "Continue SAME677 writer under S30 six-field live-binding REQUEST_REPAIR, preserve acceptedR18-B4; current653 repair separately; W1-H4 S31 remains not started"
+}
