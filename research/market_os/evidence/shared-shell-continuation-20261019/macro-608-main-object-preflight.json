@@ -1,0 +1,10 @@
+{
+  "observed_at": "2026-10-20T19:06:36.946548+00:00",
+  "incoming": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "exit": -15,
+  "stderr": "",
+  "bytes": 39317504,
+  "sha256": "eae9dfe08d047cac0583a1250b9caf763040ee15da734b54d3cf19629056df1f",
+  "missing_count": 0,
+  "missing": []
+}

@@ -885,6 +885,7 @@ jobs:
         run: |
           python3 scripts/check_site_asset_refs.py site
           python -m scripts.check_government_revenue_projection
+          python scripts/inject_shared_shell.py --check --site-dir site || exit 1
       - name: commit rendered site (site/ ONLY — never data/, so every ledger stays pristine)
         # Fail closed: no cancelled run or failed guard is allowed to mutate main.
         if: ${{ success() }}
@@ -937,6 +938,7 @@ jobs:
           # finalized-tree step. Validate the exact healed tree represented by the index.
           python3 scripts/check_site_asset_refs.py site
           python -m scripts.check_government_revenue_projection
+          python scripts/inject_shared_shell.py --check --site-dir site || exit 1
           git commit -m "engine-render: regime recompute + re-render $(date -u +%F) (scope=${{ github.event.inputs.scope || 'all' }})"
           # --autostash: we commit site/ ONLY, leaving the render's throwaway data/ writes
           # unstaged; a plain `pull --rebase` refuses on a dirty tree and silently failed
@@ -947,24 +949,23 @@ jobs:
                                  # retries burn only ~2 min, so the raised budget above would never bind
           push_retry_init "engine-rendered site"
           while push_attempt; do
-            # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can
-            # TRACK a path this job wrote as an UNTRACKED side-effect — the rebase checkout then
-            # refuses ("untracked working tree files would be overwritten") and --autostash can't
-            # clear it (it parks tracked modifications only), so every retry dies identically.
-            # Everything this step publishes is already committed above, so a path untracked HERE
-            # but tracked on origin/main is a throwaway local write — origin/main is authoritative.
-            # Gitignored files and untracked paths origin/main doesn't track never enter the
-            # intersection (runner-local stores and caches are untouched).
-            git fetch origin main || true
-            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
-                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
-              | while IFS= read -r f; do rm -f -- "$f" || true; done
+            # Fetch the named tracking ref explicitly. checkout fetch configuration can
+            # otherwise leave origin/main stale; the accepted pin must be the rebase base.
+            # The shared helper quarantines only collisions tracked by that exact target.
+            if ! push_fetch_main_for_rebase; then
+              push_abort_rebase
+              push_backoff
+              continue
+            fi
+            COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}') || exit 1
             # rename/rename on content-hashed site/assets/css/* is deterministic across
             # retries (path conflict; -X theirs can't settle it — 2026-07-22 asia-close
             # run 29904079071 dropped a day's outputs this way). The autoresolver keeps
             # both sides' hashed files (next externalize_css prunes the orphan) and
             # finishes the rebase; anything else is left for the abort+retry below.
-            if { git pull --rebase --autostash -X theirs origin main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then
+            if { git rebase --autostash -X theirs "$COMMODITY_ACCEPTED" || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then
+              # Preserve the accepted research workspace before asset normalization.
+              python -m scripts.check_commodity_publication --heal-from "$COMMODITY_ACCEPTED" || exit 1
               # Prove the rebased render commit itself before any optional heal. If a
               # later follow-up commit is skipped, this is the exact HEAD we still push.
               python3 scripts/check_site_asset_refs.py site
@@ -1023,6 +1024,7 @@ jobs:
               # Recheck the actual post-rebase tree before creating a heal commit or push.
               python3 scripts/check_site_asset_refs.py site
               python -m scripts.check_government_revenue_projection
+              python scripts/inject_shared_shell.py --check --site-dir site || exit 1
               if ! git diff --quiet -- site/ templates/; then
                 # push_staged_clean: never bake conflict markers into the follow-up
                 # commit (P0 d29e4dd44d/#4167). On a dirty scan: unstage and push the
@@ -1052,6 +1054,15 @@ jobs:
                 exit 1
               fi
               python -m scripts.check_government_revenue_projection
+              # Verify the committed bytes, even when an optional render-sync commit failed.
+              python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref HEAD || exit 1
+              # A skipped or failed optional heal commit must not leave the checker
+              # proving working-tree pages while an older HEAD is pushed.
+              if ! git diff --quiet HEAD -- site/ templates/; then
+                echo "::error title=shared-shell publication uncommitted::refusing to push a HEAD older than the validated site/templates tree"
+                exit 1
+              fi
+              python scripts/inject_shared_shell.py --check --site-dir site || exit 1
               if push_do; then echo "pushed engine-rendered site on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
             fi
             push_abort_rebase

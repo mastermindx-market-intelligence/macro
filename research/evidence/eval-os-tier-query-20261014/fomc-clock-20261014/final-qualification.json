@@ -1,0 +1,47 @@
+{
+  "schema": "eval_os.fomc_case_final_qualification.v1",
+  "observed_at": "2026-10-14T12:41:58.616582+00:00",
+  "qualified_source": "fa9fc2d424a9267e4ff8889148c087b67ff07e06",
+  "ci_scope_source": "e2d740be441b7671ba1fd060a9cc6e5b1e8a32b6",
+  "response_eval_tests": {
+    "tests": 119,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "ci_focused_tests": 3,
+  "closure_misses": {},
+  "packing": [
+    {
+      "probe": "templates/index.html",
+      "jobs": 134,
+      "weight": 5621,
+      "packs": 10
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs": 134,
+      "weight": 5441,
+      "packs": 10
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs": 128,
+      "weight": 5384,
+      "packs": 9
+    }
+  ],
+  "scope_proof_reuse": "Only two text/fixture files changed after e2 scope qualification. Full tracked path inventory, manifest, evaluator and test bytes unchanged. Moved interpretation from facts to adjudication without changing source path references. Rebound source/excerpt hashes; reran119 source-binding/harness tests on final bytes. No same-head hosted CI claim.",
+  "interpretation_isolated_from_answerer": true,
+  "registered_supplied_text_cases": 13,
+  "all_prior_benchmark_bytes_preserved": true,
+  "all_314_execution_definitions_preserved": true,
+  "independent_review": false,
+  "empirical_model_observation": false,
+  "historical_byte_custody_proven": false,
+  "production_proven": false,
+  "source_files": {
+    "engine/neuralweb/eval/benchmark_fomc_qt_clock_2024-05-01.json": "6252a938643121f9fd890b0398232b5247605bbb6df27f5226cd56f81e16d3ce",
+    "research/FOMC_QT_CLOCK_CASE_2024_05_01.md": "51ffba4a234b6c056de9661100c2cba3dde062e73b021586121352e77de88c87"
+  }
+}
