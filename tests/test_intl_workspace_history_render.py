@@ -89,3 +89,18 @@ def test_reset_and_context_confirmations_are_separate_hidden_actions():
         assert 'hidden' in next(a for _,a in nodes if attr in a)
     actions={a.get('data-im-scenario-action') for _,a in nodes}
     assert {'calculate','request_reset','confirm_reset','cancel_reset','confirm_context','cancel_context','set_tab'}<=actions
+
+
+def test_comparison_and_evidence_show_origin_limit_and_actual_universe():
+    from lib.intl_history_mount import attach_history
+    w, args = fixture()
+    section = attach_history(w, **args)['histories'][0]['sections'][0]
+    text = render()
+    assert 'Input origins across the full history have not been verified.' in text
+    assert '完整历史中的输入来源尚未经核实。' in text
+    assert 'Universe reference' in text and '范围引用' in text
+    assert section['identity']['universe'] in text
+    def denied(w, a):
+        a['sources']['JP']['history_read']['identity']['universe'] = 'PRIVATE-UNIVERSE'
+        a['sources']['JP']['capabilities']['history_source'] = dict(metadata='denied', value='denied')
+    assert 'PRIVATE-UNIVERSE' not in render(denied)

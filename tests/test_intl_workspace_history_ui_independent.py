@@ -224,7 +224,7 @@ def test_static_form_is_disabled_blank_and_confirmation_is_outside_the_fieldset(
     assert 'disabled' in fieldset
     inputs = [attrs for tag, attrs in nodes if tag == 'input']
     assert all(attrs.get('value', '') == '' for attrs in inputs)
-    assert html.find('data-im-scenario-fields') < html.find('</fieldset>') < html.find('data-im-scenario-confirm-reset')
+    assert html.find('data-im-scenario-fields') < html.find('</fieldset>', html.find('data-im-scenario-fields')) < html.find('data-im-scenario-confirm-reset')
     assert html.find('</fieldset>') < html.find('data-im-scenario-confirm-context')
     assert 'hidden' in next(attrs for _, attrs in nodes if 'data-im-scenario-result' in attrs)
 
@@ -241,7 +241,8 @@ def test_history_panel_is_one_shared_catalogue_not_per_horizon_pair():
     assert len(result['histories']) == 1
     assert len(result['histories'][0]['sections']) == 2
     assert [attrs['data-im-history-market'] for _, attrs in nodes if 'data-im-history-slot' in attrs] == ['JP', 'KR']
-    assert html.count('0.4375') == 1
+    # The authored selector's JSON transport is not a second visible observation.
+    assert html.count('<td>0.4375</td>') == 1
     assert html.count('data-im-generation="' + GENERATION + '"') == 1
 
 
@@ -256,7 +257,7 @@ def test_css_is_static_scoped_and_does_not_mint_tokens_or_fetch():
     assert '[data-theme="light"] .intl-history__result' in css
     assert '[data-theme="light"] .intl-history__boundary' in css
     assert '[data-theme="light"] .intl-history :is(input,select)' in css
-    assert 'border-inline-start:3px solid var(--link)' in css
+    assert 'border-inline-start:3px solid var(--link)' not in css
     assert 'var(--card-shadow)' in css
     assert '.style.' not in controller
     assert 'insertRule' not in controller

@@ -7119,6 +7119,35 @@ canada:
 # with per-country flags. Taiwan macro is thin on keyless sources -> degrades.
 # ===========================================================================
 intl:
+  risk_summary_publication:
+    status: confirmed
+    scope: intl-us-transmission-derived-summary-v1
+    policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#incumbent-us-transmission-derived-summary
+    metadata: allowed
+    value_permission: allowed
+    audience: anonymous-and-registered-intl-html
+    fields:
+    - state
+    - evidence_refs
+    - diagnostic.reported_state
+    - calculation_at
+    - observation_dates
+    - origin_coverage
+  # Root adopted the finite derived-output scope on 2026-11-05; source release
+  # and actual native materialization qualification remain separate.
+  # History is public inline output on intl.html, not an entitled-only payload.
+  history_publication:
+    status: confirmed
+    scope: intl-current-reconstruction-score-history-v1
+    decision_ref: https://github.com/mastermindx-market-intelligence/macro/pull/7949#issuecomment-6589273748
+    audience: anonymous-and-registered-intl-html
+    fields: [observation_at, growth_score, inflation_score]
+    metadata: [artifact_ref, read_at, method_ref, universe_ref]
+    markets: [JP, KR, TW, IN, AU, GB, EZ]
+    input_classes: [configured-native-intl-yahoo, configured-native-intl-macro, configured-native-shared-yahoo]
+    history_kind: current_reconstruction
+    input_configuration_sha256: 07a2cf4a7958d845969ce0bdf2ef1ab9b127fadfd516883b757c421dbcc11d20
+
   # Chairman confirmed permitted user-facing EOD redistribution on 2026-10-09.
   # This is a source-scoped publication decision, NOT a provider session-clock
   # attestation, trading authorization, or blanket rights grant to other feeds.

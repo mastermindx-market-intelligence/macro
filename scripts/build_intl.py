@@ -105,16 +105,62 @@ def _ecb_publication_measure(materialized, *, evaluated_at, generation):
         return unavailable
 
 
+def _history_disclosure_allowed(receipt, market, policy):
+    """Apply the finite source-owned derived-output decision, never raw rights.
+
+    Materialization verifies content identity only. The separate exact config
+    decision must be confirmed; missing/proposed/denied/unknown stays withheld.
+    """
+    from hashlib import sha256
+    from lib.intl_workspace_macro import _check_builtin_tree
+    from lib.intl_history_materialization import validate_history_materialization
+
+    expected = dict(
+        status="confirmed", scope="intl-current-reconstruction-score-history-v1",
+        audience="anonymous-and-registered-intl-html",
+        fields=["observation_at", "growth_score", "inflation_score"],
+        metadata=["artifact_ref", "read_at", "method_ref", "universe_ref"],
+        markets=["JP", "KR", "TW", "IN", "AU", "GB", "EZ"],
+        input_classes=["configured-native-intl-yahoo", "configured-native-intl-macro",
+                       "configured-native-shared-yahoo"],
+        history_kind="current_reconstruction")
+    try:
+        _check_builtin_tree(policy)
+        if (type(policy) is not dict or set(policy) != set(expected) | {"decision_ref", "input_configuration_sha256"}
+                or any(policy[key] != value for key, value in expected.items())
+                or type(policy["decision_ref"]) is not str
+                or not policy["decision_ref"].strip()
+                or market not in expected["markets"] or receipt["status"] != "ready"):
+            return False
+        descriptor = validate_history_materialization(
+            receipt["materialization"], market, receipt["frame"])
+        settings = config.load()["intl"]
+        method = descriptor["method"]
+        input_identity = sha256(json.dumps(
+            {key: settings[key] for key in ("countries", "macro", "yahoo")},
+            sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+        return (policy["input_configuration_sha256"] == input_identity
+                and descriptor["universe"]["country_config"] == settings["countries"][market]
+                and method["engine_config"] == settings["engine"]
+                and all(sha256((config.ROOT / path).read_bytes()).hexdigest() == identity
+                        for path, identity in method["implementation"].items()))
+    except (ValueError, TypeError, KeyError, OSError, RecursionError):
+        return False
+
+
 def _history_publication_sources(receipts):
-    """Reuse the country render's typed reads without conferring disclosure."""
+    """Reuse typed reads; the exact confirmed derived-output policy is separate."""
     from engine import international_macro_dashboard as owner
     from lib.intl_history_mount import _unknown_source
 
     if type(receipts) is not dict or any(type(key) is not str for key in receipts):
         raise ValueError("invalid_history_receipts")
     sources = {}
+    settings = config.load().get("intl") or {}
+    policy = settings.get("history_publication")
+    native_markets = settings.get("countries", {})
     for market, receipt in receipts.items():
-        if market not in owner.REGIONS:
+        if market not in native_markets:
             continue
         try:
             projected = owner.project_history_read(receipt)
@@ -122,6 +168,8 @@ def _history_publication_sources(receipts):
                 raise ValueError("history market mismatch")
             source = _unknown_source()
             source["history_read"] = projected
+            if _history_disclosure_allowed(receipt, market, policy):
+                source["capabilities"]["history_source"] = dict(metadata="allowed", value="allowed")
             sources[market] = source
         except Exception as exc:  # One malformed read cannot suppress other markets.
             log.error("International History receipt unavailable (%s)", type(exc).__name__)
@@ -129,7 +177,7 @@ def _history_publication_sources(receipts):
 
 
 def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, cgl=None,
-                           history_sources=None, chart_source_sink=None):
+                           history_sources=None, chart_source_sink=None, risk_publication=None):
     """Compose independent evidence-qualified views under the narrow EOD grant."""
     from engine.intl_inputs import countries
 
@@ -195,10 +243,16 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
     except Exception as exc:  # Macro failure must preserve the existing workspace.
         log.error("International Macro panel unavailable (%s)", type(exc).__name__)
     try:
-        # Existing packets supply context, never disclosure or source grants.
+        from lib.intl_risk_publication import risk_summary_eligibility
+        # Only the successful same-payload publication and exact derived policy
+        # can support this summary. Raw packets confer no permission.
         workspace = attach_risks(
             workspace, registry=registry, risk_desk=risk_desk, cgl=cgl,
-            measures={}, field_support={}, summary_eligibility={}, destinations={},
+            measures={}, field_support={},
+            summary_eligibility={"us_transmission": risk_summary_eligibility(
+                risk_desk=risk_desk, publication=risk_publication,
+                policy=(config.load().get("intl") or {}).get("risk_summary_publication"))},
+            destinations={},
         )
     except Exception as exc:
         log.error("International Risk panel unavailable (%s)", type(exc).__name__)
@@ -811,10 +865,10 @@ def main() -> int:
         # CGL W1: contagion_links compact summary (additive; CGL-R10)
         "contagion_links": _cgl_compact_summary(_cgl_artifact),
     }
+    _risk_publication = None
     try:
-        (_ird_dir / "latest.json").write_text(
-            json.dumps(_intl_risk_payload, indent=2, default=str, ensure_ascii=False)
-        )
+        from lib.intl_risk_publication import publish_risk_snapshot
+        _risk_publication = publish_risk_snapshot(_ird_dir / "latest.json", _intl_risk_payload)
         log.info("wrote data/intl_risk/latest.json (em_stress=%s, contagion=%s, vuln_fragile=%s)",
                  (em_stress_result or {}).get("state"), contagion_state,
                  (vulnerability_result or {}).get("n_fragile"))
@@ -1092,7 +1146,7 @@ def main() -> int:
                 evaluated_at=datetime.now(timezone.utc).isoformat(),
                 risk_desk=_intl_risk_payload, cgl=_cgl_artifact,
                 history_sources=_history_publication_sources(_intl_history_receipts),
-                chart_source_sink=chart_source_sink,
+                chart_source_sink=chart_source_sink, risk_publication=_risk_publication,
             )
         except Exception as exc:  # Preserve all incumbent views on adapter failure.
             log.error("International workspace unavailable (%s)", type(exc).__name__)

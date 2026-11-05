@@ -355,7 +355,45 @@
                   {% set state = summary.get('state') if summary is mapping else none %}
                   {% set quality = summary.get('quality') if summary is mapping else none %}
                   {% if quality == 'qualified' and state in us_states %}
-                    <p>{{ words('Current statement', '当前陈述') }}: {{ words(us_states[state].en, us_states[state].zh) }}</p>
+                    <p>{{ words('Transmission assessment', '传导评估') }}: {{ words(us_states[state].en, us_states[state].zh) }}</p>
+                    {% set observations = panel.get('observations') %}
+                    {% if observations is mapping %}
+                      <p>{{ words('Calculated at', '计算时间') }}: <time datetime="{{ observations.calculation_at|e }}">{{ observations.calculation_at|e }}</time></p>
+                      <p>{% if observations.origin_coverage.available < observations.origin_coverage.total %}{{ words('Partial origin coverage', '源头覆盖不完整') }}{% else %}{{ words('Origin inputs observed', '已观测的源头输入') }}{% endif %}: {{ observations.origin_coverage.available }}/{{ observations.origin_coverage.total }}</p>
+                      <details class="intl-risk__evidence">
+                        <summary>{{ words('Input observation dates', '输入观测日期') }}</summary>
+                        {% set clock_labels = {
+                          'em_hy_oas': {'en': 'EM high-yield spread', 'zh': '新兴市场高收益利差'},
+                          'vxeem': {'en': 'EM equity volatility', 'zh': '新兴市场股票波动率'},
+                          'em_fx_basket': {'en': 'EM FX basket', 'zh': '新兴市场外汇篮子'},
+                          'em_equity_breadth': {'en': 'EM equity breadth', 'zh': '新兴市场股票广度'},
+                          'em_dollar_vel': {'en': 'EM dollar velocity', 'zh': '新兴市场美元变化速率'},
+                          'emb_ief': {'en': 'EM bonds versus Treasuries', 'zh': '新兴市场债券相对美国国债'},
+                          'us_hy_oas_vel': {'en': 'US high-yield spread velocity', 'zh': '美国高收益利差变化速率'},
+                          'kre_spy_rs': {'en': 'Regional banks versus US equities', 'zh': '地区银行相对美国股票'},
+                          'move_pctile': {'en': 'Treasury volatility percentile', 'zh': '美国国债波动率分位'},
+                          'sofr_iorb_corridor': {'en': 'SOFR–IORB funding corridor', 'zh': 'SOFR–IORB资金走廊'}
+                        } %}
+                        <dl>
+                          <div><dt>{{ words('Origin calculated at', '源头计算时间') }}</dt><dd>{{ observations.origin_calculation_at|e }}</dd></div>
+                          <div><dt>{{ words('Newest origin observation', '最新源头观测') }}</dt><dd>{{ observations.origin_observation_at|e }}</dd></div>
+                          {% for item in observations.origin_inputs %}
+                            {% set label = clock_labels[item.key] %}
+                            <div><dt>{{ words(label.en, label.zh) }}</dt><dd>{{ item.observation_at|e if item.observation_at else words('Observation date unavailable', '观测日期不可用') }}</dd></div>
+                          {% endfor %}
+                          {% for leg in observations.legs %}
+                            {% set label = clock_labels[leg.key] %}
+                            <div><dt>{{ words(label.en, label.zh) }} — {{ words('calculation through', '计算截至') }}</dt><dd>{{ leg.observation_at|e }}</dd></div>
+                            {% for item in leg.inputs %}
+                              <div><dt>{{ ('MOVE' if item.key == '_MOVE' else item.key)|e }} — {{ words('source observation', '来源观测') }}</dt><dd>{{ item.observation_at|e }}</dd></div>
+                            {% endfor %}
+                          {% endfor %}
+                        </dl>
+                        <p>{{ words('Input dates are observations, not release or availability times. Calculation time does not establish market freshness.', '输入日期为观测日期，并非发布或可用时间。计算时间不能证明市场数据的时效性。') }}</p>
+                      </details>
+                    {% else %}
+                      <p>{{ words('Input observation dates unavailable; market freshness is unknown.', '输入观测日期不可用；市场数据时效性未知。') }}</p>
+                    {% endif %}
                   {% else %}
                     <p>{{ words('Transmission assessment unavailable', '传导评估不可用') }}</p>
                   {% endif %}

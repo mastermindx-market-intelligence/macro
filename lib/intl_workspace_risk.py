@@ -274,4 +274,86 @@ def qualify_us_transmission(*, two_tier, eligibility):
     }
 
 
-__all__ = ["qualify_us_transmission"]
+
+
+
+# Exact native inputs for the incumbent derived summary, not a provider grant.
+_NATIVE_RISK_SOURCES = {
+    "us_hy_oas_vel": ("data/fred/BAMLH0A0HYM2.parquet",),
+    "kre_spy_rs": ("data/yahoo/KRE.parquet", "data/yahoo/SPY.parquet"),
+    "move_pctile": ("data/yahoo/_MOVE.parquet",),
+    "sofr_iorb_corridor": ("data/fred/SOFR.parquet", "data/fred/IORB.parquet"),
+}
+_NATIVE_ORIGIN_LEGS = ("em_hy_oas", "vxeem", "em_fx_basket", "em_equity_breadth",
+                       "em_dollar_vel", "emb_ief")
+
+
+def _risk_snapshot_bytes(payload):
+    import json
+    return json.dumps(payload, indent=2, default=str, ensure_ascii=False).encode("utf-8")
+
+
+def _native_clock(value):
+    from datetime import datetime
+    if type(value) is not str:
+        raise ValueError("missing native calculation clock")
+    result = datetime.fromisoformat(value)
+    if result.tzinfo is None:
+        raise ValueError("unqualified native calculation clock")
+    return result
+
+
+def _native_observation(value, built):
+    from datetime import date
+    if type(value) is not str:
+        raise ValueError("missing native observation clock")
+    result = date.fromisoformat(value)
+    if result > built.date():
+        raise ValueError("observation after native calculation")
+    return value
+
+def risk_summary_observations(*, risk_desk, support):
+    """Detach public clock captions from the same byte-bound summary evidence.
+
+    This confers no state/permission. Legacy or unbound support cannot borrow
+    dates from a nearby raw packet. Source observation dates are not PIT,
+    acquisition, release or independently certified market-freshness clocks.
+    """
+    from hashlib import sha256
+    try:
+        if qualify_us_transmission(two_tier=risk_desk["two_tier"], eligibility=support)["quality"] != "qualified":
+            return None
+        artifact = "sha256:" + sha256(_risk_snapshot_bytes(risk_desk)).hexdigest()
+        if support["source_reference"] != artifact + "#/two_tier":
+            return None
+        raw, origin = risk_desk["two_tier"], risk_desk["em_stress"]
+        built = _native_clock(raw["built"])
+        origin_inputs = []
+        for key in _NATIVE_ORIGIN_LEGS:
+            leg = origin["legs"].get(key)
+            observed = None if leg is None else _native_observation(leg["asof"], built)
+            origin_inputs.append({"key": key, "observation_at": observed})
+        legs = []
+        for key, sources in _NATIVE_RISK_SOURCES.items():
+            observed = raw["publication_inputs"][key]
+            if (support["legs"][key]["source_reference"] !=
+                    artifact + "#/two_tier/publication_inputs/" + key):
+                return None
+            inputs = []
+            for item, source in zip(observed["inputs"], sources):
+                if item["source_reference"] != source:
+                    return None
+                inputs.append({"key": source.rsplit("/", 1)[-1].removesuffix(".parquet"),
+                               "observation_at": _native_observation(item["observation_at"], built)})
+            legs.append({"key": key, "observation_at": _native_observation(observed["observation_at"], built),
+                         "inputs": inputs})
+        return {"calculation_at": raw["built"], "origin_calculation_at": origin["built"],
+                "origin_observation_at": _native_observation(origin["as_of"], built),
+                "origin_coverage": {"available": origin["n_legs_available"], "total": origin["n_legs_total"]},
+                "origin_inputs": origin_inputs, "legs": legs,
+                "freshness": "not_established"}
+    except (ValueError, TypeError, KeyError, AttributeError, OverflowError):
+        return None
+
+
+__all__ = ["qualify_us_transmission", "risk_summary_observations"]

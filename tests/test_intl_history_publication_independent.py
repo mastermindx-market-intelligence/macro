@@ -106,7 +106,9 @@ def _build_all(tmp_path, load_history, load_history_result):
 
 
 def _history_sources(namespace=None):
-    ns = {"logging": logging, "log": _Log()}
+    from lib import config
+    ns = {"logging": logging, "log": _Log(), "config": config}
+    _exec_function(ROOT / "scripts/build_intl.py", "_history_disclosure_allowed", ns)
     if namespace:
         ns.update(namespace)
     return _exec_function(ROOT / "scripts/build_intl.py", "_history_publication_sources", ns), ns["log"]

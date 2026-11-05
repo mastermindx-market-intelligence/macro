@@ -1,12 +1,14 @@
 """International dashboard engine entrypoint: per-country features -> uniform
 regime classification -> cross-country comparison -> data/intl/latest.json (+
 per-country regime history parquets for the charts). Recomputes full history each
-run so live == backtest. Every read is descriptive / display-only.
+run from current stored inputs; dated output is not an original-known vintage.
+Every read is descriptive / display-only.
 """
 from __future__ import annotations
 
 import json
 import logging
+from datetime import datetime, timezone
 
 import pandas as pd
 
@@ -38,12 +40,27 @@ def _macro_present(snap: dict) -> int:
 
 
 def country_record(cc: str, closes: pd.DataFrame, macro: pd.DataFrame,
-                   equity: dict) -> tuple[dict | None, pd.DataFrame | None]:
+                   equity: dict, *, history_context: dict | None = None) -> tuple[dict | None, pd.DataFrame | None]:
     c = intl_inputs.countries()[cc]
     f = intl_inputs.country_frame(cc, closes, macro)
     if f.empty:
         return None, None
+    if history_context is not None:
+        from lib.intl_history_materialization import capture_history_context
+        try:
+            history_context.update(capture_history_context(
+                cc, c, config.load()["intl"]["engine"], f, source_root=config.ROOT))
+        except Exception:
+            # Failure to establish identity does not alter the incumbent model.
+            history_context.clear()
     reg = classify(f)
+    if history_context:
+        try:
+            if history_context != capture_history_context(
+                    cc, c, config.load()["intl"]["engine"], f, source_root=config.ROOT):
+                history_context.clear()
+        except Exception:
+            history_context.clear()
     asof = reg["quad"].last_valid_index()
     if asof is None:
         return None, None
@@ -87,8 +104,9 @@ def run() -> dict:
 
     records: list[dict] = []
     for cc in intl_inputs.countries():
+        history_context = {}
         try:
-            rec, hist = country_record(cc, closes, macro, equity)
+            rec, hist = country_record(cc, closes, macro, equity, history_context=history_context)
         except Exception as e:  # noqa: BLE001 — one country can't kill the board
             log.warning("intl: %s record failed: %s", cc, e)
             continue
@@ -96,7 +114,16 @@ def run() -> dict:
             continue
         records.append(rec)
         if hist is not None:
-            hist.to_parquet(p / f"{cc}_history.parquet")
+            history_path = p / f"{cc}_history.parquet"
+            hist.to_parquet(history_path)
+            if history_context:
+                from lib.intl_history_materialization import describe_history_write, read_stable_history_bytes
+                try:
+                    rec["history_materialization"] = describe_history_write(
+                        cc, hist, history_context, read_stable_history_bytes(history_path),
+                        datetime.now(timezone.utc).isoformat())
+                except Exception:
+                    log.warning("intl %s history materialization identity unavailable", cc)
         # Leading-risk radar (engine/risk_radar_intl.py): calibrated forward-drawdown
         # radar per market — US rate shocks + FX depreciation + extension percentile
         # (melt-up/KOSPI class). Display-only until this market's own forward log

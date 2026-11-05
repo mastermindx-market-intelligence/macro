@@ -20,6 +20,79 @@ from engine.international_macro_dashboard import (
 ROOT = Path(__file__).resolve().parents[1]
 
 
+@pytest.fixture
+def native_history_writer(tmp_path, monkeypatch):
+    """Controlled local source matrix; no provider or ledger operation."""
+    from copy import deepcopy
+    import numpy as np
+    import socket
+    from engine import intl_run
+    from lib import config
+    cfg = deepcopy(config.load())
+    cfg["intl"]["countries"] = {"JP": cfg["intl"]["countries"]["JP"]}
+    cfg["storage"]["site_dir"] = str(tmp_path / "site")
+    monkeypatch.setattr(config, "load", lambda: deepcopy(cfg))
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    index = pd.bdate_range("2020-01-01", periods=600)
+    x = np.arange(len(index), dtype=float)
+    frame = pd.DataFrame({
+        "index": 100 + x / 10 + np.sin(x / 20), "copper_gold": 2 + x / 1000,
+        "gdp_yoy": np.sin(x / 50), "unemployment": 4 + np.cos(x / 60),
+        "cpi_yoy": 2 + np.sin(x / 40), "oil": 50 + x / 20,
+        "yield_10y": 1 + x / 1000, "short_3m": 0.5, "m2_yoy": 3.0,
+        "policy_rate": 0.5, "curve": 0.5, "real_yield": -1.0,
+        "realvol": 15.0, "drawdown": -2.0, "fx": 100.0, "fx_strength_3m": 1.0,
+    }, index=index)
+    monkeypatch.setattr(intl_run.intl_inputs, "_intl_closes", lambda: pd.DataFrame({"fixture": [1.0]}))
+    monkeypatch.setattr(intl_run.intl_inputs, "_macro_frame", lambda: pd.DataFrame())
+    monkeypatch.setattr(intl_run.intl_inputs, "country_frame", lambda *a: frame.copy())
+    monkeypatch.setattr(intl_run.intl_inputs, "latest_macro_snapshot", lambda *a: {})
+    monkeypatch.setattr(intl_run.intl_inputs, "macro_freshness", lambda *a: {})
+    monkeypatch.setattr(intl_run.intl_equity_risk, "equity_risk_all", lambda: {})
+    monkeypatch.setattr(intl_run.intl_compare, "periphery_panel", lambda: {})
+    monkeypatch.setattr(intl_run, "_RADAR_KEYS", {})
+    return intl_run, tmp_path
+
+
+def test_native_successful_write_reaches_existing_typed_receipt_sink(native_history_writer, monkeypatch):
+    from engine import international_macro_dashboard as owner
+    from scripts import build_international_macro as builder, build_intl
+    runner, data = native_history_writer
+    latest = runner.run()
+    descriptor = latest["records"][0]["history_materialization"]
+    assert descriptor["provider_coverage"]["status"] == "unknown"
+    assert descriptor["disclosure_authority"] == "none"
+    monkeypatch.setattr(builder, "REGIONS", {"JP": builder.REGIONS["JP"]})
+    class StopBeforeRender(Exception):
+        pass
+    def stop(*a, **k):
+        raise StopBeforeRender
+    monkeypatch.setattr(builder, "build_country_view", stop)
+    receipts = {}
+    with pytest.raises(StopBeforeRender):
+        builder.build_all(latest, history_receipts=receipts)
+    receipt = receipts["JP"]
+    assert receipt["status"] == "ready"
+    projected = owner.project_history_read(receipt)
+    assert projected["identity"]["method_ref"] == descriptor["method_ref"]
+    assert projected["identity"]["universe"] == descriptor["universe_ref"]
+    source = build_intl._history_publication_sources(receipts)["JP"]
+    assert source["capabilities"]["history_source"] == {"metadata": "unknown", "value": "unknown"}
+    assert source["capabilities"]["snapshot_compare"] == {"left_observation_at": None, "right_observation_at": None}
+    assert (data / "intl/latest.json").is_file()
+
+
+def test_native_failed_write_cannot_publish_materialization(native_history_writer, monkeypatch):
+    runner, data = native_history_writer
+    def failed(*a, **k):
+        raise OSError("controlled temporary write failure")
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", failed)
+    with pytest.raises(OSError, match="controlled temporary write failure"):
+        runner.run()
+    assert not (data / "intl/latest.json").exists()
+
+
 def _record(cc: str, *, missing: bool = False) -> dict:
     spec = REGIONS[cc]
     return {

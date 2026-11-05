@@ -206,3 +206,134 @@ The official sidecar's `source_updated` is an observation-date alias.
 is an independently known policy publication time: `calculation_at` and an
 unknown release period remain null. Qualification here means permitted and
 within the adopted observation-age tolerance, with that limitation visible.
+
+## Current-reconstruction History derived-output adoption
+
+**Source adoption, 2026-11-05.** The assigned Shared Shell root
+`01a15e6c-42f8-7941-ac2b-296021932fbb`, exercising Chris's delegated delivery
+authority, approved the exact finite product/audience declaration reviewed at
+`6cb1cfc4b9d76530e7fcd33d5ffd1a37fbd2c92b` / receipt `d8ffc125`.
+`intl.history_publication` is confirmed with the existing canonical
+[Shared Shell mission reference](https://github.com/mastermindx-market-intelligence/macro/pull/7949#issuecomment-6589273748).
+The root saved and read back this decision in that existing mission comment
+on 2026-11-05 (comment body SHA256
+`2838f697360d3abaee1c6b9ffe9099de44f4865625c5eb5e2f67bd23d9e4405d`).
+It records the product/source decision, not a vendor-issued grant. Normal source
+qualification, protected release and actual native materialization remain
+separate. This is Mastermind derived-output authorization, not vendor/raw-data
+rights, provider-coverage proof, PIT or runtime activation. EOD/index/FX and
+ECB-level declarations above remain independent.
+
+The adopted audience is **anonymous and registered readers of `intl.html`**:
+the mounted data is inline HTML, so a client-side entitled view cannot narrow that
+audience. The finite output is the existing seven configured markets' descriptive
+`observation_at`, `growth_score` and `inflation_score`, plus the reconstruction
+artifact reference, actual read clock, method hash and country/config/input-column
+universe hash. Full supplied reconstruction is permitted only within that scope;
+there is no arbitrary date-range or provider-data endpoint. Two blank native date
+selectors submit exact supplied observations; selection never supplies permission.
+The five existing country-page reads are reused once; Taiwan and Australia are
+collected once through the same typed reader for this seven-market catalogue.
+They do not acquire country pages, a second store or an endpoint. Missing, invalid
+or undisclosed native inputs retain their own read/withheld state.
+
+The native input classes are configured Yahoo/yfinance index/FX closes (`intl`),
+shared Yahoo commodity closes/ratios (`yahoo`), and configured `intl_macro`
+FRED/OECD/central-bank fallback series with matching ECB/Eurostat official
+column overrides. The source configuration hash binds the actual `intl.countries`,
+`intl.macro` and `intl.yahoo` bytes as canonical JSON. A configuration change does
+not inherit this declaration. The named Yahoo commercial route remains
+`APPROVED_BY_CHAIRMAN_ATTESTATION`. This adoption is a finite Mastermind derived
+score/audience decision, not a claim that keyless access, official-source status,
+readiness or the legacy composite spark grants every underlying series' raw
+redistribution. No explicit prohibition on these derived score fields was found
+in the retained native source contract. A complete per-row provider-response and
+materialization/reuse witness is **unknown**; that fact is neither concealed nor
+converted into a new provider grant. An actually applicable third-party
+restriction remains a restriction and requires the affected source to stay
+withheld; this adoption cannot overrule one.
+
+Admission requires the successful native Parquet materialization descriptor,
+verified bytes/dated score geometry, the same typed reader/projector, current
+classifier source hashes, matching native engine/country configuration and the
+exact finite declaration. Legacy files without a descriptor, failed or changed
+writes, incompatible identities, absent/proposed/denied/changed-scope decisions
+and malformed input stay unknown. Descriptor `disclosure_authority=none` remains
+unchanged: identity metadata is not the decision.
+
+At the comparison point the page states **current reconstruction**, descriptive
+classifier scores, not investment returns, forecasts or what was known then.
+Actual read time is explicitly not first-known time. Provider-origin coverage
+remains unknown even when input-matrix/row coverage and source hashes are known.
+The newly retained official GDP/HICP response receipts are not inputs to this
+History model and confer no score coverage or permission. Raw provider series,
+response bodies, event/turn records, track records, Saved context, original-known
+vintages, PIT/backtest claims and trading authority are excluded. Scenario retains
+its existing blank/manual assumptions and confirmed context; comparison scores
+and dates never become manual returns or a scenario horizon.
+
+Dark uses the existing graphite control/panel materials; light uses white
+research surfaces, neutral hairlines and shadow. Both use the same labelled
+44px native controls, full focus outlines, EN/ZH content, and stacked mobile
+composition. Local source DOM tests establish intent/dispatch and failure
+semantics only. Original History/Comparison browser and capture holds remain
+separate from this source adoption and its later normal release.
+
+## Incumbent US transmission derived summary
+
+Status: finite source-owned product/audience decision approved by the Shared Shell
+root, matching D-RISK-DERIVED-SCOPE-20261105. This declaration is adopted in the sole integrator's local source composition;
+normal protected release remains required and no runtime activation is granted.
+Decision: https://github.com/mastermindx-market-intelligence/macro/pull/7949#issuecomment-6589273748
+(verified existing body 3fb4e3c8, 2026-11-05T12:45:01Z). The existing publisher defaults withheld
+unless its exact `intl.risk_summary_publication` declaration is confirmed. This is
+a narrow declaration for the existing native derived output, not a general policy
+framework or an extension of the EOD or named macro-field grants.
+
+Audience: anonymous and registered readers of the existing open `intl.html`
+document. Public fields are the incumbent transmission `state`, its evidence
+references and reported diagnostic state, calculation time, actual observation
+dates and origin coverage. No additional raw series values, parquet/vendor wire
+data, probabilities, forecasts, issuer exposure, country-credit changes, model
+thresholds, portfolio action, PIT or historical availability are granted. The
+existing Yahoo commercial-use attestation and native FRED/Yahoo read/use remain
+separate facts; UNKNOWN provenance coverage alone is not a licensing refusal.
+No actual provider/refusal or source-specific restriction is overridden.
+
+The normal `scripts/build_intl.py` owner must successfully write its existing
+`data/intl_risk/latest.json` and verify exact readback. Its typed successful-write
+identity must match the same passed Risk payload; failure cannot reuse an older
+file even if otherwise identical. Evidence references bind the SHA256 of those
+exact published bytes and their JSON paths. A returned data object alone never
+creates publication eligibility.
+
+Required source eligibility: the exact native `em_stress` result must match the
+state handed to `two_tier_read`, retain its own built time and per-origin-leg
+observation dates, and satisfy the incumbent minimum three of six origin inputs.
+Three observed inputs are model-qualified partial coverage, not all-six normal.
+The four mandatory transmission legs are `us_hy_oas_vel`, `kre_spy_rs`,
+`move_pctile`, and `sofr_iorb_corridor`. Each must have an available finite native
+calculation, exact boolean matching the published hot count/state, source IDs,
+actual source observation dates and calculation-frame identity. The aligned
+calculation-through date remains separate from individual KRE/SPY or SOFR/IORB
+source dates. Optional safety-bid output never fills a required slot.
+
+The source frames are the already-consumed FRED BAMLH0A0HYM2, Yahoo KRE/SPY,
+Yahoo MOVE, and FRED SOFR/IORB reads. Frame fingerprints identify the numerical
+calculation inputs; they are not vendor-wire or parquet hashes. No second store
+read, collector, feed, acquisition, new file registry or endpoint is introduced.
+Origin and transmission generation clocks are not observation, release,
+acquisition, publication-availability or independently certified freshness times.
+
+The Risk caption must say Transmission assessment / 传导评估, show calculation
+time separately from observation dates and origin coverage, provide inspectable
+per-input dates in the existing disclosure, and explicitly state that market
+freshness is not established by generation time. Missing dates remain unavailable;
+no new freshness threshold or score is inferred. An origin with three to five of
+six observed inputs may satisfy the incumbent model, but must carry an explicit
+partial-origin label and actual coverage. An origin below the incumbent minimum,
+or any incomplete/unavailable mandatory transmission leg, is withheld. Failed,
+refused, invalid or unsupported publication/input receipts remain withheld.
+Protected release still owes the coherent source/consumer composition and normal
+checks; source tests do not certify current
+data, actual runtime/availability, Paper or live account behavior.

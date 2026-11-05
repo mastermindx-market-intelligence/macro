@@ -1256,12 +1256,15 @@
       '[data-im-macro-market],[data-im-risk-channel],[data-im-risk-row],[data-im-risk-prompt],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option,'+
       '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable]';
     selector += ',[data-im-history-panel],[data-im-history-slot],[data-im-history-prompt],[data-im-history-tabs],[data-im-scenario-field],[data-im-scenario-fields],[data-im-scenario-tab],[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-confirm-context],[data-im-scenario-confirm-reset],[data-im-scenario-result],[data-im-scenario-empty],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error],[data-im-scenario-action]';
+    selector += ',[data-im-snapshot-fields],[data-im-snapshot-result],[data-im-snapshot-date],[data-im-snapshot-status],[data-im-snapshot-at],[data-im-snapshot-score]';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
       if (node === root) attrs.push('data-im-enhanced');
       if (node.closest('[data-im-history-panel]')) {
         attrs.push('hidden','disabled');
         if (node.matches('[data-im-history-panel]')) attrs.push('data-horizon','data-basis','data-im-history-enhanced','data-im-history-tab');
+        if (node.matches('[data-im-snapshot-date]')) value=true;
+        if (node.matches('[data-im-snapshot-status],[data-im-snapshot-at],[data-im-snapshot-score]')) text=true;
         if (node.matches('[data-im-scenario-field]')) { value=true;attrs.push('aria-invalid'); }
         if (node.matches('[data-im-scenario-tab]')) attrs.push('aria-pressed');
         if (node.matches('[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error]')) text=true;
@@ -1452,6 +1455,110 @@
     return market+' · '+context.horizon+' · '+basis+' · '+(zh?'汇率假设：每单位本币兑美元':'FX assumption: USD per local unit');
   }
 
+  // Authored pairs use only the already-published, permitted reconstruction.
+  // No date defaults, data fetch, interpolation or Scenario assumption import.
+  function invalidateSnapshot(controller,slot) {
+    slot.querySelectorAll('[data-im-snapshot-form]').forEach(function(form){controller.snapshotDrafts.delete(form);});
+    slot.querySelectorAll('[data-im-snapshot-result]').forEach(function(node){node.hidden=true;});
+    slot.querySelectorAll('[data-im-snapshot-fields],[data-im-snapshot-date]').forEach(function(node){node.disabled=true;if(node.hasAttribute('data-im-snapshot-date'))node.value='';});
+    slot.querySelectorAll('[data-im-snapshot-status]').forEach(function(node){node.textContent=normalLanguage(controller.root)==='zh'?'暂不比较：比较依据或日期控件已变化。':'Comparison withheld: the comparison source or date controls changed.';});
+    slot.querySelectorAll('[data-im-snapshot-at],[data-im-snapshot-score]').forEach(function(node){node.textContent='';});
+  }
+
+  function snapshotPlan(controller, plan, slot, state) {
+    function one(selector) { var ns=Array.from(slot.querySelectorAll(selector));return ns.length===1?ns[0]:null; }
+    var form=one('[data-im-snapshot-form]'), payload=one('[data-im-snapshot-payload]');
+    var fields=one('[data-im-snapshot-fields]'), result=one('[data-im-snapshot-result]'), status=one('[data-im-snapshot-status]');
+    var left=one('[data-im-snapshot-date="left"]'),right=one('[data-im-snapshot-date="right"]');
+    if(!form||!payload||!fields||!result||!status||!left||!right){invalidateSnapshot(controller,slot);return null;}
+    var key=state.source_reference+'\n'+slot.getAttribute('data-im-history-market')+'\n'+payload.textContent;
+    var prior=controller.snapshotDrafts.get(form);
+    if(prior&&prior.key===key)return prior;
+    var data=null;
+    try {
+      data=JSON.parse(payload.textContent);
+      if(!data||Object.keys(data).sort().join(',')!=='points,selection'||!data.selection||
+         Object.keys(data.selection).sort().join(',')!=='eligible,reason'||typeof data.selection.eligible!=='boolean'||
+         !(data.selection.reason===null||typeof data.selection.reason==='string')||!Array.isArray(data.points))throw 0;
+      var dates=new Set();
+      data.points.forEach(function(p){
+        if(!Array.isArray(p)||p.length!==3||typeof p[0]!=='string'||!p[0]||dates.has(p[0]))throw 0;
+        dates.add(p[0]);
+        p.slice(1).forEach(function(v){if(v!==null&&(typeof v!=='string'||!/^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?$/.test(v)||!Number.isFinite(Number(v))))throw 0;});
+      });
+      if(data.selection.eligible&&(data.selection.reason!==null||data.points.length<2))throw 0;
+    } catch(_){data={selection:{eligible:false,reason:'invalid_comparison_source'},points:[]};}
+    var draft={key:key,form:form,fields:fields,result:result,status:status,left:left,right:right,data:data,pair:null,reason:null};
+    left.value='';right.value='';controller.snapshotDrafts.set(form,draft);return draft;
+  }
+
+  function paintSnapshots(controller, plan, state) {
+    var zh=normalLanguage(controller.root)==='zh';
+    if(controller.snapshotMarket!==state.selected_market||controller.snapshotSource!==state.source_reference){
+      controller.snapshotDrafts.clear();controller.snapshotMarket=state.selected_market;controller.snapshotSource=state.source_reference;
+    }
+    plan.slots.forEach(function(slot){
+      var p=snapshotPlan(controller,plan,slot,state);if(!p)return;
+      var active=slot.getAttribute('data-im-history-market')===state.selected_market;
+      var allowed=p.data.selection.eligible;
+      [p.left,p.right].forEach(function(select){
+        var expected=allowed?p.data.points.map(function(row){return row[0];}):[];
+        var actual=Array.from(select.options).map(function(o){return o.value;});
+        if(actual.length!==expected.length+1||actual[0]!==''||expected.some(function(v,i){return actual[i+1]!==v;}))allowed=false;
+        var blank=select.options[0];if(blank)blank.textContent=zh?'选择观测':'Select an observation';
+      });
+      p.fields.disabled=!active||!allowed||!!controller.pendingScenario;
+      p.left.disabled=p.fields.disabled;p.right.disabled=p.fields.disabled;
+      if(!allowed){p.pair=null;p.reason=p.data.selection.reason||'invalid_comparison_source';}
+      p.result.hidden=!active||!p.pair||!allowed||!!controller.pendingScenario;
+      var messages={select_dates:['Select two distinct supplied observations, then Compare.','选择两条不同的已提供观测，然后比较。'],
+        same_observation:['Select two different observations.','请选择两条不同的观测。'],
+        gap_or_null_observation:['Comparison withheld: one selected observation has missing scores.','暂不比较：所选观测存在缺失评分。'],
+        observation_not_present:['Comparison withheld: select dates from this reconstruction.','暂不比较：请选择本次重建中的日期。'],
+        metadata_denied:['Comparison withheld: source metadata disclosure is denied.','暂不比较：来源元数据不允许披露。'],
+        disclosure_unknown:['Comparison withheld: source disclosure is not established.','暂不比较：尚未确立来源披露权限。'],
+        value_denied:['Comparison withheld: score disclosure is denied.','暂不比较：评分不允许披露。'],
+        value_unknown:['Comparison withheld: score disclosure is not established.','暂不比较：尚未确立评分披露权限。'],
+        comparability_not_established:['Comparison withheld: a shared method and universe are not established.','暂不比较：尚未确立一致的方法及范围。'],
+        two_observations_required:['Comparison needs at least two supplied observations.','比较至少需要两条已提供的观测。'],
+        source_missing:['Comparison withheld: the history source is missing.','暂不比较：缺少历史来源。'],
+        source_failed:['Comparison withheld: the history source could not be read.','暂不比较：无法读取历史来源。'],
+        source_empty:['Comparison withheld: the history source contains no observations.','暂不比较：历史来源中没有观测。'],
+        complete:['Comparison shows your selected pair from the current reconstruction.','比较展示您选择的两条当前重建观测。']};
+      var reason=p.reason||(p.pair?'complete':'select_dates');
+      var message=messages[reason]||(allowed?messages.select_dates:[
+        'Comparison withheld: this source has no qualified disclosure or comparable method/universe.',
+        '暂不比较：此来源尚无符合条件的披露或可比较的方法及范围。']);
+      p.status.textContent=message[zh?1:0];
+      ['left','right'].forEach(function(side,i){
+        var row=p.pair&&p.pair[i];
+        slot.querySelector('[data-im-snapshot-at="'+side+'"]').textContent=row?row[0]:'';
+        ['growth_score','inflation_score'].forEach(function(field,j){slot.querySelector('[data-im-snapshot-score="'+side+'-'+field+'"]').textContent=row?row[j+1]:'';});
+      });
+    });
+  }
+
+  function snapshotEvent(controller,event) {
+    var plan=controller.state&&historyPlan(controller,controller.state);
+    if(!plan||plan.panel.hidden||!event.target||!event.target.closest)return false;
+    var form=event.target.closest('[data-im-snapshot-form]'),slot=event.target.closest('[data-im-history-slot]');
+    if(!form||!slot||slot.hidden||event.target.closest('[data-im-workspace]')!==controller.root||slot.closest('[data-im-panel]')!==plan.panel)return false;
+    var p=snapshotPlan(controller,plan,slot,controller.state);
+    if(!p&&['submit','input','change'].includes(event.type)){event.preventDefault();return true;}
+    if(!p||p.form!==form||!(event.type==='submit'&&event.target===form||['input','change'].includes(event.type)&&[p.left,p.right].includes(event.target)))return false;
+    event.preventDefault();p.pair=null;p.reason=null;
+    if(event.type==='submit'){
+      var l=p.data.points.find(function(row){return row[0]===p.left.value;}),r=p.data.points.find(function(row){return row[0]===p.right.value;});
+      if(p.fields.disabled||!p.data.selection.eligible)p.reason='invalid_comparison_source';
+      else if(!l||!r)p.reason='observation_not_present';
+      else if(l[0]===r[0])p.reason='same_observation';
+      else if(l.slice(1).concat(r.slice(1)).some(function(v){return v===null;}))p.reason='gap_or_null_observation';
+      else p.pair=[l,r];
+      if(!p.pair)(!l||p.left.value===p.right.value?p.left:p.right).focus();
+    }
+    paintSnapshots(controller,plan,controller.state);return true;
+  }
+
   function scenarioNumber(value) {
     // Round only this display; tiny nonzero values must not look like exact zero.
     if (value!==0 && (Math.abs(value)<0.005||Math.abs(value)>=1e9)) return value.toExponential(3);
@@ -1465,6 +1572,7 @@
     plan.panel.setAttribute('data-horizon',state.horizon);plan.panel.setAttribute('data-basis',state.currency_basis);
     plan.panel.setAttribute('data-im-history-enhanced','true');plan.panel.setAttribute('data-im-history-tab',d.tab);
     plan.tabs.hidden=false;
+    paintSnapshots(controller,plan,state);
     plan.all('[data-im-scenario-tab]').forEach(function(n){n.setAttribute('aria-pressed',String(n.getAttribute('data-im-scenario-tab')===d.tab));});
     var selected=controller.config.markets.indexOf(state.selected_market);
     plan.slots.forEach(function(n,i){n.hidden=i!==selected;});plan.prompt.hidden=selected!==-1;
@@ -1566,7 +1674,8 @@
         if(command.type==='confirm_context'&&oldPending.intent&&oldPending.intent.type==='restore_focus')restoreFocus(controller,oldPending.intent.anchor_id);
       }
       paintHistory(controller,controller.state,reduced.announce);
-      if(reduced.focus)plan.fields[reduced.focus].focus({preventScroll:true});
+      if(command.type==='set_tab'&&command.tab==='scenario'&&event.target.closest('[data-im-snapshot-result]'))plan.fields.local.focus({preventScroll:true});
+      else if(reduced.focus)plan.fields[reduced.focus].focus({preventScroll:true});
       else if(command.type==='request_reset'&&reduced.ok)plan.all('[data-im-scenario-action="confirm_reset"]')[0].focus({preventScroll:true});
       else if(['confirm_reset','cancel_reset'].includes(command.type)&&reduced.ok)plan.fields.local.focus({preventScroll:true});
       else if(['confirm_context','cancel_context'].includes(command.type)&&reduced.ok) {
@@ -1839,6 +1948,7 @@
   }
 
   function clickOrChange(controller, event) {
+    if (snapshotEvent(controller,event)) return;
     if (gsMarketEvent(controller,event)) return;
     if (scenarioEvent(controller,event)) return;
     if (riskEvent(controller,event)) return;
@@ -1944,7 +2054,7 @@
     };
     var controller = {
       root: root, config: config, bindingVersion: bindingVersion, configWithSource: configWithSource, reducer: reducer, environment: { window: window },
-      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null, scenarioDraft:null, pendingScenario:null
+      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null, scenarioDraft:null, pendingScenario:null, snapshotDrafts:new Map()
     };
     controller.library = prepareLibrary(root,config);
     controller.inspectorHost = prepareInspector(controller);
@@ -1964,7 +2074,7 @@
       controller.onChange = function (event) { clickOrChange(controller, event); };
       controller.onScenarioKeydown = function(event) { scenarioKeydown(controller,event); };
       root.addEventListener('keydown',controller.onScenarioKeydown,false);
-      controller.onLibraryEvent = function (event) { if (!scenarioEvent(controller,event)) libraryEvent(controller,event); };
+      controller.onLibraryEvent = function (event) { if (!snapshotEvent(controller,event)&&!scenarioEvent(controller,event)) libraryEvent(controller,event); };
       controller.onPopstate = function () { popstate(controller); };
       controller.onResize = function () { dispatch(controller, {type:'resize'}); };
       controller.onInspectorCancel = function (event) { inspectorCancel(controller, event); };
@@ -2025,6 +2135,7 @@
     controller.state = null;
     controller.scenarioDraft = null;
     controller.pendingScenario = null;
+    controller.snapshotDrafts.clear();
     controller.reducer = null;
     if (controller.observer) controller.observer.disconnect();
     controller.root.removeEventListener('click', controller.onClick, false);
