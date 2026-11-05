@@ -4142,6 +4142,11 @@ def build_sector_pages(env: Environment, site: Path, generated: str,
     tpl = env.get_template("sector.html.j2")
     outdir = site / "sectors"
     outdir.mkdir(parents=True, exist_ok=True)
+    # Sector dossier binder (tabs + Cycles mounts). Its Cycles-family siblings
+    # (sector_cycles_states/_face .js/.css) are copied by build_sector_central.
+    _dossier_src = config.ROOT / "templates" / "sector_dossier.js"
+    if _dossier_src.exists():
+        site_assets.copy_asset("sector_dossier.js", _dossier_src, site)
     # Policy-shock de-escalation state (PS-R3: display de-escalation only — no sizing/reordering)
     _shock_path = site / "live" / "shock_state.json"
     _shock_state: dict | None = None
@@ -4164,11 +4169,28 @@ def build_sector_pages(env: Environment, site: Path, generated: str,
         if not res.get("ladder"):
             continue
         holdings = []
+        # Every top-10 row in order for the dossier Companies tab, including names
+        # the holdings analysis below skips; an unresolved row stays visible with a
+        # machine reason instead of silently dropping out.
+        members = []
         t10 = latest_top10(fund)
         if t10 is not None:
             for _, r in t10.iterrows():
                 tick = str(r["ticker"]).replace(".", "-")
                 df = store.read("stocks", tick)
+                try:
+                    _mw = float(r.get("weight_pct"))
+                    _mw = _mw if _mw == _mw else None
+                except (TypeError, ValueError):
+                    _mw = None
+                _thin = df is None or len(df) < 300
+                members.append({"ticker": tick,
+                                "name": str(r.get("name", "")).title(),
+                                "weight": _mw,
+                                "resolved": not _thin,
+                                "reason": (None if not _thin else
+                                           "no_price_history" if df is None
+                                           else "insufficient_history")})
                 if df is None or len(df) < 300:
                     continue
                 h = analyze(df["close"], df.get("high"), liquidity=liq,
@@ -4247,6 +4269,7 @@ def build_sector_pages(env: Environment, site: Path, generated: str,
         s = {"fund": fund, "name": SECTOR_NAMES.get(fund, fund),
              "mtf_json": _json2.dumps(res.get("mtf", {})), **res,
              "holdings": holdings,
+             "members": members,
              "rate_infl": (rate_infl or {}).get(fund),  # display-only macro overlay
              "dollar_ctx": _dollar_context(site, fund),  # W3-C4b display-only dollar-lean chip
              "accumulation": accumulation_signals(fund, liquidity=liq,
