@@ -1,5 +1,124 @@
 ---
 key: R81-AUTHORITY-VALIDATION-LAW
+question: 'Dated question from 2026-09-16 at Mastermind6dc2ea83: After ten consecutive bounded repair
+  rounds on the Mastermind W1-H3 CEO-submit sealed receipt (R9, R17, R18-B4, R36, R48, R50, R68, R76,
+  R80, R80-B1/B2), each of which went green and each of which was followed by a new instance of the same
+  acceptance failure, should the programme issue an eleventh instance repair or freeze a law that closes
+  the class?'
+answer: 'Retained scoped 2026-09-16 ruling: Freeze the class. R81 adds three scoped laws to the accepted
+  Executive/autonomy architecture: (1) every invariant required to GRANT authority or eligibility must
+  be asserted at the authority-granting read, from canonical current evidence or a separately authenticated
+  authority source, through one shared owner - this binds authority/eligibility invariants only and imposes
+  no writer/read assertion parity on provenance-only or audit fields; (2) any document or response crossing
+  a trust boundary is parsed into a typed value with exact types and bounded domains and rejected wholesale
+  on deviation - field-by-field `!=` against untyped input is not validation; (3) an unauthenticated,
+  self-describing artifact whose only integrity evidence is a digest it computes over itself cannot supply
+  its own authority facts - such a field is a label, not an authority fact, which does not forbid a future
+  independently authenticated canonical attestation from carrying authority. The required consolidated
+  B1/B2/B3 source repair was subsequently accepted at2374a31d134ea56af948c6049a8abaa80fc2e8a0 and protected
+  by Mastermind#677 merge6fc5c057e04114055f927ebd295edc779de86bca on2026-09-17. That source repair/review/landing
+  instruction is complete and must not be reissued. Source protection does not establish installation,
+  later H4 integration or current runtime/anti-replay status.'
+rationale: 'Historical rationale at Mastermind6dc2ea83 on2026-09-16: The three open W1-H3 blockers are
+  one defect: the design compares where it must assert and checks where it must parse. `ceo_submit_sink_eligible()`
+  copies the live App validity flags, the App peer user and both COO arm flags into its recomputed projection
+  and digest-compares them instead of asserting them, so it is a DRIFT DETECTOR ("did anything change
+  since the receipt was written?") and not an AUTHORITY VALIDATOR ("is the current state one the architecture
+  authorizes?"). Those two questions diverge exactly when the receipt is minted in an unauthorized state.
+  Because the receipt carries no authenticator - no key, nonce, counter or witness - and because writing
+  `control.json` (0440 root) and `ceo-submit-state-v1.json` (0444 root, in a 0755 root directory) require
+  the SAME privilege, the party the receipt exists to stop can always mint one. The set of documents that
+  compare-equal-but-must-not-be-authorized is therefore unbounded, and instance-by-instance repair cannot
+  terminate; a monotonically growing green suite (65 -> 110 -> 155 -> 171 -> 248 -> 274 -> 350) is what
+  that looks like from inside. Laws 1 and 3 are deliberately scoped so the freeze constrains authority
+  grants without taxing provenance/audit fields or foreclosing a properly authenticated attestation later.
+  Later canonical exact-head acceptance and protected-source closeout supersede the outstanding-repair
+  wording, while preserving the three scoped principles. The original probes and suite counts below are
+  dated evidence, not a current code/host assessment.'
+alternatives:
+- option: Issue an eleventh bounded instance repair for B3 alone
+  why_not: 'Leaves the generating mechanism intact. B1, B2 and B3 were each found by a different reviewer
+    using a different probe; nothing in the design stops a twelfth instance.
+
+    '
+- option: Add an authenticator (keyed MAC / signature) to the sealed receipt
+  why_not: 'Requires a key and a key-custody lifecycle - a new secret plane. Forbidden by Charter P7 duplicate_control_planes,
+    Skillpack INDEX hard law 2, and Sol R48''s explicit prohibition on a replacement receipt, controller
+    or validation plane.
+
+    '
+- option: Give `transaction_id` an independent durable owner so the receipt proves provenance
+  why_not: 'Its only independent owner, the transaction manifest, is unlinked by `complete_transaction`
+    on success. Every replacement needs a durable transaction log or a key - both forbidden second stores.
+    Accepted instead as a correlation label.
+
+    '
+- option: Change the frozen receipt shape (drop `transaction_id` from the digest-bound projection)
+  why_not: 'Cleaner in the abstract but breaks the R48-pinned projection field set for zero security gain
+    - the digest over that field is already circular. Costs a re-review round.
+
+    '
+- option: Defer the whole class to W1-H4 as an integration concern
+  why_not: 'False. The shipped root-only `ceo-submit-status` verb consumes the predicate TODAY and reports
+    CEO_SUBMIT_ARMED exit 0 in all eight states ARM refuses.
+
+    '
+evidence:
+- 'Historical2026-09-16 record at6dc2: Mastermind PR #677 head 6dc2ea83bc738c2532745ef71dcde6c170c58d91,
+  Draft/Hold, owning suite 274 passed'
+- 'Historical2026-09-16 record at6dc2: Ruling published as PR #677 comment 5706016890 (readback byte-identical
+  modulo one appended trailing newline)'
+- 'Historical2026-09-16 record at6dc2: B3 hostile witness: 8/8 states that evaluate_ceo_submit_arm_admission
+  REFUSES are minted-receipt ELIGIBLE, CLI CEO_SUBMIT_ARMED exit 0, writes=(0,0,0) - probe sha256 aa05cebe4b1a9cf3543bf8591cdf580f8074b619162e72ca66ba793638a17b8a'
+- 'Historical2026-09-16 record at6dc2: Candidate repair discriminator: 8/8 -> 0/8 with all four controls
+  unmoved - probe sha256 332c401f359307904b1c1e9f3e8c13883494201d433bc3e2f58a9a09fbefda46'
+- 'Historical2026-09-16 record at6dc2: B2 falsifier: 9 RED (6 JSON-float identity facts, 3 malformed exec
+  paths) against a passing positive control - probe sha256 d3f0ea0c029a3b8fff14e698386d37172b0996dc5e954b7d1089ad674f3f8d92'
+- 'Historical2026-09-16 record at6dc2: B1: ops/executive_os/autonomy_control.py _ceo_admission_probe assigns
+  `control, _raw = _root_json(...)` and never hashes `_raw`'
+- 'Historical2026-09-16 record at6dc2: R48 malformed-document matrix independently re-run at this head:
+  0/8 open - B3 is a distinct class'
+- 'Historical2026-09-16 record at6dc2: Privilege equivalence: install.sh:1253-1254 (worker 0440 root:_mastermind_worker),
+  install.sh:1275 (control runs as _mastermind_exec)'
+- 'Historical2026-09-16 record at6dc2: Prior same-carrier exact-head review 5705740434 independently co-reproduced
+  B1 and B2'
+- 'Source API read 2026-11-05: https://github.com/mastermindx-market-intelligence/Mastermind/pull/677
+  actually merged2026-09-17T05:52:04Z from semantic2374a31d134ea56af948c6049a8abaa80fc2e8a0 as6fc5c057e04114055f927ebd295edc779de86bca.'
+- 'Dated exact-head review and source closeout: https://github.com/mastermindx-market-intelligence/Mastermind/pull/677#issuecomment-5708775098
+  and https://github.com/mastermindx-market-intelligence/Mastermind/pull/677#issuecomment-5709061650;
+  B1 byte binding/B3 authority parity preserved after Unicode Cc/U+0085 repair;393-test and hosted/security
+  results are attributed historical receipts, not rerun. Specific original #677 writer BRANCH_WRITER_RELEASED=true
+  is dated and not global absence.'
+- 'Source-only acceptance and post-merge exact-byte readback: https://github.com/mastermindx-market-intelligence/Mastermind/pull/677#issuecomment-5709321380
+  and https://github.com/mastermindx-market-intelligence/Mastermind/pull/677#issuecomment-5709627963;
+  BUILT_NOT_PROVEN/NOT_INSTALLED/H4_NOT_STARTED are the September17 closeout scope. Current installation,
+  H4/runtime and separate anti-replay disposition are unassessed here.'
+affects:
+- WS:EXECUTIVE-CAPACITY-FABRIC
+- mastermind/ops/executive_os/autonomy_control.py
+- mastermind/scripts/executive_os_phase1c_control_wrapper.py
+- mastermind/control_plane/executive_service.py
+confidence: high
+reversibility: costly
+decided_by: ceo-sol
+decided_at: 2026-09-16
+---
+
+## Current reading of the retained R81 decision
+
+The original September16 record is reproduced in full below as dated evidence. Active qualification follows the actual Mastermind#677 source acceptance and merge; source adoption, current installation and remaining product acceptance are distinct. Current outer Chairman intent and protected source law govern any new action.
+
+The three scoped principles and original decision identity/alternatives remain. The consolidated repair was accepted at2374a31d and protected as6fc5c057 on2026-09-17. The old imperative to create/review/land that repair is complete. [Source acceptance](https://github.com/mastermindx-market-intelligence/Mastermind/pull/677#issuecomment-5709321380) and [protected closeout](https://github.com/mastermindx-market-intelligence/Mastermind/pull/677#issuecomment-5709627963) establish that boundary; [specific writer release](https://github.com/mastermindx-market-intelligence/Mastermind/pull/677#issuecomment-5709061650) is dated and applies only to the original #677 source operation.
+
+The original test counts and probes remain attributed. This qualification provides no new code/security/host evidence, anti-replay closure or runtime authority.
+
+## Complete original record — historical source2e1efc5a
+
+The following complete file retains its original observation epoch and instructions as history; it is not current execution authority.
+
+``````markdown
+---
+key: R81-AUTHORITY-VALIDATION-LAW
 question: >
   After ten consecutive bounded repair rounds on the Mastermind W1-H3 CEO-submit sealed
   receipt (R9, R17, R18-B4, R36, R48, R50, R68, R76, R80, R80-B1/B2), each of which went
@@ -120,3 +239,4 @@ No W1-H4 start, Ready transition, merge, enqueue, install, restart, ARM/DISARM, 
 credential or production effect. H3 capability remains `BUILT_NOT_PROVEN / SOURCE_ONLY`.
 Source custody stays with the incumbent child/branch/writer; the repair being mechanical means
 no further principal adjudication round is owed, not that custody moves.
+``````

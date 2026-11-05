@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/canada_history.html.j2
+  - templates/china_history.html.j2
+  - templates/history.html.j2
+  - templates/hk_history.html.j2
+manifest: mockups/evidence/regime-history-finished-periods/manifest.json

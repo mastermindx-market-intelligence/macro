@@ -1,0 +1,63 @@
+{
+  "new_reproducers": {
+    "failed_before_fix": 26,
+    "integration": 14,
+    "passed_after_fix": 26,
+    "semantics": 12
+  },
+  "original_hosted_failure": {
+    "all_reproduced_gates_now_pass": true,
+    "commit": "685d5d9231ef843821693fb558acd399eb2a2bae",
+    "issues": [
+      "conditional CLI source import pin",
+      "missing declared ancestor __init__ modules",
+      "missing canonical visual receipt"
+    ],
+    "no_guard_or_ceiling_waived": true,
+    "run": 38703653935
+  },
+  "publication_and_installation": "This evidence qualifies the exact source blobs, not an installed/runtime/hosted-CI result.",
+  "reviewed_subject_sha256": {
+    "engine/neuralweb/market_memory_history_archive.py": "4c9580c35557d857cb1a4f7dfcd51d3cd75647b9cf0f9ee54e4b2c98ff2974d2",
+    "engine/neuralweb/market_memory_history_dossier.py": "3062c13a89f43937e85bd091ecc79054947cfbf13dc7557b92eb80b95008dc4b",
+    "engine/neuralweb/market_memory_history_macro.py": "a43179ca6c40e25da2bf14250edf07104f7e5e429d842a3eb43133a6a0ccf5cf",
+    "engine/neuralweb/market_memory_history_view.py": "f54001b180815878253fc79fbf5a762cbe0456f4fe1d05fa09884cb68ee906a7",
+    "lib/dataos/web_api.py": "7bc02c54e93c75b3fe9a6798554b85705b2a7a95ab6296e6343bdbb6014a9157",
+    "lib/dataos/web_history.py": "0b5a0b989283a53aec6186e0c42b2b0a4e6d2978fe53b61f8ec9004ce5aa8ee4",
+    "scripts/market_memory_history.py": "42a952f655e9f3de7da6c77d7c5cb3dc54fd425565b8da248cc614a49b206852"
+  },
+  "schema": "market_memory.history_final_source_qualification.v1",
+  "scope_verification": [
+    {
+      "job": "research-price-panel",
+      "missing": [],
+      "note": "derived scopes for 1/1 jobs"
+    },
+    {
+      "job": "dataos-web-workspace",
+      "missing": [],
+      "note": "derived scopes for 1/1 jobs"
+    },
+    {
+      "job": "dataos-foundation",
+      "missing": [],
+      "note": "derived scopes for 1/1 jobs"
+    }
+  ],
+  "source_commit_at_test": "685d5d9231ef843821693fb558acd399eb2a2bae",
+  "tests": {
+    "history_and_legacy_data_lab": 427,
+    "original_hosted_ci_failure_regressions": 2,
+    "passed": 429,
+    "seconds": 30.93
+  },
+  "uncommitted_reviewed_delta_at_test": true,
+  "visual_evidence": {
+    "canonical_guard_exit": 0,
+    "corrupt_payload_refused": true,
+    "no_remote_requests": true,
+    "real_private_capture_cases": 8,
+    "real_private_html_sha256": "274dbab1e38a6c7e579e184ad790c2ebb7ae3e882d04c1cf7a0ad007c9991ea6",
+    "synthetic_only_committed_capture_cells": 16
+  }
+}

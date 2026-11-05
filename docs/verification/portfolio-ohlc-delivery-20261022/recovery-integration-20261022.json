@@ -1,0 +1,244 @@
+{
+  "schema": "portfolio.integrated_release_validation.v1",
+  "recorded_at": "2026-10-22T17:43:55.607306+00:00",
+  "resolution": {
+    "at": "2026-10-22T17:39:44.641298+00:00",
+    "source_head": "5943a9d075a8b833a5da6d84cd335cd545cb07b9",
+    "merged_base": "7a8f690d35693976b2854575833eb2041618a005",
+    "resolved_tree": "26ec5840db754ba6c4ecb45821c057aaa79e77b9",
+    "resolution": "Retain all three independently required paths in one additive conflict resolution. No surrounding path or suite removed.",
+    "validation_limit": "Original full staged whitespace check flags inherited generated HTML. Against merged base only the two byte-identical frozen raw evidence files have whitespace diagnostics; evidence bytes were preserved, not rewritten. All other branch paths pass.",
+    "frozen_evidence_equal_to_source_head": [
+      "docs/verification/portfolio-ohlc-delivery-20261022/ci-scope-correction.diff",
+      "docs/verification/portfolio-ohlc-delivery-20261022/validation-output.txt"
+    ],
+    "manifest_sha256": "fb7914113ffff4a54e32396154b42a1b300eb069c6136460b6b7bf2a0c95a232",
+    "delta": ".github/ci/legacy-jobs.yml                         |  73 ++\n .github/workflows/daily.yml                        |  24 +\n .gitignore                                         |   4 +-\n app/deploy/ohlc_origin_known_hosts                 |   1 +\n app/deploy/update.sh                               |  31 +-\n config/dag.yml                                     |  15 +\n docs/PORTFOLIO_OHLC_ORIGIN_DELIVERY.md             | 173 ++++\n .../portfolio-ohlc-delivery-20261022/README.md     | 106 +++\n .../ci-scope-correction.diff                       | 198 +++++\n .../recovery-ci-repair-20261022.json               |  94 ++\n .../portfolio-ohlc-delivery-20261022/review.md     |  81 ++\n .../validation-output.txt                          |  75 ++\n .../validation.json                                | 352 ++++++++\n scripts/build_chart_data.py                        | 148 +++-\n scripts/publish_ohlc.py                            | 982 +++++++++++++++++++++\n tests/test_ci_pack.py                              |   3 +\n tests/test_deploy_update_self_heal.py              | 112 ++-\n tests/test_publish_ohlc.py                         | 615 +++++++++++++\n tests/test_push_retry.py                           |  75 ++\n 19 files changed, 3141 insertions(+), 21 deletions(-)"
+  },
+  "prior_passing_ci": {
+    "run": 39791019017,
+    "subject_head": "5943a9d075a8b833a5da6d84cd335cd545cb07b9",
+    "tested_merge": "286c7ea210978c4cb57d930ec1c2a0fb89b98f11",
+    "base": "7abe860f0ab79f206ea846d7ffe6df0fdc2579d0",
+    "logical_jobs": 279,
+    "passed_steps": 598,
+    "digest": "ce2cf0ac89b09a370405af8c979f48d6187d60933a0975708ae262d8e7f17540",
+    "limit": "Not proof of this later integrated tree."
+  },
+  "independent_integration_review": {
+    "disposition": "Additive union accepted; expanded deployment, OHLC and actual CI compiler checks required.",
+    "preserved": "OHLC receipt/producer/helper; new Caddy autosave publication and predecessor inode fence; both FD9 borrowers; OHLC exclusion, no-op reconcile and deferred refusal."
+  },
+  "deployment_and_first_ohlc_execution": {
+    "started": "2026-10-22T17:38:22.205066+00:00",
+    "source_head": "5943a9d075a8b833a5da6d84cd335cd545cb07b9",
+    "merged_base": "7a8f690d35693976b2854575833eb2041618a005",
+    "before": {
+      "app/deploy/update.sh": "b89a0232431d60929a9522982ccf1a3859a1463fa27b15d1dd9875d838a9a153",
+      "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+      "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+      "tests/test_deploy_update_self_heal.py": "c61fdbb49f457e232d72a54089fa3209289c422622446206b45c86afc5d803f1",
+      ".github/ci/legacy-jobs.yml": "fb7914113ffff4a54e32396154b42a1b300eb069c6136460b6b7bf2a0c95a232",
+      "tests/test_ci_pack.py": "00c5f15e77db40c1b19d582b848b45feb7657461edeb08245413ac27d6fa2acc"
+    },
+    "groups": [
+      {
+        "name": "deployment",
+        "started": "2026-10-22T17:38:22.211888+00:00",
+        "finished": "2026-10-22T17:38:48.242599+00:00",
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "tests/test_deploy_update_self_heal.py",
+          "tests/test_caddy_autosave_driver.py",
+          "tests/test_macro_caddy_overlay.py",
+          "tests/test_macro_caddy_publication.py",
+          "-q",
+          "--tb=short",
+          "--basetemp",
+          "/tmp/portfolio-ohlc-delivery-20261022/integration-1735/deployment-pytest"
+        ],
+        "exit": 0,
+        "log_sha256": "edd3411ff21dd496cc593ef41ac050180e37a70634bc47f327d1e0496541da53",
+        "tail": [
+          "........................................................................ [ 17%]",
+          "........................................................................ [ 34%]",
+          "........................................................................ [ 51%]",
+          "........................................................................ [ 68%]",
+          "........................................................................ [ 85%]",
+          "..............................................................           [100%]",
+          "422 passed in 24.78s"
+        ]
+      },
+      {
+        "name": "ohlc",
+        "started": "2026-10-22T17:38:48.243345+00:00",
+        "finished": "2026-10-22T17:38:51.528556+00:00",
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "tests/test_publish_ohlc.py",
+          "tests/test_build_chart_data.py",
+          "-q",
+          "--tb=short",
+          "--basetemp",
+          "/tmp/portfolio-ohlc-delivery-20261022/integration-1735/ohlc-pytest"
+        ],
+        "exit": 1,
+        "log_sha256": "49ed5212dd1fa0f309e41a893520fcc360696c3c09691dbbb62a629f468f1a3e",
+        "tail": [
+          "tests/test_build_chart_data.py:197: in _run_chart_resample",
+          "    js = (Path(__file__).resolve().parents[1] / \"site\" / \"chart.js\").read_text()",
+          "         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py:787: in read_text",
+          "    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:",
+          "         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py:771: in open",
+          "    return io.open(self, mode, buffering, encoding, errors, newline)",
+          "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "E   FileNotFoundError: [Errno 2] No such file or directory: '/Volumes/Mastermind/agent-workspaces/macro/web/portfolio-ohlc-delivery-20261022/site/chart.js'",
+          "------------------------------- Sparse worktree --------------------------------",
+          "This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree \u2014 site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full",
+          "",
+          "NOTE: sparse worktree \u2014 data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full",
+          "=========================== short test summary info ============================",
+          "FAILED tests/test_build_chart_data.py::test_chart_js_buckets_3d_by_the_shipped_boundaries",
+          "FAILED tests/test_build_chart_data.py::test_a_trimmed_gapless_window_agrees_with_row_arithmetic",
+          "2 failed, 76 passed in 2.65s"
+        ]
+      }
+    ],
+    "after": {
+      "app/deploy/update.sh": "b89a0232431d60929a9522982ccf1a3859a1463fa27b15d1dd9875d838a9a153",
+      "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+      "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+      "tests/test_deploy_update_self_heal.py": "c61fdbb49f457e232d72a54089fa3209289c422622446206b45c86afc5d803f1",
+      ".github/ci/legacy-jobs.yml": "fb7914113ffff4a54e32396154b42a1b300eb069c6136460b6b7bf2a0c95a232",
+      "tests/test_ci_pack.py": "00c5f15e77db40c1b19d582b848b45feb7657461edeb08245413ac27d6fa2acc"
+    },
+    "finished": "2026-10-22T17:38:51.550109+00:00",
+    "unchanged": true,
+    "passed": false
+  },
+  "ohlc_after_exact_sparse_fixture_restoration": {
+    "started": "2026-10-22T17:39:48.508831+00:00",
+    "finished": "2026-10-22T17:39:51.822447+00:00",
+    "fixture": {
+      "path": "site/chart.js",
+      "blob": "3e3f538f9ca7fbeba24cd6f4ff2a8943f720ad1e",
+      "sha256": "a31b8e5aa13fafc13605047c05fc0bfb3656f70a9a56dc0e5b2f0bfa78858099",
+      "reason": "Restore exactly the current tracked index fixture omitted by sparse checkout during merge; no index/source change."
+    },
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "tests/test_publish_ohlc.py",
+      "tests/test_build_chart_data.py",
+      "-q",
+      "--tb=short",
+      "--basetemp",
+      "/tmp/portfolio-ohlc-delivery-20261022/integration-1735/ohlc-fixture-pytest"
+    ],
+    "exit": 0,
+    "log_sha256": "c10fdd754ed3141ac6fa551820e62b5f020668c717820379ca83cd8f1b67204d",
+    "tail": [
+      "........................................................................ [ 92%]",
+      "......                                                                   [100%]",
+      "78 passed in 2.50s"
+    ]
+  },
+  "ci_scope_and_packing_execution": {
+    "started": "2026-10-22T17:38:48.647792+00:00",
+    "finished": "2026-10-22T17:42:48.514053+00:00",
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered",
+      "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier",
+      "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+      "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+      "tests/test_ci_pack.py::test_autosave_adoption_contracts_execute_in_existing_code_job",
+      "tests/test_ci_pack.py::test_every_real_legacy_job_declares_its_gate",
+      "-q",
+      "--tb=short",
+      "--basetemp",
+      "/tmp/portfolio-ohlc-delivery-20261022/integration-1735/ci-pytest"
+    ],
+    "exit": 0,
+    "before": {
+      ".github/ci/legacy-jobs.yml": "fb7914113ffff4a54e32396154b42a1b300eb069c6136460b6b7bf2a0c95a232",
+      "tests/test_ci_pack.py": "00c5f15e77db40c1b19d582b848b45feb7657461edeb08245413ac27d6fa2acc"
+    },
+    "after": {
+      ".github/ci/legacy-jobs.yml": "fb7914113ffff4a54e32396154b42a1b300eb069c6136460b6b7bf2a0c95a232",
+      "tests/test_ci_pack.py": "00c5f15e77db40c1b19d582b848b45feb7657461edeb08245413ac27d6fa2acc"
+    },
+    "unchanged": true,
+    "log_sha256": "e39b6bbf0e6280c4879f1d7f7ff6bad6644d640c1bf83d9fc05832e9a2a2d7e9",
+    "tail": [
+      "........                                                                 [100%]",
+      "8 passed in 239.14s (0:03:59)"
+    ]
+  },
+  "unchanged_inherited_packing_limits": {
+    "PACKING_PROBES": [
+      [
+        "templates/index.html",
+        136,
+        5870
+      ],
+      [
+        "scripts/build_free_content.py",
+        136,
+        5842
+      ],
+      [
+        "engine/prophet/plan_book.py",
+        130,
+        5614
+      ]
+    ],
+    "PACKING_PROBE_MAX_PACKS": 10
+  },
+  "logs": {
+    "deployment.log": {
+      "file": "recovery-integration-deployment.log.gz",
+      "uncompressed_sha256": "edd3411ff21dd496cc593ef41ac050180e37a70634bc47f327d1e0496541da53",
+      "compressed_sha256": "2719c26aebe5e6f479772a7293f1542302759b72f55820456bc51fb30b77c3e2"
+    },
+    "ohlc.log": {
+      "file": "recovery-integration-ohlc.log.gz",
+      "uncompressed_sha256": "49ed5212dd1fa0f309e41a893520fcc360696c3c09691dbbb62a629f468f1a3e",
+      "compressed_sha256": "390de416e6f580cf840ea87849f55bb8e4e7f746e67064f502b019592219afed"
+    },
+    "ohlc-fixture-restored.log": {
+      "file": "recovery-integration-ohlc-fixture-restored.log.gz",
+      "uncompressed_sha256": "c10fdd754ed3141ac6fa551820e62b5f020668c717820379ca83cd8f1b67204d",
+      "compressed_sha256": "8eeeb50b0916d2f16b27a6db11b242b99a6e84b972409ccbcfd536251f283c4c"
+    },
+    "ci-coverage-packing.log": {
+      "file": "recovery-integration-ci-coverage-packing.log.gz",
+      "uncompressed_sha256": "e39b6bbf0e6280c4879f1d7f7ff6bad6644d640c1bf83d9fc05832e9a2a2d7e9",
+      "compressed_sha256": "cf6968c6dc7eda975d494279b5cc37e2d0b0a7d115dcccaacb76a6ba45506c54"
+    }
+  },
+  "summary": {
+    "deployment": "422 passed in 24.78s",
+    "ohlc": "78 passed in 2.50s after exact tracked fixture restoration; initial76pass/2missingfixturefailure retained",
+    "ci_contracts": "8 passed in239.14s; actual declared closure, curated import coverage, opaque-tier preservation, packing, ancestor census and autosave job selection",
+    "environment": "Local Python3.14.7; hosted Python3.12 final-head CI remains required."
+  },
+  "remaining_gates": [
+    "Final-head complete hosted CI and semantic gate",
+    "Ordinary expected-head merge and actual tree/blob readback",
+    "Installed helper/updater verification through incumbent cron",
+    "Genuine trusted daily completion and delivery",
+    "Authenticated eligible Portfolio/Treasury consumer proof"
+  ]
+}

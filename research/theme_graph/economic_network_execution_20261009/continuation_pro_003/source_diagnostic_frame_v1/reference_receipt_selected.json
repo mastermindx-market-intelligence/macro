@@ -1,0 +1,155 @@
+{
+  "source_ref": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+  "reference_receipt_git_blob_sha": "81888460546b7fc46b0f4ce5f3dedee131430e3c",
+  "authority": {
+    "consumers": [
+      "gmi.identity_resolution/v1"
+    ],
+    "identity_authority": "canonical_exact_identity",
+    "ranking_authority": "none",
+    "signal_authority": "none",
+    "trade_authority": "none"
+  },
+  "generated_at": "2026-10-09T05:05:32",
+  "producer": "scripts/build_security_master.py",
+  "row_counts": {
+    "issuer_master": 1215,
+    "issuer_migrations": 3,
+    "security_master": 2384,
+    "security_migrations": 1,
+    "vendor_alias_rows_readable": 6046,
+    "vendor_aliases": 6046
+  },
+  "issuer": {
+    "era": "issuer_semantic_correction_v1",
+    "era_migrations_total": 3,
+    "evidence_snapshot": "2026-10-05",
+    "migrations_this_run": 0,
+    "multi_security_groups": [
+      {
+        "issuer_id": "ISS:US-XNAS-FOX",
+        "security_ids": [
+          "SEC:US-XNAS-FOX",
+          "SEC:US-XNAS-FOXA"
+        ]
+      },
+      {
+        "issuer_id": "ISS:US-XNAS-GOOG",
+        "security_ids": [
+          "SEC:US-XNAS-GOOG",
+          "SEC:US-XNAS-GOOGL"
+        ]
+      },
+      {
+        "issuer_id": "ISS:US-XNAS-NWS",
+        "security_ids": [
+          "SEC:US-XNAS-NWS",
+          "SEC:US-XNAS-NWSA"
+        ]
+      }
+    ],
+    "state_counts": {
+      "DEFERRED_IDENTITY_EXCEPTION": 1,
+      "NO_ISSUER_EVIDENCE": 1168,
+      "RESOLVED": 1214
+    }
+  },
+  "security": {
+    "era": "security_supersession_duplicate_mint_v1",
+    "era_migrations_total": 1,
+    "migrations_this_run": 0,
+    "state_counts": {
+      "ACTIVE": 2383,
+      "SUPERSEDED_DUPLICATE_MINT": 1
+    }
+  },
+  "coverage": {
+    "resolved": 710,
+    "total": 721,
+    "unresolved": 11,
+    "unresolved_names": [
+      "ANGPY",
+      "B",
+      "BLD",
+      "EA",
+      "GATO",
+      "IMPUY",
+      "MAG",
+      "PSKY",
+      "RHHBY",
+      "WBD",
+      "WBS"
+    ]
+  },
+  "china_hk_admission": {
+    "contract": "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md",
+    "evidence_sources": {
+      "cn": {
+        "dataset": "data/china_filings/filings.parquet",
+        "newest_observation": "2026-10-08",
+        "provenance": "CNInfo (巨潮资讯网) SSE+SZSE disclosure metadata (collectors/china_filings.py)"
+      },
+      "hk": {
+        "dataset": "data/hk_shorts/positions.parquet + data/hk_shorts/turnover.parquet",
+        "newest_observation": "2026-10-08",
+        "provenance": "SFC official Short Position Reports + HKEX official turnover statistics (collectors/hk_shorts.py)"
+      }
+    },
+    "refusals_this_run": {
+      "cn": [
+        {
+          "listing_key": "CN-XSHE-002648",
+          "node_id": "co:cn:002648.SZ",
+          "reason": "no_committed_primary_source_evidence",
+          "symbol": "002648.SZ"
+        },
+        {
+          "listing_key": "CN-XSHE-300229",
+          "node_id": "co:cn:300229.SZ",
+          "reason": "no_committed_primary_source_evidence",
+          "symbol": "300229.SZ"
+        },
+        {
+          "listing_key": "CN-XSHG-600059",
+          "node_id": "co:cn:600059.SS",
+          "reason": "no_committed_primary_source_evidence",
+          "symbol": "600059.SS"
+        }
+      ],
+      "hk": []
+    },
+    "refused_this_run": {
+      "cn": 3,
+      "hk": 0
+    },
+    "resolved_this_run": {
+      "cn": 0,
+      "hk": 0
+    },
+    "resolved_total": {
+      "cn": 1018,
+      "hk": 147
+    },
+    "target_n": {
+      "cn": 1021,
+      "hk": 147
+    },
+    "target_population_source": "data/theme_graph/nodes.parquet (kind=company, market_scope in cn/hk)"
+  },
+  "inputs": {
+    "config.yml": "b8963682e5f2fe209cee1a604f19e51bbce232992d75c0b26c60a615600a310f",
+    "config/delisted_symbols.yml": "6cefebced6f19f7d612078f369e47ae4cd4d23ac35f6ecfbd732f4dd4a6e661a",
+    "data/baskets/membership.json": "b968e9812f60494bd02bbc0d5ad4b8dc67dcb90a939426728e9db6befba9678a",
+    "data/breadth/constituents.parquet": "ecdd7e77ac36198b45c4ff6b854e7a46281bd3504d82540853f29c09a1f64aaf",
+    "data/china_filings/filings.parquet": "f8c9ffd6a7f3c24a7478b14e9699f99b70ca3155b9f867cf549de3ef0a48a87f",
+    "data/hk_shorts/positions.parquet": "5a16bec36c5379cf81d0af1e60c9e8cc21575e84bd9c557c48fefd6986d75444",
+    "data/hk_shorts/turnover.parquet": "7150319bafdc32b626afa9a85a63332935f801a61c2d186e0ece8730828d1e0d",
+    "data/symbol_directory/cik_map": "5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9",
+    "data/symbol_directory/snapshots": "a96d477d51c73b86b7fe58e131fc1022b6cf921d89e974872d6b433c54b1cc0f",
+    "data/theme_graph/nodes.parquet": "c93b4e840bf83b18b53343acd15ecb01c22f38d22d2ff979eea13a6f0910934b",
+    "lib/ticker_aliases.py": "6a6da16e40de28e9ac3eb9f319ca6b1a137a479656101b590b9264211e3e70fd"
+  },
+  "symbol_directory_snapshot": "2026-10-09",
+  "cik_map_snapshot": "2026-10-05"
+}
+
