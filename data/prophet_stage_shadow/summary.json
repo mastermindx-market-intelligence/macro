@@ -3,24 +3,24 @@
   "is_context_only": true,
   "display_only": true,
   "authority_tier": "display",
-  "generated_asof": "2026-10-30",
-  "generated_utc": "2026-10-30T08:51:55.546244+00:00",
+  "generated_asof": "2026-11-04",
+  "generated_utc": "2026-11-04T14:46:11.597586+00:00",
   "spec": "research/PROPHET_STAGE_FUSION_PREREG.md",
   "accrual_disclaimer": "accruing \u2014 first 126-day cohort matures ~2026-12; n is tiny until then; NOT yet decisive. The 2022-26 backtest on the T-cascade confluence proxy found no CI-clean win-rate edge (a quality right-shift only) \u2014 this forward-shadow is the definitive on-Prophet check, tagging Prophet's ACTUAL entries from go-live. Display / shadow tier only: it NEVER gates, ranks, or alters any Prophet decision.",
-  "n_entries": 767,
-  "n_tagged": 601,
-  "n_stageable": 601,
+  "n_entries": 854,
+  "n_tagged": 670,
+  "n_stageable": 670,
   "n_matured": {
-    "21": 335,
-    "63": 38,
+    "21": 390,
+    "63": 62,
     "126": 0,
     "clean15_126": 0,
-    "clean8_21": 335
+    "clean8_21": 390
   },
   "integrity_projection": {
-    "raw_rows": 767,
-    "revision_rows": 335,
-    "effective_rows": 767,
+    "raw_rows": 854,
+    "revision_rows": 390,
+    "effective_rows": 854,
     "quarantined_excluded": 0,
     "quarantined_ids": [],
     "clock_mismatch_excluded": 0,
@@ -33,41 +33,54 @@
     "path": "data/earnings_calls/history.parquet",
     "tier": "r2_history",
     "generation": {
-      "generation_id": "50f4431f335fd24878d2b37c",
-      "published_at": "2026-10-30T06:40:43.575411+00:00",
+      "generation_id": "48d03974726a5daa4e60f075",
+      "published_at": "2026-11-04T04:35:24.447095+00:00",
       "rows": 50982
     },
     "reason": null
   },
   "split": {
     "stage2": {
-      "n": 234,
+      "n": 254,
       "clean15_126": {
         "n_matured": 0,
         "n_win": 0,
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 154,
-        "n_win": 31,
-        "win_rate": 0.2012987012987013
+        "n_matured": 178,
+        "n_win": 38,
+        "win_rate": 0.21348314606741572
       }
     },
     "rest": {
-      "n": 367,
+      "n": 416,
       "clean15_126": {
         "n_matured": 0,
         "n_win": 0,
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 181,
-        "n_win": 48,
-        "win_rate": 0.26519337016574585
+        "n_matured": 212,
+        "n_win": 64,
+        "win_rate": 0.3018867924528302
       }
     },
     "fresh_stage2": {
-      "n": 41,
+      "n": 44,
+      "clean15_126": {
+        "n_matured": 0,
+        "n_win": 0,
+        "win_rate": null
+      },
+      "clean8_21": {
+        "n_matured": 27,
+        "n_win": 1,
+        "win_rate": 0.037037037037037035
+      }
+    },
+    "positive_ec": {
+      "n": 147,
       "clean15_126": {
         "n_matured": 0,
         "n_win": 0,
@@ -75,21 +88,8 @@
       },
       "clean8_21": {
         "n_matured": 25,
-        "n_win": 1,
-        "win_rate": 0.04
-      }
-    },
-    "positive_ec": {
-      "n": 116,
-      "clean15_126": {
-        "n_matured": 0,
-        "n_win": 0,
-        "win_rate": null
-      },
-      "clean8_21": {
-        "n_matured": 0,
-        "n_win": 0,
-        "win_rate": null
+        "n_win": 10,
+        "win_rate": 0.4
       }
     }
   },
@@ -105,10 +105,10 @@
     },
     "ec_coverage": {
       "state": "available",
-      "n_rows_with_ec": 234,
-      "n_rows": 767,
+      "n_rows_with_ec": 295,
+      "n_rows": 854,
       "n_matured_126_with_ec": 0,
-      "note": "234 of 767 tagged entries carry an earnings-call reading; the cohort split below is measured on real tags."
+      "note": "295 of 854 tagged entries carry an earnings-call reading; the cohort split below is measured on real tags."
     },
     "note": "median fwd_ret_126 split for the Stage-2 \u2229 EC-positive cohort vs the rest, over matured-126 entries. MEASUREMENT ONLY \u2014 the hold-leash reads diff/n to self-demote; this layer never gates, ranks, or alters a pick. diff/medians are null until both sides mature (~2026-12). Read ec_coverage first: with no earnings-call tags the split is an empty sample, not a result."
   },

@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SOFI-BULL-20260803",
-  "asof": "2026-10-30",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 9.6,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -50.4,
+  "asof": "2026-11-04",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 31.6,
+  "raw_confidence": 32.6,
+  "delta_vs_base": -28.4,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 0.0,
+    "validity": 52.6,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.026,
+    "dist_to_stop_r": 0.622,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 195.6,
-    "p1": -0.6837,
-    "p2": -0.3418,
+    "horizon_pct_used": 206.7,
+    "p1": -0.2523,
+    "p2": -0.1261,
     "p3": null,
-    "move_r": -1.026,
+    "move_r": -0.378,
     "mfe_r": 0.345,
     "mae_r": -1.144
   },
@@ -45,16 +45,8 @@
   "_first_trigger_ts": "2026-08-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 88,
-  "tau": 1.9556,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 93,
+  "tau": 2.0667,
   "closed": true,
   "outcome": "EXPIRED"
 }

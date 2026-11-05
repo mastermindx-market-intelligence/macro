@@ -28,6 +28,18 @@ function instant(v) {
     && (m[4]===undefined || +m[4]<60) && (m[5]===undefined || +m[5]<24 && +m[6]<60)
     && Number.isFinite(Date.parse(v));
 }
+function instantAfter(a,b) {
+  // Called only after instant() validates both strings. Parse the whole second
+  // with its native offset, then compare every fractional digit without rounding.
+  const parts=v=>({whole:Date.parse(v.replace(/\.\d+/,'')),fraction:/\.(\d+)/.exec(v)?.[1]||''});
+  const left=parts(a),right=parts(b);
+  if(left.whole!==right.whole)return left.whole>right.whole;
+  for(let i=0;i<Math.max(left.fraction.length,right.fraction.length);i++){
+    const l=left.fraction[i]||'0',r=right.fraction[i]||'0';
+    if(l!==r)return l>r;
+  }
+  return false;
+}
 function cancel(reader) { try { void Promise.resolve(reader.cancel()).catch(()=>{}); } catch (_) {} }
 function field(dl,en,zh,value) { const row=node('div','ox-company-field');row.append(node('dt','',en,zh));const dd=node('dd');dd.textContent=value;row.append(dd);dl.append(row); }
 function pct(v) { return (v>0?'+':'')+(100*v).toFixed(2)+'%'; }
@@ -40,7 +52,7 @@ export function decodeResearch(value, selection) {
       || c.source?.artifact!=='data/price_pressure/latest.json' || c.source.schema!=='price_pressure.v1'
       || !HEX.test(c.source.snapshot_sha256) || !instant(c.source.generated_utc)
       || !instant(clock?.captured_at) || !clock.captured_at.endsWith('Z')
-      || Date.parse(c.source.generated_utc)>Date.parse(clock.captured_at)
+      || instantAfter(c.source.generated_utc,clock.captured_at)
       || Date.parse(clock.captured_at)>Date.now()+1000 || id.date>clock.captured_at.slice(0,10)
       || clock.clock_class!=='system_recorded' || clock.historical_availability!=='unknown'
       || clock.scope!=='retrospective_captured_read' || !n

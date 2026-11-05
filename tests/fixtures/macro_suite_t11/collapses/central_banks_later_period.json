@@ -1,0 +1,13 @@
+{
+"why": "Two different printed dates replace a stale no-change lineage sentence.",
+"pairs": [
+[
+">This is a new observation for a later reference period, not a revision of the prior print.",
+">Same reference period as the predecessor print; no source value changed (no-change republication)."
+],
+[
+">这是较晚参考期的新观察，不是对上一期读数的修订。",
+">与上一期读数同一参考期；源值未变（无变更再发布）。"
+]
+]
+}

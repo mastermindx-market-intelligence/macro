@@ -305,3 +305,39 @@ def test_research_preserves_valid_native_clock_precision(browser, stamp):
         assert len(seen) == 1 and not errors
     finally:
         context.close()
+
+
+@pytest.mark.parametrize('source,captured,accepted', [
+    ("2026-01-03T10:00:00.123999Z", "2026-01-03T10:00:00.123000Z", False),
+    ("2026-01-03T10:00:00.123000Z", "2026-01-03T10:00:00.123999Z", True),
+    ("2026-01-03T10:00:00.123000Z", "2026-01-03T10:00:00.123Z", True),
+    ("2026-01-03T11:00:00.123456+01:00", "2026-01-03T10:00:00.123456Z", True),
+    ("2026-01-03T11:00:00.123457+01:00", "2026-01-03T10:00:00.123456Z", False),
+    ("2026-01-04T00:00:00.000001+14:00", "2026-01-03T10:00:00.000000Z", False),
+    ("2026-01-02T23:30:00.000001-10:30", "2026-01-03T10:00:00.000000Z", False),
+    ("2026-01-03T10:00:00.123456789012345678901Z", "2026-01-03T10:00:00.123456789012345678900Z", False),
+    ("2026-01-03T10:00:00.123456789012345678900Z", "2026-01-03T10:00:00.123456789012345678901Z", True),
+    ("2026-01-03T09:59:59.999999999999999999999Z", "2026-01-03T10:00:00Z", True),
+    ("2026-01-03T10:00:01Z", "2026-01-03T10:00:00.999999Z", False),
+    ("2026-01-03T11:00+01:00", "2026-01-03T10:00:00Z", True),
+    ("2026-01-03T11:00:00+01:00", "2026-01-03T10:00Z", True),
+    ("2026-01-03T10:00:00.000000000000000001Z", "2026-01-03T10:00:00Z", False),
+], ids=["later_by_999_microseconds", "earlier_by_999_microseconds", "equal_trailing_zeroes", "equal_source_offset", "source_offset_later", "positive_offset_rollover_later", "negative_offset_rollover_later", "beyond_double_precision_later", "beyond_double_precision_earlier", "previous_second_fraction", "later_whole_second", "source_without_seconds", "capture_without_seconds", "fraction_after_zero_later"])
+def test_research_compares_native_clock_fractions_without_rounding(browser, source, captured, accepted):
+    value = packet()
+    value['capture']['source']['generated_utc'] = source
+    value['capture']['capture']['captured_at'] = captured
+    value['case']['asof']['value'] = captured
+    value['case']['asof']['t0_evidence_ref']['recorded_clock']['value'] = captured
+    context, page, seen, errors = start(browser, value=value)
+    try:
+        inspect(page)
+        settled(page, 'ready' if accepted else 'unavailable')
+        rendered = page.locator('[data-research-result]').text_content()
+        if accepted:
+            assert captured in rendered
+        else:
+            assert 'opc_' not in rendered
+        assert len(seen) == 1 and not errors
+    finally:
+        context.close()
