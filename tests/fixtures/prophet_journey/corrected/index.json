@@ -1,0 +1,17 @@
+{
+  "as_of": "2026-09-27",
+  "source_board_asof": "2026-09-26",
+  "source_asof": "2026-09-26",
+  "plans": [
+    {
+      "id": "PLAN1",
+      "asset": "TEST1",
+      "lifecycle_state": "ready",
+      "entry_status": "pre_trigger",
+      "entry_zone_state": "zone_open",
+      "management_status": "available",
+      "phase": "pre_trigger",
+      "admission_class": "anticipation_v1"
+    }
+  ]
+}

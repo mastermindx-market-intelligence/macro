@@ -33,9 +33,17 @@ from datetime import date, timedelta
 
 import pandas as pd
 
+from collectors import edgar_facts as _edgar_facts
 from collectors.edgar_facts import _get_json
 from collectors.edgar_fts import _parse_hit, _theme_universe
 from lib import config
+
+# Falsy-but-not-None "SEC positively returned 404" sentinel minted by edgar_facts (#6921).
+# Read as a module attribute, never imported by name: while edgar_facts predates #6921
+# the name does not exist and a confirmed 404 is plain None, so the first-request guard
+# below collapses to `is None`; once it lands this binds the real object (identity is
+# pinned by tests/test_edgar_fts_confirmed_absent_first_request.py).
+_CONFIRMED_ABSENT = getattr(_edgar_facts, "_CONFIRMED_ABSENT", None)
 
 log = logging.getLogger("edgar_guidance")
 
@@ -83,6 +91,14 @@ def _is_stale(p) -> bool:
         return True
 
 
+def _enrich_and_store(frame, path):
+    from collectors.guidance_source_context import enrich_guidance_hits
+    enriched = enrich_guidance_hits(frame)
+    if enriched is not None:
+        enriched.to_parquet(path, index=False)
+    return enriched
+
+
 def fetch_guidance_hits(force: bool = False,
                         phrases: list[str] | None = None) -> pd.DataFrame | None:
     """Sweep the directional lexicons over 8-K, filter to the theme universe, upsert the
@@ -90,8 +106,8 @@ def fetch_guidance_hits(force: bool = False,
     failure. Mirrors collectors/edgar_fts.fetch_bottleneck_hits."""
     p = _cache_path()
     if not force and not _is_stale(p):
-        log.info("edgar_guidance cache fresh; skipping refresh")
-        return pd.read_parquet(p) if p.exists() else None
+        log.info("edgar_guidance cache fresh; skipping search refresh")
+        return _enrich_and_store(pd.read_parquet(p), p) if p.exists() else None
 
     universe = _theme_universe()
     if not universe:
@@ -109,7 +125,7 @@ def fetch_guidance_hits(force: bool = False,
                    f"&startdt={startdt}&enddt={enddt}&from={page * 10}")
             data = _get_json(url, retries=1 if first_request else 3)
             # network down on the very first call -> abort the whole sweep, keep any cache
-            if data is None and first_request:
+            if (data is None or data is _CONFIRMED_ABSENT) and first_request:
                 log.warning("edgar_guidance: EDGAR unreachable; keeping existing cache")
                 return pd.read_parquet(p) if p.exists() else None
             first_request = False
@@ -141,7 +157,7 @@ def fetch_guidance_hits(force: bool = False,
         except Exception:  # noqa: BLE001
             pass
     new = new.drop_duplicates(subset=["id", "phrase"]).reset_index(drop=True)
-    new.to_parquet(p, index=False)
+    new = _enrich_and_store(new, p)
     log.info("edgar_guidance: %d guidance-language hits cached -> %s", len(new), p)
     return new
 

@@ -1,0 +1,80 @@
+{
+  "schema": "eval_os.current_main_requalification.v1",
+  "observed_at": "2026-10-13T23:53:08.849937+00:00",
+  "previous_candidate": "847a530c5ac6fadfdfc3d44e0057a5bc2c0ee773",
+  "integrated_main": "398c40c4787c97da1c6f4ecd72aabc11b34844cc",
+  "source_binding": "The containing ordinary merge commit binds this tree; sole PR6651 records its published head and exact-head CI.",
+  "qualified_source_sha256": {
+    "admin/evidence_findings.py": "d2355370c9c458db54a35e2253903d5b781b5b0193c945b587618706cb3bf909",
+    "admin/evidence_status.py": "5315e8e95b2a5ee3c5c12b88eac8126c8578db12a773357916aed20bdb459efd",
+    "admin/intelligence_os.py": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+    "admin/server.py": "53e65e1fca02988f7a0838d2b64026b78e3921c7c66a366e4be6c04e1e93a87b",
+    "admin/static/app.js": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772",
+    "admin/static/index.html": "27a1a4e55dee999b435dda94c86730987624621ee3868c7fbea086e308645179",
+    "admin/static/preferences.js": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f",
+    "admin/static/styles.css": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60",
+    "app/deploy/update.sh": "d7f68951f9e549bb5a7a82cc7609b9df5c9b50b5113486b51e58be76b4da9d74",
+    "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json": "f86677c419e97eb3932024db56e5e147de7b5a88536bb9701af5ea367e8140db",
+    "engine/neuralweb/response_eval.py": "b4caa23259a91e78ef4ddbbbce2ec38c6339fa12090f9135018d125d1b320e1d",
+    "engine/qledger.py": "6473c710806b26bc5ee3da3ad781d07b3ca02f208f9789a723186216819c1e00",
+    "scripts/build_intelligence_registry.py": "8f224e29d69517cbb5fd1e390ec05f70755d0bf5f89056ff016f2caf9d7381a9",
+    "scripts/grade_qledger.py": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2",
+    "tests/test_admin_intelligence_os.py": "273aa17f27b3877f0e1d4c54142f9244338e6f9aff204aa165c5c0efd43d01bb",
+    "tests/test_admin_intelligence_os_ui.py": "3b46980645abc39f10c7db7f8b93676c7cc6829c3e952e87aaf8dd2048dc06a3",
+    "tests/test_admin_server.py": "1104ad54702e18a5646f3431c4006b7d6f69e50aa8091ccba0cf42aea821d861",
+    "tests/test_eval_os_adversarial_acceptance.py": "0d1aaf8542a217511d5b5ec64828cfcd6ccccb69f0022b34fcc88a12504fa08f",
+    "tests/test_evidence_findings.py": "e1f5fbcdebb3dd694c0eeeba682e6812f544d387ad8bc6856da57a243f47e9a7",
+    "tests/test_evidence_findings_ui.py": "22362ea16ca073fc9d091499431077039013ced2301b77e7e77abadb0507df06",
+    "tests/test_w6_readiness_monitor.py": "c90b17025ae56391ab766878f066086ee086638ea40842c00e7610f12533a303"
+  },
+  "manifest_sha256": "9c4939e337747ffa50004fc509dc8c2354686d31472c6e1790b1e43fda74e581",
+  "changed_qualified_sources": [
+    "app/deploy/update.sh"
+  ],
+  "repair": "Preserve main packing curation, exact union of two manifest conflicts and updater restart regex; add exactly six missing dependency paths in two new exclusive jobs. No threshold, command or gate weakening.",
+  "red": {
+    "run": 38387357496,
+    "head": "847a530c5ac6fadfdfc3d44e0057a5bc2c0ee773",
+    "failure": "pack0 packing budgets5813>5800 and5618>5600;610passed;11otherpacks andcontract-delta passed",
+    "log_sha256": "8c78f0b8e5c888f302131423e12356141900333f7c6a4979ae13d8e37b845563"
+  },
+  "local_checks": {
+    "tests": {
+      "tests": "66",
+      "failures": "1",
+      "errors": "0",
+      "skipped": "0",
+      "time": "162.577"
+    },
+    "final-tests": {
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "156.795"
+    }
+  },
+  "qualification": "63 affected updater controls passed before six-path-only repair; all three affected CI curation controls pass after repair. Unchanged product/science/browser/resource evidence reused.",
+  "retained_receipts_sha256": {
+    "current-main-repair-20261013-tests.txt": "e9061123e5c2254b09b8d3a5fb5f609745f770175a97123bd940675c14b54c7d",
+    "current-main-repair-20261013-tests.xml": "338cc011f23244929fc9628e383f3a05ddd0c5d95c163542661122099e342310",
+    "ci-six-path-followon-review.json": "d7b924304a4f69ad51ed2be13ffc301796fd8b01366ff95e74f7e9643f9ceac6",
+    "current-main-repair-20261013-final-tests.xml": "e7852f7a2df34a9ad832e2bb907222fadc3adf2bde599df6ef2f07c25efca38b",
+    "normal-owner-progression-20261013.json": "01e9caa6154c5081a5c8b1f0894f59d6d1bfd747b4945daaab6a3e7579f6b15b",
+    "t21-normal-owner-adjudication.json": "76013596fdc826b4ba4a292db103458fd584d4e6595bfd15287d873209237e0b",
+    "current-main-union-review.json": "737f067b4151b51905ba60c3157db3ba082b2177554a036bb84bb7841edbf245",
+    "current-main-repair-20261013-final-tests.txt": "44505e4f8c807e2fb263b28249908c4df8dfc002663d3aa289818fb840ac9555"
+  },
+  "T21": "Accepted genuine pre-release owner progression: scheduledAsia38406512307,812grades,dry_runfalse,publishedstatus byte-equal installedproduction.",
+  "T23": "Open: reserved release, normal updater, authenticated candidateAPI/render, post-release owner update and actual operator comprehension.",
+  "SCOPED_COMMISSION_COMPLETE": false,
+  "LEGACY_PROGRAMME_COMPLETE": false,
+  "PRODUCTION_PROVEN": false,
+  "raw_test_artifacts_sha256": {
+    "current-main-repair-20261013-tests.txt": "36759d28a36437d9f984e340f0360bbff0410baab54400d0f7f54fb72d2c9dc8",
+    "current-main-repair-20261013-tests.xml": "21f7d3d064654a599d82a72449e69ed8f162d2dbed4458546fd175c006d36191",
+    "current-main-repair-20261013-final-tests.xml": "a3491309fd7ca4742f4ac6a27686ff24db400e29ea13c88f90993ab6d0d1d1ed",
+    "current-main-repair-20261013-final-tests.txt": "44505e4f8c807e2fb263b28249908c4df8dfc002663d3aa289818fb840ac9555"
+  },
+  "canonical_log_normalization": "Canonical test log/XML copies remove trailing whitespace only; original raw bytes remain in external integration evidence with recorded SHA256."
+}

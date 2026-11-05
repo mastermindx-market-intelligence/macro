@@ -1,0 +1,18 @@
+{
+  "workspace": {"id": "liquidity_regime"},
+  "headline": {
+    "one_month_vector": {
+      "status": "PRESENT",
+      "dx": 0.4,
+      "dy": -0.2,
+      "x_axis_id": "funding_pressure",
+      "y_axis_id": "balance_sheet_support"
+    }
+  },
+  "axes": {
+    "items": [
+      {"axis_id": "balance_sheet_support"},
+      {"axis_id": "funding_pressure"}
+    ]
+  }
+}
