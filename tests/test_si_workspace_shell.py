@@ -716,3 +716,19 @@ def test_brief_evidence_link_opens_the_measured_map_panel() -> None:
     assert out['#si-measured'] == ['map', 'si-measured']
     assert out['#overview'] == ['overview', None]
     assert out['#confluence'] == ['confluence', None]
+
+
+def test_handoff_name_ink_never_carries_direction() -> None:
+    # D25: in ZH (red up, green down) a fixed-green leader name sat beside its red
+    # +11.7%. The names use plain text ink; the signed 20d delta carries direction and
+    # takes its colour from its own sign.
+    import re
+    for tpl in ("sector_central.html.j2", "sector_central_china.html.j2"):
+        css = (TPL / tpl).read_text(encoding="utf-8")
+        rules = re.findall(r"[^{}]*\.rvx-hocol[^{}]*\.nm[^{}]*\{([^}]*)\}", css)
+        assert rules, tpl
+        for body in rules:
+            assert not re.search(r"rvx-(lead|weak)|si-ink-(up|warn|ok)|var\(--(up|warn)\)", body), (tpl, body)
+    page = _page()
+    assert "(r20<0?'rvx-dn':'rvx-up')" in page
+    assert '<span class="rvx-num rvx-up">\'+fmtPct(r20)' not in page

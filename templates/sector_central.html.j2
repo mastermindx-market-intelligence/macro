@@ -547,7 +547,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .rvx-hocol .lbl{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .rvx-hocol .nm{font-size:15px;font-weight:750;margin:4px 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rvx-hocol .meta{font-size:11.5px;color:var(--muted)}
-.rvx-hocol.out .nm{color:var(--rvx-weak)} .rvx-hocol.in .nm{color:var(--rvx-lead)}
+.rvx-hocol .nm{color:var(--text)} /* neutral: the signed delta beside it carries direction in the locale's up/down ink */
 .rvx-hoarrow{flex:none;width:46px;display:grid;place-items:center}
 .rvx-hoarrow svg{width:46px;height:28px;overflow:visible}
 .rvx-hoarrow path.ln{stroke:url(#rvxHo);stroke-width:2;fill:none;stroke-linecap:round;stroke-dasharray:58;stroke-dashoffset:58;animation:rvxHoDraw 1.1s ease-out .5s forwards}
@@ -2860,7 +2860,7 @@ function renderVerdictHero(){
     om.innerHTML=(zh?'原第一':'was #1')+(r20!=null?' · <span class="rvx-num">'+fmtPct(r20)+'</span> 20d':'')+(r5!=null&&r5<0?' · <span class="rvx-num rvx-dn">'+fmtPct(r5)+'</span> 5d':''); } }
   const im=document.getElementById('hero-in-meta');
   if(im&&im.dataset.id){ const t=themeById(im.dataset.id); if(t){ const r20=relPct(t,'20d'), v=t.pulse_rank_delta_5d;
-    im.innerHTML=(r20!=null?'<span class="rvx-num rvx-up">'+fmtPct(r20)+'</span> 20d':'')+(v!=null&&v>0?' · '+(zh?'快速上行':'climbing fast'):''); } }
+    im.innerHTML=(r20!=null?'<span class="rvx-num '+(r20<0?'rvx-dn':'rvx-up')+'">'+fmtPct(r20)+'</span> 20d':'')+(v!=null&&v>0?' · '+(zh?'快速上行':'climbing fast'):''); } }
 }
 
 // ── Rotation map (signature) + linked board — one source, many views ──
