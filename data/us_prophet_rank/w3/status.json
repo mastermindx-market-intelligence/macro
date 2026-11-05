@@ -88,32 +88,32 @@
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-11-03",
+    "board_as_of": "2026-11-04",
     "coverage": {
-      "identical": 8,
+      "identical": 0,
       "matured": 0,
-      "revisions_refused": 1,
-      "stamps": 0,
-      "written": 0
+      "revisions_refused": 0,
+      "stamps": 1,
+      "written": 8
     },
     "dry_run": false,
     "failures": [],
     "family": {
-      "identical": 8,
+      "identical": 0,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 0,
-      "written": 0
+      "stamps": 1,
+      "written": 8
     },
     "n_coverage_rows": 8,
     "n_family_rows": 8,
-    "n_paired_rows": 2037,
+    "n_paired_rows": 2097,
     "paired": {
       "identical": 1994,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 0,
-      "written": 0
+      "stamps": 1,
+      "written": 60
     },
     "reconstruction_refused": [
       "2026-07-31",
@@ -141,39 +141,19 @@
       "2026-10-29",
       "2026-10-30"
     ],
-    "require_stamp": "2026-11-03",
-    "same_stamp_revisions_refused": [
-      {
-        "changed_fields": [
-          {
-            "existing": 3,
-            "field": "distinct_values",
-            "incoming": 2
-          }
-        ],
-        "existing_fingerprint": "330bbd3e2503baa608f7ecba8a177000e49ddd46cf37049b58daac878413821c",
-        "grain": "coverage",
-        "incoming_fingerprint": "cc10f051e73bedfab10750fad1d7aca20aeef4a0e966cbf5917b5c4f8eb89cc8",
-        "key": [
-          "2026-11-03",
-          "gex_confirm_verdict"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-11-03"
-      }
-    ],
+    "require_stamp": "2026-11-04",
+    "same_stamp_revisions_refused": [],
     "sessions_written": {
       "identical": 32,
       "matured": 0,
       "refused": 0,
-      "written": 0
+      "written": 1
     }
   },
   "latest_session": {
     "liveness": "unmatured",
     "reason": "paired observation accrued; H=10 outcome pending (not zero)",
-    "stamp_date": "2026-11-03"
+    "stamp_date": "2026-11-04"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [
@@ -196,7 +176,7 @@
   ],
   "n_degraded_or_unpaired": 20,
   "n_missing": 4,
-  "paired_sessions_accrued": 32,
+  "paired_sessions_accrued": 33,
   "same_stamp_revisions_refused": [
     {
       "changed_fields": [
@@ -12112,10 +12092,10 @@
   ],
   "schema": "us.prophet_w3_status/v1",
   "structural": {
-    "n_coverage_rows": 256,
-    "n_family_rows": 256,
+    "n_coverage_rows": 264,
+    "n_family_rows": 264,
     "outcome_blind": true,
     "schema": "prophet_fusion.w3_structural.v1"
   },
-  "unmatured_sessions": 31
+  "unmatured_sessions": 32
 }

@@ -237,16 +237,21 @@ DISPLAY_BOARD_PAYLOAD_DIR = "premiumdata"
 # same ~183B/symbol (vs the 500KB budget), <=24 Yahoo batch requests plus <=5
 # Polygon chunks, ~13s at ~37 symbols/s — still cheap for both producers; the
 # orchestrator gate above is unaffected for the same reason.
-# Cap raised 480 -> 512 (2026-11-05) without relaxing the 15% safety guard.
-# Exact hosted CI merge tree 95f88dbaf07c (head 0f6d46ae) and updated-main
-# merge tree 213513a0fed6 (main 946cf834) each contain 415 uncapped board
-# names + 35 tile inputs = 431 distinct display symbols after deduplication.
-# The old 480 limit allowed 408 (85%) before the guard; 512 allows 435, leaving
-# 97 board slots (18.9% headroom), with zero extra requests for today's 415.
-# Fresh read-only same-producer probe: 431 requested / 385 resolved in 8.248s,
-# 68,085 serialized bytes (45s VPS display stage / 500,000-byte browser limits).
-# Observed for this current universe, NOT a max-cap or p95 runtime claim.
-DISPLAY_BOARD_CAP = 512
+#
+# Cap raised 480 -> 640 (2026-11-05) after main's own proof went red again on
+# test_the_board_leg_has_headroom_over_the_cap (415 > 0.85 * 480 = 408), which
+# turned every CI-authority pull request red because an authority-changing PR may
+# not excuse an inherited red. Measured on main's committed site/ bytes at
+# 09f1c648 with this module's own board_display_symbols (pages plus the
+# premiumdata/us_stocks.json payload): uncapped board leg 415 (china_stocks 259,
+# us_stocks 51, hk_stocks 46, crypto 26, canada_stocks 10, macro 10, canada 6,
+# china/commodities/hk 4 each). The leg grew 342 -> 415 in four weeks, almost all
+# of it the China board; 640 puts it at 65% of the cap (~225 slots of swing, the
+# same ~1.5x margin 480 gave 342). Cost at the new ceiling: ~117KB serialized at
+# the same ~183B/symbol (vs the 500KB budget), <=32 Yahoo batch requests plus
+# <=7 Polygon chunks, ~17s at ~37 symbols/s — still cheap for both producers;
+# the orchestrator gate above is unaffected for the same reason.
+DISPLAY_BOARD_CAP = 640
 
 
 def payload_html(path: Path) -> str:
