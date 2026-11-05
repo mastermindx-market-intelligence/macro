@@ -707,6 +707,55 @@ lanes:
           Measured 2026-08-09: ~39s over 680 graded names (budget 600s).
       - id: engine_run
         module: engine.run
+      - id: build_netliq_daily
+        module: scripts.build_netliq_daily
+        note: >
+          non-fatal; CPI net-liquidity DATA INFRASTRUCTURE — deterministic full
+          rebuild of the daily net-liquidity panel via engine.canon (the ONE
+          audit-#28 formula: WALCL_bn − RRP_bn − TGA_bn, billions). Derived
+          cols: netliq_d13w/d26w (65/130-row changes) + netliq_pctile_expanding
+          (PIT-pure expanding percentile). Stale-guard truncates the frame at
+          min(component last real obs)+10bd; per-component last-obs dates land
+          in the meta sidecar. Registers NO trial (FT-3 suspended by
+          cycle_truth_ft2_credit_hazard_null_v1).
+          Runs after the daily regime refresh, before AI Brief consumers and
+          the existing durable core checkpoint.
+          inputs: [data/fred/WALCL.parquet, data/fred/RRPONTSYD.parquet,
+                   data/treasury/tga.parquet]
+          outputs: [data/macro/fed_net_liquidity.parquet,
+                    data/macro/fed_net_liquidity_meta.json]
+      - id: build_liquidity_plumbing
+        module: scripts.build_liquidity_plumbing
+        note: >
+          non-fatal; Neural Web liquidity-plumbing lobe (neuralweb.liquidity_plumbing.v1)
+          — pure aggregation, no network calls. Runs AFTER build_netliq_daily (consumes
+          data/macro/fed_net_liquidity.parquet) and AFTER the regime/treasury/auction
+          artifacts are present. Shadow-tier, display/de-escalation only, no score raise.
+          Runs before AI Brief consumers and the existing durable core checkpoint.
+          inputs: [data/macro/fed_net_liquidity.parquet,
+                   data/macro/fed_net_liquidity_meta.json,
+                   data/regime/latest.json,
+                   data/treasury/net_issuance.parquet,
+                   data/treasury/tga.parquet,
+                   data/treasury_auctions/auctions.parquet]
+          outputs: [data/neuralweb/liquidity_plumbing.json]
+      - id: master_brain_scorer
+        module: engine.master_brain_scorer
+      - id: master_brain
+        module: engine.master_brain
+        note: >
+          Generate once after accepted regime inputs, before server-rendered US
+          brief consumers and the optional tail. Regional inputs retain their
+          own accepted as-of dates. Synthesis has a bounded, fail-soft step.
+      - id: build_aibrief
+        module: scripts.build_aibrief
+      - id: engine_run_legacy_plan
+        module: engine.run
+        note: >
+          Compatibility branch in the core helper for already-queued old YAML
+          plans that check out new main. The current plan passes
+          --regime-inputs-attempted and skips this invocation; each plan attempts
+          the regime refresh exactly once, including a failed current attempt.
       - id: build_shock_deescalation
         module: engine.shock_deescalation
         note: >
@@ -1348,10 +1397,6 @@ lanes:
           after build_vector because H6 consumes the governed BTC authority
           contract emitted by that builder. Display-only; no new scored
           authority.
-      - id: master_brain_scorer
-        module: engine.master_brain_scorer
-      - id: master_brain
-        module: engine.master_brain
       - id: ai_desk_scorer
         module: engine.ai_desk_scorer
       - id: demand_ledger
@@ -1444,8 +1489,6 @@ lanes:
         module: scripts.build_briefing
       - id: build_intel_hub
         module: scripts.build_intel_hub
-      - id: build_aibrief
-        module: scripts.build_aibrief
       - id: build_am_edition
         module: scripts.build_am_edition
       - id: build_mastermind
@@ -1485,35 +1528,6 @@ lanes:
           inputs: [data/regime/latest.json, data/market_state/latest.json,
                    data/sentiment_crypto/fear_greed.parquet]
           outputs: [data/signal_archive/context_daily.parquet]
-      - id: build_netliq_daily
-        module: scripts.build_netliq_daily
-        note: >
-          non-fatal; CPI net-liquidity DATA INFRASTRUCTURE — deterministic full
-          rebuild of the daily net-liquidity panel via engine.canon (the ONE
-          audit-#28 formula: WALCL_bn − RRP_bn − TGA_bn, billions). Derived
-          cols: netliq_d13w/d26w (65/130-row changes) + netliq_pctile_expanding
-          (PIT-pure expanding percentile). Stale-guard truncates the frame at
-          min(component last real obs)+10bd; per-component last-obs dates land
-          in the meta sidecar. Registers NO trial (FT-3 suspended by
-          cycle_truth_ft2_credit_hazard_null_v1).
-          inputs: [data/fred/WALCL.parquet, data/fred/RRPONTSYD.parquet,
-                   data/treasury/tga.parquet]
-          outputs: [data/macro/fed_net_liquidity.parquet,
-                    data/macro/fed_net_liquidity_meta.json]
-      - id: build_liquidity_plumbing
-        module: scripts.build_liquidity_plumbing
-        note: >
-          non-fatal; Neural Web liquidity-plumbing lobe (neuralweb.liquidity_plumbing.v1)
-          — pure aggregation, no network calls. Runs AFTER build_netliq_daily (consumes
-          data/macro/fed_net_liquidity.parquet) and AFTER the regime/treasury/auction
-          artifacts are present. Shadow-tier, display/de-escalation only, no score raise.
-          inputs: [data/macro/fed_net_liquidity.parquet,
-                   data/macro/fed_net_liquidity_meta.json,
-                   data/regime/latest.json,
-                   data/treasury/net_issuance.parquet,
-                   data/treasury/tga.parquet,
-                   data/treasury_auctions/auctions.parquet]
-          outputs: [data/neuralweb/liquidity_plumbing.json]
       - id: build_global_liquidity_transmission
         module: scripts.build_global_liquidity_transmission
         note: >
@@ -3336,6 +3350,8 @@ lanes:
           content-derived workspace identity, compact-shell semantic equality,
           required UI markers, and the raw first-paint byte budget. Repeated
           immediately before every render commit or push after any rebase/heal.
+      - id: aibrief_worktree_candidate
+        module: scripts.check_aibrief_publication
       - id: check_template_site_sync_fix
         module: scripts.check_template_site_sync
         args: [--fix]
@@ -3351,6 +3367,9 @@ lanes:
       - id: commodity_metadata_candidate
         module: scripts.check_commodity_publication
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$PUBLISH_COMMIT"]
+      - id: aibrief_metadata_candidate
+        module: scripts.check_aibrief_publication
+        args: [--candidate-ref, "$PUBLISH_COMMIT"]
       - id: metadata_government_revenue_projection
         module: scripts.check_government_revenue_projection
       - id: commodity_postrebase_recovery
@@ -3375,6 +3394,9 @@ lanes:
       - id: commodity_committed_candidate
         module: scripts.check_commodity_publication
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, HEAD]
+      - id: aibrief_committed_candidate
+        module: scripts.check_aibrief_publication
+        args: [--candidate-ref, HEAD]
 
   # ── intraday.yml / bars ─────────────────────────────────────────────────
   - workflow: .github/workflows/intraday.yml

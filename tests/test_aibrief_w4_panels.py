@@ -173,7 +173,17 @@ class TestContextStrip:
             self._write_fixtures(Path(td))
             out = _gather_context_strip(Path(td))
         assert out["cortex_status"] == "degraded"
-        assert "rate-limited" in (out["cortex_en"] or "").lower()
+        # A degraded cortex is not necessarily rate limiting — the source reason
+        # here is model_unavailable. The chip must not assert a cause the source
+        # did not report, and must not claim a successful model review.
+        en = (out["cortex_en"] or "").lower()
+        assert "rate-limit" not in en
+        assert "ran successfully" not in en
+        assert "unavailable" in en or "dashboard" in en
+        zh = out["cortex_zh"] or ""
+        assert "速率" not in zh
+        assert "已成功" not in zh
+        assert "不可用" in zh or "看板" in zh
 
     def test_absent_when_all_reads_fail(self):
         with tempfile.TemporaryDirectory() as td:
@@ -193,6 +203,170 @@ class TestContextStrip:
         # CSS class names appear in the <style> block regardless; check the PANEL content
         assert "Right now" not in html
         assert "当前状态" not in html
+
+    # --- canonical liquidity states: consumer-visible plain words ------------
+
+    _CANONICAL_LIQUIDITY_STATES = (
+        ("benign_liquidity_tailwind", "expanding", "扩张"),
+        ("mechanical_liquidity_tailwind", "transient", "暂时"),
+        ("stress_liquidity_expansion", "stressed", "压力"),
+        ("neutral_with_buffer", "cushion", "缓冲"),
+        ("neutral_hollow", "limited", "有限"),
+        ("orderly_drain", "draining", "回落"),
+        ("data_degraded", "no dependable", "暂无可靠"),
+    )
+
+    def _write_context_fixtures(
+        self, tmp: Path, market_plane: dict, liquidity: dict
+    ) -> None:
+        nw = tmp / "neuralweb"
+        nw.mkdir(parents=True, exist_ok=True)
+        (nw / "market_plane.json").write_text(json.dumps(market_plane))
+        (nw / "world_state.json").write_text(json.dumps(_make_world_state()))
+        (nw / "liquidity_plumbing.json").write_text(json.dumps(liquidity))
+
+    def _liquidity_payload(
+        self, headline: dict | None, asof: str = "2026-10-14"
+    ) -> dict:
+        payload = {
+            "schema": "liquidity_plumbing.v1",
+            "asof": asof,
+            "produced_at": "2026-10-16T00:00:00Z",
+            "tier": "display",
+        }
+        if headline is not None:
+            payload["headline"] = headline
+        return payload
+
+    def test_neutral_hollow_keeps_lost_buffer_warning(self):
+        payload = self._liquidity_payload(
+            {"state": "neutral_hollow", "summary": "Net liquidity is neutral but RRP exhausted."}
+        )
+        with tempfile.TemporaryDirectory() as td:
+            self._write_context_fixtures(Path(td), _make_market_plane(), payload)
+            out = _gather_context_strip(Path(td))
+        en = out["liquidity_en"] or ""
+        zh = out["liquidity_zh"] or ""
+        assert "limited" in en.lower()
+        assert "buffer" in en.lower()
+        assert "neutral" in en.lower()
+        assert "roughly neutral" not in en.lower()
+        assert "缓冲" in zh
+        assert "有效缓冲" in zh
+        assert "有限" in zh
+
+    @pytest.mark.parametrize("state,en_meaning,zh_meaning", _CANONICAL_LIQUIDITY_STATES)
+    def test_canonical_liquidity_states_render_bilingual_plain_words(
+        self, state, en_meaning, zh_meaning
+    ):
+        payload = self._liquidity_payload({"state": state, "summary": "Test summary."})
+        with tempfile.TemporaryDirectory() as td:
+            self._write_context_fixtures(Path(td), _make_market_plane(), payload)
+            out = _gather_context_strip(Path(td))
+        en = out["liquidity_en"] or ""
+        zh = out["liquidity_zh"] or ""
+        assert en and zh
+        assert state not in en
+        assert state not in zh
+        assert any("一" <= ch <= "鿿" for ch in zh)
+        assert en_meaning in en.lower()
+        assert zh_meaning in zh
+
+    @pytest.mark.parametrize(
+        "headline",
+        [
+            {"state": "a_state_we_do_not_know", "summary": "x"},
+            {"summary": "headline without a state"},
+            None,
+        ],
+        ids=["unknown_state", "missing_state", "missing_headline"],
+    )
+    def test_unknown_or_missing_liquidity_is_not_reported_as_neutral(self, headline):
+        payload = self._liquidity_payload(headline)
+        with tempfile.TemporaryDirectory() as td:
+            self._write_context_fixtures(Path(td), _make_market_plane(), payload)
+            out = _gather_context_strip(Path(td))
+        en = (out["liquidity_en"] or "").lower()
+        assert "roughly neutral" not in en
+        assert "unavailable" in en or "unknown" in en
+        zh = out["liquidity_zh"] or ""
+        assert "不可用" in zh or "未知" in zh
+
+    def test_absent_liquidity_artifact_is_not_reported_as_neutral(self):
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            nw = tmp / "neuralweb"
+            nw.mkdir(parents=True, exist_ok=True)
+            (nw / "market_plane.json").write_text(json.dumps(_make_market_plane()))
+            (nw / "world_state.json").write_text(json.dumps(_make_world_state()))
+            out = _gather_context_strip(tmp)
+        assert out["absent"] is False
+        assert out["liquidity_en"] is None
+        assert out["liquidity_zh"] is None
+
+    def test_cortex_unknown_status_makes_no_rate_limit_claim(self):
+        mp = _make_market_plane()
+        mp["cortex"] = {"status": "some_future_status"}
+        with tempfile.TemporaryDirectory() as td:
+            self._write_context_fixtures(
+                Path(td), mp, self._liquidity_payload({"state": "neutral_hollow"})
+            )
+            out = _gather_context_strip(Path(td))
+        assert out["cortex_status"] == "some_future_status"
+        en = (out["cortex_en"] or "").lower()
+        assert "rate-limit" not in en
+        assert "ran successfully" not in en
+        zh = out["cortex_zh"] or ""
+        assert "速率" not in zh
+        assert "已成功" not in zh
+
+    def test_cortex_ok_keeps_successful_label(self):
+        mp = _make_market_plane()
+        mp["cortex"] = {"status": "ok"}
+        with tempfile.TemporaryDirectory() as td:
+            self._write_context_fixtures(
+                Path(td), mp, self._liquidity_payload({"state": "neutral_hollow"})
+            )
+            out = _gather_context_strip(Path(td))
+        assert out["cortex_status"] == "ok"
+        assert "ran successfully" in (out["cortex_en"] or "").lower()
+        assert "成功" in (out["cortex_zh"] or "")
+        assert "rate-limit" not in (out["cortex_en"] or "").lower()
+
+    def test_older_liquidity_source_date_is_retained(self):
+        mp = _make_market_plane()
+        mp["asof"] = "2026-11-04"
+        payload = self._liquidity_payload(
+            {"state": "neutral_hollow", "summary": "x"}, asof="2026-10-14"
+        )
+        with tempfile.TemporaryDirectory() as td:
+            self._write_context_fixtures(Path(td), mp, payload)
+            out = _gather_context_strip(Path(td))
+        assert out["regime_asof"] == "2026-11-04"
+        assert out["strip_asof"] == "2026-10-14"
+
+    def test_template_shows_hollow_liquidity_not_generic_neutral(self):
+        payload = self._liquidity_payload({"state": "neutral_hollow", "summary": "x"})
+        with tempfile.TemporaryDirectory() as td:
+            self._write_context_fixtures(Path(td), _make_market_plane(), payload)
+            ctx_strip = _gather_context_strip(Path(td))
+        html = _render(ctx_strip=ctx_strip)
+        assert "limited effective buffer" in html.lower()
+        assert "有效缓冲有限" in html
+        assert "roughly neutral" not in html.lower()
+
+    def test_template_has_no_hard_coded_rate_limit_copy(self):
+        with tempfile.TemporaryDirectory() as td:
+            self._write_context_fixtures(
+                Path(td), _make_market_plane(), self._liquidity_payload({"state": "neutral_hollow"})
+            )
+            ctx_strip = _gather_context_strip(Path(td))
+        html = _render(ctx_strip=ctx_strip)
+        assert "Rate-limited overnight" not in html
+        assert "隔夜遭速率限制" not in html
+        assert "When rate-limited" not in html
+        assert "隔夜模型不可用时" in html
+        assert "dashboard data only" in html.lower()
 
 
 # ── Panel B: What's ahead ────────────────────────────────────────────────────────

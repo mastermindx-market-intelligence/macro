@@ -203,8 +203,8 @@
     <div class="ctx-row">
       <span class="ctx-label">{{ t('AI review', 'AI复盘') }}</span>
       <span class="ctx-chip {{ 'cortex-ok' if ctx_strip.cortex_status == 'ok' else 'cortex-deg' }}">
-        <span class="l-en">{{ ctx_strip.cortex_en or 'Rate-limited overnight' }}</span>
-        <span class="l-zh">{{ ctx_strip.cortex_zh or '隔夜遭速率限制' }}</span>
+        <span class="l-en">{{ ctx_strip.cortex_en or 'Overnight review unavailable' }}</span>
+        <span class="l-zh">{{ ctx_strip.cortex_zh or '隔夜复盘不可用' }}</span>
       </span>
     </div>
     {% endif %}
@@ -339,8 +339,8 @@
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
     <h2 style="margin:0">{{ t('Overnight deliberation', '隔夜AI复盘') }}</h2>
     {{ help(
-      'The overnight AI reviewer reads the dashboards with a set of read-only tools. This is AI-generated deliberation — labelled as such. When rate-limited (the usual state), it shows an honest absent note rather than synthetic content.',
-      '隔夜 AI 审阅者使用一组只读工具读取看板内容。这是 AI 生成的审议结果，已明确标注。遭遇速率限制时（常见状态），显示诚实的缺席提示，不生成合成内容。'
+      'The overnight AI reviewer reads the dashboards with a set of read-only tools. This is AI-generated deliberation — labelled as such. When the overnight model is unavailable, it shows an honest absent note rather than synthetic content.',
+      '隔夜 AI 审阅者使用一组只读工具读取看板内容。这是 AI 生成的审议结果，已明确标注。隔夜模型不可用时，显示诚实的缺席提示，不生成合成内容。'
     ) }}
   </div>
   <div id="cortex-body"></div>
