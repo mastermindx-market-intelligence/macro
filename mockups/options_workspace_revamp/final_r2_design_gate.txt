@@ -1,0 +1,28 @@
+::error title=design-system::R0 enforce-added: 16 blocking finding(s) on line(s) added by this diff (25314 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)
+::error title=design-system::templates/options.html.j2:299 [color-literal] hex colour #3324
+::error title=design-system::templates/options.html.j2:308 [color-literal] hex colour #3371
+::error title=design-system::templates/options.html.j2:316 [color-literal] colour function color-mix(
+::error title=design-system::templates/options.html.j2:316 [literal-custom-property] --hair: color-mix(in srgb, var(--line) 72%, transparent)
+::error title=design-system::templates/options.html.j2:317 [color-literal] colour function color-mix(
+::error title=design-system::templates/options.html.j2:317 [literal-custom-property] --tile: color-mix(in srgb, var(--panel2) 86%, var(--panel))
+::error title=design-system::templates/options.html.j2:318 [color-literal] colour function color-mix(
+::error title=design-system::templates/options.html.j2:318 [literal-custom-property] --ink-2: color-mix(in srgb, var(--text) 66%, transparent)
+::error title=design-system::templates/options.html.j2:332 [literal-custom-property] --s1: 4px
+... 7 further blocking finding(s) not annotated (cap 10); full detail follows
+design-system ratchet — mode=enforce-added blocking=16 (estate pre-existing, non-blocking: 25314)
+templates/options.html.j2:299: color-literal: hex colour #3324
+templates/options.html.j2:308: color-literal: hex colour #3371
+templates/options.html.j2:316: color-literal: colour function color-mix(
+templates/options.html.j2:316: literal-custom-property: --hair: color-mix(in srgb, var(--line) 72%, transparent)
+templates/options.html.j2:317: color-literal: colour function color-mix(
+templates/options.html.j2:317: literal-custom-property: --tile: color-mix(in srgb, var(--panel2) 86%, var(--panel))
+templates/options.html.j2:318: color-literal: colour function color-mix(
+templates/options.html.j2:318: literal-custom-property: --ink-2: color-mix(in srgb, var(--text) 66%, transparent)
+templates/options.html.j2:332: literal-custom-property: --s1: 4px
+templates/options.html.j2:332: literal-custom-property: --s2: 8px
+templates/options.html.j2:332: literal-custom-property: --s3: 12px
+templates/options.html.j2:332: literal-custom-property: --s4: 16px
+templates/options.html.j2:332: literal-custom-property: --s5: 20px
+templates/options.html.j2:332: literal-custom-property: --s6: 24px
+templates/options.html.j2:332: literal-custom-property: --s7: 32px
+templates/options.html.j2:332: literal-custom-property: --s8: 44px

@@ -2362,9 +2362,11 @@ def build_rail(stores: dict) -> dict:
             continue
         d = _num(r.get("dist_to_flip_pct"))
         if d is not None and abs(d) <= _NEAR_FLIP_PCT and r.get("ticker"):
-            near.append((abs(d), r["ticker"]))
-    near.sort()
-    c = [t for _d, t in near[:6]]
+            near.append((abs(d), r["ticker"], _day(r.get("asof"))))
+    near.sort(key=lambda item: (item[0], item[1]))
+    selected_near = near[:6]
+    c = [t for _d, t, _asof in selected_near]
+    near_dates = {asof for _d, _t, asof in selected_near}
 
     return {
         "a": a, "b": b, "c": c,
@@ -2372,8 +2374,11 @@ def build_rail(stores: dict) -> dict:
         # session these rows actually describe.  Never label prior-session
         # leaders with the day the JSON happened to be serialized.
         "asof": _day(leaders.get("session_date")),
-        "near_asof": max((_day(r.get("asof")) for r in rows
-                          if isinstance(r, dict) and _day(r.get("asof"))), default=None),
+        # Only the selected rows can date this evidence. Preserve each date
+        # when rows disagree or have no valid stamp; never borrow a newer
+        # session from an unrelated Scanner name.
+        "c_rows": [{"ticker": t, "asof": asof} for _d, t, asof in selected_near],
+        "near_asof": next(iter(near_dates)) if len(near_dates) == 1 else None,
     }
 
 

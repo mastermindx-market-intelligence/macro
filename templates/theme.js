@@ -1739,7 +1739,7 @@
      the same navigation choose one row when it fits and a composed second row
      when it does not. This is intentionally content-driven rather than a set of
      profile-specific breakpoints, so new menu entries inherit the behavior. */
-  function initAdaptiveNav() {
+  function initAdaptiveNav(immediate) {
     var nav = document.querySelector('.site-nav, .topbar');
     if (!nav || nav.getAttribute('data-adaptive-nav-ready') === '1') return;
     var links = nav.querySelector('.nav-links');
@@ -1793,7 +1793,10 @@
     document.addEventListener('mmx-markets-change', schedule);
     document.addEventListener('langchange', schedule);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
-    schedule();
+    // An explicitly opted-in page boots after its complete nav, before main.
+    // Reuse this same measurement now; all later updates remain coalesced.
+    if (immediate === true) paint();
+    else schedule();
   }
 
   /* ---- settings modal (theme + language + future account) -----------------
@@ -5480,11 +5483,21 @@
     });
   }
 
-  // Build the settings modal as EARLY as possible. theme.js is the last script
-  // before </body>, so the nav is already parsed — relocating the toggles now,
-  // before first paint, swaps them for the gear with no visible flash. Idempotent,
-  // with a DOMContentLoaded fallback for any page that loads theme.js in <head>.
-  if (document.body) { try { initSettings(); } catch (e) {} }
+  // Build the settings modal as EARLY as possible. Most pages load this script
+  // at the end of body; an explicit data-nav-early script runs immediately after
+  // the complete shared nav, before main content. Only that opt-in advances the
+  // existing, idempotent geometry initializers. DOMContentLoaded stays the
+  // fallback; drill handlers still bind there exactly once.
+  if (document.body) {
+    try { initSettings(); } catch (e) {}
+    if (_mmThemeScript && _mmThemeScript.hasAttribute('data-nav-early')) {
+      try {
+        initNavSearch();
+        initMobileNav();
+        initAdaptiveNav(true);
+      } catch (e) {}
+    }
+  }
 
   document.addEventListener('DOMContentLoaded', function () {
     wrapTables();

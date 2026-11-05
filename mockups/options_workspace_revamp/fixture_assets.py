@@ -12,5 +12,7 @@ def bind_template_assets(html):
         path = match.group(3)
         if path.startswith(("/", "#", "data:", "http:", "https:")):
             return match.group(0)
-        return match.group(1) + match.group(2) + urljoin("/templates/", path) + match.group(2)
+        # The public runtime config is a built site asset, not a template file.
+        base = "/site/" if path.split("?", 1)[0] in ("live_config.js", "./live_config.js") else "/templates/"
+        return match.group(1) + match.group(2) + urljoin(base, path) + match.group(2)
     return _ASSET.sub(replace, html)

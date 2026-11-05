@@ -587,6 +587,38 @@ def test_rail_group_c_reuses_the_shipped_near_flip_threshold():
     assert "OLD" not in rail["c"]   # +12.0%
 
 
+def test_near_flip_research_dates_come_from_selected_rows():
+    stores = _stores()
+    stores["screener"]["rows"] = [
+        {"ticker": "OLDER_NEAR", "dist_to_flip_pct": 0.2, "asof": "2026-07-20"},
+        {"ticker": "LATEST_FAR", "dist_to_flip_pct": 5, "asof": "2026-07-24"},
+    ]
+    rail = build_context(REPO, stores)["rail"]
+    assert rail["c"] == ["OLDER_NEAR"]
+    assert rail["near_asof"] == "2026-07-20"
+    assert rail["c_rows"] == [{"ticker": "OLDER_NEAR", "asof": "2026-07-20"}]
+
+
+def test_near_flip_research_preserves_mixed_and_missing_dates_in_render():
+    stores = _stores()
+    stores["screener"]["rows"] = [
+        {"ticker": "OLDER_NEAR", "dist_to_flip_pct": 0.2, "asof": "2026-07-20"},
+        {"ticker": "UNDATED_NEAR", "dist_to_flip_pct": -0.3, "asof": "2026-02-30"},
+        {"ticker": "NEWER_NEAR", "dist_to_flip_pct": 0.4, "asof": "2026-07-23"},
+        {"ticker": "LATEST_FAR", "dist_to_flip_pct": 5, "asof": "2026-07-24"},
+    ]
+    rail = build_context(REPO, stores)["rail"]
+    assert rail["c"] == ["OLDER_NEAR", "UNDATED_NEAR", "NEWER_NEAR"]
+    assert rail["near_asof"] is None
+    page = render(REPO, stores=stores)
+    chips = dict(re.findall(r'<button class="oew-tkchip has-date" type="button" data-goto="([^"]+)">(.*?)</button>', page))
+    assert "2026-07-20" in chips["OLDER_NEAR"]
+    assert "2026-07-23" in chips["NEWER_NEAR"]
+    assert "Date unavailable" in chips["UNDATED_NEAR"]
+    assert "日期未知" in chips["UNDATED_NEAR"]
+    assert all("2026-07-24" not in body for body in chips.values())
+
+
 def test_index_row_covers_the_four_pinned_products(page):
     ctx = build_context(REPO, _stores())
     assert [i["sym"] for i in ctx["indexes"]] == list(INDEX_KEYS)
@@ -754,7 +786,7 @@ def test_absent_stores_produce_plain_word_empty_states():
     text = _visible_text("".join(empties))
     assert "no data" not in text.lower(), "bare 'no data' is not an honest empty state"
     for phrase in ("No index chains reported for this close",
-                   "Sector premium did not report for this close"):
+                   "Sector premium data is unavailable for this source session."):
         assert phrase in page
 
 
@@ -888,9 +920,28 @@ def test_soft_contrast_is_not_redeclared(page):
     assert "html.soft-contrast" not in page
 
 
-def test_theme_js_is_the_last_body_script(page):
-    scripts = re.findall(r"<script[^>]*src=\"([^\"]+)\"", page)
-    assert scripts[-1] == "theme.js", f"theme.js must be last, got {scripts[-1]!r}"
+def test_theme_js_boots_once_after_shared_nav_before_workspace(page):
+    """Settle shared header geometry before main; retain the DOM-ready CTA pass."""
+    scripts = list(re.finditer(
+        r'<script\b[^>]*\bsrc="theme\.js(?:\?[^\"]*)?"[^>]*>', page, re.I))
+    assert len(scripts) == 1, "theme.js must have one owning script, not duplicate boots"
+    theme = scripts[0]
+    for marker in ("data-sync", "data-nav-early"):
+        assert re.search(r"\s" + marker + r"(?:\s|=|>)", theme.group(0)), marker
+    assert not re.search(r"\s(?:defer|async)(?:\s|=|>)", theme.group(0)), (
+        "the opted-in owner must execute synchronously before main is parsed"
+    )
+    nav = re.search(
+        r'<nav\b[^>]*class="[^\"]*\bsite-nav\b[^\"]*"[^>]*>.*?</nav>', page, re.S | re.I)
+    main = re.search(r'<main\b[^>]*id="options-workspace"[^>]*>', page, re.I)
+    assert nav and main, "the shared navigation and workspace must remain present"
+    assert nav.end() <= theme.start() < theme.end() <= main.start(), (
+        "the complete shared nav must precede its early owner, then main content"
+    )
+    assert re.search(
+        r"if\(document.readyState === 'loading'\)\s*"
+        r"document.addEventListener\('DOMContentLoaded', wireBriefCta\);\s*"
+        r"else wireBriefCta\(\);", page), "the Brief CTA must retain its DOM-ready fallback"
 
 
 def test_scanner_table_wrapper_carries_tbl_scroll(page):
@@ -2568,8 +2619,8 @@ def test_flow_mode_degrades_honestly_at_every_absence(page):
     # the intraday overlay is never fetched under the stub, so the tide panel
     # must already be showing its labelled absence rather than a blank canvas
     assert "oew-fl-null" in res["noCohorts"]
-    assert "No intraday record for this session." in res["noCohorts"]
-    assert "本场次暂无盘中记录。" in res["noCohorts"]
+    assert "Intraday record unavailable." in res["noCohorts"]
+    assert "盘中记录不可用。" in res["noCohorts"]
     # cohorts.json missing costs the theme panel and nothing else
     assert res["noCohorts"].count('class="oew-panel"') == 4
     for key, html_ in res.items():
@@ -2856,8 +2907,8 @@ def test_terminal_ctas_route_through_the_house_helper(page):
     assert "esc(terminalUrl(tk))" in page, "the Ticker CTA must build its href through the helper"
     assert 'id="oew-brief-cta"' in page
     assert "a.href = terminalUrl('');" in page
-    # theme.js defines the helper and is the LAST body script, so the Brief's
-    # static CTA can only be re-pointed once the document is parsed
+    # The early shared owner defines the helper before the workspace. Keep the
+    # DOM-ready CTA pass so the baked destination and language wiring still work.
     assert "document.addEventListener('DOMContentLoaded', wireBriefCta)" in page
     # Both handoffs still explain the dated research / live Terminal split.
     # The Brief now uses shorter copy rather than repeating the old paragraph.

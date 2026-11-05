@@ -25,3 +25,20 @@ The initial pointer-interception diagnostic was an open shared global hover menu
 The expanded harness initially assumed that every published session had an intraday canvas and that a fixture's return URL would literally contain options.html. The actual published record correctly has no intraday series, and the Terminal link correctly returns to the current fixture URL. Assertions now require the history canvas plus either a real intraday canvas or its explicit unavailable state, and an exact parsed symbol/origin/return URL. These are fixture-truth corrections, not product code changes.
 
 Before any later independent review, freeze the final candidate and retain this completed failure unchanged. A new bounded review must use its own ordinary admission under the original mission; the incumbent router and native thermal/host gates retain eligibility. No independent review, Paper edit, hosted CI pass, merge, deployment, or live verification is inferred from local tests.
+
+## Refined candidate review admission
+
+Frozen source head: ba7947223ae58f436d4cfadbedc28454b10483fc.
+Independent request: options-workspace-final-code-review-20261102-01, original mission root/parent, controller 48570. Ordinary native routing selected the reviewer; the principal did not supply a host, model, pool override, or lowered threshold.
+
+The original controller returned NATIVE_SETTLED, REMOTE_CLEANED transport=1 receipt_saved=0 usage_saved=0, and DONE rc=75 signal=admission reason=remote_admission_refused. The complete terminal result is 241 bytes, SHA-256 dfdab375c534c78fa07804020dee9d3e804315681d172c48e23515f74c458c82. Its sole admission reason is host_temperature_at_or_above_limit. Root status was verified before reading the complete final result. No reviewer executed, no result was accepted, and no paid worker remains active for this mission.
+
+This second refusal remains terminal and unaccepted. Read-only investigation of the original controller's supported capacity/thermal reporting is separate from any worker request. No blind retry, replay, model/host/carrier substitution, threshold change, or service mutation is authorized by this record. Native design preflight and local/browser tests do not replace independent source review.
+
+## Current recovery disposition — 2026-11-05
+
+The current Chairman instruction and ChatGPT Web review waiver supersede the historical blanket independent-review requirement above. Principal self-check of the recovered diff, focused existing evidence, required CI and feasible real-path proof govern continuation. No prior refusal is relabelled as a completed review, and no native advisory result is a GitHub APPROVED review. Formal nonauthor approval will be obtained only if an actual repository rule requires it; the principal will not self-approve or self-merge.
+
+The recovered candidate and exact source fingerprints are recorded in VERIFICATION.md. Original published head remains ba7947223ae58f436d4cfadbedc28454b10483fc before recovery publication. All 248 untracked artifacts are scoped to Options evidence or tests (45,563,244 bytes); no unrelated untracked path was found. Existing original Paper effects are terminally reconciled in paper/paper-effect-reconciliation-20261103.json.
+
+The installed Studio publisher rejects the newer optional repository argument because its inner status schema accepts only operation_id. The original installed owner was diagnosed read-only without configuration, guard or carrier changes; its status then succeeded, and the exposed status tool without repository also succeeded, binding this operation to the original Macro branch with equal local/remote ba794 head and a dirty workspace. No commit or push effect occurred during diagnosis. Use the original typed commit/push tools with that verified binding.

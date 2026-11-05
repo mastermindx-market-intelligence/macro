@@ -27,6 +27,7 @@ from __future__ import annotations
 import html
 import re
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
@@ -208,26 +209,73 @@ def _payload(*, roots: list[dict], ledger_asof: str | None = "2026-09-24",
 
 
 def _workspace_fold(page: str, sym: str) -> str:
-    """Slice the rendered HTML to just the fold container under one index card."""
-    # Anchor on the index card opening, then capture the trailing <details>
-    # oew-lab container (one card = at most one fold, before the card's
-    # closing </div>).  When the card has no fold, return the card-only slice
-    # so callers can assert `class="oew-lab…"` absence on it.
-    needle = f'class="oew-ic-sym mono">{sym}</span>'
-    if needle not in page:
-        return ""
-    start = page.rfind('<div class="oew-ic">', 0, page.index(needle))
-    next_card = page.find('<div class="oew-ic">', start + 1)
-    card_end = next_card if next_card >= 0 else page.find("<!-- /oew -->", start)
-    if card_end < 0:
-        card_end = len(page)
-    fold_start = page.find('<details class="oew-aib-detail oew-lab"', start, card_end)
-    if fold_start < 0:
-        return page[start:card_end]
-    fold_end = page.find("</details>", fold_start, card_end)
-    if fold_end < 0:
-        fold_end = card_end
-    return page[fold_start:fold_end + len("</details>")]
+    """Read one ticker's fold without borrowing another card's markup.
+
+    The ticker is now an interactive control. Match its class token and
+    destination, independent of attribute order or decorative child spans.
+    Keep the exact source slice so the existing content assertions stay intact.
+    A real card without a fold is returned whole for the absence assertions.
+    """
+    line_offsets = [0]
+    for line in page.splitlines(keepends=True):
+        line_offsets.append(line_offsets[-1] + len(line))
+
+    class CardParser(HTMLParser):
+        def __init__(self):
+            super().__init__(convert_charrefs=False)
+            self.div_depth = 0
+            self.card = None
+            self.matches = []
+
+        def source_offset(self):
+            line, column = self.getpos()
+            return line_offsets[line - 1] + column
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            classes = (attrs.get("class") or "").split()
+            if tag == "div":
+                self.div_depth += 1
+                if self.card is None and "oew-ic" in classes:
+                    self.card = {
+                        "start": self.source_offset(), "depth": self.div_depth,
+                        "matches": False, "details_depth": 0,
+                        "fold_start": None, "fold_depth": None, "fold_end": None,
+                    }
+            if self.card is None:
+                return
+            if "oew-ic-sym" in classes and attrs.get("data-goto") == sym:
+                self.card["matches"] = True
+            if tag == "details":
+                self.card["details_depth"] += 1
+                if "oew-lab" in classes and self.card["fold_start"] is None:
+                    self.card["fold_start"] = self.source_offset()
+                    self.card["fold_depth"] = self.card["details_depth"]
+
+        def handle_endtag(self, tag):
+            if self.card is not None:
+                if tag == "details":
+                    if (self.card["details_depth"] == self.card["fold_depth"]
+                            and self.card["fold_end"] is None):
+                        self.card["fold_end"] = page.index(">", self.source_offset()) + 1
+                    self.card["details_depth"] -= 1
+                if tag == "div" and self.div_depth == self.card["depth"]:
+                    if self.card["matches"]:
+                        if self.card["fold_start"] is not None:
+                            assert self.card["fold_end"] is not None, "unclosed payoff fold"
+                            bounds = self.card["fold_start"], self.card["fold_end"]
+                        else:
+                            bounds = self.card["start"], page.index(">", self.source_offset()) + 1
+                        self.matches.append(page[bounds[0]:bounds[1]])
+                    self.card = None
+            if tag == "div":
+                self.div_depth -= 1
+
+    parser = CardParser()
+    parser.feed(page)
+    parser.close()
+    assert len(parser.matches) == 1, f"expected exactly one index card for {sym}"
+    return parser.matches[0]
 
 
 # ─────────────────────────────────────────────────────────────────────────────

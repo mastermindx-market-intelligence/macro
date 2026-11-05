@@ -290,13 +290,14 @@
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="illus.css">
+<link rel="preload" href="theme.js" as="script">
 <style>
 /* ═══════════════════════════════════════════════════════════════════════════
    BASE. House tokens come from theme.css; .soft-contrast is applied to <html>
    by theme.js for every visitor and re-tunes --bg/--panel/--panel2/--text/--line
    — inherited automatically, NEVER re-declared here. No prefers-color-scheme
    rule: the house has zero, and theme comes from the no-flash boot script above.
-   body top padding = the nav-gap law (scripts/check_nav_gap.py, #3324).
+   body top padding = the nav-gap law (scripts/check_nav_gap.py, issue 3324).
    ═══════════════════════════════════════════════════════════════════════════ */
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:var(--font-ui);
@@ -305,7 +306,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ui);
 /* TYPE ROLE LAW — machine-recorded facts are monospaced, human interpretation is
    not. Never put Hanzi inside .mono (CJK falls back to a mismatched face). The
    --font-mono token already leads with ui-monospace: never hand-roll an
-   "SF Mono"-first stack, which renders SERIF in Chrome (#3371). */
+   "SF Mono"-first stack, which renders SERIF in Chrome (issue 3371). */
 .oew .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 
 /* Workspace aliases inherit the canonical theme. Information accents never
@@ -313,9 +314,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ui);
 .oew{
   --oew-accent:var(--info);
   --oew-stamp:var(--muted);
-  --hair: color-mix(in srgb, var(--line) 72%, transparent);
-  --tile: color-mix(in srgb, var(--panel2) 86%, var(--panel));
-  --ink-2: color-mix(in srgb, var(--text) 66%, transparent);
+  --hair: var(--line);
+  --tile: var(--panel2);
+  --ink-2: var(--muted);
   --ink-3: var(--muted);
   /* stance ramp — ONE hue, intensity = urgency. Direction-STABLE and
      deliberately NOT zh-flipped, exactly like the --pv-* prophet verbs. A
@@ -329,12 +330,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ui);
   --oew-st-protect:var(--warn);
   --oew-st-aside:  var(--muted);
   --oew-st-ignore: var(--muted);
-  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:44px;
-  --r-pill:999px; --r-ctl:8px; --r-panel:14px; --r-shell:14px;
 }
 html[data-theme="light"] .oew{
-  --hair: color-mix(in srgb, var(--line) 92%, transparent);
-  --ink-2: color-mix(in srgb, var(--text) 72%, transparent);
+  --hair: var(--line);
+  --ink-2: var(--muted);
 }
 
 .oew-eyebrow{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
@@ -342,15 +341,15 @@ html[data-lang="zh"] .oew-eyebrow{letter-spacing:0;text-transform:none}
 .oew-wrap{max-width:1328px;margin:0 auto;padding:var(--s7) var(--s6) var(--s8)}
 .oew-icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .oew :focus-visible{outline:2px solid var(--info);outline-offset:3px}
-.oew button,.oew input,.oew select{font-family:inherit}
+.oew button,.oew input,.oew select{font-family:var(--font-ui)}
 .oew-chrome{margin-bottom:var(--s6)}
 .oew-idrow{display:flex;align-items:center;justify-content:space-between;gap:var(--s6);margin-bottom:var(--s6)}
 .oew-title{margin:var(--s1) 0 0;font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1.12}
 .oew-subtitle{margin:var(--s2) 0 0;color:var(--muted);font-size:15px}
 .oew-session{display:flex;align-items:center;gap:var(--s3);flex:none}
-.oew-session-icon{width:44px;height:44px;display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:var(--muted)}
+.oew-session-icon{width:44px;height:44px;display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px);color:var(--muted)}
 .oew-session-date{font-size:17px;font-weight:650;margin-top:2px}
-.oew-context-drawer{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:var(--s5)}
+.oew-context-drawer{border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);margin-bottom:var(--s5)}
 .oew-context-drawer>summary{display:flex;align-items:center;gap:var(--s4);padding:var(--s4) var(--s5);cursor:pointer;list-style:none;min-height:56px}
 .oew-context-drawer>summary::-webkit-details-marker,.oew-history>summary::-webkit-details-marker{display:none}
 .oew-context-drawer>summary>.oew-icon,.oew-history>summary>.oew-icon{width:16px;height:16px;transition:transform .16s ease;color:var(--muted)}
@@ -359,12 +358,12 @@ html[data-lang="zh"] .oew-eyebrow{letter-spacing:0;text-transform:none}
 .oew-context-link{margin-left:auto;color:var(--ink-info,var(--info));font-size:12px;font-weight:600;white-space:nowrap}
 .oew-context-body{border-top:1px solid var(--line);padding:var(--s5)}
 .oew-console-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s3)}
-.oew-read{padding:var(--s4);background:var(--panel2);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2)}
+.oew-read{padding:var(--s4);background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-btn,10px);display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2)}
 .oew-read-k{display:flex;align-items:center;gap:5px}
 .oew-read-v{font-size:18px;font-weight:700;line-height:1.3;color:var(--text)}
 .oew-read-n{font-size:12px;color:var(--muted)}
 .oew-reading-date{display:flex;flex-wrap:wrap;gap:var(--s2);font-size:11.5px;color:var(--muted);margin-top:auto;padding-top:var(--s2)}
-.oew-vetted{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--panel);color:var(--ink-ok,var(--ok));font-size:10px;cursor:help;flex:none}
+.oew-vetted{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:var(--r-pill);background:var(--panel);color:var(--ink-ok,var(--ok));font-size:10px;cursor:help;flex:none}
 .oew-source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s6)}
 .oew-source-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px var(--s3);padding:var(--s3) 0;border-top:1px solid var(--line);font-size:12.5px}
 .oew-source-state{grid-column:1/-1;font-size:12px;color:var(--muted)}
@@ -373,7 +372,7 @@ html[data-lang="zh"] .oew-eyebrow{letter-spacing:0;text-transform:none}
 /* ── THE PIP STRIP — the atomic fill-track. The DENOMINATOR must be as visible
       as the reading: an unfilled pip is a filled tile, not an empty outline. */
 .oew-pips{display:inline-flex;gap:3px;align-items:center;cursor:help;margin-top:2px}
-.oew-pip{width:17px;height:6px;border-radius:2px;background:color-mix(in srgb,var(--text) 13%,transparent);border:none}
+.oew-pip{width:17px;height:6px;border-radius:calc(var(--r-ctl) * .25);background:var(--line);border:none}
 .oew-pip.on{background:var(--oew-accent)}
 .oew-pip.nul{background:transparent;border:1px dotted var(--hair);opacity:.6}
 .oew-pips.sm .oew-pip{width:9px;height:5px}
@@ -400,11 +399,11 @@ html[data-lang="zh"] .oew-eyebrow{letter-spacing:0;text-transform:none}
   border:1px solid var(--hair);color:var(--ink-info, var(--info));background:var(--tile)}
 
 /* Five persistent research tasks. Roving focus and history are handled below. */
-.oew-tabs{display:flex;gap:var(--s1);padding:var(--s1);background:var(--panel2);border:1px solid var(--line);border-radius:12px;margin:0}
-.oew-tab{appearance:none;display:flex;align-items:center;justify-content:center;gap:var(--s2);min-width:0;min-height:44px;flex:1;padding:var(--s2) var(--s4);font:inherit;font-size:13px;font-weight:650;border:0;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap}
+.oew-tabs{display:flex;gap:var(--s1);padding:var(--s1);background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px);margin:0}
+.oew-tab{appearance:none;display:flex;align-items:center;justify-content:center;gap:var(--s2);min-width:0;min-height:44px;flex:1;padding:var(--s2) var(--s4);font:inherit;font-size:13px;font-weight:650;border:0;border-radius:var(--r-btn,10px);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap}
 .oew-tab[aria-selected="true"]{background:var(--panel);color:var(--text);box-shadow:var(--card-shadow)}
-.oew-tab:hover{color:var(--text);background:color-mix(in srgb,var(--panel) 65%,transparent)}
-.oew-tab .cnt{font-size:11px;font-weight:500;background:var(--panel2);border-radius:6px;padding:1px 5px;color:var(--muted)}
+.oew-tab:hover{color:var(--text);background:var(--panel2)}
+.oew-tab .cnt{font-size:11px;font-weight:500;background:var(--panel2);border-radius:calc(var(--r-ctl) * .75);padding:1px 5px;color:var(--muted)}
 .oew-tab:focus-visible{outline-offset:-2px}
 
 /* ═══ PANEL SHELL — shared by every panel in every mode ═══ */
@@ -731,6 +730,8 @@ html[data-lang="zh"] .oew-ic-lv .k{letter-spacing:.02em;text-transform:none}
   border-radius:5px;border:1px solid var(--hair);background:var(--panel);color:var(--text);cursor:pointer}
 .oew-tkchip:hover{border-color:var(--oew-accent);color:var(--oew-accent)}
 .oew-tkchip:focus-visible{outline:2px solid var(--oew-accent);outline-offset:1px}
+.oew-tkchip.has-date{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:8px 10px;min-height:44px}
+.oew-tkchip .oew-chip-date{font-size:12.5px;font-weight:400;color:var(--muted)}
 
 /* ── Terminal handoff ── */
 .oew-handoff{border:1px solid var(--hair);border-radius:var(--r-panel);
@@ -740,7 +741,7 @@ html[data-lang="zh"] .oew-ic-lv .k{letter-spacing:.02em;text-transform:none}
 .oew-ho-s{font-size:12px;color:var(--ink-2);margin-top:2px;max-width:56ch;line-height:1.45}
 .oew-ho-clock{font-size:11px;color:var(--oew-stamp);margin-top:6px}
 .oew-cta{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:7px;background:var(--oew-accent);
-  color:var(--bg);border:none;border-radius:10px;padding:12px 18px;min-height:44px;font:inherit;font-size:13px;font-weight:650;
+  color:var(--bg);border:none;border-radius:var(--r-btn,10px);padding:12px 18px;min-height:44px;font:inherit;font-size:13px;font-weight:650;
   cursor:pointer;text-decoration:none}
 .oew-cta:hover{filter:brightness(1.08)}
 .oew-cta:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
@@ -1058,6 +1059,7 @@ html[data-lang="zh"] .oew-pb-h{letter-spacing:.02em;text-transform:none}
 @media (max-width:760px){.oew-fl-tide{grid-template-columns:1fr;gap:var(--s4)}}
 .oew-fl-cvh{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:7px}
 html[data-lang="zh"] .oew-fl-cvh{letter-spacing:.02em;text-transform:none}
+.oew-fl-source{display:flex;align-items:baseline;gap:var(--s1);flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:var(--s2)}
 .oew-fl-cv{position:relative;height:104px}
 .oew-fl-cv canvas{width:100%;height:100%;display:block}
 .oew-fl-read{display:flex;align-items:baseline;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s2);font-size:11.5px;color:var(--muted)}
@@ -1084,7 +1086,7 @@ html[data-lang="zh"] .oew-fl-cvh{letter-spacing:.02em;text-transform:none}
 @media (max-width:820px){.oew-raw-grid{grid-template-columns:1fr}}
 .oew-raw-empty{font-size:11.5px;color:var(--ink-2);padding:var(--s3) 0}
 .oew-raw-leg{display:flex;gap:var(--s3);flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin-top:var(--s2)}
-.oew-raw-leg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.oew-raw-leg i{display:inline-block;width:9px;height:9px;border-radius:calc(var(--r-ctl) * .25);margin-right:5px;vertical-align:-1px}
 .oew-raw-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
 table.oew-raw-tbl{width:100%;border-collapse:collapse;font-size:11.5px}
 table.oew-raw-tbl th{text-align:right;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;
@@ -1179,7 +1181,7 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 .oew-availability p,.oew-recovery p{color:var(--muted);font-size:13px;line-height:1.6;margin:var(--s2) 0 0;max-width:72ch}
 .oew-actions{display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap;flex:none}
 .oew-secondary,.oew-text-link{appearance:none;font:inherit;display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);min-height:44px;cursor:pointer;font-size:12.5px;font-weight:600;text-decoration:none}
-.oew-secondary{padding:var(--s2) var(--s4);color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:10px}
+.oew-secondary{padding:var(--s2) var(--s4);color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-btn,10px)}
 .oew-secondary:hover{background:var(--bg)}
 .oew-text-link{border:0;background:none;padding:0;color:var(--ink-info,var(--info));white-space:nowrap}
 .oew-index-section{margin:0 0 var(--s7)}
@@ -1188,7 +1190,7 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 .oew-index-section>.oew-phead>.oew-ph-sub{font-size:13px}
 .oew-index-section>.oew-pbody{padding:0}
 .oew-idx{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s3);align-items:start}
-.oew-ic{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:var(--s5);box-shadow:var(--card-shadow);min-width:0}
+.oew-ic{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:var(--s5);box-shadow:var(--card-shadow);min-width:0}
 .oew-ic-top{align-items:flex-start;gap:var(--s2);margin-bottom:var(--s3)}
 .oew-ic-sym{font-size:16px;font-weight:750;line-height:1.2;min-height:30px;display:flex;align-items:center}
 .oew-ic-sym>span{font-size:12px;color:var(--muted);margin-left:var(--s1)}
@@ -1201,7 +1203,7 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 .oew-index-track-line{position:absolute;left:0;right:0;top:22px;height:2px;background:var(--line)}
 .oew-index-mark{position:absolute;top:17px;height:12px;width:1px;background:var(--muted);transform:translateX(-50%)}
 .oew-index-mark.is-flip{top:12px;height:22px;width:0;background:none;border-left:2px dashed var(--muted)}
-.oew-index-mark.is-spot{top:17px;width:12px;height:12px;border-radius:50%;background:var(--info);border:2px solid var(--panel);box-shadow:0 0 0 1px var(--info);z-index:1}
+.oew-index-mark.is-spot{top:17px;width:12px;height:12px;border-radius:var(--r-pill);background:var(--info);border:2px solid var(--panel);box-shadow:0 0 0 1px var(--info);z-index:1}
 .oew-ic-levels{margin-top:0;padding-top:0;border-top:0;gap:var(--s2)}
 .oew-ic-lv .k{font-size:11px;letter-spacing:0;text-transform:none}
 .oew-ic-lv .v{font-size:12px;margin-top:3px}
@@ -1210,13 +1212,13 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 .oew-ic-em b{color:var(--text);font-weight:550}
 .oew-index-legend{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);color:var(--muted);font-size:12px;margin-top:var(--s4)}
 .oew-index-legend>span{display:inline-flex;gap:var(--s2);align-items:center}
-.oew-legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--info)}
+.oew-legend-dot{display:inline-block;width:8px;height:8px;border-radius:var(--r-pill);background:var(--info)}
 .oew-legend-rule{display:inline-block;height:12px;border-left:2px dashed var(--muted)}
-.oew-history{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:var(--s5);box-shadow:var(--card-shadow)}
+.oew-history{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel);margin-bottom:var(--s5);box-shadow:var(--card-shadow)}
 .oew-history>summary{list-style:none;cursor:pointer;padding:var(--s5) var(--s6);display:flex;align-items:center;justify-content:space-between;gap:var(--s5)}
 .oew-history>summary h2{margin:0;font-size:16px;font-weight:700}
 .oew-history>summary p{margin:var(--s1) 0 0;font-size:12.5px;color:var(--muted);max-width:85ch}
-.oew-history-body{padding:var(--s5);border-top:1px solid var(--line);background:var(--panel2);border-radius:0 0 14px 14px}
+.oew-history-body{padding:var(--s5);border-top:1px solid var(--line);background:var(--panel2);border-radius:0 0 var(--r-panel) var(--r-panel)}
 .oew-change-date{font-size:11px;font-weight:400;color:var(--muted);margin-left:var(--s1)}
 .oew-handoff{padding:var(--s5) var(--s6)}
 .oew-ho-s{max-width:86ch;font-size:12.5px;line-height:1.6;margin-top:var(--s1)}
@@ -1248,7 +1250,7 @@ html[data-theme="light"] .oew-cta{background:var(--text);color:var(--panel)}
   .oew-title{font-size:32px}
   .oew-idrow{align-items:flex-start;gap:var(--s4);flex-wrap:wrap}
   .oew-session{width:100%;gap:var(--s2)}
-  .oew-session-icon{width:36px;height:36px;border-radius:10px}
+  .oew-session-icon{width:36px;height:36px;border-radius:var(--r-btn,10px)}
   .oew-session>div{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
   .oew-session-date{font-size:14px;margin:0}
   .oew-context-drawer>summary{padding:var(--s3);gap:var(--s2);flex-wrap:wrap}
@@ -1307,7 +1309,7 @@ html[data-theme="light"] .oew-cta{background:var(--text);color:var(--panel)}
   .oew *, .oew *::before, .oew *::after{scroll-behavior:auto!important;transition:none!important}
 }
 
-.oew-partial-recovery{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s3);padding:var(--s4);border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:12.5px;margin-bottom:var(--s4)}
+.oew-partial-recovery{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s3);padding:var(--s4);border:1px solid var(--line);border-radius:var(--r-card,12px);color:var(--muted);font-size:12.5px;margin-bottom:var(--s4)}
 .oew-partial-recovery button:disabled{cursor:wait;opacity:.6}
 .oew-index-section>.oew-phead{position:relative;padding-right:24px}
 .oew-index-section>.oew-phead>.oew-ph-right{position:absolute;right:0;top:5px}
@@ -1328,7 +1330,9 @@ html[data-theme="light"] .oew-cta{background:var(--text);color:var(--panel)}
 </head>
 <body class="page-options">
 
+{% set nav_defer_enhancements = true %}
 {% include "_site_nav.html.j2" %}
+<script src="theme.js" data-sync data-nav-early></script>
 
 <main class="oew" id="options-workspace">
 <div class="oew-wrap">
@@ -1543,8 +1547,8 @@ html[data-theme="light"] .oew-cta{background:var(--text);color:var(--panel)}
         {% endfor %}
       </div>
       {% else %}
-      <p class="oew-empty">{{ t('Sector premium did not report for this close. It returns with the next options tape.',
-                               '本次收盘没有板块权利金数据。下一次期权盘面数据到位后会恢复。') }}</p>
+      <p class="oew-empty">{{ t('Sector premium data is unavailable for this source session.',
+                               '本数据场次的板块权利金数据不可用。') }}</p>
       {% endif %}
     </div>
     <div class="oew-pfoot">
@@ -1593,8 +1597,8 @@ html[data-theme="light"] .oew-cta{background:var(--text);color:var(--panel)}
         {% endfor %}
       </div>
       {% else %}
-      <div class="oew-pbody"><p class="oew-empty">{{ t('No single-name premium marks for this close. They return with the next options tape.',
-                               '本次收盘没有个股权利金记录。下一次期权盘面数据到位后会恢复。') }}</p></div>
+      <div class="oew-pbody"><p class="oew-empty">{{ t('Single-name premium records are unavailable for this source session.',
+                               '本数据场次的个股权利金记录不可用。') }}</p></div>
       {% endif %}
     </div>
     <div class="oew-pfoot">
@@ -1629,10 +1633,10 @@ html[data-theme="light"] .oew-cta{background:var(--text);color:var(--panel)}
           </div>{% else %}<p class="oew-empty">{{ t('No fresh turns in this close.', '本次收盘没有新的转向。') }}</p>{% endif %}
         </div>
         <div class="oew-rg">
-          <div class="oew-rg-h">{{ t('Sitting near a flip level', '接近翻转位') }}</div><time class="oew-source-date mono">{{ rail.near_asof or '—' }}</time>
+          <div class="oew-rg-h">{{ t('Sitting near a flip level', '接近翻转位') }}</div><span class="oew-source-date">{{ t('Source date on each name', '逐个标注数据日期') }}</span>
           <div class="oew-rg-s">{{ t('Within 1% of the price where hedging changes character.', '距对冲性质改变的价格 1% 以内。') }}</div>
           {% if rail.c %}<div class="oew-tkchips">
-            {% for tk in rail.c %}<button class="oew-tkchip" type="button" data-goto="{{ tk }}">{{ tk }}</button>{% endfor %}
+            {% for row in rail.c_rows %}<button class="oew-tkchip has-date" type="button" data-goto="{{ row.ticker }}"><span>{{ row.ticker }}</span><span class="oew-chip-date">{% if row.asof %}{{ row.asof }}{% else %}{{ t('Date unavailable', '日期未知') }}{% endif %}</span></button>{% endfor %}
           </div>{% else %}<p class="oew-empty">{{ t('No name closed within 1% of its flip level.', '没有标的收于其翻转位 1% 以内。') }}</p>{% endif %}
         </div>
       </div>
@@ -1797,9 +1801,8 @@ var SKEL = {
 };
 
 /* The Terminal destination, through the house helper.
-   theme.js is the LAST body script, so window.MDXTerminal does NOT exist while
-   this IIFE runs — every caller here is a render or a DOM-ready callback, by
-   which time it does. The literal stays as the no-JS/helper-absent fallback:
+   theme.js now boots after the shared nav, before this workspace. The literal
+   stays as the no-JS/helper-absent fallback:
    it reaches the Terminal, it just loses the &from=macro/&ret= stamp the
    Terminal reads to draw its "← Dashboard" button. gex.js already routes its
    own CTA this way (site/gex.js:528). The spelling this CTA used before was a
@@ -1910,8 +1913,8 @@ function errorPanel(mode, ticker){
    .catch(→ null), and an honest labelled absence on every failure path.
    ══════════════════════════════════════════════════════════════════════════ */
 var flDesk = null, flTide = null;
-/* Generated from the canonical NYSE calendar at bake time.  It is null on a
-   weekend/holiday, so the literal Today panel cannot invent a session. */
+/* Generated from the canonical NYSE calendar at bake time. It is null on a
+   weekend/holiday, so the intraday panel cannot invent a requested session. */
 var LIVE_SESSION_DATE = {{ live_session_date|tojson }};
 
 function r2Url(path){
@@ -1948,8 +1951,8 @@ function flSectorPanel(desk){
   + '</div>';
   if(!rows.length){
     return '<div class="oew-panel">' + head + '<div class="oew-pbody"><p class="oew-empty">'
-      + bi('Sector premium did not report for this close. It returns with the next options tape.',
-           '本次收盘没有板块权利金数据。下一次期权盘面数据到位后会恢复。') + '</p></div></div>';
+      + bi('Sector premium data is unavailable for this source session.',
+           '本数据场次的板块权利金数据不可用。') + '</p></div></div>';
   }
   var top = num(rows[0].gross_premium_mn) || 0;
   var body = rows.map(function(r){
@@ -2005,8 +2008,8 @@ function flThemePanel(desk, cohorts){
   var covered = rows.filter(function(c){ return num(c.n_members_covered); }).length;
   if(!rows.length || !covered){
     return '<div class="oew-panel">' + head + '<div class="oew-pbody"><p class="oew-empty">'
-      + bi('No theme-group data for this close. It returns with the next options tape.',
-           '本次收盘没有主题组合数据。下一次期权盘面数据到位后会恢复。') + '</p></div></div>';
+      + bi('Theme-group data is unavailable for this source session.',
+           '本数据场次的主题组合数据不可用。') + '</p></div></div>';
   }
   var tiles = rows.map(function(c){
     var net = num(c.net_premium_mn);
@@ -2076,47 +2079,56 @@ function flEtfPanel(desk){
   + '</div>';
 }
 
-/* ── panel 4 · the tide: 30 sessions of net premium + how today unfolded ── */
+/* ── panel 4 · historical tide and a separately dated intraday record ── */
 function flTidePanel(desk){
   var spark = ((desk && desk.market_tide) || {}).spark || [];
   var head = '<div class="oew-phead">'
     + '<h2 class="oew-ph-title">' + bi('The tide','资金潮汐') + '</h2>'
-    + '<span class="oew-ph-sub">' + bi('thirty sessions of net premium, and how today unfolded',
-        '三十个交易日的净权利金，以及今日的展开过程') + '</span>'
+    + '<span class="oew-ph-sub">' + bi('Historical net premium and a separately dated intraday record',
+        '历史净权利金与单独标注日期的盘中记录') + '</span>'
     + '<div class="oew-ph-right"><span class="oew-help" tabindex="0" role="button"'
-      + ' data-tip-en="Left: each session’s net options premium — call premium bought minus put premium bought — against a zero line. Right: the same measure minute by minute through the completed session, from the live tape store. Read the shape, not the level; direction is approximate."'
-      + ' data-tip-zh="左：各交易日的净期权权利金（买入看涨减买入看跌），以零轴为基准。右：同一指标在已收盘交易时段内的逐分钟走势，数据来自实时盘面存储。请看形态而非绝对水平；方向为近似值。">?</span></div>'
+      + ' data-tip-en="Left: historical session net options premium — call premium bought minus put premium bought — against a zero line. Right: the same measure minute by minute from the tape store. Each chart has its own source date. Read the shape, not the level; direction is approximate."'
+      + ' data-tip-zh="左：历史交易日的净期权权利金（买入看涨减买入看跌），以零轴为基准。右：来自盘面存储的同一指标逐分钟走势。各图单独注明数据日期。请看形态而非绝对水平；方向为近似值。">?</span></div>'
   + '</div>';
   /* MI-1: fewer than two REAL observations cannot draw a curve — the canvas
      guard would leave a blank rectangle under an aria-label promising thirty
      sessions. Nulls are no-observation slots, so they don't count. */
   var realN = spark.filter(function(d){ return num(d.net_premium_mn) !== null; }).length;
+  var historyMarkup = '<div class="oew-fl-cv"><canvas id="oew-fl-spark" role="img"'
+    + ' aria-label="Net options premium over the last thirty sessions"></canvas></div>';
   if(realN < 2){
-    return '<div class="oew-panel">' + head + '<div class="oew-pbody"><p class="oew-empty">'
-      + bi('No session history on file yet for the tide. It fills in as closes accrue.',
-           '资金潮汐暂无历史场次记录。随着收盘场次积累会逐步填充。') + '</p></div></div>';
+    historyMarkup = '<div class="oew-fl-null"><p class="oew-empty">'
+      + bi('Not enough session history to draw the tide.',
+           '历史场次记录不足，暂无法绘制资金潮汐。') + '</p></div>';
   }
   return '<div class="oew-panel">' + head
     + '<div class="oew-pbody"><div class="oew-fl-tide">'
       + '<div>'
         + '<div class="oew-fl-cvh">' + bi('Thirty sessions','近三十个交易日') + '</div>'
-        + '<div class="oew-fl-cv"><canvas id="oew-fl-spark" role="img"'
-          + ' aria-label="Net options premium over the last thirty sessions"></canvas></div>'
+        + '<div class="oew-fl-source" id="oew-fl-history-source">' + bi('History through:', '历史截至：')
+          + ' ' + flTideDate(((desk && desk.market_tide) || {}).asof) + '</div>'
+        + historyMarkup
       + '</div>'
       + '<div>'
-        + '<div class="oew-fl-cvh">' + bi('Today, minute by minute','今日逐分钟') + '</div>'
+        + '<div class="oew-fl-cvh">' + bi('Intraday record','盘中记录') + '</div>'
+        + '<div class="oew-fl-source" id="oew-fl-intraday-source">' + bi('Requested session:', '请求场次：')
+          + ' ' + flTideDate(LIVE_SESSION_DATE) + '</div>'
         + '<div id="oew-fl-unfold"><div class="oew-fl-null">'
-          + bi('No intraday record for this session.','本场次暂无盘中记录。') + '</div></div>'
+          + bi('Intraday record unavailable.','盘中记录不可用。') + '</div></div>'
         + '<div class="oew-fl-read" id="oew-fl-read"></div>'
       + '</div>'
     + '</div></div>'
     + '<div class="oew-pfoot"><span>'
       + bi('Shape only. Direction is approximate ~ and this is never a buy or sell signal.',
            '仅供观察形态。方向为近似值 ~，从不构成买卖信号。') + '</span>'
-      + (((desk && desk.market_tide) || {}).asof
-          ? '<span class="oew-asof mono">' + esc(desk.market_tide.asof) + '</span>' : '')
     + '</div>'
   + '</div>';
+}
+
+function flTideDate(value){
+  var day = sourceDay(value);
+  return day ? '<time class="mono" datetime="' + esc(day) + '">' + esc(day) + '</time>'
+    : bi('Date unavailable', '日期不可用');
 }
 
 /* Both curves are ZERO-ANCHORED: the baseline is 0, never the series minimum,
@@ -2229,8 +2241,10 @@ function flApplyTide(tide){
   /* "Two-way" is an honest state, not a rounding artefact: a close inside 2% of
      the day's gross premium is noise, not a lean. (flow_desk's own rule.) */
   var flat = grossSum > 0 && Math.abs(last) < grossSum * 0.02;
+  var sourceEl = document.getElementById('oew-fl-intraday-source');
+  if(sourceEl) sourceEl.innerHTML = bi('Source session:', '数据场次：') + ' ' + flTideDate(tide.session_date);
   host.innerHTML = '<div class="oew-fl-cv"><canvas id="oew-fl-curve" role="img"'
-    + ' aria-label="Net options premium through the completed session"></canvas></div>';
+    + ' aria-label="Net options premium during source session ' + esc(tide.session_date) + '"></canvas></div>';
   if(readEl){
     var lean = flat ? bi('Two-way','多空均衡') : (last > 0 ? bi('Calls led','看涨主导') : bi('Puts led','看跌主导'));
     var shape;
@@ -2256,8 +2270,8 @@ function flTideValidity(tide){
 }
 function renderFlow(host, desk, cohorts){
   if(!desk || !desk.sector_heatmap){
-    host.innerHTML = emptyPanel('The flow desk did not report for this close. It returns with the next options tape.',
-      '本次收盘没有资金流台数据。下一次期权盘面数据到位后会恢复。');
+    host.innerHTML = emptyPanel('The flow desk is unavailable for this source session.',
+      '本数据场次的资金流工作台不可用。');
     return;
   }
   flDesk = desk;
@@ -2334,15 +2348,20 @@ var SC_RANGES = [
 ];
 var SC_TONE_ORDER = { 'call-leaning':1, 'neutral':0, 'put-leaning':-1 };
 var scRows = [], scPreset = 'premium', scSkew75 = null, scAsof = null;
-/* idx is the header POSITION, not the key: three fields appear in two views
-   each, and aria-sort must mark exactly one header, never both copies. */
+/* idx retains the clicked header position; key carries the sort across views.
+   Duplicate columns share aria-sort, with one copy visible in each view. */
 function scSortDefault(){ return { key:'gross_premium_mn', dir:'desc', idx:7 }; }
 var scSort = scSortDefault();
 
+function rowLagDays(rowAsof, freshest){
+  var rowDay = sourceDay(rowAsof), basis = sourceDay(freshest);
+  if(!rowDay || !basis || rowDay > basis) return null;
+  return Math.round((Date.parse(basis) - Date.parse(rowDay)) / 86400000);
+}
 function ageCell(rowAsof, freshest){
   var rowDay = sourceDay(rowAsof), basis = sourceDay(freshest);
-  if(!rowDay || !basis || rowDay > basis) return '<span class="oew-age" data-tip-en="Source date is missing, invalid, or after the scanner snapshot." data-tip-zh="数据日期缺失、无效或晚于筛选快照。">' + bi('Unknown', '未知') + '</span>';
-  var d = Math.round((Date.parse(basis) - Date.parse(rowDay)) / 86400000);
+  var d = rowLagDays(rowAsof, freshest);
+  if(d === null) return '<span class="oew-age" data-tip-en="Source date is missing, invalid, or after the scanner snapshot." data-tip-zh="数据日期缺失、无效或晚于筛选快照。">' + bi('Unknown', '未知') + '</span>';
   var on = d === 0 ? 3 : (d <= 3 ? 2 : 1);
   var tipEn = 'Chain dated ' + rowDay + '. ' + d + ' calendar days behind the scanner snapshot (' + basis + '), not the latest market close.';
   var tipZh = '期权链日期 ' + rowDay + '；比筛选快照（' + basis + '）早 ' + d + ' 个自然日，并非相对最新市场收盘。';
@@ -2412,6 +2431,14 @@ function scFilter(rows){ return scRangeFilter(scPresetFilter(rows)); }
 function scSortRows(rows){
   var col = scSort.key, dir = scSort.dir;
   return rows.slice().sort(function(a, b){
+    /* Sort the displayed calendar-day lag, not parseFloat's year prefix.
+       Unknown dates stay last in either direction, just as the cells report. */
+    if(col === 'asof'){
+      var al = rowLagDays(a.asof, scAsof), bl = rowLagDays(b.asof, scAsof);
+      if(al === null) return bl === null ? 0 : 1;
+      if(bl === null) return -1;
+      return dir === 'desc' ? bl - al : al - bl;
+    }
     var av = a[col], bv = b[col];
     if(av === null || av === undefined){ return (bv === null || bv === undefined) ? 0 : 1; }
     if(bv === null || bv === undefined) return -1;
@@ -2475,7 +2502,10 @@ function scBody(){
    (and announced "none") the moment the reader switched views while sorted.
    Key-marking lights both copies, of which exactly one is visible per view. */
 function scAria(key){
-  return ' aria-sort="' + (scSort.key === key ? (scSort.dir === 'asc' ? 'ascending' : 'descending') : 'none') + '"';
+  return ' aria-sort="' + scSortOrder(key) + '"';
+}
+function scSortOrder(key){
+  return scSort.key === key ? (scSort.dir === 'asc' ? 'ascending' : 'descending') : 'none';
 }
 function scHead(){
   var h = '<th class="left" data-sort="ticker" data-i="0" tabindex="0"' + scAria('ticker') + '>' + bi('Name','标的') + '</th>';
@@ -2519,8 +2549,8 @@ function scFiltersHTML(rows){
     + '</div>'
   + '</details>';
 }
-/* Repaint after a preset, a filter or a sort. The thead is re-rendered too: the
-   sort arrow is drawn from aria-sort, so the two can never disagree. */
+/* Repaint after a preset, a filter or a sort. Update existing header attributes
+   so keyboard focus survives sorting; the arrow is drawn from aria-sort. */
 /* The subtitle in both of its honest states: untouched board → the population;
    any preset/range narrowing → shown-of-total plus the way back. */
 function scSubHTML(shown, total){
@@ -2535,7 +2565,9 @@ function scRepaint(){
   var body = document.getElementById('oew-sc-body');
   if(body) body.innerHTML = scBody();
   var head = document.getElementById('oew-sc-head');
-  if(head) head.innerHTML = scHead();
+  if(head) Array.prototype.forEach.call(head.querySelectorAll('[data-sort]'), function(th){
+    th.setAttribute('aria-sort', scSortOrder(th.getAttribute('data-sort')));
+  });
   var sub = document.getElementById('oew-sc-sub');
   if(sub) sub.innerHTML = scSubHTML(scVisibleRows().length, scRows.length);
 }
@@ -2587,12 +2619,18 @@ function scApplyLang(){
 function renderScanner(host, payload){
   var rows = (payload && payload.rows) || [];
   if(!rows.length){
-    host.innerHTML = emptyPanel('The screener export is empty for this close. It returns with the next options snapshot.',
-      '本次收盘的筛选导出为空。下一次期权快照到位后会恢复。');
+    host.innerHTML = emptyPanel('The screener export is empty for this source session.',
+      '本数据场次的筛选导出为空。');
     return;
   }
   scRows = rows; scSkew75 = null;
-  scAsof = rows.map(function(r){ return sourceDay(r.asof); }).filter(Boolean).sort().pop() || null;
+  /* The completed session bounds admissible row dates; it is not the snapshot
+     date. Keep the newest admissible row's own date, so archival exports stay
+     archival and a future row cannot make itself look fresh or age every row. */
+  var completedSession = sourceDay(window.OEW_TARGET_SESSION);
+  scAsof = rows.map(function(r){ return sourceDay(r.asof); })
+    .filter(function(day){ return day && completedSession && day <= completedSession; })
+    .sort().pop() || null;
   var presets = SC_PRESETS.map(function(p){
     return '<button class="oew-preset" type="button" data-preset="' + p[0] + '" aria-pressed="' + (p[0] === scPreset) + '">'
       + bi(p[1], p[2]) + '</button>';
@@ -2644,9 +2682,9 @@ var REGIME_HEAD = {
 };
 var REGIME_SAY = {
   'long':  ['Dealer hedging at this source close trades against the market, so dips tend to get bought back and swings stay contained.',
-            '今日做市商对冲与市场反向，因此回调通常被买回，波动幅度受限。'],
+            '在该数据来源的收盘时点，做市商对冲与市场反向，因此回调通常被买回，波动幅度受限。'],
   'short': ['Dealer hedging at this source close trades with the market, so swings run larger and sell-offs can pick up speed. Do not assume dips get bought back the way they do on calm days.',
-            '今日做市商对冲与市场同向，因此波动更大，抛售可能加速。不要想当然地认为回调会像平静日那样被买回。']
+            '在该数据来源的收盘时点，做市商对冲与市场同向，因此波动更大，抛售可能加速。不要想当然地认为回调会像平静日那样被买回。']
 };
 function pipRow(strength){
   var on = strength === null ? 0 : Math.max(1, Math.min(5, Math.round(strength / 20)));
@@ -3863,10 +3901,13 @@ document.addEventListener('click', function(e){
   var disclosure = e.target.closest && e.target.closest('[data-open-details]');
   if(disclosure){
     var details = document.getElementById(disclosure.getAttribute('data-open-details'));
-    if(details){ details.open = true; details.scrollIntoView({behavior:'smooth', block:'start'}); details.querySelector('summary').focus(); }
+    if(details){ details.open = true; details.scrollIntoView({behavior:workspaceScrollBehavior(), block:'start'}); details.querySelector('summary').focus(); }
   }
 });
 /* ticker deep-links from the Brief rail and the Scanner table */
+function workspaceScrollBehavior(){
+  return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+}
 document.addEventListener('click', function(e){
   var b = e.target.closest && e.target.closest('[data-goto]');
   if(!b) return;
@@ -3875,7 +3916,7 @@ document.addEventListener('click', function(e){
   curTicker = b.getAttribute('data-goto') || curTicker;
   activate('ticker', {focus:true});
   if(e.detail === 0){ var input = document.getElementById('oew-tk-q'); if(input) input.focus(); }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: workspaceScrollBehavior() });
 });
 /* scanner controls (delegated — the table is rendered after this binds) */
 document.addEventListener('click', function(e){
@@ -4032,11 +4073,9 @@ function setupTickerSearch(){
 setupTickerSearch();
 
 /* The Brief's Terminal CTA, re-pointed through the house helper.
-   It CANNOT be done inline above: theme.js is the last body script, so
-   window.MDXTerminal does not exist while this IIFE runs. DOMContentLoaded fires
-   after every synchronous body script has executed, which is exactly the moment
-   the helper becomes available. The baked href stays a working destination the
-   whole time — this only adds the &from=macro/&ret= stamp. */
+   The shared helper boots before the workspace; the DOM-ready pass also applies
+   the current language to the workspace controls. The baked href stays a working
+   destination the whole time — this only adds the &from=macro/&ret= stamp. */
 function wireBriefCta(){
   var a = document.getElementById('oew-brief-cta');
   if(a) a.href = terminalUrl('');
@@ -4088,6 +4127,5 @@ readRoute();
 })();
 </script>
 <script defer src="illus.js"></script>
-<script src="theme.js"></script>
 </body>
 </html>

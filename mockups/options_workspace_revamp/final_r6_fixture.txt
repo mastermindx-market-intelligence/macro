@@ -1,0 +1,8 @@
+{
+  "source_pin": "e4009c94d75770739844240b22f5fc915668aa9b",
+  "template_head": "ba7947223ae58f436d4cfadbedc28454b10483fc",
+  "read_count": 17,
+  "unavailable": [],
+  "output": "/Volumes/Mastermind/agent-workspaces/macro/web/options-workspace-revamp-20261101-sol-001/mockups/options_workspace_revamp/fixtures/published/workspace.html",
+  "production_writes": false
+}

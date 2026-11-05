@@ -1,0 +1,4 @@
+outcome: captured
+pages: 1  states: 24/24 captured
+manifest: mockups/options_workspace_revamp/canonical/manifest.json
+smells: mockups/options_workspace_revamp/canonical/smells.json

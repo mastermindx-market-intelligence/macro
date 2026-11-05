@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Options Paper blueprint · local preflight</title>
+<style>
+  html { background: #dde2e9; color: #17212f; font: 14px/1.5 system-ui, sans-serif; }
+  body { margin: 0; }
+  #preview-controls { padding: 16px 20px; background: #fff; border-bottom: 1px solid #b8c2d0; }
+  #preview-controls label, #preview-controls button { margin-right: 12px; }
+  #preview-controls select, #preview-controls button, #preview-controls input { font: inherit; }
+  #preview-controls select, #preview-controls button { min-height: 36px; }
+  #preview-status { display: block; margin-top: 8px; overflow-wrap: anywhere; }
+  #preview-boards { display: flex; flex-direction: column; gap: 32px; align-items: flex-start; padding: 20px; }
+  .preview-board-shell { flex: none; }
+  .preview-board-caption { padding: 0 0 8px; font-weight: 600; }
+  .preview-board { display: flex; flex-direction: column; align-items: stretch; position: relative; }
+  #preview-errors { margin: 0; padding: 12px 20px; color: #932c2c; background: #fff0f0; white-space: pre-wrap; }
+  #preview-errors:empty { display: none; }
+  @media print { #preview-controls, #preview-errors { display: none; } }
+</style>
+<header id="preview-controls">
+  <strong>Options Paper blueprint — local structure preview</strong>
+  <p>This assembles the declared fragments. It does not import into Paper or verify the website. Fonts use those already installed.</p>
+  <label>Board <select id="preview-board-select" disabled></select></label>
+  <button id="preview-all" type="button" disabled>Show all boards</button>
+  <label>Load local JSON <input id="preview-file" type="file" accept=".json,application/json"></label>
+  <output id="preview-status" role="status">Loading sibling paper_blueprint.json…</output>
+</header>
+<pre id="preview-errors" role="alert"></pre>
+<main id="preview-boards"></main>
+<script>
+(() => {
+  'use strict';
+  const select = document.getElementById('preview-board-select');
+  const all = document.getElementById('preview-all');
+  const status = document.getElementById('preview-status');
+  const errors = document.getElementById('preview-errors');
+  const host = document.getElementById('preview-boards');
+  const state = window.paperPreview = {
+    ready: false, blueprint: null, boards: new Map(), report: null,
+    load, renderBoard: id => render([id]), renderAll: () => render(), inspectLayout
+  };
+  const fail = message => { throw new Error(message); };
+  const problem = error => {
+    state.ready = false;
+    errors.textContent = error.message || String(error);
+    status.textContent = 'Preflight stopped. The blueprint has not been changed.';
+  };
+
+  function parseFragment(fragment) {
+    const template = document.createElement('template');
+    template.innerHTML = fragment.html;
+    const nodes = [...template.content.childNodes];
+    if (nodes.filter(n => n.nodeType === Node.ELEMENT_NODE).length !== 1 ||
+        nodes.some(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim()))
+      fail(fragment.id + ': expected one created root');
+    const root = template.content.firstElementChild;
+    for (const node of [root, ...root.querySelectorAll('*')]) {
+      if (['script', 'style', 'link', 'iframe', 'object', 'embed', 'img', 'image', 'canvas', 'base']
+          .includes(node.localName)) fail(fragment.id + ': unsupported active/external element');
+      for (const attr of node.attributes) {
+        const urls = [...attr.value.matchAll(/url\s*\(\s*(['"]?)(.*?)\1\s*\)/gi)].map(match => match[2]);
+        const unsafeUrl = urls.some(url => !/^#[A-Za-z][\w:.-]*$/.test(url)) ||
+          urls.length !== [...attr.value.matchAll(/url\s*\(/gi)].length;
+        if (/^on/i.test(attr.name) || /^(src|href|xlink:href)$/i.test(attr.name) ||
+            /javascript\s*:/i.test(attr.value) || unsafeUrl)
+          fail(fragment.id + ': unsupported active/external attribute');
+        for (const match of attr.value.matchAll(/var\((--[\w-]+)\)/g)) {
+          if (!Object.hasOwn(state.blueprint.tokens.css_variables, match[1]))
+            fail(fragment.id + ': unknown existing token ' + match[1]);
+        }
+      }
+    }
+    return root;
+  }
+
+  function assemble(board, attach) {
+    const root = document.createElement('div');
+    root.className = 'preview-board';
+    root.dataset.boardId = board.id;
+    root.setAttribute('aria-label', board.name);
+    root.style.width = board.width + 'px';
+    root.style.background = state.blueprint.tokens.themes[board.theme].bg;
+    const registry = new Map([[board.import_root_ref, root]]);
+    const fragments = new Map();
+    const positions = new Map();
+    let bindings = 0;
+    for (let i = 0; i < board.fragments.length; i++) {
+      const fragment = board.fragments[i];
+      if (fragment.import_sequence !== i + 1) fail(fragment.id + ': array and import_sequence differ');
+      if (fragments.has(fragment.id)) fail(fragment.id + ': duplicate fragment ID');
+      const parent = registry.get(fragment.logical_parent_ref);
+      if (!parent) fail(fragment.id + ': unresolved parent ' + fragment.logical_parent_ref);
+      const created = parseFragment(fragment);
+      created.dataset.fragmentId = fragment.id;
+      parent.appendChild(created);
+      fragments.set(fragment.id, created);
+      positions.set(fragment.id, i);
+      for (const binding of fragment.provides_nodes) {
+        if (registry.has(binding.logical_ref)) fail(fragment.id + ': duplicate binding ' + binding.logical_ref);
+        let node;
+        if (binding.match === 'created_root') node = created;
+        else if (binding.match === 'named_descendant') {
+          const scope = registry.get(binding.within_logical_ref);
+          if (!scope || !(scope === created || created.contains(scope)))
+            fail(fragment.id + ': binding scope is outside the newly created root');
+          const found = [...scope.querySelectorAll('[layer-name]')]
+            .filter(n => n.getAttribute('layer-name') === binding.layer_name);
+          if (found.length !== 1)
+            fail(fragment.id + ': named descendant has ' + found.length + ' matches: ' + binding.layer_name);
+          node = found[0];
+        } else fail(fragment.id + ': unknown binding match ' + binding.match);
+        registry.set(binding.logical_ref, node);
+        bindings++;
+      }
+    }
+    const groups = board.fragments.filter(f => f.write_kind === 'board_group');
+    groups.forEach((fragment, i) => {
+      const end = positions.get(fragment.section_complete_after);
+      const next = i + 1 < groups.length ? positions.get(groups[i + 1].id) : board.fragments.length;
+      if (end === undefined || end < positions.get(fragment.id) || end !== next - 1)
+        fail(fragment.id + ': section completion does not bound its exact fragment span');
+    });
+    if (attach) {
+      const shell = document.createElement('section');
+      shell.className = 'preview-board-shell';
+      const caption = document.createElement('div');
+      caption.className = 'preview-board-caption';
+      caption.textContent = board.name + ' · ' + board.fragments.length + ' ordered writes';
+      shell.append(caption, root);
+      host.appendChild(shell);
+    }
+    return {board, root, registry, fragments, bindings};
+  }
+
+  function load(blueprint) {
+    if (blueprint.schema !== 'mastermind.options.paper_blueprint.v2' || !Array.isArray(blueprint.boards))
+      fail('Expected mastermind.options.paper_blueprint.v2');
+    state.blueprint = blueprint;
+    state.ready = false;
+    errors.textContent = '';
+    if (!blueprint.tokens.css_variables) fail('Blueprint has no existing token snapshot for local preview');
+    for (const [name, value] of Object.entries(blueprint.tokens.css_variables)) {
+      if (!/^--[\w-]+$/.test(name) || typeof value !== 'string') fail('Invalid token snapshot');
+      document.documentElement.style.setProperty(name, value);
+    }
+    const identities = new Set();
+    const validated = blueprint.boards.map(board => {
+      if (identities.has(board.id)) fail('Duplicate board ID: ' + board.id);
+      identities.add(board.id);
+      const assembled = assemble(board, false);
+      return {id: board.id, fragments: board.fragments.length, bindings: assembled.bindings,
+        rootChildren: assembled.root.children.length};
+    });
+    state.report = {schema: blueprint.schema, validated,
+      fragments: validated.reduce((n, b) => n + b.fragments, 0),
+      bindings: validated.reduce((n, b) => n + b.bindings, 0)};
+    select.replaceChildren(...blueprint.boards.map(board => {
+      const option = document.createElement('option');
+      option.value = board.id; option.textContent = board.name; return option;
+    }));
+    select.disabled = all.disabled = false;
+    const query = new URLSearchParams(location.search);
+    const requested = query.get('board');
+    if (requested && !identities.has(requested)) fail('Unknown requested board: ' + requested);
+    select.value = requested || blueprint.boards[0].id;
+    return render(query.has('all') ? undefined : [select.value]);
+  }
+
+  async function render(ids) {
+    state.ready = false;
+    host.replaceChildren(); state.boards.clear(); errors.textContent = '';
+    for (const board of state.blueprint.boards) {
+      if (ids && !ids.includes(board.id)) continue;
+      state.boards.set(board.id, assemble(board, true));
+    }
+    if (!state.boards.size) fail('No board selected');
+    await document.fonts.ready;
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    state.ready = true;
+    status.textContent = state.report.fragments + ' fragments / ' + state.report.bindings +
+      ' unique bindings validated. ' + state.boards.size + ' board(s) shown at native width; heights fit content.';
+    return inspectLayout();
+  }
+
+  function inspectLayout() {
+    return [...state.boards.values()].map(({board, root}) => {
+      const box = root.getBoundingClientRect();
+      const overflow = [];
+      const containedHorizontalOverflow = [];
+      const horizontalScrollers = [];
+      const tinyText = [];
+      for (const node of root.querySelectorAll('*')) {
+        const rect = node.getBoundingClientRect();
+        if (!rect.width || !rect.height) continue;
+        const fragment = node.closest('[data-fragment-id]')?.dataset.fragmentId;
+        const computed = getComputedStyle(node);
+        if (['auto', 'scroll'].includes(computed.overflowX) && node.scrollWidth > node.clientWidth + 1)
+          horizontalScrollers.push({fragment, name: node.getAttribute('layer-name'),
+            clientWidth: node.clientWidth, scrollWidth: node.scrollWidth, scrollLeft: node.scrollLeft});
+        if (rect.left < box.left - 1 || rect.right > box.right + 1) {
+          let visibleLeft = rect.left, visibleRight = rect.right;
+          for (let parent = node.parentElement; parent && root.contains(parent); parent = parent.parentElement) {
+            if (['auto', 'scroll', 'hidden', 'clip'].includes(getComputedStyle(parent).overflowX)) {
+              const clip = parent.getBoundingClientRect();
+              visibleLeft = Math.max(visibleLeft, clip.left);
+              visibleRight = Math.min(visibleRight, clip.right);
+            }
+          }
+          const finding = {fragment, tag: node.localName, text: node.textContent.trim().slice(0, 90),
+            left: rect.left - box.left, right: rect.right - box.left};
+          if (visibleRight > visibleLeft && (visibleLeft < box.left - 1 || visibleRight > box.right + 1))
+            overflow.push(finding);
+          else containedHorizontalOverflow.push(finding);
+        }
+        const directText = [...node.childNodes].filter(n => n.nodeType === Node.TEXT_NODE)
+          .map(n => n.textContent.trim()).join(' ').trim();
+        if (directText) {
+          const matrix = node.namespaceURI === 'http://www.w3.org/2000/svg' ? node.getScreenCTM?.() : null;
+          const size = parseFloat(computed.fontSize) * (matrix ? Math.hypot(matrix.a, matrix.b) : 1);
+          if (size < 12.5) tinyText.push({fragment, text: directText.slice(0, 90),
+            size, font: computed.fontFamily, weight: computed.fontWeight});
+        }
+      }
+      return {id: board.id, width: box.width, height: box.height,
+        estimatedHeight: board.estimated_height, scrollWidth: root.scrollWidth,
+        overflow, containedHorizontalOverflow, horizontalScrollers,
+        supportingTextBelow12_5: tinyText};
+    });
+  }
+
+  select.addEventListener('change', () => render([select.value]).catch(problem));
+  all.addEventListener('click', () => render().catch(problem));
+  document.getElementById('preview-file').addEventListener('change', async event => {
+    const file = event.target.files[0];
+    if (file) try { await load(JSON.parse(await file.text())); } catch (error) { problem(error); }
+  });
+  fetch('./paper_blueprint.json', {cache: 'no-store'})
+    .then(response => { if (!response.ok) fail('Blueprint HTTP ' + response.status); return response.json(); })
+    .then(load).catch(error => {
+      problem(error);
+      status.textContent = 'Load the sibling JSON with the file picker, or serve this directory through the existing local preview server.';
+    });
+})();
+</script>
+</html>

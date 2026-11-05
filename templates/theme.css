@@ -564,6 +564,14 @@ html[data-theme="light"][data-lang="zh"] {
 :root { --prov: #62a0e8; --prov-ink: var(--prov); }
 html[data-theme="light"] { --prov: #2f6fd0;
   --prov-ink: color-mix(in srgb, var(--prov) 82%, var(--text)); }
+
+/* Options workspace radius and spacing primitives; shared palette, page scope. */
+.oew {
+  --r-card:12px; --r-btn:10px; --r-ctl:8px;
+  --r-panel:14px; --r-pill:999px; --r-shell:var(--r-panel);
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:44px;
+}
+
 /* ---- Chinese mode: directional GAUGES that paint state from status tokens ----
    The status tokens --ok/--act deliberately DON'T swap (they encode health/danger, see
    above). But a few gauges are genuine market-DIRECTION reads (bullish vs bearish) that

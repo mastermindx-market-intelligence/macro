@@ -1,0 +1,260 @@
+Error occurred in event listener
+Traceback (most recent call last):
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_browser_context.py", line 261, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 455, in handle
+    raise e
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 442, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 478, in _handle_internal
+    await handler_finished_future
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 469, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_impl_to_api_mapping.py", line 139, in wrapper_func
+    return handler(
+        *list(map(lambda a: self.from_maybe_impl(a), args))[:arg_count]
+    )
+  File "/Volumes/Mastermind/agent-workspaces/macro/web/options-workspace-revamp-20261101-sol-001/mockups/options_workspace_revamp/verify_early_navigation.py", line 311, in asset_route
+    time.sleep(delay / 1000)
+               ~~~~~~^~~~~~
+TypeError: unsupported operand type(s) for /: 'Request' and 'int'
+Error occurred in event listener
+Traceback (most recent call last):
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_browser_context.py", line 261, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 455, in handle
+    raise e
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 442, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 478, in _handle_internal
+    await handler_finished_future
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 469, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_impl_to_api_mapping.py", line 139, in wrapper_func
+    return handler(
+        *list(map(lambda a: self.from_maybe_impl(a), args))[:arg_count]
+    )
+  File "/Volumes/Mastermind/agent-workspaces/macro/web/options-workspace-revamp-20261101-sol-001/mockups/options_workspace_revamp/capture_canonical_evidence.py", line 77, in handle
+    elif route.request.url.startswith(ORIGIN+"/"):route.continue_()
+                                                  ~~~~~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py", line 1025, in continue_
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.continue_(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 518, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 468, in _handle_route
+    raise e
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 464, in _handle_route
+    await callback()
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 516, in _inner
+    await self._inner_continue(False)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 522, in _inner_continue
+    await self._race_with_page_close(
+    ...<17 lines>...
+    )
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 564, in _race_with_page_close
+    raise cast(BaseException, fut.exception())
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+TypeError: Route.continue_: unsupported operand type(s) for /: 'Request' and 'int'
+Error occurred in event listener
+Traceback (most recent call last):
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_browser_context.py", line 261, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 455, in handle
+    raise e
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 442, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 478, in _handle_internal
+    await handler_finished_future
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 469, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_impl_to_api_mapping.py", line 139, in wrapper_func
+    return handler(
+        *list(map(lambda a: self.from_maybe_impl(a), args))[:arg_count]
+    )
+  File "/Volumes/Mastermind/agent-workspaces/macro/web/options-workspace-revamp-20261101-sol-001/mockups/options_workspace_revamp/capture_canonical_evidence.py", line 77, in handle
+    elif route.request.url.startswith(ORIGIN+"/"):route.continue_()
+                                                  ~~~~~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py", line 1025, in continue_
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.continue_(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 518, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 468, in _handle_route
+    raise e
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 464, in _handle_route
+    await callback()
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 516, in _inner
+    await self._inner_continue(False)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 522, in _inner_continue
+    await self._race_with_page_close(
+    ...<17 lines>...
+    )
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 564, in _race_with_page_close
+    raise cast(BaseException, fut.exception())
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+TypeError: Route.continue_: Route.continue_: unsupported operand type(s) for /: 'Request' and 'int'
+Error occurred in event listener
+Traceback (most recent call last):
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_browser_context.py", line 261, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 455, in handle
+    raise e
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 442, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 478, in _handle_internal
+    await handler_finished_future
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 469, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_impl_to_api_mapping.py", line 139, in wrapper_func
+    return handler(
+        *list(map(lambda a: self.from_maybe_impl(a), args))[:arg_count]
+    )
+  File "/Volumes/Mastermind/agent-workspaces/macro/web/options-workspace-revamp-20261101-sol-001/mockups/options_workspace_revamp/capture_canonical_evidence.py", line 77, in handle
+    elif route.request.url.startswith(ORIGIN+"/"):route.continue_()
+                                                  ~~~~~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py", line 1025, in continue_
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.continue_(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 518, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 468, in _handle_route
+    raise e
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 464, in _handle_route
+    await callback()
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 516, in _inner
+    await self._inner_continue(False)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 522, in _inner_continue
+    await self._race_with_page_close(
+    ...<17 lines>...
+    )
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 564, in _race_with_page_close
+    raise cast(BaseException, fut.exception())
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+TypeError: Route.continue_: Route.continue_: Route.continue_: unsupported operand type(s) for /: 'Request' and 'int'
+Error occurred in event listener
+Traceback (most recent call last):
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_browser_context.py", line 261, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 455, in handle
+    raise e
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 442, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 478, in _handle_internal
+    await handler_finished_future
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_helper.py", line 469, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_impl_to_api_mapping.py", line 139, in wrapper_func
+    return handler(
+        *list(map(lambda a: self.from_maybe_impl(a), args))[:arg_count]
+    )
+  File "/Volumes/Mastermind/agent-workspaces/macro/web/options-workspace-revamp-20261101-sol-001/mockups/options_workspace_revamp/capture_canonical_evidence.py", line 77, in handle
+    elif route.request.url.startswith(ORIGIN+"/"):route.continue_()
+                                                  ~~~~~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py", line 1025, in continue_
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.continue_(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 518, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 468, in _handle_route
+    raise e
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 464, in _handle_route
+    await callback()
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 516, in _inner
+    await self._inner_continue(False)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 522, in _inner_continue
+    await self._race_with_page_close(
+    ...<17 lines>...
+    )
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 564, in _race_with_page_close
+    raise cast(BaseException, fut.exception())
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+TypeError: Route.continue_: Route.continue_: Route.continue_: Route.continue_: unsupported operand type(s) for /: 'Request' and 'int'
+{"outcome": "failed", "report": "/Volumes/Mastermind/agent-workspaces/macro/web/options-workspace-revamp-20261101-sol-001/mockups/options_workspace_revamp/early_navigation_report.json", "cases": [{"id": "1440-en-light-cold", "outcome": "failed", "raw_cls": 1.840649514531893e-06, "failed_checks": ["no-unexpected-console-errors", "no-loopback-http-errors"]}, {"id": "1440-en-light-context-reload", "outcome": "failed", "raw_cls": 1.4516320248199587e-06, "failed_checks": ["successful-cold-predecessor", "no-unexpected-console-errors", "no-loopback-http-errors"]}, {"id": "1440-en-light-theme-delayed-250ms", "outcome": "failed", "raw_cls": null, "failed_checks": ["actual-served-theme-matches-source", "requested-delay-observed", "observers-complete", "enhanced-before-dom-ready-fallback"]}, {"id": "900-zh-dark", "outcome": "failed", "raw_cls": 0.01005211149691358, "failed_checks": ["no-unexpected-console-errors", "no-loopback-http-errors"]}, {"id": "901-zh-light", "outcome": "failed", "raw_cls": 0.03132126064368676, "failed_checks": ["no-unexpected-console-errors", "no-loopback-http-errors"]}, {"id": "1440-zh-dark", "outcome": "failed", "raw_cls": 0.015358830573104212, "failed_checks": ["no-unexpected-console-errors", "no-loopback-http-errors"]}]}

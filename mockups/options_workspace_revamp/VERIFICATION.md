@@ -91,3 +91,25 @@ A fresh focused source run after those refinements passed **199 tests, 3 skips**
 The principal visually inspected the expanded mobile payoff in Chinese after widening the card and increasing essential numeric/footnote text. Original full-matrix evidence remains as historical proof of the unchanged workspaces; the expanded report proves the subsequently adjusted layout and copy.
 
 extract_paper_samples.py captures actual dated panel text, the first eight visible Scanner rows and four Ticker SVGs from the same 17 exact published JSON blobs. paper_actual_samples.json is design input with provenance, not a new market dataset or a claim that Paper is already applied.
+
+## Recovered candidate and current authority — 2026-11-05
+
+This cumulative checkpoint supersedes the earlier remaining-gate descriptions where they required a blanket independent source review. The current Chairman instruction and ChatGPT Web review waiver authorize principal self-check and continued implementation; a separate reviewer is required only where an actual repository rule demands formal nonauthor approval. The two recorded thermal-admission refusals remain terminal failed attempts, not approvals. Required hosted checks, existing scientific/data holds and truthful release/live receipts remain distinct.
+
+The original managed operation and branch were recovered at `ba7947223ae58f436d4cfadbedc28454b10483fc`; its previously unpublished changes and evidence were preserved. The candidate fixes the payoff-card test parser's obsolete markup assumptions, replaces new literal styling with scoped shared tokens, retains each near-flip row's own source date, separates historical and intraday Flow clocks, sorts Scanner row lag by calendar days with invalid/future dates last, preserves keyboard focus during sorting, and boots shared navigation before the Options workspace. The built minified navigation bundle and CSS mirrors accompany the source. No market-data producer or model was changed.
+
+Recovered evidence, not newly rerun in this recovery:
+
+- `final_r7_pytest.txt`: 259 passed and 7 subtests passed in 31.50s; 12 pre-existing temporary-directory cleanup warnings.
+- `final_r7_design_gate.txt`: 0 blocking findings with the existing checker and allowlist.
+- `final_r7_canonical_capture.txt` and `canonical/manifest.json`: 24/24 canonical states captured. The empty `final_r7_visual_gate.txt` alone is not treated as an exit-code receipt.
+- `visual-candidate-final-nav/report.json`: 40 five-task/width/theme/locale views, with no document overflow or recorded page errors.
+- `early_navigation_report_r3.json`: six passing cases; `early_navigation_production_report.json`: one passing case using the built minified bundle. Both record unchanged source fingerprints during execution. The latter is a fixture-based compiled-bundle smoke check, not a production-URL check.
+
+The recovered browser reports fingerprint `templates/options.html.j2` SHA256 `6ace5251abef24cc80973425df6b16dd310cad7afdd5c799a7cb3b2db4ef1c8a`, `templates/theme.js` `11df39d743c64287b6f9b9f926f748ce84d2faad0b45c0b91ec296ee0998a53b`, `site/theme.js` `4139fe657fbec6dcb5707ea9bb8bf5d8a71390250997ebe2d5b699d212e19680`, both CSS mirrors `259f5be3a138bbb2f01a2ca6c8fda2a94cd0b53ec985c404ac325029a8511054`, and the builder `a2af9b55e0c6c83d574ba7b1c3288fcb2798ebc3dca4cced69e40f3b2dc89afe`. Recovery readback matched those source files. These fingerprints preserve attribution even if subsequent base integration changes shared files.
+
+Published-head CI run 41402720711 had three failed packs: four payoff-fold parser tests (pack3), nineteen added-line design findings (pack9), and a 488050-byte shared daily workflow above its 487000-byte cap (pack6, also failing on the old base). The local candidate repairs the first two; current-base integration and fresh hosted CI must qualify their publication. The inherited shared-workflow failure is being checked against current main instead of creating a competing workflow repair.
+
+Paper proof is partially complete in the original file `01M2WGNCX9475G79JRKJTCM08P`, page `p-25-0`: seven completed boards have screenshot/JSX evidence. Flow mobile light is partial; Scanner mobile dark, Ticker mobile light and both Leaders boards remain. See `paper/paper-progress-checkpoint.json` and the terminal reconciliation in `paper/paper-effect-reconciliation-20261103.json`. Historical Paper exports retain their original source attribution. No full Paper-completion, merge, deployment or production acceptance is claimed here.
+
+Next delivery work: publish this recovered candidate through the original owner/branch, reconcile current main and required CI, complete feasible remaining Paper work, then follow the normal release path and inspect the actual production journeys. Optional checks that remain infeasible may be explicitly deferred under the current Chairman instruction; a deferred check is never described as passed.

@@ -1,0 +1,16 @@
+{
+  "board_count": 12,
+  "fragment_count": 571,
+  "repeated_item_writes": 446,
+  "maximum_fragment_bytes": 15650,
+  "no_grid_or_margin": true,
+  "no_script_remote_assets_or_raster": true,
+  "source_backed_SVG_allowed": true,
+  "balanced_editable_HTML": true,
+  "logical_parents_precede_children": true,
+  "mobile_guide_markup_exact_except_colors": true,
+  "actual_Paper_visual_review": false,
+  "existing_token_references_only": true,
+  "canonical_brand_glyph_copies": 10,
+  "brand_svg_bytes_unchanged": true
+}
