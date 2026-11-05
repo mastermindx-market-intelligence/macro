@@ -158,6 +158,11 @@ def test_mobile_workflow_row_scrolls_instead_of_widening_the_page() -> None:
     keep = js.split("bring the selected step into it", 1)[1].split("}catch(e){}", 1)[0]
     assert "row.scrollLeft" in keep
     assert "window.scroll" not in keep and "scrollIntoView" not in keep
+    # Tabbing to a clipped step does not scroll the row by itself (L6.5 probe: the
+    # focused Cycles step sat 56px past the row edge), so focus uses the same helper.
+    focus = js.split("addEventListener('focusin'", 1)[1].split("});", 1)[0]
+    assert "keepStepInRow(" in focus and ".si-workflow" in focus
+    assert "keepStepInRow(row&&row.querySelector('.on'))" in js
 
 
 # ───────────────────────────────────────────────────────── organ view membership

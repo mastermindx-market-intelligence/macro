@@ -335,6 +335,17 @@ var SCROLL_MEM={};
 var SCROLL_GEN=0;   /* activation generation (RI09): each activate() supersedes any
                        still-pending replay frame from an earlier activation — a stale
                        frame must not scroll a view that is no longer on screen */
+/* On a phone the workflow row scrolls sideways; bring the selected step into it.
+   Only the row's own scrollLeft moves, never the page. */
+function keepStepInRow(step){
+  try{
+    var row=step&&step.closest('.si-workflow');
+    if(!row||row.scrollWidth<=row.clientWidth) return;
+    var rr=row.getBoundingClientRect(), sr=step.getBoundingClientRect();
+    if(sr.left<rr.left) row.scrollLeft-=rr.left-sr.left;
+    else if(sr.right>rr.right) row.scrollLeft+=sr.right-rr.right;
+  }catch(e){}
+}
 function activate(view,target,user){
   if(VIEWS.indexOf(view)<0) view='overview';
   var gen=++SCROLL_GEN;   /* every activation invalidates pending replay frames */
@@ -361,16 +372,7 @@ function activate(view,target,user){
   }
   var subnav=document.querySelector('.si-side');
   if(subnav) subnav.hidden=view==='overview'||view==='cycles';
-  /* On a phone the workflow row scrolls sideways; bring the selected step into it.
-     Only the row's own scrollLeft moves, never the page. */
-  try{
-    var row=document.querySelector('.si-workflow'), step=row&&row.querySelector('.on');
-    if(step&&row.scrollWidth>row.clientWidth){
-      var rr=row.getBoundingClientRect(), sr=step.getBoundingClientRect();
-      if(sr.left<rr.left) row.scrollLeft-=rr.left-sr.left;
-      else if(sr.right>rr.right) row.scrollLeft+=sr.right-rr.right;
-    }
-  }catch(e){}
+  try{ var row=document.querySelector('.si-workflow'); keepStepInRow(row&&row.querySelector('.on')); }catch(e){}
   try{ document.title=BASE_TITLE+' · '+TITLES[view][isZh()?1:0]; }catch(e){}
   current=view;
   /* First activation mounts the heavy organs. The view must be laid out first so the
@@ -456,6 +458,12 @@ function route(ev){
 window.__siViewReads=reads;
 window.__siRoute=route;
 window.addEventListener('hashchange',route);
+/* Keyboard focus: the browser leaves a partly clipped step where it is, so the
+   focused step is brought into the row the same way. */
+document.addEventListener('focusin',function(ev){
+  var t=ev.target;
+  if(t&&t.closest&&t.closest('.si-workflow')) keepStepInRow(t.closest('.si-workflow > a')||t);
+});
 window.addEventListener('mmx:shell-location',route);
 document.addEventListener('langchange',function(){
   try{ document.title=BASE_TITLE+' · '+TITLES[current||'overview'][isZh()?1:0]; }catch(e){}
