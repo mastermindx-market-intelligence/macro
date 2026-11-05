@@ -352,6 +352,8 @@ do_not_redo:
   - "Do not replace A/B source carriers, edit A's F00C CSV from this census, shrink the denominator or re-open generic commercial rights already approved by the October 23 attestation."
   - "Do not rebind this charter or import an unmerged Draft as protected source. Use the existing locked merge path after normal source landing, preserving P1-P13 aliases and all existing component identities."
 artifacts:
+  - research/market_os/ALWAYS_ON_MACRO_MIGRATION_2026-11-05.md
+  - agentos/decisions/DEC-MACRO-ALWAYS-ON-DATA-SEPARATE-FROM-CODE.md
   - research/market_os/MASTERMIND_MARKET_OS_ARCHITECTURE_FREEZE_AND_A1A_COMMISSIONING_2026-08-20.md
   - agentos/handoffs/MARKET-OS-2026-08-20.md
   - agentos/handoffs/MARKET-OS-2026-08-21.md

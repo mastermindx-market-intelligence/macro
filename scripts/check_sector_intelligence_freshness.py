@@ -14,12 +14,21 @@ import re
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from lib import nyse_calendar  # noqa: E402
+# Shared by the build gate and the external served-generation observer.
+ARTIFACT_PATHS = (
+    "basketdata/baskets.json",
+    "basketdata/action_board.json",
+    "sectordata/sector_central.json",
+    "premiumdata/sector_central.json",
+    "sector_central.html",
+)
+
 _ACTION_LANES = (
     "buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid",
 )
@@ -47,9 +56,11 @@ def _parse_date(value: object) -> date | None:
         return None
 
 
-def _read_json(path: Path, errors: list[str]) -> tuple[dict[str, Any] | None, bytes | None]:
+def _read_json(
+    path: Path, errors: list[str], read_bytes: Callable[[Path], bytes],
+) -> tuple[dict[str, Any] | None, bytes | None]:
     try:
-        raw = path.read_bytes()
+        raw = read_bytes(path)
     except OSError as exc:
         errors.append(f"{path.relative_to(path.parents[2])} is absent or unreadable: {exc}")
         return None, None
@@ -64,9 +75,11 @@ def _read_json(path: Path, errors: list[str]) -> tuple[dict[str, Any] | None, by
     return payload, raw
 
 
-def _html_metadata(path: Path, errors: list[str]) -> dict[str, str | None]:
+def _html_metadata(
+    path: Path, errors: list[str], read_bytes: Callable[[Path], bytes],
+) -> dict[str, str | None]:
     try:
-        text = path.read_text(encoding="utf-8")
+        text = read_bytes(path).decode("utf-8")
     except (OSError, UnicodeDecodeError) as exc:
         errors.append(f"site/sector_central.html is absent or unreadable: {exc}")
         return {key: None for key in _HTML_ATTRS}
@@ -112,17 +125,24 @@ def evaluate(
     *,
     now: datetime | None = None,
     max_sessions_behind: int = 1,
+    site_dir: Path | None = None,
+    read_bytes: Callable[[Path], bytes] | None = None,
 ) -> dict[str, Any]:
-    """Evaluate one repo/site tree without modifying it."""
+    """Evaluate one generation without modifying it.
+
+    The CLI reads root/site. The external sentinel supplies the actual served
+    root and a stable in-memory byte snapshot; neither path invokes a builder.
+    """
     root = Path(root)
-    site = root / "site"
+    site = Path(site_dir) if site_dir is not None else root / "site"
+    read_bytes = Path.read_bytes if read_bytes is None else read_bytes
     errors: list[str] = []
     warnings: list[str] = []
-    baskets, baskets_raw = _read_json(site / "basketdata" / "baskets.json", errors)
-    action, action_raw = _read_json(site / "basketdata" / "action_board.json", errors)
-    sector, _ = _read_json(site / "sectordata" / "sector_central.json", errors)
-    premium, _ = _read_json(site / "premiumdata" / "sector_central.json", errors)
-    html = _html_metadata(site / "sector_central.html", errors)
+    baskets, baskets_raw = _read_json(site / "basketdata" / "baskets.json", errors, read_bytes)
+    action, action_raw = _read_json(site / "basketdata" / "action_board.json", errors, read_bytes)
+    sector, _ = _read_json(site / "sectordata" / "sector_central.json", errors, read_bytes)
+    premium, _ = _read_json(site / "premiumdata" / "sector_central.json", errors, read_bytes)
+    html = _html_metadata(site / "sector_central.html", errors, read_bytes)
 
     dates: dict[str, date] = {}
     if baskets is not None:
@@ -215,12 +235,20 @@ def evaluate(
         common_as_of = unique_dates[0]
 
     sessions_behind: int | None = None
+    calendar_unavailable = False
     if common_as_of is not None:
         try:
             sessions_behind = nyse_calendar.sessions_behind(common_as_of, now)
+            latest_possible_session = nyse_calendar.session_date(now)
         except Exception as exc:  # noqa: BLE001 - calendar failure is fail closed here
+            calendar_unavailable = True
             errors.append(f"NYSE calendar unavailable: {exc!r}")
         else:
+            if common_as_of > latest_possible_session:
+                errors.append(
+                    f"Sector Intelligence as_of={common_as_of.isoformat()} is ahead of "
+                    f"the current NYSE session {latest_possible_session.isoformat()}"
+                )
             if sessions_behind > max_sessions_behind:
                 errors.append(
                     "STALE SECTOR INTELLIGENCE: common as_of="
@@ -235,8 +263,33 @@ def evaluate(
         "baskets_sha256": actual_baskets_sha,
         "action_board_sha256": actual_action_sha,
     }
+    # A failed observation is not proof of old data. Keep the build gate
+    # fail-closed while allowing the external sentinel's existing blindness
+    # escalation to distinguish unreadable/unsupported generations from a
+    # stable generation whose date or integrity is demonstrably wrong.
+    unavailable = (
+        calendar_unavailable
+        or any(doc is None for doc in (baskets, action, sector, premium))
+        or len(dates) != 6
+        or any(value is None for value in html.values())
+        or not isinstance((action or {}).get("action_board"), dict)
+    )
+    # A conclusive old-source watermark must not be hidden by another missing
+    # field (the observed 2026-11-05 production bundle has both conditions).
+    age_breach = sessions_behind is not None and sessions_behind > max_sessions_behind
+    status = "stale" if age_breach else (
+        "indeterminate" if unavailable else ("stale" if errors else "ok")
+    )
+    reason = (
+        "data_out_of_date" if age_breach
+        else "freshness_unavailable" if unavailable
+        else "publication_inconsistent" if errors
+        else "current"
+    )
     return {
         "ok": not errors,
+        "status": status,
+        "reason": reason,
         "errors": errors,
         "warnings": warnings,
         "facts": facts,
