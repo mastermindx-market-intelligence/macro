@@ -141,6 +141,10 @@ def _configure_brain_fabric() -> None:
         lane="brain", workload_profile="site_interactive", root=REPO)
     app.state.fabric_selected = selected
     app.state.fabric_provider_factory = factory
+    ask_selected, ask_factory = configured_application_fabric(
+        lane="ask-brain", workload_profile="site_interactive", root=REPO)
+    app.state.ask_fabric_selected = ask_selected
+    app.state.ask_fabric_provider_factory = ask_factory
 
 
 _configure_brain_fabric()
@@ -1362,8 +1366,16 @@ class AskRequest(BaseModel):
     context_ticker: str | None = Field(None, description="Optional ticker to focus the query (e.g. 'NVDA')")
 
 
+def _ask_fabric_selection(request: Request) -> dict:
+    selected = getattr(request.app.state, "ask_fabric_selected", False)
+    if selected is False:
+        return {}
+    return {"fabric_selected": selected,
+            "fabric_provider_factory": getattr(request.app.state, "ask_fabric_provider_factory", None)}
+
+
 @app.post("/api/ask")
-def ask_brain(body: AskRequest, user: dict = Depends(require_site_full_user)) -> dict:
+def ask_brain(body: AskRequest, request: Request, user: dict = Depends(require_site_full_user)) -> dict:
     """Ask the Neural Web brain a question.
 
     Read-only cortex tools; write tools are absent from the schema (Article 1).
@@ -1388,12 +1400,13 @@ def ask_brain(body: AskRequest, user: dict = Depends(require_site_full_user)) ->
         user_id=user_id,
         context_ticker=body.context_ticker,
         root=REPO,
+        **_ask_fabric_selection(request),
     )
     return result
 
 
 @app.post("/api/ask/stream")
-def ask_brain_stream(body: AskRequest, user: dict = Depends(require_site_full_user)):
+def ask_brain_stream(body: AskRequest, request: Request, user: dict = Depends(require_site_full_user)):
     """SSE streaming variant of /api/ask.
 
     Tool-calling turns run synchronously; the final synthesis turn is streamed
@@ -1419,10 +1432,28 @@ def ask_brain_stream(body: AskRequest, user: dict = Depends(require_site_full_us
             user_id=user_id,
             context_ticker=body.context_ticker,
             root=REPO,
+            **_ask_fabric_selection(request),
         )
 
+    async def _connected_generator():
+        import anyio
+        from starlette.concurrency import run_in_threadpool
+        events = _generator()
+        sentinel = object()
+        try:
+            while not await request.is_disconnected():
+                event = await run_in_threadpool(next, events, sentinel)
+                if event is sentinel or await request.is_disconnected():
+                    break
+                yield event
+        finally:
+            # Wait for the current blocking call, then close the original
+            # iterator. Never start a later round after downstream cancellation.
+            with anyio.CancelScope(shield=True):
+                await run_in_threadpool(events.close)
+
     return StreamingResponse(
-        _generator(),
+        _connected_generator(),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
