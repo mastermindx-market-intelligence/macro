@@ -414,9 +414,9 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-05T07:38:19Z",
+    "built_at": "2026-11-05T10:00:13Z",
     "calculation_as_of": "2026-11-04",
-    "code_version": "8a5b9fb3f82ec6f4fad61eb510b5563894ad5a80",
+    "code_version": "e26dddef9b88ebefbcb9600423a069a829c6899d",
     "content_sha256": "eb00acdec12cb71d0601d2ec2df63e6daac3e0d78adf9f9150bbfc621b67cfd5",
     "generation_id": "labor_markets-US-eb00acdec12cb71d",
     "producer": "engine.market_os.macro_workspaces.labor",

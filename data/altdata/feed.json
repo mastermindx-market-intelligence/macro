@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-05T07:24:02.146804+00:00",
+  "generated_utc": "2026-11-05T09:50:06.680142+00:00",
   "as_of": "2026-11-05",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -24647,7 +24647,7 @@
         "ticker": "COP",
         "next_date": "2026-11-05",
         "days_to": 0,
-        "eps_forecast": 2.97,
+        "eps_forecast": 3.06,
         "last_surprise_pct": 9.5
       },
       {
@@ -24682,7 +24682,7 @@
         "ticker": "HALO",
         "next_date": "2026-11-05",
         "days_to": 0,
-        "eps_forecast": 2.16,
+        "eps_forecast": 2.17,
         "last_surprise_pct": 25.4
       },
       {
@@ -24766,7 +24766,7 @@
         "ticker": "ROK",
         "next_date": "2026-11-05",
         "days_to": 0,
-        "eps_forecast": 3.55,
+        "eps_forecast": 3.72,
         "last_surprise_pct": 3.0
       },
       {
@@ -24999,6 +24999,13 @@
         "days_to": 5,
         "eps_forecast": null,
         "last_surprise_pct": 13.2
+      },
+      {
+        "ticker": "JBGS",
+        "next_date": "2026-11-10",
+        "days_to": 5,
+        "eps_forecast": null,
+        "last_surprise_pct": null
       },
       {
         "ticker": "CSCO",
