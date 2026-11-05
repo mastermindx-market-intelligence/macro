@@ -902,3 +902,73 @@ console.log(JSON.stringify(out));
                          "personLang": "", "unknown": "new-slug", "unknownLang": ""}
     assert out["zh"] == {"topic": "网络安全", "topicLang": "", "person": "McElligott",
                          "personLang": "en", "unknown": "new-slug", "unknownLang": "en"}
+
+
+# --- SIC-D41: no painted edge stripe on a vault container --------------------
+
+_RULE = re.compile(r"([^{}]+)\{([^{}]*)\}")
+_THIN = re.compile(r"(?:^|;)\s*(height|width)\s*:\s*(\d+(?:\.\d+)?)px")
+
+
+def edge_stripes(css: str) -> list[str]:
+    """Selectors of pseudo-elements painted as a thin band along a whole edge:
+    pinned to both ends of one edge (left:0 + right:0, or top:0 + bottom:0),
+    a painted background, and the cross dimension at most 6px."""
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    found = []
+    for sel, body in _RULE.findall(css):
+        if "::before" not in sel and "::after" not in sel:
+            continue
+        decl = " ".join(body.split())
+        if "background" not in decl:
+            continue
+        spans_row = re.search(r"\bleft\s*:\s*0", decl) and re.search(r"\bright\s*:\s*0", decl)
+        spans_col = re.search(r"\btop\s*:\s*0", decl) and re.search(r"\bbottom\s*:\s*0", decl)
+        thin = [(d, float(v)) for d, v in _THIN.findall(";" + decl) if float(v) <= 6]
+        if (spans_row and any(d == "height" for d, _ in thin)) or (
+                spans_col and any(d == "width" for d, _ in thin)):
+            found.append(" ".join(sel.split()))
+    return found
+
+
+def _vault_template() -> str:
+    return (bld.ROOT / "templates" / "research_vault.html.j2").read_text(encoding="utf-8")
+
+
+def test_vault_containers_carry_no_edge_stripe():
+    """SIC-D41: a highlighted card and the reader modal each wore a 3px accent
+    band across the top edge. A container never takes an edge stripe
+    (docs/DESIGN_DOCTRINE.md); the card keeps an even border and its
+    Highlighted label."""
+    assert edge_stripes(_vault_template()) == []
+    assert ".rep.pick{ border-color:" in _vault_template()
+
+
+def test_highlighted_card_keeps_its_label():
+    js = _vault_js()
+    assert "T('Highlighted', '精选')" in js
+    assert "(x.top ? ' pick' : '')" in js
+    src = (bld.ROOT / "scripts" / "build_research_vault.py").read_text(encoding="utf-8")
+    assert "精选" in src and '" pick" if top' in src
+
+
+@pytest.mark.parametrize(
+    "old",
+    [
+        '.rep.pick::before{ content:""; position:absolute; top:0; left:0; right:0; height:3px; '
+        "border-radius:18px 18px 0 0;\n  background:linear-gradient(90deg, var(--rv), var(--rv-2)); }",
+        '.rv-modal::before{ content:""; position:absolute; top:0; left:0; right:0; height:3px; z-index:5;\n'
+        "  background:linear-gradient(90deg, var(--rv), var(--rv-2), "
+        "color-mix(in srgb,var(--rv) 20%,transparent)); }",
+    ],
+)
+def test_the_stripe_rule_rejects_the_base_rules(old):
+    assert edge_stripes(old)
+    assert edge_stripes(_vault_template() + "\n" + old)
+
+
+def test_the_stripe_rule_keeps_bullets_and_washes():
+    keep = (".rep-points li::before{ content:''; position:absolute; left:0; top:.6em; width:6px; "
+            "height:6px; background:var(--rv); }\n"
+            ".rv-hero::before{ content:''; position:absolute; inset:0; background:var(--wash); }")
+    assert edge_stripes(keep) == []
