@@ -111,7 +111,12 @@
     .si-page-title { font-size:var(--fs-num-lg); letter-spacing:-.025em; }
     .si-page-region { display:block; padding:6px 0 0; border:0; }
     .si-side-foot { max-width:40%; font-size:var(--fs-micro); text-align:right; }
-    .si-workflow { gap:2px; justify-content:space-between; }
+    /* Six steps do not fit 390px in English: the row scrolls sideways instead of widening
+       the page. The scrollport would clip an outset ring, so the full 2px ring is drawn inset. */
+    .si-workflow { gap:2px; justify-content:space-between; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; }
+    .si-workflow::-webkit-scrollbar { display:none; }
+    .si-workflow > a { flex:0 0 auto; }
+    .si-workflow > a:focus-visible { outline-offset:-2px; }
     .si-workflow-link, .si-workflow > .si-view-btn { padding:8px 10px; font-size:var(--fs-sm); }
     .si-side { flex-wrap:wrap; gap:4px; padding:10px 0; }
     .si-side .si-view-btn { min-height:44px; padding:8px 10px; font-size:var(--fs-sm); }

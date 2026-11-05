@@ -361,6 +361,16 @@ function activate(view,target,user){
   }
   var subnav=document.querySelector('.si-side');
   if(subnav) subnav.hidden=view==='overview'||view==='cycles';
+  /* On a phone the workflow row scrolls sideways; bring the selected step into it.
+     Only the row's own scrollLeft moves, never the page. */
+  try{
+    var row=document.querySelector('.si-workflow'), step=row&&row.querySelector('.on');
+    if(step&&row.scrollWidth>row.clientWidth){
+      var rr=row.getBoundingClientRect(), sr=step.getBoundingClientRect();
+      if(sr.left<rr.left) row.scrollLeft-=rr.left-sr.left;
+      else if(sr.right>rr.right) row.scrollLeft+=sr.right-rr.right;
+    }
+  }catch(e){}
   try{ document.title=BASE_TITLE+' · '+TITLES[view][isZh()?1:0]; }catch(e){}
   current=view;
   /* First activation mounts the heavy organs. The view must be laid out first so the

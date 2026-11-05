@@ -143,6 +143,23 @@ def test_mobile_switcher_keeps_the_workflow_and_labels() -> None:
     assert '.si-vb-l { display:none' not in css
 
 
+def test_mobile_workflow_row_scrolls_instead_of_widening_the_page() -> None:
+    """At 390px the six English steps are wider than the column (L6.4 probe: a 428px
+    page). The row scrolls sideways, keeps a full focus ring drawn inset, and the
+    router brings the selected step into the row without moving the page."""
+    css = _shell_css(_page())
+    mobile = css.split('@media (max-width:767px)', 1)[1]
+    row = mobile.split('.si-workflow {', 1)[1].split('}', 1)[0]
+    assert 'overflow-x:auto' in row
+    assert 'flex-wrap' not in row
+    assert '.si-workflow > a { flex:0 0 auto; }' in mobile
+    assert '.si-workflow > a:focus-visible { outline-offset:-2px; }' in mobile
+    js = ROUTER.read_text(encoding="utf-8")
+    keep = js.split("bring the selected step into it", 1)[1].split("}catch(e){}", 1)[0]
+    assert "row.scrollLeft" in keep
+    assert "window.scroll" not in keep and "scrollIntoView" not in keep
+
+
 # ───────────────────────────────────────────────────────── organ view membership
 
 VIEW_ORGANS = {
