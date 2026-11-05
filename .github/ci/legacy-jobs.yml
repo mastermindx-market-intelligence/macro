@@ -35227,6 +35227,12 @@ jobs:
     # fallback domains that otherwise select unrelated homepage/Prophet probes.
     scope: exclusive
     paths:
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       - "admin/**"
       - "app/**"
       - "collectors/**"
