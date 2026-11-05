@@ -1,5 +1,53 @@
 ---
 key: CHAIRMAN-COGNITION-ONE-META-CEO-TWO-MODES
+question: '(Qualified 2026-11-05) How should Mastermind transfer Chris''s recurring chief-chairman-engineer cognition into the autonomous organization under one office with two responsibilities — as decided 2026-08-30 and subsequently accepted per the successor evidence below?
+
+  '
+answer: '(Qualified 2026-11-05) The accepted architecture stands through actual successor acceptance, not through this archive: one durable office SOL:META-CEO:MASTERMIND with two responsibilities — CHAIRMAN_COGNITION decides what Mastermind should become or change next; CEO_EXECUTION executes accepted direction through existing owners — with no duplicate cognition plane, strategic value / organizational authority / current serviceability kept separate, deterministic packets always emitting execution_authority_granted=false, action-time owner/envelope revalidation, and reserved Chairman / production-deploy / live-capital boundaries. Date-qualified: the 2026-08-30 SUPERVISED_LIVE_CANARY-only statement was an initial condition, not permanent law; the current protected Chairman cognition law also provides BOUNDED_AUTONOMOUS within currently accepted constraints and envelopes. Current outer Chairman intent governs; this record is not new law or implementation.
+
+  '
+rationale: '(Qualified 2026-11-05) Accepted because it avoids a second Meta-Chairman and duplicated authority/memory while separating strategic cognition from bounded execution; the operative acceptance lives in the successor records cited below, not in this archived text.
+
+  '
+evidence:
+- 'Mastermind PR309: https://github.com/mastermindx-market-intelligence/Mastermind/pull/309 — merged2026-09-01T03:54:22Z, merge commit6e3872cfdae7c487d9ec1eace82149a274c5c518.'
+- 'Mastermind PR311: https://github.com/mastermindx-market-intelligence/Mastermind/pull/311 — merged2026-09-01T19:07:56Z, merge commite255fdd2fa9d89701b9d2843556751799da55cd0.'
+- 'Wrapper replacement: https://github.com/mastermindx-market-intelligence/Mastermind/pull/284#issuecomment-5488480483 and https://github.com/mastermindx-market-intelligence/Mastermind/pull/286#issuecomment-5488677485. Closing these wrappers unmerged did not leave the architecture unadopted.'
+- 'Protected source pointer: https://github.com/mastermindx-market-intelligence/Mastermind/blob/17f6e4ad95f7006c1e607885a40210115049d024/docs/EXECUTIVE_CHAIRMAN_COGNITION_LAW.md — blob06fb63dbc3ca62587cc2324b87fd3a6766996f82. Requalify protected law at execution time when materially changed; this historical record is not a new authority.'
+- Complete original August30 decision is preserved verbatim in the dated archive. Source acceptance does not prove installation, execution or a served product.
+alternatives:
+- option: 'Dated 2026-08-30: Create a separate Meta-Chairman agent above the Meta-CEO'
+  why_not: 'Historical 2026-08-30 assessment, preserved for context: This creates another durable office, succession/binding problem and ambiguous action authority, and invites a duplicate strategy memory or scheduler. Current outer Chairman intent and protected law govern.'
+- option: 'Dated 2026-08-30: Put the top executive permanently on an API or Workspace-Agent supervisor'
+  why_not: 'Historical 2026-08-30 assessment, preserved for context: The protected Chat-native Meta-CEO law keeps included-plan Chat as the default Sol cognition plane and permits metered routes only under a bounded exception receipt. Current outer Chairman intent and protected law govern.'
+- option: 'Dated 2026-08-30: Require a long passive shadow phase before any real strategic effect'
+  why_not: 'Historical 2026-08-30 assessment, preserved for context: It delays learning and preserves Chris as the operating bottleneck. Reversible supervised canaries with explicit stop, rollback and falsifier controls provide faster evidence. Current outer Chairman intent and protected law govern.'
+- option: 'Dated 2026-08-30: Let the cognition packet directly execute its recommendation'
+  why_not: 'Historical 2026-08-30 assessment, preserved for context: A recommendation is not authority, a current carrier, or an action-time effect receipt. Direct actuation would bypass existing owners and create a second control plane. Current outer Chairman intent and protected law govern.'
+affects:
+- WS:CHAIRMAN-CONTROL-ROOM
+- SOL:META-CEO:MASTERMIND
+- Mastermind Executive OS / Agent OS operating composition
+- Chat-native Meta-CEO hierarchy
+confidence: high
+reversibility: costly
+decided_by: chairman-chris-and-ceo-sol
+decided_at: 2026-08-30
+---
+
+## Current reading boundary — qualified 2026-11-05
+
+The architecture was adopted through the actual successor source records cited in `evidence`. This archival qualification preserves one office with two responsibilities and does not create law, ownership, a routing gate or implementation. Current outer Chairman intent and protected law govern.
+
+The initial August30 canary-only and routing statements, alternative assessments, source pins and worker receipts are dated history. The protected cognition law also provides bounded autonomy within accepted constraints and action-time envelopes. Strategic value, organizational authority and present serviceability remain separate. Deterministic cognition packets do not grant execution authority; existing owners, live writer/effect fences and reserved Chairman, production and capital boundaries still apply.
+
+Both original source records below remain recoverable byte for byte. Their merge records prove source adoption only, without an installation, canary, deployment or whole-product claim.
+
+## Dated archive — complete original 2026-08-30 file, preserved verbatim
+
+``````markdown
+---
+key: CHAIRMAN-COGNITION-ONE-META-CEO-TWO-MODES
 question: >
   How should Mastermind transfer Chris's recurring chief-chairman-engineer cognition into the
   autonomous organization without creating another Meta-Chairman, control plane, durable memory,
@@ -87,3 +135,4 @@ decided_at: 2026-08-30
 10. **Completion.** The program is complete only when Chris no longer carries routine portfolio
     reconstruction, session/account allocation, message shuttling, watcher repair, carrier archaeology
     or initiative babysitting—and real company capabilities still reach proof.
+``````

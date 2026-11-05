@@ -351,6 +351,8 @@ def test_hist_cross_sections_reads_parquet(monkeypatch, tmp_path):
 def test_validate_all_includes_new_families(monkeypatch, tmp_path):
     """fundflow + chips appear in the scorecard, degrading to `accruing` with no history."""
     from engine import china_validation as cv
+    from engine import trial_ledger
+    monkeypatch.setattr(trial_ledger, "DEFAULT_PATH", tmp_path / "trial_ledger.jsonl")
     monkeypatch.setattr(cv.config, "data_dir", lambda: tmp_path)
     monkeypatch.setattr(cv, "_panel", lambda: None)       # no price panel → families go accruing
     monkeypatch.setattr(cv, "_bench_close", lambda: None)
@@ -462,6 +464,8 @@ def test_forecast_guidance_parser(monkeypatch, tmp_path):
 
 def test_guidance_family_in_validation(monkeypatch, tmp_path):
     from engine import china_validation as cv
+    from engine import trial_ledger
+    monkeypatch.setattr(trial_ledger, "DEFAULT_PATH", tmp_path / "trial_ledger.jsonl")
     monkeypatch.setattr(cv.config, "data_dir", lambda: tmp_path)
     monkeypatch.setattr(cv, "_panel", lambda: None)
     monkeypatch.setattr(cv, "_bench_close", lambda: None)

@@ -1,0 +1,47 @@
+{
+  "stage": "baseline",
+  "fixture": {
+    "true_participation": 0.2,
+    "mismatched_pre_split": 0.02,
+    "factor": 10.0,
+    "restored_pre_split": 0.2,
+    "incumbent_break_index_raw": 69,
+    "incumbent_break_index_corrected": null
+  },
+  "retained_case": {
+    "ticker": "AVGO",
+    "effective": "2024-07-15",
+    "store_entry": {
+      "fetched": "2026-07-10",
+      "first_trade": "2009-08-01",
+      "splits": {
+        "2024-07-15": 10.0
+      }
+    },
+    "vendor_as_of": "2026-10-08",
+    "joined_rows": 801,
+    "first_joined": "2023-08-01",
+    "last_joined": "2026-10-08",
+    "valid_pre": 40,
+    "valid_post": 40,
+    "median_pre_raw": 0.036367235350999,
+    "median_post_raw": 0.3578762635062342,
+    "median_pre_corr": 0.36367235350999,
+    "median_post_corr": 0.3578762635062342,
+    "D_raw": 2.286500724552875,
+    "D_corr": -0.01608436844117067,
+    "log_ratio": 2.302585092994046,
+    "incumbent_full_raw": {
+      "break_index": 268,
+      "rows": 801,
+      "usable_rows": 533
+    },
+    "incumbent_full_corr": {
+      "break_index": null,
+      "rows": 801,
+      "usable_rows": 801
+    },
+    "result_id": "59f8b6bcb0900287536fe1734548d0c6f4f48afb383e018b3c32114631067609",
+    "level_status": "RELATIVE_WITHIN_SEGMENT"
+  }
+}

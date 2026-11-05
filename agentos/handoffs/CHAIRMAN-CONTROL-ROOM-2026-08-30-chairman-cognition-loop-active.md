@@ -1,3 +1,63 @@
+---
+workstream: WS:CHAIRMAN-CONTROL-ROOM
+model: sol
+session: historical-Aug30-records-qualified-20261105-c4
+ended_because: complete
+mission: Qualify and preserve the 2026-08-30 Chairman Cognition decision and handoff as dated records; completion here describes this archival records task, not the Chairman Control Room program.
+state_before: At original PR6701 head 2fdd00c698ba8e6f066dbe67eb1f983a3df2888a, the decision retained August30 mode/routing assertions and the handoff lacked canonical frontmatter. The original A1/A2 status and receipts are dated observations, not present-day runtime evidence.
+changed:
+- path: agentos/decisions/DEC-CHAIRMAN-COGNITION-ONE-META-CEO-TWO-MODES.md
+  what: Date-qualify the decision using actual successor adoption and the protected cognition law; preserve all original bytes in a dated archive.
+- path: agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-30-chairman-cognition-loop-active.md
+  what: Add canonical archival handoff fields and a current reading boundary; preserve the complete original and existing filename.
+verified:
+- claim: The architecture was adopted through successor PR309 and PR311; closing PR284 and PR286 unmerged was wrapper replacement, not rejection of the architecture.
+  command: GitHub connector GET Mastermind PR309/PR311 and closure comments5488480483/5488677485
+  result: PR309 merged2026-09-01T03:54:22Z at merge commit6e3872cfdae7c487d9ec1eace82149a274c5c518; PR311 merged2026-09-01T19:07:56Z at merge commite255fdd2fa9d89701b9d2843556751799da55cd0.
+- claim: The protected law retains one office/two responsibilities and provides bounded autonomy within accepted constraints; the initial canary-only statement is not permanent standalone law.
+  command: GitHub connector fetch docs/EXECUTIVE_CHAIRMAN_COGNITION_LAW.md at protected Mastermind17f6e4ad95f7006c1e607885a40210115049d024
+  result: Blob06fb63dbc3ca62587cc2324b87fd3a6766996f82. Current outer Chairman intent and execution-time protected law govern; source presence does not prove runtime installation.
+- claim: A newer workstream and associated handoff exist on the observed Macro main.
+  command: GitHub connector fetch agentos/workstreams/WS-CHAIRMAN-CONTROL-ROOM.md and agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-14-r2-acceptance-consumer.md at3d258daf9818ba366eac96a0d38ce938539ca936
+  result: Workstream blob15664946e1da595fc0fd4a4e4ec8bc71ef2ea829 and handoff blob0c520b7a3f43c708b3c58ac9d280c47f77e8de60; neither is changed or treated as current runtime proof.
+unverified:
+- claim: Current installation and enforcement of the adopted architecture.
+  what_would_verify: Read the current protected enforcement source and actual execution-time owner/runtime receipts under live writer/effect fences.
+- claim: A real supervised canary or bounded autonomous strategic effect and whole-product outcome.
+  what_would_verify: Current Executive OS/Agent OS effect receipts and end-to-end acceptance across the actual producer/consumer journey.
+- claim: Current canonical owner consumption of these archival records.
+  what_would_verify: Execution-time owner and source-linked consumption evidence; historical authors are not an approval gate.
+unresolved:
+- Actual protected delivery status of the current published PR6701 head must be resolved at execution time; the commission-time head is not a future-head assertion.
+- Current program execution, live writer/effect state and consumer acceptance are outside this archival records proof.
+next_actions:
+- Resolve the current published PR6701 head and finish its actual source qualification and protected delivery; do not reapply an already published archive or assume the old head.
+- Continue through the actual current WS:CHAIRMAN-CONTROL-ROOM owner with source-linked Executive OS/Agent OS evidence, preserving any live writer or EFFECT_UNKNOWN; use the newer workstream/handoff without mistaking their dated status for a current effect.
+- Never replay the historical A1/A2 repair, audit, canary or Slack carriers merely because this archive describes them.
+do_not_redo:
+- Reopen or re-adjudicate PR284/PR286 as if their closed wrappers disproved successor acceptance.
+- Redispatch the historical A1/A2 workers or Slack carrier C0BSBM78V1N/1788117617.152939.
+- Modify the current workstream or October14 handoff as part of this two-record archival qualification.
+- Create another office, routing/mode gate, memory, queue or approval plane from this archive.
+- Add a date alias/ranking field or infer installed, executed, deployed, absent or complete product state from source merges.
+danger_areas:
+- Archived RUNNING/WAITING/ACK/START/CI states, source pins and canary/routing instructions are dated August30 observations, not current action authority.
+- The decision alternatives include historical routing judgments; current outer Chairman intent and protected law govern.
+- An old author is not an approver; the assigned receiver still reconciles actual current live writers and uncertain effects.
+- ended_because complete closes only this archival records task, not the Chairman Control Room mission.
+---
+
+## Current reading boundary — qualified 2026-11-05
+
+This file preserves the complete August30 handoff as a dated record. Every archived RUNNING, WAITING, ASSIGNED, ACK, START, CI, audit, source-pin and worker statement is historical. None establishes a current live, absent or closed runtime effect. The old A1/A2 next actions are not a new dispatch instruction.
+
+PR284 and PR286 were replaced wrappers; actual successor PR309 and PR311 merged. Current outer Chairman intent and execution-time protected law govern. The archived canary-only wording is not a permanent mode gate. The actual newer workstream and October14 handoff remain unchanged and must also be read at their observation dates.
+
+`ended_because: complete` refers only to this archival records task. The published PR's current head must still pass actual source and delivery requirements. Program installation, effects and consumer acceptance require their own canonical evidence. The existing filename and August30 observation date are unchanged; no alias or ranking field is introduced.
+
+## Dated archive — complete original 2026-08-30 file, preserved verbatim
+
+``````markdown
 # Chairman Cognition Loop — active program handoff
 
 **Workstream:** `WS:CHAIRMAN-CONTROL-ROOM`  
@@ -97,3 +157,4 @@ The next handoff must name the exact accepted A1/A2 heads, current protected Mas
 revisions, real canary input/output digests, actual effect/evidence, Chairman interventions required,
 capability state and one exact next action. A fresh session must not need this chat to reconstruct the
 ruling.
+``````
