@@ -507,6 +507,8 @@ def test_ordinary_collect_yahoo_opts_into_same_fetch_capture(monkeypatch):
     calls = []
     class OrdinaryAdapter:
         group = "yahoo"
+        def __init__(self, *, native_wti_session_reader=None):
+            assert native_wti_session_reader is None or callable(native_wti_session_reader)
     def run(adapter, **kwargs):
         calls.append(kwargs)
         return FetchResult("yahoo", "ok")

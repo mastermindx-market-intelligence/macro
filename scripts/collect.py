@@ -111,7 +111,11 @@ def _run_one(key: str, cls, full_history: bool):
     shared mutable state — so it is safe to call from a worker thread."""
     log.info("=== running %s ===", key)
     try:
-        adapter = cls()
+        if key == "yahoo":
+            from lib.wti_session_bootstrap import native_session_reader
+            adapter = cls(native_wti_session_reader=native_session_reader())
+        else:
+            adapter = cls()
     except Exception as e:  # noqa: BLE001
         log.error("init %s failed: %s", key, e)
         return None

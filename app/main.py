@@ -2595,6 +2595,8 @@ app.include_router(market_memory_router)
 # store, cache, scheduler or second evaluation.
 from app.ontology_explorer import router as ontology_explorer_router  # noqa: E402
 app.include_router(ontology_explorer_router)
+from lib.wti_session_bootstrap import configure_wti_sessions  # noqa: E402
+configure_wti_sessions(app)
 
 # Filing Forensics private state transport. The public page is only a shell;
 # this route enforces the same authenticated site_full entitlement as the paid
