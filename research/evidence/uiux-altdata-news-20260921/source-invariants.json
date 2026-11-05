@@ -1,0 +1,17 @@
+{
+  "base": "1dc11fb3eb326393c803bc2eff408db89bb91bc1",
+  "old_css": "7d4fc68b",
+  "new_css": "41a985eb",
+  "source_code_only": "Existing news IIFE + status controls + scoped CSS; no data files or other source sections modified",
+  "previous_script_sha256": "4da4e27d4fa13ad7b8e985cea9bb7c3ca1a2ffb81e4c34d68678e207aa995e11",
+  "candidate_script_sha256": "6ccfda160774e31928cc8925614bdf6be6c8d17643d720af2854cda8b96222e5",
+  "all_preceding_board_rows_and_data_unchanged": true,
+  "page_and_template_client_identical": true,
+  "canonical_base_css_binding": true,
+  "request_paths_unchanged": [
+    "altdata/mastermind.json",
+    "news/by_ticker.json",
+    "news/financial.json"
+  ],
+  "http_403_is_restricted_not_expired_session": true
+}

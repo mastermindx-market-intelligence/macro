@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T21:13:06Z",
+ "accession": "0001062993-26-001765",
+ "cik": "0001308648",
+ "doc_byte_length": 1768662,
+ "doc_sha256": "6069f622d1086c4a6eda344e4d5a1a6c7bd83db81e5bb13ae56f49a1f001e63e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "exhibit99-1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 82352,
+  "byte_start": 81442,
+  "normalized": "On March 13, 2025, the Company announced the appointment of Mr. Daniel Muñiz Quintanilla to the Board. Also on March 13th, the Company signed an amendment agreement (the \"Amended Springpole Stream Agreement\") to the Springpole Stream Agreement (as defined in the section in this AIF entitled \"Risk Factors - Operational Risks - The Springpole Stream Agreement\") among the Company, Gold Canyon Resources Inc. and First Mining Gold Corp. (\"First Mining\") to accelerate the final tranche payment owed by the Company under the Springpole Stream Agreement, which the Company paid in cash on March 27, 2025. As consideration for entering into the Amended Springpole Stream Agreement, First Mining agreed to extend the expiry date of the common share purchase warrants that were issued to the Company on July 20, 2020, and to amend the exercise price of such warrants.",
+  "normalized_sha256": "2bedc3891b73f2f3500e525052b788cf6e6932438ef6fed920542ad9524a59de",
+  "raw": "On March 13, 2025, the Company announced the appointment of Mr. Daniel Mu&#241;iz Quintanilla to the Board.&#160; Also on March 13<sup>th</sup>, the Company signed an amendment agreement (the \"<b>Amended Springpole Stream Agreement</b>\") to the Springpole Stream Agreement (as defined in the section in this AIF entitled \"<i>Risk Factors - Operational Risks - The Springpole Stream Agreement</i>\") among the Company, Gold Canyon Resources Inc. and First Mining Gold Corp. (\"<b>First Mining</b>\") to accelerate the final tranche payment owed by the Company under the Springpole Stream Agreement, which the Company paid in cash on March 27, 2025.&#160; As consideration for entering into the Amended Springpole Stream Agreement, First Mining agreed to extend the expiry date of the common share purchase warrants that were issued to the Company on July 20, 2020, and to amend the exercise price of such warrants.",
+  "raw_sha256": "a18bffedbb7296e5e5c645d0bd676a26919d98c978c625cd9c4708269ba54ba7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1308648/000106299326001765/exhibit99-1.htm",
+ "xbrl_contexts": []
+}

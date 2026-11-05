@@ -1,0 +1,124 @@
+{
+  "fixture": "Synthetic values shaped on scripts/live_flow_poller.py:3233-3255 (live_flow.meta/v2 emit) and scripts/build_live_flow_baselines.py:195-227 (eod252 baselines map); every value here is synthetic and none was observed at any source.",
+  "now": "2026-10-21T19:00:00+00:00",
+  "session": "2026-10-21",
+  "cases": {
+    "valid_v2_fresh": {
+      "schema": "live_flow.meta/v2",
+      "asof": "2026-10-21T18:54:50+00:00",
+      "built_at": "2026-10-21T18:54:51+00:00",
+      "cycle_started_at": "2026-10-21T18:54:00+00:00",
+      "observed_start_to_start_sec": 60.0,
+      "source_response_at_first": "2026-10-21T18:54:05+00:00",
+      "source_response_at_last": "2026-10-21T18:54:50+00:00",
+      "roots_requested": 40,
+      "roots_with_source_payload": 37,
+      "universe_n": 40,
+      "_transport": {"mtime": "2026-10-21T18:54:51+00:00", "http_status": 200}
+    },
+    "v2_producer_form": {
+      "schema": "live_flow.meta/v2",
+      "asof": "2026-10-21T18:54:50.123456Z",
+      "built_at": "2026-10-21T18:54:51.004211Z",
+      "cycle_started_at": "2026-10-21T18:54:00.000001Z",
+      "observed_start_to_start_sec": 60.0,
+      "source_response_at_first": "2026-10-21T18:54:05.250000Z",
+      "source_response_at_last": "2026-10-21T18:54:50.123456Z",
+      "roots_requested": 40,
+      "roots_with_source_payload": 37,
+      "universe_n": 40,
+      "_transport": {"mtime": "2026-10-21T18:54:51+00:00", "http_status": 200}
+    },
+    "v2_last_3h_old_fresh_mtime": {
+      "schema": "live_flow.meta/v2",
+      "asof": "2026-10-21T16:00:00+00:00",
+      "built_at": "2026-10-21T18:59:00+00:00",
+      "cycle_started_at": "2026-10-21T15:59:00+00:00",
+      "observed_start_to_start_sec": 60.0,
+      "source_response_at_first": "2026-10-21T15:59:10+00:00",
+      "source_response_at_last": "2026-10-21T16:00:00+00:00",
+      "roots_requested": 40,
+      "roots_with_source_payload": 37,
+      "universe_n": 40,
+      "_transport": {"mtime": "2026-10-21T18:59:30+00:00", "http_status": 200}
+    },
+    "v1_meta_http200": {
+      "schema": "live_flow.meta/v1",
+      "asof": "2026-10-21T18:58:00+00:00",
+      "built_at": "2026-10-21T18:58:01+00:00",
+      "_transport": {"mtime": "2026-10-21T18:58:01+00:00", "http_status": 200}
+    },
+    "v2_zero_captured": {
+      "schema": "live_flow.meta/v2",
+      "asof": "2026-10-21T18:00:00+00:00",
+      "built_at": "2026-10-21T18:58:01+00:00",
+      "cycle_started_at": "2026-10-21T18:58:00+00:00",
+      "observed_start_to_start_sec": 60.0,
+      "source_response_at_first": null,
+      "source_response_at_last": null,
+      "roots_requested": 50,
+      "roots_with_source_payload": 0,
+      "universe_n": 50,
+      "_transport": {"mtime": "2026-10-21T18:58:01+00:00", "http_status": 200}
+    },
+    "v2_counts_absent": {
+      "schema": "live_flow.meta/v2",
+      "asof": "2026-10-21T18:54:50+00:00",
+      "built_at": "2026-10-21T18:54:51+00:00",
+      "cycle_started_at": "2026-10-21T18:54:00+00:00",
+      "observed_start_to_start_sec": 60.0,
+      "source_response_at_first": "2026-10-21T18:54:05+00:00",
+      "source_response_at_last": "2026-10-21T18:54:50+00:00",
+      "_transport": {"mtime": "2026-10-21T18:54:51+00:00", "http_status": 200}
+    },
+    "v2_out_of_order": {
+      "schema": "live_flow.meta/v2",
+      "asof": "2026-10-21T18:54:50+00:00",
+      "built_at": "2026-10-21T18:54:51+00:00",
+      "cycle_started_at": "2026-10-21T18:54:00+00:00",
+      "observed_start_to_start_sec": 60.0,
+      "source_response_at_first": "2026-10-21T18:54:50+00:00",
+      "source_response_at_last": "2026-10-21T18:54:05+00:00",
+      "roots_requested": 40,
+      "roots_with_source_payload": 37,
+      "universe_n": 40,
+      "_transport": {"mtime": "2026-10-21T18:54:51+00:00", "http_status": 200}
+    },
+    "v2_future_dated": {
+      "schema": "live_flow.meta/v2",
+      "asof": "2026-10-21T19:30:50+00:00",
+      "built_at": "2026-10-21T19:30:51+00:00",
+      "cycle_started_at": "2026-10-21T19:30:00+00:00",
+      "observed_start_to_start_sec": 60.0,
+      "source_response_at_first": "2026-10-21T19:30:05+00:00",
+      "source_response_at_last": "2026-10-21T19:30:50+00:00",
+      "roots_requested": 40,
+      "roots_with_source_payload": 37,
+      "universe_n": 40,
+      "_transport": {"mtime": "2026-10-21T19:30:51+00:00", "http_status": 200}
+    },
+    "built_at_only": {
+      "built_at": "2026-10-21T18:59:00+00:00",
+      "roots_requested": 40,
+      "_transport": {"mtime": "2026-10-21T18:59:30+00:00", "http_status": 200}
+    },
+    "eod252_baselines": {
+      "SPY": {
+        "mean": 0.00041,
+        "std": 0.0123,
+        "n_obs": 252,
+        "computed_asof": "2026-10-21",
+        "source_session_start": "2026-10-20T14:30:00+00:00",
+        "source_session_end": "2026-10-20T20:59:00+00:00"
+      },
+      "QQQ": {
+        "mean": 0.00057,
+        "std": 0.0141,
+        "n_obs": 252,
+        "computed_asof": "2026-10-21",
+        "source_session_start": "2026-10-20T14:30:00+00:00",
+        "source_session_end": "2026-10-20T20:59:00+00:00"
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "schema": "research.bounded_source_owner_interface_census.v1",
+  "head": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-source-diagnostic-20261009-pro-004",
+  "device_id": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
+  "purpose": "Find existing accepted review/entitlement/source provenance interfaces for WP02 historical-frame prerequisites without granting rights or executing acquisition.",
+  "scope": "Pinned clean macro workspace only; code, public in-repo owner records and exact relevant contracts. No private contract or runtime store was opened.",
+  "census": [
+    {
+      "query": "Initial path discovery: rg --files config engine docs scripts tests, source/catalog/rights/admission filename filter",
+      "result": "Exploratory output capped at 130; not a completeness proof"
+    },
+    {
+      "query": "Scoped interface filename census excluding docs/pr-crops",
+      "result": "54 paths"
+    },
+    {
+      "query": "Venue literal content query in config collectors lib engine contracts research/licenses and named Data OS docs",
+      "result": "58 related paths for the broad TSX-inclusive query; no claim all 58 semantically inspected"
+    },
+    {
+      "query": "Source identifier stem cross-check TMX|TSXV|SEDAR|JPX|Cboe Canada|Canadian Securities Exchange|word CSE in config lib collectors engine contracts research/licenses",
+      "result": "8 related paths, inspected relevant route/calendar contexts or classified as unrelated; not a grant census of all vendors"
+    },
+    {
+      "query": "app_observation|app-observation|application_observation|#8711 in config lib engine contracts research/licenses research/theme_graph",
+      "result": "rg exit 1/no match at pinned HEAD; private runtime, unmerged branches and other repositories outside scope"
+    },
+    {
+      "query": "source_admission|SourceAdmission|source_owner|SourceOwner|rights_verifier in dataset registry, lib/dataos, company_intelligence, fundamental_forensics, frozen economic research",
+      "result": "rg exit 1/no match; nearby concrete APIs inspected separately"
+    }
+  ],
+  "coverage_limits": [
+    "Working-tree data directory absent: two path-discovery child rg commands exited 2 with only data: No such file or directory; outer read-only processes exited 0. Resolved subsequent queries exclude that absent directory.",
+    "Source catalog/architecture are inspected documentary claims, not fresh verification of their historical runtime counts.",
+    "Full fixed SHA-256/HEAD-blob pins accompany partial read scopes; hashing does not imply full semantic reading.",
+    "Not a global absence of source contracts, rights, data or vendor capability; runtime private stores and external owners not probed."
+  ],
+  "rights_findings": [
+    {
+      "source": "Massive",
+      "classification": "ACTUAL_ACCEPTED_OPERATOR_RECORDED_GRANT",
+      "witness": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md:8–54",
+      "scope": "Recorded enterprise history/reference/non-display/derived/model/retention/distribution; dataset-specific written conditions controlling",
+      "canadian_historical_roster_capability": "NOT_ESTABLISHED",
+      "reopen_global_license_gate": false
+    },
+    {
+      "source": "TMX/TSX/TSXV, CSE, Cboe Canada, SEDAR+, JPX",
+      "classification": "EXACT_CUSTOMER_ENTITLEMENT_NOT_ESTABLISHED_WITHIN_SCOPE",
+      "witness": "Named vendor/interface census and inspected exact owner records",
+      "scope": "No corresponding actual customer grant located among inspected records; prior feasibility catalogs/recommendations cannot grant rights",
+      "global_no_license_claim": false
+    },
+    {
+      "source": "#8711/private app observation",
+      "classification": "NOT_INDEPENDENTLY_INSPECTED_AT_THIS_PIN",
+      "scope": "Any adopted registration can establish only its stated provenance/ownership; source licence and D/K public history require separate witnesses",
+      "grant_inferred": false
+    }
+  ],
+  "effects": {
+    "native_source_code_edits": false,
+    "git_mutations": false,
+    "fetches": false,
+    "installs": false,
+    "data_acquisition": false,
+    "authenticated_website_or_session_probe": false,
+    "credentials_requested_or_printed": false,
+    "messages_to_people": false,
+    "purchases": false,
+    "new_registry": false,
+    "runtime_or_tests_executed": false,
+    "scratch_packet_written": true,
+    "environment_detail": "Final read-only metadata/status check copied os.environ into a subprocess environment solely to set GIT_OPTIONAL_LOCKS=0. No values inspected/output or named secrets queried. This unnecessary dictionary access is disclosed; no claim of zero environment dictionary access."
+  },
+  "status": "BOUNDED_ABSENCE_AND_EXISTING_PATTERNS_DOCUMENTED_NOT_ADMISSION"
+}

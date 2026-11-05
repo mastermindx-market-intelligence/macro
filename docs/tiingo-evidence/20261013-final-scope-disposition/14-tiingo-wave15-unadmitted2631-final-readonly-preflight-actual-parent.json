@@ -1,0 +1,18 @@
+{
+  "schema": "tiingo.readonly_preflight_actual_parent/v1",
+  "recorded_at_utc": "2026-10-13T01:59:41.393856+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "original_session_id": 62514,
+  "actual_original_terminal_return_consumed": true,
+  "exit_code": 0,
+  "method_sha256": "dccefc622669e985443ae1434a311185c4f50d87fec28df78da6e18f1c16b934",
+  "plan_sha256": "1fcaf8614d1df2ef31c1de353b4056755038a578f95ed2fe389969747b9ceec0",
+  "selected_original_never_admitted_symbols": 2631,
+  "held_symbols_excluded": 28,
+  "existing_eod_symbol_collisions": 0,
+  "source_pins_verified": true,
+  "credentials_read": false,
+  "network_requests": 0,
+  "archive_writes": 0,
+  "original_unexecuted_preparation_preserved": true
+}

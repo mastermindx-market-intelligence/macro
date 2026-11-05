@@ -1,0 +1,56 @@
+{
+  "workflow_run_id": "38733137011",
+  "subject_head_sha": "1bb4b0c394aa3dac5f0381345a95d6aa4c737dab",
+  "tested_tree_sha": "24b30fc1de55b1239be752e60620013f64a9516f",
+  "base_sha": "24e858983c53494d0746c2b1dc988135ff6277ec",
+  "plan_sha256": "e657b4e1a9cfba649f65082639db512b28812a2cb6f419b7bce6cf2e5737e3ca",
+  "eligible_job_count": 127,
+  "observed_at": "2026-10-15T12:25:48.369029+00:00",
+  "artifact_id": 11970539481,
+  "zip_sha256": "cf0fda888a65d7d23f82816d783ea0c8704a035e714299526766e453d08b28c4",
+  "a1_job": {
+    "logical_job_id": "eval-os-a1",
+    "pack_index": 9,
+    "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+    "steps": [
+      {
+        "proof_id": "require Node for actual renderer contracts",
+        "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
+      },
+      {
+        "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+        "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
+      }
+    ]
+  },
+  "verified_at": "2026-10-15T12:27:19.111078+00:00",
+  "tested_parents": [
+    "24e858983c53494d0746c2b1dc988135ff6277ec",
+    "1bb4b0c394aa3dac5f0381345a95d6aa4c737dab"
+  ],
+  "tested_git_tree": "3810d367866bda7923e2ae1406f19fe1f50e7528",
+  "admitted_preview_tree": "3810d367866bda7923e2ae1406f19fe1f50e7528",
+  "preview_matches": true,
+  "production_paths": [
+    "admin/evidence_findings.py",
+    "admin/evidence_status.py",
+    "admin/intelligence_os.py",
+    "admin/server.py",
+    "admin/static/app.js",
+    "admin/static/index.html",
+    "admin/static/preferences.js",
+    "admin/static/styles.css",
+    "app/deploy/update.sh",
+    "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json",
+    "engine/neuralweb/response_eval.py",
+    "engine/qledger.py",
+    "scripts/build_intelligence_registry.py",
+    "scripts/grade_qledger.py",
+    "admin/theme_tokens.py",
+    "templates/theme.css",
+    "engine/qledger_desk_adapter.py"
+  ],
+  "production_paths_match": true,
+  "a1_execution_identity_unchanged": true,
+  "terminal_checks_pending": true
+}
