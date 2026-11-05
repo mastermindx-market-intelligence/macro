@@ -1,177 +1,132 @@
-# PR audit — mastermindx-market-intelligence/mastermind-terminal#713
+# Terminal PR #713 — corrected historical audit record
 
-**Auditor:** meta-ceo-b-2026-09-08 (one-pass remote useful-idle, no retries, no scope expansion)
-**Audit timestamp:** 2026-09-22
-**Repo / PR:** mastermindx-market-intelligence/mastermind-terminal #713
-**PR title:** feat(chart): upgrade searchable study management and touch access
-**Merged at:** 2026-09-22T10:40:03Z
-**Head sha (integration):** `3b488ce96f2633613e1bd9d873e96693aef20314` ("feat(chart): make study layers searchable and touch-accessible (#713)")
-**Source base:** `7f98bfd9868a7a71dfd7a0b90c482793dc13f1b6` (the prior #716 head on `origin/master` immediately before this merge)
-**Branch:** `claude/terminal-chart-layers-ux-20260922`
-**Author:** chriswong6031-creator (Claude Skillpack lane; PR body declares `Mastermind@ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e` (v1.0.1 compatible) protected pack + operation id implicitly the chart-layer upgrade wave)
-**Repo root verified:** `/Users/chriswong/lanes/repos/mastermind-terminal`, sparse-checkout (worktree-scoped). `terminal/components/ChartObjectTree.tsx`, `terminal/components/ChartObjectTree.module.css`, `terminal/lib/__tests__/chartObjectTree.test.tsx`, `terminal/e2e/chart-object-tree.spec.ts` and `terminal/lib/i18n.tsx` are all fetched via `git show origin/master:<path>` (the local sparse filter excludes `terminal/**` directories so diff + e2e + i18n were obtained by direct blob resolution against `origin/master`).
+Historical audit date: **2026-09-22**. Records correction: **2026-11-05 UTC**.
 
-> **Scope note (§1):** the chronologically most-recent merged PRs in either repo inside the 24 h window are terminal #713 (10:40:03Z — this PR), terminal #716 (07:45:29Z — `fix(options): enlarge mobile workspace navigation`, 0 audits in repo), terminal #710 (06:53:44Z — `fix(options): keep mobile flow receipts readable`, 0 audits), macro #7701 (07:50:16Z — `[MO F07] event -> AssumptionChange: typed proposal, typed abstention, shadow scenario`, backend F-class), macro #7688 (07:34:06Z — `feat(prophet): own B4 session eligibility policy`, audited under `orch/audits/macro_PR-7688.mm.md`), macro #7687 (07:39:39Z — `fix(prophet): keep optional structural overlay from deadlocking B4`, audited under `orch/audits/macro_PR-7687.mm.md`), macro #7699 (07:28:34Z — audit recording PR), macro #7698 (07:23:25Z — `docs(ric): RIC F3 production proof`, research-doc only), macro #7634 (07:13:09Z — `fix(reports): accessible archive filters and keyboard locale updates`, F-class infrastructure repair, no user-visible new copy). Cross-repo, the chronologically newest un-audited **half-B** (B-class user-facing chart/UI) merge is **#713** at 10:40:03Z — `feat(chart): upgrade searchable study management and touch access` on Terminal. The audit covers it directly.
+This account applies the [#7731 preservation ruling](https://github.com/mastermindx-market-intelligence/macro/pull/7731#pullrequestreview-5325849962) to the report already protected through #7740. It retains the useful source findings and corrects evidence overclaims throughout. The complete original #7731, #7739 and protected reports remain available at the immutable links below; none is presented as a byte-identical duplicate of another.
 
----
+**Status: historical source record, not a new product audit or current production acceptance.** Terminal #713's source merge is verified. Historical test, browser, validator and deployment statements remain attributed to their original receipts. No such operation was rerun for this correction. A past `BUILT_NOT_PROVEN` statement describes its dated release boundary; it neither reverses the proven merge nor establishes today's production state.
 
-## 1. PR metadata
+## Verified target identity and scope
 
-| field | value |
+| Field | Verified immutable source |
 |---|---|
-| repo | mastermindx-market-intelligence/mastermind-terminal |
-| number | 713 |
-| title | feat(chart): upgrade searchable study management and touch access |
-| merged_at | 2026-09-22T10:40:03Z |
-| head (integration) | `3b488ce96f2633613e1bd9d873e96693aef20314` |
-| base | `7f98bfd9868a7a71dfd7a0b90c482793dc13f1b6` (prior #716 head on `origin/master`) |
-| branch | `claude/terminal-chart-layers-ux-20260922` |
-| changed files | 13 — `docs/TERMINAL_CHART_LAYERS_UX_2026-09-22.md` (+34 ADDED), `terminal/components/ChartObjectTree.module.css` (+53 ADDED), `terminal/components/ChartObjectTree.tsx` (+107 / -118 MODIFIED), `terminal/lib/__tests__/chartObjectTree.test.tsx` (+66 ADDED), `terminal/e2e/chart-object-tree.spec.ts` (+88 ADDED), 7 PNG crops under `terminal/docs/pr-crops/chart-layers-ux-20260922/` + 1 `EVIDENCE.json` |
-| additions / deletions | 394 / 118 |
-| labels | (none external; merge-on-green backstop consumed by sweeper) |
-| scope collision | none — body declares "No worker or watcher was commissioned. No settings/state owner, store, dependency, chart renderer, backend service or signal/indicator mathematics is introduced or replaced." and lists parent-mission siblings (#701 chart settings, #705 chart view/reset, #707 warm-cache release, #702 stalled-tap carrier) as adjacent but explicitly out of scope; this PR upgrades the existing Object Tree panel only |
-| operation id | `TERMINAL-CHART-LAYERS-UX-20260922` (implicit chart-upgrade programme slice) |
-| protected pack | `Mastermind@ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e` (v1.0.1 / bootstrap 1) |
+| Repository / PR | [mastermindx-market-intelligence/mastermind-terminal #713](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/713) |
+| Title | feat(chart): upgrade searchable study management and touch access |
+| Final PR source head | `8114f2ee9615717d6223219a894dc10b619965b1` |
+| Protected merge | [`3b488ce96f2633613e1bd9d873e96693aef20314`](https://github.com/mastermindx-market-intelligence/mastermind-terminal/commit/3b488ce96f2633613e1bd9d873e96693aef20314), **one-parent squash** |
+| Sole protected parent | `7f98bfd9868a7a71dfd7a0b90c482793dc13f1b6` |
+| Merged at | **2026-09-22 10:40:03 UTC** |
+| Earlier feature commit | `bb5097b4f6cdfebcd39df55fb1196f74689c7778`, parent `3b0340bf831f3112575129f3c2f649ced0e00e78`; three later source-branch integrations lead to the final source head |
+| Source branch | `claude/terminal-chart-layers-ux-20260922` |
+| Complete actual-parent delta | **13 paths, +394/-118**, including **seven PNGs** |
 
-**Nature of change (chart-layer Object Tree upgrade, half-B UI expansion):** the PR rewrites the existing right-rail "Object Tree" panel so the Chairman can find indicators quickly via search, see visibility counts, and operate hide/show/remove on both desktop and touch without losing keyboard focus or hiding meaning behind truncations. The implementation reuses the existing `TerminalShell` props (`OTEntry`, `onEye`, `onRemove`, `onClose` — the existing callbacks and the source-supplied `noRemove` protected-flag are unchanged), introduces transient view-state search only (never edits studies or preferences), and replaces the inline-style layout with a dedicated `ChartObjectTree.module.css`. On narrow viewports the panel is escalated to the browser's native manual Popover top layer to escape the chart's containing/stacking context — feature-detected and cleaned up on media change, no portal, no remount, no second component.
+The old protected metadata labeled `8114f2ee` as the protected merge; it is the final PR source head. The earlier semantic feature commit, final source head, historical fixture base and protected merge have different roles. The #7739 report's description of `8114f2ee` as the squash commit is also corrected here.
 
-**Repair of an actual discovered defect (PR body, §"Completed local qualification and discovered clipping defect"):** an initial mobile CSS-fixed side panel was still clipped by the chart's ancestor at the 390×844 viewport, and fullscreen chrome could cover a control. A stronger viewport plus center-point hit test reproduced that failure. The native-Popover repair passes the improved test; only currently tested Chromium behavior is claimed, and the PR body is explicit that "a legacy-browser fallback was not separately proven." This is a known-claimed scope boundary, not a hidden one.
+The complete delta comprises:
 
----
+| Path / group | Actual-parent delta |
+|---|---|
+| `terminal/components/ChartObjectTree.tsx` | +107/-118 |
+| `terminal/components/ChartObjectTree.module.css` | New, +53/-0 |
+| `terminal/lib/__tests__/chartObjectTree.test.tsx` | New, +66/-0 |
+| `terminal/e2e/chart-object-tree.spec.ts` | New, +88/-0 |
+| `docs/TERMINAL_CHART_LAYERS_UX_2026-09-22.md` | New, +34/-0 |
+| `terminal/docs/pr-crops/chart-layers-ux-20260922/EVIDENCE.json` | New, +46/-0 |
+| Seven PNGs under the same crop directory | One pre-edit baseline plus six desktop/tablet/mobile EN/ZH crops; binary paths are included in the 13-path total |
 
-## 2. Plain-language findings
+The inspected component, CSS, test and browser-source blobs at the protected merge are respectively `49a333e9b5b63009cbec19ea9c3dfb871f5f4b76`, `c1d282504430f27dd88c1e17a78fc5bc2d546584`, `2656b68f546ea547e9359dcc96c60dccd35de2ff` and `76ac47064877144905e065223ebae6ca5a0feab6`.
 
-### 2.1 PASS — guard run on the integration head
+## Retained source findings
 
-The guard was executed against the PR head against the prior #716 base on `origin/master`:
+The source change adds search and touch access to the existing chart Object Tree. It does not establish a new indicator-state owner, chart renderer, backend, mathematical signal or translation system.
 
-```
-$ cd ~/lanes/repos/mastermind-terminal && \
-  git diff --unified=0 7f98bfd9868a7a71dfd7a0b90c482793dc13f1b6 \
-  3b488ce96f2633613e1bd9d873e96693aef20314 \
-  -- 'terminal/app' 'terminal/components' 'terminal/lib' > /tmp/pr713.diff
+- **Search remains view state.** The component's local query filters supplied labels and tags, including hidden studies. It uses the existing `onEye`, `onRemove` and `onClose` callbacks for mutations; filtering itself does not mutate the study collection.
+- **Focus and empty states are explicit in source.** Search receives focus on open. After removal, focus is directed to a surviving action or the search field. Escape clears a nonempty filter before closing. No-match and no-study states use distinct existing translation keys; a clear-filter action remains available.
+- **Removal ownership stays with the caller.** `OTEntry.noRemove` suppresses an entry's remove button. The component has a separate main-series summary without a remove action. The unit source tests a supplied `locked` seed with `noRemove: true`; that seed does **not** establish every TerminalShell assignment, including `_oracle` or comparison entries. No broad shell-ownership audit is claimed.
+- **Translated controls keep their existing owner.** Action labels and empty-state copy use `useT`; labels/tags come from the existing caller. Historical reports' string-count and EN/ZH parity assertions remain attributed; this correction does not run a new full LEX census.
+- **Narrow layout uses the same DOM/component instance.** Source feature-detects the native manual Popover API, promotes the existing section at widths up to 860px, responds to media changes, and removes the listener/popover state on cleanup. The source contains no portal or second component instance for that path.
+- **Legacy-browser fallback remains unproven.** Feature detection and local `z-index:35` do not establish usable fallback behavior when native Popover is unavailable. The historical receipt's claimed Chromium coverage is not cross-browser acceptance, and an untested path is not automatically a demonstrated defect.
 
-$ node terminal/scripts/check_plain_language.mjs \
-    --diff-file /tmp/pr713.diff --json \
-    --root /Users/chriswong/lanes/repos/mastermind-terminal
-```
+These are readings of the immutable source and test definitions, not a fresh interactive verification or claim about deployed behavior.
 
-Result:
+## Historical fixture evidence and its limits
 
-```json
-{"version":1,"mode":"enforce-added","base":"origin/master","baseResolved":true,
- "vocabulary":{"declaredTerms":83,"overlaySource":"terminal/lib/plainLabels.ts",
-               "overlayPresent":false,"overlayTerms":0},
- "scannedFiles":2,"findings":[],"legacy":[],
- "counts":{"blocking":0,"legacyReported":0,"waived":0},"nulls":[]}
-exit=0
-```
+The [original evidence manifest](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3b488ce96f2633613e1bd9d873e96693aef20314/terminal/docs/pr-crops/chart-layers-ux-20260922/EVIDENCE.json), blob `80a2f264eb2b30f19cfd2c2c60e3daebaeab8b33`, explicitly records:
 
-**Note on the `scannedFiles: 2` figure (sparse-worktree disclosure):** the local `mastermind-terminal` checkout is sparse — the `WorktreeCreate` hook applies `config/sparse_worktree.json` and excludes `terminal/app`, `terminal/lib`, `site/`, `data/`, `mockups/`. `listScanFiles` therefore walked only the files present on disk: `terminal/components/ChartObjectTree.tsx` (the only file in SCAN_GLOBS that the diff touches) and `terminal/components/vol/VolTermPanel.tsx` (the only other `.tsx` file in the components subtree of this sparse checkout). `terminal/lib/i18n.tsx` (EXTRA_FILES) was not present locally — fetched via `git show origin/master:terminal/lib/i18n.tsx` for the LEX parity audit below. `terminal/lib/__tests__/chartObjectTree.test.tsx` and `terminal/e2e/chart-object-tree.spec.ts` are in the guard's `EXCLUDE_RE` and never contribute findings; the new `terminal/components/ChartObjectTree.module.css` is not in `SCAN_GLOBS` and never would. Forward-only `enforce-added` blocking semantics: no `added`-line violation ⇒ guard exits 0.
+- `fixture: true` and `productionProof: false`.
+- Historical fixture base `3b0340bf831f3112575129f3c2f649ced0e00e78`, capturedAt `2026-09-22T03:09:04.967361+00:00`.
+- Declared theme **Terminal dark-only**; EN/ZH crops at **1440x900, 820x1180 and 390x844**.
+- Four source-file SHA256 entries, seven crop SHA256 entries, original commands and author-reported results.
 
-**Coverage statement:** the diff's only user-visible JSX surface in the guard's scan scope is `terminal/components/ChartObjectTree.tsx`; that file was scanned, produced zero findings (R1 raw_state_enum / R2 internal_study_slug / R3 raw_slug_interpolation / R4 untranslated_stat_token / R5b missing_zh all clean), and `nulls: []` because the touched file has visible added lines (`visibleAddedCount > 0`) — there is no `not evaluable` null to disclose.
+Root recomputed the four immutable source-file SHA256 digests and matched all four manifest entries. This establishes that identity relationship only. The PNG digests were **not** recomputed and the images were not recaptured or newly visually accepted. Image hashes identify artifacts; they do not prove focus behavior, state mutation, clipping, motion suppression, browser compatibility or live data.
 
-### 2.2 All new visible strings route through `t()` with confirmed EN+ZH LEX parity
+| Historical manifest field | Reported result, not rerun |
+|---|---|
+| unit | 379 files; 6088 passed; 4 existing todo |
+| component | 7 passed |
+| browser | 14 passed; 10 intentional viewport skips; 0 failed; retries 0 |
+| layerCases | 7 passed; all target centers reachable; canonical preferences changed by real controls |
+| typecheck / scopedLint | PASS / PASS |
+| mutation | Initial mobile clipping failed target-center hit test; native top-layer repair passed |
 
-Every user-visible string in the new `ChartObjectTree.tsx` is a `t("…")` call against a key whose LEX entry carries an `[en, zh]` tuple. Verified by `git show origin/master:terminal/lib/i18n.tsx | grep` over the 14 keys touched by the PR:
+The historical browser command covers **both** the Object Tree and chart-view-reset specs on desktop/tablet/mobile projects. Its combined 14-pass total is not seven viewport definitions or fourteen Object Tree test definitions. The retained Object Tree source has three Playwright test definitions; its responsive round-trip test skips non-desktop projects. The unit source has seven `it` definitions. These static counts do not independently establish execution.
 
-| key | EN | ZH | where used |
-|---|---|---|---|
-| `objectTree` | "Object tree" | "图层树" | panel heading `<h2 id={`${id}-title`}>` |
-| `drawSearch` | "Search" | "搜索" | search `aria-label` / `placeholder` |
-| `smIndicators` | "Indicators" | "指标" | header subtitle ("`{entries.length} 指标`"), search label concatenation |
-| `smClose` | "Close" | "关闭" | close button `aria-label` / `title` |
-| `lgShow` | "Show" | "显示" | eye-toggle `aria-label` / `title` (when entry.hidden) |
-| `lgHide` | "Hide" | "隐藏" | eye-toggle `aria-label` / `title` (when not hidden) |
-| `remove` | "Remove" | "移除" | remove button `aria-label` / `title` |
-| `clearFilter` | "Clear filter" | "清除筛选" | clear-filter button + empty-state CTA |
-| `scr2EmptyTitle` | "No matches" | "没有匹配结果" | empty-state body when filter returns no rows but entries exist |
-| `ctvMainSeries` | "Main series" | "主图序列" | main-series small label |
-| `ctvOverlays` | "Overlays" | "叠加指标" | overlay group `<h3>` |
-| `ctvSubPanes` | "Sub-pane indicators" | "副图指标" | sub-pane group `<h3>` |
-| `ctvNoIndicators` | "No indicators active." | "暂无活跃指标。" | empty-state body when no entries exist at all |
-| `isTabVisibility` | "Visibility" | "可见性" | visibility-count `aria-label` ("`可见性: {visible}/{entries.length}`") |
+The [browser-test source](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3b488ce96f2633613e1bd9d873e96693aef20314/terminal/e2e/chart-object-tree.spec.ts) contains checks for:
 
-**No new LEX entry is added by this PR** — every key already existed on the integration base; the upgrade is purely a UI rewire of keys that were already declared. Bilingual parity therefore holds by inheritance; no zh routing change is owed.
+1. Search focus, finding a study, hide/show/remove state, localStorage preference changes, Escape ordering and horizontal overflow.
+2. Chinese heading/search/action visibility; on non-desktop projects, control viewport reachability, center-point hit testing and minimum width/height.
+3. A desktop-to-mobile-to-desktop filter round trip in the same panel, including native-popover state and preserved query/row count.
 
-### 2.3 No raw slugs, state enums, or stat tokens reach a user-visible position
+Reading these checks is not a new execution. In particular, the source sets `reducedMotion: "reduce"` and then captures a screenshot; it does **not** explicitly assert computed animation or transition suppression. The historical mutation and RED/GREEN claims remain author-reported receipts, not a regression reproduced by this records correction.
 
-- **R1 raw_state_enum:** the `enumRe` (`/\b([A-Z][A-Z0-9]+(?:_[A-Z0-9]+)+)\b/g`) walk over visible text spans in `ChartObjectTree.tsx` returns zero matches. The only UPPER_SNAKE identifiers in the file are TypeScript-side (`OTEntry`, `noRemove`, `useId`, `useEffect`, `useMemo`, `useRef`, `useState` etc.) — none ever renders as visible text. `PLAIN_VOCABULARY.allowTokens` (`RSI`, `MACD`, `ETF`, `NAV`, `AI`, `API`, `USD`, `HKD`, `CNY`) is irrelevant: no token from the surface ever reaches user-visible text.
-- **R2 internal_study_slug:** the slug set (`trust_tier`, `event-edge`, `msc_regime`, `mscRegime`, `flowScore`, `gexdesk`, `prophet`, `oracle`, `conductor`, `synapse`, `lobe`, `tripwire`, `falsifier`, `quiet_accumulation`, `bottom_watch`) never appears in a visible span. The PR does not introduce any new slug-bearing visible copy; the indicator labels are supplied by the parent's `OTEntry.label`/`OTEntry.tag` (source of truth for study identity) and are rendered as plain English / Chinese study names, never as internal study slugs.
-- **R3 raw_slug_interpolation:** the visible `{row.regime}` / `{cfg.type}` / `{row.kind}` family of patterns does not appear in this file. The only interpolation in visible spans is `{symbol}`, `{entries.length}`, `{visible}`, `{entry.label}`, `{entry.tag}` — all rendered text or counts, not slug fields. The `PLAIN_VOCABULARY.slugFields` set (`state`, `regime`, `status`, `tier`, `slug`, `code`, `kind`, `category`, `type`, `bucket`, `classification`, `verdict`, `urgency`) is not surfaced as a visible interpolation in this PR.
-- **R4 untranslated_stat_token:** the stat token set (`iv_rank`, `ivr`, `gex`, `dex`, `vanna`, `charm`, `dte`, `oi`, `pcr`, `rv30`, `hv20`, `atr14`, `zscore`, `pctl`, `yoy`, `qoq`, `ttm`, `cagr`) is absent from visible text spans. The visibility count is rendered as `{visible}/{entries.length}` (a ratio, no token name); the search box is filtered on `${entry.label} ${entry.tag ?? ""}` (label / tag text only); no raw statistic token name ever reaches a user-visible position.
-- **R5a/R5b missing_zh:** every visible literal in `ChartObjectTree.tsx` is wrapped in `t("…")` with a confirmed LEX pair above; no added English literal in a user-visible position without zh routing. `terminal/lib/i18n.tsx` itself was not modified by the PR, so the LEX-arity check is unchanged.
+## Plain-language findings: keep scan scopes distinct
 
----
+The reports describe different historical scans and should not be collapsed into one estate-wide green result:
 
-## 3. Theme findings
+| Report / quoted scope | Historical reported counts | Limit |
+|---|---|---|
+| Original #7731 sparse-worktree scan | 2 scanned files; 0 blocking, 0 legacy, 0 waived, 0 nulls | The report names the sparse checkout and its missing paths. It is not a 252-file full-census result. |
+| Original #7739 full-census report | 252 scanned files; 0 blocking, 6 legacy, 0 waived, 0 nulls | The legacy entries are reported outside the changed component; no fresh census verifies their present state. |
+| Protected #7740 report | 252 scanned files; embedded JSON says 0 blocking, 6 legacy, **1 waived**, 0 nulls | Its heading says 0 waived while its embedded JSON/table says 1. This internal discrepancy is preserved in the immutable original and not silently harmonized. |
 
-### 3.1 PASS — Terminal dark-only, no new theme primitives
+The sparse report describes fetching the missing i18n source separately for its translation assessment. Its quoted command, scan result, claimed reproduction and translation findings remain attributed evidence. The historical 252-file reports and their six legacy findings are also attributed; this correction does not certify the current vocabulary overlay or rerun the guard.
 
-Per the integration base and `terminal/docs/pr-crops/chart-layers-ux-20260922/EVIDENCE.json` (`"theme": "Terminal dark-only"`), Terminal remains a single-theme product; the new `ChartObjectTree.module.css` introduces **no new color token, no new type ramp, no new spacing scale, no new rounding scale, no new motion grammar**.
+The retained component source uses existing translation keys for its controls and contains distinct no-match/no-study states. Those useful source findings are retained without adopting blanket statements that every possible caller-supplied label or current product surface has been audited.
 
-**Token usage (existing terminal design-system tokens only — full inventory referenced from `terminal/app/globals.css` token layer):**
+## Theme, touch and accessibility findings
 
-- `var(--panel-2)` — root background
-- `var(--panel)`, `var(--panel-3)` — surfaces (search, main-series card, clear button)
-- `var(--text)`, `var(--text-2)`, `var(--text-dim)` — type ramp colors
-- `var(--line)` — borders / separators
-- `var(--brand)` — focus outline + main-series icon accent
-- `var(--danger)` — remove hover state
-- `var(--font-ui)` — UI text
-- `var(--font-mono)` — count badge + tag small text
+The audited change **does alter a Terminal visual surface**: a rewritten component, new CSS module, search, focus treatment and responsive side sheet. Reusing tokens or adding no global palette does not make visual review structurally inapplicable. The manifest's dark-only contract is a dated statement of that candidate's scope; this record does not determine today's design law.
 
-**No new CSS variable is added.** Every visual value resolves through the existing token graph; the new rules read the same design system the surrounding panel already reads.
+Source reuses existing panel/text/brand/line/danger/font tokens, with a local shadow `rgb(0 0 0 / .24)`, local `z-index:35` and data-driven per-study icon color. There is no new theme-token file or light-mode branch in this target delta. These are source observations, not a rendered theme acceptance.
 
-**Two inline values are introduced (intentional, narrowly scoped, dark-art-direction-consistent):**
+The CSS specifies 44px action dimensions on narrow/coarse-pointer layouts, a 16px touch input font, safe-area insets, contained overscroll, wrapping names, visible-focus styles and a reduced-motion override. The browser source contains selected control-dimension and reachability assertions. Neither CSS declarations, screenshots nor digests alone establish universal accessibility conformance, iOS behavior or computed motion suppression; no such fresh determination is made.
 
-- `.root:global(.ot-root) { … box-shadow:-12px 0 32px rgb(0 0 0 / .24); }` on the `@media (max-width:860px)` side-sheet variant. This is the same dark-only inline RGB shadow the existing Terminal dark direction uses elsewhere (e.g. dialog backdrops) — a single hardcoded shadow rather than a new `--shadow-*` token. Reasonable for a one-off side-sheet; flagged for consistency only, not as a violation. If a `--shadow-side-sheet` token existed on the integration base, the author would have used it; introducing one in this slice would be scope-creep against the bounded half-B fix. **Recommended follow-up (non-blocking):** if a future PR touches more side-sheet surfaces, promote this value to a token in the same PR — keeping the inline value here is the lower-risk choice for an isolated UI fix.
-- `z-index: 35` on the same `@media (max-width:860px)` rule. This sits above the chart's stacking context but is owned by the native Popover top layer when activated, so the z-index is a fallback for browsers without Popover support (the feature-detection block in `ChartObjectTree.tsx`). Single value, no other z-index reassigned, no global z-index arms race introduced. **Consistent with the existing Terminal layering convention** (`--z-*` tokens are not used here either; the surrounding options-flow / chart-settings panels likewise use small integer z-indices for fixed surfaces).
+**Optional future design note:** shadow-token or touch-floor consolidation may be considered only as part of a warranted future change across multiple surfaces. This historical note creates no standalone tokenization task, fallback implementation, new palette or product work.
 
-**Type ramp / spacing / rounding:** all font / size / weight declarations use the existing `var(--font-ui)` and `var(--font-mono)` tokens with concrete weights / sizes that match the surrounding `.ot-row` family the file replaces — no new size scale, no new weight ramp, no new letter-spacing, no new line-height scale. `border-radius` values (5/7/8/9px) are concrete values used in the existing panel family and do not introduce a new rounding scale.
+## Validated-claims scope
 
-**Motion grammar:** `@media (prefers-reduced-motion: reduce) { .root *, .root *::before, .root *::after { animation:none!important; transition:none!important; } }` is the same `prefers-reduced-motion` block the existing Terminal panels use to disable incidental transitions. No new animation, no new transition, no new easing curve is introduced.
+The historical reports cite Macro's `check_validated_claims.py` while also stating that its scanned paths exclude Terminal UI. An absent MISS row outside that checker's coverage **cannot establish a Terminal PASS**. The Macro check's unchanged behavior and the target's absence from its input set are coverage limits, not positive validation.
 
-**Breakpoints:** one new media query `@media (max-width:860px), (pointer:coarse)` for touch sizing (44 px controls), and one new `@media (max-width:860px)` for the side-sheet layout — both adjacent to the existing terminal breakpoint convention (the surrounding chart settings and flow-board panels already use 860 px as the phone boundary). No new breakpoint introduced; the new queries live within the existing breakpoint family.
+The reports' scoped copy assessments, historical anti-promotion statements and reported absence of specific terms remain attributed conclusions. Disclaimers do not themselves prove correctness or waive required tests or public proof. This chart-management source does not introduce a rank, admission, sizing, execution or trading authority; the archived evidence does not grant one.
 
-### 3.2 East-Asian up/down convention (`html[data-updown="east"]`) preserved
+## Preserved original records and source custody
 
-The new CSS touches no token that the East-Asian red-up convention flips (`--up`, `--down`, `--buy`, `--sell`, `--regime-up`, `--up-rgb`, `--down-rgb`, `--rebuy`, `--cut`). The only color tokens used (`--text`, `--text-2`, `--text-dim`, `--line`, `--brand`, `--danger`, `--panel`, `--panel-2`, `--panel-3`) are convention-invariant. A CN/HK/JP viewer therefore sees the exact same Object Tree panel as an EN viewer.
+The following complete reports remain distinct immutable evidence. This corrected account replaces the misleading active summary at the existing path; it does not embed another full narrative or claim the originals were identical.
 
-### 3.3 `prefers-reduced-motion` parity
+| Historical record | Immutable full report | Original blob |
+|---|---|---|
+| Protected #7740 edition, merged 2026-09-22 21:31:45 UTC | [Full protected report at 0e370dc3](https://github.com/mastermindx-market-intelligence/macro/blob/0e370dc3a3d61e53f92cde6407dee6a9959fb6d0/orch/audits/mastermind-terminal_PR-713.mm.md) | `e86927e4af40941827c572c2e92163133786947e` |
+| Original #7731 edition | [Full report at cced4165](https://github.com/mastermindx-market-intelligence/macro/blob/cced4165af78388dd4038c36099dce1a0c22bdfc/orch/audits/mastermind-terminal_PR-713.mm.md) | `07713d37234165dfe5e9e88b5525a1369b012fa9` |
+| Original #7739 edition, closed unmerged | [Full report at aa516ddb](https://github.com/mastermindx-market-intelligence/macro/blob/aa516ddbbcddb9fa337a07b9431768713f0b0545/orch/audits/mastermind-terminal_PR-713.mm.md) | `6bf57a39cf767aa66c595f6529bb60def54041b5` |
 
-The new `@media (prefers-reduced-motion: reduce)` block uses the same blanket `animation:none!important; transition:none!important;` pattern as the surrounding Terminal panels. Motion on this surface under reduced-motion preference is fully suppressed.
+At correction intake, the protected payload at Macro base `b3134cb2ad3b594c129fd5c6db3f294cf40bfba6` was byte-identical to the #7740 merge. Root re-read both original reports and verified their blob identities; #7739's existing branch still pointed to `aa516ddbbcddb9fa337a07b9431768713f0b0545`. Its 2026 cleanup statement is attributed to its body and is not a current global host/process census.
 
----
+The historical reports use qwen-auditor-style labels. Their source commits and labels do not establish that an actual qwen worker executed, and their cited older Skillpack pins or IDLE-mode instructions are dated provenance, not current operating law.
 
-## 4. Validated-claims findings
+The #7739 original dependency-install/proof-refusal record remains in its PR history; it is not silently cleared by this correction. Its closed request, no-force/no-delete boundaries, original report, branch and history remain intact. This records carrier does not resolve unrelated holds, unknown effects, source-workspace custody or live acceptance.
 
-### 4.1 PASS — no `validated` / `falsifier` / `证伪` claim in a user-visible position
+## Result and remaining boundaries
 
-- **PR body** uses the conventional carrier-cohort language: "BUILT_NOT_PROVEN", "Current capability", "production deployment has not been started", "Required protected CI, merge and exact-target live verification remain owed" — all of which are honest status statements, not the words `validated` / `falsifier` / `证伪` / `thesis refuted` / `proof`. These are GitHub-only markdown and never reach the rendered UI.
-- **Commit message** (`feat(chart): make study layers searchable and touch-accessible (#713)`) is conventional — no `validated`, no `falsifier`, no `证伪`, no `proof`, no `thesis refuted`, no `peak` claim. Conventional commit subject only.
-- **`docs/TERMINAL_CHART_LAYERS_UX_2026-09-22.md`** (new masterplan/qualification file) is a maintainer-internal document — not under `terminal/app/`, not under `terminal/components/`, and not in `SCAN_GLOBS`. It carries the words "discriminating verification", "RED on protected base", "GREEN on candidate" (all of which are conventional carrier language naming the test harness), but it is never rendered to a user.
-- **`ChartObjectTree.tsx`** contains zero user-visible string literals that name a validation or falsifier outcome. Every visible string routes through `t("…")`; the keys audited above (`objectTree`, `drawSearch`, `smIndicators`, `smClose`, `lgShow`, `lgHide`, `remove`, `clearFilter`, `scr2EmptyTitle`, `ctvMainSeries`, `ctvOverlays`, `ctvSubPanes`, `ctvNoIndicators`, `isTabVisibility`) all carry EN+ZH lexicon entries that name UI affordances, never a verdict.
-- **`chartObjectTree.test.tsx`** (component test, in `terminal/lib/__tests__/` — `EXCLUDE_RE`) uses the English labels `objectTree, drawSearch, smIndicators, smClose, lgShow, lgHide, remove, clearFilter, scr2EmptyTitle, ctvMainSeries, ctvOverlays, ctvSubPanes, ctvNoIndicators, isTabVisibility` in the `vi.mock("@/lib/i18n")` fixture only — these are key names, not display copy.
-- **`chart-object-tree.spec.ts`** (Playwright e2e, in `terminal/e2e/` — `EXCLUDE_RE`) uses English / Chinese test-side assertions ("Hide Moving Averages", "Show Relative Strength", "Remove Moving Averages", "Close", "图层树", "搜索 指标", "隐藏 Moving Averages", "关闭") that are the rendered UI text, not validation claims.
+The correction preserves the useful union: searchable study management, existing mutation callbacks, focus retention, distinct empty states, translated controls, touch access, source-owned removal protection, explicit fixture limits and unproven legacy-browser fallback. It corrects identities, scan scopes, visual/checker coverage and unsupported evidence claims in the retained account.
 
-### 4.2 Discriminating verification (PR body) is concrete and reproducible
-
-The PR body's §"Completed local qualification and discovered clipping defect" names a real RED/GREEN pair:
-
-- **RED base:** initial mobile CSS-fixed panel — clipped by the chart's ancestor at 390×844 viewport, fullscreen chrome covering a control. Reproduced via a stronger viewport plus center-point hit test.
-- **GREEN candidate:** integration head `3b488ce9` — the native-Popover side-sheet repair passes the improved test; final phone/tablet crops show the full panel with every study action reachable. **Claim scope:** "Only currently tested Chromium behavior is claimed; a legacy-browser fallback was not separately proven." This is an explicit, narrow, reproducible claim — not a vague "validated".
-
-**Word-budget / glance-tier check (parity with `research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md`):** the Object Tree panel does not introduce a glance-tier surface of its own; it is a settings / management surface. The PR introduces no new glance-tier copy, no new stat tile, no new front-facing claim. The visibility count (`{visible}/{entries.length}`) is an in-panel operator indicator with a full `aria-label` ("Visibility: …" / "可见性: …"); it is not a glance-tier stat.
-
-### 4.3 LEX additions = 0
-
-This PR does **not** add a new LEX entry. The 14 keys used all existed on the integration base. The bilingual layer is unchanged in scope — only a UI surface that was already declared is now wired.
-
----
-
-## 5. Overall verdict
-
-**PASS** — clean, bounded, well-evidenced chart-layer Object Tree upgrade; no plain-language / theme / validated-claims violations.
-
-The PR replaces the existing inline-styled Object Tree panel with a module-CSS + dedicated tsx rewrite that adds transient search, accessibility-grade focus management (Escape clears the filter before closing; removal restores focus inside the surviving controls/search rather than dropping it onto the document; search receives focus on open), 44 px touch targets on `pointer:coarse` / `(max-width:860px)`, a native-Popover side-sheet at narrow widths (feature-detected, cleanup on media change), and an explicit `prefers-reduced-motion: reduce` block. Every visible string routes through `t("…")` against an existing LEX key with confirmed EN+ZH parity; no new copy, no new tokens, no new motion, no new breakpoint. The guard ran clean on the integration head against the prior #716 base on `origin/master`: 0 blocking findings, 0 legacy findings, 0 waived, 0 nulls, 2 scanned files (sparse-worktree disclosure; the only in-scope user-visible JSX file in the diff was scanned). The single inline shadow `rgb(0 0 0 / .24)` and the single z-index `35` are dark-art-direction-consistent narrowly-scoped values, not new tokens — flagged as a non-blocking consistency note only. The PR body correctly classifies the slice as `BUILT_NOT_PROVEN` with "protected CI, merge and exact-target live verification remain owed"; that is honest, not a validated-claims violation. Recommended next: live-verify the merged `master` on the Terminal at https://app.mastermind-x.com/terminal right-rail Object Tree at 1440×900 desktop and 390×844 mobile viewports, confirming the search box receives focus on open, the visibility count reads `visible/total`, the eye / remove buttons carry EN + ZH labels per active language, and a real hide/show/remove action through the panel mutates `localStorage["mm.indHidden"]` / `["mm.inds"]` per the e2e assertions — that is the live step the terminal `AGENTS.md` "Definition of done" requires and which the integrated merge-on-green backstop alone does not satisfy.
+This is a **records correction only**. No new blanket product PASS is issued. Any subsequent source release, deployment or public verification must use its actual current carrier and authority. Historical related-PR notes about #701/#705, #707 and #702 remain in the original reports and do not reassign their work. The parent charting mission's current completion is not adjudicated here.

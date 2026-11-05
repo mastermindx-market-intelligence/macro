@@ -1,0 +1,24 @@
+{
+  "revision": "R23",
+  "status": "BUILT_NOT_PROVEN",
+  "applied_to_paper": false,
+  "production_enabled": false,
+  "source_blob": "1a616e0ee1bfc7dce63783ca7b53201f254fc69a",
+  "source_bytes": 21188,
+  "source_sha256": "991dc0095a40e18199b9c4b12f041f71304edd396c464a491161b3a37637be5c",
+  "verification": {
+    "baseline_new_cases": {"total": 21, "passed": 6, "failed": 15},
+    "final_node_suite": {"total": 97, "passed": 97, "failed": 0, "unchanged_original": 70, "new_r23": 27},
+    "deliberate_broken_variants": {"total": 12, "detected": 12},
+    "source_syntax": "PASS",
+    "execution_kind": "Node with recording DOM; not browser",
+    "browser_runs": 0,
+    "native_content_writes": 0,
+    "r22_template_checks": "20 historical passes, unchanged template and stylesheet, not rerun"
+  },
+  "new_test_blob": "d566715e5c90678601553cf3053f03583ff2b005",
+  "mutation_runner_blob": "b3816a9dcad3370de8c1d9e10a50e3c0868382cc",
+  "original_test_blobs_unchanged": ["7cacbc283c30fb41a5cc77e14af916433c9f544b", "59ce7eb93c5bad4e6745a8c555ce54e68fe89871", "2406fa4ff069a5537b1a1dbb4bffc7517e8fe741"],
+  "setup_failures": ["Initial cyclic-object assertion run terminated with SIGKILL; cause not independently profiled. Boolean identity assertions allowed the same behavior tests to complete.", "First combined regression had 90 passes and one singular/plural status-copy failure; copy was repaired without changing the original tests."],
+  "outstanding": ["production owner adoption and CI registration", "paired assets and serving qualification", "real browser/device/locale/theme evidence", "native M1 Paper connection", "independent review and production acceptance", "separate R18 and R19 holds unchanged"]
+}

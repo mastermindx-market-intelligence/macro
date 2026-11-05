@@ -302,3 +302,76 @@ assert.equal(refused.label, 'Queue for X');
 assert.equal(refused.button.disabled, false);
 assert(refused.detail.includes('Refused by'));
 """)
+
+
+def test_publisher_receipt_labels_preserve_delivery_uncertainty():
+    """A legacy posted record is not independently verified delivery evidence."""
+    start = APP.index('RENDER.marketing_publish = async () => {')
+    end = APP.index('/* Dark-desk park readout', start)
+    renderer = APP[start:end]
+    assert '["posted", "Publisher records", "var(--muted)"]' in renderer
+    assert 'Recent publisher records' in renderer
+    assert 'not delivery confirmation or permission to resend' in renderer
+    assert '["posted", "Posted",' not in renderer
+    assert 'What goes out next, what is stuck, and what already went.' not in renderer
+    assert 'Live posts land here with their Buffer receipt' not in renderer
+    assert 'Engagement is polled after the post lands' not in renderer
+    assert 'Submission receipts and confirmed delivery remain separate.' in renderer
+    # Preserve the existing ledger fields, receipt navigation, and measurement nulls.
+    assert 'const posted = d.recent_posted || [];' in renderer
+    assert 'posted: ["#pub-posted",' in renderer
+    assert 'r.external_url' in renderer and 'r.external_id' in renderer
+    assert 'v2 == null ?' in renderer and 'not measured yet' in renderer
+    assert 'recorded ${a.posted || 0}' in renderer
+    assert 'pubWireGoLive(d);' in renderer
+    assert 'onclick="pubRunDryRun(this)"' in renderer
+
+
+def test_site_inventory_searches_all_rows_before_bounded_pagination():
+    _node_assert("""
+const select = new Function(block('function adminInventoryPage(', 'RENDER.content = ') + '; return adminInventoryPage;')();
+const pages = Array.from({length:12622}, (_, i) => ({name: `page-${i}.html`, kb:i, age_hours:i}));
+const original = JSON.stringify(pages);
+assert.equal(select(pages).rows.length, 50);
+assert.deepEqual(select(pages).rows, pages.slice(0,50));
+assert.equal(select(pages, '', 2).rows[0].name, 'page-50.html');
+assert.equal(select(pages, '  PAGE-12621  ').rows[0].name, 'page-12621.html');
+assert.equal(select(pages, 'not-a-page').total, 0);
+assert.equal(select(pages, '', Infinity).page, 1);
+assert.equal(select(pages, '', -1).page, 1);
+assert.equal(select(pages, '', 99999).page, 253);
+assert.equal(select(pages, '', 253).rows.length, 22);
+const seen = []; for (let n=1; n<=253; n++) seen.push(...select(pages,'',n).rows.map(p=>p.name));
+assert.equal(seen.length,12622); assert.equal(new Set(seen).size,12622);
+assert.equal(JSON.stringify(pages), original);
+const empty = select([], '', 7);
+assert.deepEqual([empty.page,empty.pages,empty.from,empty.to,empty.total],[1,1,0,0,0]);
+""")
+
+
+def test_site_inventory_late_initial_read_cannot_replace_a_new_page():
+    _node_assert("""
+const vm = require('node:vm');
+let finish; const view = {innerHTML:'new page', isConnected:true};
+const sandbox = {RENDER:{}, CURRENT:'content', ADMIN_RENDER_EPOCH:1, $:()=>view,
+  api:()=>new Promise(resolve=>{finish=resolve;}), card:()=>'', esc:String, fmtAge:String};
+vm.createContext(sandbox);
+vm.runInContext(block('function adminInventoryPage(', '/* ---- NEURAL WEB (W8a)'),sandbox);
+const pending = sandbox.RENDER.content();
+sandbox.CURRENT='overview'; sandbox.ADMIN_RENDER_EPOCH=2;
+finish({pages:[],total_pages:0}); await pending;
+assert.equal(view.innerHTML,'new page');
+""")
+
+
+def test_site_inventory_has_named_controls_and_read_error_recovery():
+    content = APP.split('RENDER.content = async () => {', 1)[1].split('/* ---- NEURAL WEB (W8a)', 1)[0]
+    assert 'id="inventorySearch" type="search"' in content
+    assert 'label for="inventorySearch"' in content
+    assert 'aria-live="polite"' in content
+    assert 'adminInventoryPage(d.pages, search.value, page)' in content
+    assert 'page = 1; draw();' in content
+    assert 'Link check unavailable. Try again.' in content
+    assert 'Live-site check unavailable. Try again.' in content
+    assert '$("#view").appendChild' not in content
+    assert 'post(' not in content and 'dispatch(' not in content

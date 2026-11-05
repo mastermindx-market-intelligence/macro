@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-19T11:46:29.460471+00:00",
+  "fresh_main": "f42ca7e130be35c43743148377d5debb5341d7d6",
+  "merge_base": "69dd6e774cc48223005426765e74aed193d55954",
+  "fetch": {
+    "args": [
+      "git",
+      "fetch",
+      "origin",
+      "main"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "From https://github.com/mastermindx-market-intelligence/macro\n * branch                        main       -> FETCH_HEAD\n"
+  },
+  "checks": [
+    {
+      "args": [
+        "python3",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/shared-shell-css-visual-20261019T1107/current-pr-ui.diff"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}
