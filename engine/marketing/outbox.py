@@ -1772,6 +1772,7 @@ def transition(
     receipt: dict | str | None = None,
     now: datetime | None = None,
     _state: dict | None = None,
+    prepared_payload: dict[str, Any] | None = None,
 ) -> bool:
     """Append a status transition row to status_ledger.jsonl.
 
@@ -1781,6 +1782,10 @@ def transition(
     now: stamps the row's `at` (default wall-clock UTC). Tests inject a fixed
     now so posted_today_by_account() — which counts by `at` date — stays
     deterministic; production callers leave it unset.
+
+    prepared_payload: the exact frozen keyword arguments sent to publish().
+    Operator-approved dispatch requires matching current AND prepared payloads;
+    internal approvals without an operator decision keep their existing behavior.
 
     _state (internal): a preloaded fold_state() snapshot for batch callers;
     kept current on success so N sequential transitions fold once, not N times.
@@ -1805,6 +1810,12 @@ def transition(
             # retain their existing transition semantics.
             if current == "approved" and to == "posting":
                 decision = (state.get("decisions") or {}).get(item_id) or {}
+                if decision.get("decision") == "hold":
+                    log.warning(
+                        "outbox.transition: latest operator decision holds %r before dispatch",
+                        item_id,
+                    )
+                    return False
                 if decision.get("decision") == "approve":
                     item = state["items"].get(item_id)
                     expected_digest = str(decision.get("payload_digest") or "")
@@ -1812,10 +1823,19 @@ def transition(
                         _approval_payload_digest(item, root=root)
                         if item is not None else ""
                     )
-                    if not expected_digest or expected_digest != actual_digest:
+                    prepared_digest = (
+                        _approval_payload_digest(item, prepared_payload=prepared_payload)
+                        if item is not None and prepared_payload is not None else ""
+                    )
+                    if (
+                        not expected_digest
+                        or expected_digest != actual_digest
+                        or expected_digest != prepared_digest
+                    ):
                         log.warning(
                             "outbox.transition: approval payload changed before "
-                            "dispatch for %r; fresh operator approval required",
+                            "dispatch for %r; current and prepared payloads must both "
+                            "match the operator decision",
                             item_id,
                         )
                         return False
@@ -2029,19 +2049,39 @@ def _approval_payload_digest(
     *,
     root: Path | str | None = None,
     sidecar: dict[str, str] | None = None,
+    prepared_payload: dict[str, Any] | None = None,
 ) -> str:
     """SHA-256 of publish-affecting fields the operator approved."""
-    media_sidecar = _approval_media_sidecar(root) if sidecar is None else sidecar
+    if prepared_payload is None:
+        media_sidecar = _approval_media_sidecar(root) if sidecar is None else sidecar
+        text = str(item.get("text") or "")
+        link = str(item.get("link") or "")
+        media_urls = _approval_media_urls(item, sidecar=media_sidecar)
+    else:
+        # Consume the actual send arguments, never re-resolve a newer sidecar.
+        # Missing/malformed fields refuse the enclosing transition without writes.
+        text = prepared_payload["text"]
+        link = prepared_payload["link"]
+        media_paths = prepared_payload["media_paths"]
+        if (
+            not isinstance(text, str)
+            or (link is not None and not isinstance(link, str))
+            or (media_paths is not None and not isinstance(media_paths, (list, tuple)))
+            or any(not isinstance(url, str) for url in (media_paths or []))
+        ):
+            raise ValueError("invalid prepared publish payload")
+        link = link or ""
+        media_urls = list(media_paths or [])
     payload = {
         "schema": "marketing.approval_payload/v1",
         "account": str(item.get("account") or ""),
         "kind": str(item.get("kind") or ""),
-        "text": str(item.get("text") or ""),
+        "text": text,
         "as_of": str(item.get("as_of") or ""),
         "scheduled_at": str(item.get("scheduled_at") or ""),
         "slot": str(item.get("slot") or ""),
-        "link": str(item.get("link") or ""),
-        "media_urls": _approval_media_urls(item, sidecar=media_sidecar),
+        "link": link,
+        "media_urls": media_urls,
     }
     encoded = json.dumps(
         payload,

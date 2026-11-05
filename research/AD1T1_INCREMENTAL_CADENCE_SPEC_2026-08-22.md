@@ -738,3 +738,124 @@ none authorized).
   live `timestamp` ever parses tz-aware/unparseable, oi_D degrades to
   `date_unresolved` → lane `partial` → sentinel pages: fail-visible, never
   fabricated.
+
+## October 24 amendment — default-off SPY D-session observation (source preparation)
+
+The four §A4 cells, universe, source-health threshold, canonical writer lock,
+worker ceiling, 65-minute daily budget and nonsession/pre-gate no-op remain the
+production contract. Historical July 31 empty responses do not establish a
+permanent same-day availability rule. Current provider documentation names
+17:15 ET EOD generation; that nominal time is neither current-account access nor
+first availability. OI report dates and their prior-position roles remain separate.
+
+The existing `_daily_main` now has a private optional `d_session_observation`
+argument, default `None`. No CLI flag, environment parser, plist or wrapper
+supplies it. `_DSessionObservation.transport` also defaults to `None`. The source
+collector now provides `bounded_spy_d_session_transport(day)` through `_get_csv`
+and native normalizers, freezing origin/date/parameters and the shared budget and
+deadline. No production caller binds it: an explicit preparation with transport
+None returns `bounded_transport_not_bound`, with zero pilot requests or claim.
+Source implementation is not installed-source/access/custody qualification, an
+allocation or an enabled product feature.
+
+The sole proposed rung is a natural session invocation entering at 17:30 ET,
+using the canonical calendar and frozen D/S. Forced, nonsession, pre-gate, other
+rung and lock-refused invocations make zero pilot requests. Exact local SPY OI[D]
+and declared prior-session OI[S] must already exist and validate before a claim.
+Their actual dates, file hashes/lengths and read clocks are retained; a read clock
+is not vendor first availability. A future separately admitted transport gets at
+most two physical attempts TOTAL: EOD[D], then full-order Greeks[D], SPY only,
+with the existing explicit requested-version-1 policy. Probes, retries, redirects,
+pagination, extra OI and fallback are not an additional allowance.
+
+Implemented source interface (still unbound/default-off at runtime):
+
+```
+transport.origin
+transport(kind, *, root, day, order, request_options, request_budget,
+          max_bytes, max_rows, deadline_at,
+          response_handler, raw_response_handler) -> normalized DataFrame
+```
+
+The explicit pilot adapter composes the existing EOD/Greek normalizers and
+budgeted native `_get_csv`, without changing ordinary bulk callers or the separate
+four-root historical catch-up scope. It is not a parallel collector or raw HTTP path. Every physical attempt must call `request_budget.begin(session, exact_url)` BEFORE GET;
+the existing budget rejects retry-enabled adapters, and this observation refuses
+second attempts for the same endpoint. Status must be reported, complete bounded
+raw bytes durably retained before parsing, and the shared monotonic deadline
+honored during transport/streaming. Normalized frames must retain the actual
+pre-normalization row count in `attrs["_bounded_raw_rows"]`; missing or oversized
+raw counts withhold even when deduplication produced a small frame. Raw and
+normalized row counts are distinct receipt fields. The adapter also returns
+`_d_session_binding` for the exact origin/endpoint/query,
+body SHA/length and raw row count. The daily observation compares it with its
+actual callback receipt before accepting the normalized frame. Request version1
+is not observed response-model evidence. DefaultNone remains until source review,
+protected integration/install, actual allocation/journal/access/custody and host
+capacity are qualified. One high-level method call alone proves no physical bound.
+
+An existing private retention parent is required outside the canonical store.
+The exact SPY/date/17:30 claim is exclusive and fsynced. It reserves each attempt
+before GET. Refusal, uncertain return, incomplete capture and existing claims
+never become retries at 19:00/21:00. Raw observations/receipts stay private; no raw
+licensed payload is committed. The declared observation population is contracts
+with expiration >= D. Full
+local reports and canonical file hashes are retained before exclusions; valid
+S-expiring baseline rows are explicitly counted as expiry-before-D exclusions.
+Invalid/missing/non-normalized expiration is never an exclusion. Eligible local
+OI[D]/OI[S] membership must agree before a pilot request. Coverage uses the union
+of eligible reported contracts across EOD[D], Greeks[D], OI[D] and OI[S], with
+per-input missing counts; it never silently intersects away a missing live member.
+Returned frame dates are derived from actual frame values (or unknown), separate
+from request/target D. Version1 is request provenance; absent response-model
+metadata remains unknown. Zero OI is valid; missing is not zero. Requested version is not an
+invented model/tenor/Greek-unit certificate. `OBSERVED_COMPLETE` means this strict
+observed four-input composition only: market completeness, economic expiry,
+model details, earliest availability, PIT and instantaneous/pricing capabilities
+remain unknown/false as recorded.
+
+Pilot responses never call `_ensure_one_cell`, `_merge_day`, write canonical
+EOD/Greek Parquet or advance Hub's latest-SPY selector. The existing four-cell
+maintenance and health still run; pilot outcome is a separate optional receipt
+field. Its elapsed work is subtracted from the same daily deadline, with no extra
+pool/concurrency allowance. Activation, one exact natural session budget/journal,
+installed source/access and host capacity remain separately held. Mock proofs are
+synthetic structural checks only, not observed vendor availability or product
+acceptance. No retired whole-year writer, new timer, collector, queue or store is
+introduced.
+
+The optional deadline transport additionally requires the native POSIX main
+thread and exclusive inactive `ITIMER_REAL` ownership. It raises through the
+actual blocking GET/header/body read at the absolute shared deadline, closes the
+response while unwinding, cancels its timer and restores the prior handler.
+Unsupported thread/platform or an already-active timer refuses before GET. A
+read-inactivity timeout alone does not establish this bound: continuously
+trickling headers/body can prevent `iter_content(65536)` from yielding. Local
+loopback slow-drip regressions cover both phases. No background capture thread
+is launched; an interrupted physical request stays `EFFECT_UNKNOWN` in its
+exclusive journal and cannot start its second request or be replayed. Closing
+our client connection does not certify the provider-side outcome.
+
+The trusted optional configuration must bind one exact `session_day` (default
+None). A missing, non-date or different session refuses before local OI reading,
+claim creation or any pilot request. Its receipt retains that bound session and
+computed `spy-YYYY-MM-DD-1730-observation-v1` operation identity. Reusing this
+configuration on another session does not carry its allocation forward. Neither
+a date label nor configuration construction authenticates an operator or grants
+provider access; the actual one-operation allocation and installation/custody
+preconditions remain separate. No CLI/environment entry is enabled here.
+
+### Oct26 exact CLI binding amendment — default off, source only
+
+The earlier unbound-source preparation now has one explicit normal-entry opt-in:
+`THETADATA_D_SESSION_OBSERVATION=spy-2026-10-26-1730-observation-v1`. The existing
+thin wrapper inherits it; `main --daily` supplies the fixed native transport and
+original root/coordinator/private journal for D26/S23. Absent/empty configuration
+still supplies `None`. No generic root/date/budget API, new timer or wrapper gate
+is introduced. Wrong token, forced/legacy mode or nondefault deadline refuses
+before source work. Exact date/rung/lock/local OI and durable no-replay fences
+remain, and native timer/thread/origin/zero-retry inspection precedes the claim.
+See the runbook's exact Oct26 binding for installation/account/capacity/activation
+requirements. Source publication or that configuration token does not itself
+establish those facts. No environment was set or host source installed by this
+amendment; the separately allocated two pilot attempts remain unexecuted.

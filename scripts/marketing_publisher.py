@@ -3166,23 +3166,26 @@ def main(argv: list[str] | None = None) -> int:
                 (floor_advance, str(it.get("kind") or "")))
             continue
 
+        # Freeze the actual send values before the final approval comparison.
+        # Checking a newly resolved sidecar here could authorize B while sending A.
+        prepared_payload = {
+            "text": text,
+            "channel_id": channel_id,
+            "media_paths": list(media_paths) if media_paths else None,
+            "link": link,
+            "scheduled_at": send_scheduled_at,
+            "now": now,
+            # SHARE-NOW must retain a concrete time, never Buffer's own queue.
+            "immediate": is_immediate,
+        }
         # -- LIVE: approved → posting BEFORE the network call ----------------
         if not _outbox.transition(iid, "posting", actor="publisher", root=root,
-                                  note="in-flight (pre-publish)"):
+                                  note="in-flight (pre-publish)",
+                                  prepared_payload=prepared_payload):
             log.error("item %s: could not mark posting — skipping (not posting)", iid)
             continue
 
-        receipt = publisher.publish(
-            text=text,
-            channel_id=channel_id,
-            media_paths=media_paths or None,
-            link=link,
-            scheduled_at=send_scheduled_at,
-            now=now,
-            # SHARE-NOW: never let a breaking item fall through to Buffer's own
-            # queue (addToQueue) — it must be customScheduled at a concrete time.
-            immediate=is_immediate,
-        )
+        receipt = publisher.publish(**prepared_payload)
 
         if receipt.ok:
             _outbox.transition(

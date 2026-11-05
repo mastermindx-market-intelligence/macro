@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-26T20:35:23Z",
+ "accession": "0001973239-26-000097",
+ "cik": "0001973239",
+ "doc_byte_length": 3137018,
+ "doc_sha256": "8ab052cc035f9cc93429c0bfd76edf2bc11a686a80f0cc7b568fbd456b2ec815",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-26",
+ "form": "20-F",
+ "period_of_report": "2026-03-31",
+ "primary_document": "arm-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 491456,
+  "byte_start": 490974,
+  "normalized": "On April 18, 2024, Qualcomm brought a new action in Delaware against Arm Holdings plc, asserting claims that were rejected for inclusion in the original action. In this new action, Qualcomm asserted that we failed to satisfy certain delivery obligations under Qualcomm’s Architecture License Agreement with us (the “Qualcomm ALA”). On December 16, 2024, Qualcomm amended its complaint to add allegations relating to an Arm notice of breach of the Qualcomm ALA and",
+  "normalized_sha256": "c1a3f2bd7ceaa7f0c592f0b28fec32a02fea05cd4763c65e1626418dc24adaf0",
+  "raw": "On April 18, 2024, Qualcomm brought a new action in Delaware against Arm Holdings plc, asserting claims that were rejected for inclusion in the original action. In this new action, Qualcomm asserted that we failed to satisfy certain delivery obligations under Qualcomm&#8217;s Architecture License Agreement with us (the &#8220;Qualcomm ALA&#8221;). On December 16, 2024, Qualcomm amended its complaint to add allegations relating to an Arm notice of breach of the Qualcomm ALA and ",
+  "raw_sha256": "6470dd0ce74988234395b04efe5fd33276bbc40f357ed21589fe0b0d60b40b31"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1973239/000197323926000097/arm-20260331.htm",
+ "xbrl_contexts": []
+}

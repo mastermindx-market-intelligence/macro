@@ -1,0 +1,30 @@
+{
+  "identity": {
+    "base": "c43c2fc11582af9fe13c2455ae1716f5b7be1762",
+    "peer_heads": {
+      "7180": "99b9bc18ded963ed5e9b9a4864bfff88a8e1d5ba",
+      "7187": "0a076cedd8094e5425e782aca976820e93ed6e8e",
+      "7200": "f6d1b8632aa353c213b1f39cda63a38d30949e79",
+      "7206": "6159410678619d148531ba3e2ecbb1ad7a537d04",
+      "7227": "0e57dc01e494475802c62fc664924236544abb90"
+    },
+    "archive_head": "b00578603f9ee1f25ce39ba92003b76b77be652c",
+    "unpublished_commit": "660324954e037d4f6e3fda565f0d51bcb3a998ed",
+    "tree": "97aff7d8d5bac02b40594f6eda21eaefcc8e2c05",
+    "all_existing_job_semantics_preserved": true,
+    "code_owners": [
+      "us-breadth-completed-close",
+      "us-deep-stock-completed-close",
+      "prophet-turn-watch-row-evidence-v2",
+      "yahoo-daily-archive-refresh"
+    ],
+    "production": false,
+    "manual_conflict_resolution": false
+  },
+  "returncode": 0,
+  "seconds": 82.15,
+  "suite_count": 17,
+  "source_changes": [],
+  "production": false,
+  "output_tail": "........................................................................ [ 12%]\n........................................................................ [ 24%]\n........................................................................ [ 37%]\n........................................................................ [ 49%]\n........................................................................ [ 62%]\n........................................................................ [ 74%]\n........................................................................ [ 87%]\n.............s.......................................................... [ 99%]\n...                                                                      [100%]\n=============================== warnings summary ===============================\ntests/test_us_breadth_completed_close.py: 28 warnings\n  /Users/chriswong/.cache/mastermind-proof/yahoo-daily-integrated-tests-20260916T2350/snapshot/collectors/breadth.py:274: Pandas4Warning: Timestamp.utcnow is deprecated and will be removed in a future version. Use Timestamp.now('UTC') instead.\n    _now = pd.Timestamp.utcnow().tz_localize(None)\n\ntests/test_us_breadth_completed_close.py: 10 warnings\n  /Users/chriswong/.cache/mastermind-proof/yahoo-daily-integrated-tests-20260916T2350/snapshot/collectors/breadth.py:646: Pandas4Warning: Timestamp.utcnow is deprecated and will be removed in a future version. Use Timestamp.now('UTC') instead.\n    age = (pd.Timestamp.utcnow().tz_localize(None) - cached.index.max()).days\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n578 passed, 1 skipped, 38 warnings in 76.95s (0:01:16)\n"
+}

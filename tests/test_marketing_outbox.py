@@ -1310,6 +1310,10 @@ def test_media_change_after_approval_blocks_dispatch_until_fresh_approval(tmp_pa
     assert not transition(
         item["id"], "posting", actor="publisher", root=tmp_path,
         note="in-flight (pre-publish)",
+        prepared_payload={
+            "text": item["text"], "link": item.get("link"),
+            "media_paths": ["https://pub.example/chart-001-deadbeef.png"],
+        },
     )
     assert current_statuses(tmp_path)[item["id"]] == "approved"
 
@@ -1317,6 +1321,43 @@ def test_media_change_after_approval_blocks_dispatch_until_fresh_approval(tmp_pa
     assert transition(
         item["id"], "posting", actor="publisher", root=tmp_path,
         note="in-flight (pre-publish)",
+        prepared_payload={
+            "text": item["text"], "link": item.get("link"),
+            "media_paths": ["https://pub.example/chart-001-deadbeef.png"],
+        },
+    )
+
+
+@pytest.mark.parametrize("change", ["missing", "malformed", "text", "link"])
+def test_operator_dispatch_rejects_unbound_prepared_payload(tmp_path, change):
+    from engine.marketing.outbox import (
+        apply_decisions, enqueue, read_ledger, record_decision, transition,
+    )
+
+    item = _make_minimal_item(tmp_path)
+    assert enqueue(item, root=tmp_path) == "queued"
+    assert record_decision(item["id"], "approve", actor="op", root=tmp_path)
+    assert apply_decisions(tmp_path)["approved"] == [item["id"]]
+    prepared = {"text": item["text"], "link": item.get("link"), "media_paths": None}
+    invalid = dict(prepared)
+    if change == "missing":
+        invalid = None
+    elif change == "malformed":
+        invalid["media_paths"] = [object()]
+    elif change == "text":
+        invalid["text"] += " Changed after approval."
+    else:
+        invalid["link"] = "https://example.com/changed-after-approval"
+    before = read_ledger(tmp_path)
+
+    assert not transition(
+        item["id"], "posting", actor="publisher", root=tmp_path,
+        prepared_payload=invalid,
+    )
+    assert read_ledger(tmp_path) == before
+    assert transition(
+        item["id"], "posting", actor="publisher", root=tmp_path,
+        prepared_payload=prepared,
     )
 
 
@@ -1343,7 +1384,10 @@ def test_media_repair_never_resurrects_posted_item(tmp_path):
     assert enqueue(item, root=tmp_path) == "queued"
     assert record_decision(item["id"], "approve", actor="op", root=tmp_path)
     assert apply_decisions(tmp_path)["approved"] == [item["id"]]
-    assert transition(item["id"], "posting", actor="publisher", root=tmp_path)
+    assert transition(
+        item["id"], "posting", actor="publisher", root=tmp_path,
+        prepared_payload={"text": item["text"], "link": item.get("link"), "media_paths": None},
+    )
     assert transition(item["id"], "posted", actor="publisher", root=tmp_path)
 
     assert append_jsonl(sidecar_path(tmp_path), {
