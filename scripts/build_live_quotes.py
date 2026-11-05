@@ -237,7 +237,17 @@ DISPLAY_BOARD_PAYLOAD_DIR = "premiumdata"
 # same ~183B/symbol (vs the 500KB budget), <=24 Yahoo batch requests plus <=5
 # Polygon chunks, ~13s at ~37 symbols/s — still cheap for both producers; the
 # orchestrator gate above is unaffected for the same reason.
-DISPLAY_BOARD_CAP = 480
+# 2026-11-05 headroom: the exact #9495 tested base and candidate have
+# identical board rosters (415 valid symbols; no Prophet additions). The
+# previous 480 budget now leaves too little 15%-guard headroom.
+# A read-only public /live/quotes.json response measured 431 requested,
+# 428 resolved, 82,017 transferred bytes and 0.984s HTTP delivery time.
+# This is NOT provider refresh latency. At about 192 bytes per served quote,
+# a 560-entry ceiling projects ~108KB versus the 500KB browser budget.
+# The older measured 37 symbols/s producer rate projects ~15s at the cap,
+# but needs a new direct provider check before any further cap increase.
+# Retain every published symbol and all incumbent quality/freshness gates.
+DISPLAY_BOARD_CAP = 560
 
 
 def payload_html(path: Path) -> str:
