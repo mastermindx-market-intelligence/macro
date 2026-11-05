@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-10T21:59:48Z",
+ "accession": "0001062993-26-001944",
+ "cik": "0001277866",
+ "doc_byte_length": 45139,
+ "doc_sha256": "d8c7a782ed2bc2c5d678049ffbbb877f0a03f86fea22ae2ba196b06e111ab497",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-13",
+ "form": "40-F/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "form40fa.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1008,
+  "byte_start": 991,
+  "normalized": "(Amendment No. 1)",
+  "normalized_sha256": "d8ba42c08467b381caa53adfe8b30719231789485f4e355a2a34e3c3097f5f10",
+  "raw": "(Amendment No. 1)",
+  "raw_sha256": "d8ba42c08467b381caa53adfe8b30719231789485f4e355a2a34e3c3097f5f10"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1277866/000106299326001944/form40fa.htm",
+ "xbrl_contexts": []
+}

@@ -1,167 +1,165 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-08-28",
-  "generated_at": "2026-08-29T14:47:41.029149+00:00",
+  "as_of": "2026-11-03",
+  "generated_at": "2026-11-04T17:51:37.504879+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-08-28-RIVN-20260829144741-1",
-      "ticker": "RIVN",
-      "name": null,
+      "id": "2026-11-03-PWR-20261104175137-1",
+      "ticker": "PWR",
+      "name": "Quanta Services Inc",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The deterministic verdict finds no clear edge: the validated selection leg is only marginal, while entry is unblocked and the cycle has turned up. That combination supports watching rather than taking a directional view versus the S&P 500.",
+      "horizon_d": 21,
+      "thesis": "A leader with a fresh swing low and buy setup, but the accounting-quality warning plus a mixed weekly picture and negative factor composite argue against chasing here; this is a watch-and-verify, not a short.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Selection z 0.16, 52nd percentile",
-        "Entry unblocked, 57th percentile",
-        "Board: TURN SIGNALED, direction up"
+        "Verdict: 'Leader \u00b7 accounting warning \u2014 verify before buying'",
+        "Selection axis z=1.23 (SUE z=2.42 validated)",
+        "Entry axis z=0.50, unblocked",
+        "Quality axis z=-0.50 with accounting=warn",
+        "Daily bottoming, weekly not yet turned (MIXED regime)"
       ],
-      "dissent": "The upturn and favorable entry could develop into persistent relative momentum despite the weak selection signal.",
+      "dissent": "The SUE z=2.42 is the lone validated FDR survivor and 68th-percentile selection is the strongest on the board; if accounting proves clean, momentum can persist and the leader extends.",
       "falsifier": {
-        "text": "RIVN establishes sustained relative strength versus the S&P 500 while the uptrend remains intact.",
+        "text": "PWR loses its 50-day average support, or the TURN SIGNALED reverts below the swing low before a weekly turn confirms.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-09-25",
+      "check_by": "2026-12-02",
+      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
+    },
+    {
+      "id": "2026-11-03-CVNA-20261104175137-2",
+      "ticker": "CVNA",
+      "name": "Carvana Co",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "A bullish FRESH BUY with strong daily technicals but a near-zero selection edge, negative composite factors, accounting-watch flag, and the deterministic verdict 'Neutral \u2014 no clear edge'; neither a clear long nor a short here.",
+      "evidence": [
+        "Verdict: 'Neutral \u2014 no clear edge'",
+        "Selection axis z=0.02, pct 50 (no leg above literature tier)",
+        "Quality factors composite -1.02 with accruals -1.34",
+        "Accounting flag = watch",
+        "Earnings due \u2014 caution to size down"
+      ],
+      "dissent": "With-trend bullish regime, FRESH BUY state, and seasonality up in 80% of past Novembers; if earnings land clean, the high-beta discretionary name could outperform sharply.",
+      "falsifier": {
+        "text": "CVNA fails to hold above its 10-day average after the earnings print, or the FRESH BUY state rolls over back below the swing low.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-02",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-08-28-EZPW-20260829144741-2",
-      "ticker": "EZPW",
-      "name": null,
+      "id": "2026-11-03-CMG-20261104175137-3",
+      "ticker": "CMG",
+      "name": "Chipotle Mexican Grill Inc",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The verdict remains neutral because favorable residual-alpha selection is offset by a weak entry profile and an accounting-quality watch. With price close to its high and momentum intact, the risk controls argue against chasing but do not support a short.",
+      "horizon_d": 21,
+      "thesis": "The board says HOLD \u2014 EXTENDED even though the ladder only shows turn-signaled, and the selection axis is below the 50th percentile; the clean quality flag is offset by an extension brake, so no chase and no short.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Selection z 0.90, 64th percentile",
-        "Entry z -0.63, 40th percentile",
-        "Accounting flag: watch",
-        "Board direction up, 3.3% off high"
+        "Verdict: 'Neutral \u2014 no clear edge'",
+        "Board state: HOLD \u2014 EXTENDED",
+        "Selection axis z=-0.39, pct 44",
+        "Quality axis z=0.59 with accounting=clean",
+        "Broad tape stress caution"
       ],
-      "dissent": "Strong momentum and the positive selection ordering could continue to carry EZPW ahead of the index.",
+      "dissent": "CMG has the cleanest accounting flag on the board, strong fundamentals (54% ROE), and 67% up-rate in Nov; if the extension clears, the bottoming setup could resume higher.",
       "falsifier": {
-        "text": "EZPW decisively loses its uptrend and continues weakening relative to the S&P 500.",
+        "text": "CMG closes back below its 200-day average, or the daily swing low breaks before any weekly turn confirms.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-09-25",
+      "check_by": "2026-12-02",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-08-28-LAUR-20260829144741-3",
-      "ticker": "LAUR",
-      "name": null,
+      "id": "2026-11-03-SBRA-20261104175137-4",
+      "ticker": "SBRA",
+      "name": "Sabra Health Care REIT",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "Good entry and clean quality readings are balanced by only marginal selection and negative earnings-surprise and revision context. The validated ordering does not provide enough separation for a directional call.",
+      "horizon_d": 21,
+      "thesis": "A genuine bearish structural tell in a 'constructive' looking name: the prior cycle topped early (left-translated), price is approaching the band, and the entry is HALF SIZE; this is a tiring-trend warning, not a base to buy.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Entry z 0.91, 64th percentile",
-        "Quality z 0.94, accounting clean",
-        "Selection z 0.14, 52nd percentile",
-        "SUE z -0.39 and revisions z -0.40"
+        "Prior cycle topped early \u2014 'a bearish structural tell'",
+        "Cycle translation = left",
+        "Verdict 'Constructive \u2014 building a base' but entry_tag HALF SIZE"
       ],
-      "dissent": "The uptrend, favorable entry and clean quality profile could outweigh the stale negative event context and produce relative outperformance.",
+      "dissent": "Near all-time-high (-7.7% off high), price above both moving averages, and revisions z=1.49 could keep the REIT supported if rate cuts resume. (softened: strong leader, momentum intact \u2014 extension is not a short (cautious-on-leader historically ~17% right); watch, don't chase)",
       "falsifier": {
-        "text": "LAUR sustains a relative breakout versus the S&P 500 with its uptrend intact.",
+        "text": "SBRA closes above its prior cycle high, invalidating the left-translation read.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-09-25",
-      "engine_verdict": "Neutral \u2014 no clear edge"
+      "check_by": "2026-12-02",
+      "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-08-28-VIRT-20260829144741-4",
-      "ticker": "VIRT",
-      "name": null,
-      "lean": "neutral",
+      "id": "2026-11-03-UE-20261104175137-5",
+      "ticker": "UE",
+      "name": "Urban Edge Properties",
+      "lean": "constructive",
       "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "The extension brake and cycle block make this a watch-don't-chase setup, but the stock remains an intact leader near its high, so extension alone is not a bearish signal. Accounting quality adds uncertainty without establishing a directional short case.",
+      "horizon_d": 21,
+      "thesis": "Despite a bullish-seeming failed-cycle warning in the points, the deterministic verdict is 'Constructive \u2014 building a base' unblocked, with a positive selection axis, low volatility, and a fresh swing low; the base-building setup deserves the constructive lean the engine assigned.",
       "evidence": [
-        "Verdict: Extended \u2014 wait for a pullback",
-        "Entry blocked, z -2.54",
-        "Trades 44% above its long-term trend line",
-        "Board direction up, 1.3% off high",
-        "Accounting flag: watch"
+        "Verdict: 'Constructive \u2014 building a base'",
+        "Selection axis z=0.29 (revisions positive)",
+        "Entry axis z=0.29, unblocked",
+        "Fresh swing low 4 days ago",
+        "Failed cycle warning present (bearish caution)"
       ],
-      "dissent": "The cycle block and extreme distance above trend could resolve through sharp relative underperformance rather than a benign consolidation.",
+      "dissent": "The failed-cycle flag (broke below the low that began the cycle) plus below-200dma and overdue investor phase mean this could be a dead cat bounce in a still-downtrending REIT.",
       "falsifier": {
-        "text": "VIRT breaks its uptrend and then persistently underperforms the S&P 500.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-09-18",
-      "engine_verdict": "Extended \u2014 wait for a pullback"
-    },
-    {
-      "id": "2026-08-28-BGC-20260829144741-5",
-      "ticker": "BGC",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "No axis supplies meaningful separation: selection, entry and quality are all near the middle of the cross-section. The extended board state warrants restraint, but the unblocked entry and intact uptrend do not justify a bearish lean.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Selection z -0.14, 48th percentile",
-        "Entry z 0.05, 51st percentile and unblocked",
-        "Quality z -0.37, accounting clean",
-        "Board: HOLD \u2014 EXTENDED, direction up"
-      ],
-      "dissent": "The intact uptrend could persist and turn the current extension into continued relative outperformance.",
-      "falsifier": {
-        "text": "BGC sustains clear relative strength versus the S&P 500 while remaining in an uptrend.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-09-25",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-08-28-ALV-20260829144741-6",
-      "ticker": "ALV",
-      "name": null,
-      "lean": "cautious",
-      "conviction": "medium",
-      "horizon_d": 20,
-      "thesis": "The explicit lagging verdict is an actual bearish relative signal rather than an extension-only warning, and weak residual-alpha selection reinforces it. The favorable entry and upward turn temper conviction, especially given the track record's unbenchmarked directional accuracy.",
-      "evidence": [
-        "Verdict: Lagging \u2014 relative weakness",
-        "Selection z -0.58, 41st percentile",
-        "SUE z -1.74 and revisions z -0.59",
-        "Board urgency: caution",
-        "Entry unblocked, 64th percentile"
-      ],
-      "dissent": "The signaled upward turn and favorable entry could reverse the lagging condition and drive renewed relative strength.",
-      "falsifier": {
-        "text": "ALV sustains outperformance versus the S&P 500 while preserving its upward turn.",
+        "text": "UE closes back below its 50-day average, or the failed-cycle low breaks again.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "ALV",
+          "subject_ticker": "UE",
           "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 20
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 21
         }
       },
-      "check_by": "2026-09-25",
-      "engine_verdict": "Lagging \u2014 relative weakness"
+      "check_by": "2026-12-02",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-11-03-CMCSA-20261104175137-6",
+      "ticker": "CMCSA",
+      "name": "Comcast Corp Class A",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Despite a strong entry axis (63rd percentile) and positive value composite, the selection axis is negative, the Communication Services basket is below trend, and the verdict is 'Neutral \u2014 no clear edge'; the entry setup is unattractive with an unloved basket.",
+      "evidence": [
+        "Verdict: 'Neutral \u2014 no clear edge'",
+        "Selection axis z=-0.36 (SUE negative -0.31)",
+        "Entry axis z=0.88 but HALF SIZE and basket below trend",
+        "Value composite z=2.09 (cheap, but crowded in a lagging basket)"
+      ],
+      "dissent": "CMCSA has the strongest value factor on the board, clean accounting, and a 63rd-percentile entry; if the market rotates from growth to value defensives, this laggard could catch a bid.",
+      "falsifier": {
+        "text": "CMCSA breaks below its swing low, or the Communication Services basket falls further below trend.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-02",
+      "engine_verdict": "Neutral \u2014 no clear edge"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."

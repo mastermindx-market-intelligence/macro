@@ -1,0 +1,32 @@
+{
+  "workspace": {
+    "id": "financial_conditions",
+    "title": {"en": "Financial conditions", "zh": "金融状况"},
+    "subtitle": {"en": "", "zh": ""}
+  },
+  "region": {"code": "US", "display_name": "United States", "supported": true},
+  "availability": {"state": "CURRENT"},
+  "headline": {
+    "status": "PRESENT",
+    "state_id": "B",
+    "effective_date": "2026-09-04",
+    "method_version": "financial_conditions.compose.v1",
+    "state_label": {"en": "Tight funding", "zh": "融资偏紧"},
+    "hysteresis": {"applied": false, "band": 0, "held_prior": false}
+  },
+  "changes": {"comparability": "NO_EARLIER_PUBLICATION", "deltas": []},
+  "corrections": {
+    "correction_state": "UNCHANGED",
+    "note": "Same reference period as the predecessor print; no source value changed (no-change republication)."
+  },
+  "metrics": {
+    "items": [{
+      "metric_id": "financial_conditions_level",
+      "value": 57.63,
+      "unit": "index",
+      "definition_version": "v1",
+      "status": "PRESENT"
+    }]
+  },
+  "axes": {"items": []}
+}
