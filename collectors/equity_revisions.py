@@ -381,22 +381,87 @@ def _write_parquet(path: Path, frame: pd.DataFrame, columns: list[str]) -> None:
     temporary.replace(path)
 
 
-def _apply_lineage(rows: list[dict[str, Any]], existing: pd.DataFrame) -> None:
+_LINEAGE_KEY_COLUMNS = (
+    "provider",
+    "provider_record_class",
+    "ticker_compat",
+    "metric",
+    "horizon_label_raw",
+    "observation_type",
+)
+
+
+def _latest_lineage_index(existing: pd.DataFrame) -> dict[tuple[str, ...], int] | None:
+    """Index literal string keys once against this exact pre-session frame.
+
+    Values are integer row positions, so the eventual lookup uses the same
+    pandas scalar types as the original filtered-frame ``iloc[-1]`` lookup.
+    Unsafe legacy key/clock shapes return None and retain the original per-row
+    comparison and sorting behavior. Never add current-session rows here.
+    """
+    if existing.empty:
+        return {}
+    columns = [*_LINEAGE_KEY_COLUMNS, "system_observed_at"]
+    if not set([*columns, "value"]).issubset(existing.columns):
+        return None
+    prior = existing.loc[:, columns].copy()
+    prior["_lineage_position"] = range(len(existing))
+    prior = prior.loc[existing["value"].notna()]
+    if prior.empty:
+        return {}
+    # pandas equality is broader than dictionary equality for some legacy
+    # dtypes. Do not JSON/string-normalize missing, numeric or other keys.
+    if any(
+        any(type(value) is not str for value in prior[column])
+        for column in _LINEAGE_KEY_COLUMNS
+    ):
+        return None
+    # Normal producer clocks are strings; null clocks retain pandas' original
+    # NA-last ordering. Mixed/incomparable clock types use per-key sorting.
+    if any(
+        type(value) is not str
+        and not (pd.api.types.is_scalar(value) and pd.isna(value))
+        for value in prior["system_observed_at"]
+    ):
+        return None
+    ordered = prior.sort_values("system_observed_at", kind="stable")
+    return {
+        tuple(values[:-1]): int(values[-1])
+        for values in ordered[[*_LINEAGE_KEY_COLUMNS, "_lineage_position"]].itertuples(
+            index=False, name=None
+        )
+    }
+
+
+def _apply_lineage(
+    rows: list[dict[str, Any]],
+    existing: pd.DataFrame,
+    *,
+    latest_by_key: dict[tuple[str, ...], int] | None = None,
+) -> None:
     """Mark changed values as append-only supersessions; nulls never replace good rows."""
     if existing.empty:
         return
-    key_columns = ["provider", "provider_record_class", "ticker_compat", "metric", "horizon_label_raw", "observation_type"]
+    key_columns = _LINEAGE_KEY_COLUMNS
     for row in rows:
         if row["value"] is None:
             row["correction_state"] = "missing"
             continue
-        prior = existing
-        for column in key_columns:
-            prior = prior[prior[column] == row[column]]
-        prior = prior[prior["value"].notna()]
-        if prior.empty:
-            continue
-        newest = prior.sort_values("system_observed_at", kind="stable").iloc[-1]
+        if latest_by_key is not None and all(type(row[column]) is str for column in key_columns):
+            position = latest_by_key.get(tuple(row[column] for column in key_columns))
+            if position is None:
+                continue
+            newest = existing.iloc[position]
+        else:
+            # Preserve pandas equality and per-key sorting for legacy inputs
+            # that are not eligible for the normal string-key fast path.
+            prior = existing
+            for column in key_columns:
+                prior = prior[prior[column] == row[column]]
+            prior = prior[prior["value"].notna()]
+            if prior.empty:
+                continue
+            newest = prior.sort_values("system_observed_at", kind="stable").iloc[-1]
         # Mutation gate 3: a fiscal rollover is not a revision.  horizon_label_raw
         # is a RELATIVE provider label (e.g. "0q" always means "the current
         # quarter"), so the same key can legitimately refer to a different
@@ -462,6 +527,9 @@ def accrue_expectation_observations(
     attempts_path = out_dir / "expectation_attempts.parquet"
     existing_observations = _read_parquet(observations_path, _OBSERVATION_COLUMNS)
     existing_attempts = _read_parquet(attempts_path, _ATTEMPT_COLUMNS)
+    existing_observation_ids = set(existing_observations["observation_id"].dropna().astype(str))
+    existing_attempt_ids = set(existing_attempts["attempt_id"].dropna().astype(str))
+    latest_lineage_by_key = _latest_lineage_index(existing_observations)
     new_observations: list[dict[str, Any]] = []
     new_attempts: list[dict[str, Any]] = []
 
@@ -495,7 +563,7 @@ def accrue_expectation_observations(
             status, http_status, error_class, error_detail = _safe_http_failure(exc)
             payload_hash = None
             attempt_id = _canonical_sha256((session_id, _EXPECTATION_PROVIDER, ticker, payload_hash))
-            if attempt_id not in set(existing_attempts["attempt_id"].dropna().astype(str)):
+            if attempt_id not in existing_attempt_ids:
                 new_attempts.append({
                     "attempt_id": attempt_id, "collection_session_id": session_id,
                     "provider": _EXPECTATION_PROVIDER, "ticker_compat": ticker,
@@ -510,7 +578,7 @@ def accrue_expectation_observations(
         payload = {record_class: _frame_payload(frame) for record_class, frame in sorted(frames.items())}
         payload_hash = _canonical_sha256(payload)
         attempt_id = _canonical_sha256((session_id, _EXPECTATION_PROVIDER, ticker, payload_hash))
-        if attempt_id in set(existing_attempts["attempt_id"].dropna().astype(str)):
+        if attempt_id in existing_attempt_ids:
             continue
         system_observed_at = _iso8601()
         response_rows = _expectation_rows(
@@ -518,10 +586,12 @@ def accrue_expectation_observations(
             payload_hash=payload_hash, frames=frames, provider_observed_at=provider_observed_at,
             system_observed_at=system_observed_at, period_end_by_horizon=period_end_by_horizon,
         )
-        _apply_lineage(response_rows, existing_observations)
+        _apply_lineage(
+            response_rows, existing_observations, latest_by_key=latest_lineage_by_key
+        )
         deduped_rows = [
             row for row in response_rows
-            if row["observation_id"] not in set(existing_observations["observation_id"].dropna().astype(str))
+            if row["observation_id"] not in existing_observation_ids
         ]
         valid_metrics = {row["metric"] for row in response_rows if row["value"] is not None}
         malformed_response = any(
