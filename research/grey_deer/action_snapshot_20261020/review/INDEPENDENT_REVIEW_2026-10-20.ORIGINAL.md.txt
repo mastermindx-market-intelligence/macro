@@ -1,0 +1,78 @@
+# Independent review — dated Risk Radar action map
+
+**Verdict: ACCEPT_WITH_SCOPE.**
+
+**Review date:** 20 October 2026. **Reviewer:** independent advisory agent `action_map_review_oct20`. This verdict accepts the supplied action map as an internally consistent, dated descriptive diagnostic and a qualitative agenda for the existing policy owners. It does not accept a forecast, a new action policy, a completed September–October index reconstruction, or a delivered production product.
+
+## Exact artifact reviewed
+
+The reviewed [action map](../DATED_ACTION_MAP_2026-10-16.md) is 14,889 bytes, SHA256 `783bf218f9b3797cccaf2b0b40a2fe083beac7d4cd10c83be561861cc0df1f04`. The verdict applies to that version.
+
+| Input | Bytes | SHA256 |
+|---|---:|---|
+| [Observed snapshot](../OBSERVED_SNAPSHOT_2026-10-16.json) | 51,139 | `ab28897bcae098669fb6f2391ce40fadebc64eb417bc2942815a87ba9470ef1d` |
+| [Primary-source check, narrative](../PRIMARY_SOURCE_CHECK_2026-10-20.md) | 2,807 | `9e1fc56686cf138d727d9569dec911221104a6729d73a02aa51631cbfacfcaf1` |
+| [Primary-source check, retained values](../PRIMARY_SOURCE_CHECK_2026-10-20.json) | 1,733 | `f28592bc68bbf99c690dfbf25ff6dd74cb2f0d48ca550c95b10c41257884f417` |
+| [Rendering script](../build_report.py) | 15,818 | `1c17c0b03d98b268913fdda153e2a2dd21616cc734d185b97f54fea0700ae72b` |
+| [Exposure chart](../EXPOSURE_DAMAGE_2026-10-16.png) | 163,019 | `c5a43d5eeb224fc24dce365d9323d05db5cb93dde89d09402fb62dc648eb4820` |
+
+The review used local reads, simple arithmetic on supplied JSON and visual inspection of the chart. The rendering script was read, not executed. No native computation, model fit, source acquisition, browser session, GitHub operation, CI run or production operation was performed. This review file is the only artifact written by the reviewer.
+
+## Arithmetic and coverage findings
+
+**No arithmetic or count discrepancy found in the map.**
+
+| Check | Independently obtained result | Assessment |
+|---|---|---|
+| Snapshot population | 36 rows and 36 unique tickers; 36 matching source identities | Matches declared fixed proxy universe. |
+| Current observations | 32 rows dated 16 October | Matches the denominator used for current damage counts. |
+| Older observations | DIA, ARKK, BIL and SGOV dated 14 October; each has status `NO_VALID_OBSERVATION_AT_ASOF` and two reference sessions behind | All four are visibly marked behind in the table and excluded from the 32-current-proxy counts. The two-session lag is retained metadata, not an independently rebuilt exchange calendar. |
+| Complete displayed table | 36 dates and all 180 numeric cells agree with the JSON at the stated two-decimal percentage precision; no duplicate table rows | Pass. |
+| Current damage of at least 5% | 20 of 32 current proxies | Pass. |
+| Current damage of at least 10% | 8: IWM, XLI, SMH, SOXX, XBI, KRE, GLD and MCHI | Exact match to the map. |
+| Sector damage of at least 5% | 7 of 11: XLK, XLU, XLF, XLB, XLI, XLRE and XLY | Pass. |
+| Sector price below SMA200 | 5 of 11: XLU, XLC, XLI, XLRE and XLY | Pass. |
+| SPY return arithmetic from the four supplied endpoint rows | One-, five- and twenty-session endpoint ratios reproduce the snapshot returns with zero numerical difference | Confirms endpoint arithmetic only; intermediate session completeness and original price publication were not independently verified. |
+| Recorded SPY issuer comparison | Retained 16 October `close_price` 763.25 minus recorded issuer close 763.25 equals 0.00 | The check supports one recorded close. The reviewer did not independently revisit the issuer. |
+| Current relative-return fields | All 32 current rows match `(1 + exposure return) / (1 + SPY return) - 1`, at both supplied relative-return horizons | These fields are geometric relative returns, not arithmetic return spreads or evidence of flows. |
+| Retained source comparison metadata | Sum of reported revisions is zero for both `close` and `close_price`; sum of removed prior dates is zero; source maximum dates match all observation dates | Internally consistent. The reviewer did not reopen or compare the raw Git archives. |
+
+The 20 current proxies at at least 5% damage are IWM, QQQ, XLK, XLU, XLF, XLB, XLI, XLRE, XLY, SMH, SOXX, XBI, IGV, KRE, GLD, FXI, MCHI, EWH, INDA and EEM. Counts used the full-precision JSON threshold, not the rounded display.
+
+The XLU counterexample also holds: its stabilization flag is true, five-session return is +1.93%, price is +4.02% above SMA20, rolling drawdown is 8.81%, and price remains 4.74% below SMA200. The map correctly keeps current improvement and remaining damage separate. Its definition of rolling damage also correctly leaves anchored recovery unresolved.
+
+## Exposure, clocks and action authority
+
+The central exposure distinction is supported by the supplied measurements: the small SPY drawdown coexists with much larger semiconductor damage, while RSP, XLP, XLV and XLE supply evidence against a claim that all equity exposures are deteriorating together. The map does not promote those overlapping proxy counts into constituent breadth or independent event counts.
+
+The instrument qualification is explicit and material. QQQ is treated as Nasdaq-100 exposure; it is not presented as the Nasdaq Composite. The map therefore leaves the literal Composite comparison and the requested dated September–October decision-time reconstruction open. DIA's older observation is also acknowledged. USD country ETFs are not presented as local-currency national indexes or independent country populations. Acceptance of this snapshot cannot close any of those reconstruction gaps.
+
+Preparation on 20 October is visibly separated from observations dated 16 October and the four rows dated 14 October. The absence of a 19 October close, current executable prices, historical `available_at` and first-user publication is stated. The action priorities consequently remain a dated review agenda. They are not evidence of what the system actually published at a past decision time.
+
+Protection/reduction wording is tied to excessive concentration, existing limits, current confirmation and policy-owner checks. Hold/add language for XLP/XLV is conditional on mandate, current quotes, absolute performance and concentration. Cash/bills require instrument and eligibility refresh, and the older BIL/SGOV date is disclosed. Numerical allocations, order size and execution remain with Portfolio/Prophet and their validated owners. No new numerical sizing or executable instruction is introduced.
+
+The defense discussion preserves the distinction between relative opportunity and absolute capital preservation. Positive observed defensive-equity returns support a candidate review; the map does not claim guaranteed protection. Its explicit failure case—relative winners can become absolute losers—is useful. Recovery remains a separate problem: the map does not turn a rebound, positive week or descriptive stabilization flag into a validated re-entry signal. The horizon labels are qualitative review horizons, with no measured lead-time or holding-period performance established by this artifact.
+
+## Competing pathways and limits
+
+The alternatives and falsifiers are adequate for this bounded diagnostic. Contained rotation is retained alongside wider damage. Concentrated deleveraging/defensive escape is presented as an interpretation consistent with prices, with fund flows explicitly unmeasured. Continued leadership repair weakens that interpretation; synchronized deterioration strengthens a wider-damage concern. Systemic contagion is left unconfirmed and requires evidence beyond pooled ETF counts. Credit ETF prices are not silently treated as credit spreads, funding conditions or causal transmission.
+
+No updated credit spread, funding, MOVE, earnings-surprise or options-positioning measurement is claimed. Their absence limits the inference rather than being filled with a score. The supplied primary-source record rejects the mismatched Nasdaq date and does not admit a daily value from the unavailable historical table. Its SPY check is narrowly bounded to a single close; it does not authenticate all endpoints, all other ETFs or original information availability.
+
+## Findings requiring action
+
+**Blocking issues: none within the accepted scope.** No arithmetic correction or policy rollback is requested.
+
+**Small optional clarity edit:** the SPY/RSP entry-condition phrase “existing broad-market confirmation, with actual breadth/funding evidence” could be read as defining funding evidence as part of the existing canonical gate. The gate formula and its current constituent-breadth input are not independently established by this review packet. The smallest clarification is to replace that sentence with:
+
+> Systemic escalation remains with the existing broad-market gate and its owner. This snapshot supplies only the SPY price leg; current constituent-breadth and credit/funding evidence are not evaluated here.
+
+This clarifies the ownership boundary without changing a gate or withholding the dated exposure warning. The existing map already states that proxy counts are not the canonical gate and that systemic contagion is unconfirmed, so this is not a condition of the scoped acceptance.
+
+## Acceptance boundary
+
+The snapshot retains `independent_episode_count = null`, `point_in_time_eligible = false`, unknown historical availability/publication clocks, and false source-purpose and numerical-policy authority. Its reported provider calls, fitted models and future labels are zero. These metadata agree with the map; the reviewer has not independently witnessed the earlier native execution.
+
+**No predictive claim, fund-flow claim, point-in-time lead-time claim, independent episode count, empirical portfolio benefit or re-entry authority is accepted.** Prior Grey Deer predictive dispositions and source-use holds are unchanged. The chart is readable, correctly dated, and separates five-session direction from 63-session damage for its selected ETF proxies; it is not proof of backend-to-user delivery.
+
+The approved outcome is a candid, numerically consistent dated diagnostic that can support review by the existing policy owners. Full primary-series verification, the literal-index reconstruction, historical publication clocks, incremental out-of-sample performance, current execution inputs and actual product delivery remain outside this verdict.

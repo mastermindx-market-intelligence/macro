@@ -1,0 +1,42 @@
+{
+  "artifacts": [
+    {
+      "bytes": 17980,
+      "name": "METHOD_REVIEW.md",
+      "sha256": "e35cc6b4bffa57cb7203f126620b069e7b2944dd45e29f71c4e9bf827dc390b6"
+    },
+    {
+      "bytes": 3984,
+      "name": "FINDINGS.json",
+      "sha256": "ce6e7c2364fdd5db96cf47120e5dc14d79e036ffabc9d8f955bf94e2491af446"
+    },
+    {
+      "bytes": 4095,
+      "name": "SOURCE_OBSERVATIONS.json",
+      "sha256": "d16eea19bd56f8cd59a7ad15d54148cda6990ced2f690cca30d6194e1a917af0"
+    },
+    {
+      "bytes": 3309,
+      "name": "METHOD_CHECKS.json",
+      "sha256": "c7bbdaf7b8acfd3008ff2f1fd4c630d75bfdc80fe4e15bd6c92f20a7b1892bf5"
+    },
+    {
+      "bytes": 897,
+      "name": "FINAL_POLICY_BINDINGS.json",
+      "sha256": "5b8f455a1180daaafe69ef9f8198afca17c8f97f0ce342c6f86433b451ef4c2d"
+    },
+    {
+      "bytes": 623,
+      "name": "SNAPSHOT_001.json",
+      "sha256": "cbf0cb01e400eb6e531c586d118fecf407b66883ff86f859376adaccf27aee08"
+    }
+  ],
+  "created_at_utc": "2026-10-09T11:29:10.676280+00:00",
+  "manifest_self_excluded": true,
+  "native_application_or_selector_proof": false,
+  "reviewer_independent_of_policy_author": true,
+  "schema": "research.selection_policy_independent_review_manifest/v1",
+  "source_snapshot_core_matches_author_final": true,
+  "source_snapshot_directory": "input_snapshot_001",
+  "state": "FROZEN_INITIAL_METHOD_REVIEW_TWO_P2_CORRECTIONS_PENDING"
+}

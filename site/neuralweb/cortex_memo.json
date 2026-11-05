@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-09-12T11:30:09+00:00",
+  "as_of": "2026-11-05T15:04:56+00:00",
   "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
   "what_fired": [],
   "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
@@ -8,7 +8,7 @@
   "deserves_operator": [],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-09-11",
+    "as_of": "2026-11-05",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -20,8 +20,8 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 66,
-      "total_rows": 74
+      "ungradeable": 171,
+      "total_rows": 179
     },
     "is_context_only": true
   },
@@ -34,20 +34,12 @@
     "model_used": "claude-sonnet-4-6",
     "provider_attempts": [
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
         "ok": false,
-        "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09561-d7f6-7683-8c8b-0e9293ed8191\"} {\"type\":\"turn.started\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Skill descriptions were shortened to fit the skills context budget. Codex can still see every sk"
-      },
-      {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
-        "attempted": true,
-        "ok": false,
-        "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09561-e9a8-7bb0-bd0b-ac8f2338bd7d\"} {\"type\":\"turn.started\"} {\"type\":\"error\",\"message\":\"Your workspace is out of credits. Ask your workspace owner to refill in order to continue.\"} {\"type\":\"turn.failed\",\"error\":{\"message\":\"Your wo"
+        "error_type": "auth",
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgjzCsBS4TB193FAxJAMD'}"
       },
       {
         "provider": "oauth",
@@ -55,7 +47,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CeyUAHddfgEn5UToMvhKm'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgjzCzwm1kMAGKEqNXe9G'}"
       },
       {
         "provider": "oauth",
@@ -63,7 +55,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CeyUBarzkvA9aTbKTFo7q'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgjzEF3bgScsriM1m19Ty'}"
       },
       {
         "provider": "oauth",
@@ -71,7 +63,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CeyUGCs4Fqii2PsXxxHru'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgjzJoWaY3Zc8Ji9naXLu'}"
       },
       {
         "provider": "oauth",
@@ -79,29 +71,21 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CeyUVg1p2e4h6oYMzjHZg'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgjzYDiyaRuuNmt8PnMyE'}"
       },
       {
-        "provider": "codex",
+        "provider": "oauth",
         "model": "claude-sonnet-4-6",
         "attempted": true,
         "ok": false,
-        "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09566-0a28-7e02-a197-4c2094f68c8a\"} {\"type\":\"turn.started\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Skill descriptions were shortened to fit the skills context budget. Codex can still see every sk"
-      },
-      {
-        "provider": "codex",
-        "model": "claude-sonnet-4-6",
-        "attempted": true,
-        "ok": false,
-        "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09566-25a4-7163-a514-4f55f38c39fa\"} {\"type\":\"turn.started\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Skill descriptions were shortened to fit the skills context budget. Codex can still see every sk"
+        "error_type": "auth",
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgjzYEWrsVjZC9BQb5zk1'}"
       }
     ],
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-09-12T10:43:30Z"
+    "context_as_of": "2026-11-05T13:32:20Z"
   }
 }

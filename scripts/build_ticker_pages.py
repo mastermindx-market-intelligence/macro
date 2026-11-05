@@ -31,6 +31,7 @@ from calendar import month_abbr
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 _HERE = Path(__file__).resolve().parent
 _ROOT = _HERE.parent
@@ -483,6 +484,61 @@ def is_stale(freshness_date: str | None) -> bool:
         return (date.today() - d).days > STALENESS_DAYS
     except (ValueError, TypeError):
         return True
+
+
+def _issuer_clocks(per: dict, intel: dict | None, news_rec: dict | None) -> dict:
+    """Keep issuer evidence, measured price and daily-analysis clocks separate.
+
+    A global publication receipt is not an observation of every issuer. The
+    stock-library owner binds price_asof to its actual close and blob.asof to
+    its analysis series; neither may be advanced by news or this render.
+    """
+    blob = per.get("blob") or {}
+    tech = blob.get("tech") or {}
+    price = tech.get("price")
+    price_as_of = None
+    if (isinstance(price, (int, float)) and not isinstance(price, bool)
+            and math.isfinite(price) and price > 0):
+        price_as_of = page_freshness([tech.get("price_asof")])
+    daily_as_of = page_freshness([per.get("blob_asof") or blob.get("asof")]) if tech else None
+    dates = [price_as_of, daily_as_of]
+    for artifact, key in (("blob", "blob_asof"), ("gex_v1", "gex_as_of"),
+                          ("signals", "signals_as_of"), ("flow", "flow_as_of"),
+                          ("brief", "brief_as_of")):
+        if per.get(artifact):
+            dates.append(per.get(key))
+    if isinstance(intel, dict):
+        # Only existing semantic channels qualify, not schema/version/receipt
+        # metadata or has_* flags. A measured numeric zero remains evidence.
+        read = intel.get("read") if isinstance(intel.get("read"), dict) else {}
+        brain = intel.get("brain") if isinstance(intel.get("brain"), dict) else {}
+        alt = intel.get("alt") if isinstance(intel.get("alt"), dict) else {}
+        radar = intel.get("radar") if isinstance(intel.get("radar"), dict) else {}
+        texts = (intel.get("note"), read.get("read"), read.get("label"),
+                 brain.get("evidence"), radar.get("note"))
+        numbers = (brain.get("confidence"), alt.get("signal_score"), radar.get("edge_score"))
+        if (any(isinstance(text, str) and _clean_str(text) for text in texts)
+                or any(finite(number) is not None for number in numbers)):
+            dates.append(intel.get("asof") or intel.get("as_of"))
+    headlines = news_rec.get("top") if isinstance(news_rec, dict) else None
+    for headline in headlines if isinstance(headlines, list) else []:
+        if not isinstance(headline, dict):
+            continue
+        title, url, published = (headline.get(key) for key in ("title", "url", "published"))
+        if not all(isinstance(value, str) and value.strip() for value in (title, url, published)) or not _clean_str(title):
+            continue
+        try:
+            source = urlsplit(url)
+            if (source.scheme not in {"http", "https"} or not source.hostname
+                    or source.username or source.password):
+                continue
+        except ValueError:
+            continue
+        # Publication of an actual issuer headline is a dated source; the
+        # row/global collection receipt is not a substitute for that date.
+        dates.append(published)
+    return {"freshness": page_freshness(dates), "price_as_of": price_as_of,
+            "daily_as_of": daily_as_of, "price_stale": is_stale(price_as_of)}
 
 
 def build_sitemap(existing_xml: str, stocks_entries: list[dict]) -> str:
@@ -1585,7 +1641,7 @@ def _build_deep(blob: dict | None, per: dict, agg: dict, ticker: str,
 
 def _build_meta(
     ticker: str, name: str, blob: dict | None, stance_en: str,
-    freshness: str, stale: bool, generated_utc: str,
+    freshness: str | None, stale: bool, generated_utc: str,
 ) -> dict:
     price = None
     if blob:
@@ -1626,12 +1682,15 @@ def _build_meta(
         "@type": "ProfilePage",
         "@id": f"{canonical}#profile",
         "name": f"{ticker} — {name} company dossier",
-        "datePublished": freshness,
-        "dateModified": freshness,
         "publisher": {"@type": "Organization", "name": "MastermindX"},
         "mainEntity": company_entity,
         "url": canonical,
     }
+    # Profile publication history is not retained here. This document's known
+    # generation day can describe modification, never the market observation.
+    generated_day = page_freshness([generated_utc])
+    if generated_day:
+        jsonld["dateModified"] = generated_day
     jsonld_str = json.dumps(jsonld, ensure_ascii=False).replace("</", "<\\/")
 
     return {
@@ -2582,6 +2641,16 @@ def _build_valuation(blob: dict | None) -> list | None:
             "cheap": cheap,
         })
     return rows or None
+
+
+def _valuation_assumptions_view(blob: dict | None) -> dict | None:
+    """Passthrough read of valuation_scenario_controls.v1 written next to V1.
+
+    Lives after _build_valuation, outside the #6905 V1 helper cluster.
+    """
+    if not blob:
+        return None
+    return (blob.get("valuation_scenario") or {}).get("controls")
 
 
 def _build_earnings(blob: dict | None) -> dict | None:
@@ -4288,6 +4357,12 @@ def _ss_equality_display(raw: Any, key: str = "") -> tuple[str, str, bool]:
     their house pair. Identifier-shaped values stay verbatim in ss-id.
     Anything else is the dash pair plus a warning. *key* is the equality
     check id so ticker/CUSIP gates can fire.
+
+    H1 heal-round (PR #7122): an identifier-shaped value (SEC:/ISS:/cik:/
+    US-XN.../evt_) does NOT render as visible text. ``is_id=True`` rows keep
+    ``raw_token`` for the audit guard / data attribute, but the visible
+    text is replaced with a plain-word phrase that confirms the read without
+    leaking the raw token.
     """
     if raw is None:
         return _SS_READ_ABSENT["en"], _SS_READ_ABSENT["zh"], False
@@ -4301,6 +4376,10 @@ def _ss_equality_display(raw: Any, key: str = "") -> tuple[str, str, bool]:
     if not s:
         return _SS_READ_ABSENT["en"], _SS_READ_ABSENT["zh"], False
     mapped = _ss_project_identity_token(s, key)
+    # H1: when the mapped value carries an identifier shape, withhold the
+    # raw token from visible text.
+    if mapped["is_id"]:
+        return _ID_TOKEN_WITHHELD_EN, _ID_TOKEN_WITHHELD_ZH, True
     return mapped["en"], mapped["zh"], mapped["is_id"]
 
 
@@ -4316,6 +4395,13 @@ def _ss_equality_rows(raw_list: Any) -> list[dict[str, Any]]:
         verdict = _SS_EQUALITY_VERDICT[equal]
         left_en, left_zh, left_is_id = _ss_equality_display(item.get("left_value"), check)
         right_en, right_zh, right_is_id = _ss_equality_display(item.get("right_value"), check)
+        # H1 heal-round (PR #7122): preserve the raw identifier token on
+        # ``raw_token`` for the audit guard / data attribute; visible text
+        # already withholds the token via _ID_TOKEN_WITHHLED_EN/ZH.
+        left_raw = (str(item.get("left_value")).strip()
+                    if item.get("left_value") is not None else "")
+        right_raw = (str(item.get("right_value")).strip()
+                     if item.get("right_value") is not None else "")
         rows.append({
             "check": check,
             "label_en": (house or {}).get("en") or "",
@@ -4325,9 +4411,11 @@ def _ss_equality_rows(raw_list: Any) -> list[dict[str, Any]]:
             "left_en": left_en,
             "left_zh": left_zh,
             "left_is_id": left_is_id,
+            "left_raw": left_raw if left_is_id else "",
             "right_en": right_en,
             "right_zh": right_zh,
             "right_is_id": right_is_id,
+            "right_raw": right_raw if right_is_id else "",
             "verdict_en": verdict["en"],
             "verdict_zh": verdict["zh"],
             "ok": equal,
@@ -4672,6 +4760,16 @@ def _ss_map_identity_read_value(k: str, raw: Any, has_v: bool) -> dict[str, Any]
     return _ss_project_identity_token(s, k)
 
 
+# H1 heal-round (PR #7122): identity-read rows that carry a raw identifier
+# token (SEC:/ISS:/cik:/US-XN.../evt_) must NOT render the raw token as
+# visible text. The raw token is preserved on the security-state record for
+# the audit guard / data attribute / receipt JSON; the visible text row
+# carries a plain-word phrase that confirms the read happened without
+# leaking the raw token into customer copy.
+_ID_TOKEN_WITHHELD_EN = "Identifier recorded on the security-state record"
+_ID_TOKEN_WITHHELD_ZH = "标识已记录于证券状态档案"
+
+
 def _ss_identity_read_rows(seq: Any) -> list[dict[str, Any]]:
     """Project identity `values_read` into labeled customer-copy rows.
 
@@ -4680,6 +4778,13 @@ def _ss_identity_read_rows(seq: Any) -> list[dict[str, Any]]:
     Identity-checks print a frozen label; an unknown key falls back to the
     key inside `<span class="ss-id">`. An unmapped value keeps the row and
     prints the dash pair.
+
+    H1 heal-round (PR #7122): raw identifier tokens (SEC:/ISS:/cik:/US-XN.../
+    evt_) do not render as visible text. ``is_id=True`` rows keep their label
+    (so the reader sees WHICH field was read) but the value is replaced with
+    a plain-word EN/ZH phrase that confirms the read without leaking the
+    raw token. The raw token is still preserved on ``raw_token`` (data
+    attribute / audit guard) — never on the visible text.
     """
     rows: list[dict[str, Any]] = []
     for item in (seq if isinstance(seq, (list, tuple)) else []):
@@ -4696,14 +4801,22 @@ def _ss_identity_read_rows(seq: Any) -> list[dict[str, Any]]:
         else:
             continue
         mapped = _ss_map_identity_read_value(k, raw, has_v)
-        if mapped is None:
-            continue
         house = _SS_READ_FIELD.get(k)
+        # H1 heal-round: when the mapped value carries an identifier shape,
+        # replace its visible text with a plain-word phrase. The raw token
+        # is preserved on ``raw_token`` for the audit guard; visible text
+        # never sees it.
+        raw_token = (str(raw).strip() if raw is not None else "")
+        if mapped["is_id"] and raw_token:
+            vis_en, vis_zh = _ID_TOKEN_WITHHELD_EN, _ID_TOKEN_WITHHELD_ZH
+        else:
+            vis_en, vis_zh = mapped["en"], mapped["zh"]
         rows.append({
             "k": k,
-            "v": mapped["en"],
-            "v_en": mapped["en"],
-            "v_zh": mapped["zh"],
+            "v": vis_en,
+            "v_en": vis_en,
+            "v_zh": vis_zh,
+            "raw_token": raw_token if mapped["is_id"] else "",
             "is_id": mapped["is_id"],
             "label_en": (house or {}).get("en") or "",
             "label_zh": (house or {}).get("zh") or "",
@@ -4743,6 +4856,165 @@ def _ss_pair(node: Any, key: str = "") -> dict[str, str] | None:
     return None
 
 
+# Closed vocabulary of workspace lifecycle states the CHANGE card can print.
+# The engine composes that card's sentence itself and interpolates the owner's
+# raw lifecycle token into BOTH language slots
+# (`engine/security_state.py:1219-1223`), so the Chinese page reads
+# `Q4 2026 财报工作区状态为 complete：…` — an engine token inside customer copy
+# (Chairman plain-language law 2026-09-06). The vocabulary is closed by the
+# docket: `EVENT_STATES` (`engine/company_intelligence/events.py:43`, §4.3),
+# enforced on every producer by `CompanyEvent.__post_init__`
+# (`engine/company_intelligence/events.py:239`), reaching the reader through
+# `_lifecycle_payload` (`engine/company_intelligence/event_workspace.py:269`);
+# plus the reader's own `"unknown"` sentinel when the owner states no state at
+# all (`engine/security_state.py:1198`). This table is the projection layer, the
+# same shape as `_SS_READ_VALUE`: the compiled golden stays engine truth and is
+# never edited, and the template never receives the token.
+_SS_CHANGE_STATE: dict[str, dict[str, str]] = {
+    "discovered": {"en": "first seen", "zh": "已发现"},
+    "scheduled": {"en": "scheduled", "zh": "已排期"},
+    "rescheduled": {"en": "rescheduled", "zh": "已改期"},
+    "started": {"en": "under way", "zh": "进行中"},
+    "completed_partial": {"en": "partly complete", "zh": "部分完成"},
+    "complete": {"en": "complete", "zh": "已完成"},
+    "corrected": {"en": "corrected", "zh": "已更正"},
+    "superseded": {"en": "superseded", "zh": "已被取代"},
+    "derived_ready": {"en": "ready to read", "zh": "可供查阅"},
+    "distributed": {"en": "distributed", "zh": "已分发"},
+    "cancelled": {"en": "cancelled", "zh": "已取消"},
+    "unknown": {"en": "not stated", "zh": "未说明"},
+}
+
+# The reader does not re-validate `lifecycle.state` against `EVENT_STATES` — only
+# the producer does — and the workspace arrives over the wire, so ANY value is
+# reachable here: a wrong case (`Complete`), a different separator
+# (`in-progress`), a value from a newer contract (`v2_ready`), or a non-string
+# the engine's f-string stringified. None of them may print. They take house
+# words that say exactly what happened — the owner stated something this reader
+# does not recognise, which is NOT the same fact as "the owner stated nothing"
+# (`unknown`) — and are RECORDED for the operator, mirroring
+# `_SS_UNMAPPED_WARNED` / `_ss_warn_unmapped_identity`.
+_SS_CHANGE_STATE_UNREADABLE: dict[str, str] = {"en": "not recognised", "zh": "无法识别"}
+_SS_CHANGE_STATE_UNMAPPED: set[str] = set()
+
+# Already-projected house words, so a second application of the projection is a
+# no-op instead of re-reading its own output as an unrecognised token (which
+# would both rewrite the sentence and emit a false operator line for a value the
+# engine never sent).
+_SS_CHANGE_STATE_PROJECTED: dict[str, frozenset[str]] = {
+    slot: frozenset(
+        [entry[slot] for entry in _SS_CHANGE_STATE.values()]
+        + [_SS_CHANGE_STATE_UNREADABLE[slot]]
+    )
+    for slot in ("en", "zh")
+}
+
+# The engine's own two sentence frames. The match is anchored on the FRAME and
+# captures whatever the owner put between it and the terminator — never gated on
+# the token's shape, or the values that most need catching would walk straight
+# past the table. The Chinese frame swallows the engine's ASCII space so the
+# house words sit flush against the CJK, never `状态为 已完成`.
+_SS_CHANGE_STATE_EN_RE = re.compile(r"(?<=results workspace is )(.+?)(?=:)")
+_SS_CHANGE_STATE_ZH_RE = re.compile(r"(?<=财报工作区状态为)\s*(.+?)(?=：)")
+
+# `engine/security_state.py:1218` labels a workspace with no fiscal quarter (an
+# annual period) `"the latest period"` and interpolates that English into the
+# CHINESE frame too. Frozen here for the same reason the states are: a Latin run
+# in Chinese copy is machine text whether or not it is a token.
+_SS_CHANGE_PERIOD_ZH: dict[str, str] = {"the latest period": "最近一期"}
+_SS_CHANGE_PERIOD_ZH_RE = re.compile(
+    r"^(" + "|".join(re.escape(k) for k in _SS_CHANGE_PERIOD_ZH) + r")\s*(?=财报工作区状态为)"
+)
+
+
+def _ss_warn_unmapped_change_state(token: str, field: str = "lifecycle state") -> None:
+    """One stderr line per distinct out-of-contract value per process.
+
+    `field` names the contract field the value arrived in, because the card's
+    sentence and the drilldown's correction row read the same vocabulary out of
+    two different fields and an operator chasing one should not be sent to the
+    other. The dedupe stays keyed on the VALUE: one line per distinct value per
+    process is the contract, whichever field first carried it.
+    """
+    if token in _SS_CHANGE_STATE_UNMAPPED:
+        return
+    _SS_CHANGE_STATE_UNMAPPED.add(token)
+    print(f"change card {field} unmapped: {token}", file=sys.stderr)
+
+
+def _ss_project_change_state(pair: dict[str, str] | None) -> dict[str, str] | None:
+    """Rewrite the engine's raw lifecycle value as house words in both slots.
+
+    Falsy input is returned unchanged. A projected slot is a fixpoint: applying
+    this to its own output changes nothing and records nothing.
+    """
+    if not pair:
+        return pair
+    out = dict(pair)
+    for slot, rx in (("en", _SS_CHANGE_STATE_EN_RE), ("zh", _SS_CHANGE_STATE_ZH_RE)):
+        text = out.get(slot) or ""
+        if not text:
+            continue
+
+        def _house(m: "re.Match[str]", _slot: str = slot) -> str:
+            raw = m.group(1).strip()
+            if raw in _SS_CHANGE_STATE_PROJECTED[_slot]:
+                return raw
+            entry = _SS_CHANGE_STATE.get(raw)
+            if entry is None:
+                _ss_warn_unmapped_change_state(raw)
+                return _SS_CHANGE_STATE_UNREADABLE[_slot]
+            return entry[_slot]
+
+        out[slot] = rx.sub(_house, text)
+    zh = out.get("zh") or ""
+    if zh:
+        out["zh"] = _SS_CHANGE_PERIOD_ZH_RE.sub(
+            lambda m: _SS_CHANGE_PERIOD_ZH[m.group(1)], zh,
+        )
+    return out
+
+
+# `correction_state` is the SAME closed lifecycle vocabulary as the card's
+# sentence — the reader DERIVES it from `lifecycle.state`
+# (`engine/security_state.py:1199-1201`) — and the drilldown printed it raw into
+# both language slots (`templates/ticker.html.j2:1822`), so the Chinese page read
+# `更正状态 superseded`. It arrives as a bare token rather than inside a sentence
+# frame, so it meets `_SS_CHANGE_STATE` directly instead of through the frame
+# regexes; the row then receives an EN string and a ZH string, never the token.
+#
+# `"none"` is that derivation's own "nothing to report" default (the `.get(…,
+# "none")` fallback), not a lifecycle state, so it is absence rather than an
+# unrecognised value: it keeps the row's existing house copy ("None recorded" /
+# "无记录") by projecting to nothing. Reading it as unrecognised would misread
+# the commonest real value on the surface AND file an operator line on every
+# ordinary page.
+#
+# These are `_clean_str`'s own placeholder literals (`:276`). `_clean_str`
+# empties them only when they are the WHOLE value, so a padded `" None "`
+# survives it; matching here after `.strip()` and case-insensitively is what
+# closes that gap rather than letting whitespace decide whether absence is
+# readable.
+_SS_CORRECTION_ABSENT: frozenset[str] = frozenset({"none", "nan", "nat", "null"})
+
+
+def _ss_project_correction_state(raw: Any) -> dict[str, str] | None:
+    """House EN/ZH for one `correction_state` token; None means nothing recorded.
+
+    Same contract as `_ss_project_change_state` for values the table does not
+    know: readable house words in both slots AND one operator line, because the
+    reader does not re-validate this field either and it arrives over the wire.
+    """
+    token = _clean_str(raw).strip()
+    if not token or token.casefold() in _SS_CORRECTION_ABSENT:
+        return None
+    entry = _SS_CHANGE_STATE.get(token)
+    if entry is None:
+        _ss_warn_unmapped_change_state(token, field="correction state")
+        return dict(_SS_CHANGE_STATE_UNREADABLE)
+    return dict(entry)
+
+
 def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
     """Project one axis leg into everything its card and dialog print."""
     leg = leg if isinstance(leg, dict) else {}
@@ -4750,6 +5022,12 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
     cov = _SS_COVERAGE.get(cov_code, _SS_COVERAGE_FALLBACK)
 
     reason = _ss_pair(leg, "reason")
+    if key == "change":
+        # Every engine-composed sentence on this axis, not only the one today's
+        # engine fills: `reason` / `clause` / `actionable` render into the same
+        # card and dialog, so a lifecycle value arriving in any of them must
+        # meet the table too.
+        reason = _ss_project_change_state(reason)
     why = reason or (
         {"en": cov["why_en"], "zh": cov["why_zh"]} if cov["why_en"] else None
     )
@@ -4759,8 +5037,18 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
     # say. A card whose bold line repeats its own chip has spent its best line
     # on a word the reader already read.
     summary = _ss_pair(leg, "summary")
-    headline = _ss_pair(leg, "headline") or summary or {"en": cov["en"], "zh": cov["zh"]}
-    clause = _ss_pair(leg, "clause") or (summary if summary is not headline else None)
+    explicit_headline = _ss_pair(leg, "headline")
+    if key == "change":
+        # `summary` is projected BEFORE `headline` derives from it, so the two
+        # stay the same object: `clause` below keys off that identity, and a
+        # broken identity makes the card print its sentence twice.
+        summary = _ss_project_change_state(summary)
+        explicit_headline = _ss_project_change_state(explicit_headline)
+    headline = explicit_headline or summary or {"en": cov["en"], "zh": cov["zh"]}
+    explicit_clause = _ss_pair(leg, "clause")
+    if key == "change":
+        explicit_clause = _ss_project_change_state(explicit_clause)
+    clause = explicit_clause or (summary if summary is not headline else None)
 
     # Clocks, in the order the reference composition names them. A clock that is
     # absent is dropped rather than printed as "—": an empty clock row would
@@ -4835,6 +5123,11 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
             unresolved["code"] = _clean_str(suf.get("code") or "")
             unresolved["from"] = _clean_str(suf.get("leg") or "")
 
+    # `or ""` is the collapse the replaced line carried: a falsy non-string
+    # (`0`, `False`, `[]`) is nothing recorded, not a value to read back at the
+    # operator.
+    correction = _ss_project_correction_state(leg.get("correction_state") or "")
+
     out = {
         "key": key,
         "dlg": f"ss-{key.replace('_', '-')}",
@@ -4846,11 +5139,15 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
         "headline": headline,
         "clause": clause,
         "why": why,
-        "actionable": _ss_pair(leg, "actionable") or _SS_ACTIONABLE[cov["tone"]],
+        "actionable": (
+            _ss_project_change_state(_ss_pair(leg, "actionable")) if key == "change"
+            else _ss_pair(leg, "actionable")
+        ) or _SS_ACTIONABLE[cov["tone"]],
         "owner": _clean_str(leg.get("owner") or ""),
         "owner_object": _clean_str(leg.get("owner_object") or leg.get("owner_object_id") or ""),
         "source": _clean_str(leg.get("source") or ""),
-        "correction": _clean_str(leg.get("correction_state") or ""),
+        "correction_en": (correction or {}).get("en", ""),
+        "correction_zh": (correction or {}).get("zh", ""),
         "generation_id": _clean_str(leg.get("generation_id") or ""),
         "clocks": clock_rows,
         "asof": clock_rows[-1]["v"] if clock_rows else "",
@@ -5408,6 +5705,80 @@ def build_security_state(blob: dict | None) -> dict | None:
 # Main context builder
 # ---------------------------------------------------------------------------
 
+def _capital_need_for_page(blob: dict | None, generated_utc: str) -> dict | None:
+    """Revalidate source blocks at render time; never trust cached arithmetic."""
+    if not isinstance(blob, dict) or not any(k in blob for k in ("debt_maturity", "cash_runway", "capital_need")):
+        return None
+    try:
+        from engine.capital_need import assemble_capital_need
+        return assemble_capital_need(
+            blob.get("debt_maturity"), blob.get("cash_runway"),
+            as_of=generated_utc[:10],
+        )
+    except Exception as exc:  # additive panel; a failure must not revive cached math
+        print(f"::warning title=ticker capital-need validation::{type(exc).__name__}: {exc}", flush=True)
+        return {"schema": "capital_need.v1", "version": 1, "status": "unknown",
+                "reported": {}, "derived": {},
+                "authority": {"class": "context_only", "display_only": True}}
+
+
+def _debt_maturity_for_page(raw: dict | None, capital_need: dict | None) -> dict | None:
+    """Project validated facts in canonical order; discard cached display claims."""
+    if not isinstance(raw, dict):
+        return None
+    from engine.debt_maturity import BUCKETS, _usd_dollars
+
+    if raw.get("status") != "reported":
+        result = {"status": raw.get("status"), "period": None, "buckets": []}
+        if raw.get("status") == "no_maturity_facts":
+            result["buckets"] = [
+                {"key": key, "tag": tag, "label_en": en, "label_zh": zh,
+                 "reported": False, "usd": None, "display": None,
+                 "share_pct": None, "drop_reason": "absent"}
+                for key, tag, en, zh in BUCKETS
+            ]
+        return result
+    view = ((capital_need or {}).get("reported") or {}).get("debt_due")
+    if not view:
+        # Keep the verification-unavailable state without exposing unvalidated
+        # period labels or cached numeric presentation.
+        return {"status": "reported", "period": None, "buckets": []}
+    by_key = {row["key"]: row for row in view["buckets"]}
+    buckets = []
+    for key, tag, en, zh in BUCKETS:
+        fact = by_key.get(key) or {}
+        observed = fact.get("state") == "observed"
+        value = fact.get("value") if observed else None
+        buckets.append({
+            "key": key, "tag": tag, "label_en": en, "label_zh": zh,
+            "reported": observed, "usd": value,
+            "display": _usd_dollars(value) if observed else None,
+            "share_pct": 0 if observed else None,
+            "drop_reason": fact.get("drop_reason") or (None if observed else "absent"),
+        })
+    total = view["total_reported_usd"]
+    if total:
+        # Same largest-remainder display allocation as the source producer.
+        raw_shares = {i: row["usd"] / total * 100
+                      for i, row in enumerate(buckets) if row["reported"]}
+        shares = {i: int(value) for i, value in raw_shares.items()}
+        order = sorted(shares, key=lambda i: raw_shares[i] - shares[i], reverse=True)
+        for i in order[:max(100 - sum(shares.values()), 0)]:
+            shares[i] += 1
+        for i, value in shares.items():
+            buckets[i]["share_pct"] = value
+    period = dict(view["period"])
+    period["label"] = f"FY{period['fy']}"
+    return {
+        "schema": "debt_maturity.v1", "status": "reported", "unit": "USD",
+        "period": period, "buckets": buckets,
+        "total_reported_usd": total, "total_display": _usd_dollars(total),
+        "near_share_pct": buckets[0]["share_pct"],
+        "buckets_reported": sum(row["reported"] for row in buckets),
+        "buckets_total": len(BUCKETS),
+    }
+
+
 def build_page_context(
     ticker: str,
     name: str,
@@ -5449,16 +5820,8 @@ def build_page_context(
     inv_en, inv_zh = _scrub_machine(inv_en), _scrub_machine_zh(inv_zh)
 
     # --- Freshness ---
-    freshness_dates = [
-        per.get("blob_asof"),
-        per.get("gex_as_of"),
-        per.get("signals_as_of"),
-        per.get("flow_as_of"),
-        agg.get("intel_as_of"),
-        agg.get("news_as_of"),
-        per.get("brief_as_of"),
-    ]
-    freshness = page_freshness(freshness_dates) or date.today().isoformat()
+    clocks = _issuer_clocks(per, intel, news_rec)
+    freshness = clocks["freshness"]
     stale = is_stale(freshness)
 
     # --- Trailing returns + seasonality from ohlc ---
@@ -5586,6 +5949,9 @@ def build_page_context(
         index_chips.append({"en": "Russell 2000", "zh": "罗素2000"})
     hero["index_chips"] = index_chips or None
 
+    valuation_assumptions = _valuation_assumptions_view(blob)
+    capital_need = _capital_need_for_page(blob, generated_utc)
+
     return {
         "meta": meta,
         "hero": hero,
@@ -5598,7 +5964,9 @@ def build_page_context(
         "gauges": gauges,
         "performance": performance,
         "financials": financials,
-        "debt_maturity": (blob or {}).get("debt_maturity"),
+        "debt_maturity": _debt_maturity_for_page((blob or {}).get("debt_maturity"), capital_need),
+        "cash_runway": (blob or {}).get("cash_runway"),
+        "capital_need": capital_need,
         "valuation": valuation,
         "valuation_scenario": valuation_scenario,
         "earnings": earnings,
@@ -5617,6 +5985,7 @@ def build_page_context(
         # Decision Spine. None for every listing whose blob carries no
         # security_state block — those pages render exactly as before.
         "security_state": build_security_state(blob),
+        "valuation_assumptions": valuation_assumptions,
         "news": news_section,
         "placeholders": {
             "analyst_targets": True,
@@ -5645,6 +6014,9 @@ def build_page_context(
         "meta_desc": meta["meta_desc"],
         "jsonld_str": meta["jsonld_str"],
         "freshness": freshness,
+        "price_as_of": clocks["price_as_of"],
+        "daily_as_of": clocks["daily_as_of"],
+        "price_stale": clocks["price_stale"],
         "stale": stale,
         "stance_en": stance_en,
         "stance_zh": stance_zh,
@@ -6046,6 +6418,11 @@ def run(
             )
             write_page(out / "index.html", index_html)
             index_written = True
+            if out == site / "stocks" and only_tickers is None:
+                # Retired /movers.html: emit the fixed moved-notice stub only
+                # alongside successful canonical stock-index generation — never
+                # in --only subset or context-only modes.
+                _write_movers_stub(site)
             sitemap_entries.insert(0, {
                 "loc": f"{CANONICAL_BASE}/stocks/index.html",
                 "lastmod": date.today().isoformat(),
@@ -6126,6 +6503,32 @@ def run(
     return 0
 
 
+def _write_movers_stub(site: Path) -> bool:
+    """Write the retired /movers.html fixed moved-notice stub into ``site``.
+
+    Zero-data by contract: renders templates/movers.html — a constant
+    bilingual notice pointing at /stocks/index.html#today-movers — through the
+    same Jinja Environment/FileSystemLoader(TEMPLATES_DIR) +
+    lib.pages.write_page pair used by every other page in this module.
+    Fail-soft: warns and returns False instead of raising when the template is
+    unavailable, matching run()'s template-loading behaviour.
+    """
+    try:
+        from jinja2 import Environment, FileSystemLoader
+
+        env = Environment(
+            loader=FileSystemLoader(str(TEMPLATES_DIR)),
+            autoescape=True,
+        )
+        tmpl = env.get_template("movers.html")
+        write_page(site / "movers.html", tmpl.render())
+        return True
+    except Exception as e:  # noqa: BLE001
+        print(f"::warning title=movers::movers stub page not written: {e}",
+              flush=True)
+        return False
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build static per-ticker stock dossier pages (v2).")
     parser.add_argument("--out", default=None, help="Output directory (default: site/stocks)")
@@ -6138,7 +6541,16 @@ def main(argv: list[str] | None = None) -> int:
                         help="Comma-separated list of tickers to render (skips sitemap merge when used)")
     parser.add_argument("--manifest-out", default=None,
                         help="Optional JSON receipt listing ticker pages rendered in this invocation")
+    parser.add_argument("--movers-page-only", action="store_true",
+                        help="Write only the fixed /movers.html moved-notice stub "
+                             "into the site root and exit (no run, data, membership, "
+                             "stock, logo or sitemap work)")
     args = parser.parse_args(argv)
+
+    if args.movers_page_only:
+        # Early return BEFORE any run/data/membership/stock/logo/sitemap work:
+        # page-only mode performs only the fixed stub emission.
+        return 0 if _write_movers_stub(SITE) else 1
 
     out = Path(args.out) if args.out else (SITE / "stocks")
     sitemap_out = Path(args.sitemap_out) if args.sitemap_out else None
