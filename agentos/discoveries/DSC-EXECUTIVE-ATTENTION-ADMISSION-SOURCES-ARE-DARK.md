@@ -11,7 +11,8 @@ claim: >
   it does not prove absence everywhere on that filesystem or across the fleet.
   This is a dated host observation, not a current source-coverage verdict.
 falsifier: >
-  Compare the retained September 20 composition/search evidence with a
+  Inspect original Macro #7517 at f239ba0aab29bde02e84230436bd394a82dd4f77.
+  Compare its retained September 20 composition/search evidence with a
   source from that same host and time that supplied admitted attention or a
   backing store within the reported search scope. A newer populated owner
   would invalidate using this old observation as current coverage, without
