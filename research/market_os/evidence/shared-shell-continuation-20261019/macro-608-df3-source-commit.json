@@ -1,0 +1,23 @@
+{
+  "started_at": "2026-10-20T19:28:35.323876+00:00",
+  "state": "SOURCE_COMMITTED_LOCAL_ONLY",
+  "head_before": "608dfad299e2e48ab7703bf0b180e0dca1318229",
+  "incoming": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "remote_before": "608dfad299e2e48ab7703bf0b180e0dca1318229",
+  "source_tree": "17f8cca6de011cb467cd13246c3cf076e56b9e05",
+  "changed_paths_vs_incoming": 1309,
+  "test_receipt_sha256": "f522a0c9840901351c83597d305aa3ac4d889fe58d1ac599e429cacc5d0b33d6",
+  "retained_browser_lineage_sha256": "45640fc392162b589154e3aae278371647caaa6e2d7944782e337c245f48dd97",
+  "message_sha256": "88abfeca70bbacda725127fba23137b2b405a976faba41b6ab84e1ef3cb4537f",
+  "commit_exit": 0,
+  "log_bytes": 113,
+  "log_sha256": "72f239404cb6ae029ad9deac0f58abc34532d2888b3f9ad239f995b3f851a5c4",
+  "head_after": "5f4bdfe152847f118b2930c98eb233a45abf292a",
+  "parents": [
+    "608dfad299e2e48ab7703bf0b180e0dca1318229",
+    "df3cba80e5ff43e3411209381b32d9d4df06bd1f"
+  ],
+  "clean": true,
+  "pushed": false,
+  "finished_at": "2026-10-20T19:29:07.855890+00:00"
+}

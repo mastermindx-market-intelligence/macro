@@ -454,6 +454,8 @@ def snapshot(
         window_phase    dict from engine/opex.py
         glance_en       Tier-1 stance sentence (EN)
         glance_zh       Tier-1 stance sentence (ZH)
+        drivers_en      Current positioning context without a phase prefix (EN)
+        drivers_zh      Current positioning context without a phase prefix (ZH)
         doctrine        Standing law reminder
         dealer_sign_passport  Caveat on dealer-sign unobservability
         vanna_symmetry_caveat Caveat on vanna_drag directionality
@@ -585,18 +587,15 @@ def _snapshot_inner(
     }
 
 
-def _make_driver_read(
+def _make_positioning_read(
     level: str,
     n_hot: int,
     n_applicable: int,
     states: dict,
+    *,
+    concentration_copy: tuple[str, str],
 ) -> tuple[str, str]:
-    """Compose phase-free current positioning context for a dated event row.
-
-    The OPEX calendar owns the event date. This read owns only the current
-    dealer/positioning state, so it deliberately contains no historical
-    window-phase prefix that could describe a future expiry as "Mid-cycle".
-    """
+    """Compose positioning copy with an explicit concentration description."""
     if n_applicable == 0:
         return (
             "Surface data building — readings pending. Watch, don't chase.",
@@ -624,16 +623,34 @@ def _make_driver_read(
         chips_en.append("dealer books stretched")
         chips_zh.append("做市商持仓拉满")
     if states.get("concentration_hot"):
-        chips_en.append("expiry-week exposure crowded")
-        chips_zh.append("到期周敞口拥挤")
+        chips_en.append(concentration_copy[0])
+        chips_zh.append(concentration_copy[1])
 
     chip_str_en = (", ".join(chips_en) + ". ") if chips_en else ""
     chip_str_zh = ("，".join(chips_zh) + "。") if chips_zh else ""
-    avail_note_en = f" ({n_hot}/{n_applicable} signals active)"
+    avail_note_en = f" ({n_hot}/{n_applicable} signals active)" if n_applicable > 0 else ""
     avail_note_zh = f"（{n_hot}/{n_applicable}项信号激活）"
     return (
         f"{chip_str_en}{stance_en}{avail_note_en}",
         f"{chip_str_zh}{stance_zh}{avail_note_zh}",
+    )
+
+
+def _make_driver_read(
+    level: str,
+    n_hot: int,
+    n_applicable: int,
+    states: dict,
+) -> tuple[str, str]:
+    """Current positioning context without a phase claim for the dated event.
+
+    Concentration compares near-term exposure shares with their own history;
+    it does not establish that the current date is in expiration week.
+    The event calendar owns the event date; this read adds no future phase tag.
+    """
+    return _make_positioning_read(
+        level, n_hot, n_applicable, states,
+        concentration_copy=("exposure concentration elevated", "敞口集中度偏高"),
     )
 
 
@@ -647,7 +664,7 @@ def _make_glance(
     gamma_ctx: dict | None,
     states: dict,
 ) -> tuple[str, str]:
-    """Compose the current OPEX-cycle glance plus phase-free positioning read."""
+    """Compose the current-cycle glance, preserving its established wording."""
     phase_words = {
         "opex_week": "Expiration week",
         "post_opex": "Post-expiration window",
@@ -656,8 +673,9 @@ def _make_glance(
     phase_en = phase_words.get(phase, "Options cycle")
     quad_tag = " (quad-witching)" if is_quad else ""
     td_tag = f" — {td_to}d to expiry" if td_to is not None else ""
-    drivers_en, drivers_zh = _make_driver_read(
+    drivers_en, drivers_zh = _make_positioning_read(
         level, n_hot, n_applicable, states,
+        concentration_copy=("expiry-week exposure crowded", "到期周敞口拥挤"),
     )
     return (
         f"{phase_en}{quad_tag}{td_tag}. {drivers_en}",

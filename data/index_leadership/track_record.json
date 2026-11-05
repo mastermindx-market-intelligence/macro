@@ -1,99 +1,104 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-15",
-  "generated_at": "2026-09-17T07:07:13.590336+00:00",
+  "as_of": "2026-10-30",
+  "generated_at": "2026-11-04T14:31:14.401054+00:00",
   "is_context_only": true,
-  "n_snapshots": 752,
-  "n_days": 26,
+  "n_snapshots": 1353,
+  "n_days": 46,
   "horizons": {
     "5": {
-      "n_matured": 686,
+      "n_matured": 1328,
       "by_stage": {
         "running": {
-          "n": 613,
-          "mean_fwd_rel": -0.0057,
-          "hit_rate": 0.44
+          "n": 1251,
+          "mean_fwd_rel": -0.0052,
+          "hit_rate": 0.431
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.001,
-          "hit_rate": 0.5
+          "mean_fwd_rel": -0.0011,
+          "hit_rate": 0.472
         },
         "coiling_primed": {
-          "n": 37,
-          "mean_fwd_rel": 0.0119,
-          "hit_rate": 0.595
+          "n": 41,
+          "mean_fwd_rel": 0.011,
+          "hit_rate": 0.585
         }
       },
-      "running_ic": -0.0637,
-      "running_ic_t_hac": -0.745,
+      "running_ic": -0.0173,
+      "running_ic_t_hac": -0.289,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 616,
+      "n_matured": 1328,
       "by_stage": {
         "running": {
-          "n": 544,
-          "mean_fwd_rel": -0.0084,
-          "hit_rate": 0.415
+          "n": 1251,
+          "mean_fwd_rel": -0.0102,
+          "hit_rate": 0.408
         },
         "coiling": {
-          "n": 35,
-          "mean_fwd_rel": -0.0054,
-          "hit_rate": 0.429
+          "n": 36,
+          "mean_fwd_rel": -0.0064,
+          "hit_rate": 0.417
         },
         "coiling_primed": {
-          "n": 37,
-          "mean_fwd_rel": 0.0163,
-          "hit_rate": 0.514
+          "n": 41,
+          "mean_fwd_rel": 0.0142,
+          "hit_rate": 0.488
         }
       },
-      "running_ic": -0.0731,
-      "running_ic_t_hac": -0.981,
+      "running_ic": -0.0425,
+      "running_ic_t_hac": -0.853,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 468,
+      "n_matured": 1191,
       "by_stage": {
         "running": {
-          "n": 413,
-          "mean_fwd_rel": -0.0157,
-          "hit_rate": 0.392
+          "n": 1114,
+          "mean_fwd_rel": -0.033,
+          "hit_rate": 0.311
         },
         "coiling": {
-          "n": 26,
-          "mean_fwd_rel": -0.0118,
-          "hit_rate": 0.423
+          "n": 36,
+          "mean_fwd_rel": -0.0189,
+          "hit_rate": 0.278
         },
         "coiling_primed": {
-          "n": 29,
-          "mean_fwd_rel": 0.0311,
-          "hit_rate": 0.69
+          "n": 41,
+          "mean_fwd_rel": 0.0196,
+          "hit_rate": 0.61
         }
       },
-      "running_ic": -0.007,
-      "running_ic_t_hac": -0.099,
+      "running_ic": -0.1046,
+      "running_ic_t_hac": -1.132,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 33,
+      "n_matured": 535,
       "by_stage": {
         "running": {
-          "n": 26,
-          "mean_fwd_rel": -0.0463,
-          "hit_rate": 0.346
+          "n": 471,
+          "mean_fwd_rel": -0.054,
+          "hit_rate": 0.299
         },
         "coiling": {
-          "n": 7,
-          "mean_fwd_rel": -0.0806,
-          "hit_rate": 0.286
+          "n": 32,
+          "mean_fwd_rel": -0.0456,
+          "hit_rate": 0.25
+        },
+        "coiling_primed": {
+          "n": 32,
+          "mean_fwd_rel": 0.0085,
+          "hit_rate": 0.531
         }
       },
-      "running_ic": null,
-      "running_ic_t_hac": null,
+      "running_ic": -0.0521,
+      "running_ic_t_hac": -1.914,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     }
@@ -111,67 +116,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-08-25",
-      "id": "russell:other-industrial-metals-mining",
-      "name": "Other Industrial Metals & Mining",
+      "date": "2026-10-08",
+      "id": "subsectors:internet-content-information",
+      "name": "Internet Content & Information",
       "stage": "running",
-      "fwd_rel": -0.1356,
+      "fwd_rel": -0.1608,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-25",
-      "id": "russell:waste-management",
-      "name": "Waste Management",
+      "date": "2026-10-08",
+      "id": "nasdaq:internet-content-information",
+      "name": "Internet Content & Information",
       "stage": "running",
-      "fwd_rel": -0.1274,
+      "fwd_rel": -0.1608,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-25",
-      "id": "baskets:gold-miners",
-      "name": "Gold Miners",
+      "date": "2026-10-08",
+      "id": "nasdaq:communication-equipment",
+      "name": "Communication Equipment",
       "stage": "running",
-      "fwd_rel": -0.1183,
+      "fwd_rel": -0.1465,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-25",
-      "id": "russell:other-precious-metals-mining",
-      "name": "Other Precious Metals & Mining",
+      "date": "2026-10-08",
+      "id": "baskets:ai-infra",
+      "name": "AI Infrastructure",
+      "stage": "running",
+      "fwd_rel": -0.1405,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-08",
+      "id": "baskets:ai-semiconductors",
+      "name": "AI Semiconductors",
+      "stage": "running",
+      "fwd_rel": -0.133,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-08",
+      "id": "russell:semiconductors",
+      "name": "Semiconductors",
       "stage": "running",
       "fwd_rel": -0.1072,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-25",
-      "id": "russell:residential-construction",
-      "name": "Residential Construction",
+      "date": "2026-10-08",
+      "id": "subsectors:electronic-components",
+      "name": "Electronic Components",
       "stage": "running",
-      "fwd_rel": -0.0927,
+      "fwd_rel": -0.0937,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-25",
-      "id": "subsectors:restaurants",
-      "name": "Restaurants",
-      "stage": "running",
-      "fwd_rel": -0.0652,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-25",
-      "id": "subsectors:household-personal-products",
-      "name": "Household & Personal Products",
-      "stage": "running",
-      "fwd_rel": -0.0646,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-25",
-      "id": "subsectors:biotechnology",
-      "name": "Biotechnology",
-      "stage": "running",
-      "fwd_rel": -0.0576,
+      "date": "2026-10-08",
+      "id": "baskets:data-center-power",
+      "name": "Data-Center Power & Cooling",
+      "stage": "coiling_primed",
+      "fwd_rel": -0.0866,
       "horizon_d": 21
     }
   ],
