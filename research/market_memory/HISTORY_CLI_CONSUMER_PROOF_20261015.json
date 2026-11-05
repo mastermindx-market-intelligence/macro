@@ -1,0 +1,50 @@
+{
+  "schema": "market_memory.history_cli_consumer_proof.v1",
+  "manifest_sha256": "31f61ea6dc152265d3e9ed2d955068e8d914b1f82b990804ad5efb0b68b5ecd0",
+  "macro_sha256": "21d432846cf6d7d2c41d39cf4df75b8faa39e0afe7bb6c629b14066819b5f5f1",
+  "dossier_date": "2022-09-13",
+  "dossier_sha256": "6c8098d502ec9294f3e317a1f4f79d321a58ebc3329db25076b8885c284bfbbe",
+  "market_rows": 25,
+  "macro_first_print_rows": 11,
+  "outcomes_in_default_dossier": false,
+  "summary": {
+    "denominator": "selected_proxy_observations_with_valid_1bar_return",
+    "flat_proxy_count": 0,
+    "interpretation": "Descriptive selected proxies; not whole-market breadth or an alert.",
+    "largest_advances": [
+      {
+        "return_1ob_pct": 1.3774104684725064,
+        "vendor_symbol": "UUP"
+      },
+      {
+        "return_1ob_pct": 0.23273133502526022,
+        "vendor_symbol": "TLT"
+      }
+    ],
+    "largest_declines": [
+      {
+        "return_1ob_pct": -5.49096762663247,
+        "vendor_symbol": "XLC"
+      },
+      {
+        "return_1ob_pct": -5.483684108916831,
+        "vendor_symbol": "QQQ"
+      },
+      {
+        "return_1ob_pct": -5.308464849439487,
+        "vendor_symbol": "XLK"
+      }
+    ],
+    "missing_return_count": 0,
+    "negative_proxy_count": 23,
+    "observed_proxy_count": 25,
+    "positive_proxy_count": 2,
+    "valid_return_count": 25
+  },
+  "browser_cli_output": "/Volumes/Mastermind/data/web-lab-runs/market-time-machine-20261015-v2-browser/history-cli.html",
+  "browser_html_sha256": "cc0f3841c35895e1db0624028ab48491eaed6bf97b96e8c988080acfc4bbfea1",
+  "browser_identical_to_eight_case_verified_artifact": true,
+  "elapsed_seconds": 5.611,
+  "both_subprocesses_exited_zero": true,
+  "served_public_route": false
+}

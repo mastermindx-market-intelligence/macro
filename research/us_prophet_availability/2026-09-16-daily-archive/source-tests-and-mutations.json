@@ -1,0 +1,23 @@
+{
+  "production": false,
+  "source_sha256": "848b138063297e7d67b1ba66b0710de4d50a67582b5f4dd76f5014ebc62abfee",
+  "mutations": [
+    {
+      "mutation": "restore_backlog_starvation",
+      "returncode": 1,
+      "output_tail": "----------------------------- Captured stdout call -----------------------------\n::notice title=yahoo-backfill::backfilled 1, parked 0, remaining 0\n------------------------------- Sparse worktree --------------------------------\nThis checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, finviz_themes, knowledge, mockups, ops, properties, reports, requirements, site, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree \u2014 .claude not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n\nNOTE: sparse worktree \u2014 .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, finviz_themes, knowledge, mockups, ops, properties, reports, requirements, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_yahoo_universe_backfill.py::test_refresh_all_does_not_starve_existing_prices_behind_new_name_backlog\nFAILED tests/test_yahoo_universe_backfill.py::test_refresh_all_keeps_one_existing_budget_for_backfill_and_refresh\n2 failed, 6 passed, 57 deselected in 3.04s"
+    },
+    {
+      "mutation": "restore_six_day_selection",
+      "returncode": 1,
+      "output_tail": "----------------------------- Captured stdout call -----------------------------\n::notice title=yahoo-backfill::backfilled 0, parked 0, remaining 0, refreshed 0 of 4, refresh cadence ~4.0d\n------------------------------- Sparse worktree --------------------------------\nThis checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, finviz_themes, knowledge, mockups, ops, properties, reports, requirements, site, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree \u2014 .claude not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n\nNOTE: sparse worktree \u2014 .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, finviz_themes, knowledge, mockups, ops, properties, reports, requirements, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_yahoo_universe_backfill.py::test_refresh_all_selects_every_eligible_archive_name\nFAILED tests/test_yahoo_universe_backfill.py::test_refresh_all_dry_run_is_a_plan_not_a_freshness_receipt\n2 failed, 6 passed, 57 deselected in 2.09s"
+    },
+    {
+      "mutation": "bypass_shared_wall_budget",
+      "returncode": 1,
+      "output_tail": "tests/test_yahoo_universe_backfill.py:893: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::notice title=yahoo-backfill::backfilled 1, parked 0, remaining 0, refreshed 1 of 1, refresh cadence ~1.0d\n------------------------------- Sparse worktree --------------------------------\nThis checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, finviz_themes, knowledge, mockups, ops, properties, reports, requirements, site, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree \u2014 .claude not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n\nNOTE: sparse worktree \u2014 .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, finviz_themes, knowledge, mockups, ops, properties, reports, requirements, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_yahoo_universe_backfill.py::test_refresh_all_keeps_one_existing_budget_for_backfill_and_refresh\n1 failed, 7 passed, 57 deselected in 3.37s"
+    }
+  ],
+  "restored_returncode": 0,
+  "restored_summary": "94 passed, 1 skipped in 6.23s"
+}

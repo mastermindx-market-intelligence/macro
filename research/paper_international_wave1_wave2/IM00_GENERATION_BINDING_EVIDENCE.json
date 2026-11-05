@@ -1,0 +1,83 @@
+{
+  "schema": "paper.im00.generation.binding.evidence.v1",
+  "status": "SCOPED_SOURCE_AND_SYNTHETIC_BROWSER_ACCEPTED_NOT_OPTED_IN",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_hashes": {
+    "lib/intl_workspace_binding.py": "9e7575e6cd5205dc333e273945839374ea2c7aca33939c87f1d69e52eaf91691",
+    "lib/intl_compare_mount.py": "5fb17b26b9e293aaa674abc844a5e29f3b34e3f628fe812fb7b31e15db052a67",
+    "lib/intl_inspector_mount.py": "92a360d9dba2ba65449db5c921e96ce42b4cfd3a3fd8c4834de7896aecbc7598",
+    "lib/intl_library_mount.py": "a7a703c911b041be8033bfee3ffc71115d030bb850961110b4e48a84466ded11",
+    "lib/intl_compare_view.py": "4f331b0ef4c670b763a4e5a0fee2bc93b91e7b8aa401a755a2e7cf71dc66ebc2",
+    "lib/intl_inspector_view.py": "bd9f90c138afd1c03cd9d5b4dcbf61e424a294df67779cdd592634ac6f22d9a7",
+    "lib/intl_library_view.py": "cf5555a4c2c582eb0ad00568e13c532ca05c2c083a62d25525da2cc6f594b081",
+    "engine/intl_workspace_overview.py": "39f1280b94a7a9580f383b8220902a0960bbab2087b3fd5c7204ef33ba71167b",
+    "templates/intl_workspace.js": "3448346092a0384863ee517f77fa1dea47b577f971af54eb163949d28b27c155",
+    "templates/intl_workspace/shell.html.j2": "7becf0ded6b9467cb5d37b801bac8a2d190d3f4f81d0e94fd6b065948252d087",
+    "templates/intl_workspace/overview.html.j2": "4dc3e566509e4cceaca7a956b6be1958638a83a214e8aa58b95c7af35f03a0dc",
+    "templates/intl_workspace/compare.html.j2": "fed425067115c832735c37129807624020b1f4f921066d01a1f5e4c5f13423c3",
+    "templates/intl_workspace/inspector.html.j2": "675fdf258899cea8d361593e990d819deb187cb1ef90284d1c72012153e06f94",
+    "templates/intl_workspace/library.html.j2": "45bacd0239214a99597c53bce290af5744ea60c198ea2510154064b791d80ae0",
+    "tests/test_intl_workspace_generation_mount.py": "a4269312cbc60b5fedb37d5b415f168d3fde362681d7264761b5e4b6ece28e48",
+    "tests/intl_workspace_generation_integration.test.cjs": "45c90dc4f696907514546282c41d2900db46bfff72d64bc559b7508f58a73202",
+    "tests/test_intl_workspace_overview.py": "b3f1edaf59506be2e003f4e4ed1f9b01132310074bbaacf1b872c25fe34a59fc",
+    "config/intl_library_catalogue.json": "efb38991184357909b1f8c55c6753efad4f2e8b56616d2d526d9318e8a94895c",
+    "tests/intl_workspace_generation_controller.test.cjs": "d9c16a27bd7f5142ce08165f207c78e724a705ccb8c3d1e7544eef65d3bddc8f"
+  },
+  "reviews": [
+    {
+      "run": "paper-01a1101f-generation-client-review-r1",
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM00_GENERATION_CLIENT_REVIEW_R1.json",
+      "sha256": "9603551ec012a8a00c09c52e7258f31988694e9120cad656a30358a2ce03efdc",
+      "proof": "78author+14independent browser cases PASS"
+    },
+    {
+      "run": "paper-01a1101f-generation-integration-review-r1",
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM00_GENERATION_INTEGRATION_REVIEW_R1.json",
+      "sha256": "3bf91f79174fa69f372c9147a83a3175b52328fb60b8abb56a56df9888b42a64",
+      "proof": "58generation+237focused Python,5actualproducer/browser,8independentPython+5independentBrowser PASS"
+    }
+  ],
+  "parent_tests": {
+    "python": 234,
+    "actual_producer_browser": 5,
+    "client_regression": 78,
+    "frozen_R2_counterproof": "11FAIL47PASS; corrected candidate234PASS. Earlier racyRED58PASS is not counted as RED."
+  },
+  "visual": {
+    "status": "PARENT_SYNTHETIC_COMPONENT_VISUAL_PASS",
+    "matrix": "2currencybases x EN/ZH x dark/light x1440/390 xrest/focus =32",
+    "focus": 16,
+    "manifest": "mockups/evidence/paper-international-generation/states/manifest.json",
+    "manifest_sha256": "7684befd71ad1e21044aa36a3a624c4ab47db9770b665ba443ffaf680b6b1f27",
+    "capture_receipt": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM00_GENERATION_CAPTURE_SOURCE_R1.json",
+    "capture_receipt_sha256": "55308a2ed2a882cd8145eb361f273034e32e5c3026280b19a2ad738dfdc7486a",
+    "inspected": [
+      "local-only real supplied backend, dark EN mobile: JP +6.34local whileUSD/FX andGBunavailable; sourcehash wraps",
+      "USDNULL real supplied backend, light ZH desktop: bothselectedretained andallfinancialfieldsunknown, no fabricatedsource"
+    ],
+    "visual_conclusion": "Existing dark metric surfaces and light hairline division retained. No overflow observed in matrix, inputfocus2px. Publicationnonce invisible; financialdisclosure source onlywhereadmitted.",
+    "limits": [
+      "Synthetic ownerframes/attestations; notcurrentmarket/productionrights/auth/publication.",
+      "Actualcomponentcapture preservesincumbentAskMastermindoverlay."
+    ]
+  },
+  "stress": {
+    "passed": 32,
+    "matrix": "local/USD x EN/ZH x dark/light x768/320 x100/200percent text",
+    "receipt": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM00_GENERATION_STRESS.json",
+    "sha256": "5cb6a95f388f60436535d1a18c7c7272c9e0c898445078a9feddcd208a730917"
+  },
+  "gates": {
+    "ci_scope_closure": "both existing International jobs missing=[]",
+    "ci_registry": "247jobs validated",
+    "design": "0newblocking",
+    "runtime_style": "206JS scanned,89hits unchanged",
+    "visual_evidence": "exit0"
+  },
+  "contract": "Version2 root config.source_reference is a canonical opaque UUIDv4 generation. All owned panels/triggers bind exactly. Actual financial source remains nullable; no NULL wildcard. Library metadata source None, external library_generation. Version1 absent marker preserved; malformed/mixed versions refuse enhancement, leaving native fallback. Source refresh rejects old DOM even if financial source unchanged.",
+  "limits": [
+    "Synthetic input/grant proofs, not current market, authenticated rights or publication.",
+    "Builder remains closes-only v1 until genuine producer basis/completed-session/numerical-disclosure inputs exist.",
+    "New generation needed for every content or disclosure change; no persistent nonce owner introduced."
+  ]
+}
