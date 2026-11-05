@@ -112,7 +112,7 @@
     {
       "event_type": "guidance_cut",
       "direction": "bearish",
-      "n": 44,
+      "n": 46,
       "n_graded": 34,
       "hit_5d": 0.4117647058823529,
       "hit_21d": 0.3225806451612903,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 2150,
+    "n_sampled": 2144,
     "n_graded": 0,
     "classes": []
   }

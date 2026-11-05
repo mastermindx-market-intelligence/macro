@@ -555,7 +555,7 @@
       "vix_term_lead_lag": "coincident",
       "skew": 150.9,
       "skew_pctile": 0.7103174603174603,
-      "stock_bond_corr": 0.0936270863679278,
+      "stock_bond_corr": 0.09362708636791679,
       "stock_bond_regime": "mixed",
       "roro": -0.42442513291368644,
       "roro_state": "risk-off",
@@ -662,7 +662,7 @@
     "tiers": {
       "leading": {
         "asof": "2026-11-30",
-        "index": 94.25342049259837,
+        "index": 94.25342049259838,
         "mom6": -0.6292524196325218,
         "trend": 0.3308080463886444,
         "diffusion": 33.333333333333336,
@@ -9443,7 +9443,7 @@
   },
   "fed_path": {
     "asof": "2026-11-04",
-    "built": "2026-11-05T07:21:15.686161+00:00",
+    "built": "2026-11-05T09:47:07.613784+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -18852,135 +18852,6 @@
         }
       },
       {
-        "theme": "rare_earth_critical_min",
-        "name": "Rare Earth & Critical Minerals",
-        "stage": "WATCH",
-        "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 4d (2026-11-09); 1 proposed rule(s) last 60d; 3 final rule(s) last 60d",
-        "entry_ready": false,
-        "entry_note": "not a thesis stage \u2014 no entry",
-        "bottleneck_band": "NEUTRAL",
-        "bottleneck_text_only": false,
-        "bottleneck_fingerprint_only": false,
-        "fingerprint": {
-          "theme": "rare_earth_critical_min",
-          "fingerprint_tightness": -0.016,
-          "leg7_member_inventory": -0.016,
-          "leg8_member_backlog": null,
-          "n_legs_live": 1,
-          "basis": "annual",
-          "provisional": true,
-          "components": {
-            "leg7_member_inventory": {
-              "value": -0.016,
-              "n_reporting": 7,
-              "latest_fy": 2026,
-              "min_required": 3,
-              "met_gate": true,
-              "description": "Median YoY change in inventory days (COGS-based, revenue fallback) across theme members. Uses COGS when available (more accurate), falls back to revenue. Negative YoY (falling) \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
-              "weight_provisional": 0.5,
-              "n_cogs_based": 4,
-              "n_revenue_based": 3
-            },
-            "leg8_member_backlog": {
-              "value": null,
-              "n_reporting": 2,
-              "latest_fy": 2025,
-              "min_required": 3,
-              "met_gate": false,
-              "description": "Median YoY RPO (RevenueRemainingPerformanceObligation) growth across theme members. Rising RPO \u2192 more backlog \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
-              "weight_provisional": 0.5
-            }
-          },
-          "_shadow_candidates": {
-            "leg7_weight": 0.5,
-            "leg8_weight": 0.5,
-            "note": "provisional equal-weight; shadow calibration pending (Wave 3a/3b)"
-          }
-        },
-        "tightness": 0.24,
-        "bottleneck_regime": false,
-        "demand_band": null,
-        "demand_strength": null,
-        "capex_yoy": null,
-        "revision_breadth": 0.417,
-        "revision_level": "POSITIVE",
-        "broadening_state": "INSUFFICIENT_HISTORY",
-        "est_drift_90d": 8.33,
-        "guidance_band": null,
-        "guidance_net": null,
-        "guidance_raisers": null,
-        "guidance_cutters": null,
-        "altdata_summary": null,
-        "n_altdata_leading": 0,
-        "altdata_members": null,
-        "glut_band": "STABLE",
-        "glut_score": -0.24,
-        "theme_feed_summary": null,
-        "molecule_gap": null,
-        "observation_split": null,
-        "fda_details": null,
-        "divergence_share": null,
-        "ppi_yoy_latest": 29.04,
-        "language_accel": 1.0,
-        "policy_reg_chip": {
-          "theme": "rare_earth_critical_min",
-          "summary": "comment close in 4d (2026-11-09); 1 proposed rule(s) last 60d; 3 final rule(s) last 60d",
-          "days_to_comment_close": 4,
-          "days_to_rule_effective": null,
-          "prorule_inflow_60d": 1,
-          "rule_finalization_60d": 3,
-          "next_comment_close_date": "2026-11-09",
-          "next_comment_close_title": "National Petroleum Reserve in Alaska Production Site Development",
-          "evidence_class": "dated-structured"
-        },
-        "score": 45.0,
-        "score_detail": {
-          "score": 45.0,
-          "base": 64.7,
-          "axes": {
-            "magnitude": null,
-            "acceleration": 0.5,
-            "bottleneck": 0.35,
-            "pricing_power": 1.0,
-            "underpricing": 1.0,
-            "purity": null,
-            "timing": 0.4
-          },
-          "n_axes_live": 5,
-          "caps": [
-            "WATCH (late) -> capped at 45"
-          ],
-          "verdict": "watch",
-          "physical_confirmed": true,
-          "earliness": 1.0
-        },
-        "size_band": "WATCH",
-        "size_note": "nothing actionable yet",
-        "derisk": false,
-        "size_mult": 0.08,
-        "size_detail": {
-          "band": "WATCH",
-          "derisk": false,
-          "note": "nothing actionable yet",
-          "earliness": 1.0,
-          "earliness_tilt": 1.25,
-          "cluster_dilution": {
-            "cluster_id": "c6",
-            "cluster_size": 2,
-            "enb_cluster": 1.33,
-            "factor": 0.665,
-            "note": "dilution = min(1, ENB=1.3 / size=2) = 0.67"
-          },
-          "size_mult_breakdown": {
-            "stage_cap": 0.1,
-            "earliness_tilt": 1.25,
-            "cluster_dilution": 0.665,
-            "product": 0.08
-          }
-        }
-      },
-      {
         "theme": "copper_steel_electrify",
         "name": "Copper, Steel & Electrification",
         "stage": "WATCH",
@@ -19106,6 +18977,135 @@
             "earliness_tilt": 1.0588,
             "cluster_dilution": 0.665,
             "product": 0.07
+          }
+        }
+      },
+      {
+        "theme": "rare_earth_critical_min",
+        "name": "Rare Earth & Critical Minerals",
+        "stage": "WATCH",
+        "tier": "P",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 4d (2026-11-09); 1 proposed rule(s) last 60d; 3 final rule(s) last 60d",
+        "entry_ready": false,
+        "entry_note": "not a thesis stage \u2014 no entry",
+        "bottleneck_band": "NEUTRAL",
+        "bottleneck_text_only": false,
+        "bottleneck_fingerprint_only": false,
+        "fingerprint": {
+          "theme": "rare_earth_critical_min",
+          "fingerprint_tightness": -0.016,
+          "leg7_member_inventory": -0.016,
+          "leg8_member_backlog": null,
+          "n_legs_live": 1,
+          "basis": "annual",
+          "provisional": true,
+          "components": {
+            "leg7_member_inventory": {
+              "value": -0.016,
+              "n_reporting": 7,
+              "latest_fy": 2026,
+              "min_required": 3,
+              "met_gate": true,
+              "description": "Median YoY change in inventory days (COGS-based, revenue fallback) across theme members. Uses COGS when available (more accurate), falls back to revenue. Negative YoY (falling) \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
+              "weight_provisional": 0.5,
+              "n_cogs_based": 4,
+              "n_revenue_based": 3
+            },
+            "leg8_member_backlog": {
+              "value": null,
+              "n_reporting": 2,
+              "latest_fy": 2025,
+              "min_required": 3,
+              "met_gate": false,
+              "description": "Median YoY RPO (RevenueRemainingPerformanceObligation) growth across theme members. Rising RPO \u2192 more backlog \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
+              "weight_provisional": 0.5
+            }
+          },
+          "_shadow_candidates": {
+            "leg7_weight": 0.5,
+            "leg8_weight": 0.5,
+            "note": "provisional equal-weight; shadow calibration pending (Wave 3a/3b)"
+          }
+        },
+        "tightness": 0.24,
+        "bottleneck_regime": false,
+        "demand_band": null,
+        "demand_strength": null,
+        "capex_yoy": null,
+        "revision_breadth": 0.417,
+        "revision_level": "POSITIVE",
+        "broadening_state": "INSUFFICIENT_HISTORY",
+        "est_drift_90d": 8.33,
+        "guidance_band": null,
+        "guidance_net": null,
+        "guidance_raisers": null,
+        "guidance_cutters": null,
+        "altdata_summary": null,
+        "n_altdata_leading": 0,
+        "altdata_members": null,
+        "glut_band": "STABLE",
+        "glut_score": -0.24,
+        "theme_feed_summary": null,
+        "molecule_gap": null,
+        "observation_split": null,
+        "fda_details": null,
+        "divergence_share": null,
+        "ppi_yoy_latest": 29.04,
+        "language_accel": 1.0,
+        "policy_reg_chip": {
+          "theme": "rare_earth_critical_min",
+          "summary": "comment close in 4d (2026-11-09); 1 proposed rule(s) last 60d; 3 final rule(s) last 60d",
+          "days_to_comment_close": 4,
+          "days_to_rule_effective": null,
+          "prorule_inflow_60d": 1,
+          "rule_finalization_60d": 3,
+          "next_comment_close_date": "2026-11-09",
+          "next_comment_close_title": "National Petroleum Reserve in Alaska Production Site Development",
+          "evidence_class": "dated-structured"
+        },
+        "score": 45.0,
+        "score_detail": {
+          "score": 45.0,
+          "base": 64.7,
+          "axes": {
+            "magnitude": null,
+            "acceleration": 0.5,
+            "bottleneck": 0.35,
+            "pricing_power": 1.0,
+            "underpricing": 1.0,
+            "purity": null,
+            "timing": 0.4
+          },
+          "n_axes_live": 5,
+          "caps": [
+            "WATCH (late) -> capped at 45"
+          ],
+          "verdict": "watch",
+          "physical_confirmed": true,
+          "earliness": 1.0
+        },
+        "size_band": "WATCH",
+        "size_note": "nothing actionable yet",
+        "derisk": false,
+        "size_mult": 0.08,
+        "size_detail": {
+          "band": "WATCH",
+          "derisk": false,
+          "note": "nothing actionable yet",
+          "earliness": 1.0,
+          "earliness_tilt": 1.25,
+          "cluster_dilution": {
+            "cluster_id": "c6",
+            "cluster_size": 2,
+            "enb_cluster": 1.33,
+            "factor": 0.665,
+            "note": "dilution = min(1, ENB=1.3 / size=2) = 0.67"
+          },
+          "size_mult_breakdown": {
+            "stage_cap": 0.1,
+            "earliness_tilt": 1.25,
+            "cluster_dilution": 0.665,
+            "product": 0.08
           }
         }
       },
@@ -19435,7 +19435,7 @@
           "freshness": {
             "capture_qualified": true,
             "capture_finished_at": "2026-11-04T14:35:00.047945+00:00",
-            "capture_age_s": 60379.29479,
+            "capture_age_s": 69131.62476,
             "source_generation": "2026-11-04",
             "source_generation_age_days": 1,
             "stale": null,
@@ -21684,48 +21684,113 @@
     "note": "W4a rebuild: HEAT = n_lit_sources / n_available_sources [\u00d7 earliness when measured \u2014 dropped, not filled, when absent].  5 distinct data feeds (physical \u00b7 demand \u00b7 guidance \u00b7 altdata \u00b7 edgar_scarcity \u2014 the old subsector_scarcity + discovery_echo were one EDGAR parquet, now counted once). Dark sources leave the denominator \u2014 no outage penalty.  Earliness from engine/foresight_earliness.py (attention-based, Q3); absent below 2 usable legs \u2192 factor DROPPED (not laundered as neutral 0.5).  Physical numeric bonus \u00d71.15 when genuinely TIGHT/SOLD_OUT.  Threshold 0.40 PROVISIONAL.  Meta-driver cards emit for \u22653 co-heating same-cluster themes.  Cross-theme heats reflect agreement among AVAILABLE surfaces only \u2014 themes with different data coverage are not on a fully comparable scale."
   },
   "foresight_analyst": {
-    "regime_read": "The board is split: a genuinely convergent, early setup is visible only in grid electrification, where a physical tightening, accelerating demand and actual guidance raises from two members co-occur while revisions have barely started to move. Everything else is single-surface noise, text-only, or not yet lit \u2014 the desk should stay on WATCH.",
-    "regime_read_zh": "\u770b\u677f\u5448\u73b0\u5206\u5316\uff1a\u771f\u6b63\u6536\u655b\u4e14\u65e9\u671f\u7684\u4e00\u81f4\u4fe1\u53f7\u53ea\u51fa\u73b0\u5728\u7535\u7f51\u7535\u6c14\u5316\u2014\u2014\u7269\u7406\u74f6\u9888\u6536\u7d27\u3001\u9700\u6c42\u52a0\u901f\u3001\u4e24\u5bb6\u6210\u5458\u4e0a\u8c03\u6307\u5f15\u540c\u65f6\u51fa\u73b0\uff0c\u800c\u5206\u6790\u5e08\u4fee\u6b63\u624d\u521a\u5f00\u59cb\u3002\u5176\u4f59\u4e3b\u9898\u8981\u4e48\u662f\u5355\u4e00\u8868\u9762\u566a\u58f0\uff0c\u8981\u4e48\u4ec5\u6709\u6587\u672c\u4fe1\u53f7\uff0c\u8981\u4e48\u6839\u672c\u6ca1\u4eae\uff0c\u5e94\u7ee7\u7eed\u7559\u5728\u89c2\u5bdf\u533a\u3002",
+    "regime_read": "The clearest early convergence is concentrated in infrastructure bottlenecks and defense supply scarcity. Data-center power shows confirmed tightening alongside accelerating demand, while defense shows award activity and subsector scarcity preceding analyst revisions but still lacks numeric physical confirmation.",
+    "regime_read_zh": "\u76ee\u524d\u6700\u6e05\u6670\u7684\u65e9\u671f\u6c47\u805a\u96c6\u4e2d\u5728\u57fa\u7840\u8bbe\u65bd\u74f6\u9888\u4e0e\u56fd\u9632\u4f9b\u5e94\u7a00\u7f3a\u3002\u6570\u636e\u4e2d\u5fc3\u7535\u529b\u4e0e\u51b7\u5374\u5448\u73b0\u5df2\u786e\u8ba4\u7684\u4f9b\u5e94\u8d8b\u7d27\u548c\u9700\u6c42\u52a0\u901f\uff1b\u56fd\u9632\u9886\u57df\u5219\u51fa\u73b0\u653f\u5e9c\u5408\u540c\u6d3b\u52a8\u4e0e\u7ec6\u5206\u884c\u4e1a\u7a00\u7f3a\u5148\u4e8e\u5206\u6790\u5e08\u4fee\u6b63\u7684\u7ec4\u5408\uff0c\u4f46\u4ecd\u7f3a\u5c11\u6570\u503c\u5316\u5b9e\u7269\u786e\u8ba4\u3002",
     "theses": [
       {
-        "theme": "grid_electrification",
-        "mechanism": "The physical layer is TIGHTENING at the same time the demand band is ACCELERATING and two separate members have actually raised guidance \u2014 a rare self-reinforcing loop: real-world bottlenecks are starting to bind, customers are pulling forward orders, and management teams are confirming it in their own numbers before the sell-side has adjusted. The three surfaces are independent of each other, so they are not echoing the same decision.",
-        "non_obvious": "The cross-surface pattern is a supply-constrained order pull-forward that is already visible in guidance, but with revision breadth near zero \u2014 the street models are still treating the theme as a slow recovery or regulatory pipe dream, not a bottleneck. The two guidance raisers therefore act as a leading whisper that has not yet propagated to consensus estimates.",
+        "theme": "data_center_power",
+        "mechanism": "Accelerating customer demand is meeting a tightening physical supply chain, so power and cooling capacity may be becoming the gating layer for data-center expansion before analyst revisions fully absorb the constraint [demand] [physical].",
+        "non_obvious": "The important pattern is not demand strength alone, but demand acceleration occurring simultaneously with confirmed physical tightening while revision breadth remains incomplete; that combination suggests an operational bottleneck is forming ahead of broad Street recognition [demand] [physical].",
         "kill_criteria": [
-          "bottleneck_band loosens from TIGHTENING to NEUTRAL",
-          "guidance_band turns to CUTTING or the guidance_raisers count drops to 0",
-          "demand_band flips from ACCELERATING to DECELERATING",
-          "revision_breadth broadens significantly without physical or guidance confirmation, indicating the street has priced the move"
+          "The physical bottleneck leg loosens from TIGHTENING to NEUTRAL.",
+          "The demand leg falls from ACCELERATING to NEUTRAL or weaker.",
+          "Revision breadth rolls over before either guidance or another independent confirmation surface appears."
         ],
         "evidence": [
           {
-            "text": "[physical] bottleneck_band TIGHTENING",
+            "text": "physical: bottleneck band is TIGHTENING and physically confirmed",
             "ungrounded": true
           },
           {
-            "text": "[demand] demand_band ACCELERATING",
+            "text": "demand: demand band is ACCELERATING",
             "ungrounded": true
           },
           {
-            "text": "[guidance] guidance_band RAISING, guidance_raisers 2",
-            "ungrounded": true
-          },
-          {
-            "text": "[earliness] revision_breadth 0.069",
+            "text": "revisions: revision breadth is not yet comprehensive",
             "ungrounded": true
           }
         ],
         "evidence_display": [],
-        "dissent": "The heat score is very low and the stage remains WATCH, implying the desk sees the surface alignment as insufficient or too early to act \u2014 the tightening could be policy-driven hype rather than sustained physical scarcity, and only two guidance raisers is a small, possibly idiosyncratic sample.",
+        "dissent": "Only two independent surfaces are aligned, with no confirming management-guidance, alternative-data, or subsector-scarcity leg.",
+        "confidence": "medium",
+        "n_grounded": 0,
+        "n_total_evidence": 3,
+        "_forecast_clamped": null
+      },
+      {
+        "theme": "defense_aerospace",
+        "mechanism": "Accelerating government-award activity and patent clustering are appearing alongside filing-based subsector scarcity while analyst revisions remain largely dormant, consistent with procurement pressure reaching constrained suppliers before consensus estimates react [altdata] [edgar_scarcity].",
+        "non_obvious": "The hard-to-see pattern is the conjunction of award acceleration, innovation activity, and filing-based scarcity with almost no revision participation; this may indicate demand is concentrating into scarce capacity before the Street models it [altdata] [edgar_scarcity].",
+        "kill_criteria": [
+          "The government-award acceleration or patent-cluster leg disappears on the next board refresh.",
+          "The edgar_scarcity leg turns off.",
+          "Numeric physical evidence arrives as NEUTRAL rather than confirming tightening.",
+          "Revision breadth broadens and then rolls over without physical confirmation or supportive guidance."
+        ],
+        "evidence": [
+          {
+            "text": "altdata: government-award acceleration and a patent cluster",
+            "ungrounded": true
+          },
+          {
+            "text": "edgar_scarcity: subsector-scarcity surface is lit",
+            "ungrounded": true
+          },
+          {
+            "text": "revisions: revision breadth remains very limited",
+            "ungrounded": true
+          },
+          {
+            "text": "physical: tightness is text-only and numeric confirmation is absent",
+            "ungrounded": true
+          }
+        ],
+        "evidence_display": [],
+        "dissent": "The apparent bottleneck is derived from text rather than numeric physical data, so filing language and award activity may be signaling procurement noise rather than a durable capacity constraint.",
         "confidence": "low",
+        "n_grounded": 0,
+        "n_total_evidence": 4,
+        "_forecast_clamped": null
+      },
+      {
+        "theme": "grid_electrification",
+        "mechanism": "Accelerating demand is coinciding with a tightening physical bottleneck and management guidance moving higher, implying that customer spending is translating into supplier operating visibility rather than remaining only an end-market narrative [demand] [physical] [guidance].",
+        "non_obvious": "The unusual pattern is three-way confirmation from customers, physical constraints, and management guidance while analyst revisions remain narrow; operational evidence is aligned more broadly than consensus participation [demand] [physical] [guidance].",
+        "kill_criteria": [
+          "The physical bottleneck leg loosens from TIGHTENING to NEUTRAL.",
+          "The demand leg falls from ACCELERATING to NEUTRAL or weaker.",
+          "The guidance leg moves from RAISING to flat or cuts.",
+          "Revision breadth broadens and subsequently rolls over while demand or guidance weakens."
+        ],
+        "evidence": [
+          {
+            "text": "physical: bottleneck band is TIGHTENING and physically confirmed",
+            "ungrounded": true
+          },
+          {
+            "text": "demand: demand band is ACCELERATING",
+            "ungrounded": true
+          },
+          {
+            "text": "guidance: guidance band is RAISING",
+            "ungrounded": true
+          },
+          {
+            "text": "revisions: revision breadth remains narrow",
+            "ungrounded": true
+          }
+        ],
+        "evidence_display": [],
+        "dissent": "The board assigns limited earliness to the theme, so the operational alignment may already be less under-recognized than its narrow revision breadth suggests.",
+        "confidence": "medium",
         "n_grounded": 0,
         "n_total_evidence": 4,
         "_forecast_clamped": null
       }
     ],
-    "confidence": "low",
+    "confidence": "medium",
     "asof": "2026-11-04",
-    "n_theses": 1,
+    "n_theses": 3,
     "disclaimer": "An AI reading of the desk's OWN deterministic convergence \u2014 checkable and forward-graded, never a price forecast."
   },
   "thesis_monitor": {
@@ -23629,7 +23694,7 @@
       "phase": null
     },
     "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-    "_timing_s": 3.93,
+    "_timing_s": 5.42,
     "forward_log": {
       "market": "us",
       "n_graded": 34,
@@ -23866,7 +23931,7 @@
         }
       }
     },
-    "_timing_s": 0.25
+    "_timing_s": 0.17
   },
   "mag7_washout": {
     "schema": "mag7_washout.v1",
@@ -25444,7 +25509,7 @@
       ]
     },
     "n_roster": 13,
-    "_timing_s": 2.37
+    "_timing_s": 2.57
   },
   "vol_shock": {
     "score": 47.4,
@@ -28303,7 +28368,7 @@
   },
   "freshness": {
     "asof": "2026-11-04",
-    "built_at": "2026-11-05T07:23:43Z",
+    "built_at": "2026-11-05T09:49:49Z",
     "age_days": 1,
     "age_sessions": 1,
     "max_age_sessions": 1,

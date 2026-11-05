@@ -13004,3 +13004,6 @@
 {"id":"ob-2026-11-04-0814c90fbd","from":"posting","to":"posted","at":"2026-11-05T07:19:47Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aec2e1280f7fd0537f80674","external_url":null,"at":"2026-11-05T07:19:39Z","booked_at":"2026-11-05T07:20:39Z"}}
 {"id":"ob-2026-11-04-062378ae1b","from":"approved","to":"quarantined","at":"2026-11-05T07:19:47Z","actor":"publisher","note":"clock: stale_session:2026-11-04!=2026-11-05 (kind 'watchlist' is a tape read; the Thursday session has opened)","receipt":null}
 {"id":"ob-2026-11-04-7e6dc7b096","from":"approved","to":"quarantined","at":"2026-11-05T07:19:47Z","actor":"publisher","note":"clock: stale_session:2026-11-04!=2026-11-05 (move phrase 'holds'; the Thursday session has opened)","receipt":null}
+{"id":"ob-2026-11-03-ad32af1460","from":"queued","to":"quarantined","at":"2026-11-05T15:47:30Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-11-03-c3144205e1","from":"queued","to":"quarantined","at":"2026-11-05T15:47:30Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-11-03-6f097f694f","from":"queued","to":"quarantined","at":"2026-11-05T15:47:30Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}

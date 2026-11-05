@@ -1,13 +1,13 @@
 {
   "date": "2026-11-04",
-  "generated_utc": "2026-11-05 07:38",
+  "generated_utc": "2026-11-05 10:00",
   "business_cycle": {
     "available": true,
     "asof": "2026-11-30",
     "tiers": {
       "leading": {
         "asof": "2026-11-30",
-        "index": 94.25342049259837,
+        "index": 94.25342049259838,
         "mom6": -0.6292524196325218,
         "trend": 0.3308080463886444,
         "diffusion": 33.333333333333336,
@@ -4205,7 +4205,7 @@
       "vix_term_lead_lag": "coincident",
       "skew": 150.9,
       "skew_pctile": 0.7103174603174603,
-      "stock_bond_corr": 0.0936270863679278,
+      "stock_bond_corr": 0.09362708636791679,
       "stock_bond_regime": "mixed",
       "roro": -0.42442513291368644,
       "roro_state": "risk-off",
