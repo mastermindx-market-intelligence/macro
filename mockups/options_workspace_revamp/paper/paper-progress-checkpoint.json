@@ -1,9 +1,9 @@
 {
   "schema": "mastermind.options.paper_progress.v1",
-  "at": "2026-11-03T07:49:15.710Z",
+  "at": "2026-11-05T08:14:37.069820+00:00",
   "file_id": "01M2WGNCX9475G79JRKJTCM08P",
   "page_id": "p-25-0",
-  "guard": "bceb511067468aa16a32ec6ca25f3832209f764b9905cbe7088eee6546fd509f",
+  "guard": "REQUIRES_FRESH_ORIGINAL_TARGET_READ",
   "artboards": [
     {
       "logical": "brief-desktop-light",
@@ -54,7 +54,7 @@
     "components-desktop-light": 28,
     "recovery-mobile-dark": 19,
     "ticker-desktop-dark": 88,
-    "flow-mobile-light": 3
+    "flow-mobile-light": 39
   },
   "bindings": {
     "artboard:brief-desktop-light": "6Y1Q-0",
@@ -24105,5 +24105,34 @@
     "template_sha256": "6ace5251abef24cc80973425df6b16dd310cad7afdd5c799a7cb3b2db4ef1c8a",
     "candidate": "working tree; final keyboard refinements pending",
     "published_head": "ba7947223ae58f436d4cfadbedc28454b10483fc"
+  },
+  "recovery_readback": {
+    "at": "2026-11-05T08:14:37.069820+00:00",
+    "state": "OBSERVED_EXISTING_COMPLETE_BOARD",
+    "carrier": "Mastermind Paper native app",
+    "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "page_id": "p-25-0",
+    "board": "flow-mobile-light",
+    "node_id": "71QK-0",
+    "completed_fragments": 39,
+    "verification": "Original-carrier get_children, get_jsx and get_screenshot; all 39 blueprint fragments have their visible text present in the live JSX; principal visually inspected the full mobile board. No canvas edit was made in this recovery.",
+    "source_attribution": "Recovered pre-existing live content matches paper_blueprint.json; original import-call receipts beyond the saved step-3 checkpoint are not fabricated.",
+    "artifact_sha256": {
+      "flow-mobile-light.jsx": "2d1be6ba50b545a1fa7d5e8e70ab18ba49b700f7360849b139121a670156eb56",
+      "flow-mobile-light.jpg": "8496ca88c472e202f91dd2869a1995ae91246e7085fa3dbd1e8f7b5694886b29"
+    }
+  },
+  "recovery_capacity_disposition": {
+    "observed_at": "2026-11-05T08:14:37.069820+00:00",
+    "state": "FURTHER_WRITES_DEFERRED",
+    "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "vendor_warning": "Warning: Your file is too large. Further changes will result in data loss. Please start a new file.",
+    "decision": "Preserve the existing file and completed boards. Under the current Chairman waiver, defer the four remaining Paper boards and continue source/CI/release work. No file migration, duplication or canvas mutation performed.",
+    "remaining_boards": [
+      "scanner-mobile-dark",
+      "ticker-mobile-light",
+      "leaders-desktop-light",
+      "leaders-mobile-dark"
+    ]
   }
 }
