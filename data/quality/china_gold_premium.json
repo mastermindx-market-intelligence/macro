@@ -1,9 +1,9 @@
 {
   "schema": "commodity.china_gold_premium_quality.v1",
-  "checked_at": "2026-11-05T13:14:41+00:00",
-  "status": "render_mismatch",
-  "render_consistent": false,
-  "machine_projection_consistent": false,
+  "checked_at": "2026-11-05T13:40:03+00:00",
+  "status": "available_fresh",
+  "render_consistent": true,
+  "machine_projection_consistent": true,
   "available": true,
   "headline_method": "close_proxy",
   "headline_state": "discount",
@@ -12,9 +12,9 @@
   "rendered_display_source": "proxy",
   "expected_currency": "CNY",
   "rendered_currency": "CNY",
-  "rendered_state": "premium",
-  "rendered_source_asof": "2026-11-03T07:30:00+00:00",
-  "rendered_premium_pct": 0.431411,
+  "rendered_state": "discount",
+  "rendered_source_asof": "2026-11-04T07:30:00+00:00",
+  "rendered_premium_pct": -0.058134,
   "source_fresh": true,
   "source_asof": "2026-11-04T07:30:00+00:00",
   "sources": [
@@ -43,14 +43,7 @@
   "history_points": 266,
   "stats_5_ready": true,
   "stats_30_ready": true,
-  "violations": [
-    "state: expected discount, rendered premium",
-    "source_asof: expected 2026-11-04T07:30:00+00:00, rendered 2026-11-03T07:30:00+00:00",
-    "premium_pct: expected -0.05813363685669426, rendered 0.431411",
-    "machine.state: expected discount, rendered premium",
-    "machine.source_asof: expected 2026-11-04T07:30:00+00:00, rendered 2026-11-03T07:30:00+00:00",
-    "machine.premium_pct: expected -0.05813363685669426, rendered 0.43141090435516727"
-  ],
+  "violations": [],
   "source_artifacts": [
     {
       "role": "sge",
@@ -81,10 +74,6 @@
       "selected_asof_present": true
     }
   ],
-  "close_proxy_dataos_promotion_ready": false,
-  "close_proxy_dataos_promotion_blockers": [
-    "render contract is not consistent",
-    "status is render_mismatch, not available_fresh",
-    "machine projection was not proven consistent"
-  ]
+  "close_proxy_dataos_promotion_ready": true,
+  "close_proxy_dataos_promotion_blockers": []
 }
