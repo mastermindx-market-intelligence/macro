@@ -62,9 +62,11 @@ def _load_msp(root: Path, fixture: Path | None = None) -> dict | None:
         return None
 
 
-def render(root: Path, fixture: Path | None = None) -> str:
+def render(root: Path, fixture: Path | None = None, *, now: datetime | None = None) -> str:
     """Render market_structure.html.j2 and return the HTML string."""
     msp = _load_msp(root, fixture)
+    from lib.market_structure_view import build_view, direction, finite, number  # noqa: PLC0415
+    view = build_view(msp, now=now)
 
     templates_dir = root / "templates"
     env = Environment(
@@ -82,7 +84,9 @@ def render(root: Path, fixture: Path | None = None) -> str:
         pass  # template defines t() as a local macro; td() only used in footer
 
     tpl = env.get_template("market_structure.html.j2")
-    return tpl.render(msp=msp)
+    return tpl.render(msp=view["data"], view=view, num=number, finite=finite,
+                      direction=direction,
+                      chart_data={key: chart["rows"] for key, chart in view["charts"].items()})
 
 
 def main(argv: list[str] | None = None) -> int:

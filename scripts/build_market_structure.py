@@ -366,6 +366,7 @@ def _build_systematic_block(
 ) -> tuple[dict, pd.DataFrame | None]:
     """Build VC + CTA block + history frame.  Fail-open → nulls."""
     null_sys = {
+        "asof": None,
         "vc": {
             "alloc_bn": None, "alloc_frac": None, "flow_1d_bn": None,
             "flow_5d_bn": None, "state": None, "flow_window_n": None,
@@ -433,6 +434,7 @@ def _build_systematic_block(
             })
 
         sys_block = {
+            "asof": str(hist.index[-1].date()) if not hist.empty else None,
             "vc": {
                 "alloc_bn":     _safe_float(latest_vc["alloc_bn"]),
                 "alloc_frac":   _safe_float(latest_vc["alloc_frac"]),
@@ -474,6 +476,7 @@ def _build_vol_block(closes: pd.Series | None, data_dir: Path) -> dict:
     null = {
         "rv21": None, "rv63": None, "rv_cross_state": None,
         "vix_curve": None, "vix_curve_slope": None, "series_start_curve": None,
+        "rv_asof": None, "curve_asof": None,
     }
     if closes is None:
         return null
@@ -493,6 +496,7 @@ def _build_vol_block(closes: pd.Series | None, data_dir: Path) -> dict:
         curve_block: list | None = None
         curve_slope: float | None = None
         curve_series_start: str | None = None
+        curve_asof: str | None = None
 
         try:
             vix_df = _read_parquet(data_dir / "cboe" / "vix_curve.parquet")
@@ -515,6 +519,7 @@ def _build_vol_block(closes: pd.Series | None, data_dir: Path) -> dict:
                     if m1 is not None and m6 is not None:
                         curve_slope = round(m6 - m1, 4)
                 curve_series_start = str(vix_df.index.min().date())
+                curve_asof = str(vix_df.index[-1].date())
         except Exception as exc:  # noqa: BLE001
             log.warning("market_structure: vix_curve read failed: %s", exc)
 
@@ -525,6 +530,8 @@ def _build_vol_block(closes: pd.Series | None, data_dir: Path) -> dict:
             "vix_curve":          curve_block,
             "vix_curve_slope":    curve_slope,
             "series_start_curve": curve_series_start,
+            "rv_asof": str(closes.index[-1].date()) if rv21_v is not None or rv63_v is not None else None,
+            "curve_asof": curve_asof,
         }
 
     except Exception as exc:  # noqa: BLE001
@@ -540,6 +547,7 @@ def _build_dispersion_block(data_dir: Path) -> dict:
     """COR1M/COR3M/DSPX block.  Fail-open → nulls."""
     null = {
         "cor1m": None, "cor1m_regime": None, "cor1m_1y_delta": None,
+        "asof": None,
         "cor1m_pctile_2y": None,
         "cor1m_pctile_lo": _COR1M_PCTILE_LO,
         "cor1m_pctile_hi": _COR1M_PCTILE_HI,
@@ -608,6 +616,7 @@ def _build_dispersion_block(data_dir: Path) -> dict:
 
         return {
             "cor1m":            latest_cor1m,
+            "asof":             str(cor1m_s.index[-1].date()) if not cor1m_s.empty else None,
             "cor1m_regime":     cor1m_regime,
             "cor1m_1y_delta":   cor1m_1y_delta,
             "cor1m_pctile_2y":  round(pctile_2y, 1) if pctile_2y is not None else None,

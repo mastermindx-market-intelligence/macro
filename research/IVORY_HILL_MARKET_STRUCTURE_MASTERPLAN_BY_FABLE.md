@@ -311,3 +311,35 @@ falsifies completion. Browser navigation to the live URL currently times out thr
 authorized plugin. Reconcile that surface rather than switching control carriers silently.
 Continue R3/R4 in the registered workspace, retain R2's exact gate, then attach R5/R6 evidence
 to this same section. This task tree records specification and evidence, not Executive Job state.
+
+### W2.R recovery and single-consumer integration — 2026-11-05
+
+Current Chairman continuation assigns this session recovery and implementation. The original
+managed source remains on operation `market-structure-revamp-20261101-c2` at recovered
+head `98c3b604de0beb149c7445cacb6036117766fbbe`. Canonical workspace status reports
+PRESERVED_DIRTY; seven intended source files survived, with no matched host process.
+This checkpoint preserves those files as unfinished work; it is not a tested release.
+The existing page/glance suites fail against this unpublished redesign (obsolete layout
+assertions plus unqualified semantics); no green or production claim is made.
+
+A later existing candidate, Macro Draft PR #10734 / operation
+`d06-macro-implementation-20261104-c4`, head
+`ec69837d6843343d4f692e28677324af81af8a7b`, already contains rendered editable Paper
+Market boards and a substantially qualified implementation. It is the single intended
+consumer/publication carrier after current writer/effect qualification. This original
+branch is retained as a recovery source; no competing Market PR will be opened.
+
+Preserve D06's chart/range/locale/gap correctness and other two pages. Selectively complete
+W2.R3/R4 there: visible SPX/observed date/hedging meaning/switch level; expiry-aware locked
+weekly ranges without inventing missing bands; accessible exact observations and CSV;
+remove tactical trade-instruction copy. Retain source/model independence and existing
+shared navigation/tokens. Product acceptance still requires actual served-page proof.
+
+Protected procedure pin: Mastermind `0efd0744ac705ddc24880acde1cb4ac6e8c55d05`.
+Attended session review waiver is loaded; no blanket external reviewer gate is added.
+Existing Draft/HOLD, native CI/security, source writer, denied and uncertain effects remain.
+Paid Fabric proposal child `market-structure-view-repair-20261105-c2-01` retains original
+root/parent `market-structure-revamp-20261101-c2`, controller 48784; latest original
+controller reports ubuntu3 reservation and MiniMax LEASE_WAIT, not proven worker START.
+It only proposes presentation-helper repair and cannot edit either source branch.
+Native design adviser returned read-only integration judgment; it is not GitHub approval.
