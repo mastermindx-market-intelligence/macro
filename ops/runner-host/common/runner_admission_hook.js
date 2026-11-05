@@ -10,6 +10,7 @@ const profiles = {
   "mastermind-ci-admission-pc-ci.js": "pc-ci",
   "mastermind-ci-admission-pc-render.js": "pc-render",
   "runner_admission_m1_canary.js": "m1-canary",
+  "runner_admission_m1_nightly_2.js": "m1-nightly-2",
 };
 const profile = profiles[path.basename(process.argv[1] || "")];
 if (!profile) {

@@ -463,6 +463,54 @@ def test_active_changes_dir_no_lifecycle_rows_by_default() -> None:
     assert "NEWP" in life.index and "GONE" in life.index
 
 
+def test_sector_residual_panel_decomposes_each_fund_once() -> None:
+    """m-2: one weight_decomposition per fund; pool_n is the unsliced count."""
+    calls: list[str] = []
+    funds = ["XLK", "XLF", "XLE"]
+
+    def fake_wd(fund: str, lookback_days=None):
+        calls.append(fund)
+        return pd.DataFrame({
+            "active_change": [0.10, 0.20],
+            "w0": [1.0, 1.0], "w1": [1.1, 1.2],
+            "raw_change": [0.1, 0.2], "active_pct": [1.0, 2.0],
+            "est_flow_mn": [1.0, 2.0],
+            "t0": ["2026-09-01", "2026-09-01"],
+            "t1": ["2026-09-08", "2026-09-08"],
+            "name": ["Alpha", "Beta"],
+        }, index=["AAA", "BBB"])
+
+    orig_wd = hs.weight_decomposition
+    orig_load = hs.config.load
+    orig_macro = hs._live_macro_context
+    orig_lad = hs._ladder_for
+    orig_vol = hs.volume_surge
+    try:
+        hs.weight_decomposition = fake_wd  # type: ignore[assignment]
+        hs.config.load = lambda: {  # type: ignore[assignment]
+            "sponsors": {"sector_funds": funds},
+            "holdings_signals": {"min_price_history": 60},
+        }
+        hs._live_macro_context = lambda: (None, None)  # type: ignore[assignment]
+        hs._ladder_for = lambda *a, **k: None  # type: ignore[assignment]
+        hs.volume_surge = lambda *a, **k: None  # type: ignore[assignment]
+        rows, pool_n = hs.sector_residual_panel(12)
+        assert calls == funds
+        assert pool_n == 6
+        assert len(rows) == 6
+        calls.clear()
+        sliced = hs.top_sector_residuals(2)
+        assert calls == funds
+        assert len(sliced) == 2
+        assert sliced[0]["ticker"] == "BBB"  # |0.20| ranks first
+    finally:
+        hs.weight_decomposition = orig_wd
+        hs.config.load = orig_load
+        hs._live_macro_context = orig_macro
+        hs._ladder_for = orig_lad
+        hs.volume_surge = orig_vol
+
+
 if __name__ == "__main__":
     for fn in [test_decompose_price_only_zero_residual,
                test_decompose_accumulation_positive_residual,
@@ -482,7 +530,8 @@ if __name__ == "__main__":
                test_etf_signals_conviction_ranks_weight_over_pct,
                test_etf_signals_flags_new_position,
                test_etf_signals_flags_full_exit,
-               test_active_changes_dir_no_lifecycle_rows_by_default]:
+               test_active_changes_dir_no_lifecycle_rows_by_default,
+               test_sector_residual_panel_decomposes_each_fund_once]:
         fn()
         print(f"PASS {fn.__name__}")
     print("all holdings-signal tests passed")

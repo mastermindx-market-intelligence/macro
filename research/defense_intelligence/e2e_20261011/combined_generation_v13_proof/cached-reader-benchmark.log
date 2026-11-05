@@ -1,0 +1,3 @@
+{"route": "/api/government-revenue/dossier/company/LMT", "samples_n": 100, "same_bytes": true, "median_ms": 62.4045000076876, "p95_ms": 187.9098750068806, "max_ms": 193.77758300106507, "pass": true}
+{"route": "/api/government-revenue/defense-economics", "samples_n": 100, "same_bytes": true, "median_ms": 119.48035450041061, "p95_ms": 509.0729169896804, "max_ms": 543.8005830073962, "pass": true}
+{"route": "/government-revenue-data/program-dossier.json", "samples_n": 100, "same_bytes": true, "median_ms": 24.310395507200155, "p95_ms": 33.59554200142156, "max_ms": 37.65524999471381, "pass": true}

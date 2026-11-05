@@ -51,13 +51,19 @@ reconstructed) never fires, because that reader cannot reveal that a correction 
    (`engine/neuralweb/company_intelligence_reader.py:1150-1276`), which walks
    `previous_generation_id` and verifies each predecessor's bytes against
    `previous_manifest_sha256`.
-2. `read_event_workspace` (`:581-622`; it calls `_load_event_workspace` at `:599`) and
-   `read_current_event_workspace` are **FORBIDDEN** as the source of any decision-time
-   observation BODY. They may serve only a separately and visibly labelled "known now"
-   research view, never `decision_admissibility = ADMISSIBLE`. The prohibition is scoped to
-   bodies deliberately: id discovery via `find_current_event_id_for_company` (`:1036-1076`)
-   also resolves the CURRENT marker, so the candidate event-id SET is not itself
-   point-in-time. An event that exists only post-cut is representable — it resolves to
+2. `read_event_workspace` (`:581-622`; it calls `_load_event_workspace` at `:599`),
+   `read_current_event_workspace`, `load_current_workspace`
+   (`engine/neuralweb/company_intelligence_reader.py:1006`), and
+   `load_workspace_with_disposition`
+   (`engine/neuralweb/company_intelligence_reader.py:1022`) are **FORBIDDEN** as the source
+   of any decision-time observation BODY. They may serve only a separately and visibly
+   labelled "known now" research view, never `decision_admissibility = ADMISSIBLE`. The
+   prohibition is scoped to bodies deliberately: id discovery via
+   `find_current_event_id_for_company` (`:1036-1076`) also resolves the CURRENT marker, so
+   the candidate event-id SET is not itself point-in-time. Production callers include
+   `engine/security_state.py:646,701`, `scripts/build_stock_library.py:4824`, and
+   `scripts/build_cycle_pattern_imce_prospective.py:141,203`; none feeds D5.
+   An event that exists only post-cut is representable — it resolves to
    `AFTER_DECISION_CUT` — but an event superseded off the current nest can go unseen, and that
    limit must be disclosed rather than silently inherited.
 3. **Admission is a CONJUNCTION over both clocks — never `source_available_at` alone.** A
@@ -360,13 +366,11 @@ episode.company_id (issuer_id)  ->  issuer_master.cik  ->  company_id_for_cik(ci
 
 Two constraints on using it:
 
-1. **The canonical reader does not expose it.** `IssuerMaster`'s row shape
-   (`SecurityIssuerRow`, `lib/dataos/identity.py:760-779`) is deliberately narrow —
-   `security_id`, `issuer_id`, `issuer_state`, `listing_key` — and carries no `cik`. D5 may NOT
-   read `issuer_master.parquet` behind the canonical reader's back; that mints a second identity
-   reader, which §11's no-second-identity-plane rule forbids. The bridge requires a bounded,
-   owner-coordinated extension of the canonical Data OS issuer reader to expose the issuer CIK.
-   Until that exists, the join is **UNRESOLVED**.
+1. **The canonical reader exposes the issuer CIK.** `IssuerMaster.cik_of_issuer` returns the
+   evidenced current CIK, refuses conflicting non-null observations rather than guessing, and
+   intentionally has no `asof` parameter (`lib/dataos/identity.py:929-946`). D5 consumes that
+   method before resolving the CIK to the Earnings namespace
+   (`engine/prophet_lab/intelligence_vector.py:1055-1057`). Resolved 2026-09-23 (R6-C-01).
 2. **It is a current-registrant observation, not a point-in-time lineage claim.** The issuer
    reader deliberately carries no `asof` parameter and its own contract states the CIK evidence
    proves who owns a ticker TODAY and "never what the issuer mapping was on a past date"
@@ -403,6 +407,22 @@ Two constraints on using it:
 **Acceptance test.** One episode whose issuer resolves to a CIK with a real event workspace, and
 one episode whose issuer does NOT resolve — asserting the second yields `IDENTITY_UNRESOLVED`
 with a named reason and NOT an empty-but-healthy Earnings family.
+
+---
+
+## A14 — Two earnings planes
+
+**Effective immediately.** Prophet has two deliberately separate earnings planes. PR #7294,
+merged 2026-09-22, restored the governed EquityDesk earnings source used by Prophet's
+earnings-quality and bridge paths (`engine/earnings_qual.py`;
+`engine/prophet_bridge.py:3924-3929`). That is NOT the D5 source. Only the
+company-intelligence plane — `engine/company_intelligence/**` accessed through
+`company_intelligence_reader` — feeds D5. On that D5 plane, consensus is unlicensed, so
+beat/miss is permanently **ABSENT**: the builder emits a typed `missing_source` absence and a
+`consensus_unlicensed` warning
+(`engine/company_intelligence/event_workspace_build.py:355-380,396-400`), and A12 forbids
+`beat`/`miss` unless `basis_match` is true
+(`CELL_F_D5_CONTRACT_AMENDMENTS_2026-08-26.md:323-326`).
 
 ---
 

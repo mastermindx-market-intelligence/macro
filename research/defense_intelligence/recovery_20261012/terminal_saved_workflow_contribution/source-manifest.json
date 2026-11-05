@@ -1,0 +1,124 @@
+{
+  "schema": "defense.terminal_saved_workflow_contribution_source.v1",
+  "target_carrier": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/778",
+  "target_saved_owner_head": "122694a1249cc15f563f139aa6ee5e36c7862f12",
+  "source_qualification": "Every proposed change is now qualified against exact incumbent778 head122694a1249cc15f563f139aa6ee5e36c7862f12. Fresh Thesis/SQL reads at that head match the originally qualified blobs, and current protected masterabea23b1f75231aa7ae8f3a971c44094ff4f9726 has identical Thesis/SQL/rmsViews/analysisSymbol bytes. No branch compatibility delta exists for these source inputs; this is still a source contribution, not writer custody or release.",
+  "sources": [
+    {
+      "repo": "terminal",
+      "path": "terminal/lib/savedViewContract.ts",
+      "blob_sha": "bf18ac7151002d7a099fbebbb0681cffc3cec6dc",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/122694a1249cc15f563f139aa6ee5e36c7862f12/terminal/lib/savedViewContract.ts",
+      "source_ref": "122694a1249cc15f563f139aa6ee5e36c7862f12",
+      "retained_corrupted_sha256": "4d2cb095218745c22cfcb3e4f7fffb188db282794c988e2ccd91aa38760b8b80",
+      "exact_source_sha256": "516cf2522ba52a3466723f9fbd4dcc9bbe02c9c34c60be5944f781af9ea2bb8e",
+      "verified_git_blob": "bf18ac7151002d7a099fbebbb0681cffc3cec6dc",
+      "proposed_sha256": "4fd1dedd313d542d9d0b50dbad694382680c805dc4f43540c5688a2e6a4f5fa7",
+      "removed_bytes": "one final LF introduced by Add File serialization"
+    },
+    {
+      "repo": "terminal",
+      "path": "terminal/lib/savedViews.ts",
+      "blob_sha": "88c4b836a8a199f9f0efcb87607c40dfa60902b5",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/122694a1249cc15f563f139aa6ee5e36c7862f12/terminal/lib/savedViews.ts",
+      "source_ref": "122694a1249cc15f563f139aa6ee5e36c7862f12",
+      "retained_corrupted_sha256": "e22e8c78a64781fb3175293516533bfba55bb55aa3d0fdd5dbbaaef30904300e",
+      "exact_source_sha256": "96980b561188d68853cc63ebbe6500d73347db301f898db292d8a70417797fc5",
+      "verified_git_blob": "88c4b836a8a199f9f0efcb87607c40dfa60902b5",
+      "proposed_sha256": "96980b561188d68853cc63ebbe6500d73347db301f898db292d8a70417797fc5",
+      "removed_bytes": "one final LF introduced by Add File serialization"
+    },
+    {
+      "repo": "terminal",
+      "path": "terminal/lib/theses.ts",
+      "blob_sha": "eb539804e0a7db91b60ef0b61e3905137d8628ff",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/122694a1249cc15f563f139aa6ee5e36c7862f12/terminal/lib/theses.ts",
+      "source_ref": "122694a1249cc15f563f139aa6ee5e36c7862f12",
+      "retained_corrupted_sha256": "281dc7511b850de2d12e91c941fc50b46e03921d6887959deedeb12f475157de",
+      "exact_source_sha256": "60f07b1fa0ebadedd1d3d4686c55524c7f418df4c2ea606c6eceedf7a26ceec3",
+      "verified_git_blob": "eb539804e0a7db91b60ef0b61e3905137d8628ff",
+      "proposed_sha256": "389b60738350b103596a4870b275e3094a17f2e616db9c97e52ef3753b44238a",
+      "removed_bytes": "one final LF introduced by Add File serialization"
+    },
+    {
+      "repo": "terminal",
+      "path": "supabase/migrations/0012_thesis_objects.sql",
+      "blob_sha": "906c1d40a04ce277ff2874f321bc3f005179d883",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/122694a1249cc15f563f139aa6ee5e36c7862f12/supabase/migrations/0012_thesis_objects.sql",
+      "source_ref": "122694a1249cc15f563f139aa6ee5e36c7862f12",
+      "retained_corrupted_sha256": "398535f80994587aa17fdf4c5b3cb57035814e5de8ef78c1bf6a84f325fc2fbb",
+      "exact_source_sha256": "1fe4450222ef646862002546b7dfc192af42c0f50434df1980553709a0ebe12a",
+      "verified_git_blob": "906c1d40a04ce277ff2874f321bc3f005179d883",
+      "proposed_sha256": "670524bb81e1a297d6c9372d33db94852b40c56b7d3dbc6a9ffcd938b26bd1fe",
+      "removed_bytes": "one final LF introduced by Add File serialization"
+    },
+    {
+      "repo": "terminal",
+      "path": "terminal/app/api/thesis-saved-views/route.ts",
+      "blob_sha": "26a8ff93b71855497e622cbcd326ef5ce632418b",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/122694a1249cc15f563f139aa6ee5e36c7862f12/terminal/app/api/thesis-saved-views/route.ts",
+      "source_ref": "122694a1249cc15f563f139aa6ee5e36c7862f12",
+      "retained_corrupted_sha256": "9ce99b55a9dac9e37040309e64391cbd8b195a624b1024befea3a205fa2aef8f",
+      "exact_source_sha256": "f7b05185a42ed5a6a470db590445517228be5bfbe4d5afeaa97d42cdcb795be9",
+      "verified_git_blob": "26a8ff93b71855497e622cbcd326ef5ce632418b",
+      "proposed_sha256": "b0e89e3adbe8b474be79a78a229b368cc2c63b48980c508d8b45eed76260d0bb",
+      "removed_bytes": "one final LF introduced by Add File serialization"
+    },
+    {
+      "repo": "terminal",
+      "path": "terminal/lib/governmentRevenueMonitor.ts",
+      "blob_sha": null,
+      "exact_source_sha256": null,
+      "proposed_sha256": "eae5db1df295dbe1894c74bf26899e3a07d97f4e25ab4febed7eca43c1401571",
+      "source_ref": "122694a1249cc15f563f139aa6ee5e36c7862f12"
+    }
+  ],
+  "materialization_repair": {
+    "native_thread": "01a13356-f007-7e80-a9e1-5214fa41cfc2",
+    "tool_call_utc": "2026-10-13T04:35:46.825Z",
+    "source_call": "apply_patch Add File serialized s.content.split(newline), retaining the empty last split item as an additional plus-line",
+    "effect": "one extra final LF in all7 retained sources; zero logic changes"
+  },
+  "original_worker_result": "rc0 contribution rejected by parent; repaired source artifact is separate, no worker acceptance recorded",
+  "effects": {
+    "shared_source_write": false,
+    "sql_apply": false,
+    "notifications_or_drain": false,
+    "outside_chat_delivery": false,
+    "custody_transfer": false
+  },
+  "patch_sha256": "a77f3f43eaeeb51a5ee3680a82bbb9b69449dd746e3af02152a615e49455ed89",
+  "checks_sha256": "e828addce2e5d96c63bc67cb20907a20894485bdc99fb97f2cc88a9ca1c7cbd9",
+  "current_default_compatibility": {
+    "commit": "abea23b1f75231aa7ae8f3a971c44094ff4f9726",
+    "same_as_incumbent": [
+      {
+        "path": "terminal/lib/theses.ts",
+        "git_blob": "eb539804e0a7db91b60ef0b61e3905137d8628ff",
+        "sha256": "60f07b1fa0ebadedd1d3d4686c55524c7f418df4c2ea606c6eceedf7a26ceec3"
+      },
+      {
+        "path": "supabase/migrations/0012_thesis_objects.sql",
+        "git_blob": "906c1d40a04ce277ff2874f321bc3f005179d883",
+        "sha256": "1fe4450222ef646862002546b7dfc192af42c0f50434df1980553709a0ebe12a"
+      },
+      {
+        "path": "terminal/lib/rmsViews.ts",
+        "git_blob": "00e8dd67960e651f8548a771b1c8d4b1fb666c68",
+        "sha256": "fd5f025806c5a4b1b27e7d99a026e82f555767f0d96b6a2766a5b363961897cb"
+      },
+      {
+        "path": "terminal/lib/analysisSymbol.ts",
+        "git_blob": "b32106075430767915f66a30a0bc47f8d55fada6",
+        "sha256": "8be2bee6a178eee8d2951a65c4744fb039c8905f964daa022d86e4c575b49776"
+      }
+    ]
+  },
+  "same_carrier_handoff": {
+    "comment": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/778#issuecomment-6141933267",
+    "published_contribution_commit": "75da11947eb007cefb01125533df08a4703866d2",
+    "ack": false,
+    "live_receiver_qualified": false,
+    "original_frontier": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/770#issuecomment-5889320517"
+  }
+}

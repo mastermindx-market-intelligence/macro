@@ -1,0 +1,347 @@
+{
+  "scope": "economic evidence and proposed validation; final candidate research artifact for Sol adjudication; no implementation or promotion authority",
+  "as_of": "2026-10-08",
+  "sources": [
+    {
+      "id": "S01",
+      "title": "Cohen and Frazzini (2008), Economic Links and Predictable Returns",
+      "canonical_urls": [
+        "https://pages.stern.nyu.edu/~afrazzin/pdf/Economic%20Links%20and%20Predictable%20Returns%20-%20Cohen%20and%20Frazzini.pdf",
+        "https://doi.org/10.1111/j.1540-6261.2008.01379.x"
+      ],
+      "inspection_notes_and_locators": "- Original journal article on author's NYU page: https://pages.stern.nyu.edu/~afrazzin/pdf/Economic%20Links%20and%20Predictable%20Returns%20-%20Cohen%20and%20Frazzini.pdf . DOI https://doi.org/10.1111/j.1540-6261.2008.01379.x .\n- Inspected final published PDF, 35 pages; Section II, printed pp. 1983–1984/P6–P7; Sections IV–VII and tables available in original. Customer data 1980–2004; return-table sample 1981–2004. They impose six months after fiscal year-end, conservatively match names, exclude ambiguous matches, and include 11,484 unique supplier-customer relationships. Customers skew large; supplier coverage is selective.\n- Historical monthly long-short abnormal return reported around 1.55%. Authors test own/industry momentum, liquidity, lead-lag, linked-vs-unlinked real activities, and common mutual-fund ownership. Useful evidence for an information-diffusion hypothesis; attention proxies and relationship formation are not randomized. **This is an historical result, not current alpha.** Do not repeat the paper's broad customer-name-disclosure statement as current source law without separately inspecting the controlling accounting/SEC rules; see disclosure flag below.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S02",
+      "title": "Pinchuk (2023 working paper), Customer Momentum",
+      "canonical_urls": [
+        "https://arxiv.org/pdf/2301.11394",
+        "https://arxiv.org/abs/2301.11394"
+      ],
+      "inspection_notes_and_locators": "- Original author paper https://arxiv.org/pdf/2301.11394 ; metadata https://arxiv.org/abs/2301.11394 .\n- Full original PDF opened; Section 3/P5–P6, Section 4.2/P10–P11; Tables 6 and 8–10/P32 onward; Section 5.1. Data January 1978–June 2018, conservative name matching and six-month lag; 2005–2018 is a post-original-sample test, not wholly post-publication because original publication was 2008.\n- Equally/value-weighted decile spreads fall to approximately 0.6% per month in the later period. Risk-adjusted later alphas fail the paper's 5% significance criterion; some raw spreads remain significant. Partial large-to-small lead-lag explanation and smaller/nonrepresentative coverage qualify inference. Unpublished replication is useful counterevidence, not a conclusive null or exact replication of every original choice. “Exploitation” is an interpretation, not an identified causal treatment.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S03",
+      "title": "Barrot and Sauvagnat (2016 published; inspected December 2014 author draft), Input Specificity and the Propagation of Idiosyncratic Shocks in Production Networks",
+      "canonical_urls": [
+        "https://finance.unibocconi.eu/sites/default/files/files/media/attachments/JMP-JulienSauvagnat20150109105100.pdf",
+        "https://doi.org/10.1093/qje/qjw018",
+        "https://dspace.mit.edu/entities/publication/63f3398c-f351-4c90-9ad3-71bf214c9ab2"
+      ],
+      "inspection_notes_and_locators": "- Author/university-hosted draft https://finance.unibocconi.eu/sites/default/files/files/media/attachments/JMP-JulienSauvagnat20150109105100.pdf ; final DOI https://doi.org/10.1093/qje/qjw018 .\n- Inspected original 78-page December 2014 job-market draft. Introduction/P1–P3; production and equity-event results/Sections 3–4; specificity contrasts; inventories Appendix Table A.2/P48; disaster list/P63 identifies January 1978–December 2010 sample. Published QJE landing-page retrieval failed. MIT repository https://dspace.mit.edu/entities/publication/63f3398c-f351-4c90-9ad3-71bf214c9ab2 confirms an author-final manuscript and the same mechanism; its download returned HTTP 405. **Draft numerical estimates must not be presented as final published estimates**.\n- Natural disasters to suppliers generate customer output losses, especially for specific/differentiated, R&D or patent-bearing inputs, with negative spillovers to other suppliers. Equity-event response is studied separately. Main lesson: substitution frictions matter. Headquarters geography, reported large-customer-link selection, inventories, shared location/industry exposure, and specificity-proxy interpretation remain material identification/transfer considerations. Use mechanism, not a portable numerical multiplier.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S04",
+      "title": "Carvalho, Nirei, Saito and Tahbaz-Salehi (2021), Supply Chain Disruptions: Evidence from the Great East Japan Earthquake",
+      "canonical_urls": [
+        "https://vasco-m-carvalho.github.io/pdfs/JapanEQ.pdf",
+        "https://doi.org/10.1093/qje/qjaa044"
+      ],
+      "inspection_notes_and_locators": "- Final-lineage author PDF https://vasco-m-carvalho.github.io/pdfs/JapanEQ.pdf ; DOI https://doi.org/10.1093/qje/qjaa044 .\n- Opened 51-page author PDF; data Section 3.1/P8–P10; Figure 5/P16, robustness Section 4.3; Table 3/P28–P29; aggregate calculation Section 6/P30. TSR releases 2010–2012; release year differs from underlying fiscal year. Balanced analytic sales panel 750,237 firms; client-driven updates mean not every firm is refreshed yearly.\n- Identifies upstream and downstream direct/indirect earthquake propagation with geographic and industry controls and pre-trend checks. Aggregate 0.47 percentage-point real-GDP-growth decline is a **model-dependent estimate**, not simply the reduced-form treatment coefficient. Important lineage correction: an older December 2016 version reports 1.2 pp **gross output**, which must not be mixed with final-lineage **real GDP**. Final estimates allow some intermediate substitution; no universal Leontief assumption follows.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S05",
+      "title": "Boehm, Flaaen and Pandalai-Nayar (2019 published; inspected FEDS 2015-094), Input Linkages and the Transmission of Shocks",
+      "canonical_urls": [
+        "https://www.federalreserve.gov/econresdata/feds/2015/files/2015094pap.pdf",
+        "https://www.federalreserve.gov/econres/feds/input-linkages-and-the-transmission-of-shocks-firm-level-evidence-from-the-2011-tohoku-earthquake.htm",
+        "https://doi.org/10.1162/rest_a_00750"
+      ],
+      "inspection_notes_and_locators": "- Federal Reserve original working paper https://www.federalreserve.gov/econresdata/feds/2015/files/2015094pap.pdf ; official page https://www.federalreserve.gov/econres/feds/input-linkages-and-the-transmission-of-shocks-firm-level-evidence-from-the-2011-tohoku-earthquake.htm ; final DOI https://doi.org/10.1162/rest_a_00750 .\n- Opened 75-page original working paper. Table 3 production elasticities; Figures 6–7/P41–P42; external validity Section 4.4/P28–P29. 2011 earthquake study of U.S. Japanese affiliates, comparison multinationals, linked confidential Census trade/firm data; monthly auto-plant production checks support an export-based output proxy.\n- Imported-input declines and output declines are roughly proportional, suggesting low short-run substitutability. Specialized intra-firm trade and a temporary disruption with a largely fixed supplier network matter. Authors explicitly caution that longer-lived shocks may permit supplier reorganization. Confidential microdata cannot be recreated merely by buying a public relationship database. Also note S04/S05 share the earthquake event; they are not independent event replications.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S06",
+      "title": "Acemoglu, Carvalho, Ozdaglar and Tahbaz-Salehi (2012), The Network Origins of Aggregate Fluctuations",
+      "canonical_urls": [
+        "https://economics.mit.edu/sites/default/files/publications/The%20Network%20Origins%20of%20Aggregate%20Fluctuations.pdf",
+        "https://doi.org/10.3982/ECTA9623"
+      ],
+      "inspection_notes_and_locators": "- Final author-hosted journal PDF https://economics.mit.edu/sites/default/files/publications/The%20Network%20Origins%20of%20Aggregate%20Fluctuations.pdf ; DOI https://doi.org/10.3982/ECTA9623 .\n- Opened 41-page Econometrica PDF; model Section 2, influence-vector representation/P10; network asymmetry Section 3; Theorem 4/P20. Supplier-role asymmetry and higher-order dependence can prevent rapid averaging of independent shocks. Sparseness by itself does not determine aggregate fluctuations.\n- This is primarily structural theory with network illustration, not a trained out-of-sample securities predictor. Its influence weights have economic normalization and model assumptions; arbitrary PageRank over mixed semantic/financial edges is not the same object. It justifies testing economically specified propagation, while also supplying a strong null: symmetric networks can aggregate away idiosyncratic shocks.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S07",
+      "title": "Acemoglu, Akcigit and Kerr (2016), Networks and the Macroeconomy: An Empirical Exploration",
+      "canonical_urls": [
+        "https://economics.mit.edu/sites/default/files/publications/Networks%20and%20the%20Macroeconomy%20-%20An%20Empirical%20Explo.pdf",
+        "https://doi.org/10.1086/685961"
+      ],
+      "inspection_notes_and_locators": "- Final published chapter PDF https://economics.mit.edu/sites/default/files/publications/Networks%20and%20the%20Macroeconomy%20-%20An%20Empirical%20Explo.pdf ; DOI https://doi.org/10.1086/685961 .\n- Opened 63 pages. Theory pp. 274–283; predetermined 1991 BEA network and equations (13)–(14), pp. 289–292; China-trade instrument pp. 294 onward/Table 2A; federal-spending Table 3A; productivity and foreign-patent Tables 4A–5A; collocation analysis.\n- Multiple shock classes exhibit network propagation. Supply/productivity and demand shocks have different expected directions; Cobb-Douglas knife-edge cancellation is model-specific. Industry sales-to-customer versus input-cost shares use different denominators. China import instruments rely on other-country imports; federal spending relies on predetermined shares and aggregate changes. These are design-specific exclusion/identification assumptions, not proof every news shock is exogenous. Industry-level propagation and multiplier estimates do not establish firm stock-return prediction.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S08",
+      "title": "Foerster, Sarte and Watson (2011; December 2010 final-lineage draft), Sectoral versus Aggregate Shocks",
+      "canonical_urls": [
+        "https://www.richmondfed.org/-/media/richmondfedorg/research/economists/bios/pdfs/sarte_sectoral_aggregate_shocks.pdf",
+        "https://doi.org/10.1086/659311"
+      ],
+      "inspection_notes_and_locators": "- Richmond Fed author PDF https://www.richmondfed.org/-/media/richmondfedorg/research/economists/bios/pdfs/sarte_sectoral_aggregate_shocks.pdf ; published DOI https://doi.org/10.1086/659311 .\n- Opened 46 pages; 117 U.S. industrial-production sectors, 1972–2007. Structural factor analysis Section 4/Table 7/P17; conclusion/P26. Common reduced-form factors explain most variation, but can themselves embody propagated sectoral shocks. Structurally adjusted sectoral contribution rises toward half during the Great Moderation; sectoral volatility does not itself increase.\n- Older 2008 WP abstract says roughly 30%; final-lineage December 2010 PDF says roughly half. Use the latter identified version and preserve revision lineage. Pure independent sectoral shocks plus observed IO linkages do not reproduce all observed comovement. Critical alternative: common macro disturbances must remain in the model and baselines; a common statistical factor is neither proof of exogenous aggregate cause nor proof of network transmission.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S09",
+      "title": "Hoberg and Phillips (2016), TNIC product competition and original data documentation",
+      "canonical_urls": [
+        "https://hobergphillips.tuck.dartmouth.edu/tnic_basedata.html",
+        "https://hobergphillips.tuck.dartmouth.edu/idata/Readme_tnic3.txt",
+        "https://doi.org/10.1086/688176"
+      ],
+      "inspection_notes_and_locators": "- Official author data https://hobergphillips.tuck.dartmouth.edu/tnic_basedata.html and exact readme https://hobergphillips.tuck.dartmouth.edu/idata/Readme_tnic3.txt ; paper DOI https://doi.org/10.1086/688176 .\n- Author readme inspected in full: background lines 32–53; Technical Notes 1–5/lines 82–104. Pairwise product vocabulary similarity, nouns/proper nouns, geographic exclusions and vertical-relationship removal. TNIC-3 matches SIC3 pair granularity. Mirror rows and self-links are intentional. Stored score is excess above inclusion threshold, not raw cosine.\n- Technical Note 3 explicitly says data is **not lagged**: year derives from fiscal datadate and the associated 10-K. Latest downloaded annual file is not automatically point-in-time usable. The journal PDF retrieval from an indexed Dartmouth location and NBER failed; do not claim uninspected tables or profitability effect sizes. Dataset methodological facts above are directly documented. This layer supports rival-set construction, not proof of a supply contract or return alpha.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S10",
+      "title": "Frésard, Hoberg and Phillips (2020), VTNIC / Innovation Activities and Integration through Vertical Acquisitions",
+      "canonical_urls": [
+        "https://faculty.marshall.usc.edu/Gerard-Hoberg/FresardHobergPhillipsDataSite/index.html",
+        "https://doi.org/10.1093/rfs/hhz106"
+      ],
+      "inspection_notes_and_locators": "- Author data documentation https://faculty.marshall.usc.edu/Gerard-Hoberg/FresardHobergPhillipsDataSite/index.html ; published DOI https://doi.org/10.1093/rfs/hhz106 .\n- Full primary data webpage inspected, lines 1–3 and file descriptions. Links firms' product vocabulary to BEA vertically connected commodity vocabulary. Separate firm-year internal-integration and firm-pair-year potential-relatedness files. Pairwise file **does not use observed goods flows**. Basic release keeps top 10% of pairs.\n- This is unusually explicit source support for a “potential relation” status. Research using vertical text should preserve that interpretation. Do not turn a high score into named customer/supplier identity or material revenue percentage. Original paper listings/drafts were discovered but its final full methods and tables were not fully retrieved here; no acquisition-causality magnitude is asserted.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S11",
+      "title": "Baqaee and Farhi (2019; inspected June 2017 draft), Beyond Hulten's Theorem",
+      "canonical_urls": [
+        "https://bfi.uchicago.edu/wp-content/uploads/Baqaee_Farhi.pdf",
+        "https://doi.org/10.3982/ECTA15202"
+      ],
+      "inspection_notes_and_locators": "- Original author conference PDF https://bfi.uchicago.edu/wp-content/uploads/Baqaee_Farhi.pdf ; final DOI https://doi.org/10.3982/ECTA15202 .\n- Opened 74-page June 30, 2017 draft; introduction and Section 2/Theorem 2.2; elasticities, reallocation and second-order effects. Small productivity-shock first-order effects in an efficient economy can be summarized by sales/GDP weights, while nonlinear effects depend on substitution and network structure.\n- Useful restraint: if a proposed graph predicts only those first-order shocks, a sales-weight baseline may already capture the intended effect. For large bottleneck disruptions, a universal linear path multiplier is especially questionable. Calibration is not observed prospective forecast performance. Author website indicates an erratum; this lane does not use calibration numerical magnitudes or final quantitative claims requiring erratum reconciliation.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S12",
+      "title": "Engle (2002), Dynamic Conditional Correlation",
+      "canonical_urls": [
+        "https://pages.stern.nyu.edu/~rengle/dccfinal.pdf",
+        "https://doi.org/10.1198/073500102288618487"
+      ],
+      "inspection_notes_and_locators": "- Original author PDF https://pages.stern.nyu.edu/~rengle/dccfinal.pdf ; DOI https://doi.org/10.1198/073500102288618487 .\n- Opened 34-page January 2002 draft. Sections I and III; covariance decomposition `H_t = D_t R_t D_t`, estimation/performance sections. DCC provides a parsimonious conditional-correlation model built from standardized residuals and volatility estimates.\n- Supports covariance/risk estimation as a distinct statistical layer. It supplies no proof a correlation is contractual or causal, and no automatic expected-return sign. Conditional covariance, lead-lag regression and a forecast of expected returns are different estimands. For GMI, compare graph-return forecasts against ordinary factor/covariance models rather than allowing a neural graph to claim credit for volatility regimes or common factor loading.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S13",
+      "title": "Ramírez (2018 revised FEDS 2017-014), Firm Networks and Asset Returns",
+      "canonical_urls": [
+        "https://www.federalreserve.gov/econres/feds/files/2017014r1pap.pdf",
+        "https://doi.org/10.17016/FEDS.2017.014r1",
+        "https://ssrn.com/abstract=2197370"
+      ],
+      "inspection_notes_and_locators": "- Official original PDF https://www.federalreserve.gov/econres/feds/files/2017014r1pap.pdf ; DOI https://doi.org/10.17016/FEDS.2017.014r1 .\n- Opened 80-page February 1, 2018 version; introduction/P3–P5; calibrated cross-sectional results/P25; conclusion/P27. Model combines enduring relationships, changing shock-transmission propensity and recursive preferences; matched network properties produce lower premiums for central than peripheral firms through diversification.\n- This is equilibrium/calibration support for an alternative sign, not an independent prospective alpha benchmark. Centrality can signal diversification and lower expected compensation, or exposure to systemic shocks; “more central means higher return” has no general theorem. Ahern's contrasting 2013 interindustry result was located, but primary full-text retrieval failed; held as a discovery pointer, not weight-bearing counterevidence: https://ssrn.com/abstract=2197370 . Networks, granularity and centrality definitions differ, so apparent contradictions need not estimate the same object.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S14",
+      "title": "McLean and Pontiff (2016), Does Academic Research Destroy Stock Return Predictability?",
+      "canonical_urls": [
+        "https://www.onlinelibrary.wiley.com/doi/full/10.1111/jofi.12365",
+        "https://doi.org/10.1111/jofi.12365"
+      ],
+      "inspection_notes_and_locators": "- Publisher original https://www.onlinelibrary.wiley.com/doi/full/10.1111/jofi.12365 ; DOI https://doi.org/10.1111/jofi.12365 . Original publisher page opened; accessible text is abstract/metadata rather than all methods.\n- Abstract reports study of 97 published cross-sectional predictors: average portfolio returns lower out-of-sample and further lower after publication (reported 26% and 58%). This supports the *need* for post-discovery and forward validation, not an exact discount to apply to customer momentum, a GNN, or today's strategy.\n- Publication date, in-sample boundary and trading exploitation are not interchangeable timestamps. Selection of published findings and changes in market structure also matter. Treat as general validation evidence; no source-specific causal decomposition is imported into GMI.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S15",
+      "title": "BEA official IO documentation and revision structure",
+      "canonical_urls": [
+        "https://www.bea.gov/industry/benchmark-input-output-data",
+        "https://www.bea.gov/itable/input-output"
+      ],
+      "inspection_notes_and_locators": "- https://www.bea.gov/industry/benchmark-input-output-data ; https://www.bea.gov/itable/input-output .\n- Benchmark page distinguishes make/use, direct requirements, total requirements, before/after redefinitions and industry/commodity formulations; warns older benchmark files do not embody specified later comprehensive revisions. Current interactive IO page says annual updates in late September, and explicitly flags historical-series corrections.\n- Supports using official sector-level flows as a baseline while retaining vintage, classification, price basis and requirements-matrix kind. It does not disclose named firm-to-firm transactions. Sector correspondence is a prior/imputation and must retain that status. Updating a historical benchmark to its latest corrected form cannot silently create a point-in-time historical forecast input.",
+      "retrieval_date": "2026-10-08"
+    },
+    {
+      "id": "S16",
+      "title": "AI capex accounting case: Microsoft FY2025 original financial statements",
+      "canonical_urls": [
+        "https://www.microsoft.com/investor/reports/ar25/index.html"
+      ],
+      "inspection_notes_and_locators": "- Original issuer annual report https://www.microsoft.com/investor/reports/ar25/index.html .\n- Inspected cash-flow statement/year ended June 30 2025; material cash requirements table and notes; Note 13 lease cash/noncash tables. Cash PP&E additions $64.551bn; finance-lease ROU additions $20.511bn are separately reported. Outstanding construction commitments $32.149bn and purchase commitments $109.953bn are future-obligation measures; purchase commitments primarily concern datacenters and include orders/take-or-pay contracts outside construction commitments.\n- This is a concrete accounting-basis example, **not proof any specific supplier received those dollars**. It does not isolate all additions as AI. Gross commitments, lease liabilities, current cash additions, construction stock and future capex plans cannot be summed as one contemporaneous AI-demand flow. Exact supplier allocation, ordering, installation, utilization and revenue recognition remain separate research questions.",
+      "retrieval_date": "2026-10-08"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C01",
+      "claim": "Actual production linkages can transmit identified real shocks, conditional on input specificity, substitution, buffers and horizon.",
+      "type": "bounded_mechanism",
+      "supporting_sources": [
+        "S03",
+        "S04",
+        "S05",
+        "S07"
+      ],
+      "qualifying_sources": [],
+      "confidence": "high within studied settings; transfer requires separate validation"
+    },
+    {
+      "id": "C02",
+      "claim": "Historical customer momentum is not evidence of current tradable alpha.",
+      "type": "inference",
+      "supporting_sources": [
+        "S01"
+      ],
+      "qualifying_sources": [
+        "S02",
+        "S14"
+      ],
+      "confidence": "high as an evidence-boundary statement"
+    },
+    {
+      "id": "C03",
+      "claim": "TNIC is product similarity, vertically purged, with mirrored pairs/self-links, threshold-adjusted scores and unlagged fiscal-year labeling.",
+      "type": "documented_method",
+      "supporting_sources": [
+        "S09"
+      ],
+      "qualifying_sources": [],
+      "confidence": "high; exact original author readme inspected"
+    },
+    {
+      "id": "C04",
+      "claim": "VTNIC pairwise potential vertical relatedness is not observed firm-to-firm trade.",
+      "type": "documented_method",
+      "supporting_sources": [
+        "S10"
+      ],
+      "qualifying_sources": [],
+      "confidence": "high; explicit author documentation"
+    },
+    {
+      "id": "C05",
+      "claim": "Price dependence is a statistical estimand distinct from contractual economic exposure or causal direction.",
+      "type": "inference",
+      "supporting_sources": [
+        "S12"
+      ],
+      "qualifying_sources": [
+        "S08"
+      ],
+      "confidence": "high as semantic/methodological boundary"
+    },
+    {
+      "id": "C06",
+      "claim": "Generic centrality has no universally established expected-return sign or independent forecasting value.",
+      "type": "inference",
+      "supporting_sources": [
+        "S06",
+        "S13"
+      ],
+      "qualifying_sources": [],
+      "confidence": "high against universal claim; current predictive evidence remains untested"
+    },
+    {
+      "id": "C07",
+      "claim": "Official sector IO supports baseline flow/requirements models but not named firm-to-firm transaction facts; vintage/revisions matter.",
+      "type": "documented_method",
+      "supporting_sources": [
+        "S15"
+      ],
+      "qualifying_sources": [],
+      "confidence": "high"
+    },
+    {
+      "id": "C08",
+      "claim": "Japan final-lineage model GDP-growth estimate 0.47 pp must be distinguished from old draft gross-output estimate 1.2 pp.",
+      "type": "version_correction",
+      "supporting_sources": [
+        "S04"
+      ],
+      "qualifying_sources": [],
+      "confidence": "high; underlying quantities/versions differ"
+    },
+    {
+      "id": "C09",
+      "claim": "Microsoft FY2025 PP&E cash additions, lease asset additions and outstanding commitments require different accounting/timing treatment.",
+      "type": "documented_accounting",
+      "supporting_sources": [
+        "S16"
+      ],
+      "qualifying_sources": [],
+      "confidence": "high; exact original tables inspected"
+    },
+    {
+      "id": "C10",
+      "claim": "Neural multi-layer forecasting should remain held pending same-information chronological baseline comparisons and prospective validation.",
+      "type": "recommendation",
+      "supporting_sources": [
+        "S01",
+        "S02",
+        "S06",
+        "S08",
+        "S11",
+        "S12",
+        "S14"
+      ],
+      "qualifying_sources": [],
+      "confidence": "judgment based on scope/validation evidence; no experiment run"
+    }
+  ],
+  "open_questions": [
+    "Final Barrot-Sauvagnat full text numerical verification",
+    "Baqaee-Farhi erratum if importing calibration magnitudes",
+    "Exact ASC 280 and historical/current S-K customer identity disclosure provisions",
+    "Final TNIC full-paper tables if importing validation effect sizes",
+    "Current point-in-time GMI/vendor data and independent forecast validation"
+  ],
+  "memo_sha256": "74dbf0675e25df653d82e990b97e7c1e0b39fec5497da5941d547d0626c5b30e",
+  "artifact": "ECONOMIC_EVIDENCE_AND_VALIDATION.md",
+  "original_memo_sha256": "74dbf0675e25df653d82e990b97e7c1e0b39fec5497da5941d547d0626c5b30e",
+  "validation_status": "proposed only; no experiments, performance results or prospective forecasts",
+  "commission4_overlap": {
+    "source": "source/estate/research__economic_propagation__COMMISSION4_EFFECTIVE_DATED_ECONOMIC_EXPOSURE_SUPPLY_CHAIN_GRAPH_2026-10-04.md",
+    "sections": [
+      "C4",
+      "E4",
+      "F2-F5",
+      "H1",
+      "H6-H9",
+      "L Gold-set requirement"
+    ],
+    "interpretation": "refinement of existing contracts, mechanisms and evaluation controls; not novelty or a new control plane",
+    "source_sha256": "6bc568d7fdcdd45c8a45c02f1094cb3109ff727665db13e30f1d277e127c03d0",
+    "canonical_url": "https://github.com/mastermindx-market-intelligence/macro/blob/4f4e80ca9ba9309ccb8bb211ff4d0a1ecff00272/research/economic_propagation/COMMISSION4_EFFECTIVE_DATED_ECONOMIC_EXPOSURE_SUPPLY_CHAIN_GRAPH_2026-10-04.md"
+  },
+  "proposed_gates": [
+    "G0 admissibility",
+    "G1 assertions",
+    "G2 fundamentals",
+    "G3 risk",
+    "G4 returns",
+    "G5 scope"
+  ],
+  "artifact_sha256": "46a1774b55e99642fa97b47cd0860a80f14666568b01d664c72bcd92a724a35d",
+  "validation_claim_status": {
+    "endpoint_separation": "proposed",
+    "unknown_edge_handling": "proposed",
+    "issuer_time_event_sector_splits": "proposed",
+    "same_information_baselines": "proposed",
+    "calibration_selective_abstention": "proposed",
+    "power_mde_and_cost_hurdles": "analytical proposals, no sample size or empirical MDE estimated",
+    "prospective_promotion": "proposed, not authorized or run",
+    "automatic_admission_floor": "existing Commission4 proposed floor retained, not adopted by this report; cost may tighten, not relax",
+    "eligibility": "required source-purpose/identity/native-time clearance or typed hold; bounded estimation uncertainty is separate"
+  },
+  "review_resolution": {
+    "review": "lanes/REVIEW_INDEPENDENT.md",
+    "R3": "retain proposed per-stratum exact 95% role+direction LCB >= .95; no cost-derived relaxation; stricter adopted owner rules and cost gates still apply",
+    "R4": "adjudicated precision separated from verified support, unknown share, bounds and coverage; unknowns are not automatically false edges",
+    "R5": "purpose, required identity and native-time eligibility fail closed; partial knowledge is inventory status, not permission",
+    "R6": "four exact K3-D killed-species keys and const-false authority/const-null economic_share inherited; generic gates cannot revive them",
+    "pilot": "120 issuers diagnostic only, not precision or global recall proof",
+    "arithmetic": "0.05**(1/59) = 0.950492390111773; independent zero-error positive assertions per stratum only"
+  },
+  "binding_kills": [
+    "DNR:KILL-PSS-SR2-PEER-DIFFUSION",
+    "DNR:KILL-PSS-SR3-PARTICIPATION",
+    "DNR:KILL-CN-SUPPLY-ABSORPTION",
+    "DNR:KILL-CAUSAL-DAG-ALPHA"
+  ],
+  "current_k3d_authority": "const-false; economic_share const-null; no proposed gate grants authority"
+}

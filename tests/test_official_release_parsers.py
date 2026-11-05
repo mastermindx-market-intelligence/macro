@@ -152,7 +152,7 @@ def test_dol_listing_selector_uses_exact_deterministic_release_path() -> None:
     assert selected is not None
     assert selected["entry_id"] == "/newsroom/releases/eta/eta20260723"
     assert selected["source_url"] == (
-        "https://www.dol.gov/newsroom/releases/eta/eta20260723"
+        "https://www.dol.gov/index.php/newsroom/releases/eta/eta20260723"
     )
     assert selected["source_released_at"] is None
     assert selected["title"] == "Unemployment Insurance Weekly Claims Report"

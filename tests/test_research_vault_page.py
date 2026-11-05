@@ -26,6 +26,10 @@ import pytest
 from scripts import build_research_vault as bld
 
 
+EMPTY_SUMMARY_EN = "No summary is available for this report. The full report is available to read."
+EMPTY_SUMMARY_ZH = "本篇暂无摘要。全文已可查看。"
+
+
 # --- fixtures ---------------------------------------------------------------
 
 _SEED = {
@@ -133,7 +137,13 @@ def test_browse_and_filter(page_seeded):
     assert 'id="tree"' in page_seeded                     # browse rail tree host
     assert 'id="q"' in page_seeded                        # search box
     assert 'data-dim="inst"' in page_seeded               # institution facet group
-    assert 'data-dim="side"' in page_seeded               # rating facet group
+    assert 'data-dim="side"' in page_seeded               # desk-type facet group
+    assert "Desk type" in page_seeded and "机构类型" in page_seeded
+    assert "买方" in page_seeded and "卖方" in page_seeded
+    facet = re.search(r'data-dim="side">(.*?)</div>', page_seeded, re.S)
+    assert facet, "missing side facet group"
+    assert "Rating" not in facet.group(1) and "评级" not in facet.group(1)
+    assert "看多" not in page_seeded and "看空" not in page_seeded
     assert 'data-dim="theme"' in page_seeded              # theme facet group
 
 
@@ -168,9 +178,24 @@ def test_ssr_cards_baked_when_seeded(page_seeded):
     assert "Bernstein" in page_seeded
     # top-pick + needs-metadata states render
     assert "rep glass pick" in page_seeded               # highlighted card
+    assert '<span class="l-en">Highlighted</span><span class="l-zh">精选</span>' in page_seeded
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    assert "T('Highlighted', '精选')" in js
     assert "rep glass needs" in page_seeded              # needs-metadata card
-    assert "Summary pending" in page_seeded              # empty-summary fallback
+    assert EMPTY_SUMMARY_EN in page_seeded               # empty-summary fallback
+    assert EMPTY_SUMMARY_ZH in page_seeded
     assert 'class="rep-titlelink"' not in page_seeded
+
+
+def test_empty_summary_wording_promises_nothing_on_either_surface(page_seeded):
+    """Upstream never summarized these records, so no summary is on its way."""
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    assert f"T('{EMPTY_SUMMARY_EN}', '{EMPTY_SUMMARY_ZH}')" in js
+    assert f'<span class="l-en">{EMPTY_SUMMARY_EN}</span>' in page_seeded
+    assert f'<span class="l-zh">{EMPTY_SUMMARY_ZH}</span>' in page_seeded
+    for surface in (page_seeded, js):
+        for promise in ("Summary pending", "摘要生成中", "still being prepared", "整理中"):
+            assert promise not in surface, promise
 
 
 def test_public_ssr_preview_stops_at_three_and_shows_pro_gate(monkeypatch):
@@ -277,8 +302,8 @@ def test_interactive_first_paint_masks_the_baked_snapshot(page_seeded):
     assert "html.rv-awaiting-live .rv-feed{ display:none; }" in page_seeded
     assert "html.rv-awaiting-live .rv-feed-loading{ display:block; }" in page_seeded
     assert 'id="feed-shell" aria-busy="false"' in page_seeded
-    assert 'class="rv-status-loading">Refreshing live research' in page_seeded
-    assert 'class="rv-status-loading">正在刷新实时研报' in page_seeded
+    assert 'class="rv-status-loading">Checking the saved copy' in page_seeded
+    assert 'class="rv-status-loading">正在核对保存副本' in page_seeded
 
 
 def test_no_js_default_is_an_honest_saved_snapshot(page_seeded):
@@ -309,10 +334,8 @@ def test_boot_waits_for_authoritative_catalog_before_ingesting_bake():
 
 
 # --- Wave 4 PR A: the status line may only claim what the clock supports -----
-# "Updated hourly" is a claim about the PRODUCER, and before Wave 4 the client
-# made it whenever the API request had not thrown — so an arbitrarily old catalog
-# read as live. Freshness now comes from generated_at, and every non-fresh outcome
-# states the data is saved AND prints the clock it was generated on.
+# Catalog freshness comes from generated_at. A fresh catalog does not prove
+# hourly full-text ingestion; every non-fresh outcome shows its saved clock.
 
 def test_live_label_is_gated_on_a_fresh_producer_clock():
     js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
@@ -322,13 +345,15 @@ def test_live_label_is_gated_on_a_fresh_producer_clock():
     assert ("CATALOG_FRESH = source === 'live' && isFresh(" in js)
     assert "} else if (CATALOG_FRESH) {" in js
     live = js.index("} else if (CATALOG_FRESH) {")
-    assert js.index("'This week · Updated hourly'") > live, (
-        "the hourly label must sit inside the freshness branch"
+    assert js.index("'Catalog recently updated'") > live, (
+        "the catalog freshness label must sit inside the freshness branch"
     )
+    assert "'This week · Updated hourly'" not in js
+    assert js.index("'目录近期已更新'") > live
     # Every other outcome shows the real generation time rather than an adjective.
-    assert "'Saved snapshot · live update delayed'" in js
+    assert "'Saved snapshot · refresh delayed'" in js
     assert "' · updated ' + fmtStamp(iso, false)" in js
-    assert "'已保存快照 · 实时更新延迟'" in js
+    assert "'已保存快照 · 更新延迟'" in js
 
 
 def test_unavailable_catalog_is_not_painted_as_an_empty_vault():
@@ -342,7 +367,7 @@ def test_unavailable_catalog_is_not_painted_as_an_empty_vault():
         "the unavailable branch must precede the honest-empty branch, or a failed "
         "read renders as 'we hold no reports yet' — a claim we cannot support"
     )
-    assert "'Live research is temporarily unavailable'" in js
+    assert "'Research is temporarily unavailable'" in js
     # An undatable bake is discarded rather than painted.
     assert "return validCatalog(parsed) ? parsed : null;" in js
 
@@ -388,6 +413,130 @@ def test_empty_state_has_no_fake_cards(page_empty):
 def test_ssr_projection_never_leaks_body(page_seeded):
     # the private full-text body must not appear anywhere in the baked page
     assert "SECRET FULL TEXT" not in page_seeded
+
+
+def test_side_renders_as_desk_type_not_a_rating(page_seeded):
+    """`side` is buy-side/sell-side desk type. A Goldman card must not read SELL."""
+    assert "Sell-side" in page_seeded
+    assert "卖方" in page_seeded
+    assert re.search(r'class="stamp sell"', page_seeded) is None
+    assert ">SELL<" not in page_seeded and ">BUY<" not in page_seeded
+    assert "stamp sell-side" in page_seeded
+    # F7: dual class so origin/main .stamp.sell still matches during the bake skew
+    assert "stamp sell-side sell" in page_seeded
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    assert "T('Buy-side', '买方')" in js
+    assert "T('Sell-side', '卖方')" in js
+    assert "T('BUY', '看多')" not in js
+    assert "T('SELL', '看空')" not in js
+
+
+def test_ssr_summary_strips_markdown_and_rejoins_split_sentences(monkeypatch):
+    catalog = {
+        "schema": "research_vault.catalog.v1",
+        "generated_at": "2026-07-22T18:00:00Z",
+        "count": 1,
+        "institutions": ["Rabobank"],
+        "items": [{
+            "id": "rabo-2026-09-09-china",
+            "title": "China note",
+            "institution": "Rabobank",
+            "side": "sell",
+            "desk": "Economics",
+            "published_at": "2026-09-09T10:00:00Z",
+            "summary_points": [
+                "**China’s Economic Data & Structural Risks**: CPI at 0.8% y-o-y (up from 0.5%), PPI at 3.8% y-o-y (vs.",
+                "6% consensus); tobacco monopoly’s $54bn capital funding signals inflationary pressures.",
+            ],
+            "tags": ["China"], "tickers": [], "top_pick": False, "pages": 4,
+            "needs_metadata": False,
+        }],
+    }
+    html = _render(monkeypatch, catalog)
+    assert "**" not in html.split("id=\"feed\"", 1)[-1].split("</div>", 1)[0]
+    assert "vs. 6% consensus" in html
+    assert "(vs.</li>" not in html
+
+
+def test_ssr_hero_figs_use_summary_not_bare_dash(page_seeded):
+    assert re.search(r'id="fig-total">\d+', page_seeded)
+    assert re.search(r'id="fig-new">\d+', page_seeded)
+    assert 'id="fig-total">—' not in page_seeded
+
+
+def test_badge_saved_is_worded_null_not_bare_dash(page_seeded):
+    assert 'id="badge-saved"' in page_seeded
+    assert re.search(r'id="badge-saved"[^>]*>—\s*<', page_seeded) is None
+    assert "none yet" in page_seeded
+    assert "暂无" in page_seeded
+    # Hydrate must keep the worded null; a bare count of 0 stomps the bake.
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    assert "function savedBadgeText(n)" in js
+    assert "n > 0 ? String(n)" in js
+    assert "T('none yet', '暂无')" in js
+    assert js.count("$('badge-saved').textContent = savedBadgeText(") == 2
+    assert "$('badge-saved').textContent = ITEMS.filter" not in js
+
+
+def test_ssr_card_uses_display_title_not_doubled_lead(monkeypatch):
+    catalog = {
+        "schema": "research_vault.catalog.v1",
+        "generated_at": "2026-09-09T10:00:00Z",
+        "count": 1,
+        "institutions": ["Goldman Sachs"],
+        "items": [{
+            "id": "gs-abc123",
+            "title": "GS Vol Views GS Vol Views 9 Sep 2026",
+            "institution": "Goldman Sachs",
+            "side": "sell",
+            "desk": "Vol",
+            "published_at": "2026-09-09T10:00:00Z",
+            "summary_points": ["Range holds."],
+            "tags": [], "tickers": [], "top_pick": False, "pages": 4,
+            "needs_metadata": False,
+        }],
+    }
+    html = _render(monkeypatch, catalog)
+    feed = html.split('id="feed"', 1)[-1].split('id="rv-catalog"', 1)[0]
+    assert "GS Vol Views" in feed
+    assert "GS Vol Views GS Vol Views" not in feed
+
+
+def test_ssr_card_does_not_print_folder_institution(monkeypatch):
+    catalog = {
+        "schema": "research_vault.catalog.v1",
+        "generated_at": "2026-09-09T10:00:00Z",
+        "count": 2,
+        "institutions": ["S&T", "New folder"],
+        "items": [
+            {
+                "id": "st-1", "title": "Note A", "institution": "S&T",
+                "side": "sell", "desk": "", "published_at": "2026-09-09T10:00:00Z",
+                "summary_points": ["A."], "tags": [], "tickers": [],
+                "top_pick": False, "pages": 1, "needs_metadata": False,
+            },
+            {
+                "id": "nf-1", "title": "Note B", "institution": "New folder",
+                "side": "independent", "desk": "", "published_at": "2026-09-08T10:00:00Z",
+                "summary_points": ["B."], "tags": [], "tickers": [],
+                "top_pick": False, "pages": 1, "needs_metadata": False,
+            },
+        ],
+    }
+    html = _render(monkeypatch, catalog)
+    feed = html.split('id="feed"', 1)[-1].split('id="rv-catalog"', 1)[0]
+    assert "S&amp;T" not in feed
+    assert "S&T" not in feed
+    assert "New folder" not in feed
+    assert "Institutional desk" in feed
+    assert "机构研究台" in feed
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    assert "instDisplay(x.inst)" in js
+    assert "function instDisplay(" in js
+    assert "T('Institutional desk', '机构研究台')" in js
+    assert "T('Unknown', '未知')" in js
+    assert "if (!s) return 'Unknown';" not in js
+    assert "if (s === 'Unknown') return s;" not in js
 
 
 # --- bilingual + compliance -------------------------------------------------
@@ -446,10 +595,225 @@ def test_status_timestamp_is_rendered_per_language():
     """Both status spans are written in one paint, so each needs its own format.
 
     Caught in browser verification: the ZH span read
-    '已保存快照 · 实时更新延迟 · 更新于 Aug 19, 2026 · 09:38 UTC' because fmtWhen
+    '已保存快照 · 更新延迟 · 更新于 Aug 19, 2026 · 09:38 UTC' because fmtWhen
     reads the LIVE <html data-lang> and only one span is ever visible.
     """
     js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
     assert "function fmtStamp(iso, useZh)" in js
     assert "fmtStamp(iso, false)" in js and "fmtStamp(iso, true)" in js
     assert "useZh ? p[0] + '年'" in js
+
+
+def test_hero_freshness_runtime_contract():
+    """Exercise the real hero function for stale, loading and entitled states."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    assert node, "Node is required for the Research Vault hero contract"
+    result = subprocess.run(
+        [node, "--test", str(bld.ROOT / "tests/js/research_vault_hero_freshness.test.mjs")],
+        cwd=bld.ROOT, capture_output=True, text=True, timeout=45,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+# --- saved-copy clock (W39-L4) ---------------------------------------------
+
+_CLOCK_WRITTEN = "2031-02-03T04:05:06.000000+00:00"
+_CLOCK_NEWEST = "2031-07-08T21:09:00+00:00"
+_CLOCK_EN_WRITTEN = "Saved copy written 2031-02-03 04:05 UTC."
+_CLOCK_ZH_WRITTEN = "保存副本写入于 2031-02-03 04:05 UTC。"
+_CLOCK_EN_LATEST = "Newest report in that copy: 2031-07-08."
+_CLOCK_ZH_LATEST = "该副本中最新研报：2031-07-08。"
+
+
+def _clock_item(published_at: str) -> dict:
+    return {
+        "id": "desk-2031-note",
+        "title": "Desk note",
+        "institution": "Bernstein",
+        "side": "sell",
+        "desk": "Macro",
+        "published_at": published_at,
+        "summary_points": ["A point."],
+        "tags": ["Macro"],
+        "tickers": ["SPY"],
+        "top_pick": False,
+        "pages": 4,
+        "needs_metadata": False,
+    }
+
+
+def _clock_catalog(generated_at, published_at: str) -> dict:
+    return {
+        "schema": "research_vault.catalog.v1",
+        "generated_at": generated_at,
+        "count": 1,
+        "institutions": ["Bernstein"],
+        "summary": {
+            "source_clock": {
+                "latest_report_published_at": published_at,
+            },
+        },
+        "items": [_clock_item(published_at)],
+    }
+
+
+def _saved_clock(html: str) -> str:
+    match = re.search(r'id="rv-saved-clock"(.*?)</p>', html, re.S)
+    assert match, "saved-copy clock is missing"
+    return match.group(1)
+
+
+def test_vault_hero_shows_saved_copy_clock(monkeypatch):
+    """Week figures need the saved copy's write time and newest report."""
+    html = _render(
+        monkeypatch, _clock_catalog(_CLOCK_WRITTEN, _CLOCK_NEWEST),
+    )
+    clock = _saved_clock(html)
+    assert _CLOCK_EN_WRITTEN in clock
+    assert _CLOCK_EN_LATEST in clock
+    assert _CLOCK_ZH_WRITTEN in clock
+    assert _CLOCK_ZH_LATEST in clock
+    assert "UTC. Newest report" in clock
+    assert "UTC。该副本中最新研报" in clock
+    assert _CLOCK_WRITTEN not in clock
+    assert "None" not in clock
+    assert "—" not in clock
+    assert 'class="l-en"' in clock and 'class="l-zh"' in clock
+    assert html.index('id="fig-total"') < html.index('id="rv-saved-clock"')
+
+    written_only = _saved_clock(_render(
+        monkeypatch, _clock_catalog(_CLOCK_WRITTEN, ""),
+    ))
+    assert _CLOCK_EN_WRITTEN in written_only
+    assert _CLOCK_ZH_WRITTEN in written_only
+    assert "Newest report" not in written_only
+    assert "该副本中最新研报" not in written_only
+    assert "None" not in written_only
+    assert "—" not in written_only
+
+    latest_only = _saved_clock(_render(
+        monkeypatch, _clock_catalog("not-a-clock", _CLOCK_NEWEST),
+    ))
+    assert _CLOCK_EN_LATEST in latest_only
+    assert _CLOCK_ZH_LATEST in latest_only
+    assert "Saved copy written" not in latest_only
+    assert "保存副本写入于" not in latest_only
+    assert "None" not in latest_only
+    assert "—" not in latest_only
+
+    malformed = (
+        "",
+        None,
+        "not-a-clock",
+        "2031-02-03",
+        "2031-13-03T04:05:00Z",
+        "2031-02-03T25:05:00Z",
+    )
+    for generated_at in malformed:
+        page = _render(
+            monkeypatch, _clock_catalog(generated_at, "nope"),
+        )
+        assert 'id="rv-saved-clock"' not in page
+        assert "Saved copy written" not in page
+        assert "保存副本写入于" not in page
+        assert "Newest report in that copy" not in page
+        assert "该副本中最新研报" not in page
+
+
+def test_vault_status_drops_banned_live_words(monkeypatch):
+    """Loading and timeout copy name the saved copy, not a live feed."""
+    html = _render(monkeypatch, dict(bld._EMPTY_CATALOG))
+    banned = (
+        "Refreshing live research",
+        "live refresh delayed",
+        "正在刷新实时研报",
+        "实时更新延迟",
+    )
+    for phrase in banned:
+        assert phrase not in html, phrase
+    assert "Checking the saved copy" in html
+    assert "正在核对保存副本" in html
+    assert "Saved snapshot · refresh still delayed" in html
+    assert "已保存快照 · 更新仍未完成" in html
+
+
+def test_vault_settled_status_drops_the_live_word():
+    """The reader with JS reads this line, not the loading copy."""
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    for phrase in ("live update delayed", "Live research", "实时研报", "实时更新"):
+        assert phrase not in js, phrase
+    assert "'Research unavailable · try again shortly'" in js
+    assert "'研报暂不可用 · 请稍后重试'" in js
+    assert "'研报暂时不可用'" in js
+
+
+def _saved_clock_cases():
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node not installed")
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    start = js.index("function paintSavedClock() {")
+    end = js.index("/* ═══════════ hero counts", start)
+    script = """
+function el() {
+  var q = {'.l-en': {textContent: 'baked en'}, '.l-zh': {textContent: 'baked zh'}};
+  return {hidden: false, querySelector: function (s) { return q[s]; }, q: q};
+}
+var p, CATALOG_SOURCE, CATALOG_FRESH, ITEMS;
+var $ = function (id) { return id === 'rv-saved-clock' ? p : null; };
+""" + js[start:end] + """
+var out = {};
+function run(name, source, fresh, items, startHidden) {
+  p = el(); p.hidden = !!startHidden;
+  CATALOG_SOURCE = source; CATALOG_FRESH = fresh; ITEMS = items;
+  paintSavedClock();
+  out[name] = {hidden: p.hidden, en: p.q['.l-en'].textContent, zh: p.q['.l-zh'].textContent};
+}
+var two = [{date: '2031-02-03'}, {date: '2031-04-05'}, {}];
+run('stale', 'snapshot', false, two);
+run('stale_api', 'live', false, two);
+run('fresh', 'live', true, two);
+run('unavailable', 'unavailable', false, two);
+run('reshown', 'snapshot', false, two, true);
+run('no_dates', 'snapshot', false, [{}]);
+console.log(JSON.stringify(out));
+"""
+    done = subprocess.run([node, "-e", script], capture_output=True, text=True, timeout=30)
+    assert done.returncode == 0, done.stderr
+    return json.loads(done.stdout)
+
+
+def test_saved_clock_names_the_newest_report_of_the_copy_on_screen():
+    cases = _saved_clock_cases()
+    for name in ("stale", "stale_api", "reshown"):
+        assert cases[name]["hidden"] is False
+        assert cases[name]["en"] == "Newest report in this copy: 2031-04-05."
+        assert cases[name]["zh"] == "该副本中最新研报：2031-04-05。"
+
+
+def test_saved_clock_goes_away_unless_the_copy_is_saved_and_old():
+    """Under fresh figures, or no catalog, the baked line would contradict the hero."""
+    cases = _saved_clock_cases()
+    for name in ("fresh", "unavailable", "no_dates"):
+        assert cases[name]["hidden"] is True, name
+
+
+def test_saved_written_needs_a_full_iso_stamp():
+    assert bld._saved_written("2031-02-03T04:05:06Z") == "2031-02-03 04:05 UTC"
+    for bad in ("2031-02-03 04:05:06", "2031-02-03", "", None, "2031-02-30T04:05"):
+        assert bld._saved_written(bad) == ""
+
+
+def test_saved_clock_repaints_once_a_catalog_settles():
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    settle = js[js.index("function finishCatalogPaint("):js.index("function ingest(")]
+    assert "paintSavedClock();" in settle
+    ingest = js[js.index("function ingest("):]
+    assert ingest.index("ITEMS = items.map(normItem);") < ingest.index("finishCatalogPaint(")

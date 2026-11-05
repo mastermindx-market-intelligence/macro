@@ -1,0 +1,15 @@
+{
+  "registered_before_new_outcomes_utc": "2026-10-21T15:09:04.529108+00:00",
+  "protocol_commit": "b8036161bb84c2cab452d4d797081f7026f6b87d",
+  "base_main": "13b0bab82abfdb59d60664bd3e85a104ab8678f2",
+  "history": "already exposed; not fresh holdout",
+  "file_sha256": {
+    "PROTOCOL.md": "c4f5128a9b767e5a92b4ffd2e12f9cc5ddfcc9b82dd3b072bcc59fa205bf08f3",
+    "config.json": "d120fcdf0b05e17462e4316423b383f5286f80e38e94b0b9bb03352006d6cd90",
+    "analyze.py": "7da96411ee3274b87eea78a8907ac25214635aa4c37cc59bc083fc0df48eb668",
+    "verify.py": "9032e7b219e53087ccfa2c779afc332380a0b5a6621b9ef56bf0633f201354f8",
+    "prepare_inputs.py": "794634aefdd828e458796ea1989813706342c5856e3930093593d9b088402f17",
+    "inputs/source_manifest.json": "7e53cbf4c14c1e6d9df3ea6b8744e5d152865b4b53fe5f34f35e13bf1e5c0842",
+    "inputs/signal_roster.csv": "a1053b09cd1e0da7c8e4426b67faa955fe4796b68cac6fd9be0118a9e37d413f"
+  }
+}

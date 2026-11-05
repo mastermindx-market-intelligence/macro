@@ -1,0 +1,22 @@
+[
+  {
+    "mutation": "wrong_baseline_denominator",
+    "candidate": "PASS",
+    "mutant": "FAIL_AS_EXPECTED"
+  },
+  {
+    "mutation": "imputed_missing_baseline",
+    "candidate": "PASS",
+    "mutant": "FAIL_AS_EXPECTED"
+  },
+  {
+    "mutation": "wrong_horizon_outcome",
+    "candidate": "PASS",
+    "mutant": "FAIL_AS_EXPECTED"
+  },
+  {
+    "mutation": "false_validation_claim",
+    "candidate": "PASS",
+    "mutant": "FAIL_AS_EXPECTED"
+  }
+]

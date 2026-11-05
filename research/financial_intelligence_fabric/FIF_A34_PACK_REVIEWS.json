@@ -1,0 +1,413 @@
+{
+  "schema": "fif.a34_pack_reviews.v1",
+  "reviews": [
+    {
+      "pack_id": "PK01",
+      "verdict": "PASS_WITH_NOTES",
+      "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [],
+      "notes": [
+        "pk01_debt.py:207-214 \u2014 the covenant pattern matches compliance wording (\"was in compliance with \u2026 covenants\") and named covenant ratios, but a *bare non-compliance* sentence (\"is not in compliance with its debt covenants\") is not matched; run ADV-5d returned `covenant_term_observation unsupported/missing_dependency`. Honest refusal (typed absence, no invented breach verdict), but a recall gap on the wording domain the field names.",
+        "pk01_debt.py:242-247 + narrative.py:194-201 \u2014 when the covenant sentence is the debt note's first sentence and the heading contains \"Note N. X\", the \". \"-sentence rule stops inside the heading and `text_value` carries a heading fragment prefix (run ADV-5e: `'Debt The credit facility covenants include a maximum leverage ratio of 3.5x.'`). Verbatim source bytes with exact offsets (span provenance stays exact); wording noise, not fabrication.",
+        "pk01_debt.py:73-76 \u2014 `short_term_debt` admits only `us-gaap:ShortTermBorrowings`; issuers tagging `CommercialPaper`/`OtherShortTermBorrowings` type `missing_standard_fact:us-gaap:ShortTermBorrowings` (AAPL fixture run confirms). Deliberate freeze per the module docstring (pinned base envelope), reported here as the recall gap it is.",
+        "base.py:1374-1387 (effect on PK01's by-instrument field) \u2014 when every instrument row is lease-excluded, the field types `missing_standard_fact:us-gaap:DebtInstrumentCarryingAmount` although the concept *is* present at the period; no catalogue reason code names the member-exclusion cause (the exclusion remains auditable via `mapping_rule_digest`, which encodes `exclude_member_substrings`).",
+        "pk01_debt.py:88-91 \u2014 the limitation \"debt_components_vs_total: total_debt is formula-derived from the same addends\" is appended whenever the formula *branch runs*, including when it yields `not_evaluable` (run ITEM2-B: limitation present, total_debt value None) \u2014 nothing was actually derived; slightly over-broad wording.",
+        "base.py:2296-2306 \u2014 the stock Presence check reads `outcome.value`, which is `None` for a valued *text* field, so `covenant_span_present` would be `not_evaluable` even on success; the finalize hook synthesizes the `pass` (pk01_debt.py:290-293). Correct as shipped (the hook always runs for an applicable result), but the pass is hook-owned, not framework-derived."
+      ]
+    },
+    {
+      "pack_id": "PK02",
+      "verdict": "FAIL",
+      "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "base.py:1449-1454 (`_axes_valued_row`, reached via `_resolve_axes_fact_mapping` base.py:1471-1675) \u2014 for PK02's four `optional_axes` fields (`sbc_allocated_by_line`, `antidilutive_securities_excluded`, `shares_outstanding_cover`, `shares_issued_parenthetical`), the row stamps the catalogue unit (`row[\"unit\"] = catalogue_unit \u2026`) without ever checking `_unit_measure(representative.unit)` against `_unit_equivalents(catalogue_unit)`; a USD-tagged `us-gaap:CommonStockSharesIssued` emits `quality=valued value='1000000000' unit='shares'` with no refusal (probe A2), the same hole on the cover path (A3) and inside the per-class check where a USD number is compared against real share counts to mint a nonsense `fail` (probe M), while the identical wrong-unit fact on a plain mapping is refused `not_evaluable`/`unit_mismatch` (probes A1/A4/N); the envelope even asserts the receipt `unit_check=catalogue_equivalence_v1` (base.py:2898) \u2014 minimal fix: apply the same R-F1 equivalence check `_resolve_fact_mapping` applies at base.py:954-984 (typed `not_evaluable`/`unit_mismatch` absence with the \"fact unit X is not Y\" limitation) to the undimensioned row and each member row of the axes resolver."
+      ],
+      "notes": [
+        "pk02_sbc.py:192-207 \u2014 `eps_identity` divides the *basic* numerator by diluted shares for the diluted leg; ASC 260 diluted EPS legitimately carries numerator adjustments (convertible interest add-backs), and the `us-gaap:NetIncomeLoss` fallback (pk02_sbc.py:103-108) overstates \"available to common\" when preferred dividends exist \u2014 an ASC 260-correct filing produces a false `fail` (probe C: disclosed 0.76 = (100+14)/150 vs computed 100/150 \u2192 fail).",
+        "pk02_sbc.py:164-189 \u2014 `per_class_shares_vs_cover` compares cover-page outstanding vs parenthetical issued with no treasury term; issued \u2212 treasury = outstanding, so a legitimate treasury-stock issuer whose cover date equals the balance-sheet date gets a false `fail` (probe B: 1,000M issued vs 900M outstanding, tolerance 1 share \u2192 fail).",
+        "pk02_sbc.py:95-101 \u2014 the second `dilutive_securities_increment` alias (`IncrementalCommonSharesAttributableToShareBasedPaymentArrangements`) is the SBC-only increment; when only it resolves and other dilutive instruments exist, `basic_to_diluted_reconciliation` false-fails (probe D: 100+10 vs 115); alias priority itself is correct (probe D2: total adjustment wins when both tagged \u2192 pass).",
+        "base.py:1948-1967 (sum identity) and the eps rule path \u2014 neither applies the `same_period_required` period gate that `per_class_shares_vs_cover` uses (base.py:2230-2247); operands from different windows can mint a check `pass` (probe F2: basic/increment YTD vs diluted quarter-only, 1010 = 1000+10 \u2192 pass).",
+        "base.py:954-984 \u2014 the unit law tests only the representative occurrence; an identical-valued duplicate in a wrong unit is absorbed into the same valued row with both occurrence ids, and the outcome depends on which duplicate is representative (probe O: EPS 2.09 tagged both `ps` and `shares` \u2192 valued USD/shares).",
+        "tests/test_fif_specialist_packs.py:11052 \u2014 the synthetic-document template declares `xmlns:xbrldi=\"http://xbrl.org/2005/xbrldi\"` while the strict parser canonicalizes `http://xbrl.org/2006/xbrldi` (collectors/sec_filing_parser.py:63), so `test_pk02dev_dimensioned_sbc_only_is_disallowed_dimension` actually exercises the `dimensions_known=False` (R-F3) path, not the parsed-axis-member path; the pinned refusal still holds (both paths refuse), but the test's comment overstates what it proved \u2014 the real axis path is covered only through AAPL-fixture probes."
+      ]
+    },
+    {
+      "pack_id": "PK03",
+      "verdict": "FAIL",
+      "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "engine/fundamental_forensics/specialist_packs/base.py:4213 \u2014 _resolve_allowlist_dimensioned_fact_mapping admits the same occurrence under multiple declared allowlist entries when the ledger member is Clark-form (any namespace the ledger does not canonicalize, e.g. srt or an extension), because _dimension_qname_matches (base.py:3293-3302) falls back to local-name equality; PK03's _ELIMINATION_MEMBER_ALLOWLIST (pk03_segments.py:67-73) declares both us-gaap:ConsolidationEliminationsMember and srt:ConsolidationEliminationsMember, so one {srt}ConsolidationEliminationsMember fact emits TWO valued rows citing the SAME source_occurrence_id \u2014 minimal fix: dedupe by resolved ledger member in the allowlist loop (skip a declared member whose candidate occurrences were already emitted under an earlier entry), plus a PK03 test with a Clark-form elimination member"
+      ],
+      "notes": [
+        "pk03_segments.py:5-13 vs pk03_segments.py:277-300 \u2014 the geographic/product \"read-only mirrors of PK04 \u2026 can never disagree\" invariant is falsified by the widened dev-corpus mappings: PK03 admits us-gaap:Revenues geo/product rows and an optional ConsolidationItemsAxis=OperatingSegmentsMember stamp that PK04's revenue_disaggregated (pk04_revenue.py:129-133, single concept, no optional other-members, finalize touches only rpo_total) refuses; ADV-7 run emits a geo row PK04 would not emit. Rows are correctly labeled; only the stated cross-pack invariant breaks.",
+        "pk03_segments.py:138-154 \u2014 segment_count_consistent fails when the tagged count exceeds the number of revenue-tagged segment rows (a filer with a no-revenue segment); the fail verdict is a strict internal-consistency signal, documented in the docstring, but can be a false alarm (ADV-6 end-to-end: count 3 vs 2 rows \u2192 fail).",
+        "pk03_segments.py:74 \u2014 the bridge/fp tolerance is a fixed absolute 1,000,000 USD regardless of issuer scale or stated decimals; loose for small issuers (a 5M-revenue issuer passes with a 0.9M gap). Visible in each emitted check row's tolerance.",
+        "pk03_segments.py:408-410 \u2014 the finalize hook silently trims limitations to 32 ([:32]) where the framework's own overflow rule is a loud refusal (base.py:2929-2930); a dropped limitation line is a lost disclosure, though row-level reasons survive.",
+        "base.py:66-76 + 558-592 \u2014 within the annual family \"10-K\" outranks \"10-K/A\" regardless of period, so an amendment never becomes the primary package; amended facts then join the same ledger and surface as typed not_evaluable conflicts (ADV-5 mechanism) rather than superseding. Honest refusal, but a recast-in-amendment is read from the original.",
+        "base.py:1846-1859 + 4008-4037 vs pk03_segments.py:86-91 \u2014 the consolidated operand probes CORE_REVENUE_CONCEPTS first-concept-wins (undimensioned), while segment_revenue emits rows under all three aliases; a filer tagging the segment table on us-gaap:Revenues and the income statement on the 606 concept compares bases across the bridge (code-observed; not constructed end-to-end).",
+        "ADV-6 output \u2014 a valued number_of_operating_segments row carries unit \"USD\" copied from the ledger fact although the catalogue declares the field unitless (contract checks unit equality only when the catalogue unit is non-null); cosmetic.",
+        "base.py:3671-3698 \u2014 with no _def.xml member, grouped fields emit every admitted axis member with a \"member rows unpartitioned\" limitation instead of refusing; honest and visible, but strictness then depends on the package carrying the definition linkbase."
+      ]
+    },
+    {
+      "pack_id": "PK04",
+      "verdict": "FAIL",
+      "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "engine/fundamental_forensics/specialist_packs/pk04_revenue.py:121-125 (selection implemented at base.py:3374-3377) \u2014 rpo_percentage_next_12m admits a typed start-date bucket at ANY distance \u2265 period_of_report; a filing whose only RevenueRemainingPerformanceObligationPercentage bucket is dated beyond 12 months (run A1: member 2027-07-01 vs por 2025-12-31) is emitted as valued \"0.4\" under a field whose catalogue name promises \"expected within 12 months\", with no reason code and no limitation flagging the beyond-12-months selection \u2014 the value does not mean what its field says, silently \u2014 minimal fix: bound the admissible window the way the rpo_total guard already does (pk04_revenue.py:279-291: por < member_date <= por + 92 days; both pinned real shapes put the 12-months bucket at por+1), keeping the field a typed absence when the only bucket is later, or emit a limitation naming the beyond-12-months selection"
+      ],
+      "notes": [
+        "base.py:878-884 \u2014 on an admitted 10-Q (pk04_revenue.py:52) the longest-duration rule resolves revenue to the YTD figure, not the quarter (run A2: 222,000,000 six-month figure chosen over the 111,000,000 quarter); the row reports its actual period, but a field_id-only reader may expect the quarter",
+        "base.py:3841-3867 \u2014 the rollforward's refused-implied-additions limitation is minted even when operand periods are mutually incompatible (run A3: Q4-recognized 2.0B against FY-bound balances names \"refused to imply additions = -1000000000\" with no period-compatibility flag); the check itself stays not_evaluable, so no wrong verdict is emitted",
+        "pk04_revenue.py:292-297 \u2014 the Period1 same-context guard can only fire on synthetic ledgers: RPO_TIMING_PERIOD1_CONCEPT is a non-numeric duration element the raw ledger excludes by design (pk04_revenue.py:126-127), and its duration context can never equal the aggregate's instant-at-por shape key; defense-in-depth only, unreachable in production",
+        "pk04_revenue.py:78-84 \u2014 when both the ASC 606 concept and us-gaap:Revenues are tagged, the pack reports the 606 basis and ignores Revenues (run A10: 24,568,000,000 vs 25,968,000,000); documented core-catalogue basis and the row names its concept, but the value is 606-basis revenue, not total revenues",
+        "contracts/specialist_packs/pack.pk04.v1.schema.json:19-152 \u2014 the masterplan boundary names \"contract assets\"; the frozen catalogue declares no contract-asset field, so assets are distinguished from liabilities only vacuously; a K1/K2 catalogue matter, not a pack defect \u2014 the pack cannot emit outside its catalogue"
+      ]
+    },
+    {
+      "pack_id": "PK05",
+      "verdict": "PASS_WITH_NOTES",
+      "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [],
+      "notes": [
+        "engine/fundamental_forensics/specialist_packs/base.py:959 (representative-only unit gate; ids joined at base.py:996\u20131004) \u2014 in a duplicate group with equal values but different units (USD+EUR at the same instant), the R-F1 unit check tests only the `representative` occurrence (chosen by occurrence-id order, base.py:951): when the USD fact is representative the valued row's `source_occurrence_ids` cites the EUR-tagged duplicate as co-evidence with no typed absence for it, and which outcome occurs (valued vs `unit_mismatch`) hinges on id ordering. Demonstrated live (T3c vs T3c-clean). The emitted value itself is never wrong (both duplicates agree numerically; differing values across units hit the `unit_mismatch` conflict branch), so NOTE not DEFECT. Minimal fix: gate the whole `admitted` group (any non-equivalent unit \u2192 `unit_mismatch`) instead of the representative.",
+        "base.py:1883 (`_identity_tolerance`, used by the weighted sum at base.py:2081\u20132097 and rollforward at base.py:2127\u20132140) \u2014 tolerance is one unit of the coarsest stated `decimals`; a 6\u20137-line reconciliation or rollforward whose disclosed lines foot only within accumulated rounding (up to N\u00d70.5 units, e.g. 3M for six decimals=-6 lines against a 1M tolerance) can FAIL an economically tied identity. Conservative direction (false-fail, never false-value). Minimal fix: tolerance = half the sum of operand rounding units (or \u03a3 0.5-unit) for multi-addend identities.",
+        "pk05_tax.py:201\u2013209 (`_decimals_of` fallback) \u2014 a disclosed ETR tagged `decimals=\"INF\"` (claims exactness) falls back to the value's own scale (0.2 \u2192 tolerance 0.1), so `etr_formula_vs_disclosed` can PASS a formula that contradicts an \"exact\" disclosed rate. Rare input (INF on a rate), display-only check. Minimal fix: treat INF as tolerance 0 (or the formula's 6-dp quantum).",
+        "engine/fundamental_forensics/specialist_packs/pk05_tax.py:26\u201336 / calculation_linkbase.py:8\u201312 \u2014 the FX-translation/acquisition UTP movement lines (three standard spellings) map to no catalogue field, so `utp_rollforward` fails on such filings instead of absorbing them; this is a declared, typed limit (the identity goes `not_evaluable`, never invents the line), recorded here because a domain consumer will meet it on real filings."
+      ]
+    },
+    {
+      "pack_id": "PK06",
+      "verdict": "PASS_WITH_NOTES",
+      "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [],
+      "notes": [
+        "engine/fundamental_forensics/specialist_packs/pk06_leases.py:60-65,81-86,111-119 \u2014 the `undiscounted_minus_imputed_equals_liability` identity structurally fails on internally consistent filings: the first alias of `undiscounted_payments_total`/`lease_imputed_interest` is the operating-only ladder, while the liability side always adds `finance_lease_liability_total`; verified on the golden AAPL fixture (2,235+12,490+1,230=15,955 vs 14,725 \u2192 fail) and synthetic case B (13,100\u22122,100=11,000 \u2713 operating identity holds, yet check=fail), and in case I a filing tagging BOTH ladders resolves to the operating-only one even though the combined alias present would satisfy the identity \u2014 minimal fix: a producer-declared limitation naming the ladder-scope behavior (the honest-fail intent lives only in the code comment, pk06_leases.py:106-110, not in the envelope).",
+        "engine/fundamental_forensics/specialist_packs/pk06_leases.py:57-59 + base.py:62,1026-1030 \u2014 a percent-basis tagged discount rate (`OperatingLeaseWeightedAverageDiscountRatePercent` = 4.1, pure) is emitted as `value=4.1, unit=\"ratio\"` (verified scenario A): the no-rescale pass-through is lawful but the frozen catalogue's \"ratio\" unit mislabels a percent number (4.1 reads as 410%), and no limitation names the basis \u2014 minimal fix: a limitation line declaring the pass-through basis.",
+        "engine/fundamental_forensics/specialist_packs/pk06_leases.py:54-56 \u2014 `weighted_average_remaining_term` can never value at this producer version (string element; the numeric-only converter excludes nonnumeric facts, ixbrl_raw_ledger.py:334-335) \u2014 honest (declared limitation, typed `missing`), but the field is structurally dead.",
+        "base.py:1895-1904 \u2014 the scalar `disjoint` reading (|left\u2212right| > tolerance) treats magnitude equality as double counting: verified 42,000,000 commitments vs coincidentally-equal 42,000,000 PK08 accrual \u2192 `fail`, vs 5,000,000 \u2192 `pass`; equality is neither necessary nor sufficient for overlap, so the check's name promises more than the comparison delivers (conservative direction; no value emitted).",
+        "base.py:2310-2316 \u2014 in the two-spec merged `lease_liability_split_vs_total` row, `not_evaluable` outranks `fail`: a genuinely broken operating split (2.0+9.0\u226012.0, verified) reports `not_evaluable` when the finance half is unresolvable \u2014 masks a real arithmetic break, though never into a `pass`.",
+        "pk06_leases.py:120-125 \u2014 the boundary's \"avoid double counting\" clause has no leases-vs-debt counterpart: finance-lease liabilities that also sit inside PK01 debt are emitted with no cross-pack disjointness check or limitation (only commitments-vs-PK08 has one); the pack itself emits no aggregate so it cannot double count internally \u2014 the exposure is downstream summation, unmarked.",
+        "pk06_leases.py:53,60 \u2014 generic field names over operating-only concepts (`lease_cash_payments`\u2192`OperatingLeasePayments`; `undiscounted_payments_total` whose scope varies by which alias resolves): each row carries its `concept` so the basis stays traceable, but the field name alone overstates scope.",
+        "pk06_leases.py:132-135 \u2014 `undiscounted_payments_by_year` produces only the next-twelve-months row; honestly declared as an envelope limitation (matches catalogue intent; the by-year maturity table is deferred)."
+      ]
+    },
+    {
+      "pack_id": "PK07",
+      "verdict": "FAIL",
+      "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "engine/fundamental_forensics/specialist_packs/pk07_mna.py:601-609 \u2014 the acquisition-date sentence guard (completion verb, no announcement/agreement/payment wording, date inside the fiscal period) is armed only when `variant is not mapping`, so the first-priority frozen search (`ACQUISITION_DATE_PATTERN`, pk07_mna.py:175-179, matched at pk07_mna.py:609) values `acquisition_date` from any \"on/as of/completed on <date>\" in a frozen-heading (\"Note N \u2013 Business Combinations\") note with no verb test and no period bound \u2014 run: \"The Company announced on June 1, 2025 a definitive agreement to acquire Testcorp\u2026 The transaction is pending\" \u2192 `acquisition_date` valued `June 1, 2025` (announcement date, mapping digest = frozen `a41298a8\u2026`, confirmed against `pk07_mna._ACQUISITION_DATE_MAPPING`); run: \"was completed on March 15, 2024\" in a FY2025 pack \u2192 valued `March 15, 2024` (outside the fiscal period); the identical announcement sentence under the widened heading correctly types the absence \u2014 minimal fix: arm the same guard and in-period bound for the frozen variant in `_rewrite_narrative_row`, extending `_ACQUISITION_COMPLETION_PATTERN` with the passive \"acquisition \u2026 was completed\" shape so the pinned TESTCO completion sentence still values, and re-capture the pinned envelope digest (test line 8391).",
+        "engine/fundamental_forensics/specialist_packs/pk07_mna.py:766-775 \u2014 `_goodwill_rollforward_row` computes `expected = opening[0] + \u2026` without ever comparing the opening probe's unit with the closing row's unit; the probe is minted with `\"unit\": None` (pk07_mna.py:706-720), which bypasses the framework's R-F1 USD gate, so a non-USD prior-instant goodwill fact enters the identity unchecked \u2014 run: prior-instant `us-gaap:Goodwill` tagged EUR 1000 with all components and the closing USD (1000+300\u221250\u2212100+10=1160) \u2192 `goodwill_rollforward_closed` `status: \"pass\"`, `tolerance: \"1\"` on a cross-currency identity, while `impairment_vs_carrying` on the same fact correctly types `not_evaluable`/`unit_mismatch` \u2014 minimal fix: compare `opening[1]` against `_row_unit(ledger, rows[\"goodwill\"])` exactly as `_impairment_vs_carrying_row` already does (pk07_mna.py:813-821) and type `not_evaluable`/`unit_mismatch` on mismatch."
+      ],
+      "notes": [
+        "pk07_mna.py:84-87 \u2014 `intangible_assets_net`'s p20 alias `FiniteLivedIntangibleAssetsNet` values the field with a finite-lived-only quantity when it is the only tagged concept, narrower than the field name \"intangible assets, net (excluding goodwill)\"; the row's `concept` discloses which concept valued it.",
+        "pk07_mna.py:778-825 \u2014 `impairment_vs_carrying` compares each impairment against the prior-instant carrying amount while its `evidence_field_ids`/`operands` name the closing-instant fields; run: opening 100 + acquired 900 \u2212 impairment 500 = closing 500 (books consistent, roll-forward would close) \u2192 check `fail` though impairment 500 does not exceed the named evidence `goodwill`=500.",
+        "pk07_mna.py:748 \u2014 the roll-forward's opening operand is a ledger probe for which \"no row is minted\" (documented design), so the envelope carries no occurrence id for the fact that drove the check's status; the check cannot be audited to its opening source from the envelope alone.",
+        "pk07_mna.py:492-493 \u2014 the single-member consideration rule silently skips non-USD facts, so a EUR-only per-deal consideration fact types `missing_standard_fact` rather than any unit reason.",
+        "pk07_mna.py:629-632 \u2014 when the widened section locates but the sentence guard rejects every candidate date, the emitted absence and limitation still carry the frozen search's own code (`governing_section_not_supplied` / `narrative_span_not_located`); no guard-rejection note exists.",
+        "pk07_mna.py:1004-1006 \u2014 `[:32]` silently trims limitations, contradicting the framework's loud-overflow refusal (base.py:2929-2930); unreachable at the current catalogue shape (bounded \u2264 ~18 lines), so latent only.",
+        "pk07_mna.py:612-614 (catalogue field at pack.pk07.v1.schema.json:121-125) \u2014 `acquisition_date` is emitted as the verbatim US-format span (\"March 15, 2025\") while the catalogue field name promises \"(ISO-8601 date)\"; pinned by test line 8847.",
+        "pk07_mna.py:171-174 \u2014 `NOTE_IMP`'s bare \"Impairment\" arm lets any prose containing the word (risk factors, MD&A) become the governing section for `impairment_testing_note_span`; the AAPL fixture itself demonstrates the loose arm matching policies prose, and the quoted span may not come from a note (content remains genuine impairment-testing prose with provenance)."
+      ]
+    },
+    {
+      "pack_id": "PK08",
+      "verdict": "FAIL",
+      "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "engine/fundamental_forensics/specialist_packs/pk08_contingencies.py:589 \u2014 `_nil_bs_vs_note_row` returns `fail` (no reason) when `commitments_text_block` is not valued, which includes `not_evaluable` rows produced by a governing-section locator miss (frozen `NOTE_CC` heading pattern), asserting the issuer's nil balance-sheet line lacks a note explanation on filings that have one (synthetic A3-4 run; JNJ 10-K FY2025 real run) \u2014 in `_nil_bs_vs_note_row`, branch on the block row's `quality_state == \"not_evaluable\"` (and on a located-but-empty note for `fail`) exactly as `_item3_vs_note_row` (lines 592\u2013612) already does, i.e. return `_check_row(catalogue_check, \"not_evaluable\", reason=\"missing_dependency\")` when the block was not locatable."
+      ],
+      "notes": [
+        "pk08_contingencies.py:737-738 \u2014 the C2 prose-range retype overwrites the reason of *any* non-valued range row, including a `not_evaluable`/`unit_mismatch` row (EUR-tagged `range_low` + prose range \u2192 row reason becomes `numeric_value_in_narrative_only`); the unit cause survives only in a limitation line (\"fact unit EUR is not USD\"). The row's typed reason no longer names the actual cause of absence.",
+        "pk08_contingencies.py:164 vs 102 \u2014 the disclosed arm accepts \"range of possible loss\" without \"reasonably\", but `PROSE_RANGE_PHRASE` requires \"reasonably possible\"; a disclosed prose-only range phrased \"range of possible loss of $100 million to $500 million\" values `disclosed_range` yet the range rows keep `missing_standard_fact` instead of the more precise `numeric_value_in_narrative_only` (run: prose-range fires=False).",
+        "pk08_contingencies.py:147 \u2014 range arms are compiled without `re.IGNORECASE`; sentence-initial capitalizations (\"Unable to estimate the loss\u2026\", sole estimate language) do not match and type the row absent (safe direction, but a coverage gap; contrast the section locator, which is case-insensitive).",
+        "pk08_contingencies.py:435-437 vs catalogue line 57 \u2014 the catalogue-declared literal `no_range_language` is never emitted; a Contingencies subsection with genuinely no range language types `missing`/`missing_dependency` (note `narrative_span_not_located`), conflating \"searched, found none\" with \"span not located\" (run: \"no range language at all\" case).",
+        "pk08_contingencies.py:72-79 \u2014 the frozen `NOTE_CC` heading pattern misses real filing styles (BA \"Note 15 - Liabilities, Commitments and Contingencies\", JNJ \"Note 19 Legal proceedings\"), so on the real litigation corpus the five narrative fields all type `not_evaluable`/`missing` \u2014 typed and safe, but real-filing coverage for the pack's narrative half is ~zero; this NOTE is the benign face of the DEFECT above.",
+        "pk08_contingencies.py:475-476 \u2014 the Item 3 heading strip compiles `ITEM3.heading` without `re.IGNORECASE` while `locate_section` is case-insensitive; JNJ's \"Item 3. Legal proceedings\" (lowercase p) leaves the heading inside `legal_proceedings_item3.text_value` (cosmetic; value remains the issuer's text with a span).",
+        "pk08_contingencies.py:686-696 \u2014 `commitments_text_block` (catalogue name \"note text block\") carries only the Contingencies *subsection* (from the last \"Contingencies\" in the note), not the note from its heading; per the frozen B.2 spec, but the field name overstates the scope.",
+        "pk08_contingencies.py:132-134 \u2014 \"not possible to determine whether a loss will occur\" values `not_estimable` (the `[a-z]+ ` gap bridges to \"loss\"): outcome-uncertainty wording is typed as range-inestimability; the recorded `source_span` (\"is not possible to determine whether a loss\") keeps it auditable (F3 seat ruling; run A3-5).",
+        "pk08_contingencies.py:504 \u2014 allegation/procedural spans take the first pattern match in Item 3 by position (no priority order, unlike the range arms); a boilerplate sentence can win over the principal matter \u2014 still the issuer's wording with a span.",
+        "base.py:4733-4745 (effect on PK08) \u2014 a filing tagging a *valued* (non-nil) CommitmentsAndContingencies line types `missing`/`missing_dependency` because the catalogue field name declares only `nil_disclosed | missing`; the pack refuses to invent `valued` and retains the occurrence ids plus a limitation \u2014 contract-faithful, but the field cannot state a valued line."
+      ]
+    },
+    {
+      "pack_id": "PK09",
+      "verdict": "FAIL",
+      "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "engine/fundamental_forensics/specialist_packs/pk09_controls.py:302-305 \u2014 GOING_CONCERN_DOUBT carries no negation or conditionality guard, so \"no substantial doubt about the Company's ability to continue as a going concern\" (run A1) and a hypothetical \"substantial doubt about our ability ... may arise\" (run A2) both emit `going_concern_substantial_doubt: valued 'disclosed'`, and `_going_concern_vs_opinion` then corroborates the false positive with `pass` when the auditor's own negated sentence repeats the phrase (run A1b) \u2014 minimal fix: guard the pattern with the v5-style clause look-back idiom already used for material weakness (refuse a preceding no/not/never/free-of and a following may/might/could) and let guarded wording fall through to the valued `not_disclosed` absence or a typed miss, mirroring MATERIAL_WEAKNESS_IDENTIFIED lines 243-257.",
+        "engine/fundamental_forensics/specialist_packs/pk09_controls.py:135-153 (arms) + :669-697 (sentence-bounded resolver) via base.py:3149 single leftmost `search` \u2014 \"Management determined that the internal control over financial reporting of Testco Acquired Inc was not effective as of the acquisition date\" (the standard SEC-guidance exclusion wording the 2026-11-01 issuer-named-copula recall repair now matches) placed before management's period-end conclusion emits `icfr_management_conclusion: 'ineffective'` although management concluded effective (run B1; reversed order yields 'effective', run B1-reversed \u2014 the flip is purely leftmost-order) \u2014 minimal fix: extend the v7 period machinery to prefer (or require) a conclusion clause whose sentence's as-of date equals the period of report, or demote to a typed absence when the section holds both an effective and an ineffective full-phrase conclusion (the two-firm demotion at :1160-1221 is the model).",
+        "engine/fundamental_forensics/specialist_packs/pk09_controls.py:352-359 (material_weakness_present scoped ITEM9A-only) against :1086-1135 (`_apply_icfr_management_fallback` mints the conclusion from the Item-8 Management report) \u2014 with Management's report in Item 8 and Item 9A incorporating by reference, the envelope emits `icfr_management_conclusion: 'ineffective'` (span inside the Item-8 report) while `material_weakness_present: valued 'false'` is asserted over the Item 9A incorporation sentence alone and `remediation_span` is gated off (run D1b) \u2014 the issuer did disclose a material weakness in the primary document this envelope itself read; minimal fix: run the same MGMT_ICFR_REPORT fallback search for the weakness boolean in finalize (or refuse the confident false whenever the conclusion row was minted from outside Item 9A), keeping the stock typed absence on ambiguity."
+      ],
+      "notes": [
+        "engine/fundamental_forensics/specialist_packs/pk09_controls.py:302-306 \u2014 auditor_opinion_fs has no \"qualified\" arm (name declares it); an except-for qualified opinion correctly stays typed-absent (run C1; existing test 12611) but is never valued \u2014 recall gap, honest refusal.",
+        "engine/fundamental_forensics/specialist_pack_contract.py:522-576 vs base.py:3192-3196 \u2014 the enum-literal catalogue binding is emit-time only: with the digest restamped, validate_pack_result accepts `text_value='probably_fine'` (and arbitrary fraud-verdict text) on a valued enum row; PK09's finalize-hook rows bypass the A.4 gate and stay catalogue-clean today, but the contract alone does not forbid such an emission.",
+        "engine/fundamental_forensics/specialist_packs/base.py:3149 (case-sensitive compile) + pk09_controls.py:306 \u2014 GOING_CONCERN_PLAN matches only lowercase \"management's plans\"; sentence-initial \"Management's plans to alleviate...\" misses and the field takes `narrative_span_not_located` (run A3), while lowercase resolves (run A3b).",
+        "engine/fundamental_forensics/specialist_packs/pk09_controls.py:301,467-474 \u2014 critical_audit_matters is heading-presence + 512-char window; on a heading-only report the value is trailing boilerplate (\"Description of the Matter /s/ Big Four & Co LLP February 24, 2026\", run batch 4) \u2014 presence semantics fine, captured text noisy.",
+        "engine/fundamental_forensics/specialist_packs/base.py:743-752 \u2014 conclusion/opinion rows bind period=period_of_report regardless of the sentence's own as-of date: \"effective as of December 31, 2024\" in a 2026-06-30 filing emits period.end=2026-06-30 with no typed marker (run 4d); v7 reconciles dates for remediations only.",
+        "engine/fundamental_forensics/specialist_packs/pk09_controls.py:353-354 \u2014 material_weakness_present ignores auditor-report wording by design (\"ITEM9A ONLY\"); an adverse auditor ICFR opinion naming material weaknesses coexists with MW=false (run 4c) \u2014 documented scope, cross check honestly not_evaluable.",
+        "engine/fundamental_forensics/specialist_packs/pk09_controls.py:937-942 \u2014 `_section_description` limitation lines print the raw heading REGEX as \"section searched\" (run D1b limitations) \u2014 diagnostic quality only.",
+        "engine/fundamental_forensics/specialist_packs/narrative.py:194-201 \u2014 sentence spans can swallow the section heading when no \". \" precedes it: remediation_span text_value begins \"Controls and Procedures There was a material weakness...\" (runs 4d-2, flip) \u2014 cosmetic."
+      ]
+    },
+    {
+      "pack_id": "PK10",
+      "verdict": "FAIL",
+      "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "engine/fundamental_forensics/specialist_packs/pk10_proxy.py:103-106 \u2014 the anchor arm `frequency of` is unqualified, so `_say_on_pay_frequency_value` resolves the say-on-pay frequency from any sentence containing \"frequency of\" plus a surviving cadence word: \"The frequency of dividend increases was annual for three years.\" emits `say_on_pay_frequency='annual'` (span: \"frequency of dividend increases was annual\"), and \"The frequency of committee meetings is annual.\" with no say-on-pay content anywhere emits `'annual'`; the wrong sentence also wins when it precedes the genuine one \u2014 a valued enum with a source that does not support it \u2014 minimal fix: qualify the arm to the vote context (e.g. `frequency of[^.]{0,80}?(?:say[- ]on[- ]pay|(?:executive )?compensation|advisory)`) or require the anchored sentence to name a vote/proposal.",
+        "engine/fundamental_forensics/specialist_packs/narrative.py:122 \u2014 `name` (bytes, from line 119) is compared against `_DROP_SUBTREE_TAGS` (a frozenset of `str`), so `b\"ix:header\" in {\"script\",\"style\",\"ix:header\"}` is always False and no subtree is ever dropped; PK10 output effect (run A6): a document-initial matched sentence is quoted as `text_value='Form 0000000099 2026-06-30 Adjusted EPS was not a selected performance measure for fiscal 2025 executive compensation.'` \u2014 the hidden header's CIK/context dates presented inside a disclosure quote, and sentence boundaries computed over header content \u2014 minimal fix: decode the tag name before the compare (`name_match.group(1).decode(\"ascii\",\"ignore\").lower()`) or store bytes literals in the drop set."
+      ],
+      "notes": [
+        "engine/fundamental_forensics/specialist_packs/pk10_proxy.py:58 \u2014 the performance-measure pattern admits only \"most important/selected performance measure\"; common proxy phrasings (\"key performance measures\", \"primary performance measure\") resolve as the valued `not_disclosed`.",
+        "engine/fundamental_forensics/specialist_packs/pk10_proxy.py:59 \u2014 the independence pattern misses noun phrasings; \"Each of the non-management directors meets the independence standards of the NYSE\u2026\" resolves as valued `not_disclosed` over a real disclosure (run A5).",
+        "engine/fundamental_forensics/specialist_packs/pk10_proxy.py:113-127 \u2014 a disclosed cadence outside the enum (\"every four years\", run A4) resolves `not_disclosed`; the frozen catalogue has no \"disclosed-outside-enum\" code, so the absence claim overstates.",
+        "engine/fundamental_forensics/specialist_packs/pk10_proxy.py:249-252 \u2014 the prose-numeral probes match only \"total compensation of $\u2026\" / \"compensation actually paid\u2026$\u2026\"; other prose numerals keep `missing_dependency` (still a typed refusal, never a scraped number; run A2).",
+        "engine/fundamental_forensics/specialist_packs/base.py:3204-3206 \u2014 sentence quotes truncate silently at `max_chars=1024` while `source_span` keeps the full sentence (run A7: 1024-char value over a 2412-byte span), with no truncation marker in the row.",
+        "engine/fundamental_forensics/specialist_packs/pk10_proxy.py:230-241 \u2014 `say_on_pay_frequency` is the nearest field to the excluded \"voting procedures\" zone; the pack emits only the disclosed cadence enum and never a recommendation (run A8: a \"vote FOR/AGAINST\" recommendation sentence leaves all four fields at `not_disclosed`), keeping it inside the boundary.",
+        "engine/fundamental_forensics/specialist_packs/base.py:743-748 \u2014 narrative rows carry the package's `period_of_report` with `start=None`; the disclosed fiscal year inside the quote is never reconciled to it (the `sct_year_matches_fiscal` check abstains), so the row period is the filing period, not the metric period."
+      ]
+    },
+    {
+      "pack_id": "PK11",
+      "verdict": "FAIL",
+      "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+      "reviewer_kind": "independent native read-only reviewer (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "D1 (pk11_bank.py:209-214 with :916-930): `cet1_vs_minimum` is evaluated by the framework before `finalize_result` values `cet1_ratio_disclosed`/`regulatory_minimum_disclosed`, and it is never re-evaluated. The placeholder relation `left_lte_right` with left=CET1 ratio, right=minimum asserts CET1 \u2264 minimum, which is inverted (base.py:1900-1901).",
+        "D2 (pk11_bank.py:628-629 and :644-646, rule text :750-760): `_resolve_disclosed` applies the entity-tier precedence across all instants \u2264 por and only then takes the latest instant inside the winning tier. A consolidated prior-year cell therefore beats a period-end cell.",
+        "D3 (pk11_bank.py:385-411): `capital_ratio_arithmetic` compares `cet1_capital / risk_weighted_assets` with `cet1_ratio_disclosed` without checking that the date and the regulatory approach match.",
+        "D4 (pk11_bank.py:662-665 through :757-759): the lower-of-approaches rule is applied to `regulatory_minimum_disclosed` on its own. It should follow the approach of the chosen CET1 ratio.",
+        "D5 (pk11_bank.py:267-297 and :440): the rollforward opening is the latest allowance instant before por, while provision and write-offs are year-to-date flows. In a 10-Q the opening becomes a prior quarter end.",
+        "D6 (pk11_bank.py:598-602 and :820): ratio cells have no 0..1 range check, so `11.5` (a percent written as a number) is valued.",
+        "D7 (pk11_bank.py:170-176 with :379-380): `us-gaap:LoansAndLeasesReceivableNetReportedAmount` (net of the allowance) is an alias of `loans_held_for_investment`, the `acl_coverage` denominator."
+      ],
+      "notes": []
+    },
+    {
+      "pack_id": "PK12",
+      "verdict": "FAIL",
+      "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+      "reviewer_kind": "independent native read-only reviewer (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "D1 (pk12_biotech.py:141-146 with base.py:631): `_cash_runway_quarters` divides opCF by 4 with no full-year duration check. A Q4-only opCF of -25 gives 32 quarters instead of 8 and the check passes. Fix: refuse unless the opCF duration is annual, with an existing typed code (`unit_mismatch` covers period basis).",
+        "D2 (pk12_biotech.py:317-319 with base.py:4008-4033): the capex probe has no unit or duration check. EUR capex gives 22.222222 (pass), shares give 0.000480, Q4-only capex gives 23.529412. Fix: capex must be USD with an annual duration, else the check is not_evaluable with `unit_mismatch` (or `missing_dependency` when absent).",
+        "D3 (pk12_biotech.py:300-304 and :343): the FCF month count appears only in a limitation string, capex has no provenance in the envelope, and evidence_field_ids omit capex. Contracts are frozen, so no new row: withhold the month count until it can be traced.",
+        "D4 (pk12_biotech.py:141-146 and :201-210): the runway's static assumptions are never stated. Fix: add a limitation stating the formula and assumptions whenever the runway row is valued."
+      ],
+      "notes": []
+    },
+    {
+      "pack_id": "PK02",
+      "verdict": "PASS_WITH_NOTES",
+      "reviewed_commit": "56dc0f3c11292050b5c7bb79708e1c2fd0520af8",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [],
+      "notes": [
+        "The shared helper `_rf1_unit_mismatch` applies the R-F1 unit-equivalence check at all three resolver sites; a wrong-unit fact now gives `not_evaluable`/`unit_mismatch` instead of a valued row.",
+        "24 synthetic cases are behaviour-identical apart from the closed defect; the four adapted tests are justified.",
+        "A field with N refused members appends N identical limitation strings, and a refused member row carries `dimensions: []`.",
+        "The members-only-with-valued-members route is no longer pinned by a repo test: the parent pin depended on the defect itself (gate code unchanged)."
+      ]
+    },
+    {
+      "pack_id": "PK03",
+      "verdict": "PASS_WITH_NOTES",
+      "reviewed_commit": "1f6de89fbd8831f5b93559f41e5ffcb183873eba",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [],
+      "notes": [
+        "A Clark-form elimination member that matches two allowlist entries is emitted once; each row cites the source occurrences it uses.",
+        "18 dedup attacks at the repair and its parent: no distinct fact suppressed, no duplicate survived; all 12 packs over the 19 diversified_v1 accessions are byte-identical.",
+        "On self-inconsistent synthetic inputs `fp_internal_revenue_not_double_counted` now fails; it passed before only because the elimination was counted twice."
+      ]
+    },
+    {
+      "pack_id": "PK04",
+      "verdict": "PASS",
+      "reviewed_commit": "ab1a790b9bd0a7159254c67b32606bd7c914d589",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [],
+      "notes": [
+        "`rpo_percentage_next_12m` requires the typed member in `por < date <= por + 92 days`; otherwise the resolver's own typed absence.",
+        "14 window-boundary attacks, none leaks; the golden `por+1` shape and the dev corpus (34/34 assertions) are identical."
+      ]
+    },
+    {
+      "pack_id": "PK07",
+      "verdict": "FAIL",
+      "reviewed_commit": "6bd86e57b83ad23e10777bec758fed1c20d4547a",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "pk07_mna.py:272 - the passive alternative's unconstrained window values agreement/payment/financing completion dates as `acquisition_date` under both heading families."
+      ],
+      "notes": []
+    },
+    {
+      "pack_id": "PK07",
+      "verdict": "FAIL",
+      "reviewed_commit": "d347c6769bf7013184bd757fd72e060f10906a77",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "pk07_mna.py:296-297 - the reject alternatives `\\bpayment\\b`/`\\bfinancing\\b` refuse only singular underived forms, so repayment/prepayment/refinancing completion sentences still value `acquisition_date`."
+      ],
+      "notes": []
+    },
+    {
+      "pack_id": "PK07",
+      "verdict": "PASS_WITH_NOTES",
+      "reviewed_commit": "b1cde9afcf2bc944d2d117ec8699c251c292a00e",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [],
+      "notes": [
+        "The reject alternatives become `\\b(?:re|pre)?payments?\\b` / `\\b(?:re)?financings?\\b`; all five leak shapes give a value on the parent and a typed absence at the repair.",
+        "diversified_v1 is byte-identical (27/27 assertions).",
+        "A genuine completion sentence that also mentions a payment is refused (conservative); a few derived money words (prefinancing, funding, installment) are not rejected."
+      ]
+    },
+    {
+      "pack_id": "PK08",
+      "verdict": "PASS_WITH_NOTES",
+      "reviewed_commit": "aecc4749a7f422964b300d949a7b3a647721fbc4",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [],
+      "notes": [
+        "`_nil_bs_vs_note_row` abstains (`not_evaluable`/`missing_dependency`) when a valued nil balance-sheet line meets an unsupplied governing note section.",
+        "Field rows are byte-identical at the repair and its parent on all 13 litigation_v1 accessions; 181/181 PK08 cases pass.",
+        "The sentence guards can only reject more sentences, so a few genuine sentences become a typed absence, never a wrong value."
+      ]
+    },
+    {
+      "pack_id": "PK09",
+      "verdict": "FAIL",
+      "reviewed_commit": "f962c5d29055610a5fa547f7798058502415d7f7",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "pk09_controls.py:316-320 - a mixed recital (\"we considered whether there was substantial doubt ... and we concluded no substantial doubt ... existed\") still values `going_concern_substantial_doubt=disclosed` and `going_concern_vs_opinion=pass`.",
+        "pk09_controls.py:317 - the negator look-behinds are lowercase-only, so a sentence-initial \"No substantial doubt about the Company's ability to continue as a going concern exists.\" is still `disclosed`."
+      ],
+      "notes": []
+    },
+    {
+      "pack_id": "PK10",
+      "verdict": "FAIL",
+      "reviewed_commit": "b5f900802adfa07648c2b2a5914c4cc79e6b1cdc",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [
+        "pk10_proxy.py:117-121 - the vote-context list admits bare compensation/advisory/proposal, so non-vote frequency sentences value the say-on-pay frequency.",
+        "pk10_proxy.py:119 - the look-ahead gap reaches across an unpunctuated sentence boundary after newline collapse."
+      ],
+      "notes": []
+    },
+    {
+      "pack_id": "PK10",
+      "verdict": "PASS_WITH_NOTES",
+      "reviewed_commit": "0e9f2f7b1ee5d27e2ac550656dd78c1df5692bd9",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [],
+      "notes": [
+        "Both second-round defects close: the vote-context look-ahead matches only real vote terms, and block breaks stop the look-ahead at HTML block boundaries.",
+        "NarrativeText text and offsets are byte-identical to the parent on 25 synthetic documents and 19 admitted real filings; block breaks are derived data only.",
+        "The dev corpus is 10-K/10-Q only, so the supplied proxy path is covered by synthetic documents and unit tests, not real proxy filings."
+      ]
+    },
+    {
+      "pack_id": "PK11",
+      "verdict": "PASS_WITH_NOTES",
+      "reviewed_commit": "449fb57174c5d90188d2e829dca5148bad9265e6",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [],
+      "notes": [
+        "All seven defects (D1-D7) reproduce on the parent and close at the repair; 30+ matching and window attacks pass.",
+        "banks_v1 is byte-identical over 13 filings with 21/23 assertions on both sides (the same two quarterly-window assertions fail before and after).",
+        "Three D7-dependent assertions change under the seat ruling; D1, D3, D4 and D5 are proven on synthetic ledgers only, because the corpus has no filing that values CET1 capital or risk-weighted assets."
+      ]
+    },
+    {
+      "pack_id": "PK12",
+      "verdict": "PASS_WITH_NOTES",
+      "reviewed_commit": "114fc6bc290dcb5f562ef53374633bf3cbefb932",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [],
+      "notes": [
+        "The runway requires a full-year operating-cash-flow fact (350-380 days), else `not_evaluable`/`unit_mismatch` and both runway checks abstain; the FCF capex must be USD and annual.",
+        "All four defects close; 34 window and gate attacks, no leak.",
+        "Pre-existing limitations remain: capex and operating-cash-flow windows are not cross-checked, zero cash fails the months check, the capex sign is not gated."
+      ]
+    },
+    {
+      "pack_id": "PK09",
+      "verdict": "PASS_WITH_NOTES",
+      "reviewed_commit": "37a6c2b54197c3035a6e4f76fa5ff05380d85138",
+      "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+      "reviewer_kind": "independent fabric review lane (non-authoring)",
+      "review_date": "2026-11-02",
+      "defects": [],
+      "notes": [
+        "The repair implements the frozen fix spec exactly and closes both re-review defects (mixed recital, capital negator); each reproduces on the parent as disclosed with check pass and at the repair falls to not_disclosed with check fail or not_evaluable, never pass on a refused match.",
+        "Residual phrasings outside the reviewed shapes stay disclosed: a negated re-mention placed before the match (reversed recital), negators separated from the phrase by words other than any, and all-caps negators; a look-behind re-mention arm would close them.",
+        "Over-refusal in the conservative direction: a genuine current-period doubt is refused when a negated mention about another subject or period is comma-joined within 160 characters.",
+        "Dev identity proven on the two admitted dev corpora through the admitted-package loader (0 diffs); held-out corpora were not read."
+      ]
+    }
+  ]
+}

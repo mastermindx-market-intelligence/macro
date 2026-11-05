@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-20T15:52:33.173500+00:00",
+  "raw_reconciliation_sha256": "2c18617f922f1a24d2e0c411b82032f379c96f7d79a9c0c971bcbac5f4bec7d3",
+  "raw_reconciliation_preserved": true,
+  "clarification": "The original field initial_canonical_candidate_sha256 records the pre-final intermediate bytes. The first product had already undergone the refused write_page attempt. Use the two distinct identities below; no source or actual receipt is rewritten.",
+  "products": [
+    {
+      "path": "site/products/market-terminal.html",
+      "initial_canonical_candidate_sha256": "5901db2724640cb204d0182d6ddcffea98f0e85619ba3b12bdf8368db33c9ef7",
+      "pre_final_intermediate_sha256": "6dfc03407ac31be49493e07295050c102de559af6f60f4dd1deca1a727c731f4",
+      "final_sha256": "2932c399af121e875b22288f46e194ca6ea689ec3ce8f301f25fb8d214e2afea"
+    },
+    {
+      "path": "site/products/market-dashboards.html",
+      "initial_canonical_candidate_sha256": "c08e01c4de053b90027b0dfbefaddf91d7d733631d5b976779edf91525beabf0",
+      "pre_final_intermediate_sha256": "c08e01c4de053b90027b0dfbefaddf91d7d733631d5b976779edf91525beabf0",
+      "final_sha256": "3a45d44143828ad0863c6263e9e69a2b37d00d4e6eef8970f7c79b08e5c54c63"
+    },
+    {
+      "path": "site/products/mastermind-ai.html",
+      "initial_canonical_candidate_sha256": "e44b7149def31d7087ee688ce46168af46eb1c457ba00d5d03a3bf1f3efb872d",
+      "pre_final_intermediate_sha256": "e44b7149def31d7087ee688ce46168af46eb1c457ba00d5d03a3bf1f3efb872d",
+      "final_sha256": "a2da0da5c2e2d43064b0d95b9153775f9292d3cf6089dd15998df85f101627a6"
+    }
+  ]
+}

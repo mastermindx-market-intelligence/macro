@@ -1,0 +1,248 @@
+{
+  "as_of": "2026-09-16",
+  "coverage": {
+    "end": "2026-09-16",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-07 to 2026-09-16; chronicle event store begins 2013-05-21; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-07"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-09-16",
+      "events": [
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-c656772232b3",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ifvweti4bl0-81ed6e",
+          "tickers": [],
+          "title": "S&T: GS FOMC View The September FOMC Goldmans Take from Traders and Research 15 Sep 2026",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-15",
+      "events": [
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-cd03d89da006",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-xm8agt8ub0p-04ec2a",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Equity Strategy Equity",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-14",
+      "events": [
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-7048facbb57d",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-2bjqnt4xqgi-8c8a40",
+          "tickers": [],
+          "title": "Deutsche Bank: Investor Positioning and Flows Sep 14",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-13",
+      "events": [
+        {
+          "date": "2026-09-13",
+          "id": "cev-research_vault-4b6375145fab",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-7nb5vkdeljr-c803a6",
+          "tickers": [],
+          "title": "Goldman Sachs: China Weekly Kickstart Markets fell 1 3 dragged by offshore tech",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-12",
+      "events": []
+    },
+    {
+      "date": "2026-09-11",
+      "events": []
+    },
+    {
+      "date": "2026-09-10",
+      "events": []
+    },
+    {
+      "date": "2026-09-09",
+      "events": [
+        {
+          "date": "2026-09-09",
+          "id": "cev-research_vault-bf3c6cfcc234",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-rvsqdyc3v11-68fdab",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Afternoon Briefing",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-09-09",
+          "id": "cev-research_vault-caee82c0445b",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-yqygf8lgrlx-40b901",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-09-09",
+          "id": "cev-research_vault-d4598e3b4ed3",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-b3xabvlutpj-4421a7",
+          "tickers": [],
+          "title": "S&T: GS Callahan GS US TMT Day 1 GS Communacopia Technology Conference preview 8 Sep 2026",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-08",
+      "events": [
+        {
+          "date": "2026-09-08",
+          "id": "cev-regime_flip-ce8df3a72851",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-08#regime_us",
+          "tickers": [],
+          "title": "US regime: Q2 Reflation → Q3 Stagflation",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-09-08",
+          "id": "cev-research_vault-b85f7b1ddab7",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-lolpawjrapz-63c793",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Europe Equity Research | Today’s Morning Meeting",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-07",
+      "events": [
+        {
+          "date": "2026-09-07",
+          "id": "cev-research_vault-ad7d430da8cc",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-yneditx3h3o-fa0a00",
+          "tickers": [],
+          "title": "Goldman Sachs: China Cosmetics 1H26 2Q26 wrap Online margin pressure persists and offline remains resilient; 2H26 key to watch for local p...",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-07",
+          "id": "cev-research_vault-bb0ed904ebde",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-m6g0lh7xhvi-130e53",
+          "tickers": [],
+          "title": "S&T: GS Pasquariello markets macro 7 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-07",
+          "id": "cev-research_vault-be90c19dd825",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-fuysdpfdjnl-cc1081",
+          "tickers": [],
+          "title": "S&T: GS Biswas Credit now surrounded by many faces of rates 6 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-07",
+          "id": "cev-research_vault-c04a47997fba",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-jpn5xoixxpy-a700f3",
+          "tickers": [],
+          "title": "UBS: UBS US Enterprise Hardware and Networking Generating the latest updates on AI",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-07",
+          "id": "cev-research_vault-cd4734fa6cc3",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-joizfpntj3q-74caef",
+          "tickers": [],
+          "title": "S&T: GS Crook GS MORNING 1 Adam Crook's Latest, 2 JPY Update, 3 AI Back in Focus, 4 Week Ahead and 5 GCEM Symposium 7 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-07",
+          "id": "cev-research_vault-e19225b3bc7e",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-iba2tmpt9z2-681633",
+          "tickers": [],
+          "title": "S&T: GS Saboureault Positioning Mondays Week 36 7 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-07",
+          "id": "cev-research_vault-ed12ad22ee23",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-c6nvaayqo0v-c576e7",
+          "tickers": [],
+          "title": "Goldman Sachs: European Daily A More Mixed Q3 Activity Picture After a Firm Q2",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-07",
+          "id": "cev-research_vault-ef1ebefa7cad",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-tglz6d8iuo6-c3a02d",
+          "tickers": [],
+          "title": "S&T: GS Garrett weekend prep 7 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-07",
+          "id": "cev-research_vault-f2ecf7dce9c0",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-gyzddeyojqp-c707cd",
+          "tickers": [],
+          "title": "Deutsche Bank: DB Early Morning Reid Macro Strategy",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-07",
+          "id": "cev-research_vault-f68d86ac7634",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-zei5gas0ytq-bbe436",
+          "tickers": [],
+          "title": "S&T: GS Duttenhoefer Duttenhoefers Daily 7 Sep 2026",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

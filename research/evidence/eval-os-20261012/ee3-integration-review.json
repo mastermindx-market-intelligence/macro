@@ -1,0 +1,52 @@
+{
+  "schema": "eval-os.ee3-integration-review.v1",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "reviewer_native_thread": "01a13341-2c83-79b2-9a5a-dddb12e780e3",
+  "carrier": "PR6651",
+  "source_state": "Resolved staged in-progress merge; no new merge commit/remote attestation",
+  "ours": "501e714310cc27cccc1df1ec2284e11eb05e98bf",
+  "theirs": "ee3b1907497c4d5179d76626777b007e0da93d18",
+  "merge_base": "398c40c4787c97da1c6f4ecd72aabc11b34844cc",
+  "ruling": "ACCEPTED_BOUNDED_SOURCE_UNION_PENDING_PARENT_AFFECTED_CHECKS",
+  "findings": [],
+  "reviewed_working_sha256": {
+    ".github/ci/legacy-jobs.yml": "6cd27c84bb352a4a9697b197ee9c35cdb48f2004b66b49a408a9f1c7428e2165",
+    "tests/test_ci_pack.py": "fa537dc53ceb44e9f34a68e785d1337d5125772c6767ad5599bf54e788e0ac8e",
+    "app/deploy/update.sh": "2883664f9de1f409f822939c311595e7a034c62b762b2c3b6d6b2a3a56f34da1"
+  },
+  "conflict_review": {
+    "unmerged_index_entries": 0,
+    "original_stages": "No remaining stages; exact ours/theirs/common objects compared instead",
+    "curated_exclusive": "Exact AST set union: ours eval-os-a1 plus incoming deploy-git-history; comments/entries from both preserved; diff from ours only three incoming lines",
+    "manifest": "All300 candidate parsedjobs unchanged; eval-os-a1 block unchanged including1166literalpaths/eight suites/Node. Only incoming deploy-git-history26linejob added; main job preserved exactly. Existing accepted path pairs and legacyneural-web additions are retained with no new sibling modifications."
+  },
+  "updater": {
+    "accepted_delta": "Only diff from501e removes --depth1 from ordinary fetch and imports incomingmain explanatorycomment. Strictmode/fetchfailure ordering remains beforeOLD/NEW/reset. Existing shallow boundary repair remains separate; no deepen/reset control added by this merge.",
+    "A1_restart_boundary": "Candidate A1/calendar/theme/qledger/grade plus price_views/read_contract triggers retained unchanged; incomingmain acquisitiondelta intentionally unioned.",
+    "qualification": "Only updater among21previouslyqualifiedfiles changes; app/science/render/testbytes allmatch accepted501equalification."
+  },
+  "incoming_preservation": {
+    "incoming_changed_files": 4680,
+    "only_three_not_byteequal_to_theirs": [
+      ".github/ci/legacy-jobs.yml",
+      "tests/test_ci_pack.py",
+      "app/deploy/update.sh"
+    ],
+    "incoming_data_files_exact_main": 1,
+    "incoming_site_files_exact_main": 4668,
+    "incoming_lib_dataos_files_exact_main": 1,
+    "incoming_data_site_dataos_mismatches": []
+  },
+  "verification_boundary": {
+    "root_checks": "Four CIcuration/selection+deployselfheal+newGit-history focused checks running; reviewer did not run or claim their result",
+    "retained_evidence": "Unchanged eval-os-a1 command/app/sciencebytes retain373test evidence; manifest/test/updaterintegration needs parent affectedchecks plus newexactcommit binding",
+    "T22": "New published head actualhostedselection+execution stillowed; no priorgreen inferred",
+    "release": "ReservedHOLD/merge/install/authenticatedproduction/postreleaseT23/operator/legacy requirements remain open"
+  },
+  "effect_discipline": {
+    "reviewer_source_or_git_writes": false,
+    "reviewer_tests_or_network": false,
+    "new_fabric_or_native_labor": false,
+    "evidence_write": "this external assurance receipt only"
+  }
+}

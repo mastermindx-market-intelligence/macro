@@ -1,0 +1,203 @@
+{
+  "case_key": "corrected_interpretation",
+  "expected_regression": "New facts cannot retain stale causal text as one ready generation",
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T07",
+    "T08",
+    "T11"
+  ],
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "slice_key": "hbm_packaging",
+    "view": "manufacturing",
+    "time_mode": "latest",
+    "source_cutoff": null,
+    "recorded_cutoff": null,
+    "offset": 0,
+    "limit": 50,
+    "expected_generation": null
+  },
+  "bundle": {
+    "revision_tuple": [
+      [
+        "assertion",
+        "gmirca_22f42357882a0afeb24704d14bc74fe6"
+      ],
+      [
+        "identity",
+        "identity-vintage-012"
+      ],
+      [
+        "interpretation",
+        "interp-psi-new"
+      ],
+      [
+        "interpretation",
+        "interp-psi-old"
+      ]
+    ],
+    "rights_revision": "synthetic-rights-0",
+    "assertions": [
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": "gmirca_975dd24b77b1177d16e206e637f5dba2",
+          "reason": "the reported operation supersedes the earlier target reading"
+        },
+        "curation_revision": "gmirca_22f42357882a0afeb24704d14bc74fe6",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Module Vendor Psi",
+              "model": null,
+              "selector": "fac:psi-line",
+              "source_label": "Psi module line"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-06-30",
+            "period_kind": "quarter",
+            "period_start": "2026-04-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "reported quarterly output",
+            "wafer_diameter_mm": null
+          },
+          "relation": null,
+          "stage": "reported_operation",
+          "stage_source_language": "the line operated at thirty-one thousand modules in the quarter"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "the original target reading"
+          ],
+          "establishes": [
+            "the corrected, observed ramp figure"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Psi module ramp"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_module_per_quarter",
+          "value": 31,
+          "value_high": null
+        },
+        "predicate": "REPORTED_DEPLOYMENT",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "module ramp"
+        },
+        "source": {
+          "locator": "para-2",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-08-12T08:00:00Z",
+          "published_at": "2026-08-11",
+          "published_at_grain": "date",
+          "publisher": "Example Trade Wire",
+          "retained_at": "2026-08-12T08:05:00Z",
+          "retention_ref": "retention:corrected/psi-ramp-report",
+          "source_uri": "https://example.invalid/corrected/psi-ramp-report"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Module Vendor Psi",
+          "source_platform_label": null,
+          "source_product_label": "Psi module ramp"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      }
+    ],
+    "identity_results": [
+      {
+        "company_node_id": "co:synth_psi",
+        "source_business_label": "Synthetic Module Vendor Psi",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-01T00:00:00Z"
+      }
+    ],
+    "event_workspaces": [],
+    "financial_packets": [],
+    "interpretation_blocks": [
+      {
+        "interpretation_id": "interp-psi-old",
+        "mechanism": "the target ramp implied tight upstream supply all year",
+        "offset": null,
+        "missing_measurement": "monthly upstream shipments",
+        "falsifier": "reported operation below the target band",
+        "input_revisions": [
+          "gmirca_975dd24b77b1177d16e206e637f5dba2"
+        ],
+        "freshness": "current",
+        "reviewed_at": "2026-03-05T00:00:00Z"
+      },
+      {
+        "interpretation_id": "interp-psi-new",
+        "mechanism": "the reported operation confirms the ramp started; the supply read resets to observation",
+        "offset": "an upstream shortage would cap the following quarter",
+        "missing_measurement": "monthly upstream shipment volumes",
+        "falsifier": "next-quarter operation falls below the reported band",
+        "input_revisions": [
+          "gmirca_22f42357882a0afeb24704d14bc74fe6"
+        ],
+        "freshness": "current",
+        "reviewed_at": "2026-08-13T00:00:00Z"
+      }
+    ],
+    "native_refs": [],
+    "omissions": [
+      "event_workspaces_pending_T05",
+      "financial_packets_pending_T05"
+    ]
+  },
+  "expected": {
+    "superseded_revision": "gmirca_975dd24b77b1177d16e206e637f5dba2",
+    "stale_prefix": "[stale interpretation] ",
+    "summary_status": "degraded"
+  }
+}

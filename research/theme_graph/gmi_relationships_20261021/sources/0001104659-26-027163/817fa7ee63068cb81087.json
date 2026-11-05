@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-12T21:16:46Z",
+ "accession": "0001104659-26-027163",
+ "cik": "0001463972",
+ "doc_byte_length": 3177948,
+ "doc_sha256": "5d3f41d59fa013b2054aa3a2aba17ed22b29388f912693daeec4e17dfbb6b392",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-12",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "vuzi-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2669429,
+  "byte_start": 2668948,
+  "normalized": "The Company decided to cease further funding of development activities with Atomistic SAS (“Atomistic”) under the license agreement, dated December 16, 2022, among the Company, Atomistic, and Atomistic’s two principals (the “License Agreement”). The Company’s decision gave Atomistic the right under the License Agreement to terminate the Granted License (as defined under the License Agreement), which right Atomistic exercised on July 1, 2024.",
+  "normalized_sha256": "0689c1b9cacad4f66199997b27cf02478943096c7c8b2194d8f52c53c3bdc7d8",
+  "raw": "The Company decided to cease further funding of development activities with Atomistic SAS (&#8220;Atomistic&#8221;) under the license agreement, dated December 16, 2022, among the Company, Atomistic, and Atomistic&#8217;s two principals (the &#8220;License Agreement&#8221;). The Company&#8217;s decision gave Atomistic the right under the License Agreement to terminate the Granted License (as defined under the License Agreement), which right Atomistic exercised on July 1, 2024.",
+  "raw_sha256": "817fa7ee63068cb81087816ed101581c52da28f27f7a0a09d6281bd6adb1d43e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1463972/000110465926027163/vuzi-20251231x10k.htm",
+ "xbrl_contexts": []
+}

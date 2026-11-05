@@ -1,0 +1,7 @@
+[
+  {
+    "start": 5144,
+    "end": 5150,
+    "text": "# The packing probes and their ceilings: (changed path, max selected jobs, max\n# selected weight-seconds), plus one pack ceiling for every probe. The history of\n# each number is the docstring of the test below. scripts/check_contract_delta.py\n# reads both names with ast.literal_eval, so keep them plain module-level literals.\nPACKING_PROBES = (\n<<<<<<< HEAD\n    (\"templates/index.html\", 136, 5_829),  # ci-trigger-closure: data \u2014 file NAME handed to the planner, not read by this test (note at the top)\n    (\"scripts/build_free_content.py\", 134, 5_704),  # ci-trigger-closure: data \u2014 file NAME handed to the planner, not read by this test (note at the top)\n=======\n    (\"templates/index.html\", 136, 5_822),  # ci-trigger-closure: data \u2014 file NAME handed to the planner, not read by this test (note at the top)\n    (\"scripts/build_free_content.py\", 135, 5_795),  # ci-trigger-closure: data \u2014 file NAME handed to the planner, not read by this test (note at the top)\n>>>>>>> df3cba80e5ff43e3411209381b32d9d4df06bd1f\n    (\"engine/prophet/plan_book.py\", 130, 5_600),\n)\n# Twelve packs per shape was the pre-curation measurement.\nPACKING_PROBE_MAX_PACKS = 10\n"
+  }
+]

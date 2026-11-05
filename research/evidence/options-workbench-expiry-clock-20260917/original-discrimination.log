@@ -1,0 +1,85 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+___________ test_year_fraction_0dte_tracks_remaining_et_session_time ___________
+
+    def test_year_fraction_0dte_tracks_remaining_et_session_time():
+        import scripts.build_flow_surface as bfs
+
+        # SPY/QQQ/IWM daily ETF expiries settle from the 16:00 ET underlying close.
+        # July is EDT: 14:00Z = 10:00 ET, so six hours remain — never a fixed four.
+        morning = bfs._year_fraction("2026-07-06", "2026-07-06T14:00:00Z")
+        assert morning is not None
+>       assert abs(morning - (6.0 / 24.0) / 365.0) < 1e-12
+E       assert 0.00022831050228310504 < 1e-12
+E        +  where 0.00022831050228310504 = abs((0.00045662100456621003 - ((6.0 / 24.0) / 365.0)))
+
+tests/test_flow_surface.py:637: AssertionError
+________ test_year_fraction_respects_the_existing_early_close_calendar _________
+
+    def test_year_fraction_respects_the_existing_early_close_calendar():
+        import scripts.build_flow_surface as bfs
+
+        # Friday after Thanksgiving 2026 is a canonical 13:00 ET close in
+        # engine.session_digest. At 12:59 ET exactly one minute remains.
+        last_minute = bfs._year_fraction("2026-11-27", "2026-11-27T17:59:00Z")
+        assert last_minute is not None
+>       assert abs(last_minute - (1.0 / 60.0 / 24.0) / 365.0) < 1e-12
+E       assert 0.0004547184170471842 < 1e-12
+E        +  where 0.0004547184170471842 = abs((0.00045662100456621003 - (((1.0 / 60.0) / 24.0) / 365.0)))
+
+tests/test_flow_surface.py:657: AssertionError
+__________ test_year_fraction_uses_elapsed_clock_across_dates_and_dst __________
+
+    def test_year_fraction_uses_elapsed_clock_across_dates_and_dst():
+        import scripts.build_flow_surface as bfs
+
+        # 10:00 ET Monday to 16:00 ET Tuesday is 30 calendar hours, not an integer day.
+        next_day = bfs._year_fraction("2026-07-07", "2026-07-06T14:00:00Z")
+        assert next_day is not None
+>       assert abs(next_day - (30.0 / 24.0) / 365.0) < 1e-12
+E       assert 0.0006849315068493149 < 1e-12
+E        +  where 0.0006849315068493149 = abs((0.0027397260273972603 - ((30.0 / 24.0) / 365.0)))
+
+tests/test_flow_surface.py:670: AssertionError
+__ TestRunCycleEndToEnd.test_surface_quote_tap_uses_the_canonical_cycle_clock __
+
+self = <tests.test_live_flow.TestRunCycleEndToEnd object at 0x10ed00e10>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10efe7c50>
+
+    def test_surface_quote_tap_uses_the_canonical_cycle_clock(self, monkeypatch):
+        import scripts.build_flow_surface as bfs
+
+        seen = {}
+        real = bfs.extract_cycle_quotes
+
+        def recording_extract(calls_df, puts_df, *, session_date, near_dte_cap_days=90, observed_at=None):
+            seen["session_date"] = session_date
+            seen["observed_at"] = observed_at
+            return real(
+                calls_df, puts_df,
+                session_date=session_date,
+                observed_at=observed_at,
+                near_dte_cap_days=near_dte_cap_days,
+            )
+
+        monkeypatch.setattr(bfs, "extract_cycle_quotes", recording_extract)
+        started = "2026-07-02T18:29:59Z"
+        self._run_real_cycle(
+            monkeypatch,
+            {"SPY": self._root_frame("SPY", "09:30", seq_base=1000)},
+            cycle_started_at=started,
+        )
+
+        assert seen["session_date"] == SESSION_DATE
+>       assert seen["observed_at"] == started
+E       AssertionError: assert None == '2026-07-02T18:29:59Z'
+
+tests/test_live_flow.py:2426: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, agentos, browser, calibration, content, data, docs, finviz_themes, knowledge, mockups, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_flow_surface.py::test_year_fraction_0dte_tracks_remaining_et_session_time
+FAILED tests/test_flow_surface.py::test_year_fraction_respects_the_existing_early_close_calendar
+FAILED tests/test_flow_surface.py::test_year_fraction_uses_elapsed_clock_across_dates_and_dst
+FAILED tests/test_live_flow.py::TestRunCycleEndToEnd::test_surface_quote_tap_uses_the_canonical_cycle_clock
+4 failed in 1.87s

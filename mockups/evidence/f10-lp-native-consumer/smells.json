@@ -1,0 +1,107 @@
+{
+  "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
+  "generated_at": "2026-10-20T03:38:37Z",
+  "metric_notes": {
+    "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
+    "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
+    "duplicate_heading_texts": "case-folded visible heading text seen more than once; a repeated section label across tabs is a legitimate duplicate",
+    "panel_count": "class-name heuristic over the configured selector list; both over- and under-counts are expected",
+    "payload_bytes_total": "sum of response body sizes reported by the driver for the reference state; excludes bodies the driver could not size",
+    "raw_slug_hits": "visible text matching 3+ segment snake_case; legitimate identifiers (file names, API keys quoted on purpose) match too",
+    "screenshot_completion": "captured states / attempted states for this page; states the registry excludes are not attempted and are recorded as gaps",
+    "section_count": "direct <section> children of <body> plus direct element children of <main>; an approximation of 'how many blocks is this page'",
+    "source_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
+    "visible_word_count": "whitespace-split innerText of <body>; Chinese text is not word-segmented, so a zh capture undercounts relative to en"
+  },
+  "pages": [
+    {
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 35830,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 61499,
+            "elements_wider_than_viewport": 423,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 35830,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 16,
+          "h3": 11,
+          "h4": 5,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 60,
+        "payload_bytes_total": 941285,
+        "raw_slug_hit_count": 209,
+        "raw_slug_hits": [
+          "active_commodity_lev_phase0",
+          "alpha_grammar_confluence_v1",
+          "any_dd5_within_h21",
+          "astra_regime_indicator_handoff_20261004",
+          "baskets_abs_escape",
+          "baskets_breadth_divergence",
+          "baskets_conviction_demotion",
+          "baskets_rank_dd_mod",
+          "baskets_residual_rank",
+          "baskets_rollover_fit",
+          "baskets_voltarget_sizing",
+          "bd_avoid1_ledger",
+          "board_ledger_ca",
+          "board_ledger_hk",
+          "breadth_div_own",
+          "breadth_divergence_forward_log",
+          "breadth_thrust_3m",
+          "btc_onchain_dd_phase0",
+          "btc_override_ledger",
+          "btc_vector_optimal_phase0",
+          "business_cycle_recession_signal",
+          "c19_wp31_incremental_information",
+          "c1b_commodity_flip_protective_phase0",
+          "capitulation_overlay_phase0",
+          "china_cycle_phase"
+        ],
+        "request_count": 15,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 9909
+      },
+      "page_id": "measurement.html#ric-local-projections-f10-lp-alfred-cpi-payroll-descriptive-v2-primary-lags4-h0-3",
+      "route": "/measurement.html#ric-local-projections-f10-lp-alfred-cpi-payroll-descriptive-v2-primary-lags4-h0-3"
+    }
+  ],
+  "schema": "mastermind.ux_smell_report.v1",
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/b-f10-lp-native-consumer-20261020-fab1b8cbbacec823",
+    "resolved_sha_or_none": "715ae550e932514fbf819a67f6ee6092305ac555",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/b-f10-lp-native-consumer-20261020-fab1b8cbbacec823 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/b-f10-lp-native-consumer-20261020-fab1b8cbbacec823/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "version": "1.3.0"
+  }
+}

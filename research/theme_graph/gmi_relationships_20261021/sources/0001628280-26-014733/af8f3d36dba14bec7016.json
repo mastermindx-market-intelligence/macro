@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-04T22:20:43Z",
+ "accession": "0001628280-26-014733",
+ "cik": "0001438423",
+ "doc_byte_length": 1326156,
+ "doc_sha256": "d1e239f43c04a857c00616b6a24a5e30b6a6b5b94eb3d640ec9b2de9e4aa1245",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-04",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mram-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 163421,
+  "byte_start": 162780,
+  "normalized": "Our manufacturing agreement with GLOBALFOUNDRIES includes a customary forecast and ordering mechanism for the supply of certain of our wafers, and we are obligated to order and pay for, and GLOBALFOUNDRIES is obligated to supply, wafers consistent with the binding portion of our forecast. GLOBALFOUNDRIES also has the ability to discontinue its manufacture of any of our wafers upon due notice and completion of the notice period. The initial term of the manufacturing agreement is for three years, which automatically renews for successive one-year periods thereafter unless either party provides sufficient advance notice of non-renewal.",
+  "normalized_sha256": "a3663082d23aa7d955767616ca6b9b97744d97ea6562426ba4d5405f846636da",
+  "raw": " Our manufacturing agreement with GLOBALFOUNDRIES includes a customary forecast and ordering mechanism for the supply of certain of our wafers, and we are obligated to order and pay for, and GLOBALFOUNDRIES is obligated to supply, wafers consistent with the binding portion of our forecast. GLOBALFOUNDRIES also has the ability to discontinue its manufacture of any of our wafers upon due notice and completion of the notice period. The initial term of the manufacturing agreement is for three years, which automatically renews for successive one-year periods thereafter unless either party provides sufficient advance notice of non-renewal.",
+  "raw_sha256": "af8f3d36dba14bec70165a36d5eb8b12fedea13ace1a08af66e09cfcb6f08e5e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1438423/000162828026014733/mram-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,12 @@
+{
+  "finished_at": "2026-10-19T23:51:52.200670+00:00",
+  "commit": "[claude/shared-shell-beta-output-custody-20261019 5f4965b56] test(beta): cover build-output custody refusal boundaries\n 1 file changed, 86 insertions(+), 2 deletions(-)",
+  "head": "5f4965b5668209036842b1ad8b4d0db12b919b5b",
+  "parent": "f06f887d65ac6e34684bc6c3a3ffd60cd3cdaa7b",
+  "base": "50a8c01553ee92731a53dfcff36256308cfb5f0e",
+  "push_exit": 0,
+  "push_stdout": "",
+  "push_stderr": "remote: \nremote: GitHub found 44 vulnerabilities on mastermindx-market-intelligence/mastermind-terminal's default branch (6 critical, 19 high, 18 moderate, 1 low). To find out more, visit:        \nremote:      https://github.com/mastermindx-market-intelligence/mastermind-terminal/security/dependabot        \nremote: \nTo https://github.com/mastermindx-market-intelligence/mastermind-terminal.git\n   52e8195fb..5f4965b56  HEAD -> claude/shared-shell-beta-output-custody-20261019\n",
+  "status": "",
+  "remote_readback": "5f4965b5668209036842b1ad8b4d0db12b919b5b\trefs/heads/claude/shared-shell-beta-output-custody-20261019"
+}

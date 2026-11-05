@@ -1,0 +1,27 @@
+{
+  "schema": "eval_os.a1_conflict_source_repair_proposal.v1",
+  "at": "2026-10-14T12:02:55.332435+00:00",
+  "original_a1": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+  "observed_main": "a5a5482b1d64b8a064a0355189d90c428660a850",
+  "proposal_commit": "a8d9f1952dd621a80e30525374145aee71ff3a7f",
+  "proposal_parent": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+  "parent_count": 1,
+  "main_not_merged_into_proposal": true,
+  "affected_jobs": [
+    "fif-kernel-guards",
+    "crypto-assistant-context",
+    "research-price-panel",
+    "ticker-news-qbus"
+  ],
+  "all_job_definitions_preserved": 309,
+  "all_path_memberships_and_counts_preserved": true,
+  "only_changed_path": ".github/ci/legacy-jobs.yml",
+  "patch_sha256": "a739f54936e760ac588e1faf7631ab8c9d13558416094f499e0c55973ee3a41e",
+  "proposal_manifest_sha256": "bf467ccb61d0cf611c19a14f072ba963d520462f965e01aa222007d2e39897da",
+  "preview_merge_rc": 0,
+  "preview_tree": "012ab7f6bea6143bb06ef9d17482b00d1a4a6b54",
+  "source_branch_updated": false,
+  "remote_updated": false,
+  "ci_launched": false,
+  "acceptance": "Prepared source-only collision repair; no independent review or hosted qualification yet. Root source custody remains distinct from controller-only base refresh and merge."
+}

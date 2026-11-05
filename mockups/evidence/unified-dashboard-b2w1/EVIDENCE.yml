@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/dashboard.html.j2
+  - templates/theme.css
+manifest: mockups/evidence/unified-dashboard-b2w1/p0_evidence.json

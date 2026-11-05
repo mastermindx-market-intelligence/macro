@@ -1,0 +1,4 @@
+# Preserve packet-exact recovered source bytes while disabling only the
+# whitespace rule those two immutable payload files intentionally violate.
+extractor/tests/test_feed_watcher.py whitespace=-blank-at-eof
+extractor/tests/test_storage_guard.py whitespace=-blank-at-eof

@@ -69,14 +69,33 @@ def _driver_change(s: pd.Series, name: str, idx: pd.Index, window: int) -> pd.Se
 # --------------------------------------------------------------------------- #
 def orthogonalize(base_close: pd.Series, broad: pd.Series | None,
                   cfg: dict) -> tuple[pd.Series, pd.Series]:
-    """Residual base-vs-USD index = the pair's move AFTER stripping its rolling
-    broad-dollar beta. Causal (uses the PRIOR window's beta). Before a beta is
-    estimable, the residual == the raw return."""
+    """Legacy two-Series interface; numerical adjustment remains owned here.
+
+    The residual index uses raw returns before a beta is estimable and when the
+    dollar input is absent. Its name alone does not prove a fitted adjustment.
+    """
+    residual, beta, _ = _orthogonalize_with_evidence(base_close, broad, cfg)
+    return residual, beta
+
+
+def _orthogonalize_with_evidence(base_close: pd.Series, broad: pd.Series | None,
+                                cfg: dict) -> tuple[pd.Series, pd.Series, pd.DataFrame]:
+    """The same calculation plus method annotations; not another signal model.
+
+    Annotations are tied to each actual return used in the residual index. They
+    say nothing about vendor freshness, causal attribution or predictive power.
+    """
     idx = base_close.index
     r = np.log(base_close.replace(0, np.nan)).diff()
+    method = pd.Series('unavailable', index=idx, name='residual_method')
+    carried = pd.Series(False, index=idx, name='residual_dollar_carried')
     if broad is None:
-        return base_close.rename("resid_close"), pd.Series(np.nan, index=idx, name="dollar_beta")
-    d = np.log(broad.reindex(idx).ffill().replace(0, np.nan)).diff()
+        method.loc[np.isfinite(r)] = 'raw_fallback'
+        return (base_close.rename("resid_close"),
+                pd.Series(np.nan, index=idx, name="dollar_beta"),
+                pd.concat([method, carried], axis=1))
+    aligned = broad.reindex(idx)
+    d = np.log(aligned.ffill().replace(0, np.nan)).diff()
     win = cfg["beta_window_d"]
     mp = cfg.get("beta_min_train_d", win)
     cov = r.rolling(win, min_periods=mp).cov(d)
@@ -84,7 +103,13 @@ def orthogonalize(base_close: pd.Series, broad: pd.Series | None,
     beta = (cov / var.replace(0, np.nan)).shift(1)              # causal
     e = (r - beta * d).where(beta.notna(), r)                   # raw return until beta exists
     resid = np.exp(e.fillna(0.0).cumsum())
-    return resid.rename("resid_close"), beta.rename("dollar_beta")
+    method.loc[e.isna()] = 'zero_filled'
+    method.loc[np.isfinite(e) & beta.isna()] = 'raw_fallback'
+    adjusted = np.isfinite(e) & np.isfinite(beta) & np.isfinite(r) & np.isfinite(d)
+    method.loc[adjusted] = 'adjusted'                         # zero beta is a valid fit
+    carried.loc[adjusted] = (aligned.isna() | aligned.shift(1).isna()).loc[adjusted]
+    return (resid.rename("resid_close"), beta.rename("dollar_beta"),
+            pd.concat([method, carried], axis=1))
 
 
 # --------------------------------------------------------------------------- #
@@ -254,13 +279,57 @@ def riskoff_factor(R: pd.Series | None, meta: dict, idx: pd.Index) -> pd.DataFra
     if R is None:
         return pd.DataFrame(index=idx)
     beta = RISK_BETA.get(meta.get("archetype"), 0.5)
-    f = (-beta * R.reindex(idx).ffill()).clip(-1, 1)          # +=bullish base (havens flip via beta<0)
+    f = (-beta * R.reindex(idx)).clip(-1, 1)          # +=bullish base (havens flip via beta<0)
     return pd.DataFrame({"riskoff": f})
 
 
 # --------------------------------------------------------------------------- #
 # dollar master frame
 # --------------------------------------------------------------------------- #
+
+def _finite_fx(value) -> bool:
+    """A numeric zero is evidence; booleans and non-finite values are not."""
+    return (not isinstance(value, (bool, np.bool_)) and
+            isinstance(value, (int, float, np.integer, np.floating)) and
+            bool(np.isfinite(value)))
+
+
+def _confirm_fx_regime(state: pd.Series, days: int = 5) -> pd.DataFrame:
+    """Forex-local confirmation; gaps cannot vote or bridge a candidate streak.
+
+    Valid-input behavior retains the existing five-observation confirmation.
+    After a gap, a different candidate stays unavailable until requalified.
+    Last-confirmed history is separate from the nullable current observation.
+    """
+    current = candidate = last_at = None
+    run = 0
+    recovering = False
+    rows = []
+    for ts, value in state.items():
+        if pd.isna(value):
+            candidate, run, recovering = None, 0, True
+            visible = None
+        elif current is None:
+            current, last_at = value, ts
+            candidate, run, recovering = None, 0, False
+            visible = current
+        elif value == current:
+            candidate, run, recovering = None, 0, False
+            last_at, visible = ts, current
+        else:
+            candidate, run = (value, run + 1) if value == candidate else (value, 1)
+            if run >= days:
+                current, last_at = value, ts
+                candidate, run, recovering = None, 0, False
+            visible = None if recovering else current
+        rows.append({"smile_regime": visible,
+                     "smile_last_confirmed": current,
+                     "smile_last_confirmed_asof": last_at,
+                     "smile_candidate": candidate,
+                     "smile_candidate_count": run})
+    return pd.DataFrame(rows, index=state.index)
+
+
 def dollar_master(drivers: dict, cfg: dict) -> pd.DataFrame:
     dxy = drivers.get("dxy")
     broad = drivers.get("broad_dollar")
@@ -281,12 +350,17 @@ def dollar_master(drivers: dict, cfg: dict) -> pd.DataFrame:
     out["dollar_day_z"] = _zraw(drv.pct_change()).abs()
     up = out["dollar_dir"] > 0
     ro = out["risk_off"] > 0
-    reg = pd.Series("Neutral", index=idx, dtype=object)
-    reg[up & ro] = "Risk-off haven bid"        # right of the smile
-    reg[up & ~ro] = "US growth premium"        # left of the smile
-    reg[~up & ~ro] = "Global reflation"        # bottom of the smile (USD weak)
-    reg[~up & ro] = "US-specific stress"       # smile breaking (USD weak + stress)
-    out["smile_regime"] = cs._confirm(reg, 5)
+    valid = out["dollar_roc"].map(_finite_fx) & out["risk_off"].map(_finite_fx)
+    reg = pd.Series(None, index=idx, dtype=object)
+    reg[valid & (up & ro)] = "Risk-off haven bid"        # right of the smile
+    reg[valid & (up & ~ro)] = "US growth premium"        # left of the smile
+    reg[valid & (~up & ~ro)] = "Global reflation"        # bottom of the smile (USD weak)
+    reg[valid & (~up & ro)] = "US-specific stress"       # smile breaking (USD weak + stress)
+    out = out.join(_confirm_fx_regime(reg, 5))
+    out["risk_off"] = out["risk_off"].where(out["risk_off"].map(_finite_fx))
+    out["smile_unavailable_reason"] = np.where(
+        ~valid, "missing_or_invalid_risk_or_direction",
+        np.where(out["smile_regime"].isna(), "requalifying_after_gap", None))
     return out
 
 
@@ -299,7 +373,8 @@ def compute_asset(ai: dict, cfg: dict | None = None, R: pd.Series | None = None)
     px = ai["price"]                                          # canonical base-vs-USD OHLC
     drivers = ai["drivers"]
 
-    resid_close, beta = orthogonalize(px["close"], drivers.get("broad_dollar"), cfg["dollar"])
+    resid_close, beta, residual_evidence = _orthogonalize_with_evidence(
+        px["close"], drivers.get("broad_dollar"), cfg["dollar"])
     px_resid = _synth_ohlc(resid_close)
 
     mom = cs.momentum(px_resid, cfg["momentum"])             # idiosyncratic short trend
@@ -324,6 +399,9 @@ def compute_asset(ai: dict, cfg: dict | None = None, R: pd.Series | None = None)
         off = (1.0 / px["close"]) if meta.get("invert") else px["close"]   # raw offshore USD/CNH
         out = out.join(cnh_basis(off, onshore, cfg.get("cnh", {})))
     out["pair"] = ai["pair"]
+    # Display provenance only; never included in factor/score calculations above.
+    out["residual_method"] = residual_evidence["residual_method"]
+    out["residual_dollar_carried"] = residual_evidence["residual_dollar_carried"]
     return out
 
 

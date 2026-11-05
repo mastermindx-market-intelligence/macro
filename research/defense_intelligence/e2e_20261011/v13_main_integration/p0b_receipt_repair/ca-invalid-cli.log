@@ -1,0 +1,2 @@
+error: --historical-head must be an exact lowercase 40-character Git SHA
+usage: verify_stock_dashboard_mobile_layout.cjs --html FILE --site-dir DIR --fixture-receipt FILE --fixture-assets-dir DIR [--composer FILE] [--browser FILE] [--out FILE] [--screenshot-dir DIR] [--historical-head SHA] [--historical-tree SHA]

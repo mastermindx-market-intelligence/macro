@@ -1,0 +1,8 @@
+dafd6ed3f3263b23aa74772d866dc03a8de94fb4
+100644 4f2706f605e77cd1fe813e3c507329c748799bee 1	.github/ci/legacy-jobs.yml
+100644 b9001dc87a7b313407436a29d6fc406926c12c8a 2	.github/ci/legacy-jobs.yml
+100644 f4dbffb83f46f63dea2d8206c34c623dad09972d 3	.github/ci/legacy-jobs.yml
+
+Auto-merging .github/ci/legacy-jobs.yml
+CONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml
+Auto-merging tests/test_ci_pack.py

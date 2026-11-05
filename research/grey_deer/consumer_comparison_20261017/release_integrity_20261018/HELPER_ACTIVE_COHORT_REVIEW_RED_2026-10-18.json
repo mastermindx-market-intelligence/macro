@@ -1,0 +1,33 @@
+{
+  "runner": "stdlib AST loader; exact standalone fixture test bodies, no pytest/app imports",
+  "test_source_sha256": "a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a",
+  "helper_sha256": "c64b940d75a70db26eeed6af1305c2c0e7c924201026a45b69aaa8de2ebe483d",
+  "app_import_tests_executed": false,
+  "network_or_production_calls": false,
+  "cases": [
+    {
+      "test": "test_integrity_active_cohort_authority_mutation_requires_reconciliation",
+      "parameters": {
+        "field": "account.json"
+      },
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "2026-10-17 23:43:57 deploying 2222222222222222222222222222222222222222 (2 changed path(s))\n    app/main.py\n    app/old.py\n2026-10-17 23:43:59 forward evaluation authority bytes changed, missing, unreadable, or lock verification failed\n2026-10-17 23:43:59 deploy failed: forward evaluation activation/status verification failed; rolling back\n2026-10-17 23:43:59 rollback complete; health returned 200\n",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/da452a3ea08d/release_review/helper_fixture_driver_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 470, in test_integrity_active_cohort_authority_mutation_requires_reconciliation\n    assert \"recovery incomplete\" in result.stdout, result.stdout + result.stderr\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 2026-10-17 23:43:57 deploying 2222222222222222222222222222222222222222 (2 changed path(s))\n    app/main.py\n    app/old.py\n2026-10-17 23:43:59 forward evaluation authority bytes changed, missing, unreadable, or lock verification failed\n2026-10-17 23:43:59 deploy failed: forward evaluation activation/status verification failed; rolling back\n2026-10-17 23:43:59 rollback complete; health returned 200\n\n",
+      "seconds": 2.517
+    },
+    {
+      "test": "test_integrity_active_cohort_authority_mutation_requires_reconciliation",
+      "parameters": {
+        "field": "fills.jsonl"
+      },
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "2026-10-17 23:44:00 deploying 2222222222222222222222222222222222222222 (2 changed path(s))\n    app/main.py\n    app/old.py\n2026-10-17 23:44:02 forward evaluation authority bytes changed, missing, unreadable, or lock verification failed\n2026-10-17 23:44:02 deploy failed: forward evaluation activation/status verification failed; rolling back\n2026-10-17 23:44:03 rollback complete; health returned 200\n",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/da452a3ea08d/release_review/helper_fixture_driver_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 470, in test_integrity_active_cohort_authority_mutation_requires_reconciliation\n    assert \"recovery incomplete\" in result.stdout, result.stdout + result.stderr\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 2026-10-17 23:44:00 deploying 2222222222222222222222222222222222222222 (2 changed path(s))\n    app/main.py\n    app/old.py\n2026-10-17 23:44:02 forward evaluation authority bytes changed, missing, unreadable, or lock verification failed\n2026-10-17 23:44:02 deploy failed: forward evaluation activation/status verification failed; rolling back\n2026-10-17 23:44:03 rollback complete; health returned 200\n\n",
+      "seconds": 3.261
+    }
+  ],
+  "passed": 0,
+  "failed": 2
+}

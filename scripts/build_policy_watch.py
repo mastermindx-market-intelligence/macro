@@ -150,6 +150,26 @@ def _verified_labels(as_of: object) -> tuple[str, str]:
     return parsed.strftime("%b %-d, %Y"), f"{parsed.year}年{parsed.month}月{parsed.day}日"
 
 
+def _analysis_snapshot_labels(raw: object) -> tuple[str | None, str, str]:
+    """Return a typed desk snapshot date and bilingual labels, or fail closed.
+
+    `state_asof` is the authority for the analysis snapshot. Generated/build times,
+    the historical intel vintage, and future review dates are deliberately not
+    accepted as substitutes.
+    """
+    if not isinstance(raw, str):
+        return None, "", ""
+    value = raw
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+        return None, "", ""
+    try:
+        datetime.strptime(value, "%Y-%m-%d")
+    except ValueError:
+        return None, "", ""
+    en, zh = format_lifecycle_date(value, "day")
+    return value, en, zh
+
+
 _MONTH_FULL = (
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December",
@@ -352,6 +372,9 @@ def main() -> int:
         desk = {k: v for k, v in dj.items() if k != "raw_text"}
     except Exception:  # noqa: BLE001
         desk = None
+    analysis_asof_iso, analysis_asof_en, analysis_asof_zh = _analysis_snapshot_labels(
+        desk.get("state_asof") if isinstance(desk, dict) else None
+    )
 
     # explicit Fed reaction-function read (display-only) from the regime latest.json
     # UK policy desk -- engine.uk_policy_brain writes site/uk_policy.json in CI.
@@ -452,6 +475,9 @@ def main() -> int:
         uk_desk=uk_desk,
         active_section="research", active_page="policy_watch",
         lifecycle=lifecycle, current=current,
+        analysis_asof_iso=analysis_asof_iso,
+        analysis_asof_en=analysis_asof_en,
+        analysis_asof_zh=analysis_asof_zh,
         background_unavailable=background_unavailable,
     )
     # Jinja's language branches leave indentation on otherwise-empty lines.

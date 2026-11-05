@@ -1,0 +1,153 @@
+{
+ "schema": "cdv1.pg_envelope.oracle_adjudication.v1",
+ "oracle": {
+  "file": "oracle_f1.json",
+  "sha256": "75ec2190dba711a8c80f57fe309d02df481990d4f17e12c61822dcc32ab7a77c",
+  "notes_file": "oracle_f1_notes.md",
+  "notes_sha256": "7ca96abd5a8ba52e1452a40b0449af73401abca09be2f324ffe1ee5b0ac8e4f8",
+  "spec_file": "oracle_f1_spec.md",
+  "spec_sha256": "32a22721107f6bc38b34cc9a17f4119b6ae358ce2cf0628a06fa8c3f6f881ad4",
+  "authored_by": "GLM (Z.ai)",
+  "lane": "remote fabric lane on mb, receipt rs_20260925T030518Z_53323, rc=0 at 2026-09-25T03:30Z; working directory held only the spec and the five P&G originals"
+ },
+ "adjudicator": "CDV-1 Meta-CEO seat, session 251f88c8 (Opus 5.5 under the fable-mode doctrine), 2026-09-25",
+ "value_changes": [],
+ "value_check": "Every numeric oracle value agrees with the seat's own second-statement reading of the same bytes (95 of 95 comparisons, five releases). The pinned primary and second statements reproduce all 57 F1-Q values (test_frozen_pins_reproduce_the_oracle).",
+ "locator_corrections": [
+  {
+   "release": "FY26Q1",
+   "metric": "pg_diluted_eps",
+   "entry": "also_found[0]",
+   "table_ordinal": 2,
+   "field": "column_header",
+   "oracle": "2025",
+   "corrected": "2026",
+   "cell_text": "1.95",
+   "evidence": "The highlights table labels its columns with FISCAL years (2026 current, 2025 prior); the oracle wrote calendar years. The cell text and value are unchanged."
+  },
+  {
+   "release": "FY26Q1",
+   "metric": "pg_prior_diluted_eps",
+   "entry": "also_found[0]",
+   "table_ordinal": 2,
+   "field": "column_header",
+   "oracle": "2024",
+   "corrected": "2025",
+   "cell_text": "1.61",
+   "evidence": "The highlights table labels its columns with FISCAL years (2026 current, 2025 prior); the oracle wrote calendar years. The cell text and value are unchanged."
+  },
+  {
+   "release": "FY26Q1",
+   "metric": "pg_core_eps",
+   "entry": "also_found[0]",
+   "table_ordinal": 2,
+   "field": "column_header",
+   "oracle": "2025",
+   "corrected": "2026",
+   "cell_text": "1.99",
+   "evidence": "The highlights table labels its columns with FISCAL years (2026 current, 2025 prior); the oracle wrote calendar years. The cell text and value are unchanged."
+  },
+  {
+   "release": "FY26Q1",
+   "metric": "pg_prior_core_eps",
+   "entry": "also_found[0]",
+   "table_ordinal": 2,
+   "field": "column_header",
+   "oracle": "2024",
+   "corrected": "2025",
+   "cell_text": "1.93",
+   "evidence": "The highlights table labels its columns with FISCAL years (2026 current, 2025 prior); the oracle wrote calendar years. The cell text and value are unchanged."
+  },
+  {
+   "release": "FY26Q2",
+   "metric": "pg_diluted_eps",
+   "entry": "also_found[0]",
+   "table_ordinal": 2,
+   "field": "column_header",
+   "oracle": "2025",
+   "corrected": "2026",
+   "cell_text": "1.78",
+   "evidence": "The highlights table labels its columns with FISCAL years (2026 current, 2025 prior); the oracle wrote calendar years. The cell text and value are unchanged."
+  },
+  {
+   "release": "FY26Q2",
+   "metric": "pg_prior_diluted_eps",
+   "entry": "also_found[0]",
+   "table_ordinal": 2,
+   "field": "column_header",
+   "oracle": "2024",
+   "corrected": "2025",
+   "cell_text": "1.88",
+   "evidence": "The highlights table labels its columns with FISCAL years (2026 current, 2025 prior); the oracle wrote calendar years. The cell text and value are unchanged."
+  },
+  {
+   "release": "FY26Q2",
+   "metric": "pg_core_eps",
+   "entry": "also_found[0]",
+   "table_ordinal": 2,
+   "field": "column_header",
+   "oracle": "2025",
+   "corrected": "2026",
+   "cell_text": "1.88",
+   "evidence": "The highlights table labels its columns with FISCAL years (2026 current, 2025 prior); the oracle wrote calendar years. The cell text and value are unchanged."
+  },
+  {
+   "release": "FY26Q2",
+   "metric": "pg_prior_core_eps",
+   "entry": "also_found[0]",
+   "table_ordinal": 2,
+   "field": "column_header",
+   "oracle": "2024",
+   "corrected": "2025",
+   "cell_text": "1.88",
+   "evidence": "The highlights table labels its columns with FISCAL years (2026 current, 2025 prior); the oracle wrote calendar years. The cell text and value are unchanged."
+  }
+ ],
+ "unit_label_deviation": {
+  "metrics": [
+   "pg_price_contribution_pp",
+   "pg_mix_contribution_pp",
+   "pg_fx_contribution_pp",
+   "pg_other_contribution_pp"
+  ],
+  "oracle": "percent",
+  "binding": "percentage_points",
+  "reason": "The spec defines these four as contributions to net sales growth in percentage points; the oracle labelled them percent. No value is affected."
+ },
+ "non_locators": "Entries whose table_ordinal is 1 or null quote the headline table's prose lines (interim headlines joined with ' | '). They are echoes of the release's summary sentences, not table/row/column locators, and the envelope reads no prose.",
+ "not_used_in_v1": [
+  {
+   "release": "FY25Q4",
+   "metric": "pg_reported_eps_growth_pct",
+   "entry": "also_found[2]",
+   "issue": "quotes the fiscal-year headline line for a quarterly growth rate"
+  },
+  {
+   "release": "FY25Q4",
+   "metric": "pg_core_eps_growth_pct",
+   "entry": "also_found[1]",
+   "issue": "quotes the fiscal-year headline line for a quarterly growth rate"
+  },
+  {
+   "release": "FY26Q4",
+   "metric": "pg_reported_eps_growth_pct",
+   "entry": "also_found[2]",
+   "issue": "quotes the fiscal-year headline line for a quarterly growth rate"
+  },
+  {
+   "release": "FY26Q4",
+   "metric": "pg_core_eps_growth_pct",
+   "entry": "also_found[1]",
+   "issue": "quotes the fiscal-year headline line for a quarterly growth rate"
+  },
+  {
+   "release": "FY25Q4",
+   "metric": "pg_organic_sales_growth_pct",
+   "entry": "also_found[1]",
+   "issue": "resolves to two cells: the quarter and fiscal-year halves of the highlights table both print +2% under '% Change'"
+  }
+ ],
+ "conventions": {
+  "dash_zero": "In F1-Q a value cell printing an em dash ('&#8212;%', or '&#8212;' beside a '%' unit cell) is zero. The oracle spec stated this before the oracle read the releases. The releases mark not-applicable separately ('n/a' in the highlights table) and carry no dash-means-zero sentence, so this is a family convention pinned by the envelope; it narrows plan line 206 for F1-Q only and is flagged to the decision owner on #7905."
+ }
+}

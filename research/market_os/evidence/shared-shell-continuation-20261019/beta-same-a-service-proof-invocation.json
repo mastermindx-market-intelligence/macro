@@ -1,0 +1,12 @@
+{
+  "started_at": "2026-10-20T18:48:16.449576+00:00",
+  "wrapper": "/tmp/shared-shell-css-visual-20261019T1107/beta-same-a-service-proof.py",
+  "wrapper_bytes": 7390,
+  "wrapper_sha256": "f2636b5b2a3965d3bbff6d59874d946125aaa7b19d12d520553633384efc2570",
+  "state": "RETURNED",
+  "exit": 1,
+  "finished_at": "2026-10-20T18:48:26.301999+00:00",
+  "wrapper_unchanged": true,
+  "log_bytes": 2124,
+  "log_sha256": "91baeb292e6bbfb05455f8c086cf362739f475abef7492b73fcc5a2b08a3804c"
+}

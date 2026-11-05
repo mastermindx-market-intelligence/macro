@@ -1,0 +1,9 @@
+{
+  "base": "0d9d836cda058f3f59507e3b7b7fed92b05ef7dc",
+  "template_and_pages": 122,
+  "basket_pages": 121,
+  "only_source_delta": "Add existing tbl-scroll class to existing .ts holdings wrapper",
+  "entire_page_bytes_equal_after_reversing_one_token": true,
+  "embedded_data_and_all_javascript_unchanged": true,
+  "no_shared_asset_or_auth_change": true
+}

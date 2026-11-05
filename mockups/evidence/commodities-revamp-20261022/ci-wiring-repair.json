@@ -1,0 +1,60 @@
+{
+  "schema": "commodities.ci_wiring_repair.v1",
+  "generated_at": "2026-10-22T08:02:00Z",
+  "pull_request": 10038,
+  "failure": {
+    "run_id": 39742155515,
+    "job_id": 119701748054,
+    "head": "753127b54a5c252702fac21c438c47eedd0fa3f7",
+    "base": "faf78fff3c0e670ce9414c99b9fcbc6ebb1ea6d4",
+    "step": "differential contract-delta gate",
+    "cause": "New tests/test_commodity_presentation_render.py suite not named by a workflow run step.",
+    "introduced": 1,
+    "inherited": 0
+  },
+  "reproducer": {
+    "command": "scripts.audit_unrun_tests.gated_unrun_suites()",
+    "before": {
+      "target_unrun": true,
+      "total_findings": 1,
+      "exit_code": 0,
+      "process_id": 38382
+    },
+    "after": {
+      "target_unrun": false,
+      "total_findings": 0,
+      "exit_code": 0,
+      "process_id": 45346
+    }
+  },
+  "repair": {
+    "path": ".github/ci/legacy-jobs.yml",
+    "job": "commodities-research-workspace",
+    "before_sha256": "88a25aceaf84ca5d9bd5b6093104af76832ef4d180760d9c22ec385217d3a84c",
+    "after_sha256": "77b51f370f01f8ab98e6bf3e7d0368a1598c0417ec6e31f62e0f46f77afcd9a3",
+    "changes": [
+      "Include the renderer, DOM and presentation suites in the job source closure.",
+      "Run the new Python suite with the existing Commodities owner tests.",
+      "Install pinned jsdom@26.1.0 in the runner temporary directory and run the DOM/presentation suites."
+    ],
+    "waivers_added": false,
+    "guard_relaxed": false,
+    "product_source_changed": false
+  },
+  "qualification": {
+    "receipt": "ci-wiring-checks.json",
+    "python_tests": 83,
+    "python_subtests": 35,
+    "js_contracts": 6,
+    "dom_journeys": 27,
+    "presentation_regression": "PASS",
+    "all_exit_codes": 0
+  },
+  "proof_limits": {
+    "hosted_ci_after_repair": "PENDING",
+    "covering_render": "PENDING",
+    "production_serving": "PENDING",
+    "authenticated_ui": "PENDING",
+    "paper": "NOT_APPLIED"
+  }
+}

@@ -69,7 +69,7 @@ class _StubPub:
         self._by_id = by_id
         self.calls: list[str] = []
 
-    def fetch_post_metrics(self, pid, *, now=None):
+    def fetch_post_metrics(self, pid, *, expected_channel_id=None, now=None):
         from engine.marketing.social_publisher import MetricsResult
         self.calls.append(pid)
         r = self._by_id.get(pid)
@@ -79,10 +79,11 @@ class _StubPub:
                              (now or _NOW).strftime(_ISO))
 
 
-def _metrics_ok(url, metrics, raw=None, updated="2026-07-23T12:00:00Z"):
+def _metrics_ok(url, metrics, raw=None, updated="2026-07-23T12:00:00Z",
+                delivery=None):
     from engine.marketing.social_publisher import MetricsResult
     return MetricsResult(True, url, metrics, raw or [], updated, None, "buffer",
-                         _NOW.strftime(_ISO))
+                         _NOW.strftime(_ISO), delivery=delivery)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -120,6 +121,58 @@ def test_fetch_metrics_success(monkeypatch):
     assert len(res.raw) == 6  # nothing dropped
     # Query carried the post id.
     assert captured["payload"]["variables"]["input"]["id"] == "buf-1"
+
+
+def test_fetch_metrics_normalizes_provider_sent_and_channel_readiness(monkeypatch):
+    from engine.marketing.social_publisher import BufferPublisher
+
+    pub = BufferPublisher(token="tkn")
+    captured: dict = {}
+
+    def fake_transport(payload):
+        captured["payload"] = payload
+        return {"data": {"post": {
+            "id": "buf-1",
+            "channelId": "chan-1",
+            "status": "sent",
+            "schedulingType": "automatic",
+            "dueAt": "2026-07-23T14:55:00Z",
+            "sentAt": "2026-07-23T15:00:00Z",
+            "externalLink": "https://x.com/mastermindx001/status/1",
+            "notificationStatus": None,
+            "error": None,
+            "channel": {
+                "id": "chan-1",
+                "isDisconnected": False,
+                "isLocked": False,
+                "isQueuePaused": False,
+                "hasActiveMemberDevice": True,
+            },
+            "metricsUpdatedAt": None,
+            "metrics": [],
+        }}}
+
+    monkeypatch.setattr(pub, "_transport", fake_transport)
+    res = pub.fetch_post_metrics(
+        "buf-1", expected_channel_id="chan-1", now=_NOW)
+
+    assert res.ok is True
+    assert res.delivery is not None
+    assert res.delivery["state"] == "provider_sent"
+    assert res.delivery["provider_id"] == "buf-1"
+    assert res.delivery["channel_id"] == "chan-1"
+    assert res.delivery["provider_status"] == "sent"
+    assert res.delivery["scheduling_type"] == "automatic"
+    assert res.delivery["provider_sent"] is True
+    assert res.delivery["provider_sent_at"] == "2026-07-23T15:00:00Z"
+    assert res.delivery["external_url"].startswith("https://x.com/")
+    assert res.delivery["x_visible"] is None
+    assert res.delivery["channel_ready"] is True
+    assert res.delivery["read_ok"] is True
+    query = captured["payload"]["query"]
+    assert query.lstrip().startswith("query ")
+    assert "mutation" not in query
+    assert "rawError" not in query
 
 
 def test_fetch_metrics_empty_is_honest(monkeypatch):
@@ -254,6 +307,71 @@ def test_happy_path_row_shape_and_empty_note(tmp_path):
     empty = rows["buf-999"]
     assert empty["metrics"] == {} and "metrics_empty" in empty["note"]
     assert empty["ok"] is True  # empty-but-fetched is ok
+
+
+def test_poller_passes_configured_expected_channel_to_provider_read(tmp_path):
+    import scripts.marketing_metrics_poll as poller
+
+    _seed_posted(tmp_path, external_id="buf-channel", account="flagship", at=_NOW)
+    cfg = tmp_path / "config" / "marketing.yml"
+    cfg.parent.mkdir(parents=True, exist_ok=True)
+    cfg.write_text(
+        "publish:\n  channels:\n    flagship: chan-expected\n",
+        encoding="utf-8",
+    )
+
+    class CapturingPublisher:
+        def __init__(self):
+            self.calls = []
+
+        def fetch_post_metrics(self, remote_id, *, expected_channel_id=None, now=None):
+            self.calls.append((remote_id, expected_channel_id))
+            return _metrics_ok("https://x.com/mm/status/1", {}, updated=None)
+
+    publisher = CapturingPublisher()
+    poller.poll(tmp_path, now=_NOW, dry_run=False, publisher=publisher)
+
+    assert publisher.calls == [("buf-channel", "chan-expected")]
+
+
+def test_poller_persists_provider_delivery_observation_in_existing_ledger(tmp_path):
+    import scripts.marketing_metrics_poll as poller
+
+    _seed_posted(tmp_path, external_id="buf-delivery", at=_NOW)
+    delivery = {
+        "schema": "marketing.provider_delivery/v1",
+        "read_ok": True,
+        "state": "provider_sent",
+        "provider_id": "buf-delivery",
+        "channel_id": "chan-1",
+        "provider_status": "sent",
+        "scheduling_type": "automatic",
+        "notification_status": None,
+        "due_at": "2026-07-23T14:55:00Z",
+        "provider_sent": True,
+        "provider_sent_at": "2026-07-23T15:00:00Z",
+        "external_url": "https://x.com/mastermindx001/status/777",
+        "x_visible": None,
+        "x_visible_at": None,
+        "channel_ready": True,
+        "channel": {
+            "id": "chan-1", "is_disconnected": False, "is_locked": False,
+            "is_queue_paused": False, "has_active_member_device": True,
+        },
+        "publishing_error": None,
+        "observed_at": _NOW.strftime(_ISO),
+        "error": None,
+    }
+    stub = _StubPub({
+        "buf-delivery": _metrics_ok(
+            delivery["external_url"], {}, updated=None, delivery=delivery),
+    })
+
+    poller.poll(tmp_path, now=_NOW, dry_run=False, publisher=stub)
+
+    rows = _read_metrics_rows(tmp_path)
+    assert len(rows) == 1
+    assert rows[0]["delivery"] == delivery
 
 
 def test_failed_poll_writes_honest_row(tmp_path):
@@ -478,6 +596,155 @@ class TestPostedIsNotProofItWentOut:
                 "receipt": {"backend": "buffer", "external_id": external_id,
                             "at": at, "booked_at": at}}
 
+    def test_legacy_posted_with_buffer_id_projects_accepted_unconfirmed_not_sent(
+            self, tmp_path):
+        """Creation acceptance is not provider-send or X-visibility evidence."""
+        import json
+
+        from engine.marketing.telemetry import delivery_projection
+
+        at = "2026-07-01T10:00:00Z"
+        root = self._root(
+            tmp_path,
+            ledger=[
+                {"id": "ob-legacy", "from": "queued", "to": "approved",
+                 "at": at, "actor": "test", "note": "approved", "receipt": None},
+                {"id": "ob-legacy", "from": "approved", "to": "posting",
+                 "at": at, "actor": "publisher", "note": "in-flight",
+                 "receipt": None},
+                self._posted("ob-legacy", "buf-legacy", at),
+            ],
+            metrics=[],
+        )
+        (root / "data" / "marketing" / "outbox" / "items.jsonl").write_text(
+            json.dumps({"id": "ob-legacy", "status": "queued",
+                        "account": "flagship"}) + "\n", encoding="utf-8")
+
+        out = delivery_projection(root)
+
+        assert out["accepted"] == 1
+        assert out["provider_sent"] == 0
+        assert out["accepted_unconfirmed"] == 1
+        row = out["items"][0]
+        assert row["id"] == "ob-legacy"
+        assert row["provider_id"] == "buf-legacy"
+        assert row["accepted_at"] == at
+        assert row["state"] == "accepted_unconfirmed"
+        assert row["provider_sent"] is None
+        assert row["provider_sent_at"] is None
+        assert row["x_visible"] is None
+
+    def test_acceptance_time_is_not_the_future_booked_send_time(self, tmp_path):
+        import json
+        from engine.marketing.telemetry import delivery_projection
+
+        accepted_at = "2026-07-01T10:00:00Z"
+        booked_at = "2026-07-01T10:30:00Z"
+        posted = self._posted("ob-booked", "buf-booked", accepted_at)
+        posted["receipt"]["booked_at"] = booked_at
+        root = self._root(tmp_path, ledger=[
+            {"id": "ob-booked", "from": "queued", "to": "approved",
+             "at": accepted_at, "actor": "test", "note": "approved", "receipt": None},
+            {"id": "ob-booked", "from": "approved", "to": "posting",
+             "at": accepted_at, "actor": "publisher", "note": "in-flight", "receipt": None},
+            posted,
+        ], metrics=[])
+        (root / "data" / "marketing" / "outbox" / "items.jsonl").write_text(
+            json.dumps({"id": "ob-booked", "status": "queued",
+                        "account": "flagship"}) + "\n", encoding="utf-8")
+
+        row = delivery_projection(root)["items"][0]
+
+        assert row["accepted_at"] == accepted_at
+        assert row["booked_at"] == booked_at
+
+    def test_provider_sent_survives_a_later_failed_lookup_as_stale_evidence(
+            self, tmp_path):
+        import json
+
+        from engine.marketing.telemetry import delivery_projection
+
+        accepted_at = "2026-07-01T10:00:00Z"
+        sent_at = "2026-07-01T10:02:00Z"
+        root = self._root(
+            tmp_path,
+            ledger=[
+                {"id": "ob-sent", "from": "queued", "to": "approved",
+                 "at": accepted_at, "actor": "test", "note": "approved",
+                 "receipt": None},
+                {"id": "ob-sent", "from": "approved", "to": "posting",
+                 "at": accepted_at, "actor": "publisher", "note": "in-flight",
+                 "receipt": None},
+                self._posted("ob-sent", "buf-sent", accepted_at),
+            ],
+            metrics=[
+                {
+                    "remote_id": "buf-sent",
+                    "polled_at": "2026-07-01T10:03:00Z",
+                    "ok": True,
+                    "metrics": {},
+                    "delivery": {
+                        "schema": "marketing.provider_delivery/v1",
+                        "read_ok": True,
+                        "state": "provider_sent",
+                        "provider_id": "buf-sent",
+                        "channel_id": "chan-1",
+                        "provider_status": "sent",
+                        "scheduling_type": "automatic",
+                        "notification_status": None,
+                        "due_at": accepted_at,
+                        "provider_sent": True,
+                        "provider_sent_at": sent_at,
+                        "external_url": "https://x.com/mm/status/1",
+                        "x_visible": None,
+                        "x_visible_at": None,
+                        "channel_ready": True,
+                        "channel": {"id": "chan-1"},
+                        "publishing_error": None,
+                        "observed_at": "2026-07-01T10:03:00Z",
+                        "error": None,
+                    },
+                },
+                {
+                    "remote_id": "buf-sent",
+                    "polled_at": "2026-07-01T10:04:00Z",
+                    "ok": False,
+                    "metrics": {},
+                    "delivery": {
+                        "schema": "marketing.provider_delivery/v1",
+                        "read_ok": False,
+                        "state": "unknown_degraded",
+                        "provider_id": "buf-sent",
+                        "channel_id": "chan-1",
+                        "provider_status": None,
+                        "provider_sent": None,
+                        "provider_sent_at": None,
+                        "x_visible": None,
+                        "x_visible_at": None,
+                        "observed_at": "2026-07-01T10:04:00Z",
+                        "error": "network_error: timeout",
+                    },
+                },
+            ],
+        )
+        (root / "data" / "marketing" / "outbox" / "items.jsonl").write_text(
+            json.dumps({"id": "ob-sent", "status": "queued",
+                        "account": "flagship"}) + "\n", encoding="utf-8")
+
+        out = delivery_projection(root)
+
+        assert out["accepted"] == 1
+        assert out["provider_sent"] == 1
+        assert out["accepted_unconfirmed"] == 0
+        row = out["items"][0]
+        assert row["state"] == "provider_sent"
+        assert row["provider_sent"] is True
+        assert row["provider_sent_at"] == sent_at
+        assert row["observed_at"] == "2026-07-01T10:03:00Z"
+        assert row["observation_stale"] is True
+        assert row["latest_lookup_error"] == "network_error: timeout"
+        assert row["x_visible"] is None
+
     def test_a_post_with_real_metrics_is_confirmed(self, tmp_path):
         from datetime import datetime, timezone
 
@@ -576,17 +843,13 @@ class TestPostingOutbidsTelemetry:
         steps = yaml.safe_load(self.WF.read_text(encoding="utf-8"))["jobs"]["publish"]["steps"]
         return [s for s in steps if "poll post metrics" in str(s.get("name", ""))][0]
 
-    def test_the_daily_gate_bounds_the_minute_not_only_the_hour(self):
-        """THE PIN. An hour-only gate is a TWICE-daily gate: the cron sweeps at
-        :00 and :30 both report hour 13."""
+    def test_the_workflow_uses_due_since_success_not_a_wall_clock_slot(self):
+        """A delayed sweep must reconcile due work instead of missing the day."""
         run = self._poll_step()["run"]
-        assert "date -u +%H" in run and '"13"' in run, \
-            "the poll must still be gated to one hour a day"
-        assert "date -u +%M" in run, \
-            "an hour-only gate admits both the 13:00Z and the 13:30Z sweep"
-        assert "-ge 25" in run, (
-            "the minute bound must exclude the 13:30Z sweep — sweeps land at :00 "
-            "and :30 plus up to ~15 min of Actions drift, so <25 admits only :00")
+        assert "--if-due" in run
+        assert "date -u +%H" not in run
+        assert "date -u +%M" not in run
+        assert '"13"' not in run
 
     def test_a_breaking_post_now_dispatch_spends_nothing_on_telemetry(self):
         """A `post_now` click is an operator trying to get ONE post out NOW.
@@ -596,9 +859,10 @@ class TestPostingOutbidsTelemetry:
             "the step must see the breaking-dispatch input to be able to skip on it"
         run = step["run"]
         assert "POST_NOW_ITEM" in run and "exit 0" in run
-        assert run.index("POST_NOW_ITEM") < run.index("github.event_name"), (
-            "the post_now bail must precede the schedule clock branch — otherwise "
-            "a breaking dispatch at 13:0xZ polls anyway")
+        assert run.index("POST_NOW_ITEM") < run.index("scripts.marketing_metrics_poll"), (
+            "the post_now bail must precede the reconciliation call")
+        assert "github.event_name" not in run, (
+            "due-since-success replaced the brittle schedule-clock branch")
 
     def test_the_per_run_call_cap_stays_well_under_the_daily_allowance(self):
         import scripts.marketing_metrics_poll as MP
@@ -643,3 +907,537 @@ class TestPostingOutbidsTelemetry:
         assert clause in pub_if and clause in poll_if, (
             "both Buffer-spending steps carry the same recall clause so a "
             f"recall run makes ZERO calls: publisher={pub_if!r} poll={poll_if!r}")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Provider-delivery normalization contract (MX-X recovery Lane A)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _delivery_post(*, status="scheduled", scheduling="automatic",
+                   sent_at=None, due_at="2026-07-23T15:30:00Z",
+                   channel_id="chan-1", post_id="buf-1", notification=None,
+                   active_device=True, disconnected=False, locked=False,
+                   paused=False, external="https://x.com/mm/status/1",
+                   publishing_error=None):
+    return {
+        "id": post_id,
+        "channelId": channel_id,
+        "status": status,
+        "schedulingType": scheduling,
+        "dueAt": due_at,
+        "sentAt": sent_at,
+        "externalLink": external,
+        "notificationStatus": notification,
+        "error": publishing_error,
+        "channel": {
+            "id": channel_id,
+            "isDisconnected": disconnected,
+            "isLocked": locked,
+            "isQueuePaused": paused,
+            "hasActiveMemberDevice": active_device,
+        },
+    }
+
+
+@pytest.mark.parametrize(
+    ("status", "scheduling", "sent_at", "publishing_error", "state", "sent"),
+    [
+        ("draft", None, None, None, "accepted_unconfirmed", False),
+        ("needs_approval", None, None, None, "accepted_unconfirmed", False),
+        ("scheduled", "automatic", None, None, "accepted_unconfirmed", False),
+        ("sending", "automatic", None, None, "accepted_unconfirmed", False),
+        ("sent", "automatic", "2026-07-23T15:31:00Z", None,
+         "provider_sent", True),
+        ("error", "automatic", None,
+         {"message": "Platform rejected post", "supportUrl": "https://support.buffer.com/help"},
+         "provider_failed", False),
+    ],
+)
+def test_delivery_normalizer_covers_documented_buffer_statuses(
+        status, scheduling, sent_at, publishing_error, state, sent):
+    from engine.marketing.social_publisher import _normalize_delivery_observation
+
+    obs = _normalize_delivery_observation(
+        _delivery_post(status=status, scheduling=scheduling, sent_at=sent_at,
+                       publishing_error=publishing_error),
+        requested_post_id="buf-1", expected_channel_id="chan-1",
+        observed_at="2026-07-23T16:00:00Z",
+    )
+
+    assert obs["read_ok"] is True
+    assert obs["state"] == state
+    assert obs["provider_sent"] is sent
+    assert obs["x_visible"] is None
+    if publishing_error:
+        assert obs["publishing_error"] == {
+            "message": "Platform rejected post",
+            "support_url": "https://support.buffer.com/help",
+        }
+        assert "rawError" not in obs["publishing_error"]
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "expected_ready"),
+    [
+        ({"disconnected": True}, False),
+        ({"locked": True}, False),
+        ({"paused": True}, False),
+        ({}, True),
+    ],
+)
+def test_delivery_normalizer_exposes_channel_readiness_blocks(kwargs, expected_ready):
+    from engine.marketing.social_publisher import _normalize_delivery_observation
+
+    obs = _normalize_delivery_observation(
+        _delivery_post(**kwargs), requested_post_id="buf-1",
+        expected_channel_id="chan-1", observed_at="2026-07-23T16:00:00Z")
+
+    assert obs["read_ok"] is True
+    assert obs["channel_ready"] is expected_ready
+
+
+def test_notification_mode_requires_an_active_member_device_for_dispatch():
+    from engine.marketing.social_publisher import _normalize_delivery_observation
+
+    obs = _normalize_delivery_observation(
+        _delivery_post(scheduling="notification", notification="notified",
+                       active_device=False),
+        requested_post_id="buf-1", expected_channel_id="chan-1",
+        observed_at="2026-07-23T16:00:00Z")
+
+    assert obs["read_ok"] is True
+    assert obs["state"] == "accepted_unconfirmed"
+    assert obs["scheduling_type"] == "notification"
+    assert obs["channel_ready"] is False
+
+
+@pytest.mark.parametrize(
+    ("post", "requested", "expected_channel", "reason"),
+    [
+        (_delivery_post(post_id="wrong"), "buf-1", "chan-1", "provider_id_mismatch"),
+        (_delivery_post(channel_id="wrong"), "buf-1", "chan-1", "expected_channel_mismatch"),
+        (_delivery_post(status="future_status"), "buf-1", "chan-1", "unknown_provider_status"),
+        (_delivery_post(status="sent", sent_at=None), "buf-1", "chan-1", "sent_without_sent_at"),
+        (_delivery_post(status="scheduled", sent_at="2026-07-23T15:31:00Z"),
+         "buf-1", "chan-1", "non_sent_status_with_sent_at"),
+        (_delivery_post(due_at="not-a-time"), "buf-1", "chan-1", "malformed_due_at"),
+        (_delivery_post(external="javascript:alert(1)"),
+         "buf-1", "chan-1", "unsafe_external_link"),
+    ],
+)
+def test_delivery_normalizer_fails_closed_on_bad_or_mismatched_evidence(
+        post, requested, expected_channel, reason):
+    from engine.marketing.social_publisher import _normalize_delivery_observation
+
+    obs = _normalize_delivery_observation(
+        post, requested_post_id=requested, expected_channel_id=expected_channel,
+        observed_at="2026-07-23T16:00:00Z")
+
+    assert obs["read_ok"] is False
+    assert obs["state"] == "unknown_degraded"
+    assert obs["provider_sent"] is None
+    assert reason in (obs["error"] or "")
+
+
+def test_graphql_failure_returns_explicit_degraded_delivery_without_mutation(monkeypatch):
+    from engine.marketing.social_publisher import BufferPublisher
+
+    pub = BufferPublisher(token="tkn")
+    captured = {}
+
+    def fake_transport(payload):
+        captured.update(payload)
+        return {"errors": [{"message": "provider unavailable"}]}
+
+    monkeypatch.setattr(pub, "_transport", fake_transport)
+    res = pub.fetch_post_metrics(
+        "buf-1", expected_channel_id="chan-1", now=_NOW)
+
+    assert res.ok is False
+    assert res.delivery["read_ok"] is False
+    assert res.delivery["state"] == "unknown_degraded"
+    assert res.delivery["provider_sent"] is None
+    assert "graphql_error" in (res.delivery["error"] or "")
+    assert captured["query"].lstrip().startswith("query ")
+    assert "mutation" not in captured["query"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Bounded one-item provider readback (zero mutation / zero retry-create)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_delivery_readback_binds_canonical_item_provider_and_channel_without_writes(tmp_path):
+    import scripts.marketing_metrics_poll as poller
+
+    item_id = _seed_posted(
+        tmp_path, external_id="buf-readback", account="mastermind_news", at=_NOW)
+    cfg = tmp_path / "config" / "marketing.yml"
+    cfg.parent.mkdir(parents=True, exist_ok=True)
+    cfg.write_text(
+        "publish:\n  channels:\n    mastermind_news: chan-news\n",
+        encoding="utf-8",
+    )
+    metrics_path = tmp_path / "data" / "marketing" / "post_metrics.jsonl"
+    metrics_path.write_text(
+        '{"remote_id":"older","polled_at":"2026-07-22T00:00:00Z"}\n',
+        encoding="utf-8",
+    )
+    before = {
+        path.relative_to(tmp_path).as_posix(): path.read_bytes()
+        for path in (tmp_path / "data" / "marketing").rglob("*")
+        if path.is_file()
+    }
+
+    delivery = {
+        "schema": "marketing.provider_delivery/v1",
+        "read_ok": True,
+        "state": "provider_sent",
+        "provider_id": "buf-readback",
+        "channel_id": "chan-news",
+        "provider_status": "sent",
+        "scheduling_type": "automatic",
+        "notification_status": None,
+        "due_at": "2026-07-23T14:55:00Z",
+        "provider_sent": True,
+        "provider_sent_at": "2026-07-23T15:00:00Z",
+        "external_url": "https://x.com/mastermind_news/status/777",
+        "x_visible": None,
+        "x_visible_at": None,
+        "channel_ready": True,
+        "channel": {
+            "id": "chan-news", "is_disconnected": False, "is_locked": False,
+            "is_queue_paused": False, "has_active_member_device": True,
+        },
+        "publishing_error": None,
+        "observed_at": _NOW.strftime(_ISO),
+        "error": None,
+    }
+
+    class ReadOnlyPublisher:
+        def __init__(self):
+            self.calls = []
+
+        def fetch_post_metrics(self, remote_id, *, expected_channel_id=None, now=None):
+            self.calls.append((remote_id, expected_channel_id, now))
+            return _metrics_ok(delivery["external_url"], {}, updated=None,
+                               delivery=delivery)
+
+    publisher = ReadOnlyPublisher()
+    result = poller.delivery_readback(
+        tmp_path, item_id=item_id, now=_NOW, publisher=publisher)
+
+    after = {
+        path.relative_to(tmp_path).as_posix(): path.read_bytes()
+        for path in (tmp_path / "data" / "marketing").rglob("*")
+        if path.is_file()
+    }
+    assert result["ok"] is True
+    assert result["read_only"] is True
+    assert result["item_id"] == item_id
+    assert result["account"] == "mastermind_news"
+    assert result["provider_id"] == "buf-readback"
+    assert result["expected_channel_id"] == "chan-news"
+    assert result["acceptance"]["outbox_status"] == "posted"
+    assert result["delivery"] == delivery
+    assert result["delivery"]["x_visible"] is None
+    assert publisher.calls == [("buf-readback", "chan-news", _NOW)]
+    assert after == before, "readback must not append metrics or mutate any live ledger"
+
+
+def test_delivery_readback_separates_acceptance_from_booked_send_time(tmp_path):
+    import scripts.marketing_metrics_poll as poller
+    from engine.marketing.outbox import enqueue, make_item, transition
+
+    accepted = datetime(2026, 7, 23, 14, 0, tzinfo=timezone.utc)
+    booked_at = "2026-07-23T14:30:00Z"
+    item = make_item(account="flagship", kind="signal", text="booked later",
+                     as_of="2026-07-23", provenance="test", now=accepted)
+    enqueue(item, root=tmp_path, max_per_account_day=99)
+    transition(item["id"], "approved", actor="t", root=tmp_path)
+    transition(item["id"], "posting", actor="t", root=tmp_path)
+    transition(item["id"], "posted", actor="publisher", root=tmp_path,
+               receipt={"backend": "buffer", "external_id": "buf-booked-readback",
+                        "at": accepted.strftime(_ISO), "booked_at": booked_at})
+    _write_flagship_channel(tmp_path)
+
+    class Publisher:
+        def fetch_post_metrics(self, remote_id, *, expected_channel_id=None, now=None):
+            delivery = _successful_delivery(remote_id, _NOW.strftime(_ISO))
+            return _metrics_ok(None, {}, updated=None, delivery=delivery)
+
+    result = poller.delivery_readback(
+        tmp_path, item_id=item["id"], now=_NOW, publisher=Publisher())
+
+    assert result["ok"] is True
+    assert result["acceptance"]["accepted_at"] == accepted.strftime(_ISO)
+    assert result["acceptance"]["booked_at"] == booked_at
+
+
+def test_delivery_readback_refuses_non_posted_item_without_provider_call(tmp_path):
+    import scripts.marketing_metrics_poll as poller
+    from engine.marketing.outbox import enqueue, make_item
+
+    item = make_item(
+        account="flagship", kind="signal", text="queued only", as_of="2026-07-23",
+        provenance="test", now=_NOW)
+    enqueue(item, root=tmp_path, max_per_account_day=99)
+
+    class MustNotCall:
+        def fetch_post_metrics(self, *args, **kwargs):
+            raise AssertionError("provider read must not run for an unaccepted item")
+
+    result = poller.delivery_readback(
+        tmp_path, item_id=item["id"], now=_NOW, publisher=MustNotCall())
+
+    assert result["ok"] is False
+    assert result["error"] == "item_not_provider_accepted"
+    assert result["outbox_status"] == "queued"
+
+
+def test_delivery_readback_without_authorized_token_is_explicit_dark_noop(
+        tmp_path, monkeypatch):
+    import scripts.marketing_metrics_poll as poller
+
+    item_id = _seed_posted(tmp_path, external_id="buf-dark", account="flagship", at=_NOW)
+    cfg = tmp_path / "config" / "marketing.yml"
+    cfg.parent.mkdir(parents=True, exist_ok=True)
+    cfg.write_text(
+        "publish:\n  channels:\n    flagship: chan-flagship\n",
+        encoding="utf-8",
+    )
+    monkeypatch.delenv("BUFFER_TOKEN", raising=False)
+
+    result = poller.delivery_readback(tmp_path, item_id=item_id, now=_NOW)
+
+    assert result["ok"] is False
+    assert result["read_only"] is True
+    assert result["error"] == "buffer_token_unavailable"
+    assert result["network_attempted"] is False
+
+class TestDeliveryReadbackWorkflowIsolation:
+    WF = Path(__file__).resolve().parents[1] / ".github/workflows/marketing-publish.yml"
+
+    def _workflow(self):
+        import yaml
+        return yaml.safe_load(self.WF.read_text(encoding="utf-8"))
+
+    def test_workflow_exposes_a_bounded_readback_input(self):
+        workflow = self._workflow()
+        inputs = workflow[True]["workflow_dispatch"]["inputs"]
+        assert "delivery_readback_item" in inputs
+        assert inputs["delivery_readback_item"]["default"] == ""
+
+    def test_readback_runs_in_a_read_only_job_and_publish_job_is_excluded(self):
+        workflow = self._workflow()
+        jobs = workflow["jobs"]
+        assert "delivery-readback" in jobs
+        readback = jobs["delivery-readback"]
+        assert readback["permissions"] == {"contents": "read"}
+        assert "delivery_readback_item" in str(readback.get("if", ""))
+        assert "delivery_readback_item" in str(jobs["publish"].get("if", ""))
+        assert re.search(r"!\s*=\s*''|!=\s*''", str(readback.get("if", "")))
+        assert re.search(r"==\s*''", str(jobs["publish"].get("if", "")))
+
+    def test_readback_job_has_one_query_command_and_no_sender_or_writer(self):
+        workflow = self._workflow()
+        readback = workflow["jobs"]["delivery-readback"]
+        steps = readback["steps"]
+        checkout = [s for s in steps if str(s.get("uses", "")).startswith("actions/checkout@")][0]
+        assert checkout.get("with", {}).get("persist-credentials") is False
+        all_run = "\n".join(str(s.get("run") or "") for s in steps)
+        assert all_run.count("--delivery-readback-item") == 1
+        assert "scripts.marketing_metrics_poll" in all_run
+        for forbidden in (
+            "scripts.marketing_publisher", "scripts.marketing_recall",
+            "git push", "git commit", "--live", "createPost", "deletePost",
+        ):
+            assert forbidden not in all_run
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Due-since-success reconciliation (no clock-only/global-watermark semantics)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _successful_delivery(provider_id: str, observed_at: str) -> dict:
+    return {
+        "schema": "marketing.provider_delivery/v1",
+        "read_ok": True,
+        "state": "accepted_unconfirmed",
+        "provider_id": provider_id,
+        "channel_id": "chan-flagship",
+        "provider_status": "scheduled",
+        "scheduling_type": "automatic",
+        "notification_status": None,
+        "due_at": observed_at,
+        "provider_sent": False,
+        "provider_sent_at": None,
+        "external_url": None,
+        "x_visible": None,
+        "x_visible_at": None,
+        "channel_ready": True,
+        "channel": {
+            "id": "chan-flagship", "is_disconnected": False,
+            "is_locked": False, "is_queue_paused": False,
+            "has_active_member_device": True,
+        },
+        "publishing_error": None,
+        "observed_at": observed_at,
+        "error": None,
+    }
+
+
+class _DuePublisher:
+    def __init__(self):
+        self.calls = []
+
+    def fetch_post_metrics(self, remote_id, *, expected_channel_id=None, now=None):
+        self.calls.append(remote_id)
+        observed_at = (now or _NOW).strftime(_ISO)
+        delivery = _successful_delivery(remote_id, observed_at)
+        return _metrics_ok(None, {}, updated=None, delivery=delivery)
+
+
+def _write_flagship_channel(tmp_path: Path) -> None:
+    cfg = tmp_path / "config" / "marketing.yml"
+    cfg.parent.mkdir(parents=True, exist_ok=True)
+    cfg.write_text(
+        "publish:\n  channels:\n    flagship: chan-flagship\n",
+        encoding="utf-8",
+    )
+
+
+def test_due_reconciliation_runs_after_a_missed_clock_slot(tmp_path):
+    import scripts.marketing_metrics_poll as poller
+
+    late = datetime(2026, 7, 23, 19, 34, tzinfo=timezone.utc)
+    _seed_posted(tmp_path, external_id="buf-late", at=late)
+    _write_flagship_channel(tmp_path)
+    publisher = _DuePublisher()
+
+    summary = poller.poll(
+        tmp_path, now=late, publisher=publisher, due_only=True,
+        daily_call_budget=8)
+
+    assert publisher.calls == ["buf-late"]
+    assert summary["due"] == 1
+    assert summary["polled"] == 1
+    assert summary["stopped"] is None
+
+
+def test_due_reconciliation_services_oldest_unobserved_item_first(tmp_path):
+    import scripts.marketing_metrics_poll as poller
+
+    for hour, remote_id in [(12, "buf-old"), (13, "buf-mid"), (14, "buf-new")]:
+        at = datetime(2026, 7, 23, hour, 0, tzinfo=timezone.utc)
+        _seed_posted(tmp_path, external_id=remote_id, at=at, text=remote_id)
+    _write_flagship_channel(tmp_path)
+    publisher = _DuePublisher()
+
+    summary = poller.poll(
+        tmp_path, now=_NOW, publisher=publisher, due_only=True,
+        max_calls=1, daily_call_budget=99)
+
+    assert summary["due"] == 3
+    assert publisher.calls == ["buf-old"]
+
+
+def test_fresh_successful_observation_is_not_polled_again(tmp_path):
+    import json
+    import scripts.marketing_metrics_poll as poller
+
+    _seed_posted(tmp_path, external_id="buf-fresh", at=_NOW)
+    _write_flagship_channel(tmp_path)
+    p = tmp_path / "data" / "marketing" / "post_metrics.jsonl"
+    p.write_text(json.dumps({
+        "remote_id": "buf-fresh", "account": "flagship",
+        "polled_at": "2026-07-23T14:30:00Z", "ok": True, "metrics": {},
+        "delivery": _successful_delivery("buf-fresh", "2026-07-23T14:30:00Z"),
+    }) + "\n", encoding="utf-8")
+    publisher = _DuePublisher()
+
+    summary = poller.poll(
+        tmp_path, now=_NOW, publisher=publisher, due_only=True,
+        daily_call_budget=8)
+
+    assert publisher.calls == []
+    assert summary["due"] == 0
+    assert summary["deferred_fresh"] == 1
+    assert summary["polled"] == 0
+
+
+def test_graphql_or_http_failure_never_counts_as_successful_reconciliation(tmp_path):
+    import json
+    import scripts.marketing_metrics_poll as poller
+
+    _seed_posted(tmp_path, external_id="buf-failed", at=_NOW)
+    _write_flagship_channel(tmp_path)
+    p = tmp_path / "data" / "marketing" / "post_metrics.jsonl"
+    p.write_text(json.dumps({
+        "remote_id": "buf-failed", "account": "flagship",
+        "polled_at": "2026-07-23T14:55:00Z", "ok": False, "metrics": {},
+        "delivery": {
+            "schema": "marketing.provider_delivery/v1", "read_ok": False,
+            "state": "unknown_degraded", "provider_id": "buf-failed",
+            "observed_at": "2026-07-23T14:55:00Z",
+            "error": "graphql_error: provider unavailable",
+        },
+    }) + "\n", encoding="utf-8")
+    publisher = _DuePublisher()
+
+    summary = poller.poll(
+        tmp_path, now=_NOW, publisher=publisher, due_only=True,
+        daily_call_budget=8)
+
+    assert publisher.calls == ["buf-failed"]
+    assert summary["due"] == 1
+
+
+def test_partial_batch_does_not_advance_past_unfinished_targets(tmp_path):
+    import scripts.marketing_metrics_poll as poller
+
+    for index in range(3):
+        _seed_posted(
+            tmp_path, external_id=f"buf-partial-{index}", at=_NOW,
+            text=f"distinct reconciliation item {index}")
+    _write_flagship_channel(tmp_path)
+    first = _DuePublisher()
+
+    first_summary = poller.poll(
+        tmp_path, now=_NOW, publisher=first, due_only=True,
+        max_calls=1, daily_call_budget=99)
+    second = _DuePublisher()
+    second_summary = poller.poll(
+        tmp_path, now=_NOW, publisher=second, due_only=True,
+        max_calls=2, daily_call_budget=99)
+
+    assert first_summary["polled"] == 1
+    assert first_summary["stopped"] == "max_calls"
+    assert len(first.calls) == 1
+    assert set(second.calls).isdisjoint(first.calls)
+    assert len(second.calls) == 2
+    assert second_summary["polled"] == 2
+    assert second_summary["stopped"] is None
+
+
+def test_rolling_budget_reserves_shared_token_capacity(tmp_path):
+    import json
+    import scripts.marketing_metrics_poll as poller
+
+    _seed_posted(tmp_path, external_id="buf-budget", at=_NOW)
+    _write_flagship_channel(tmp_path)
+    p = tmp_path / "data" / "marketing" / "post_metrics.jsonl"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    rows = [
+        {"remote_id": f"older-{i}", "polled_at": "2026-07-23T14:45:00Z",
+         "ok": False, "metrics": {}, "note": "poll_failed: timeout"}
+        for i in range(8)
+    ]
+    p.write_text("\n".join(json.dumps(row) for row in rows) + "\n", encoding="utf-8")
+    publisher = _DuePublisher()
+
+    summary = poller.poll(
+        tmp_path, now=_NOW, publisher=publisher, due_only=True,
+        daily_call_budget=8)
+
+    assert publisher.calls == []
+    assert summary["due"] == 1
+    assert summary["recent_calls"] == 8
+    assert summary["budget_remaining"] == 0
+    assert summary["stopped"] == "rolling_budget"

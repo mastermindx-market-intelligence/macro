@@ -1,0 +1,411 @@
+{
+ "authority": {
+  "may_escalate": false,
+  "may_gate": false,
+  "may_rank": false,
+  "may_size": false,
+  "may_trade": false,
+  "tier": "display"
+ },
+ "cohort": {
+  "bounds_note": "breadth bounds are whole-population bounds over unmeasured members, not confidence intervals",
+  "expected_n": 11,
+  "horizon": "rs_63d",
+  "measured_n": 9,
+  "missing": [
+   [
+    "XLRE",
+    "missing_input"
+   ],
+   [
+    "XLU",
+    "thin_history"
+   ]
+  ],
+  "outside_cohort": [],
+  "positive_breadth": {
+   "bounds": [
+    0.45454545454545453,
+    0.6363636363636364
+   ],
+   "bounds_kind": "identification_bounds_not_confidence_interval",
+   "coverage": 0.8181818181818182,
+   "k_over_n": 0.5555555555555556
+  },
+  "window_sessions": 63
+ },
+ "confirmed_events": {
+  "as_of": "2026-10-09",
+  "n_active": 2,
+  "reason": null,
+  "rows": [
+   {
+    "asof": "2026-10-09",
+    "day_n": 14,
+    "event_type": null,
+    "from_key": "ai_semis",
+    "id": "xlk-xle:handoff",
+    "sector": "Technology",
+    "severity": "major",
+    "started": "2026-09-21",
+    "to_key": "energy"
+   },
+   {
+    "asof": "2026-10-09",
+    "day_n": 6,
+    "event_type": "cross_handoff",
+    "from_key": "disc",
+    "id": "xly-xlp:cross",
+    "sector": "Consumer Discretionary",
+    "severity": "notable",
+    "started": "2026-10-01",
+    "to_key": "staples"
+   }
+  ],
+  "source": "/marketdata/rotation_events.json#active",
+  "status": "available",
+  "truncated": false
+ },
+ "definition_id": "leadership_rotation_context/1",
+ "early_context": {
+  "as_of": "2026-10-09",
+  "context_only": true,
+  "coverage": {
+   "evaluable_2s": 2,
+   "groups": {
+    "broadening_proxy": {
+     "evaluable_2s": 0,
+     "positive_2s": 0,
+     "registered": 0
+    },
+    "defensive_sector": {
+     "evaluable_2s": 1,
+     "positive_2s": 0,
+     "registered": 1
+    },
+    "retailer_context": {
+     "evaluable_2s": 1,
+     "positive_2s": 1,
+     "registered": 1
+    }
+   },
+   "missing_pair_ids": [],
+   "positive_2s": 1,
+   "registered_pairs": 2
+  },
+  "reason": null,
+  "reason_codes": [
+   "PARTIAL_COVERAGE"
+  ],
+  "source": "/marketdata/rotation_events.json#early_context",
+  "state": "watch",
+  "status": "available"
+ },
+ "generation": {
+  "benchmark": "SPY",
+  "cohort_id": "us_sectors_11",
+  "history_as_of": "2026-10-09",
+  "history_schema": "sector_cycles.rs_history.v1",
+  "id": "2026-10-09|SPY|us_sectors_11",
+  "price_basis": "total_return",
+  "session_end": "2026-10-09"
+ },
+ "groups": [
+  {
+   "current": {
+    "metric": "relative_wealth_pct",
+    "rank": 8,
+    "reason": null,
+    "rs_21d": -0.6,
+    "rs_63d": -1.4,
+    "status": "measured",
+    "units": "pct",
+    "z": -1.1123492427862898
+   },
+   "group_id": "XLB",
+   "group_kind": "sector",
+   "name_en": "Materials",
+   "name_zh": "原材料",
+   "reconstruction": {
+    "first": "2026-10-07",
+    "last": "2026-10-09",
+    "mode": "reconstructed_price_history",
+    "naturally_observed": false,
+    "points": 3,
+    "reason": null,
+    "source": "/sectordata/sector_cycles.json#sectors[].rs_history",
+    "status": "available"
+   }
+  },
+  {
+   "current": {
+    "metric": "relative_wealth_pct",
+    "rank": 3,
+    "reason": null,
+    "rs_21d": 1.1,
+    "rs_63d": 2.3,
+    "status": "measured",
+    "units": "pct",
+    "z": 0.7304980101880112
+   },
+   "group_id": "XLC",
+   "group_kind": "sector",
+   "name_en": "Communication Services",
+   "name_zh": "通讯服务",
+   "reconstruction": {
+    "first": "2026-10-07",
+    "last": "2026-10-09",
+    "mode": "reconstructed_price_history",
+    "naturally_observed": false,
+    "points": 3,
+    "reason": null,
+    "source": "/sectordata/sector_cycles.json#sectors[].rs_history",
+    "status": "available"
+   }
+  },
+  {
+   "current": {
+    "metric": "relative_wealth_pct",
+    "rank": 1,
+    "reason": null,
+    "rs_21d": 2.4,
+    "rs_63d": 4.1,
+    "status": "measured",
+    "units": "pct",
+    "z": 1.6270182954187522
+   },
+   "group_id": "XLE",
+   "group_kind": "sector",
+   "name_en": "Energy",
+   "name_zh": "能源",
+   "reconstruction": {
+    "first": "2026-10-07",
+    "last": "2026-10-09",
+    "mode": "reconstructed_price_history",
+    "naturally_observed": false,
+    "points": 3,
+    "reason": null,
+    "source": "/sectordata/sector_cycles.json#sectors[].rs_history",
+    "status": "available"
+   }
+  },
+  {
+   "current": {
+    "metric": "relative_wealth_pct",
+    "rank": 4,
+    "reason": null,
+    "rs_21d": 0.3,
+    "rs_63d": 1.2,
+    "status": "measured",
+    "units": "pct",
+    "z": 0.18262450254700283
+   },
+   "group_id": "XLF",
+   "group_kind": "sector",
+   "name_en": "Financials",
+   "name_zh": "金融",
+   "reconstruction": {
+    "first": "2026-10-07",
+    "last": "2026-10-09",
+    "mode": "reconstructed_price_history",
+    "naturally_observed": false,
+    "points": 3,
+    "reason": null,
+    "source": "/sectordata/sector_cycles.json#sectors[].rs_history",
+    "status": "available"
+   }
+  },
+  {
+   "current": {
+    "metric": "relative_wealth_pct",
+    "rank": 7,
+    "reason": null,
+    "rs_21d": -0.2,
+    "rs_63d": -0.7,
+    "status": "measured",
+    "units": "pct",
+    "z": -0.7637024651965572
+   },
+   "group_id": "XLI",
+   "group_kind": "sector",
+   "name_en": "Industrials",
+   "name_zh": "工业",
+   "reconstruction": {
+    "first": "2026-10-07",
+    "last": "2026-10-09",
+    "mode": "reconstructed_price_history",
+    "naturally_observed": false,
+    "points": 3,
+    "reason": null,
+    "source": "/sectordata/sector_cycles.json#sectors[].rs_history",
+    "status": "available"
+   }
+  },
+  {
+   "current": {
+    "metric": "relative_wealth_pct",
+    "rank": 6,
+    "reason": null,
+    "rs_21d": -0.5,
+    "rs_63d": 0.0,
+    "status": "measured",
+    "units": "pct",
+    "z": -0.4150556876068245
+   },
+   "group_id": "XLK",
+   "group_kind": "sector",
+   "name_en": "Technology",
+   "name_zh": "科技",
+   "reconstruction": {
+    "first": "2026-10-07",
+    "last": "2026-10-09",
+    "mode": "reconstructed_price_history",
+    "naturally_observed": false,
+    "points": 3,
+    "reason": null,
+    "source": "/sectordata/sector_cycles.json#sectors[].rs_history",
+    "status": "available"
+   }
+  },
+  {
+   "current": {
+    "metric": "relative_wealth_pct",
+    "rank": 9,
+    "reason": null,
+    "rs_21d": -1.0,
+    "rs_63d": -2.2,
+    "status": "measured",
+    "units": "pct",
+    "z": -1.5108027028888413
+   },
+   "group_id": "XLP",
+   "group_kind": "sector",
+   "name_en": "Consumer Staples",
+   "name_zh": "必需消费",
+   "reconstruction": {
+    "first": "2026-10-07",
+    "last": "2026-10-09",
+    "mode": "reconstructed_price_history",
+    "naturally_observed": false,
+    "points": 3,
+    "reason": null,
+    "source": "/sectordata/sector_cycles.json#sectors[].rs_history",
+    "status": "available"
+   }
+  },
+  {
+   "current": {
+    "metric": "relative_wealth_pct",
+    "rank": null,
+    "reason": "missing_input",
+    "rs_21d": null,
+    "rs_63d": null,
+    "status": "unmeasured",
+    "units": "pct",
+    "z": null
+   },
+   "group_id": "XLRE",
+   "group_kind": "sector",
+   "name_en": "Real Estate",
+   "name_zh": "房地产",
+   "reconstruction": {
+    "first": null,
+    "last": null,
+    "mode": "reconstructed_price_history",
+    "naturally_observed": false,
+    "points": 0,
+    "reason": "missing_input",
+    "source": "/sectordata/sector_cycles.json#sectors[].rs_history",
+    "status": "unavailable"
+   }
+  },
+  {
+   "current": {
+    "metric": "relative_wealth_pct",
+    "rank": null,
+    "reason": "thin_history",
+    "rs_21d": null,
+    "rs_63d": null,
+    "status": "unmeasured",
+    "units": "pct",
+    "z": null
+   },
+   "group_id": "XLU",
+   "group_kind": "sector",
+   "name_en": "Utilities",
+   "name_zh": "公用事业",
+   "reconstruction": {
+    "first": null,
+    "last": null,
+    "mode": "reconstructed_price_history",
+    "naturally_observed": false,
+    "points": 0,
+    "reason": "thin_history",
+    "source": "/sectordata/sector_cycles.json#sectors[].rs_history",
+    "status": "unavailable"
+   }
+  },
+  {
+   "current": {
+    "metric": "relative_wealth_pct",
+    "rank": 5,
+    "reason": null,
+    "rs_21d": 0.2,
+    "rs_63d": 0.9,
+    "status": "measured",
+    "units": "pct",
+    "z": 0.03320445500854601
+   },
+   "group_id": "XLV",
+   "group_kind": "sector",
+   "name_en": "Health Care",
+   "name_zh": "医疗保健",
+   "reconstruction": {
+    "first": "2026-10-07",
+    "last": "2026-10-09",
+    "mode": "reconstructed_price_history",
+    "naturally_observed": false,
+    "points": 3,
+    "reason": null,
+    "source": "/sectordata/sector_cycles.json#sectors[].rs_history",
+    "status": "available"
+   }
+  },
+  {
+   "current": {
+    "metric": "relative_wealth_pct",
+    "rank": 2,
+    "reason": null,
+    "rs_21d": 1.7,
+    "rs_63d": 3.3,
+    "status": "measured",
+    "units": "pct",
+    "z": 1.2285648353162006
+   },
+   "group_id": "XLY",
+   "group_kind": "sector",
+   "name_en": "Consumer Discretionary",
+   "name_zh": "非必需消费",
+   "reconstruction": {
+    "first": "2026-10-07",
+    "last": "2026-10-09",
+    "mode": "reconstructed_price_history",
+    "naturally_observed": false,
+    "points": 3,
+    "reason": null,
+    "source": "/sectordata/sector_cycles.json#sectors[].rs_history",
+    "status": "available"
+   }
+  }
+ ],
+ "research_estimate": {
+  "reason": "no_admitted_model",
+  "status": "unavailable"
+ },
+ "schema": "leadership_rotation_context.measured_group_read/v1",
+ "source_roots": [
+  "engine.rotation_events",
+  "engine.sector_cycles"
+ ],
+ "status": "partial"
+}
