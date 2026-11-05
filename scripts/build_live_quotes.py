@@ -237,7 +237,16 @@ DISPLAY_BOARD_PAYLOAD_DIR = "premiumdata"
 # same ~183B/symbol (vs the 500KB budget), <=24 Yahoo batch requests plus <=5
 # Polygon chunks, ~13s at ~37 symbols/s — still cheap for both producers; the
 # orchestrator gate above is unaffected for the same reason.
-DISPLAY_BOARD_CAP = 480
+# Cap raised 480 -> 512 (2026-11-05) without relaxing the 15% safety guard.
+# Exact hosted CI merge tree 95f88dbaf07c (head 0f6d46ae) and updated-main
+# merge tree 213513a0fed6 (main 946cf834) each contain 415 uncapped board
+# names + 35 tile inputs = 431 distinct display symbols after deduplication.
+# The old 480 limit allowed 408 (85%) before the guard; 512 allows 435, leaving
+# 97 board slots (18.9% headroom), with zero extra requests for today's 415.
+# Fresh read-only same-producer probe: 431 requested / 385 resolved in 8.248s,
+# 68,085 serialized bytes (45s VPS display stage / 500,000-byte browser limits).
+# Observed for this current universe, NOT a max-cap or p95 runtime claim.
+DISPLAY_BOARD_CAP = 512
 
 
 def payload_html(path: Path) -> str:

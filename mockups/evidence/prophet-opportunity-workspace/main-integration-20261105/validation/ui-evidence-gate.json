@@ -1,0 +1,29 @@
+{
+  "source_head": "ee5d7f68229ad14e9d384af61bafc3701df70f65",
+  "base": "b48b5dc562cf1e2600699fc24a445709e18ef8fe",
+  "tested_staged_tree": "83cfc95c12800f5077494f208685b6e47e1fdfa3",
+  "exit": 0,
+  "seconds": 2.88,
+  "diff_sha256": "7668de568d738f69ee2e083ceff8c18f99318106eef372d870b03939ee624a1d",
+  "diff_bytes": 24934968,
+  "source_docs_whitespace_exit": 0,
+  "native_html_whitespace": {
+    "count": 486,
+    "files": [
+      "site/us_stocks.html"
+    ],
+    "types": [
+      "trailing whitespace."
+    ],
+    "classification": "Ad hoc git diff --check warnings in exact native-generated HTML; preserve producer bytes and validate source/docs separately."
+  },
+  "command": [
+    "python",
+    "-m",
+    "scripts.check_ui_visual_evidence",
+    "--diff-file",
+    "/tmp/prophet-integration-ui-gate-ee5d7f.diff",
+    "--repo-root",
+    "/home/ubuntu0/lanes/wt/d03-9495-main-integration-c2-20261104"
+  ]
+}

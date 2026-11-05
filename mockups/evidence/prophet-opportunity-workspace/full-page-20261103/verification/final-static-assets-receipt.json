@@ -1,0 +1,113 @@
+{
+  "base_build_head": "39dca3226316c81060eb9b17314b9ee340f6fcf3",
+  "source_head": "5370b9f51740fe87d25da33d46552cd33b628596",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-page-revamp-final-validation-20261103",
+  "base_receipt_sha256": "64c24f0fd9f3e8be99158d17c663c600b1bee4fbb515ff6b8f9839197f4aa392",
+  "source_delta": [
+    "site/theme.css",
+    "templates/theme.css"
+  ],
+  "before": {
+    "site/us_stocks.html": {
+      "sha256": "da2865c3684dcf0a65d4d752d67fea1fb5c8a46df6725e20d59ee318855cb0e8",
+      "bytes": 798914
+    },
+    "site/premiumdata/us_stocks.json": {
+      "sha256": "421ab3f966d02b9cc6ee77ac67c6daa19ed5a00a768386ea8920c59ffdc3856e",
+      "bytes": 11222304
+    },
+    "site/factordata/us_standouts.json": {
+      "sha256": "3004ae4d024c3023e4ed38037753349d5b06ba28728353765cc8a1d285333bb9",
+      "bytes": 2535594
+    },
+    "templates/theme.css": {
+      "sha256": "0865b7e9e62e9de3be52e7807cff40242f2e4321a3efec3e400cc0b577811df2",
+      "bytes": 231243
+    },
+    "site/theme.css": {
+      "sha256": "0865b7e9e62e9de3be52e7807cff40242f2e4321a3efec3e400cc0b577811df2",
+      "bytes": 231243
+    },
+    "templates/theme.js": {
+      "sha256": "24ddb7ffaf378f62538855c37eae4a905cbe09f2ab8542d5e1b821731d159fd2",
+      "bytes": 427407
+    },
+    "site/theme.js": {
+      "sha256": "3c04cf0a6ae248643d2a00e46e9ab63d459b8489699033ede460f9a000ef5743",
+      "bytes": 298369
+    },
+    "templates/chat.html": {
+      "sha256": "fcd6b1275e91461f7b28851c892bb58c202c0050dc3e19021d7735d72a29087c",
+      "bytes": 97532
+    },
+    "site/chat.html": {
+      "sha256": "fcd6b1275e91461f7b28851c892bb58c202c0050dc3e19021d7735d72a29087c",
+      "bytes": 97532
+    }
+  },
+  "scope": "Completed four-module native build plus a CSS-only canonical asset follow-up. Data and protected fragments are unchanged. This is not a new full data build or production acceptance.",
+  "started_at": 1793682458.524079,
+  "steps": [
+    {
+      "command": [
+        "git",
+        "merge",
+        "--ff-only",
+        "5370b9f51740fe87d25da33d46552cd33b628596"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "scripts.optimize_assets"
+      ],
+      "exit": 0,
+      "seconds": 33.96
+    }
+  ],
+  "tool_sha256": "3a0e2f9c0474683dd6f94fc0ef0a6e04aa5500c8cbae692df5b699a19c0ae75c",
+  "prior_asset_receipt_sha256": "4bdcea3b88c0c6bf1eb4143322818bfc784d8c7fc4fa7b74ee5de35ab5f09bb5",
+  "artifacts": {
+    "site/us_stocks.html": {
+      "sha256": "12da851f12dea2570ec24291cbc59a513bd1fcb32ee82c964875dfbd9c5447af",
+      "bytes": 798914
+    },
+    "site/premiumdata/us_stocks.json": {
+      "sha256": "421ab3f966d02b9cc6ee77ac67c6daa19ed5a00a768386ea8920c59ffdc3856e",
+      "bytes": 11222304
+    },
+    "site/factordata/us_standouts.json": {
+      "sha256": "3004ae4d024c3023e4ed38037753349d5b06ba28728353765cc8a1d285333bb9",
+      "bytes": 2535594
+    },
+    "templates/theme.css": {
+      "sha256": "321eca2fafe69c5aa9d810241a6f7d955a4e328c3f98e706d919a8035a212a82",
+      "bytes": 231543
+    },
+    "site/theme.css": {
+      "sha256": "321eca2fafe69c5aa9d810241a6f7d955a4e328c3f98e706d919a8035a212a82",
+      "bytes": 231543
+    },
+    "templates/theme.js": {
+      "sha256": "24ddb7ffaf378f62538855c37eae4a905cbe09f2ab8542d5e1b821731d159fd2",
+      "bytes": 427407
+    },
+    "site/theme.js": {
+      "sha256": "3c04cf0a6ae248643d2a00e46e9ab63d459b8489699033ede460f9a000ef5743",
+      "bytes": 298369
+    },
+    "templates/chat.html": {
+      "sha256": "bb755ece46f49c9c0331383a2b46fe1177a9c7e793c847d4a53dffa7c61fb506",
+      "bytes": 97532
+    },
+    "site/chat.html": {
+      "sha256": "bb755ece46f49c9c0331383a2b46fe1177a9c7e793c847d4a53dffa7c61fb506",
+      "bytes": 97532
+    }
+  },
+  "protected_and_model_unchanged": true,
+  "shared_javascript_unchanged": true,
+  "completed_at": 1793682501.75118
+}

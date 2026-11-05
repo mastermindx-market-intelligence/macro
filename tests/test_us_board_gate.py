@@ -48,12 +48,11 @@ from tests.test_dashboard_template_render import _env, _board_row, _base_vm  # n
 
 # A card's identity is its whole rendered body (the `<a class="pvcard …">…</a>`
 # block: ticker, name, price, verb, edge, marks — everything), NOT its ticker.
-# This is a single flat board (unlike the ETF/China multi-panel desks where one
-# ticker legitimately appears in several boards), so ticker and row happen to
-# coincide here — but keying on the full body is still what
-# docs/TIER_PREVIEW_PATTERN.md's checklist step 7 requires, and it is what
-# actually catches a markup regression that keys the wrong span.
-CARD_ROW = re.compile(r'<(?:a|article) class="pvcard.*?</(?:a|article)>', re.S)
+# The candidate board is one population; the full page also has separately
+# split leader observations and research-pool records for some of the same
+# tickers. Full-body keys enforce docs/TIER_PREVIEW_PATTERN.md checklist step 7
+# without confusing those records, and detect copies outside the original grid.
+CARD_ROW = re.compile(r'<(?P<card_tag>a|article) class="pvcard.*?</(?P=card_tag)>', re.S)
 TICKER_ATTR = re.compile(r'data-ticker="([^"]*)"')
 SCRIPT_TAG = re.compile(r'<script\b.*?</script>', re.S)
 
@@ -68,8 +67,22 @@ def _strip_scripts(html: str) -> str:
     return SCRIPT_TAG.sub("", html)
 
 
+def _card_content_key(html: str) -> str:
+    # A row can occur in Today, Screener and their paid payloads. Normalize only
+    # caller-owned DOM occurrence IDs; retain every fact, action and source ID.
+    html = re.sub(r' (?:id|data-po-id)="(?:po-)?(?:board|today|screener)(?:-paid)?-\d+(?:-setup)?"', '', html)
+    return " ".join(html.split())
+
+
 def _keys(html: str) -> list[str]:
-    return [" ".join(m.group(0).split()) for m in CARD_ROW.finditer(_strip_scripts(html))]
+    return [_card_content_key(m.group(0)) for m in CARD_ROW.finditer(_strip_scripts(html))]
+
+
+def test_card_identity_keeps_nested_link_tail_but_ignores_dom_occurrence():
+    first = '<article class="pvcard po-card" id="po-today-0" data-po-id="today-0"><a href="stock.html#ABC">ABC</a><p>risk A</p><details id="today-0-setup">terms</details></article>'
+    paid = first.replace('today-0', 'screener-paid-6')
+    assert _keys(first) == _keys(paid), "a new DOM occurrence must not hide a leaked row"
+    assert _keys(first) != _keys(paid.replace('risk A', 'risk B')), "content after the stock link must remain in the identity"
 
 
 def _candidate_card_surface(html: str) -> str:
@@ -471,7 +484,7 @@ def test_mixed_live_group_copy_preserves_near_buy_and_lossless_tier_split(previe
                     if tag == "article":
                         self.depth -= 1
                         if not self.depth:
-                            self.cards.append(" ".join("".join(self.parts).split()))
+                            self.cards.append(_card_content_key("".join(self.parts)))
                             self.parts = []
 
             def handle_data(self, data):
@@ -496,8 +509,8 @@ def test_mixed_live_group_copy_preserves_near_buy_and_lossless_tier_split(previe
     public_cards = card_bodies(public)
     assert whole_cards == public_cards + card_bodies(tail)
     assert [TICKER_ATTR.search(card).group(1) for card in whole_cards] == ["MSCI", "ADSK", "ABBV"]
-    assert [re.search(r'class="pv-chip"[^>]*>\s*<span class="l-en">([^<]+)', card).group(1)
-            for card in whole_cards] == ["Near", "Buy", "Buy"]
+    assert [re.search(r'class="po-chip"[^>]*>\s*<span class="l-en">([^<]+)', card).group(1)
+            for card in whole_cards] == ["Near", "Buy · partial", "Buy"]
     assert gate["stage_counts"]["live"] == 3
     assert len(public_cards) == preview_rows
     assert source == before
@@ -518,7 +531,8 @@ def test_mixed_live_group_copy_preserves_near_buy_and_lossless_tier_split(previe
             assert "请查看每张卡片的入场判读及日期" in heading
             assert "Buy and Near" in heading and "Near requires confirmation" in heading
             assert "买入与临近" in heading and "临近仍需确认" in heading
-            assert "not more likely to win" in heading and "并不代表更容易获胜" in heading
+            assert "not entry permission or a win probability" in heading
+            assert "并非入场许可或胜率" in heading
             assert "entry window is open" not in heading
             assert "入场窗口" not in heading and "现在可操作" not in heading
         if surface != "public" or preview_rows:
@@ -617,15 +631,55 @@ def _shipped_payload():
     return payload
 
 
-def test_shipped_shell_leaks_no_locked_ticker():
+def _assert_no_shipped_candidate_row_leak(shell, payload):
+    """Check paid content across the whole page, including outside its grid.
+
+    Candidate, leader-observation and research-pool previews are separate
+    populations. A shared ticker is not a shared record (TIER_PREVIEW_PATTERN
+    step 7); compare complete card bodies and prove parser coverage instead.
+    """
+    locked_keys = _keys(payload.get("cards_html") or "")
+    assert payload.get("locked", 0) > 0, "no locked rows is a vacuous leak check"
+    assert len(locked_keys) == payload["locked"], (
+        f"card parser covered {len(locked_keys)} of {payload['locked']} locked rows")
+    assert len(set(locked_keys)) == len(locked_keys), "paid rows have duplicate identities"
+    leaked = set(locked_keys) & set(_keys(shell))
+    assert not leaked, f"{len(leaked)} locked candidate rows reachable in the shipped shell"
+
+
+def test_shipped_shell_leaks_no_locked_candidate_row():
     payload = _shipped_payload()
     if not SHELL.exists():
         pytest.skip("site/us_stocks.html not built in this checkout")
     shell = SHELL.read_text(encoding="utf-8")
-    locked_tickers = {r["ticker"] for r in payload.get("rows", []) if r.get("ticker")}
-    assert locked_tickers, "a gated payload with no locked rows is a vacuous pass"
-    leaked = sorted(tk for tk in locked_tickers if f'data-ticker="{tk}"' in shell)
-    assert leaked == [], f"locked tickers reachable in the shipped shell: {leaked[:5]}"
+    _assert_no_shipped_candidate_row_leak(shell, payload)
+
+
+def test_shipped_row_guard_allows_distinct_research_records_for_same_ticker():
+    paid = '<article class="pvcard po-card" data-ticker="ABC"><a href="stock.html#ABC">ABC</a><p>Paid entry assessment</p></article>'
+    shell = '<div class="plo-row" data-ticker="ABC">Leader observation</div><div class="ucp-row" data-ticker="ABC">Research-pool observation</div>'
+    _assert_no_shipped_candidate_row_leak(shell, {"cards_html": paid, "locked": 1})
+
+
+def test_shipped_row_guard_checks_record_body_not_just_card_ticker():
+    paid = '<article class="pvcard po-card" data-ticker="ABC"><p>Assessment A</p></article>'
+    distinct = paid.replace('Assessment A', 'Assessment B')
+    _assert_no_shipped_candidate_row_leak(distinct, {"cards_html": paid, "locked": 1})
+
+
+@pytest.mark.parametrize("ticker", ["ABC", ""])
+def test_shipped_row_guard_catches_copy_outside_grid_with_new_dom_id(ticker):
+    paid = f'<article class="pvcard po-card" id="po-screener-paid-7" data-po-id="screener-paid-7" data-ticker="{ticker}"><a href="stock.html#ABC">Company</a><p>Paid entry assessment</p></article>'
+    copied = paid.replace('screener-paid-7', 'today-0')
+    shell = '<html><div id="us-cand-grid"></div><aside>' + copied + '</aside></html>'
+    with pytest.raises(AssertionError, match="locked candidate rows reachable"):
+        _assert_no_shipped_candidate_row_leak(shell, {"cards_html": paid, "locked": 1})
+
+
+@pytest.mark.parametrize("cards,locked", [("", 1), ('<section class="changed-card">Paid</section>', 1), ("", 0)])
+def test_shipped_row_guard_refuses_missing_parser_coverage(cards, locked):
+    with pytest.raises(AssertionError, match="parser covered|vacuous"):
+        _assert_no_shipped_candidate_row_leak("", {"cards_html": cards, "locked": locked})
 
 
 def _shell_board_blocks():
@@ -640,7 +694,7 @@ def _shell_board_blocks():
     start = shell.find('id="us-stocktable-data"')
     table = (re.findall(r'"ticker":\s*"([^"]+)"', shell[start:shell.find("</script>", start)])
              if start >= 0 else [])
-    cards = [m.group(1) for m in TICKER_ATTR.finditer("".join(CARD_ROW.findall(_candidate_card_surface(shell))))]
+    cards = [m.group(1) for m in TICKER_ATTR.finditer("".join([m.group(0) for m in CARD_ROW.finditer(_candidate_card_surface(shell))]))]
     return payload, cards, table
 
 
@@ -1236,7 +1290,7 @@ def test_candidate_membership_detector_preserves_real_plan_population():
     """The fix is structural scoping, not deleting the distinct plan fixture."""
     html = _render_shell({"buy": _rows(3), "eligible": 3}, None)
     assert _tickers_in(html) == {"TIC0", "TIC1", "TIC2"}
-    all_cards = "\n".join(CARD_ROW.findall(_strip_scripts(html)))
+    all_cards = "\n".join([m.group(0) for m in CARD_ROW.finditer(_strip_scripts(html))])
     assert 'data-ticker="ACME"' in all_cards and 'data-ticker="ZEUS"' in all_cards
     assert set(TICKER_ATTR.findall(_candidate_card_surface(html))) == {"TIC0", "TIC1", "TIC2"}
 

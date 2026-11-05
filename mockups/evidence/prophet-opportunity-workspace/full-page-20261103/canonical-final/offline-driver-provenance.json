@@ -1,0 +1,10 @@
+{
+  "canonical_module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+  "wrapper_sha256": "2b23ceedaa83d90d68e7d277805a93ea15b90c1183f8169def832be51456d315",
+  "native_pages": {
+    "us_stocks.html": "12da851f12dea2570ec24291cbc59a513bd1fcb32ee82c964875dfbd9c5447af",
+    "chat.html": "bb755ece46f49c9c0331383a2b46fe1177a9c7e793c847d4a53dffa7c61fb506"
+  },
+  "scope": "Canonical v2 capture producer; an outer browser-context network policy blocks non-loopback requests, service workers and protected payload paths. Rendering, observed states, screenshots and manifest generation use the canonical producer unchanged. This is not authenticated or production acceptance.",
+  "exit": 0
+}

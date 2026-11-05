@@ -693,6 +693,8 @@ def _compute_inner(data_root: Path | None, as_of: str | None) -> dict:
 
     universe_n = 0
     skipped_n = 0
+    evaluated_n = 0
+    failed_n = 0
     tickers_out: dict[str, Any] = {}
     transition_rows: list[dict] = []
     confirmed_list: list[str] = []
@@ -731,9 +733,11 @@ def _compute_inner(data_root: Path | None, as_of: str | None) -> dict:
         try:
             result = _compute_symbol(sym, close, prior_state, prior_held)
         except Exception as e:
+            failed_n += 1
             log.debug("mtf_upturn: %s compute failed: %s", sym, e)
             continue
 
+        evaluated_n += 1
         state = result["state"]
         k = result["k"]
 
@@ -821,6 +825,11 @@ def _compute_inner(data_root: Path | None, as_of: str | None) -> dict:
         "as_of": computed_asof,
         "universe_n": universe_n,
         "skipped_n": skipped_n,
+        # Display health only: failures must not masquerade as a valid empty
+        # cohort. These counters do not alter any signal, threshold or ledger.
+        "evaluated_n": evaluated_n,
+        "failed_n": failed_n,
+        **({"error": "no_symbols_evaluated"} if evaluated_n == 0 else {}),
         "elapsed_s": round(elapsed, 2),
         "tickers": tickers_out,
         "cohort": {

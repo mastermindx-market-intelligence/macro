@@ -949,8 +949,10 @@ def test_priority_score_replaces_the_edge_slot_with_the_no_forecast_framing():
     stated once instead of on all 40 cards."""
     html = _priority_html()
     assert '<span class="l-en">Priority</span><span class="l-zh">优先级</span>' in html
-    assert "not more likely to win" in _footnote(html)
-    assert "并不代表更容易获胜" in _footnote(html)
+    foot = _footnote(html)
+    assert "not entry permission or a win probability" in foot
+    assert "并非入场许可或胜率" in foot
+    assert "more ready today" not in foot
 
 
 def test_the_card_chips_carry_no_hover_cards():
@@ -980,15 +982,21 @@ def test_board_carries_the_plain_language_priority_footnote_once():
     html = _priority_html()
     assert html.count('<p class="pb-fn">') == 1
     foot = _footnote(html)
-    assert "Higher Priority means the setup is more ready today" in foot
-    assert "not more likely to win" in foot
+    assert "Priority is the published ordering score" in foot
+    assert "not entry permission or a win probability" in foot
+    assert "优先级是已发布的排序分数" in foot
     assert "signal 30%" not in foot and "us_prophet_v1" not in foot
 
 
 def test_stage_heading_tips_explain_priority_in_plain_language():
     html = _priority_html()
-    assert "Higher Priority means the setup is more ready today, not more likely to win." in html
-    assert "优先级越高，表示今天越接近可操作，并不代表更容易获胜。" in html
+    # The five rendered stage headings must EACH carry this warning in EN and ZH.
+    # Matching somewhere in the page would pass on the footnote alone.
+    assert len(re.findall(
+        r'data-tip-en="[^"]*Priority is the published ordering score', html)) == 5
+    assert len(re.findall(
+        r'data-tip-zh="[^"]*优先级是已发布的排序分数', html)) == 5
+    assert "Higher Priority means the setup is more ready today" not in html
     assert "awaiting confluence" not in html
 
 
@@ -1052,7 +1060,7 @@ def test_runway_disclosure_reads_the_artifact_and_stops_when_the_leg_scores():
         assert _RW_EN not in place
         assert _RW_ZH not in place
         assert _RW_TAIL_ZH not in place
-    assert "Higher Priority means the setup is more ready today" in _footnote(html)
+    assert "Priority is the published ordering score" in _footnote(html)
 
 
 def test_runway_disclosure_without_the_coverage_key_claims_no_count():
@@ -1078,7 +1086,7 @@ def test_runway_disclosure_never_reaches_the_legacy_board():
 def test_featured_shelf_is_explained_without_engine_language():
     html = _priority_html()
     foot = _footnote(html)
-    assert "Featured highlights up to 12 of the most ready names" in foot
+    assert "Featured highlights up to 12 of the highest-priority eligible names" in foot
     assert "no more than four per sector" in foot
     assert "absolute floor" not in foot and "admission limit" not in foot
 

@@ -1,0 +1,44 @@
+{
+  "head": "9378425800564062fe4d178e7c16c5360eb61636",
+  "workspace": "/home/ubuntu0/lanes/wt/d03-9495-testrepair-c2-20261104",
+  "log": "/tmp/d03-t48-native-public-access-ui-20261104-c2-v1.log",
+  "started_at": 1793827305.8672235,
+  "modules": [
+    {
+      "module": "scripts.build_site",
+      "exit": 0,
+      "seconds": 1073.21
+    },
+    {
+      "module": "scripts.inject_data_base",
+      "exit": 0,
+      "seconds": 5.76
+    },
+    {
+      "module": "scripts.externalize_css",
+      "exit": 0,
+      "seconds": 7.51
+    },
+    {
+      "module": "scripts.optimize_assets",
+      "exit": 0,
+      "seconds": 26.31
+    }
+  ],
+  "external_refresh_disabled": true,
+  "artifacts": {
+    "site/us_stocks.html": {
+      "sha256": "2bfb709b652a92e40f48793fb2ac4bb542f7130b91a534b8ac8d2570388419db",
+      "bytes": 793938
+    },
+    "site/premiumdata/us_stocks.json": {
+      "sha256": "92e2e176c52fc2ea4c1be7b791764c19b704c5b00d13a1966ae1f5d3f2a0d8cc",
+      "bytes": 9663652
+    },
+    "site/factordata/us_standouts.json": {
+      "sha256": "2e77214946c6ea2b63271dddae81cdd5c0b8ac8bf22345bef50d1fa6e2623d7a",
+      "bytes": 2026101
+    }
+  },
+  "completed_at": 1793828418.6743906
+}

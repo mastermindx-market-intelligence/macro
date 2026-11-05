@@ -1,0 +1,44 @@
+{
+  "head": "381bb7aa89ab200730e080a26b9d2ac4c83d7c3a",
+  "workspace": "/Volumes/Mastermind/tmp/prophet-native-381bb7-20261103.GMrvqz/repo",
+  "log": "/private/tmp/prophet-native-robustness-20261103.ASXWYu/native-build-381bb7.log",
+  "started_at": 1793694829.4905112,
+  "modules": [
+    {
+      "module": "scripts.build_site",
+      "exit": 0,
+      "seconds": 1740.59
+    },
+    {
+      "module": "scripts.inject_data_base",
+      "exit": 0,
+      "seconds": 12.08
+    },
+    {
+      "module": "scripts.externalize_css",
+      "exit": 0,
+      "seconds": 19.25
+    },
+    {
+      "module": "scripts.optimize_assets",
+      "exit": 0,
+      "seconds": 54.51
+    }
+  ],
+  "external_refresh_disabled": true,
+  "artifacts": {
+    "site/us_stocks.html": {
+      "sha256": "78b2b40f85869d0015dccfdcdbad7d0800256dcbc13885dae6a89b03516e77e4",
+      "bytes": 808783
+    },
+    "site/premiumdata/us_stocks.json": {
+      "sha256": "65cc9b96aef70c80ecbad2a32b97353a230908ba2996c265710f261e2aa6e9d8",
+      "bytes": 11256942
+    },
+    "site/factordata/us_standouts.json": {
+      "sha256": "e9a57034863c5e39b1f9faaed999e7ff6e1f768457fd65b82208aaf7f331ffd0",
+      "bytes": 2533274
+    }
+  },
+  "completed_at": 1793696656.104832
+}

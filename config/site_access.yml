@@ -604,6 +604,10 @@ public:
     #     401 → null.
     - /watchlist.js
     - /watchstore.js
+    # Prophet's checked-save chooser has no source payload or personal records.
+    # It composes existing authenticated list APIs; premiumdata stays protected.
+    - /prophet_save.js
+    - /prophet_save.css
     - /market_books.js
     - /portfolio.js
     # A1B fast start is the same visitor-owned funnel surface: pure parsing/CSS

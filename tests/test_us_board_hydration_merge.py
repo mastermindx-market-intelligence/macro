@@ -643,30 +643,61 @@ if (scene.previous_error && status()) {
 const before = {today: snapshot(document.getElementById('us-today')),
   candidates: snapshot(document.getElementById('us-candidates')),
   date: board.getAttribute('data-board-asof'), foreign: snapshot(foreign)};
-const window = {MDXAuth: {user: () => ({id: 'member'}), hasSession: () => true,
+let currentUser = scene.initial_user_null ? null : {id: 'member'};
+const authListeners = [];
+function emitAuth(user, event) {
+  currentUser = user;
+  authListeners.forEach(fn => fn({detail: {user, event}}));
+}
+function changeAuth(stage) {
+  if (scene.auth_change_at !== stage) return;
+  if (scene.auth_change === 'roundtrip') {
+    emitAuth(null, 'SIGNED_OUT'); emitAuth({id: 'member'}, 'SIGNED_IN');
+  } else if (scene.auth_change === 'switch') emitAuth({id: 'other'}, 'SIGNED_IN');
+  else if (scene.auth_change === 'silent-switch') currentUser = {id: 'other'};
+  else if (scene.auth_change === 'logout') emitAuth(null, 'SIGNED_OUT');
+  else emitAuth({id: 'member'}, scene.auth_change || 'TOKEN_REFRESHED');
+}
+const window = {addEventListener: (name, fn) => {
+  if (name === 'mdx-auth') authListeners.push(fn);
+}, MDXAuth: {user: () => currentUser, hasSession: () => true,
   client: () => Promise.resolve({auth: {getSession: () => {
     sessionRefreshes++;
     if (scene.session_mode === 'rejected') return Promise.reject(new Error('fixture rejected'));
     const session = scene.session_mode === 'missing' ? null :
-      {access_token: scene.session_mode === 'blank' ? ' ' : 'explicit-test-session'};
-    return Promise.resolve({data: {session}, error: scene.session_mode === 'error' ? {} : null});
+      {access_token: scene.session_mode === 'blank' ? ' ' : 'explicit-test-session',
+       user: scene.session_user === 'missing' ? null :
+         {id: scene.session_user === 'mismatch' ? 'other' : 'member'}};
+    return Promise.resolve().then(() => {
+      if (scene.initial_user_null) emitAuth({id: 'member'}, 'INITIAL_SESSION');
+      changeAuth('session');
+      return {data: {session}, error: scene.session_mode === 'error' ? {} : null};
+    });
   }}})},
   USStockTable: {_mergeRows: rows => merges.push(rows)}};
 const fetch = (url, options) => {
   requests.push({url, options});
   const isApi = String(url).indexOf('/api/prophet/daily-brief/v1') === 0;
   const failure = isApi ? ((scene.api || {}).failure || '200') : scene.failure;
-  if (failure === 'network') return Promise.reject(new TypeError('offline'));
   const code = failure === 'http500' ? 500 : Number(failure) || 200;
-  return Promise.resolve({ok: code >= 200 && code < 300, status: code,
-    json: () => failure === 'bad_json' ? Promise.reject(new SyntaxError('bad JSON')) :
-      Promise.resolve(scene.failure === 'invalid_envelope' && !isApi
-        ? {schema: 'wrong', page: 'us_stocks'}
-        : (isApi ? (scene.api || {}).envelope : scene.payload))});
+  if (isApi && failure === 'pending') return new Promise(() => {});
+  return Promise.resolve().then(() => {
+    changeAuth(isApi ? 'response' : 'payload');
+    if (failure === 'network') throw new TypeError('offline');
+    return {ok: code >= 200 && code < 300, status: code,
+      json: () => Promise.resolve().then(() => {
+        if (isApi) changeAuth('json');
+        if (failure === 'bad_json') throw new SyntaxError('bad JSON');
+        return scene.failure === 'invalid_envelope' && !isApi
+          ? {schema: 'wrong', page: 'us_stocks'}
+          : (isApi ? (scene.api || {}).envelope : scene.payload);
+      })};
+  });
 };
 vm.runInNewContext(scene.loader, {window, document, fetch, Promise, console, Event: function(){},
   setTimeout: fn => { fn(); return 1; }, location: {href: 'us_stocks.html'}});
 setImmediate(() => {
+  changeAuth('after');
   const s = status();
   let visible = !!s && !s.hidden;
   for (let n = s && s.parentNode; n; n = n.parentNode) {
@@ -687,6 +718,7 @@ setImmediate(() => {
     nativeState: today && today.getAttribute('data-today-native-state'),
     nativeReasons: today && today.getAttribute('data-today-native-reasons'),
     nativeNote: note ? note.textContent : null,
+    nativeNoteRole: note ? note.getAttribute('role') : null,
     nativeNoteState: note ? note.getAttribute('data-today-native-state') : null}));
 });
 """
@@ -767,8 +799,8 @@ def test_native_query_fires_once_with_exact_pins_and_discloses_partial(tmp_path,
     assert out["nativeReasons"] == "DAILY_BRIEF_OWNER_INPUTS_UNAVAILABLE"
     assert out["nativeNoteState"] == "partial"
     assert out["nativeNote"] is not None
-    assert "Native candidate binding is available for 3 of 3 shown names" in out["nativeNote"]
-    assert "原生候选绑定" in out["nativeNote"]
+    assert "Additional context is available for 3 of 3 shown setups" in out["nativeNote"]
+    assert "所显示 3 个名字中已有 3 个附有补充背景" in out["nativeNote"]
     # the hydrated cards are NOT dropped by the native disclosure
     assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"]
 
@@ -780,8 +812,38 @@ def test_native_available_status_discloses_available(tmp_path, loader_scene):
                                                 reason_codes=[])}
     out = _run(tmp_path, scene, mode="today")
     assert out["nativeState"] == "available"
-    assert "Native candidate context is attached" in out["nativeNote"]
-    assert "已附加此精确来源的原生候选上下文" in out["nativeNote"]
+    assert "Evidence summary is linked to this board snapshot." in out["nativeNote"]
+    assert "证据摘要已关联此榜单快照" in out["nativeNote"]
+
+
+@pytest.mark.parametrize('change', [None, 'logout', 'switch'])
+def test_pending_summary_is_loading_until_account_context_changes(tmp_path, loader_scene, change):
+    scene = copy.deepcopy(loader_scene)
+    scene['api'] = {'failure': 'pending'}
+    out = _run(tmp_path, scene, mode='today', auth_change_at='after', auth_change=change)
+    assert out['nativeState'] == 'unavailable', 'pending data must never become admitted evidence'
+    assert out['nativeNoteRole'] == 'status'
+    assert out['todayTickers'] == ['MSCI', 'ADSK', 'ABBV']
+    assert len(out['requests']) == 2
+    if change:
+        assert out['nativeReasons'] == 'NATIVE_SESSION_CHANGED'
+        assert 'Loading the evidence summary' not in out['nativeNote']
+        assert 'Evidence summary unavailable' in out['nativeNote']
+    else:
+        assert out['nativeReasons'] == 'NATIVE_CONTEXT_PENDING'
+        assert 'Loading the evidence summary' in out['nativeNote']
+        assert '正在加载证据摘要' in out['nativeNote']
+        assert 'Evidence summary unavailable' not in out['nativeNote']
+
+
+def test_completed_response_cannot_claim_a_pending_request_with_a_reason_code(tmp_path, loader_scene):
+    scene = copy.deepcopy(loader_scene)
+    scene['api'] = {'failure': '503', 'envelope': _brief_envelope(binding=scene['binding'],
+        status='UNAVAILABLE', candidates=[], reason_codes=['NATIVE_CONTEXT_PENDING'])}
+    out = _run(tmp_path, scene, mode='today')
+    assert out['nativeReasons'] == 'NATIVE_CONTEXT_PENDING'
+    assert 'Loading the evidence summary' not in out['nativeNote']
+    assert 'Evidence summary unavailable' in out['nativeNote']
 
 
 @pytest.mark.parametrize("failure", ["401", "403"])
@@ -806,8 +868,8 @@ def test_native_409_conflict_discloses_typed_reason_without_retry(tmp_path, load
     assert out["nativeState"] == "unavailable"
     assert out["nativeReasons"] == "SOURCE_BINDING_MISMATCH"
     assert out["nativeNoteState"] == "unavailable"
-    assert "Native candidate context is unavailable" in out["nativeNote"]
-    assert "此精确来源的原生候选上下文不可用" in out["nativeNote"]
+    assert "Evidence summary unavailable. Published setups remain available below." in out["nativeNote"]
+    assert "证据摘要暂不可用。下方仍可查看已发布的形态" in out["nativeNote"]
     assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"], "incumbent shell cards are never dropped"
 
 
@@ -999,3 +1061,50 @@ def test_genuinely_empty_served_shelf_makes_no_native_query_and_no_mutation(
     assert out["todayTickers"] == []
     assert out["after"] == out["before"], (
         "an empty shelf must not mutate the shell, its empty note or any other warning")
+
+
+# Account lifetime is distinct from source/roster admission. Execute the real
+# rendered loader and delay the native response across canonical auth events.
+@pytest.mark.parametrize("at", ["session", "payload", "response", "json", "after"])
+@pytest.mark.parametrize("change", ["logout", "switch", "roundtrip"])
+def test_native_context_cannot_outlive_requesting_account(tmp_path, loader_scene, at, change):
+    out = _run(tmp_path, loader_scene, mode="today", auth_change_at=at, auth_change=change)
+    assert out["nativeState"] == "unavailable"
+    assert out["nativeReasons"] == "NATIVE_SESSION_CHANGED"
+    assert "Additional context is available" not in out["nativeNote"]
+    assert len(out["requests"]) == (1 if at in {"session", "payload"} else 2)
+    assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"]
+
+
+@pytest.mark.parametrize("change", ["TOKEN_REFRESHED", "SIGNED_IN", "PREFS_SAVED", "USER_UPDATED"])
+def test_native_same_account_events_preserve_request(tmp_path, loader_scene, change):
+    out = _run(tmp_path, loader_scene, mode="today", auth_change_at="json", auth_change=change)
+    assert out["nativeState"] == "partial" and len(out["requests"]) == 2
+
+
+def test_native_initial_session_binds_before_query(tmp_path, loader_scene):
+    out = _run(tmp_path, loader_scene, mode="today", initial_user_null=True)
+    assert out["nativeState"] == "partial" and len(out["requests"]) == 2
+
+
+@pytest.mark.parametrize("user", ["missing", "mismatch"])
+def test_native_token_requires_same_account_identity(tmp_path, loader_scene, user):
+    out = _run(tmp_path, loader_scene, mode="today", session_user=user)
+    assert out["nativeState"] == "unavailable"
+    assert out["nativeReasons"] == "NATIVE_SESSION_UNAVAILABLE"
+    assert len(out["requests"]) == 1
+
+
+@pytest.mark.parametrize("failure,at", [("401", "response"), ("403", "response"),
+                                        ("network", "response"), ("bad_json", "json")])
+def test_native_late_error_does_not_overwrite_session_change(tmp_path, loader_scene, failure, at):
+    out = _run(tmp_path, {**loader_scene, "api": {"failure": failure}}, mode="today",
+               auth_change_at=at, auth_change="logout")
+    assert out["nativeReasons"] == "NATIVE_SESSION_CHANGED"
+    assert len(out["requests"]) == 2
+
+
+def test_native_rechecks_owner_even_without_event(tmp_path, loader_scene):
+    out = _run(tmp_path, loader_scene, mode="today", auth_change_at="json", auth_change="silent-switch")
+    assert out["nativeReasons"] == "NATIVE_SESSION_CHANGED"
+    assert out["nativeState"] == "unavailable" and len(out["requests"]) == 2

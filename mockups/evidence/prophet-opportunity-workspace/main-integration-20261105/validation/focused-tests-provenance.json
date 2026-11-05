@@ -1,0 +1,14 @@
+{
+  "qualified_source_commit": "676b5ecc915295165553b931c9b753598b33c756",
+  "log": "focused-tests.txt",
+  "log_sha256": "581b00b13a334576a3c42660405ee63818bd89d0496a6f2f75bfe0a49f51ae07",
+  "result": "265 passed in 58.66s",
+  "note": "Batch ran on the code later committed as676b5ecc; these tested source files are byte-identical in the integrated input. This is not a claim that the already-run test process had676b5ecc as its HEAD.",
+  "source_files": {
+    "scripts/build_site.py": "1e6aa4bd84f4a919094761ea12102e1084e79c683dd974bdfb888dcbb5aaac5e",
+    "tests/test_build_site_frozen_us_source.py": "96ec7359900212040458c3ba1fcb15c84882a7af0e2c8ac0aa31d239e4994c64",
+    "tests/test_us_today_source_binding.py": "56b81fce0ce70d4a6d0e84136471be69526bfac11094fe650b754eb0ee0b5410",
+    "tests/test_us_completed_session_panel.py": "c3256f8dc03e9ef3076e2f1f31c09e540426a7a80910998b1ee5e861f5d504c8",
+    "tests/test_prophet_plan_relation.py": "8de148e69fe5f823a3f720eb6539dd47a0917ad372378d4595e92e6d27db7828"
+  }
+}

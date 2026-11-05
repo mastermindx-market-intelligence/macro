@@ -1164,6 +1164,20 @@ def _seed_plan(plan_id: str, ticker: str, signal_date: str) -> dict:
     }
 
 
+def _live_seed_plan(plan_id: str, ticker: str, signal_date: str) -> dict:
+    """A genuinely OPEN seed against _run_main's synthetic rising price history.
+
+    The regular seed's 115/130 targets are hit by the 100..139 mock close panel,
+    so its management closure is truthful even when the forward ledger is empty.
+    Put the explicitly-live control far outside that synthetic price envelope;
+    keep the normal seeded plans unchanged for stopped/closed coverage.
+    """
+    plan = _seed_plan(plan_id, ticker, signal_date)
+    plan["targets"] = [500.0, 600.0]
+    plan["invalidation"] = 50.0
+    return plan
+
+
 class TestIndexHygieneEndToEnd:
 
     def test_every_shipped_plan_carries_an_age_and_a_pulse(self, tmp_path):
@@ -1182,11 +1196,16 @@ class TestIndexHygieneEndToEnd:
             assert set(plan) >= {"age_days", "clock_age_days", "phase", "pulse",
                                  "pulse_zh"}
             assert plan["pulse"] and plan["pulse_zh"]
-            # The pulse quotes the HORIZON clock, not the signal clock (ruling §13,
-            # 2026-08-13).  `age_days` anchors on signal_date and can precede the
-            # plan's own existence by months; `clock_age_days` is the age that is
-            # commensurable with `horizon_days` and equals the state's days_elapsed.
-            assert str(plan["clock_age_days"]) + "d" in plan["pulse"]
+            # Open pulses quote the HORIZON clock, not the signal clock (ruling §13).
+            # Closed pulses intentionally omit BOTH ages: displaying a growing clock
+            # on a closed thesis falsely implies that its holding window is still live.
+            # The raw clock_age_days and signal age remain on the index row.
+            if plan["closed"]:
+                assert plan["pulse"].startswith("closed")
+                assert plan["pulse_zh"].startswith("已结")
+                assert str(plan["clock_age_days"]) + "d" not in plan["pulse"]
+            else:
+                assert str(plan["clock_age_days"]) + "d" in plan["pulse"]
 
     def test_age_buckets_sum_to_active_count(self, tmp_path):
         index = _run_main(
@@ -1316,7 +1335,7 @@ class TestIndexHygieneEndToEnd:
             seed_plans={
                 "DEAD-BULL-20260601": _seed_plan("DEAD-BULL-20260601", "DEAD", "2026-06-01"),
                 "WON-BULL-20260610": _seed_plan("WON-BULL-20260610", "WON", "2026-06-10"),
-                "LIVE-BULL-20260720": _seed_plan("LIVE-BULL-20260720", "LIVE", "2026-07-20"),
+                "LIVE-BULL-20260720": _live_seed_plan("LIVE-BULL-20260720", "LIVE", "2026-07-20"),
             },
             ledger={"DEAD-BULL-20260601": "INVALIDATED", "WON-BULL-20260610": "T1_HIT"},
         )
@@ -1331,7 +1350,7 @@ class TestIndexHygieneEndToEnd:
         live = by_id["LIVE-BULL-20260720"]
         assert live["closed"] is False
         assert live["pulse"] and "closed" not in live["pulse"]
-        assert str(live["age_days"]) + "d" in live["pulse"]
+        assert str(live["clock_age_days"]) + "d" in live["pulse"]
 
         # age_days survives on the closed row — it is raw data; only the plain-word
         # line must not imply the thesis is still running.
@@ -1347,7 +1366,7 @@ class TestIndexHygieneEndToEnd:
             seed_plans={
                 "DEAD-BULL-20260601": _seed_plan("DEAD-BULL-20260601", "DEAD", "2026-06-01"),
                 "WON-BULL-20260610": _seed_plan("WON-BULL-20260610", "WON", "2026-06-10"),
-                "LIVE-BULL-20260720": _seed_plan("LIVE-BULL-20260720", "LIVE", "2026-07-20"),
+                "LIVE-BULL-20260720": _live_seed_plan("LIVE-BULL-20260720", "LIVE", "2026-07-20"),
             },
             ledger={"DEAD-BULL-20260601": "INVALIDATED", "WON-BULL-20260610": "T1_HIT"},
         )
@@ -1364,7 +1383,7 @@ class TestIndexHygieneEndToEnd:
         index = _run_main(
             tmp_path, [_buy("AAPL", priority=88.0, anchor="2026-07-31", spot=120.0)],
             asof="2026-08-03",
-            seed_plans={"LIVE-BULL-20260720": _seed_plan(
+            seed_plans={"LIVE-BULL-20260720": _live_seed_plan(
                 "LIVE-BULL-20260720", "LIVE", "2026-07-20")})
         assert index["open_count"] == index["active_count"] == 2
         assert not any(p["closed"] for p in index["plans"])

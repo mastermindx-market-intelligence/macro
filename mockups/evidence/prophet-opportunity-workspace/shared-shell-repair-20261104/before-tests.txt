@@ -1,0 +1,25 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________________ test_every_committed_site_page_has_shim ____________________
+
+    def test_every_committed_site_page_has_shim():
+        site = ROOT / "site"
+        missing = []
+        for page in sorted(site.rglob("*.html")):
+            try:
+                head = page.read_text(errors="ignore")
+            except OSError:
+                continue
+            if DBASE_MARKER not in head:
+                missing.append(str(page.relative_to(site)))
+>       assert not missing, (
+            f"{len(missing)} committed site page(s) lack the data-base shim "
+            f"(R2 rerouting regression — write via lib.pages.write_page): {missing[:10]}"
+        )
+E       AssertionError: 1 committed site page(s) lack the data-base shim (R2 rerouting regression — write via lib.pages.write_page): ['market_memory.html']
+E       assert not ['market_memory.html']
+
+tests/test_site_shim.py:275: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_site_shim.py::test_every_committed_site_page_has_shim - Ass...
+1 failed in 4.66s

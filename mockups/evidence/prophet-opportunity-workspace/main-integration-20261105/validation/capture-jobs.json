@@ -1,0 +1,31 @@
+{
+  "head": "ee5d7f68229ad14e9d384af61bafc3701df70f65",
+  "started_at": 1793851698.644697,
+  "jobs": [
+    {
+      "name": "native-page",
+      "script": "/home/ubuntu0/lanes/wt/d03-9495-main-integration-c2-20261104/mockups/evidence/prophet-opportunity-workspace/full-page-20261103/tools/capture_native_prophet.py",
+      "output": "/tmp/prophet-integration-browser-ee5d7f",
+      "log": "/tmp/prophet-integration-native-page-ee5d7f.log",
+      "exit": 0,
+      "seconds": 32.92
+    },
+    {
+      "name": "cautions",
+      "script": "/tmp/verify_prophet_integration_caution_ee5d7f.py",
+      "output": "/tmp/prophet-integration-cautions-ee5d7f",
+      "log": "/tmp/prophet-integration-cautions-ee5d7f.log",
+      "exit": 0,
+      "seconds": 7.31
+    },
+    {
+      "name": "canonical-theme",
+      "script": "/tmp/capture_prophet_integration_theme_ee5d7f.py",
+      "output": "/tmp/prophet-integration-theme-ee5d7f",
+      "log": "/tmp/prophet-integration-canonical-theme-ee5d7f.log",
+      "exit": 0,
+      "seconds": 136.0
+    }
+  ],
+  "completed_at": 1793851874.8716524
+}

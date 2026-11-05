@@ -1,0 +1,428 @@
+FF.....FFFFF..FF                                                         [100%]
+=================================== FAILURES ===================================
+_ test_uncertain_inspection_rechecks_only_reads_when_owner_allows[not-confirmed] _
+
+read_state = 'not-confirmed'
+
+    @pytest.mark.parametrize('read_state', ['not-confirmed', 'unavailable'])
+    def test_uncertain_inspection_rechecks_only_reads_when_owner_allows(read_state):
+        """A recoverable observation permits another user-clicked read, never a Save."""
+>       run("const READ_STATE=" + json.dumps(read_state) + r"""
+          saveResult={state:'uncertain'};
+          WatchStore.symbols.inspect=()=>{inspection++;return Promise.resolve({
+            state:READ_STATE,membership:'unknown',readRetryAllowed:true,writeRetryAllowed:false});};
+          first.row.querySelector('.pvs-save-pick').click();await flush();
+          choose().click();await flush();assert.equal(state(),'uncertain');
+          const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
+          inspect.click();assert.equal(inspect.disabled,true);await flush();
+          assert.equal(inspection,1);assert.equal(inspect.disabled,false);
+          await flush();assert.equal(inspection,1,'no automatic read retry');
+          inspect.click();await flush();
+          assert.equal(inspection,2);assert.equal(writes,1);
+          assert.equal(state(),'uncertain');
+          assert.equal(buttons().some(b=>b.textContent.includes('Save ticker')),false);
+          buttons()[0].click();first.row.querySelector('.pvs-save-pick').click();await flush();
+          assert.equal(state(),'uncertain');assert.equal(writes,1);
+        """)
+
+tests/test_prophet_save_composition.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario = 'const READ_STATE="not-confirmed"\n      saveResult={state:\'uncertain\'};\n      WatchStore.symbols.inspect=()=>{insp...or(\'.pvs-save-pick\').click();await flush();\n      assert.equal(state(),\'uncertain\');assert.equal(writes,1);\n    '
+
+    def run(scenario):
+        script = 'const MODULE=' + json.dumps(str(ROOT / 'templates/prophet_save.js')) + ';\n' + DOM
+        script += '\n(async()=>{' + scenario + "\n})().then(()=>{process.stdout.write('OK');},e=>{console.error(e.stack);process.exitCode=1;});"
+        proc = subprocess.run(['node', '-e', script], capture_output=True, text=True, timeout=20)
+>       assert proc.returncode == 0, proc.stderr + proc.stdout
+E       AssertionError: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+E         
+E         true !== false
+E         
+E             at [eval]:95:41
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node', '-e', 'const MODULE="/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/templa...err='AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n\n    at [eval]:95:41\n').returncode
+
+tests/test_prophet_save_composition.py:106: AssertionError
+_ test_uncertain_inspection_rechecks_only_reads_when_owner_allows[unavailable] _
+
+read_state = 'unavailable'
+
+    @pytest.mark.parametrize('read_state', ['not-confirmed', 'unavailable'])
+    def test_uncertain_inspection_rechecks_only_reads_when_owner_allows(read_state):
+        """A recoverable observation permits another user-clicked read, never a Save."""
+>       run("const READ_STATE=" + json.dumps(read_state) + r"""
+          saveResult={state:'uncertain'};
+          WatchStore.symbols.inspect=()=>{inspection++;return Promise.resolve({
+            state:READ_STATE,membership:'unknown',readRetryAllowed:true,writeRetryAllowed:false});};
+          first.row.querySelector('.pvs-save-pick').click();await flush();
+          choose().click();await flush();assert.equal(state(),'uncertain');
+          const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
+          inspect.click();assert.equal(inspect.disabled,true);await flush();
+          assert.equal(inspection,1);assert.equal(inspect.disabled,false);
+          await flush();assert.equal(inspection,1,'no automatic read retry');
+          inspect.click();await flush();
+          assert.equal(inspection,2);assert.equal(writes,1);
+          assert.equal(state(),'uncertain');
+          assert.equal(buttons().some(b=>b.textContent.includes('Save ticker')),false);
+          buttons()[0].click();first.row.querySelector('.pvs-save-pick').click();await flush();
+          assert.equal(state(),'uncertain');assert.equal(writes,1);
+        """)
+
+tests/test_prophet_save_composition.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario = 'const READ_STATE="unavailable"\n      saveResult={state:\'uncertain\'};\n      WatchStore.symbols.inspect=()=>{inspec...or(\'.pvs-save-pick\').click();await flush();\n      assert.equal(state(),\'uncertain\');assert.equal(writes,1);\n    '
+
+    def run(scenario):
+        script = 'const MODULE=' + json.dumps(str(ROOT / 'templates/prophet_save.js')) + ';\n' + DOM
+        script += '\n(async()=>{' + scenario + "\n})().then(()=>{process.stdout.write('OK');},e=>{console.error(e.stack);process.exitCode=1;});"
+        proc = subprocess.run(['node', '-e', script], capture_output=True, text=True, timeout=20)
+>       assert proc.returncode == 0, proc.stderr + proc.stdout
+E       AssertionError: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+E         
+E         true !== false
+E         
+E             at [eval]:95:41
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node', '-e', 'const MODULE="/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/templa...err='AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n\n    at [eval]:95:41\n').returncode
+
+tests/test_prophet_save_composition.py:106: AssertionError
+_ test_uncertain_inspection_observed_membership_never_confirms_the_earlier_save _
+
+    def test_uncertain_inspection_observed_membership_never_confirms_the_earlier_save():
+        """A later present observation remains separate from the uncertain write."""
+>       run(r"""
+          saveResult={state:'uncertain'};
+          WatchStore.symbols.inspect=()=>{inspection++;return Promise.resolve({
+            state:inspection===1?'unavailable':'present',readRetryAllowed:true,writeRetryAllowed:false});};
+          first.row.querySelector('.pvs-save-pick').click();await flush();
+          choose().click();await flush();
+          const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
+          inspect.click();await flush();inspect.click();await flush();
+          assert.equal(inspection,2);assert.equal(state(),'observed');
+          assert.equal(inspect.disabled,true);
+          assert.equal(saveDialog().textContent.includes('does not prove the earlier save'),true);
+          assert.equal(writes,1);
+          buttons()[0].click();first.row.querySelector('.pvs-save-pick').click();await flush();
+          assert.equal(state(),'uncertain');assert.equal(writes,1);
+        """)
+
+tests/test_prophet_save_composition.py:187: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario = "\n      saveResult={state:'uncertain'};\n      WatchStore.symbols.inspect=()=>{inspection++;return Promise.resolve({\...lector('.pvs-save-pick').click();await flush();\n      assert.equal(state(),'uncertain');assert.equal(writes,1);\n    "
+
+    def run(scenario):
+        script = 'const MODULE=' + json.dumps(str(ROOT / 'templates/prophet_save.js')) + ';\n' + DOM
+        script += '\n(async()=>{' + scenario + "\n})().then(()=>{process.stdout.write('OK');},e=>{console.error(e.stack);process.exitCode=1;});"
+        proc = subprocess.run(['node', '-e', script], capture_output=True, text=True, timeout=20)
+>       assert proc.returncode == 0, proc.stderr + proc.stdout
+E       AssertionError: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+E         
+E         1 !== 2
+E         
+E             at [eval]:95:14
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node', '-e', 'const MODULE="/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/templa...'', stderr='AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n1 !== 2\n\n    at [eval]:95:14\n').returncode
+
+tests/test_prophet_save_composition.py:106: AssertionError
+_ test_uncertain_inspection_unexpected_fault_is_redacted_and_fails_closed[rejected] _
+
+fault = 'rejected'
+
+    @pytest.mark.parametrize('fault', ['rejected', 'sync-throw'])
+    def test_uncertain_inspection_unexpected_fault_is_redacted_and_fails_closed(fault):
+        """Unexpected owner failure is not an implicit read or write retry grant."""
+>       run("const FAULT=" + json.dumps(fault) + r""";
+          saveResult={state:'uncertain'};
+          WatchStore.symbols.inspect=()=>{inspection++;
+            if(FAULT==='sync-throw')throw Error('private-provider-detail');
+            return Promise.reject(Error('private-provider-detail'));};
+          first.row.querySelector('.pvs-save-pick').click();await flush();
+          choose().click();await flush();
+          const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
+          inspect.click();await flush();
+          assert.equal(state(),'uncertain');assert.equal(inspect.disabled,true);
+          assert.equal(saveDialog().textContent.includes('Membership could not be checked'),true);
+          assert.equal(saveDialog().textContent.includes('private-provider-detail'),false);
+          inspect.click();await flush();assert.equal(inspection,1);assert.equal(writes,1);
+          assert.equal(buttons().some(b=>b.textContent.includes('Save ticker')),false);
+        """)
+
+tests/test_prophet_save_composition.py:207: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario = 'const FAULT="rejected";\n      saveResult={state:\'uncertain\'};\n      WatchStore.symbols.inspect=()=>{inspection++;...);assert.equal(writes,1);\n      assert.equal(buttons().some(b=>b.textContent.includes(\'Save ticker\')),false);\n    '
+
+    def run(scenario):
+        script = 'const MODULE=' + json.dumps(str(ROOT / 'templates/prophet_save.js')) + ';\n' + DOM
+        script += '\n(async()=>{' + scenario + "\n})().then(()=>{process.stdout.write('OK');},e=>{console.error(e.stack);process.exitCode=1;});"
+        proc = subprocess.run(['node', '-e', script], capture_output=True, text=True, timeout=20)
+>       assert proc.returncode == 0, proc.stderr + proc.stdout
+E       AssertionError: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+E         
+E         false !== true
+E         
+E             at [eval]:97:14
+E         [eval]:91
+E                 return Promise.reject(Error('private-provider-detail'));};
+E                                       ^
+E         
+E         Error: private-provider-detail
+E             at WatchStore.symbols.inspect ([eval]:91:31)
+E             at /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/templates/prophet_save.js:80:28
+E             at [eval]:52:109
+E             at Array.forEach (<anonymous>)
+E             at El.dispatchEvent ([eval]:52:97)
+E             at El.click ([eval]:53:34)
+E             at [eval]:95:15
+E         
+E         Node.js v22.23.3
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node', '-e', 'const MODULE="/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/templa...>)\n    at El.dispatchEvent ([eval]:52:97)\n    at El.click ([eval]:53:34)\n    at [eval]:95:15\n\nNode.js v22.23.3\n").returncode
+
+tests/test_prophet_save_composition.py:106: AssertionError
+_ test_uncertain_inspection_unexpected_fault_is_redacted_and_fails_closed[sync-throw] _
+
+fault = 'sync-throw'
+
+    @pytest.mark.parametrize('fault', ['rejected', 'sync-throw'])
+    def test_uncertain_inspection_unexpected_fault_is_redacted_and_fails_closed(fault):
+        """Unexpected owner failure is not an implicit read or write retry grant."""
+>       run("const FAULT=" + json.dumps(fault) + r""";
+          saveResult={state:'uncertain'};
+          WatchStore.symbols.inspect=()=>{inspection++;
+            if(FAULT==='sync-throw')throw Error('private-provider-detail');
+            return Promise.reject(Error('private-provider-detail'));};
+          first.row.querySelector('.pvs-save-pick').click();await flush();
+          choose().click();await flush();
+          const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
+          inspect.click();await flush();
+          assert.equal(state(),'uncertain');assert.equal(inspect.disabled,true);
+          assert.equal(saveDialog().textContent.includes('Membership could not be checked'),true);
+          assert.equal(saveDialog().textContent.includes('private-provider-detail'),false);
+          inspect.click();await flush();assert.equal(inspection,1);assert.equal(writes,1);
+          assert.equal(buttons().some(b=>b.textContent.includes('Save ticker')),false);
+        """)
+
+tests/test_prophet_save_composition.py:207: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario = 'const FAULT="sync-throw";\n      saveResult={state:\'uncertain\'};\n      WatchStore.symbols.inspect=()=>{inspection+...);assert.equal(writes,1);\n      assert.equal(buttons().some(b=>b.textContent.includes(\'Save ticker\')),false);\n    '
+
+    def run(scenario):
+        script = 'const MODULE=' + json.dumps(str(ROOT / 'templates/prophet_save.js')) + ';\n' + DOM
+        script += '\n(async()=>{' + scenario + "\n})().then(()=>{process.stdout.write('OK');},e=>{console.error(e.stack);process.exitCode=1;});"
+        proc = subprocess.run(['node', '-e', script], capture_output=True, text=True, timeout=20)
+>       assert proc.returncode == 0, proc.stderr + proc.stdout
+E       AssertionError: Error: private-provider-detail
+E             at WatchStore.symbols.inspect ([eval]:90:39)
+E             at /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/templates/prophet_save.js:80:28
+E             at [eval]:52:109
+E             at Array.forEach (<anonymous>)
+E             at El.dispatchEvent ([eval]:52:97)
+E             at El.click ([eval]:53:34)
+E             at [eval]:95:15
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node', '-e', 'const MODULE="/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/templa....forEach (<anonymous>)\n    at El.dispatchEvent ([eval]:52:97)\n    at El.click ([eval]:53:34)\n    at [eval]:95:15\n').returncode
+
+tests/test_prophet_save_composition.py:106: AssertionError
+__ test_uncertain_inspection_rechecks_generation_before_invoking_read[False] ___
+
+same_user = False
+
+    @pytest.mark.parametrize('same_user', [False, True])
+    def test_uncertain_inspection_rechecks_generation_before_invoking_read(same_user):
+        """An auth transition before the queued read cannot start an old-account read."""
+>       run("const SAME_USER=" + json.dumps(same_user) + r""";
+          saveResult={state:'uncertain'};
+          WatchStore.symbols.inspect=()=>{inspection++;return Promise.resolve({
+            state:'present',readRetryAllowed:true,writeRetryAllowed:false});};
+          first.row.querySelector('.pvs-save-pick').click();await flush();
+          choose().click();await flush();
+          buttons().find(b=>b.textContent.includes('Check account list')).click();
+          sess={state:'ready',userId:SAME_USER?'u1':'u2',generation:2};ev('mdx-auth');
+          await flush();
+          assert.equal(inspection,0);assert.equal(writes,1);
+          assert.equal(saveDialog().open,false);
+        """)
+
+tests/test_prophet_save_composition.py:227: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario = "const SAME_USER=false;\n      saveResult={state:'uncertain'};\n      WatchStore.symbols.inspect=()=>{inspection++;ret...flush();\n      assert.equal(inspection,0);assert.equal(writes,1);\n      assert.equal(saveDialog().open,false);\n    "
+
+    def run(scenario):
+        script = 'const MODULE=' + json.dumps(str(ROOT / 'templates/prophet_save.js')) + ';\n' + DOM
+        script += '\n(async()=>{' + scenario + "\n})().then(()=>{process.stdout.write('OK');},e=>{console.error(e.stack);process.exitCode=1;});"
+        proc = subprocess.run(['node', '-e', script], capture_output=True, text=True, timeout=20)
+>       assert proc.returncode == 0, proc.stderr + proc.stdout
+E       AssertionError: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+E         
+E         1 !== 0
+E         
+E             at [eval]:96:14
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node', '-e', 'const MODULE="/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/templa...'', stderr='AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n1 !== 0\n\n    at [eval]:96:14\n').returncode
+
+tests/test_prophet_save_composition.py:106: AssertionError
+___ test_uncertain_inspection_rechecks_generation_before_invoking_read[True] ___
+
+same_user = True
+
+    @pytest.mark.parametrize('same_user', [False, True])
+    def test_uncertain_inspection_rechecks_generation_before_invoking_read(same_user):
+        """An auth transition before the queued read cannot start an old-account read."""
+>       run("const SAME_USER=" + json.dumps(same_user) + r""";
+          saveResult={state:'uncertain'};
+          WatchStore.symbols.inspect=()=>{inspection++;return Promise.resolve({
+            state:'present',readRetryAllowed:true,writeRetryAllowed:false});};
+          first.row.querySelector('.pvs-save-pick').click();await flush();
+          choose().click();await flush();
+          buttons().find(b=>b.textContent.includes('Check account list')).click();
+          sess={state:'ready',userId:SAME_USER?'u1':'u2',generation:2};ev('mdx-auth');
+          await flush();
+          assert.equal(inspection,0);assert.equal(writes,1);
+          assert.equal(saveDialog().open,false);
+        """)
+
+tests/test_prophet_save_composition.py:227: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario = "const SAME_USER=true;\n      saveResult={state:'uncertain'};\n      WatchStore.symbols.inspect=()=>{inspection++;retu...flush();\n      assert.equal(inspection,0);assert.equal(writes,1);\n      assert.equal(saveDialog().open,false);\n    "
+
+    def run(scenario):
+        script = 'const MODULE=' + json.dumps(str(ROOT / 'templates/prophet_save.js')) + ';\n' + DOM
+        script += '\n(async()=>{' + scenario + "\n})().then(()=>{process.stdout.write('OK');},e=>{console.error(e.stack);process.exitCode=1;});"
+        proc = subprocess.run(['node', '-e', script], capture_output=True, text=True, timeout=20)
+>       assert proc.returncode == 0, proc.stderr + proc.stdout
+E       AssertionError: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+E         
+E         1 !== 0
+E         
+E             at [eval]:96:14
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node', '-e', 'const MODULE="/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/templa...'', stderr='AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n1 !== 0\n\n    at [eval]:96:14\n').returncode
+
+tests/test_prophet_save_composition.py:106: AssertionError
+_ test_uncertain_inspection_late_settlement_cannot_change_replacement_dialog[rejected-False] _
+
+same_user = False, settlement = 'rejected'
+
+    @pytest.mark.parametrize('same_user', [False, True])
+    @pytest.mark.parametrize('settlement', ['present', 'rejected'])
+    def test_uncertain_inspection_late_settlement_cannot_change_replacement_dialog(same_user, settlement):
+        """Old read completions cannot cross a new account generation or dialog."""
+>       run("const SAME_USER=" + json.dumps(same_user) + ";const SETTLEMENT="
+            + json.dumps(settlement) + r""";
+          saveResult={state:'uncertain'};let finish;
+          WatchStore.symbols.inspect=()=>{inspection++;return new Promise((resolve,reject)=>{
+            finish=()=>SETTLEMENT==='rejected'?reject(Error('private-provider-detail')):
+              resolve({state:'present',readRetryAllowed:true,writeRetryAllowed:false});});};
+          first.row.querySelector('.pvs-save-pick').click();await flush();
+          choose().click();await flush();
+          buttons().find(b=>b.textContent.includes('Check account list')).click();await flush();
+          assert.equal(inspection,1);
+          sess={state:'ready',userId:SAME_USER?'u1':'u2',generation:2};ev('mdx-auth');await flush();
+          first.row.querySelector('.pvs-save-pick').click();await flush();
+          const expected=SAME_USER?'uncertain':'choose';assert.equal(state(),expected);
+          finish();await flush();
+          assert.equal(state(),expected);assert.equal(writes,1);
+          assert.equal(saveDialog().textContent.includes('private-provider-detail'),false);
+          assert.equal(saveDialog().textContent.includes('Your account currently contains'),false);
+        """)
+
+tests/test_prophet_save_composition.py:245: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario = 'const SAME_USER=false;const SETTLEMENT="rejected";\n      saveResult={state:\'uncertain\'};let finish;\n      WatchSt...il\'),false);\n      assert.equal(saveDialog().textContent.includes(\'Your account currently contains\'),false);\n    '
+
+    def run(scenario):
+        script = 'const MODULE=' + json.dumps(str(ROOT / 'templates/prophet_save.js')) + ';\n' + DOM
+        script += '\n(async()=>{' + scenario + "\n})().then(()=>{process.stdout.write('OK');},e=>{console.error(e.stack);process.exitCode=1;});"
+        proc = subprocess.run(['node', '-e', script], capture_output=True, text=True, timeout=20)
+>       assert proc.returncode == 0, proc.stderr + proc.stdout
+E       AssertionError: [eval]:90
+E                 finish=()=>SETTLEMENT==='rejected'?reject(Error('private-provider-detail')):
+E                                                           ^
+E         
+E         Error: private-provider-detail
+E             at finish ([eval]:90:51)
+E             at [eval]:99:7
+E         
+E         Node.js v22.23.3
+E         OK
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node', '-e', 'const MODULE="/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/templa...          ^\n\nError: private-provider-detail\n    at finish ([eval]:90:51)\n    at [eval]:99:7\n\nNode.js v22.23.3\n").returncode
+
+tests/test_prophet_save_composition.py:106: AssertionError
+_ test_uncertain_inspection_late_settlement_cannot_change_replacement_dialog[rejected-True] _
+
+same_user = True, settlement = 'rejected'
+
+    @pytest.mark.parametrize('same_user', [False, True])
+    @pytest.mark.parametrize('settlement', ['present', 'rejected'])
+    def test_uncertain_inspection_late_settlement_cannot_change_replacement_dialog(same_user, settlement):
+        """Old read completions cannot cross a new account generation or dialog."""
+>       run("const SAME_USER=" + json.dumps(same_user) + ";const SETTLEMENT="
+            + json.dumps(settlement) + r""";
+          saveResult={state:'uncertain'};let finish;
+          WatchStore.symbols.inspect=()=>{inspection++;return new Promise((resolve,reject)=>{
+            finish=()=>SETTLEMENT==='rejected'?reject(Error('private-provider-detail')):
+              resolve({state:'present',readRetryAllowed:true,writeRetryAllowed:false});});};
+          first.row.querySelector('.pvs-save-pick').click();await flush();
+          choose().click();await flush();
+          buttons().find(b=>b.textContent.includes('Check account list')).click();await flush();
+          assert.equal(inspection,1);
+          sess={state:'ready',userId:SAME_USER?'u1':'u2',generation:2};ev('mdx-auth');await flush();
+          first.row.querySelector('.pvs-save-pick').click();await flush();
+          const expected=SAME_USER?'uncertain':'choose';assert.equal(state(),expected);
+          finish();await flush();
+          assert.equal(state(),expected);assert.equal(writes,1);
+          assert.equal(saveDialog().textContent.includes('private-provider-detail'),false);
+          assert.equal(saveDialog().textContent.includes('Your account currently contains'),false);
+        """)
+
+tests/test_prophet_save_composition.py:245: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario = 'const SAME_USER=true;const SETTLEMENT="rejected";\n      saveResult={state:\'uncertain\'};let finish;\n      WatchSto...il\'),false);\n      assert.equal(saveDialog().textContent.includes(\'Your account currently contains\'),false);\n    '
+
+    def run(scenario):
+        script = 'const MODULE=' + json.dumps(str(ROOT / 'templates/prophet_save.js')) + ';\n' + DOM
+        script += '\n(async()=>{' + scenario + "\n})().then(()=>{process.stdout.write('OK');},e=>{console.error(e.stack);process.exitCode=1;});"
+        proc = subprocess.run(['node', '-e', script], capture_output=True, text=True, timeout=20)
+>       assert proc.returncode == 0, proc.stderr + proc.stdout
+E       AssertionError: [eval]:90
+E                 finish=()=>SETTLEMENT==='rejected'?reject(Error('private-provider-detail')):
+E                                                           ^
+E         
+E         Error: private-provider-detail
+E             at finish ([eval]:90:51)
+E             at [eval]:99:7
+E         
+E         Node.js v22.23.3
+E         OK
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node', '-e', 'const MODULE="/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/templa...          ^\n\nError: private-provider-detail\n    at finish ([eval]:90:51)\n    at [eval]:99:7\n\nNode.js v22.23.3\n").returncode
+
+tests/test_prophet_save_composition.py:106: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_prophet_save_composition.py::test_uncertain_inspection_rechecks_only_reads_when_owner_allows[not-confirmed]
+FAILED tests/test_prophet_save_composition.py::test_uncertain_inspection_rechecks_only_reads_when_owner_allows[unavailable]
+FAILED tests/test_prophet_save_composition.py::test_uncertain_inspection_observed_membership_never_confirms_the_earlier_save
+FAILED tests/test_prophet_save_composition.py::test_uncertain_inspection_unexpected_fault_is_redacted_and_fails_closed[rejected]
+FAILED tests/test_prophet_save_composition.py::test_uncertain_inspection_unexpected_fault_is_redacted_and_fails_closed[sync-throw]
+FAILED tests/test_prophet_save_composition.py::test_uncertain_inspection_rechecks_generation_before_invoking_read[False]
+FAILED tests/test_prophet_save_composition.py::test_uncertain_inspection_rechecks_generation_before_invoking_read[True]
+FAILED tests/test_prophet_save_composition.py::test_uncertain_inspection_late_settlement_cannot_change_replacement_dialog[rejected-False]
+FAILED tests/test_prophet_save_composition.py::test_uncertain_inspection_late_settlement_cannot_change_replacement_dialog[rejected-True]
+9 failed, 7 passed, 21 deselected in 1.40s

@@ -1,0 +1,61 @@
+{
+  "schema": "prophet.ci_registration_validation.v1",
+  "phase": "final-registration",
+  "parent_head": "39f792bb3d0902fe46127b455c35f8f98d307080",
+  "workspace": "/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105",
+  "manifest_sha256": "238f344f59da12523b18b0d0da0d5628f681b478c61562d1a945d12f35c7d00d",
+  "started_at": "2026-11-05T04:46:55.569625+00:00",
+  "checks": [
+    {
+      "name": "unrun-census",
+      "argv": [
+        "/home/ubuntu0/lanes/venv/bin/python",
+        "scripts/audit_unrun_tests.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 13.251,
+      "log": "/tmp/prophet-ci-registration-final-39f792-unrun-census.log"
+    },
+    {
+      "name": "manifest",
+      "argv": [
+        "/home/ubuntu0/lanes/venv/bin/python",
+        "scripts/run_ci_pack.py",
+        "--workflow",
+        ".github/ci/legacy-jobs.yml",
+        "--gate",
+        "code",
+        "--pack-count",
+        "12",
+        "--validate-only"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.254,
+      "log": "/tmp/prophet-ci-registration-final-39f792-manifest.log"
+    },
+    {
+      "name": "trigger-closure",
+      "argv": [
+        "/home/ubuntu0/lanes/venv/bin/python",
+        "scripts/check_ci_trigger_closure.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 33.772,
+      "log": "/tmp/prophet-ci-registration-final-39f792-trigger-closure.log"
+    },
+    {
+      "name": "routing-and-exclusive-closure",
+      "argv": [
+        "/home/ubuntu0/lanes/venv/bin/python",
+        "-c",
+        "from pathlib import Path\nfrom scripts.run_ci_pack import infer_job_scopes, load_legacy_jobs, select_jobs, curated_exclusive_closure_findings\nimport json\nmanifest=Path(\".github/ci/legacy-jobs.yml\")\njobs,summary=infer_job_scopes(load_legacy_jobs(manifest,gate=\"code\"))\nprint(json.dumps({\"scope_summary\":summary}),flush=True)\npairs=[\n(\"tests/test_build_site_frozen_us_source.py\",\"unrun-grading-board\"),\n(\"tests/test_render_macro_fast_source_guard.py\",\"unrun-grading-board\"),\n(\"scripts/build_site.py\",\"unrun-grading-board\"),\n(\"scripts/render_macro_fast.py\",\"unrun-grading-board\"),\n(\"tests/test_prophet_public_featured_access_card.py\",\"prophet-lab\"),\n(\"templates/dashboard.html.j2\",\"prophet-lab\"),\n(\"templates/theme.css\",\"prophet-lab\"),\n(\"tests/test_prophet_same_date_publication.py\",\"washout-turn-organ\"),\n(\"scripts/build_prophet.py\",\"washout-turn-organ\"),\n]\nfor changed_path,owner in pairs:\n selected,reason=select_jobs(jobs,[changed_path])\n ids={job.job_id for job in selected}\n assert owner in ids,(changed_path,owner,reason)\n print(json.dumps({\"changed_path\":changed_path,\"required_owner\":owner,\"owner_selected\":True,\"selected_count\":len(ids),\"reason\":reason}),flush=True)\nfindings=curated_exclusive_closure_findings(manifest)\nprint(json.dumps({\"canonical_exclusive_closure_findings\":findings,\"qualified_changed_exclusive_owner\":\"washout-turn-organ\",\"changed_owner_passed\":\"washout-turn-organ\" not in findings}),flush=True)\nassert \"washout-turn-organ\" not in findings,findings[\"washout-turn-organ\"]\n"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 114.581,
+      "log": "/tmp/prophet-ci-registration-final-39f792-routing-and-exclusive-closure.log"
+    }
+  ],
+  "completed_at": "2026-11-05T04:49:04.660498+00:00",
+  "all_passed": false,
+  "final_status": " M .github/ci/legacy-jobs.yml\n"
+}

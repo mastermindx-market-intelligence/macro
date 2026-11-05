@@ -1,0 +1,10 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - site/theme.js
+  - templates/_prophet_opportunity.css.j2
+  - templates/_prophet_opportunity_card.html.j2
+  - templates/dashboard.html.j2
+  - templates/theme.css
+  - site/us_stocks.html
+  - site/assets/css/60dc406b.css
+manifest: mockups/evidence/prophet-opportunity-workspace/theme-prophet-current-20261104/canonical/manifest.json

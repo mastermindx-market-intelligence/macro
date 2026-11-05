@@ -1,0 +1,3 @@
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Validated 314 legacy jobs; 314 in scope (full suite: changed-file set unavailable); pack weights=[1630, 1400, 1070, 672, 672, 672, 671, 672, 672, 671, 670, 671]; selected pack 0 (1 jobs).
+Selected jobs: fif-kernel-guards

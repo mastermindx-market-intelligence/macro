@@ -1814,6 +1814,46 @@
      Plans remains the historical record wall. */
   #us-standouts:not([data-prophet-src="candidates"]) #us-st-view-toggle { display:none; }
   #us-today button.mx-sec-link { border:0; background:transparent; color:var(--link); font:inherit; cursor:pointer; min-height:40px; padding:0 8px; }
+  /* D03 T48: zero public Featured is an ACCESS state, not a claim that the
+     underlying nonempty source population is empty. Scope every new rule to the
+     Today empty card; shared .mx-empty / lifecycle / error states keep owners. */
+  #us-today .mx-today-access-empty {
+    display:flex; flex-direction:column; align-items:flex-start; gap:12px;
+    margin:14px 0 20px; padding:20px; text-align:left;
+    border:1px solid var(--line); border-radius:var(--r-card,12px);
+    background:var(--panel); box-shadow:var(--card-shadow);
+  }
+  #us-today .mx-today-access-mark {
+    display:inline-flex; align-items:center; border-radius:var(--r-ctl,8px);
+    padding:6px 9px; font-size:var(--fs-label); font-weight:750;
+    letter-spacing:.065em; line-height:1.3; color:var(--text);
+    background:var(--panel2);
+  }
+  #us-today .mx-today-access-empty .mx-empty-line {
+    color:var(--text); font-size:clamp(18px,4.5vw,22px);
+    font-weight:750; line-height:1.25; max-width:28ch;
+  }
+  #us-today .mx-today-access-empty .mx-empty-why {
+    margin:0; max-width:60ch; font-size:var(--fs-body);
+    line-height:1.55; color:var(--muted);
+  }
+  #us-today .mx-today-access-cta {
+    display:inline-flex; align-items:center; justify-content:center;
+    min-height:44px; padding:11px 16px; border:0; border-radius:var(--r-btn,10px);
+    background:var(--text); color:var(--bg); font:inherit;
+    font-size:var(--fs-body); font-weight:750; cursor:pointer;
+    text-decoration:none;
+  }
+  #us-today .mx-today-access-cta:focus-visible {
+    outline:3px solid var(--link); outline-offset:3px;
+  }
+  #us-today .mx-today-access-caption {
+    margin:0; font-size:var(--fs-sm); line-height:1.5; color:var(--muted);
+  }
+  @media (max-width:420px) {
+    #us-today .mx-today-access-empty { padding:17px; gap:11px; }
+    #us-today .mx-today-access-cta { width:100%; }
+  }
   /* count chips row (id matches stocktable.js hard-coded lookup) */
   #st-count-chips { display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; margin:8px 0; }
   .st-chip { display:inline-block; font-size:10px; font-weight:700; padding:2px 9px;
@@ -2358,6 +2398,17 @@
 {% endif %}
 {% set all_tools_enabled = (mode != 'stocks') %}
 {% include "_site_nav.html.j2" %}
+{% if mode == 'stocks' %}
+{# Match live.js's neutral initial state before first paint. The existing session
+   renderer reuses this node; no calendar claim or extra status owner is created. #}
+<div id="market-session-status" class="dtp-row" role="status" aria-live="polite"
+     data-session-state="unverified"
+     data-tip-en="Calendar status is unverified. Displayed data keeps its original date."
+     data-tip-zh="交易日历状态未确认。已显示数据保留原始日期。">
+  <span class="dtp-chip dtp-chip--behind">{{ t('US · Status unverified', '美股 · 状态未确认') }}</span>
+  <span class="dtp-asof">{{ t('Next open unverified', '开市时间待确认') }}</span>
+</div>
+{% endif %}
 <div class="grid">
 
   {% if mode == 'stocks' %}
@@ -2561,6 +2612,7 @@
   }
   html[data-theme="light"] body.page-stocks .chip{ border-color:#dde2ea; }
   </style>
+  <style id="prophet-page-css">{% include "_prophet_page.css.j2" %}</style>
   <div class="panel span12" id="stocks-header">
     {% set _stk_hdr_su = us_standouts if (us_standouts is defined and us_standouts) else none %}
     {% set _stk_hdr_delayed = (_stk_hdr_su.get('staleness') or {}).get('delayed') if _stk_hdr_su else false %}
@@ -2608,27 +2660,44 @@
          ~ ('入场信号按各自较慢的周期重新评分，当前这一批的日期是 ' ~ _sig_asof ~ '，所以卡片上的信号可能比榜单更早。' if _sig_asof else '')
          ~ ('数据延迟时，榜单会继续显示最后一批有效数据，而不是留空——操作前请先看一下实时报价。' if _stk_hdr_delayed else '') -%}
     <div class="stk-headline">
-      <h1>{{ t('US Stocks', '美国股票') }}</h1>
+      <div class="prophet-heading">
+        <div class="prophet-eyebrow">{{ t('US equity intelligence', '美股研究') }}</div>
+        <h1>Prophet <span>{{ t('US stocks', '美国股票') }}</span></h1>
+      </div>
       <div class="stk-head-meta">
         <span class="stk-status{{ ' is-delayed' if _stk_hdr_delayed else '' }}"
               {%- if _stk_hdr_su and _stk_hdr_su.get('as_of') %} data-tip-en="{{ _vint_tip_en|e }}" data-tip-zh="{{ _vint_tip_zh|e }}"{% endif %}>
-          <span class="stk-fresh-dot" aria-hidden="true"></span>
+          {% if _stk_hdr_su and _stk_hdr_su.get('as_of') %}<span class="stk-fresh-dot" aria-hidden="true"></span>{% endif %}
           {%- if _stk_hdr_su and _stk_hdr_su.get('as_of') %}
           <span class="l-en">{{ 'Delayed · data through' if _stk_hdr_delayed else 'Data through' }}</span><span class="l-zh">{{ '已延迟 · 数据截至' if _stk_hdr_delayed else '数据截至' }}</span>
           <strong>{{ _stk_hdr_su.as_of }}</strong>
           {%- else %}
-          <span class="l-en">{{ 'Delayed' if _stk_hdr_delayed else 'Fresh' }}</span><span class="l-zh">{{ '延迟' if _stk_hdr_delayed else '新鲜' }}</span>
+          {{ t('Board date unavailable', '榜单日期暂不可用') }}
           {%- endif %}
         </span>
-        <span class="stk-status"><span class="l-en">Regime</span><span class="l-zh">周期</span> <strong>{{ td(latest.quad_name) }}</strong></span>
+        <span class="stk-status"><span class="l-en">Regime</span><span class="l-zh">周期</span> <strong>{{ td(latest.quad_name|trim) if latest.quad_name is string and latest.quad_name|trim else t('Unavailable', '暂无数据') }}</strong></span>
         {% if pb and pb.dial %}<span class="stk-status"><span class="l-en">Posture</span><span class="l-zh">姿态</span> <strong>{{ td(pb.dial.posture) }}</strong></span>{% endif %}
       </div>
+      <div class="prophet-assistant-slot">
+        <button id="prophet-assistant" class="prophet-assistant-trigger" type="button" hidden
+                aria-controls="mmb-panel" aria-expanded="false" aria-describedby="prophet-assistant-status">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/></svg>
+          {{ t('Ask', '提问') }}
+        </button>
+        <noscript><a class="prophet-assistant-trigger" href="chat.html">{{ t('Ask', '提问') }}</a></noscript>
+      </div>
     </div>
-    <div class="stk-header-links">
-      <a href="macro.html"><span class="l-en">Market posture</span><span class="l-zh">市场姿态</span> →</a>
-      <a href="us_stocks_lab.html">🧪 <span class="l-en">Pick Lab</span><span class="l-zh">选股实验室</span> →</a>
-      <a href="alerts.html"><span class="l-en">Alerts</span><span class="l-zh">提醒</span> →</a>
-    </div>
+    <p id="prophet-assistant-status" class="prophet-assistant-status" role="status" aria-live="polite" hidden></p>
+    <nav class="stk-header-links prophet-section-nav" aria-label="Prophet">
+      <a href="#us-standouts">{{ t('Opportunities', '机会') }}</a>
+      <a href="#prophet-market-context">{{ t('Market context', '市场背景') }}</a>
+      <a href="{{ '#sectors' if sector_setups else 'sector_central.html#actnow-section' }}">{{ t('Sector timing', '板块时机') }}</a>
+      <a href="us_track_record.html">{{ t('Track record', '历史表现') }} <span aria-hidden="true">↗</span></a>
+      <span class="prophet-nav-tools">
+        <a href="us_stocks_lab.html">{{ t('Pick Lab', '选股实验室') }} <span aria-hidden="true">↗</span></a>
+        <a href="alerts.html">{{ t('Alerts', '提醒') }} <span aria-hidden="true">↗</span></a>
+      </span>
+    </nav>
   </div>
   {# MEGA-CAP TAPE folded into #action-board header (S2 §1.3). Include lives in
      templates/_us_act_now_board.html.j2, mode-gated so sector_central does not leak it. #}
@@ -16538,7 +16607,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% set _b4_label_en = (market_state.label_en if (market_state.label_en is defined and market_state.label_en) else _b4_color) %}
   {% set _b4_label_zh = (market_state.label_zh if (market_state.label_zh is defined and market_state.label_zh) else _b4_label_en) %}
   {% set _b4_nalert = (intl_cascade.n_alert if (intl_cascade is defined and intl_cascade and intl_cascade.n_alert is not none and intl_cascade.n_alert > 0) else 0) %}
-  <div class="stk-ctx-strip {{ _b4_cls }} span12">
+  <div class="stk-ctx-strip {{ _b4_cls }} span12" id="prophet-market-brief">
     <span class="scx-dot" aria-hidden="true"></span>
     <span class="scx-head">
       <span class="scx-label"><span class="l-en">Market state</span><span class="l-zh">市场状态</span></span>
@@ -16559,10 +16628,20 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
      Until 2026-10-02 this include sat inside the macro-only block behind `mode != 'macro'`
      and therefore rendered on no page (MO-PAID-001_FIX_R1). Stocks mode is its host;
      `_regime_read_panel.html.j2` hides itself unless latest.base_effect carries both axes. #}
-  {% include "_regime_read_panel.html.j2" %}
+  {# A selected Sector Central handoff belongs before its destination board,
+     including the empty board. It is distinct from the market context below. #}
   {% if mode == "stocks" %}{% include "_sector_prophet_context.html.j2" %}{% endif %}
-  {% if action_board %}
-  {% include "_us_act_now_board.html.j2" %}
+  {# The named navigation landing remains useful when the board has no artifact. #}
+  {% if not ((us_standouts and us_standouts.buy) or (action_board and action_board.notable)) %}
+  <section class="panel span12 prophet-empty-workspace" id="us-standouts">
+    <h2>{{ t('Opportunities unavailable', '机会数据暂不可用') }}</h2>
+    <p>{{ t('The stock board has not loaded. Market context remains available below.', '股票榜单暂未加载，下方市场背景仍可查看。') }}</p>
+    <a href="macro.html">{{ t('Explore market context', '查看市场背景') }} →</a>
+  </section>
+  {% endif %}
+  {# Detailed context follows the opportunity workspace in source and focus order.
+     The stock workspace remains available if the independent theme board is absent. #}
+  {% if action_board or (us_standouts and us_standouts.buy) %}
     {% set _su = us_standouts if (us_standouts and us_standouts.buy) else None %}
     {{ pv.pv_css(setup_detail=true) }}
     <style>{% include "_prophet_workspace.css.j2" %}</style>
@@ -16850,8 +16929,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          {%- if _su and _su.get('as_of') %} data-board-asof="{{ _su.as_of|e }}"{% endif %}
          {%- if _su and _su.get('staleness') %} data-board-delayed="{{ '1' if _su.staleness.get('delayed') else '0' }}"{% endif %}
          {%- if _bs and _bs.get('rel') %} data-boardstate="{{ _bs.rel }}"{% endif %}>
-      <div class="pb-hdrow" style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
-        <h2 style="margin:0">{{ t('Prophet Stock Signals', 'Prophet 选股') }}</h2>
+      <div class="pb-hdrow">
+        <h2>{{ t('Opportunity workspace', '机会工作台') }}</h2>
         {#- W-L1 board-state stamp (spec §2 A, §5.1). BOTH variants are SSR-baked and both
             ship their l-en/l-zh pair, because the copy has to exist in the page in both
             languages before the live plane can ever reach it (bilingual from birth), and
@@ -16900,8 +16979,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
            full-board eligible count — live: "60 shown · 76 setups") and
            neither matched what was actually on screen. Deleted outright;
            the dot legend below is the whole line now. -#}
-        {% if _su %}{% set _su_delayed = (_su.get('staleness') or {}).get('delayed') %}<span class="muted" id="us-board-sub" style="font-size:11.5px">{% if _su_delayed %}{{ t("dots reflect prices as of " ~ ((_su.staleness or {}).get('price_through') or '?') ~ " — verify before acting.", "价格点位截至 " ~ ((_su.staleness or {}).get('price_through') or '?') ~ "，操作前请确认最新价格。") }}{% else %}{{ t("green dot = entry open, yellow = wait for pullback.", "绿点＝现在可入场，黄点＝等回调。") }}{% endif %}
-          <span class="help">?<span class="tip tip-wide">{% if _su_delayed %}<span class="l-en">Board is delayed — prices are as of {{ ((_su.staleness or {}).get('price_through') or '?') }}. Dots and entry signals may not reflect current prices. Use the card to judge the company, then check a live quote before acting.</span><span class="l-zh">数据延迟 — 价格截至 {{ ((_su.staleness or {}).get('price_through') or '?') }}。绿点及入场信号可能不反映最新价格。先用卡片判断公司，再查看实时报价后操作。</span>{% else %}<span class="l-en">Each card separates two questions: is the stock worth owning, and is today a good entry? A strong company can still be a wait if price has run too far. Green means the entry is open; yellow means wait.</span><span class="l-zh">每张卡片分开回答两个问题：这只股票是否值得持有，以及今天是否适合入场。好公司若股价已经跑远，仍然应该等待。绿点表示入场窗口已开；黄点表示等待。</span>{% endif %}</span></span></span>{% endif %}
+        {% if _su %}{% set _su_delayed = (_su.get('staleness') or {}).get('delayed') %}<span class="muted" id="us-board-sub" style="font-size:11.5px">{% if _su_delayed %}{{ t("dots reflect prices as of " ~ ((_su.staleness or {}).get('price_through') or '?') ~ " — verify before acting.", "价格点位截至 " ~ ((_su.staleness or {}).get('price_through') or '?') ~ "，操作前请确认最新价格。") }}{% else %}{{ t("A strong setup still needs a current entry assessment.", "好形态也需要当前有效的入场判读。") }}{% endif %}
+          <span class="help">?<span class="tip tip-wide">{% if _su_delayed %}<span class="l-en">Board is delayed — prices are as of {{ ((_su.staleness or {}).get('price_through') or '?') }}. Dots and entry signals may not reflect current prices. Use the card to judge the company, then check a live quote before acting.</span><span class="l-zh">数据延迟 — 价格截至 {{ ((_su.staleness or {}).get('price_through') or '?') }}。绿点及入场信号可能不反映最新价格。先用卡片判断公司，再查看实时报价后操作。</span>{% else %}<span class="l-en">Each card separates two questions: is the stock worth owning, and is today a good entry? A strong company can still be a wait if price has run too far. Use the entry assessment and its date before acting.</span><span class="l-zh">每张卡片分开回答两个问题：这只股票是否值得持有，以及今天是否适合入场。好公司若股价已经跑远，仍然应该等待。操作前，请查看入场判读及其日期。</span>{% endif %}</span></span></span>{% endif %}
         {% if not _su %}<span class="muted" style="font-size:11.5px">{{ t("Up to 10 names per sector · grouped by setup, strongest names first.", "每个板块最多 10 只 · 按形态分组，较强者优先。") }}
           {{ help("Shows up to ten holdings from each sector when their price action reaches a clear buy, turning or topping point. Cards are grouped by setup stage; stronger names within the sector appear first. A cap keeps one sector from taking over. Click any card for the full breakdown.", "当价格走势出现明确的买入、转向或见顶时，每个板块最多展示十只股票。卡片按形态阶段分组，同板块中较强者优先。数量上限可避免单一板块占满页面。点击卡片查看完整拆解。") }}</span>{% endif %}
       </div>
@@ -16953,45 +17032,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% if _stale.get('unknown') or not _stale.get('price_through') %}<span class="l-en">We can’t confirm how current these prices are, so treat this board as out of date — check a live quote before you act.</span><span class="l-zh">目前无法确认这些价格是否最新，请把本榜单当作过期数据——操作前先看一下实时报价。</span>{% else %}<span class="l-en">Still ranked on prices as of {{ _stale.get('price_through') }}{% if _stale_behind is not none %} — {{ _stale_behind }} session{{ '' if _stale_behind == 1 else 's' }} behind{% endif %}. We’re updating it; check a live quote before you act.</span><span class="l-zh">仍按截至 {{ _stale.get('price_through') }} 的价格排序{% if _stale_behind is not none %}，落后 {{ _stale_behind }} 个交易日{% endif %}。数据正在更新，操作前请先看一下实时报价。</span>{% endif %}
       </div>
       {% endif %}
-      {# P1 — incumbent leader-pullback organ projected as a separate display shelf.
-          It is neither Candidates nor Plans and carries no rank, entry, or trade authority. #}
-      {% if us_leader_observations %}
-      {% set _plo = us_leader_observations %}
-      {% set _plo_src = _plo.get('source') or {} %}
-      {% set _plo_counts = _plo.get('counts') or {} %}
-      {% set _plo_gate = (pgate.get('leader_observations') if pgate else none) %}
-      <section class="plo" id="us-leader-observations" data-status="{{ _plo.get('status')|e }}">
-        <div class="plo-hd">
-          <h3><span class="l-en">Leaders / waiting for entry</span><span class="l-zh">领涨股 / 等待入场条件</span></h3>
-          <span class="plo-asof">
-            <span class="l-en">Source</span><span class="l-zh">数据日期</span>
-            {{ _plo_src.get('data_session') or _plo_src.get('as_of') or '—' }}
-          </span>
-        </div>
-        <div class="plo-summary">
-          <span><b>{{ _plo_counts.get('active', 0) }}</b> <span class="l-en">active observations</span><span class="l-zh">个活跃观察</span></span>
-          <span class="plo-authority"><span class="l-en">Context only · not a recommendation</span><span class="l-zh">仅供背景参考 · 非推荐</span></span>
-        </div>
-        {% if _plo.get('status') == 'unavailable' %}
-        <div class="plo-state"><span class="l-en">Leader observations unavailable.</span><span class="l-zh">领涨股观察暂不可用。</span></div>
-        {% elif _plo.get('status') == 'empty' %}
-        <div class="plo-state"><span class="l-en">No active leader-reset states.</span><span class="l-zh">暂无活跃的领涨重置状态。</span></div>
-        {% elif _plo.get('status') == 'degraded' %}
-        <div class="plo-state"><span class="l-en">Some source rows could not be classified.</span><span class="l-zh">部分来源条目无法分类。</span></div>
-        {% endif %}
-        <div class="plo-rows">
-          {% with rows=(_plo.get('rows') or []) %}{% include "_us_leader_observation_rows.html.j2" %}{% endwith %}
-        </div>
-        {% if _plo_gate %}
-        <div class="pg-more plo-more">
-          <span class="l-en">{{ _plo_gate.locked }} more observed names</span>
-          <span class="l-zh">另有 {{ _plo_gate.locked }} 个观察标的</span>
-        </div>
-        {% endif %}
-      </section>
-      {% endif %}
       {% include "_us_candidate_pool.html.j2" %}
-      {% include "_us_early_observations.html.j2" %}
       {# B4 Conviction Delta — data prep for the "What changed today" dashboard.
          Rendered only when us_standouts.delta exists and has >=1 entry.
          Purely descriptive: shows which verb and which reason-codes changed.
@@ -17009,8 +17050,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       <script type="application/json" id="us-stocktable-data">
       {
         "rows": [{% for _n in _su.buy %}{% if not loop.first %},{% endif %}{
+          {% set _table_ticker = (_n.get('ticker') or '')|string|trim|upper %}
+          {% set _table_plans = (plan_rel_by_ticker or {}).get(_table_ticker, []) if plan_rel_by_ticker is defined else [] %}
+          {% set _table_relation = {'state': 'unknown', 'plans': []} if plan_rel is defined and plan_rel is mapping and plan_rel.get('state') == 'unknown' else {'state': 'related_security' if _table_plans else 'none', 'plans': _table_plans} %}
           "ticker":        {{ _n.ticker | tojson }},
-          "setup_detail":  {{ psd_table.table_action(_n, _su.get("as_of")) | string | tojson }},
+          "setup_detail":  {{ psd_table.opportunity_table_action(_n, _su.get("as_of"), _table_relation) | string | tojson }},
           "name":          {{ _n.name | tojson }},
           "sector":        {{ (_n.sector or '') | tojson }},
           "lane":          {{ (_n.get('lane') or '') | tojson }},
@@ -17148,8 +17192,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _stage_sub_zh = {'live':'请查看每张卡片的入场判读及日期','setting_up':'尚未触发 — 做好准备','ran':'行情已经启动','basing':'尚无入场信号 — 观察，勿追高','blocked':'暂时观望'} -%}
       {# Tier-2 receipts. One shared sentence carries the honest framing on every bucket:
          the ordering is a readiness rank, NOT a return forecast (§G0.7). #}
-      {%- set _pri_en = ' Higher Priority means the setup is more ready today, not more likely to win.' -%}
-      {%- set _pri_zh = ' 优先级越高，表示今天越接近可操作，并不代表更容易获胜。' -%}
+      {%- set _pri_en = ' Priority is the published ordering score, not entry permission or a win probability. The card explains its scoring basis.' -%}
+      {%- set _pri_zh = ' 优先级是已发布的排序分数，并非入场许可或胜率；评分依据见卡片说明。' -%}
       {# ── M1: the runway leg's own coverage receipt (measured 2026-08-02) ────────
            The formula advertises "runway 10%", but the extension reading that leg
            scores is absent on every row, so the leg contributes 0 to all of them. A
@@ -17273,18 +17317,24 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <span class="mx-sec-total"><span class="l-en"><b>{{ _today_visible|length }}</b> of <b>{{ _today_total }}</b> Featured</span><span class="l-zh">精选 <b>{{ _today_visible|length }}</b> / <b>{{ _today_total }}</b></span></span>
           <button type="button" class="mx-sec-link" onclick="if(window.USProphetSource){window.USProphetSource.set('candidates')}">{{ t('Open Screener', '打开筛选器') }}</button>
         </div>
-        <p class="mx-sec-note">{{ t('A preview of the current board’s owner-Featured shelf in its existing order. Featured is not entry permission — the card’s Buy, Near or Wait state still controls timing.', '当前榜单「精选」层的预览，顺序保持不变。精选不等于获准入场——仍以卡片上的买入、接近或等待状态决定时机。') }}</p>
+        <p class="mx-sec-note">{{ t('Compare price structure and key risks. Open a setup for the full picture.', '比较价格结构与主要风险，打开形态查看完整分析。') }}</p>
         {%- if _today_visible %}
         <div class="nbgrid" id="us-today-grid">
-          {% with items=_today_visible, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
+          {% with items=_today_visible, opportunity_prefix='today', sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
         </div>
         {%- if _today_more > 0 %}
-        <p class="mx-sec-note us-today-remainder"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener; this three-card preview is not a pick quota.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票保留在筛选器；三张卡只是预览容量，并非选股名额。</span></p>
+        <p class="mx-sec-note us-today-remainder"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票可在筛选器中查看。</span></p>
         {%- endif %}
         {%- elif _today_total > 0 %}
-        <div class="mx-empty"><div class="mx-empty-line">{{ t('Featured names exist, but none are visible in this access preview.', '存在精选股票，但当前访问预览中未显示。') }}</div><div class="mx-empty-why">{{ t('Open Screener after access is available; no hidden name is inferred here.', '获得访问权限后请打开筛选器；此处不会推断任何隐藏股票。') }}</div></div>
+        <div class="mx-empty mx-today-access-empty" role="region" aria-labelledby="us-featured-empty-title">
+          <span class="mx-today-access-mark">{{ t('PUBLIC PREVIEW · ACCESS LEVEL', '公开预览 · 访问权限') }}</span>
+          <div class="mx-empty-line" id="us-featured-empty-title">{{ t('Featured setups are outside this preview.', '精选形态不在当前预览范围内。') }}</div>
+          <div class="mx-empty-why">{{ t('This access level does not display Featured names. It does not mean no setups exist.', '当前访问权限不展示精选股票，但并不意味着没有相关形态。') }}</div>
+          <button type="button" class="mx-today-access-cta" onclick="if(window.USProphetSource){window.USProphetSource.set('candidates')}">{{ t('Open Screener ↗', '打开筛选器 ↗') }}</button>
+          <p class="mx-today-access-caption">{{ t('Browse available candidates in Screener. Protected setup details and Save remain account-gated.', '前往筛选器浏览可查看的候选股票。受限形态详情和保存功能仍需相应账户权限。') }}</p>
+        </div>
         {%- else %}
-        <div class="mx-empty"><div class="mx-empty-line">{{ t('No owner-Featured names on this board.', '当前榜单暂无精选股票。') }}</div><div class="mx-empty-why">{{ t('Screener remains available; zero Featured is not a broken board.', '筛选器仍可使用；精选为零并不代表榜单故障。') }}</div></div>
+        <div class="mx-empty"><div class="mx-empty-line">{{ t('No Featured setups on this board.', '当前榜单暂无精选股票。') }}</div><div class="mx-empty-why">{{ t('Explore all candidates in Screener.', '前往筛选器浏览全部候选股票。') }}</div></div>
         {%- endif %}
       </section>
       {% endif %}
@@ -17520,7 +17570,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
            WL1-PROVCARD-CONTRACT below, tests/test_wl1_lifecycle_
            neutralization.py) re-acquires this grid via that absence. -#}
       <div class="nbgrid" data-showmore-rows="3" id="us-cand-grid">
-      {% with items=_render_list.items, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
+      {% with items=_render_list.items, opportunity_prefix='screener', sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
       </div>{# end #us-cand-grid #}
         {#- P0 #6185 (B4) — restored CANDIDATE tier wall, keyed on `gate`
            (not `life_gate` — that key belongs to the plan wall inside
@@ -17702,9 +17752,47 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          2026-08-05. That is why the disclosure needed a chip of its own.) #}
       {% set _xuc = ((_su.get('ranking') or {}).get('ext_unknown_coverage') or {}) %}
       {% set _xfu = _xuc.get('featured_with_unknown') or 0 %}
-      <p class="pb-fn"><span class="l-en">Higher Priority means the setup is more ready today, not more likely to win. Featured highlights up to 12 of the most ready names, with no more than four per sector; every qualifying name still appears on this board.{% if _xfu %} We could not check whether {{ _xfu }} featured name{{ '' if _xfu == 1 else 's' }} had already run too far.{% endif %}{{ _rw_en }}</span><span class="l-zh">优先级越高，表示今天越接近可操作，并不代表更容易获胜。精选区最多突出 12 只股票、每个板块不超过 4 只；所有合格股票仍会保留在本榜。{% if _xfu %}其中 {{ _xfu }} 只精选股票无法检查是否已经涨得太远。{% endif %}{{ _rw_zh }}</span></p>
+      <p class="pb-fn"><span class="l-en">Priority is the published ordering score, not entry permission or a win probability. The card explains its scoring basis. Featured highlights up to 12 of the highest-priority eligible names, with no more than four per sector; every qualifying name still appears on this board.{% if _xfu %} We could not check whether {{ _xfu }} featured name{{ '' if _xfu == 1 else 's' }} had already run too far.{% endif %}{{ _rw_en }}</span><span class="l-zh">优先级是已发布的排序分数，并非入场许可或胜率；评分依据见卡片说明。精选区最多突出 12 只股票、每个板块不超过 4 只；所有合格股票仍会保留在本榜。{% if _xfu %}其中 {{ _xfu }} 只精选股票无法检查是否已经涨得太远。{% endif %}{{ _rw_zh }}</span></p>
       {% endif %}
       </div>{# end .nb-grid-section #}
+      {# P1 — incumbent leader-pullback organ projected as a separate display shelf.
+          It is neither Candidates nor Plans and carries no rank, entry, or trade authority. #}
+      {% if us_leader_observations %}
+      {% set _plo = us_leader_observations %}
+      {% set _plo_src = _plo.get('source') or {} %}
+      {% set _plo_counts = _plo.get('counts') or {} %}
+      {% set _plo_gate = (pgate.get('leader_observations') if pgate else none) %}
+      <section class="plo" id="us-leader-observations" data-status="{{ _plo.get('status')|e }}">
+        <div class="plo-hd">
+          <h3 id="us-leader-observation-title"><span class="l-en">Leaders / waiting for entry</span><span class="l-zh">领涨股 / 等待入场条件</span></h3>
+          <span class="plo-asof">
+            <span class="l-en">Source</span><span class="l-zh">数据日期</span>
+            {{ _plo_src.get('data_session') or _plo_src.get('as_of') or '—' }}
+          </span>
+        </div>
+        <div class="plo-summary">
+          <span><b>{{ _plo_counts.get('active', 0) }}</b> <span class="l-en">active observations</span><span class="l-zh">个活跃观察</span></span>
+          <span class="plo-authority"><span class="l-en">Context only · not a recommendation</span><span class="l-zh">仅供背景参考 · 非推荐</span></span>
+        </div>
+        {% if _plo.get('status') == 'unavailable' %}
+        <div class="plo-state"><span class="l-en">Leader observations unavailable.</span><span class="l-zh">领涨股观察暂不可用。</span></div>
+        {% elif _plo.get('status') == 'empty' %}
+        <div class="plo-state"><span class="l-en">No active leader-reset states.</span><span class="l-zh">暂无活跃的领涨重置状态。</span></div>
+        {% elif _plo.get('status') == 'degraded' %}
+        <div class="plo-state"><span class="l-en">Some source rows could not be classified.</span><span class="l-zh">部分来源条目无法分类。</span></div>
+        {% endif %}
+        <div class="plo-rows" tabindex="0" role="region" aria-labelledby="us-leader-observation-title">
+          {% with rows=(_plo.get('rows') or []) %}{% include "_us_leader_observation_rows.html.j2" %}{% endwith %}
+        </div>
+        {% if _plo_gate %}
+        <div class="pg-more plo-more">
+          <span class="l-en">{{ _plo_gate.locked }} more observed names</span>
+          <span class="l-zh">另有 {{ _plo_gate.locked }} 个观察标的</span>
+        </div>
+        {% endif %}
+      </section>
+      {% endif %}
+      {% include "_us_early_observations.html.j2" %}
       {% set _has_outcomes = us_board_outcomes and us_board_outcomes.get('rows') %}
       {% if _has_outcomes %}<div class="prophet-board-tools">{% endif %}
       {# W2 outcomes strip: recently surfaced → outcome. Renders only when the artifact
@@ -18068,6 +18156,16 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     </div>
     {% endif %}
   {% endif %}
+  <div class="span12 prophet-context-heading" id="prophet-market-context">
+    <div>
+      <span class="prophet-eyebrow">{{ t('The bigger picture', '全局视角') }}</span>
+      <h2>{{ t('Market context', '市场背景') }}</h2>
+      <p>{{ t('The environment behind every setup.', '理解每个形态背后的市场环境。') }}</p>
+    </div>
+    <a href="macro.html">{{ t('Open market outlook', '查看市场展望') }} <span aria-hidden="true">↗</span></a>
+  </div>
+  {% include "_regime_read_panel.html.j2" %}
+  {% if action_board %}{% include "_us_act_now_board.html.j2" %}{% endif %}
   {% endif %}{# /mode != macro — action board #}
 
 
@@ -18431,10 +18529,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
 
   {# TS-U3 / TS-R7: Per-stock Turn Setups — multi-timeframe momentum (mode=stocks only).
      Client-side from stockdata/mtf_upturn.json (U2 nightly artifact).
-     Schema: mtf_upturn.v1. Fail-open: absent until tonight's nightly. #}
+     Schema: mtf_upturn.v1. Missing or invalid sources are unavailable, never an empty result. #}
   {% if mode == 'stocks' %}
-  <div class="panel span12 dash-mtf-section" id="dash-mtf-section">
-    <h2>{{ t('Turn Setups — early bottoming signs by stock', '拐点形态 — 个股早期筑底迹象') }}
+  <div class="panel span12 dash-mtf-section" id="dash-mtf-section" data-mtf-state="idle">
+    <h2 id="dash-mtf-heading" tabindex="-1">{{ t('Turn Setups — early bottoming signs by stock', '拐点形态 — 个股早期筑底迹象') }}
       <span class="help">?<span class="tip tip-wide">
         <span class="l-en">
           A per-stock checklist of early bottoming signs — more filled boxes = more timeframes agreeing.
@@ -18456,8 +18554,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </span>
       </span></span>
     </h2>
-    <div id="dash-mtf-body">
-      <div class="mtf-skel" aria-hidden="true">
+    <div class="dash-mtf-feedback">
+      <p id="dash-mtf-status" class="muted" role="status" aria-live="polite" aria-atomic="true">{{ t('Turn setup data has not loaded.', '拐点形态数据尚未加载。') }}</p>
+      <button id="dash-mtf-retry" class="dash-mtf-retry" type="button" hidden>{{ t('Retry turn setups', '重试拐点形态') }}</button>
+      <noscript><p class="muted">{{ t('Enable JavaScript to load the published checklist. Other server-rendered research remains available.', '启用 JavaScript 可加载已发布的检查表。其他服务端渲染的研究内容仍可查看。') }}</p></noscript>
+    </div>
+    <div id="dash-mtf-body" aria-busy="false" aria-labelledby="dash-mtf-heading">
+      <div class="mtf-skel" aria-hidden="true" hidden>
         <div class="mtf-skel-hd"></div>
         <div class="mtf-skel-row"></div>
         <div class="mtf-skel-row"></div>
@@ -18466,8 +18569,6 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <div class="mtf-skel-row"></div>
         <div class="mtf-skel-row"></div>
       </div>
-      <p class="dash-mtf-absent mx-empty l-en" hidden>No stock is showing early bottoming signs tonight. <span class="empty-why">The checklist needs at least two timeframes to agree, and none cleared that bar in the latest run.</span></p>
-      <p class="dash-mtf-absent mx-empty l-zh" hidden>今晚没有个股出现早期筑底迹象。<span class="empty-why">该检查表要求至少两个时间框架同向，最近一次运行中没有标的达到这一门槛。</span></p>
     </div>
   </div>
   {% endif %}
@@ -18669,6 +18770,12 @@ window.__CHART_SWAP__ = {
 };
 </script>
 <script src="theme.js"></script>
+{% if mode == 'stocks' %}
+<div data-watchstore-checked-save hidden></div>
+<link rel="stylesheet" href="prophet_save.css">
+<script src="watchstore.js"></script>
+<script src="prophet_save.js"></script>
+{% endif %}
 <script src="tier_preview.js"></script>
 {# The macro shell has no Plotly graphs or Time Machine panel. Avoid three
    do-nothing JS downloads on its mobile critical path; retain the existing
@@ -18856,7 +18963,7 @@ window.__CHART_SWAP__ = {
 (function(){
 'use strict';
 function isZh(){return document.documentElement.getAttribute('data-lang')==='zh';}
-function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function L(en,zh){return'<span class="l-en">'+en+'</span><span class="l-zh">'+(zh==null?en:zh)+'</span>';}
 function fmtPct(v){if(v==null)return'—';return(v>=0?'+':'')+v.toFixed(2)+'%';}
 function clsPct(v){return v==null?'muted':v>=0?'up':'dn';}
@@ -19159,36 +19266,88 @@ function _mtfPhasePlain(raw){
     +L(esc(en.join(' · ')),esc(zh.join(' · ')))+'</span>';
 }
 
+/* Validate display data before drawing a factual row or an empty-state claim.
+   The source is a dated nightly snapshot, not a live trade recommendation. */
+function mtfObject(value){return !!value&&typeof value==='object'&&!Array.isArray(value);}
+function mtfDate(value){
+  if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  var date=new Date(value+'T00:00:00Z');
+  return Number.isFinite(date.getTime())&&date.toISOString().slice(0,10)===value;
+}
+function validMtfPayload(data){
+  if(!mtfObject(data)||data.schema!=='mtf_upturn.v1'||data.error!=null||
+     !mtfDate(data.as_of)||!Number.isInteger(data.universe_n)||data.universe_n<1||
+     !mtfObject(data.tickers)||!mtfObject(data.cohort)) return false;
+  // Older v1 artifacts have no health counts. When supplied, both are binding.
+  if(Object.prototype.hasOwnProperty.call(data,'evaluated_n')||
+     Object.prototype.hasOwnProperty.call(data,'failed_n')){
+    if(!Number.isInteger(data.evaluated_n)||data.evaluated_n<1||
+       !Number.isInteger(data.failed_n)||data.failed_n<0||
+       data.evaluated_n+data.failed_n!==data.universe_n) return false;
+  }
+  var seen=new Set();
+  var valid=['confirmed','watch'].every(function(group){
+    var symbols=data.cohort[group];
+    return Array.isArray(symbols)&&symbols.every(function(sym){
+      if(typeof sym!=='string'||!sym.trim()||seen.has(sym)||
+         !Object.prototype.hasOwnProperty.call(data.tickers,sym)) return false;
+      seen.add(sym);
+      var row=data.tickers[sym];
+      if(!mtfObject(row)||row.state!==(group==='confirmed'?'UPTURN_CONFIRMED':'UPTURN_WATCH')) return false;
+      // Hysteresis can retain confirmed at K=2, never below the watch floor.
+      if(!Number.isInteger(row.k)||row.k<2||row.k>4) return false;
+      if(row.htf_coverage!=null&&typeof row.htf_coverage!=='boolean') return false;
+      if(row.monthly_phase!=null&&typeof row.monthly_phase!=='string') return false;
+      if(row.since!=null&&!mtfDate(row.since)) return false;
+      if(row.basket_ids!=null&&(!Array.isArray(row.basket_ids)||
+         !row.basket_ids.every(function(id){return typeof id==='string';}))) return false;
+      if(!mtfObject(row.legs)||!['d_macd','d3_confluence','w2_macd'].every(function(key){
+        return typeof row.legs[key]==='boolean';
+      })) return false;
+      if(['cross','approaching','none'].indexOf(row.legs.w_macd)<0) return false;
+      if(!mtfObject(row.trend)||!['d','d3','w','w2'].every(function(key){
+        var trend=row.trend[key];
+        return mtfObject(trend)&&typeof trend.pos==='boolean'&&
+          (trend.bars_since_cross==null||
+           (Number.isInteger(trend.bars_since_cross)&&trend.bars_since_cross>=0));
+      })) return false;
+      return true;
+    });
+  });
+  // Empty is a factual result only when the ticker map and cohort agree.
+  return valid&&seen.size<=(data.evaluated_n==null?data.universe_n:data.evaluated_n)&&
+    !(seen.size===0&&(data.evaluated_n==null||data.failed_n>0))&&Object.keys(data.tickers).every(function(sym){
+    var row=data.tickers[sym];
+    return mtfObject(row)&&(row.state==='NONE'?!seen.has(sym):
+      (row.state==='UPTURN_CONFIRMED'||row.state==='UPTURN_WATCH')&&seen.has(sym));
+  });
+}
+
 function renderMtfTable(mtfUpturn){
   var bodyEl=document.getElementById('dash-mtf-body');
-  if(!bodyEl) return;
-
-  if(!mtfUpturn||!mtfUpturn.tickers){
-    /* Artifact not in yet — leave the true-geometry skeleton in place. */
-    return;
-  }
-
+  if(!bodyEl) return {shown:0,total:0};
   var tickers=mtfUpturn.tickers;
-  var asOf=mtfUpturn.as_of||'';
+  var asOf=mtfUpturn.as_of;
 
   // Build row list: CONFIRMED first, then WATCH. A name earns a row only when it
   // has a live early-turn signal — no fixed roster is force-shown (Mag7 pin removed).
   var confirmed=[], watch=[];
   var seen=new Set();
   (mtfUpturn.cohort&&mtfUpturn.cohort.confirmed||[]).forEach(function(sym){
-    if(tickers[sym]){confirmed.push(sym);seen.add(sym);}
+    if(tickers[sym]&&!seen.has(sym)){confirmed.push(sym);seen.add(sym);}
   });
   (mtfUpturn.cohort&&mtfUpturn.cohort.watch||[]).forEach(function(sym){
     if(tickers[sym]&&!seen.has(sym)){watch.push(sym);seen.add(sym);}
   });
 
+  var total=confirmed.length+watch.length;
   var rows=confirmed.concat(watch).slice(0,40);
 
   if(!rows.length){
-    var skel=bodyEl.querySelector('.mtf-skel');
-    if(skel) skel.remove();
-    bodyEl.querySelectorAll('.dash-mtf-absent').forEach(function(p){p.hidden=false;});
-    return;
+    bodyEl.innerHTML='<p class="dash-mtf-absent mx-empty">'+L(
+      'No qualifying turn setups in this snapshot. <span class="empty-why">The checklist needs at least two timeframes to agree. This is an early-warning checklist, not a buy list.</span>',
+      '此快照中没有符合条件的拐点形态。<span class="empty-why">检查表要求至少两个时间框架同向。这是早期预警检查表，非买入清单。</span>')+'</p>';
+    return {shown:0,total:0};
   }
 
   // Leg glyphs — 3 visual states (U7):
@@ -19240,7 +19399,8 @@ function renderMtfTable(mtfUpturn){
   var html='<p class="muted" style="font-size:11px;margin:0 0 5px">'
     +L('as of '+esc(asOf)+' · an early-warning checklist, not a buy list',
        '截至 '+esc(asOf)+' · 早期预警检查表，非买入清单')+'</p>';
-  html+='<div class="tbl-scroll"><table class="dash-mtf-tbl"><thead><tr>'
+  html+='<p class="dash-mtf-scroll-hint">'+L('Scroll the table to see every timeframe and source detail.','横向滚动表格可查看全部时间框架与来源详情。')+'</p>';
+  html+='<div class="tbl-scroll dash-mtf-scroll" role="region" aria-labelledby="dash-mtf-heading" tabindex="0"><table class="dash-mtf-tbl"><thead><tr>'
     +'<th>'+L('ticker','代码')+'</th>'
     +'<th>'+L('state','状态')+'</th>'
     +'<th class="r">'+L('boxes','格数')+'</th>'
@@ -19267,16 +19427,19 @@ function renderMtfTable(mtfUpturn){
     html+='<tr>'
       +'<td><b>'+esc(sym)+'</b></td>'
       +'<td><span class="dash-mtf-badge '+stateCls+'">'+stateLbl+'</span></td>'
-      +'<td class="r"><span class="dash-mtf-k">'+(t.k||0)+'</span></td>'
+      +'<td class="r"><span class="dash-mtf-k">'+(t.k==null?'—':t.k)+'</span></td>'
       +'<td><div class="dash-mtf-legs">'
         +legEl3(!!legs.d_macd,trend.d||null,'D')
         +legEl3(!!legs.d3_confluence,trend.d3||null,'3D')
         +wMacdEl3(legs.w_macd||'none',trend.w||null)
-        +legEl3(!!legs.w2_macd,trend.w2||null,'2W')
-      +'</div></td>'
+        +(t.htf_coverage===false
+          ?'<span class="dash-mtf-leg unknown" data-tip-en="2W: history is insufficient. Unknown, not negative." data-tip-zh="双周：历史数据不足。状态未知，并非看跌。">?</span>'
+          :legEl3(!!legs.w2_macd,trend.w2||null,'2W'))
+      +'</div>'+(t.htf_coverage===false?'<span class="dash-mtf-coverage">'+L(
+        '2W history limited','双周历史不足')+'</span>':'')+'</td>'
       +'<td class="dash-mtf-phase">'+_mtfPhasePlain(t.monthly_phase)+'</td>'
       +'<td class="dash-mtf-since">'+esc(t.since||'—')+'</td>'
-      +'<td class="dash-mtf-baskets">'+(_bids.length?L(esc(basketEn),esc(basketZh)):'—')+'</td>'
+      +'<td class="dash-mtf-baskets" data-mtf-symbol="'+esc(sym)+'">'+(_bids.length?L(esc(basketEn),esc(basketZh)):'—')+'</td>'
       +'</tr>';
   });
   html+='</tbody></table></div>';
@@ -19299,38 +19462,122 @@ function renderMtfTable(mtfUpturn){
       _mtfBtn.setAttribute('aria-expanded', nowCollapsed?'false':'true');
     });
   }
+  return {shown:rows.length,total:total};
 }
 
 /* ────────────────────────────────────────────────────────────────────────
    FETCH + ORCHESTRATE
    ──────────────────────────────────────────────────────────────────────── */
 var pulse=null, mtfUpturn=null;
-var pulseDone=false, mtfDone=false, namesDone=false;
+var pulseDone=false, namesDone=false;
+var mtfPanel=document.getElementById('dash-mtf-section');
+var mtfBody=document.getElementById('dash-mtf-body');
+var mtfStatus=document.getElementById('dash-mtf-status');
+var mtfRetry=document.getElementById('dash-mtf-retry');
+var mtfSkeleton=mtfBody?mtfBody.innerHTML:'';
+var mtfRequest=0, mtfPending=false;
 
 function tryRender(){
-  if(!pulseDone||!mtfDone||!namesDone) return;
-  renderTapeBand(pulse);
-  renderMtfTable(mtfUpturn);
+  if(pulseDone&&namesDone) renderTapeBand(pulse);
 }
 
+function setMtfState(state,en,zh){
+  mtfPanel.setAttribute('data-mtf-state',state);
+  mtfBody.setAttribute('aria-busy',state==='loading'?'true':'false');
+  mtfStatus.innerHTML=L(esc(en),esc(zh));
+  mtfRetry.disabled=state==='loading';
+  if(state!=='loading') mtfRetry.hidden=state!=='unavailable';
+}
+
+function refreshMtfNames(){
+  if(!mtfUpturn||!mtfBody) return;
+  mtfBody.querySelectorAll('[data-mtf-symbol]').forEach(function(cell){
+    var row=mtfUpturn.tickers[cell.getAttribute('data-mtf-symbol')];
+    if(!row) return;
+    var ids=(row.basket_ids||[]).slice(0,3);
+    var more=(row.basket_ids||[]).length>3?'…':'';
+    cell.innerHTML=ids.length?L(esc(ids.map(_dtpNameEn).join(', ')+more),
+      esc(ids.map(_dtpNameZh).join('、')+more)):'—';
+  });
+}
+
+function loadMtf(){
+  if(!mtfPanel||!mtfBody||!mtfStatus||!mtfRetry||mtfPending) return;
+  var restoreFocus=document.activeElement===mtfRetry;
+  var request=++mtfRequest, settled=false;
+  var controller=typeof AbortController==='function'?new AbortController():null;
+  mtfPending=true;
+  mtfUpturn=null;
+  mtfBody.innerHTML=mtfSkeleton;
+  var skeleton=mtfBody.querySelector('.mtf-skel');
+  if(skeleton) skeleton.hidden=false;
+  setMtfState('loading','Loading the published turn-setup checklist…','正在加载已发布的拐点形态检查表…');
+
+  function finish(data){
+    if(settled||request!==mtfRequest) return;
+    settled=true;
+    clearTimeout(timeout);
+    mtfPending=false;
+    var result=null;
+    if(validMtfPayload(data)){
+      try {result=renderMtfTable(data); mtfUpturn=data;} catch(ignore){result=null;}
+    }
+    if(!result){
+      mtfBody.innerHTML='';
+      setMtfState('unavailable',
+        'Turn setups unavailable. The source could not be verified; no result has been inferred. You can retry.',
+        '拐点形态暂不可用。无法验证数据源，未据此推断结果。可点击重试。');
+    }else{
+      var count=result.total>result.shown?result.shown+' of '+result.total:result.total;
+      var countZh=result.total>result.shown?'显示 '+result.shown+' / '+result.total:result.total;
+      var partialEn=data.failed_n>0?' · Partial: '+data.failed_n+' calculations unavailable':'';
+      var partialZh=data.failed_n>0?' · 部分结果：'+data.failed_n+' 个标的计算不可用':'';
+      setMtfState(result.total?'ready':'empty',
+        count+' qualifying setup'+(result.total===1?'':'s')+' · as of '+data.as_of+partialEn,
+        countZh+' 个符合条件的形态 · 截至 '+data.as_of+partialZh);
+    }
+    // Return focus only for a retry initiated here, and never steal it back
+    // after the reader has moved to another control while the request runs.
+    if(restoreFocus&&(document.activeElement===mtfRetry||document.activeElement===document.body)){
+      var target=result?document.getElementById('dash-mtf-heading'):mtfRetry;
+      if(target) target.focus({preventScroll:true});
+    }
+  }
+
+  var timeout=setTimeout(function(){
+    finish(null);
+    if(controller) controller.abort();
+  },4000);
+  var options={cache:'no-cache'};
+  if(controller) options.signal=controller.signal;
+  Promise.resolve().then(function(){return fetch('stockdata/mtf_upturn.json',options);})
+    .then(function(response){if(!response.ok) throw new Error('mtf-unavailable'); return response.json();})
+    .then(finish,function(){finish(null);});
+}
+
+if(mtfRetry) mtfRetry.addEventListener('click',loadMtf);
+loadMtf();
 fetchJson('live/basket_pulse.json',function(d){pulse=d;pulseDone=true;tryRender();});
-fetchJson('stockdata/mtf_upturn.json',function(d){mtfUpturn=d;mtfDone=true;tryRender();});
-/* Parallel fetch: display names for tape and turn-setup rows (FT-R8: graceful fail).
-   Unlike the data fetches, a names failure must not stall the band behind the 4s
-   backstop — fall through to prettified slugs immediately. */
+/* Display names are optional. Their failure cannot hold the checklist loading,
+   and a late success updates only name cells, preserving row focus and folds. */
 fetch('basketdata/baskets.json',{cache:'no-cache'})
   .then(function(r){if(!r.ok)throw 0;return r.json();})
   .then(function(d){
-    var list=(d&&d.baskets)||[];
+    var list=d&&Array.isArray(d.baskets)?d.baskets:[];
     list.forEach(function(b){
-      if(b.id){ _dtpNames[b.id]={en:b.name||_dtpSlug(b.id), zh:b.name_zh||b.name||_dtpSlug(b.id)}; }
+      if(b&&typeof b.id==='string'){
+        var fallback=_dtpSlug(b.id);
+        _dtpNames[b.id]={en:typeof b.name==='string'?b.name:fallback,
+          zh:typeof b.name_zh==='string'?b.name_zh:typeof b.name==='string'?b.name:fallback};
+      }
     });
+    refreshMtfNames();
   })
   .catch(function(){})
   .then(function(){namesDone=true;tryRender();});
 
-// Fail-open: if any fetch doesn't resolve, still render with what we have
-setTimeout(function(){pulseDone=true;mtfDone=true;namesDone=true;tryRender();},4000);
+// The tape has its own backstop; it never settles or retries the MTF request.
+setTimeout(function(){pulseDone=true;namesDone=true;tryRender();},4000);
 
 // See-more folds — V2 action board + sector setups table. Page-scoped;
 // theme.js .lst-wrap handler ignores .act-more buttons.
@@ -20904,26 +21151,42 @@ if (document.readyState === 'loading') {
     var button = event.target && event.target.closest ? event.target.closest('.pvs-plan-link[data-pvs-plan-target]') : null;
     if (!button) return;
     var target = button.getAttribute('data-pvs-plan-target');
+    var card = document.getElementById(target);
+    var record = button.closest('.pvs-plan-rec');
+    var feedback = record && record.querySelector('.pvs-plan-feedback');
+    var feedbackEn = feedback && feedback.querySelector('.l-en');
+    var feedbackZh = feedback && feedback.querySelector('.l-zh');
+    if (feedback) feedback.removeAttribute('data-state');
+    if (feedbackEn) feedbackEn.textContent = '';
+    if (feedbackZh) feedbackZh.textContent = '';
+    /* Resolve through the existing lifecycle/access owner BEFORE leaving the
+       candidate. A missing/withheld record must not close the detail, switch
+       the source or reset the reader's table view, focus or reading position. */
+    var selected = false;
+    if (card && target && target.indexOf('pv-') === 0 &&
+        window.USProphetLife && typeof window.USProphetLife.selectPlan === 'function') {
+      try { selected = window.USProphetLife.selectPlan(card) === true; } catch(e) {}
+    }
+    if (!selected) {
+      if (window.PVSetupReturn) window.PVSetupReturn.abandon();
+      document.body.dataset.pvsPlanLinkResult='missing';
+      if (feedback) feedback.setAttribute('data-state', 'unavailable');
+      if (feedbackEn) feedbackEn.textContent = 'This plan is not available in the current view. Your candidate is still here; continue reviewing it or try again.';
+      if (feedbackZh) feedbackZh.textContent = '当前视图无法打开此计划。候选详情仍保留在此处，您可继续查看或重试。';
+      return;
+    }
     var dialog = document.getElementById('pv-setup-dialog');
-    /* Snapshot BEFORE the existing .pvs-close releases the live candidate source;
-       nothing is claimed until the exact target is confirmed further down. */
+    /* The exact native target is confirmed. Snapshot BEFORE the existing
+       .pvs-close releases the live candidate source. */
     var pending = window.PVSetupReturn ? window.PVSetupReturn.snapshot({
       mode: window.USProphetSource ? window.USProphetSource.get() : null,
-      view: window.USStockTable && window.USStockTable._getView ? window.USStockTable._getView() : null}) : null;
+      view: window.USStockTable && window.USStockTable._getView ? window.USStockTable._getView() : null,
+      link: button}) : null;
     if (dialog && dialog.open) {
       var close = dialog.querySelector('.pvs-close');
       if (close) close.click();
     }
     if (window.USProphetSource) window.USProphetSource.set('plans');
-    var card = document.getElementById(target);
-    if (!card || !target || target.indexOf('pv-') !== 0 ||
-        !window.USProphetLife || !window.USProphetLife.selectPlan(card)) {
-      /* No confirmed target, so no journey — a hop into Plans must never inherit a
-         stale return from an earlier candidate. */
-      if (window.PVSetupReturn) window.PVSetupReturn.abandon();
-      document.body.dataset.pvsPlanLinkResult='missing';
-      return;
-    }
     if (card.classList.contains('sm-hidden')) card.classList.remove('sm-hidden');
     if (card.classList.contains('sm-reveal')) card.classList.remove('sm-reveal');
     card.setAttribute('tabindex','-1');
@@ -20977,16 +21240,54 @@ if (document.readyState === 'loading') {
      long-idle member can be signed in with a token the server will reject.
      getSession() refreshes and rewrites the cookie before we ask (same fix as
      the onboarding wall, PR #3454). No-op when signed out. */
-  var todayAccessToken = null;
+  var todayAccessToken = null, todaySessionUser = null;
+  var todayAuthEpoch = 0, todaySessionEpoch = 0, todayNativeAdmission = null;
+  function todayAccountId(){
+    try {
+      var user = window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user();
+      return user && typeof user.id === 'string' && user.id.trim() ? user.id : null;
+    } catch(e) { return null; }
+  }
+  var todayObservedUser = todayAccountId();
+  function invalidateTodayAccount(){
+    todayAuthEpoch++;
+    todayAccessToken = null;
+    todaySessionUser = null;
+    if (todayNativeAdmission) applyTodayNative(todayNativeAdmission,
+      { state: 'unavailable', reasons: ['NATIVE_SESSION_CHANGED'] });
+  }
+  /* This only withholds stale display context; server authorization is unchanged.
+     A generation also rejects logout/relogin to the same account. Same-account
+     refresh/preference events and the first INITIAL_SESSION do not cancel work. */
+  window.addEventListener('mdx-auth', function(event){
+    var user = todayAccountId();
+    if ((event && event.detail && event.detail.event === 'SIGNED_OUT') ||
+        (todayObservedUser && user !== todayObservedUser)) invalidateTodayAccount();
+    todayObservedUser = user;
+  });
+  function todayRequestCurrent(epoch, user){
+    if (epoch === todayAuthEpoch && user && user === todayAccountId()) return true;
+    if (epoch === todayAuthEpoch) invalidateTodayAccount();
+    return false;
+  }
   function freshSession(){
     todayAccessToken = null;
+    todaySessionUser = null;
+    todaySessionEpoch = todayAuthEpoch;
+    var epoch = todaySessionEpoch;
+    todayObservedUser = todayAccountId();
     try{
       if (window.MDXAuth && window.MDXAuth.client && window.MDXAuth.hasSession && window.MDXAuth.hasSession()){
         return window.MDXAuth.client().then(function(sb){ return sb.auth.getSession(); })
           .then(function(result){
             var session = result && !result.error && result.data && result.data.session;
-            if (session && typeof session.access_token === 'string' && session.access_token.trim()){
+            var user = session && session.user && session.user.id;
+            if (epoch === todayAuthEpoch && typeof user === 'string' && user.trim() &&
+                user === todayAccountId() && typeof session.access_token === 'string' &&
+                session.access_token.trim()){
               todayAccessToken = session.access_token;
+              todaySessionUser = user;
+              todayObservedUser = user;
             }
             return result;
           }).catch(function(){});
@@ -21235,9 +21536,8 @@ if (document.readyState === 'loading') {
       }
       note.innerHTML =
         '<span class="l-en">' + more + ' more Featured name' + (more === 1 ? '' : 's') +
-        ' remain in Screener; this ' + preview + '-card preview is not a pick quota.</span>' +
-        '<span class="l-zh">另有 ' + more + ' 只精选股票保留在筛选器；这 ' + preview +
-        ' 张卡只是预览容量，并非选股名额。</span>';
+        ' remain in Screener.</span>' +
+        '<span class="l-zh">另有 ' + more + ' 只精选股票可在筛选器中查看。</span>';
     } else if (note){
       note.remove();
     }
@@ -21354,20 +21654,25 @@ if (document.readyState === 'loading') {
       else root.appendChild(note);
     }
     note.setAttribute('data-today-native-state', state);
-    if (state === 'available'){
+    note.setAttribute('role', 'status');
+    if (outcome.loading === true){
       note.innerHTML =
-        '<span class="l-en">Native candidate context is attached for this exact source.</span>' +
-        '<span class="l-zh">已附加此精确来源的原生候选上下文。</span>';
+        '<span class="l-en">Loading the evidence summary. Published setups remain available below.</span>' +
+        '<span class="l-zh">正在加载证据摘要。下方仍可查看已发布的形态。</span>';
+    } else if (state === 'available'){
+      note.innerHTML =
+        '<span class="l-en">Evidence summary is linked to this board snapshot.</span>' +
+        '<span class="l-zh">证据摘要已关联此榜单快照。</span>';
     } else if (state === 'partial'){
       note.innerHTML =
-        '<span class="l-en">Native candidate binding is available for ' + outcome.shown +
-        ' of ' + outcome.total + ' shown names; the full brief’s own inputs are still pending.</span>' +
+        '<span class="l-en">Additional context is available for ' + outcome.shown +
+        ' of ' + outcome.total + ' shown setups; some evidence is still incomplete.</span>' +
         '<span class="l-zh">所显示 ' + outcome.total + ' 个名字中已有 ' + outcome.shown +
-        ' 个建立原生候选绑定；完整简报的各所有者输入仍未就绪。</span>';
+        ' 个附有补充背景；部分证据尚不完整。</span>';
     } else {
       note.innerHTML =
-        '<span class="l-en">Native candidate context is unavailable for this exact source.</span>' +
-        '<span class="l-zh">此精确来源的原生候选上下文不可用。</span>';
+        '<span class="l-en">Evidence summary unavailable. Published setups remain available below.</span>' +
+        '<span class="l-zh">证据摘要暂不可用。下方仍可查看已发布的形态。</span>';
     }
   }
 
@@ -21378,13 +21683,20 @@ if (document.readyState === 'loading') {
      disclose typed unavailable WITHOUT retry; the incumbent shell and its
      hydrated cards are never dropped either way. */
   function queryDailyBrief(admission){
+    todayNativeAdmission = admission;
+    var epoch = todaySessionEpoch, user = todaySessionUser;
+    if (epoch !== todayAuthEpoch){
+      applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_SESSION_CHANGED'] });
+      return Promise.resolve();
+    }
     if (!todayAccessToken){
       applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_SESSION_UNAVAILABLE'] });
       return Promise.resolve();
     }
+    if (!todayRequestCurrent(epoch, user)) return Promise.resolve();
     /* Withhold any prior native context while this exact full roster is checked.
        Ordinary cards and their selection/order remain untouched. */
-    applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_CONTEXT_PENDING'] });
+    applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_CONTEXT_PENDING'], loading: true });
     var pins = admission.pins;
     var url = '/api/prophet/daily-brief/v1' +
       '?source_sha256=' + encodeURIComponent(pins.source_sha256) +
@@ -21393,6 +21705,7 @@ if (document.readyState === 'loading') {
     return fetch(url, { credentials: 'same-origin', cache: 'no-store',
                         headers: { Authorization: 'Bearer ' + todayAccessToken } })
       .then(function(r){
+        if (!todayRequestCurrent(epoch, user)) return null;
         if (r && (r.status === 401 || r.status === 403)){
           applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_AUTH_UNAVAILABLE'] });
           return null;
@@ -21401,7 +21714,7 @@ if (document.readyState === 'loading') {
         return r.json().then(function(data){ return { http: r.status, data: data }; });
       })
       .then(function(result){
-        if (!result) return;
+        if (!result || !todayRequestCurrent(epoch, user)) return;
         var outcome;
         if (result.http === 200){
           outcome = todayNativeOutcome(result.data, admission);
@@ -21423,6 +21736,7 @@ if (document.readyState === 'loading') {
         applyTodayNative(admission, outcome);
       })
       .catch(function(){
+        if (!todayRequestCurrent(epoch, user)) return;
         applyTodayNative(admission,
                          { state: 'unavailable', reasons: ['DAILY_BRIEF_UNAVAILABLE'] });
       });

@@ -1,0 +1,2224 @@
+{
+  "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+  "page_id": "p-C-0",
+  "reference_page_untouched": "p-A-0",
+  "updated_at": "2026-11-03T05:58:25.220903+00:00",
+  "boards": [
+    {
+      "variant": "1440-light-en",
+      "board_id": "YW1-0",
+      "complete": true,
+      "group_nodes": {
+        "artboard": "YW1-0",
+        "R8 Global navigation": "YW2-0",
+        "R8 Main": "YWV-0",
+        "R8 Masthead": "YWX-0",
+        "R8 Market brief": "YXC-0",
+        "R8 Section navigation": "YXO-0",
+        "R8 Workspace header": "YXY-0",
+        "R8 Board guidance": "YYA-0",
+        "R8 Opportunity grid": "YYF-0",
+        "R8 Card NVDA": "YYH-0",
+        "R8 Card NVDA identity": "YYJ-0",
+        "R8 Card NVDA status": "YYT-0",
+        "R8 Card NVDA chart": "YZW-0",
+        "R8 Card NVDA terms": "YZA-0",
+        "R8 Card NVDA actions": "YZL-0",
+        "R8 Card ANET": "Z06-0",
+        "R8 Card ANET identity": "Z3X-0",
+        "R8 Card ANET status": "Z47-0",
+        "R8 Card ANET chart": "Z4E-0",
+        "R8 Card ANET terms": "Z4O-0",
+        "R8 Card ANET actions": "Z07-0",
+        "R8 Card VKTX": "Z1F-0",
+        "R8 Card VKTX identity": "Z4Z-0",
+        "R8 Card VKTX status": "Z59-0",
+        "R8 Card VKTX chart": "Z5G-0",
+        "R8 Card VKTX terms": "Z5Q-0",
+        "R8 Card VKTX actions": "Z1G-0",
+        "R8 Card CRDO": "Z2O-0",
+        "R8 Card CRDO identity": "Z61-0",
+        "R8 Card CRDO status": "Z6B-0",
+        "R8 Card CRDO chart": "Z6I-0",
+        "R8 Card CRDO terms": "Z6S-0",
+        "R8 Card CRDO actions": "Z2P-0",
+        "R8 Complete board link": "Z73-0",
+        "R8 Context heading": "Z78-0",
+        "R8 Context grid": "Z7D-0",
+        "R8 Regime panel": "Z7F-0",
+        "R8 Regime heading": "Z7H-0",
+        "R8 Regime readings": "Z7N-0",
+        "R8 Regime path": "Z7Y-0",
+        "R8 Breadth panel": "Z8B-0",
+        "R8 Breadth heading": "Z8D-0",
+        "R8 Breadth bar": "Z8I-0",
+        "R8 Breadth metrics": "Z8U-0",
+        "R8 Theme heading": "Z96-0",
+        "R8 Theme lanes": "Z9B-0",
+        "R8 Theme lane 0": "Z9D-0",
+        "R8 Theme lane 1": "Z9M-0",
+        "R8 Theme lane 2": "Z9T-0",
+        "R8 Theme lane 3": "ZA1-0",
+        "R8 Theme lane 4": "ZA8-0",
+        "R8 Sector heading": "ZAG-0",
+        "R8 Sector table": "ZAL-0",
+        "R8 Sector columns": "ZAN-0",
+        "R8 Sector row XLF": "ZAX-0",
+        "R8 Sector row XLK": "ZBC-0",
+        "R8 Sector row XLE": "ZBR-0",
+        "R8 Sector row XLV": "ZC6-0",
+        "R8 Sector row XLP": "ZCL-0",
+        "R8 Sector row XLB": "ZD0-0",
+        "R8 Turn setups": "ZDF-0",
+        "R8 Research links": "ZDQ-0",
+        "R8 Footer": "ZDZ-0"
+      },
+      "scope": "Native visual review complete; clean JSX exported; final principal review pending"
+    },
+    {
+      "variant": "1440-dark-en",
+      "board_id": "ZE5-0",
+      "complete": false,
+      "group_nodes": {
+        "artboard": "ZE5-0",
+        "R8 Global navigation": "ZQT-0",
+        "R8 Main": "ZE6-0",
+        "R8 Masthead": "ZQF-0",
+        "R8 Market brief": "ZQ4-0",
+        "R8 Section navigation": "ZPV-0",
+        "R8 Workspace header": "ZPK-0",
+        "R8 Board guidance": "ZPG-0",
+        "R8 Opportunity grid": "ZKF-0",
+        "R8 Card NVDA": "ZO7-0",
+        "R8 Card NVDA identity": "ZP7-0",
+        "R8 Card NVDA status": "ZP1-0",
+        "R8 Card NVDA chart": "ZOS-0",
+        "R8 Card NVDA terms": "ZOI-0",
+        "R8 Card NVDA actions": "ZO8-0",
+        "R8 Card ANET": "ZMY-0",
+        "R8 Card ANET identity": "ZNY-0",
+        "R8 Card ANET status": "ZNS-0",
+        "R8 Card ANET chart": "ZNJ-0",
+        "R8 Card ANET terms": "ZN9-0",
+        "R8 Card ANET actions": "ZMZ-0",
+        "R8 Card VKTX": "ZLP-0",
+        "R8 Card VKTX identity": "ZMP-0",
+        "R8 Card VKTX status": "ZMJ-0",
+        "R8 Card VKTX chart": "ZMA-0",
+        "R8 Card VKTX terms": "ZM0-0",
+        "R8 Card VKTX actions": "ZLQ-0",
+        "R8 Card CRDO": "ZKG-0",
+        "R8 Card CRDO identity": "ZLG-0",
+        "R8 Card CRDO status": "ZLA-0",
+        "R8 Card CRDO chart": "ZL1-0",
+        "R8 Card CRDO terms": "ZKR-0",
+        "R8 Card CRDO actions": "ZKH-0",
+        "R8 Complete board link": "ZKB-0",
+        "R8 Context heading": "ZK7-0",
+        "R8 Context grid": "ZIN-0",
+        "R8 Regime panel": "ZJF-0",
+        "R8 Regime heading": "ZK2-0",
+        "R8 Regime readings": "ZJS-0",
+        "R8 Regime path": "ZJG-0",
+        "R8 Breadth panel": "ZIO-0",
+        "R8 Breadth heading": "ZJB-0",
+        "R8 Breadth bar": "ZJ0-0",
+        "R8 Breadth metrics": "ZIP-0",
+        "R8 Theme heading": "ZIJ-0",
+        "R8 Theme lanes": "ZHK-0",
+        "R8 Theme lane 0": "ZIB-0",
+        "R8 Theme lane 1": "ZI5-0",
+        "R8 Theme lane 2": "ZHY-0",
+        "R8 Theme lane 3": "ZHS-0",
+        "R8 Theme lane 4": "ZHL-0",
+        "R8 Sector heading": "ZHG-0",
+        "R8 Sector table": "ZEU-0",
+        "R8 Sector columns": "ZH7-0",
+        "R8 Sector row XLF": "ZGT-0",
+        "R8 Sector row XLK": "ZGF-0",
+        "R8 Sector row XLE": "ZG1-0",
+        "R8 Sector row XLV": "ZFN-0",
+        "R8 Sector row XLP": "ZF9-0",
+        "R8 Sector row XLB": "ZEV-0",
+        "R8 Turn setups": "ZEK-0",
+        "R8 Research links": "ZEC-0",
+        "R8 Footer": "ZE7-0"
+      },
+      "scope": "Held; incomplete after original unknown palette operation"
+    },
+    {
+      "variant": "390-light-en",
+      "board_id": "ZRL-0",
+      "complete": true,
+      "group_nodes": {
+        "artboard": "ZRL-0",
+        "R8 Global navigation": "1051-0",
+        "R8 Main": "ZRM-0",
+        "R8 Masthead": "105E-0",
+        "R8 Market brief": "105T-0",
+        "R8 Section navigation": "1065-0",
+        "R8 Workspace header": "106F-0",
+        "R8 Board guidance": "102W-0",
+        "R8 Opportunity grid": "ZXV-0",
+        "R8 Card NVDA": "101N-0",
+        "R8 Card NVDA identity": "102N-0",
+        "R8 Card NVDA status": "102H-0",
+        "R8 Card NVDA chart": "1028-0",
+        "R8 Card NVDA terms": "101Y-0",
+        "R8 Card NVDA actions": "101O-0",
+        "R8 Card ANET": "100E-0",
+        "R8 Card ANET identity": "101E-0",
+        "R8 Card ANET status": "1018-0",
+        "R8 Card ANET chart": "100Z-0",
+        "R8 Card ANET terms": "100P-0",
+        "R8 Card ANET actions": "100F-0",
+        "R8 Card VKTX": "ZZ5-0",
+        "R8 Card VKTX identity": "1005-0",
+        "R8 Card VKTX status": "ZZZ-0",
+        "R8 Card VKTX chart": "ZZQ-0",
+        "R8 Card VKTX terms": "ZZG-0",
+        "R8 Card VKTX actions": "ZZ6-0",
+        "R8 Card CRDO": "ZXW-0",
+        "R8 Card CRDO identity": "ZYW-0",
+        "R8 Card CRDO status": "ZYQ-0",
+        "R8 Card CRDO chart": "ZYH-0",
+        "R8 Card CRDO terms": "ZY7-0",
+        "R8 Card CRDO actions": "ZXX-0",
+        "R8 Complete board link": "ZXR-0",
+        "R8 Context heading": "ZXN-0",
+        "R8 Context grid": "ZW3-0",
+        "R8 Regime panel": "ZWV-0",
+        "R8 Regime heading": "ZXI-0",
+        "R8 Regime readings": "ZX8-0",
+        "R8 Regime path": "ZWW-0",
+        "R8 Breadth panel": "ZW4-0",
+        "R8 Breadth heading": "ZWR-0",
+        "R8 Breadth bar": "ZWG-0",
+        "R8 Breadth metrics": "ZW5-0",
+        "R8 Theme heading": "ZVZ-0",
+        "R8 Theme lanes": "ZV0-0",
+        "R8 Theme lane 0": "ZVR-0",
+        "R8 Theme lane 1": "ZVL-0",
+        "R8 Theme lane 2": "ZVE-0",
+        "R8 Theme lane 3": "ZV8-0",
+        "R8 Theme lane 4": "ZV1-0",
+        "R8 Sector heading": "ZUW-0",
+        "R8 Sector table": "ZSA-0",
+        "R8 Sector columns": "ZUN-0",
+        "R8 Sector row XLF": "1072-0",
+        "R8 Sector row XLK": "107E-0",
+        "R8 Sector row XLE": "107Q-0",
+        "R8 Sector row XLV": "1082-0",
+        "R8 Sector row XLP": "108E-0",
+        "R8 Sector row XLB": "108Q-0",
+        "R8 Turn setups": "ZS0-0",
+        "R8 Research links": "ZRS-0",
+        "R8 Footer": "ZRN-0",
+        "Status bar": "106R-0"
+      },
+      "scope": "Native visual review complete; clean JSX exported; final principal review pending"
+    },
+    {
+      "variant": "390-dark-zh",
+      "board_id": "1092-0",
+      "complete": true,
+      "group_nodes": {
+        "artboard": "1092-0",
+        "R8 Global navigation": "10L8-0",
+        "R8 Main": "1093-0",
+        "R8 Masthead": "10KU-0",
+        "R8 Market brief": "10KJ-0",
+        "R8 Section navigation": "10KA-0",
+        "R8 Workspace header": "10JZ-0",
+        "R8 Board guidance": "10JV-0",
+        "R8 Opportunity grid": "10EU-0",
+        "R8 Card NVDA": "10IM-0",
+        "R8 Card NVDA identity": "10JM-0",
+        "R8 Card NVDA status": "10JG-0",
+        "R8 Card NVDA chart": "10J7-0",
+        "R8 Card NVDA terms": "10IX-0",
+        "R8 Card NVDA actions": "10IN-0",
+        "R8 Card ANET": "10HD-0",
+        "R8 Card ANET identity": "10ID-0",
+        "R8 Card ANET status": "10I7-0",
+        "R8 Card ANET chart": "10HY-0",
+        "R8 Card ANET terms": "10HO-0",
+        "R8 Card ANET actions": "10HE-0",
+        "R8 Card VKTX": "10G4-0",
+        "R8 Card VKTX identity": "10H4-0",
+        "R8 Card VKTX status": "10GY-0",
+        "R8 Card VKTX chart": "10GP-0",
+        "R8 Card VKTX terms": "10GF-0",
+        "R8 Card VKTX actions": "10G5-0",
+        "R8 Card CRDO": "10EV-0",
+        "R8 Card CRDO identity": "10FV-0",
+        "R8 Card CRDO status": "10FP-0",
+        "R8 Card CRDO chart": "10FG-0",
+        "R8 Card CRDO terms": "10F6-0",
+        "R8 Card CRDO actions": "10EW-0",
+        "R8 Complete board link": "10EQ-0",
+        "R8 Context heading": "10EM-0",
+        "R8 Context grid": "10D2-0",
+        "R8 Regime panel": "10DU-0",
+        "R8 Regime heading": "10EH-0",
+        "R8 Regime readings": "10E7-0",
+        "R8 Regime path": "10DV-0",
+        "R8 Breadth panel": "10D3-0",
+        "R8 Breadth heading": "10DQ-0",
+        "R8 Breadth bar": "10DF-0",
+        "R8 Breadth metrics": "10D4-0",
+        "R8 Theme heading": "10CY-0",
+        "R8 Theme lanes": "10BZ-0",
+        "R8 Theme lane 0": "10CQ-0",
+        "R8 Theme lane 1": "10CK-0",
+        "R8 Theme lane 2": "10CD-0",
+        "R8 Theme lane 3": "10C7-0",
+        "R8 Theme lane 4": "10C0-0",
+        "R8 Sector heading": "10BV-0",
+        "R8 Sector table": "109R-0",
+        "R8 Sector columns": "10BM-0",
+        "R8 Sector row XLF": "10BB-0",
+        "R8 Sector row XLK": "10B0-0",
+        "R8 Sector row XLE": "10AP-0",
+        "R8 Sector row XLV": "10AE-0",
+        "R8 Sector row XLP": "10A3-0",
+        "R8 Sector row XLB": "109S-0",
+        "R8 Turn setups": "109H-0",
+        "R8 Research links": "1099-0",
+        "R8 Footer": "1094-0",
+        "Status bar": "10LK-0"
+      },
+      "scope": "Native visual review complete; clean JSX exported; final principal review pending"
+    }
+  ],
+  "unresolved_operations": [
+    {
+      "operation_id": "prophet-r8-20261103-desktop-dark-colors-200",
+      "state": "EFFECT_UNKNOWN_TRANSPORT",
+      "tool": "update_styles",
+      "held_board": "ZE5-0",
+      "held_node_ids": [
+        "ZE5-0",
+        "ZQT-0",
+        "ZE6-0",
+        "ZQF-0",
+        "ZQ4-0",
+        "ZPV-0",
+        "ZPK-0",
+        "ZPG-0",
+        "ZKF-0",
+        "ZKB-0",
+        "ZK7-0",
+        "ZIN-0",
+        "ZIJ-0",
+        "ZHK-0",
+        "ZHG-0",
+        "ZEU-0",
+        "ZEK-0",
+        "ZEC-0",
+        "ZE7-0",
+        "ZE9-0",
+        "ZE8-0",
+        "ZEB-0",
+        "ZEA-0",
+        "ZED-0",
+        "ZEJ-0",
+        "ZEI-0",
+        "ZEH-0",
+        "ZEG-0",
+        "ZEF-0",
+        "ZEE-0",
+        "ZEQ-0",
+        "ZEP-0",
+        "ZEL-0",
+        "ZEN-0",
+        "ZEM-0",
+        "ZEO-0",
+        "ZET-0",
+        "ZER-0",
+        "ZES-0",
+        "ZH7-0",
+        "ZGT-0",
+        "ZGF-0",
+        "ZG1-0",
+        "ZFN-0",
+        "ZF9-0",
+        "ZEV-0",
+        "ZF5-0",
+        "ZF0-0",
+        "ZEY-0",
+        "ZEW-0",
+        "ZEX-0",
+        "ZEZ-0",
+        "ZF1-0",
+        "ZF3-0",
+        "ZF2-0",
+        "ZF4-0",
+        "ZF6-0",
+        "ZF8-0",
+        "ZF7-0",
+        "ZFJ-0",
+        "ZFE-0",
+        "ZFC-0",
+        "ZFA-0",
+        "ZFB-0",
+        "ZFD-0",
+        "ZFF-0",
+        "ZFH-0",
+        "ZFG-0",
+        "ZFI-0",
+        "ZFK-0",
+        "ZFM-0",
+        "ZFL-0",
+        "ZFX-0",
+        "ZFS-0",
+        "ZFQ-0",
+        "ZFO-0",
+        "ZFP-0",
+        "ZFR-0",
+        "ZFT-0",
+        "ZFV-0",
+        "ZFU-0",
+        "ZFW-0",
+        "ZFY-0",
+        "ZG0-0",
+        "ZFZ-0",
+        "ZGB-0",
+        "ZG6-0",
+        "ZG4-0",
+        "ZG2-0",
+        "ZG3-0",
+        "ZG5-0",
+        "ZG7-0",
+        "ZG9-0",
+        "ZG8-0",
+        "ZGA-0",
+        "ZGC-0",
+        "ZGE-0",
+        "ZGD-0",
+        "ZGP-0",
+        "ZGK-0",
+        "ZGI-0",
+        "ZGG-0",
+        "ZGH-0",
+        "ZGJ-0",
+        "ZGL-0",
+        "ZGN-0",
+        "ZGM-0",
+        "ZGO-0",
+        "ZGQ-0",
+        "ZGS-0",
+        "ZGR-0",
+        "ZH3-0",
+        "ZGY-0",
+        "ZGW-0",
+        "ZGU-0",
+        "ZGV-0",
+        "ZGX-0",
+        "ZGZ-0",
+        "ZH1-0",
+        "ZH0-0",
+        "ZH2-0",
+        "ZH4-0",
+        "ZH6-0",
+        "ZH5-0",
+        "ZHE-0",
+        "ZHC-0",
+        "ZHA-0",
+        "ZH8-0",
+        "ZH9-0",
+        "ZHB-0",
+        "ZHD-0",
+        "ZHF-0",
+        "ZHH-0",
+        "ZHJ-0",
+        "ZHI-0",
+        "ZIB-0",
+        "ZI5-0",
+        "ZHY-0",
+        "ZHS-0",
+        "ZHL-0",
+        "ZHP-0",
+        "ZHO-0",
+        "ZHN-0",
+        "ZHM-0",
+        "ZHR-0",
+        "ZHQ-0",
+        "ZHV-0",
+        "ZHU-0",
+        "ZHT-0",
+        "ZHX-0",
+        "ZHW-0",
+        "ZI2-0",
+        "ZI1-0",
+        "ZI0-0",
+        "ZHZ-0",
+        "ZI4-0",
+        "ZI3-0",
+        "ZI8-0",
+        "ZI7-0",
+        "ZI6-0",
+        "ZIA-0",
+        "ZI9-0",
+        "ZIG-0",
+        "ZIF-0",
+        "ZIE-0",
+        "ZID-0",
+        "ZIC-0",
+        "ZII-0",
+        "ZIH-0",
+        "ZIK-0",
+        "ZIM-0",
+        "ZIL-0",
+        "ZJF-0",
+        "ZIO-0",
+        "ZJB-0",
+        "ZJ0-0",
+        "ZIP-0",
+        "ZIQ-0",
+        "ZIX-0",
+        "ZIU-0",
+        "ZIR-0",
+        "ZIT-0",
+        "ZIS-0",
+        "ZIW-0",
+        "ZIV-0",
+        "ZIZ-0",
+        "ZIY-0",
+        "ZJ4-0",
+        "ZJ1-0",
+        "ZJ3-0",
+        "ZJ2-0",
+        "ZJ8-0",
+        "ZJ5-0",
+        "ZJ7-0",
+        "ZJ6-0",
+        "ZJA-0",
+        "ZJ9-0",
+        "ZJC-0",
+        "ZJE-0",
+        "ZJD-0",
+        "ZK2-0",
+        "ZJS-0",
+        "ZJG-0",
+        "ZJI-0",
+        "ZJH-0",
+        "ZJP-0",
+        "ZJM-0",
+        "ZJJ-0",
+        "ZJL-0",
+        "ZJK-0",
+        "ZJO-0",
+        "ZJN-0",
+        "ZJR-0",
+        "ZJQ-0",
+        "ZJT-0",
+        "ZJY-0",
+        "ZJU-0",
+        "ZJX-0",
+        "ZJW-0",
+        "ZJV-0",
+        "ZK1-0",
+        "ZK0-0",
+        "ZJZ-0",
+        "ZK3-0",
+        "ZK6-0",
+        "ZK4-0",
+        "ZK5-0",
+        "ZK8-0",
+        "ZKA-0",
+        "ZK9-0",
+        "ZKC-0",
+        "ZKE-0",
+        "ZKD-0",
+        "ZO7-0",
+        "ZMY-0",
+        "ZLP-0",
+        "ZKG-0",
+        "ZLG-0",
+        "ZLA-0",
+        "ZL1-0",
+        "ZKR-0",
+        "ZKH-0",
+        "ZKI-0",
+        "ZKO-0",
+        "ZKK-0",
+        "ZKJ-0",
+        "ZKM-0",
+        "ZKL-0",
+        "ZKN-0",
+        "ZKQ-0",
+        "ZKP-0",
+        "ZKU-0",
+        "ZKT-0",
+        "ZKS-0",
+        "ZKY-0",
+        "ZKV-0",
+        "ZKX-0",
+        "ZKW-0",
+        "ZL0-0",
+        "ZKZ-0",
+        "ZL5-0",
+        "ZL2-0",
+        "ZL4-0",
+        "ZL3-0",
+        "ZL9-0",
+        "ZL8-0",
+        "ZL7-0",
+        "ZL6-0",
+        "ZLC-0",
+        "ZLB-0",
+        "ZLE-0",
+        "ZLD-0",
+        "ZLF-0",
+        "ZLI-0",
+        "ZLH-0",
+        "ZLM-0",
+        "ZLJ-0",
+        "ZLL-0",
+        "ZLK-0",
+        "ZLO-0",
+        "ZLN-0",
+        "ZMP-0",
+        "ZMJ-0",
+        "ZMA-0",
+        "ZM0-0",
+        "ZLQ-0",
+        "ZLR-0",
+        "ZLX-0",
+        "ZLT-0",
+        "ZLS-0",
+        "ZLV-0",
+        "ZLU-0",
+        "ZLW-0",
+        "ZLZ-0",
+        "ZLY-0",
+        "ZM3-0",
+        "ZM2-0",
+        "ZM1-0",
+        "ZM7-0",
+        "ZM4-0",
+        "ZM6-0",
+        "ZM5-0",
+        "ZM9-0",
+        "ZM8-0",
+        "ZME-0",
+        "ZMB-0",
+        "ZMD-0",
+        "ZMC-0",
+        "ZMI-0",
+        "ZMH-0",
+        "ZMG-0",
+        "ZMF-0",
+        "ZML-0",
+        "ZMK-0",
+        "ZMN-0",
+        "ZMM-0",
+        "ZMO-0",
+        "ZMR-0",
+        "ZMQ-0",
+        "ZMV-0",
+        "ZMS-0",
+        "ZMU-0",
+        "ZMT-0",
+        "ZMX-0",
+        "ZMW-0",
+        "ZNY-0",
+        "ZNS-0",
+        "ZNJ-0",
+        "ZN9-0",
+        "ZMZ-0",
+        "ZN0-0",
+        "ZN6-0",
+        "ZN2-0",
+        "ZN1-0",
+        "ZN4-0",
+        "ZN3-0",
+        "ZN5-0",
+        "ZN8-0",
+        "ZN7-0",
+        "ZNC-0",
+        "ZNB-0",
+        "ZNA-0",
+        "ZNG-0",
+        "ZND-0",
+        "ZNF-0",
+        "ZNE-0",
+        "ZNI-0",
+        "ZNH-0",
+        "ZNN-0",
+        "ZNK-0",
+        "ZNM-0",
+        "ZNL-0",
+        "ZNR-0",
+        "ZNQ-0",
+        "ZNP-0",
+        "ZNO-0",
+        "ZNU-0",
+        "ZNT-0",
+        "ZNW-0",
+        "ZNV-0",
+        "ZNX-0",
+        "ZO0-0",
+        "ZNZ-0",
+        "ZO4-0",
+        "ZO1-0",
+        "ZO3-0",
+        "ZO2-0",
+        "ZO6-0",
+        "ZO5-0",
+        "ZP7-0",
+        "ZP1-0",
+        "ZOS-0",
+        "ZOI-0",
+        "ZO8-0",
+        "ZO9-0",
+        "ZOF-0",
+        "ZOB-0",
+        "ZOA-0",
+        "ZOD-0",
+        "ZOC-0",
+        "ZOE-0",
+        "ZOH-0",
+        "ZOG-0",
+        "ZOL-0",
+        "ZOK-0",
+        "ZOJ-0",
+        "ZOP-0",
+        "ZOM-0",
+        "ZOO-0",
+        "ZON-0",
+        "ZOR-0",
+        "ZOQ-0",
+        "ZOW-0",
+        "ZOT-0",
+        "ZOV-0",
+        "ZOU-0",
+        "ZP0-0",
+        "ZOZ-0",
+        "ZOY-0",
+        "ZOX-0",
+        "ZP3-0",
+        "ZP2-0",
+        "ZP5-0",
+        "ZP4-0",
+        "ZP6-0",
+        "ZP9-0",
+        "ZP8-0",
+        "ZPD-0",
+        "ZPA-0",
+        "ZPC-0",
+        "ZPB-0",
+        "ZPF-0",
+        "ZPE-0",
+        "ZPH-0",
+        "ZPJ-0",
+        "ZPI-0",
+        "ZPS-0",
+        "ZPL-0",
+        "ZPQ-0",
+        "ZPO-0",
+        "ZPM-0",
+        "ZPN-0",
+        "ZPP-0",
+        "ZPR-0",
+        "ZPU-0",
+        "ZPT-0",
+        "ZQ2-0",
+        "ZQ0-0",
+        "ZPY-0",
+        "ZPW-0",
+        "ZPX-0",
+        "ZPZ-0",
+        "ZQ1-0",
+        "ZQ3-0",
+        "ZQB-0",
+        "ZQ5-0",
+        "ZQ9-0",
+        "ZQ7-0",
+        "ZQ6-0",
+        "ZQ8-0",
+        "ZQA-0",
+        "ZQE-0",
+        "ZQD-0",
+        "ZQC-0",
+        "ZQG-0",
+        "ZQO-0",
+        "ZQH-0",
+        "ZQN-0",
+        "ZQM-0",
+        "ZQI-0",
+        "ZQK-0",
+        "ZQJ-0",
+        "ZQL-0",
+        "ZQS-0",
+        "ZQP-0",
+        "ZQR-0",
+        "ZQQ-0",
+        "ZQU-0",
+        "ZRH-0",
+        "ZR9-0",
+        "ZQV-0",
+        "ZR4-0",
+        "ZR0-0",
+        "ZQW-0",
+        "ZQZ-0",
+        "ZQY-0",
+        "ZQX-0",
+        "ZR2-0",
+        "ZR1-0",
+        "ZR3-0",
+        "ZR6-0",
+        "ZR5-0",
+        "ZR8-0",
+        "ZR7-0",
+        "ZRG-0",
+        "ZRF-0",
+        "ZRE-0",
+        "ZRD-0",
+        "ZRC-0",
+        "ZRB-0",
+        "ZRA-0",
+        "ZRJ-0",
+        "ZRI-0",
+        "ZRK-0"
+      ],
+      "arguments": {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "updates": [
+          {
+            "nodeIds": [
+              "ZNB-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZNA-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZNF-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZNE-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZNI-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZNH-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZNM-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZNL-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZNT-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZNW-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--mx-dark-panel2)",
+              "borderColor": "var(--mx-dark-line-quiet)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZNV-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-link)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZNX-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-info)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZNZ-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZO3-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZO2-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-down)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZO6-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZO5-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZOB-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--mx-dark-panel)",
+              "borderColor": "var(--mx-dark-line)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZOA-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-link)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZOC-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZOH-0"
+            ],
+            "styles": {
+              "borderColor": "var(--mx-dark-line)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZOG-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZOK-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZOJ-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZOO-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZON-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZOR-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZOQ-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZOV-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZOU-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZP2-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZP5-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--mx-dark-panel2)",
+              "borderColor": "var(--mx-dark-line-quiet)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZP4-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-link)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZP6-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-up)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZP8-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPC-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPB-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-up)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPF-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPE-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPJ-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPI-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPL-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--mx-dark-panel2)",
+              "borderColor": "var(--mx-dark-line-quiet)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPQ-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--mx-dark-panel)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPN-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPP-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPR-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPU-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPT-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-link)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQ2-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--mx-dark-panel2)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPX-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZPZ-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQ1-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQ3-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQ9-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--mx-dark-panel2)",
+              "borderColor": "var(--mx-dark-line-quiet)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQ7-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--mx-dark-panel2)",
+              "borderColor": "var(--mx-dark-line-quiet)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQ6-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-link)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQ8-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQA-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQE-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--mx-dark-warn)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQD-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-warn)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQC-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQN-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQM-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQI-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--mx-dark-panel)",
+              "borderColor": "var(--mx-dark-line)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQJ-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQS-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQR-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZQQ-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZR4-0"
+            ],
+            "styles": {
+              "borderColor": "var(--mx-dark-line-quiet)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZR0-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--mx-dark-panel)",
+              "borderColor": "var(--mx-dark-line)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZR1-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZR5-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZRG-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZRF-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZRE-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZRD-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZRC-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZRB-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZRA-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZRJ-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--mx-dark-info)"
+            }
+          },
+          {
+            "nodeIds": [
+              "ZRI-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-text)"
+            }
+          }
+        ]
+      },
+      "before": "f86421b453b0e388738eba6b7b67813b2f291cfb979025d65d7eff006e13d396",
+      "error": null
+    }
+  ],
+  "observed_operations": [
+    {
+      "operation_id": "prophet-r8-20261103-desktop-light-group-00",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "23b532bd912bb9e306654044b582d6e3173f24d6e7c930fe319e32b8f221f0c3",
+      "after": "bf0fcfb0d9b9a8052f566c09c6e6c3e87a6c4debdadc43e3d906e11cb740a79b"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "bf0fcfb0d9b9a8052f566c09c6e6c3e87a6c4debdadc43e3d906e11cb740a79b",
+      "after": "a6c1de231b2dc1f6af2ca460e09a73de21e97204211e4b6f70e715c07048770e"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-02",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "a6c1de231b2dc1f6af2ca460e09a73de21e97204211e4b6f70e715c07048770e",
+      "after": "313143337ab6382e057ba49d846e632dd656c7f45f74fa33e46ca37af59f0da5"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-03",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "313143337ab6382e057ba49d846e632dd656c7f45f74fa33e46ca37af59f0da5",
+      "after": "ee371402c6d4395dea52d7f12e41e17ba5d0b457c0546b4f32bbd3648b3b5992"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-04",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "ee371402c6d4395dea52d7f12e41e17ba5d0b457c0546b4f32bbd3648b3b5992",
+      "after": "e00b1ae62bfd346d1c2bac546feacc88a851ba9c7b4f7b611522af6f80c29861"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-05",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "e00b1ae62bfd346d1c2bac546feacc88a851ba9c7b4f7b611522af6f80c29861",
+      "after": "d04dd564c7f4cafc8124c821ed52540578ae80efdde4b0cbc9064dfb5f7a1d0a"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-06",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "d04dd564c7f4cafc8124c821ed52540578ae80efdde4b0cbc9064dfb5f7a1d0a",
+      "after": "f59aa999a23e46c92c1aa0f2000d79e13d408e55ef56c5904c3445348c903ffe"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-07",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "f59aa999a23e46c92c1aa0f2000d79e13d408e55ef56c5904c3445348c903ffe",
+      "after": "ac5cabac7896962b89c9116b878d37d2ff7f3dfd47a962b4befd964e30c2332f"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-08",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "ac5cabac7896962b89c9116b878d37d2ff7f3dfd47a962b4befd964e30c2332f",
+      "after": "d21f2fcf52a7caccec3e287f67d2ef4483c27e05f41afd5bf3e6b36ebec461b5"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-09",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "d21f2fcf52a7caccec3e287f67d2ef4483c27e05f41afd5bf3e6b36ebec461b5",
+      "after": "fad06027b3baed054f02d41e36a026ea5847c50ba9a995cff406e215c8be8388"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-10",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "fad06027b3baed054f02d41e36a026ea5847c50ba9a995cff406e215c8be8388",
+      "after": "a7a747bb5b9f4a8fc201df14e6b315b95abfb74fd17ce06d014fdabea8615155"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-11",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "a7a747bb5b9f4a8fc201df14e6b315b95abfb74fd17ce06d014fdabea8615155",
+      "after": "dd4b805a15665bbfeaa9bb7eb0a249dd9680be82db31dcf8d034805160a679d6"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-12",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "dd4b805a15665bbfeaa9bb7eb0a249dd9680be82db31dcf8d034805160a679d6",
+      "after": "ba26effd9bcb4ac7ba80ae6eaa8c9200f43d7b1cf9b20356ecab783a8b4482be"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-13",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "ba26effd9bcb4ac7ba80ae6eaa8c9200f43d7b1cf9b20356ecab783a8b4482be",
+      "after": "e0fc0587f98b73cc393b0e233f9fef5d741451612903005bf17d08581d7bddef"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-desktop-light-fit-position",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "e0fc0587f98b73cc393b0e233f9fef5d741451612903005bf17d08581d7bddef",
+      "after": "3d6994b471427db4a03908dec4c36b82607bef2d1720cbb656642d2f3798b993"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-desktop-light-explicit-font",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "3d6994b471427db4a03908dec4c36b82607bef2d1720cbb656642d2f3798b993",
+      "after": "3d6994b471427db4a03908dec4c36b82607bef2d1720cbb656642d2f3798b993"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-nvda-zone-alignment",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "3d6994b471427db4a03908dec4c36b82607bef2d1720cbb656642d2f3798b993",
+      "after": "3d6994b471427db4a03908dec4c36b82607bef2d1720cbb656642d2f3798b993"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-card-anet-clone",
+      "tool": "duplicate_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "3d6994b471427db4a03908dec4c36b82607bef2d1720cbb656642d2f3798b993",
+      "after": "dc7967b5fff2e019e330aa848b4d4362e5e14a317b6d9ae1797d04257809b0e8"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-card-vktx-clone",
+      "tool": "duplicate_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "dc7967b5fff2e019e330aa848b4d4362e5e14a317b6d9ae1797d04257809b0e8",
+      "after": "4553cbc5b34394bca017ccfd675e70521d63e1e18b43485d42b7c5deea7a4595"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-card-crdo-clone",
+      "tool": "duplicate_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "4553cbc5b34394bca017ccfd675e70521d63e1e18b43485d42b7c5deea7a4595",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-card-clone-names",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-replace-15",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-replace-16",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-replace-17",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-replace-18",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-replace-21",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-replace-22",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-replace-23",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-replace-24",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-replace-27",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-replace-28",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-replace-29",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-replace-30",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-32",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "04987837eb380d5827e280d04413a98e72383e14317fd65b007b114fcc14fdc2",
+      "after": "e67d9bea5891fe554a7cf69e85f5bfd463258963aff5903ffd7d1c1535fc8c85"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-33",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "e67d9bea5891fe554a7cf69e85f5bfd463258963aff5903ffd7d1c1535fc8c85",
+      "after": "ba92df604ef5f8ff82eef396e6ff669ffc8c45664042ed3ef9d2fcfbaa78a454"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-34",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "ba92df604ef5f8ff82eef396e6ff669ffc8c45664042ed3ef9d2fcfbaa78a454",
+      "after": "254783e6dc3d751475e51d548e7f91df4f58aba399ec54edbc1cf77c9196cfe7"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-35",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "254783e6dc3d751475e51d548e7f91df4f58aba399ec54edbc1cf77c9196cfe7",
+      "after": "b3bb74f43cbd536fa608f21bf154eacc648f33e9f8a953b5ea1b3b51e9859c52"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-36",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "b3bb74f43cbd536fa608f21bf154eacc648f33e9f8a953b5ea1b3b51e9859c52",
+      "after": "e2fa7116cf5048fb071d25a5bb1ffab7ed46fe34c4bd93e5698b5b83d2ea6bee"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-card-order",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "e2fa7116cf5048fb071d25a5bb1ffab7ed46fe34c4bd93e5698b5b83d2ea6bee",
+      "after": "e2fa7116cf5048fb071d25a5bb1ffab7ed46fe34c4bd93e5698b5b83d2ea6bee"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-37",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "e2fa7116cf5048fb071d25a5bb1ffab7ed46fe34c4bd93e5698b5b83d2ea6bee",
+      "after": "2d3793125950483374972b35f080b86403f5f327c0b1ded97b42ae6c28290dc0"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-38",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "2d3793125950483374972b35f080b86403f5f327c0b1ded97b42ae6c28290dc0",
+      "after": "8395eb154b3136cad9b1545a8267719bec2de3f6180a0d1d4c19f4cca884c6f1"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-39",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "8395eb154b3136cad9b1545a8267719bec2de3f6180a0d1d4c19f4cca884c6f1",
+      "after": "87ac5b0b534a5da3d6417b04aff387f5e5d065980ba5b0e95cbdcb7c95faaf39"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-40",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "87ac5b0b534a5da3d6417b04aff387f5e5d065980ba5b0e95cbdcb7c95faaf39",
+      "after": "f9500f2fbc85dfc00e4b68a1b83f25f541c0fa2964866782431802cc4f333630"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-41",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "f9500f2fbc85dfc00e4b68a1b83f25f541c0fa2964866782431802cc4f333630",
+      "after": "4b66fb75ceea14999f6abc87e6c2dddec271b60afc46582f517e4971ebfad423"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-42",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "4b66fb75ceea14999f6abc87e6c2dddec271b60afc46582f517e4971ebfad423",
+      "after": "f24b90bd34b18bd298fb887148e24fcc4cded23c6866c3ffa9aacb61b7d4e0ee"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-43",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "f24b90bd34b18bd298fb887148e24fcc4cded23c6866c3ffa9aacb61b7d4e0ee",
+      "after": "e4c428bda54c58bcd157a1ee2a913a1e03944c6e0561ef94ea3f2078eef90dc2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-44",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "e4c428bda54c58bcd157a1ee2a913a1e03944c6e0561ef94ea3f2078eef90dc2",
+      "after": "b0eda29973d7b5b1fbedcdfb9aa066756b5f22810d55ac1fd47b24b660fb9f82"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-45",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "b0eda29973d7b5b1fbedcdfb9aa066756b5f22810d55ac1fd47b24b660fb9f82",
+      "after": "4c595a0b2a8e21234b46f40476d8519b6b779b6c3567ad9b9f0c2e6685d3dedf"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-46",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "4c595a0b2a8e21234b46f40476d8519b6b779b6c3567ad9b9f0c2e6685d3dedf",
+      "after": "7d5c4ab61d0f0acf00c9cc020e9c86d505c58bdc3dcac258099227ceb6c955a5"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-47",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "7d5c4ab61d0f0acf00c9cc020e9c86d505c58bdc3dcac258099227ceb6c955a5",
+      "after": "761efefa1bcac4b8227fc5ce13052f3b2b012ca75fdc8e0195d648e1502443da"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-48",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "761efefa1bcac4b8227fc5ce13052f3b2b012ca75fdc8e0195d648e1502443da",
+      "after": "15056a5608b400632135d5bc89c156e4ba479205b62fc757685215ffa7c844a7"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-49",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "15056a5608b400632135d5bc89c156e4ba479205b62fc757685215ffa7c844a7",
+      "after": "b45f7b22f94014a115d234dc61152d963d953d6d9061f05be3b9a7e5b22c4321"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-50",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "b45f7b22f94014a115d234dc61152d963d953d6d9061f05be3b9a7e5b22c4321",
+      "after": "0deb4c2ed71ef095b8b172780ecd393a02fa4a5dec3326f92a5d46267e2ff65b"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-51",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "0deb4c2ed71ef095b8b172780ecd393a02fa4a5dec3326f92a5d46267e2ff65b",
+      "after": "73bf19ac8c1db2f28094d82b914f97753dfc535ed8795ed62eebdf597683e903"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-52",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "73bf19ac8c1db2f28094d82b914f97753dfc535ed8795ed62eebdf597683e903",
+      "after": "9ce12f5c2ec18f2b4cf3bec86e77b505fb55803bbd588a8cde84d6aeb0d7e8f8"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-53",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "9ce12f5c2ec18f2b4cf3bec86e77b505fb55803bbd588a8cde84d6aeb0d7e8f8",
+      "after": "9093e9440e613096a9c9389a4abe338dae01789bea261aa81dd888e67a0d5d42"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-54",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "9093e9440e613096a9c9389a4abe338dae01789bea261aa81dd888e67a0d5d42",
+      "after": "2cb36e01be439b1b9609b4e96ed23d0e45e0bc14ebc792c192a51e40b9b3524b"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-55",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "2cb36e01be439b1b9609b4e96ed23d0e45e0bc14ebc792c192a51e40b9b3524b",
+      "after": "66f38ab288bc3489aefac34a9c75f08b8898deedecfb53ee5d8b72c8e559c054"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-56",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "66f38ab288bc3489aefac34a9c75f08b8898deedecfb53ee5d8b72c8e559c054",
+      "after": "bd3f9036c634e84a0efa11b3c481edea445954cdab2a12c9530920432d14b6eb"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-57",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "bd3f9036c634e84a0efa11b3c481edea445954cdab2a12c9530920432d14b6eb",
+      "after": "308a252f467ca1a86b6369c3368a82a61f942f231e711cb6dee73ae82eba89a2"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-58",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "308a252f467ca1a86b6369c3368a82a61f942f231e711cb6dee73ae82eba89a2",
+      "after": "f4ee24755dc2fae5fa30904bc436d6de978f4352b3df3d2bc687bcbd0e8bb45a"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-59",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "f4ee24755dc2fae5fa30904bc436d6de978f4352b3df3d2bc687bcbd0e8bb45a",
+      "after": "f3f4dc6b4fe9f93310f3e41d3f0d34c655c7ac5b03e754556c0d3a62b4cc4392"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-60",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "f3f4dc6b4fe9f93310f3e41d3f0d34c655c7ac5b03e754556c0d3a62b4cc4392",
+      "after": "5d84ce1f41b1c13a48cdb02041aaa28d66e955a8932c4e1b47ff3ccba7d06509"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-light-en-group-61",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "5d84ce1f41b1c13a48cdb02041aaa28d66e955a8932c4e1b47ff3ccba7d06509",
+      "after": "95b90bc0cb84b1ea1e0b79747fa26d9baff92822eb111134f95fd9b311690cea"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-1440-dark-en-clone",
+      "tool": "duplicate_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "95b90bc0cb84b1ea1e0b79747fa26d9baff92822eb111134f95fd9b311690cea",
+      "after": "549bdec3490a39657f298a13d1eb81f55dd2e9e6fc5328c7bdad5c2cf2a1be4f"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-clone",
+      "tool": "duplicate_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "549bdec3490a39657f298a13d1eb81f55dd2e9e6fc5328c7bdad5c2cf2a1be4f",
+      "after": "349e0f62c1b64496ffa128feb5b17a341cd3e8b3380fe2c2bd32918745c9583f"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-variant-names",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "349e0f62c1b64496ffa128feb5b17a341cd3e8b3380fe2c2bd32918745c9583f",
+      "after": "e90308b1d1455594c0f12e2e549b41cf076879e017f85983af877ec8675b4104"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-variant-positions",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "e90308b1d1455594c0f12e2e549b41cf076879e017f85983af877ec8675b4104",
+      "after": "f86421b453b0e388738eba6b7b67813b2f291cfb979025d65d7eff006e13d396"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-desktop-dark-colors-0",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "f86421b453b0e388738eba6b7b67813b2f291cfb979025d65d7eff006e13d396",
+      "after": "f86421b453b0e388738eba6b7b67813b2f291cfb979025d65d7eff006e13d396"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-desktop-dark-colors-100",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "f86421b453b0e388738eba6b7b67813b2f291cfb979025d65d7eff006e13d396",
+      "after": "f86421b453b0e388738eba6b7b67813b2f291cfb979025d65d7eff006e13d396"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-light-layout",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "f86421b453b0e388738eba6b7b67813b2f291cfb979025d65d7eff006e13d396",
+      "after": "593de776225f1c5e34abc5c2918f93ea47e128479e49188946be19e63af8e540"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-replace-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "593de776225f1c5e34abc5c2918f93ea47e128479e49188946be19e63af8e540",
+      "after": "e65b6ad8b90ecefdfbfc17342d0cf8d8b33ffb683741c0c4ccb9576a5a8b2b09"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-replace-03",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "e65b6ad8b90ecefdfbfc17342d0cf8d8b33ffb683741c0c4ccb9576a5a8b2b09",
+      "after": "12c32cd37c86cef676f0e6f7f893a530e49b2ddc9ab687aa80414584e53a517c"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-replace-04",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "12c32cd37c86cef676f0e6f7f893a530e49b2ddc9ab687aa80414584e53a517c",
+      "after": "15526fe8e023bd77d666fa0cc722536174728e14d294e38db32131c8263e458e"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-replace-05",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "15526fe8e023bd77d666fa0cc722536174728e14d294e38db32131c8263e458e",
+      "after": "15526fe8e023bd77d666fa0cc722536174728e14d294e38db32131c8263e458e"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-replace-06",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "15526fe8e023bd77d666fa0cc722536174728e14d294e38db32131c8263e458e",
+      "after": "56a2914a46aa96c98fd1de9d5b262f6bcc53e6cd235732fd3d37b7c5d1dd841a"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-group-00",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "56a2914a46aa96c98fd1de9d5b262f6bcc53e6cd235732fd3d37b7c5d1dd841a",
+      "after": "88b5d82e09f0803a500652b07a8e3ca68f9a3b957b73d2a5b9db876cca8c6e2a"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-status-first",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "88b5d82e09f0803a500652b07a8e3ca68f9a3b957b73d2a5b9db876cca8c6e2a",
+      "after": "88b5d82e09f0803a500652b07a8e3ca68f9a3b957b73d2a5b9db876cca8c6e2a"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-replace-53",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "88b5d82e09f0803a500652b07a8e3ca68f9a3b957b73d2a5b9db876cca8c6e2a",
+      "after": "4804e6904f5b862ba2edc5b3025fa2ab7fb45d1630af48b556ba73b9b1d39bdd"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-replace-54",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "4804e6904f5b862ba2edc5b3025fa2ab7fb45d1630af48b556ba73b9b1d39bdd",
+      "after": "0876ae0d2d1c7169eebde7a05f07456a6d941ec0d2b5302fbb01f6d35ecd2e71"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-replace-55",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "0876ae0d2d1c7169eebde7a05f07456a6d941ec0d2b5302fbb01f6d35ecd2e71",
+      "after": "2eb8e28075953a55dc07d1a064ead3399edccc9bfa2040e1489e8b43cc306d94"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-replace-56",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "2eb8e28075953a55dc07d1a064ead3399edccc9bfa2040e1489e8b43cc306d94",
+      "after": "02ac11b5be0b9db526743e262c43667e72e710827b52cbe2ce3770ca15024b23"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-replace-57",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "02ac11b5be0b9db526743e262c43667e72e710827b52cbe2ce3770ca15024b23",
+      "after": "c72f7fc513c23e418af93cbab46d8656dfe18187a506e9acd8f33243b750db9a"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-390-light-en-replace-58",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "c72f7fc513c23e418af93cbab46d8656dfe18187a506e9acd8f33243b750db9a",
+      "after": "a343aee364626131bff19b9ca09674bf1a1ea9fa5835623632adb1670c51d93a"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-dark-zh-clone",
+      "tool": "duplicate_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "a343aee364626131bff19b9ca09674bf1a1ea9fa5835623632adb1670c51d93a",
+      "after": "54d255fbbe6321afe5b12c5a24e98496cc3abfaa257dcdae452cadcc21e23f9c"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-name",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "54d255fbbe6321afe5b12c5a24e98496cc3abfaa257dcdae452cadcc21e23f9c",
+      "after": "4fc1f9c0e8c9856c96d2bbfc95f410d758c8d1db1caab2d0be5fc30653785ec5"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-position",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "4fc1f9c0e8c9856c96d2bbfc95f410d758c8d1db1caab2d0be5fc30653785ec5",
+      "after": "4fc1f9c0e8c9856c96d2bbfc95f410d758c8d1db1caab2d0be5fc30653785ec5"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-colors-0",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "4fc1f9c0e8c9856c96d2bbfc95f410d758c8d1db1caab2d0be5fc30653785ec5",
+      "after": "4fc1f9c0e8c9856c96d2bbfc95f410d758c8d1db1caab2d0be5fc30653785ec5"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-colors-75",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "4fc1f9c0e8c9856c96d2bbfc95f410d758c8d1db1caab2d0be5fc30653785ec5",
+      "after": "4fc1f9c0e8c9856c96d2bbfc95f410d758c8d1db1caab2d0be5fc30653785ec5"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-colors-150",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "4fc1f9c0e8c9856c96d2bbfc95f410d758c8d1db1caab2d0be5fc30653785ec5",
+      "after": "4fc1f9c0e8c9856c96d2bbfc95f410d758c8d1db1caab2d0be5fc30653785ec5"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-colors-225",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "4fc1f9c0e8c9856c96d2bbfc95f410d758c8d1db1caab2d0be5fc30653785ec5",
+      "after": "4fc1f9c0e8c9856c96d2bbfc95f410d758c8d1db1caab2d0be5fc30653785ec5"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-text-0",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "4fc1f9c0e8c9856c96d2bbfc95f410d758c8d1db1caab2d0be5fc30653785ec5",
+      "after": "eff1020c7858bf24a721af6048b8cf6528d7cac09cb299ab747302c6c964e1d5"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-text-55",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "eff1020c7858bf24a721af6048b8cf6528d7cac09cb299ab747302c6c964e1d5",
+      "after": "da4ff74ee3cac2dd5dbf2fdb402494124519d893d4d284aec63adb7e3afc14a1"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-text-110",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "da4ff74ee3cac2dd5dbf2fdb402494124519d893d4d284aec63adb7e3afc14a1",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-fonts",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-svg-0",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-svg-1",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-svg-2",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-svg-3",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-svg-4",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-svg-5",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-svg-6",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-svg-7",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-svg-8",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-svg-9",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-svg-10",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    },
+    {
+      "operation_id": "prophet-r8-20261103-mobile-zh-svg-11",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970",
+      "after": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+    }
+  ],
+  "scope": "Editable Paper visual design and native export only. Not native application, authenticated path, or production release acceptance.",
+  "independent_review": {
+    "completed": true,
+    "reviewed_nodes": [
+      "YW1-0",
+      "ZRL-0",
+      "1092-0"
+    ],
+    "disposition": "No remaining concrete native visual blocker in these three reviewed artboards; desktop Growth and Inflation values verified in native context crop Z7D-0.",
+    "evidence": "paper-1440-light-en-context.jpg and five native Paper screenshots/crops",
+    "scope": "Paper design review only, not a live product or release acceptance"
+  },
+  "finished_nodes": {
+    "operation_id": "prophet-r8-20261103-finish-reviewed-three-boards",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "nodes": [
+      "YW1-0",
+      "ZRL-0",
+      "1092-0"
+    ],
+    "snapshot": "41dd4fd9efb0e77d78ab067f381684e592972c986b9b79a1c36ab68b30e72970"
+  }
+}

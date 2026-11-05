@@ -585,6 +585,31 @@
     el.classList.remove("mx-skel");
     el.removeAttribute("aria-busy");
   }
+  // Opt-in visible clock follows the value this owner actually painted. A carried
+  // close keeps its bar date; an accepted quote uses its own observation time.
+  // It never rewrites a chart, signal or assessment clock elsewhere in the card.
+  function paintVisibleQuoteClock(el, r, held) {
+    var box = el.closest && el.closest('[data-quote-container]');
+    var clock = box && box.querySelector('[data-quote-clock]');
+    if (!clock || (!held && r.price == null)) return;
+    var date = held ? el.getAttribute('data-through') : r.quoteTs;
+    var ms = awareTime(date), en, zh;
+    if (held && /^\d{4}-\d{2}-\d{2}$/.test(date || '')) {
+      en = 'Close · ' + date; zh = '收盘 · ' + date;
+    } else if (!held && !r.invalidClock && isFinite(ms) && ms <= Date.now() + 60000) {
+      var stamp = new Date(ms).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+      en = 'Quote · ' + stamp; zh = '报价 · ' + stamp;
+    } else {
+      en = held ? 'Close date unavailable' : 'Quote time unavailable';
+      zh = held ? '暂无收盘日期' : '暂无报价时间';
+    }
+    if (clock.textContent === en + zh) return;
+    clock.textContent = '';
+    var enNode = document.createElement('span'), zhNode = document.createElement('span');
+    enNode.className = 'l-en'; enNode.textContent = en;
+    zhNode.className = 'l-zh'; zhNode.textContent = zh;
+    clock.appendChild(enNode); clock.appendChild(zhNode);
+  }
   function patchSymbol(sym, r, sessions, ovT) {
     var touched = false;
     sessions = sessions || _marketSessions;
@@ -611,6 +636,7 @@
         if (r.dataThrough) el.setAttribute("data-through", r.dataThrough); else if (guard) el.removeAttribute("data-through");
         setChip(el, ov && !ov.stale && !ov.baseline_stale ? ov.divergence : null);
       }
+      paintVisibleQuoteClock(el, r, !!(pxGuard && pxGuard.held));
       touched = true;
     });
     chgNodes().forEach(function (el) {

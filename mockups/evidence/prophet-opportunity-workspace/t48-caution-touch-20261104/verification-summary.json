@@ -1,0 +1,22 @@
+{
+  "source_head": "50cf9d22425587c04ce85c4c2774443abc500a16",
+  "caution_source_head": "f2fb5f52f3610daa46d56205971bb2811ff56016",
+  "prophet_artifacts_unchanged_since_browser_capture": true,
+  "focused_prophet_checks": 119,
+  "focused_shim_checks": 5,
+  "browser_cells": 16,
+  "publication_pair_checks": 12,
+  "all_pair_checks_true": true,
+  "min_caution_height": 44,
+  "screenshot_count": 24,
+  "page_errors": 0,
+  "failed_local_responses": 0,
+  "visually_inspected": [
+    "screener-view-1440-light-en.png",
+    "screener-view-390-dark-zh.png",
+    "screener-expanded-320-light-en.png",
+    "screener-expanded-390-dark-zh.png"
+  ],
+  "source_law_pin": "70187bb1660e8a7c3038271bb9f8924b5e525cb0",
+  "recorded_at": "2026-11-05T03:19:54.112558+00:00"
+}

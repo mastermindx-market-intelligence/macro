@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/home/ubuntu0/lanes/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_prophet_opportunity_card.py",
+    "tests/test_us_prophet_original_card_layout.py"
+  ],
+  "source_base": "43ac1d47cdc73b716301da3edbe9dc69da8bd120",
+  "working_change": "cautions native disclosure 44px minimum",
+  "completed_at": "2026-11-05T03:10:29.975462+00:00",
+  "exit_code": 0,
+  "output_file": "focused-tests.txt"
+}

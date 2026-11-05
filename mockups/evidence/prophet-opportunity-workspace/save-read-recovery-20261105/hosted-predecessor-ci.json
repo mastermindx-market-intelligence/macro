@@ -1,0 +1,35 @@
+{
+  "schema": "prophet.hosted_predecessor_ci_observation.v1",
+  "subject": "f3c79cfed26286c25592e487939a59fa2dbfc7ec",
+  "run_id": 41970841427,
+  "job_id": 127060497433,
+  "tested_merge": "b12eb5a55e5555248414224ee0b0538dde6802e4",
+  "tested_base": "83ba26af56330d822277d2a729badc6aeb33a20d",
+  "conclusion": "failure",
+  "introduced": 3,
+  "inherited": 0,
+  "only_failures": "three planner weight ceilings; no newly selected jobs",
+  "fix_commit": "ec24a85de3fc91988ca5a6fb25a97384b1cf2ab5",
+  "measurements": [
+    {
+      "probe": "templates/index.html",
+      "jobs": 137,
+      "weight": 5918,
+      "packs": 10
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs": 137,
+      "weight": 5933,
+      "packs": 10
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs": 131,
+      "weight": 5674,
+      "packs": 10
+    }
+  ],
+  "source_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41970841427/job/127060497433",
+  "new_head_qualified": false
+}

@@ -1,0 +1,19 @@
+{
+  "operation": "prophet-validation-market-memory-shim-20261104-c2",
+  "source_base": "f2fb5f52f3610daa46d56205971bb2811ff56016",
+  "scope": "Existing generated page repaired only through lib.pages.write_page; no source template change, data rebuild or runtime action",
+  "page": "site/market_memory.html",
+  "writer": "lib.pages.write_page",
+  "before_sha256": "790b79c77b541136dc64a6255c4a147f10b0f3dddc4d087a08b7dcf5c6d208af",
+  "after_sha256": "6a01ab8fdd69609b62f95ef6f68f7a29ffd83506c0abed89a3c3d5480e47b824",
+  "dbase_markers": 1,
+  "shared_shell_blocks": 1,
+  "owned_injections_only": true,
+  "injection_idempotent": true,
+  "existing_assets_unchanged": {
+    "site/data_base.js": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+    "site/shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "site/shared_shell_bridge.js": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b"
+  },
+  "created_at": "2026-11-05T03:13:46.368231+00:00"
+}

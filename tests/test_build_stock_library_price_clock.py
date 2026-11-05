@@ -142,3 +142,46 @@ def test_real_main_calls_the_same_tested_enrichment_boundary():
              isinstance(n.func, ast.Name) and n.func.id == "_enrich_stock_technicals"]
     assert len(calls) == 1
     assert [n.id for n in calls[0].args] == ["rec", "close", "_ohlcv", "bench"]
+
+
+def test_board_carries_older_price_and_newer_spark_on_their_own_dates():
+    recent, older = closes(), closes("2026-09-25") * .7
+    rec = seed(recent)
+    library._enrich_stock_technicals(rec, recent, ohlcv(older), None)
+    before = copy.deepcopy(rec)
+    display = library._board_display_snapshot(rec["tech"], recent, None, "down")
+    assert display["price"] == 91.7
+    assert display["price_as_of"] == "2026-09-25"
+    assert display["spark_as_of"] == "2026-10-08"
+    assert display["spark_svg"] == library._spark_svg(list(recent.tail(64).values), color="var(--down)")
+    assert rec == before
+    from engine.prophet_opportunity_presentation import present_us_candidate
+    card = present_us_candidate({**display, "signal_asof": "2026-09-21"}, occurrence_id="test-card")
+    assert card["quote"]["asof"] == "2026-09-25"
+    assert card["chart"]["asof"] == "2026-10-08"
+    assert card["assessment_asof"] is None
+    assert card["signal_asof"] == "2026-09-21"
+
+
+def test_board_cannot_fill_missing_price_date_from_chart_or_analysis():
+    display = library._board_display_snapshot({"price": 131, "asof": "2099-01-01"}, closes(), None, "up")
+    assert display["price_as_of"] is None
+    assert display["spark_as_of"] == "2026-10-08"
+
+
+@pytest.mark.parametrize("index", [pd.RangeIndex(3),
+    pd.DatetimeIndex(["2026-10-06", "2026-10-08", "2026-10-08"]),
+    pd.DatetimeIndex(["2026-10-08", "2026-10-07", "2026-10-06"])])
+def test_board_does_not_guess_chart_date_from_ambiguous_series(index):
+    close = pd.Series([100., 120., 131.], index=index)
+    display = library._board_display_snapshot({"price": 131, "price_asof": "2026-09-25"}, close, None, None)
+    assert display["spark_as_of"] is None
+    assert display["price_as_of"] == "2026-09-25"
+
+
+def test_board_chart_clock_tracks_last_bar_actually_drawn():
+    close = closes()
+    close.iloc[-1] = np.nan
+    display = library._board_display_snapshot({}, close, None, "up")
+    assert display["spark_as_of"] == "2026-10-07"
+    assert display["price_as_of"] is None

@@ -1,0 +1,116 @@
+{
+  "base_build_head": "c0774fbef8c6a8e5ea6e1b5a5e08dfff1c15330e",
+  "source_head": "5e27058f43bb4dbdbc5e54ff4ecbbba70ef81930",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/prophet-native-save-20261104-b87f9b57ef4d5080",
+  "base_receipt_sha256": "5c6e4de0c8bd0344abea0ad9d157936c982249dfe212c247dfae94d4e25b516b",
+  "tool_sha256": "f9cc6923ed54b61ee4a3b4e6470c7abcac3406b56aa614e610b2f1c22168d69e",
+  "source_delta": [
+    "app/deploy/Caddyfile",
+    "config/site_access.yml",
+    "templates/prophet_save.css",
+    "templates/prophet_save.js",
+    "tests/test_paywall.py",
+    "tests/test_prophet_save_composition.py",
+    "tests/test_regwall_json_gate.py"
+  ],
+  "before": {
+    "site/us_stocks.html": {
+      "sha256": "7ff8aa52dd01e00d7586f55ee3b6dbf1ae28606d98ba845f23cfd8551346a601",
+      "bytes": 813656
+    },
+    "site/premiumdata/us_stocks.json": {
+      "sha256": "03cb5dee7aea9cd923f5861584277f100f522ce3e478bb1f763bc3c124e847ea",
+      "bytes": 10353005
+    },
+    "site/factordata/us_standouts.json": {
+      "sha256": "dfb34687cdbf32ea6faff946d00a56fb997a89892d2a51a9d4e15f8882fd70c5",
+      "bytes": 2103290
+    },
+    "site/prophet_save.js": {
+      "sha256": "95cf155d242cf9ecbb39486497051e823e40d40034414a0c73289a28ffe30fb8",
+      "bytes": 17642
+    },
+    "site/prophet_save.css": {
+      "sha256": "c4c33f2d4812ec810536241e8a31d54bbf7e014c4d39671a768b2332fc711d41",
+      "bytes": 1206
+    },
+    "site/theme.js": {
+      "sha256": "a32f4446fc013608a3e793f78b1db2d750a2a0a913bff47da602d339281e2f37",
+      "bytes": 300521
+    },
+    "site/theme.css": {
+      "sha256": "321eca2fafe69c5aa9d810241a6f7d955a4e328c3f98e706d919a8035a212a82",
+      "bytes": 231543
+    },
+    "templates/chat.html": {
+      "sha256": "b869056995c79d5a043baf1bd70015100a13617929b0eb3b07433b833a352e2a",
+      "bytes": 97532
+    },
+    "site/chat.html": {
+      "sha256": "b869056995c79d5a043baf1bd70015100a13617929b0eb3b07433b833a352e2a",
+      "bytes": 97532
+    }
+  },
+  "started_at": 1793771524.4917078,
+  "steps": [
+    {
+      "command": [
+        "git",
+        "merge",
+        "--ff-only",
+        "5e27058f43bb4dbdbc5e54ff4ecbbba70ef81930"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "scripts.optimize_assets"
+      ],
+      "exit": 0,
+      "seconds": 43.59
+    }
+  ],
+  "scope": "Completed four-module native build plus canonical emission of two Save assets. Policy, CI enrollment and tests have separate source evidence. This is not a new market-data build, deployed serving policy or browser acceptance.",
+  "artifacts": {
+    "site/us_stocks.html": {
+      "sha256": "653326c306ecc1adc9687eb664765301e1ab94151ed6ed51d01a2d2b6e2f093b",
+      "bytes": 813656
+    },
+    "site/premiumdata/us_stocks.json": {
+      "sha256": "03cb5dee7aea9cd923f5861584277f100f522ce3e478bb1f763bc3c124e847ea",
+      "bytes": 10353005
+    },
+    "site/factordata/us_standouts.json": {
+      "sha256": "dfb34687cdbf32ea6faff946d00a56fb997a89892d2a51a9d4e15f8882fd70c5",
+      "bytes": 2103290
+    },
+    "site/prophet_save.js": {
+      "sha256": "8bce9f8c3a4cda47de753e81eac6b0b270ea1207171da61237f4a7a7c36cd202",
+      "bytes": 18135
+    },
+    "site/prophet_save.css": {
+      "sha256": "a9aaca1ce94ac018d38233b34bfe143dac63f86051375ce474d00ddcb689a642",
+      "bytes": 1460
+    },
+    "site/theme.js": {
+      "sha256": "a32f4446fc013608a3e793f78b1db2d750a2a0a913bff47da602d339281e2f37",
+      "bytes": 300521
+    },
+    "site/theme.css": {
+      "sha256": "321eca2fafe69c5aa9d810241a6f7d955a4e328c3f98e706d919a8035a212a82",
+      "bytes": 231543
+    },
+    "templates/chat.html": {
+      "sha256": "b869056995c79d5a043baf1bd70015100a13617929b0eb3b07433b833a352e2a",
+      "bytes": 97532
+    },
+    "site/chat.html": {
+      "sha256": "b869056995c79d5a043baf1bd70015100a13617929b0eb3b07433b833a352e2a",
+      "bytes": 97532
+    }
+  },
+  "protected_payload_and_market_source_unchanged": true,
+  "completed_at": 1793771586.8125608
+}

@@ -111,7 +111,6 @@ def test_requested_four_boards_opt_in_and_international_does_not() -> None:
         # partial with the us_stocks tier split (docs/TIER_PREVIEW_PATTERN.md):
         # the free shell and the /premiumdata/ payload render cards from ONE
         # source. Same single call, same opt-in — new home.
-        "_us_board_cards.html.j2": 1,
         "china.html.j2": 2,
         "hk.html.j2": 1,
         "canada.html.j2": 1,
@@ -145,3 +144,15 @@ def test_stale_percentage_is_muted_without_shrinking_its_type() -> None:
     stale = _rule(".pvcard .pv-quote .pv-chg.stale")
     assert "color:var(--muted)" in stale
     assert "font-weight:700" in stale
+
+
+def test_us_opportunity_card_keeps_same_native_live_price_consumers():
+    from tests.test_prophet_opportunity_integration import _render, _source
+    card = _render([_source()]).select_one('.po-card')
+    quote = card.select_one('[data-quote-container]')
+    price, change = quote.select_one('.nb-px'), quote.select_one('.nb-chg')
+    assert price.find_next_sibling() is change
+    assert price['data-sym'] == change['data-sym'] == 'BRK.B'
+    assert price['data-mkt'] == change['data-mkt'] == 'us'
+    assert price['data-through'] == '2026-09-24'
+    assert quote.select_one('[data-quote-clock]')

@@ -877,9 +877,13 @@ html body :is(a.actitem, a.idx-alloc, .nbcard, a.scard):hover {
 /* max-width + auto margins pin the bar to ONE consistent width on every page
    (matching .site-footer and the vector family's 1500px nav) — full-width macro
    dashboards and 1180px reading pages no longer make the menu jump width as you
-   navigate between them. Below 1500px the cap is inert, so laptops see no change. */
-.site-nav { display: grid; grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center; column-gap: 12px; row-gap: 9px; margin: 0 auto 16px;
+   navigate between them. Below 1500px the cap is inert, so laptops see no change.
+   Three tracks (1fr + search + controls) and 10px/8px gaps match the
+   [data-nav-layout] grid in navigation-refresh.css, so the pre-enhance bar and
+   the measured "stacked" bar are the same box (see the pre-enhance footprint
+   block further down). */
+.site-nav { display: grid; grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center; column-gap: 10px; row-gap: 8px; margin: 0 auto 16px;
   max-width: 1500px; }
 /* the menu owns the full first row on its own (one clean line); the search +
    the Mastermind/Terminal/⚙ cluster share the second row. Keeping the links off
@@ -1077,11 +1081,21 @@ html body :is(a.actitem, a.idx-alloc, .nbcard, a.scard):hover {
     overflow: hidden; transform: none; box-shadow: none; border: 0; background: transparent; }
 }
 
-/* global stock search */
-.nav-search { grid-column: 1; grid-row: 2; position: relative; min-width: 0; max-width: 480px; }
+/* global stock search.
+   Pre-enhance footprint: the compact 128×40 ticker-search box (the exact box
+   initNavSearch swaps in) parked in the SECOND track, right-aligned, so the
+   swap changes pixels inside the box but not the box. The element-prefixed
+   `nav.site-nav` selector (0,2,1) deliberately out-ranks the theme.js
+   SETTINGS_CSS injection (0,2,0 — kept for the self-contained vector family)
+   while staying below the post-enhance authorities: `[data-nav-layout]`
+   (navigation-refresh.css, 0,3,0) and the injected ≤900px `.has-nav-toggle`
+   flex rules (0,3,0). The live single/stacked selectors own measured desktop placement; mobile
+   values mirror the existing hamburger composition. */
+nav.site-nav .nav-search { grid-column: 2; grid-row: 2; justify-self: end;
+  position: relative; min-width: 0; width: 128px; max-width: none; height: 40px; }
 .nav-search .mag { position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
   font-size: 12px; opacity: .65; pointer-events: none; }
-.nav-search input { width: 100%; box-sizing: border-box; padding: 8px 12px 8px 32px;
+.nav-search input { width: 100%; height: 40px; box-sizing: border-box; padding: 8px 12px 8px 32px;
   border-radius: 10px; border: 1px solid color-mix(in srgb, #416aec 30%, var(--line));
   background: var(--panel2);
   color: var(--text); font: inherit; font-size: 13px; outline: none;
@@ -1155,8 +1169,12 @@ html body :is(a.actitem, a.idx-alloc, .nbcard, a.scard):hover {
 .tbl-filter .cnt { font-size: 12px; font-weight: 600; color: var(--muted);
   font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-.site-nav .nav-ctrls { grid-column: 2; grid-row: 2; justify-self: end; align-self: center;
-  display: flex; align-items: center; gap: 10px; }
+/* Track 3, row 2: the control cluster sits right of the compact search (same
+   cells data-nav-layout="stacked" uses), and min-height:40px matches the gear /
+   hamburger row height initSettings and initMobileNav converge to — so neither
+   swap moves a row edge. (0,2,1) for the same cascade reason as .nav-search. */
+nav.site-nav .nav-ctrls { grid-column: 3; grid-row: 2; justify-self: end; align-self: center;
+  display: flex; align-items: center; gap: 10px; min-height: 40px; }
 
 /* Mastermind + Terminal nav pills — rebuilt on the gbtn glass recipe (macro sweep
    2026-07). Both are frosted glass pills with an inset sheen and a diagonal sheen
@@ -1434,26 +1452,69 @@ html[data-lang="zh"] .lang-toggle .zh-opt { color: #fff; }
 .af-fwd { margin-top: 3px; font-size: 12px; color: var(--muted); }
 .af-empty { padding: 10px 2px; color: var(--muted); font-size: 13px; }
 
-/* mobile: full-width search, and tighter links so the wrapped menu stays compact
-   (controls stay pinned in their own grid column regardless) */
-@media (max-width: 760px) { .nav-search { max-width: none; } }
+/* ── Pre-enhance nav footprint (CLS) ─────────────────────────────────────────
+   theme.js upgrades the bar in several passes that used to land AFTER first
+   paint on long pages (initSettings gear swap, initNavSearch ticker swap,
+   initAdaptiveNav row measurement, initMobileNav hamburger), so readers saw a
+   wide 480px search input on its own row slam ~1100px sideways while the page
+   jumped during enhancement (the native 2026-11-03 baseline measured
+   maximum session CLS 0.70067 desktop / 0.22890 mobile). The static boxes
+   now approximate the enhanced geometry. The adaptive one-row decision can
+   still move the desktop bar; measure the actual native load before claiming
+   a layout-stability result.
+
+   ≤900px mirrors the injected `.has-nav-toggle` composition exactly: controls
+   own row 1 flush right, the full-width 40px search owns row 2, links sit in
+   row 3 (no box while the ≤900px pre-collapse hides them). Inserting the
+   42×40 hamburger then flips no box. Pill/gap values below duplicate the
+   hamburger CSS's ≤560px/≤360px sizing so the cluster's SIZE does not change
+   when the hamburger lands either.
+
+   `nav.site-nav` selectors (0,2,1) out-rank the SETTINGS_CSS injection
+   (0,2,0 — mirrored, for the vector family) and lose to `.has-nav-toggle`
+   (0,3,0, injected later), preserving JS authority. */
+@media (max-width: 900px) {
+  nav.site-nav { column-gap: 8px; row-gap: 8px; }
+  nav.site-nav .nav-ctrls { grid-column: 1 / -1; grid-row: 1; margin-top: 0;
+    justify-self: end; flex-wrap: wrap; justify-content: flex-end; min-width: 0; gap: 8px; }
+  nav.site-nav .nav-links { grid-column: 1 / -1; grid-row: 3; }
+  nav.site-nav .nav-search { grid-column: 1 / -1; grid-row: 2; width: 100%; }
+  nav.site-nav a.nav-link { padding: 6px 8px; font-size: 12.5px; }
+  nav.site-nav .nav-brand .brand-word { display: none; }  /* phones: keep the menu compact, glyph only */
+  /* The inert drill sheet has no usable controls before enhancement. Its
+     translated fixed box otherwise extends a no-JS phone viewport by 16px.
+     initMobileNav supplies .has-nav-toggle before drills can open. */
+  nav.site-nav:not(.has-nav-toggle) .nav-drill-panel[inert] { display: none; }
+}
 @media (max-width: 560px) {
-  /* one column: toggles get their own top-right row, the menu links wrap across
-     the FULL width below (instead of being squeezed beside the toggles), then
-     the search — so links stay readable and the toggles never float mid-list. */
-  .site-nav { grid-template-columns: 1fr; column-gap: 8px; row-gap: 8px; }
-  /* stretch the cluster to the full column and let it WRAP — keeping the default
-     justify-self:end sized it to its content (max-content), so the AI-brief pills +
-     theme + EN/中文 toggles overflowed the viewport ~21px at 375px. flex-wrap lets
-     the toggles drop to a second row instead of spilling; justify-content keeps
-     them flush right as the comment below intends. */
-  .site-nav .nav-ctrls { grid-column: 1; grid-row: 1; margin-top: 0;
-    justify-self: stretch; flex-wrap: wrap; justify-content: flex-end; min-width: 0; }
-  .site-nav .nav-links { grid-column: 1; grid-row: 2; }
-  .nav-search { grid-column: 1; grid-row: 3; }
-  .site-nav a.nav-link { padding: 6px 8px; font-size: 12.5px; }
-  .site-nav .nav-ctrls { gap: 7px; }
-  .site-nav .nav-brand .brand-word { display: none; }  /* phones: keep the menu compact, glyph only */
+  nav.site-nav .nav-ctrls .ai-brief-link { padding: 8px 12px; font-size: 12px; gap: 5px; }
+}
+@media (max-width: 360px) {
+  nav.site-nav .nav-ctrls { gap: 6px; }
+  nav.site-nav .nav-ctrls .ai-brief-link { padding: 7px 10px; font-size: 11.5px; gap: 4px; }
+}
+/* ≥901px the link row itself must also mirror the measured bar:
+   [data-nav-layout] runs the pills NO-WRAP with the compact pill chrome, so a
+   pre-enhance wrapped 2-line menu (legacy pill padding) would still reflow
+   every pill — up to ~136px of horizontal pill travel on a 1000px viewport —
+   when initAdaptiveNav writes the attribute. These dimensions mirror
+   navigation-refresh.css's enhanced link sizing. Corners use the existing
+   button-radius token; final single/stacked placement remains measured by JS. */
+@media (min-width: 901px) {
+  nav.site-nav .nav-links { flex-wrap: nowrap; gap: 2px; }
+  nav.site-nav a.nav-link { min-height: 40px; display: inline-flex; align-items: center;
+    padding: 0 9px; border-radius: var(--r-btn,10px); }
+}
+/* 901–1100px converges to the ICON-ONLY stacked bar for every full market
+   inventory (single cannot fit there), and navigation-refresh.css's stacked
+   band hides the brand wordmark and tightens the pills in that state — so the
+   pre-enhance bar mirrors it, or the attribute frame slides every pill ~130px
+   left. Rare narrow single-row profiles re-grow the wordmark at the flip
+   instead (a bounded, per-profile trade). */
+@media (min-width: 901px) and (max-width: 1100px) {
+  nav.site-nav:not([data-nav-layout]) .nav-brand .brand-word { display: none; }
+  nav.site-nav .nav-links { gap: 1px; }
+  nav.site-nav a.nav-link { padding-inline: 8px; }
 }
 
 /* ---- Time-machine warning chips: hover definition popover ------------------ */

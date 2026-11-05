@@ -258,7 +258,8 @@ def test_signed_intent_binds_email_time_scope_and_attribution_without_email_leak
     assert EMAIL not in token and EMAIL not in str(req)
     assert req["status"] == "verification_requested"
     fails("INVALID_VERIFICATION_INTENT", lambda: service.verify(email="other@example.com", otp="123456", public_ref=token, now=NOW))
-    fails("INVALID_VERIFICATION_INTENT", lambda: service.verify(email=EMAIL, otp="123456", public_ref=token[:-2] + "AA", now=NOW))
+    tampered_ref = token[:-1] + ("Q" if token.endswith("A") else "A")
+    fails("INVALID_VERIFICATION_INTENT", lambda: service.verify(email=EMAIL, otp="123456", public_ref=tampered_ref, now=NOW))
     fails("EXPIRED_VERIFICATION_INTENT", lambda: service.verify(email=EMAIL, otp="123456", public_ref=token, now=NOW + timedelta(minutes=21)))
     assert service.verify(email=EMAIL, otp="123456", public_ref=token, now=NOW)["status"] == "verified"
     row = next(iter(store.records.values()))

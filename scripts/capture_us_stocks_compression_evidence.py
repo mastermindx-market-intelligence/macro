@@ -182,12 +182,13 @@ def fixture_vm() -> dict:
 def _env():
     import jinja2
     from engine import i18n
-    from scripts.build_site import us_stance_projection
+    from scripts.build_site import present_us_candidate, us_stance_projection
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(TEMPLATES_DIR)))
     env.filters["min"] = lambda seq: min(seq)
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip,
-                       us_stance_projection=us_stance_projection)
+                       us_stance_projection=us_stance_projection,
+                       present_us_candidate=present_us_candidate)
     return env
 
 

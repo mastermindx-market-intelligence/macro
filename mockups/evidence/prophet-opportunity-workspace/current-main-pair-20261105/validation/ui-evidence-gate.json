@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/home/ubuntu0/lanes/venv/bin/python",
+    "scripts/check_ui_visual_evidence.py",
+    "--repo-root",
+    "/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105",
+    "--diff-file",
+    "/tmp/prophet-latest-main-frozen-9a8a28.ui.diff"
+  ],
+  "source_head": "9a8a28c557717441d2c5ef5529dad9fc7445e7b4",
+  "base": "008d4015fef2655a98d33dfd5c30d3cb600e2271",
+  "includes_working_tree_generated_pair": true,
+  "exit_code": 0,
+  "elapsed_seconds": 4.945,
+  "diff_bytes": 19885190,
+  "diff_sha256": "b7b4694e3cc65634c7b8d128cd721b0b36abb603179094037516ab666afc0ed2",
+  "checker_sha256": "6d3a8661db2de7802b873f2d1dc220746a681167befdf3e44cc1d0256f80dc7c",
+  "completed_at": "2026-11-05T05:43:11.124963+00:00"
+}
