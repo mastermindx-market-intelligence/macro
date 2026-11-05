@@ -314,6 +314,42 @@ def _render(ctx: dict) -> str:
     return tmpl.render(**ctx)
 
 
+def _advanced_ctx(breadth_split=None) -> dict:
+    """Minimal context that keeps advanced.html.j2 from crashing."""
+    return {
+        "latest": {
+            "date": "2026-07-13",
+            "growth_score": 0.1,
+            "growth_confidence": 0.5,
+            "inflation_score": -0.1,
+            "inflation_confidence": 0.5,
+            "preference_check": None,
+        },
+        "generated_utc": "2026-07-13T00:00:00Z",
+        "cross_asset": None,
+        "portfolio": None,
+        "ic_scorecard": None,
+        "components_confirming": [],
+        "components_contradicting": [],
+        "flip_plain": "",
+        "internals": [],
+        "size_style": [],
+        "breadth_div": None,
+        "accumulation": [],
+        "holdings_changes": [],
+        "holdings_threshold": 1,
+        "flows_html": None,
+        "breadth_split": breadth_split,
+    }
+
+
+def _render_advanced(ctx: dict) -> str:
+    """Render advanced.html.j2 — the R6 landing for the breadth-split module."""
+    env = _env()
+    tmpl = env.get_template("advanced.html.j2")
+    return tmpl.render(**ctx)
+
+
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
@@ -321,30 +357,23 @@ def _render(ctx: dict) -> str:
 class TestVSBSurfaceBothPayloads:
     """Scenario (i): both vol_weather and breadth_split present.
 
-    UD-B2-W1 (R-W1-A-AMENDED): the vol-weather chips no longer render
-    inside #dlg-sentiment. They now live as a sub-row inside the mx5
-    scorecard left column (.mx5-sc-left / .mx5-sc-vw) — see
-    test_ud_b2_w1_vw_fold.py for the engine-true fold tests. This class
-    keeps the surface-render assertions (plain text, pctile phrasing,
-    breadth_split surface) on the new location.
+    The vol-weather chips no longer render inside #dlg-sentiment or the
+    primary scorecard. They live once inside #dlg-risk; see
+    test_ud_b2_w1_vw_fold.py for the engine-true placement tests. This class
+    keeps surface assertions on that detail location.
     """
 
-    def test_vol_weather_subrow_present_in_risk_isle(self):
+    def test_vol_weather_detail_present_in_risk_dialog(self):
         ctx = _base_ctx()
         ctx["vol_weather"] = _full_vol_weather()
         ctx["breadth_split"] = _full_breadth_split(spread=25.0)
         html = _render(ctx)
-        # The new sub-row is identified by data-sx-vw-strip + scope class
-        assert "data-sx-vw-strip" in html, (
-            "Vol weather sub-row must render (folded into the risk isle)"
-        )
-        assert "sx-vw-strip--risk-isle" in html, (
-            "Vol weather sub-row must carry its scope class"
-        )
-        # And the OLD sibling-section id must NOT appear anymore
-        assert 'id="vsb-vol-weather-section"' not in html, (
-            "Old dialog sibling-section id (vsb-vol-weather-section) must not appear on the page"
-        )
+        assert 'data-sx-vw-host="risk-detail"' in html
+        assert "data-sx-vw-strip" in html
+        assert "sx-vw-strip--risk-detail" in html
+        assert 'data-sx-vw-host="mx5-sc-left"' not in html
+        assert 'class="mx5-sc-vw"' not in html
+        assert 'id="vsb-vol-weather-section"' not in html
 
     def test_vol_weather_chip_rows_present(self):
         ctx = _base_ctx()
@@ -360,119 +389,65 @@ class TestVSBSurfaceBothPayloads:
         assert 'data-vsb-chip="' not in html
 
     def test_vol_weather_plain_text_and_pctile_phrase(self):
-        """R-W1-B + one-integer law: glance tier carries ONLY tier words
-        (calm/breeze/gust/storm + ZH twins). The OLD phrases ('Volatility is
-        calm', 'higher than N% of days', 'lower than N% of days') are banned
-        from the glance tier — they belonged to the dialog's scoreboard row
-        and have been demoted/removed entirely.
-
-        R-W1-A-AMENDED: the strip renders inside the mx5 scorecard's
-        left column (.mx5-sc-vw host). Slice that host to inspect the
-        strip's glance tier.
-        """
+        """Risk Detail keeps tier words without restoring percentile scoreboard prose."""
         ctx = _base_ctx()
         ctx["vol_weather"] = _full_vol_weather()
         html = _render(ctx)
-        # Round-3: slice the mx5-sc-vw host (the vol-weather's new home).
-        host_start = html.find('<div class="mx5-sc-vw"')
-        assert host_start >= 0, (
-            "mx5-sc-vw host must exist when mode=macro + vol_weather set "
-            "(DEV-VW-LOCATION)"
-        )
-        depth = 0
-        i = host_start
-        n = len(html)
-        while i < n:
-            if html.startswith("<div ", i) or html.startswith("<div>", i):
-                depth += 1
-                i += 5
-            elif html.startswith("</div>", i):
-                depth -= 1
-                i += 6
-                if depth == 0:
-                    break
-            else:
-                i += 1
-        isle = html[host_start:i]
-        # Every tier word family must be reachable from a chip in the fixture.
-        # The fixture uses bands: normal/calm/quiet/low/elevated/extreme. The
-        # template's _vw_band_word map covers every one of them — at least one
-        # of the tier words below must appear on the rendered row.
+        host_start = html.find('<section class="riskdlg-vw"')
+        assert host_start >= 0, "Risk Detail volatility host must render"
+        host_end = html.find("</section>", host_start)
+        assert host_end >= 0
+        detail = html[host_start:host_end]
         tier_words_en = ("calm", "breeze", "gust", "storm")
         tier_words_zh = ("平静", "微风", "疾风", "风暴")
-        any_en = [w for w in tier_words_en if f'>{w}</span>' in isle or f'>{w}<' in isle]
-        any_zh = [w for w in tier_words_zh if f'>{w}</span>' in isle or f'>{w}<' in isle]
-        assert any_en, (
-            f"At least one tier word EN {tier_words_en} must appear on the "
-            f"rendered strip (R-W1-B)"
-        )
-        assert any_zh, (
-            f"At least one tier word ZH {tier_words_zh} must appear on the "
-            f"rendered strip (R-W1-B)"
-        )
-        # pctile scoreboard phrases must NOT appear on the page at all
-        # (one-integer law: removed entirely, not demoted)
-        assert "higher than" not in html, (
-            "Pctile 'higher than N% of days' must not appear (one-integer law retirement)"
-        )
-        assert "lower than" not in html, (
-            "Pctile 'lower than N% of days' must not appear (one-integer law retirement)"
-        )
-        # The old dialog-row marker is gone too
+        assert any(f'>{w}</span>' in detail or f'>{w}<' in detail for w in tier_words_en)
+        assert any(f'>{w}</span>' in detail or f'>{w}<' in detail for w in tier_words_zh)
+        assert "higher than" not in html
+        assert "lower than" not in html
         assert "data-vsb-chip=" not in html
 
     def test_breadth_split_section_present(self):
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        ctx["breadth_split"] = _full_breadth_split(spread=25.0)
-        html = _render(ctx)
+        """UD-B2-W3 R6: the module lives on advanced.html, not the macro dialog."""
+        html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=25.0)))
         assert 'id="vsb-breadth-split-section"' in html, (
-            "AI vs rest section header should render when payload present"
+            "AI vs rest section header should render on advanced.html when payload present"
+        )
+        dash = _render(_base_ctx() | {"breadth_split": _full_breadth_split(spread=25.0)})
+        assert 'id="vsb-breadth-split-section"' not in dash, (
+            "Move, do not duplicate: dashboard.html.j2 must not keep the module"
         )
 
     def test_breadth_split_stance_text(self):
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        ctx["breadth_split"] = _full_breadth_split(spread=25.0)
-        html = _render(ctx)
+        html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=25.0)))
         assert "AI names leading" in html
         assert "AI 相关股领涨" in html
 
     def test_breadth_split_receipt_lines(self):
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        ctx["breadth_split"] = _full_breadth_split(spread=25.0)
-        html = _render(ctx)
+        html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=25.0)))
         assert 'data-vsb-bs="ai"' in html
         assert 'data-vsb-bs="nonai"' in html
         assert "AI-linked names above their 50-day trend" in html
         assert "Everyone else" in html
 
     def test_card_caveat_renders_when_spread_large(self):
+        """UD-B2-W3 R6: the glance-tier sentiment caveat is relocated with the
+        module. Dashboard must not keep vsb-sentiment-caveat."""
         ctx = _base_ctx()
         ctx["vol_weather"] = _full_vol_weather()
         ctx["breadth_split"] = _full_breadth_split(spread=25.0)
         html = _render(ctx)
-        assert 'id="vsb-sentiment-caveat"' in html, (
-            "Card caveat should render when |spread_50| >= 15"
+        assert 'id="vsb-sentiment-caveat"' not in html, (
+            "Card caveat relocated with census #36; must not remain on the sentiment isle"
         )
-        # Stance text should appear in the caveat
-        assert "AI names leading" in html
 
     def test_circularity_watch_note(self):
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        ctx["breadth_split"] = _full_breadth_split(spread=25.0)
-        html = _render(ctx)
+        html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=25.0)))
         assert "recycles capital" in html, (
-            "Static circularity-watch note should appear in dialog"
+            "Static circularity-watch note should appear on advanced.html"
         )
 
     def test_cohort_size_note(self):
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        ctx["breadth_split"] = _full_breadth_split(spread=25.0)
-        html = _render(ctx)
+        html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=25.0)))
         # 100 AI-linked names out of 400 tracked
         assert "100" in html
         assert "400" in html
@@ -485,7 +460,7 @@ class TestVSBSurfaceBothPayloads:
         # The brief check: no Jinja undefined-variable render artifacts
         assert "<< NaN" not in html, "No << NaN artifacts should appear"
         # Spot-check our added sections specifically: extract the vol-weather
-        # sub-row from the risk isle slice and the breadth block; neither should
+        # detail block from the Risk Detail slice and the breadth block; neither should
         # contain rendering NaNs. Post-fold, vol-weather lives inside the risk
         # isle, so we slice by the new data-sx-vw-strip sentinel.
         if "data-sx-vw-strip" in html:
@@ -515,6 +490,11 @@ class TestVSBSurfaceAbsent:
         ctx = _base_ctx()
         html = _render(ctx)
         assert 'id="vsb-breadth-split-section"' not in html
+        # advanced.html keeps the landing (designed-null) so the hero chip
+        # does not 404; the data rows stay absent.
+        adv = _render_advanced(_advanced_ctx(None))
+        assert 'id="vsb-breadth-split-section"' in adv
+        assert 'data-vsb-bs="ai"' not in adv
 
     def test_card_caveat_absent_when_breadth_none(self):
         ctx = _base_ctx()
@@ -541,11 +521,8 @@ class TestVSBSurfaceSmallSpread:
         )
 
     def test_dialog_sections_still_render_when_spread_small(self):
-        """Small spread should not suppress the dialog sections."""
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        ctx["breadth_split"] = _full_breadth_split(spread=8.0)
-        html = _render(ctx)
+        """Small spread should not suppress the relocated advanced.html module."""
+        html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=8.0)))
         assert 'id="vsb-breadth-split-section"' in html
 
     def test_negative_spread_also_suppressed(self):

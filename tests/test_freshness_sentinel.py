@@ -1149,6 +1149,39 @@ def test_read_served_round_trips_and_maps_a_missing_file_to_indeterminate(tmp_pa
     assert fs.check_surface(_prophet_surface(), missing, NOW)["status"] == "indeterminate"
 
 
+def test_read_served_reads_a_json_body_larger_than_the_http_page_cap(tmp_path):
+    """read_served() reads the WHOLE file, so a served JSON artifact bigger than
+    the HTTP page cap is not truncated — the real prophet/index.json is ~5 MB."""
+    (tmp_path / "prophet").mkdir()
+    payload = tmp_path / "prophet" / "index.json"
+    payload.write_text(json.dumps({"source_asof": "2026-10-09", "pad": "x" * 5_300_000}))
+    assert payload.stat().st_size > fs.BODY_CAP
+    got = fs.read_served(tmp_path, "/prophet/index.json")
+    assert got.error is None and got.status == 200
+    assert json.loads(got.body)["source_asof"] == "2026-10-09"
+
+
+def test_read_served_still_refuses_a_body_over_the_served_cap(tmp_path, monkeypatch):
+    """The served cap is still a memory-sanity bound: past it the read maps to
+    an error → INDETERMINATE, exactly like every other transport failure."""
+    monkeypatch.setattr(fs, "SERVED_BODY_CAP", 1000)
+    (tmp_path / "prophet").mkdir()
+    (tmp_path / "prophet" / "index.json").write_text(
+        json.dumps({"source_asof": "2026-10-09", "pad": "x" * 2000})
+    )
+    got = fs.read_served(tmp_path, "/prophet/index.json")
+    assert got.error and "byte cap" in got.error
+    assert fs.check_surface(_prophet_surface(), got, NOW)["status"] == "indeterminate"
+
+
+def test_http_page_cap_is_unchanged_and_below_the_served_cap():
+    """BODY_CAP's truncation rationale (HTTP pages, ~1 MB) is untouched; the
+    served cap is a separate, larger whole-file sanity bound."""
+    assert fs.BODY_CAP == 2_000_000
+    assert fs.SERVED_BODY_CAP == 16_000_000
+    assert fs.SERVED_BODY_CAP > fs.BODY_CAP
+
+
 def test_prophet_non_json_body_is_indeterminate_not_stale():
     """A login page, an error shell or a half-written file mid-rsync is a
     transport failure wearing a 200. It escalates through the blindness counter
