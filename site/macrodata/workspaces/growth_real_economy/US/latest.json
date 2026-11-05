@@ -514,11 +514,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-05T07:38:19Z",
+    "built_at": "2026-11-05T10:00:13Z",
     "calculation_as_of": "2026-11-04",
-    "code_version": "8a5b9fb3f82ec6f4fad61eb510b5563894ad5a80",
-    "content_sha256": "e61f9adb8b9e3582a2d4b9d1cc427b414246211b2cbfe4e8b7cf248d12722b22",
-    "generation_id": "growth_real_economy-US-e61f9adb8b9e3582",
+    "code_version": "e26dddef9b88ebefbcb9600423a069a829c6899d",
+    "content_sha256": "505917714c783afa223a11c809156968021d5e15b9502c9021ce4d780d4e0336",
+    "generation_id": "growth_real_economy-US-505917714c783afa",
     "producer": "engine.market_os.macro_workspaces.growth",
     "rendered_at": null
   },
@@ -1033,7 +1033,7 @@
           "value": null
         },
         "unit": "index_0_100",
-        "value": 94.25342049259837,
+        "value": 94.25342049259838,
         "value_type": "index"
       },
       {

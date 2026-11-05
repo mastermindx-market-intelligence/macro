@@ -311,9 +311,9 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-05T07:38:19Z",
+    "built_at": "2026-11-05T10:00:13Z",
     "calculation_as_of": "2026-10-29",
-    "code_version": "8a5b9fb3f82ec6f4fad61eb510b5563894ad5a80",
+    "code_version": "e26dddef9b88ebefbcb9600423a069a829c6899d",
     "content_sha256": "b69ea7da8872d8c8c6b878bfa6d64f7978595417ed805efa43a872115ecd7985",
     "generation_id": "housing_real_estate-US-b69ea7da8872d8c8",
     "producer": "engine.market_os.macro_workspaces.housing",

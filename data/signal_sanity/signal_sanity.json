@@ -139,29 +139,29 @@
       "fails": [],
       "warns": [],
       "as_of": "2026-11-05",
-      "n": 210,
-      "coverage": 210,
+      "n": 209,
+      "coverage": 209,
       "row": {
         "run_date": "2026-11-05",
         "surface": "news",
         "as_of": "2026-11-05",
-        "n_records": 210,
-        "coverage": 210,
-        "fingerprint": "45c51d71d3ca0409",
+        "n_records": 209,
+        "coverage": 209,
+        "fingerprint": "4985626b4f3f628e",
         "scores": {
           "n_recent": {
-            "n_sub": 210,
-            "pop": 210,
+            "n_sub": 209,
+            "pop": 209,
             "uniq": 6,
-            "mean": 1.938095238095238,
-            "std": 1.53094312372229
+            "mean": 1.937799043062201,
+            "std": 1.5220726670022848
           },
           "sentiment_score": {
-            "n_sub": 210,
-            "pop": 210,
+            "n_sub": 209,
+            "pop": 209,
             "uniq": 3,
-            "mean": 0.08571428571428572,
-            "std": 0.7941966376910241
+            "mean": 0.0861244019138756,
+            "std": 0.7900389450928342
           }
         }
       }
@@ -217,5 +217,5 @@
     "intel_hub"
   ],
   "missing": [],
-  "evaluated_at": "2026-11-05T11:18:50.054632+00:00"
+  "evaluated_at": "2026-11-05T13:32:07.703051+00:00"
 }
