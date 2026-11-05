@@ -585,7 +585,7 @@ def test_business_cycle_phase_vocabulary_matches_the_producer() -> None:
     the workspace."""
     import ast
 
-    source = (ROOT / "engine" / "business_cycle.py").read_text(encoding="utf-8")
+    source = (ROOT / "engine" / "business_cycle.py").read_text(encoding="utf-8")  # ci-trigger-closure: data - this test checks the producer's text, not its imports; the job's paths: list it
     phase_fn = next(
         node for node in ast.walk(ast.parse(source))
         if isinstance(node, ast.FunctionDef) and node.name == "_phase"
