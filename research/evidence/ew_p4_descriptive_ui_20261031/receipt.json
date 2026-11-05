@@ -2001,7 +2001,7 @@
     "templates/_risk_envelope_band.css.j2": "09c15c1a022beba816a4adc92dd1a83751dab638",
     "templates/_risk_envelope_band.html.j2": "57af6f51d5f68d30eae9e7e913efd258c306681f",
     "templates/_risk_radar_workspace.html.j2": "59599c343078e786ccd45657e15b2dd8fef40ee9",
-    "templates/dashboard.html.j2": "1d5e07a962ce3b7068a7a37ea4bb0ffef851357a",
+    "templates/dashboard.html.j2": "4a890c3224898639f680d6b0cefe836a0238d269",
     "templates/rotation_events.js": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
     "templates/rotation_glance.css": "5d1653f8f99f71685e5123fae22767240819fdda",
     "templates/sector_central.html.j2": "7fc01311669d6083a2c04abc75b4eb1b0d8eb6ed",
@@ -2025,5 +2025,15 @@
     "tests/fixtures/ew_p4_observation/stale_obs.json": "cbdde8065fc8490ea07be0476bfa6d520ef66f31",
     "tests/fixtures/ew_p4_observation/withdrawn.json": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca",
     "tests/probe_ew_p4_descriptive_ui_browser.py": "9961f3d02347a41c4fd3e573be4946ce24c7a071"
+  },
+  "integrated_preview": {
+    "authority": "read_only_compatibility_not_a_commit",
+    "source_pr_head": "1d76c865672275081d84e31a934dd3c1a76f00c2",
+    "protected_main_at_preview": "2fbee06234fec4e792918c1cb0d9f8ea2ed833c4",
+    "main_dashboard_blob": "4a890c3224898639f680d6b0cefe836a0238d269",
+    "browser_cases": 68,
+    "screenshot_assets_compared": 73,
+    "all_screenshot_assets_identical": true,
+    "preview_source": "PR head with exact current-main dashboard template; other render inputs unchanged"
   }
 }
