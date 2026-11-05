@@ -102,7 +102,7 @@ html[data-theme="dark"] .stance{background:var(--grid)}
 
   <div class="cmdy-toggle" role="tablist">
     {% for g in groups %}
-    <button class="cmdy-tab{{ ' active' if loop.first }}" data-grp="{{ g.key }}" role="tab">{{ g.icon }} {{ t(g.label_en, g.label_zh) }}</button>
+    <button class="cmdy-tab{{ ' active' if loop.first }}" data-grp="{{ g.key }}" role="tab" aria-selected="{{ 'true' if loop.first else 'false' }}">{{ g.icon }} {{ t(g.label_en, g.label_zh) }}</button>
     {% endfor %}
   </div>
   {% for g in groups %}
@@ -154,7 +154,7 @@ html[data-theme="dark"] .stance{background:var(--grid)}
   document.querySelectorAll('.cmdy-tab').forEach(function(tab){
     tab.addEventListener('click', function(){
       var g = tab.getAttribute('data-grp');
-      document.querySelectorAll('.cmdy-tab').forEach(function(t){t.classList.toggle('active', t.getAttribute('data-grp')===g);});
+      document.querySelectorAll('.cmdy-tab').forEach(function(t){var selected=t.getAttribute('data-grp')===g;t.classList.toggle('active', selected);t.setAttribute('aria-selected', String(selected));});
       document.querySelectorAll('.cmdy-grid').forEach(function(gr){gr.classList.toggle('active', gr.getAttribute('data-grp')===g);});
       try{history.replaceState(null,'','#'+g);}catch(e){}
     });
