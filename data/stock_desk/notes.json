@@ -1,165 +1,164 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-04",
-  "generated_at": "2026-09-05T06:22:25.000907+00:00",
+  "as_of": "2026-11-03",
+  "generated_at": "2026-11-04T17:51:37.504879+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-04-ADM-20260905062225-1",
-      "ticker": "ADM",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "The verdict is a high-confluence leader, but the caution flags deterioration in its Consumer Staples basket and the board shows a caution urgency on a fresh buy, so the extension/don't-chase brake suppresses any constructive lean without warranting a short against momentum that is still intact.",
-      "evidence": [
-        "Verdict: High-confluence leader",
-        "Board state: FRESH BUY, urgency caution",
-        "Caution: Consumer Staples basket deteriorating",
-        "Entry z: 0.44, off-high -2.1%"
-      ],
-      "dissent": "The event-edge confluence (SUE z=1.28, insider, revisions) could persist and ADM could continue leading even with a weakening basket.",
-      "falsifier": {
-        "text": "ADM closes below its recent pullback low while the Consumer Staples basket breaks its own trend",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-16",
-      "engine_verdict": "High-confluence leader (context)"
-    },
-    {
-      "id": "2026-09-04-F-20260905062225-2",
-      "ticker": "F",
-      "name": null,
+      "id": "2026-11-03-PWR-20261104175137-1",
+      "ticker": "PWR",
+      "name": "Quanta Services Inc",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 21,
-      "thesis": "The verdict is neutral with no clear edge, and while the board shows a turn signal and now urgency, negative SUE and accounting watch caution argue against any directional lean; the name is neither strong enough to constructively lean on nor weak enough to short.",
+      "thesis": "A leader with a fresh swing low and buy setup, but the accounting-quality warning plus a mixed weekly picture and negative factor composite argue against chasing here; this is a watch-and-verify, not a short.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "SUE z: -0.89",
-        "Accounting quality: watch",
-        "Board state: TURN SIGNALED, off-high -15.6%",
-        "Caution: Consumer Discretionary basket below trend"
+        "Verdict: 'Leader \u00b7 accounting warning \u2014 verify before buying'",
+        "Selection axis z=1.23 (SUE z=2.42 validated)",
+        "Entry axis z=0.50, unblocked",
+        "Quality axis z=-0.50 with accounting=warn",
+        "Daily bottoming, weekly not yet turned (MIXED regime)"
       ],
-      "dissent": "A sharp turn signal with now urgency could mark an inflection if recent insider buying and revisions turn positive, producing an outsized bounce.",
+      "dissent": "The SUE z=2.42 is the lone validated FDR survivor and 68th-percentile selection is the strongest on the board; if accounting proves clean, momentum can persist and the leader extends.",
       "falsifier": {
-        "text": "F breaks above its recent turn-signal trigger level on strong volume",
+        "text": "PWR loses its 50-day average support, or the TURN SIGNALED reverts below the swing low before a weekly turn confirms.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-05",
-      "engine_verdict": "Neutral \u2014 no clear edge"
+      "check_by": "2026-12-02",
+      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
     },
     {
-      "id": "2026-09-04-WFC-20260905062225-3",
-      "ticker": "WFC",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "The verdict is neutral with no clear edge, and despite a fresh buy with now urgency and positive SUE, accounting watch and a crowded Financials basket keep this a no-direction watch.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "SUE z: 0.96",
-        "Accounting quality: watch",
-        "Caution: Financials basket crowded and stretched",
-        "Board state: FRESH BUY, off-high -5.3%"
-      ],
-      "dissent": "Positive SUE and a fresh buy with now urgency could produce a sharp move if accounting concerns fade.",
-      "falsifier": {
-        "text": "WFC closes below its prior consolidation low",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-16",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-09-04-SMP-20260905062225-4",
-      "ticker": "SMP",
-      "name": null,
+      "id": "2026-11-03-CVNA-20261104175137-2",
+      "ticker": "CVNA",
+      "name": "Carvana Co",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 21,
-      "thesis": "The verdict is neutral with no clear edge, and despite a fresh buy with now urgency and clean accounting, the absence of drivers and a weak tailwind leave no leg to lean on.",
+      "thesis": "A bullish FRESH BUY with strong daily technicals but a near-zero selection edge, negative composite factors, accounting-watch flag, and the deterministic verdict 'Neutral \u2014 no clear edge'; neither a clear long nor a short here.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Board state: FRESH BUY, off-high -7.5%",
-        "No cautions, no drivers",
-        "Tailwind z: -0.32"
+        "Verdict: 'Neutral \u2014 no clear edge'",
+        "Selection axis z=0.02, pct 50 (no leg above literature tier)",
+        "Quality factors composite -1.02 with accruals -1.34",
+        "Accounting flag = watch",
+        "Earnings due \u2014 caution to size down"
       ],
-      "dissent": "A fresh buy state with now urgency in a low-vol small cap could offer attractive entry if the broader tape rallies.",
+      "dissent": "With-trend bullish regime, FRESH BUY state, and seasonality up in 80% of past Novembers; if earnings land clean, the high-beta discretionary name could outperform sharply.",
       "falsifier": {
-        "text": "SMP closes below its current fresh-buy trigger level",
+        "text": "CVNA fails to hold above its 10-day average after the earnings print, or the FRESH BUY state rolls over back below the swing low.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-05",
+      "check_by": "2026-12-02",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-04-PCRX-20260905062225-5",
-      "ticker": "PCRX",
-      "name": null,
-      "lean": "cautious",
+      "id": "2026-11-03-CMG-20261104175137-3",
+      "ticker": "CMG",
+      "name": "Chipotle Mexican Grill Inc",
+      "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "The engine verdict is lagging relative weakness, and with negative revisions (z=-1.51), negative SUE, and flat momentum, the actual bearish signal supports a cautious short lean versus the S&P 500 even though the board shows an extended hold.",
+      "horizon_d": 21,
+      "thesis": "The board says HOLD \u2014 EXTENDED even though the ladder only shows turn-signaled, and the selection axis is below the 50th percentile; the clean quality flag is offset by an extension brake, so no chase and no short.",
       "evidence": [
-        "Verdict: Lagging \u2014 relative weakness",
-        "Revision z: -1.51",
-        "SUE z: -0.23",
-        "Momentum z: -0.17",
-        "Board state: HOLD \u2014 EXTENDED"
+        "Verdict: 'Neutral \u2014 no clear edge'",
+        "Board state: HOLD \u2014 EXTENDED",
+        "Selection axis z=-0.39, pct 44",
+        "Quality axis z=0.59 with accounting=clean",
+        "Broad tape stress caution"
       ],
-      "dissent": "Positive tailwind and clean quality could catch a bid if the name is oversold, especially with the board showing up direction and a now urgency.",
+      "dissent": "CMG has the cleanest accounting flag on the board, strong fundamentals (54% ROE), and 67% up-rate in Nov; if the extension clears, the bottoming setup could resume higher.",
       "falsifier": {
-        "text": "PCRX closes above its recent extension high",
+        "text": "CMG closes back below its 200-day average, or the daily swing low breaks before any weekly turn confirms.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-02",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-03-SBRA-20261104175137-4",
+      "ticker": "SBRA",
+      "name": "Sabra Health Care REIT",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "A genuine bearish structural tell in a 'constructive' looking name: the prior cycle topped early (left-translated), price is approaching the band, and the entry is HALF SIZE; this is a tiring-trend warning, not a base to buy.",
+      "evidence": [
+        "Prior cycle topped early \u2014 'a bearish structural tell'",
+        "Cycle translation = left",
+        "Verdict 'Constructive \u2014 building a base' but entry_tag HALF SIZE"
+      ],
+      "dissent": "Near all-time-high (-7.7% off high), price above both moving averages, and revisions z=1.49 could keep the REIT supported if rate cuts resume. (softened: strong leader, momentum intact \u2014 extension is not a short (cautious-on-leader historically ~17% right); watch, don't chase)",
+      "falsifier": {
+        "text": "SBRA closes above its prior cycle high, invalidating the left-translation read.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-02",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-11-03-UE-20261104175137-5",
+      "ticker": "UE",
+      "name": "Urban Edge Properties",
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Despite a bullish-seeming failed-cycle warning in the points, the deterministic verdict is 'Constructive \u2014 building a base' unblocked, with a positive selection axis, low volatility, and a fresh swing low; the base-building setup deserves the constructive lean the engine assigned.",
+      "evidence": [
+        "Verdict: 'Constructive \u2014 building a base'",
+        "Selection axis z=0.29 (revisions positive)",
+        "Entry axis z=0.29, unblocked",
+        "Fresh swing low 4 days ago",
+        "Failed cycle warning present (bearish caution)"
+      ],
+      "dissent": "The failed-cycle flag (broke below the low that began the cycle) plus below-200dma and overdue investor phase mean this could be a dead cat bounce in a still-downtrending REIT.",
+      "falsifier": {
+        "text": "UE closes back below its 50-day average, or the failed-cycle low breaks again.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "PCRX",
+          "subject_ticker": "UE",
           "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 30
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 21
         }
       },
-      "check_by": "2026-10-16",
-      "engine_verdict": "Lagging \u2014 relative weakness"
+      "check_by": "2026-12-02",
+      "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-09-04-COF-20260905062225-6",
-      "ticker": "COF",
-      "name": null,
+      "id": "2026-11-03-CMCSA-20261104175137-6",
+      "ticker": "CMCSA",
+      "name": "Comcast Corp Class A",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 21,
-      "thesis": "The verdict is neutral with no clear edge, and although the board shows a turn signal with now urgency, strong negative momentum (z=-1.39) offsets a positive SUE, leaving no reliable directional edge.",
+      "thesis": "Despite a strong entry axis (63rd percentile) and positive value composite, the selection axis is negative, the Communication Services basket is below trend, and the verdict is 'Neutral \u2014 no clear edge'; the entry setup is unattractive with an unloved basket.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "SUE z: 1.8",
-        "Momentum z: -1.39",
-        "Revision z: -0.59",
-        "Caution: Financials basket crowded and stretched"
+        "Verdict: 'Neutral \u2014 no clear edge'",
+        "Selection axis z=-0.36 (SUE negative -0.31)",
+        "Entry axis z=0.88 but HALF SIZE and basket below trend",
+        "Value composite z=2.09 (cheap, but crowded in a lagging basket)"
       ],
-      "dissent": "A very strong SUE on fresh earnings could catalyze a sharp bounce from a turn signal, especially with entry signals present.",
+      "dissent": "CMCSA has the strongest value factor on the board, clean accounting, and a 63rd-percentile entry; if the market rotates from growth to value defensives, this laggard could catch a bid.",
       "falsifier": {
-        "text": "COF breaks below its turn-signal low",
+        "text": "CMCSA breaks below its swing low, or the Communication Services basket falls further below trend.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-05",
+      "check_by": "2026-12-02",
       "engine_verdict": "Neutral \u2014 no clear edge"
     }
   ],

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-10-31T15:52:20Z",
+ "accession": "0001628280-25-047726",
+ "cik": "0001023514",
+ "doc_byte_length": 10163139,
+ "doc_sha256": "2652e9a9b13cdc9b5a99f7d33173544ca58d0da0b36ecd431e0d68376f695087",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-10-31",
+ "form": "20-F",
+ "period_of_report": "2025-06-30",
+ "primary_document": "hmy-20250630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 8114611,
+  "byte_start": 8114492,
+  "normalized": "The Franco-Nevada contract consisted of a streaming agreement to purchase 25% of the gold production through MWS for a",
+  "normalized_sha256": "6967004c257a5d9ea3777b3968725b1a350426ec5574ff0c1ff54f223dacc907",
+  "raw": "The Franco-Nevada contract consisted of a streaming agreement to purchase 25% of the gold production through MWS for a ",
+  "raw_sha256": "5202d19883e599f988e971345809744e10cf989081e289e7f5bb5f34ed5cb44f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1023514/000162828025047726/hmy-20250630.htm",
+ "xbrl_contexts": []
+}

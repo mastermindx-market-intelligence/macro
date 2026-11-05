@@ -50,16 +50,28 @@ waves:
   pr: 295
   depends_on:
   - SCF-GH0
-  next_action: Reconcile existing PR295 at actual head59b6e81bf147b3730b811c3ad252a4e65775b521; preserve
-    its owner, source/integration distinction and independent review. Older body SHA is not current.
+  next_action: >-
+    Source merged through Mastermind PR295 as
+    79437fd51cb73dd76be9293cb11c092b8c781790 on 2026-09-05.
+    Reuse the accepted pure assessment engine and its source-review evidence.
+    Reconcile remaining live GitHub composition and installed-consumer proof
+    through the existing GH2/current source carrier; source protection alone
+    does not prove an installed app or autonomous release. Do not reopen PR295
+    or repeat its completed source release.
 - id: SCF-CAP1
   title: Truthful capability-status projection over immutable owner facts
   status: in_progress
   pr: 290
   depends_on:
   - SCF-F0
-  next_action: Reconcile existing PR290 at actual head15675237f1d2ac44d91ef5c53aa8c7e38a7a7d60; do
-    not create another projector or assume old body proof describes this head.
+  next_action: >-
+    Source merged through Mastermind PR290 as
+    7db7bd879971a7ea67e88da56dd178581387b8b8 on 2026-09-06.
+    Reuse the accepted pure capability-status projector and its source proof.
+    Reconcile installed-consumer and real capability-fact composition evidence
+    on the existing carriers. This record establishes source acceptance only,
+    not installation, discovery, a registry, an app or write authority. Do not
+    create another projector or repeat PR290's completed source release.
 - id: SCF-PKG0
   title: Protect immutable Operator package-generation and complete CAP-S1 source law
   status: done
@@ -72,9 +84,16 @@ waves:
   pr: 350
   depends_on:
   - SCF-PKG0
-  next_action: 'Continue existing PR350 and its exact owner; current head6cc4c6c413b0572b54f194058b7714aa5df25d8d
-    remains open. #329/#326 source releases are complete; do not revive their old wait. Historical
-    consumed provider attempt is not reusable proof.'
+  next_action: >-
+    Source merged through Mastermind PR350 as
+    ef02058ba9356808e41937dab054f00043f89c1e on 2026-09-06.
+    Preserve its accepted source, integration and review evidence and reconcile
+    installed-profile, real four-turn Codex provider-canary and cleanup evidence
+    through the existing carriers. This source merge does not establish provider
+    canary acceptance or production promotion; separate policy, host and route
+    promotion remain governed by CAP-PROMOTE1. Do not repeat source releases
+    350/329/326, replay a consumed provider attempt or treat that historical
+    attempt as reusable proof.
 - id: CAP-PROMOTE1
   title: Separately reviewed checked-in V4 policy, host and route promotion
   status: todo
@@ -244,13 +263,32 @@ do_not_redo:
 - Do not create a super-MCP, generic actuator, plugin memory, parallel SDK shim, binding/identity
   store, lifecycle, scheduler or retry owner.
 - Do not infer production from source merges, compatibility tests, records or Slack delivery.
-next_action: Consume R3 independent-review and MCP JSON repair returns on their exact existing carriers.
-  Preserve Company466 and the six marathon implementation owners. Validate/review this same records
-  PR against current Macro source; never redo released source predecessors or represent records as
-  runtime acceptance.
+next_action: >-
+  Reconcile the current exact-head source, review, integration and effect state
+  of existing MCP issue487 / PR495 before further action; preserve accepted proof
+  and do not repeat historical placement or completed proof requests. R3 review
+  and source closure are complete: Mastermind PR448 merged as
+  8f3370e349ab8f1a54acac4c63697740f32715b1; do not recreate its reviewer or builder.
+  Preserve Company466, the six marathon implementation lanes and their actual
+  live source/effect fences. Installed authentication, provider canaries,
+  Runtime/Wake and product acceptance remain with their existing carriers.
+  Never redo released source predecessors or represent records as runtime
+  acceptance.
 ---
 
 # Current source and capability boundary
+
+**2026-11-05 source-state supersession.** The September5 discussion below and
+the dated handoffs retain their original observation epochs. Mastermind
+PRs295,290,350 and448 now have the protected source merges recorded in the
+updated fields above; their historical source-release and R3-review waits are
+closed. MCP issue487 already has repair PR495, so its former pre-START
+description is historical; current release and installed behavior require their
+own evidence. The updated `next_action` fields govern this workstream's current
+projection. Preserve accepted proof, live-writer and uncertain-effect fences,
+and all remaining installed, provider, cleanup and production obligations.
+Neither this records publication nor those source merges completes the SCF
+program.
 
 This is a bounded predicate refresh, not a fresh exhaustive inventory of every
 planning wave. Unrefreshed todo states retain prior planning and cannot prove
