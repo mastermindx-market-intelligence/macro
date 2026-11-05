@@ -1,0 +1,172 @@
+{
+  "cell": "v5-intl-country-cycles__dark__en__1440__d30-intl",
+  "view": "v5",
+  "url": "/country_cycles.html",
+  "theme": "dark",
+  "lang": "en",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "variant": null,
+  "js": true,
+  "steps": [],
+  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "pins": {
+    "chromium": "149.0.7827.55",
+    "playwright": "1.61.1",
+    "host": "darwin/arm64",
+    "executable": {
+      "name": "chrome-headless-shell",
+      "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+    },
+    "launch_args": [
+      "--disable-skia-runtime-opts",
+      "--disable-partial-raster",
+      "--disable-gpu",
+      "--force-color-profile=srgb",
+      "--disable-font-subpixel-positioning",
+      "--font-render-hinting=none",
+      "--disable-lcd-text"
+    ],
+    "font_pin": "/p0b-font-pin/pin.css",
+    "clock": "2026-11-05T12:00:00Z",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "dpr": 1
+  },
+  "http_status": 200,
+  "notes": [],
+  "scrollWidth": 1440,
+  "scrollHeight": 3795,
+  "data_theme": "dark",
+  "data_lang": "en",
+  "html_lang": "en",
+  "computed_bg": "rgb(13, 16, 24)",
+  "boxes": {
+    "heading": {
+      "selector": "#sc-hero-title",
+      "x": 79,
+      "y": 517,
+      "w": 211,
+      "h": 16,
+      "visible": true,
+      "text": "MARKET ROTATION OVERLAY"
+    },
+    "asof": {
+      "selector": "#sc-asof",
+      "x": 1288,
+      "y": 390,
+      "w": 78,
+      "h": 15,
+      "visible": true,
+      "text": "2026-11-04"
+    },
+    "generation": null,
+    "stale_guard": null,
+    "chips": {
+      "selector": "#sc-chips",
+      "x": 79,
+      "y": 592,
+      "w": 1282,
+      "h": 43,
+      "visible": true,
+      "text": "✦ Select all visible 🇨🇭 Switzerland 🇸🇪 Sweden 🇬🇧 United Kingdom 🇩🇪 Germany 🇳🇱 Netherlands 🇪🇸 Spain 🇫🇷 France 🇮🇹 Italy 🇭🇰 Hong Kong 🇨🇦 Canada 🇯🇵 Japan 🇦🇺 Australia 🇸🇬 Singapor"
+    },
+    "chart": {
+      "selector": "#sc-chart",
+      "x": 79,
+      "y": 635,
+      "w": 1282,
+      "h": 660,
+      "visible": true,
+      "text": "WASHED-OUT MID-CYCLE EUPHORIC Low Mid High 2020 2022 2024 2026 TODAY"
+    },
+    "inspector": {
+      "selector": "#sc-detail",
+      "x": 60,
+      "y": 1326,
+      "w": 1320,
+      "h": 416,
+      "visible": true,
+      "text": "MARKET ROTATION · 2026-11-04 Every market on the same clock — near the top means the move is late, near the bottom means it is washed out. Switch to Price for what actually happened, and tap a market "
+    },
+    "compare_tray": null,
+    "fixture_label": null,
+    "tape_asof": null,
+    "stance_unavailable": null
+  },
+  "fixture_labels": {
+    "count": 0,
+    "visible": 0,
+    "texts": []
+  },
+  "fixture_text": [],
+  "size_mult_text": [],
+  "stripe_audit": {
+    "scope": "body",
+    "flagged": []
+  },
+  "next_turn_labels": [
+    "▲ ref: Peak was proj. Feb ’22 — elapsed ↓ Headwind RS -4.9% #—",
+    "▼ Next ▼ Dec ’26 ↓ Headwind RS -10.8% #—",
+    "▲ ref: Peak was proj. Mar ’23 — elapsed ↔ Mixed RS -0.2% #—",
+    "▼ Next ▼ Jan ’27 ↓ Headwind RS -16.8% #—",
+    "▲ ref: Peak was proj. Oct ’25 — elapsed ↔ Mixed RS -4.2% #—",
+    "▲ ref: Peak was proj. May ’23 — elapsed ↔ Mixed RS +0.7% #—",
+    "▼ ref: Trough was proj. Oct ’18 — elapsed ↓ Headwind RS -16.8% #—",
+    "▲ ref: Peak was proj. Aug ’25 — elapsed ↓ Headwind RS +4.6% #—",
+    "▲ ref: Peak was proj. Sep ’20 — elapsed ↔ Mixed RS +5.2% #—",
+    "▲ ref: Peak was proj. Jan ’26 — elapsed ↓ Headwind RS -6.7% #—",
+    "▼ Next ▼ Nov ’26 ↓ Headwind RS +2.4% #—",
+    "▼ ref: Trough was proj. Feb ’26 — elapsed ↓ Headwind RS +0.7% #—",
+    "▲ ref: Peak was proj. Dec ’22 — elapsed ↔ Mixed RS +5.2% #—",
+    "▲ ref: Peak was proj. Oct ’25 — elapsed ↔ Mixed RS +5.9% #—",
+    "▼ Next ▼ Feb ’27 ↔ Mixed RS -14.5% #—",
+    "▲ ref: Peak was proj. Sep ’25 — elapsed ↔ Mixed RS -2.5% #—"
+  ],
+  "cycles_ctx": null,
+  "assertions": {
+    "scroll_width_within_viewport": true,
+    "console_errors": 0,
+    "console_errors_unexpected": 0,
+    "size_mult_visible": false,
+    "page_errors": 0,
+    "fixture_label_visible": false,
+    "theme_applied": true,
+    "lang_applied": true,
+    "zh_latin": null
+  },
+  "console_errors": [],
+  "console_errors_expected": [],
+  "page_errors": [],
+  "failed_requests": [],
+  "interceptions": [],
+  "serve": {
+    "counts": {
+      "head-fallback": 16,
+      "out": 24
+    },
+    "head_fallback": [
+      "/account.js",
+      "/assets/css/43732ec2.css",
+      "/country_cycles.html",
+      "/country_cycles_data.js",
+      "/country_cycles_dna_data.js",
+      "/country_cycles_narr_data.js",
+      "/country_cycles_series_data.js",
+      "/live.js",
+      "/live_config.js",
+      "/logo_config.js",
+      "/nav_market.js",
+      "/navigation-refresh.css",
+      "/stock-logos.js"
+    ],
+    "missing": []
+  },
+  "zh_latin": null,
+  "png": {
+    "file": "cells/v5-intl-country-cycles__dark__en__1440__d30-intl.png",
+    "sha256": "5f8ac6f83363f2da56cff77292af96e8cc07dbbc237564ba5ddce6839b18dc8d"
+  }
+}

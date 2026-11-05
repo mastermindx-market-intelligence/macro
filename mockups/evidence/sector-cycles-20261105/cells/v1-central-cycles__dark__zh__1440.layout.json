@@ -1,0 +1,217 @@
+{
+  "cell": "v1-central-cycles__dark__zh__1440",
+  "view": "v1",
+  "url": "/sector_central.html#cycles",
+  "theme": "dark",
+  "lang": "zh",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "variant": null,
+  "js": true,
+  "steps": [],
+  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "pins": {
+    "chromium": "149.0.7827.55",
+    "playwright": "1.61.1",
+    "host": "darwin/arm64",
+    "executable": {
+      "name": "chrome-headless-shell",
+      "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+    },
+    "launch_args": [
+      "--disable-skia-runtime-opts",
+      "--disable-partial-raster",
+      "--disable-gpu",
+      "--force-color-profile=srgb",
+      "--disable-font-subpixel-positioning",
+      "--font-render-hinting=none",
+      "--disable-lcd-text"
+    ],
+    "font_pin": "/p0b-font-pin/pin.css",
+    "clock": "2026-11-05T12:00:00Z",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "dpr": 1
+  },
+  "http_status": 200,
+  "notes": [],
+  "scrollWidth": 1440,
+  "scrollHeight": 1832,
+  "data_theme": "dark",
+  "data_lang": "zh",
+  "html_lang": "zh-CN",
+  "computed_bg": "rgb(13, 16, 24)",
+  "boxes": {
+    "heading": {
+      "selector": "#sc-hero-title",
+      "x": 84,
+      "y": 489,
+      "w": 102,
+      "h": 22,
+      "visible": true,
+      "text": "板块轮动叠加"
+    },
+    "asof": {
+      "selector": "#sc-asof",
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": ""
+    },
+    "generation": {
+      "selector": "#si-cycles-gen",
+      "x": 206,
+      "y": 356,
+      "w": 48,
+      "h": 17,
+      "visible": true,
+      "text": "已是最新"
+    },
+    "stale_guard": {
+      "selector": ".mr-chip-stale",
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "Older evidence shown显示较早证据"
+    },
+    "chips": {
+      "selector": "#sc-chips",
+      "x": 84,
+      "y": 570,
+      "w": 1272,
+      "h": 47,
+      "visible": true,
+      "text": "✦ 全选可见 科技 通讯 非必需 金融 工业 原材料 能源 医疗 必需 公用 房地产"
+    },
+    "chart": {
+      "selector": "#sc-chart",
+      "x": 84,
+      "y": 617,
+      "w": 1272,
+      "h": 660,
+      "visible": true,
+      "text": "超卖 中段 狂热 低 中 高 2020 2022 2024 2026 当前"
+    },
+    "inspector": {
+      "selector": "#sc-detail",
+      "x": 65,
+      "y": 1308,
+      "w": 1310,
+      "h": 409,
+      "visible": true,
+      "text": "板块轮动 · 2026-11-03 所有板块放在同一个刻度上——靠上说明这波已经走了很久，靠下说明跌得比较透。切到价格看实际走势，点某个板块可以看它的拐点。 各板块所处位置 上行中 健康上行 金融 原材料 能源 医疗 必需 回落中 下行中 科技 入场良机 已筑底 · 转强 非必需 公用 房地产 筑底中 超卖 通讯 工业 领涨 · 对比标普(21日 · 63日) 1 医疗保健 63d +14.5% "
+    },
+    "compare_tray": null,
+    "fixture_label": null,
+    "tape_asof": {
+      "selector": "#ftr-tape-asof",
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "as of Jul 27, 07:38 PM UTC截至 Jul 27, 07:38 PM UTC Older evidence shown显示较早证据"
+    },
+    "stance_unavailable": null
+  },
+  "fixture_labels": {
+    "count": 0,
+    "visible": 0,
+    "texts": []
+  },
+  "fixture_text": [],
+  "size_mult_text": [],
+  "stripe_audit": {
+    "scope": "body",
+    "flagged": []
+  },
+  "next_turn_labels": [],
+  "cycles_ctx": {
+    "asof": "2026-11-03",
+    "generation": {
+      "artifact_session": "2026-11-03",
+      "clock": "settled_daily_session",
+      "consumer_session": "2026-11-03",
+      "reason": "aligned",
+      "status": "aligned"
+    },
+    "coverage": {
+      "expected": 11,
+      "measured": 11,
+      "missing": []
+    }
+  },
+  "assertions": {
+    "scroll_width_within_viewport": true,
+    "console_errors": 1,
+    "console_errors_unexpected": 0,
+    "size_mult_visible": false,
+    "page_errors": 0,
+    "fixture_label_visible": false,
+    "theme_applied": true,
+    "lang_applied": true,
+    "zh_latin": 217
+  },
+  "console_errors": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:8741/premiumdata/sector_central.json"
+    }
+  ],
+  "console_errors_expected": [
+    "premiumdata 401 (anonymous capture)"
+  ],
+  "page_errors": [],
+  "failed_requests": [
+    {
+      "url": "http://127.0.0.1:8741/premiumdata/sector_central.json",
+      "failure": "net::ERR_ABORTED"
+    }
+  ],
+  "interceptions": [],
+  "serve": {
+    "counts": {
+      "out": 50,
+      "head-fallback": 19,
+      "premium-anonymous": 1
+    },
+    "head_fallback": [
+      "/account.js",
+      "/basketdata/etf_pulse.json",
+      "/basketdata/narrative_emergence.json",
+      "/basketdata/pulse.json",
+      "/basketdata/theme_extension.json",
+      "/basketdata/vol_sentiment.json",
+      "/lightweight-charts.js",
+      "/live.js",
+      "/live/overlay.json",
+      "/live/quotes.json",
+      "/live_config.js",
+      "/logo_config.js",
+      "/macro-desk.css",
+      "/marketdata/index_leadership.json",
+      "/nav_market.js",
+      "/navigation-refresh.css",
+      "/policy_lever.json",
+      "/stock-logos.js",
+      "/subsectors.js"
+    ],
+    "missing": []
+  },
+  "zh_latin": {
+    "scope": "document",
+    "count": 217,
+    "rc": 1,
+    "line": "zh-latin=217 A ABNB AI Absolute Airbnb All Animal Artificial Assets Basket Beauty Big Bottoming Brokers Building CENT CENTA COTY CVSA Care Central Chain Class Communication Companies Company Complex Consumer Corp Coty Covista Critical Crypto Cyclical DOCS DV Defense Defensive Defensives Digital skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX"
+  },
+  "png": {
+    "file": "cells/v1-central-cycles__dark__zh__1440.png",
+    "sha256": "8a84bd67264864f9c97e99c536d6461a2a9d06adc3466d06d345cd9b79f2f656"
+  }
+}

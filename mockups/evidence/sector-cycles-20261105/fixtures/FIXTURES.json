@@ -1,0 +1,577 @@
+{
+ "checks": {
+  "cn_core_extra_keys_from_head": [],
+  "cn_labelled": {
+   "baskets": 22,
+   "sectors": 31
+  },
+  "font_pin": {
+   "files": 6,
+   "schema": "mastermind.p0b_font_pin.v1",
+   "site_faces": 6
+  },
+  "rederive:chinasectordata/sector_cycles_basket_map.json": "byte-equal",
+  "rederive:sector_central_data.js": "byte-equal",
+  "rederive:sector_cycles_china_data.js": "byte-equal",
+  "rederive:sector_cycles_china_series_data.js": "byte-equal",
+  "rederive:sector_cycles_data.js": "byte-equal",
+  "rederive:sector_cycles_series_data.js": "byte-equal",
+  "rederive:sectordata/sector_central.json": "byte-equal",
+  "rederive:sectordata/sector_cycles.json": "byte-equal",
+  "us_core_extra_keys_from_head": [
+   "turn_record"
+  ],
+  "us_labelled": {
+   "baskets": 49,
+   "nasdaq": 6,
+   "sectors": 11
+  },
+  "v1_inputs": {
+   "action_board": "ok",
+   "baskets": "ok",
+   "cycles_ctx": true,
+   "gate": {
+    "gated": true,
+    "preview_rows": 3
+   },
+   "si_handoff": "ok",
+   "source_as_of": "2026-11-03"
+  },
+  "v3": {
+   "calibration": true,
+   "etf_has_high": false,
+   "etf_last": "2026-10-30",
+   "generated_utc": "2026-11-05 00:00",
+   "holdings": 20,
+   "members": 20,
+   "unresolved": []
+  },
+  "v4_cycles_ctx": "ok"
+ },
+ "devs": [
+  "DEV-L6-5: no data dir; engine.cycles falls back to CYCLE_PRESETS bands and risk calibration 1.0",
+  "fences: config.data_dir/config.site_dir/store._path patched to nonexistent paths (no mkdir); calls recorded",
+  "V3 price history and ladder_calibration.json read read-only from the --rt render tree",
+  "V3 generated_utc pinned to '2026-11-05 00:00'",
+  "lane ran seat-direct (Fabric offered no darwin/arm64 host for the pin)",
+  "labelled fixtures are re-derived by this script from HEAD blobs, not stored (2.0 MB + 1.2 MB)"
+ ],
+ "fences": [
+  {
+   "arg": "",
+   "caller": "engine/cycles.py:126:_load_risk_calib",
+   "fn": "config.data_dir",
+   "n": 1
+  },
+  {
+   "arg": "",
+   "caller": "engine/cycles.py:97:_load_fitted_bands",
+   "fn": "config.data_dir",
+   "n": 1
+  },
+  {
+   "arg": "",
+   "caller": "engine/ticker_alerts.py:326:_ladder_path",
+   "fn": "config.data_dir",
+   "n": 1
+  },
+  {
+   "arg": "",
+   "caller": "engine/vol_regime.py:300:load_overlay_gate",
+   "fn": "config.data_dir",
+   "n": 58
+  }
+ ],
+ "gaps": [
+  "fixture chip is face-only (SC_FACE.card); grid/inspector rows carry no chip",
+  "V1 rendered from HEAD sector_central.json: no accumulation rows, no flows section",
+  "V3 without liquidity/macro drag, dollar_ctx, accumulation, rate_infl, alpha_leaders, notable",
+  "V3 alert feed: no ladder history, RT yahoo ETF frame has no high column; put_absent=False",
+  "China sleeve_chip present only as committed in HEAD (cn_sleeve_chip not called)",
+  "US turn_record carried from the HEAD core payload (backtest_turn_record not called)",
+  "V1 publication + grader blocks as committed in the HEAD central json"
+ ],
+ "guards": [
+  {
+   "outside_ev": 0,
+   "stage": "before",
+   "wt_data": false,
+   "wt_site": false
+  },
+  {
+   "outside_ev": 0,
+   "stage": "after",
+   "wt_data": false,
+   "wt_site": false
+  }
+ ],
+ "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+ "reads": {
+  "data/regime/ladder_calibration.json": {
+   "bytes": 2443,
+   "sha256": "f6abcdba12ebda2dbf18016466f3d1559117ec6b7f9036bf1a3ad34c45c13e6a",
+   "status": "ok"
+  },
+  "data/sector_holdings/XLK.parquet": {
+   "bytes": 10885,
+   "sha256": "7dd0436f2c3304a5f178d38db6e8dfcc8ef762dadc015d0815d0fc94c37ac501",
+   "status": "ok"
+  },
+  "data/stock_fundamentals/snapshots.parquet": {
+   "bytes": 1549340,
+   "sha256": "8d10e0c86b38dfd3d7c8c63708e145933c8b83a4c1c3ee6264e8bc4850ac0621",
+   "status": "ok"
+  },
+  "data/stocks/AAPL.parquet": {
+   "bytes": 457633,
+   "sha256": "2b90a6b74c0d3d8e50f4cc7d03a97087e591679b9d5d4a339543095483622923",
+   "status": "ok"
+  },
+  "data/stocks/ADI.parquet": {
+   "bytes": 420886,
+   "sha256": "d932e8e13839bdc8fbf43d824e2f1bcd841f4f14b7efdc44d025d955b04994a5",
+   "status": "ok"
+  },
+  "data/stocks/AMAT.parquet": {
+   "bytes": 426587,
+   "sha256": "56bd980000fa3dabd86c27ce3b714d7eb7f1ecd4eb3ab91fadcf3f8c1fda83e6",
+   "status": "ok"
+  },
+  "data/stocks/AMD.parquet": {
+   "bytes": 305747,
+   "sha256": "10a41fb3b9d9226f78d68b32f3597648d0094322c17141f41a02b92d53c11fd6",
+   "status": "ok"
+  },
+  "data/stocks/APH.parquet": {
+   "bytes": 329271,
+   "sha256": "1d66e1e121b6df26ed62e6a8a3363a726e4e821f1c2d7fc0b4ac83087f41ccfe",
+   "status": "ok"
+  },
+  "data/stocks/AVGO.parquet": {
+   "bytes": 182226,
+   "sha256": "4b2817fde1b9eaa7f141be54ef070bc4e12adca1a8936b2c3772b4ee276a67f2",
+   "status": "ok"
+  },
+  "data/stocks/CRWD.parquet": {
+   "bytes": 68864,
+   "sha256": "71d03974f15153effd1576ba0e2f4c59dd6c60ac65852a804f57cff6f5ac74d9",
+   "status": "ok"
+  },
+  "data/stocks/CSCO.parquet": {
+   "bytes": 374937,
+   "sha256": "5a088854befb0fb2136d7d79b78d614ea1940d7c2bee6e1df28198da6852d881",
+   "status": "ok"
+  },
+  "data/stocks/IBM.parquet": {
+   "bytes": 652679,
+   "sha256": "347017b4d58b5cc3e595189c39d7ca2ee11bc85e48bd00850c306e0a5ee3c389",
+   "status": "ok"
+  },
+  "data/stocks/INTC.parquet": {
+   "bytes": 452922,
+   "sha256": "1190dd38873f186b81865c7c4e720badaafa6adfba91deb52470ce351115054e",
+   "status": "ok"
+  },
+  "data/stocks/KLAC.parquet": {
+   "bytes": 410423,
+   "sha256": "2aabf9f80a31d5b0fd0574095f9f471ae61d15cba08fa7d16be241c9c99db367",
+   "status": "ok"
+  },
+  "data/stocks/LRCX.parquet": {
+   "bytes": 386413,
+   "sha256": "7dd0f92d62817ac6f3bce0a87561d4f0a0496ce4717b3edcdb41c10407aa1b78",
+   "status": "ok"
+  },
+  "data/stocks/MSFT.parquet": {
+   "bytes": 416645,
+   "sha256": "ff6188c1d047e4f0ad810855b3568d1c93c2814719c1d5b1b3e1320ad2753241",
+   "status": "ok"
+  },
+  "data/stocks/MU.parquet": {
+   "bytes": 399888,
+   "sha256": "05d2c36a8f7e2da5b964282e40455685e43df7bb6e213b96f7205ec85a264847",
+   "status": "ok"
+  },
+  "data/stocks/NVDA.parquet": {
+   "bytes": 290047,
+   "sha256": "ee7767aa451df36eca05e47cba03928172e580ec2326be67e815a6289bf88ed1",
+   "status": "ok"
+  },
+  "data/stocks/ORCL.parquet": {
+   "bytes": 399972,
+   "sha256": "64baf76c9a50d6bdf28493928e64f8f75d8be82b299ac58dc00926a21871d472",
+   "status": "ok"
+  },
+  "data/stocks/PANW.parquet": {
+   "bytes": 129288,
+   "sha256": "ec30a278ab25b28873b95485a8a6d7ba1cb69376344978a9965afec77b50574b",
+   "status": "ok"
+  },
+  "data/stocks/PLTR.parquet": {
+   "bytes": 56335,
+   "sha256": "03f7dd8c3b45715cb52e63da8cb4855852b2ff4fe385661eee09f11cfc6f2454",
+   "status": "ok"
+  },
+  "data/stocks/QCOM.parquet": {
+   "bytes": 357305,
+   "sha256": "414cd9625957feacfa9f57d2c775b317a9414e76c2f7729e965deb8d97f97a79",
+   "status": "ok"
+  },
+  "data/stocks/TXN.parquet": {
+   "bytes": 535493,
+   "sha256": "33b5e26ade9f63ab49feda4957d6c6148be80605ecadd30360b0cf3b6b6d7588",
+   "status": "ok"
+  },
+  "data/yahoo/SPY.parquet": {
+   "bytes": 244978,
+   "sha256": "bfb908a59386cc032261999fedcb7354c3a36c4e8d6c3f49a8cfd26dd723592f",
+   "status": "ok"
+  },
+  "data/yahoo/XLK.parquet": {
+   "bytes": 190334,
+   "sha256": "cf4824d0ef15795e4ba8530e912f3054aa46f532f87a451e9e3d35bf48f24aaf",
+   "status": "ok"
+  }
+ },
+ "rt": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/sic-render-9917-0e26565ae38dc0d6",
+ "schema": "sector_cycles.l6_fixtures.v1",
+ "variants": {
+  "pulse_gt5d": {
+   "as_of": "2026-10-26T19:38:46.535556+00:00",
+   "fixture": "fixtures/basket_pulse__pulse_gt5d.json",
+   "serves": [
+    "live/basket_pulse.json"
+   ],
+   "sha256": "66c75bb745090ab79a87f420599fe1b90411b0dc53837dc07236cf9ad62de8d7"
+  },
+  "pulse_le5d": {
+   "as_of": "2026-11-02T19:38:46.535556+00:00",
+   "fixture": "fixtures/basket_pulse__pulse_le5d.json",
+   "serves": [
+    "live/basket_pulse.json"
+   ],
+   "sha256": "573f51701b824557e11bad2bf7df756b5f8d2cda5a79a627fc3615421145f936"
+  },
+  "unstamped": {
+   "entity": "xlk",
+   "removed": [
+    "doctrine_ink",
+    "doctrine_stance",
+    "doctrine_stance_en",
+    "doctrine_stance_zh"
+   ],
+   "serves": [
+    "sector_cycles_data.js"
+   ]
+  },
+  "xlk_unresolved": {
+   "added_member": {
+    "name": "Fixture member (no price history)",
+    "reason": "no_price_history",
+    "resolved": false,
+    "ticker": "FIXTURE",
+    "weight": null
+   },
+   "serves": [
+    "sectors/XLK.html"
+   ]
+  }
+ },
+ "written": {
+  "_variants/pulse_gt5d/live/basket_pulse.json": {
+   "sha256": "66c75bb745090ab79a87f420599fe1b90411b0dc53837dc07236cf9ad62de8d7",
+   "source": "HEAD:site/live/basket_pulse.json",
+   "transform": "as_of_utc=as_of_quotes=2026-10-26T19:38:46.535556+00:00"
+  },
+  "_variants/pulse_le5d/live/basket_pulse.json": {
+   "sha256": "573f51701b824557e11bad2bf7df756b5f8d2cda5a79a627fc3615421145f936",
+   "source": "HEAD:site/live/basket_pulse.json",
+   "transform": "as_of_utc=as_of_quotes=2026-11-02T19:38:46.535556+00:00"
+  },
+  "_variants/unstamped/sector_cycles_data.js": {
+   "sha256": "228aa41f44d7bb95b0557e583d0590524a1c30e6672e3744574a7447c1377f04",
+   "source": "sector_cycles_data.js",
+   "transform": "sectors[xlk].now: removed ['doctrine_ink', 'doctrine_stance', 'doctrine_stance_en', 'doctrine_stance_zh']"
+  },
+  "_variants/xlk_unresolved/sectors/XLK.html": {
+   "sha256": "682611e3b7780d3d73d2f173ee9d991873d1c136f517e64690112030d8f87364",
+   "source": "render",
+   "transform": "members + one FIXTURE unresolved"
+  },
+  "basketdata/action_board.json": {
+   "sha256": "6b942bbd9024807ac85edeacb51f249f1b94c78dc9ae8f57edb20508514ffe1d",
+   "source": "HEAD:site/basketdata/action_board.json",
+   "transform": "copy"
+  },
+  "basketdata/baskets.json": {
+   "sha256": "9cbbb014283a90fc9c3e305d4d93ccccf2b92ea856b7e6729db760820e6b9961",
+   "source": "HEAD:site/basketdata/baskets.json",
+   "transform": "copy"
+  },
+  "basketdata/foresight_cascade.json": {
+   "sha256": "550e843921b04477e073a4e868a411fb095dabf2af78cc3c8de8ae76f1c12db8",
+   "source": "HEAD:site/basketdata/foresight_cascade.json",
+   "transform": "copy"
+  },
+  "basketdata/si_handoff.json": {
+   "sha256": "d0fcd77acf97dcf3bf23c479ad1c77051d41e070372ced404adadeee1cd4cae6",
+   "source": "HEAD:site/basketdata/si_handoff.json",
+   "transform": "copy"
+  },
+  "chinasectordata/sector_cycles.json": {
+   "sha256": "3de3b1eb9c4f347bf2857ada44dc2fd968e490e92a7f1a5c27f99233b35c0ec0",
+   "source": "HEAD:site/chinasectordata/sector_cycles.json",
+   "transform": "label=FIXTURE on every entity"
+  },
+  "chinasectordata/sector_cycles_basket_map.json": {
+   "sha256": "923ddeef0208ef6d0d1d6c9d026cadaa42e177533bf0553978e1abbbc70b7125",
+   "source": "HEAD:site/chinasectordata/sector_cycles_basket_map.json",
+   "transform": "copy (labelled map is JSON-equal to HEAD)"
+  },
+  "cycle.css": {
+   "sha256": "231bf145f094e64b082aad1a4f55ea36dc2d0cfc54493763d7dfdec65e8b6d5c",
+   "source": "HEAD:site/cycle.css",
+   "transform": "copy"
+  },
+  "dashboard-icons.css": {
+   "sha256": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9",
+   "source": "HEAD:templates/dashboard-icons.css",
+   "transform": "copy"
+  },
+  "dashboard-icons.js": {
+   "sha256": "ee1d516321594b8459adef23e0cd75427563ce72305543aaa2fcc9a7105e2b03",
+   "source": "HEAD:templates/dashboard-icons.js",
+   "transform": "copy"
+  },
+  "data_base.js": {
+   "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+   "source": "HEAD:site/data_base.js",
+   "transform": "copy"
+  },
+  "desk_watch.js": {
+   "sha256": "503d0e535ba9fa61af6bc721e526189b163ad2582789f0678edc2fdd5ba588db",
+   "source": "HEAD:templates/desk_watch.js",
+   "transform": "copy"
+  },
+  "factordata/us_standouts.json": {
+   "sha256": "c5c5dd085d5c4d4c336f4274dee5a3bad85d6a196989a9f13a4df031bf1999c6",
+   "source": "HEAD:site/factordata/us_standouts.json",
+   "transform": "copy"
+  },
+  "forming_narratives.js": {
+   "sha256": "df6bf5cc7929fc59597eb2e0d76d0bc581b79dd2335db92f34cd596b26b58687",
+   "source": "HEAD:templates/forming_narratives.js",
+   "transform": "copy"
+  },
+  "heatmap.js": {
+   "sha256": "0b0c7ac0ab9535d0dc8353734387608d3700c3e0c195ca2241eddb0d1fdda6b5",
+   "source": "HEAD:site/heatmap.js",
+   "transform": "copy"
+  },
+  "live/basket_pulse.json": {
+   "sha256": "9ffbe879ca70f5b5de304a0dc36978cb17b55291b4642b9782ff2c22d044a314",
+   "source": "HEAD:site/live/basket_pulse.json",
+   "transform": "copy"
+  },
+  "live/shock_state.json": {
+   "sha256": "cfa5cc5598801f912af003fdb86cb26b4972f1481bad09b9c8fbf93a2971b2e9",
+   "source": "HEAD:site/live/shock_state.json",
+   "transform": "copy"
+  },
+  "marketdata/rotation_events.json": {
+   "sha256": "a51fb4988759ed83b660807d51f90b9db55cf86adcd07e62a116f3c68a4f64b1",
+   "source": "HEAD:site/marketdata/rotation_events.json",
+   "transform": "copy"
+  },
+  "marketdata/sector_fragmentation.json": {
+   "sha256": "8be8efa313a5fde3666d9d9ae7d5ca7fb8aeb4ab59e873fc0871050cc1f6fafa",
+   "source": "HEAD:site/marketdata/sector_fragmentation.json",
+   "transform": "copy"
+  },
+  "marketdata/subsector_rotation.json": {
+   "sha256": "de612031f18cc45007f706308542b40bce03df471defb68384bfb2091710c76a",
+   "source": "HEAD:site/marketdata/subsector_rotation.json",
+   "transform": "copy"
+  },
+  "mm_charts.js": {
+   "sha256": "244eb76905e552fb17cb24f69600fcbd4fd15f6c28d70f98a96774007630d031",
+   "source": "HEAD:site/mm_charts.js",
+   "transform": "copy"
+  },
+  "mtf.js": {
+   "sha256": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0",
+   "source": "HEAD:site/mtf.js",
+   "transform": "copy"
+  },
+  "product-nav-icons.css": {
+   "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+   "source": "HEAD:templates/product-nav-icons.css",
+   "transform": "copy"
+  },
+  "rotation_events.js": {
+   "sha256": "b1ddf67b07865465e72d2822fa6f5cc9efe0636e2cae58c9fa8f8b2bed372296",
+   "source": "HEAD:templates/rotation_events.js",
+   "transform": "copy"
+  },
+  "rotation_glance.css": {
+   "sha256": "ed17c4ba8a85a1a356a0129ad3fc50b160abd44f3305af5dcaad2317813e81ec",
+   "source": "HEAD:templates/rotation_glance.css",
+   "transform": "copy"
+  },
+  "sector_central.html": {
+   "sha256": "4f201986b13affceb7aa7d3ee0c556d8c83576d38b2db4d446b52989e1fd3851",
+   "source": "render",
+   "transform": "jinja+inject_text+inject_shared_shell_text"
+  },
+  "sector_central_data.js": {
+   "sha256": "477419e7f8e05ed67c81118faeba833f4999702ac2952b9b4cc85efa71d3fbdb",
+   "source": "HEAD:site/sectordata/sector_central.json",
+   "transform": "re-serialised (self-checked)"
+  },
+  "sector_cycles.css": {
+   "sha256": "a92eca15e3b9b3152f09a0d696942d53eb4349b0628d03a1f2c189436adba700",
+   "source": "HEAD:templates/sector_cycles.css",
+   "transform": "copy"
+  },
+  "sector_cycles.html": {
+   "sha256": "acf5d1682269b3d85a824deb8734065deab046ea895736e8f99a510181f75886",
+   "source": "render",
+   "transform": "jinja+inject_text+inject_shared_shell_text"
+  },
+  "sector_cycles.js": {
+   "sha256": "900a957193179020b5225abb9447c25185e1c3f5e5e968ff7645c5249c8fd910",
+   "source": "HEAD:templates/sector_cycles.js",
+   "transform": "copy"
+  },
+  "sector_cycles_china.html": {
+   "sha256": "615c7a9d910870797b919b1c3052533b530ecc9ea9c5b4b5b26d865ced2267f6",
+   "source": "render",
+   "transform": "jinja+inject_text+inject_shared_shell_text"
+  },
+  "sector_cycles_china_data.js": {
+   "sha256": "5fce9f6052dfb93b46d35ce152c6c289099c149e3a28873ad0a2b8198e1ed43b",
+   "source": "HEAD:site/chinasectordata/sector_cycles.json",
+   "transform": "label=FIXTURE; split_cycles_payload"
+  },
+  "sector_cycles_china_dna_data.js": {
+   "sha256": "ea6c6a47867de183d5ec9946570f3511ebf6ac0bd2393441ff17c27f45a20374",
+   "source": "HEAD:site/sector_cycles_china_dna_data.js",
+   "transform": "copy"
+  },
+  "sector_cycles_china_narr_data.js": {
+   "sha256": "b5a396410be11be0096b9f7a66397ce3676ee700d08c97efdbdb90efa2e18997",
+   "source": "HEAD:site/sector_cycles_china_narr_data.js",
+   "transform": "copy"
+  },
+  "sector_cycles_china_series_data.js": {
+   "sha256": "a69d103c585fb318a3c04fdb8b285622b4330bce9abaef9d44b12622988d5543",
+   "source": "HEAD:site/chinasectordata/sector_cycles.json",
+   "transform": "label=FIXTURE; split_cycles_payload (series half)"
+  },
+  "sector_cycles_compare.js": {
+   "sha256": "e59904cce282e3fe8c6a68c165f00712933438cc08c86395875e29f7b8b34dd0",
+   "source": "HEAD:templates/sector_cycles_compare.js",
+   "transform": "copy"
+  },
+  "sector_cycles_data.js": {
+   "sha256": "adbccb1ae4a869589454ee508e0b0612f26a23d1ad2b48cd1646c7f9cf0f1cbf",
+   "source": "HEAD:site/sectordata/sector_cycles.json",
+   "transform": "label=FIXTURE on every entity; split_cycles_payload; HEAD core extras appended turn_record"
+  },
+  "sector_cycles_dna_data.js": {
+   "sha256": "46b0879d8cff5928f69e739ff13becf2276c08510866d8aed1645848dcf59137",
+   "source": "HEAD:site/sector_cycles_dna_data.js",
+   "transform": "copy"
+  },
+  "sector_cycles_face.js": {
+   "sha256": "ad709b5371da72a61ce0ca0801dda36bf5a2e3f912a0d4834e26dd5f0d32b089",
+   "source": "HEAD:templates/sector_cycles_face.js",
+   "transform": "copy"
+  },
+  "sector_cycles_narr_data.js": {
+   "sha256": "d5fd29540fefacd458e80d1ad066c67c195bb2c1e4658b88deeba8089771d1e5",
+   "source": "HEAD:site/sector_cycles_narr_data.js",
+   "transform": "copy"
+  },
+  "sector_cycles_platform.css": {
+   "sha256": "a99d22e57e234ce0b79156fa8861e32334609774aaf450a4b699ebd622e2e146",
+   "source": "HEAD:templates/sector_cycles_platform.css",
+   "transform": "copy"
+  },
+  "sector_cycles_platform.js": {
+   "sha256": "a07e712d951d2ac7ef10b777d0fa37df929d50461697c4c9824bbbe6bc3830ff",
+   "source": "HEAD:templates/sector_cycles_platform.js",
+   "transform": "copy"
+  },
+  "sector_cycles_series_data.js": {
+   "sha256": "416f03619fe535457b656047cee0e0b8c054ffb1afd39ecd5a1520a986a3b8e7",
+   "source": "HEAD:site/sectordata/sector_cycles.json",
+   "transform": "label=FIXTURE; split_cycles_payload (series half)"
+  },
+  "sector_cycles_states.css": {
+   "sha256": "3de1b407b48ed76dfe801b6f4977a5db20c7f5436fe30b89c9154c0bc9d0145f",
+   "source": "HEAD:templates/sector_cycles_states.css",
+   "transform": "copy"
+  },
+  "sector_cycles_states.js": {
+   "sha256": "766e070829aaf3c3a76de0c88aa8cbaee4eea2020a12f2d450b6c0d35d803b42",
+   "source": "HEAD:templates/sector_cycles_states.js",
+   "transform": "copy"
+  },
+  "sector_dossier.js": {
+   "sha256": "f2740d7155375e48f386bdab2235c33cfd843cc6fb1c7e49b22162ebd5aba497",
+   "source": "HEAD:templates/sector_dossier.js",
+   "transform": "copy"
+  },
+  "sectordata/sector_central.json": {
+   "sha256": "9c8244c518365acc533854e27fbef67a697fba506f1e98a372458b00e8a93047",
+   "source": "HEAD:site/sectordata/sector_central.json",
+   "transform": "re-serialised (self-checked)"
+  },
+  "sectordata/sector_cycles.json": {
+   "sha256": "774d6d382f49a6ae0a134d822b18b5b799c64da7512cb020ad1a573df580a7bf",
+   "source": "HEAD:site/sectordata/sector_cycles.json",
+   "transform": "label=FIXTURE on every entity"
+  },
+  "sectors/XLK.html": {
+   "sha256": "ba952e66e894a49b3fec027fd66f35d0f557dfdc9d421bbe73c6688c07a9028b",
+   "source": "render",
+   "transform": "jinja+inject_text+inject_shared_shell_text"
+  },
+  "shared_shell.css": {
+   "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+   "source": "HEAD:templates/shared_shell.css",
+   "transform": "copy"
+  },
+  "shared_shell_bridge.js": {
+   "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+   "source": "HEAD:templates/shared_shell_bridge.js",
+   "transform": "copy"
+  },
+  "si_workspace.js": {
+   "sha256": "ea8bcc830195a0a2231d6219f428a7d22b4f1dbbc65b7add16752593b2e39f44",
+   "source": "HEAD:templates/si_workspace.js",
+   "transform": "copy"
+  },
+  "subsector_rotation.js": {
+   "sha256": "454792b8248ce2daedaf0788939082c45aae396268803dcbc5c087b36312fd00",
+   "source": "HEAD:templates/subsector_rotation.js",
+   "transform": "copy"
+  },
+  "theme.css": {
+   "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+   "source": "HEAD:site/theme.css",
+   "transform": "copy"
+  },
+  "theme.js": {
+   "sha256": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+   "source": "HEAD:site/theme.js",
+   "transform": "copy"
+  },
+  "time_machine.js": {
+   "sha256": "0c71b0e3e2a005fed78aed1d175849f8f1b16685ade285e308d517b3fffde804",
+   "source": "HEAD:templates/time_machine.js",
+   "transform": "copy"
+  }
+ }
+}
