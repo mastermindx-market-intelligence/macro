@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-11-05T04:38:09.261925+00:00",
+  "published_head": "39f792bb3d0902fe46127b455c35f8f98d307080",
+  "preserved_workspace": "/home/ubuntu0/lanes/wt/d03-9495-main-integration-c2-20261104",
+  "preserved_dirty_sha256": {
+    "site/prophet_save.js": "08f379959282896c0a10ca75670a4960e92dd6bead29bb9350394baec7173a72",
+    "templates/prophet_save.js": "08f379959282896c0a10ca75670a4960e92dd6bead29bb9350394baec7173a72",
+    "tests/test_prophet_save_composition.py": "4f5e9d3c5a6e45528b566dc953f74821435bfa23f62d1b525c067c30a9b787b7"
+  },
+  "registration_manifest_unchanged": true,
+  "original_hosted_step_receipt_exists": false,
+  "new_workspace": "/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105",
+  "next_operation": "isolated CI registration only",
+  "isolated_checkout_verified": true
+}

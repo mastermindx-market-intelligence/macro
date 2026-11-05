@@ -1,0 +1,14 @@
+{"scope_summary": "derived scopes for 139/314 jobs; 173 declared exclusive"}
+{"changed_path": "tests/test_build_site_frozen_us_source.py", "required_owner": "unrun-grading-board", "owner_selected": true, "selected_count": 3, "reason": "scoped to 1 changed file(s): 3/314 jobs (2 unscoped always-on, 1 scoped matches)"}
+{"changed_path": "tests/test_render_macro_fast_source_guard.py", "required_owner": "unrun-grading-board", "owner_selected": true, "selected_count": 3, "reason": "scoped to 1 changed file(s): 3/314 jobs (2 unscoped always-on, 1 scoped matches)"}
+{"changed_path": "scripts/build_site.py", "required_owner": "unrun-grading-board", "owner_selected": true, "selected_count": 89, "reason": "scoped to 1 changed file(s): 89/314 jobs (2 unscoped always-on, 87 scoped matches)"}
+{"changed_path": "scripts/render_macro_fast.py", "required_owner": "unrun-grading-board", "owner_selected": true, "selected_count": 80, "reason": "scoped to 1 changed file(s): 80/314 jobs (2 unscoped always-on, 78 scoped matches)"}
+{"changed_path": "tests/test_prophet_public_featured_access_card.py", "required_owner": "prophet-lab", "owner_selected": true, "selected_count": 3, "reason": "scoped to 1 changed file(s): 3/314 jobs (2 unscoped always-on, 1 scoped matches)"}
+{"changed_path": "templates/dashboard.html.j2", "required_owner": "prophet-lab", "owner_selected": true, "selected_count": 90, "reason": "scoped to 1 changed file(s): 90/314 jobs (2 unscoped always-on, 88 scoped matches)"}
+{"changed_path": "templates/theme.css", "required_owner": "prophet-lab", "owner_selected": true, "selected_count": 104, "reason": "scoped to 1 changed file(s): 104/314 jobs (2 unscoped always-on, 102 scoped matches)"}
+{"changed_path": "tests/test_prophet_same_date_publication.py", "required_owner": "washout-turn-organ", "owner_selected": true, "selected_count": 3, "reason": "scoped to 1 changed file(s): 3/314 jobs (2 unscoped always-on, 1 scoped matches)"}
+{"changed_path": "scripts/build_prophet.py", "required_owner": "washout-turn-organ", "owner_selected": true, "selected_count": 80, "reason": "scoped to 1 changed file(s): 80/314 jobs (2 unscoped always-on, 78 scoped matches)"}
+{"canonical_exclusive_closure_findings": {"washout-turn-organ": ["site/prophet/index.json"]}, "qualified_changed_exclusive_owner": "washout-turn-organ", "changed_owner_passed": false}
+Traceback (most recent call last):
+  File "<string>", line 25, in <module>
+AssertionError: ('site/prophet/index.json',)

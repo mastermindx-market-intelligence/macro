@@ -1,0 +1,80 @@
+{
+  "schema": "prophet.ci_registration_validation.v1",
+  "parent_head": "39f792bb3d0902fe46127b455c35f8f98d307080",
+  "workspace": "/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105",
+  "owner_job": "unrun-grading-board",
+  "owner_step": "Today source binding and private hydration (hermetic)",
+  "started_at": "2026-11-05T04:39:42.508678+00:00",
+  "manifest_sha256": "468018ce18bda25f8b7847a75b8d53b317f824d7e5b615574e71355f6dae5626",
+  "checks": [
+    {
+      "name": "hosted-step",
+      "argv": [
+        "/home/ubuntu0/lanes/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_build_site_frozen_us_source.py",
+        "tests/test_us_today_source_binding.py",
+        "tests/test_us_board_gate.py",
+        "tests/test_us_board_hydration_merge.py",
+        "-q",
+        "-k",
+        "not test_shipped"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 95.205,
+      "log": "/tmp/prophet-ci-registration-39f792-hosted-step.log"
+    },
+    {
+      "name": "unrun-census",
+      "argv": [
+        "/home/ubuntu0/lanes/venv/bin/python",
+        "scripts/audit_unrun_tests.py"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 14.829,
+      "log": "/tmp/prophet-ci-registration-39f792-unrun-census.log"
+    },
+    {
+      "name": "trigger-closure",
+      "argv": [
+        "/home/ubuntu0/lanes/venv/bin/python",
+        "scripts/check_ci_trigger_closure.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 32.778,
+      "log": "/tmp/prophet-ci-registration-39f792-trigger-closure.log"
+    },
+    {
+      "name": "manifest",
+      "argv": [
+        "/home/ubuntu0/lanes/venv/bin/python",
+        "scripts/run_ci_pack.py",
+        "--workflow",
+        ".github/ci/legacy-jobs.yml",
+        "--gate",
+        "code",
+        "--pack-count",
+        "12",
+        "--validate-only"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.245,
+      "log": "/tmp/prophet-ci-registration-39f792-manifest.log"
+    },
+    {
+      "name": "routing",
+      "argv": [
+        "/home/ubuntu0/lanes/venv/bin/python",
+        "-c",
+        "from pathlib import Path\nfrom scripts.run_ci_pack import infer_job_scopes, load_legacy_jobs, select_jobs\nimport json\njobs, summary = infer_job_scopes(load_legacy_jobs(Path(\".github/ci/legacy-jobs.yml\"), gate=\"code\"))\nprint(json.dumps({\"scope_summary\":summary},default=str))\nfor changed_path in (\"tests/test_build_site_frozen_us_source.py\",\"scripts/build_site.py\"):\n    selected, reason = select_jobs(jobs,[changed_path])\n    ids={job.job_id for job in selected}\n    assert \"unrun-grading-board\" in ids,(changed_path,reason)\n    print(json.dumps({\"changed_path\":changed_path,\"required_owner\":\"unrun-grading-board\",\"owner_selected\":True,\"selected_count\":len(ids),\"reason\":reason},default=str))\n"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 47.448,
+      "log": "/tmp/prophet-ci-registration-39f792-routing.log"
+    }
+  ],
+  "completed_at": "2026-11-05T04:42:54.019641+00:00",
+  "all_passed": false,
+  "final_status": " M .github/ci/legacy-jobs.yml\n"
+}
