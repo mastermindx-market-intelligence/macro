@@ -3000,12 +3000,15 @@ def test_daily_options_pit_checkpoint_is_immediate_success_only_metadata_replay(
     )
     broad_block = workflow[broad_start:broad_end]
     assert "git add data/ site/ reports/" in broad_block
-    assert "bash scripts/ci/options_signal_nightly.sh exclude-broad" in broad_block
+    pinned_exclusion = 'bash "$publisher_source_root/scripts/ci/options_signal_nightly.sh" exclude-broad'
+    assert pinned_exclusion in broad_block
+    assert 'NATIVE_PUBLICATION_CODE_ROOT="${native_code_root:-}"' in broad_block
+    assert 'native_publication_prepare_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"' in broad_block
     broad_add = broad_block.index("git add data/ site/ reports/")
     exclusions = [
         match.start()
         for match in re.finditer(
-            "bash scripts/ci/options_signal_nightly.sh exclude-broad", broad_block
+            re.escape(pinned_exclusion), broad_block
         )
     ]
     assert len(exclusions) == 2
@@ -3016,7 +3019,7 @@ def test_daily_options_pit_checkpoint_is_immediate_success_only_metadata_replay(
     assert 'git commit -m "engine: regime update' not in broad_block
     assert 'git commit -m "render-sync: post-rebase guards' not in broad_block
     assert broad_block.index("data/prophet/origination_receipts") < (
-        broad_block.rindex("bash scripts/ci/options_signal_nightly.sh exclude-broad")
+        broad_block.rindex(pinned_exclusion)
     )
     cleanup_helper = helper.split("exclude_broad() {", 1)[1].split(
         "\nassert_integrity() {", 1

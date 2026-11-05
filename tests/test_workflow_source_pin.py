@@ -69,3 +69,23 @@ def test_original_shell_refuses_symlink_git_object_before_execution(tmp_path):
             'RUNNER_TEMP':str(runner),'GITHUB_RUN_ID':'123','GITHUB_RUN_ATTEMPT':'1','GITHUB_JOB':'engine'},
         capture_output=True,text=True)
     assert result.returncode==76 and not list(runner.iterdir())
+
+
+def test_shallow_newer_data_checkout_materializes_only_original_source_before_execution(tmp_path):
+    donor=tmp_path/'donor';donor.mkdir();git(donor,'init','-q','-b','main')
+    git(donor,'config','user.name','fixture');git(donor,'config','user.email','fixture@example.invalid')
+    path='scripts/ci/original.sh';script=donor/path;script.parent.mkdir(parents=True)
+    script.write_text('# EXTRACTED-VERBATIM-FROM: .github/workflows/daily.yml\necho ORIGINAL_SOURCE\n')
+    git(donor,'add','.');git(donor,'commit','-qm','original');original=git(donor,'rev-parse','HEAD')
+    script.write_text('echo MUTABLE_DATA_CHECKOUT\n');git(donor,'add','.');git(donor,'commit','-qm','new main')
+    checkout=tmp_path/'checkout';git(tmp_path,'clone','--depth=1',donor.as_uri(),str(checkout))
+    before=subprocess.run(['git','-C',str(checkout),'cat-file','-e',original+'^{commit}'],capture_output=True)
+    assert before.returncode!=0
+    runner=tmp_path/'runner';runner.mkdir()
+    result=subprocess.run(['bash','-eo','pipefail','-c',pinned_workflow_shell(path,'stage')],
+        cwd=checkout,env={**os.environ,'GITHUB_WORKFLOW_SHA':original,'GITHUB_SHA':original,
+            'RUNNER_TEMP':str(runner),'GITHUB_RUN_ID':'123','GITHUB_RUN_ATTEMPT':'1','GITHUB_JOB':'engine'},
+        capture_output=True,text=True)
+    assert result.returncode==0 and result.stdout=='ORIGINAL_SOURCE\n',result.stderr
+    assert git(checkout,'rev-parse','HEAD')==git(donor,'rev-parse','HEAD')
+    assert (checkout/path).read_text()=='echo MUTABLE_DATA_CHECKOUT\n'

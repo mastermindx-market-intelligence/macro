@@ -189,7 +189,9 @@ def test_successful_prophet_build_is_checkpointed_immediately_before_the_tail() 
 
     assert acceptance_i == build_i + 1
     assert checkpoint_i == acceptance_i + 1
-    assert r2_i == checkpoint_i + 1
+    assert steps[checkpoint_i+1]['id'] == 'native_publication_prophet_stage_origin'
+    assert steps[checkpoint_i+2]['id'] == 'prophet_checkpoint'
+    assert r2_i == checkpoint_i + 3
     assert tombstone_i == r2_i + 1
     assert source_i == tombstone_i + 1
     assert source_i < names.index(STAGE_SHADOW_STEP)
@@ -262,7 +264,10 @@ def test_r2_is_armed_only_after_a_successfully_pushed_checkpoint() -> None:
     )
     arm_i = run.index('echo "r2_ready=true" >> "$GITHUB_OUTPUT"')
 
-    assert checkpoint["id"] == "prophet_checkpoint"
+    assert checkpoint["id"] == "native_publication_prophet_stage"
+    final = _step('Confirm original prophet checkpoint protected publication')
+    assert final['id'] == 'prophet_checkpoint'
+    assert 'native_publication_prophet_stage_origin.outcome' in final['if']
     assert push_i < remote_proof_i < hash_proof_i < arm_i
     assert run.count('echo "r2_ready=true" >> "$GITHUB_OUTPUT"') == 1
     assert 'git diff --quiet "$CHECKPOINT_SHA" origin/main --' in run

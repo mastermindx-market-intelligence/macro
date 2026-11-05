@@ -118,6 +118,11 @@ umask 077
 [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{{40}}$ ]]
 [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
 case "${{RUNNER_TEMP:-}}" in /*) : ;; *) exit 76 ;; esac
+# A main DATA checkout may be newer than this original workflow invocation.
+# Obtain ONLY its exact immutable source object on the existing origin/carrier.
+if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{{commit}}"; then
+  perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+fi
 case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- {path})" in
   100644*|100755*) : ;; *) exit 76 ;;
 esac

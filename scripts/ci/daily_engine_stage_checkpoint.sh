@@ -2,7 +2,20 @@
 # EXTRACTED-VERBATIM-FROM: .github/workflows/daily.yml
 # Existing Prophet Stage-shadow durability checkpoint; body preserved.
 set -euo pipefail
-. "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+if [ "${GITHUB_REPOSITORY:-}" = mastermindx-market-intelligence/macro ]; then
+  umask 077
+  native_code_root="${RUNNER_TEMP%/}/native-publication-code-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
+  native_bootstrap="${RUNNER_TEMP%/}/native-publication-bootstrap-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-${NATIVE_PUBLICATION_PUBLISHING_STEP}.sh"
+  case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_publication_source.sh)" in
+    100644*) : ;; *) exit 76 ;;
+  esac
+  (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/native_publication_source.sh" > "$native_bootstrap")
+  . "$native_bootstrap"
+  native_publication_prepare_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"
+  . "$native_code_root/scripts/ci/push_retry.sh"
+else
+  . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+fi
 git config user.name "dashboard-bot"
 git config user.email "actions@users.noreply.github.com"
 
@@ -41,6 +54,7 @@ STAGE_CHECKPOINT_ROOT="$(mktemp -d "${RUNNER_TEMP}/prophet-stage-checkpoint.XXXX
 STAGE_CHECKPOINT_DIR="${STAGE_CHECKPOINT_ROOT}/tree"
 STAGE_CHECKPOINT_BRANCH="_prophet_stage_checkpoint_${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT:-1}"
 cleanup_stage_checkpoint() {
+  [ "${native_checkpoint_pending:-0}" != 1 ] || return 0
   cd "$GITHUB_WORKSPACE"
   git worktree remove --force "$STAGE_CHECKPOINT_DIR" 2>/dev/null || true
   git branch -D "$STAGE_CHECKPOINT_BRANCH" 2>/dev/null || true
@@ -101,6 +115,19 @@ PUSH_MAX_ATTEMPTS=12
 PUSH_MAIN_BRANCHES="$STAGE_CHECKPOINT_BRANCH"
 push_retry_init "Prophet Stage-shadow durable checkpoint"
 push_on_main_ok || exit 0
+native_initial_rc=0
+push_native_do origin HEAD:main || native_initial_rc=$?
+case "$native_initial_rc" in
+  77)
+    # Explicit staging success; only final same-intent readback is publication.
+    native_checkpoint_pending=1
+    printf 'checkpoint_root=%s\ncheckpoint_dir=%s\ncheckpoint_branch=%s\n' \
+      "$STAGE_CHECKPOINT_ROOT" "$STAGE_CHECKPOINT_DIR" "$STAGE_CHECKPOINT_BRANCH" >> "$GITHUB_OUTPUT"
+
+    exit 0 ;;
+  80) export NATIVE_PUBLICATION_EXPECT_OFF=1 ;;
+  *) exit "$native_initial_rc" ;;
+esac
 while push_attempt; do
   if ! push_fetch_main_for_rebase; then
     push_abort_rebase

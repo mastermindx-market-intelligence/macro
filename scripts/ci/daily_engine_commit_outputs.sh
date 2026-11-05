@@ -7,7 +7,21 @@
 # Invoked as: bash scripts/ci/daily_engine_commit_outputs.sh
 set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declares no shell:
 
-. "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+if [ "${GITHUB_REPOSITORY:-}" = mastermindx-market-intelligence/macro ]; then
+  umask 077
+  native_code_root="${RUNNER_TEMP%/}/native-publication-code-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
+  native_bootstrap="${RUNNER_TEMP%/}/native-publication-bootstrap-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-${NATIVE_PUBLICATION_PUBLISHING_STEP}.sh"
+  case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_publication_source.sh)" in
+    100644*) : ;; *) exit 76 ;;
+  esac
+  (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/native_publication_source.sh" > "$native_bootstrap")
+  . "$native_bootstrap"
+  native_publication_prepare_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"
+  . "$native_code_root/scripts/ci/push_retry.sh"
+else
+  . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+fi
+publisher_source_root="${native_code_root:-${GITHUB_WORKSPACE:-.}}"
 git config user.name "dashboard-bot"
 git config user.email "actions@users.noreply.github.com"
 # normalize the EXACT tree this always() commit stages (P0 2026-08-04,
@@ -31,12 +45,12 @@ python -m scripts.optimize_assets || echo "::warning::asset optimize FAILED — 
 # red on every PR until #3358). Heal BEFORE staging so the first commit is never
 # diverged; the post-rebase --fix stays for the -X theirs mid-render-merge case.
 python -m scripts.check_template_site_sync --fix || true
-python3 scripts/check_conflict_markers.py --file site/start.html
+PYTHONPATH="$publisher_source_root" python3 -P -m scripts.check_conflict_markers --file site/start.html
 # start runtimes single-instance (ui.start_runtime_single_instance): a stale-
 # checkout render re-emits doubled live tags with ZERO markers (adad513bdfe),
 # so the marker gate above can't see it — heal from HEAD (the last committed
 # page, at most one render old) rather than forfeit the whole render.
-python3 scripts/check_start_runtime.py --heal-from HEAD
+PYTHONPATH="$publisher_source_root" python3 -P -m scripts.check_start_runtime --file site/start.html --heal-from HEAD
 # templates/ too, and ONLY for the plain-copy HTML pairs (index.html, chat.html):
 # optimize_assets re-stamps their templates/ side because the --fix above rewrites
 # their site copy FROM templates/ — a stamp staged site-only is reverted before it
@@ -46,9 +60,9 @@ python3 scripts/check_start_runtime.py --heal-from HEAD
 # refuse stash/rebase wreckage (2026-08-01 d29e4dd44d: a conflicted
 # autostash apply from an earlier push loop in THIS job was staged
 # wholesale — 1,704 pages shipped markers)
-bash "${GITHUB_WORKSPACE:-.}/scripts/ci/strip_conflict_markers.sh"
-bash scripts/ci/options_signal_nightly.sh exclude-broad
-bash scripts/ci/options_signal_nightly.sh require-clean-broad-start
+bash "$publisher_source_root/scripts/ci/strip_conflict_markers.sh"
+NATIVE_PUBLICATION_CODE_ROOT="${native_code_root:-}" bash "$publisher_source_root/scripts/ci/options_signal_nightly.sh" exclude-broad
+NATIVE_PUBLICATION_CODE_ROOT="${native_code_root:-}" bash "$publisher_source_root/scripts/ci/options_signal_nightly.sh" require-clean-broad-start
 # China gold premium final render audit: the builder-band check proves the raw
 # source→VM→page seam; this second pass proves the EXACT post-normalization tree
 # that the broad stage below will commit. It rewrites the same existing
@@ -60,6 +74,13 @@ cgp_audit_rc=$?
 set -e
 if [ "$cgp_audit_rc" -ne 0 ]; then
   echo "::error title=China gold premium final render audit::normalized Gold panel disagrees with current source/engine truth; see data/quality/china_gold_premium.json"
+fi
+# Bind the existing publication guard to one fetched accepted tree before
+# sealing the generated candidate; this does not rebuild/acquire source data.
+if [ "${GITHUB_REPOSITORY:-}" = mastermindx-market-intelligence/macro ]; then
+  perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin +refs/heads/main:refs/remotes/origin/main
+  COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}')
+  PYTHONPATH="$publisher_source_root" python3 -P -m scripts.check_commodity_publication --heal-from "$COMMODITY_ACCEPTED"
 fi
 git add data/ site/ reports/
 # separate + tolerant: `git add site/ templates/` exits 128 when a pathspec
@@ -127,7 +148,7 @@ if ! git checkout HEAD -- "$LEADER_SOURCE_PATH"; then
 fi
 git reset -q -- "$LEADER_SOURCE_PATH"
 # Re-exclude both exact-published namespaces after the broad add.
-bash scripts/ci/options_signal_nightly.sh exclude-broad
+NATIVE_PUBLICATION_CODE_ROOT="${native_code_root:-}" bash "$publisher_source_root/scripts/ci/options_signal_nightly.sh" exclude-broad
 # W0b (2026-07-08 stale-HK incident): US engine job must NOT commit asia-owned
 # data/ paths — asia-close.yml is the sole writer of all china*/hk* stores.
 # The GHA cache restore above (data/hk_stocks, restore-keys: hk-stocks-ohlc-)
@@ -201,7 +222,7 @@ git add -f site/live/notify_state.json 2>/dev/null || true
 # exit; the ledger's own publication stays with the qledger publication program).
 # A carve that cannot secure custody withholds this commit: exit 1, because a
 # lost engine commit must red the run (see the push_lost branch below).
-. "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"
+. "$publisher_source_root/scripts/ci/qledger_carve.sh"
 qledger_carve_staged || exit 1
 if git diff --cached --quiet; then echo "no engine output changes"; exit 0; fi
 # Fail-closed conflict gate (P0 2026-08-01, d29e4dd44d / #4167): a conflicted
@@ -217,7 +238,7 @@ if ! push_staged_heal data/ site/ reports/ templates/; then
   exit 1
 fi
 if git diff --cached --quiet; then echo "no engine output changes after conflict heal"; exit 0; fi
-bash scripts/ci/options_signal_nightly.sh commit-broad-candidate \
+NATIVE_PUBLICATION_CODE_ROOT="${native_code_root:-}" bash "$publisher_source_root/scripts/ci/options_signal_nightly.sh" commit-broad-candidate \
   "engine: regime update $(date -u +%F)"
 # best-effort push (see commit-data). The deploy below uses the uploaded
 # artifact, so it never depends on this commit landing.
@@ -226,6 +247,31 @@ PUSH_BUDGET_SECS=600   # a dropped push here costs the nightly's forward-ledger 
 PUSH_MAX_ATTEMPTS=20   # let the 600s DEADLINE stop this loop, not the attempt count: 10 contention
                        # retries burn only ~2 min, so the raised budget above would never bind
 push_retry_init "engine outputs"
+# The existing metadata replay conserves ALL unlanded local generations,
+# including a prior checkpoint whose protected squash rewrote its ancestry.
+# It changes neither the dirty DATA checkout nor the original index.
+native_candidate=""
+NATIVE_PUBLICATION_CANDIDATE_UNQUALIFIED=1
+if perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin +refs/heads/main:refs/remotes/origin/main; then
+  native_parent=$(git merge-base HEAD origin/main) || native_parent=""
+  if [ -n "$native_parent" ] && native_candidate=$(push_metadata_replay_commit "$native_parent" origin/main HEAD \
+      "$(git log -1 --format=%B HEAD)" "${RUNNER_TEMP}/engine-native-${NATIVE_PUBLICATION_PUBLISHING_STEP:-local}.idx"); then
+    if PYTHONPATH="$publisher_source_root" python3 -P -m scripts.check_commodity_publication \
+        --accepted-ref origin/main --candidate-ref "$native_candidate"; then
+      NATIVE_PUBLICATION_CANDIDATE_UNQUALIFIED=0
+    fi
+  fi
+fi
+export NATIVE_PUBLICATION_CANDIDATE_UNQUALIFIED
+native_initial_rc=0
+push_native_do origin "${native_candidate:-HEAD}:refs/heads/main" || native_initial_rc=$?
+unset NATIVE_PUBLICATION_CANDIDATE_UNQUALIFIED
+case "$native_initial_rc" in
+  0) push_won; exit 0 ;;
+  77) echo "publication=pending" >> "$GITHUB_OUTPUT"; exit 0 ;;
+  80) export NATIVE_PUBLICATION_EXPECT_OFF=1 ;;
+  *) exit "$native_initial_rc" ;;
+esac
 while push_attempt; do
   # Classify native pending work before the shared helper can clean or rebase.
   qledger_before_rebase=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
@@ -247,7 +293,7 @@ while push_attempt; do
   if { perl -e 'alarm 420; exec @ARGV or die' -- git rebase --autostash -X theirs origin/main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then
     # A nightly may have rendered before a newer accepted workspace landed.
     COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}') || exit 1
-    python -m scripts.check_commodity_publication --heal-from "$COMMODITY_ACCEPTED" || exit 1
+    PYTHONPATH="$publisher_source_root" python3 -P -m scripts.check_commodity_publication --heal-from "$COMMODITY_ACCEPTED" || exit 1
     # post-rebase template↔site re-sync (ui.template_site_sync): -X theirs can
     # resurrect this run's checkout-time template copies over a reword that merged
     # mid-nightly (2026-07-07: engine-render commit 2ae709f9f0 reverted #1793's
@@ -280,9 +326,9 @@ while push_attempt; do
       || echo "::warning::ms-board coherence heal incomplete (incoherent board may predate this run)"
     # refuse stash/rebase wreckage (2026-08-01 d29e4dd44d: a conflicted
     # autostash apply was staged wholesale — 1,704 pages shipped markers)
-    bash "${GITHUB_WORKSPACE:-.}/scripts/ci/strip_conflict_markers.sh"
-    python3 scripts/check_conflict_markers.py --file site/start.html
-    python3 scripts/check_start_runtime.py --heal-from origin/main
+    bash "$publisher_source_root/scripts/ci/strip_conflict_markers.sh"
+    PYTHONPATH="$publisher_source_root" python3 -P -m scripts.check_conflict_markers --file site/start.html
+    PYTHONPATH="$publisher_source_root" python3 -P -m scripts.check_start_runtime --file site/start.html --heal-from origin/main
     if ! git diff --quiet -- site/ templates/; then
       # push_staged_clean: never bake conflict markers into the follow-up
       # commit (P0 d29e4dd44d/#4167). On a dirty scan: unstage and push the
@@ -293,7 +339,7 @@ while push_attempt; do
       # re-add above would re-stage a NEW site/qledger file the carve unstaged
       if [ "${QLEDGER_CARVED:-false}" = true ]; then git reset -q -- site/qledger data/qledger 2>/dev/null || true; fi
       if push_staged_clean site/ templates/; then
-        bash scripts/ci/options_signal_nightly.sh commit-render-sync \
+        NATIVE_PUBLICATION_CODE_ROOT="${native_code_root:-}" bash "$publisher_source_root/scripts/ci/options_signal_nightly.sh" commit-render-sync \
           "render-sync: post-rebase guards (template re-copy + ms-board coherence)" \
           || echo "::warning::render-sync commit failed (non-fatal — pages publish gate backstops divergence)"
       else
@@ -307,7 +353,7 @@ while push_attempt; do
     fi
     # This is the actual final candidate, including any render-sync commit.
     qledger_push_candidate=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
-    python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref "$qledger_push_candidate" || exit 1
+    PYTHONPATH="$publisher_source_root" python3 -P -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref "$qledger_push_candidate" || exit 1
     if push_do origin "$qledger_push_candidate:refs/heads/main"; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
   fi
   push_abort_rebase

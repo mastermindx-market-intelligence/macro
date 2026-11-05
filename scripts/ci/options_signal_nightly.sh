@@ -25,7 +25,18 @@ set -euo pipefail
 
 REPO_ROOT="${GITHUB_WORKSPACE:-$(git rev-parse --show-toplevel)}"
 # shellcheck source=scripts/ci/push_retry.sh
-. "$REPO_ROOT/scripts/ci/push_retry.sh"
+OIP_CODE_ROOT="${NATIVE_PUBLICATION_CODE_ROOT:-$REPO_ROOT}"
+if [ -n "${NATIVE_PUBLICATION_CODE_ROOT:-}" ]; then
+  # A child shell must reconstruct the verification function from original Git,
+  # rather than execute an ambient workspace or trust an inherited function.
+  oip_bootstrap=$(mktemp "${RUNNER_TEMP}/native-options-bootstrap.XXXXXX")
+  GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show \
+    "$GITHUB_WORKFLOW_SHA:scripts/ci/native_publication_source.sh" > "$oip_bootstrap"
+  . "$oip_bootstrap"
+  rm -- "$oip_bootstrap"
+  native_publication_verify_source "$OIP_CODE_ROOT" "$GITHUB_WORKFLOW_SHA"
+fi
+. "$OIP_CODE_ROOT/scripts/ci/push_retry.sh"
 
 readonly -a OIP_EPISODE_CORE_PATHS=(
   data/options_signal_episode/checkpoint.json
@@ -462,11 +473,11 @@ oip_restore_locked_index() {
 # is acquired while Git's index lock is held. A later rejection may remove only
 # the same still-empty regular inode; replacement or ambiguity preserves it.
 oip_acquire_owned_empty_lock_identity() {
-  python3 "$REPO_ROOT/scripts/ci/options_index_lock_identity.py" acquire "$1"
+  python3 "$OIP_CODE_ROOT/scripts/ci/options_index_lock_identity.py" acquire "$1"
 }
 
 oip_release_owned_empty_lock() {
-  python3 "$REPO_ROOT/scripts/ci/options_index_lock_identity.py" release "$1" "$2"
+  python3 "$OIP_CODE_ROOT/scripts/ci/options_index_lock_identity.py" release "$1" "$2"
 }
 
 # Commit the exact live index snapshot while owning Git's real index lock.

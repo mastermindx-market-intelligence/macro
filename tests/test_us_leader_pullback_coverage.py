@@ -569,7 +569,9 @@ class TestNightlyDurability:
         restore_i = names.index(self.ACCEPTED_SOURCE_STEP)
         dashboard_i = names.index(self.DASHBOARD_STEP)
         prophet_i = names.index(self.PROPHET_STEP)
-        assert restore_i == checkpoint_i + 1
+        assert steps[checkpoint_i+1]['id'] == 'native_publication_leader_stage_origin'
+        assert steps[checkpoint_i+2]['id'] == 'leader_checkpoint'
+        assert restore_i == checkpoint_i + 3
         assert checkpoint_i < restore_i < dashboard_i < prophet_i
 
         restore = steps[restore_i]

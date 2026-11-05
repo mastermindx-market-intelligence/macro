@@ -83,37 +83,7 @@ jobs:
         env:
           FIRED_CRON: ${{ github.event.schedule }}
           EVENT_NAME: ${{ github.event_name }}
-        run: |
-          python3 - <<'PY'
-          import datetime
-          import os
-          from zoneinfo import ZoneInfo
-
-          EDT_CRON = "30 22 * * *"  # 18:30 ET while America/New_York is UTC-4 (EDT)
-          EST_CRON = "30 23 * * *"  # 18:30 ET while America/New_York is UTC-5 (EST)
-
-          now_env = os.environ.get("ET_GATE_NOW_UTC")  # test injection only
-          now = (datetime.datetime.fromisoformat(now_env) if now_env
-                 else datetime.datetime.now(datetime.timezone.utc))
-          if now.tzinfo is None:
-              now = now.replace(tzinfo=datetime.timezone.utc)
-          offset = now.astimezone(ZoneInfo("America/New_York")).utcoffset()
-          # Any offset other than EDT's -4h resolves to the EST cron: with broken
-          # tzdata the nightly still runs exactly once (possibly an hour late),
-          # never zero times.
-          intended = EDT_CRON if offset == datetime.timedelta(hours=-4) else EST_CRON
-          fired = os.environ.get("FIRED_CRON", "")
-          event = os.environ.get("EVENT_NAME", "")
-          verdict = "true" if (event != "schedule" or fired == intended) else "false"
-          # Hours, not the raw timedelta: str(timedelta(hours=-4)) renders
-          # "-1 day, 20:00:00", which is the wrong thing to read at 3am.
-          off_h = offset.total_seconds() / 3600
-          print(f"::notice title=daily ET gate::event={event or '-'} fired={fired or '-'} "
-                f"intended={intended} ny_utc_offset={off_h:+.0f}h -> run={verdict}", flush=True)
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
-              fh.write(f"run={verdict}\n")
-          PY
-
+        run: bash scripts/ci/daily_et_gate.sh
   # collect (a.k.a. collect-core since the 2026-07-14 split): the main adapter
   # sweep + in-collect graders/audits, committing as early as possible so the
   # engine job (needs: collect) starts ~30-75m sooner. The slow post-adapter
@@ -381,27 +351,7 @@ jobs:
           COLLECT_LANE: nightly  # lane sentinel: forward-ledger graders (grade_breadth_divergence,
                                  # grade_policy_calendar) check COLLECT_LANE==nightly before writing;
                                  # asia-close/weekly/intl_etf leave it unset → no-op in those lanes.
-        run: |
-          if [ -n "$FRED_API_KEY" ]; then echo "::notice::FRED_API_KEY present — using official API"; else echo "::warning::FRED_API_KEY ABSENT — check repo Settings > Secrets and variables > Actions > Repository secrets"; fi
-          # --exclude-group asia: China/HK collectors run in their own asia-close shard
-          # (after the Asia cash close), not here — keeps this US-evening run lean.
-          # --skip-shadow-importance: the ~13-14m shadow passes run standalone in
-          # collect_tail (2026-07-14 split) — off the engine job's critical path.
-          # sec_capital_structure_companyfacts is serially registered immediately
-          # after sec_capital_structure in scripts.collect's shared SEC host group.
-          # It can therefore consume only same-run verified complete-submission
-          # anchors, while retaining raw Company Facts JSON separately and without
-          # invoking any share-count consumer. Immutable Parquet generations and
-          # chained receipts are installed/read back before its tiny current pointer
-          # advances; any failure leaves the prior authenticated generation selected.
-          # sam_gov_opportunities is excluded because government-revenue-live.yml
-          # is its sole serialized ledger owner. Two workflows must never merge and
-          # overwrite the same revision/document Parquets concurrently.
-          # Existing collector step exposes one run-local time fence; the source
-          # must have been evaluated in THIS execution, not merely earlier on
-          # the same completed market session.
-          echo "started_at=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
-          python -m scripts.collect --exclude-group asia --exclude sam_gov_opportunities --skip-shadow-importance
+        run: bash scripts/ci/daily_collect_collectors.sh
       - name: qualify Russell same-run cache handoff
         # Do not treat a green collectors job, frozen partial cold cache, or a
         # prior checked_at as proof of current source. Read the incumbent
@@ -411,55 +361,7 @@ jobs:
         continue-on-error: true  # this transport must not veto the market checkpoint
         env:
           RUSSELL_COLLECT_STARTED_AT: ${{ steps.collectors.outputs.started_at }}
-        run: |
-          python - <<'PY_RUSSELL_HANDOFF'
-          import json
-          import os
-          from datetime import datetime, time, timezone
-          from pathlib import Path
-          from zoneinfo import ZoneInfo
-          from lib.nyse_calendar import expected_last_session
-
-          expected = expected_last_session()
-          close_utc = datetime.combine(
-              expected, time(16), tzinfo=ZoneInfo("America/New_York")
-          ).astimezone(timezone.utc)
-          receipt = {}
-          try:
-              receipt = json.loads(Path("data/run_status.json").read_text())
-          except (OSError, ValueError, TypeError):
-              pass
-          source = ((receipt.get("sources") or {}).get("russell_breadth") or {})
-          def parse_utc(stamp):
-              if not isinstance(stamp, str):
-                  return None
-              try:
-                  instant = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
-                  if instant.tzinfo is None:
-                      instant = instant.replace(tzinfo=timezone.utc)
-                  return instant.astimezone(timezone.utc)
-              except ValueError:
-                  return None
-
-          checked = parse_utc(source.get("checked_at"))
-          finished = parse_utc(receipt.get("last_run"))
-          started = parse_utc(os.environ.get("RUSSELL_COLLECT_STARTED_AT"))
-          now = datetime.now(timezone.utc)
-          cache = Path("data/russell_breadth/_closes_cache.parquet")
-          qualified = (
-              source.get("status") == "ok"
-              and source.get("last_date") == expected.isoformat()
-              and started is not None and finished is not None and checked is not None
-              and close_utc <= started <= finished <= checked <= now
-              and cache.is_file() and cache.stat().st_size > 0
-          )
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
-              out.write(f"qualified={'true' if qualified else 'false'}\n")
-          if qualified:
-              print("::notice title=Russell cache handoff::qualified completed-session source; ready for same-run save")
-          else:
-              print("::warning title=Russell cache handoff withheld::missing/unqualified current Russell source; engine remains exact-key-only")
-          PY_RUSSELL_HANDOFF
+        run: bash scripts/ci/daily_collect_russell_handoff.sh
       - name: save qualified Russell close cache before market git push
         # The normal late Git push can fail independently (GH001/credentials).
         # Keep the same-run producer→engine cache authoritative only when the
@@ -721,100 +623,7 @@ jobs:
         #     cross-job step outcomes are not referenceable in an `if:` anyway.
         if: always() && steps.collectors.outcome == 'success'
         id: commitdata
-        run: |
-          echo "committed=false" >> "$GITHUB_OUTPUT"
-          git config user.name "dashboard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          # site/qledger: the qledger grader (scripts/collect.py -> grade_qledger)
-          # writes the TRACKED site/qledger/track_record.json (un-ignored by #1139).
-          # Left unstaged it blocks `git pull --rebase` ("unstaged changes") and the
-          # whole data push silently dies after 5 attempts — 07-03/07-04 collections
-          # were lost exactly this way (the sentinel staging-gap pattern). The
-          # --autostash on the rebase below is the durable guard: it survives ANY
-          # stray tracked write collect leaves outside data/+site/qledger/ (e.g.
-          # reports/*.md graders), not just the qledger paths we happen to stage here.
-          # (site/basketdata moved with the TIL steps to collect_tail's commit —
-          # 2026-07-14 split; nothing left in this job writes site/basketdata.)
-          git add data/ site/qledger/
-          # W0b (2026-07-08 stale-HK incident): US collect job must NOT commit asia-owned
-          # data that it never produced. The GHA cache restore steps above may lay stale
-          # data/hk_stocks (restore-keys: hk-stocks-ohlc-) and breadth caches on top of
-          # the fresh files asia-close already committed.  After the broad `git add data/`
-          # above, unstage every asia-close-owned path so -X theirs on the rebase-push
-          # cannot clobber asia's fresh commit with this job's stale copy.
-          # Derived from asia-close.yml: collect --group asia = adapters starting with
-          # `china` or `hk` (scripts/collect.py group_members), so excludes cover all
-          # data/china*, data/hk*, and data/hkma (adapter key `hkma` starts with `hk`).
-          git reset -q -- data/hk data/hk_* data/hkma data/china data/china_* 2>/dev/null || true
-          # Capital-structure SCOPE CARVE-OUT — same idiom as the asia unstage above.
-          # UNCONDITIONAL since the 2026-08-06 split: none of the five capital-structure
-          # steps has run yet at this point, so there is no outcome to test and nothing
-          # here could be a complete generation. `run collectors`
-          # (sec_capital_structure) has already rewritten the TRACKED
-          # source_manifest.jsonl, which the broad `git add data/` above swept in — a
-          # source ledger no compiler has accepted. Drop it; the second checkpoint
-          # commits it once the whole chain has validated it.
-          #
-          # `git reset` ONLY — never `git checkout`. The pre-2026-08-06 carve-out fired
-          # AFTER a failed chain and restored the clean committed ledger (#4600's
-          # self-heal). Here the chain has not run, and that freshly-collected ledger is
-          # its INPUT: reverting it would feed the spine yesterday's manifests every
-          # single night. Unstage, do not revert.
-          git reset -q -- data/capital_structure site/capital-structure-data 2>/dev/null || true
-          # QLEDGER OVERSIZE CARVE-OUT (2026-10-17). data/qledger/claims.jsonl is an
-          # append-only monolith; once it crossed GitHub's 100 MiB file limit, GH001
-          # rejected this WHOLE commit and the market plane (data/baskets/ohlcv,
-          # data/stocks, breadth, macro) stopped publishing on 2026-10-16 and 10-17
-          # (jobs 116748357565, 117262684428). When any staged qledger blob is within
-          # 1 MiB of the limit (headroom for the rebase onto a moving main), unstage ALL
-          # of data/qledger + site/qledger (one plane: published together or not at
-          # all) and warn. Unstage only, never revert; the ledger's size belongs to the
-          # qledger publication program.
-          qledger_limit=104857600
-          qledger_margin=1048576
-          qledger_over=""
-          while IFS= read -r -d '' qpath; do
-            qsize=$(git cat-file -s ":$qpath" 2>/dev/null || echo unmeasured)
-            case "$qsize" in
-              ''|*[!0-9]*) qledger_over="$qledger_over $qpath=unmeasured" ;;
-              *) if [ "$qsize" -gt $((qledger_limit - qledger_margin)) ]; then qledger_over="$qledger_over $qpath=${qsize}B"; fi ;;
-            esac
-          done < <(git diff --cached --name-only -z --no-renames --diff-filter=d -- data/qledger site/qledger)
-          if [ -n "$qledger_over" ]; then
-            # Custody snapshot BEFORE the unstage: an unreachable, runner-local commit of
-            # the full staged index (parent = this HEAD). No ref names it and nothing
-            # pushes it — the same object class as git's own autostash entry. The push
-            # loop's --autostash can discard dirty bytes on a conflicted re-apply, so
-            # the steps around `push market data` park these paths at HEAD and restore
-            # them from this snapshot afterwards (#9556 review 5566188238).
-            qledger_snapshot=$(git commit-tree "$(git write-tree)" -p HEAD -m "qledger carve custody snapshot (runner-local; never pushed)" 2>/dev/null) || qledger_snapshot=""
-            if [ -z "$qledger_snapshot" ]; then
-              # FAIL CLOSED ON PUBLICATION: with no snapshot, park/restore cannot run and the
-              # push loop's --autostash would carry the dirty qledger bytes unprotected. So
-              # withhold the WHOLE market commit (committed stays false: neither push step
-              # runs), leave index + worktree untouched, and keep collect green.
-              echo "qledger_withheld=true" >> "$GITHUB_OUTPUT"
-              echo "::error title=market publication withheld (qledger carve snapshot failed)::could not snapshot the carved qledger bytes:${qledger_over}; NEITHER market data NOR data/qledger + site/qledger is published by this run (no market commit, no push). The collected bytes are left untouched in this runner workspace (runner-local; gone at the next clean checkout)."
-              if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
-                {
-                  echo "### Market publication withheld: qledger carve snapshot failed"
-                  echo ""
-                  echo "- oversize qledger blob(s):${qledger_over}"
-                  echo "- market data: NOT committed and NOT pushed by this run"
-                  echo "- data/qledger + site/qledger: NOT published; collected bytes left untouched in this runner workspace (runner-local)"
-                  echo "- owner: qledger publication program"
-                } >> "$GITHUB_STEP_SUMMARY" || true
-              fi
-              exit 0
-            fi
-            git reset -q -- data/qledger site/qledger
-            echo "qledger_carved=true" >> "$GITHUB_OUTPUT"
-            echo "qledger_snapshot=$qledger_snapshot" >> "$GITHUB_OUTPUT"
-            echo "::warning title=qledger carved out of market commit::staged qledger blob(s) within ${qledger_margin}B of GitHub's ${qledger_limit}B file limit:${qledger_over}; this run's data/qledger + site/qledger are NOT published (owner: qledger publication program); the market commit, if any, excludes them."
-          fi
-          if git diff --cached --quiet; then echo "no market data changes to commit"; exit 0; fi
-          git commit -m "data: daily collection $(date -u +%F)"
-          echo "committed=true" >> "$GITHUB_OUTPUT"
+        run: bash scripts/ci/daily_collect_local_checkpoint.sh
       - name: salvage unrecoverable chain snapshots (collectors red — market commit skipped)
         # THE HALF THE NAMED-STEPS GATE ABOVE CANNOT COVER (2026-08-06 postmortem).
         # That gate is right for the bulk plane and must not be loosened, and the
@@ -855,6 +664,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_salvage_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -957,6 +771,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_market_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -1033,62 +852,7 @@ jobs:
         if: always() && steps.commitdata.outputs.qledger_snapshot != ''
         env:
           QLEDGER_SNAPSHOT: ${{ steps.commitdata.outputs.qledger_snapshot }}
-        run: |
-          restored=""
-          lost=""
-          qpaths=$(git -c core.quotePath=false diff --name-only --no-renames "$QLEDGER_SNAPSHOT^" "$QLEDGER_SNAPSHOT" -- data/qledger site/qledger 2>/dev/null) || qpaths=""
-          if [ -z "$qpaths" ]; then lost=" snapshot-unreadable:$QLEDGER_SNAPSHOT"; fi
-          while IFS= read -r qpath; do
-            [ -n "$qpath" ] || continue
-            # Classify against the snapshot TREE, never against a lookup exit code
-            # (#9556 post-merge findings 6285214966 + 6290288707): a readable tree
-            # that lacks the path is a deferred deletion; an unreadable tree
-            # (object store, lock, OOM) is LOST and the surviving bytes stay put.
-            if ! entry=$(git ls-tree --name-only "$QLEDGER_SNAPSHOT" -- "$qpath" 2>/dev/null); then
-              lost="$lost $qpath(lookup-failed)"; continue
-            fi
-            if [ -n "$entry" ]; then
-              want=$(git rev-parse "$QLEDGER_SNAPSHOT:$qpath" 2>/dev/null) || want=""
-              if [ -z "$want" ]; then lost="$lost $qpath(lookup-failed)"; continue; fi
-              have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
-              if [ "$have" != "$want" ]; then
-                # A non-file at the path (a directory) cannot be swapped: POSIX `mv`
-                # would move the temp INTO it and leak the blob. Report LOST, touch nothing.
-                if [ -e "$qpath" ] && [ ! -f "$qpath" ]; then lost="$lost $qpath(not-a-file)"; continue; fi
-                # Read into a sibling temp file and swap in only a hash-verified
-                # copy: a failed blob read must never truncate the surviving file.
-                mkdir -p -- "$(dirname -- "$qpath")" 2>/dev/null || true
-                tmp=$(mktemp "$qpath.restore.XXXXXX" 2>/dev/null) || tmp=""
-                if [ -n "$tmp" ] && git cat-file blob "$QLEDGER_SNAPSHOT:$qpath" > "$tmp" 2>/dev/null \
-                   && [ "$(git hash-object -- "$tmp" 2>/dev/null)" = "$want" ]; then
-                  chmod u=rw,go=r -- "$tmp" 2>/dev/null || true
-                  mv -f -- "$tmp" "$qpath" 2>/dev/null || true
-                fi
-                if [ -n "$tmp" ]; then rm -f -- "$tmp" 2>/dev/null || true; fi
-                have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
-              fi
-              if [ "$have" = "$want" ]; then restored="$restored $qpath"; else lost="$lost $qpath"; fi
-            else
-              rm -f -- "$qpath" 2>/dev/null || true
-              if [ -e "$qpath" ]; then lost="$lost $qpath(deleted)"; else restored="$restored $qpath(deleted)"; fi
-            fi
-          done <<< "$qpaths"
-          if [ -n "$lost" ]; then
-            echo "::error title=qledger carve custody LOST::carved qledger bytes could not be restored in this workspace:${lost}; they survive only in the unreachable runner-local snapshot $QLEDGER_SNAPSHOT until git gc, and were NOT published (owner: qledger publication program)."
-          fi
-          if [ -n "$restored" ]; then
-            echo "::warning title=qledger carve-out not published::NOT published by this run:${restored} — restored byte-identical in this runner's workspace from snapshot $QLEDGER_SNAPSHOT; runner-local only, gone at the next clean checkout (owner: qledger publication program)."
-          fi
-          if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
-            {
-              echo "### QLedger carve-out — NOT published by this run"
-              echo ""
-              echo "- snapshot (runner-local, never pushed): \`$QLEDGER_SNAPSHOT\`"
-              echo "- restored byte-identical in this workspace:${restored:- none}"
-              echo "- LOST (not restorable here):${lost:- none}"
-              echo "- owner: qledger publication program; this job does not durably retain these bytes"
-            } >> "$GITHUB_STEP_SUMMARY" || true
-          fi
+        run: bash scripts/ci/daily_collect_qledger_restore.sh
       # ── CAPITAL-STRUCTURE HANDOFF (the chain itself moved out 2026-08-06) ───
       # The five capital-structure steps, their diagnostics capture, and their
       # commit/push checkpoint used to run HERE. They now run in the
@@ -1120,31 +884,7 @@ jobs:
       - name: stamp the capital-structure handoff receipt (no network ops in this step)
         id: cs_handoff_stamp
         continue-on-error: true
-        run: |
-          ledger="data/capital_structure/source_manifest.jsonl"
-          if [ ! -f "$ledger" ]; then
-            echo "::warning::no $ledger to hand off — the capital_structure job will fail closed rather than compile the committed ledger"
-            exit 0
-          fi
-          # Stamped HERE, after "push market data", deliberately: that step's rebase
-          # runs --autostash, and on a CONFLICTED re-apply push_autostash_ok resets
-          # hard, leaving origin/main's committed ledger in the tree. That is still a
-          # sound input (#4600's restore-a-clean-ledger self-heal) but it is a
-          # DIFFERENT ledger, so the receipt must describe whatever actually survived
-          # rather than what the collectors wrote 20 minutes earlier.
-          #
-          # The ledger is SHARDED byte-exactly: $ledger is part 1 (never rewritten
-          # once sealed) and source_manifest.part-NNNN.jsonl continuation parts hold
-          # later rows, each under GitHub's 100 MiB blob limit -- the single file
-          # crossed it on 2026-09-27 and every nightly through 10-09 compiled a
-          # generation and lost it at push (GH001). The receipt therefore describes
-          # the LOGICAL ledger, the ordered concatenation of every part: `rows` is
-          # still its newline count and `sha256` still its digest (byte-for-byte the
-          # old shasum/wc receipt while no continuation part exists), and ONE script
-          # owns that arithmetic on both sides of the handoff. Appends to
-          # $GITHUB_OUTPUT itself; a part listing it cannot read stamps nothing, so
-          # the verify step refuses as "no ledger receipt".
-          python scripts/capital_structure_ledger_receipt.py stamp --root data/capital_structure
+        run: bash scripts/ci/daily_collect_capital_handoff.sh
       - name: hand the capital-structure workspace to its own job
         continue-on-error: true
         # actions/upload-artifact v4.6.2 — the pin already used by the diagnostics
@@ -1770,6 +1510,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_capital_structure_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -2274,6 +2019,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_collect_tail_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -2520,36 +2270,7 @@ jobs:
         # recorded in the committed data/quality/signals_audit.json. The HARD red gate for
         # contract-breaking PRs lives in ci.yml (signal-contract job) where blocking is safe.
         # Compute is cheap (reads the committed data/stocks/*.parquet deep-history panel).
-        run: |
-          set +e
-          echo "::group::build + validate MTF signals"
-          python -m scripts.build_signal_quality > "$RUNNER_TEMP/sigq.log" 2>&1; bq=$?
-          cat "$RUNNER_TEMP/sigq.log"
-          if [ "$bq" -ne 0 ]; then
-            echo "::error title=build_signal_quality failed (rc=$bq)::signal compute failed — leaf left at last-good"
-          fi
-          python -m scripts.validate_signals > "$RUNNER_TEMP/sigv.log" 2>&1; vrc=$?
-          cat "$RUNNER_TEMP/sigv.log"
-          echo "::endgroup::"
-          if [ "$vrc" -ne 0 ]; then
-            # Discard the drifted/malformed write so neither the commit-to-main nor the Pages
-            # artifact can ship it. Leaf AND per-ticker files are tracked on main (per-ticker
-            # tracked since 2026-06-28 via the render lane) -> restore last-good committed
-            # copies; git clean sweeps only untracked strays (e.g. a new ticker's first write).
-            # NEVER `rm` the tracked per-ticker files here: the 226 staged deletions ride the
-            # broad `git add site/` into the engine commit and modify/delete-conflict with the
-            # intraday render lane's signal commits — the rebase-push then fails every retry
-            # and the WHOLE nightly engine commit (regime update + forward ledgers) is dropped
-            # (2026-07-12 incident: pick-lab ledgers lost).
-            git checkout -- data/signal_archive/mtf_signals_latest.json 2>/dev/null || true
-            git checkout -- site/signals/ 2>/dev/null || true
-            git clean -fq -- site/signals/ 2>/dev/null || true
-            echo "::error title=signal §7 contract gate FAILED::malformed/drifted signal write discarded (leaf + per-ticker files restored to last-good committed copies); see data/quality/signals_audit.json"
-            { echo "### ❌ signal §7 contract gate failed — bad write discarded";
-              echo '<details><summary>validator output</summary>'; echo; echo '```';
-              tail -n 40 "$RUNNER_TEMP/sigv.log"; echo '```'; echo '</details>'; } >> "$GITHUB_STEP_SUMMARY"
-          fi
-          exit 0
+        run: bash scripts/ci/daily_engine_mtf_signal_gate.sh
       - name: build signal track-record ledger (w0-stageB)
         # Incremental + cheap (reads site/signals/ + data/stocks/ — both already
         # written by the step above). Runs AFTER build_signal_quality so both
@@ -2631,14 +2352,80 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_leader_pullback_coverage::rc=$rc (non-fatal — the intake keeps yesterday's coverage until tomorrow's run)"; fi
           exit 0
       - name: checkpoint leader-pullback source to main (durable before engine tail)
-        id: leader_checkpoint
+        id: native_publication_leader_stage
         # Same publisher, same artifact, same main branch: this is an early durability
         # checkpoint for the source build above, not a second source/store/control plane.
         # It validates the incumbent source contract and publishes ONLY the one existing
         # leader artifact. A stale/failed source or same-path race is refused fail-closed.
         continue-on-error: true
         timeout-minutes: 10
-        run: bash scripts/ci/daily_engine_leader_checkpoint.sh
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_leader_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # SOURCE-PINNED-WORKFLOW-SHELL: scripts/ci/daily_engine_leader_checkpoint.sh native_publication_leader_stage
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+          case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
+          case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_engine_leader_checkpoint.sh)" in
+            100644*|100755*) : ;; *) exit 76 ;;
+          esac
+          NATIVE_PUBLISHER_SCRIPT="${RUNNER_TEMP%/}/native-publication-shell-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-native_publication_leader_stage.sh"
+          (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/daily_engine_leader_checkpoint.sh" > "$NATIVE_PUBLISHER_SCRIPT")
+          chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+          bash "$NATIVE_PUBLISHER_SCRIPT"
+      - name: Upload original leader checkpoint origin
+        id: native_publication_leader_stage_origin
+        if: ${{ always() && steps.native_publication_leader_stage.outcome == 'success' && steps.native_publication_leader_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_leader_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_leader_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm original leader checkpoint protected publication
+        id: leader_checkpoint
+        continue-on-error: true
+        if: ${{ always() && steps.native_publication_leader_stage.outcome == 'success' && (steps.native_publication_leader_stage.outputs.native_origin_path == '' || steps.native_publication_leader_stage_origin.outcome == 'success') }}
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_leader_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_leader_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_leader_stage.outputs.native_deadline }}
+          NATIVE_INDEX_SHA256: ${{ steps.native_publication_leader_stage.outputs.index_sha256 }}
+          LEGACY_R2_READY: ${{ steps.native_publication_leader_stage.outputs.r2_ready }}
+          LEGACY_SOURCE_SHA: ${{ steps.native_publication_leader_stage.outputs.checkpoint_sha }}
+          CHECKPOINT_ROOT: ${{ steps.native_publication_leader_stage.outputs.checkpoint_root }}
+          CHECKPOINT_DIR: ${{ steps.native_publication_leader_stage.outputs.checkpoint_dir }}
+          CHECKPOINT_BRANCH: ${{ steps.native_publication_leader_stage.outputs.checkpoint_branch }}
+        run: |
+          # SOURCE-PINNED-WORKFLOW-SHELL: scripts/ci/native_checkpoint_settle.sh leader_checkpoint
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+          case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
+          case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_checkpoint_settle.sh)" in
+            100644*|100755*) : ;; *) exit 76 ;;
+          esac
+          NATIVE_PUBLISHER_SCRIPT="${RUNNER_TEMP%/}/native-publication-shell-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-leader_checkpoint.sh"
+          (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/native_checkpoint_settle.sh" > "$NATIVE_PUBLISHER_SCRIPT")
+          chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+          bash "$NATIVE_PUBLISHER_SCRIPT"
       - name: restore accepted leader source for downstream consumers
         id: leader_accepted_source
         if: always()
@@ -2876,11 +2663,14 @@ jobs:
         run: |
           python3 -m scripts.prophet_board_acceptance --run-id "${GITHUB_RUN_ID}"
       - name: checkpoint Prophet outputs to main (durable before engine tail)
-        id: prophet_checkpoint
+        id: native_publication_prophet_stage
         if: steps.prophet_nightly.outputs.succeeded == 'true'
         timeout-minutes: 12
         continue-on-error: true
         env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_prophet_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PROPHET_DELTA_MANIFEST: ${{ steps.prophet_nightly.outputs.delta_manifest }}
         # The engine worktree is intentionally very dirty here: build_site and
         # the pre-Prophet builders have produced thousands of not-yet-normalized
@@ -2888,7 +2678,69 @@ jobs:
         # worktree instead. Correction/provenance ledgers never cross this
         # boundary, deletions are forbidden, and any same-path change on main
         # aborts the checkpoint rather than being conflict-resolved away.
-        run: bash scripts/ci/daily_engine_prophet_checkpoint.sh
+        run: |
+          # SOURCE-PINNED-WORKFLOW-SHELL: scripts/ci/daily_engine_prophet_checkpoint.sh native_publication_prophet_stage
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+          case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
+          case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_engine_prophet_checkpoint.sh)" in
+            100644*|100755*) : ;; *) exit 76 ;;
+          esac
+          NATIVE_PUBLISHER_SCRIPT="${RUNNER_TEMP%/}/native-publication-shell-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-native_publication_prophet_stage.sh"
+          (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/daily_engine_prophet_checkpoint.sh" > "$NATIVE_PUBLISHER_SCRIPT")
+          chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+          bash "$NATIVE_PUBLISHER_SCRIPT"
+      - name: Upload original prophet checkpoint origin
+        id: native_publication_prophet_stage_origin
+        if: ${{ always() && steps.native_publication_prophet_stage.outcome == 'success' && steps.native_publication_prophet_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_prophet_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_prophet_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm original prophet checkpoint protected publication
+        id: prophet_checkpoint
+        continue-on-error: true
+        if: ${{ always() && steps.native_publication_prophet_stage.outcome == 'success' && (steps.native_publication_prophet_stage.outputs.native_origin_path == '' || steps.native_publication_prophet_stage_origin.outcome == 'success') }}
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_prophet_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_prophet_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_prophet_stage.outputs.native_deadline }}
+          NATIVE_INDEX_SHA256: ${{ steps.native_publication_prophet_stage.outputs.index_sha256 }}
+          LEGACY_R2_READY: ${{ steps.native_publication_prophet_stage.outputs.r2_ready }}
+          LEGACY_SOURCE_SHA: ${{ steps.native_publication_prophet_stage.outputs.checkpoint_sha }}
+          CHECKPOINT_ROOT: ${{ steps.native_publication_prophet_stage.outputs.checkpoint_root }}
+          CHECKPOINT_DIR: ${{ steps.native_publication_prophet_stage.outputs.checkpoint_dir }}
+          CHECKPOINT_BRANCH: ${{ steps.native_publication_prophet_stage.outputs.checkpoint_branch }}
+        run: |
+          # SOURCE-PINNED-WORKFLOW-SHELL: scripts/ci/native_checkpoint_settle.sh prophet_checkpoint
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+          case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
+          case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_checkpoint_settle.sh)" in
+            100644*|100755*) : ;; *) exit 76 ;;
+          esac
+          NATIVE_PUBLISHER_SCRIPT="${RUNNER_TEMP%/}/native-publication-shell-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-prophet_checkpoint.sh"
+          (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/native_checkpoint_settle.sh" > "$NATIVE_PUBLISHER_SCRIPT")
+          chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+          bash "$NATIVE_PUBLISHER_SCRIPT"
       - name: publish Prophet public health receipt to R2
         if: steps.prophet_checkpoint.outputs.r2_ready == 'true'
         timeout-minutes: 5
@@ -2934,64 +2786,7 @@ jobs:
         # the sole tombstone owner (the publisher step no longer enforces
         # it). `!cancelled()` runs this even if an earlier step in the job
         # failed, so a red upstream step never suppresses the self-heal.
-        run: |
-          python3 - <<'PY'
-          import os
-
-          from scripts.build_prophet import _r2_client
-
-          # Forbidden public key literal (DEC:B1-PROPHET-PUBLIC-SPLIT), named
-          # here rather than imported — the tombstone check/delete never
-          # needs a live index, only the key it must never let stand.
-          FORBIDDEN_INDEX_KEY = "prophet/index.json"
-
-          client = _r2_client()
-          if client is None:
-              print(
-                  "::notice title=Prophet R2 tombstone skipped::"
-                  "R2 credentials unavailable; nothing to enforce",
-                  flush=True,
-              )
-              raise SystemExit(0)
-          from botocore.exceptions import ClientError
-
-          bucket = os.environ.get("R2_BUCKET") or "mastermindx"
-
-          try:
-              client.head_object(Bucket=bucket, Key=FORBIDDEN_INDEX_KEY)
-          except ClientError as exc:
-              response = exc.response or {}
-              status = (response.get("ResponseMetadata") or {}).get("HTTPStatusCode")
-              code = str((response.get("Error") or {}).get("Code") or "")
-              if status == 404 or code in {"404", "NoSuchKey", "NotFound"}:
-                  print(
-                      "::notice title=Prophet R2 tombstone::"
-                      f"{FORBIDDEN_INDEX_KEY} already absent",
-                      flush=True,
-                  )
-                  raise SystemExit(0)
-              print(
-                  "::warning title=Prophet R2 tombstone check failed::"
-                  f"could not verify {FORBIDDEN_INDEX_KEY} absence: {exc}",
-                  flush=True,
-              )
-              raise SystemExit(0)
-
-          try:
-              client.delete_object(Bucket=bucket, Key=FORBIDDEN_INDEX_KEY)
-          except Exception as exc:  # noqa: BLE001 — deletion failure is non-fatal
-              print(
-                  "::warning title=Prophet R2 tombstone delete failed::"
-                  f"forbidden public object {FORBIDDEN_INDEX_KEY} could not be removed: {exc}",
-                  flush=True,
-              )
-              raise SystemExit(0)
-          print(
-              "::notice title=Prophet R2 tombstone::"
-              f"removed forbidden public object {FORBIDDEN_INDEX_KEY}",
-              flush=True,
-          )
-          PY
+        run: bash scripts/ci/daily_engine_prophet_r2_tombstone.sh
       - name: restore accepted Prophet source for downstream derivations
         id: prophet_accepted_source
         if: always()
@@ -3002,56 +2797,7 @@ jobs:
         # they consume from current accepted main instead. This deliberately
         # permits a safe no-op night: previously accepted plans may still mature
         # and grade even when this run originated no new plan.
-        run: |
-          set -euo pipefail
-          EVENT_REF="${GITHUB_REF:-}"
-          SOURCE_BRANCH="$(git symbolic-ref --short -q HEAD || true)"
-          if [ "$EVENT_REF" != "refs/heads/main" ] \
-            || [ "$SOURCE_BRANCH" != "main" ]; then
-            echo "::warning title=Prophet downstream source withheld::off-main event/checkout cannot advance Prophet-derived ledgers"
-            exit 0
-          fi
-          git fetch origin +refs/heads/main:refs/remotes/origin/main
-          ACCEPTED_PROPHET_SHA="$(git rev-parse origin/main)"
-          git checkout "$ACCEPTED_PROPHET_SHA" -- \
-            site/prophet \
-            data/prophet \
-            data/prophet_arena \
-            data/prophet_stage_shadow
-          # checkout does not remove generated additions absent from the accepted
-          # tree. Plans/states/arena are closed builder-owned roots, so remove
-          # only those additions; data/prophet correction ledgers are never
-          # cleaned and were restored from accepted main above.
-          git clean -fd -- \
-            site/prophet \
-            data/prophet/origination_receipts \
-            data/prophet/origination_sources \
-            data/prophet_arena \
-            data/prophet_stage_shadow
-          RESTORE_MISMATCH=false
-          if ! git diff --cached --quiet "$ACCEPTED_PROPHET_SHA" -- \
-              site/prophet data/prophet data/prophet_arena data/prophet_stage_shadow \
-            || ! git diff --quiet -- \
-              site/prophet data/prophet data/prophet_arena data/prophet_stage_shadow \
-            || [ -n "$(git ls-files --others --exclude-standard -- data/prophet)" ]; then
-            RESTORE_MISMATCH=true
-          fi
-          # Keep accepted bytes in the worktree for downstream readers, but do
-          # not leave them staged against this job's older checkout-time HEAD.
-          # This reset must follow verification: a checkpoint can legitimately
-          # add plans/receipts/Arena ledgers that do not exist in HEAD, and an
-          # earlier reset makes those accepted paths look deleted/untracked.
-          git reset -q -- \
-            site/prophet \
-            data/prophet \
-            data/prophet_arena \
-            data/prophet_stage_shadow
-          if [ "$RESTORE_MISMATCH" = "true" ]; then
-            echo "::error title=Prophet downstream source mismatch::engine worktree could not be made byte-equivalent to accepted main; derived ledgers withheld"
-            exit 1
-          fi
-          echo "ready=true" >> "$GITHUB_OUTPUT"
-          echo "accepted_sha=$ACCEPTED_PROPHET_SHA" >> "$GITHUB_OUTPUT"
+        run: bash scripts/ci/daily_engine_prophet_accepted_source.sh
       - name: Prophet × Stage forward-shadow (tag actual entries + nightly grade advance)
         id: prophet_stage_shadow
         if: steps.prophet_accepted_source.outputs.ready == 'true'
@@ -3071,159 +2817,84 @@ jobs:
         continue-on-error: true
         env:
           COLLECT_LANE: nightly
-        run: |
-          set +e
-          STAGE_BASELINE="${RUNNER_TEMP}/prophet-stage-${GITHUB_RUN_ID}.before.json"
-          STAGE_DELTA="${RUNNER_TEMP}/prophet-stage-${GITHUB_RUN_ID}.delta.tsv"
-          export STAGE_BASELINE STAGE_DELTA
-          python3 - <<'PY'
-          import hashlib
-          import json
-          import os
-          from pathlib import Path
-
-          root = Path(os.environ["GITHUB_WORKSPACE"])
-          owned = (
-              "data/prophet_stage_shadow/ledger.jsonl",
-              "data/prophet_stage_shadow/revisions.jsonl",
-              "data/prophet_stage_shadow/summary.json",
-          )
-
-          def fingerprint(path: Path) -> str:
-              if path.is_symlink():
-                  raise RuntimeError(f"refusing symlinked Stage-shadow output: {path}")
-              return (
-                  f"{path.stat().st_mode & 0o7777:04o}:"
-                  f"{hashlib.sha256(path.read_bytes()).hexdigest()}"
-              )
-
-          before = {
-              rel: fingerprint(root / rel)
-              for rel in owned
-              if (root / rel).is_file()
-          }
-          Path(os.environ["STAGE_BASELINE"]).write_text(
-              json.dumps(before, sort_keys=True), encoding="utf-8"
-          )
-          PY
-          baseline_rc=$?
-          if [ "$baseline_rc" -ne 0 ]; then
-            echo "succeeded=false" >> "$GITHUB_OUTPUT"
-            echo "::warning title=Prophet Stage manifest::could not fingerprint the accepted Stage-shadow baseline (rc=$baseline_rc); accrual checkpoint withheld"
-            exit 0
-          fi
-          echo "::group::build_prophet_stage_shadow (tag + grade + summarize)"
-          python -m scripts.build_prophet_stage_shadow > "$RUNNER_TEMP/prophet_stage_shadow.log" 2>&1; rc=$?
-          cat "$RUNNER_TEMP/prophet_stage_shadow.log"
-          echo "::endgroup::"
-          if [ "$rc" -ne 0 ]; then
-            echo "succeeded=false" >> "$GITHUB_OUTPUT"
-            echo "::warning title=build_prophet_stage_shadow::rc=$rc (non-fatal; accrual checkpoint withheld)"
-            exit 0
-          fi
-          python3 - <<'PY'
-          import hashlib
-          import json
-          import os
-          import sys
-          from pathlib import Path
-
-          from engine import prophet_stage_shadow as shadow
-
-          root = Path(os.environ["GITHUB_WORKSPACE"])
-          data_root = root / "data"
-          site_root = root / "site"
-          owned = (
-              "data/prophet_stage_shadow/ledger.jsonl",
-              "data/prophet_stage_shadow/revisions.jsonl",
-              "data/prophet_stage_shadow/summary.json",
-          )
-
-          def fingerprint(path: Path) -> str:
-              if path.is_symlink():
-                  raise RuntimeError(f"refusing symlinked Stage-shadow output: {path}")
-              return (
-                  f"{path.stat().st_mode & 0o7777:04o}:"
-                  f"{hashlib.sha256(path.read_bytes()).hexdigest()}"
-              )
-
-          before = json.loads(
-              Path(os.environ["STAGE_BASELINE"]).read_text(encoding="utf-8")
-          )
-          after = {
-              rel: fingerprint(root / rel)
-              for rel in owned
-              if (root / rel).is_file()
-          }
-          deleted = sorted(set(before) - set(after))
-          if deleted:
-              print(
-                  "::error title=Prophet Stage output deletion::"
-                  + ", ".join(deleted)
-                  + " — append-only checkpoint refuses deletions",
-                  flush=True,
-              )
-              raise SystemExit(2)
-
-          summary_file = root / "data/prophet_stage_shadow/summary.json"
-          if not summary_file.is_file():
-              print("::error title=Prophet Stage summary missing::no effective projection was emitted", flush=True)
-              raise SystemExit(3)
-          summary = json.loads(summary_file.read_text(encoding="utf-8"))
-          projection = shadow._project_shadow_ledger(data_root)
-          expected_entries = shadow.collect_prophet_entries(site_root, data_root)
-          missing_ids, unexpected_ids = shadow.projection_membership_gaps(
-              expected_entries, projection
-          )
-          receipt = summary.get("integrity_projection") or {}
-          if (
-              summary.get("schema") != shadow.SUMMARY_SCHEMA
-              or projection.authority_error is not None
-              or receipt.get("authority_error") is not None
-              or receipt.get("raw_rows") != projection.raw_count
-              or receipt.get("revision_rows") != projection.revision_count
-              or receipt.get("effective_rows") != len(projection.rows)
-              or summary.get("n_entries") != len(projection.rows)
-              # Lossless cohort contract: collect_prophet_entries already applies
-              # current canonical quarantine. Every remaining expected plan must
-              # have exactly one effective shadow row, and no orphan row may survive.
-              or missing_ids
-              or unexpected_ids
-          ):
-              print(
-                  "::error title=Prophet Stage projection mismatch::"
-                  "raw ledger, append-only revisions and summary do not form one "
-                  "validated effective projection; checkpoint withheld",
-                  flush=True,
-              )
-              raise SystemExit(4)
-
-          changed = sorted(path for path, value in after.items() if before.get(path) != value)
-          with Path(os.environ["STAGE_DELTA"]).open("w", encoding="utf-8") as handle:
-              for rel in changed:
-                  handle.write(f"{rel}\t{before.get(rel, 'MISSING')}\t{after[rel]}\n")
-          PY
-          manifest_rc=$?
-          if [ "$manifest_rc" -eq 0 ]; then
-            echo "succeeded=true" >> "$GITHUB_OUTPUT"
-            echo "delta_manifest=$STAGE_DELTA" >> "$GITHUB_OUTPUT"
-          else
-            echo "succeeded=false" >> "$GITHUB_OUTPUT"
-            echo "::warning title=Prophet Stage manifest::accrual returned 0 but its effective projection could not be proven (rc=$manifest_rc); checkpoint withheld"
-          fi
-          exit 0
+        run: bash scripts/ci/daily_engine_stage_shadow.sh
       - name: checkpoint Prophet Stage-shadow accrual to main
-        id: prophet_stage_checkpoint
+        id: native_publication_shadow_stage
         if: steps.prophet_stage_shadow.outputs.succeeded == 'true'
         timeout-minutes: 10
         continue-on-error: true
         env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_shadow_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           STAGE_DELTA_MANIFEST: ${{ steps.prophet_stage_shadow.outputs.delta_manifest }}
           ACCEPTED_PROPHET_SHA: ${{ steps.prophet_accepted_source.outputs.accepted_sha }}
         # Raw PIT evidence, correction/grade revisions, and their summary move as
         # one hash-verified set from a clean worktree. A newer Prophet authority
         # projection or same-path Stage writer wins; there is no conflict override.
-        run: bash scripts/ci/daily_engine_stage_checkpoint.sh
+        run: |
+          # SOURCE-PINNED-WORKFLOW-SHELL: scripts/ci/daily_engine_stage_checkpoint.sh native_publication_shadow_stage
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+          case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
+          case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_engine_stage_checkpoint.sh)" in
+            100644*|100755*) : ;; *) exit 76 ;;
+          esac
+          NATIVE_PUBLISHER_SCRIPT="${RUNNER_TEMP%/}/native-publication-shell-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-native_publication_shadow_stage.sh"
+          (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/daily_engine_stage_checkpoint.sh" > "$NATIVE_PUBLISHER_SCRIPT")
+          chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+          bash "$NATIVE_PUBLISHER_SCRIPT"
+      - name: Upload original shadow checkpoint origin
+        id: native_publication_shadow_stage_origin
+        if: ${{ always() && steps.native_publication_shadow_stage.outcome == 'success' && steps.native_publication_shadow_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_shadow_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_shadow_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm original shadow checkpoint protected publication
+        id: prophet_stage_checkpoint
+        continue-on-error: true
+        if: ${{ always() && steps.native_publication_shadow_stage.outcome == 'success' && (steps.native_publication_shadow_stage.outputs.native_origin_path == '' || steps.native_publication_shadow_stage_origin.outcome == 'success') }}
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_shadow_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_shadow_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_shadow_stage.outputs.native_deadline }}
+          NATIVE_INDEX_SHA256: ${{ steps.native_publication_shadow_stage.outputs.index_sha256 }}
+          LEGACY_R2_READY: ${{ steps.native_publication_shadow_stage.outputs.r2_ready }}
+          LEGACY_SOURCE_SHA: ${{ steps.native_publication_shadow_stage.outputs.checkpoint_sha }}
+          CHECKPOINT_ROOT: ${{ steps.native_publication_shadow_stage.outputs.checkpoint_root }}
+          CHECKPOINT_DIR: ${{ steps.native_publication_shadow_stage.outputs.checkpoint_dir }}
+          CHECKPOINT_BRANCH: ${{ steps.native_publication_shadow_stage.outputs.checkpoint_branch }}
+        run: |
+          # SOURCE-PINNED-WORKFLOW-SHELL: scripts/ci/native_checkpoint_settle.sh prophet_stage_checkpoint
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+          case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
+          case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_checkpoint_settle.sh)" in
+            100644*|100755*) : ;; *) exit 76 ;;
+          esac
+          NATIVE_PUBLISHER_SCRIPT="${RUNNER_TEMP%/}/native-publication-shell-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-prophet_stage_checkpoint.sh"
+          (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/native_checkpoint_settle.sh" > "$NATIVE_PUBLISHER_SCRIPT")
+          chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+          bash "$NATIVE_PUBLISHER_SCRIPT"
       - name: Prophet Live arming pass (provisional-close trigger pack -> R2)
         # AFTER build_site (same close stores the board was built from). Probes the
         # SAME close-only admission gate (engine/signal_gate.py) with candidate
@@ -3408,10 +3079,71 @@ jobs:
       # cap before the sole broad publisher. Persist the core public tree here;
       # the existing final publisher remains the second cut for later tail outputs.
       - name: checkpoint core engine outputs to main (durable before tail desks)
+        id: native_publication_core_stage
         if: always()
         timeout-minutes: 25
         continue-on-error: true
-        run: bash scripts/ci/daily_engine_commit_outputs.sh
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_core_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # SOURCE-PINNED-WORKFLOW-SHELL: scripts/ci/daily_engine_commit_outputs.sh native_publication_core_stage
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+          case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
+          case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_engine_commit_outputs.sh)" in
+            100644*|100755*) : ;; *) exit 76 ;;
+          esac
+          NATIVE_PUBLISHER_SCRIPT="${RUNNER_TEMP%/}/native-publication-shell-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-native_publication_core_stage.sh"
+          (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/daily_engine_commit_outputs.sh" > "$NATIVE_PUBLISHER_SCRIPT")
+          chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+          bash "$NATIVE_PUBLISHER_SCRIPT"
+      - name: Upload original native_publication_core_stage origin
+        id: native_publication_core_stage_origin
+        if: ${{ always() && steps.native_publication_core_stage.outcome == 'success' && steps.native_publication_core_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_core_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_core_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm original native_publication_core_stage protected publication
+        id: native_publication_core
+        continue-on-error: true
+        if: ${{ always() && steps.native_publication_core_stage.outcome == 'success' && (steps.native_publication_core_stage.outputs.native_origin_path == '' || steps.native_publication_core_stage_origin.outcome == 'success') }}
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_core_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_core_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_core_stage.outputs.native_deadline }}
+        run: |
+          # SOURCE-PINNED-WORKFLOW-SHELL: scripts/ci/native_checkpoint_settle.sh native_publication_core
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+          case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
+          case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_checkpoint_settle.sh)" in
+            100644*|100755*) : ;; *) exit 76 ;;
+          esac
+          NATIVE_PUBLISHER_SCRIPT="${RUNNER_TEMP%/}/native-publication-shell-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-native_publication_core.sh"
+          (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/native_checkpoint_settle.sh" > "$NATIVE_PUBLISHER_SCRIPT")
+          chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+          bash "$NATIVE_PUBLISHER_SCRIPT"
       # QLEDGER CARVE CUSTODY (scripts/ci/qledger_carve.sh): the committer restores the
       # carved runner-local ledger bytes from its EXIT trap; the 25m step timeout or a
       # job cancel can SIGKILL it first, so this always() step restores from the
@@ -4338,35 +4070,7 @@ jobs:
         # site/intlstockdata) directly from the committed caches — independent of the
         # dashboard render — and surfaces any failure as an annotation without
         # aborting the deploy. Idempotent.
-        run: |
-          set +e
-          libdir() {
-            case "$1" in
-              scripts.build_china_library) echo site/chinastockdata;;
-              scripts.build_hk_library) echo site/hkstockdata;;
-              scripts.build_canada_library) echo site/canadastockdata;;
-              scripts.build_intl_library) echo site/intlstockdata;;
-            esac
-          }
-          for mod in scripts.build_canada_library scripts.build_intl_library; do
-            idx="$(libdir "$mod")/index.json"
-            # Skip a market whose dashboard step already built its library FRESH this run
-            # (index.json newer than the job-start marker). This rebuild is a FAILURE-PATH
-            # safety net — on the success path the same heavy analyze() over the whole
-            # universe already ran, so rebuilding is pure duplicate work. A dashboard that
-            # swallowed an error leaves an older (pulled) index.json => marker is newer =>
-            # we still rebuild and the library ships.
-            if [ -f "$RUNNER_TEMP/engine_libs_marker" ] && [ "$idx" -nt "$RUNNER_TEMP/engine_libs_marker" ]; then
-              echo "::notice::$mod — already built fresh this run ($idx); skipping redundant rebuild"
-              continue
-            fi
-            echo "::group::$mod"; python -m "$mod" > "$RUNNER_TEMP/lib.log" 2>&1; rc=$?; cat "$RUNNER_TEMP/lib.log"; echo "::endgroup::"
-            if [ "$rc" -ne 0 ]; then
-              echo "::error title=$mod failed (rc=$rc)::$(tail -n 2 "$RUNNER_TEMP/lib.log" | tr '\n' ' ' | tail -c 600)"
-              { echo "### ❌ $mod failed (rc=$rc)"; echo '```'; tail -n 40 "$RUNNER_TEMP/lib.log"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
-            fi
-          done
-          exit 0
+        run: bash scripts/ci/daily_engine_stock_search.sh
       - name: watchlist buy-zone sentinel (B6 — fail-soft; skips when creds absent)
         # B6: reads operator Supabase watchlist (two-table schema: watchlists + watchlist_symbols),
         # diffs vs yesterday's per-ticker state, emits buy-zone-enter alerts to
@@ -4864,6 +4568,7 @@ jobs:
       - name: timings band — commit-publish (W2)
         run: python3 scripts/nightly_timings.py mark --band commit-publish || echo "::warning::timings band mark failed (non-fatal)"
       - name: commit chronicle artifacts
+        id: native_publication_chronicle_stage
         if: always()
         # always() for the same reason as the build step above — and it matters
         # more here: a build that ran but whose commit was skipped leaves the
@@ -4887,43 +4592,66 @@ jobs:
         # the object id; the dirty render tree is never touched. Local main stays on
         # the original chronicle commit — the engine push loop below rebases it out
         # as an already-applied patch, exactly as the old porcelain flow did.
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_chronicle_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          git config user.name "dashboard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add data/chronicle 2>/dev/null || true
-          if git diff --cached --quiet; then echo "no chronicle changes"; exit 0; fi
-          CHRONICLE_PARENT=$(git rev-parse HEAD)
-          git commit -m "chronicle: nightly event spine + state_log + rollups $(date -u +%F)"
-          CHRONICLE_COMMIT=$(git rev-parse HEAD)
-          CHRONICLE_MESSAGE=$(git log -1 --format=%B "$CHRONICLE_COMMIT")
-          PUSH_ALARM=420
-          push_retry_init "chronicle artifacts"
-          while push_attempt; do
-            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
-            if CHRONICLE_PUBLISH=$(push_metadata_replay_commit "$CHRONICLE_PARENT" origin/main \
-                "$CHRONICLE_COMMIT" "$CHRONICLE_MESSAGE" "${RUNNER_TEMP:-/tmp}/chronicle-replay.idx"); then
-              # A replay whose tree equals origin/main means the chronicle content
-              # already landed (e.g. a prior attempt's push worked but its alarm
-              # misread it) — pushing it would create an empty duplicate commit.
-              if [ "$(git rev-parse "$CHRONICLE_PUBLISH^{tree}")" = "$(git rev-parse origin/main^{tree})" ]; then
-                echo "chronicle content already on origin/main — nothing to push"
-                push_won; exit 0
-              fi
-              if push_do origin "$CHRONICLE_PUBLISH:refs/heads/main"; then
-                echo "pushed chronicle artifacts on attempt $PUSH_ATTEMPT (metadata replay — dirty render tree untouched)"
-                push_won; exit 0
-              fi
-            else
-              # data/chronicle is single-writer: a replay conflict means another
-              # writer touched it on main — anomalous, surface it while retrying.
-              echo "::warning title=chronicle replay conflict::newer main changed data/chronicle differently (single-writer contract broken?) — retrying"
-              PUSH_FAIL_CLASS="rebase-conflict"
-            fi
-            push_backoff
-          done
-          push_lost
-          echo "::warning::could not push chronicle artifacts after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal — the local chronicle commit still rides the engine push loop below)"
+          # SOURCE-PINNED-WORKFLOW-SHELL: scripts/ci/daily_engine_chronicle_publish.sh native_publication_chronicle_stage
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+          case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
+          case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_engine_chronicle_publish.sh)" in
+            100644*|100755*) : ;; *) exit 76 ;;
+          esac
+          NATIVE_PUBLISHER_SCRIPT="${RUNNER_TEMP%/}/native-publication-shell-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-native_publication_chronicle_stage.sh"
+          (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/daily_engine_chronicle_publish.sh" > "$NATIVE_PUBLISHER_SCRIPT")
+          chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+          bash "$NATIVE_PUBLISHER_SCRIPT"
+      - name: Upload original native_publication_chronicle_stage origin
+        id: native_publication_chronicle_stage_origin
+        if: ${{ always() && steps.native_publication_chronicle_stage.outcome == 'success' && steps.native_publication_chronicle_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_chronicle_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_chronicle_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm original native_publication_chronicle_stage protected publication
+        id: native_publication_chronicle
+        if: ${{ always() && steps.native_publication_chronicle_stage.outcome == 'success' && (steps.native_publication_chronicle_stage.outputs.native_origin_path == '' || steps.native_publication_chronicle_stage_origin.outcome == 'success') }}
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_chronicle_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_chronicle_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_chronicle_stage.outputs.native_deadline }}
+        run: |
+          # SOURCE-PINNED-WORKFLOW-SHELL: scripts/ci/native_checkpoint_settle.sh native_publication_chronicle
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+          case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
+          case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_checkpoint_settle.sh)" in
+            100644*|100755*) : ;; *) exit 76 ;;
+          esac
+          NATIVE_PUBLISHER_SCRIPT="${RUNNER_TEMP%/}/native-publication-shell-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-native_publication_chronicle.sh"
+          (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/native_checkpoint_settle.sh" > "$NATIVE_PUBLISHER_SCRIPT")
+          chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+          bash "$NATIVE_PUBLISHER_SCRIPT"
       - name: build mastermind context (NW bridge)
         if: always()
         # NW → Mastermind bridge W1: compile data/neuralweb/mastermind_context.json and
@@ -5019,8 +4747,68 @@ jobs:
         # never kills the nightly.
         run: python -m scripts.build_options_flow_attention || echo "::warning::build_options_flow_attention failed (non-fatal — reflex dormant this run)"
       - name: commit engine outputs
+        id: native_publication_stage
         if: always()   # commit the freshly-built pages even if a LATER optional builder times out or is cancelled. pages.yml deploys the COMMITTED main tree, so a skipped commit = stale live site. The builders are individually resilient (each leaves the prior page in place on its own error), so partial output is never broken — committing what built beats shipping nothing.
-        run: bash scripts/ci/daily_engine_commit_outputs.sh
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # SOURCE-PINNED-WORKFLOW-SHELL: scripts/ci/daily_engine_commit_outputs.sh native_publication_stage
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+          case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
+          case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_engine_commit_outputs.sh)" in
+            100644*|100755*) : ;; *) exit 76 ;;
+          esac
+          NATIVE_PUBLISHER_SCRIPT="${RUNNER_TEMP%/}/native-publication-shell-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-native_publication_stage.sh"
+          (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/daily_engine_commit_outputs.sh" > "$NATIVE_PUBLISHER_SCRIPT")
+          chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+          bash "$NATIVE_PUBLISHER_SCRIPT"
+      - name: Upload original native_publication_stage origin
+        id: native_publication_stage_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm original native_publication_stage protected publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && (steps.native_publication_stage.outputs.native_origin_path == '' || steps.native_publication_stage_origin.outcome == 'success') }}
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+        run: |
+          # SOURCE-PINNED-WORKFLOW-SHELL: scripts/ci/native_checkpoint_settle.sh native_publication
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
+          case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
+          case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_checkpoint_settle.sh)" in
+            100644*|100755*) : ;; *) exit 76 ;;
+          esac
+          NATIVE_PUBLISHER_SCRIPT="${RUNNER_TEMP%/}/native-publication-shell-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}-native_publication.sh"
+          (set -o noclobber; GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show "$GITHUB_WORKFLOW_SHA:scripts/ci/native_checkpoint_settle.sh" > "$NATIVE_PUBLISHER_SCRIPT")
+          chmod 400 "$NATIVE_PUBLISHER_SCRIPT"
+          bash "$NATIVE_PUBLISHER_SCRIPT"
       - name: restore carved qledger bytes after the engine commit (runner-local, never published)
         if: always()
         run: . scripts/ci/qledger_carve.sh; qledger_carve_restore_from_file
@@ -5196,6 +4984,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_factor_series_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -5310,6 +5103,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_factor_panel_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -5465,6 +5263,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_oracle_offrender_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -5591,6 +5394,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_tech_lab_offrender_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -5878,6 +5686,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_standout_audit_us_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -6005,6 +5818,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_us_scan_tier_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -6213,6 +6031,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_us_prophet_ledgers_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -6307,6 +6130,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_stock_briefs_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -6512,6 +6340,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_cortex_commit.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -6670,6 +6503,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_causal_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -6737,6 +6575,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_foundry_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -6835,6 +6678,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_active_build_map_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac
@@ -6927,6 +6775,11 @@ jobs:
           [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
           [ "$GITHUB_WORKFLOW_SHA" = "$GITHUB_SHA" ]
           case "${RUNNER_TEMP:-}" in /*) : ;; *) exit 76 ;; esac
+          # A main DATA checkout may be newer than this original workflow invocation.
+          # Obtain ONLY its exact immutable source object on the existing origin/carrier.
+          if ! GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git cat-file -e "$GITHUB_WORKFLOW_SHA^{commit}"; then
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch --no-tags --no-write-fetch-head origin "$GITHUB_WORKFLOW_SHA"
+          fi
           case "$(GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/daily_ledger_heartbeat_publish.sh)" in
             100644*|100755*) : ;; *) exit 76 ;;
           esac

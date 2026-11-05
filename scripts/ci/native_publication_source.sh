@@ -8,6 +8,7 @@ _native_publication_source_paths() {
     .github/workflows/merge-on-green.yml \
     .github/workflows/trusted-ci-executor.yml \
     engine/__init__.py \
+    engine/commodity_decision_workspace.py \
     engine/qledger_store.py \
     engine/qledger_store_native.py \
     engine/qledger_store_protocol.py \
@@ -15,13 +16,22 @@ _native_publication_source_paths() {
     scripts/__init__.py \
     scripts/audit_unrun_tests.py \
     scripts/check_runner_policy.py \
+    scripts/check_commodity_publication.py \
+    scripts/check_conflict_markers.py \
+    scripts/check_site_asset_refs.py \
+    scripts/check_start_runtime.py \
     scripts/ci/fms_persist.py \
     scripts/ci/govrev_source_binding.py \
+    scripts/ci/native_checkpoint.py \
     scripts/ci/native_publication.py \
     scripts/ci/native_publication_origin.py \
     scripts/ci/native_queue_push.py \
+    scripts/ci/options_index_lock_identity.py \
+    scripts/ci/options_signal_nightly.sh \
     scripts/ci/push_retry.sh \
     scripts/ci/qledger_publication.py \
+    scripts/ci/qledger_carve.sh \
+    scripts/ci/strip_conflict_markers.sh \
     scripts/ci_admission_stages.py \
     scripts/ci_apt_cold_acquisition.py \
     scripts/ci_apt_native_plan.py \

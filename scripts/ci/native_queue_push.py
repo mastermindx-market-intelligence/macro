@@ -433,6 +433,7 @@ def producer_identity(head, digest, *, require_staging_step=True,publishing_step
                      'cortex': '.github/workflows/daily.yml',
                      'collect': '.github/workflows/daily.yml',
                      'causal': '.github/workflows/daily.yml',
+                     'engine': '.github/workflows/daily.yml',
                      'capital_structure': '.github/workflows/daily.yml',
                      'collect_tail': '.github/workflows/daily.yml',
                      'factor_series': '.github/workflows/daily.yml',
@@ -670,6 +671,8 @@ def prepare_publication(root, arguments, deadline):
         raise PublicationHeld('original_publication_budget_expired')
     if os.environ.get('NATIVE_PUBLICATION_EXPECT_OFF')=='1':
         raise PublicationHeld('native_mode_changed_after_legacy_selection')
+    if os.environ.get('NATIVE_PUBLICATION_CANDIDATE_UNQUALIFIED') == '1':
+        raise PublicationHeld('native_original_candidate_preparation_unqualified')
     arguments=list(arguments)
     source_ref=arguments[-1].split(':')[0] if len(arguments)==2 and ':' in arguments[-1] else 'HEAD'
     return PENDING, stage(api, root, target, head, repository_id,source_ref=source_ref)
