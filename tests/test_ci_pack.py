@@ -887,14 +887,14 @@ def test_code_owner_executes_company_intelligence_refresh_contract(real_manifest
             for step in job.definition["steps"]
             if isinstance(step, dict)
         )
-        assert "tests/test_company_intelligence_refresh.py" in commands
+        assert "tests/test_company_intelligence_refresh.py" in commands  # ci-trigger-closure: data — suite NAME checked in manifest commands, not opened
 
     assert by_id["prophet-lab"].is_scoped, "code-owner proof needs inferred scope"
     code_jobs = [job for job in jobs if job.gate == "code"]
     for changed in (
-        "scripts/refresh_company_intelligence.py",
-        ".github/workflows/company-intelligence.yml",
-        "tests/test_company_intelligence_refresh.py",
+        "scripts/refresh_company_intelligence.py",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        ".github/workflows/company-intelligence.yml",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "tests/test_company_intelligence_refresh.py",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
     ):
         selected, reason = PACK.select_jobs(code_jobs, [changed])
         assert "prophet-lab" in {item.job_id for item in selected}, reason
