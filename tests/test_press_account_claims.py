@@ -102,3 +102,16 @@ def test_signup_claims_reads_only_existing_recent_ledger_bound_and_never_writes(
     assert out['rows'][0]['publication_id']=='press-brief-21'
     assert "('press-brief-0'," not in calls[0]
     assert {p:p.read_bytes() for p in root.rglob('*') if p.is_file()}==before
+
+
+def test_signup_claims_accepts_valid_positive_and_singleton_aggregates(tmp_path):
+    root=_seed(tmp_path)
+    for count in (1,3):
+        row=_claim_response(count=count)
+        if count==1:
+            row['latest_signup_at']=row['earliest_signup_at']
+        result=_read(root,lambda sql:[row])['signup_claims']
+        assert result['status']=='available'
+        assert result['rows'][0]['publication_id']=='press-brief-1'
+        assert result['rows'][0]['active_accounts_claiming_content']==count
+        assert result['rows'][0]['desk']=='brief'
