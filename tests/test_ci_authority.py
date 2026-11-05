@@ -854,6 +854,19 @@ def test_workflow_is_required_workflow_shaped_and_never_executes_candidate() -> 
     assert "metadata-only retarget seam" in source
 
 
+def test_authority_events_queue_without_cancelling_required_execution() -> None:
+    # An edited-event verdict cannot replace the required opened/synchronize
+    # execution. A single pending slot also cancels an earlier pending event
+    # during a burst; both running and pending authority runs must be retained.
+    concurrency = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))["concurrency"]
+    assert concurrency["cancel-in-progress"] is False
+    assert concurrency["queue"] == "max"
+    assert concurrency["group"] == (
+        "ci-authority-${{ github.event.pull_request.number || "
+        "github.event.merge_group.head_sha || github.run_id }}"
+    )
+
+
 # ---------------------------------------------------------------------------
 # Bounded retry-with-backoff on the GitHubApi REST client.
 #

@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-20T22:26:05Z",
+ "accession": "0001736297-26-000010",
+ "cik": "0001736297",
+ "doc_byte_length": 2244526,
+ "doc_sha256": "df72dc9ec1ea2954a7236c64d661a1635e2133904cea45f58abe678960520f2d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "alab-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1428449,
+  "byte_start": 1427399,
+  "normalized": "Customer D 16 %24",
+  "normalized_sha256": "a3dc39b0880855956c70c4a173c166aa9bae745819b3e507295bbe77ff175fb2",
+  "raw": "Customer D </span></div></td><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:top\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-57\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-397\">16</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:2px 1pt 2px 0;text-align:right;vertical-align:top\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:top\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-58\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-398\">24",
+  "raw_sha256": "2940b59184573cbce5f1b75cfbd4043971cdadb14f58a1c0a8c15c80b8aeeabe"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1736297/000173629726000010/alab-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 28731,
+   "byte_start": 28055,
+   "context_ref": "c-58",
+   "raw": "<xbrli:context id=\"c-58\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001736297</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">alab:CustomerDMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "c4498630dbafe1a0e6231a4c0f49c9bae7d01e9c0ed487dac0cee6ecde8bbdbf"
+  }
+ ]
+}

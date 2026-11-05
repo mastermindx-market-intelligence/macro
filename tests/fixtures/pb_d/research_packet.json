@@ -1,0 +1,2154 @@
+{
+  "cohort": {
+    "cohort_id": "synthetic-e2e-20261007",
+    "cuts": [
+      {
+        "board_receipt": {
+          "board_as_of_at": "2026-10-06T20:00:00Z",
+          "board_session_date": "2026-10-06",
+          "generated_at": "2026-10-07T12:15:00Z",
+          "lane": "buy",
+          "population": "us_prophet_v3",
+          "price_as_of_at": "2026-10-06T20:00:00Z",
+          "price_session_date": "2026-10-06",
+          "price_source_vintage": "SYNTHETIC_NOT_MARKET_PRICES",
+          "published": true,
+          "receipt_id": "SYNTHETIC_NOT_A_PUBLISHED_BOARD",
+          "received_at": "2026-10-07T12:45:00Z",
+          "source_snapshot_sha256": "16b89c2a8d0b601bebf0fe7bc4d778fab44e555e697d1cb1836ffd7ce7e6c59d",
+          "versions": {
+            "attention": "legacy-n-recent-ge-3",
+            "benchmark_mapping": "synthetic-Tech-XLK",
+            "board_population": "synthetic-us-v3-buy-fixture",
+            "config_digest": "bcd7feab1adb91e7425b0c1187bd890d4d851520f15dca94ff675a38bbda3955",
+            "label_spec": "PB_D_EVENT_QUALITY_LABEL_SPEC/v1.0",
+            "price_convention": "synthetic-common-adjusted-prices",
+            "technical": "synthetic-emitted-t2-receipt-no-engine-execution"
+          }
+        },
+        "decision_date": "2026-10-07",
+        "quality_by_observation": {},
+        "rows": [
+          {
+            "attention_coverage_complete": true,
+            "attention_n_recent": 3,
+            "benchmark_mapping_complete": true,
+            "canonical_issuer_id": "cik:0000320193",
+            "emitted_tier": "T2",
+            "native_event_date": "2026-10-06",
+            "native_event_id": "synthetic-native-event/cik:0000320193",
+            "native_t2_age": 0,
+            "native_t2_age_unit": "native_2D_ticks",
+            "observation_id": "synthetic-observation/cik:0000320193",
+            "sector": "Technology",
+            "sector_benchmark": "XLK",
+            "technical_attested": true,
+            "technical_receipt_id": "synthetic-native-receipt/cik:0000320193",
+            "ticker_at_cut": "SYNTHETIC"
+          },
+          {
+            "attention_coverage_complete": true,
+            "attention_n_recent": 3,
+            "benchmark_mapping_complete": true,
+            "canonical_issuer_id": "cik:0000000002",
+            "emitted_tier": "T2",
+            "native_event_date": "2026-10-06",
+            "native_event_id": "synthetic-native-event/cik:0000000002",
+            "native_t2_age": 0,
+            "native_t2_age_unit": "native_2D_ticks",
+            "observation_id": "synthetic-observation/cik:0000000002",
+            "sector": "Technology",
+            "sector_benchmark": "XLK",
+            "technical_attested": true,
+            "technical_receipt_id": "synthetic-native-receipt/cik:0000000002",
+            "ticker_at_cut": "SYNTHCONTROL2"
+          },
+          {
+            "attention_coverage_complete": true,
+            "attention_n_recent": 3,
+            "benchmark_mapping_complete": true,
+            "canonical_issuer_id": "cik:0000000003",
+            "emitted_tier": "T2",
+            "native_event_date": "2026-10-06",
+            "native_event_id": "synthetic-native-event/cik:0000000003",
+            "native_t2_age": 0,
+            "native_t2_age_unit": "native_2D_ticks",
+            "observation_id": "synthetic-observation/cik:0000000003",
+            "sector": "Technology",
+            "sector_benchmark": "XLK",
+            "technical_attested": true,
+            "technical_receipt_id": "synthetic-native-receipt/cik:0000000003",
+            "ticker_at_cut": "SYNTHCONTROL3"
+          },
+          {
+            "attention_coverage_complete": true,
+            "attention_n_recent": 3,
+            "benchmark_mapping_complete": true,
+            "canonical_issuer_id": "cik:0000000004",
+            "emitted_tier": "T2",
+            "native_event_date": "2026-10-06",
+            "native_event_id": "synthetic-native-event/cik:0000000004",
+            "native_t2_age": 0,
+            "native_t2_age_unit": "native_2D_ticks",
+            "observation_id": "synthetic-observation/cik:0000000004",
+            "sector": "Technology",
+            "sector_benchmark": "XLK",
+            "technical_attested": true,
+            "technical_receipt_id": "synthetic-native-receipt/cik:0000000004",
+            "ticker_at_cut": "SYNTHUNKNOWN"
+          }
+        ]
+      }
+    ],
+    "first_cut_date": "2026-10-07",
+    "operation_key": "PB-D-T2-EVENT-QUALITY-20261007",
+    "schedule": {
+      "calendar_id": "XNYS",
+      "coverage_end": "2027-10-28",
+      "coverage_start": "2026-10-02",
+      "sessions": [
+        {
+          "market_close": "2026-10-02T16:00:00-04:00",
+          "market_open": "2026-10-02T09:30:00-04:00",
+          "session_date": "2026-10-02"
+        },
+        {
+          "market_close": "2026-10-05T16:00:00-04:00",
+          "market_open": "2026-10-05T09:30:00-04:00",
+          "session_date": "2026-10-05"
+        },
+        {
+          "market_close": "2026-10-06T16:00:00-04:00",
+          "market_open": "2026-10-06T09:30:00-04:00",
+          "session_date": "2026-10-06"
+        },
+        {
+          "market_close": "2026-10-07T16:00:00-04:00",
+          "market_open": "2026-10-07T09:30:00-04:00",
+          "session_date": "2026-10-07"
+        },
+        {
+          "market_close": "2026-10-08T16:00:00-04:00",
+          "market_open": "2026-10-08T09:30:00-04:00",
+          "session_date": "2026-10-08"
+        },
+        {
+          "market_close": "2026-10-09T16:00:00-04:00",
+          "market_open": "2026-10-09T09:30:00-04:00",
+          "session_date": "2026-10-09"
+        },
+        {
+          "market_close": "2026-10-12T16:00:00-04:00",
+          "market_open": "2026-10-12T09:30:00-04:00",
+          "session_date": "2026-10-12"
+        },
+        {
+          "market_close": "2026-10-13T16:00:00-04:00",
+          "market_open": "2026-10-13T09:30:00-04:00",
+          "session_date": "2026-10-13"
+        },
+        {
+          "market_close": "2026-10-14T16:00:00-04:00",
+          "market_open": "2026-10-14T09:30:00-04:00",
+          "session_date": "2026-10-14"
+        },
+        {
+          "market_close": "2026-10-15T16:00:00-04:00",
+          "market_open": "2026-10-15T09:30:00-04:00",
+          "session_date": "2026-10-15"
+        },
+        {
+          "market_close": "2026-10-16T16:00:00-04:00",
+          "market_open": "2026-10-16T09:30:00-04:00",
+          "session_date": "2026-10-16"
+        },
+        {
+          "market_close": "2026-10-19T16:00:00-04:00",
+          "market_open": "2026-10-19T09:30:00-04:00",
+          "session_date": "2026-10-19"
+        },
+        {
+          "market_close": "2026-10-20T16:00:00-04:00",
+          "market_open": "2026-10-20T09:30:00-04:00",
+          "session_date": "2026-10-20"
+        },
+        {
+          "market_close": "2026-10-21T16:00:00-04:00",
+          "market_open": "2026-10-21T09:30:00-04:00",
+          "session_date": "2026-10-21"
+        },
+        {
+          "market_close": "2026-10-22T16:00:00-04:00",
+          "market_open": "2026-10-22T09:30:00-04:00",
+          "session_date": "2026-10-22"
+        },
+        {
+          "market_close": "2026-10-23T16:00:00-04:00",
+          "market_open": "2026-10-23T09:30:00-04:00",
+          "session_date": "2026-10-23"
+        },
+        {
+          "market_close": "2026-10-26T16:00:00-04:00",
+          "market_open": "2026-10-26T09:30:00-04:00",
+          "session_date": "2026-10-26"
+        },
+        {
+          "market_close": "2026-10-27T16:00:00-04:00",
+          "market_open": "2026-10-27T09:30:00-04:00",
+          "session_date": "2026-10-27"
+        },
+        {
+          "market_close": "2026-10-28T16:00:00-04:00",
+          "market_open": "2026-10-28T09:30:00-04:00",
+          "session_date": "2026-10-28"
+        },
+        {
+          "market_close": "2026-10-29T16:00:00-04:00",
+          "market_open": "2026-10-29T09:30:00-04:00",
+          "session_date": "2026-10-29"
+        },
+        {
+          "market_close": "2026-10-30T16:00:00-04:00",
+          "market_open": "2026-10-30T09:30:00-04:00",
+          "session_date": "2026-10-30"
+        },
+        {
+          "market_close": "2026-11-02T16:00:00-05:00",
+          "market_open": "2026-11-02T09:30:00-05:00",
+          "session_date": "2026-11-02"
+        },
+        {
+          "market_close": "2026-11-03T16:00:00-05:00",
+          "market_open": "2026-11-03T09:30:00-05:00",
+          "session_date": "2026-11-03"
+        },
+        {
+          "market_close": "2026-11-04T16:00:00-05:00",
+          "market_open": "2026-11-04T09:30:00-05:00",
+          "session_date": "2026-11-04"
+        },
+        {
+          "market_close": "2026-11-05T16:00:00-05:00",
+          "market_open": "2026-11-05T09:30:00-05:00",
+          "session_date": "2026-11-05"
+        },
+        {
+          "market_close": "2026-11-06T16:00:00-05:00",
+          "market_open": "2026-11-06T09:30:00-05:00",
+          "session_date": "2026-11-06"
+        },
+        {
+          "market_close": "2026-11-09T16:00:00-05:00",
+          "market_open": "2026-11-09T09:30:00-05:00",
+          "session_date": "2026-11-09"
+        },
+        {
+          "market_close": "2026-11-10T16:00:00-05:00",
+          "market_open": "2026-11-10T09:30:00-05:00",
+          "session_date": "2026-11-10"
+        },
+        {
+          "market_close": "2026-11-11T16:00:00-05:00",
+          "market_open": "2026-11-11T09:30:00-05:00",
+          "session_date": "2026-11-11"
+        },
+        {
+          "market_close": "2026-11-12T16:00:00-05:00",
+          "market_open": "2026-11-12T09:30:00-05:00",
+          "session_date": "2026-11-12"
+        },
+        {
+          "market_close": "2026-11-13T16:00:00-05:00",
+          "market_open": "2026-11-13T09:30:00-05:00",
+          "session_date": "2026-11-13"
+        },
+        {
+          "market_close": "2026-11-16T16:00:00-05:00",
+          "market_open": "2026-11-16T09:30:00-05:00",
+          "session_date": "2026-11-16"
+        },
+        {
+          "market_close": "2026-11-17T16:00:00-05:00",
+          "market_open": "2026-11-17T09:30:00-05:00",
+          "session_date": "2026-11-17"
+        },
+        {
+          "market_close": "2026-11-18T16:00:00-05:00",
+          "market_open": "2026-11-18T09:30:00-05:00",
+          "session_date": "2026-11-18"
+        },
+        {
+          "market_close": "2026-11-19T16:00:00-05:00",
+          "market_open": "2026-11-19T09:30:00-05:00",
+          "session_date": "2026-11-19"
+        },
+        {
+          "market_close": "2026-11-20T16:00:00-05:00",
+          "market_open": "2026-11-20T09:30:00-05:00",
+          "session_date": "2026-11-20"
+        },
+        {
+          "market_close": "2026-11-23T16:00:00-05:00",
+          "market_open": "2026-11-23T09:30:00-05:00",
+          "session_date": "2026-11-23"
+        },
+        {
+          "market_close": "2026-11-24T16:00:00-05:00",
+          "market_open": "2026-11-24T09:30:00-05:00",
+          "session_date": "2026-11-24"
+        },
+        {
+          "market_close": "2026-11-25T16:00:00-05:00",
+          "market_open": "2026-11-25T09:30:00-05:00",
+          "session_date": "2026-11-25"
+        },
+        {
+          "market_close": "2026-11-26T16:00:00-05:00",
+          "market_open": "2026-11-26T09:30:00-05:00",
+          "session_date": "2026-11-26"
+        },
+        {
+          "market_close": "2026-11-27T16:00:00-05:00",
+          "market_open": "2026-11-27T09:30:00-05:00",
+          "session_date": "2026-11-27"
+        },
+        {
+          "market_close": "2026-11-30T16:00:00-05:00",
+          "market_open": "2026-11-30T09:30:00-05:00",
+          "session_date": "2026-11-30"
+        },
+        {
+          "market_close": "2026-12-01T16:00:00-05:00",
+          "market_open": "2026-12-01T09:30:00-05:00",
+          "session_date": "2026-12-01"
+        },
+        {
+          "market_close": "2026-12-02T16:00:00-05:00",
+          "market_open": "2026-12-02T09:30:00-05:00",
+          "session_date": "2026-12-02"
+        },
+        {
+          "market_close": "2026-12-03T16:00:00-05:00",
+          "market_open": "2026-12-03T09:30:00-05:00",
+          "session_date": "2026-12-03"
+        },
+        {
+          "market_close": "2026-12-04T16:00:00-05:00",
+          "market_open": "2026-12-04T09:30:00-05:00",
+          "session_date": "2026-12-04"
+        },
+        {
+          "market_close": "2026-12-07T16:00:00-05:00",
+          "market_open": "2026-12-07T09:30:00-05:00",
+          "session_date": "2026-12-07"
+        },
+        {
+          "market_close": "2026-12-08T16:00:00-05:00",
+          "market_open": "2026-12-08T09:30:00-05:00",
+          "session_date": "2026-12-08"
+        },
+        {
+          "market_close": "2026-12-09T16:00:00-05:00",
+          "market_open": "2026-12-09T09:30:00-05:00",
+          "session_date": "2026-12-09"
+        },
+        {
+          "market_close": "2026-12-10T16:00:00-05:00",
+          "market_open": "2026-12-10T09:30:00-05:00",
+          "session_date": "2026-12-10"
+        },
+        {
+          "market_close": "2026-12-11T16:00:00-05:00",
+          "market_open": "2026-12-11T09:30:00-05:00",
+          "session_date": "2026-12-11"
+        },
+        {
+          "market_close": "2026-12-14T16:00:00-05:00",
+          "market_open": "2026-12-14T09:30:00-05:00",
+          "session_date": "2026-12-14"
+        },
+        {
+          "market_close": "2026-12-15T16:00:00-05:00",
+          "market_open": "2026-12-15T09:30:00-05:00",
+          "session_date": "2026-12-15"
+        },
+        {
+          "market_close": "2026-12-16T16:00:00-05:00",
+          "market_open": "2026-12-16T09:30:00-05:00",
+          "session_date": "2026-12-16"
+        },
+        {
+          "market_close": "2026-12-17T16:00:00-05:00",
+          "market_open": "2026-12-17T09:30:00-05:00",
+          "session_date": "2026-12-17"
+        },
+        {
+          "market_close": "2026-12-18T16:00:00-05:00",
+          "market_open": "2026-12-18T09:30:00-05:00",
+          "session_date": "2026-12-18"
+        },
+        {
+          "market_close": "2026-12-21T16:00:00-05:00",
+          "market_open": "2026-12-21T09:30:00-05:00",
+          "session_date": "2026-12-21"
+        },
+        {
+          "market_close": "2026-12-22T16:00:00-05:00",
+          "market_open": "2026-12-22T09:30:00-05:00",
+          "session_date": "2026-12-22"
+        },
+        {
+          "market_close": "2026-12-23T16:00:00-05:00",
+          "market_open": "2026-12-23T09:30:00-05:00",
+          "session_date": "2026-12-23"
+        },
+        {
+          "market_close": "2026-12-24T16:00:00-05:00",
+          "market_open": "2026-12-24T09:30:00-05:00",
+          "session_date": "2026-12-24"
+        },
+        {
+          "market_close": "2026-12-25T16:00:00-05:00",
+          "market_open": "2026-12-25T09:30:00-05:00",
+          "session_date": "2026-12-25"
+        },
+        {
+          "market_close": "2026-12-28T16:00:00-05:00",
+          "market_open": "2026-12-28T09:30:00-05:00",
+          "session_date": "2026-12-28"
+        },
+        {
+          "market_close": "2026-12-29T16:00:00-05:00",
+          "market_open": "2026-12-29T09:30:00-05:00",
+          "session_date": "2026-12-29"
+        },
+        {
+          "market_close": "2026-12-30T16:00:00-05:00",
+          "market_open": "2026-12-30T09:30:00-05:00",
+          "session_date": "2026-12-30"
+        },
+        {
+          "market_close": "2026-12-31T16:00:00-05:00",
+          "market_open": "2026-12-31T09:30:00-05:00",
+          "session_date": "2026-12-31"
+        },
+        {
+          "market_close": "2027-01-01T16:00:00-05:00",
+          "market_open": "2027-01-01T09:30:00-05:00",
+          "session_date": "2027-01-01"
+        },
+        {
+          "market_close": "2027-01-04T16:00:00-05:00",
+          "market_open": "2027-01-04T09:30:00-05:00",
+          "session_date": "2027-01-04"
+        },
+        {
+          "market_close": "2027-01-05T16:00:00-05:00",
+          "market_open": "2027-01-05T09:30:00-05:00",
+          "session_date": "2027-01-05"
+        },
+        {
+          "market_close": "2027-01-06T16:00:00-05:00",
+          "market_open": "2027-01-06T09:30:00-05:00",
+          "session_date": "2027-01-06"
+        },
+        {
+          "market_close": "2027-01-07T16:00:00-05:00",
+          "market_open": "2027-01-07T09:30:00-05:00",
+          "session_date": "2027-01-07"
+        },
+        {
+          "market_close": "2027-01-08T16:00:00-05:00",
+          "market_open": "2027-01-08T09:30:00-05:00",
+          "session_date": "2027-01-08"
+        },
+        {
+          "market_close": "2027-01-11T16:00:00-05:00",
+          "market_open": "2027-01-11T09:30:00-05:00",
+          "session_date": "2027-01-11"
+        },
+        {
+          "market_close": "2027-01-12T16:00:00-05:00",
+          "market_open": "2027-01-12T09:30:00-05:00",
+          "session_date": "2027-01-12"
+        },
+        {
+          "market_close": "2027-01-13T16:00:00-05:00",
+          "market_open": "2027-01-13T09:30:00-05:00",
+          "session_date": "2027-01-13"
+        },
+        {
+          "market_close": "2027-01-14T16:00:00-05:00",
+          "market_open": "2027-01-14T09:30:00-05:00",
+          "session_date": "2027-01-14"
+        },
+        {
+          "market_close": "2027-01-15T16:00:00-05:00",
+          "market_open": "2027-01-15T09:30:00-05:00",
+          "session_date": "2027-01-15"
+        },
+        {
+          "market_close": "2027-01-18T16:00:00-05:00",
+          "market_open": "2027-01-18T09:30:00-05:00",
+          "session_date": "2027-01-18"
+        },
+        {
+          "market_close": "2027-01-19T16:00:00-05:00",
+          "market_open": "2027-01-19T09:30:00-05:00",
+          "session_date": "2027-01-19"
+        },
+        {
+          "market_close": "2027-01-20T16:00:00-05:00",
+          "market_open": "2027-01-20T09:30:00-05:00",
+          "session_date": "2027-01-20"
+        },
+        {
+          "market_close": "2027-01-21T16:00:00-05:00",
+          "market_open": "2027-01-21T09:30:00-05:00",
+          "session_date": "2027-01-21"
+        },
+        {
+          "market_close": "2027-01-22T16:00:00-05:00",
+          "market_open": "2027-01-22T09:30:00-05:00",
+          "session_date": "2027-01-22"
+        },
+        {
+          "market_close": "2027-01-25T16:00:00-05:00",
+          "market_open": "2027-01-25T09:30:00-05:00",
+          "session_date": "2027-01-25"
+        },
+        {
+          "market_close": "2027-01-26T16:00:00-05:00",
+          "market_open": "2027-01-26T09:30:00-05:00",
+          "session_date": "2027-01-26"
+        },
+        {
+          "market_close": "2027-01-27T16:00:00-05:00",
+          "market_open": "2027-01-27T09:30:00-05:00",
+          "session_date": "2027-01-27"
+        },
+        {
+          "market_close": "2027-01-28T16:00:00-05:00",
+          "market_open": "2027-01-28T09:30:00-05:00",
+          "session_date": "2027-01-28"
+        },
+        {
+          "market_close": "2027-01-29T16:00:00-05:00",
+          "market_open": "2027-01-29T09:30:00-05:00",
+          "session_date": "2027-01-29"
+        },
+        {
+          "market_close": "2027-02-01T16:00:00-05:00",
+          "market_open": "2027-02-01T09:30:00-05:00",
+          "session_date": "2027-02-01"
+        },
+        {
+          "market_close": "2027-02-02T16:00:00-05:00",
+          "market_open": "2027-02-02T09:30:00-05:00",
+          "session_date": "2027-02-02"
+        },
+        {
+          "market_close": "2027-02-03T16:00:00-05:00",
+          "market_open": "2027-02-03T09:30:00-05:00",
+          "session_date": "2027-02-03"
+        },
+        {
+          "market_close": "2027-02-04T16:00:00-05:00",
+          "market_open": "2027-02-04T09:30:00-05:00",
+          "session_date": "2027-02-04"
+        },
+        {
+          "market_close": "2027-02-05T16:00:00-05:00",
+          "market_open": "2027-02-05T09:30:00-05:00",
+          "session_date": "2027-02-05"
+        },
+        {
+          "market_close": "2027-02-08T16:00:00-05:00",
+          "market_open": "2027-02-08T09:30:00-05:00",
+          "session_date": "2027-02-08"
+        },
+        {
+          "market_close": "2027-02-09T16:00:00-05:00",
+          "market_open": "2027-02-09T09:30:00-05:00",
+          "session_date": "2027-02-09"
+        },
+        {
+          "market_close": "2027-02-10T16:00:00-05:00",
+          "market_open": "2027-02-10T09:30:00-05:00",
+          "session_date": "2027-02-10"
+        },
+        {
+          "market_close": "2027-02-11T16:00:00-05:00",
+          "market_open": "2027-02-11T09:30:00-05:00",
+          "session_date": "2027-02-11"
+        },
+        {
+          "market_close": "2027-02-12T16:00:00-05:00",
+          "market_open": "2027-02-12T09:30:00-05:00",
+          "session_date": "2027-02-12"
+        },
+        {
+          "market_close": "2027-02-15T16:00:00-05:00",
+          "market_open": "2027-02-15T09:30:00-05:00",
+          "session_date": "2027-02-15"
+        },
+        {
+          "market_close": "2027-02-16T16:00:00-05:00",
+          "market_open": "2027-02-16T09:30:00-05:00",
+          "session_date": "2027-02-16"
+        },
+        {
+          "market_close": "2027-02-17T16:00:00-05:00",
+          "market_open": "2027-02-17T09:30:00-05:00",
+          "session_date": "2027-02-17"
+        },
+        {
+          "market_close": "2027-02-18T16:00:00-05:00",
+          "market_open": "2027-02-18T09:30:00-05:00",
+          "session_date": "2027-02-18"
+        },
+        {
+          "market_close": "2027-02-19T16:00:00-05:00",
+          "market_open": "2027-02-19T09:30:00-05:00",
+          "session_date": "2027-02-19"
+        },
+        {
+          "market_close": "2027-02-22T16:00:00-05:00",
+          "market_open": "2027-02-22T09:30:00-05:00",
+          "session_date": "2027-02-22"
+        },
+        {
+          "market_close": "2027-02-23T16:00:00-05:00",
+          "market_open": "2027-02-23T09:30:00-05:00",
+          "session_date": "2027-02-23"
+        },
+        {
+          "market_close": "2027-02-24T16:00:00-05:00",
+          "market_open": "2027-02-24T09:30:00-05:00",
+          "session_date": "2027-02-24"
+        },
+        {
+          "market_close": "2027-02-25T16:00:00-05:00",
+          "market_open": "2027-02-25T09:30:00-05:00",
+          "session_date": "2027-02-25"
+        },
+        {
+          "market_close": "2027-02-26T16:00:00-05:00",
+          "market_open": "2027-02-26T09:30:00-05:00",
+          "session_date": "2027-02-26"
+        },
+        {
+          "market_close": "2027-03-01T16:00:00-05:00",
+          "market_open": "2027-03-01T09:30:00-05:00",
+          "session_date": "2027-03-01"
+        },
+        {
+          "market_close": "2027-03-02T16:00:00-05:00",
+          "market_open": "2027-03-02T09:30:00-05:00",
+          "session_date": "2027-03-02"
+        },
+        {
+          "market_close": "2027-03-03T16:00:00-05:00",
+          "market_open": "2027-03-03T09:30:00-05:00",
+          "session_date": "2027-03-03"
+        },
+        {
+          "market_close": "2027-03-04T16:00:00-05:00",
+          "market_open": "2027-03-04T09:30:00-05:00",
+          "session_date": "2027-03-04"
+        },
+        {
+          "market_close": "2027-03-05T16:00:00-05:00",
+          "market_open": "2027-03-05T09:30:00-05:00",
+          "session_date": "2027-03-05"
+        },
+        {
+          "market_close": "2027-03-08T16:00:00-05:00",
+          "market_open": "2027-03-08T09:30:00-05:00",
+          "session_date": "2027-03-08"
+        },
+        {
+          "market_close": "2027-03-09T16:00:00-05:00",
+          "market_open": "2027-03-09T09:30:00-05:00",
+          "session_date": "2027-03-09"
+        },
+        {
+          "market_close": "2027-03-10T16:00:00-05:00",
+          "market_open": "2027-03-10T09:30:00-05:00",
+          "session_date": "2027-03-10"
+        },
+        {
+          "market_close": "2027-03-11T16:00:00-05:00",
+          "market_open": "2027-03-11T09:30:00-05:00",
+          "session_date": "2027-03-11"
+        },
+        {
+          "market_close": "2027-03-12T16:00:00-05:00",
+          "market_open": "2027-03-12T09:30:00-05:00",
+          "session_date": "2027-03-12"
+        },
+        {
+          "market_close": "2027-03-15T16:00:00-04:00",
+          "market_open": "2027-03-15T09:30:00-04:00",
+          "session_date": "2027-03-15"
+        },
+        {
+          "market_close": "2027-03-16T16:00:00-04:00",
+          "market_open": "2027-03-16T09:30:00-04:00",
+          "session_date": "2027-03-16"
+        },
+        {
+          "market_close": "2027-03-17T16:00:00-04:00",
+          "market_open": "2027-03-17T09:30:00-04:00",
+          "session_date": "2027-03-17"
+        },
+        {
+          "market_close": "2027-03-18T16:00:00-04:00",
+          "market_open": "2027-03-18T09:30:00-04:00",
+          "session_date": "2027-03-18"
+        },
+        {
+          "market_close": "2027-03-19T16:00:00-04:00",
+          "market_open": "2027-03-19T09:30:00-04:00",
+          "session_date": "2027-03-19"
+        },
+        {
+          "market_close": "2027-03-22T16:00:00-04:00",
+          "market_open": "2027-03-22T09:30:00-04:00",
+          "session_date": "2027-03-22"
+        },
+        {
+          "market_close": "2027-03-23T16:00:00-04:00",
+          "market_open": "2027-03-23T09:30:00-04:00",
+          "session_date": "2027-03-23"
+        },
+        {
+          "market_close": "2027-03-24T16:00:00-04:00",
+          "market_open": "2027-03-24T09:30:00-04:00",
+          "session_date": "2027-03-24"
+        },
+        {
+          "market_close": "2027-03-25T16:00:00-04:00",
+          "market_open": "2027-03-25T09:30:00-04:00",
+          "session_date": "2027-03-25"
+        },
+        {
+          "market_close": "2027-03-26T16:00:00-04:00",
+          "market_open": "2027-03-26T09:30:00-04:00",
+          "session_date": "2027-03-26"
+        },
+        {
+          "market_close": "2027-03-29T16:00:00-04:00",
+          "market_open": "2027-03-29T09:30:00-04:00",
+          "session_date": "2027-03-29"
+        },
+        {
+          "market_close": "2027-03-30T16:00:00-04:00",
+          "market_open": "2027-03-30T09:30:00-04:00",
+          "session_date": "2027-03-30"
+        },
+        {
+          "market_close": "2027-03-31T16:00:00-04:00",
+          "market_open": "2027-03-31T09:30:00-04:00",
+          "session_date": "2027-03-31"
+        },
+        {
+          "market_close": "2027-04-01T16:00:00-04:00",
+          "market_open": "2027-04-01T09:30:00-04:00",
+          "session_date": "2027-04-01"
+        },
+        {
+          "market_close": "2027-04-02T16:00:00-04:00",
+          "market_open": "2027-04-02T09:30:00-04:00",
+          "session_date": "2027-04-02"
+        },
+        {
+          "market_close": "2027-04-05T16:00:00-04:00",
+          "market_open": "2027-04-05T09:30:00-04:00",
+          "session_date": "2027-04-05"
+        },
+        {
+          "market_close": "2027-04-06T16:00:00-04:00",
+          "market_open": "2027-04-06T09:30:00-04:00",
+          "session_date": "2027-04-06"
+        },
+        {
+          "market_close": "2027-04-07T16:00:00-04:00",
+          "market_open": "2027-04-07T09:30:00-04:00",
+          "session_date": "2027-04-07"
+        },
+        {
+          "market_close": "2027-04-08T16:00:00-04:00",
+          "market_open": "2027-04-08T09:30:00-04:00",
+          "session_date": "2027-04-08"
+        },
+        {
+          "market_close": "2027-04-09T16:00:00-04:00",
+          "market_open": "2027-04-09T09:30:00-04:00",
+          "session_date": "2027-04-09"
+        },
+        {
+          "market_close": "2027-04-12T16:00:00-04:00",
+          "market_open": "2027-04-12T09:30:00-04:00",
+          "session_date": "2027-04-12"
+        },
+        {
+          "market_close": "2027-04-13T16:00:00-04:00",
+          "market_open": "2027-04-13T09:30:00-04:00",
+          "session_date": "2027-04-13"
+        },
+        {
+          "market_close": "2027-04-14T16:00:00-04:00",
+          "market_open": "2027-04-14T09:30:00-04:00",
+          "session_date": "2027-04-14"
+        },
+        {
+          "market_close": "2027-04-15T16:00:00-04:00",
+          "market_open": "2027-04-15T09:30:00-04:00",
+          "session_date": "2027-04-15"
+        },
+        {
+          "market_close": "2027-04-16T16:00:00-04:00",
+          "market_open": "2027-04-16T09:30:00-04:00",
+          "session_date": "2027-04-16"
+        },
+        {
+          "market_close": "2027-04-19T16:00:00-04:00",
+          "market_open": "2027-04-19T09:30:00-04:00",
+          "session_date": "2027-04-19"
+        },
+        {
+          "market_close": "2027-04-20T16:00:00-04:00",
+          "market_open": "2027-04-20T09:30:00-04:00",
+          "session_date": "2027-04-20"
+        },
+        {
+          "market_close": "2027-04-21T16:00:00-04:00",
+          "market_open": "2027-04-21T09:30:00-04:00",
+          "session_date": "2027-04-21"
+        },
+        {
+          "market_close": "2027-04-22T16:00:00-04:00",
+          "market_open": "2027-04-22T09:30:00-04:00",
+          "session_date": "2027-04-22"
+        },
+        {
+          "market_close": "2027-04-23T16:00:00-04:00",
+          "market_open": "2027-04-23T09:30:00-04:00",
+          "session_date": "2027-04-23"
+        },
+        {
+          "market_close": "2027-04-26T16:00:00-04:00",
+          "market_open": "2027-04-26T09:30:00-04:00",
+          "session_date": "2027-04-26"
+        },
+        {
+          "market_close": "2027-04-27T16:00:00-04:00",
+          "market_open": "2027-04-27T09:30:00-04:00",
+          "session_date": "2027-04-27"
+        },
+        {
+          "market_close": "2027-04-28T16:00:00-04:00",
+          "market_open": "2027-04-28T09:30:00-04:00",
+          "session_date": "2027-04-28"
+        },
+        {
+          "market_close": "2027-04-29T16:00:00-04:00",
+          "market_open": "2027-04-29T09:30:00-04:00",
+          "session_date": "2027-04-29"
+        },
+        {
+          "market_close": "2027-04-30T16:00:00-04:00",
+          "market_open": "2027-04-30T09:30:00-04:00",
+          "session_date": "2027-04-30"
+        },
+        {
+          "market_close": "2027-05-03T16:00:00-04:00",
+          "market_open": "2027-05-03T09:30:00-04:00",
+          "session_date": "2027-05-03"
+        },
+        {
+          "market_close": "2027-05-04T16:00:00-04:00",
+          "market_open": "2027-05-04T09:30:00-04:00",
+          "session_date": "2027-05-04"
+        },
+        {
+          "market_close": "2027-05-05T16:00:00-04:00",
+          "market_open": "2027-05-05T09:30:00-04:00",
+          "session_date": "2027-05-05"
+        },
+        {
+          "market_close": "2027-05-06T16:00:00-04:00",
+          "market_open": "2027-05-06T09:30:00-04:00",
+          "session_date": "2027-05-06"
+        },
+        {
+          "market_close": "2027-05-07T16:00:00-04:00",
+          "market_open": "2027-05-07T09:30:00-04:00",
+          "session_date": "2027-05-07"
+        },
+        {
+          "market_close": "2027-05-10T16:00:00-04:00",
+          "market_open": "2027-05-10T09:30:00-04:00",
+          "session_date": "2027-05-10"
+        },
+        {
+          "market_close": "2027-05-11T16:00:00-04:00",
+          "market_open": "2027-05-11T09:30:00-04:00",
+          "session_date": "2027-05-11"
+        },
+        {
+          "market_close": "2027-05-12T16:00:00-04:00",
+          "market_open": "2027-05-12T09:30:00-04:00",
+          "session_date": "2027-05-12"
+        },
+        {
+          "market_close": "2027-05-13T16:00:00-04:00",
+          "market_open": "2027-05-13T09:30:00-04:00",
+          "session_date": "2027-05-13"
+        },
+        {
+          "market_close": "2027-05-14T16:00:00-04:00",
+          "market_open": "2027-05-14T09:30:00-04:00",
+          "session_date": "2027-05-14"
+        },
+        {
+          "market_close": "2027-05-17T16:00:00-04:00",
+          "market_open": "2027-05-17T09:30:00-04:00",
+          "session_date": "2027-05-17"
+        },
+        {
+          "market_close": "2027-05-18T16:00:00-04:00",
+          "market_open": "2027-05-18T09:30:00-04:00",
+          "session_date": "2027-05-18"
+        },
+        {
+          "market_close": "2027-05-19T16:00:00-04:00",
+          "market_open": "2027-05-19T09:30:00-04:00",
+          "session_date": "2027-05-19"
+        },
+        {
+          "market_close": "2027-05-20T16:00:00-04:00",
+          "market_open": "2027-05-20T09:30:00-04:00",
+          "session_date": "2027-05-20"
+        },
+        {
+          "market_close": "2027-05-21T16:00:00-04:00",
+          "market_open": "2027-05-21T09:30:00-04:00",
+          "session_date": "2027-05-21"
+        },
+        {
+          "market_close": "2027-05-24T16:00:00-04:00",
+          "market_open": "2027-05-24T09:30:00-04:00",
+          "session_date": "2027-05-24"
+        },
+        {
+          "market_close": "2027-05-25T16:00:00-04:00",
+          "market_open": "2027-05-25T09:30:00-04:00",
+          "session_date": "2027-05-25"
+        },
+        {
+          "market_close": "2027-05-26T16:00:00-04:00",
+          "market_open": "2027-05-26T09:30:00-04:00",
+          "session_date": "2027-05-26"
+        },
+        {
+          "market_close": "2027-05-27T16:00:00-04:00",
+          "market_open": "2027-05-27T09:30:00-04:00",
+          "session_date": "2027-05-27"
+        },
+        {
+          "market_close": "2027-05-28T16:00:00-04:00",
+          "market_open": "2027-05-28T09:30:00-04:00",
+          "session_date": "2027-05-28"
+        },
+        {
+          "market_close": "2027-05-31T16:00:00-04:00",
+          "market_open": "2027-05-31T09:30:00-04:00",
+          "session_date": "2027-05-31"
+        },
+        {
+          "market_close": "2027-06-01T16:00:00-04:00",
+          "market_open": "2027-06-01T09:30:00-04:00",
+          "session_date": "2027-06-01"
+        },
+        {
+          "market_close": "2027-06-02T16:00:00-04:00",
+          "market_open": "2027-06-02T09:30:00-04:00",
+          "session_date": "2027-06-02"
+        },
+        {
+          "market_close": "2027-06-03T16:00:00-04:00",
+          "market_open": "2027-06-03T09:30:00-04:00",
+          "session_date": "2027-06-03"
+        },
+        {
+          "market_close": "2027-06-04T16:00:00-04:00",
+          "market_open": "2027-06-04T09:30:00-04:00",
+          "session_date": "2027-06-04"
+        },
+        {
+          "market_close": "2027-06-07T16:00:00-04:00",
+          "market_open": "2027-06-07T09:30:00-04:00",
+          "session_date": "2027-06-07"
+        },
+        {
+          "market_close": "2027-06-08T16:00:00-04:00",
+          "market_open": "2027-06-08T09:30:00-04:00",
+          "session_date": "2027-06-08"
+        },
+        {
+          "market_close": "2027-06-09T16:00:00-04:00",
+          "market_open": "2027-06-09T09:30:00-04:00",
+          "session_date": "2027-06-09"
+        },
+        {
+          "market_close": "2027-06-10T16:00:00-04:00",
+          "market_open": "2027-06-10T09:30:00-04:00",
+          "session_date": "2027-06-10"
+        },
+        {
+          "market_close": "2027-06-11T16:00:00-04:00",
+          "market_open": "2027-06-11T09:30:00-04:00",
+          "session_date": "2027-06-11"
+        },
+        {
+          "market_close": "2027-06-14T16:00:00-04:00",
+          "market_open": "2027-06-14T09:30:00-04:00",
+          "session_date": "2027-06-14"
+        },
+        {
+          "market_close": "2027-06-15T16:00:00-04:00",
+          "market_open": "2027-06-15T09:30:00-04:00",
+          "session_date": "2027-06-15"
+        },
+        {
+          "market_close": "2027-06-16T16:00:00-04:00",
+          "market_open": "2027-06-16T09:30:00-04:00",
+          "session_date": "2027-06-16"
+        },
+        {
+          "market_close": "2027-06-17T16:00:00-04:00",
+          "market_open": "2027-06-17T09:30:00-04:00",
+          "session_date": "2027-06-17"
+        },
+        {
+          "market_close": "2027-06-18T16:00:00-04:00",
+          "market_open": "2027-06-18T09:30:00-04:00",
+          "session_date": "2027-06-18"
+        },
+        {
+          "market_close": "2027-06-21T16:00:00-04:00",
+          "market_open": "2027-06-21T09:30:00-04:00",
+          "session_date": "2027-06-21"
+        },
+        {
+          "market_close": "2027-06-22T16:00:00-04:00",
+          "market_open": "2027-06-22T09:30:00-04:00",
+          "session_date": "2027-06-22"
+        },
+        {
+          "market_close": "2027-06-23T16:00:00-04:00",
+          "market_open": "2027-06-23T09:30:00-04:00",
+          "session_date": "2027-06-23"
+        },
+        {
+          "market_close": "2027-06-24T16:00:00-04:00",
+          "market_open": "2027-06-24T09:30:00-04:00",
+          "session_date": "2027-06-24"
+        },
+        {
+          "market_close": "2027-06-25T16:00:00-04:00",
+          "market_open": "2027-06-25T09:30:00-04:00",
+          "session_date": "2027-06-25"
+        },
+        {
+          "market_close": "2027-06-28T16:00:00-04:00",
+          "market_open": "2027-06-28T09:30:00-04:00",
+          "session_date": "2027-06-28"
+        },
+        {
+          "market_close": "2027-06-29T16:00:00-04:00",
+          "market_open": "2027-06-29T09:30:00-04:00",
+          "session_date": "2027-06-29"
+        },
+        {
+          "market_close": "2027-06-30T16:00:00-04:00",
+          "market_open": "2027-06-30T09:30:00-04:00",
+          "session_date": "2027-06-30"
+        },
+        {
+          "market_close": "2027-07-01T16:00:00-04:00",
+          "market_open": "2027-07-01T09:30:00-04:00",
+          "session_date": "2027-07-01"
+        },
+        {
+          "market_close": "2027-07-02T16:00:00-04:00",
+          "market_open": "2027-07-02T09:30:00-04:00",
+          "session_date": "2027-07-02"
+        },
+        {
+          "market_close": "2027-07-05T16:00:00-04:00",
+          "market_open": "2027-07-05T09:30:00-04:00",
+          "session_date": "2027-07-05"
+        },
+        {
+          "market_close": "2027-07-06T16:00:00-04:00",
+          "market_open": "2027-07-06T09:30:00-04:00",
+          "session_date": "2027-07-06"
+        },
+        {
+          "market_close": "2027-07-07T16:00:00-04:00",
+          "market_open": "2027-07-07T09:30:00-04:00",
+          "session_date": "2027-07-07"
+        },
+        {
+          "market_close": "2027-07-08T16:00:00-04:00",
+          "market_open": "2027-07-08T09:30:00-04:00",
+          "session_date": "2027-07-08"
+        },
+        {
+          "market_close": "2027-07-09T16:00:00-04:00",
+          "market_open": "2027-07-09T09:30:00-04:00",
+          "session_date": "2027-07-09"
+        },
+        {
+          "market_close": "2027-07-12T16:00:00-04:00",
+          "market_open": "2027-07-12T09:30:00-04:00",
+          "session_date": "2027-07-12"
+        },
+        {
+          "market_close": "2027-07-13T16:00:00-04:00",
+          "market_open": "2027-07-13T09:30:00-04:00",
+          "session_date": "2027-07-13"
+        },
+        {
+          "market_close": "2027-07-14T16:00:00-04:00",
+          "market_open": "2027-07-14T09:30:00-04:00",
+          "session_date": "2027-07-14"
+        },
+        {
+          "market_close": "2027-07-15T16:00:00-04:00",
+          "market_open": "2027-07-15T09:30:00-04:00",
+          "session_date": "2027-07-15"
+        },
+        {
+          "market_close": "2027-07-16T16:00:00-04:00",
+          "market_open": "2027-07-16T09:30:00-04:00",
+          "session_date": "2027-07-16"
+        },
+        {
+          "market_close": "2027-07-19T16:00:00-04:00",
+          "market_open": "2027-07-19T09:30:00-04:00",
+          "session_date": "2027-07-19"
+        },
+        {
+          "market_close": "2027-07-20T16:00:00-04:00",
+          "market_open": "2027-07-20T09:30:00-04:00",
+          "session_date": "2027-07-20"
+        },
+        {
+          "market_close": "2027-07-21T16:00:00-04:00",
+          "market_open": "2027-07-21T09:30:00-04:00",
+          "session_date": "2027-07-21"
+        },
+        {
+          "market_close": "2027-07-22T16:00:00-04:00",
+          "market_open": "2027-07-22T09:30:00-04:00",
+          "session_date": "2027-07-22"
+        },
+        {
+          "market_close": "2027-07-23T16:00:00-04:00",
+          "market_open": "2027-07-23T09:30:00-04:00",
+          "session_date": "2027-07-23"
+        },
+        {
+          "market_close": "2027-07-26T16:00:00-04:00",
+          "market_open": "2027-07-26T09:30:00-04:00",
+          "session_date": "2027-07-26"
+        },
+        {
+          "market_close": "2027-07-27T16:00:00-04:00",
+          "market_open": "2027-07-27T09:30:00-04:00",
+          "session_date": "2027-07-27"
+        },
+        {
+          "market_close": "2027-07-28T16:00:00-04:00",
+          "market_open": "2027-07-28T09:30:00-04:00",
+          "session_date": "2027-07-28"
+        },
+        {
+          "market_close": "2027-07-29T16:00:00-04:00",
+          "market_open": "2027-07-29T09:30:00-04:00",
+          "session_date": "2027-07-29"
+        },
+        {
+          "market_close": "2027-07-30T16:00:00-04:00",
+          "market_open": "2027-07-30T09:30:00-04:00",
+          "session_date": "2027-07-30"
+        },
+        {
+          "market_close": "2027-08-02T16:00:00-04:00",
+          "market_open": "2027-08-02T09:30:00-04:00",
+          "session_date": "2027-08-02"
+        },
+        {
+          "market_close": "2027-08-03T16:00:00-04:00",
+          "market_open": "2027-08-03T09:30:00-04:00",
+          "session_date": "2027-08-03"
+        },
+        {
+          "market_close": "2027-08-04T16:00:00-04:00",
+          "market_open": "2027-08-04T09:30:00-04:00",
+          "session_date": "2027-08-04"
+        },
+        {
+          "market_close": "2027-08-05T16:00:00-04:00",
+          "market_open": "2027-08-05T09:30:00-04:00",
+          "session_date": "2027-08-05"
+        },
+        {
+          "market_close": "2027-08-06T16:00:00-04:00",
+          "market_open": "2027-08-06T09:30:00-04:00",
+          "session_date": "2027-08-06"
+        },
+        {
+          "market_close": "2027-08-09T16:00:00-04:00",
+          "market_open": "2027-08-09T09:30:00-04:00",
+          "session_date": "2027-08-09"
+        },
+        {
+          "market_close": "2027-08-10T16:00:00-04:00",
+          "market_open": "2027-08-10T09:30:00-04:00",
+          "session_date": "2027-08-10"
+        },
+        {
+          "market_close": "2027-08-11T16:00:00-04:00",
+          "market_open": "2027-08-11T09:30:00-04:00",
+          "session_date": "2027-08-11"
+        },
+        {
+          "market_close": "2027-08-12T16:00:00-04:00",
+          "market_open": "2027-08-12T09:30:00-04:00",
+          "session_date": "2027-08-12"
+        },
+        {
+          "market_close": "2027-08-13T16:00:00-04:00",
+          "market_open": "2027-08-13T09:30:00-04:00",
+          "session_date": "2027-08-13"
+        },
+        {
+          "market_close": "2027-08-16T16:00:00-04:00",
+          "market_open": "2027-08-16T09:30:00-04:00",
+          "session_date": "2027-08-16"
+        },
+        {
+          "market_close": "2027-08-17T16:00:00-04:00",
+          "market_open": "2027-08-17T09:30:00-04:00",
+          "session_date": "2027-08-17"
+        },
+        {
+          "market_close": "2027-08-18T16:00:00-04:00",
+          "market_open": "2027-08-18T09:30:00-04:00",
+          "session_date": "2027-08-18"
+        },
+        {
+          "market_close": "2027-08-19T16:00:00-04:00",
+          "market_open": "2027-08-19T09:30:00-04:00",
+          "session_date": "2027-08-19"
+        },
+        {
+          "market_close": "2027-08-20T16:00:00-04:00",
+          "market_open": "2027-08-20T09:30:00-04:00",
+          "session_date": "2027-08-20"
+        },
+        {
+          "market_close": "2027-08-23T16:00:00-04:00",
+          "market_open": "2027-08-23T09:30:00-04:00",
+          "session_date": "2027-08-23"
+        },
+        {
+          "market_close": "2027-08-24T16:00:00-04:00",
+          "market_open": "2027-08-24T09:30:00-04:00",
+          "session_date": "2027-08-24"
+        },
+        {
+          "market_close": "2027-08-25T16:00:00-04:00",
+          "market_open": "2027-08-25T09:30:00-04:00",
+          "session_date": "2027-08-25"
+        },
+        {
+          "market_close": "2027-08-26T16:00:00-04:00",
+          "market_open": "2027-08-26T09:30:00-04:00",
+          "session_date": "2027-08-26"
+        },
+        {
+          "market_close": "2027-08-27T16:00:00-04:00",
+          "market_open": "2027-08-27T09:30:00-04:00",
+          "session_date": "2027-08-27"
+        },
+        {
+          "market_close": "2027-08-30T16:00:00-04:00",
+          "market_open": "2027-08-30T09:30:00-04:00",
+          "session_date": "2027-08-30"
+        },
+        {
+          "market_close": "2027-08-31T16:00:00-04:00",
+          "market_open": "2027-08-31T09:30:00-04:00",
+          "session_date": "2027-08-31"
+        },
+        {
+          "market_close": "2027-09-01T16:00:00-04:00",
+          "market_open": "2027-09-01T09:30:00-04:00",
+          "session_date": "2027-09-01"
+        },
+        {
+          "market_close": "2027-09-02T16:00:00-04:00",
+          "market_open": "2027-09-02T09:30:00-04:00",
+          "session_date": "2027-09-02"
+        },
+        {
+          "market_close": "2027-09-03T16:00:00-04:00",
+          "market_open": "2027-09-03T09:30:00-04:00",
+          "session_date": "2027-09-03"
+        },
+        {
+          "market_close": "2027-09-06T16:00:00-04:00",
+          "market_open": "2027-09-06T09:30:00-04:00",
+          "session_date": "2027-09-06"
+        },
+        {
+          "market_close": "2027-09-07T16:00:00-04:00",
+          "market_open": "2027-09-07T09:30:00-04:00",
+          "session_date": "2027-09-07"
+        },
+        {
+          "market_close": "2027-09-08T16:00:00-04:00",
+          "market_open": "2027-09-08T09:30:00-04:00",
+          "session_date": "2027-09-08"
+        },
+        {
+          "market_close": "2027-09-09T16:00:00-04:00",
+          "market_open": "2027-09-09T09:30:00-04:00",
+          "session_date": "2027-09-09"
+        },
+        {
+          "market_close": "2027-09-10T16:00:00-04:00",
+          "market_open": "2027-09-10T09:30:00-04:00",
+          "session_date": "2027-09-10"
+        },
+        {
+          "market_close": "2027-09-13T16:00:00-04:00",
+          "market_open": "2027-09-13T09:30:00-04:00",
+          "session_date": "2027-09-13"
+        },
+        {
+          "market_close": "2027-09-14T16:00:00-04:00",
+          "market_open": "2027-09-14T09:30:00-04:00",
+          "session_date": "2027-09-14"
+        },
+        {
+          "market_close": "2027-09-15T16:00:00-04:00",
+          "market_open": "2027-09-15T09:30:00-04:00",
+          "session_date": "2027-09-15"
+        },
+        {
+          "market_close": "2027-09-16T16:00:00-04:00",
+          "market_open": "2027-09-16T09:30:00-04:00",
+          "session_date": "2027-09-16"
+        },
+        {
+          "market_close": "2027-09-17T16:00:00-04:00",
+          "market_open": "2027-09-17T09:30:00-04:00",
+          "session_date": "2027-09-17"
+        },
+        {
+          "market_close": "2027-09-20T16:00:00-04:00",
+          "market_open": "2027-09-20T09:30:00-04:00",
+          "session_date": "2027-09-20"
+        },
+        {
+          "market_close": "2027-09-21T16:00:00-04:00",
+          "market_open": "2027-09-21T09:30:00-04:00",
+          "session_date": "2027-09-21"
+        },
+        {
+          "market_close": "2027-09-22T16:00:00-04:00",
+          "market_open": "2027-09-22T09:30:00-04:00",
+          "session_date": "2027-09-22"
+        },
+        {
+          "market_close": "2027-09-23T16:00:00-04:00",
+          "market_open": "2027-09-23T09:30:00-04:00",
+          "session_date": "2027-09-23"
+        },
+        {
+          "market_close": "2027-09-24T16:00:00-04:00",
+          "market_open": "2027-09-24T09:30:00-04:00",
+          "session_date": "2027-09-24"
+        },
+        {
+          "market_close": "2027-09-27T16:00:00-04:00",
+          "market_open": "2027-09-27T09:30:00-04:00",
+          "session_date": "2027-09-27"
+        },
+        {
+          "market_close": "2027-09-28T16:00:00-04:00",
+          "market_open": "2027-09-28T09:30:00-04:00",
+          "session_date": "2027-09-28"
+        },
+        {
+          "market_close": "2027-09-29T16:00:00-04:00",
+          "market_open": "2027-09-29T09:30:00-04:00",
+          "session_date": "2027-09-29"
+        },
+        {
+          "market_close": "2027-09-30T16:00:00-04:00",
+          "market_open": "2027-09-30T09:30:00-04:00",
+          "session_date": "2027-09-30"
+        },
+        {
+          "market_close": "2027-10-01T16:00:00-04:00",
+          "market_open": "2027-10-01T09:30:00-04:00",
+          "session_date": "2027-10-01"
+        },
+        {
+          "market_close": "2027-10-04T16:00:00-04:00",
+          "market_open": "2027-10-04T09:30:00-04:00",
+          "session_date": "2027-10-04"
+        },
+        {
+          "market_close": "2027-10-05T16:00:00-04:00",
+          "market_open": "2027-10-05T09:30:00-04:00",
+          "session_date": "2027-10-05"
+        },
+        {
+          "market_close": "2027-10-06T16:00:00-04:00",
+          "market_open": "2027-10-06T09:30:00-04:00",
+          "session_date": "2027-10-06"
+        },
+        {
+          "market_close": "2027-10-07T16:00:00-04:00",
+          "market_open": "2027-10-07T09:30:00-04:00",
+          "session_date": "2027-10-07"
+        },
+        {
+          "market_close": "2027-10-08T16:00:00-04:00",
+          "market_open": "2027-10-08T09:30:00-04:00",
+          "session_date": "2027-10-08"
+        },
+        {
+          "market_close": "2027-10-11T16:00:00-04:00",
+          "market_open": "2027-10-11T09:30:00-04:00",
+          "session_date": "2027-10-11"
+        },
+        {
+          "market_close": "2027-10-12T16:00:00-04:00",
+          "market_open": "2027-10-12T09:30:00-04:00",
+          "session_date": "2027-10-12"
+        },
+        {
+          "market_close": "2027-10-13T16:00:00-04:00",
+          "market_open": "2027-10-13T09:30:00-04:00",
+          "session_date": "2027-10-13"
+        },
+        {
+          "market_close": "2027-10-14T16:00:00-04:00",
+          "market_open": "2027-10-14T09:30:00-04:00",
+          "session_date": "2027-10-14"
+        },
+        {
+          "market_close": "2027-10-15T16:00:00-04:00",
+          "market_open": "2027-10-15T09:30:00-04:00",
+          "session_date": "2027-10-15"
+        },
+        {
+          "market_close": "2027-10-18T16:00:00-04:00",
+          "market_open": "2027-10-18T09:30:00-04:00",
+          "session_date": "2027-10-18"
+        },
+        {
+          "market_close": "2027-10-19T16:00:00-04:00",
+          "market_open": "2027-10-19T09:30:00-04:00",
+          "session_date": "2027-10-19"
+        },
+        {
+          "market_close": "2027-10-20T16:00:00-04:00",
+          "market_open": "2027-10-20T09:30:00-04:00",
+          "session_date": "2027-10-20"
+        },
+        {
+          "market_close": "2027-10-21T16:00:00-04:00",
+          "market_open": "2027-10-21T09:30:00-04:00",
+          "session_date": "2027-10-21"
+        },
+        {
+          "market_close": "2027-10-22T16:00:00-04:00",
+          "market_open": "2027-10-22T09:30:00-04:00",
+          "session_date": "2027-10-22"
+        },
+        {
+          "market_close": "2027-10-25T16:00:00-04:00",
+          "market_open": "2027-10-25T09:30:00-04:00",
+          "session_date": "2027-10-25"
+        },
+        {
+          "market_close": "2027-10-26T16:00:00-04:00",
+          "market_open": "2027-10-26T09:30:00-04:00",
+          "session_date": "2027-10-26"
+        },
+        {
+          "market_close": "2027-10-27T16:00:00-04:00",
+          "market_open": "2027-10-27T09:30:00-04:00",
+          "session_date": "2027-10-27"
+        },
+        {
+          "market_close": "2027-10-28T16:00:00-04:00",
+          "market_open": "2027-10-28T09:30:00-04:00",
+          "session_date": "2027-10-28"
+        }
+      ],
+      "source_id": "SYNTHETIC_WEEKDAY_FIXTURE_NOT_A_REAL_EXCHANGE_CALENDAR",
+      "timezone": "America/New_York",
+      "validated": true,
+      "validated_at": "2026-10-01T00:00:00Z",
+      "validation_receipt_id": "synthetic-unverified-calendar-receipt",
+      "version": "synthetic-fixture-v1"
+    },
+    "through_cut_date": "2026-10-07",
+    "versions": {
+      "attention": "legacy-n-recent-ge-3",
+      "benchmark_mapping": "synthetic-Tech-XLK",
+      "board_population": "synthetic-us-v3-buy-fixture",
+      "config_digest": "bcd7feab1adb91e7425b0c1187bd890d4d851520f15dca94ff675a38bbda3955",
+      "label_spec": "PB_D_EVENT_QUALITY_LABEL_SPEC/v1.0",
+      "price_convention": "synthetic-common-adjusted-prices",
+      "technical": "synthetic-emitted-t2-receipt-no-engine-execution"
+    }
+  },
+  "dataset_kind": "SYNTHETIC_DRY_RUN",
+  "outcomes": [
+    {
+      "entry_close_at_utc": "2026-10-07T20:00:00Z",
+      "entry_session_date": "2026-10-07",
+      "entry_status": "FILLED",
+      "h10_absolute_return_pp": 3.0,
+      "h10_exit_close_at_utc": "2026-10-21T20:00:00Z",
+      "h10_exit_session_date": "2026-10-21",
+      "h10_sector_excess_pp": 1.5,
+      "h10_spy_excess_pp": 2.0,
+      "h1_absolute_return_pp": 2.0,
+      "h1_exit_close_at_utc": "2026-10-08T20:00:00Z",
+      "h1_exit_session_date": "2026-10-08",
+      "h1_sector_excess_pp": 0.5,
+      "h1_spy_excess_pp": 1.0,
+      "h21_absolute_return_pp": 2.0,
+      "h21_exit_close_at_utc": "2026-11-05T21:00:00Z",
+      "h21_exit_session_date": "2026-11-05",
+      "h21_sector_excess_pp": 0.5,
+      "h21_spy_excess_pp": 1.0,
+      "h5_absolute_return_pp": 4.0,
+      "h5_clean_liftoff": true,
+      "h5_exit_close_at_utc": "2026-10-14T20:00:00Z",
+      "h5_exit_session_date": "2026-10-14",
+      "h5_sector_excess_pp": 2.5,
+      "h5_spy_excess_pp": 3.0,
+      "issuer_id": "cik:0000320193",
+      "observation_id": "synthetic-observation/cik:0000320193",
+      "outcome_available_at": "2026-11-05T21:00:00Z",
+      "outcome_observed_at": "2026-11-05T21:00:00Z",
+      "price_receipt_ref": "SYNTHETIC_NOT_MARKET_PRICES/cik:0000320193",
+      "ticker_at_cut": "SYNTHETIC"
+    },
+    {
+      "entry_close_at_utc": "2026-10-07T20:00:00Z",
+      "entry_session_date": "2026-10-07",
+      "entry_status": "FILLED",
+      "h10_absolute_return_pp": -1.0,
+      "h10_exit_close_at_utc": "2026-10-21T20:00:00Z",
+      "h10_exit_session_date": "2026-10-21",
+      "h10_sector_excess_pp": -2.5,
+      "h10_spy_excess_pp": -2.0,
+      "h1_absolute_return_pp": 0.0,
+      "h1_exit_close_at_utc": "2026-10-08T20:00:00Z",
+      "h1_exit_session_date": "2026-10-08",
+      "h1_sector_excess_pp": -1.5,
+      "h1_spy_excess_pp": -1.0,
+      "h21_absolute_return_pp": -2.0,
+      "h21_exit_close_at_utc": "2026-11-05T21:00:00Z",
+      "h21_exit_session_date": "2026-11-05",
+      "h21_sector_excess_pp": -3.5,
+      "h21_spy_excess_pp": -3.0,
+      "h5_absolute_return_pp": 0.0,
+      "h5_clean_liftoff": false,
+      "h5_exit_close_at_utc": "2026-10-14T20:00:00Z",
+      "h5_exit_session_date": "2026-10-14",
+      "h5_sector_excess_pp": -1.5,
+      "h5_spy_excess_pp": -1.0,
+      "issuer_id": "cik:0000000002",
+      "observation_id": "synthetic-observation/cik:0000000002",
+      "outcome_available_at": "2026-11-05T21:00:00Z",
+      "outcome_observed_at": "2026-11-05T21:00:00Z",
+      "price_receipt_ref": "SYNTHETIC_NOT_MARKET_PRICES/cik:0000000002",
+      "ticker_at_cut": "SYNTHCONTROL2"
+    },
+    {
+      "entry_close_at_utc": "2026-10-07T20:00:00Z",
+      "entry_session_date": "2026-10-07",
+      "entry_status": "FILLED",
+      "h10_absolute_return_pp": -1.0,
+      "h10_exit_close_at_utc": "2026-10-21T20:00:00Z",
+      "h10_exit_session_date": "2026-10-21",
+      "h10_sector_excess_pp": -2.5,
+      "h10_spy_excess_pp": -2.0,
+      "h1_absolute_return_pp": 0.0,
+      "h1_exit_close_at_utc": "2026-10-08T20:00:00Z",
+      "h1_exit_session_date": "2026-10-08",
+      "h1_sector_excess_pp": -1.5,
+      "h1_spy_excess_pp": -1.0,
+      "h21_absolute_return_pp": -2.0,
+      "h21_exit_close_at_utc": "2026-11-05T21:00:00Z",
+      "h21_exit_session_date": "2026-11-05",
+      "h21_sector_excess_pp": -3.5,
+      "h21_spy_excess_pp": -3.0,
+      "h5_absolute_return_pp": 0.0,
+      "h5_clean_liftoff": false,
+      "h5_exit_close_at_utc": "2026-10-14T20:00:00Z",
+      "h5_exit_session_date": "2026-10-14",
+      "h5_sector_excess_pp": -1.5,
+      "h5_spy_excess_pp": -1.0,
+      "issuer_id": "cik:0000000003",
+      "observation_id": "synthetic-observation/cik:0000000003",
+      "outcome_available_at": "2026-11-05T21:00:00Z",
+      "outcome_observed_at": "2026-11-05T21:00:00Z",
+      "price_receipt_ref": "SYNTHETIC_NOT_MARKET_PRICES/cik:0000000003",
+      "ticker_at_cut": "SYNTHCONTROL3"
+    }
+  ],
+  "quality_requests": {
+    "synthetic-observation/cik:0000000002": {
+      "coverage": {
+        "available_at": "2026-10-07T13:15:00Z",
+        "candidate_event_ids": [],
+        "classifier_version": "synthetic-blinded-review/v1",
+        "covered_from": "2026-10-02T13:15:00Z",
+        "covered_through": "2026-10-07T13:15:00Z",
+        "issuer_id": "cik:0000000002",
+        "missing_sources": [],
+        "observed_at": "2026-10-07T13:15:00Z",
+        "provider_receipt_ids": [
+          "synthetic-provider-coverage/2026-10-07"
+        ],
+        "reviews": [
+          {
+            "candidate_set_complete": true,
+            "completed_at": "2026-10-07T13:15:00Z",
+            "independent": true,
+            "outcome_blind": true,
+            "packet_sha256": "968dc76fc6995175394ac926cd27e78d7c75eac4a0d8088550070a2e198e0f47",
+            "review_receipt_id": "synthetic-review/coverage-rater-0/cik:0000000002",
+            "reviewer_id": "coverage-rater-0"
+          },
+          {
+            "candidate_set_complete": true,
+            "completed_at": "2026-10-07T13:15:00Z",
+            "independent": true,
+            "outcome_blind": true,
+            "packet_sha256": "968dc76fc6995175394ac926cd27e78d7c75eac4a0d8088550070a2e198e0f47",
+            "review_receipt_id": "synthetic-review/coverage-rater-1/cik:0000000002",
+            "reviewer_id": "coverage-rater-1"
+          }
+        ],
+        "source_version": "synthetic-source/v1",
+        "status": "complete"
+      },
+      "decision_cut": "2026-10-07T13:15:00Z",
+      "events": [],
+      "freshness_start": "2026-10-02T13:15:00Z",
+      "issuer_id": "cik:0000000002",
+      "raw_attention": true,
+      "source_bodies": {},
+      "source_documents": {},
+      "source_segments": {},
+      "synthetic": true,
+      "ticker_at_cut": "SYNTHCONTROL2"
+    },
+    "synthetic-observation/cik:0000000003": {
+      "coverage": {
+        "available_at": "2026-10-07T13:15:00Z",
+        "candidate_event_ids": [],
+        "classifier_version": "synthetic-blinded-review/v1",
+        "covered_from": "2026-10-02T13:15:00Z",
+        "covered_through": "2026-10-07T13:15:00Z",
+        "issuer_id": "cik:0000000003",
+        "missing_sources": [],
+        "observed_at": "2026-10-07T13:15:00Z",
+        "provider_receipt_ids": [
+          "synthetic-provider-coverage/2026-10-07"
+        ],
+        "reviews": [
+          {
+            "candidate_set_complete": true,
+            "completed_at": "2026-10-07T13:15:00Z",
+            "independent": true,
+            "outcome_blind": true,
+            "packet_sha256": "4043a9b2e9d7899da08f40db0ee243126152a6fd35041c306bf4934e38a778c4",
+            "review_receipt_id": "synthetic-review/coverage-rater-0/cik:0000000003",
+            "reviewer_id": "coverage-rater-0"
+          },
+          {
+            "candidate_set_complete": true,
+            "completed_at": "2026-10-07T13:15:00Z",
+            "independent": true,
+            "outcome_blind": true,
+            "packet_sha256": "4043a9b2e9d7899da08f40db0ee243126152a6fd35041c306bf4934e38a778c4",
+            "review_receipt_id": "synthetic-review/coverage-rater-1/cik:0000000003",
+            "reviewer_id": "coverage-rater-1"
+          }
+        ],
+        "source_version": "synthetic-source/v1",
+        "status": "complete"
+      },
+      "decision_cut": "2026-10-07T13:15:00Z",
+      "events": [],
+      "freshness_start": "2026-10-02T13:15:00Z",
+      "issuer_id": "cik:0000000003",
+      "raw_attention": true,
+      "source_bodies": {},
+      "source_documents": {},
+      "source_segments": {},
+      "synthetic": true,
+      "ticker_at_cut": "SYNTHCONTROL3"
+    },
+    "synthetic-observation/cik:0000000004": {
+      "coverage": {
+        "available_at": "2026-10-07T13:15:00Z",
+        "candidate_event_ids": [],
+        "classifier_version": "synthetic-blinded-review/v1",
+        "covered_from": "2026-10-02T13:15:00Z",
+        "covered_through": "2026-10-07T13:15:00Z",
+        "issuer_id": "cik:0000000004",
+        "missing_sources": [
+          "synthetic-unavailable-provider"
+        ],
+        "observed_at": "2026-10-07T13:15:00Z",
+        "provider_receipt_ids": [
+          "synthetic-provider-coverage/2026-10-07"
+        ],
+        "reviews": [
+          {
+            "candidate_set_complete": true,
+            "completed_at": "2026-10-07T13:15:00Z",
+            "independent": true,
+            "outcome_blind": true,
+            "packet_sha256": "17f23eb6b9cac5c850077e279b9d5a9991d303da58e05956a6d01e5a311d898c",
+            "review_receipt_id": "synthetic-review/coverage-rater-0/cik:0000000004",
+            "reviewer_id": "coverage-rater-0"
+          },
+          {
+            "candidate_set_complete": true,
+            "completed_at": "2026-10-07T13:15:00Z",
+            "independent": true,
+            "outcome_blind": true,
+            "packet_sha256": "17f23eb6b9cac5c850077e279b9d5a9991d303da58e05956a6d01e5a311d898c",
+            "review_receipt_id": "synthetic-review/coverage-rater-1/cik:0000000004",
+            "reviewer_id": "coverage-rater-1"
+          }
+        ],
+        "source_version": "synthetic-source/v1",
+        "status": "incomplete"
+      },
+      "decision_cut": "2026-10-07T13:15:00Z",
+      "events": [],
+      "freshness_start": "2026-10-02T13:15:00Z",
+      "issuer_id": "cik:0000000004",
+      "raw_attention": true,
+      "source_bodies": {},
+      "source_documents": {},
+      "source_segments": {},
+      "synthetic": true,
+      "ticker_at_cut": "SYNTHUNKNOWN"
+    },
+    "synthetic-observation/cik:0000320193": {
+      "coverage": {
+        "available_at": "2026-10-07T13:15:00Z",
+        "candidate_event_ids": [
+          "evt_cik0000320193_2026q3_action"
+        ],
+        "classifier_version": "synthetic-blinded-review/v1",
+        "covered_from": "2026-10-02T13:15:00Z",
+        "covered_through": "2026-10-07T13:15:00Z",
+        "issuer_id": "cik:0000320193",
+        "missing_sources": [],
+        "observed_at": "2026-10-07T13:15:00Z",
+        "provider_receipt_ids": [
+          "synthetic-provider-coverage/2026-10-07"
+        ],
+        "reviews": [
+          {
+            "candidate_set_complete": true,
+            "completed_at": "2026-10-07T13:15:00Z",
+            "independent": true,
+            "outcome_blind": true,
+            "packet_sha256": "db68907b6011b274ba4ace10fbbcb3e57a6045b9a00419b3ea85be90cdaed668",
+            "review_receipt_id": "synthetic-review/coverage-rater-0",
+            "reviewer_id": "coverage-rater-0"
+          },
+          {
+            "candidate_set_complete": true,
+            "completed_at": "2026-10-07T13:15:00Z",
+            "independent": true,
+            "outcome_blind": true,
+            "packet_sha256": "db68907b6011b274ba4ace10fbbcb3e57a6045b9a00419b3ea85be90cdaed668",
+            "review_receipt_id": "synthetic-review/coverage-rater-1",
+            "reviewer_id": "coverage-rater-1"
+          }
+        ],
+        "source_version": "synthetic-source/v1",
+        "status": "complete"
+      },
+      "decision_cut": "2026-10-07T13:15:00Z",
+      "events": [
+        {
+          "adjudication": null,
+          "correction_links": [],
+          "event_id": "evt_cik0000320193_2026q3_action",
+          "event_version": 1,
+          "evidence": [
+            {
+              "claim_id": "claim_eb924f07966ec0fbc89ff1900f90f27f",
+              "clock_status": "verified",
+              "issuer_id": "cik:0000320193",
+              "issuer_relevance": "direct",
+              "new_information": true,
+              "public_time_precision": "second",
+              "source_span": {
+                "authority": "context_only",
+                "display_excerpt": "Synthetic issuer confirms a funded, 36-month supply contract for 200 units, conditional on site qualification.",
+                "document_id": "synthetic-doc-issuer",
+                "document_version": 1,
+                "locator": {
+                  "kind": "text_span",
+                  "segment_index": 0,
+                  "span_end_byte": 110,
+                  "span_start_byte": 0,
+                  "sub_kind": "transcript_segment"
+                },
+                "receipt": {
+                  "segment_bytes": 110,
+                  "segment_index": 0,
+                  "segment_sha256": "b6f13b3cba3fb23edce04c067cdddc688c3af5f052cc39dca3603a5dd57f0949",
+                  "source_sha256": "b6f13b3cba3fb23edce04c067cdddc688c3af5f052cc39dca3603a5dd57f0949",
+                  "span_end_byte": 110,
+                  "span_start_byte": 0,
+                  "text_sha256": "b6f13b3cba3fb23edce04c067cdddc688c3af5f052cc39dca3603a5dd57f0949"
+                },
+                "receipt_state": "byte_replayed",
+                "rights_profile": "synthetic_rights_v1",
+                "schema": "source_span.v1",
+                "span_id": "span_023f70d2d0eb4e683980",
+                "text_sha256": "b6f13b3cba3fb23edce04c067cdddc688c3af5f052cc39dca3603a5dd57f0949",
+                "unreplayable_reason": null
+              }
+            },
+            {
+              "claim_id": "claim_223f1a002087f6326847ee386b90ad52",
+              "clock_status": "verified",
+              "issuer_id": "cik:0000320193",
+              "issuer_relevance": "direct",
+              "new_information": true,
+              "public_time_precision": "second",
+              "source_span": {
+                "authority": "context_only",
+                "display_excerpt": "Synthetic counterparty independently confirms its executed purchase obligation and committed funding for those 200 units.",
+                "document_id": "synthetic-doc-counterparty",
+                "document_version": 1,
+                "locator": {
+                  "kind": "text_span",
+                  "segment_index": 0,
+                  "span_end_byte": 121,
+                  "span_start_byte": 0,
+                  "sub_kind": "transcript_segment"
+                },
+                "receipt": {
+                  "segment_bytes": 121,
+                  "segment_index": 0,
+                  "segment_sha256": "85c9c0a5a6a3b5cf031975758b6a76a69a39ef280e36885fde76b317c93897e2",
+                  "source_sha256": "85c9c0a5a6a3b5cf031975758b6a76a69a39ef280e36885fde76b317c93897e2",
+                  "span_end_byte": 121,
+                  "span_start_byte": 0,
+                  "text_sha256": "85c9c0a5a6a3b5cf031975758b6a76a69a39ef280e36885fde76b317c93897e2"
+                },
+                "receipt_state": "byte_replayed",
+                "rights_profile": "synthetic_rights_v1",
+                "schema": "source_span.v1",
+                "span_id": "span_fa56cb415f303f42036a",
+                "text_sha256": "85c9c0a5a6a3b5cf031975758b6a76a69a39ef280e36885fde76b317c93897e2",
+                "unreplayable_reason": null
+              }
+            }
+          ],
+          "evidence_references": [],
+          "focal_proposition_id": "claim_eb924f07966ec0fbc89ff1900f90f27f",
+          "focal_proposition_text": "Synthetic funded supply obligation changes issuer revenue capacity.",
+          "issuer_id": "cik:0000320193",
+          "materiality": {
+            "alternative_explanation": "Orders may displace other committed capacity.",
+            "contingency": "Site qualification is required.",
+            "dimension": "revenue",
+            "direction": "positive",
+            "falsifier": "Failure to qualify the site terminates the obligation.",
+            "horizon": "36 months",
+            "mechanism": "Committed orders create revenue capacity subject to qualification.",
+            "new_information_document_id": "synthetic-doc-issuer",
+            "significance_basis": "duration",
+            "significance_rationale": "The three-year obligation matters to the issuer's stated capacity plan.",
+            "what_changed": "An executed funded obligation became public."
+          },
+          "occurred_at": null,
+          "owner_receipt_id": "synthetic-ci-generation/event-1",
+          "reviews": [
+            {
+              "completed_at": "2026-10-06T17:00:00Z",
+              "independent": true,
+              "labels": {
+                "ATTENTION_ONLY": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "FALSE"
+                },
+                "EXPECTATION_CHANGE": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "UNKNOWN"
+                },
+                "FINANCING_LINKED": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "FALSE"
+                },
+                "GOVERNMENT_LINKED": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "FALSE"
+                },
+                "INDEPENDENT_EVIDENCE_2PLUS": {
+                  "evidence_refs": [
+                    "claim_eb924f07966ec0fbc89ff1900f90f27f",
+                    "claim_223f1a002087f6326847ee386b90ad52"
+                  ],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "TRUE"
+                },
+                "NO_MATERIAL_EVENT": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "FALSE"
+                },
+                "STRATEGIC_OPTION": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "FALSE"
+                },
+                "SYNDICATED_SINGLE_ROOT": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "FALSE"
+                },
+                "VERIFIED_MATERIAL_EVENT": {
+                  "evidence_refs": [
+                    "claim_eb924f07966ec0fbc89ff1900f90f27f",
+                    "claim_223f1a002087f6326847ee386b90ad52"
+                  ],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "TRUE"
+                }
+              },
+              "outcome_blind": true,
+              "packet_sha256": "f4db4714e028098891970a6ea2aa8c45f99928bde88ec82e6ff2fd763c231ac6",
+              "review_receipt_id": "synthetic-review/event-rater-0",
+              "reviewer_id": "event-rater-0",
+              "root_pairs": [
+                {
+                  "evidence_refs": [
+                    "claim_eb924f07966ec0fbc89ff1900f90f27f",
+                    "claim_223f1a002087f6326847ee386b90ad52"
+                  ],
+                  "independent_generation": "TRUE",
+                  "reason": "The synthetic packet records separately generated issuer and counterparty obligations, with no common originating source.",
+                  "root_family_ids": [
+                    "synthetic-root-0",
+                    "synthetic-root-1"
+                  ],
+                  "shared_evidentiary_failure": "FALSE"
+                }
+              ]
+            },
+            {
+              "completed_at": "2026-10-06T17:01:00Z",
+              "independent": true,
+              "labels": {
+                "ATTENTION_ONLY": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "FALSE"
+                },
+                "EXPECTATION_CHANGE": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "UNKNOWN"
+                },
+                "FINANCING_LINKED": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "FALSE"
+                },
+                "GOVERNMENT_LINKED": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "FALSE"
+                },
+                "INDEPENDENT_EVIDENCE_2PLUS": {
+                  "evidence_refs": [
+                    "claim_eb924f07966ec0fbc89ff1900f90f27f",
+                    "claim_223f1a002087f6326847ee386b90ad52"
+                  ],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "TRUE"
+                },
+                "NO_MATERIAL_EVENT": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "FALSE"
+                },
+                "STRATEGIC_OPTION": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "FALSE"
+                },
+                "SYNDICATED_SINGLE_ROOT": {
+                  "evidence_refs": [],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "FALSE"
+                },
+                "VERIFIED_MATERIAL_EVENT": {
+                  "evidence_refs": [
+                    "claim_eb924f07966ec0fbc89ff1900f90f27f",
+                    "claim_223f1a002087f6326847ee386b90ad52"
+                  ],
+                  "reason": "Independent synthetic packet review; no actual issuer inference.",
+                  "value": "TRUE"
+                }
+              },
+              "outcome_blind": true,
+              "packet_sha256": "f4db4714e028098891970a6ea2aa8c45f99928bde88ec82e6ff2fd763c231ac6",
+              "review_receipt_id": "synthetic-review/event-rater-1",
+              "reviewer_id": "event-rater-1",
+              "root_pairs": [
+                {
+                  "evidence_refs": [
+                    "claim_eb924f07966ec0fbc89ff1900f90f27f",
+                    "claim_223f1a002087f6326847ee386b90ad52"
+                  ],
+                  "independent_generation": "TRUE",
+                  "reason": "The synthetic packet records separately generated issuer and counterparty obligations, with no common originating source.",
+                  "root_family_ids": [
+                    "synthetic-root-0",
+                    "synthetic-root-1"
+                  ],
+                  "shared_evidentiary_failure": "FALSE"
+                }
+              ]
+            }
+          ],
+          "roots": [
+            {
+              "claim_ids": [
+                "claim_eb924f07966ec0fbc89ff1900f90f27f"
+              ],
+              "dependencies": [],
+              "lineage_complete": true,
+              "mechanism_link": null,
+              "origin_claim_id": "claim_eb924f07966ec0fbc89ff1900f90f27f",
+              "origin_document_id": "synthetic-doc-issuer",
+              "origin_id": "synthetic-origin-0",
+              "root_family_id": "synthetic-root-0",
+              "support_kind": "proposition",
+              "supports_proposition_id": "claim_eb924f07966ec0fbc89ff1900f90f27f"
+            },
+            {
+              "claim_ids": [
+                "claim_223f1a002087f6326847ee386b90ad52"
+              ],
+              "dependencies": [],
+              "lineage_complete": true,
+              "mechanism_link": null,
+              "origin_claim_id": "claim_223f1a002087f6326847ee386b90ad52",
+              "origin_document_id": "synthetic-doc-counterparty",
+              "origin_id": "synthetic-origin-1",
+              "root_family_id": "synthetic-root-1",
+              "support_kind": "proposition",
+              "supports_proposition_id": "claim_eb924f07966ec0fbc89ff1900f90f27f"
+            }
+          ],
+          "tag_details": {}
+        }
+      ],
+      "freshness_start": "2026-10-02T13:15:00Z",
+      "issuer_id": "cik:0000320193",
+      "raw_attention": true,
+      "source_bodies": {
+        "synthetic-doc-counterparty": "Synthetic counterparty independently confirms its executed purchase obligation and committed funding for those 200 units.",
+        "synthetic-doc-issuer": "Synthetic issuer confirms a funded, 36-month supply contract for 200 units, conditional on site qualification."
+      },
+      "source_documents": {
+        "synthetic-doc-counterparty": {
+          "authority": "context_only",
+          "available_at": "2026-10-06T16:00:00Z",
+          "content_bytes": 121,
+          "content_sha256": "85c9c0a5a6a3b5cf031975758b6a76a69a39ef280e36885fde76b317c93897e2",
+          "document_id": "synthetic-doc-counterparty",
+          "document_kind": "release",
+          "event_id": "evt_cik0000320193_2026q3_action",
+          "fetched_at": "2026-10-06T16:05:00Z",
+          "filing_key": null,
+          "holds_bytes": true,
+          "presented_fiscal_label": null,
+          "published_at": "2026-10-06T16:00:00Z",
+          "revision": 1,
+          "rights_profile": "synthetic_rights_v1",
+          "rights_state": "licensed",
+          "schema": "source_document.v1",
+          "source_class": "third_party",
+          "superseded_by_document_id": null,
+          "supersedes_document_id": null
+        },
+        "synthetic-doc-issuer": {
+          "authority": "context_only",
+          "available_at": "2026-10-06T15:00:00Z",
+          "content_bytes": 110,
+          "content_sha256": "b6f13b3cba3fb23edce04c067cdddc688c3af5f052cc39dca3603a5dd57f0949",
+          "document_id": "synthetic-doc-issuer",
+          "document_kind": "release",
+          "event_id": "evt_cik0000320193_2026q3_action",
+          "fetched_at": "2026-10-06T15:05:00Z",
+          "filing_key": null,
+          "holds_bytes": true,
+          "presented_fiscal_label": null,
+          "published_at": "2026-10-06T15:00:00Z",
+          "revision": 1,
+          "rights_profile": "synthetic_rights_v1",
+          "rights_state": "public_primary",
+          "schema": "source_document.v1",
+          "source_class": "issuer_release",
+          "superseded_by_document_id": null,
+          "supersedes_document_id": null
+        }
+      },
+      "source_segments": {},
+      "synthetic": true,
+      "ticker_at_cut": "SYNTHETIC"
+    }
+  },
+  "schema": "pb_d_research_input.v1"
+}

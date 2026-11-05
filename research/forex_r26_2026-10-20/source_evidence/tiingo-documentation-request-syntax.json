@@ -1,0 +1,64 @@
+{
+  "schema": "forex_r26.tiingo_documentation_observation.v1",
+  "observed_date": "2026-10-21",
+  "scope": "Public primary documentation only; no API acquisition, source admission or rights grant",
+  "page": "https://www.tiingo.com/documentation/forex",
+  "asset": "https://apimedia.tiingo.com/dist/src_app_api_documentation_documentation_module_ts-es2015.f92c915a94800abc2f1b.js",
+  "asset_bytes": 533306,
+  "asset_sha256": "86fe3905be0376727e737bf9a294de3d9c527af7c477ca63948e5b5ffe0b5f7b",
+  "excerpt": {
+    "byte_start_inclusive": 341639,
+    "byte_end_exclusive": 342912,
+    "bytes": 1273,
+    "sha256": "6419b49a9bf927eebd43f9eaef397301fec1473ddbbc45560cf781debf086365"
+  },
+  "component_binding": {
+    "constructor_start_byte": 339627,
+    "selector": "tiingo-forex",
+    "selector_observed_near_byte": 343560,
+    "reused_property_name": "iexHistoricalPricesRequestRows",
+    "qualification": "The property name is reused; the enclosing component and rendered section are Forex. Parent independently checked the retained bytes and asset hash."
+  },
+  "documented_request_facts": {
+    "resampleFreq": {
+      "minimum": "1min",
+      "units": [
+        "min",
+        "hour"
+      ],
+      "examples": [
+        "15min",
+        "4hour"
+      ],
+      "default": "5min"
+    },
+    "startDate": {
+      "format": "YYYY-MM-DD",
+      "predicate": ">="
+    },
+    "endDate": {
+      "format": "YYYY-MM-DD",
+      "predicate": "<="
+    },
+    "historical_selection": "A non-null startDate or endDate selects historical data"
+  },
+  "interpretation_limits": [
+    "The public rendered page also shows a 1day example; the minute/hour request table is not treated as an exhaustive backend support contract.",
+    "Documented 4hour syntax does not establish UTC bucket origin, start/end labels, inclusion, completeness, closure/DST or finality.",
+    "The separate top-of-book midpoint definition does not establish the historical OHLC basis.",
+    "Naming conventions do not prove literal USDBRL coverage or offshore-CNH spot identity.",
+    "No account-specific product-use rights were inferred from public documentation."
+  ],
+  "remaining_source_gates": [
+    "historical OHLC construction/filtering",
+    "timestamp and UTC4H bucket semantics",
+    "sparse intervals, complete and partial buckets",
+    "session calendar and DST",
+    "finality and corrections",
+    "prospective availability and freshness",
+    "literal pair coverage and identity",
+    "existing account rights mapping"
+  ],
+  "provider_packet_sent": false,
+  "eligible_finalized_4h_observations": 0
+}

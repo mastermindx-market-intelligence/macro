@@ -90,7 +90,8 @@ A name in reduce_avoid that is ALSO in bottoming_watch keeps entries in BOTH lan
 The reduce_avoid row gets dual_read=True + dual_chip_en/zh set.
 Basket cycle ids use a 'b-' prefix (e.g. 'b-cn_baijiu') while theme ids do not
 ('cn_baijiu'); dual-read matching normalizes by stripping the 'b-' prefix.
-Never merged, never re-ranked.
+Raw evidence lanes are never merged or re-ranked. The additive display_lanes
+projection renders one card per exact entity and retains every source read.
 
 BUY-WORD PROHIBITION (F1/W8-R3)
 bottoming_watch rows must not contain: buy, entry, accumulate, enter (case-insensitive)
@@ -99,6 +100,7 @@ in any name, tag, reco field.  The lane caption enforces this at template level.
 from __future__ import annotations
 
 import logging
+from copy import deepcopy
 from typing import Any
 
 from engine.i18n import tr
@@ -237,6 +239,56 @@ def _cycle_row(r: dict) -> dict:
     return row
 
 
+def _display_lanes(lanes: dict[str, list[dict]]) -> dict[str, list[dict]]:
+    """Project one card per exact entity without changing source recommendations.
+
+    THEME/BASKET share the existing canonical basket id (including ``b-``
+    normalization). Sector identities stay separate: equal names are not proof
+    of equivalent exposures, and parent/child themes must never be collapsed.
+    Source rows remain in ``lanes`` and in each projected card's ``source_reads``.
+    An existing action outranks a watch observation; conflicting buy/reduce
+    sources are disclosed on the defensive lane, never resolved into a new buy.
+    This is presentation only: no Prophet rank, entry, size or ledger authority.
+    """
+    priority = {"reduce_avoid": 0, "buy_now": 1,
+                "wait_pullback": 2, "bottoming_watch": 3}
+    grouped: dict[str, list[tuple[str, int, dict]]] = {}
+    for lane, rows in lanes.items():
+        for index, row in enumerate(rows):
+            rid = str(row.get("id") or "")
+            kind = row.get("kind")
+            if not rid:
+                key = f"unidentified:{lane}:{index}"
+            elif kind in ("THEME", "BASKET"):
+                key = "basket:" + (rid[2:] if rid.startswith("b-") else rid)
+            else:
+                key = f"{kind or 'unknown'}:{rid}"
+            grouped.setdefault(key, []).append((lane, index, row))
+
+    projected: dict[str, list[tuple[int, dict]]] = {lane: [] for lane in lanes}
+    for key, sources in grouped.items():
+        lane, index, source = min(sources, key=lambda s: (priority[s[0]], s[1]))
+        row = deepcopy(source)
+        row["canonical_display_id"] = key
+        row["observed_lanes"] = list(dict.fromkeys(s[0] for s in sources))
+        row["source_reads"] = [{"lane": s[0], "row": deepcopy(s[2])} for s in sources]
+        row["action_disagreement"] = (
+            "buy_now" in row["observed_lanes"] and "reduce_avoid" in row["observed_lanes"]
+        )
+        # Move supporting tape/cycle observations onto the single primary card.
+        # Never overwrite that card's action, score, identity, or entry decision.
+        for field in ("organ_state", "organ_chip_en", "organ_chip_zh",
+                      "phase", "osc_slope", "pos", "rs_63d", "rs_rank"):
+            if row.get(field) is None:
+                for _, _, evidence in sources:
+                    if evidence.get(field) is not None:
+                        row[field] = deepcopy(evidence[field])
+                        break
+        projected[lane].append((index, row))
+    return {lane: [r for _, r in sorted(rows, key=lambda item: item[0])]
+            for lane, rows in projected.items()}
+
+
 # --------------------------------------------------------------------------- #
 #  Main assembler                                                               #
 # --------------------------------------------------------------------------- #
@@ -248,6 +300,7 @@ def assemble_act_now(
     ths_baskets: dict | None = None,
     member_names: dict | None = None,
     href_exists: "((str) -> bool) | None" = None,
+    *, observed_at=None,
 ) -> dict[str, Any]:
     """Assemble the four-lane Act-Now v2 board.
 
@@ -535,15 +588,34 @@ def assemble_act_now(
                     continue
             _row["href"] = _candidate
 
+    lanes = {
+        "buy_now": buy_now,
+        "wait_pullback": wait_pullback,
+        "bottoming_watch": bottoming_watch,
+        "reduce_avoid": reduce_avoid,
+    }
+    display_lanes = _continuation_display_lanes(_display_lanes(lanes), theme_intel, observed_at)
+    decisions = [row["theme_decision"] for rows in display_lanes.values() for row in rows
+                 if row.get("kind") == "THEME" and row.get("theme_decision")]
+    unavailable = [d for d in decisions if d["status"] == "UNAVAILABLE"]
+    data_note = None
+    if unavailable:
+        if len(unavailable) < len(decisions):
+            en = "Some theme inputs are unavailable; affected theme recommendations are not confirmed."
+            zh = "部分主题输入暂缺；相关主题的当前建议尚未确认。"
+        elif all(d["source_status"] == "UNSETTLED" for d in unavailable):
+            en = "Theme session data is settling; current theme recommendations are not confirmed."
+            zh = "主题交易日数据待确认；当前主题建议尚未确认。"
+        else:
+            en = "Theme inputs are unavailable; current theme recommendations are not confirmed."
+            zh = "主题输入暂缺；当前主题建议尚未确认。"
+        data_note = {"en": en, "zh": zh}
     return {
-        "lanes": {
-            "buy_now": buy_now,
-            "wait_pullback": wait_pullback,
-            "bottoming_watch": bottoming_watch,
-            "reduce_avoid": reduce_avoid,
-        },
+        "lanes": lanes,
+        "display_lanes": display_lanes,
         "as_of": as_of,
         "notes": notes,
+        "theme_data_note": data_note,
     }
 
 
@@ -627,3 +699,146 @@ def load_cycle_rows(forward_log_path: str | None) -> list[dict] | None:
     except Exception as exc:  # noqa: BLE001
         log.warning("Failed to load forward_log from %s: %s", forward_log_path, exc)
         return None
+
+
+# Reuse the final theme producer's recommendation; this is a display projection,
+# never a second score, stock-entry gate, thesis store or minimum-hold rule.
+def _theme_display_context(theme_intel, observed_at):
+    from datetime import date, datetime, timezone
+    from lib import cn_calendar
+
+    now = observed_at if observed_at is not None else datetime.now(timezone.utc)
+    ti = theme_intel if isinstance(theme_intel, dict) else {}
+    status, session = "UNAVAILABLE", ti.get("as_of")
+    try:
+        if now.tzinfo is None or now.utcoffset() is None:
+            raise ValueError("timezone required")
+        day = date.fromisoformat(session)
+        if day.isoformat() != session or not cn_calendar.is_session(day):
+            raise ValueError("settled session identity required")
+        expected = cn_calendar.expected_last_session(now)
+        if ti.get("stale") is not True:
+            if day == expected:
+                status = "CURRENT"
+            elif day > expected and day == now.astimezone(cn_calendar.CST).date():
+                status = "UNSETTLED"  # preserve the existing calendar's finality rule
+    except (ValueError, TypeError, AttributeError) as exc:
+        log.debug("China theme session validation unavailable (%s)", type(exc).__name__)
+    if status != "CURRENT":
+        log.info("China theme action availability: %s", status)
+    by_id, duplicates = {}, set()
+    for td in ti.get("themes") or []:
+        if not isinstance(td, dict) or not isinstance(td.get("id"), str):
+            continue
+        tid = td["id"]
+        if tid in by_id:
+            duplicates.add(tid)
+        by_id[tid] = td
+    for tid in duplicates:
+        by_id.pop(tid, None)
+    an = ti.get("act_now") or {}
+    conflicts = {item.get("id") for item in an.get("conflicted") or []
+                 if isinstance(item, dict) and isinstance(item.get("id"), str)}
+    return status, session, by_id, conflicts
+
+
+def _continuation_display_lanes(lanes, theme_intel, observed_at=None):
+    """Keep final accumulation actionable while its current conditions persist.
+
+    Raw lanes and source_reads remain immutable. Every render reevaluates the
+    actual final producer verdict; no remembered buy survives missing evidence.
+    Neither a tape watch nor a foreign-market narrative can originate a buy.
+    """
+    import math
+
+    status, session, themes, conflicts = _theme_display_context(theme_intel, observed_at)
+    result = {lane: [] for lane in lanes}
+    for source_lane, rows in lanes.items():
+        for original in rows:
+            row, lane = deepcopy(original), source_lane
+            if row.get("kind") != "THEME":
+                result[lane].append(row)
+                continue
+            tid = row.get("id")
+            td = themes.get(tid)
+            final = td.get("reco") if td else None
+            coherent = status == "CURRENT" and td is not None
+            if td:
+                # The aggregate producer owns coverage. A date on the wrapper
+                # cannot substitute for current, eligible constituent evidence.
+                observation = td.get("observation")
+                coherent = (coherent and isinstance(observation, dict)
+                            and observation.get("effective_as_of") == session
+                            and observation.get("aggregate_eligible") is True)
+                for key in ("mtf", "tape"):
+                    evidence = td.get(key)
+                    if isinstance(evidence, dict) and evidence.get("as_of") is not None:
+                        coherent = coherent and evidence["as_of"] == session
+            coherent = coherent and final in {"enter", "accumulate", "hold", "trim", "avoid"}
+            row["theme_decision"] = {
+                "source_as_of": session, "final_reco": final,
+                "final_label": td.get("label") if td else None,
+                "status": "CURRENT" if coherent else "UNAVAILABLE",
+                "source_status": status,
+                "source_conflict": tid in conflicts,
+                "scope": "theme_presentation_only", "stock_entry_permission": False,
+            }
+            if not coherent or final not in {"enter", "accumulate", "hold", "trim", "avoid"}:
+                if lane == "buy_now":
+                    lane = "wait_pullback"
+                # Keep original evidence only in source_reads. Unqualified metrics
+                # must not survive as an apparently current score/leadership read.
+                for field in ("score", "rel20", "rel5", "breadth_pct50", "leadership",
+                              "leaders_en", "leaders_zh", "n_members", "phase", "osc_slope",
+                              "pos", "rs_63d", "rs_rank", "organ_state", "organ_chip_en", "organ_chip_zh",
+                              "dual_chip_en", "dual_chip_zh"):
+                    row[field] = None
+                row["dual_read"] = False
+                row["action_disagreement"] = False
+                row["reasons"] = []
+                row.pop("entry_route", None)
+                settling = status == "UNSETTLED"
+                row.update(reco=None, reco_en="SESSION SETTLING" if settling else "DATA UNAVAILABLE",
+                           reco_zh="交易日数据待确认" if settling else "数据暂缺")
+            elif lane == "reduce_avoid":
+                pass  # a defensive source conflict can never be promoted to a buy
+            elif final in {"hold", "trim", "avoid"}:
+                lane = "wait_pullback" if final == "hold" else "reduce_avoid"
+                row.update(reco=final, reco_en=td.get("reco_en") or final.upper(),
+                           reco_zh=td.get("reco_zh"))
+            elif tid in conflicts or row.get("action_disagreement"):
+                lane = "wait_pullback"
+                row.update(reco="hold", reco_en="CONFLICT — WAIT", reco_zh="信号冲突 — 等待")
+            else:
+                textures = td.get("textures") if isinstance(td.get("textures"), dict) else {}
+                ce = textures.get("clean_entry") if isinstance(textures.get("clean_entry"), dict) else {}
+                clean, extension = ce.get("flag"), td.get("ext_abs")
+                complete = (td.get("regime_demoted") is False and td.get("chase_demoted") is False
+                            and isinstance(clean, bool))
+                source_action = row.get("reco")
+                row.update(reco=final, reco_en=td.get("reco_en") or final.upper(),
+                           reco_zh=td.get("reco_zh"))
+                continuation = (
+                    final == "accumulate" and td.get("label") == "dominant"
+                    and source_action == "accumulate" and complete
+                    and isinstance(extension, (int, float)) and not isinstance(extension, bool)
+                    and math.isfinite(extension)
+                )
+                if continuation:
+                    lane = "buy_now"
+                    row.update(entry_route="continuation", reco="accumulate",
+                               reco_en="CONTINUATION", reco_zh="趋势增持")
+                elif lane == "buy_now" and (clean is not True or not complete):
+                    lane = "wait_pullback"
+                elif lane == "buy_now":
+                    row["entry_route"] = "clean_entry"
+            result[lane].append(row)
+    # Preserve the existing score order among themes after cross-lane promotion;
+    # sectors retain their original order and are never scored against themes.
+    def theme_score(row):
+        value = row.get("score")
+        return value if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) else float("-inf")
+    buy = result["buy_now"]
+    result["buy_now"] = sorted((r for r in buy if r.get("kind") == "THEME"),
+                               key=theme_score, reverse=True) + [r for r in buy if r.get("kind") != "THEME"]
+    return result

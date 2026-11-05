@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-08-17T20:03:17Z",
+ "accession": "0001628280-26-057358",
+ "cik": "0001633978",
+ "doc_byte_length": 3332187,
+ "doc_sha256": "8fa710d6ca512bf191fee2211e129bb55d49be90caeddd3801c7203750db47ed",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-06-27",
+ "primary_document": "lite-20260627.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3065204,
+  "byte_start": 3064132,
+  "normalized": "Customer B15.0 %16.0",
+  "normalized_sha256": "c58ea7963990fe40e2068499ffec5694d431f38973876fdf19ac0cd453adb326",
+  "raw": "Customer B</span></td><td colspan=\"2\" style=\"background-color:#ffffff;padding:1.5pt 0 1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-531\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-2056\">15.0</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:1.5pt 1pt 1.5pt 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:1.5pt 0 1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-532\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-2057\">16.0",
+  "raw_sha256": "cb64f1e3bc8399b1f312fe4a91346a0f5e2a0a929386d1ee62945cbcdc50058c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1633978/000162828026057358/lite-20260627.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 266273,
+   "byte_start": 265612,
+   "context_ref": "c-532",
+   "raw": "<xbrli:context id=\"c-532\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001633978</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">lite:CustomerBMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-06-30</xbrli:startDate><xbrli:endDate>2025-06-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "abb203c5e448b03f07fb3d12ec544d49f6d82380d165f1a267db6679397eabab"
+  }
+ ]
+}
