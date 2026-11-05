@@ -1737,44 +1737,39 @@ jobs:
       # generation. Every git network op is alarm-bounded (macOS runners have no GNU
       # timeout; perl alarm survives execve — SIGALRM kills a hung op, the loop retries).
       - name: push capital-structure data (alarm-bounded git ops)
-        id: pushcs
         if: always() && steps.commitcs.outputs.committed == 'true'
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/daily_capital_structure_publish.sh
+
+      - name: Retain original capital_structure publication origin
+        id: native_publication_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected capital_structure publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          # Same best-effort policy as the market push: losing a race for refs/heads/main
-          # must not red the job. (Pre-split this loop doubled as a second chance at a
-          # lost market push, because both commits sat in one workspace. It does not any
-          # more — that commit lives in `collect`'s workspace, and `collect`'s own
-          # salvage push is what covers it. This loop publishes the generation only.)
-          PUSH_ALARM=420
-          push_retry_init "capital-structure generation"
-          while push_attempt; do
-            # pre-sync collision sweep — see the market push above for the full rationale
-            # (a mid-run commit on origin/main tracking a path this job wrote untracked).
-            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
-            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
-                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
-              | while IFS= read -r f; do rm -f -- "$f" || true; done
-            # Whole-generation append-only fence (DEC:CS-V2-WHOLE-GENERATION-APPEND-ONLY-FENCE).
-            # Two overlapping capital_structure jobs can each compile from the ledger they
-            # checked out; `-X theirs` below then REPLACES origin/main's coherent CS
-            # generation. Runs after fetch and before rebase so a proven drop of
-            # source_manifest.jsonl withholds data/capital_structure and
-            # site/capital-structure-data together — never one file, never merge=union.
-            # Collect cannot host this fence: collect unstages those paths.
-            if ! push_append_only_fence origin/main; then push_backoff; continue; fi
-            if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then
-                echo "pushed capital-structure generation on attempt $PUSH_ATTEMPT"
-                push_won
-                exit 0
-              fi
-            fi
-            push_abort_rebase
-            push_backoff
-          done
-          push_lost
-          echo "::warning::could not push the capital-structure generation after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal — the market data is already published; the next night recompiles)"
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       # W2: per-band timings row + >85%-of-cap tripwire. always() so a job-cap cancel
       # still records the night in the grace window (elapsed ≈ cap → the warning fires).
       - name: timings ledger + 85% budget tripwire (W2)
@@ -2235,50 +2230,38 @@ jobs:
         # stores are safe to commit: every lane here is state-resumable and
         # claims are idempotent.
         if: always()
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/daily_collect_tail_publish.sh
+
+      - name: Retain original collect_tail publication origin
+        id: native_publication_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected collect_tail publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          git config user.name "dashboard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          # Everything this job writes is under data/ (tape_flow, trade_flows,
-          # clinical_trials, neuralweb, qledger claims, run_status) or
-          # site/basketdata/ (TIL site projections). No cache-restore steps run
-          # in this job, so the W0b asia unstage sweep from the collect job is
-          # not needed here — a fresh checkout+pull can only differ where THIS
-          # job's steps wrote. (The adapter sweep + qledger grader never run in
-          # this job, so site/qledger/track_record.json is never touched here;
-          # tests/test_collect_staging_globs.py keys on the grader-bearing
-          # module's dotted name, which this comment deliberately avoids.)
-          # data/run_status.json is co-written by the concurrent engine job
-          # (flow_signals registration) — whole-file -X theirs means one side's
-          # sources[] update can lose a race and go 1-run stale. Display-only
-          # and self-healing (healthcheck's hard-fail keys last_run/
-          # circuit_breaker are written solely by collect-core's adapter sweep,
-          # present in every job's base) — accepted at the 07-14 split review.
-          git add data/ site/basketdata/
-          # GH001 carve (scripts/ci/qledger_carve.sh, #9556 parity): an oversize staged qledger blob sank this whole commit nightly from 10-21; withhold stays green.
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 0
-          if git diff --cached --quiet; then echo "no tail data changes to commit"; exit 0; fi
-          git commit -m "data: collect-tail accrual $(date -u +%F)"
-          # best-effort push: same 5-retry rebase loop as the collect job's
-          # "commit market data" (see the pre-sync collision-sweep rationale there —
-          # render.yml / #2252). -X theirs prefers THIS job's freshly-accrued
-          # data on any conflict; exhausting the retry budget is non-fatal (the
-          # stores are state-resumable and re-accrue next night).
-          PUSH_ALARM=420
-          push_retry_init "tail data"
-          while push_attempt; do
-            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
-            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
-                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
-              | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "pushed tail data on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
-            fi
-            push_abort_rebase
-            push_backoff
-          done
-          push_lost
-          echo "::warning::could not push collect-tail data after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
         run: bash scripts/ci/nightly_timings_finish.sh 200
@@ -5296,37 +5279,38 @@ jobs:
       - name: factor return series (build_factor_series)
         run: python -m scripts.build_factor_series || echo "factor series skipped (additive)"
       - name: commit factor series
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/daily_factor_series_publish.sh
+
+      - name: Retain original factor_series publication origin
+        id: native_publication_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected factor_series publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          git config user.name "dashboard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add site/factordata/factor_series.json
-          if git diff --cached --quiet; then echo "no factor-series changes"; exit 0; fi
-          git commit -m "factor-series: month-end walk $(date -u +%F)"
-          # best-effort push (different file from engine's outputs → rebases clean)
-          PUSH_ALARM=420
-          push_retry_init "factor series"
-          while push_attempt; do
-            # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can
-            # TRACK a path this job wrote as an UNTRACKED side-effect — the rebase checkout then
-            # refuses ("untracked working tree files would be overwritten") and --autostash can't
-            # clear it (it parks tracked modifications only), so every retry dies identically.
-            # Everything this step publishes is already committed above, so a path untracked HERE
-            # but tracked on origin/main is a throwaway local write — origin/main is authoritative.
-            # Gitignored files and untracked paths origin/main doesn't track never enter the
-            # intersection (runner-local stores and caches are untouched).
-            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
-            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
-                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
-              | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "pushed factor series on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
-            fi
-            push_abort_rebase
-            push_backoff
-          done
-          push_lost
-          echo "::warning::could not push factor series after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal — daily reads the last committed json)"
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
         run: bash scripts/ci/nightly_timings_finish.sh 45
@@ -5397,43 +5381,38 @@ jobs:
       # factor_attention firings are written in THIS job's tree but the cortex
       # job's commit step runs in a different tree where they never exist.
       - name: commit factor intelligence outputs
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/daily_factor_panel_publish.sh
+
+      - name: Retain original factor_panel publication origin
+        id: native_publication_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected factor_panel publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          git config user.name "dashboard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add data/neuralweb/factor_intelligence_state.json
-          git add site/neuralwebdata/factor_intelligence_state.json
-          git add data/factordata/factor_state_history.jsonl
-          git add data/factordata/fire_coordinates.jsonl
-          git add data/neuralweb/factor_contradictions.jsonl || true  # dormant until panel backfill ≥60d; absent = expected
-          git add data/reflexes/factor_attention/firings.jsonl || true  # absent until first factor_attention firing
-          git add site/factordata/dna_class.json
-          if git diff --cached --quiet; then echo "no factor intelligence changes"; exit 0; fi
-          git commit -m "factor-intelligence: nightly state artifact + pool $(date -u +%F)"
-          # best-effort push (own files -> rebases clean against engine/factor_series)
-          PUSH_ALARM=420
-          push_retry_init "factor intelligence"
-          while push_attempt; do
-            # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can
-            # TRACK a path this job wrote as an UNTRACKED side-effect — the rebase checkout then
-            # refuses ("untracked working tree files would be overwritten") and --autostash can't
-            # clear it (it parks tracked modifications only), so every retry dies identically.
-            # Everything this step publishes is already committed above, so a path untracked HERE
-            # but tracked on origin/main is a throwaway local write — origin/main is authoritative.
-            # Gitignored files and untracked paths origin/main doesn't track never enter the
-            # intersection (runner-local stores and caches are untouched).
-            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
-            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
-                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
-              | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "pushed factor intelligence outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
-            fi
-            push_abort_rebase
-            push_backoff
-          done
-          push_lost
-          echo "::warning::could not push factor intelligence after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
         run: bash scripts/ci/nightly_timings_finish.sh 20
@@ -5545,45 +5524,38 @@ jobs:
           COLLECT_LANE: nightly
         run: python -m scripts.build_thematic_state --mode ACTIVITY_MEMBERSHIP_STATE
       - name: commit oracle Time Machine feed + ratio lens
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/daily_oracle_offrender_publish.sh
+
+      - name: Retain original oracle_offrender publication origin
+        id: native_publication_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected oracle_offrender publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          git config user.name "dashboard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add site/oracledata/ data/oracle/ratio_lens_ledger.jsonl
-          # washout_counterread_ledger.jsonl is only written on days the signal FIRES
-          # (build_oracle_washout_counterread.py show=True); on non-firing days it is absent
-          # and a hard `git add` exits 128, aborting this whole step (this failed the nightly
-          # on 2026-07-13 and 2026-07-14). The commit is gated below by `git diff --cached
-          # --quiet`, so tolerating the file's absence is safe.
-          git add data/oracle/washout_counterread_ledger.jsonl 2>/dev/null || true
-          git add data/theme_graph/shadow_theme_state.v1.json 2>/dev/null || true
-          git add data/theme_graph/activity_membership_state.v1.json 2>/dev/null || true
-          if git diff --cached --quiet; then echo "no oracle Time Machine or ratio lens changes"; exit 0; fi
-          git commit -m "oracle-tm: nightly Time Machine feed + ratio lens refresh $(date -u +%F)"
-          # best-effort push (own files -> rebases clean; no other job writes site/oracledata/)
-          PUSH_ALARM=420
-          push_retry_init "oracle Time Machine feed"
-          while push_attempt; do
-            # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can
-            # TRACK a path this job wrote as an UNTRACKED side-effect — the rebase checkout then
-            # refuses ("untracked working tree files would be overwritten") and --autostash can't
-            # clear it (it parks tracked modifications only), so every retry dies identically.
-            # Everything this step publishes is already committed above, so a path untracked HERE
-            # but tracked on origin/main is a throwaway local write — origin/main is authoritative.
-            # Gitignored files and untracked paths origin/main doesn't track never enter the
-            # intersection (runner-local stores and caches are untouched).
-            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
-            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
-                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
-              | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "pushed oracle Time Machine feed on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
-            fi
-            push_abort_rebase
-            push_backoff
-          done
-          push_lost
-          echo "::warning::could not push oracle Time Machine feed after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
         run: bash scripts/ci/nightly_timings_finish.sh 40
@@ -5666,56 +5638,38 @@ jobs:
       # publish it to the live site. Committing nothing beats committing corrupt
       # JSON. Make the writes atomic first if you want always() here.
       - name: commit Technical Lab artifacts
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/daily_tech_lab_offrender_publish.sh
+
+      - name: Retain original tech_lab_offrender publication origin
+        id: native_publication_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected tech_lab_offrender publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          git config user.name "dashboard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add site/factordata/tech_screener.json site/factordata/tech_lab.json
-          if [ -f site/factordata/tech_confluence.json ]; then
-            git add site/factordata/tech_confluence.json
-          fi
-          if [ -f site/factordata/m2_profiles.json ]; then
-            git add site/factordata/m2_profiles.json
-          fi
-          # tech_events is written by a sibling PR (TLT-W3); pick it up once present.
-          if [ -d site/factordata/tech_events ]; then
-            git add site/factordata/tech_events
-          fi
-          if [ -f site/confluence_screener.html ]; then
-            git add site/confluence_screener.html
-          fi
-          if [ -f site/premiumdata/confluence_screener.json ]; then
-            git add site/premiumdata/confluence_screener.json
-          fi
-          if [ -f site/og/confluence_screener.png ]; then
-            git add site/og/confluence_screener.png
-          fi
-          if git diff --cached --quiet; then echo "no tech-lab artifact changes"; exit 0; fi
-          git commit -m "tech-lab: nightly 64-signal screener + lab refresh $(date -u +%F)"
-          # best-effort rebase-push (own files → clean rebases; no other job writes these paths)
-          PUSH_ALARM=420
-          push_retry_init "tech-lab artifacts"
-          while push_attempt; do
-            # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can
-            # TRACK a path this job wrote as an UNTRACKED side-effect — the rebase checkout then
-            # refuses ("untracked working tree files would be overwritten") and --autostash can't
-            # clear it (it parks tracked modifications only), so every retry dies identically.
-            # Everything this step publishes is already committed above, so a path untracked HERE
-            # but tracked on origin/main is a throwaway local write — origin/main is authoritative.
-            # Gitignored files and untracked paths origin/main doesn't track never enter the
-            # intersection (runner-local stores and caches are untouched).
-            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
-            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
-                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
-              | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "pushed tech-lab artifacts on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
-            fi
-            push_abort_rebase
-            push_backoff
-          done
-          push_lost
-          echo "::warning::could not push tech-lab artifacts after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
         run: bash scripts/ci/nightly_timings_finish.sh 120
@@ -5959,45 +5913,38 @@ jobs:
       # own log. The host spool (data/marketing/learning_host/) is gitignored
       # and must never appear here.
       - name: commit marketing learning artifacts (XG-W6)
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/daily_standout_audit_us_publish.sh
+
+      - name: Retain original standout_audit_us publication origin
+        id: native_publication_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected standout_audit_us publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          git config user.name "dashboard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add data/marketing/learning 2>/dev/null || true
-          if git diff --cached --quiet; then echo "no marketing learning changes"; exit 0; fi
-          HALTED=$(python3 -c "import json,pathlib;p=pathlib.Path('data/marketing/learning/halts.json');d=json.loads(p.read_text()) if p.exists() else {};print(','.join(sorted(a for a,r in (d.get('accounts') or {}).items() if isinstance(r,dict) and r.get('state')=='halted')) or 'none')" 2>/dev/null || echo "unknown")
-          # METADATA-ONLY PUSH (P0 d29e4dd44d/#4167, same shape as the chronicle
-          # step): this push runs while the SIBLING data/marketing/ paths that
-          # "commit standout audit US artifacts" broad-adds NEXT are still dirty
-          # — a `pull --rebase --autostash` here could conflict its re-apply,
-          # exit 0, and hand that step a marker-polluted tree. Replay in a temp
-          # index and push the object id; the dirty tree is never touched.
-          LEARNING_PARENT=$(git rev-parse HEAD)
-          git commit -m "marketing-learning: labels + scorecard + desk health $(date -u +%F) (halted: ${HALTED})"
-          LEARNING_COMMIT=$(git rev-parse HEAD)
-          LEARNING_MESSAGE=$(git log -1 --format=%B "$LEARNING_COMMIT")
-          PUSH_ALARM=420
-          push_retry_init "marketing learning artifacts"
-          while push_attempt; do
-            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
-            if LEARNING_PUBLISH=$(push_metadata_replay_commit "$LEARNING_PARENT" origin/main \
-                "$LEARNING_COMMIT" "$LEARNING_MESSAGE" "${RUNNER_TEMP:-/tmp}/learning-replay.idx"); then
-              if [ "$(git rev-parse "$LEARNING_PUBLISH^{tree}")" = "$(git rev-parse origin/main^{tree})" ]; then
-                echo "marketing learning content already on origin/main — nothing to push"
-                push_won; exit 0
-              fi
-              if push_do origin "$LEARNING_PUBLISH:refs/heads/main"; then
-                echo "pushed marketing learning artifacts on attempt $PUSH_ATTEMPT (metadata replay — dirty marketing tree untouched)"
-                push_won; exit 0
-              fi
-            else
-              PUSH_FAIL_CLASS="rebase-conflict"
-            fi
-            push_backoff
-          done
-          push_lost
-          echo "::warning title=marketing_learning::could not push learning artifacts (they advance again tomorrow)"
-          exit 0
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       - name: commit standout audit US artifacts
         # Body extracted verbatim to scripts/ci/daily_standout_audit_us_commit.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
         run: bash scripts/ci/daily_standout_audit_us_commit.sh
@@ -6081,34 +6028,38 @@ jobs:
           COLLECT_LANE: nightly
         run: python -m scripts.run_us_scan_tier --nightly || true
       - name: commit scan-tier artifacts
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/daily_us_scan_tier_publish.sh
+
+      - name: Retain original us_scan_tier publication origin
+        id: native_publication_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected us_scan_tier publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/prophet_scan_tier 2>/dev/null || true
-          git add data/us_prophet_rank/candidates 2>/dev/null || true
-          # Healed caches (prepend-only splices from local donors).
-          git add data/yahoo 2>/dev/null || true
-          git add data/stocks 2>/dev/null || true
-          if git diff --cached --quiet; then echo "no scan-tier changes"; exit 0; fi
-          push_staged_heal data/ || exit 1
-          if git diff --cached --quiet; then echo "no scan-tier changes after conflict heal"; exit 0; fi
-          git commit -m "us-scan-tier: widened seeing set + shallow-cache heal $(date -u +%F)"
-          PUSH_ALARM=420
-          push_retry_init "US scan tier artifacts"
-          while push_attempt; do
-            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
-            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
-                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
-              | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "pushed US scan tier artifacts on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
-            fi
-            push_abort_rebase
-            push_backoff
-          done
-          push_lost
-          echo "::warning::could not push US scan tier artifacts after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
         run: bash scripts/ci/nightly_timings_finish.sh 60
@@ -6273,37 +6224,38 @@ jobs:
         # commit is exactly how 2026-08-06 was lost. Committing what advanced beats
         # discarding the night; the job's own conclusion still carries the failure.
         if: always()
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/daily_us_prophet_ledgers_publish.sh
+
+      - name: Retain original us_prophet_ledgers publication origin
+        id: native_publication_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected us_prophet_ledgers publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Every path below is written ONLY by the six steps above (no other lane writes
-          # them), so the add list is exact rather than a broad `git add data/`: this job
-          # must never carry another lane's stray runner-tree bytes to main.
-          git add data/prophet_doors 2>/dev/null || true
-          git add data/us_prophet_rank/episodes 2>/dev/null || true
-          git add data/us_prophet_rank/grades 2>/dev/null || true
-          git add data/us_prophet_rank/w3 2>/dev/null || true
-          git add data/prophet_miss_audit 2>/dev/null || true
-          if git diff --cached --quiet; then echo "no prophet ledger changes"; exit 0; fi
-          push_staged_heal data/ || exit 1
-          if git diff --cached --quiet; then echo "no prophet ledger changes after conflict heal"; exit 0; fi
-          git commit -m "prophet-us: nightly ledger advance $(date -u +%F)"
-          PUSH_ALARM=420
-          push_retry_init "prophet ledger artifacts"
-          while push_attempt; do
-            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
-            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
-                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
-              | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "pushed prophet ledger artifacts on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
-            fi
-            push_abort_rebase
-            push_backoff
-          done
-          push_lost
-          echo "::warning::could not push prophet ledger artifacts after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
         run: bash scripts/ci/nightly_timings_finish.sh 60
@@ -6354,57 +6306,38 @@ jobs:
       - name: precompute AI stock briefs (build_stock_briefs)
         run: python -m scripts.build_stock_briefs
       - name: commit stock briefs
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/daily_stock_briefs_publish.sh
+
+      - name: Retain original stock_briefs publication origin
+        id: native_publication_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected stock_briefs publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          git config user.name "dashboard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          # site/stockbrief is gitignored for local-dev cleanliness but must be TRACKED
-          # on main so the committed-tree deploy ships it (-f overrides the ignore).
-          git add -f site/stockbrief 2>/dev/null || true
-          git add data/catalyst/stockbrief_cache 2>/dev/null || true
-          # stock_desk (T9): the accountable-lean notes + the graded track record are written
-          # by build_stock_briefs in THIS job (after the engine job's force-add of site/stockdata
-          # already ran), so they must be force-added HERE or they never land on main → the
-          # aidesk_lean.js panel 404s. The ledger (data/stock_desk, NOT gitignored) must also be
-          # committed or the track record can never accumulate past-due leans. (Same gitignore/
-          # force-add trap as the per-market stock libraries.)
-          git add data/stock_desk 2>/dev/null || true
-          # Eval OS E1: stock_desk's qledger registration (P3 anchor-at-registration,
-          # #6598) writes claims.jsonl + evidence_clock_start/stock_desk.json under
-          # data/qledger IN THIS JOB — the only lane that runs this producer. Without
-          # this add, an accepted claim and the write-once evidence clock live only in
-          # the runner checkout and the next job's clean checkout destroys them.
-          # data/qledger's one committed-file fence (the CONTROL clock, #5970) is a
-          # .gitignore rule, so a plain add here can never re-commit it.
-          git add data/qledger 2>/dev/null || true
-          # GH001 carve (scripts/ci/qledger_carve.sh, #9556 parity): an oversize staged qledger blob sank this whole commit nightly from 10-21; withhold stays green.
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 0
-          if git diff --cached --quiet; then echo "no stock-brief changes"; exit 0; fi
-          git commit -m "stock-briefs: AI research briefs + accountable leans $(date -u +%F)"
-          # best-effort push (own files → rebases clean against engine/factor_series)
-          PUSH_ALARM=420
-          push_retry_init "stock briefs"
-          while push_attempt; do
-            # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can
-            # TRACK a path this job wrote as an UNTRACKED side-effect — the rebase checkout then
-            # refuses ("untracked working tree files would be overwritten") and --autostash can't
-            # clear it (it parks tracked modifications only), so every retry dies identically.
-            # Everything this step publishes is already committed above, so a path untracked HERE
-            # but tracked on origin/main is a throwaway local write — origin/main is authoritative.
-            # Gitignored files and untracked paths origin/main doesn't track never enter the
-            # intersection (runner-local stores and caches are untouched).
-            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
-            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
-                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
-              | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "pushed stock briefs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
-            fi
-            push_abort_rebase
-            push_backoff
-          done
-          push_lost
-          echo "::warning::could not push stock briefs after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal — the stock page falls back to the last committed briefs)"
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       - name: sync stock_briefs stockdata writes to R2 (post-flip freshness)
         if: always()
         env:
@@ -6575,7 +6508,7 @@ jobs:
 
       - name: Retain original cortex publication origin
         id: native_publication_origin
-        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
@@ -6586,7 +6519,7 @@ jobs:
 
       - name: Confirm original protected cortex publication
         id: native_publication
-        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
         env:
           NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
           NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
@@ -6844,37 +6777,38 @@ jobs:
         run: |
           python3 scripts/agentos.py status || echo "::warning::agent_os_state generation failed (non-fatal — fail-open)"
       - name: commit active build map outputs
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/daily_active_build_map_publish.sh
+
+      - name: Retain original active_build_map publication origin
+        id: native_publication_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected active_build_map publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          git config user.name "dashboard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add docs/ACTIVE_BUILD_MAP.md data/governance/active_builds.json \
-                  docs/AGENT_OS_STATE.md data/governance/agent_os_state.json
-          if git diff --cached --quiet; then echo "no active build map changes"; exit 0; fi
-          git commit -m "docs: active build map $(date -u +%F)"
-          PUSH_ALARM=420
-          push_retry_init "active build map"
-          while push_attempt; do
-            # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can
-            # TRACK a path this job wrote as an UNTRACKED side-effect — the rebase checkout then
-            # refuses ("untracked working tree files would be overwritten") and --autostash can't
-            # clear it (it parks tracked modifications only), so every retry dies identically.
-            # Everything this step publishes is already committed above, so a path untracked HERE
-            # but tracked on origin/main is a throwaway local write — origin/main is authoritative.
-            # Gitignored files and untracked paths origin/main doesn't track never enter the
-            # intersection (runner-local stores and caches are untouched).
-            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
-            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
-                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
-              | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "pushed active build map on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
-            fi
-            push_abort_rebase
-            push_backoff
-          done
-          push_lost
-          echo "::warning::could not push active build map after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
         run: bash scripts/ci/nightly_timings_finish.sh 10
@@ -6923,26 +6857,38 @@ jobs:
           python -m scripts.check_ledger_advance --render-happened || echo "::warning::check_ledger_advance failed (non-fatal — CSP-R1 fail-open)"
       - name: commit ledger heartbeat state
         if: always()
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/daily_ledger_heartbeat_publish.sh
+
+      - name: Retain original ledger_heartbeat publication origin
+        id: native_publication_origin
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected ledger_heartbeat publication
+        id: native_publication
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
-          git config user.name "dashboard-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add data/ci/ledger_heartbeat_state.json 2>/dev/null || true
-          if git diff --cached --quiet; then echo "no heartbeat state change"; exit 0; fi
-          git commit -m "ops: ledger heartbeat state $(date -u +%F)"
-          PUSH_ALARM=120
-          PUSH_MAX_ATTEMPTS=6      # a one-line ops state file, non-fatal — a shorter budget than the render lanes is right, but 3 was not enough to outlast main's commit rate
-          push_retry_init "ledger heartbeat state"
-          while push_attempt; do
-            perl -e 'alarm 60; exec @ARGV or die' -- git fetch origin main || true
-            if perl -e 'alarm 120; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "heartbeat state pushed on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
-            fi
-            push_abort_rebase
-            push_backoff
-          done
-          push_lost
-          echo "::warning::could not push heartbeat state after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
         run: bash scripts/ci/nightly_timings_finish.sh 5

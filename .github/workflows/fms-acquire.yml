@@ -142,7 +142,7 @@ jobs:
 
       - name: Retain original FMS publication origin
         id: native_publication_origin
-        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
@@ -153,7 +153,7 @@ jobs:
 
       - name: Confirm original FMS persistence before dependent publication
         id: persist
-        if: steps.native_publication_stage.outputs.projection_changed == 'true'
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.projection_changed == 'true' && (steps.native_publication_stage.outputs.native_origin_path == '' || steps.native_publication_origin.outcome == 'success') }}
         env:
           NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
           NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}

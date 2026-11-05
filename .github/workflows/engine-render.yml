@@ -896,22 +896,26 @@ jobs:
           NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Capture repository-owned execution bytes from the original protected
-          # workflow SHA BEFORE rebase can replace files in the candidate tree.
-          umask 077
-          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
-          native_code_root="${RUNNER_TEMP%/}/native-publication-code-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
-          mkdir -m 700 -- "$native_code_root"
-          mkdir -p -- "$native_code_root/scripts/ci"
-          GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show \
-            "$GITHUB_WORKFLOW_SHA:scripts/ci/native_publication_source.sh" \
-            > "$native_code_root/scripts/ci/native_publication_source.sh"
-          case "$(GIT_NO_REPLACE_OBJECTS=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_publication_source.sh)" in
-            100644*) : ;; *) exit 76 ;;
-          esac
-          . "$native_code_root/scripts/ci/native_publication_source.sh"
-          native_publication_capture_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"
-          . "$native_code_root/scripts/ci/push_retry.sh"
+          if [ "${GITHUB_REPOSITORY:-}" = mastermindx-market-intelligence/macro ]; then
+            # Capture repository-owned execution bytes from the original protected
+            # workflow SHA BEFORE rebase can replace files in the candidate tree.
+            umask 077
+            [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+            native_code_root="${RUNNER_TEMP%/}/native-publication-code-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
+            mkdir -m 700 -- "$native_code_root"
+            mkdir -p -- "$native_code_root/scripts/ci"
+            GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show \
+              "$GITHUB_WORKFLOW_SHA:scripts/ci/native_publication_source.sh" \
+              > "$native_code_root/scripts/ci/native_publication_source.sh"
+            case "$(GIT_NO_REPLACE_OBJECTS=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_publication_source.sh)" in
+              100644*) : ;; *) exit 76 ;;
+            esac
+            . "$native_code_root/scripts/ci/native_publication_source.sh"
+            native_publication_capture_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"
+            . "$native_code_root/scripts/ci/push_retry.sh"
+          else
+            . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+          fi
           git config user.name "dashboard-bot"
           git config user.email "actions@users.noreply.github.com"
           # ONLY site/ — never data/ or reports/. engine.run + the builders touch data/ in the
@@ -1102,7 +1106,7 @@ jobs:
           echo "### ❌ engine-rendered site NOT pushed after $PUSH_ATTEMPT attempts — live site stale until the next render/nightly re-lands" >> "$GITHUB_STEP_SUMMARY"
       - name: Retain original engine-render publication origin
         id: native_publication_origin
-        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
@@ -1113,7 +1117,7 @@ jobs:
 
       - name: Confirm original protected engine-render publication
         id: native_publication
-        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
         env:
           NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
           NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
@@ -1124,4 +1128,3 @@ jobs:
           PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
             --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
           echo "published=true" >> "$GITHUB_OUTPUT"
-

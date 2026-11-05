@@ -128,7 +128,7 @@ jobs:
 
       - name: Retain original commodity publication origin
         id: native_publication_origin
-        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
@@ -139,7 +139,7 @@ jobs:
 
       - name: Confirm original protected commodity publication
         id: native_publication
-        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        if: ${{ always() && steps.native_publication_stage.outcome == 'success' && steps.native_publication_origin.outcome == 'success' && steps.native_publication_stage.outputs.native_origin_path != '' }}
         env:
           NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
           NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}

@@ -431,6 +431,18 @@ def producer_identity(head, digest, *, require_staging_step=True):
                      'acquire': '.github/workflows/fms-acquire.yml',
                      'render': '.github/workflows/public-render.yml',
                      'cortex': '.github/workflows/daily.yml',
+                     'capital_structure': '.github/workflows/daily.yml',
+                     'collect_tail': '.github/workflows/daily.yml',
+                     'factor_series': '.github/workflows/daily.yml',
+                     'factor_panel': '.github/workflows/daily.yml',
+                     'oracle_offrender': '.github/workflows/daily.yml',
+                     'tech_lab_offrender': '.github/workflows/daily.yml',
+                     'standout_audit_us': '.github/workflows/daily.yml',
+                     'us_scan_tier': '.github/workflows/daily.yml',
+                     'us_prophet_ledgers': '.github/workflows/daily.yml',
+                     'stock_briefs': '.github/workflows/daily.yml',
+                     'active_build_map': '.github/workflows/daily.yml',
+                     'ledger_heartbeat': '.github/workflows/daily.yml',
                      'engine-render': '.github/workflows/engine-render.yml'}
         step='native_publication_stage'
     elif credential=='ADMIN_GH_TOKEN':

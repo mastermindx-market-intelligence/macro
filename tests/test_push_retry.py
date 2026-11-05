@@ -1862,7 +1862,8 @@ def _lane_block(lane: str, step_name: str, subs: dict) -> str:
     for job in doc["jobs"].values():
         for s in job.get("steps") or []:
             if s.get("name") == step_name:
-                body = s["run"]
+                from scripts.workflow_run_source import resolve_run_source
+                body = resolve_run_source(s["run"],REPO_ROOT)
                 return re.sub(r"\$\{\{([^}]*)\}\}", lambda m: subs.get(m.group(1).strip(), ""), body)
     raise AssertionError(f"{lane}: step {step_name!r} not found")
 
@@ -2028,6 +2029,38 @@ def test_options_intel_semantic_noop_does_not_push(tmp_path):
     assert "semantic no-op" in r.stdout
     assert (tmp_path / "n").read_text() == "0"
     assert _git_output(bare, "rev-parse", "main") == before
+
+
+@pytest.mark.parametrize('native_result',[80,77,75])
+def test_extracted_nightly_factor_preserves_legacy_or_original_pending_generation(tmp_path,native_result):
+    block=_lane_block('daily.yml','commit factor series',{})
+    bare,lane,stub,_=_lane_fixture(tmp_path)
+    output=tmp_path/'outputs'
+    artifact=lane/'site/factordata/factor_series.json'
+    artifact.parent.mkdir(parents=True);artifact.write_text('{"original":"factor-generation"}')
+    before=_git_output(bare,'rev-parse','main')
+    for name in ('python','python3'):
+        (stub/name).write_text('#!/usr/bin/env bash\n'
+          'if [ "$1" = -P ]; then shift; fi\n'
+          f'if [ "$1" = -m ] && [ "$2" = scripts.ci.native_queue_push ]; then exit {native_result}; fi\n'
+          'exit 0\n')
+    summary=tmp_path/'summary';summary.touch()
+    # Use the actual extracted source and shared helper. Fixture-only output
+    # path is the same provider output mechanism; no live API/event is created.
+    block=f'export GITHUB_OUTPUT="{output}"\n'+block
+    result=_run_lane(block,lane,stub,summary,render_ok=True)
+    if native_result==80:
+        assert result.returncode==0,result.stdout+result.stderr
+        assert _git_output(bare,'show','main:site/factordata/factor_series.json')=='{"original":"factor-generation"}'
+        assert _git_output(bare,'show','main:data/ledger.json')=='{"canonical": true}'
+        assert 'other.txt' in _git_output(bare,'ls-tree','--name-only','main')
+    else:
+        assert result.returncode==(0 if native_result==77 else 75),result.stdout+result.stderr
+        assert _git_output(bare,'rev-parse','main')==before
+        assert _git_output(lane,'show','HEAD:site/factordata/factor_series.json')=='{"original":"factor-generation"}'
+        if native_result==77:
+            assert 'publication=pending' in output.read_text()
+            assert 'published=true' not in output.read_text()
 
 
 def test_render_lane_block_lands_the_render_over_a_racing_commit(tmp_path):
