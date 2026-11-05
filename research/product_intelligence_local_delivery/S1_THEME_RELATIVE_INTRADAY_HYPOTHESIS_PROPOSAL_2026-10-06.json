@@ -1,0 +1,130 @@
+{
+  "schema": "mastermind.s1_hypothesis_proposal.v1",
+  "main_pin": "8280428333f6a8ff9dbc99a39886eadeabc09df7",
+  "hypothesis": {
+    "value": "Each hourly bar is defined by its start time in America/New_York (ZoneInfo; RTH anchors per engine/prophet_entry_policy.py:58). Vendor aggregate field t is the window start (ASSUMED vendor documentation until the S2 interval/alignment audit confirms; collector indexes ts from t at scripts/build_polygon_intraday.py:271). Full-RTH bars are those starting 10:00, 11:00, 12:00, 13:00, 14:00, and 15:00 ET. Exclude the bar starting 09:00 ET (contains 09:00-09:30 extended hours). Exclude every bar starting before 09:00 ET or at/after 16:00 ET. Pre-decision window: the single bar starting 10:00 ET (ends 11:00 ET, the decision time). Forward window: K=5 bars starting 11:00 ET, 12:00 ET, 13:00 ET, 14:00 ET, and 15:00 ET (last ends 16:00 ET). Mean across matured sessions of cross-sectional Spearman correlations between pre-decision and forward-window theme-relative trailing-beta residuals; support when 95% two-sided t-interval on session correlations excludes 0; rejection when that interval lies entirely in [-0.10,0.10]; inconclusive otherwise or before maturity",
+    "basis_label": "STATED",
+    "basis": "Package S theme-relative intraday descriptive strength with testable session-level statistic and interval rules fixed at proposal time"
+  },
+  "decision_time": {
+    "value": "Each hourly bar is defined by its start time in America/New_York (ZoneInfo; RTH anchors per engine/prophet_entry_policy.py:58). Vendor aggregate field t is the window start (ASSUMED vendor documentation until the S2 interval/alignment audit confirms; collector indexes ts from t at scripts/build_polygon_intraday.py:271). Full-RTH bars are those starting 10:00, 11:00, 12:00, 13:00, 14:00, and 15:00 ET. Exclude the bar starting 09:00 ET (contains 09:00-09:30 extended hours). Exclude every bar starting before 09:00 ET or at/after 16:00 ET. Pre-decision window: the single bar starting 10:00 ET (ends 11:00 ET, the decision time). Forward window: K=5 bars starting 11:00 ET, 12:00 ET, 13:00 ET, 14:00 ET, and 15:00 ET (last ends 16:00 ET).",
+    "basis_label": "ASSUMED",
+    "basis": "Wall-clock and bar-start convention frozen before any S1 data examination; K=5 is derived (PHYSICS) from decision time and 16:00 close"
+  },
+  "sessions": {
+    "value": "US RTH 09:30-16:00 America/New_York; exclude early-close dates per engine/prophet_entry_policy.py:58-66; exclude session years outside _SUPPORTED_SESSION_YEARS until policy owner extends _SUPPORTED_SESSION_YEARS and _EARLY_CLOSE_DATES (engine/prophet_entry_policy.py:63-65); maturity n=120 requires that extension (S2 prerequisite); ~58 valid 2026 sessions after 2026-10-07 acceptance",
+    "basis_label": "INHERITED",
+    "basis": "engine/prophet_entry_policy.py:58-66 and explicit 2026-only supported-year frozenset at line 62; calendar arithmetic ASSUMED without data read"
+  },
+  "estimation": {
+    "value": "63 completed daily RTH sessions strictly before decision session for OLS beta vs theme benchmark; beta applied to hourly residuals; vol from same daily pre-decision window",
+    "basis_label": "ASSUMED",
+    "basis": "63-session length cites engine/us_board_rank.py:1954 as return-window charter only; daily beta on hourly bars is slow-factor approximation chosen before data read"
+  },
+  "benchmark_overlap": {
+    "value": "Equal-weight theme benchmark on same hourly bar; residual return vs beta-scaled benchmark; departs from engine/residual_alpha.py daily sector-neutral construction",
+    "basis_label": "STATED",
+    "basis": "Package S frozen benchmark overlap for hourly theme-relative descriptives"
+  },
+  "self_inclusion": {
+    "value": "Constituent excluded from theme benchmark weights on every bar",
+    "basis_label": "PHYSICS",
+    "basis": "Self-inclusion at weight 1/N mechanically correlates residual with own return"
+  },
+  "stale_zero_rule": {
+    "value": "Constituent-session scope only. Rules may use data at or before the decision time (bars starting before 11:00 ET and trailing daily data) or presence/volume of forward-window bars; never forward-window return or close values. Missing bar or zero volume omits constituent cell; zero return with positive volume in forward window is legitimate. Repeated identical closes on three or more consecutive positive-volume pre-decision bars omits that constituent for that session. Corrupt parquet absent per scripts/build_polygon_intraday.py:171-185. Omitted constituent cells count against 80% coverage",
+    "basis_label": "INHERITED",
+    "basis": "scripts/build_polygon_intraday.py:171-185 tolerant read; stale-print guard on pre-decision data only; no outcome-conditioned exclusions"
+  },
+  "halts_corporate_actions": {
+    "value": "Split-adjusted hourly OHLCV (adjusted=true); dividend policy vendor-defined inside adjusted aggregates (S2 audit); same-session window excludes overnight ex-date jumps",
+    "basis_label": "INHERITED",
+    "basis": "scripts/build_polygon_intraday.py:135-136 receipt fields; vendor ASSUMED for dividend inside adjusted series"
+  },
+  "membership_cutoff": {
+    "value": "engine/basket_membership_pit.py members_asof suite=baskets; exclude sessions with pit=False; S2 records membership.json blob sha at registration when needed",
+    "basis_label": "INHERITED",
+    "basis": "engine/basket_membership_pit.py:694-705 canonical US PIT reader"
+  },
+  "baselines": {
+    "value": "Raw hourly RTH simple return and trailing-beta residual vs theme benchmark; departs from engine/residual_momentum.py daily multi-window table",
+    "basis_label": "STATED",
+    "basis": "Package S requires raw and residual baselines distinguished at hourly grain"
+  },
+  "coverage": {
+    "value": "Session-validity exclusion when forward-window constituent-hour coverage below 80 percent; universe from existing hourly accrual keys only",
+    "basis_label": "STATED",
+    "basis": "Coverage floor is validity not thesis verdict; existing POLYGON/MASSIVE hourly accrual per intraday workflow"
+  },
+  "costs": {
+    "value": "No cost on descriptive Spearman statistic; Signal Foundry declares 8 bps for excess_return/absolute_return single-series evaluations only",
+    "basis_label": "INHERITED",
+    "basis": "engine/signal_foundry/harness.py:13-14 single-series declared 8 bps assumption; not intraday round-trip"
+  },
+  "registration": {
+    "start_rule": {
+      "value": "First formation decision_at strictly after product-owner acceptance timestamp in S2 commit",
+      "basis_label": "STATED",
+      "basis": "Package S prospective registration on untouched future formation dates"
+    },
+    "maturity_rule": {
+      "value": "n=120 valid decision sessions after session-validity exclusions; requires _SUPPORTED_SESSION_YEARS and _EARLY_CLOSE_DATES extension beyond 2026 (S2 prerequisite); sigma=0.25 ASSUMED; SE=0.0228; h=0.045 with t(0.975,119); h<=delta/2; earliest ASSUMED maturity July 2027 or 2028 if extension delayed",
+      "basis_label": "ASSUMED",
+      "basis": "Frozen n=120 delta=0.10 with h=t(0.975,n-1)*sigma/sqrt(n)<=delta/2 target P(reject|mean 0)≈0.95; 2027 policy extension required; no outcome tuning"
+    },
+    "rejection_rule": {
+      "value": "After maturity, 95% two-sided t-interval on per-session Spearman mean lies entirely within [-0.10,0.10]; delta=0.10; h=0.045; P(reject|true mean 0)≈0.95 at sigma=0.25 n=120",
+      "basis_label": "ASSUMED",
+      "basis": "Equivalence band delta=0.10 below minimum effect of interest (ASSUMED); P(reject|0)=2Phi((delta-h)/SE)-1 with SE=sigma/sqrt(n)"
+    },
+    "inconclusive_rule": {
+      "value": "Interval neither supports nor rejects per band rules, or maturity not met",
+      "basis_label": "STATED",
+      "basis": "Fixed three-way partition on the session-mean Spearman statistic"
+    },
+    "accounting_owner_path": {
+      "value": "engine/trial_ledger.py:126-151",
+      "basis_label": "INHERITED",
+      "basis": "TrialLedger.log_trial append-only writes to data/trial_ledger.jsonl"
+    }
+  },
+  "distinctness": [
+    {
+      "key": "DEC-TREND-PERSISTENCE-STOPS-AT-WAVE-C",
+      "why_distinct": "Closed eleven-sector daily 20/60-session persistence family; S1 is hourly theme Spearman continuity"
+    },
+    {
+      "key": "KILL-TREND-PERSISTENCE-SECTOR-GROUP-PERSISTENCE",
+      "why_distinct": "DNR closes GICS sector group persistence cells; S1 is theme hourly descriptives only"
+    },
+    {
+      "key": "KILL-TREND-PERSISTENCE-PATH-FEATURE-PROFILE",
+      "why_distinct": "DNR closes path-feature drawdown profile family; S1 does not reopen path-shape persistence"
+    },
+    {
+      "key": "KILL-INTRADAY-CHRONICLE",
+      "why_distinct": "Forbids chronicle lane writes; S1 uses price-bar accrual only"
+    },
+    {
+      "key": "DEC-D-LANE-PARKED-AS-FORWARD-STUDY",
+      "why_distinct": "Parks retrospective Prophet theme conditioning; S1 is intraday descriptive registration not lane D outcomes"
+    },
+    {
+      "key": "S0 section Q3 daily strength",
+      "why_distinct": "Daily narrative_rotation and us_board_rank windows; none score hourly theme-relative residuals"
+    },
+    {
+      "key": "WS-PROPHET-REGIME-TIMEFRAME-RESEARCH",
+      "why_distinct": "Wave-1 closed; further theme persistence requires new prereg such as C1-W2; S1 is not that construction"
+    }
+  ],
+  "forbidden": [
+    "rank gate or size authority",
+    "inferred fund inflow claims",
+    "holdability or ease-of-holding claims",
+    "the CI-enforced claim word in user-facing copy",
+    "front-facing thesis-verdict vocabulary",
+    "outcome scan before registration"
+  ],
+  "acceptance_ask": "Do you accept commissioning Package S2 prospective registration for theme-relative intraday descriptive strength on hourly RTH bars under section 3 frozen parameters?"
+}

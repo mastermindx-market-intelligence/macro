@@ -1,0 +1,58 @@
+{
+  "observed_at": "2026-10-19T12:54:33.582449+00:00",
+  "root": "/opt/terminal/beta/terminal/.next.broken",
+  "root_identity": [
+    2048,
+    359191
+  ],
+  "total_entries": 2564,
+  "type_mode_histogram": {
+    "directory:0o755": 320,
+    "regular:0o644": 135,
+    "regular:0o664": 2109
+  },
+  "ownership_alias_special_exceptions": [],
+  "acl_findings_or_errors": [],
+  "xattr_name_counts": {},
+  "parent_chain": [
+    {
+      "path": "/opt/terminal",
+      "dev": 2048,
+      "ino": 1572865,
+      "mode": "0o755",
+      "uid": 0,
+      "gid": 0,
+      "acl_names": []
+    },
+    {
+      "path": "/opt/terminal/beta",
+      "dev": 2048,
+      "ino": 1597716,
+      "mode": "0o755",
+      "uid": 0,
+      "gid": 0,
+      "acl_names": []
+    },
+    {
+      "path": "/opt/terminal/beta/terminal",
+      "dev": 2048,
+      "ino": 1598413,
+      "mode": "0o755",
+      "uid": 0,
+      "gid": 0,
+      "acl_names": []
+    },
+    {
+      "path": "/opt/terminal/beta/terminal/.next.broken",
+      "dev": 2048,
+      "ino": 359191,
+      "mode": "0o755",
+      "uid": 0,
+      "gid": 0,
+      "acl_names": []
+    }
+  ],
+  "metadata_inventory_sha256": "4d30bebace1079156b740c886461f7d1fdf72b6894359a3c9002426e0dc499ff",
+  "root_identity_stable": true,
+  "readonly": true
+}

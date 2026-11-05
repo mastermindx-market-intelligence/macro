@@ -1,0 +1,52 @@
+{
+ "accepted_at": "2026-02-13T21:03:51Z",
+ "accession": "0001437749-26-004100",
+ "cik": "0000855658",
+ "doc_byte_length": 2133659,
+ "doc_sha256": "17e693d25bd745e0cfc4d5358b65e259eda6606b391713706f638a627adf5477",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-13",
+ "form": "10-K",
+ "period_of_report": "2026-01-03",
+ "primary_document": "lscc20260103_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1234236,
+  "byte_start": 1232417,
+  "normalized": "Certain of our distributors accounted for more than 10% of net accounts receivable at the dates presented. At January 3, 2026 and December 28, 2024, Distributor A accounted for approximately 28% and 36%, respectively, and Distributor B accounted for approximately 62% and 45%, respectively.",
+  "normalized_sha256": "1949eddf17ca519b199bd4ff7926e22babc92f7d1ba15960352811b19c2f4aaf",
+  "raw": "Certain of our distributors accounted for more than <em style=\"font: inherit;\">10%</em> of net accounts receivable at the dates presented. At <em style=\"font: inherit;\"> January 3, 2026 </em>and <em style=\"font: inherit;\"> December 28, 2024</em>, Distributor A accounted for approximately <ix:nonFraction id=\"c139795398\" contextRef=\"d_2024-12-29_2026-01-03_ConcentrationRiskByBenchmarkAxis-AccountsReceivableMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorAMember\" unitRef=\"Pure\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" format=\"ixt:num-dot-decimal\" decimals=\"2\">28</ix:nonFraction>%&#160;and <ix:nonFraction id=\"c139795399\" contextRef=\"d_2023-12-31_2024-12-28_ConcentrationRiskByBenchmarkAxis-AccountsReceivableMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorAMember\" unitRef=\"Pure\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" format=\"ixt:num-dot-decimal\" decimals=\"2\">36</ix:nonFraction>%, respectively, and Distributor B&#160;accounted for approximately <ix:nonFraction id=\"c139795400\" contextRef=\"d_2024-12-29_2026-01-03_ConcentrationRiskByBenchmarkAxis-AccountsReceivableMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorBMember\" unitRef=\"Pure\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" format=\"ixt:num-dot-decimal\" decimals=\"2\">62</ix:nonFraction>%&#160;and <ix:nonFraction id=\"c139795401\" contextRef=\"d_2023-12-31_2024-12-28_ConcentrationRiskByBenchmarkAxis-AccountsReceivableMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorBMember\" unitRef=\"Pure\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" format=\"ixt:num-dot-decimal\" decimals=\"2\">45</ix:nonFraction>%, respectively.",
+  "raw_sha256": "ef558a26744065e94d6a13ad3244d701855b5275d4a434e83bac577ad65aeac4"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/855658/000143774926004100/lscc20260103_10k.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 56382,
+   "byte_start": 55541,
+   "context_ref": "d_2024-12-29_2026-01-03_ConcentrationRiskByBenchmarkAxis-AccountsReceivableMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorAMember",
+   "raw": "<xbrli:context id=\"d_2024-12-29_2026-01-03_ConcentrationRiskByBenchmarkAxis-AccountsReceivableMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorAMember\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000855658</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">lscc:DistributorAMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-12-29</xbrli:startDate><xbrli:endDate>2026-01-03</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "d3e1da99758bbbc9f48d60ccac7e5d48b6cd7f59ebd6065e016eb800eb92ac6a"
+  },
+  {
+   "byte_end": 57224,
+   "byte_start": 56383,
+   "context_ref": "d_2023-12-31_2024-12-28_ConcentrationRiskByBenchmarkAxis-AccountsReceivableMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorAMember",
+   "raw": "<xbrli:context id=\"d_2023-12-31_2024-12-28_ConcentrationRiskByBenchmarkAxis-AccountsReceivableMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorAMember\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000855658</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">lscc:DistributorAMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-12-31</xbrli:startDate><xbrli:endDate>2024-12-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "2254737cff8191109a5ff6eb90e75b6a37dfffc6ed6cd14819fa12c4bec702d0"
+  },
+  {
+   "byte_end": 58066,
+   "byte_start": 57225,
+   "context_ref": "d_2024-12-29_2026-01-03_ConcentrationRiskByBenchmarkAxis-AccountsReceivableMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorBMember",
+   "raw": "<xbrli:context id=\"d_2024-12-29_2026-01-03_ConcentrationRiskByBenchmarkAxis-AccountsReceivableMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorBMember\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000855658</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">lscc:DistributorBMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-12-29</xbrli:startDate><xbrli:endDate>2026-01-03</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "cd8fd2492cb09f68243d2043d8e26e1a3a4fecbfef79fe01273e6cd689aaffed"
+  },
+  {
+   "byte_end": 58908,
+   "byte_start": 58067,
+   "context_ref": "d_2023-12-31_2024-12-28_ConcentrationRiskByBenchmarkAxis-AccountsReceivableMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorBMember",
+   "raw": "<xbrli:context id=\"d_2023-12-31_2024-12-28_ConcentrationRiskByBenchmarkAxis-AccountsReceivableMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorBMember\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000855658</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">lscc:DistributorBMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-12-31</xbrli:startDate><xbrli:endDate>2024-12-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "f0595961ab74acc7ab96b0fdf7c3d232a2992b8a3f8814338473ef28312d6cd2"
+  }
+ ]
+}

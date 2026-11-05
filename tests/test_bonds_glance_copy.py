@@ -95,12 +95,138 @@ def test_committed_bonds_stylesheet_is_fingerprinted() -> None:
     import hashlib
     import re
 
+    from jinja2 import Environment, StrictUndefined
+
+    from scripts.build_bonds import C
+
+    blocks = re.findall(r"<style\b[^>]*>(.*?)</style>", _src(), re.IGNORECASE | re.DOTALL)
+    source_css = next(block for block in blocks if ".dtp-chip--snapshot" in block)
+    rendered_css = Environment(
+        autoescape=True,
+        keep_trailing_newline=True,
+        undefined=StrictUndefined,
+    ).from_string(source_css).render(C=C)
+    digest = hashlib.sha256(rendered_css.encode("utf-8")).hexdigest()[:8]
+
     html = SITE.read_text(encoding="utf-8")
     refs = re.findall(r"assets/css/([0-9a-f]{8})\.css\?v=\1", html)
-    assert "f5ed7f7d" in refs
-    css = ROOT / "site" / "assets" / "css" / "f5ed7f7d.css"
+    assert digest in refs
+    css = ROOT / "site" / "assets" / "css" / f"{digest}.css"
     assert css.is_file()
-    assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == "f5ed7f7d"
+    assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == digest
     text = css.read_text(encoding="utf-8")
+    assert text == rendered_css
     assert ".dtp-chip--snapshot" in text
     assert ".dtp-chip--live" not in text
+
+
+# --- appended: bonds gauge macro — unavailable score vs numeric zero ---
+import re
+
+import pytest
+from jinja2 import Environment, StrictUndefined, Undefined
+
+_BONDS_TEMPLATE = Path(__file__).resolve().parents[1] / "templates" / "bonds.html.j2"
+
+
+def _gauge_macro_src() -> str:
+    src = _BONDS_TEMPLATE.read_text(encoding="utf-8")
+    m = re.search(r"\{%\s*-?\s*macro\s+gauge\b.*?\{%\s*-?\s*endmacro\s*-?%\}", src, re.S)
+    assert m, "gauge macro not found in templates/bonds.html.j2"
+    return m.group(0)
+
+
+def _render_gauge(score) -> str:
+    env = Environment(undefined=StrictUndefined, autoescape=True)
+    module = env.from_string(_gauge_macro_src()).module
+    return module.gauge(score, "#34d399")
+
+
+_INVALID_CASES = [
+    (None, None),
+    (Undefined(name="health_score"), None),
+    (True, "True"),
+    (False, "False"),
+    ("75", "75"),
+    ("abc", "abc"),
+    (float("nan"), "nan"),
+    (float("inf"), "inf"),
+    (float("-inf"), "-inf"),
+    (-1, "-1"),
+    (101, "101"),
+]
+
+
+def _assert_unavailable(html: str) -> None:
+    assert "bhg-needle" not in html
+    assert "bhg-ptr" not in html
+    assert " of 100" not in html
+    assert "满分100" not in html
+    assert "bhg-track" not in html
+    assert "Missing or invalid inputs." in html
+    assert "输入缺失或无效。" in html
+    assert 'class="faint"' in html
+    assert 'class="l-en"' in html and 'class="l-zh"' in html
+    assert "Score unavailable" in html
+    assert "评分不可用" in html
+    assert "<figcaption" in html
+
+
+@pytest.mark.parametrize(("score", "forbidden"), _INVALID_CASES)
+def test_gauge_unavailable_has_no_needle_or_scored_label(score, forbidden):
+    html = _render_gauge(score)
+    _assert_unavailable(html)
+    if forbidden:
+        # scrub SVG path geometry so e.g. "75" only means a coerced score
+        assert forbidden not in re.sub(r'd="[^"]*"', "", html)
+
+
+def test_gauge_zero_renders_real_zero():
+    html = _render_gauge(0)
+    assert 'aria-label="Bond health score 0 of 100"' in html
+    assert "bhg-ptr" in html
+    assert "债券健康评分 0，满分100" in html
+    assert 'transform="rotate(-90.0 70 75)"' in html
+    assert "--arc-gap:175.93" in html
+
+
+def test_gauge_bounds_and_midpoint():
+    html = _render_gauge(100)
+    assert 'aria-label="Bond health score 100 of 100"' in html
+    assert 'transform="rotate(90.0 70 75)"' in html
+    assert "--arc-gap:0.0" in html
+
+    html = _render_gauge(75)
+    assert 'aria-label="Bond health score 75 of 100"' in html
+    assert 'transform="rotate(45.0 70 75)"' in html
+
+
+@pytest.mark.parametrize("score", [None, 0, 100])
+def test_gauge_preserves_builder_missing_and_true_zero(score):
+    import pandas as pd
+    from scripts.build_bonds import _vm
+
+    snapshot = {"health_score": score, "health_label": None, "pillars": {
+        key: {} for key in ("curve", "credit", "real_inflation", "stress", "cross_asset")
+    }}
+    vm = _vm(snapshot, pd.DataFrame())
+    assert vm["health"]["score"] is score
+    html = _render_gauge(vm["health"]["score"])
+    if score is None:
+        _assert_unavailable(html)
+    else:
+        assert f'aria-label="Bond health score {score} of 100"' in html
+        assert f'aria-label="债券健康评分 {score}，满分100"' in html
+
+
+def test_committed_gauge_matches_current_renderer():
+    # The publication's actual score/color remain its own inputs. This check
+    # binds just the changed component to the common renderer.
+    html = SITE.read_text(encoding="utf-8")
+    figures = re.findall(r'<figure class="bhg l-(?:en|zh)".*?</figure>', html, re.S)
+    assert len(figures) == 2
+    score = int(re.search(r'Bond health score (\d+) of 100', figures[0]).group(1))
+    color = re.search(r'--sc:([^;]+)', figures[0]).group(1)
+    env = Environment(undefined=StrictUndefined, autoescape=True)
+    expected = str(env.from_string(_gauge_macro_src()).module.gauge(score, color))
+    assert figures == re.findall(r'<figure class="bhg l-(?:en|zh)".*?</figure>', expected, re.S)
