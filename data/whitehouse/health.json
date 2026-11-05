@@ -1,22 +1,16 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-04T23:39:31.684111+00:00",
+  "as_of": "2026-11-05T21:59:15.395166+00:00",
   "posts_seen": 13,
-  "seen_total": 321,
-  "evaluated": 2,
-  "activated": 0,
+  "seen_total": 322,
+  "evaluated": 1,
+  "activated": 1,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-11-04-president-trump-will-again-defy-the-odds-the-fake-news-and-the-radical-left",
-      "importance": 5,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-11-04-first-lady-melania-trump-and-lsu-establish-5-million-fostering-the-future-endowm",
-      "importance": 5,
-      "activated": false,
+      "id": "wh-2026-11-05-first-lady-melania-trump-unites-russia-and-ukraine-at-the-white-house-following-",
+      "importance": 72,
+      "activated": true,
       "degraded_reason": "served_by:deepseek"
     }
   ]
