@@ -661,6 +661,9 @@ html[data-theme="light"] .sc-openpage { color: #fff; }
 .scf .scf-read-body { margin:0; font-size:var(--fs-sm); line-height:1.55; color:var(--text); }
 .scf .scf-kv { display:flex; flex-direction:column; margin:0; }
 .scf .scf-kv > div { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr); gap:4px 12px; padding:4px 0; align-items:baseline; min-width:0; }
+/* The kv row grid ties theme.css's html[data-lang="zh"] .l-en rule on specificity and loads later, so a
+   language-scoped row would show in both languages. Re-scope the row here. */
+html[data-lang="zh"] .scf .scf-kv > div.l-en, html:not([data-lang="zh"]) .scf .scf-kv > div.l-zh { display:none; }
 .scf .scf-kv dt { font:600 var(--fs-micro)/1.45 var(--font-ui); color:var(--muted); overflow-wrap:anywhere; }
 .scf .scf-kv dd { margin:0; font:500 var(--fs-sm)/1.45 var(--font-ui); color:var(--text); font-variant-numeric:tabular-nums; overflow-wrap:anywhere; min-width:0; }
 .scf .scf-hz-ladder { display:grid; grid-template-columns:minmax(44px,auto) repeat(3,minmax(0,1fr)); gap:4px; }

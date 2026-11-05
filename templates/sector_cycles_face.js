@@ -262,7 +262,7 @@ SC_FACE.hazardPass = function (cell, ek, key) { return !!cell && cell.p != null 
     pc = HOP.call(PHASE_CHIP, now.phase_v2) ? chip(D('cycles.' + PHASE_CHIP[now.phase_v2]), 'scf-phase-chip', { phase: String(now.phase_v2).toLowerCase() }) : gap('phase-v2');
     fx = ctx.fixture || rec.label === 'FIXTURE';
     chips = pc + (fx ? chip(D('components.fixture_chip'), 'cyc-outline', { fixture: 'true' }) : '') + (now.thin_history ? chip(D('cycles.short_history_chip'), 'cyc-outline') : '');
-    pos = num(now.pos_v2) ? '<span class="scf-pos"><b>' + Math.round(now.pos_v2) + '</b>/100<span class="b">' + D('cycles.mode_osc_chip') + '</span></span>' : gap('pos-v2');
+    pos = num(now.pos_v2) ? '<span class="scf-pos"><b>' + Math.round(now.pos_v2) + '</b>/100<span class="b">' + D('cycles.mode_osc_chip') + ' · ' + D('cycles.clock_phase_v2') + '</span></span>' : gap('pos-v2');
     return '<article class="scf scf-card" data-sector="' + esc(rec.id || rec.ticker || '') + '"><div class="scf-card-head"><div class="scf-id"><h2>' + P(rec.name || '', rec.name_zh || rec.name || '') + '</h2>' +
       '<span class="scf-tk mono">' + esc(rec.ticker || '') + '</span>' + pos + '<span class="scf-grp">' + P(rec.group || '', rec.group_zh || '') + ' · ' + basisFace(rec) + '</span></div>' +
       '<div class="scf-chips">' + chips + '</div>' + SC_FACE.stance(now, ctx) + SC_FACE.phaseAge(now, ctx) + '</div>' +
@@ -303,9 +303,9 @@ SC_FACE.hazardPass = function (cell, ek, key) { return !!cell && cell.p != null 
     if (!t) return sec('scf-turn', D('cycles.r4_leadership'), gap('turn-none'));
     lab = (idx == null || idx === tt.length - 1) ? BP(t.k === 'peak' ? 'last_peak' : 'last_trough') : gapLbl('turn-pivot-label', 'turns_tail[' + ix + '].k ' + t.k);
     conf = typeof t.provisional === 'boolean' ? '<div class="l-en"><dt>' + gapLbl('turn-confirmation-label', 'turns_tail[' + ix + '].provisional') + '</dt><dd>' + mono(String(t.provisional)) + '</dd></div>' : '';
-    return sec('scf-turn', D('cycles.r4_leadership'), '<dl class="scf-kv"><div><dt>' + lab + '</dt><dd>' + bi(esc(fmtMonEn(t.t)), esc(fmtMonZh(t.t))) + ' ' + mono(t.date) + '</dd></div>' +
+    return sec('scf-turn', D('cycles.r4_leadership'), '<dl class="scf-kv"><div><dt>' + lab + '</dt><dd>' + bi(esc(fmtMonEn(t.t)), esc(fmtMonZh(t.t))) + '</dd></div>' +
       conf + '</dl>' + (conf ? '' : gapHid('turn-confirmation-label')) + gapHid('turn-confirmation') + gapHid('turn-method-label') + gapHid('turn-method') +
-      drawer([[code('turns_tail[' + ix + ']'), mono('i ' + t.i + ' · k ' + t.k + ' · px ' + t.px + ' · mag_pct ' + t.mag_pct + ' · major ' + t.major + ' · provisional ' + t.provisional + ' · osc ' + t.osc)],
+      drawer([[code('turns_tail[' + ix + ']'), mono('date ' + t.date + ' · i ' + t.i + ' · k ' + t.k + ' · px ' + t.px + ' · mag_pct ' + t.mag_pct + ' · major ' + t.major + ' · provisional ' + t.provisional + ' · osc ' + t.osc)],
               [code('epoch · basis'), mono(((rec.now.hazard || {}).epoch || 'null') + ' · ' + rec.basis)]], false));
   };
   SC_FACE.trendRisk = function (x, ctx, central) {
