@@ -1,0 +1,138 @@
+.............................F.FFFF..................................... [ 43%]
+...............................FFF...F....FF..........F................. [ 87%]
+........F............                                                    [100%]
+=================================== FAILURES ===================================
+__________________ test_sidebar_present_with_six_view_buttons __________________
+tests/test_si_workspace_shell.py:75: in test_sidebar_present_with_six_view_buttons
+    assert '<nav class="si-side" aria-label="Sector Intelligence views">' in s, \
+E   AssertionError: rail lost its aria-label
+E   assert '<nav class="si-side" aria-label="Sector Intelligence views">' in '{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>\n{%- ...d rows were never here. */\n    });\n})();\n</script>\n{% endif %}<script src="theme.js"></script>\n</body>\n</html>\n'
+________________________ test_v1_anchor_rail_is_retired ________________________
+tests/test_si_workspace_shell.py:101: in test_v1_anchor_rail_is_retired
+    assert 'data-view="confluence" href="#confluence"' in rail
+E   assert 'data-view="confluence" href="#confluence"' in '{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>\n{%- ...    <span class="si-workflow-note">{{ t(\'Sectors, themes and industries, connected.\', \'串联板块、主题与行业。\') }}</span>\n  '
+__________________________ test_shell_grid_and_stage ___________________________
+tests/test_si_workspace_shell.py:109: in test_shell_grid_and_stage
+    assert "grid-template-columns:var(--si-rail-w, 200px)" in s, \
+E   AssertionError: §1 pins the shell grid and the --si-rail-w custom property
+E   assert 'grid-template-columns:var(--si-rail-w, 200px)' in '{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>\n{%- ...d rows were never here. */\n    });\n})();\n</script>\n{% endif %}<script src="theme.js"></script>\n</body>\n</html>\n'
+__________ test_sticky_rail_containing_block_reaches_the_page_bottom ___________
+tests/test_si_workspace_shell.py:129: in test_sticky_rail_containing_block_reaches_the_page_bottom
+    css = _shell_css(s)
+          ^^^^^^^^^^^^^
+tests/test_si_workspace_shell.py:459: in _shell_css
+    assert marker in src, "shell CSS block is gone"
+E   AssertionError: shell CSS block is gone
+E   assert 'SI WORKSPACE V2 shell' in '{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>\n{%- ...d rows were never here. */\n    });\n})();\n</script>\n{% endif %}<script src="theme.js"></script>\n</body>\n</html>\n'
+___________________ test_mobile_switcher_is_not_a_hamburger ____________________
+tests/test_si_workspace_shell.py:144: in test_mobile_switcher_is_not_a_hamburger
+    assert len(mob) == 2, "no <768px breakpoint — the mobile switcher is missing"
+E   AssertionError: no <768px breakpoint — the mobile switcher is missing
+E   assert 1 == 2
+E    +  where 1 = len(['{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>\n{%-... rows were never here. */\n    });\n})();\n</script>\n{% endif %}<script src="theme.js"></script>\n</body>\n</html>\n'])
+____________________ test_shell_css_has_no_literal_colours _____________________
+tests/test_si_workspace_shell.py:466: in test_shell_css_has_no_literal_colours
+    css = _shell_css(_page())
+          ^^^^^^^^^^^^^^^^^^^
+tests/test_si_workspace_shell.py:459: in _shell_css
+    assert marker in src, "shell CSS block is gone"
+E   AssertionError: shell CSS block is gone
+E   assert 'SI WORKSPACE V2 shell' in '{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>\n{%- ...d rows were never here. */\n    });\n})();\n</script>\n{% endif %}<script src="theme.js"></script>\n</body>\n</html>\n'
+________________ test_shell_state_colours_match_the_pinned_spec ________________
+tests/test_si_workspace_shell.py:476: in test_shell_state_colours_match_the_pinned_spec
+    css = _shell_css(_page())
+          ^^^^^^^^^^^^^^^^^^^
+tests/test_si_workspace_shell.py:459: in _shell_css
+    assert marker in src, "shell CSS block is gone"
+E   AssertionError: shell CSS block is gone
+E   assert 'SI WORKSPACE V2 shell' in '{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>\n{%- ...d rows were never here. */\n    });\n})();\n</script>\n{% endif %}<script src="theme.js"></script>\n</body>\n</html>\n'
+_____________________ test_view_switch_is_a_display_toggle _____________________
+tests/test_si_workspace_shell.py:485: in test_view_switch_is_a_display_toggle
+    css = _shell_css(_page())
+          ^^^^^^^^^^^^^^^^^^^
+tests/test_si_workspace_shell.py:459: in _shell_css
+    assert marker in src, "shell CSS block is gone"
+E   AssertionError: shell CSS block is gone
+E   assert 'SI WORKSPACE V2 shell' in '{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>\n{%- ...d rows were never here. */\n    });\n})();\n</script>\n{% endif %}<script src="theme.js"></script>\n</body>\n</html>\n'
+____________________ test_router_asset_is_paired_into_site _____________________
+tests/test_si_workspace_shell.py:560: in test_router_asset_is_paired_into_site
+    assert site_copy.exists(), "site/si_workspace.js missing — the page would 404 it"
+E   AssertionError: site/si_workspace.js missing — the page would 404 it
+E   assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-central-macro-paper-pivot-20261020-sol-001/site/si_workspace.js').exists
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_redirect_stub_rendered[baskets.html-sector_central.html#actnow-section] _
+tests/test_sector_intelligence_page.py:64: in test_redirect_stub_rendered
+    s = _read(ROOT / "site" / name)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_sector_intelligence_page.py:22: in _read
+    assert p.exists(), f"{p} missing"
+E   AssertionError: /Volumes/Mastermind 2/agent-workspaces/macro/web/sector-central-macro-paper-pivot-20261020-sol-001/site/baskets.html missing
+E   assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-central-macro-paper-pivot-20261020-sol-001/site/baskets.html').exists
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_redirect_stub_rendered[subsector_rotation.html-sector_central.html#si-movement] _
+tests/test_sector_intelligence_page.py:64: in test_redirect_stub_rendered
+    s = _read(ROOT / "site" / name)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_sector_intelligence_page.py:22: in _read
+    assert p.exists(), f"{p} missing"
+E   AssertionError: /Volumes/Mastermind 2/agent-workspaces/macro/web/sector-central-macro-paper-pivot-20261020-sol-001/site/subsector_rotation.html missing
+E   assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-central-macro-paper-pivot-20261020-sol-001/site/subsector_rotation.html').exists
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_______ test_generated_forming_narratives_matches_deferred_init_contract _______
+tests/test_sector_intelligence_page.py:211: in test_generated_forming_narratives_matches_deferred_init_contract
+    html = _read(ROOT / "site" / "sector_central.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_sector_intelligence_page.py:22: in _read
+    assert p.exists(), f"{p} missing"
+E   AssertionError: /Volumes/Mastermind 2/agent-workspaces/macro/web/sector-central-macro-paper-pivot-20261020-sol-001/site/sector_central.html missing
+E   assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-central-macro-paper-pivot-20261020-sol-001/site/sector_central.html').exists
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_____ test_scoped_publication_directories_are_real_and_owned_by_the_build ______
+tests/test_sector_intelligence_page.py:716: in test_scoped_publication_directories_are_real_and_owned_by_the_build
+    assert (ROOT / "site" / "basket").is_dir()
+E   AssertionError: assert False
+E    +  where False = is_dir()
+E    +    where is_dir = ((PosixPath('/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-central-macro-paper-pivot-20261020-sol-001') / 'site') / 'basket').is_dir
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-216e4fb8-be5b-4a34-9578-799d77fa444f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-216e4fb8-be5b-4a34-9578-799d77fa444f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-216e4fb8-be5b-4a34-9578-799d77fa444f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-216e4fb8-be5b-4a34-9578-799d77fa444f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_si_workspace_shell.py::test_sidebar_present_with_six_view_buttons
+FAILED tests/test_si_workspace_shell.py::test_v1_anchor_rail_is_retired - ass...
+FAILED tests/test_si_workspace_shell.py::test_shell_grid_and_stage - Assertio...
+FAILED tests/test_si_workspace_shell.py::test_sticky_rail_containing_block_reaches_the_page_bottom
+FAILED tests/test_si_workspace_shell.py::test_mobile_switcher_is_not_a_hamburger
+FAILED tests/test_si_workspace_shell.py::test_shell_css_has_no_literal_colours
+FAILED tests/test_si_workspace_shell.py::test_shell_state_colours_match_the_pinned_spec
+FAILED tests/test_si_workspace_shell.py::test_view_switch_is_a_display_toggle
+FAILED tests/test_si_workspace_shell.py::test_router_asset_is_paired_into_site
+FAILED tests/test_sector_intelligence_page.py::test_redirect_stub_rendered[baskets.html-sector_central.html#actnow-section]
+FAILED tests/test_sector_intelligence_page.py::test_redirect_stub_rendered[subsector_rotation.html-sector_central.html#si-movement]
+FAILED tests/test_sector_intelligence_page.py::test_generated_forming_narratives_matches_deferred_init_contract
+FAILED tests/test_sector_intelligence_page.py::test_scoped_publication_directories_are_real_and_owned_by_the_build
+13 failed, 152 passed, 2 warnings in 17.75s

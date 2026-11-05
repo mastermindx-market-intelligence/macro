@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "store_id",
+    "certificate_id",
+    "certificate_sha256",
+    "qualified_source_generation_id",
+    "qualified_source_generation_sha256",
+    "publisher_revision"
+  ],
+  "properties": {
+    "schema": {
+      "const": "market_memory.lineage_head.v1"
+    },
+    "store_id": {
+      "type": "string",
+      "pattern": "^mmstore_[a-f0-9]{64}$"
+    },
+    "certificate_id": {
+      "type": "string",
+      "pattern": "^mmcert_[a-f0-9]{64}$"
+    },
+    "certificate_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "qualified_source_generation_id": {
+      "type": "string",
+      "pattern": "^mmgeneration_[a-f0-9]{64}$"
+    },
+    "qualified_source_generation_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "publisher_revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_memory/lineage_head.v1.schema.json"
+}

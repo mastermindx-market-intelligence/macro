@@ -1,0 +1,240 @@
+{
+ "file": "supabase/migrations/0012_thesis_objects.sql",
+ "source_ref": "mastermind-terminal master d4556962 (PR #502)",
+ "sha256": "1fe4450222ef646862002546b7dfc192af42c0f50434df1980553709a0ebe12a",
+ "project_ref": "{ref}",
+ "apply_mode": "raw-management-api-fallback (README 'How DDL actually lands'); scripts/supabase_apply.py@618915c8 aborted at pre-readback parsing a prose comment line as SQL",
+ "applied_at": "2026-09-06T19:20:32.240448Z",
+ "readback_statements": [],
+ "pre": [],
+ "ddl_response": [],
+ "post": [],
+ "post_explicit": {
+  "queries": [
+   "select relname, relrowsecurity from pg_class where relname in ('theses','thesis_versions') and relnamespace = 'public'::regnamespace",
+   "select schemaname, tablename, policyname from pg_policies where schemaname = 'public' and tablename in ('theses','thesis_versions') order by tablename, policyname",
+   "select table_name, grantee, privilege_type from information_schema.role_table_grants where table_schema = 'public' and table_name in ('theses','thesis_versions') order by table_name, grantee, privilege_type",
+   "select p.proname, p.prosecdef, p.proconfig from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname in ('apply_thesis_version_v1','read_current_thesis_versions_v1')",
+   "select indexname from pg_indexes where schemaname='public' and tablename in ('theses','thesis_versions') order by indexname"
+  ],
+  "rows": [
+   [
+    {
+     "relname": "theses",
+     "relrowsecurity": true
+    },
+    {
+     "relname": "thesis_versions",
+     "relrowsecurity": true
+    }
+   ],
+   [
+    {
+     "schemaname": "public",
+     "tablename": "theses",
+     "policyname": "theses_select_own"
+    },
+    {
+     "schemaname": "public",
+     "tablename": "thesis_versions",
+     "policyname": "thesis_versions_select_own"
+    }
+   ],
+   [
+    {
+     "table_name": "theses",
+     "grantee": "authenticated",
+     "privilege_type": "SELECT"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "postgres",
+     "privilege_type": "DELETE"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "postgres",
+     "privilege_type": "INSERT"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "postgres",
+     "privilege_type": "REFERENCES"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "postgres",
+     "privilege_type": "SELECT"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "postgres",
+     "privilege_type": "TRIGGER"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "postgres",
+     "privilege_type": "TRUNCATE"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "postgres",
+     "privilege_type": "UPDATE"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "service_role",
+     "privilege_type": "DELETE"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "service_role",
+     "privilege_type": "INSERT"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "service_role",
+     "privilege_type": "REFERENCES"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "service_role",
+     "privilege_type": "SELECT"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "service_role",
+     "privilege_type": "TRIGGER"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "service_role",
+     "privilege_type": "TRUNCATE"
+    },
+    {
+     "table_name": "theses",
+     "grantee": "service_role",
+     "privilege_type": "UPDATE"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "authenticated",
+     "privilege_type": "SELECT"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "postgres",
+     "privilege_type": "DELETE"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "postgres",
+     "privilege_type": "INSERT"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "postgres",
+     "privilege_type": "REFERENCES"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "postgres",
+     "privilege_type": "SELECT"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "postgres",
+     "privilege_type": "TRIGGER"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "postgres",
+     "privilege_type": "TRUNCATE"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "postgres",
+     "privilege_type": "UPDATE"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "service_role",
+     "privilege_type": "DELETE"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "service_role",
+     "privilege_type": "INSERT"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "service_role",
+     "privilege_type": "REFERENCES"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "service_role",
+     "privilege_type": "SELECT"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "service_role",
+     "privilege_type": "TRIGGER"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "service_role",
+     "privilege_type": "TRUNCATE"
+    },
+    {
+     "table_name": "thesis_versions",
+     "grantee": "service_role",
+     "privilege_type": "UPDATE"
+    }
+   ],
+   [
+    {
+     "proname": "apply_thesis_version_v1",
+     "prosecdef": true,
+     "proconfig": [
+      "search_path=pg_catalog, public, auth, extensions"
+     ]
+    },
+    {
+     "proname": "read_current_thesis_versions_v1",
+     "prosecdef": false,
+     "proconfig": [
+      "search_path=pg_catalog, public, auth"
+     ]
+    }
+   ],
+   [
+    {
+     "indexname": "theses_id_user_id_key"
+    },
+    {
+     "indexname": "theses_owner_subject_idx"
+    },
+    {
+     "indexname": "theses_owner_updated_idx"
+    },
+    {
+     "indexname": "theses_pkey"
+    },
+    {
+     "indexname": "thesis_versions_owner_thesis_idx"
+    },
+    {
+     "indexname": "thesis_versions_pkey"
+    },
+    {
+     "indexname": "thesis_versions_thesis_id_version_key"
+    },
+    {
+     "indexname": "thesis_versions_user_id_client_request_id_key"
+    }
+   ]
+  ],
+  "at": "2026-09-06T19:21:50.735921+00:00"
+ }
+}

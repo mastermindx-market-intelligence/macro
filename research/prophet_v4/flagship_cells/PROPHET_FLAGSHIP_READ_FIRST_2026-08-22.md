@@ -1,3 +1,47 @@
+<!-- BEGIN PUBLICATION-QUALIFICATION PREFIX 2026-11-05 (deletable: removing this entire block restores the 2026-08-22 original byte-for-byte; original git blob 1b8a6d5afd233f7b0c755033cd917b08d0054cb4) -->
+> **PUBLICATION QUALIFICATION — 2026-11-05 — dated historical research, not current source law.**
+>
+> This document is published as **dated research** in its original 2026-08-22 form. The text below
+> the prefix is unchanged and stays byte-for-byte reconstructible by deleting this block.
+>
+> - This is the **August 2026-08-22 cold-start map**. It remains a routing and precedence reference
+>   for the eight August cells. It is **not** a current task queue: step 4's A1–A12 list, the
+>   backbone-prework routing and the Step 14 launch overlays below are August state. A cold-start
+>   session today reconciles against the current owner sources named below first, and steps 1–2 of
+>   §1 still hold — current authority first, dated research second.
+> * **Publication status note — read this first:**
+>   `research/prophet_v4/flagship_cells/PROPHET_FLAGSHIP_PUBLICATION_STATUS_2026-11-05.md`
+> * **Current owner / authority sources:**
+>   `research/prophet_v4/CONTRACT_AND_OWNER_MAP.md` ·
+>   `agentos/workstreams/WS-PROPHET-US-V4-RECOVERY.md` ·
+>   `agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-11-object-change.md`
+> * **Continuation observed at parent base `e34bd7a6ba8e09cb801a51600d465a6f7db380d7`:** the workstream
+>   records the later four-market and October12 Daily Brief continuation, programme comment
+>   `6107291350`. Follow its relevant latest handoff; the October11 link is dated context.
+>
+> Current Chairman intent and protected source law govern this publication. Parent source
+> composition uses `e34bd7a6ba8e09cb801a51600d465a6f7db380d7`; see the PR6264 publication receipt.
+> The original text below remains unchanged.
+>
+> - The current-state observations, owner-state descriptions, `main` and Skillpack pins, method and
+>   rights assertions, model preferences, experiment designs and launch instructions below retain
+>   their **2026-08-22 attribution** and do **not** become current source law by being published.
+> - Where an accepted successor governs, the successor wins — notably the Cell F D5 contract
+>   (PR #6275, merged `2e6e866a7852382eee0668ca72615f4747ba3f20`): D5 **reuses Context Vector
+>   unchanged and adds zero columns**, consumes **owner-issued canonical B1 episode identity**, and
+>   emits **no evidence-family envelope for an unbuilt adapter**. The August Cell F proposal to
+>   extend, split or supersede the Context Vector is a historical proposal, not live permission.
+> - The Cell G flagship VOI law and its bounded read-only implementation (PR #6276, merged
+>   `34d911cca2d763618e2e4aae1e183da0e21b0b98`) are **not relaunched** by this publication.
+> - The A1–A12 adversarial amendments, the no-money-authority rule, the PIT / rights /
+>   missingness law and the prospective promotion boundary below remain **binding**. Publication
+>   supplies no research result, no forecast, no runtime or product acceptance, and no rank, gate,
+>   sizing, execution or trade authority.
+> - This document does **not** relaunch the August eight-CEO queue and does **not** relaunch the
+>   accepted Cell F / Cell G work. Route any future action through the current workstream, the
+>   latest canonical continuation, current Chairman intent and the protected procedure.
+<!-- END PUBLICATION-QUALIFICATION PREFIX 2026-11-05 -->
+
 # PROPHET FLAGSHIP INTELLIGENCE — READ FIRST / COLD-START MAP
 
 **Date:** 2026-08-22  

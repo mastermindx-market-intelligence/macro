@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-10T20:09:34Z",
+ "accession": "0001805385-26-000012",
+ "cik": "0001805385",
+ "doc_byte_length": 2165388,
+ "doc_sha256": "7d2d30d352dcf560b0a1c9c3691edecc8a71e88e827392b865c4822ea1846e0e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-10",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "evlv-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 275886,
+  "byte_start": 275571,
+  "normalized": "On November 5, 2025, we entered into a non-exclusive contract manufacturing agreement with Plexus Corp. (“Plexus”). This shift is part of a broader supply chain strategy aimed at enhancing scalability, geographic diversification, creating long-term cost-saving opportunities, and operational resiliency.",
+  "normalized_sha256": "59890bad672a868e94fd2bf19ef539dd2a7cea7fe4ff0335d2b8a36e7fc22d84",
+  "raw": "On November 5, 2025, we entered into a non-exclusive contract manufacturing agreement with Plexus Corp. (&#8220;Plexus&#8221;). This shift is part of a broader supply chain strategy aimed at enhancing scalability, geographic diversification, creating long-term cost-saving opportunities, and operational resiliency.",
+  "raw_sha256": "3330069246197d09cad4ec401bcc4dd669b6219b318511494221ba541725cabc"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1805385/000180538526000012/evlv-20251231.htm",
+ "xbrl_contexts": []
+}

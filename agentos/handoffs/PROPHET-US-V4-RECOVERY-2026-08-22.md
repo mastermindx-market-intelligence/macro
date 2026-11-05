@@ -1,5 +1,151 @@
 ---
 workstream: WS:PROPHET-US-V4-RECOVERY
+session: "sol/macro-backlog-oldest-first-20261105-c3; PR6264 historical publication; paid preparation macro-pr6264-historical-publication-20261105-c3-a1"
+model: sol
+ended_because: ci_handoff
+mission: >
+  Publish the existing August 22 Prophet flagship package as dated research, preserving all
+  original bytes and recording accepted successor precedence. This parent qualification
+  composes the original carrier with the identified current-main source and hands the
+  records-only candidate to applicable CI and eligible non-author GitHub release review.
+  It creates no cell, runtime operation, research result, promotion or money authority.
+state_before: >
+  Original head 5d6fd20e5716258f4d6aa93811561a3a6463360c contains 31 additive Markdown
+  paths, including this handoff. The August session completed its research-writing scope;
+  it did not complete Prophet capability. Paid preparation used main
+  3d258daf9818ba366eac96a0d38ce938539ca936. The parent then inspected source and owners at
+  e34bd7a6ba8e09cb801a51600d465a6f7db380d7 and prepared the preserved package on that base.
+  Unsupported whole-estate custody and successor-absence claims in the paid proposal were
+  excluded. Its schema-valid command templates were not accepted as execution receipts.
+changed:
+  - path: agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-22.md
+    what: >
+      Adds this parent publication qualification and retains the complete original handoff,
+      including frontmatter, verbatim in the dated archive. Filename and workstream stay
+      unchanged; this August record does not become a new current continuation.
+  - path: research/prophet_v4/PROPHET_FLAGSHIP_INTELLIGENCE_EXPANSION_MASTERPLAN_2026-08-22.md
+    what: Adds a removable publication prefix; the complete original research remains unchanged.
+  - path: research/prophet_v4/flagship_cells/PROPHET_FLAGSHIP_READ_FIRST_2026-08-22.md
+    what: Adds a removable publication prefix; the complete August read order remains dated history.
+  - path: research/prophet_v4/flagship_cells/PROPHET_FLAGSHIP_PUBLICATION_STATUS_2026-11-05.md
+    what: >
+      Adds the original 31-blob inventory, source pins, preservation scope, accepted D5 and
+      G/VOI precedence, denials and scientific boundaries. The other 28 original blobs remain
+      unchanged. Total publication scope against the composition base is 32 added paths.
+verified:
+  - claim: The original package has 31 additive paths with the recorded canonical blob identities.
+    command: "https://api.github.com/repos/mastermindx-market-intelligence/Macro/pulls/6264/files?per_page=100 ; GitHub repository.object reads for every inventory path at 5d6fd20e5716258f4d6aa93811561a3a6463360c"
+    result: >
+      Parent consumed all 31 file records and compared each to the paid inventory; every
+      original blob matched, and all paths were additions. Exact object reads also matched
+      the original byte sizes. The dated publication note carries the complete inventory.
+  - claim: The publication paths are absent from the identified parent composition base.
+    command: "GitHub GraphQL repository.object(expression: commit:path), executed for all 32 publication paths at e34bd7a6ba8e09cb801a51600d465a6f7db380d7"
+    result: >
+      All 32 exact object reads returned null on this base. This proves path absence at that
+      commit, not absence of unpublished work, current writers or competing effects.
+  - claim: The three modified originals are preserved exactly in the retrieved paid artifacts.
+    command: >
+      Parent immutable raw-source reads at 5d6fd20e5716258f4d6aa93811561a3a6463360c,
+      reconstruction from the actual returned prefix/original/suffix, and UTF-8 SHA256 comparison.
+    result: >
+      All three originals and all three reconstructed postimages matched their actual
+      artifact hashes. The parent changes only new qualification text; the complete handoff
+      archive and both original research tails remain exact. The new publication-note
+      artifact also matched its reported 933f1720d54a6e8a9e3dc9daa557d9885ab3942d01774a8f0ae4c9a7864efed4 digest.
+  - claim: Accepted D5 and G/VOI successors have the cited merged identities.
+    command: "GitHub pull-request metadata reads for mastermindx-market-intelligence/Macro #6275 and #6276"
+    result: >
+      Both are closed and merged: #6275 at 2e6e866a7852382eee0668ca72615f4747ba3f20,
+      #6276 at 34d911cca2d763618e2e4aae1e183da0e21b0b98. The parent read the current owner
+      map, D5 decision, workstream, October 11 object-change handoff and Cell B V2 census
+      at e34bd7a6ba8e09cb801a51600d465a6f7db380d7. These establish the specific precedence
+      below; they do not prove whole-package incorporation or absence of other successors.
+unverified:
+  - >
+    Final published-head hosted CI, eligible non-author GitHub approval, individual release
+    admission and actual merge are separate outstanding delivery outcomes. The publication
+    receipt on PR6264 records the exact parent commit, tree, ordered parents and readbacks.
+  - >
+    No research hypothesis, forecast, runtime capability, installation or product acceptance
+    is demonstrated. The dated Cell B V2 blocked-capacity finding is retained, not re-derived.
+  - >
+    No global writer/custody absence or exhaustive successor census is asserted. The separate
+    Linear-hosted Cell A/B artifacts are not supplied or reconstructed.
+unresolved:
+  - >
+    Complete records-only review and release on this original carrier. Any later material
+    change to source, owners or actual effects requires its own bounded reconciliation;
+    an unrelated main advance is not a reason to relaunch the historical program.
+  - >
+    Future adoption, maintenance or retirement of this research belongs to the current program
+    owners under current Chairman intent. Publication makes no program-level acceptance decision.
+next_actions:
+  - >
+    The currently assigned or next lawfully assigned receiver consumes the exact PR6264
+    publication receipt, current source/check/review state and any actual live-writer or
+    unresolved-effect evidence. Complete applicable CI and the eligible non-author GitHub
+    approval required by Macro release procedure, then obtain one independent release
+    disposition and individual merge-on-green admission. Do not self-approve or self-arm.
+  - >
+    Route any substantive Prophet work through current Chairman intent and protected law,
+    WS:PROPHET-US-V4-RECOVERY, its relevant latest canonical continuations and the current
+    CONTRACT_AND_OWNER_MAP. The inspected workstream records later four-market and October12
+    Daily Brief continuation; the August queue and a historical R6 US-only receiver seat
+    do not govern that work. Do not route routine recovery back to the archived session.
+do_not_redo:
+  - "Do not repeat, shorten or reroute the recorded Cell A source-publication denial, Cell B branch-creation denial or refused branch reuse; their separate artifacts are not part of this publication."
+  - "Do not turn SOURCE_CENSUS_IDENTITY_OR_RIGHTS_BLOCKED into a positive signal, a null result or proof that the research question is closed."
+  - "Do not read protected P0 outcomes, build price-joined replay or erase prospective, source-rights, PIT, missingness or estimability controls."
+  - "Do not extend, split or supersede Context Vector through the archived Cell F proposal; accepted D5 uses it unchanged with zero added columns and owner-issued B1 identity."
+  - "Do not emit an evidence-family envelope for an unbuilt D5 adapter; readiness remains outside evidence_families[]."
+  - "Do not relaunch the August eight-cell queue, accepted Cell F/G work, old experiments or denied artifact publication."
+  - "Do not create a sibling handoff, publication registry, lifecycle, queue or competing owner."
+danger_areas:
+  - "The complete August archive remains historical even where it uses imperative language or calls an old observation current."
+  - "Publication is not adoption, earned influence, source rights, runtime acceptance or money authority."
+  - "Keep the August filename and original bytes intact through any later material composition; a fresh date could change handoff selection."
+  - "Protect real live writers and unresolved effects; PR path absence alone is not custody clearance."
+decisions:
+  - DEC:PROPHET-D5-PRESERVES-CONTEXT-VECTOR-AND-SEPARATES-EVIDENCE-AUTHORITY
+prs: [6264]
+---
+
+# Dated publication qualification — 2026-11-05
+
+Current Chairman intent authorizes this editorial preservation under parent
+`macro-backlog-oldest-first-20261105-c3` and compatible protected procedure
+`531bd22b03ffac002221b6a75fe70be70e13f417`. This is the publication record for the August
+research package; operational continuity stays with the current workstream and its later handoffs.
+
+The original carrier is composed with parent base `e34bd7a6ba8e09cb801a51600d465a6f7db380d7`.
+The exact new commit and its source/check/review disposition are recorded on PR #6264.
+Paid preparation used `3d258daf9818ba366eac96a0d38ce938539ca936`; its unsupported
+global-census and proposed-command claims were not accepted. The parent qualification below
+does not inherit the paid proposal's claim that current-main composition remains a separate wave.
+
+The package retains its August attribution, scientific controls and recorded denials. Accepted D5
+requires Context Vector reuse unchanged, zero added columns, canonical owner-issued B1 episode
+identity and no family envelope for an unbuilt adapter. The accepted Cell G VOI work is not
+relaunched. Historical session completion does not mean complete Prophet capability.
+
+Read `research/prophet_v4/flagship_cells/PROPHET_FLAGSHIP_PUBLICATION_STATUS_2026-11-05.md`
+for the full original inventory and specific successor precedence. Current Chairman intent and
+protected law govern; the current workstream and owner map supply program routing. The
+October11/October12 continuations referenced by that workstream retain their own dated scope
+and unresolved obligations.
+
+## Archive preservation
+
+Only new qualification text is edited in this file and the two research front doors; the fourth
+path is the new publication note. The other 28 original blobs are unchanged. The complete
+original handoff follows, including its original YAML and final newline.
+
+### Archived original handoff — 2026-08-22 (verbatim)
+
+``````
+---
+workstream: WS:PROPHET-US-V4-RECOVERY
 session: "Sol CEO — integrated Prophet flagship masterplan + ChatGPT-first A-H launch hardening"
 model: sol
 ended_because: complete
@@ -225,3 +371,4 @@ The architecture is deliberately **pre-designed, not pre-proven**. Individual hy
 are expected to die if evidence does not support them. The flagship product thesis and
 single-owner system boundaries are not expected to drift merely because a worker finds a
 more convenient implementation.
+``````
