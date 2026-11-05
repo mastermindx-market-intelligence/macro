@@ -1,6 +1,7 @@
 """Offline transaction/race controls; inputs are explicitly non-economic fixtures."""
 from hashlib import sha256
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -9,6 +10,25 @@ from types import SimpleNamespace
 import pytest
 
 from scripts import render_intl_durable as durable
+
+
+def test_file_path_help_resolves_own_lib_before_hostile_pythonpath(tmp_path):
+    decoy = tmp_path / "decoy"
+    foreign_lib = decoy / "lib"
+    foreign_lib.mkdir(parents=True)
+    (foreign_lib / "__init__.py").write_text(
+        'raise RuntimeError("FOREIGN_LIB_IMPORTED")\n', encoding="utf-8"
+    )
+    result = subprocess.run(
+        [sys.executable, str(Path(durable.__file__).resolve()), "--help"],
+        cwd=tmp_path,
+        env={**os.environ, "PYTHONPATH": str(decoy), "PYTHONDONTWRITEBYTECODE": "1"},
+        capture_output=True, text=True, timeout=15,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "{build,finalize,verify,stage}" in result.stdout
+    assert "FOREIGN_LIB_IMPORTED" not in result.stderr
+    assert set(tmp_path.iterdir()) == {decoy}
 
 
 def git(root, *args):

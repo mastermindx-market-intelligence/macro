@@ -15,6 +15,11 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import sys
+
+# File-path invocation must resolve this checkout before ambient repo packages.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from lib.intl_durable_publication import (
     DurablePublicationError, build_manifest, capture_inputs,
