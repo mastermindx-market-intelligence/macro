@@ -23,14 +23,16 @@ waves:
   - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
-  Complete the source-owned staged-cycle adapter joining full-set accounting,
-  causal prefix attempts, fixed evaluation and the incumbent review consumer;
-  repair S01 identity-assessment propagation through that same connected path.
+  Release the implemented source-owned staged-cycle adapter through normal checks;
+  consume the existing S01 repair and connect its private role assessment through
+  the same driver/review path without a duplicate worker or standalone metadata claim.
   Preserve original V4 and worktree unknown effects. Source readiness is not
   P01 runtime or scientific acceptance. After qualification, complete the actual
   good/bad staged cycle and unchanged historical/prospective obligations.
 artifacts:
   - research/research_factory_codegen/2026-10-12/FABLE_MASTERPLAN.md
+  - agentos/handoffs/RESEARCH-FACTORY-CODEGEN-2026-11-05.md
+  - engine/research_factory/adapter_codegen.py
   - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
   - research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.md
   - research/research_factory_codegen/2026-10-12/SOURCE_ACCEPTANCE.md
@@ -67,11 +69,15 @@ None proves admitted candidate execution or scientific acceptance.
 
 The source rebase found a missing producer-to-consumer edge: no source-owned caller
 joins staging accounting, prefix attempts, fixed numerical evaluation and review.
-The next coherent increment implements that adapter and repairs private S01 evidence
-propagation through the same existing consumers. Whole-set accounting must precede
-attempts; actual readback must bind each variant; unknown attempts stop progression;
-the default public path remains disabled before any effect. No standalone metadata
-release is counted as P01 progress.
+The source-owned adapter now joins these components. Whole-set accounting precedes
+attempts; actual readback binds each variant; unknown attempts stop progression;
+existing or partially recorded generation requires reconciliation with no replay.
+The default public path refuses before any effect. Initial affected checks passed
+93 tests plus24 subtests, and12 targeted cycle checks passed after replay and
+composition-retention repairs. Independent native Sol review accepted this source
+scope. Source publication, S01 repair, real runtime and P01 acceptance remain separate.
+The existing S01 Fabric request retains custody; it does not freeze this completed
+adapter's source release. No standalone metadata release is counted as P01 progress.
 
 Original physical V4 remains EFFECT_UNKNOWN after controller77 and the recorded
 1200-second commission overrun. No provider final, install/smoke/cleanup or absence
