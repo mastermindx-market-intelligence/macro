@@ -778,12 +778,16 @@ def pages(days=7, limit=25, minutes=None) -> dict:
     m, n = _win(minutes, days, 10080), _limit(limit, 25)
     def run():
         rows = _query(_cte(bot_window=m) +
-            "select site, coalesce(path,'(none)') as path, "
-            "count(*) filter (where type in ('pageview','route'))::int as views, "
-            "count(distinct visitor_id)::int as visitors, "
-            "round(avg(dwell_ms) filter (where dwell_ms is not null))::int as avg_dwell_ms "
-            f"from public.analytics_events where created_at > now() - interval '{m} minutes' "
-            f"and {_not_excluded('')} and {_not_a_bot('')} "
+            "select e.site, coalesce(e.path,'(none)') as path, "
+            "count(*) filter (where e.type in ('pageview','route'))::int as views, "
+            "count(distinct e.visitor_id)::int as visitors, "
+            "round(avg(e.dwell_ms) filter (where e.dwell_ms is not null))::int as avg_dwell_ms "
+            f"from public.analytics_events e where e.created_at > now() - interval '{m} minutes' "
+            # Both native membership sets exclude NULL IDs. Anti-membership therefore
+            # keeps the same NULL-visitor rows without an OR-wrapped NOT IN subplan.
+            # Keep all historical classifier evidence and every event type for dwell.
+            "and not exists (select 1 from excluded x where x.visitor_id = e.visitor_id) "
+            "and not exists (select 1 from bots b where b.visitor_id = e.visitor_id) "
             "group by 1,2 order by views desc nulls last, 1, 2 "
             f"limit {n}") or []
         return {"days": round(m / 1440, 2), "minutes": m, "pages": rows}
