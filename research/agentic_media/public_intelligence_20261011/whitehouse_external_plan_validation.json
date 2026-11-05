@@ -1,0 +1,340 @@
+{
+  "kind": "unadmitted_editorial_candidate_replay",
+  "external_plan": {
+    "schema": "press.external_candidate_plan.v1",
+    "operation": "planning_only",
+    "candidate_id": "press-external-f184b11fb6ed",
+    "source_ref": "whitehouse:wh-2026-10-08-fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-init",
+    "document_sha256": "b8b7f02bbbbfd153c9c9f9a2de53de38cd76a39d6d3ff728513e72faf868c6cd",
+    "qualification_sha256": "6cfc58cfa2fe9c689f58ae2c5693c921d8585fd6c604a149d4605962b25bd1d8",
+    "body_sha256": "dbd78e4a97171a4bf6ffb9334f430deefca04d19d68b6abc64835daaea634bf9",
+    "source_revisions": {
+      "whitehouse:wh-2026-10-08-fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-init": "sha256:b8b7f02bbbbfd153c9c9f9a2de53de38cd76a39d6d3ff728513e72faf868c6cd"
+    },
+    "blocked_by_existing_coverage": false,
+    "cadence_per_day": 2,
+    "cadence_consumed": false,
+    "allow_stage": false,
+    "allow_emit": false,
+    "publication_approved": false
+  },
+  "tested_revision": "7f0759ee547c302091282fe58b24e029aff5eb72",
+  "receipt_sha256": "6cfc58cfa2fe9c689f58ae2c5693c921d8585fd6c604a149d4605962b25bd1d8",
+  "replay_script_sha256": "3f5471dcfbcaace2df8cb5d745f848c4d05ba6d76c94d3b5a9e842b622b44bd0",
+  "planner_sha256": "8282028e5b4caae7005ef22582adef9b86d400590290e2a5b132c5052d4ddb7b",
+  "external_candidate_sha256": "b73fd096e72592684ae89262342606a5f14b2f05e349c4e914a6e996d13a273a",
+  "formatted": true,
+  "prepared_document": {
+    "title": "NVIDIA's $1 billion science commitment needs a delivery ledger",
+    "body_html": "<p class=\"press-byline\">The Brief — Mastermind News desk</p>\n<p><a href=\"https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/\">The White House announced on October 8</a> that NVIDIA committed $1 billion to a science initiative involving tools and compute credits. The Genesis Mission Consortium package totals $2.4 billion from eleven industry partners and is intended to support more than fifteen federal agencies. Those are announced commitments. The fact sheet does not identify NVIDIA&#x27;s contribution as booked revenue or a federal procurement award.</p>\n<p>AMD&#x27;s stated commitment is $500 million; OpenAI&#x27;s is $200 million. Anthropic and Google each account for $150 million. Using the announcement&#x27;s rounded figures, NVIDIA and AMD together represent about 62.5% of the consortium package. That concentration identifies where to look for implementation evidence; it does not establish which company will earn revenue from the program.</p>\n<p>For an investor tracking <a href=\"https://www.mastermind-x.com/stocks/NVDA.html\">NVIDIA&#x27;s company dossier</a>, the useful distinction is between a commitment and deployment. A commitment states what a participant intends to provide. Deployment would show which research teams received the resources, what they used, and when that use began. Neither measure, by itself, establishes a sale to a paying customer.</p>\n<p>The announcement presents the consortium within a broader package exceeding $6 billion across government, industry, academia and philanthropy. Those totals describe different scopes. They should not be combined into a new revenue estimate, or added to a company&#x27;s reported backlog without company evidence. The consortium&#x27;s stated purpose also does not resolve how its tools and credits are split across participants or agencies.</p>\n<p>Our next check is therefore specific: look for agency implementation records and company disclosures identifying delivered resources, recipient programs and commercial terms. If those records do not materialize, the event remains an announced commitment. If they do, the dossier can distinguish actual deployment from the original pledge before assessing any business effect.</p>\n<p>The fact sheet supplies no market-reaction study or valuation calculation. This report makes neither claim. Readers can use the existing company dossier and its Terminal continuation to compare later disclosures with the business they already follow, while keeping the October 8 announcement as the dated starting point.</p>\n<p class=\"press-footer\">Educational content — not investment advice. Markets involve risk.</p>",
+    "slug": "nvidia-science-commitment-delivery-ledger",
+    "description": "NVIDIA's announced science commitment needs delivery evidence. Read the White House figures alongside the distinctions that matter to investors."
+  },
+  "prepared_document_sha256": "799ef52cc8cebb39cb5263ea7d9c118a5f5263b1faa8bcf887070b1c87038e51",
+  "peer_root": "/Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main",
+  "peer_input_hashes": {
+    "data/press/staging/press-brief-2026-10-11-6cf53bdfd11a.json": "8a4c56105b869c20ce7b5928b3bab42417785cd40f70cbacdb2616434e79cfb0",
+    "data/press/staging/press-research_desk-2026-10-11-81675c403cda.json": "ae72a0afdce3e0ffc261d38f8de71b330f989597fe3c25abef4191ae55bbff3b",
+    "data/press/published.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "config_sha256": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+  "validator_sha256": "33d293ae15910607785cd2340ae04e012b32cfee084d5b636e175b8e3d944ffe",
+  "draft_sha256": "062fbdd0878a485caf2670776e72424cea1885a5492dc961f077dbae885d381c",
+  "source_sha256": "21ca4a550185c119af8013b26a74921bed45383ab64f164debb86ed339507a6e",
+  "validator_report": {
+    "ok": false,
+    "failed": [
+      "our_value",
+      "receipts"
+    ],
+    "checks": [
+      {
+        "name": "fact_anchor",
+        "ok": true,
+        "detail": "every number and quote resolves to a source fact",
+        "metrics": {
+          "numbers_checked": 7,
+          "unanchored": [],
+          "source_pool_size": 17,
+          "unsourced_quotes": []
+        }
+      },
+      {
+        "name": "claim_scope",
+        "ok": true,
+        "detail": "not a canonical claim-scoped slot",
+        "metrics": {
+          "active": false
+        }
+      },
+      {
+        "name": "close_paraphrase",
+        "ok": true,
+        "detail": "max block/source overlap 0.018 <= 0.18",
+        "metrics": {
+          "max_block_jaccard": 0.0177,
+          "doc_jaccard": 0.0011,
+          "threshold": 0.18,
+          "shingle_n": 5,
+          "worst_source": "whitehouse:wh-2026-10-08-fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-init",
+          "worst_block": "The announcement presents the consortium within a broader package exceeding $6 billion across government, industry, acad"
+        }
+      },
+      {
+        "name": "our_value",
+        "ok": false,
+        "detail": "our-value share 0.0% (< floor 40%) over 22 sentence(s); 0 distinct receipt(s)",
+        "metrics": {
+          "our_value_share": 0.0,
+          "floor": 0.4,
+          "our_words": 0,
+          "total_words": 334,
+          "granularity": "sentence",
+          "receipts": 0,
+          "receipt_values": [],
+          "sentences": [
+            {
+              "words": 21,
+              "tier": "other"
+            },
+            {
+              "words": 23,
+              "tier": "other"
+            },
+            {
+              "words": 4,
+              "tier": "neutral"
+            },
+            {
+              "words": 16,
+              "tier": "neutral"
+            },
+            {
+              "words": 10,
+              "tier": "other"
+            },
+            {
+              "words": 8,
+              "tier": "other"
+            },
+            {
+              "words": 17,
+              "tier": "other"
+            },
+            {
+              "words": 21,
+              "tier": "neutral"
+            },
+            {
+              "words": 16,
+              "tier": "neutral"
+            },
+            {
+              "words": 9,
+              "tier": "neutral"
+            },
+            {
+              "words": 17,
+              "tier": "neutral"
+            },
+            {
+              "words": 11,
+              "tier": "neutral"
+            },
+            {
+              "words": 18,
+              "tier": "other"
+            },
+            {
+              "words": 5,
+              "tier": "neutral"
+            },
+            {
+              "words": 20,
+              "tier": "neutral"
+            },
+            {
+              "words": 19,
+              "tier": "neutral"
+            },
+            {
+              "words": 22,
+              "tier": "neutral"
+            },
+            {
+              "words": 12,
+              "tier": "neutral"
+            },
+            {
+              "words": 18,
+              "tier": "neutral"
+            },
+            {
+              "words": 10,
+              "tier": "neutral"
+            },
+            {
+              "words": 5,
+              "tier": "neutral"
+            },
+            {
+              "words": 32,
+              "tier": "neutral"
+            }
+          ]
+        }
+      },
+      {
+        "name": "receipts",
+        "ok": false,
+        "detail": "0 distinct anchored receipt(s) (< minimum 5)",
+        "metrics": {
+          "receipts": 0,
+          "minimum": 5,
+          "values": []
+        }
+      },
+      {
+        "name": "quote_lint",
+        "ok": true,
+        "detail": "0 quote(s), longest 0 words",
+        "metrics": {
+          "quotes": 0,
+          "max_quotes": 2,
+          "max_quote_words": 25,
+          "oversized": []
+        }
+      },
+      {
+        "name": "banned_lexicon",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "advice_lexicon",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "cheese_test",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "ai_tells",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": [],
+          "not_only_but_also": 0,
+          "budget": 1
+        }
+      },
+      {
+        "name": "primary_source",
+        "ok": true,
+        "detail": "external source named in full and linked above the fold",
+        "metrics": {
+          "kind": "external",
+          "url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/",
+          "named": true,
+          "linked": true,
+          "accepted_names": [
+            "The White House"
+          ]
+        }
+      },
+      {
+        "name": "link_allowlist",
+        "ok": true,
+        "detail": "1 internal link(s), all public",
+        "metrics": {
+          "internal_links": 1,
+          "offenders": [],
+          "prefixes": [
+            "/research/",
+            "/blog/",
+            "/stocks/"
+          ]
+        }
+      },
+      {
+        "name": "byline",
+        "ok": true,
+        "detail": "desk byline present",
+        "metrics": {
+          "byline": "The Brief — Mastermind News desk",
+          "block": true,
+          "text": true
+        }
+      },
+      {
+        "name": "footer",
+        "ok": true,
+        "detail": "standing footer present",
+        "metrics": {
+          "block": true,
+          "text": true,
+          "required_text": "Educational content — not investment advice. Markets involve risk."
+        }
+      },
+      {
+        "name": "frontmatter",
+        "ok": true,
+        "detail": "frontmatter matches the free-estate contract",
+        "metrics": {
+          "title_len": 62,
+          "description_len": 144,
+          "slug": "nvidia-science-commitment-delivery-ledger",
+          "problems": [],
+          "upstream": ""
+        }
+      },
+      {
+        "name": "length",
+        "ok": true,
+        "detail": "334 words (budget 300–600)",
+        "metrics": {
+          "words": 334,
+          "min_words": 300,
+          "max_words": 600
+        }
+      },
+      {
+        "name": "self_similarity",
+        "ok": true,
+        "detail": "max overlap with our last 30 days + staged siblings is 0.000 <= 0.18",
+        "metrics": {
+          "max_jaccard": 0.0,
+          "threshold": 0.18,
+          "peers": 2,
+          "worst_slug": ""
+        }
+      }
+    ],
+    "our_value_share": 0.0,
+    "our_value_granularity": "sentence",
+    "receipts": 0,
+    "max_block_jaccard": 0.0177,
+    "doc_jaccard": 0.0011,
+    "words": 334,
+    "slug": "nvidia-science-commitment-delivery-ledger",
+    "desk": "brief",
+    "publication": "mastermind_news"
+  },
+  "press_admitted": false,
+  "allow_stage": false,
+  "allow_emit": false,
+  "publication_approved": false,
+  "d14_generated_batch_credit": false,
+  "scope": "Offline replay against retained source and current local corpus; not current upstream source/rights verification or planner admission."
+}

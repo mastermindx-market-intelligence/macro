@@ -1,0 +1,1619 @@
+{
+  "schema": "research_capability_ledger_not_runtime_registry",
+  "research_pin": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+  "date": "2026-09-16",
+  "interpretation": "State classifies the named capability at its disclosed evidence ceiling. UNKNOWN physical facts are not inferred absent. Historical accepted work is DO_NOT_REDO; current liveness is a separate fact.",
+  "rows": [
+    {
+      "id": "C001",
+      "group": "Control Room product",
+      "capability": "P0A compositor",
+      "canonical_owner": "Existing Control Room compositor/server",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R10",
+        "R11",
+        "R36"
+      ],
+      "evidence": "Commission and earlier Agent OS recovery identify this completed foundation; protected server exists.",
+      "why_not_stronger": "Historical acceptance is retained as DO_NOT_REDO; current installed generation and served workflow were not reverified.",
+      "current_blocker": "Historical acceptance is retained as DO_NOT_REDO; current installed generation and served workflow were not reverified.",
+      "next_vertical": "Use the existing deployment owner for a non-mutating generation/readback check, not a rebuild.",
+      "production_proof_owed": "Current actual server -> authoritative source state -> visible correct page; preserve historical acceptance separately.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C002",
+      "group": "Control Room product",
+      "capability": "Persistent Control Room / H0",
+      "canonical_owner": "Existing Control Room compositor/server",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R10",
+        "R11",
+        "R36"
+      ],
+      "evidence": "Commission and earlier Agent OS recovery identify this completed foundation; protected server exists.",
+      "why_not_stronger": "Historical acceptance is retained as DO_NOT_REDO; current installed generation and served workflow were not reverified.",
+      "current_blocker": "Historical acceptance is retained as DO_NOT_REDO; current installed generation and served workflow were not reverified.",
+      "next_vertical": "Use the existing deployment owner for a non-mutating generation/readback check, not a rebuild.",
+      "production_proof_owed": "Current actual server -> authoritative source state -> visible correct page; preserve historical acceptance separately.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C003",
+      "group": "Control Room product",
+      "capability": "X1 Command Deck",
+      "canonical_owner": "Existing Control Room compositor/server",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R10",
+        "R11",
+        "R36"
+      ],
+      "evidence": "Commission and earlier Agent OS recovery identify this completed foundation; protected server exists.",
+      "why_not_stronger": "Historical acceptance is retained as DO_NOT_REDO; current installed generation and served workflow were not reverified.",
+      "current_blocker": "Historical acceptance is retained as DO_NOT_REDO; current installed generation and served workflow were not reverified.",
+      "next_vertical": "Use the existing deployment owner for a non-mutating generation/readback check, not a rebuild.",
+      "production_proof_owed": "Current actual server -> authoritative source state -> visible correct page; preserve historical acceptance separately.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C004",
+      "group": "Control Room product",
+      "capability": "Decision-First Today / DF1",
+      "canonical_owner": "Control Room Today owner / #523",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R10",
+        "R25"
+      ],
+      "evidence": "Read-only /brief design exists; fresh pinned server text contains no /brief route.",
+      "why_not_stronger": "Later candidate implementation/review metadata unavailable; no live Today proof recovered.",
+      "current_blocker": "Later candidate implementation/review metadata unavailable; no live Today proof recovered.",
+      "next_vertical": "Reconcile only #523 and its existing implementation carrier; complete its protected one-cache read vertical.",
+      "production_proof_owed": "One real attention/coverage state rendered in Today with null decisions and NOT_CLEAR when coverage missing.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C005",
+      "group": "Control Room product",
+      "capability": "Advanced operational surface",
+      "canonical_owner": "Existing Control Room server",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R10",
+        "R11"
+      ],
+      "evidence": "Existing operational Control Room server and original Advanced product direction.",
+      "why_not_stronger": "Current served route/generation not observed.",
+      "current_blocker": "Current served route/generation not observed.",
+      "next_vertical": "Retain existing Advanced; verify current routing when Today integrates.",
+      "production_proof_owed": "Today remains sparse; Advanced reveals existing diagnostics without changing authority.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C006",
+      "group": "Control Room product",
+      "capability": "Advanced / Web Sessions",
+      "canonical_owner": "C3 #546 + existing Control Room cache",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R26",
+        "R09"
+      ],
+      "evidence": "Existing C3 architecture consumes C2 through enrolled binding-derived profiles.",
+      "why_not_stronger": "No protected fleet/UI implementation proven by this recovery; #546 current candidate frontier needs bounded reread.",
+      "current_blocker": "No protected fleet/UI implementation proven by this recovery; #546 current candidate frontier needs bounded reread.",
+      "next_vertical": "Continue #546, sequenced around DF1 shared server path.",
+      "production_proof_owed": "Two qualified profiles -> existing cache -> real partial/degraded/current/stale view.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C007",
+      "group": "Control Room product",
+      "capability": "Evidence drill-down",
+      "canonical_owner": "Control Room + canonical evidence owners",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R10",
+        "R11"
+      ],
+      "evidence": "Foundation includes evidence-oriented compositor/navigation design.",
+      "why_not_stronger": "No current end-to-end served evidence link tested.",
+      "current_blocker": "No current end-to-end served evidence link tested.",
+      "next_vertical": "Use same cached generation and safe evidence reference resolution.",
+      "production_proof_owed": "Real item -> exact immutable evidence, with stale/unavailable link states.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C008",
+      "group": "Control Room product",
+      "capability": "Current program accountability",
+      "canonical_owner": "Agent OS + Executive reads; Control Room projection",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R11",
+        "R29",
+        "R36"
+      ],
+      "evidence": "Stable organizational owner map and accountability product contract exist.",
+      "why_not_stronger": "Current runtime and complete organizational source coverage not acquired.",
+      "current_blocker": "Current runtime and complete organizational source coverage not acquired.",
+      "next_vertical": "Compose exact responsibility facts; keep unbound runtime separate.",
+      "production_proof_owed": "Actual principal responsibility remains correct across return and successor transition.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C009",
+      "group": "Control Room product",
+      "capability": "Material exception projection",
+      "canonical_owner": "Today reducer over existing authoritative reads",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R25",
+        "R11"
+      ],
+      "evidence": "DF1 explicitly defines coverage-qualified exceptions.",
+      "why_not_stronger": "Spec does not prove currently served current exceptions.",
+      "current_blocker": "Spec does not prove currently served current exceptions.",
+      "next_vertical": "Finish existing DF1 exception reducer/consumer, not an exception DB.",
+      "production_proof_owed": "Real missing source/blocked authority becomes visible NOT_CLEAR, never healthy zero.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C010",
+      "group": "Control Room product",
+      "capability": "Exact navigation",
+      "canonical_owner": "surface_bindings + closed Web-Sol FOREGROUND",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R04",
+        "R10"
+      ],
+      "evidence": "Exact fingerprint resolution and post-focus checks exist in source.",
+      "why_not_stronger": "Installed profile-specific positive/negative path not verified.",
+      "current_blocker": "Installed profile-specific positive/negative path not verified.",
+      "next_vertical": "Use INSTALL1 then existing navigation consumer.",
+      "production_proof_owed": "Correct current conversation opens/foregrounds; duplicate/stale/wrong profile refuses.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C011",
+      "group": "Control Room product",
+      "capability": "Browser/session fleet projection",
+      "canonical_owner": "C3 + existing cache",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R26",
+        "R09"
+      ],
+      "evidence": "C2 supplies qualified individual inventories; C3 has the fleet composition design.",
+      "why_not_stronger": "One-profile source is not multi-profile production coverage.",
+      "current_blocker": "One-profile source is not multi-profile production coverage.",
+      "next_vertical": "Build/prove only the existing C3 consumer after its release/collision gates.",
+      "production_proof_owed": "Complete denominator, per-profile failures, unbound rows and no cross-profile fallback.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C012",
+      "group": "Control Room product",
+      "capability": "Ask Sol grounded explanation",
+      "canonical_owner": "Existing Decision-First / Ask Sol owner",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "REJECTED_BY_DESIGN",
+      "evidence_refs": [
+        "R11"
+      ],
+      "evidence": "Ungrounded Ask Sol is explicitly hidden until grounded.",
+      "why_not_stronger": "This state rejects an ungrounded always-visible assistant, not future grounded Ask Sol.",
+      "current_blocker": "This state rejects an ungrounded always-visible assistant, not future grounded Ask Sol.",
+      "next_vertical": "Keep hidden until exact admitted facts and citations are available.",
+      "production_proof_owed": "Explanations cannot originate company truth, priority, or authority.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C013",
+      "group": "Web-Sol observation",
+      "capability": "Exact surface INSPECT",
+      "canonical_owner": "Web-Sol observation/transport; Runtime owns authority where applicable",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R02",
+        "R04"
+      ],
+      "evidence": "Unique exact conversation fingerprint -> fresh closed observation.",
+      "why_not_stronger": "URL/cue match is not authenticated account or model identity.",
+      "current_blocker": "URL/cue match is not authenticated account or model identity.",
+      "next_vertical": "INSTALL1 exact positive/negative probe",
+      "production_proof_owed": "Real exact target and wrong/missing/duplicate cases.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C014",
+      "group": "Web-Sol observation",
+      "capability": "FOREGROUND",
+      "canonical_owner": "Web-Sol observation/transport; Runtime owns authority where applicable",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R04"
+      ],
+      "evidence": "Activate exact tab and focus its current window, then re-probe and verify postconditions.",
+      "why_not_stronger": "No installed real-browser proof in this research.",
+      "current_blocker": "No installed real-browser proof in this research.",
+      "next_vertical": "INSTALL1 foreground proof",
+      "production_proof_owed": "Verified exact surface; all ambiguous post-effect paths remain unknown.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C015",
+      "group": "Web-Sol observation",
+      "capability": "Per-profile C2 census",
+      "canonical_owner": "Web-Sol observation/transport; Runtime owns authority where applicable",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R09",
+        "R23"
+      ],
+      "evidence": "128 rows max; 61,440-byte payload; total 10 seconds; coverage and omissions explicit.",
+      "why_not_stronger": "Source/fixture release is not current profile installation.",
+      "current_blocker": "Source/fixture release is not current profile installation.",
+      "next_vertical": "Existing INSTALL1/C2 consumer qualification",
+      "production_proof_owed": "Real maximum/partial/unavailable inventory without private content.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C016",
+      "group": "Web-Sol observation",
+      "capability": "Conversation fingerprint",
+      "canonical_owner": "Web-Sol observation/transport; Runtime owns authority where applicable",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R05"
+      ],
+      "evidence": "SHA-256 over canonical origin and exact conversation path.",
+      "why_not_stronger": "Does not independently attest account, document epoch, or Project membership beyond URL shape.",
+      "current_blocker": "Does not independently attest account, document epoch, or Project membership beyond URL shape.",
+      "next_vertical": "PF-1 identity coordinate qualification",
+      "production_proof_owed": "Same/different/renamed/duplicate-title conversations remain exact.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C017",
+      "group": "Web-Sol observation",
+      "capability": "Exact binding fingerprint",
+      "canonical_owner": "Web-Sol observation/transport; Runtime owns authority where applicable",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R02",
+        "R04"
+      ],
+      "evidence": "Closed requests and receipts bind binding and conversation fingerprints.",
+      "why_not_stronger": "Wire equality is not proof of current authoritative RuntimeBinding.",
+      "current_blocker": "Wire equality is not proof of current authoritative RuntimeBinding.",
+      "next_vertical": "Join existing runtime issuer at invocation",
+      "production_proof_owed": "Stale binding cannot actuate current authority.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C018",
+      "group": "Web-Sol observation",
+      "capability": "Auth-required observation",
+      "canonical_owner": "Web-Sol observation/transport; Runtime owns authority where applicable",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R05"
+      ],
+      "evidence": "Auth/login path cue; false only with target+composer; otherwise null.",
+      "why_not_stronger": "DOM cues are not a credential/account-realm verifier.",
+      "current_blocker": "DOM cues are not a credential/account-realm verifier.",
+      "next_vertical": "Disposable auth-wall proof",
+      "production_proof_owed": "No false healthy state on auth wall or unavailable cue.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C019",
+      "group": "Web-Sol observation",
+      "capability": "Provider-error observation",
+      "canonical_owner": "Web-Sol observation/transport; Runtime owns authority where applicable",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R05"
+      ],
+      "evidence": "Presence of fixed error selectors is projected.",
+      "why_not_stronger": "It cannot identify internal provider cause or context exhaustion.",
+      "current_blocker": "It cannot identify internal provider cause or context exhaustion.",
+      "next_vertical": "Disposable error/unknown controls",
+      "production_proof_owed": "Generic failure remains provider/surface uncertainty, not forced rotation.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C020",
+      "group": "Web-Sol observation",
+      "capability": "Generation cue",
+      "canonical_owner": "Web-Sol observation/transport; Runtime owns authority where applicable",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R05"
+      ],
+      "evidence": "Stop/composer presence yields active, idle, unknown.",
+      "why_not_stronger": "Cue is not completed provider-turn evidence or exact model/effort proof.",
+      "current_blocker": "Cue is not completed provider-turn evidence or exact model/effort proof.",
+      "next_vertical": "Real loading/idle/active/ambiguous proof",
+      "production_proof_owed": "No send/rotation while generation state is uncertain.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C021",
+      "group": "Web-Sol observation",
+      "capability": "Duplicate tab handling",
+      "canonical_owner": "Web-Sol observation/transport; Runtime owns authority where applicable",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R04",
+        "R09"
+      ],
+      "evidence": "Unique-target resolver rejects multiple tabs; census carries duplicate counts.",
+      "why_not_stronger": "End-to-end installed duplicate behavior not qualified.",
+      "current_blocker": "End-to-end installed duplicate behavior not qualified.",
+      "next_vertical": "INSTALL1 + C3 duplicate-tab proof",
+      "production_proof_owed": "No title/newest-tab selection or duplicate actuation.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C022",
+      "group": "Web-Sol observation",
+      "capability": "Stale/current surface discrimination",
+      "canonical_owner": "Web-Sol observation/transport; Runtime owns authority where applicable",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R04",
+        "R06"
+      ],
+      "evidence": "Source can validate requested target; runtime projection can expose current Codex generation.",
+      "why_not_stronger": "ChatGPT authority join remains absent.",
+      "current_blocker": "ChatGPT authority join remains absent.",
+      "next_vertical": "CB-W1 + Stage-B/A + C3 integration",
+      "production_proof_owed": "Revived predecessor shown stale and denied privileged next action.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C023",
+      "group": "Web-Sol observation",
+      "capability": "Multi-profile C3 census",
+      "canonical_owner": "Existing C3 #546 owner",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R26"
+      ],
+      "evidence": "Closed bounded fleet composition is designed.",
+      "why_not_stronger": "No new global crawling/registry authorized; installed fleet unknown.",
+      "current_blocker": "No new global crawling/registry authorized; installed fleet unknown.",
+      "next_vertical": "Existing C3 consumer only",
+      "production_proof_owed": "Two profiles with independent failure and honest fleet coverage.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C024",
+      "group": "Web re-entry",
+      "capability": "TYPED_REENTRY source",
+      "canonical_owner": "Web-Sol #609",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R02",
+        "R03",
+        "R24"
+      ],
+      "evidence": "Protected action foregrounds the exact idle/composer-ready target and records a volatile nonce.",
+      "why_not_stronger": "CONSUMED does not mean the model received or acknowledged an obligation.",
+      "current_blocker": "CONSUMED does not mean the model received or acknowledged an obligation.",
+      "next_vertical": "FR-1 supplied-source semantic audit and existing consumer truth repair",
+      "production_proof_owed": "Real proof must separate foreground, delivery, target ACK and source resolution.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C025",
+      "group": "Web re-entry",
+      "capability": "Installed typed re-entry",
+      "canonical_owner": "Existing INSTALL1 / Web-Sol release owner",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R21",
+        "R24"
+      ],
+      "evidence": "Source exists; no installation exercised here.",
+      "why_not_stronger": "No current package-to-profile readback.",
+      "current_blocker": "No current package-to-profile readback.",
+      "next_vertical": "Adopt accepted exact package through existing install owner",
+      "production_proof_owed": "Installed digest/host/profile matches source; rollback succeeds.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C026",
+      "group": "Web re-entry",
+      "capability": "Live exact existing-chat semantic consumption",
+      "canonical_owner": "Trusted ChatGPT adapter + Wake/Dialogue",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "NOT_BUILT",
+      "evidence_refs": [
+        "R03",
+        "R13"
+      ],
+      "evidence": "Current handler contains no obligation submission or trusted target-consumption ingress.",
+      "why_not_stronger": "Local CONSUMED is not a producer for the promised capability.",
+      "current_blocker": "Local CONSUMED is not a producer for the promised capability.",
+      "next_vertical": "Extend the existing typed sender/ACK owner after contract and provider gates",
+      "production_proof_owed": "Exact obligation becomes one accepted target ACK; visible response alone fails.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C027",
+      "group": "Web re-entry",
+      "capability": "Result-obligation linkage",
+      "canonical_owner": "Wake + terminal-return owner; Web-Sol carries digests",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R02",
+        "R03",
+        "R17"
+      ],
+      "evidence": "Wire carries operation/result/obligation digests.",
+      "why_not_stronger": "No source-proven ChatGPT model consumption of those digests.",
+      "current_blocker": "No source-proven ChatGPT model consumption of those digests.",
+      "next_vertical": "Current-owner typed delivery and ACK integration",
+      "production_proof_owed": "One actual material result reaches its exact current responsibility.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C028",
+      "group": "Web re-entry",
+      "capability": "Closed-conversation refusal",
+      "canonical_owner": "Web-Sol exact-target handler",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R03"
+      ],
+      "evidence": "Absent/moved probes yield closed/target blockers rather than create another chat.",
+      "why_not_stronger": "Source refusal is not real browser restart/closure proof.",
+      "current_blocker": "Source refusal is not real browser restart/closure proof.",
+      "next_vertical": "INSTALL1 negative test",
+      "production_proof_owed": "Closed chat never silently resurrects or causes alternate-tab send.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C029",
+      "group": "Web re-entry",
+      "capability": "Background / idle behavior",
+      "canonical_owner": "Web-Sol",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R03",
+        "R05"
+      ],
+      "evidence": "Handler requires idle composer-ready observation, then foregrounds.",
+      "why_not_stronger": "Does not implement silent background model wake; cue and provider execution are separate.",
+      "current_blocker": "Does not implement silent background model wake; cue and provider execution are separate.",
+      "next_vertical": "Qualify actual behavior without widening generic input surface",
+      "production_proof_owed": "Busy refuses; foreground is declared; receipt never implies hidden provider execution.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C030",
+      "group": "Context rotation",
+      "capability": "Rotation classifier",
+      "canonical_owner": "Web-Sol health + existing continuity decision owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R12",
+        "R05"
+      ],
+      "evidence": "Closed conceptual states and reasons exist; generic Thinking failed is not exact exhaustion.",
+      "why_not_stronger": "No source-proven production classifier/trigger acquired.",
+      "current_blocker": "No source-proven production classifier/trigger acquired.",
+      "next_vertical": "Freeze minimal supported observation-to-decision mapping after PF-1",
+      "production_proof_owed": "Healthy/suspected/required/auth/transient/unusable/unknown correctly separated.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C031",
+      "group": "Context rotation",
+      "capability": "Durable continuation",
+      "canonical_owner": "Agent OS; #651 bounded read projection",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R28",
+        "R36"
+      ],
+      "evidence": "Existing organizational records plus candidate 8-KiB derived packet.",
+      "why_not_stronger": "Candidate not protected/proven; current Agent OS reread unavailable.",
+      "current_blocker": "Candidate not protected/proven; current Agent OS reread unavailable.",
+      "next_vertical": "FR-2 exact-head continuation review; original owner publishes after gates",
+      "production_proof_owed": "Fresh context recovers outcome, DNR, active children, effects and next action from canonical records.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C032",
+      "group": "Context rotation",
+      "capability": "Exact predecessor resolution",
+      "canonical_owner": "Runtime/OHF + SessionTarget; Web-Sol observation",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R04",
+        "R06"
+      ],
+      "evidence": "Exact surface lookup exists; current runtime projector remains Codex-only.",
+      "why_not_stronger": "No accepted current ChatGPT provider binding source.",
+      "current_blocker": "No accepted current ChatGPT provider binding source.",
+      "next_vertical": "CB-W1 existing writer extension",
+      "production_proof_owed": "Predecessor is bound by provider identity/current generation, not title.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C033",
+      "group": "Context rotation",
+      "capability": "CREATE_SUCCESSOR",
+      "canonical_owner": "Future versioned Web-Sol action within existing OHF effect custody",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "NOT_BUILT",
+      "evidence_refs": [
+        "R02",
+        "R12"
+      ],
+      "evidence": "Current action enum has no create-successor action.",
+      "why_not_stronger": "Provider identity-mint and create/first-submit shape remain unproven.",
+      "current_blocker": "Provider identity-mint and create/first-submit shape remain unproven.",
+      "next_vertical": "PF-1 A/B -> frozen closed producer -> source vertical",
+      "production_proof_owed": "Exactly one same-profile/Project successor, no title or newest-tab inference.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C034",
+      "group": "Context rotation",
+      "capability": "Same-profile guarantee",
+      "canonical_owner": "Existing managed-profile owner + Web-Sol target derivation",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R12",
+        "R18"
+      ],
+      "evidence": "Contract prohibits caller-selected replacement profile.",
+      "why_not_stronger": "No real successor transaction has established the guarantee.",
+      "current_blocker": "No real successor transaction has established the guarantee.",
+      "next_vertical": "PF-1 plus CR-P1 producer",
+      "production_proof_owed": "Wrong profile fails before effect; no profile fallback.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C035",
+      "group": "Context rotation",
+      "capability": "Same-Project guarantee",
+      "canonical_owner": "Web-Sol exact binding / trusted provider observation",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R12",
+        "R44"
+      ],
+      "evidence": "Contract requires exact same Project.",
+      "why_not_stronger": "URL appearance alone is insufficient independent membership proof.",
+      "current_blocker": "URL appearance alone is insufficient independent membership proof.",
+      "next_vertical": "PF-1 Project identity evidence",
+      "production_proof_owed": "Wrong/outside Project refuses, including refresh/back-forward cases.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C036",
+      "group": "Context rotation",
+      "capability": "Exact new conversation identity",
+      "canonical_owner": "Provider adapter feeding OHF",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "NOT_BUILT",
+      "evidence_refs": [
+        "R12",
+        "R44"
+      ],
+      "evidence": "Known required contract, no proven producer.",
+      "why_not_stronger": "Durable ID minting stage remains unresolved.",
+      "current_blocker": "Durable ID minting stage remains unresolved.",
+      "next_vertical": "PF-1 first-submit/create coupling test",
+      "production_proof_owed": "New identity differs from predecessor and is observed without private endpoint/cookie access.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C037",
+      "group": "Context rotation",
+      "capability": "Deterministic bootstrap",
+      "canonical_owner": "Agent OS references + versioned Web-Sol bootstrap renderer",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R12",
+        "R28"
+      ],
+      "evidence": "Only bounded schema-validated continuation is allowed.",
+      "why_not_stronger": "A generic arbitrary prompt sender is not accepted.",
+      "current_blocker": "A generic arbitrary prompt sender is not accepted.",
+      "next_vertical": "Freeze renderer after provider effect facts",
+      "production_proof_owed": "Exact authorized fields/text digest; no transcript or hidden reasoning.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C038",
+      "group": "Context rotation",
+      "capability": "Bootstrap exactly-once effect",
+      "canonical_owner": "Existing OHF dispatch fence + new closed sender",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "NOT_BUILT",
+      "evidence_refs": [
+        "R12",
+        "R41"
+      ],
+      "evidence": "No current sender provides the effect.",
+      "why_not_stronger": "Must not promise provider-native exactly-once without protocol support.",
+      "current_blocker": "Must not promise provider-native exactly-once without protocol support.",
+      "next_vertical": "CR-P1 at-most-once dispatch and ambiguity reconciliation",
+      "production_proof_owed": "Lost response yields hold and reconciliation, not second submission.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C039",
+      "group": "Context rotation",
+      "capability": "Successor surface verification",
+      "canonical_owner": "Web-Sol observation + provider identity owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "NOT_BUILT",
+      "evidence_refs": [
+        "R05",
+        "R12"
+      ],
+      "evidence": "Existing probe can be reused as one observation component.",
+      "why_not_stronger": "Responsive page does not prove new identity, bootstrap or readiness.",
+      "current_blocker": "Responsive page does not prove new identity, bootstrap or readiness.",
+      "next_vertical": "CR-P1 verified surface receipt",
+      "production_proof_owed": "Exact successor and Project/profile, separate responsive/readiness states.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C040",
+      "group": "Context rotation",
+      "capability": "Semantic readiness / PICKUP_ACK",
+      "canonical_owner": "Trusted provider-local adapter + Wake/Company Dialogue",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "NOT_BUILT",
+      "evidence_refs": [
+        "R13",
+        "R03"
+      ],
+      "evidence": "Existing Codex pattern and ChatGPT bridge design; no accepted ChatGPT producer.",
+      "why_not_stronger": "Neither visible model prose nor local CONSUMED is authority.",
+      "current_blocker": "Neither visible model prose nor local CONSUMED is authority.",
+      "next_vertical": "CB-A1 then CB-D0/D1 using WP-3",
+      "production_proof_owed": "Trusted exact turn/current binding/obligations -> one accepted ACK.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C041",
+      "group": "Context rotation",
+      "capability": "Separate START",
+      "canonical_owner": "Versioned Agent Dialogue within existing Executive consumer",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R13",
+        "R16"
+      ],
+      "evidence": "#355 requires V3 successor rather than PROGRESS(stage=start).",
+      "why_not_stronger": "No current V3 live consumer was verified.",
+      "current_blocker": "No current V3 live consumer was verified.",
+      "next_vertical": "Freeze exact existing Executive event seam; build one vertical",
+      "production_proof_owed": "Prior accepted ACK, later distinct turn, current source/binding and no unresolved effect.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C042",
+      "group": "Context rotation",
+      "capability": "RuntimeBinding writer discovery",
+      "canonical_owner": "Runtime.OperatorHarnessRegistry through ExecutiveOperatorHarnessPort",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R06",
+        "R07"
+      ],
+      "evidence": "Canonical writer located; projection explicitly persists nothing.",
+      "why_not_stronger": "Discovery is complete, ChatGPT support and production remain absent.",
+      "current_blocker": "Discovery is complete, ChatGPT support and production remain absent.",
+      "next_vertical": "Consume known writer, not another archaeology or store",
+      "production_proof_owed": "Existing writer is used in actual ChatGPT transaction.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C043",
+      "group": "Context rotation",
+      "capability": "RuntimeBinding generation CAS",
+      "canonical_owner": "Existing OHF registry + Runtime store",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R06",
+        "R07",
+        "R13"
+      ],
+      "evidence": "Existing epoch/generation transaction model and source projection.",
+      "why_not_stronger": "ChatGPT epoch/new-conversation interpretation must be frozen against actual provider facts.",
+      "current_blocker": "ChatGPT epoch/new-conversation interpretation must be frozen against actual provider facts.",
+      "next_vertical": "CB-W1 + CB-F0 epoch/generation ruling",
+      "production_proof_owed": "One winner for expected binding/generation/predecessor/realm; no double N+1.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C044",
+      "group": "Context rotation",
+      "capability": "ABA prevention",
+      "canonical_owner": "OHF generations + exact current action-target owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R06",
+        "R14"
+      ],
+      "evidence": "Existing source law and current projection preserve generation identity.",
+      "why_not_stronger": "URL A-B-A is not prevented by content probe; ChatGPT full chain absent.",
+      "current_blocker": "URL A-B-A is not prevented by content probe; ChatGPT full chain absent.",
+      "next_vertical": "CB-I1 registry and stale-observation tests",
+      "production_proof_owed": "Old epoch/receipt cannot satisfy current binding even if URL/account text repeats.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C045",
+      "group": "Context rotation",
+      "capability": "Predecessor fencing",
+      "canonical_owner": "Runtime/OHF + Stage-B/Stage-A",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R14"
+      ],
+      "evidence": "Existing architecture names SAME_ALIAS_GENERATION_SUCCESSION and resolve_sol_action_target.",
+      "why_not_stronger": "No ChatGPT N->N+1 real proof.",
+      "current_blocker": "No ChatGPT N->N+1 real proof.",
+      "next_vertical": "CB-B1 integration through existing target owner",
+      "production_proof_owed": "Old predecessor cannot write even if it wakes and gives plausible instructions.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C046",
+      "group": "Context rotation",
+      "capability": "Post-cutover navigation",
+      "canonical_owner": "surface_bindings navigation only",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R12",
+        "R14"
+      ],
+      "evidence": "Navigation must follow committed authority, never elect it.",
+      "why_not_stronger": "No real succession/navigation sequence performed.",
+      "current_blocker": "No real succession/navigation sequence performed.",
+      "next_vertical": "CR-D1 after binding commit",
+      "production_proof_owed": "Navigation failure marks degraded; authority does not roll back.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C047",
+      "group": "Context rotation",
+      "capability": "Stale predecessor refusal",
+      "canonical_owner": "Stage-A current action resolver + OHF",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R14"
+      ],
+      "evidence": "Required stale current-target refusal is already architected.",
+      "why_not_stronger": "No real ChatGPT predecessor exercised after succession.",
+      "current_blocker": "No real ChatGPT predecessor exercised after succession.",
+      "next_vertical": "CR-D1 adversarial revival",
+      "production_proof_owed": "Exact old generation action is rejected; read-only history may remain.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C048",
+      "group": "Context rotation",
+      "capability": "Synthetic CR-D1 full rotation",
+      "canonical_owner": "Existing continuity program / all accepted owners",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "NOT_BUILT",
+      "evidence_refs": [
+        "R12",
+        "R13"
+      ],
+      "evidence": "Defined integration acceptance.",
+      "why_not_stronger": "Producer, readiness, binding and install gates remain.",
+      "current_blocker": "Producer, readiness, binding and install gates remain.",
+      "next_vertical": "Compose accepted disposable stages",
+      "production_proof_owed": "One useful governed next action after succession; zero routine shuttles.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C049",
+      "group": "Context rotation",
+      "capability": "Real CR-PROD1 Sol rotation",
+      "canonical_owner": "Current Sol authority + existing production owners",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "NOT_BUILT",
+      "evidence_refs": [
+        "R12"
+      ],
+      "evidence": "Final product acceptance defined.",
+      "why_not_stronger": "No accepted disposable full rotation, no production authorization here.",
+      "current_blocker": "No accepted disposable full rotation, no production authorization here.",
+      "next_vertical": "One explicitly approved real Project Sol after CR-D1",
+      "production_proof_owed": "Same responsibility survives, predecessor fenced, real next outcome delivered.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C050",
+      "group": "Context rotation",
+      "capability": "Predecessor effect reconciliation",
+      "canonical_owner": "Existing Executive/owner-specific effect stores",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R07",
+        "R40"
+      ],
+      "evidence": "Same-carrier effect law and existing dispatch/readback mechanisms.",
+      "why_not_stronger": "Current live predecessor operation ledger not read in this research.",
+      "current_blocker": "Current live predecessor operation ledger not read in this research.",
+      "next_vertical": "Read existing effects before any mutation/authority transfer",
+      "production_proof_owed": "No uncertain action can be replayed through successor or another account.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C051",
+      "group": "Context rotation",
+      "capability": "Fresh successor tool/procedure adoption",
+      "canonical_owner": "Current app owners + same-pinned Skillpack",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R01",
+        "R42",
+        "W02"
+      ],
+      "evidence": "Procedure is available; actual new-chat tool approvals remain surface-specific.",
+      "why_not_stronger": "Source merge and app installed status do not prove new context adoption.",
+      "current_blocker": "Source merge and app installed status do not prove new context adoption.",
+      "next_vertical": "Add fresh-context read and capability check before accepted readiness",
+      "production_proof_owed": "Successor loads exact procedure, has required allowed tools, honors completed-do-not-redo.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C052",
+      "group": "Dialogue / attention",
+      "capability": "Agent Relay hermetic core",
+      "canonical_owner": "Existing Agent Relay/Dialogue",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R16",
+        "R17"
+      ],
+      "evidence": "Earlier ASD-A0/A1 completed-source records and W3C plan establish existing core.",
+      "why_not_stronger": "Do not infer production app from source or plan.",
+      "current_blocker": "Do not infer production app from source or plan.",
+      "next_vertical": "Continue existing A2 enrollment/runtime owner",
+      "production_proof_owed": "Real caller/peer isolation plus exact current dialogue.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C053",
+      "group": "Dialogue / attention",
+      "capability": "Production Agent Relay app",
+      "canonical_owner": "Existing A2 enrollment/Relay runtime owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R16",
+        "R17"
+      ],
+      "evidence": "Enrollment implementation paths have been discovered; existing runtime is named.",
+      "why_not_stronger": "Current installed UID/socket/service/app acceptance not acquired.",
+      "current_blocker": "Current installed UID/socket/service/app acceptance not acquired.",
+      "next_vertical": "Bounded existing A2 generation/readback, then canary",
+      "production_proof_owed": "Real supported app request reaches Relay; wrong principal refused.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C054",
+      "group": "Dialogue / attention",
+      "capability": "Active Sol <-> Fable dialogue",
+      "canonical_owner": "Current exact Company Dialogue/Relay carrier",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R15",
+        "R16"
+      ],
+      "evidence": "Actual historical Fable ACK/START/RESULT carried; returned child remains without STOP.",
+      "why_not_stronger": "Manual Slack transport is not machine-owned current dialogue readiness.",
+      "current_blocker": "Manual Slack transport is not machine-owned current dialogue readiness.",
+      "next_vertical": "Settle exact returned child; prove existing ASD-A3 path",
+      "production_proof_owed": "Decision request -> ruling -> result -> consumption without Chairman shuttle.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C055",
+      "group": "Dialogue / attention",
+      "capability": "Material decision-request delivery",
+      "canonical_owner": "Agent Dialogue + Wake",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R16",
+        "R17"
+      ],
+      "evidence": "Existing closed message and attention-owner design.",
+      "why_not_stronger": "Live exact current Sol receiver not proven.",
+      "current_blocker": "Live exact current Sol receiver not proven.",
+      "next_vertical": "Existing W3C/ASD-A3 one-target proof",
+      "production_proof_owed": "Current source obligation survives sender/receiver interruption.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C056",
+      "group": "Dialogue / attention",
+      "capability": "Exact Sol attention",
+      "canonical_owner": "Wake + current RuntimeBinding + action-target resolver",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R06",
+        "R14",
+        "R17"
+      ],
+      "evidence": "Existing owner chain; ChatGPT binding and semantic reentry incomplete.",
+      "why_not_stronger": "Slack mentions and tab focus cannot satisfy target acknowledgement.",
+      "current_blocker": "Slack mentions and tab focus cannot satisfy target acknowledgement.",
+      "next_vertical": "W3C/CB integration, not another notification loop",
+      "production_proof_owed": "One exact current actor or canonical pending condition; no false consumed state.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C057",
+      "group": "Dialogue / attention",
+      "capability": "Control Room dialogue projection",
+      "canonical_owner": "ASD-A4 + existing Control Room cache",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R11",
+        "R16"
+      ],
+      "evidence": "Read-only attention projection already belongs to existing program.",
+      "why_not_stronger": "No current live Dialogue -> Control Room consumer proof.",
+      "current_blocker": "No current live Dialogue -> Control Room consumer proof.",
+      "next_vertical": "ASD-A4 after real dialogue source",
+      "production_proof_owed": "Awaiting Sol/Fable, result and degraded states follow canonical source.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C058",
+      "group": "Dialogue / attention",
+      "capability": "Transport degradation truth",
+      "canonical_owner": "Each transport owner; existing read projections",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R04",
+        "R09",
+        "R16"
+      ],
+      "evidence": "Typed unavailable/unknown and observation boundaries exist.",
+      "why_not_stronger": "Live endpoint outage/restart matrix not run here.",
+      "current_blocker": "Live endpoint outage/restart matrix not run here.",
+      "next_vertical": "Existing install/dialogue negative proof",
+      "production_proof_owed": "Missing source remains unavailable/unknown, never zero work.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C059",
+      "group": "Dialogue / attention",
+      "capability": "No-orphan responsibility",
+      "canonical_owner": "Agent OS + Executive + current Wake/action target",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R29",
+        "R43",
+        "R15"
+      ],
+      "evidence": "Continuity/recovery owners exist; one actual unclosed historical dialogue found.",
+      "why_not_stronger": "No current complete responsibility/runtime coverage.",
+      "current_blocker": "No current complete responsibility/runtime coverage.",
+      "next_vertical": "Consume existing recovery assessment and repair only exact orphaned obligation",
+      "production_proof_owed": "Every nonterminal responsibility has one current actor or valid canonical reactivation condition.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C060",
+      "group": "Managed browser",
+      "capability": "Disposable approved profile qualification",
+      "canonical_owner": "Existing MAS115 / #359 owner",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R18",
+        "R20"
+      ],
+      "evidence": "Dated profile_A anchor and exclusion proof; no present requalification.",
+      "why_not_stronger": "No fresh candidate/owner/installed/account census.",
+      "current_blocker": "No fresh candidate/owner/installed/account census.",
+      "next_vertical": "Existing non-secret exact-target prestart only under current owner",
+      "production_proof_owed": "Approved stopped disposable profile distinct from Chairman seats.",
+      "knowledge_qualification": "DATED_EFFECT_RECEIPT_OR_SOURCE; CURRENT_PHYSICAL_FACTS_UNKNOWN"
+    },
+    {
+      "id": "C061",
+      "group": "Managed browser",
+      "capability": "Profile_A",
+      "canonical_owner": "Existing fixed MAS115 provision owner",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R18",
+        "R19"
+      ],
+      "evidence": "Dated v3 anchor digest09f1e676... and stopped nonseat observations.",
+      "why_not_stronger": "Current physical running/auth state unknown; no live inspection here.",
+      "current_blocker": "Current physical running/auth state unknown; no live inspection here.",
+      "next_vertical": "Requalify the same anchor, do not mint another",
+      "production_proof_owed": "Exact current noncollision, custody, stopped state and Project/account eligibility.",
+      "knowledge_qualification": "DATED_EFFECT_RECEIPT_OR_SOURCE; CURRENT_PHYSICAL_FACTS_UNKNOWN"
+    },
+    {
+      "id": "C062",
+      "group": "Managed browser",
+      "capability": "Profile_B",
+      "canonical_owner": "Existing #359 prerequisite / lawful future successor operation",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R18",
+        "R20"
+      ],
+      "evidence": "Old creation operation stopped with intent0/create0; local bootstrap state exists.",
+      "why_not_stronger": "Cloud absence was never proved; present existence UNKNOWN, not a measured zero.",
+      "current_blocker": "Cloud absence was never proved; present existence UNKNOWN, not a measured zero.",
+      "next_vertical": "Resolve support/read-health and current owner; then reuse or provision exact missing profile once",
+      "production_proof_owed": "Exactly two approved profiles; one creation at most, exact readback and rollback.",
+      "knowledge_qualification": "DATED_EFFECT_RECEIPT_OR_SOURCE; CURRENT_PHYSICAL_FACTS_UNKNOWN"
+    },
+    {
+      "id": "C063",
+      "group": "Managed browser",
+      "capability": "Actual Chairman seats",
+      "canonical_owner": "Current seat designation + Capacity/profile owners",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R18",
+        "R19"
+      ],
+      "evidence": "Historical three designated chatgpt1/2/3 seats; cannot infer current membership/account.",
+      "why_not_stronger": "Current real-seat observation/permission absent and not needed for research.",
+      "current_blocker": "Current real-seat observation/permission absent and not needed for research.",
+      "next_vertical": "Preserve; target production only after disposable acceptance and explicit authority",
+      "production_proof_owed": "No accidental seat mutation; exact approved production profile proof.",
+      "knowledge_qualification": "DATED_EFFECT_RECEIPT_OR_SOURCE; CURRENT_PHYSICAL_FACTS_UNKNOWN"
+    },
+    {
+      "id": "C064",
+      "group": "Managed browser",
+      "capability": "Supported attachment lifecycle",
+      "canonical_owner": "Existing managed-browser adapter",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R18",
+        "W07"
+      ],
+      "evidence": "Supported vendor v2 launch and existing closed adapter architecture.",
+      "why_not_stronger": "Host shell reachability is not current attached-browser proof.",
+      "current_blocker": "Host shell reachability is not current attached-browser proof.",
+      "next_vertical": "Use existing adapter on one disposable profile",
+      "production_proof_owed": "Exact launch/attach/reconcile/stop without foreign process effect.",
+      "knowledge_qualification": "DATED_EFFECT_RECEIPT_OR_SOURCE; CURRENT_PHYSICAL_FACTS_UNKNOWN"
+    },
+    {
+      "id": "C065",
+      "group": "Managed browser",
+      "capability": "Supported foreground on managed profile",
+      "canonical_owner": "Web-Sol + existing profile owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R04",
+        "R21"
+      ],
+      "evidence": "Source foreground path is implemented.",
+      "why_not_stronger": "Managed core extension/native host discovery remains installed-proof gate.",
+      "current_blocker": "Managed core extension/native host discovery remains installed-proof gate.",
+      "next_vertical": "INSTALL1",
+      "production_proof_owed": "Correct tab/window focus inside exact approved profile; no cross-profile action.",
+      "knowledge_qualification": "DATED_EFFECT_RECEIPT_OR_SOURCE; CURRENT_PHYSICAL_FACTS_UNKNOWN"
+    },
+    {
+      "id": "C066",
+      "group": "Managed browser",
+      "capability": "Same-Project creation capability",
+      "canonical_owner": "Versioned Web-Sol successor owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "NOT_BUILT",
+      "evidence_refs": [
+        "R02",
+        "R12",
+        "R44"
+      ],
+      "evidence": "Required successor contract only.",
+      "why_not_stronger": "No live provider creation/identity evidence.",
+      "current_blocker": "No live provider creation/identity evidence.",
+      "next_vertical": "PF-1 -> CR-P1",
+      "production_proof_owed": "Exact Project membership and first-submit identity coupling proven.",
+      "knowledge_qualification": "DATED_EFFECT_RECEIPT_OR_SOURCE; CURRENT_PHYSICAL_FACTS_UNKNOWN"
+    },
+    {
+      "id": "C067",
+      "group": "Managed browser",
+      "capability": "Dedicated account realm",
+      "canonical_owner": "Existing account/credential capability owner",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R18",
+        "R19"
+      ],
+      "evidence": "A test account requirement is explicit; no verified realm returned.",
+      "why_not_stronger": "Profile existence is not authenticated dedicated account availability.",
+      "current_blocker": "Profile existence is not authenticated dedicated account availability.",
+      "next_vertical": "Existing owner verifies dedicated account, normal secure sign-in if authorized",
+      "production_proof_owed": "Both disposable profiles independently verify same eligible non-Chairman realm.",
+      "knowledge_qualification": "DATED_EFFECT_RECEIPT_OR_SOURCE; CURRENT_PHYSICAL_FACTS_UNKNOWN"
+    },
+    {
+      "id": "C068",
+      "group": "Managed browser",
+      "capability": "Secure credential handling",
+      "canonical_owner": "Existing Keychain/credential owner, not model/UI",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R18",
+        "R19"
+      ],
+      "evidence": "Prior H2 protected pipe closed before request; no secret disclosure in recovered receipt.",
+      "why_not_stronger": "No current credential health, authorization, or account-email identity verified.",
+      "current_blocker": "No current credential health, authorization, or account-email identity verified.",
+      "next_vertical": "Use owner-specific readiness and minimum approved support correlation",
+      "production_proof_owed": "Credential remains outside model/argv/logs; actual correct recipient/capability bound.",
+      "knowledge_qualification": "DATED_EFFECT_RECEIPT_OR_SOURCE; CURRENT_PHYSICAL_FACTS_UNKNOWN"
+    },
+    {
+      "id": "C069",
+      "group": "Managed browser",
+      "capability": "Rollback / recovery",
+      "canonical_owner": "Existing deployment renderer + active applier + MAS115 owner",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R21",
+        "R22"
+      ],
+      "evidence": "Rollback contracts exist; applier source child already started.",
+      "why_not_stronger": "No current applied generation or complete rollback proof.",
+      "current_blocker": "No current applied generation or complete rollback proof.",
+      "next_vertical": "Preserve source writer; finish existing INSTALL1",
+      "production_proof_owed": "Exact preimages restored, only newly created owned artifacts removed.",
+      "knowledge_qualification": "DATED_EFFECT_RECEIPT_OR_SOURCE; CURRENT_PHYSICAL_FACTS_UNKNOWN"
+    },
+    {
+      "id": "C070",
+      "group": "Managed browser",
+      "capability": "Profile Search read-health",
+      "canonical_owner": "Existing H2 read-health capability",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BROKEN",
+      "evidence_refs": [
+        "R19",
+        "R34"
+      ],
+      "evidence": "Two spent current-source observations returned HTTP_SERVICE_UNAVAILABLE, read_surface_usable=false.",
+      "why_not_stronger": "BROKEN is last observed path usability, not proof of permanent vendor outage or cause.",
+      "current_blocker": "BROKEN is last observed path usability, not proof of permanent vendor outage or cause.",
+      "next_vertical": "Account/request correlation with existing support thread; new observation only after explicit decision",
+      "production_proof_owed": "One real accepted bounded census + cleanup; no lifecycle side effect or retry.",
+      "knowledge_qualification": "DATED_EFFECT_RECEIPT_OR_SOURCE; CURRENT_PHYSICAL_FACTS_UNKNOWN"
+    },
+    {
+      "id": "C071",
+      "group": "Host awareness",
+      "capability": "Host-tool discovery procedure",
+      "canonical_owner": "COLD_START / ACTIVE_EXECUTION; #504 release owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R01",
+        "R27",
+        "R42"
+      ],
+      "evidence": "Current ACTIVE_EXECUTION demands real tool discovery; specific #504 additions absent from current COLD_START.",
+      "why_not_stronger": "#504 semantic review exists but source integration/protection incomplete in last recovery.",
+      "current_blocker": "#504 semantic review exists but source integration/protection incomplete in last recovery.",
+      "next_vertical": "Continue existing #504 release after preserving enrolled INDEX changes",
+      "production_proof_owed": "Fresh Web session discovers actual tool/device/backend without inventing permissions.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C072",
+      "group": "Host awareness",
+      "capability": "Current tool discovery",
+      "canonical_owner": "Connected app tool catalog",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "This research session, 2026-09-16",
+      "state": "PROVEN_LIVE",
+      "evidence_refs": [
+        "R01"
+      ],
+      "evidence": "This research discovered GitHub, Slack and RDC read tools and used them.",
+      "why_not_stronger": "Applies only to this session/tool generation; not all accounts or future successors.",
+      "current_blocker": "Applies only to this session/tool generation; not all accounts or future successors.",
+      "next_vertical": "Repeat only after schema/connection change",
+      "production_proof_owed": "Fresh successor repeats bounded discovery under its own authority.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C073",
+      "group": "Host awareness",
+      "capability": "Studio host read / shell",
+      "canonical_owner": "Remote Desktop Commander on approved Studio",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "RDC0.2.50; connector session8c9c012f-6b96-4e09-9943-8ade5eb6ecba; device3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
+      "state": "PROVEN_LIVE",
+      "evidence_refs": [
+        "R01"
+      ],
+      "evidence": "Exact device3f5ce987 returned Darwin/UID501 metadata and bounded source reads.",
+      "why_not_stronger": "No desktop/browser/provider/unattended implication; batched reads also received platform refusals.",
+      "current_blocker": "No desktop/browser/provider/unattended implication; batched reads also received platform refusals.",
+      "next_vertical": "Use scoped ordinary reads only; actual browser owner separately qualifies",
+      "production_proof_owed": "Capability-specific attended backend read succeeds with exact target.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C074",
+      "group": "Host awareness",
+      "capability": "MacBook read",
+      "canonical_owner": "Existing host connector / Fleet identity owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "2b8a329e-0a82-413c-b9d0-958a7de6d836",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R01"
+      ],
+      "evidence": "Registry online only; backend file/shell not tested",
+      "why_not_stronger": "Registry visibility is not host identity or backend/read capability proof.",
+      "current_blocker": "Registry visibility is not host identity or backend/read capability proof.",
+      "next_vertical": "Only when in-scope, one capability-specific read on exact approved identity; no host failover",
+      "production_proof_owed": "Literal host identity and actual read receipt; no assumption from friendly name.",
+      "knowledge_qualification": "REGISTRY_ONLY"
+    },
+    {
+      "id": "C075",
+      "group": "Host awareness",
+      "capability": "M1 Studio read",
+      "canonical_owner": "Existing host connector / Fleet identity owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "37db60bd-f84d-4521-ae9e-47c575d9ba86",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R01"
+      ],
+      "evidence": "admins-Mini-652 registry online; its mapping to M1 not independently proven",
+      "why_not_stronger": "Registry visibility is not host identity or backend/read capability proof.",
+      "current_blocker": "Registry visibility is not host identity or backend/read capability proof.",
+      "next_vertical": "Only when in-scope, one capability-specific read on exact approved identity; no host failover",
+      "production_proof_owed": "Literal host identity and actual read receipt; no assumption from friendly name.",
+      "knowledge_qualification": "REGISTRY_ONLY"
+    },
+    {
+      "id": "C076",
+      "group": "Host awareness",
+      "capability": "PC / WSL read",
+      "canonical_owner": "Existing host connector / Fleet identity owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "5c2ac8dc-72a8-4883-99ef-dbf5fab2a160",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R01"
+      ],
+      "evidence": "WSL registry online; Windows desktop3264b37b separately offline; no backend read tested",
+      "why_not_stronger": "Registry visibility is not host identity or backend/read capability proof.",
+      "current_blocker": "Registry visibility is not host identity or backend/read capability proof.",
+      "next_vertical": "Only when in-scope, one capability-specific read on exact approved identity; no host failover",
+      "production_proof_owed": "Literal host identity and actual read receipt; no assumption from friendly name.",
+      "knowledge_qualification": "REGISTRY_ONLY"
+    },
+    {
+      "id": "C077",
+      "group": "Host awareness",
+      "capability": "Exact browser / desktop reach",
+      "canonical_owner": "Existing browser and desktop capability owners",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R18",
+        "R37"
+      ],
+      "evidence": "Connected shell works; browser actuation has separate source/permission owners.",
+      "why_not_stronger": "No actual desktop or provider-session control proof in this research.",
+      "current_blocker": "No actual desktop or provider-session control proof in this research.",
+      "next_vertical": "Qualify via accepted disposable profile path, not arbitrary UI",
+      "production_proof_owed": "Real approved target observed and controlled without credential-bearing exposure.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C078",
+      "group": "Host awareness",
+      "capability": "Truthful degraded states",
+      "canonical_owner": "This research client; each capability owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "This research session only",
+      "state": "PROVEN_LIVE",
+      "evidence_refs": [
+        "R01"
+      ],
+      "evidence": "Blocked batch left without evidence; other permitted independent source reads continued.",
+      "why_not_stronger": "This is observed research behavior, not fleet-wide automated enforcement.",
+      "current_blocker": "This is observed research behavior, not fleet-wide automated enforcement.",
+      "next_vertical": "Retain lane-specific failure classification",
+      "production_proof_owed": "A denied read never becomes alternate-route success or fabricated runtime absence.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C079",
+      "group": "Host awareness",
+      "capability": "Studio Direct / Workbench availability",
+      "canonical_owner": "Installed app generation / Workbench owner",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R27",
+        "R40",
+        "W02"
+      ],
+      "evidence": "Studio Direct and Executive custom tools not discovered in this session; RDC independently responded.",
+      "why_not_stronger": "Does not establish global service unavailability; no same-action failover or Workbench admission proved.",
+      "current_blocker": "Does not establish global service unavailability; no same-action failover or Workbench admission proved.",
+      "next_vertical": "Exact supported-channel read under its owner when required",
+      "production_proof_owed": "Tools listed, authenticated, allowed and actual effect path separately proven.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C080",
+      "group": "Context / provider continuity",
+      "capability": "CCTX-0 organizational/checkpoint boundary",
+      "canonical_owner": "Executive checkpoint operation + Agent OS continuity",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R07",
+        "R28"
+      ],
+      "evidence": "Existing runtime port has reserve_checkpoint_operation; organization already has handoffs.",
+      "why_not_stronger": "CCTX named current carrier/proof not recovered; generic reservation is not complete checkpoint capability.",
+      "current_blocker": "CCTX named current carrier/proof not recovered; generic reservation is not complete checkpoint capability.",
+      "next_vertical": "Consume existing checkpoint owner, freeze exact adapter extension without new store",
+      "production_proof_owed": "Restart recovers a checkpoint reference and preserves prior effect/child identity.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C081",
+      "group": "Context / provider continuity",
+      "capability": "Codex native CCTX-1 compaction",
+      "canonical_owner": "CodexOperatorAdapter + existing provider operation owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "NOT_BUILT",
+      "evidence_refs": [
+        "R08"
+      ],
+      "evidence": "Fresh adapter descriptor explicitly supports_checkpoint=False.",
+      "why_not_stronger": "Native resume does not imply compaction; API product feature alone is insufficient.",
+      "current_blocker": "Native resume does not imply compaction; API product feature alone is insufficient.",
+      "next_vertical": "Existing CCTX-1 owner adds exact operation/event match after its own gates",
+      "production_proof_owed": "Actual native checkpoint/compaction -> terminal receipt -> exact continued worker, no global latest selection.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C082",
+      "group": "Context / provider continuity",
+      "capability": "Provider session exact resume",
+      "canonical_owner": "Codex adapter / OHF generation owner",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R08",
+        "R07"
+      ],
+      "evidence": "supports_native_resume=True; same-epoch resume/bind methods present.",
+      "why_not_stronger": "No live exact resume acceptance exercised in this research.",
+      "current_blocker": "No live exact resume acceptance exercised in this research.",
+      "next_vertical": "Use existing resume, do not build replacement",
+      "production_proof_owed": "Exact session resumes with stale/duplicate/wrong-generation refusal.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C083",
+      "group": "Context / provider continuity",
+      "capability": "Stable per-child provider context",
+      "canonical_owner": "Existing Operator Harness / provider-local session storage",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "PARTIAL",
+      "evidence_refs": [
+        "R07",
+        "R08"
+      ],
+      "evidence": "Existing epoch/provider-session semantics and exact native resume surface.",
+      "why_not_stronger": "Current installed cross-child isolation and context storage not observed.",
+      "current_blocker": "Current installed cross-child isolation and context storage not observed.",
+      "next_vertical": "Verify existing storage/identity isolation in native continuity proof",
+      "production_proof_owed": "One child cannot resume or consume another child context.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C084",
+      "group": "Context / provider continuity",
+      "capability": "No global --last ambiguity",
+      "canonical_owner": "Exact-session routing / provider adapter acceptance",
+      "current_source": "a78b8fe23d8e1ed129880ac47e97ebe96afa8aea",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "SPEC_ONLY",
+      "evidence_refs": [
+        "R01",
+        "R08"
+      ],
+      "evidence": "Required exact-native-session law excludes global-most-recent selection.",
+      "why_not_stronger": "Not a claim that every current caller has been audited.",
+      "current_blocker": "Not a claim that every current caller has been audited.",
+      "next_vertical": "Add discriminator to existing resume/compaction acceptance",
+      "production_proof_owed": "Two simultaneous sessions; only named exact handle is resumed.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    },
+    {
+      "id": "C085",
+      "group": "Context / provider continuity",
+      "capability": "Web-absent worker delivery progression",
+      "canonical_owner": "Existing Executive/COO cycle and terminal-return owners",
+      "current_source": "See exact references; mutable carrier heads are last-observed only",
+      "installed_runtime_generation": "UNKNOWN — no current installed/runtime generation established",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence_refs": [
+        "R39",
+        "R33"
+      ],
+      "evidence": "Existing hermetic reject/repair/re-review/aggregation source work.",
+      "why_not_stronger": "No current complete admitted production run with Web closed proved here.",
+      "current_blocker": "No current complete admitted production run with Web closed proved here.",
+      "next_vertical": "Finish existing #629 live canary without absorbing Fabric integration",
+      "production_proof_owed": "Useful admitted outcome reaches durable returned state; Sol-reserved final acceptance stays pending.",
+      "knowledge_qualification": "SOURCE_OR_ATTRIBUTED_EVIDENCE"
+    }
+  ]
+}

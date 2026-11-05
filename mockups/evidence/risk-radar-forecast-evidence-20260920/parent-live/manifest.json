@@ -1,0 +1,399 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-20T06:23:27Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "https://www.mastermind-x.com/risk_envelope_live.js?v=47a6eb04",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "source_url": "https://www.mastermind-x.com/macrodata/release_forecast.json",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "source_url": "https://www.mastermind-x.com/macro.html",
+          "text": "Refused to execute script from 'https://www.mastermind-x.com/risk_envelope_live.js?v=47a6eb04' because its MIME type ('application/json') is not executable, and strict MIME type checking is enabled."
+        },
+        {
+          "source_url": "https://www.mastermind-x.com/live/overlay.json",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "source_url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885409699",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "source_url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885414346",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "source_url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885418322",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "source_url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885422399",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "source_url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885425904",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "source_url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885429711",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "source_url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885433131",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "source_url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885436667",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 401,
+          "url": "https://www.mastermind-x.com/risk_envelope_live.js?v=47a6eb04"
+        },
+        {
+          "status": 401,
+          "url": "https://www.mastermind-x.com/macrodata/release_forecast.json"
+        },
+        {
+          "status": 401,
+          "url": "https://www.mastermind-x.com/live/overlay.json"
+        },
+        {
+          "status": 401,
+          "url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885409699"
+        },
+        {
+          "status": 401,
+          "url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885414346"
+        },
+        {
+          "status": 401,
+          "url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885418322"
+        },
+        {
+          "status": 401,
+          "url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885422399"
+        },
+        {
+          "status": 401,
+          "url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885425904"
+        },
+        {
+          "status": 401,
+          "url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885429711"
+        },
+        {
+          "status": 401,
+          "url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885433131"
+        },
+        {
+          "status": 401,
+          "url": "https://www.mastermind-x.com/live/risk_state.json?t=1789885436667"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3585,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 6504,
+            "elements_wider_than_viewport": 194,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 2,
+        "document_height_px": 3585,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 0,
+          "h3": 5,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 34,
+        "payload_bytes_total": 353979,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 40,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 804
+      },
+      "page_id": "macro.html",
+      "registry_route": "macro.html",
+      "route": "macro.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 954263,
+          "captured": true,
+          "file": "703ca1f65df9a898.png",
+          "force_state": null,
+          "height": 3585,
+          "locale": "en",
+          "sha256": "703ca1f65df9a898d8efe9d9ace4f4da6d9ff89ed758cb291c9a0d25970539f7",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 733304,
+          "captured": true,
+          "file": "c88f0d8d5341ff6c.png",
+          "force_state": null,
+          "height": 3585,
+          "locale": "en",
+          "sha256": "c88f0d8d5341ff6cade2bac63d903855e480f47d046a71ba44a6db0fcbe6876c",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 923375,
+          "captured": true,
+          "file": "bd3a2d58a4b2b294.png",
+          "force_state": null,
+          "height": 3540,
+          "locale": "zh",
+          "sha256": "bd3a2d58a4b2b294a883baaaf84cd08af959fccd4e62b3a2176dacf9946012f8",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 725920,
+          "captured": true,
+          "file": "4f9e1d32a61b4164.png",
+          "force_state": null,
+          "height": 3540,
+          "locale": "zh",
+          "sha256": "4f9e1d32a61b4164d19fdea8ece825a09d949cff07a01a2a2099f6f24e6d0b68",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 691016,
+          "captured": true,
+          "file": "2ceb85b81a425c2f.png",
+          "force_state": null,
+          "height": 6504,
+          "locale": "en",
+          "sha256": "2ceb85b81a425c2fca9e02d2666a3209322125c57ddba456462270c842aac347",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 583552,
+          "captured": true,
+          "file": "41d5b52065f44244.png",
+          "force_state": null,
+          "height": 6504,
+          "locale": "en",
+          "sha256": "41d5b52065f442446048dc44a7dd9be374e745fb58bdb51ec68a13b52f1e7072",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 659872,
+          "captured": true,
+          "file": "68c6450c92e95edb.png",
+          "force_state": null,
+          "height": 5945,
+          "locale": "zh",
+          "sha256": "68c6450c92e95edbe098be96e1f2e22ed3a828d28ce2fcca9a24fecda34af49a",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 566230,
+          "captured": true,
+          "file": "8ffc973e1cfab0c9.png",
+          "force_state": null,
+          "height": 5945,
+          "locale": "zh",
+          "sha256": "8ffc973e1cfab0c958ef42554128f92937d1fd44a66e36666b2b67621db79ea0",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "macro.html"
+    ],
+    "max_pages": 30,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 330,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": "https://www.mastermind-x.com",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "unavailable: a live origin does not disclose the commit it is serving",
+    "site_dir": null
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

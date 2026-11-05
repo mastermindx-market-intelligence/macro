@@ -27,6 +27,7 @@ function makeEl(attrs, cls) {
     parentNode: null,
     getAttribute: (k) => (k in a ? a[k] : null),
     setAttribute: (k, v) => { a[k] = String(v); },
+    removeAttribute: (k) => { delete a[k]; },
     hasAttribute: (k) => k in a,
     classList: {
       add: (...c) => c.forEach((x) => classes.add(x)),

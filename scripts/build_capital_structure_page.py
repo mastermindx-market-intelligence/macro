@@ -2,10 +2,21 @@
 
 The browser receives its issuer rows and filing evidence only through the
 authenticated Capital Structure API. This builder deliberately writes no data
-projection: it emits the premium desk shell and its paired assets so an
-ordinary full-site render cannot leave the page stale. The one exception is a
-read-only Policy watch chip (B-F09-6, MO-PAID-067), which cites a single
-dated policy_calendar step — display-only, no score/rank/direction.
+projection of its own and still copies only `_ASSETS`. Read-only public-fact
+exceptions, all display-only (no score/rank/direction):
+
+- B-F09-4: it reads the nightly-written `premium_featured.json` receipt so the
+  desk can show one classified deal's dated premium. That receipt is
+  server-rendered into the anonymously-fetchable HTML shell specifically
+  because the page's live API is paid-gated (`site_full` —
+  app/capital_structure.py:53), so an API-delivered premium could never be
+  anonymously verified.
+- B-F09-6 (MO-PAID-067): a read-only Policy watch chip that cites a single
+  dated policy_calendar step.
+- B-F09 covenant terms: a literal, public filing threshold from the native
+  immutable ledger. A threshold alone never supplies calculated headroom.
+- B-F09 bond pricing: two historical SEC pricing sheets retained in the native
+  corporate-bond cache, qualified against their archive receipts and filing indexes.
 
 Usage:
     python -m scripts.build_capital_structure_page
@@ -14,9 +25,11 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shutil
 import sys
+from datetime import date
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
@@ -25,6 +38,116 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_REPO_ROOT))
 _ASSETS = ("capital_structure_boot.js", "capital_structure.css", "capital_structure.js")
+_PREMIUM_RECEIPT = ("data", "special_situations", "premium_featured.json")
+
+
+def _covenant_headroom(root: Path) -> dict:
+    """Read the native immutable ledger; publish only permitted filing facts.
+
+    No source fetch, ledger write, issuer allocation, or inferred financial
+    inputs. The native producer verifies retained source bytes; this consumer
+    checks ledger lineage and transcription consistency, not a second source
+    extraction. An absent ledger remains an explicit unavailable.
+    """
+    from datetime import datetime, timezone
+    import re
+    from urllib.parse import urlsplit
+    from engine.covenant_headroom import compute_headroom
+    from engine.capital_structure.covenant_terms import (
+        logical_observation_id_for, observation_id_for, validate_locator,
+    )
+    from scripts.compile_capital_structure_covenant_terms import (
+        _load_contract, _load_existing_observations, _validate_observation_lineage,
+        _find_orphaned_lineage, read_source_ledger, source_ledger_path,
+        validate_manifest_content_binding, validate_manifest_ledger,
+    )
+    data = root / "data" / "capital_structure"
+    schema = _load_contract("capital_structure_covenant_term_observation.schema.json")
+    observations, quarantined = _load_existing_observations(
+        data / "covenant_term_observations.parquet",
+        data / "covenant_term_observations.quarantined.parquet", schema,
+    )
+    if not observations:
+        return compute_headroom([], {}, {})
+    manifests = read_source_ledger(source_ledger_path(data))
+    validate_manifest_ledger(manifests)
+    _validate_observation_lineage(observations, manifests, schema)
+    if _find_orphaned_lineage(observations, quarantined):
+        raise ValueError("covenant source correction lineage is incomplete")
+    by_id = {m["manifest_id"]: m for m in manifests}
+    now = datetime.now(timezone.utc)
+    latest = {}
+    for obs in observations:
+        if observation_id_for(obs) != obs["observation_id"]:
+            raise ValueError("covenant observation identity does not match its source/version")
+        manifest = by_id[obs["document"]["source_manifest_id"]]
+        validate_manifest_content_binding(manifest)
+        if logical_observation_id_for(manifest["manifest_id"], obs["clause"]["clause_id"], obs["term"]["name"]) != obs["logical_observation_id"]:
+            raise ValueError("covenant logical identity does not match its clause")
+        if obs["issuer_id"] != manifest["issuer"]["issuer_id"]:
+            raise ValueError("covenant issuer differs from its source manifest")
+        if (obs["document"]["canonical_url"] != manifest["document"]["canonical_url"]
+                or any(obs["filing"][key] != manifest["filing"][key]
+                       for key in ("accession", "form", "filing_date", "accepted_at"))):
+            raise ValueError("covenant citation differs from its source manifest")
+        known = datetime.fromisoformat(obs["point_in_time"]["available_at"].replace("Z", "+00:00"))
+        if known > now:
+            continue
+        key = obs["logical_observation_id"]
+        previous = latest.get(key)
+        if previous is None or obs["version"]["correction_version"] > previous["version"]["correction_version"]:
+            latest[key] = obs
+    public = []
+    tickers, names = {}, {}
+    for obs in latest.values():
+        evidence = obs["evidence"]
+        manifest = by_id[obs["document"]["source_manifest_id"]]
+        if (evidence["rights_class"] != "public_source_link"
+                or evidence["privacy_classification"] != "public"
+                or evidence["publication"]["disposition"] != "public_fact_only"
+                or manifest["rights"]["redistribution_class"] != "public_source_link"
+                or manifest["privacy"]["classification"] != "public"):
+            continue
+        url = urlsplit(obs["document"]["canonical_url"])
+        if url.scheme != "https" or url.hostname != "www.sec.gov" or not url.path.startswith("/Archives/edgar/data/") or url.username or url.password:
+            raise ValueError("covenant source link is not the retained SEC origin")
+        if obs["state"]["disposition"] == "direct":
+            # public_fact_only permits a ratio, not arbitrary filing prose.
+            # Native extraction deliberately keeps reported == normalized and
+            # value null. Its ID is a source/version key, NOT a value digest.
+            reported = obs["reported"]
+            if (reported != obs["normalized"] or reported["unit"] != "ratio"
+                    or reported["value"] is not None
+                    or not re.fullmatch(r"\d{1,2}\.\d{2} to 1\.00", reported["raw"] or "")
+                    or obs["extraction"]["method"] != "deterministic"
+                    or obs["extraction"]["review_status"] != "final"
+                    or not evidence["spans"]):
+                raise ValueError("covenant transcription is not a final literal ratio")
+            for span in evidence["spans"]:
+                validate_locator(span["locator"], manifest["document"]["byte_length"])
+        public.append(obs)
+        issuer = by_id[obs["document"]["source_manifest_id"]]["issuer"]
+        cik = str(issuer["cik"]).zfill(10)
+        tickers[cik] = issuer.get("ticker")
+        names[cik] = (issuer.get("aliases") or [None])[0]
+    # A filing threshold alone does not supply agreement-defined earnings,
+    # charges or the operative schedule. Keep the existing typed refusal.
+    result = compute_headroom(public, {}, tickers)
+    result["issuer"]["name"] = names.get(result["issuer"]["cik"])
+    return result
+
+
+def _featured_premium(root: Path) -> dict | None:
+    """Read the nightly premium receipt. Returns None when the receipt is absent,
+    unreadable, or not the expected schema — the shell then prints its plain-word null."""
+    path = root.joinpath(*_PREMIUM_RECEIPT)
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(payload, dict) or payload.get("schema") != "special_situations.premium.v1":
+        return None
+    return payload
 
 
 # ── policy-watch:start (B-F09-6, MO-PAID-067) ──
@@ -152,6 +275,31 @@ def _policy_watch(today=None) -> dict:
 # ── policy-watch:end ──
 
 
+# ── policy-projection:start (B-F09-6b, MO-PAID-067) ──
+ARTIFACT_BUDGET_BYTES = 32_768
+
+
+def _policy_projection(today=None) -> dict:
+    """Dated-event ledger onto six frozen capital-markets windows. Context only.
+
+    Strictly additive beside the merged Policy watch chip. `typed_unavailable`
+    is resolved BEFORE the guarded import, so the fallback is reachable: a
+    missing or raising `project` degrades to the typed unavailable shape
+    instead of raising a second ImportError out of the handler. A leaf module
+    that cannot be imported at all still fails the build loudly — that is a
+    broken checkout, not a source that was unavailable for this build, and it
+    must not be reported to a reader as the latter.
+    """
+    from engine.capital_policy_projection import typed_unavailable
+
+    try:
+        from engine.capital_policy_projection import project
+        return project(today=today)
+    except Exception:  # noqa: BLE001 — a section must never crash the desk
+        return typed_unavailable(today=today)
+# ── policy-projection:end ──
+
+
 def _temp_sibling(path: Path) -> Path:
     return path.with_name(f".{path.name}.{os.getpid()}.tmp")
 
@@ -166,6 +314,65 @@ def _atomic_copy(source: Path, destination: Path) -> None:
         temp.unlink(missing_ok=True)
 
 
+def _write_projection_artifact(root: Path, payload: dict) -> Path:
+    """Serialize the projection atomically under site/data/."""
+    text = json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    encoded = text.encode("utf-8")
+    if len(encoded) > ARTIFACT_BUDGET_BYTES:
+        raise RuntimeError(
+            f"artifact over budget: {len(encoded)} > {ARTIFACT_BUDGET_BYTES}"
+        )
+    dest = root / "site" / "data" / "capital_policy_projection.json"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    temp = _temp_sibling(dest)
+    try:
+        temp.write_bytes(encoded)
+        os.replace(temp, dest)
+    finally:
+        temp.unlink(missing_ok=True)
+    return dest
+
+
+def _section_html(html: str) -> str:
+    start = html.index('id="cs-policy-projection"')
+    end = html.index("</section>", start)
+    return html[html.rindex("<section", 0, start):end + len("</section>")]
+
+
+def _fence_section_budget(html: str) -> None:
+    from engine.capital_policy_projection import SECTION_BUDGET_BYTES
+    n = len(_section_html(html).encode("utf-8"))
+    if n > SECTION_BUDGET_BYTES:
+        raise RuntimeError(
+            f"policy-projection section over budget: {n} > {SECTION_BUDGET_BYTES}"
+        )
+
+
+def _fit_section_budget(day, payload: dict, html: str, render_page) -> tuple[dict, str]:
+    """Shed dated steps until the section fits its byte budget. The budget never rises.
+
+    MAX_ROWS rows fit the budget only when each row's copy is short. Measured on
+    main's real data for every build day from 2026-10-24 to 2026-11-09, twelve
+    rows rendered 8199-8378 bytes against 8192 (a collapsed "Comment periods
+    close on N Federal Register documents" row and the "N more" line cost more
+    than the worst case the tests modelled), so the fence withheld the whole
+    page each night. Each pass asks the engine for one row fewer. A window that
+    has rows keeps its first row (the engine's clip guarantees it), so shedding
+    stops at one row per occupied window, and the fence still refuses a section
+    that cannot fit.
+    """
+    from engine.capital_policy_projection import MAX_ROWS, SECTION_BUDGET_BYTES, project
+
+    cap = MAX_ROWS
+    while len(_section_html(html).encode("utf-8")) > SECTION_BUDGET_BYTES and cap > 1:
+        cap -= 1
+        smaller = project(today=day, max_rows=cap)
+        if smaller["row_count"] < payload["row_count"]:
+            payload, html = smaller, render_page(smaller)
+    _fence_section_budget(html)
+    return payload, html
+
+
 def render(root: Path) -> Path:
     """Write a data-free desk shell plus exact CSS/JS companions."""
     root = root.resolve()
@@ -176,15 +383,82 @@ def render(root: Path) -> Path:
         autoescape=True,
         undefined=StrictUndefined,
     )
-    html = env.get_template("capital_structure.html.j2").render(
+    import engine.policy_calendar as _pc
+    _orig_cal = _pc.compute_policy_calendar
+    _cal_once: dict = {"used": False, "value": None, "day": None}
+
+    def _compute_once(df=None, today=None):
+        """One policy-calendar result per build, for exactly one day.
+
+        The stored value is keyed on nothing, so a later caller asking for a
+        different day would have been handed the first call's answer without
+        being told. It is now told, loudly. The day is resolved the way the
+        callee resolves it (`None` means today), because the section leaf
+        passes a concrete date where the chip passes `None` — both mean the
+        same day, and only a genuinely different day is an error.
+        """
+        if df is not None:
+            return _orig_cal(df=df, today=today)
+        day = today if today is not None else date.today()
+        if not _cal_once["used"]:
+            _cal_once["used"] = True
+            _cal_once["day"] = day
+            _cal_once["value"] = _orig_cal(today=today)
+        elif day != _cal_once["day"]:
+            raise RuntimeError(
+                "policy calendar: this build computes one day only; it was "
+                f"computed for {_cal_once['day']} and cannot answer for {day}"
+            )
+        return _cal_once["value"]
+
+    _pc.compute_policy_calendar = _compute_once
+    # One wall-clock read for the whole page. `_cal_once["day"]` is not
+    # relied on: it stays None when the parquet is absent or `_policy_watch`
+    # is stubbed, and a clock that advances between the two callees would
+    # otherwise split the chip and the section across midnight.
+    day = date.today()
+    try:
+        watch = _policy_watch(today=day)
+        payload = _policy_projection(today=day)
+    finally:
+        _pc.compute_policy_calendar = _orig_cal
+    from engine.ma_agreement_context import featured_agreement
+    from engine.bond_issue_terms import native_comparison
+    premium = _featured_premium(root)
+    context = dict(
         active_section="research",
         active_page="capital_structure",
-        policy_watch=_policy_watch(),
+        premium=premium,
+        agreement=featured_agreement(root, premium or {}),
+        bond_comparison=native_comparison(root),
+        covenant_headroom=_covenant_headroom(root),
+        policy_watch=watch,
     )
-    # Shared navigation templates intentionally contain indentation around
-    # conditional blocks. Normalize generated-only blank-line whitespace so the
-    # committed shell remains diff-clean without modifying global nav output.
-    html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
+
+    def _page(projection) -> str:
+        out = env.get_template("capital_structure.html.j2").render(
+            **context, policy_projection=projection,
+        )
+        # Shared navigation templates intentionally contain indentation around
+        # conditional blocks. Normalize generated-only blank-line whitespace so the
+        # committed shell remains diff-clean without modifying global nav output.
+        return "\n".join(line.rstrip() for line in out.splitlines()) + "\n"
+
+    html = _page(payload)
+    if payload and 'id="cs-policy-projection"' in html:
+        # The shed re-asks the engine for the same day, so the one-day policy
+        # calendar memo goes back in for it: still one calendar result per build.
+        _pc.compute_policy_calendar = _compute_once
+        try:
+            payload, html = _fit_section_budget(day, payload, html, _page)
+        finally:
+            _pc.compute_policy_calendar = _orig_cal
+    # The artifact is written only once the section is known to be within
+    # budget, so an over-budget build cannot leave a refreshed JSON beside a
+    # page that was withheld. A build with no payload leaves the last good
+    # artifact in place rather than overwriting it with `null`.
+    if payload is not None:
+        _write_projection_artifact(root, payload)
 
     # write_page owns the depth-aware data-base shim. Use its result through a
     # temporary file so even a standalone builder cannot expose a partial page.

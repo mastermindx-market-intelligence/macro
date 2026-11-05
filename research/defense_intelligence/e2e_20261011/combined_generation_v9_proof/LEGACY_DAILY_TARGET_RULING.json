@@ -1,0 +1,24 @@
+{
+  "state": "READ_ONLY_SKIPPED_TARGET_QUALIFICATION",
+  "run_id": 38495183073,
+  "workflow_head": "3cf087f62e36f0da6d868a351c4a3922cebf9ef5",
+  "overall_run_status": "queued",
+  "target_job": {
+    "completedAt": "2026-10-14T05:25:36Z",
+    "conclusion": "skipped",
+    "databaseId": 115696593472,
+    "name": "government_revenue_projection",
+    "startedAt": "2026-10-14T05:25:36Z",
+    "status": "completed",
+    "steps": []
+  },
+  "current_preflight_branch": "qualified_records recognizes completed/skipped parent-name target without steps; run() records authenticated_publisher_job_skipped_without_steps.",
+  "implication": "This specific Government Revenue target did not start. The source preflight already admits this terminal target condition even if unrelated parent jobs are queued. No runtime-checkout whitelist relaxation is required for this case.",
+  "not_claimed": [
+    "Whole Daily run complete",
+    "Unrelated parent effects settled",
+    "Original P2/Q3 effects settled",
+    "Future publisher admission granted"
+  ],
+  "next": "Let the real admitted post-merge publisher perform fresh current-carrier preflight. No local fake Actions environment or dispatch duplication."
+}

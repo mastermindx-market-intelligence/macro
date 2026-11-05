@@ -113,6 +113,15 @@ episodes, appends unchanged H+60 v1 rows, appends session rows, then advances th
 unchanged checkpoint last. A failure in the new ledger cannot bless an
 unconsumed prefix; retry is byte-idempotent and drift-rejecting.
 
+Physical Git storage may roll over without changing that contract. The historical
+`outcomes_session.jsonl` bytes remain the immutable logical prefix; after the base
+reaches the physical blob budget, the same writer may append canonical row bytes to
+contiguous bounded `outcomes_session_parts/part-NNNNNN.jsonl` extensions. The
+logical ledger is always the exact concatenation of base then numbered parts. The
+canonical path label, global row ordinals, byte-prefix hashes, semantic key,
+checkpoint-last rule, sole-writer authority, and research-only/training-disabled
+fence remain identical. No part may rewrite the base or introduce a second ledger.
+
 Code merge is evidence scaffolding, not proof of live accrual or alpha. Do not
 start canonical campaign/model work until an RTH stage-before-index publication
 and a later nightly have produced nonempty, causally ordered episode/H+60

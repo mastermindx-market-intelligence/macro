@@ -1,0 +1,8 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_curve_panel.html.j2
+  - templates/_macro_suite_shell.html.j2
+  - lib/macro_suite_view.py
+  - lib/macro_suite_labels.py
+  - engine/market_os/macro_workspaces/rates_curves.py
+manifest: mockups/evidence/a-f01-w4-1/manifest.json

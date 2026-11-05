@@ -1,0 +1,44 @@
+diff --git a/templates/crypto.html.j2 b/templates/crypto.html.j2
+--- a/templates/crypto.html.j2
++++ b/templates/crypto.html.j2
+@@ -13,7 +13,7 @@
+ <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var la=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh'}catch(e){}return''})();if(la)document.documentElement.setAttribute('data-lang',la)}catch(e){}</script>
+ <title>Crypto Intelligence Cockpit — {{ as_of }}</title>
+ {% set seo_title = "Crypto Intelligence Cockpit — MastermindX" %}
+-{% set seo_desc = "A daily crypto market-state cockpit: top assets, money flows, leverage, volatility, allocation, Bitcoin, Ethereum and listed crypto equities." %}
++{% set seo_desc = "A daily crypto market-state cockpit: top assets, measured subscriptions, stablecoin supply, spot participation, leverage, volatility, allocation, Bitcoin, Ethereum and listed crypto equities." %}
+ {% set seo_path = "crypto.html" %}
+ {% include "_seo_head.html.j2" %}
+ <link rel="stylesheet" href="theme.css">
+@@ -290,7 +290,7 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
+     </header>
+     <p class="desk-brain-status" hidden role="status">{{ t("The assistant is not ready. Market research remains available.","助手暂未就绪；您仍可查看市场研究。") }}</p>
+     <nav class="desk-nav" data-crypto-desk-nav aria-label="Crypto research sections / 加密研究分区">
+-      <a href="#crypto-overview">{{ t('Overview','概览') }}</a><a href="#market-board">{{ t('Assets','资产') }}</a><a href="#money-flows">{{ t('Capital','资金') }}</a><a href="#leverage-heat">{{ t('Leverage','杠杆') }}</a><a href="#allocation">{{ t('Model budget','模型预算') }}</a>
++      <a href="#crypto-overview">{{ t('Overview','概览') }}</a><a href="#market-board">{{ t('Assets','资产') }}</a><a href="#money-flows">{{ t('Subscriptions and supply','申购与供应') }}</a><a href="#leverage-heat">{{ t('Leverage','杠杆') }}</a><a href="#allocation">{{ t('Model budget','模型预算') }}</a>
+     </nav>
+     <div class="desk-lead">
+       <div class="desk-lead-copy">
+@@ -303,7 +303,7 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
+     </div>
+     <div class="desk-grid">
+       <div class="desk-market-panel">
+-        <div class="desk-instrument-head"><div><h2>{{ t('The market behind the headline','标题背后的市场') }}</h2><p>{{ t('Derived total market capitalization · descriptive regime history','衍生总市值 · 描述性阶段历史') }}</p></div><span class="desk-observation-tag">{{ t('Dated observations','有日期的观测') }}</span></div>
++        <div class="desk-instrument-head"><div><h2>{{ t('The market behind the headline','标题背后的市场') }}</h2><p>{{ t('Total market capitalization. Derived from bitcoin cap divided by bitcoin share, spliced with a direct total when one is on file. Regime bands skip a splice gap.','总市值。由比特币市值除以比特币占比得到，有直接总量时再拼接。阶段带不计口径跳变。') }}{% if market.cap_basis is defined and market.cap_basis.splices %}</p><p class="desk-splice">{{ t('Basis splice','口径切换') }} {{ market.cap_basis.splices[-1].date }} · {{ market.cap_basis.splices[-1].from_basis }} → {{ market.cap_basis.splices[-1].to_basis }} · {{ t('support','样本') }} {{ market.cap_basis.splices[-1].support_before }}/{{ market.cap_basis.splices[-1].support_after }}{% endif %}</p></div><span class="desk-observation-tag">{{ t('Dated observations','有日期的观测') }}</span></div>
+         <div class="desk-market-stats">
+           <div class="{{ tone(market.total_tone) }}"><span>{{ t('Total market cap','加密总市值') }}</span><b>{{ market_total }}</b><small>{{ t('30-day change','30日变化') }} <em>{{ market_30d }}</em></small></div>
+           <div class="{{ tone(market.dominance_tone) }}"><span>{{ t('Bitcoin market share','比特币市值占比') }}</span><b>{{ dominance }}</b><small>{{ t(market.dominance_state,dominance_state_zh) }} · {{ dominance_30d }}</small></div>
+@@ -384,10 +384,10 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
+   </section>
+ 
+   <section class="crypto-shelf" data-shelf="H3" id="money-flows">
+-    <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H3</span><h2 class="shelf-title">{{ t('Money Flows','资金流') }}</h2><span class="shelf-sub">{{ t('three class-level receipts','三项资产类别收据') }}</span></div>
++    <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H3</span><h2 class="shelf-title">{{ t('Subscriptions, supply, participation','申购、供应与参与') }}</h2><span class="shelf-sub">{{ t('three separate measurements','三项分开的测量') }}</span></div>
+       <div class="triptych">
+-        <div class="sensor {{ tone(market.flows.etf.tone) }}"><div class="eyebrow">{{ t('US spot-BTC ETFs · 5D','美国现货比特币 ETF · 5日') }}</div><div class="reading">{% if market.flows.etf.value is not none %}{{ "${:+,.0f}M".format(market.flows.etf.value) }}{% else %}—{% endif %}</div><div class="read-label"><span class="state">{{ t(market.flows.etf.state,market.flows.etf.state_zh) }}</span></div><div class="receipt">{{ t('Farside fund-level net flows; class liquidity context, not a trade signal.','Farside 基金级净流量；仅作全市场流动性情况。') }}</div></div>
+-        <div class="sensor {{ tone(market.flows.stablecoins.tone) }}"><div class="eyebrow">{{ t('Stablecoin tide · 30D','稳定币潮汐 · 30日') }}</div><div class="reading">{{ fmt_money(market.flows.stablecoins.change_30d_usd, compact=True) }}</div><div class="read-label"><span class="state">{{ t(market.flows.stablecoins.state,market.flows.stablecoins.state_zh) }} · {{ fmt_pct(market.flows.stablecoins.change_30d_pct) }}</span></div><div class="receipt">{{ t('Aggregate circulating supply from DefiLlama.','DefiLlama 汇总流通供应量。') }}</div></div>
++        <div class="sensor {{ tone(market.flows.etf.tone) }}"><div class="eyebrow">{{ t('US spot-BTC ETFs · 5D','美国现货比特币 ETF · 5日') }}</div><div class="reading">{% if market.flows.etf.value is not none %}{{ "${:+,.0f}M".format(market.flows.etf.value) }}{% else %}—{% endif %}</div><div class="read-label"><span class="state">{{ t(market.flows.etf.state,market.flows.etf.state_zh) }}</span></div><div class="receipt">{{ t('Farside fund-level net creations and redemptions, in millions of dollars. A bitcoin-ETF subscription measurement, not class capitalization.','Farside 基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。') }}{% if market.flows.etf.observation_label_en is defined %}</div><div class="receipt">{{ t(market.flows.etf.observation_label_en, market.flows.etf.observation_label_zh) }}{% endif %}</div></div>
++        <div class="sensor {{ tone(market.flows.stablecoins.tone) }}"><div class="eyebrow">{{ t('Stablecoin supply · 30D','稳定币供应量 · 30日') }}</div><div class="reading">{{ fmt_money(market.flows.stablecoins.change_30d_usd, compact=True) }}</div><div class="read-label"><span class="state">{{ t(market.flows.stablecoins.state,market.flows.stablecoins.state_zh) }} · {{ fmt_pct(market.flows.stablecoins.change_30d_pct) }}</span></div><div class="receipt">{{ t('DefiLlama aggregate circulating supply. A supply change, not a measured ETF subscription.','DefiLlama 汇总流通供应量。这是供应量变化，不是已测量的 ETF 申购。') }}{% if market.flows.stablecoins.observation_label_en is defined %}</div><div class="receipt">{{ t(market.flows.stablecoins.observation_label_en, market.flows.stablecoins.observation_label_zh) }}{% endif %}</div></div>
+         <div class="sensor {{ tone(market.flows.volume.tone) }}"><div class="eyebrow">{{ t('Spot participation proxy','现货参与度代理') }}</div><div class="reading">{% if market.flows.volume.percentile is not none %}P{{ market.flows.volume.percentile }}{% else %}—{% endif %}</div><div class="read-label"><span class="state">{{ t(market.flows.volume.state,market.flows.volume.state_zh) }}</span></div><div class="receipt">{{ t('BTC spot-volume percentile is an honest proxy until full class volume accrues.','在全市场成交量积累完成前，以 BTC 现货成交量百分位作为明确标注的代理。') }}</div></div>
+       </div>
+     </div>

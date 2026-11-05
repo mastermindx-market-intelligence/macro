@@ -1,0 +1,72 @@
+{
+ "label": "0015_team_roles_invitations",
+ "sql_file": "0015_team_roles_invitations.sql",
+ "applied_at": "2026-09-08T22:24:42Z",
+ "apply_status": 201,
+ "apply_result": "ok",
+ "pre": {
+  "workspace_settings": [
+   {
+    "reg": null
+   }
+  ]
+ },
+ "post": {
+  "tables": {
+   "workspace_settings": [
+    {
+     "reg": "workspace_settings"
+    }
+   ]
+  },
+  "indexes": {
+   "workspace_settings_scope_owner_key": [
+    {
+     "indexname": "workspace_settings_scope_owner_key"
+    }
+   ]
+  },
+  "policies": {
+   "ws_select": [
+    {
+     "polname": "ws_select"
+    }
+   ],
+   "ws_insert": [
+    {
+     "polname": "ws_insert"
+    }
+   ],
+   "ws_update": [
+    {
+     "polname": "ws_update"
+    }
+   ],
+   "ws_delete": [
+    {
+     "polname": "ws_delete"
+    }
+   ]
+  },
+  "rls": {
+   "workspace_settings": [
+    {
+     "relrowsecurity": true
+    }
+   ]
+  },
+  "functions": {
+   "accept_team_invite": [
+    {
+     "proname": "accept_team_invite"
+    }
+   ]
+  }
+ },
+ "method": "Supabase Management API POST /v1/projects/{ref}/database/query (README raw fallback; scripts/supabase_apply.py parser bug terminal#516)",
+ "source_ref": "mastermind-terminal master cff58ee8d4a25143b72d45191aa405b1ac88d697 (PR #514)",
+ "sha256": "bff0f8bfaaba988f",
+ "project_ref": "{ref}",
+ "applied_by": "Meta-CEO B successor seat, session d640f3ef-1305-4b6c-aa5d-2d6d5e3dc515",
+ "applied_after": "0014_tenancy_foundation (2026-09-08T22:24:14Z)"
+}

@@ -1,0 +1,8 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_market_regime_strip.html.j2
+  - templates/markets.html.j2
+  - templates/theme.css
+  - site/theme.css
+  - site/markets.html
+manifest: mockups/evidence/ud-b2-w4b/manifest.json

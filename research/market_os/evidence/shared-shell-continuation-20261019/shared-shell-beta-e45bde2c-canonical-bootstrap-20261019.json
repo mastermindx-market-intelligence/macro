@@ -1,0 +1,21 @@
+{
+  "completed_at": "2026-10-19T04:25:41.792875+00:00",
+  "elapsed_seconds": 8.455,
+  "exit_code": 65,
+  "landed_target": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "log_lines": 15,
+  "log_path": "/tmp/shared-shell-beta-e45bde2c-canonical-bootstrap-20261019.log",
+  "log_sha256": "2b8c4aea2e7bd25707be00b7214a2944d8b484e46f6027ce6dac81c01a534765",
+  "preflight": {
+    "canonical_owner_blob": "c25514c068202b1dfff8d2bac92a019eb110440e",
+    "fresh_first_bootstrap": true,
+    "source_head": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+    "unit": {
+      "ActiveState": "inactive",
+      "MainPID": "0",
+      "UnitFileState": "disabled"
+    }
+  },
+  "public_beta_acceptance_claimed": false,
+  "started_at": "2026-10-19T04:25:33.337504+00:00"
+}

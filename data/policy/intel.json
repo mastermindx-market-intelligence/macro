@@ -511,9 +511,14 @@
       "tier": "policy-action",
       "confidence": "high",
       "check_by": "2026-08-31",
-      "status": "open",
+      "status": "hit",
       "text_en": "No coupon auction-size INCREASE at the Aug 2026 refunding (bills stay the shock absorber). Changes this read: any coupon-size hike.",
-      "text_zh": "2026年8月再融资不上调票息拍卖规模（短债仍为减震器）。改判条件：上调票息规模。"
+      "text_zh": "2026年8月再融资不上调票息拍卖规模（短债仍为减震器）。改判条件：上调票息规模。",
+      "reviewed_on": "2026-09-08",
+      "result_code": "confirmed",
+      "result_en": "Treasury kept nominal coupon auction sizes unchanged for the August refunding and said current sizes should hold for at least the next several quarters.",
+      "result_zh": "财政部在8月再融资中维持名义票息债券拍卖规模不变，并表示现有规模预计至少未来数个季度保持不变。",
+      "result_source": "https://home.treasury.gov/news/press-releases/sb0590"
     },
     {
       "id": "P7",
@@ -611,9 +616,14 @@
       "tier": "market-outcome",
       "confidence": "medium",
       "check_by": "2026-08-31",
-      "status": "open",
+      "status": "hit",
       "text_en": "Front-end Treasury demand stays robust (bill auctions well-covered, no forced coupon shift).",
-      "text_zh": "短端美债需求保持强劲（票据拍卖认购充分，未被迫调整票息）。"
+      "text_zh": "短端美债需求保持强劲（票据拍卖认购充分，未被迫调整票息）。",
+      "reviewed_on": "2026-09-08",
+      "result_code": "confirmed",
+      "result_en": "Late-August bill auctions remained well covered: the Aug. 27 28-day bill drew $272.9B of tenders for $100.0B accepted (2.73x bid-to-cover). P6 separately confirms there was no August coupon-size increase.",
+      "result_zh": "8月下旬国库券拍卖认购仍充足：8月27日28天期国库券投标2729亿美元、接受1000亿美元，投标倍数为2.73倍。P6另行确认8月没有上调票息债券拍卖规模。",
+      "result_source": "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/R_20260827_1.pdf"
     },
     {
       "id": "P17",
@@ -851,9 +861,14 @@
       "tier": "policy-action",
       "confidence": "medium-high",
       "check_by": "2026-07-31",
-      "status": "open",
+      "status": "hit",
       "text_en": "The Fed HOLDS (no cut) at the July 28–29 2026 FOMC despite the +57k June jobs miss — Warsh privileges the hot 3.4% core PCE and his 'price stability' mandate over the labor crack. Changes this read: a July rate cut.",
-      "text_zh": "尽管6月非农仅+5.7万不及预期，美联储在2026年7月28–29日FOMC按兵不动（不降息）——沃什将偏热的3.4%核心PCE与其“价格稳定”使命置于就业裂缝之上。改判条件：7月降息。"
+      "text_zh": "尽管6月非农仅+5.7万不及预期，美联储在2026年7月28–29日FOMC按兵不动（不降息）——沃什将偏热的3.4%核心PCE与其“价格稳定”使命置于就业裂缝之上。改判条件：7月降息。",
+      "reviewed_on": "2026-09-08",
+      "result_code": "confirmed",
+      "result_en": "The FOMC held the federal-funds target range at 3.50%–3.75% on July 29.",
+      "result_zh": "FOMC于7月29日将联邦基金目标区间维持在3.50%–3.75%不变。",
+      "result_source": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm"
     },
     {
       "id": "P41",
@@ -861,9 +876,14 @@
       "tier": "market-outcome",
       "confidence": "medium",
       "check_by": "2026-08-07",
-      "status": "open",
+      "status": "hit",
       "text_en": "The labor crack persists — the 3-month average nonfarm payroll gain stays below ~100k through the July report (released ~Aug 1), keeping a data-driven September easing case alive. Changes this read: a re-acceleration to a 3-mo average above ~100k.",
-      "text_zh": "就业裂缝延续——至7月就业报告（约8月1日公布）为止，非农三个月均值维持在约10万以下，使由数据驱动的9月宽松理由存续。改判条件：三个月均值回升至约10万以上。"
+      "text_zh": "就业裂缝延续——至7月就业报告（约8月1日公布）为止，非农三个月均值维持在约10万以下，使由数据驱动的9月宽松理由存续。改判条件：三个月均值回升至约10万以上。",
+      "reviewed_on": "2026-09-08",
+      "result_code": "confirmed",
+      "result_en": "BLS reported a 20,000 three-month average payroll gain through July, well below 100,000.",
+      "result_zh": "美国劳工统计局公布，截至7月的非农三个月平均新增就业为2万人，明显低于10万人。",
+      "result_source": "https://www.bls.gov/news.release/archives/empsit_08072026.htm"
     },
     {
       "id": "P42",
@@ -881,9 +901,14 @@
       "tier": "policy-action",
       "confidence": "medium",
       "check_by": "2026-07-31",
-      "status": "open",
+      "status": "void",
       "text_en": "The federal banking regulators (Fed/OCC/FDIC) advance concrete eSLR reform by the ~Jul-18 2026 deadline — a proposed or final rule that eases Treasury-intermediation capital treatment. Changes this read: the deadline passing with no rule text. (Sharper-dated version of P8.)",
-      "text_zh": "联邦银行监管机构（美联储/OCC/FDIC）在约2026年7月18日截止前推进具体的eSLR改革——出台放松国债中介资本处理的拟议或最终规则。改判条件：截止日过去仍无规则文本。（P8的更近日期版本。）"
+      "text_zh": "联邦银行监管机构（美联储/OCC/FDIC）在约2026年7月18日截止前推进具体的eSLR改革——出台放松国债中介资本处理的拟议或最终规则。改判条件：截止日过去仍无规则文本。（P8的更近日期版本。）",
+      "reviewed_on": "2026-09-08",
+      "result_code": "outcome_predated_call",
+      "result_en": "Not scored: the agencies had already finalized the relevant eSLR reform in November 2025, before this call entered the ledger.",
+      "result_zh": "不计分：相关机构已于2025年11月最终敲定eSLR改革，早于该判断进入记录的时间。",
+      "result_source": "https://www.occ.gov/news-issuances/bulletins/2025/bulletin-2025-41.html"
     },
     {
       "id": "P44",
@@ -891,9 +916,13 @@
       "tier": "policy-action",
       "confidence": "medium",
       "check_by": "2026-08-31",
-      "status": "open",
+      "status": "void",
       "text_en": "READ BEING UPDATED (7/8): The 60-day MOU window is still open (from Jun 17, ~expires mid-Aug), but the ceasefire precondition has BROKEN -- Trump declared it 'over' 7/8; CENTCOM struck 7/8-7/11; Hormuz near-standstill. The condition that would change this read (full strait re-closure) is approaching but not yet formally met. The enrichment gap has also evolved: the US shifted from zero-enrichment demand to accepting a 15-20 year suspension (Jun 14), so the stated gap in P44 ('zero enrichment vs right to enrich') is now stale. Monitor: whether Hormuz traffic resumes or escalates further, and whether US-Iran back-channel talks survive the ceasefire collapse.",
-      "text_zh": "解读更新中（7/8）：60天谅解备忘录窗口仍未关闭（自6月17日起，约8月中到期），但停火前提已破裂——特朗普于7/8宣告其“已终结”；CENTCOM于7/8-7/11发动打击；霍尔木兹濒临停滞。该预测的改判条件（海峡全面再关闭）已临近但尚未正式触发。浓缩分歧也已演变：美方已从要求零浓缩转为接受15-20年暂停（6月14日），因此P44所述分歧（“零浓缩”对“浓缩权”）表述已过时。关注：霍尔木兹通行是否恢复或进一步升级，以及美伊秘轨谈判是否在停火崩溃后存续。"
+      "text_zh": "解读更新中（7/8）：60天谅解备忘录窗口仍未关闭（自6月17日起，约8月中到期），但停火前提已破裂——特朗普于7/8宣告其“已终结”；CENTCOM于7/8-7/11发动打击；霍尔木兹濒临停滞。该预测的改判条件（海峡全面再关闭）已临近但尚未正式触发。浓缩分歧也已演变：美方已从要求零浓缩转为接受15-20年暂停（6月14日），因此P44所述分歧（“零浓缩”对“浓缩权”）表述已过时。关注：霍尔木兹通行是否恢复或进一步升级，以及美伊秘轨谈判是否在停火崩溃后存续。",
+      "reviewed_on": "2026-09-08",
+      "result_code": "premise_broken_at_entry",
+      "result_en": "Not scored: this entry was already being rewritten after its ceasefire premise broke, so it never entered the ledger as a clean active forecast.",
+      "result_zh": "不计分：该条目进入记录时，停火前提已破裂且内容已在重写，因此从未作为一条完整的有效预测进入记录。"
     }
   ],
   "monitor": [

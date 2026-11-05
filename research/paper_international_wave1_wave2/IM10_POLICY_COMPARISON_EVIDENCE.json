@@ -1,0 +1,28 @@
+{
+  "state": "PASS_SCOPED_SOURCE_ACCEPTED",
+  "source_sha256": "c5da6a12ceb8ec8bbd86d3cd36496072f96d7548e1f4273bc53d31673f78cc99",
+  "review_id": "paper-01a1101f-im10-policy-comparison-review-r1",
+  "parent_reproduction": {
+    "passed": 105,
+    "failed": 0
+  },
+  "product_tests": 104,
+  "excluded_test": "immutable baseline prefix check retained in reviewed capsule; no baseline copy in product",
+  "not_proven": [
+    "production inputs",
+    "source qualification",
+    "Saved integration",
+    "Policy preview UI",
+    "live publication",
+    "whole programme"
+  ],
+  "product_verification": {
+    "passed": 109,
+    "new_cases": 104,
+    "existing_rates": 5,
+    "log": "IM10_POLICY_PRODUCT.log",
+    "warning": "pytest temporary browser fixture cleanup permission warning; tests passed"
+  },
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f"
+}

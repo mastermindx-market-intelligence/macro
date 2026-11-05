@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-10-14T13:21:03.552557+00:00",
+  "source": "f5f93d6cf811b9464507cc32b63211380e73d5b2",
+  "comparisons": [
+    {
+      "comparison": "main",
+      "other": "c7037383bb279dada70e539af2bec58dabe19bb5",
+      "rc": 1,
+      "tree": "31ed52d164c06681cfd9a49fe6b0cf26fe270128",
+      "conflicts": [
+        "CONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml"
+      ]
+    },
+    {
+      "comparison": "a1",
+      "other": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+      "rc": 1,
+      "tree": "d7656c21a38b9320021eeb8cbeee2dc25111c1fd",
+      "conflicts": [
+        "CONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml"
+      ]
+    }
+  ],
+  "source_only_no_branch_base_merge": true
+}

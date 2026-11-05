@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-14T09:12:00.518529+00:00",
+  "state": "CURRENT_MAIN_INTEGRATED_REPROOF_REQUIRED",
+  "previous_candidate": "778c300dfb1ceee2c3a1fcece8cb9ca2dccbe611",
+  "integrated_main": "46cd92e0c213a4ba2c2f1423f147355fe9795983",
+  "github_reconciliation": "Same draftPR9066 close/reopen kept exact head, revealed newer base after stale abbded mergeability responses. No duplicate PR, merge arm or CI bypass.",
+  "conflict": {
+    "path": ".github/ci/legacy-jobs.yml",
+    "cause": "Both sides append dependencies to Industrials result-to-cash job",
+    "resolution": "Retain six Defense dependencies plus incoming two IND-R206 dependencies; no sibling source reimplementation"
+  },
+  "additional_repair": {
+    "path": "tests/test_government_revenue_dossier_ui.py",
+    "cause": "Three tests still scanned pre-extraction inline HTML and two-path atlas count",
+    "repair": "Read actual page JS plus startup loader; assert two company mounts and separate identity-only source-context mount, retaining navigation/styles/meaning/runtime checks",
+    "tests": "17 passed4.43s"
+  },
+  "proof": "Existing V11 proof correctly refuses source drift; no new generation accepted until fresh sealed proof",
+  "interrupted_local_checks": "First CI-scope/closure and capacity-integrated runs lost exec sessions during user interruption; partial logs not terminal proof. CI scope/closure rerunning once.",
+  "production_effect": false
+}

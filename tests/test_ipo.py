@@ -329,6 +329,7 @@ def test_lockup_summary_counts():
     s = il.summary(il.lockup_rows(_lockcal(), None))
     assert s["approaching"] >= 1 and s["just_expired"] >= 1
     assert s["next_ticker"] in ("APPR", "FRESH")   # soonest upcoming expiry
+    assert s["next_company"] in ("Approaching Co", "Fresh Co")
 
 
 def test_ipo_lockup_scored_flag_false():
@@ -711,3 +712,696 @@ def test_ipo_zero_survives_as_real_value_not_null(monkeypatch, tmp_path):
         r'<span class="k">[^<]*<span class="l-en">Range</span>.*?<span class="v">(.*?)</span>',
         card_html, re.DOTALL)
     assert rng and rng.group(1) == "$0–5"
+
+
+# --------------------------------------------------------------------------- #
+# BLOCKER 2 (B-F09-2 review repair round 2) — the "what would change this
+# read" copy must never print the inputs-are-MISSING sentence
+# (bi.CW_CHANGE_NONE) for a fully evaluable open/neutral/shut segment whose
+# `change` just happens to be None (no single-input flip moves the segment
+# majority). Each evaluable state gets its own plain, non-"missing data"
+# sentence (bi.CW_CHANGE_STABLE); only a genuinely not_evaluable segment gets
+# the missing-inputs copy.
+# --------------------------------------------------------------------------- #
+def _seg(state, *, change=None, inputs=None):
+    return {
+        "key": "hy", "state": state, "n_inputs": 3, "n_expected": 3,
+        "low_confidence": False,
+        "inputs": inputs if inputs is not None else [
+            {"key": "spread_range", "value": 10.0, "unit": "pct_rank", "state": "open", "as_of": "2026-09-01"},
+            {"key": "spread_drift", "value": -20.0, "unit": "bp_21", "state": "open", "as_of": "2026-09-01"},
+            {"key": "rates_vol", "value": 20.0, "unit": "pct_rank", "state": "open", "as_of": "2026-09-01"},
+        ],
+        "rail": {"pos_pct": 10.0, "easy_pct": 33.0},
+        "change": change,
+    }
+
+
+def test_credit_window_vm_not_evaluable_with_no_change_gets_missing_copy():
+    raw = {"segments": [_seg("not_evaluable", change=None)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE_NONE
+
+
+def test_credit_window_vm_open_with_no_change_gets_open_stable_copy_not_missing():
+    # e.g. three inputs all deep in "open" — no single flip reaches the
+    # two-of-three majority needed to move the segment, but the read is
+    # fully evaluable: it must NOT print the "inputs missing" sentence.
+    raw = {"segments": [_seg("open", change=None)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE_STABLE["open"]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+
+
+def test_credit_window_vm_neutral_with_no_change_gets_neutral_stable_copy_not_missing():
+    raw = {"segments": [_seg("neutral", change=None)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE_STABLE["neutral"]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+
+
+def test_credit_window_vm_shut_with_no_change_gets_shut_stable_copy_not_missing():
+    raw = {"segments": [_seg("shut", change=None)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE_STABLE["shut"]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+
+
+def test_credit_window_vm_real_change_candidate_uses_cw_change_mapping():
+    change = {"input": "spread_range", "to_state": "shut", "threshold": 66.0,
+              "current": 60.0, "direction": "up", "segment_to": "shut"}
+    raw = {"segments": [_seg("neutral", change=change)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE[("spread_range", "shut")]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_STABLE["neutral"]
+
+
+# --------------------------------------------------------------------------- #
+# BLOCKER + MAJOR (review repair round 3) — an open-side `change` candidate
+# (engine.credit_window._next_threshold now emits one for a neutral input,
+# see tests/test_credit_window.py's live-HY-shape test) must render a real,
+# plain-word sentence through CW_CHANGE, never fall back to CW_CHANGE_NONE
+# (the "inputs are missing" copy) — that fallback re-entering for an
+# evaluable read is exactly the MAJOR the round-3 review found the instant
+# the BLOCKER's engine fix landed without a matching lexicon entry.
+# --------------------------------------------------------------------------- #
+def test_credit_window_vm_open_side_change_renders_real_sentence_not_missing_copy():
+    change = {"input": "spread_drift", "to_state": "open", "threshold": -15.0,
+              "current": 10.0, "direction": "down", "segment_to": "open"}
+    raw = {"segments": [_seg("neutral", change=change)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE[("spread_drift", "open")]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+    assert seg["change_en"] and seg["change_zh"]          # real sentence, both languages
+    assert "flip this to open" in seg["change_en"].lower()
+
+
+def test_cw_change_lexicon_covers_every_pair_next_threshold_can_emit():
+    # Exhaustive coverage (round 3): CW_CHANGE must have an entry for every
+    # (input, to_state) pair engine.credit_window._next_threshold can ever
+    # emit, across every reachable state — otherwise the render silently
+    # falls back to CW_CHANGE_NONE the moment a new to_state becomes
+    # reachable. This is precisely how the MAJOR re-entered through the
+    # fallback the instant the BLOCKER's open-side candidates were added.
+    import engine.credit_window as cw
+
+    emitted_pairs = set()
+    for key in ("spread_range", "spread_drift", "rates_vol"):
+        for state in ("open", "neutral", "shut"):
+            for _threshold, to_state, _direction in cw._next_threshold(key, state):
+                emitted_pairs.add((key, to_state))
+    missing = emitted_pairs - set(bi.CW_CHANGE.keys())
+    assert missing == set()
+    # and the three open-side entries this round added are actually present —
+    # a passing "missing == set()" alone wouldn't catch a lexicon that never
+    # grew (both sides could be trivially empty in some future refactor).
+    assert {("spread_range", "open"), ("spread_drift", "open"), ("rates_vol", "open")} <= set(bi.CW_CHANGE.keys())
+
+
+# --------------------------------------------------------------------------- #
+# MAJOR-1 (review repair round 4) — ("rates_vol", "neutral") is reachable from
+# BOTH directions (an "open" rates_vol input crossing UP into the middle band,
+# or a "shut" rates_vol input crossing DOWN into it), but CW_CHANGE is keyed on
+# (input, to_state) only — no direction — so the one sentence stored there
+# must be true regardless of which direction produced the candidate. The
+# pre-fix sentence ("Rates volatility easing would flip this to half open.")
+# was only true for the down-direction case; rendered against the exact live
+# up-direction shape the round-4 review measured (HY today: spread_range=open,
+# spread_drift=neutral, rates_vol=open(20.0) -> nearest crossing is rates_vol
+# RISING to 40, direction "up") it told users volatility easing would flip the
+# read — backwards. This test pins the render for that up-direction candidate.
+# --------------------------------------------------------------------------- #
+def test_credit_window_vm_rates_vol_up_direction_change_is_not_worded_as_easing():
+    change = {"input": "rates_vol", "to_state": "neutral", "threshold": 40.0,
+              "current": 20.0, "direction": "up", "segment_to": "neutral"}
+    raw = {"segments": [_seg("open", change=change)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE[("rates_vol", "neutral")]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+    # the pre-fix sentence claimed "easing" — factually inverted for the
+    # up-direction (rising-volatility) crossing this render actually names.
+    assert "easing" not in seg["change_en"].lower()
+    assert "回落" not in seg["change_zh"]
+
+
+def test_credit_window_vm_rates_vol_neutral_entry_is_direction_agnostic():
+    # The lexicon has no direction axis, so the SAME entry renders for both
+    # the up-direction (open -> neutral) and down-direction (shut -> neutral)
+    # candidates. Pin that both actually resolve to one shared, non-empty,
+    # bilingual sentence rather than silently falling back to CW_CHANGE_NONE.
+    up = {"input": "rates_vol", "to_state": "neutral", "threshold": 40.0,
+          "current": 20.0, "direction": "up", "segment_to": "neutral"}
+    down = {"input": "rates_vol", "to_state": "neutral", "threshold": 75.0,
+            "current": 78.0, "direction": "down", "segment_to": "neutral"}
+    vm_up = bi._credit_window_vm(
+        {"segments": [_seg("open", change=up)], "as_of": "2026-09-01",
+         "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}})
+    vm_down = bi._credit_window_vm(
+        {"segments": [_seg("shut", change=down)], "as_of": "2026-09-01",
+         "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}})
+    seg_up = vm_up["segments"][0]
+    seg_down = vm_down["segments"][0]
+    assert (seg_up["change_en"], seg_up["change_zh"]) == (seg_down["change_en"], seg_down["change_zh"])
+    assert (seg_up["change_en"], seg_up["change_zh"]) == bi.CW_CHANGE[("rates_vol", "neutral")]
+    assert seg_up["change_en"] and seg_up["change_zh"]
+
+
+# --------------------------------------------------------------------------- #
+# MINOR-5 (review repair round 5) — a full render test, asserted against the
+# LITERAL expected sentence (not just equality with bi.CW_CHANGE[...], which
+# would pass even if the lexicon entry itself silently drifted): rates_vol
+# reaching "neutral" from the UP direction (rising volatility crossing down
+# into the middle band from "open") must render the one shared,
+# direction-agnostic EN/ZH sentence — never a direction-specific "easing"
+# framing that is only true for the down-direction crossing.
+# --------------------------------------------------------------------------- #
+def test_credit_window_vm_rates_vol_up_to_neutral_renders_literal_direction_agnostic_sentence():
+    change = {"input": "rates_vol", "to_state": "neutral", "threshold": 40.0,
+              "current": 20.0, "direction": "up", "segment_to": "neutral"}
+    raw = {"segments": [_seg("open", change=change)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert seg["change_en"] == (
+        "Rates volatility moving back toward the middle of the past year's "
+        "range would flip this to half open.")
+    assert seg["change_zh"] == "利率波动回到近一年区间的中段，读数会翻为半开。"
+
+
+# --------------------------------------------------------------------------- #
+# MINOR-1 (review repair round 5) — structural invariant: a PRESENT change
+# candidate (the engine found a real (input, to_state) flip) whose pair has
+# no CW_CHANGE lexicon entry must fall back to this state's honest "stable"
+# sentence (CW_CHANGE_STABLE), never the "inputs are missing" copy
+# (CW_CHANGE_NONE) — that fallback is reserved for a genuinely
+# not_evaluable segment. Pre-fix, an unmapped-but-present candidate silently
+# told users data was missing when it was not; the exhaustive coverage test
+# above (test_cw_change_lexicon_covers_every_pair_next_threshold_can_emit)
+# only pins today's REACHABLE pairs, so it cannot catch this — a future
+# engine change that emits one more pair before the lexicon is updated would
+# hit this exact fallback path again.
+# --------------------------------------------------------------------------- #
+def test_credit_window_vm_present_but_unmapped_change_candidate_falls_back_to_stable_not_missing():
+    change = {"input": "spread_range", "to_state": "unknown", "threshold": 50.0,
+              "current": 45.0, "direction": "up", "segment_to": "neutral"}
+    assert ("spread_range", "unknown") not in bi.CW_CHANGE  # precondition: genuinely unmapped
+    raw = {"segments": [_seg("neutral", change=change)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE_STABLE["neutral"]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+
+
+# --------------------------------------------------------------------------- #
+# MINOR-2 (review repair round 4) — `.cw-band` marks a FIXED zone of the rail
+# (0 to seg.rail.easy_pct, the tight/easy end of the 1y range) — the same
+# zone regardless of which state (open/neutral/shut) the card is currently
+# in — but it was painted from `--tcc` (the card's own state colour), so a
+# shut (red) lane rendered its easy zone red and an open (green) lane
+# rendered it green: a state-invariant region carrying state colour. Pinned
+# to a fixed `--green` token in both the dark (default) and light-theme
+# `.cw-band` rules; `.cw-mark` (today's actual position — legitimately
+# state-coloured) and `.cw-change` (the state-scoped copy strip) are
+# unaffected and keep using `--tcc`.
+# --------------------------------------------------------------------------- #
+def test_cw_band_uses_fixed_green_token_not_the_state_colour():
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    dark_rule = re.search(r"\.cw-band\{[^}]*\}", src)
+    light_rule = re.search(r'html\[data-theme="light"\]\s*\.cw-band\{[^}]*\}', src)
+    assert dark_rule and light_rule
+    assert "var(--tcc)" not in dark_rule.group(0)
+    assert "var(--tcc)" not in light_rule.group(0)
+    assert "var(--green)" in dark_rule.group(0)
+    assert "var(--green)" in light_rule.group(0)
+    # .cw-mark (today's actual reading) legitimately still tracks the card's
+    # current stance colour — this fix must not have swept that one too.
+    mark_rule = re.search(r"\.cw-mark\{[^}]*\}", src)
+    assert mark_rule and "var(--tcc)" in mark_rule.group(0)
+
+
+# --------------------------------------------------------------------------- #
+# MINOR-6 (review repair round 5) — the light-theme `.cw-band` tint was so
+# faint at 8% it was not legible as a band at 1440 (recaptured light
+# evidence at round 4 showed a hairline edge with no visible fill). Raised
+# into the 16-20% range while keeping the hairline `border-right` edge that
+# already marks the band's boundary.
+# --------------------------------------------------------------------------- #
+def test_light_cw_band_tint_is_raised_into_legible_range():
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    light_rule = re.search(r'html\[data-theme="light"\]\s*\.cw-band\{[^}]*\}', src)
+    assert light_rule
+    m = re.search(r"var\(--green\)\s+(\d+)%,transparent\)", light_rule.group(0))
+    assert m, "expected a color-mix(in srgb,var(--green) N%,transparent) fill"
+    pct = int(m.group(1))
+    assert 16 <= pct <= 20
+    # the hairline boundary edge must survive the tint raise, not be removed.
+    assert "border-right:1px solid" in light_rule.group(0)
+
+
+# --------------------------------------------------------------------------- #
+# H1 (B-F09-2 audit) — Tier-1 spread fractions in bi.CW_READ["spread_range"]
+# must mirror engine.credit_window.RANGE_OPEN_PCT (33) and RANGE_SHUT_PCT (66),
+# and rates_vol fractions must mirror MOVE_OPEN_PCT (40) and MOVE_SHUT_PCT (75).
+# The pre-fix wording said "four in five days" against thresholds of 33/66, which
+# is factually inverted for the open/shut cells; this pins both the constants
+# to their canonical fractions and the copy to those fractions so the two cannot
+# silently drift apart again.
+# --------------------------------------------------------------------------- #
+def test_cw_read_percentile_fractions_match_engine_thresholds():
+    import engine.credit_window as cw
+
+    # canonical mapping from the engine's thresholds to their "N in M" fractions:
+    #   RANGE 33/66  -> "two in three"   (~67% / ~66% of trailing days)
+    #   MOVE  40     -> "three in five"  (60% = 3/5)
+    #   MOVE  75     -> "three in four"  (75% = 3/4)
+    # ZH fraction form is "<denominator>分之<numerator>": 三分之二 / 五分之三 / 四分之三.
+    expected = {
+        ("spread_range", "open"):  ("two",   "three", "三", "二"),
+        ("spread_range", "shut"):  ("two",   "three", "三", "二"),
+        ("rates_vol",    "open"):  ("three", "five",  "五", "三"),
+        ("rates_vol",    "shut"):  ("three", "four",  "四", "三"),
+    }
+
+    # the four canonical fractions must still hold against the current constants —
+    # a constant drift (e.g. RANGE_OPEN_PCT moving to 45) must NOT pass silently.
+    assert abs((100.0 - cw.RANGE_OPEN_PCT) - (2 / 3) * 100) < 5  # ~67
+    assert abs(cw.RANGE_SHUT_PCT - (2 / 3) * 100) < 5            # ~66
+    assert abs((100.0 - cw.MOVE_OPEN_PCT) - (3 / 5) * 100) < 5   # 60
+    assert abs(cw.MOVE_SHUT_PCT - (3 / 4) * 100) < 5             # 75
+
+    for (key, state), (n_en, m_en, zh_den, zh_num) in expected.items():
+        en, zh = bi.CW_READ[(key, state)]
+        assert f"{n_en} in {m_en} days" in en, (
+            f"CW_READ[({key!r}, {state!r})] EN must contain {n_en!r} in {m_en!r} "
+            f"days of the past year (per {key} thresholds); got {en!r}"
+        )
+        assert f"{zh_den}分之{zh_num}" in zh, (
+            f"CW_READ[({key!r}, {state!r})] ZH must contain {zh_den!r}分之"
+            f"{zh_num!r} (per {key} thresholds); got {zh!r}"
+        )
+
+
+# --------------------------------------------------------------------------- #
+# H2 (B-F09-2 audit) — the engine's `not_evaluable` state key (and any other
+# multi-word snake_case state key) must never reach user copy in its
+# title-cased form. Repo convention is the plain display name "No read" /
+# "暂无读数" (templates/transmission.html.j2:522, templates/foresight.html.j2:25,
+# templates/_risk_envelope_band.html.j2:171).
+# Single-word state keys ("open", "neutral", "shut") have a title-cased
+# rendering ("Open", "Neutral", "Shut") that is also the natural plain-word
+# display label — those are NOT a leak, so this test only pins the multi-word
+# snake_case case the audit actually flagged.
+# The earlier round compared EN against `key.replace("_"," ").title()` =
+# "Not Evaluable" but the pre-fix value was sentence-cased "Not evaluable"
+# (the title-cased assertion was therefore happy on the old head). Pin the
+# exact fixed values explicitly so a regression to ANY form of the engine
+# token — title-cased, sentence-cased, or any other rendering — fails.
+# --------------------------------------------------------------------------- #
+def test_cw_state_and_clause_keys_do_not_leak_engine_token():
+    # 1. the EXACT fixed display values for the audit-flagged key — fails on the
+    #    pre-fix sentence-cased "Not evaluable / 无法评估" (H2's actual leak).
+    expected_state = {
+        "not_evaluable": ("No read", "暂无读数"),
+    }
+    for key, (en_want, zh_want) in expected_state.items():
+        assert key in bi.CW_STATE, (
+            f"CW_STATE must carry the engine key {key!r}; engine state "
+            f"otherwise can't be localised."
+        )
+        en_got, zh_got = bi.CW_STATE[key]
+        assert en_got == en_want, (
+            f"CW_STATE[{key!r}].EN must be {en_want!r} (repo plain-word "
+            f"convention); got {en_got!r} — the engine token must NEVER reach "
+            f"user copy."
+        )
+        assert zh_got == zh_want, (
+            f"CW_STATE[{key!r}].ZH must be {zh_want!r} (repo plain-word "
+            f"convention); got {zh_got!r} — the engine token must NEVER reach "
+            f"user copy."
+        )
+
+    # 2. no title-cased form of any multi-word snake_case engine state key
+    #    anywhere in CW_STATE / CW_CLAUSE (defensive — a future key the audit
+    #    didn't flag must still trip this).
+    for lexicon, name in ((bi.CW_STATE, "CW_STATE"), (bi.CW_CLAUSE, "CW_CLAUSE")):
+        for key, (en, _zh) in lexicon.items():
+            if "_" not in key:
+                continue
+            title_form = key.replace("_", " ").title()
+            assert en != title_form, (
+                f"{name}[{key!r}] EN is the title-cased engine key: {en!r} — "
+                f"must not equal {title_form!r}; use a plain display name "
+                f"('No read' for `not_evaluable`, etc.) so the engine token "
+                f"never reaches user copy."
+            )
+
+    # 3. the template carries no leak of the engine token in user copy —
+    #    case-insensitive for EN (catches "Not evaluable", "NOT EVALUABLE",
+    #    "not-evaluable") but NOT the snake_case key name itself (a regex
+    #    with `_` matches the snake_case key in source comments), exact for
+    #    ZH (the pre-fix leak was the literal "无法评估").
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    assert re.search(r"not[ -]evaluable", src, re.IGNORECASE) is None, (
+        "templates/ipo.html.j2 must not carry 'not evaluable' / "
+        "'Not evaluable' / 'not-evaluable' — the engine token belongs in "
+        "CW_STATE only, never in user copy; use 'No read' / '暂无读数' instead "
+        "(see repo convention)."
+    )
+    assert "无法评估" not in src, (
+        "templates/ipo.html.j2 must not carry '无法评估' — use '暂无读数' "
+        "(see template/convention across transmission / foresight / risk bands)"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# h_7128 — exercise the full production Jinja render with both credit states.
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("has_data", [False, True], ids=["missing-data", "with-data"])
+def test_cw_force_hook_fallback_nodes_and_css_are_emitted(monkeypatch, tmp_path, has_data):
+    """The builder emits real fallback nodes and opposite normal rails in both states.
+
+    _render_ipo_html calls bi.build(), including its FileSystemLoader, autoescape=True,
+    i18n globals and complete fixture context. DOM selectors cannot be satisfied by
+    class names in CSS or comments. Capture fallbacks intentionally exist in BOTH
+    states; only the normal, server-selected null/data rail changes with the input.
+    """
+    from bs4 import BeautifulSoup
+
+    seg = _seg("open" if has_data else "not_evaluable")
+    if not has_data:
+        seg.update(rail=None, inputs=[], n_inputs=0, low_confidence=True)
+    raw = {
+        "segments": [seg], "as_of": "2026-09-01",
+        "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"},
+    }
+    monkeypatch.setattr(bi.cwn, "window_state", lambda: raw)
+    rendered = _render_ipo_html(monkeypatch, tmp_path)
+    doc = BeautifulSoup(rendered, "html.parser")
+    cards = doc.select(".tcard.cw")
+    assert len(cards) == 1
+    card = cards[0]
+
+    fallback_rails = card.select(".cw-rail.is-null.cw-rail-fb")
+    fallback_scales = card.select(".cw-scale.cw-scale-fb")
+    assert len(fallback_rails) == 1, "Rendered capture fallback rail is missing"
+    assert len(fallback_scales) == 1, "Rendered capture fallback scale is missing"
+    assert fallback_rails[0]["aria-hidden"] == "true"
+    assert fallback_scales[0].select_one(".l-en").get_text() == "range can’t be read yet"
+    assert fallback_scales[0].select_one(".l-zh").get_text() == "区间暂无读数"
+
+    # The normal branch is opposite with/without data. The hidden capture-only
+    # fallback above stays available in either case, as required by the ruling.
+    null_rails = card.select(".cw-rail.is-null:not(.cw-rail-fb)")
+    null_scales = card.select(".cw-scale:not(.cw-scale-data):not(.cw-scale-fb)")
+    assert len(null_rails) == (0 if has_data else 1)
+    assert len(null_scales) == (0 if has_data else 1)
+    assert len(card.select(".cw-rail-data")) == (1 if has_data else 0)
+    assert len(card.select(".cw-scale-data")) == (1 if has_data else 0)
+    if has_data:
+        assert "left:10.0%" in card.select_one(".cw-mark")["style"]
+        assert "width:33.0%" in card.select_one(".cw-band")["style"]
+    else:
+        assert null_scales[0].select_one(".l-en").get_text() == "range can’t be read yet"
+        assert null_scales[0].select_one(".l-zh").get_text() == "区间暂无读数"
+
+    expected_state = ("Open", "开着") if has_data else ("No read", "暂无读数")
+    assert card.select_one(".tc-state .l-en").get_text() == expected_state[0]
+    assert card.select_one(".tc-state .l-zh").get_text() == expected_state[1]
+    assert not doc.body.has_attr("data-credit"), "Normal renders must not force capture state"
+
+    css = "".join(style.get_text() for style in doc.select("style"))
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
+    css = re.sub(r"\s+", " ", css)
+    assert '.cw-rail-fb,.cw-scale-fb{display:none}' in css
+    # Exact descendant selectors — whitespace is load-bearing; a compound
+    # [data-credit="null"].cw-rail-fb (no space) would be wrong.
+    assert '[data-credit="null"] .cw-rail-data,[data-credit="null"] .cw-scale-data{display:none}' in css
+    assert '[data-credit="null"] .cw-rail-fb{display:block}' in css
+    assert '[data-credit="null"] .cw-scale-fb{display:flex}' in css
+    assert not re.search(r'\[data-credit="null"\][^{}]*\.tc-state', css)
+
+
+def test_cw_force_hook_comment_names_body_not_html():
+    """The hook comment must name <body> as the element the capture script sets
+    [data-credit="null"] on — not <html> (which the pre-fix comment stated).
+    Both the CSS /* */ comment (~185-189) and the Jinja {# #} comment (~459-462)
+    must be checked; a regression in either would not be caught by scanning one."""
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    import re
+    css_comments = re.findall(r'/\*.*?\*/', src, re.DOTALL)
+    jinja_comments = re.findall(r'\{#.*?#\}', src, re.DOTALL)
+
+    hook_comments = [
+        b for b in css_comments
+        if 'data-credit' in b and 'force-state hook' in b
+    ] + [
+        b for b in jinja_comments
+        if 'data-credit' in b and 'Capture-only' in b
+    ]
+    assert hook_comments, "Force-state hook comment not found in CSS /* */ or Jinja {# #}"
+
+    for hook_comment in hook_comments:
+        assert "<body>" in hook_comment, (
+            "Hook comment must name <body> as the element [data-credit='null'] is set on "
+            "(capture_page_evidence.py sets it on <body>, not <html>)"
+        )
+        assert "<html>" not in hook_comment or "not <html>" in hook_comment, (
+            "Hook comment must not say [data-credit='null'] is set on <html> — "
+            "capture_page_evidence.py sets it on <body>"
+        )
+
+
+# --------------------------------------------------------------------------- #
+# W20-L6 — put the numbers we already hold on the IPO page (items 1-5)
+# --------------------------------------------------------------------------- #
+def _w20d_phase0():
+    """Inline copy of the committed phase-0 receipt (data/ipo/lockup_phase0.json)."""
+    return {
+        "verdict": "DISPLAY-ONLY · no measurable edge on our sample",
+        "tier": "none", "focus": "event[-1,+3]", "n_names": 77, "as_of": "2026-06-16",
+        "stat": {"n": 77, "mean_pct": 0.88, "median_pct": 1.04,
+                 "pct_negative": 44.2, "t": 0.812, "p": 0.4168},
+    }
+
+
+def _w20d_cliff_vm(confirmed=3, n=9, phase0="keep"):
+    """lockvm stub whose raw rows have -30<=days_to<=120 so the cliff card renders
+    (shape per test_lockup_timeline_shape_and_clamp). phase0='keep' -> fresh dict."""
+    raw = [
+        {"ticker": "EQPT", "company": "Eq Co", "expiry_date": "2026-07-22",
+         "days_to": 15, "size_usd": 7.47e8, "status": "approaching",
+         "source": "confirmed"},
+        {"ticker": "ESTM", "company": "Est Co", "expiry_date": "2026-09-01",
+         "days_to": 70, "size_usd": float("nan"), "status": "locked",
+         "source": "estimate"},
+    ]
+    summary = {"n": n, "approaching": 1, "just_expired": 0, "confirmed": confirmed,
+               "next_ticker": "EQPT", "next_date": "2026-07-22", "next_days": 15,
+               "next_size_usd": 7.47e8}
+    if phase0 == "keep":
+        phase0 = _w20d_phase0()
+    return {"rows": [], "summary": summary, "raw": raw, "phase0": phase0}
+
+
+def _w20d_render(monkeypatch, tmp_path, *, pipe_over=None, upcoming=None, lockvm=None):
+    """Same stubs as _render_ipo_html (copied, not modified) + W20-L6 overrides:
+    pipe_over updates snap['pipeline'], upcoming replaces snap['upcoming'] when not
+    None, lockvm stubs _lockup_vm when given."""
+    import copy
+    snap = copy.deepcopy(_synthetic_snap())
+    if pipe_over is not None:
+        snap["pipeline"].update(pipe_over)
+    if upcoming is not None:
+        snap["upcoming"] = upcoming
+    monkeypatch.setattr(bi.ir, "radar_snapshot", lambda **kw: snap)
+    monkeypatch.setattr(bi, "_risk_score_from_spvector", lambda: None)
+    monkeypatch.setattr(bi, "_lockup_vm", lambda: lockvm if lockvm is not None
+                        else {"rows": [], "summary": {}, "raw": []})
+    monkeypatch.setattr(bi, "_hk_vm", lambda: {"available": False})
+    monkeypatch.setattr(bi, "_chart_aftermarket", lambda: None)
+    monkeypatch.setattr("collectors.ipo_calendar.fetch_ipo_calendar", lambda: None)
+    monkeypatch.setattr(bi.config, "data_dir", lambda: tmp_path)
+    captured = {}
+
+    def _w20d_write_page(path, html, **kw):
+        captured["html"] = html
+        return tmp_path / "ipo.html"
+
+    monkeypatch.setattr(bi, "write_page", _w20d_write_page)
+    bi.build()
+    return captured["html"]
+
+
+def _w20d_cliff_section(html):
+    i = html.index('<span class="l-en">Lock-up cliff</span>')
+    j = html.index("The aftermarket trade")
+    return html[i:j]
+
+
+def _w20d_froth_size_disp(html):
+    """The rendered value printed by the Item-3 froth mini, or None if absent."""
+    i = html.index("Issuance froth")
+    j = html.index("CREDIT ISSUANCE WINDOW")
+    m = re.search(r'<span class="l-en">Median operating-company deal size · 90d</span>'
+                  r'<span class="l-zh">90天经营公司交易规模中位数</span>\s*:\s*'
+                  r'(.*?)</div>', html[i:j], re.DOTALL)
+    return m.group(1) if m else None
+
+
+def test_w20d_phase0_receipt_vm_formats():
+    p0 = _w20d_phase0()
+    vm = bi._phase0_receipt_vm(p0)
+    assert vm is not None
+    assert vm["as_of"] == "2026-06-16" and vm["n_names"] == 77
+    assert vm["mean_disp"] == "+0.88%"
+    assert vm["pct_negative"] == "44.2"
+    assert vm["window_en"] == "from 1 day before to 3 days after the un-lock"
+    assert vm["window_zh"] == "解禁前1日至后3日"
+    assert vm["verdict_en"] == "DISPLAY-ONLY · no measurable edge on our sample"
+    assert vm["verdict_zh"] == "仅供展示 · 在我们的样本上无可测量的优势"
+    neg = bi._phase0_receipt_vm({**p0, "stat": dict(p0["stat"], mean_pct=-0.5)})
+    assert neg["mean_disp"] == "−0.50%"          # U+2212, never an ASCII hyphen
+    assert "-" not in neg["mean_disp"]
+    d2 = bi._phase0_receipt_vm({**p0, "focus": "event[-2,+5]"})
+    assert d2["window_en"] == "from 2 days before to 5 days after the un-lock"
+    assert d2["window_zh"] == "解禁前2日至后5日"
+    b1 = bi._phase0_receipt_vm({**p0, "focus": "event[-2,+1]"})
+    assert b1["window_en"] == "from 2 days before to 1 day after the un-lock"
+    for focus in ("event[0,+3]", "event[+1,+3]", "calendar[+1]", None):
+        around = bi._phase0_receipt_vm({**p0, "focus": focus})
+        assert around["window_en"] == "around the un-lock"
+        assert around["window_zh"] == "解禁前后"
+    unk = bi._phase0_receipt_vm({**p0, "verdict": "SOMETHING-ELSE"})
+    assert unk["verdict_en"] == "SOMETHING-ELSE" and unk["verdict_zh"] == "SOMETHING-ELSE"
+    assert bi._phase0_receipt_vm(None) is None
+    assert bi._phase0_receipt_vm({}) is None
+    assert bi._phase0_receipt_vm({**p0, "stat": None}) is None
+    assert bi._phase0_receipt_vm({"stat": {"mean_pct": 0.1, "pct_negative": 1.0}}) is None
+    assert bi._phase0_receipt_vm({**p0, "stat": dict(p0["stat"],
+                                                     mean_pct=float("nan"))}) is None
+
+
+def test_w20d_lockup_phase0_receipt_renders(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, lockvm=_w20d_cliff_vm())
+    sec = _w20d_cliff_section(html)
+    m = re.search(r'<div class="mini"><span class="l-en">(Our event study of .*?)</span>'
+                  r'<span class="l-zh">(.*?)</span></div>', sec)
+    assert m, "phase-0 receipt mini not found in the cliff card"
+    en, zh = m.group(1), m.group(2)
+    assert "77 recent un-locks (to 2026-06-16)" in en
+    assert "+0.88%" in en and "44.2% of names fell behind" in en
+    assert "S&P 500" in en.replace("&amp;", "&")
+    assert "DISPLAY-ONLY · no measurable edge on our sample" in en
+    assert "仅供展示 · 在我们的样本上无可测量的优势" in zh
+    assert "DISPLAY-ONLY" not in zh and "event study" not in en.replace("Our event study", "")
+    html2 = _w20d_render(monkeypatch, tmp_path, lockvm=_w20d_cliff_vm(phase0=None))
+    sec2 = _w20d_cliff_section(html2)
+    assert "fell behind" not in sec2 and "(to 2026-06-16)" not in sec2
+
+
+def test_w20d_empty_upcoming_prints_filed_n_not_quiet(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, upcoming=[], pipe_over={"filed_n": 12})
+    m = re.search(r'<div class="empty">(.*?)</div>', html, re.DOTALL)
+    assert m, "the empty-upcoming div did not render"
+    body = m.group(1)
+    assert "No deals are expected to price in the near term." in body
+    assert "12 more filed but have no price date yet." in body
+    assert "另有12家已披露未定价。" in body
+    assert "pipeline is quiet" not in html and "发行管道清淡" not in html
+
+
+def test_w20d_filed_n_zero_is_honest(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, upcoming=[], pipe_over={"filed_n": 0})
+    body = re.search(r'<div class="empty">(.*?)</div>', html, re.DOTALL).group(1)
+    assert "0 more filed but have no price date yet." in body
+    assert "另有0家已披露未定价。" in body
+
+
+def test_w20d_filed_n_absent_prints_first_sentence_only(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, upcoming=[])   # snap pipeline has no filed_n
+    body = re.search(r'<div class="empty">(.*?)</div>', html, re.DOTALL).group(1)
+    assert "No deals are expected to price in the near term." in body
+    assert "more filed" not in body and "已披露未定价" not in body
+
+
+def test_w20d_median_op_size_on_froth_card(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, pipe_over={"median_op_size_90d": 1.5e8})
+    assert _w20d_froth_size_disp(html) == "$150M"
+
+
+def test_w20d_median_op_size_nan_is_dash(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path)   # _synthetic_snap plants a NaN median
+    assert _w20d_froth_size_disp(html) == "—"
+
+
+def test_w20d_cliff_meta_prints_confirmed(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, lockvm=_w20d_cliff_vm(confirmed=3, n=9))
+    sec = _w20d_cliff_section(html)
+    assert "3 of 9 modeled dates use a prospectus-derived day count;" in sec
+    assert "the rest assume 180 days." in sec
+    assert "在跟踪的9个估算日期中，3个采用招股书中的期限；其余假设180天。实际解禁可能附带条件或获豁免。" in sec
+
+
+def test_w20d_cliff_meta_confirmed_zero_is_honest(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, lockvm=_w20d_cliff_vm(confirmed=0, n=9))
+    assert "0 of 9 modeled dates" in _w20d_cliff_section(html)
+
+
+def test_w20d_no_false_per_name_return_claim(monkeypatch, tmp_path):
+    src = (bi.config.ROOT / "templates" / "ipo.html.j2").read_text(encoding="utf-8")
+    assert "Per-name price return" not in src
+    assert "相对发行价的个股回报" not in src
+    html = _w20d_render(monkeypatch, tmp_path)
+    assert "Per-name price return" not in html
+    assert "相对发行价的个股回报" not in html
+    assert "SPACs are flagged, never dropped" in html
+    assert "会扭曲新股基准比率。" in html
+
+
+def test_w20d_phase0_receipt_vm_non_string_fields():
+    """A producer that writes a non-string focus or verdict must not crash the page build."""
+    p0 = _w20d_phase0()
+    p0["focus"], p0["verdict"] = 3, {"en": "x"}
+    vm = bi._phase0_receipt_vm(p0)
+    assert vm["window_en"] == "around the un-lock" and vm["window_zh"] == "解禁前后"
+    assert vm["verdict_en"] == "" and vm["verdict_zh"] == ""
+
+
+def test_published_view_includes_both_languages_and_actual_dates(monkeypatch):
+    from jinja2 import Environment
+    ROOT = pathlib.Path(__file__).resolve().parents[1]
+    from scripts import build_ipo
+    rows = build_ipo._prospectus_deals_vm()
+    deal = next(row for row in rows if row["ticker"] == "CRCL")
+    assert deal["first_close_date"] == "2025-06-05"
+    assert len(deal["path_points"].split()) > 200
+    # The actual page is rendered by existing builder tests; isolate the new
+    # article so copy/clock/source assertions do not need market collectors.
+    text = (ROOT / "templates/ipo.html.j2").read_text()
+    start = text.index("  {% if prospectus_deals %}")
+    end = text.index("  <div class=\"sec\">{{ t('The aftermarket trade'", start)
+    env = Environment(autoescape=True)
+    for language in (0, 1):
+        html = env.from_string(text[start:end]).render(prospectus_deals=[deal], t=lambda en, zh: (en, zh)[language])
+        assert "2025-06-04" in html and "2025-06-05" in html and "2025-09-30" in html
+        assert "5,100,000" in html and deal["source_url"] in html

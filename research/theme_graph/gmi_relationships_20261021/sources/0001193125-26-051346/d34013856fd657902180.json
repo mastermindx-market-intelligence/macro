@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-13T21:06:57Z",
+ "accession": "0001193125-26-051346",
+ "cik": "0001122904",
+ "doc_byte_length": 4517302,
+ "doc_sha256": "28a777267657769e83ca739e63a51b90f84ab9192151617a62582bd8a1943a99",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-13",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ntgr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 479755,
+  "byte_start": 479342,
+  "normalized": "We sell a substantial portion of our products through traditional and online retailers, including Best Buy Co., Inc., Amazon.com, Inc. and their affiliates, wholesale distributors, including Ingram Micro, Inc. and TD Synnex, and service providers, such as AT&T. We expect that a significant portion of our net revenue will continue to come from sales to a small number of customers for the foreseeable future.",
+  "normalized_sha256": "63bcdc22c65648779e2dc41fe33454a55f0df86a9623aed546b2dbb3c1c2a90a",
+  "raw": "We sell a substantial portion of our products through traditional and online retailers, including Best Buy Co., Inc., Amazon.com, Inc. and their affiliates, wholesale distributors, including Ingram Micro, Inc. and TD Synnex, and service providers, such as AT&amp;T. We expect that a significant portion of our net revenue will continue to come from sales to a small number of customers for the foreseeable future.",
+  "raw_sha256": "d34013856fd657902180885115a6263e61ba4ade9a0933a9c08a685cdc6d1458"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1122904/000119312526051346/ntgr-20251231.htm",
+ "xbrl_contexts": []
+}

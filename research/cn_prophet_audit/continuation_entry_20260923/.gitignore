@@ -1,0 +1,15 @@
+initial-green.txt
+full-initial.txt
+full-qualified.txt
+postblock-tests.txt
+ui-tests.txt
+
+# Detailed red proof is retained locally and content-bound in evidence.json.
+observation-red.txt
+
+# Native telemetry stays local; supported review conclusions/closure are published.
+native-review*.json
+native-review*.stderr
+review-red.txt
+configured-root-red.txt
+review-tests.txt

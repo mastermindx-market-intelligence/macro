@@ -128,6 +128,9 @@ log "[3/5] systemd units + private Market Memory state"
 # The unit's Market Memory bind is deliberately non-optional and read-only.
 # Provision it before installation so a fresh host fails closed without making
 # the first service start impossible.
+# Ticker News reader state exists even while its operator-armed writer is absent.
+# This lets macro-api bind the path read-only from its very first start.
+install -d -m 0700 /var/lib/macro-ticker-news
 install -d -m 0700 /var/lib/macro-market-memory
 install -d -m 0700 /var/lib/macro-market-memory/public
 install -d -m 0700 /var/lib/macro-market-memory/public/trusted-v1
@@ -152,6 +155,22 @@ fi
 # but no credential or service-writable profile may exist until macro-api has
 # restarted into its deny namespace.
 bash "$APP_DIR/app/deploy/market-memory-options-prereqs.sh" --identity-only
+# BEGIN COMPANY_INTELLIGENCE_PRIVATE_ROOTS
+# Empty directories only: GMI owns publication and current-generation admission.
+if ! "$VENV/bin/python" "$APP_DIR/app/deploy/company-intelligence-private-roots.py"; then
+  echo "api-setup.sh: private Company Intelligence provisioning failed; refusing API readiness" >&2
+  exit 1
+fi
+# END COMPANY_INTELLIGENCE_PRIVATE_ROOTS
+
+# BEGIN MEDTECH_PRIVATE_ROOTS
+# Empty identity/anchors only; dedicated refresh installation and activation stay explicit.
+if ! "$VENV/bin/python" "$APP_DIR/app/deploy/medtech-prereqs.py"; then
+  echo "api-setup.sh: MedTech provisioning failed; refusing API readiness" >&2
+  exit 1
+fi
+# END MEDTECH_PRIVATE_ROOTS
+
 REVIEWED_UNIT_NAMES=(
   macro-api.service
   macro-market-memory-source.service macro-market-memory-source.timer
@@ -162,6 +181,7 @@ REVIEWED_UNIT_NAMES=(
   macro-market-memory-experience.service macro-market-memory-experience.timer
   macro-market-memory-production-records.service macro-market-memory-production-records.timer
   macro-market-memory-options.service macro-market-memory-options.timer
+  macro-alert-drain.service macro-alert-drain.timer
 )
 for reviewed_unit in "${REVIEWED_UNIT_NAMES[@]}"; do
   if ! mm_unit_repair_inputs_safe \
@@ -188,7 +208,9 @@ systemd-analyze verify \
   "$APP_DIR/app/deploy/macro-market-memory-production-records.service" \
   "$APP_DIR/app/deploy/macro-market-memory-production-records.timer" \
   "$APP_DIR/app/deploy/macro-market-memory-options.service" \
-  "$APP_DIR/app/deploy/macro-market-memory-options.timer"
+  "$APP_DIR/app/deploy/macro-market-memory-options.timer" \
+  "$APP_DIR/app/deploy/macro-alert-drain.service" \
+  "$APP_DIR/app/deploy/macro-alert-drain.timer"
 install -m 0644 "$APP_DIR/app/deploy/macro-api.service" /etc/systemd/system/macro-api.service
 install -m 0644 "$APP_DIR/app/deploy/macro-market-memory-source.service" /etc/systemd/system/macro-market-memory-source.service
 install -m 0644 "$APP_DIR/app/deploy/macro-market-memory-source.timer" /etc/systemd/system/macro-market-memory-source.timer
@@ -206,6 +228,8 @@ install -m 0644 "$APP_DIR/app/deploy/macro-market-memory-production-records.serv
 install -m 0644 "$APP_DIR/app/deploy/macro-market-memory-production-records.timer" /etc/systemd/system/macro-market-memory-production-records.timer
 install -m 0644 "$APP_DIR/app/deploy/macro-market-memory-options.service" /etc/systemd/system/macro-market-memory-options.service
 install -m 0644 "$APP_DIR/app/deploy/macro-market-memory-options.timer" /etc/systemd/system/macro-market-memory-options.timer
+install -m 0644 "$APP_DIR/app/deploy/macro-alert-drain.service" /etc/systemd/system/macro-alert-drain.service
+install -m 0644 "$APP_DIR/app/deploy/macro-alert-drain.timer" /etc/systemd/system/macro-alert-drain.timer
 # Migrate only after the exact canonical API fragment is installed. Unknown
 # files, symlinks, metadata drift, sibling drop-ins, or a noncanonical fragment
 # abort setup with both writer families already stopped; nothing broad is
@@ -257,6 +281,17 @@ if ! mm_loaded_unit_ready \
   /etc/systemd/system/macro-market-memory-options.timer \
   macro-market-memory-options.timer; then
   log "option-OI effective units are not reviewed/current"
+  exit 1
+fi
+if ! mm_loaded_unit_ready \
+  "$APP_DIR/app/deploy/macro-alert-drain.service" \
+  /etc/systemd/system/macro-alert-drain.service \
+  macro-alert-drain.service || \
+   ! mm_loaded_unit_ready \
+  "$APP_DIR/app/deploy/macro-alert-drain.timer" \
+  /etc/systemd/system/macro-alert-drain.timer \
+  macro-alert-drain.timer; then
+  log "alert-drain effective units are not reviewed/current"
   exit 1
 fi
 # Define W2C orchestration only after the units are installed, daemon-reloaded,
@@ -429,6 +464,7 @@ if ! w2c_reconcile_timer; then
   exit 1
 fi
 systemctl enable --now macro-market-memory-production-records.timer
+systemctl enable --now macro-alert-drain.timer
 if [ "$OPTIONS_CREDENTIAL_READY" -eq 1 ]; then
   if ! systemctl enable --now macro-market-memory-options.timer || \
      ! systemctl is-enabled macro-market-memory-options.timer >/dev/null 2>&1 || \

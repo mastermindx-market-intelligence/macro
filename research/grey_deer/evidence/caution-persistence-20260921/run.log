@@ -1,0 +1,126 @@
+{
+  "full": {
+    "from": "1994-02-01T00:00:00",
+    "through": "2026-08-19T00:00:00",
+    "n": 8191,
+    "events": 1446,
+    "base_rate": 0.17653522158466609,
+    "population_sha256": "a2436bd50b075cb838540f0925628cbc79a5357ae11a16c88e0ac233395c1608",
+    "all_sessions": {
+      "n": 8191,
+      "event_rate": 0.17653522158466609,
+      "precision": 0.17653522158466609,
+      "recall": 1.0,
+      "f1": 0.30009339005914704,
+      "fire_rate": 1.0,
+      "lift_vs_base": 1.0,
+      "confusion": {
+        "tp": 1446,
+        "fp": 6745,
+        "fn": 0,
+        "tn": 0
+      }
+    },
+    "caution_plus": {
+      "n": 8191,
+      "event_rate": 0.20030170968823333,
+      "precision": 0.20030170968823333,
+      "recall": 0.826417704011065,
+      "f1": 0.3224500809498111,
+      "fire_rate": 0.7283603955560981,
+      "lift_vs_base": 1.1346274578536095,
+      "confusion": {
+        "tp": 1195,
+        "fp": 4771,
+        "fn": 251,
+        "tn": 1974
+      }
+    },
+    "persistent_caution_5": {
+      "n": 8191,
+      "event_rate": 0.20777666999002992,
+      "precision": 0.20777666999002992,
+      "recall": 0.7206085753803596,
+      "f1": 0.32255068874787185,
+      "fire_rate": 0.6122573556342327,
+      "lift_vs_base": 1.176970058014063,
+      "confusion": {
+        "tp": 1042,
+        "fp": 3973,
+        "fn": 404,
+        "tn": 2772
+      }
+    }
+  },
+  "since_2020": {
+    "from": "2020-01-02T00:00:00",
+    "through": "2026-08-19T00:00:00",
+    "n": 1666,
+    "events": 294,
+    "base_rate": 0.17647058823529413,
+    "population_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec",
+    "all_sessions": {
+      "n": 1666,
+      "event_rate": 0.17647058823529413,
+      "precision": 0.17647058823529413,
+      "recall": 1.0,
+      "f1": 0.3,
+      "fire_rate": 1.0,
+      "lift_vs_base": 1.0,
+      "confusion": {
+        "tp": 294,
+        "fp": 1372,
+        "fn": 0,
+        "tn": 0
+      }
+    },
+    "caution_plus": {
+      "n": 1666,
+      "event_rate": 0.2144469525959368,
+      "precision": 0.2144469525959368,
+      "recall": 0.9693877551020408,
+      "f1": 0.3512014787430684,
+      "fire_rate": 0.7977190876350541,
+      "lift_vs_base": 1.2151993980436417,
+      "confusion": {
+        "tp": 285,
+        "fp": 1044,
+        "fn": 9,
+        "tn": 328
+      }
+    },
+    "persistent_caution_5": {
+      "n": 1666,
+      "event_rate": 0.23975588491717523,
+      "precision": 0.23975588491717523,
+      "recall": 0.935374149659864,
+      "f1": 0.38167938931297707,
+      "fire_rate": 0.6884753901560624,
+      "lift_vs_base": 1.3586166811973261,
+      "confusion": {
+        "tp": 275,
+        "fp": 872,
+        "fn": 19,
+        "tn": 500
+      }
+    }
+  },
+  "event_view": {
+    "definition": "risk_radar_caution_persistence_event.v1",
+    "event_params": {
+      "fwd": 21,
+      "depth": 0.05,
+      "min_gap": 21
+    },
+    "n_events": 110,
+    "caution_by_t0": 106,
+    "persistent_by_t0": 99,
+    "caution_event_recall": 0.9636363636363636,
+    "persistent_event_recall": 0.9,
+    "persistent_median_lead_sessions_window_bounded": 21.0,
+    "persistent_left_censored_n": 76,
+    "persistent_exact_lead_n": 23,
+    "persistent_median_lead_uncensored_sessions": 12.0,
+    "persistent_before_breach_n": 99
+  }
+}

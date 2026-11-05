@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T21:04:45Z",
+ "accession": "0001193125-26-119957",
+ "cik": "0001836833",
+ "doc_byte_length": 5134238,
+ "doc_sha256": "c5e0baac3207f49902112b4d45c345456e5353ce413e032aa573ded5160068d8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "pl-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3793217,
+  "byte_start": 3792450,
+  "normalized": "The Company has minimum purchase commitments for hosting services from Google through January 31, 2028 (see Note 14). Future minimum purchase commitments under the non-cancelable hosting service agreement with Google as of January 31, 2026 is as follows:",
+  "normalized_sha256": "8f23e22068887cc2d1e37ed21cbe1c69eeb12f5e5021b9d056b132f6b3efc019",
+  "raw": "The Company has minimum purchase commitments for hosting services from Google through January 31, 2028 (see Note 14). </span><span><ix:nonNumeric id=\"F_ec66d470-869a-464f-81d7-4ed64d4b47b5\" contextRef=\"C_6619aaea-6e52-4730-a2e8-992d0d602311\" name=\"us-gaap:OtherCommitmentsTableTextBlock\" escape=\"true\" continuedAt=\"F_ec66d470-869a-464f-81d7-4ed64d4b47b5_1\"><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">Future minimum purchase commitments under the non-cancelable hosting service agreement with Google as of January 31, </span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">2026 is as follows: ",
+  "raw_sha256": "a624d9fafd9675f75787464f84de534866e91bb133040e6780a280dd94173998"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1836833/000119312526119957/pl-20260131.htm",
+ "xbrl_contexts": []
+}

@@ -1044,6 +1044,7 @@ def originate_shadow_plans(
     prices: PriceCache,
     tilt_inputs: dict | None = None,
     panel_mixed_vintage: bool = False,
+    source_observed_at: Any = None,
 ) -> tuple[list[dict], dict]:
     """Shadow plans for one policy's rows, using the bridge's geometry and id.
 
@@ -1062,7 +1063,7 @@ def originate_shadow_plans(
     """
     recorded_at, price_basis_date, clock_errors = pb._resolve_origination_clocks(
         price_through=price_through,
-        recorded_asof=asof,
+        recorded_asof=source_observed_at or asof,
         panel_mixed_vintage=panel_mixed_vintage,
         source_delayed=source_delayed,
         source_unknown=source_unknown,
@@ -1829,6 +1830,7 @@ def run_arena(
         "asof": asof,
         "standouts_as_of": standouts_asof,
         "price_through": staleness.get("price_through"),
+        "observed_at_utc": staleness.get("observed_at_utc"),
         "source_delayed": staleness.get("delayed"),
         "source_unknown": staleness.get("unknown"),
         "source_basis": staleness.get("basis"),
@@ -1865,6 +1867,7 @@ def run_arena(
             prices=prices,
             tilt_inputs=tilt_inputs,
             panel_mixed_vintage=panel_mixed_vintage,
+            source_observed_at=staleness.get("observed_at_utc"),
         )
         ids = sorted(p["id"] for p in plans)
         tonight["policies"][policy.key] = {

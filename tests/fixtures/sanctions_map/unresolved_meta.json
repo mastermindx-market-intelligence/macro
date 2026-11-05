@@ -1,0 +1,6 @@
+{
+  "list_published_date": "2026-09-04",
+  "source_url": "https://ofac.treasury.gov/sanctions-programs-and-country-information",
+  "fetched_at": "2026-09-05T02:11:00Z",
+  "note": "A-F02-1 unknown-rung fixture: one mapped programme plus one unmapped country-scoped code so coverage.unresolved > 0."
+}

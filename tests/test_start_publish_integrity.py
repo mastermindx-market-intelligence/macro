@@ -8,6 +8,7 @@ single-instance and make every lane that writes the page fail closed before push
 from __future__ import annotations
 
 import re
+import hashlib
 from pathlib import Path
 
 from scripts.workflow_run_source import resolved_workflow_text
@@ -128,3 +129,61 @@ def test_lane_guard_checks_the_same_runtimes() -> None:
         "".join(f'<script defer src="{a}?v=x"></script>' for a in mod.RUNTIMES)
     )
     assert mod.check_text('<script defer src="sky.js"></script>')
+
+
+
+def test_wh_banner_asset_copies_remain_identical() -> None:
+    """The shared alert rail is a plain-copy runtime and must ship paired bytes."""
+    source = ROOT / "templates" / "wh_banner.js"
+    shipped = ROOT / "site" / "wh_banner.js"
+    assert source.read_bytes() == shipped.read_bytes()
+
+
+def test_wh_banner_dismiss_control_meets_interaction_contract() -> None:
+    """Sitewide alert dismissal must be touch-, keyboard-, and locale-reachable."""
+    for relative in ("templates/wh_banner.js", "site/wh_banner.js"):
+        text = (ROOT / relative).read_text(encoding="utf-8")
+        assert ".whb-x{flex:0 0 40px;width:40px;height:40px;display:grid;place-items:center;" in text
+        assert "background:transparent;border:0;color:inherit;opacity:.6;" in text
+        assert "border-radius:var(--r-sm,10px);touch-action:manipulation" in text
+        assert ".whb-x:hover{opacity:1}" in text
+        assert ".whb-x:focus-visible{outline:2px solid currentColor;" in text
+        assert ".whb-x:active{opacity:.78}" in text
+        assert 'function syncCloseLabel() {' in text
+        assert '? "关闭市场提醒"' in text
+        assert ': "Dismiss market alert"' in text
+        assert 'document.addEventListener("langchange", syncCloseLabel);' in text
+        assert 'document.removeEventListener("langchange", syncCloseLabel);' in text
+
+
+def test_mobile_menu_parks_globe_and_resumes_once_when_closed() -> None:
+    source = (ROOT / "site" / "globe-deck.js").read_text(encoding="utf-8")
+    assert "document.querySelector('.site-nav')" in source
+    assert "classList.contains('nav-open')" in source
+    assert 'if (_navMenuOpen()) { _park(); return; }' in source
+    assert 'if (_navMenuOpen()) return;' in source
+    assert 'if (open === _navWasOpen) return;' in source
+    assert 'if (open) _park(); else _wake();' in source
+    assert "attributeFilter: ['class']" in source
+    assert "window.__gdDeckInit" in source
+
+
+def test_mobile_menu_parks_sky_and_unparks_only_on_transition() -> None:
+    source = (ROOT / "site" / "sky.js").read_text(encoding="utf-8")
+    assert "document.querySelector('.site-nav')" in source
+    assert "classList.contains('nav-open')" in source
+    assert 'if (_navMenuOpen()) { running = false; raf = 0; return; }' in source
+    assert 'if (_navMenuOpen()) return; lastActT = nowMs();' in source
+    assert 'if (open === _navWasOpen) return;' in source
+    assert 'if (raf) cancelAnimationFrame(raf);' in source
+    assert 'else _activity();' in source
+    assert "attributeFilter: ['class']" in source
+    assert "window.__skyDeckInit" in source
+
+
+def test_start_hub_serves_current_content_hashed_animation_scripts() -> None:
+    html = START.read_text(encoding="utf-8")
+    for filename in ('globe-deck.js', 'sky.js'):
+        values = re.findall(rf'<script defer src="{re.escape(filename)}\?v=([0-9a-f]{{8}})"', html)
+        expected = hashlib.sha256((ROOT / 'site' / filename).read_bytes()).hexdigest()[:8]
+        assert values == [expected], filename

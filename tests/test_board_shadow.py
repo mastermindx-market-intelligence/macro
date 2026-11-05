@@ -2174,3 +2174,322 @@ def test_no_bare_session_date_literal_reintroduces_the_time_bomb():
         f"bare session-date literal(s) {sorted(literals - {'2020-01-01'})} will age out of "
         "SETTLE_WINDOW_DAYS and red this pack on a date rollover -- use ASOF"
     )
+
+# ---------------------------------------------------------------------------
+# Canada builder health projection — off-lane no-op is not a write failure
+# ---------------------------------------------------------------------------
+def _canada_health_setups() -> dict:
+    return {
+        "buy": [
+            {
+                "ticker": "TEST.TO",
+                "group": "setting_up",
+                "alpha": 0.75,
+                "price": 100.0,
+                "signal": {},
+                "conviction": {},
+                "entry_signal": {},
+            }
+        ],
+        "watch": [],
+    }
+
+
+def _stub_canada_health_read_side(monkeypatch, tmp_path):
+    """Keep every existing read projection live without repository writes."""
+    import engine
+    from engine import board_shadow as active_shadow
+    from engine import track_ledger
+
+    seen = {"scorecard": 0, "grade": 0, "track": 0, "shadow": 0}
+
+    def scorecard(_market: str) -> dict:
+        seen["scorecard"] += 1
+        return {"status": "accruing"}
+
+    def grade(_market: str) -> dict:
+        seen["grade"] += 1
+        return {"available": False}
+
+    def track_document(*_args, **_kwargs) -> dict:
+        seen["track"] += 1
+        return {"meta": {"n_total": 0}, "rows": []}
+
+    def shadow_write(*_args, **_kwargs) -> None:
+        seen["shadow"] += 1
+
+    monkeypatch.setattr(board_ledger, "scorecard", scorecard)
+    monkeypatch.setattr(board_ledger, "grade", grade)
+    monkeypatch.setattr(track_ledger, "from_board_ledger_grade", track_document)
+    monkeypatch.setattr(track_ledger, "atomic_write", lambda *_a, **_k: None)
+    monkeypatch.setattr(active_shadow, "write_shadow", shadow_write)
+    monkeypatch.setattr(engine, "board_shadow", active_shadow, raising=False)
+    if active_shadow is not bs:
+        monkeypatch.setattr(bs, "write_shadow", shadow_write)
+    monkeypatch.setattr(
+        config,
+        "load",
+        lambda: {"storage": {"site_dir": str(tmp_path)}},
+    )
+    return seen
+
+
+def test_canada_off_nightly_caller_skips_append_without_false_error(
+    monkeypatch, tmp_path
+):
+    """Expected off-lane refusal cannot become a customer-visible error."""
+    from scripts import build_canada
+
+    setups = _canada_health_setups()
+    seen = _stub_canada_health_read_side(monkeypatch, tmp_path)
+    append_calls = []
+
+    def append_board(*args, **kwargs):
+        append_calls.append((args, kwargs))
+        return 0
+
+    monkeypatch.setattr(build_canada, "_ledger_advance_enabled", lambda: False)
+    monkeypatch.setattr(board_ledger, "append_board", append_board)
+
+    health = build_canada._canada_board_ledger(setups, {"date": ASOF})
+
+    assert append_calls == [], "off-nightly caller must not enter append_board"
+    assert not [row for row in health if row.get("status") == "ERROR"], health
+    assert setups["board_track"] == {"status": "accruing"}
+    assert seen == {"scorecard": 1, "grade": 1, "track": 1, "shadow": 1}
+
+
+def test_canada_armed_nightly_zero_append_remains_loud(monkeypatch, tmp_path):
+    """A zero result after authorized admission remains a real failure."""
+    from scripts import build_canada
+
+    setups = _canada_health_setups()
+    _stub_canada_health_read_side(monkeypatch, tmp_path)
+    monkeypatch.setattr(build_canada, "_ledger_advance_enabled", lambda: True)
+    monkeypatch.setattr(board_ledger, "append_board", lambda *_a, **_k: 0)
+
+    health = build_canada._canada_board_ledger(setups, {"date": ASOF})
+
+    errors = [row for row in health if row.get("status") == "ERROR"]
+    assert len(errors) == 1
+    assert errors[0]["rows"] == 0
+    assert "append wrote 0 rows" in errors[0]["en"]
+
+
+def test_canada_armed_nightly_success_is_healthy(monkeypatch, tmp_path):
+    """A successful authorized append produces no ledger health finding."""
+    from scripts import build_canada
+
+    setups = _canada_health_setups()
+    _stub_canada_health_read_side(monkeypatch, tmp_path)
+    monkeypatch.setattr(build_canada, "_ledger_advance_enabled", lambda: True)
+    monkeypatch.setattr(board_ledger, "append_board", lambda *_a, **_k: 1)
+
+    health = build_canada._canada_board_ledger(setups, {"date": ASOF})
+
+    assert not [row for row in health if row.get("status") == "ERROR"], health
+
+
+def test_canada_armed_nightly_exception_remains_loud(monkeypatch, tmp_path):
+    """A real authorized append exception remains customer-visible."""
+    from scripts import build_canada
+
+    setups = _canada_health_setups()
+    _stub_canada_health_read_side(monkeypatch, tmp_path)
+    monkeypatch.setattr(build_canada, "_ledger_advance_enabled", lambda: True)
+
+    def explode(*_args, **_kwargs):
+        raise RuntimeError("synthetic append failure")
+
+    monkeypatch.setattr(board_ledger, "append_board", explode)
+    health = build_canada._canada_board_ledger(setups, {"date": ASOF})
+
+    errors = [row for row in health if row.get("status") == "ERROR"]
+    assert len(errors) == 1
+    assert "FAILED" in errors[0]["en"]
+
+
+# ---------------------------------------------------------------------------
+# Canada zero-official-buy liveness (masterplan §10.4)
+# ---------------------------------------------------------------------------
+# The sole CA shadow write, the scorecard attach and the track_ledger emit all
+# used to sit behind an early return in scripts.build_canada._canada_board_ledger
+# that fired whenever the official buy subset was EMPTY — so a zero-buy session
+# silenced every registered CA challenger (they run inside write_shadow) and
+# deleted the honestly-empty track panel. A real board with zero official buys
+# must keep every read projection + the shadow substrate live; only the ledger
+# append is withheld (zero buys stay append-free by ledger semantics). A MISSING
+# board object (setups=None / non-dict) keeps the old SKIP-only behavior.
+_ZERO_BUY_SKIP_ROW = {"en": "Board ledger (no ranked names to log)",
+                      "zh": "榜单账本（无可记录个股）",
+                      "status": "SKIP", "rows": 0, "last": "—"}
+
+
+def _zero_buy_setups(watch_rows: list[dict]) -> dict:
+    """_canada_health_setups() with the official buy subset emptied and an
+    explicit watch strip substituted."""
+    setups = _canada_health_setups()
+    setups["buy"] = []
+    setups["watch"] = watch_rows
+    return setups
+
+
+_TWO_WATCH_ROWS = [
+    {"ticker": "W1.TO", "alpha": 0.4, "watch_reason": "knife",
+     "block_reason": "extended 2.1z vs 5d anchor"},
+    {"ticker": "W2.TO", "alpha": 0.3, "watch_reason": "blocked",
+     "block_reason": "alignment gate withheld"},
+]
+
+
+def _capture_shadow(monkeypatch, seen: dict) -> list[tuple[list[dict], dict]]:
+    """Replace the helper's counting write_shadow stub with one that also
+    captures the exact (calls, kwargs) population handed to the substrate.
+    Resolves the module the SAME way `_stub_canada_health_read_side` (and the
+    production `from engine import board_shadow`) does — K1's delitem+re-import
+    arm can leave the engine package attribute on a re-imported module object
+    that is not this file's top-level `bs` alias."""
+    from engine import board_shadow as active_shadow
+
+    payloads: list[tuple[list[dict], dict]] = []
+
+    def shadow_write(calls, **kwargs):
+        seen["shadow"] += 1
+        payloads.append((calls, kwargs))
+
+    monkeypatch.setattr(active_shadow, "write_shadow", shadow_write)
+    if active_shadow is not bs:
+        monkeypatch.setattr(bs, "write_shadow", shadow_write)
+    return payloads
+
+
+def test_ca_zero_buy_armed_nightly_keeps_shadow_track_and_scorecard_alive(
+    monkeypatch, tmp_path
+):
+    """T1 — zero official buys, two watch rows, armed nightly: append_board is
+    NEVER called; write_shadow runs exactly once on the watch-only calls; the
+    scorecard attaches, the track ledger emits; health is the honest SKIP row
+    alone (no ERROR). This is the exact assertion that fails at BASE, where the
+    early return skips the whole block."""
+    from scripts import build_canada
+    from scripts.build_canada_library import CA_BOARD_DEFINITION
+
+    setups = _zero_buy_setups(copy.deepcopy(_TWO_WATCH_ROWS))
+    seen = _stub_canada_health_read_side(monkeypatch, tmp_path)
+    shadow_payloads = _capture_shadow(monkeypatch, seen)
+    appends = []
+
+    def append_board(*args, **kwargs):
+        appends.append((args, kwargs))
+        return 1
+
+    monkeypatch.setattr(build_canada, "_ledger_advance_enabled", lambda: True)
+    monkeypatch.setattr(board_ledger, "append_board", append_board)
+
+    health = build_canada._canada_board_ledger(setups, {"date": ASOF})
+
+    assert appends == [], "zero official buys must never reach append_board"
+    assert len(shadow_payloads) == 1, (
+        f"write_shadow must run exactly once; got {len(shadow_payloads)}"
+    )
+    calls, kwargs = shadow_payloads[0]
+    assert kwargs == {"market": "CA", "asof": ASOF}
+    assert calls == [
+        {"ticker": "W1.TO", "group": "watch", "edge_z": 0.4,
+         "primary_rejection_reason": "knife_demote",
+         "block_reason": "extended 2.1z vs 5d anchor",
+         "knife_demoted": True, "board_definition": CA_BOARD_DEFINITION},
+        {"ticker": "W2.TO", "group": "watch", "edge_z": 0.3,
+         "primary_rejection_reason": None,
+         "block_reason": "alignment gate withheld",
+         "knife_demoted": False, "board_definition": CA_BOARD_DEFINITION},
+    ]
+    assert setups["board_track"] == {"status": "accruing"}
+    assert seen == {"scorecard": 1, "grade": 1, "track": 1, "shadow": 1}
+    assert health == [_ZERO_BUY_SKIP_ROW]
+
+
+def test_ca_zero_buy_zero_watch_still_writes_empty_shadow(monkeypatch, tmp_path):
+    """T2 — zero official buys AND zero watch rows: write_shadow still runs once
+    with an empty population; the scorecard still attaches; health is exactly
+    the SKIP row."""
+    from scripts import build_canada
+
+    setups = _zero_buy_setups([])
+    seen = _stub_canada_health_read_side(monkeypatch, tmp_path)
+    shadow_payloads = _capture_shadow(monkeypatch, seen)
+
+    monkeypatch.setattr(build_canada, "_ledger_advance_enabled", lambda: True)
+
+    health = build_canada._canada_board_ledger(setups, {"date": ASOF})
+
+    assert shadow_payloads == [([], {"market": "CA", "asof": ASOF})]
+    assert setups["board_track"] == {"status": "accruing"}
+    assert health == [_ZERO_BUY_SKIP_ROW]
+
+
+def test_ca_missing_board_object_is_skip_only_and_inert(monkeypatch, tmp_path):
+    """T3 — no board object at all (setups=None): the SKIP row and nothing
+    else; no scorecard/grade/track/shadow call runs and nothing raises."""
+    from scripts import build_canada
+
+    seen = _stub_canada_health_read_side(monkeypatch, tmp_path)
+
+    health = build_canada._canada_board_ledger(None, {"date": ASOF})
+
+    assert health == [_ZERO_BUY_SKIP_ROW]
+    assert seen == {"scorecard": 0, "grade": 0, "track": 0, "shadow": 0}
+
+
+def test_ca_zero_buy_shadow_failure_is_contained(monkeypatch, tmp_path):
+    """T4 — zero official buys with write_shadow raising: contained by the call
+    site's own guard — nothing escapes, no ERROR row, the honest SKIP row is
+    the whole health list, and the scorecard attach already happened."""
+    from scripts import build_canada
+
+    setups = _zero_buy_setups(copy.deepcopy(_TWO_WATCH_ROWS))
+    _stub_canada_health_read_side(monkeypatch, tmp_path)
+
+    def explode(*_args, **_kwargs):
+        raise RuntimeError("synthetic shadow failure")
+
+    from engine import board_shadow as active_shadow
+    monkeypatch.setattr(active_shadow, "write_shadow", explode)
+    if active_shadow is not bs:
+        monkeypatch.setattr(bs, "write_shadow", explode)
+    monkeypatch.setattr(build_canada, "_ledger_advance_enabled", lambda: True)
+
+    health = build_canada._canada_board_ledger(setups, {"date": ASOF})  # must not raise
+
+    assert health == [_ZERO_BUY_SKIP_ROW]
+    assert setups["board_track"] == {"status": "accruing"}
+
+
+def test_ca_zero_buy_off_nightly_still_writes_shadow(monkeypatch, tmp_path):
+    """T5 — zero official buys on an off-nightly render: identical to T1 — the
+    append is withheld either way (never called) and the shadow write still
+    runs exactly once on the watch-only calls."""
+    from scripts import build_canada
+
+    setups = _zero_buy_setups(copy.deepcopy(_TWO_WATCH_ROWS))
+    seen = _stub_canada_health_read_side(monkeypatch, tmp_path)
+    shadow_payloads = _capture_shadow(monkeypatch, seen)
+    appends = []
+
+    def append_board(*args, **kwargs):
+        appends.append((args, kwargs))
+        return 1
+
+    monkeypatch.setattr(build_canada, "_ledger_advance_enabled", lambda: False)
+    monkeypatch.setattr(board_ledger, "append_board", append_board)
+
+    health = build_canada._canada_board_ledger(setups, {"date": ASOF})
+
+    assert appends == []
+    assert len(shadow_payloads) == 1
+    _calls, kwargs = shadow_payloads[0]
+    assert kwargs == {"market": "CA", "asof": ASOF}
+    assert len(_calls) == 2
+    assert setups["board_track"] == {"status": "accruing"}
+    assert seen == {"scorecard": 1, "grade": 1, "track": 1, "shadow": 1}
+    assert health == [_ZERO_BUY_SKIP_ROW]

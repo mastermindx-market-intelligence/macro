@@ -73,6 +73,13 @@ import copy
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.publication_prior import (
+    apply_headline_publication_fields,
+    attach_prior_publication,
+    no_earlier_publication,
+    resolve_publication_prior,
+)
+
 METHOD_VERSION = "labor_markets.compose.v1"
 AXIS_DEFINITION_VERSION = "1.0.0"
 PRODUCER = "engine.market_os.macro_workspaces.labor"
@@ -139,6 +146,18 @@ def _round(v: float | None, n: int = 2) -> float | None:
 
 def _bil(en: str, zh: str | None) -> dict:
     return {"en": en, "zh": zh}
+
+
+
+def _plain_axis_num(v, *, zh: bool = False) -> str:
+    """C-n3: format an axis score; None/non-numeric → plain-word null."""
+    if v is None:
+        return "暂无" if zh else "unavailable"
+    try:
+        return f"{float(v):.1f}"
+    except (TypeError, ValueError):
+        return "暂无" if zh else "unavailable"
+
 
 
 def _worst_freshness(states: list[str]) -> str:
@@ -327,8 +346,10 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
         reasons.append(f"contradiction={contradiction['kind']}")
 
     # ---- quadrant + hysteresis --------------------------------------------- #
+    publication_prior = resolve_publication_prior(prior_snapshot, asof)
     headline = _headline(x_value, x_status, x_null, y_value, y_status, y_null,
-                         asof, prior_snapshot, contradiction)
+                         asof, publication_prior, contradiction)
+    apply_headline_publication_fields(headline, publication_prior, raw_prior=prior_snapshot)
 
     # ---- changes vs prior accepted print ------------------------------------ #
     changes = _changes(headline, x_value, y_value, prior_snapshot)
@@ -405,7 +426,7 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
             "privacy_note": "Event definitions reuse the existing first-party analytics owner; no second analytics store, no user identity copied into the artifact.",
         },
     }
-    return snapshot
+    return attach_prior_publication(snapshot, publication_prior)
 
 
 # --------------------------------------------------------------------------- #
@@ -551,6 +572,8 @@ def _headline(x_value, x_status, x_null, y_value, y_status, y_null, asof,
             vec_null = "INSUFFICIENT_HISTORY"
         vec = {"dx": None, "dy": None, "status": "ABSENT", "null_reason": vec_null}
         transition_distance = None
+    vec["x_axis_id"] = "labor_demand"
+    vec["y_axis_id"] = "labor_supply_tightness"
 
     if not applied:
         note = "no comparable prior print; raw threshold classification, hysteresis not applied"
@@ -594,6 +617,9 @@ def _changes(headline, x_value, y_value, prior_snapshot) -> dict:
         return {"comparability": "NO_PRIOR", "prior_generation_id": None,
                 "prior_effective_date": None, "prior_method_version": None,
                 "deltas": [], "status": "ABSENT", "null_reason": "WARMUP"}
+    prior_snapshot = resolve_publication_prior(prior_snapshot, _get(headline, "effective_date"))
+    if prior_snapshot is None:
+        return no_earlier_publication()
     prior_method = _get(prior_snapshot, "headline", "method_version")
     prior_gen = _get(prior_snapshot, "generation", "generation_id")
     prior_eff = _get(prior_snapshot, "headline", "effective_date")
@@ -857,10 +883,10 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness, co
         items.append({
             "implication_id": "state_descriptive",
             "text": _bil(
-                f"US labor market reads {state_id} - {label_en} (labor demand x={x_value}, "
-                f"labor supply/tightness y={y_value}, boundary 50).",
-                f"美国劳动力市场读数为 {state_id} - {label_zh}（劳动力需求 x={x_value}，"
-                f"劳动力供给/紧张度 y={y_value}，分界 50）。"),
+                f"US labor market reads {state_id} - {label_en} (labor demand {_plain_axis_num(x_value)}, "
+                f"labor supply/tightness {_plain_axis_num(y_value)}, boundary 50).",
+                f"美国劳动力市场读数为 {state_id} - {label_zh}（劳动力需求 {_plain_axis_num(x_value, zh=True)}，"
+                f"劳动力供给/紧张度 {_plain_axis_num(y_value, zh=True)}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

@@ -254,6 +254,13 @@ import datetime as _dt
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.publication_prior import (
+    apply_headline_publication_fields,
+    attach_prior_publication,
+    no_earlier_publication,
+    resolve_publication_prior,
+)
+
 METHOD_VERSION = "consumer_payments.compose.v1"
 DEFINITION_VERSION = "1.0.0"
 AXIS_DEFINITION_VERSION = "1.0.0"
@@ -404,6 +411,16 @@ def _clamp(v: float, lo: float, hi: float) -> float:
 
 def _bil(en: str | None, zh: str | None) -> dict:
     return {"en": en, "zh": zh}
+
+
+def _plain_axis(v, *, zh: bool = False) -> str:
+    """C-n3: format an axis score; None/non-numeric → plain-word null."""
+    if v is None:
+        return "暂无" if zh else "unavailable"
+    try:
+        return f"{float(v):.1f}"
+    except (TypeError, ValueError):
+        return "暂无" if zh else "unavailable"
 
 
 def _band(v, lo, hi):
@@ -895,9 +912,11 @@ def compose(fred_frames: Mapping[str, Any] | None, *, built_at: str,
     ))
     metrics_by_id = {m["metric_id"]: m["value"] for m in metrics}
 
+    publication_prior = resolve_publication_prior(prior_snapshot, effective_date)
     headline = _headline(x_value, x_status, x_null, y_value, y_status, y_null,
-                          effective_date, prior_snapshot)
-    changes = _changes(metrics_by_id, prior_snapshot)
+                          effective_date, publication_prior)
+    apply_headline_publication_fields(headline, publication_prior, raw_prior=prior_snapshot)
+    changes = _changes(metrics_by_id, prior_snapshot, effective_date)
 
     reasons: list[str] = []
     if worst != "CURRENT":
@@ -992,7 +1011,7 @@ def compose(fred_frames: Mapping[str, Any] | None, *, built_at: str,
             "privacy_note": "Event definitions reuse the existing first-party analytics owner; no second analytics store, no user identity copied into the artifact.",
         },
     }
-    return snapshot
+    return attach_prior_publication(snapshot, publication_prior)
 
 
 # --------------------------------------------------------------------------- #
@@ -1373,6 +1392,8 @@ def _headline(x_value, x_status, x_null, y_value, y_status, y_null, effective_da
             vec_null = "INSUFFICIENT_HISTORY"
         vec = {"dx": None, "dy": None, "status": "ABSENT", "null_reason": vec_null}
         transition_distance = None
+    vec["x_axis_id"] = "cash_flow_momentum"
+    vec["y_axis_id"] = "credit_stress"
 
     if not computable:
         note = (
@@ -1493,9 +1514,9 @@ def _implications(metrics_by_id: dict, contradictions: list[dict], worst_freshne
             "implication_id": "headline_computed",
             "text": _bil(
                 f"Consumer & Payments reads {headline['state_id']} - {label['en']} "
-                f"(cash-flow momentum x={x_value}, credit stress y={y_value}, boundary 50).",
+                f"(cash-flow momentum {_plain_axis(x_value)}, credit stress {_plain_axis(y_value)}, boundary 50).",
                 f"消费与支付读数为 {headline['state_id']} - {label['zh']}"
-                f"（现金流动能 x={x_value}，信贷压力 y={y_value}，分界 50）。"),
+                f"（现金流动能 {_plain_axis(x_value, zh=True)}，信贷压力 {_plain_axis(y_value, zh=True)}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE", "confidence": conf, "horizon": "current",
             "channels": ["consumer", "spending", "credit"],
             "contradictions": [c["kind"] for c in contradictions],
@@ -1761,11 +1782,15 @@ def _sources(retail, sentiment, credit_total, credit_revolving, credit_nonrevolv
 # --------------------------------------------------------------------------- #
 # changes / corrections
 # --------------------------------------------------------------------------- #
-def _changes(current_metrics_by_id: dict, prior_snapshot: Mapping | None) -> dict:
+def _changes(current_metrics_by_id: dict, prior_snapshot: Mapping | None,
+             current_effective_date) -> dict:
     if prior_snapshot is None:
         return {"comparability": "NO_PRIOR", "prior_generation_id": None,
                 "prior_effective_date": None, "prior_method_version": None,
                 "deltas": [], "status": "ABSENT", "null_reason": "WARMUP"}
+    prior_snapshot = resolve_publication_prior(prior_snapshot, current_effective_date)
+    if prior_snapshot is None:
+        return no_earlier_publication()
     prior_method = _get(prior_snapshot, "headline", "method_version")
     prior_gen = _get(prior_snapshot, "generation", "generation_id")
     prior_eff = _get(prior_snapshot, "headline", "effective_date")

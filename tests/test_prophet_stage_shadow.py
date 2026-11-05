@@ -231,10 +231,13 @@ def test_ec_strictly_before(tmp_path, monkeypatch):
         tmp_path, [("CCC-BULL-20210615", "CCC", sig, "plan")])
 
     # EC table: one call the day BEFORE (usable) and one ON the entry day (NOT usable).
+    # Readings are on EquityDesk's NATIVE ~-10..30 scale. They used to be 42/99, which
+    # the native-range guard nulls, so this assertion had gone red for a scale reason
+    # rather than a point-in-time one.
     ec = pd.DataFrame({
         "document_ticker": ["CCC", "CCC", "CCC"],
         "call_date": pd.to_datetime(["2021-03-01", "2021-06-14", "2021-06-15"]),
-        "earnings_call_sent": [10.0, 42.0, 99.0],
+        "earnings_call_sent": [10.0, 28.0, 30.0],
     })
     ec_path = tmp_path / "ec.parquet"
     ec.to_parquet(ec_path)
@@ -242,7 +245,7 @@ def test_ec_strictly_before(tmp_path, monkeypatch):
     pss.tag_entries(root=data_root, site_root=site_root, ec_path=ec_path)
     row = list(pss._load_ledger(data_root).values())[0]
     assert row["last_ec"] is not None
-    assert row["last_ec"]["sent"] == 42.0, "must pick the most-recent call STRICTLY before entry"
+    assert row["last_ec"]["sent"] == 28.0, "must pick the most-recent call STRICTLY before entry"
     assert row["last_ec"]["call_date"] == "2021-06-14"
 
 

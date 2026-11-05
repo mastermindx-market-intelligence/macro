@@ -1,0 +1,73 @@
+{
+  "source_head": "30117a758d915dcfeec562c823f764151ef5db08",
+  "doctrine_fingerprint": "8a6c0c3772a5",
+  "run_id": "eval-t6-blind-six-01a1333d-c2",
+  "packet_sha256": "e1e7e2e85ca6827f3deccfc229e5381bbcc0d92afa955588435b7b67fde3995b",
+  "cases": [
+    {
+      "benchmark_id": "capex_bind_2026-07-22",
+      "name": "benchmark_capex_bind_2026-07-22.json",
+      "system_sha256": "9a1388376d8335e660d76d984c0062d947694948997ab3f8660095101bb36503",
+      "user_sha256": "b9444970c6cca585e2ff55f3f6aa86395a5727bec39b2d5a13feea807f102e88",
+      "files": {
+        "engine/neuralweb/eval/benchmark_capex_bind_2026-07-22.json": "ac099733b8248d4155eb3be4748b7f00384fa07d84d1e38850769951da20ae64",
+        "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md": "b344adc90871c5f04e26e723f96bab6b1b4e58ebe6fe025b25f2750060cbf147"
+      }
+    },
+    {
+      "benchmark_id": "gold_real_rate_2026-08-09",
+      "name": "benchmark_gold_real_rate_2026-08-09.json",
+      "system_sha256": "9a1388376d8335e660d76d984c0062d947694948997ab3f8660095101bb36503",
+      "user_sha256": "4778d4c76d5acb3f31b9dcee8207f1bed3e1485cbe40c221c676bb3dc2cccac1",
+      "files": {
+        "engine/neuralweb/eval/benchmark_gold_real_rate_2026-08-09.json": "590e86b7cb742f0caea2cbb8ef1c5aa1352d06b87e9300a2497ae339e73e1cc7",
+        "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md": "4baa27cc3ae84422b4a252bf6b45af9c3708099f44ce51318b7d128c13c025ca"
+      }
+    },
+    {
+      "benchmark_id": "healthcare_coherence_2026-07-13",
+      "name": "benchmark_healthcare_coherence_2026-07-13.json",
+      "system_sha256": "9a1388376d8335e660d76d984c0062d947694948997ab3f8660095101bb36503",
+      "user_sha256": "f35fc0cdf3de4bc02a3fbfdee88e9d12d94d98165327e7f4309ed16a4d140342",
+      "files": {
+        "engine/neuralweb/eval/benchmark_healthcare_coherence_2026-07-13.json": "e2e967765b15357879d9a5f7db8d1143466abbedb526fbfaca9f3dadc6c4e10e",
+        "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md": "cd7aca18bf338cd6df688e020487e6d43cb8fc8a8c69d6e462fd87559dca7fd6"
+      }
+    },
+    {
+      "benchmark_id": "mag7_forced_override_2026-07-11",
+      "name": "benchmark_mag7_forced_override_2026-07-11.json",
+      "system_sha256": "9a1388376d8335e660d76d984c0062d947694948997ab3f8660095101bb36503",
+      "user_sha256": "7b8280c48b0d8c21d3de9c0a38514cbdd537f19018073d5fc46b10b8450066d5",
+      "files": {
+        "engine/neuralweb/eval/benchmark_mag7_forced_override_2026-07-11.json": "cee090e93dcd00fecfe7f687a079ce099ee248365e850e9b55fa618c60080909",
+        "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md": "6d696600e09a105b74c02fa42090d75a821b59177c28630af918f8a9ec2adb50"
+      }
+    },
+    {
+      "benchmark_id": "mag7_narration_2026-08-03",
+      "name": "benchmark_mag7_narration_2026-08-03.json",
+      "system_sha256": "9a1388376d8335e660d76d984c0062d947694948997ab3f8660095101bb36503",
+      "user_sha256": "ca44bc456941e37bb94ced2919356f446f91b127f6a80f8fb82b78251f3e84dd",
+      "files": {
+        "engine/neuralweb/eval/benchmark_mag7_narration_2026-08-03.json": "88689c9582d7c5e40828ecb3578c0dbbe52f8277c11c4a84191f966b7463d5c3",
+        "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md": "206dbc603edcd71604e20591f4fa3ca55894dde89edbe14758ce3191f656852f"
+      }
+    },
+    {
+      "benchmark_id": "rotation_wiring_2026-07-16",
+      "name": "benchmark_rotation_wiring_2026-07-16.json",
+      "system_sha256": "9a1388376d8335e660d76d984c0062d947694948997ab3f8660095101bb36503",
+      "user_sha256": "ed6aa4346048c77ac389be2f53f9ba45c761990b5dd336e0fdbf9df84896fcee",
+      "files": {
+        "engine/neuralweb/eval/benchmark_rotation_wiring_2026-07-16.json": "876f6ae8032a1f5fd3e83282198f9b241b38ce19c8473cec68790b9de21b74e3",
+        "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md": "e1e58df473e39d55b6f9215a46873c70dbe7007b0596b8ddc71a245b97c3925c"
+      }
+    }
+  ],
+  "limits": [
+    "supplied historical text, not proved historical PIT",
+    "one shared-context Fabric batch, not independent samples",
+    "current-doctrine; not production serving model proof"
+  ]
+}

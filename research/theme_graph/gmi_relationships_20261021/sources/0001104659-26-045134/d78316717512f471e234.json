@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-20T10:21:00Z",
+ "accession": "0001104659-26-045134",
+ "cik": "0001477641",
+ "doc_byte_length": 3213770,
+ "doc_sha256": "0148f5c5ed9c69896be3b0b3922f781b03c7894153556c37baaab520258c10c0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-20",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "dq-20251231x20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 747911,
+  "byte_start": 747265,
+  "normalized": "While we continue to develop and pursue patent protection for our own technologies, we expect to continue implementing third party license arrangements on certain key aspects of our operation. In August 2011, Chongqing Daqo entered into a Technology License and Transfer Agreement with GTAT Corporation, a Delaware company, under which GTAT granted us a license to use its Hydrochlorination TCS Production Technology and Chlorosilane Recovery/Waste Neutralization Technology for our current polysilicon production and future polysilicon production expansions. We had paid off the consideration for the transfer of this technology in January 2016.",
+  "normalized_sha256": "d78316717512f471e2346734afadb1f78de6c52d358f1d9d45d7a58a194b2692",
+  "raw": "While we continue to develop and pursue patent protection for our own technologies, we expect to continue implementing third party license arrangements on certain key aspects of our operation. In August 2011, Chongqing Daqo entered into a Technology License and Transfer Agreement with GTAT Corporation, a Delaware company, under which GTAT granted us a license to use its Hydrochlorination TCS Production Technology and Chlorosilane Recovery/Waste Neutralization Technology for our current polysilicon production and future polysilicon production expansions. We had paid off the consideration for the transfer of this technology in January 2016.",
+  "raw_sha256": "d78316717512f471e2346734afadb1f78de6c52d358f1d9d45d7a58a194b2692"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1477641/000110465926045134/dq-20251231x20f.htm",
+ "xbrl_contexts": []
+}

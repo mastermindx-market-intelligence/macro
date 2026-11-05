@@ -1,0 +1,19 @@
+{
+  "phase": "red",
+  "head": "af0ba2d50a32c7a422508b442f35010dcdf154a2",
+  "source_sha256": "f130d871b605f1c1d40105fb2ec46645464dce6ff2ea465c7c24d4d5e06ef849",
+  "started_at": "2026-10-22T06:33:41.967180+00:00",
+  "completed_at": "2026-10-22T06:33:45.142016+00:00",
+  "seconds": 3.175,
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "tests/test_collect_failfast.py",
+    "-k",
+    "fred_api or fred_partial_and_total",
+    "-q"
+  ],
+  "exit_code": 1,
+  "log": "/tmp/portfolio-fred-response-hardening-20261022/red.log"
+}

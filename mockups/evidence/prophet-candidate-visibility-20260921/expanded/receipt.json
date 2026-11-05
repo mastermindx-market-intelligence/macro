@@ -1,0 +1,100 @@
+{
+  "source_ref": "4bf1b3aee532114b0c67e06c532b6e4ed7884549",
+  "source_sha256": "76d5865874e2d47f55c934a4f89acc28756d5555d9ed7cdd58af26f639ad35b7",
+  "source_path": "site/factordata/us_standouts.json",
+  "board_as_of": "2026-09-18",
+  "proof_scope": "real artifact -> production projection/split/payload -> browser component; auth response simulated; NOT deployed",
+  "counts": {
+    "eligible": 66,
+    "in_buy_lane": 52,
+    "off_buy_lane": 14,
+    "scored": 52,
+    "unscored": 14
+  },
+  "preview": 3,
+  "protected_tail": 63,
+  "amd": {
+    "ticker": "AMD",
+    "name": "Advanced Micro Devices",
+    "sector": "Information Technology",
+    "pool_rank": 26,
+    "in_buy_lane": false,
+    "lane": "more_actionable",
+    "headline_reason": "sector_cap_overflow",
+    "lane_reasons": [
+      "sector_cap_overflow"
+    ],
+    "tier_cascade": "T1",
+    "admission_class": null,
+    "prophet_score_basis": null,
+    "prophet": null,
+    "archive_state": "missing"
+  },
+  "board_bytes_unchanged": true,
+  "browser": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "horizontal_overflow": false,
+      "screenshot": "candidate-1440-light-en.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "horizontal_overflow": false,
+      "screenshot": "candidate-1440-light-zh.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "horizontal_overflow": false,
+      "screenshot": "candidate-1440-dark-en.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "horizontal_overflow": false,
+      "screenshot": "candidate-1440-dark-zh.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "horizontal_overflow": false,
+      "screenshot": "candidate-390-light-en.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "horizontal_overflow": false,
+      "screenshot": "candidate-390-light-zh.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "horizontal_overflow": false,
+      "screenshot": "candidate-390-dark-en.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "horizontal_overflow": false,
+      "screenshot": "candidate-390-dark-zh.png"
+    }
+  ],
+  "keyboard_open": true,
+  "hydration_idempotent": true,
+  "search_amd": true,
+  "outside_filter": true,
+  "no_match": true,
+  "order_preserved": true,
+  "mixed_generation_refused": true,
+  "partial_tail_refused": true
+}

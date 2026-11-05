@@ -1,0 +1,140 @@
+{
+  "canonical_capture_cells": 16,
+  "canonical_ui_guard_exit": 0,
+  "cases": [
+    {
+      "corrected_disclosure_copy": true,
+      "language": "zh",
+      "no_remote_requests": true,
+      "no_viewport_overflow": true,
+      "page_errors": [],
+      "same_data_and_pagination": true,
+      "screenshot": "/Volumes/Mastermind 2/agent-workspaces/macro/web/market-time-machine-context-20261015/.test-tmp/filing-zh-correction/browser-proof/market-1440-dark-zh.png",
+      "source_gap_stays_visible": true,
+      "theme": "dark",
+      "variant": "market",
+      "width": 1440
+    },
+    {
+      "corrected_disclosure_copy": true,
+      "language": "zh",
+      "no_remote_requests": true,
+      "no_viewport_overflow": true,
+      "page_errors": [],
+      "same_data_and_pagination": true,
+      "screenshot": "/Volumes/Mastermind 2/agent-workspaces/macro/web/market-time-machine-context-20261015/.test-tmp/filing-zh-correction/browser-proof/market-1440-light-zh.png",
+      "source_gap_stays_visible": true,
+      "theme": "light",
+      "variant": "market",
+      "width": 1440
+    },
+    {
+      "corrected_disclosure_copy": true,
+      "language": "zh",
+      "no_remote_requests": true,
+      "no_viewport_overflow": true,
+      "page_errors": [],
+      "same_data_and_pagination": true,
+      "screenshot": "/Volumes/Mastermind 2/agent-workspaces/macro/web/market-time-machine-context-20261015/.test-tmp/filing-zh-correction/browser-proof/market-390-dark-zh.png",
+      "source_gap_stays_visible": true,
+      "theme": "dark",
+      "variant": "market",
+      "width": 390
+    },
+    {
+      "corrected_disclosure_copy": true,
+      "language": "zh",
+      "no_remote_requests": true,
+      "no_viewport_overflow": true,
+      "page_errors": [],
+      "same_data_and_pagination": true,
+      "screenshot": "/Volumes/Mastermind 2/agent-workspaces/macro/web/market-time-machine-context-20261015/.test-tmp/filing-zh-correction/browser-proof/market-390-light-zh.png",
+      "source_gap_stays_visible": true,
+      "theme": "light",
+      "variant": "market",
+      "width": 390
+    },
+    {
+      "corrected_disclosure_copy": true,
+      "language": "zh",
+      "no_remote_requests": true,
+      "no_viewport_overflow": true,
+      "page_errors": [],
+      "same_data_and_pagination": true,
+      "screenshot": "/Volumes/Mastermind 2/agent-workspaces/macro/web/market-time-machine-context-20261015/.test-tmp/filing-zh-correction/browser-proof/stocks-1440-dark-zh.png",
+      "source_gap_stays_visible": true,
+      "theme": "dark",
+      "variant": "stocks",
+      "width": 1440
+    },
+    {
+      "corrected_disclosure_copy": true,
+      "language": "zh",
+      "no_remote_requests": true,
+      "no_viewport_overflow": true,
+      "page_errors": [],
+      "same_data_and_pagination": true,
+      "screenshot": "/Volumes/Mastermind 2/agent-workspaces/macro/web/market-time-machine-context-20261015/.test-tmp/filing-zh-correction/browser-proof/stocks-1440-light-zh.png",
+      "source_gap_stays_visible": true,
+      "theme": "light",
+      "variant": "stocks",
+      "width": 1440
+    },
+    {
+      "corrected_disclosure_copy": true,
+      "language": "zh",
+      "no_remote_requests": true,
+      "no_viewport_overflow": true,
+      "page_errors": [],
+      "same_data_and_pagination": true,
+      "screenshot": "/Volumes/Mastermind 2/agent-workspaces/macro/web/market-time-machine-context-20261015/.test-tmp/filing-zh-correction/browser-proof/stocks-390-dark-zh.png",
+      "source_gap_stays_visible": true,
+      "theme": "dark",
+      "variant": "stocks",
+      "width": 390
+    },
+    {
+      "corrected_disclosure_copy": true,
+      "language": "zh",
+      "no_remote_requests": true,
+      "no_viewport_overflow": true,
+      "page_errors": [],
+      "same_data_and_pagination": true,
+      "screenshot": "/Volumes/Mastermind 2/agent-workspaces/macro/web/market-time-machine-context-20261015/.test-tmp/filing-zh-correction/browser-proof/stocks-390-light-zh.png",
+      "source_gap_stays_visible": true,
+      "theme": "light",
+      "variant": "stocks",
+      "width": 390
+    }
+  ],
+  "comparisons": [
+    {
+      "after_html_sha256": "9bd5ede39d7be4978c22dc99b2fef330d096c7513f434063fd47f4a602f0a684",
+      "archive_payloads_byte_identical": true,
+      "before_html_sha256": "618b13abef5ec02d939ae0872bd8b68c41dd130d0cfc3b613e044085938e02d3",
+      "only_nine_zh_terms_changed": true,
+      "variant": "market"
+    },
+    {
+      "after_html_sha256": "5c333e90377a081ca38d25e892100d10e594a5db29e7af3cd0e99f297d570d4a",
+      "archive_payloads_byte_identical": true,
+      "before_html_sha256": "174324441567fb6dd7071ecc8e647ec7562750ef95847ffb489ef917754f8034",
+      "only_nine_zh_terms_changed": true,
+      "variant": "stocks"
+    }
+  ],
+  "exact_guard": "zh-filing-term",
+  "failed_ci_run": 38783434143,
+  "failed_job": 116591006847,
+  "focused_tests_passed": 34,
+  "guard_selftest_exit": 0,
+  "inferred_main_merge_tree_exit": 0,
+  "original_candidate_evidence_reused_except_changed_Chinese_copy": true,
+  "original_html_archives_unchanged": true,
+  "post_fix_guard_exit": 0,
+  "pre_fix_violation_count": 9,
+  "public_publication": false,
+  "schema": "market_memory.filing_zh_correction_browser_proof.v1",
+  "source_semantics_unchanged": true,
+  "unchanged_English_and_full_pagination_evidence": "reused prior exact source/data proof; all differing text is declared nine Chinese term substitutions"
+}

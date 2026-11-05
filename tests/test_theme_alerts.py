@@ -75,6 +75,35 @@ def test_leadership_rotation_fires_on_new_number_one():
     assert len(rot) == 1 and rot[0]["asset"] == "b"
 
 
+def test_confirmed_emerging_copy_is_plain_words_and_uncapped():
+    # The page used to slice detail[:200]; this body is the string that lost its
+    # debounce honesty clause. Producer must emit the full sentence in plain words
+    # (no ALLCAPS lifecycle enum, no "debounced") so a template with no cap keeps it.
+    c = {"name": "Utilities (Equal-Weight)", "name_zh": "公用事业（等权）",
+         "score": 38, "reco": "hold", "label": "emerging"}
+    ev = ta._confirmed_emerging_event("util", c, "neutral", "2026-06-20", 2)
+    assert "EMERGING" not in ev["detail"]
+    assert "debounced" not in ev["detail"].casefold()
+    assert "去抖" not in ev["detail_zh"]
+    assert "wait for a second session" in ev["detail"]
+    assert "需连续确认" in ev["detail_zh"]
+    assert len(ev["detail"]) > 200
+
+
+def test_reco_change_copy_uses_display_names_not_allcaps_enums():
+    prior = {"ai": _theme("ai", "dominant", "hold", 1, 66)}
+    intel = _intel([_theme("ai", "dominant", "accumulate", 1, 68)])
+    ev = ta.compute_events(intel, prior)[0]
+    assert "HOLD" not in ev["detail"]
+    assert "ACCUMULATE" not in ev["detail"]
+    assert "Hold" in ev["detail"] and "Accumulate" in ev["detail"]
+    assert "dominant" in ev["detail"]          # lifecycle word, not ALLCAPS
+    assert "DOMINANT" not in ev["detail"]
+    assert "dominant" not in ev["detail_zh"]   # ZH must not leak the EN enum
+    assert "主导" in ev["detail_zh"]
+    assert "持有" in ev["detail_zh"] and "加仓" in ev["detail_zh"]
+
+
 def test_event_ids_are_stable_and_bilingual():
     prior = {"x": _theme("x", "neutral", "hold", 4, 48)}
     intel = _intel([_theme("x", "deteriorating", "avoid", 9, 32)])

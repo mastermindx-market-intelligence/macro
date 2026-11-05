@@ -1,0 +1,218 @@
+{
+  "document_kind": "PROPOSED_OWNER_DECISION_CROSSWALK_NOT_AUTHORITY_REGISTRY",
+  "count": 12,
+  "decisions": [
+    {
+      "id": "D01",
+      "title": "Source-session validity and revocation",
+      "status": "OPEN_OWNER_DECISION",
+      "owner": "Incumbent confluence and B4 policy/adapter owners, #7581",
+      "required_evidence": "Current exact adapter and producer heads; actual emission/scheduling contract; accepted session and basis facts; next-session, late-emission, expiry, retraction and shortened-session cases.",
+      "required_output": "Accepted source/observed/valid-for/expiry/revocation semantics, or proof of genuine current-session qualified production. Return to existing #7581 finding5789777976 without duplicating review.",
+      "forbidden_shortcut": "Relabeling prior data as today, removing equality without a replacement validity rule, or translating compact UNKNOWN into FAIL.",
+      "blocked_consumers": [
+        "B05",
+        "B12",
+        "B15",
+        "B19"
+      ],
+      "creates_authority": false
+    },
+    {
+      "id": "D02",
+      "title": "Independent expert anchors and episode admission",
+      "status": "OPEN_OWNER_DECISION",
+      "owner": "B1/Stock Identity/TOI and relevant existing expert owners",
+      "required_evidence": "Owner-native nomination and structural anchor; causal observation clock; exact identity and re-arm semantics; rejected-source/key examples; comparison with known killed species.",
+      "required_output": "Versioned accepted source adapter and anchor contract with immutable episode lineage, suppression reasons and no changed historical IDs.",
+      "forbidden_shortcut": "Ticker/date surrogate episodes, future extrema, silent retries of immutable source keys, or parallel lifecycle store.",
+      "blocked_consumers": [
+        "B02",
+        "B10",
+        "B12",
+        "B14",
+        "B17"
+      ],
+      "creates_authority": false
+    },
+    {
+      "id": "D03",
+      "title": "Real source histories and rights",
+      "status": "OPEN_OWNER_DECISION",
+      "owner": "Existing Data OS, Earnings/FIF, GMI, quote and source licensing owners",
+      "required_evidence": "Exact usable dates, field semantics, vintage/correction lineage, coverage by original universe, delistings, publication/processing rights and source costs; data-independent domain criteria.",
+      "required_output": "Signed-off source-readiness matrix and branch-specific admissible data classes. Industrial capital goods is a Cycle readiness candidate, not a return-selected winning domain.",
+      "forbidden_shortcut": "Current membership/event set backdated, guessed statutory availability lags, broad industry series relabeled granular subthemes, or assumed licenses.",
+      "blocked_consumers": [
+        "B04",
+        "B08",
+        "B09",
+        "B16",
+        "B18"
+      ],
+      "creates_authority": false
+    },
+    {
+      "id": "D04",
+      "title": "Distinct strategy, entry and holding versions",
+      "status": "OPEN_OWNER_DECISION",
+      "owner": "Existing Prophet strategy/B4/plan owners and program acceptance",
+      "required_evidence": "Frozen economic job, supported instruments, eligibility, horizons by role, exact owner facts, entry windows, invalidation and hold/review rules; unchanged legacy control.",
+      "required_output": "Accepted sleeve definitions and separate policy versions; new 1D/4H entry and ER/CC management cannot be inferred from the EL control.",
+      "forbidden_shortcut": "Changing labels under the singleton definition, horizon-as-hold inference, confluence waiver in an adapter or retroactive strategy relabeling.",
+      "blocked_consumers": [
+        "B05",
+        "B12",
+        "B13",
+        "B15",
+        "B19"
+      ],
+      "creates_authority": false
+    },
+    {
+      "id": "D05",
+      "title": "Durable user decision/thesis mapping",
+      "status": "OPEN_OWNER_DECISION",
+      "owner": "Existing WatchStore, feedback, plan and Portfolio owners",
+      "required_evidence": "Actual supported write/read APIs and schema ownership; account/list/episode/security bindings; local/cloud distinction; retries, corrected generations, readback and independent portfolio checks.",
+      "required_output": "Owner-compatible versioned mappings for Watch, Pass/reason, thesis/milestone and held-position links. Unsupported actions visibly remain unavailable until their owner exists.",
+      "forbidden_shortcut": "A new Prophet personal store, turning a watch into a position, local-only notes advertised as cloud saved or unverified optimistic success.",
+      "blocked_consumers": [
+        "B07",
+        "B13",
+        "B17",
+        "B19",
+        "B21",
+        "B24"
+      ],
+      "creates_authority": false
+    },
+    {
+      "id": "D06",
+      "title": "Economic margins, endpoints and formal-read law",
+      "status": "OPEN_OWNER_DECISION",
+      "owner": "Existing Evaluation/QLedger with strategy and risk acceptance owners",
+      "required_evidence": "User economic loss/coverage budget independent of held-out results; declared primary endpoint and cost assumptions; permitted pilot variability/dependence analysis; all comparisons/horizons/peeks counted.",
+      "required_output": "Finite registered analysis with numerical minimum worthwhile gain/non-inferiority/coverage margins, uncertainty method, effective-information floor and read schedule before outcomes. Existing7751 remains separately controlled.",
+      "forbidden_shortcut": "Nonsignificant harm presented as safety, 300rows treated as sufficient power, favorable horizon selection, duplicate cells credited as independent or unrestricted threshold search.",
+      "blocked_consumers": [
+        "B06",
+        "B10",
+        "B11",
+        "B12",
+        "B15",
+        "B18",
+        "B19"
+      ],
+      "creates_authority": false
+    },
+    {
+      "id": "D07",
+      "title": "Source and model-vintage eligibility",
+      "status": "OPEN_OWNER_DECISION",
+      "owner": "Existing source and model/research owners",
+      "required_evidence": "Data release/observed/correction dates; model training and selection vintage where knowable; held-out partition and retrieval/extraction semantics.",
+      "required_output": "Observed-as-run, point-in-time replay or retrospective designation for each study, with a prospective remedy when historical model knowledge cannot be established.",
+      "forbidden_shortcut": "Date-filtered retrieval treated as proof modern model weights contain no future knowledge; masking alone treated as certification.",
+      "blocked_consumers": [
+        "B04",
+        "B08",
+        "B10",
+        "B11",
+        "B15",
+        "B18"
+      ],
+      "creates_authority": false
+    },
+    {
+      "id": "D08",
+      "title": "Fill, costs, latency and capacity assumptions",
+      "status": "OPEN_OWNER_DECISION",
+      "owner": "Existing quote/basis/B4/Evaluation owners; Portfolio/Risk for capacity",
+      "required_evidence": "Executable side or approved cost floor, first usable decision time, session/bar anchoring, limit-order evidence, halt/delisting treatment and measured/floor/unknown status.",
+      "required_output": "Versioned fill/cost contract and sensitivity tests; no capacity claim until actual position/liquidity assumptions are evaluated.",
+      "forbidden_shortcut": "Same-bar known-close fill, touch-equals-fill, twice-charged spread, missing quote treated as zero cost or a stop assumed guaranteed.",
+      "blocked_consumers": [
+        "B05",
+        "B06",
+        "B12",
+        "B15",
+        "B19",
+        "B24"
+      ],
+      "creates_authority": false
+    },
+    {
+      "id": "D09",
+      "title": "Visual architecture and user comprehension",
+      "status": "OPEN_OWNER_DECISION",
+      "owner": "Existing design-system/product owners and independent design reviewer",
+      "required_evidence": "Current shared components, design tokens and route inventory; dark/light EN/ZH1440/390 examples; empty/invalidated/degraded/uncertain states and user tasks.",
+      "required_output": "Accepted visual packet and task-based comprehension criteria, including experimental versus live authority and new-entry versus held-position distinctions.",
+      "forbidden_shortcut": "A third header/token family, CSS skin swap counted as both art directions, or attractive mocks treated as production proof.",
+      "blocked_consumers": [
+        "B07",
+        "B14",
+        "B17",
+        "B20",
+        "B25"
+      ],
+      "creates_authority": false
+    },
+    {
+      "id": "D10",
+      "title": "Exact source custody, worker admission and independence",
+      "status": "OPEN_OWNER_DECISION",
+      "owner": "Existing Executive Capacity/Runtime, source writer, routing and review owners",
+      "required_evidence": "Current operation/Attempt state, writer leases and effect uncertainty; original review carrier; eligible capability and budget; exact immutable packet.",
+      "required_output": "One admitted source-authoritative operation per unit, least-scarce capable route, qualified independent reviewer and durable return path.",
+      "forbidden_shortcut": "A plan mistaken for dispatch, replacing a STARTed/unknown effect, Fable default placement or raw provider-spawn fallback.",
+      "blocked_consumers": [
+        "B00",
+        "B01",
+        "B02",
+        "B03",
+        "B04",
+        "B05",
+        "B06",
+        "B20",
+        "B25",
+        "B26"
+      ],
+      "creates_authority": false
+    },
+    {
+      "id": "D11",
+      "title": "Release, telemetry and safe rollback",
+      "status": "OPEN_OWNER_DECISION",
+      "owner": "Existing release/publication/auth/monitoring owners",
+      "required_evidence": "Current production-path artifacts, entitlement and account matrix, actual ordinary refresh, version-compatible last-good state and user-action preservation.",
+      "required_output": "Accepted staged-release/rollback packet with declared freshness and field performance budgets; current quote-state reevaluation after any rollback.",
+      "forbidden_shortcut": "Serving a stale green entry card from last-good cache, destructive user-store resets, or CI green treated as acceptance.",
+      "blocked_consumers": [
+        "B21",
+        "B22",
+        "B23",
+        "B25",
+        "B26",
+        "B28"
+      ],
+      "creates_authority": false
+    },
+    {
+      "id": "D12",
+      "title": "Final US capability and claim boundary",
+      "status": "OPEN_OWNER_DECISION",
+      "owner": "Chairman/program acceptance with product/research/risk owners",
+      "required_evidence": "All advertised US persona tasks, three initial sleeve dispositions, independent scientific/mechanical/product evidence, actual limitations and remaining scope.",
+      "required_output": "Explicit accepted launch claims and ongoing obligations. Failed research is rejected honestly; further sleeves/regions require their own accepted work and do not disappear silently.",
+      "forbidden_shortcut": "A research prototype called a complete flagship, fabricated positive evidence, copying US coefficients to other markets or hiding a promised missing capability.",
+      "blocked_consumers": [
+        "B25",
+        "B27",
+        "B28"
+      ],
+      "creates_authority": false
+    }
+  ]
+}

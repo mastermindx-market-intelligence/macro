@@ -1,0 +1,31 @@
+{
+  "schema": "mastermind.page_ux_smells.v1",
+  "generated_at": "2026-09-07T06:43:57Z",
+  "disclaimer": "element-screenshot capture; smells not re-censused",
+  "pages": [
+    {
+      "page_id": "reported.html",
+      "route": "/stocks/reported.html"
+    },
+    {
+      "page_id": "not_loaded.html",
+      "route": "/stocks/not_loaded.html"
+    },
+    {
+      "page_id": "no_filings.html",
+      "route": "/stocks/no_filings.html"
+    },
+    {
+      "page_id": "identity_mismatch.html",
+      "route": "/stocks/identity_mismatch.html"
+    },
+    {
+      "page_id": "unresolved.html",
+      "route": "/stocks/unresolved.html"
+    },
+    {
+      "page_id": "no_maturity_facts.html",
+      "route": "/stocks/no_maturity_facts.html"
+    }
+  ]
+}

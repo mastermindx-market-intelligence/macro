@@ -1,0 +1,151 @@
+{
+ "label": "0014_tenancy_foundation",
+ "sql_file": "0014_tenancy_foundation.sql",
+ "applied_at": "2026-09-08T22:24:14Z",
+ "apply_status": 201,
+ "apply_result": "ok",
+ "pre": {
+  "teams": [
+   {
+    "reg": null
+   }
+  ],
+  "team_members": [
+   {
+    "reg": null
+   }
+  ],
+  "team_invites": [
+   {
+    "reg": null
+   }
+  ]
+ },
+ "post": {
+  "tables": {
+   "teams": [
+    {
+     "reg": "teams"
+    }
+   ],
+   "team_members": [
+    {
+     "reg": "team_members"
+    }
+   ],
+   "team_invites": [
+    {
+     "reg": "team_invites"
+    }
+   ]
+  },
+  "indexes": {
+   "team_members_user": [
+    {
+     "indexname": "team_members_user"
+    }
+   ],
+   "team_members_team": [
+    {
+     "indexname": "team_members_team"
+    }
+   ],
+   "team_invites_team": [
+    {
+     "indexname": "team_invites_team"
+    }
+   ],
+   "team_invites_token": [
+    {
+     "indexname": "team_invites_token"
+    }
+   ],
+   "team_invites_team_email_pending": [
+    {
+     "indexname": "team_invites_team_email_pending"
+    }
+   ]
+  },
+  "policies": {
+   "teams_select_member": [
+    {
+     "polname": "teams_select_member"
+    }
+   ],
+   "teams_insert_self": [
+    {
+     "polname": "teams_insert_self"
+    }
+   ],
+   "tm_select_member": [
+    {
+     "polname": "tm_select_member"
+    }
+   ],
+   "tm_insert_admin": [
+    {
+     "polname": "tm_insert_admin"
+    }
+   ],
+   "tm_update_admin": [
+    {
+     "polname": "tm_update_admin"
+    }
+   ],
+   "tm_delete_admin": [
+    {
+     "polname": "tm_delete_admin"
+    }
+   ],
+   "ti_select_admin": [
+    {
+     "polname": "ti_select_admin"
+    }
+   ],
+   "ti_insert_admin": [
+    {
+     "polname": "ti_insert_admin"
+    }
+   ]
+  },
+  "rls": {
+   "teams": [
+    {
+     "relrowsecurity": true
+    }
+   ],
+   "team_members": [
+    {
+     "relrowsecurity": true
+    }
+   ],
+   "team_invites": [
+    {
+     "relrowsecurity": true
+    }
+   ]
+  },
+  "functions": {
+   "is_team_member": [
+    {
+     "proname": "is_team_member"
+    }
+   ],
+   "team_role": [
+    {
+     "proname": "team_role"
+    }
+   ],
+   "handle_new_team": [
+    {
+     "proname": "handle_new_team"
+    }
+   ]
+  }
+ },
+ "method": "Supabase Management API POST /v1/projects/{ref}/database/query (README raw fallback; scripts/supabase_apply.py parser bug terminal#516)",
+ "source_ref": "mastermind-terminal master cff58ee8d4a25143b72d45191aa405b1ac88d697 (PR #514)",
+ "sha256": "88781e40147ffb8f",
+ "project_ref": "{ref}",
+ "applied_by": "Meta-CEO B successor seat, session d640f3ef-1305-4b6c-aa5d-2d6d5e3dc515"
+}

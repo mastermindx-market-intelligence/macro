@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
+from engine.altdata_signals import channel_display
 from lib import config
 
 log = logging.getLogger(__name__)
@@ -114,10 +115,12 @@ def compute_events(by_ticker: dict, prior: dict) -> list[dict]:
         chans = rec.get("channels", [])
         trump = bool(rec.get("trump_linked"))
         sev = "high" if (score >= 3 or trump) else "medium"
-        ch_str = ", ".join(chans)
+        pairs = [channel_display(c) for c in chans]
+        ch_en = ", ".join(p[0] for p in pairs)
+        ch_zh = "、".join(p[1] for p in pairs)
         head = f"🔗 {score}-channel convergence on {tk}"
-        det = f"{tk} lit up by {score} independent alt-data channels: {ch_str}."
-        det_zh = f"{tk} 被 {score} 个独立替代数据渠道同时触发：{ch_str}。"
+        det = f"{tk} lit up by {score} independent alt-data channels: {ch_en}."
+        det_zh = f"{tk} 被 {score} 个独立替代数据渠道同时触发：{ch_zh}。"
         if trump:
             head += " (Trump-linked)"
             det += " Includes a Donald Trump trade."

@@ -213,6 +213,9 @@
   <div class="c-gain">
     {{ figcell(r, T) }}
     <span class="cap">{{ t(M.cap_en, M.cap_zh) }}</span>
+    {%- if r.r21 is defined and r.r21 is not none -%}
+    <span class="cap">{{ t(pc(r.r21) ~ ' in 21 sessions', '近 21 个交易日 ' ~ pc(r.r21)) }}</span>
+    {%- endif -%}
   </div>
   {%- if not compact %}<div class="c-sp">{{ spark(r.spark, r.episode_high) }}</div>{% endif %}
   <div class="c-legs">
@@ -243,6 +246,14 @@
       {%- elif _off is not none -%}<span class="l-en">{{ '%.0f' % (_off * -100) }}% under its high</span><span class="l-zh">低于自身高点 {{ '%.0f' % (_off * -100) }}%</span>
       {%- else -%}{{ t('nothing has slipped', '暂无转弱迹象') }}{%- endif -%}
     </span>
+    {%- endif %}
+    {#- Run age: ONLY the producer's own committed days_in_episode on this row
+        (engine/top_maturation.py:1584) — never derived from the spark's length,
+        never converted to months. Null or absent prints nothing at all. -#}
+    {%- if r.days_in_episode is defined and r.days_in_episode is not none
+           and r.days_in_episode is integer and r.days_in_episode >= 1 %}
+    <span class="legs clean">{{ t(r.days_in_episode ~ (' session' if r.days_in_episode == 1
+      else ' sessions') ~ ' in this run', '本轮已持续 ' ~ r.days_in_episode ~ ' 个交易日') }}</span>
     {%- endif %}
     {%- endif %}
   </div>
@@ -578,7 +589,7 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .sh-bar .bar{height:10px;border-radius:3px}
 @media(max-width:620px){
   .sh-row{grid-template-columns:minmax(0,1fr) auto}
-  .sh-sum{grid-column:1;justify-self:start;margin-top:2px}
+  .sh-sum{grid-column:1;justify-self:start;margin-top:2px;white-space:normal}
 }
 
 /* ── TIER SECTION — position, name and size distinguish a tier. Never a hue:
@@ -785,6 +796,23 @@ a.tk:hover{color:var(--ink-link, var(--link))}
   </div>
 
   {% if MODE == 'board' %}
+  {#- Membership is a WINDOW, not tonight's band: a name that cleared a bar inside
+      `_diagnostics.membership_window_sessions` stays on the board, and one that no
+      longer clears its bar today is kept only as Character changed. Both numbers
+      are display-only reads of fields the producer already ships; `WH.get(...)`
+      keeps a v1 artifact (no diagnostics) rendering the same page, with
+      "recently" in place of a window it never declared. -#}
+  {%- set W = (WH.get('_diagnostics') or {}).get('membership_window_sessions') -%}
+  {%- set W_EN = (' in the last ' ~ W ~ ' sessions') if W else ' recently' -%}
+  {%- set W_ZH = ('最近 ' ~ W ~ ' 个交易日内') if W else '近期' -%}
+  {%- set HERO_EN = ('A name is listed when it cleared one of the three bars' ~ W_EN ~
+       '; one that no longer clears its bar today is listed only as Character changed.') -%}
+  {%- set HERO_ZH = ('个股只要在' ~ W_ZH ~ '达到过三道门槛之一就会列出；' ~
+       '今天已不再达到门槛的，只会列在「走势已变」。') -%}
+  {%- set WHO_EN = ('Every US name that cleared one of the three bars' ~ W_EN ~
+       '. Each bar includes being within 10% of its highest close in the past year.') -%}
+  {%- set WHO_ZH = (W_ZH ~ '达到过三道门槛之一的所有美股。' ~
+       '每道门槛都包含收盘价在过去一年最高收盘价 10% 以内这一条。') -%}
   {# ══ HERO — THE SHELF. Three kinds of winner, compared honestly. The overlap
         fact is stated BEFORE any number, because it is the one thing that makes
         three counts on one page readable at all. ══ #}
@@ -792,10 +820,10 @@ a.tk:hover{color:var(--ink-link, var(--link))}
     <div class="hero-lede">
       <span class="l-en"><b>Three kinds of winner, each read against its own history.</b>
         <span class="q">A name can be in more than one, so these counts do not add up to a total.
-        Every name here is within 10% of its highest close in the past year.</span></span>
+        {{ HERO_EN }}</span></span>
       <span class="l-zh"><b>三类赢家，各自对照自身历史来判读。</b>
         <span class="q">同一只个股可能同时属于多类，因此这些数字不能相加。
-        这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。</span></span>
+        {{ HERO_ZH }}</span></span>
       {{ lens.lens(
            kind='define',
            ill=lens.ILL_LANES,
@@ -803,8 +831,7 @@ a.tk:hover{color:var(--ink-link, var(--link))}
            title=('Three groups, one question','三个分组，同一个问题'),
            rows=[
              {'tone':'info','k':('Who is here','谁在这里'),
-              'v':('Every US name within 10% of its highest close in the past year that also clears one of the three bars.',
-                   '所有收盘价在过去一年最高收盘价 10% 以内、并且达到三道门槛之一的美股。')},
+              'v':(WHO_EN, WHO_ZH)},
              {'tone':'info','k':('Counted apart','分开计数'),
               'v':('A name can clear more than one bar, so it can appear in more than one group. The counts are never added together.',
                    '同一只个股可能同时达到多道门槛，因此可能出现在多个分组里。各组数字从不相加。')},
@@ -828,11 +855,19 @@ a.tk:hover{color:var(--ink-link, var(--link))}
         <span class="sh-nm">{{ t(M.en, M.zh) }}</span>
         <span class="sh-n"><span class="l-en"><b>{{ nt }}</b> names</span><span class="l-zh"><b>{{ nt }}</b> 只</span></span>
         <span class="sh-def">{{ t(M.def_en, M.def_zh) }}</span>
+        {%- set nob = (((WH.get('_diagnostics') or {}).get('tiers') or {})
+                       .get(T.key) or {}).get('n_off_band_on_board') -%}
+        {%- set nob_on = T.readable and nob is integer and nob > 0 %}
         <span class="sh-sum">
           {%- if not T.readable -%}{{ t('not read tonight', '今晚未判读') }}
           {%- elif nt == 0 -%}{{ t('none in this group tonight', '今晚该分组暂无个股') }}
           {%- elif mat == 0 -%}{{ t('none aging tonight', '今晚没有在老化的') }}
-          {%- else -%}<span class="l-en"><b>{{ mat }}</b> of them aging</span><span class="l-zh">其中 <b>{{ mat }}</b> 只在老化</span>
+          {%- else -%}
+          <span class="l-en"><b>{{ mat }}</b> of them aging
+            {%- if nob_on %} · <b>{{ nob }}</b> no longer clear the bar today{% endif %}</span>
+          <span class="l-zh">其中 <b>{{ mat }}</b> 只在老化
+            {%- if nob_on %} · 其中 <b>{{ nob }}</b>
+              只今天已不再达到门槛{% endif %}</span>
           {%- endif -%}
         </span>
         {#- HONEST WIDTH, one scope up from the theme tomography: a 122-name group

@@ -367,11 +367,20 @@ def priority(tier: str, band: str, age_days: float | None, ca_tag: str) -> tuple
     return max(0, min(100, score)), comp
 
 
+# The page's pill for a BTC leg the radar's re-check scores zero (btc_alerts._apply_leg_gate).
+_LEG_GATE_VERDICT = {"demoted": "no_edge", "insufficient_n": "underpowered"}
+
+
 def _validation(source: str, type_: str, engine_edge: str, engine_edge_zh: str,
-                reg: dict, rule_sc: dict | None = None, detail: str = "") -> dict:
+                reg: dict, rule_sc: dict | None = None, detail: str = "",
+                leg_gate: str | None = None) -> dict:
     """Honest edge block. Precedence: (1) the rule's OWN event-study backtest
     (rule_scorecard.json) — most direct; (2) a Signal-Lab row backing the family;
     (3) the engine's calibrated edge note; (4) documented-only.
+
+    A gated BTC leg comes first: the re-check is the measurement now, so the row must not
+    keep the CALIBRATED pill of the note it replaced. A status with no pill of its own
+    falls to "not backtested", never to CALIBRATED.
 
     Always returns the SAME key set (None / [] / {} where absent) so the template
     can read v.hit / v.dsr / v.horizons without tripping Jinja's missing-key
@@ -380,6 +389,10 @@ def _validation(source: str, type_: str, engine_edge: str, engine_edge_zh: str,
             "hit": None, "dsr": None, "ic": None, "n": None, "horizon": None,
             "extra": [], "report": None, "link": "signal_lab.html",
             "horizons": {}, "note": "", "note_zh": ""}
+
+    if leg_gate:
+        return {**base, "verdict": _LEG_GATE_VERDICT.get(leg_gate, "documented"),
+                "note": engine_edge, "note_zh": engine_edge_zh or engine_edge}
 
     # (1) the alert rule's own forward-SPY event study (scripts/alert_rules_phase0)
     rk = _rule_key(source, type_, detail)
@@ -460,7 +473,11 @@ def _load_context() -> dict:
             "quad": d.get("quad"), "quad_name": d.get("quad_name"),
             "quad_name_zh": enum_zh("quad", d.get("quad_name")),
             "label": d.get("label"), "cycle": d.get("cycle_tag"),
+            "cycle_en": enum_en("cycle", d.get("cycle_tag")),
+            "cycle_zh": enum_zh("cycle", d.get("cycle_tag")),
             "transition": d.get("transition_state"),
+            "transition_en": enum_en("transition", d.get("transition_state")),
+            "transition_zh": enum_zh("transition", d.get("transition_state")),
         },
         "cross_asset": {
             "verdict": ca.get("verdict"), "verdict_zh": enum_zh("ca", ca.get("verdict")),
@@ -471,7 +488,9 @@ def _load_context() -> dict:
         "risk_backdrop": {
             "recession_band": ra.get("label"), "recession_band_zh": enum_zh("band", ra.get("label")),
             "drawdown_band": dd.get("band"), "drawdown_band_zh": enum_zh("band", dd.get("band")),
-            "nfci_state": fc.get("state"), "nfci_state_zh": enum_zh("nfci", fc.get("state")),
+            "nfci_state": fc.get("state"),
+            "nfci_state_en": enum_en("nfci", fc.get("state")),
+            "nfci_state_zh": enum_zh("nfci", fc.get("state")),
             "nfci_trend": fc.get("trend"),
             "vix_term": risk.get("vix_term_state"), "vrp": risk.get("vrp_state"),
             "stock_bond_corr": risk.get("stock_bond_corr"),
@@ -568,9 +587,16 @@ def _macro_raw(today: date, cutoff: date) -> dict:
         mdf = pd.read_parquet(p)
         mdf = mdf[pd.to_datetime(mdf["date"]).dt.date >= cutoff]
         for _, r in mdf.iterrows():
-            v = alert_view(r["rule"], r["severity"], r["message"])
+            stored_zh = ""
+            if "message_zh" in r.index:
+                raw_zh = r["message_zh"]
+                if pd.notna(raw_zh):
+                    stored_zh = str(raw_zh)
+            v = alert_view(r["rule"], r["severity"], r["message"], stored_zh)
             # The macro log's `date` column is a market-SESSION date: it has no clock time
-            # and never gains a fabricated one.
+            # and never gains a fabricated one. Detail uses the VIEW rewrite (plain
+            # words for transition-state enums), never the stored machine string —
+            # that string is what the dashboard already demotes via alert_view.
             sess = pd.Timestamp(r["date"]).date().isoformat()
             out.append({
                 "source": "macro", "type": r["rule"], "asset": "macro",
@@ -582,7 +608,8 @@ def _macro_raw(today: date, cutoff: date) -> dict:
                 "tier": v.get("tier", "context"),
                 "headline": (v.get("icon", "") + " " + v.get("plain_en", r["message"])).strip(),
                 "headline_zh": (v.get("icon", "") + " " + (v.get("plain_zh") or v.get("plain_en") or r["message"])).strip(),
-                "detail": r["message"], "detail_zh": r["message"],
+                "detail": v.get("message") or r["message"],
+                "detail_zh": v.get("message_zh") or v.get("message") or r["message"],
                 "anchor": v.get("anchor") or "",
                 # page-qualified (ALERT_META anchors are bare ids, and v5 homes may
                 # live on another page) — enrichment prefers this over page+anchor
@@ -647,6 +674,7 @@ def _jsonl_raw(source: str, today: date, cutoff: date,
                 "detail_zh": e.get("detail_zh") or e.get("detail", ""),
                 "anchor": e.get("anchor") or "#timeline",
                 "edge": e.get("edge", ""), "edge_zh": e.get("edge_zh", ""),
+                **({"leg_gate": e["leg_gate"]} if e.get("leg_gate") else {}),
             })
     except Exception as ex:  # noqa: BLE001
         log.warning("triage: %s feed unavailable (%s)", source, ex)
@@ -751,18 +779,36 @@ _CA_ZH = {"concentrated": "集中", "diversified": "分散", "converging": "趋�
 _BAND_ZH = {"low": "低", "moderate": "中等", "elevated": "偏高", "high": "高",
             "severe": "严重", "extreme": "极端", "none": "无"}
 _NFCI_ZH = {"loose": "宽松", "easing": "趋松", "neutral": "中性", "tight": "收紧", "tightening": "趋紧"}
+_NFCI_EN = {"loose": "easy", "easing": "easing", "neutral": "neutral",
+            "tight": "tight", "tightening": "tightening"}
 _QUAD_ZH = {"Goldilocks": "金发经济", "Reflation": "再通胀", "Inflation": "通胀",
             "Stagflation": "滞胀", "Deflation": "通缩", "Disinflation": "去通胀",
             "Growth": "增长", "Slowdown": "放缓", "Recovery": "复苏", "Contraction": "收缩"}
+_CYCLE_ZH = {"early": "早期", "mid": "中期", "late": "晚期", "overdue": "逾期"}
+_CYCLE_EN = {"early": "early", "mid": "mid", "late": "late", "overdue": "overdue"}
+_TS_EN = {"STABLE": "steady", "WEAKENING": "weakening",
+          "TRANSITIONING": "shifting", "NEW_REGIME": "new regime forming"}
+_TS_ZH = {"STABLE": "稳定", "WEAKENING": "走弱",
+          "TRANSITIONING": "转换中", "NEW_REGIME": "新周期"}
 
 
 def enum_zh(kind: str, value):
-    """Chinese label for a closed-enum backdrop value (verdict / band / nfci / quad),
-    falling back to the raw token.  Exposed so the template can render the backdrop
-    strip bilingually without duplicating the maps."""
+    """Chinese label for a closed-enum backdrop value (verdict / band / nfci / quad /
+    cycle / transition), falling back to the raw token.  Exposed so the template
+    can render the backdrop strip bilingually without duplicating the maps."""
     if value is None:
         return None
-    return {"ca": _CA_ZH, "band": _BAND_ZH, "nfci": _NFCI_ZH, "quad": _QUAD_ZH}.get(kind, {}).get(value, value)
+    return {"ca": _CA_ZH, "band": _BAND_ZH, "nfci": _NFCI_ZH, "quad": _QUAD_ZH,
+            "cycle": _CYCLE_ZH, "transition": _TS_ZH}.get(kind, {}).get(value, value)
+
+
+def enum_en(kind: str, value):
+    """English glance-tier label for a closed-enum backdrop value.  NFCI 'loose'
+    becomes 'easy'; transition enums become plain words.  Unknown tokens pass
+    through so a new upstream state degrades to English, never crashes."""
+    if value is None:
+        return None
+    return {"nfci": _NFCI_EN, "transition": _TS_EN, "cycle": _CYCLE_EN}.get(kind, {}).get(value, value)
 
 
 # RECURRENCE IS NOT PERSISTENCE (2026-08-20).
@@ -1183,7 +1229,8 @@ def build_triage(days: int = 30, today: date | None = None,
         band, ic_note = ic_severity_cap(rep["source"], rep["type"], band)
         ca_tag = cross_asset_tag(rep["type"], ca_verdict)
         validation = _validation(rep["source"], rep["type"], rep.get("edge", ""),
-                                 rep.get("edge_zh", ""), reg, rule_sc, rep.get("detail", ""))
+                                 rep.get("edge_zh", ""), reg, rule_sc, rep.get("detail", ""),
+                                 leg_gate=rep.get("leg_gate"))
         # v2: DEMOTE-ONLY corroboration cap — an isolated, unvalidated one-off can't
         # sit at the same volume as a confirmed / backtested signal.  Bare recurrence is
         # NOT a corroborator (2026-08-20): a transition log cannot show a state held.

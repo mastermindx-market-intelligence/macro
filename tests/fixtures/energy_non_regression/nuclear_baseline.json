@@ -1,0 +1,207 @@
+{
+  "basket_membership": {
+    "nuclear_power": {
+      "members": [
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "BWXT"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "CEG"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "GEV"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "NNE"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "NRG"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "OKLO"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "SMR"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "TLN"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "VST"
+        }
+      ],
+      "weighting": "equal",
+      "weights": null
+    },
+    "uranium_miners": {
+      "members": [
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "ASPI"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "CCJ"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "DNN"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "EU"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "LEU"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "NXE"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "UEC"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "URG"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "UROY"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "UUUU"
+        }
+      ],
+      "weighting": "equal",
+      "weights": null
+    }
+  },
+  "frozen_at_main": "10c0d79e29923a92b23d9e6684c3e0979ee39a9b",
+  "owners": {
+    "basket_membership": {
+      "artifact": "data/baskets/membership.json"
+    },
+    "theme_state": {
+      "reader": "engine.neuralweb.thematic_state.compose"
+    },
+    "theme_tracker": {
+      "reader": "scripts.build_state_of_themes.compose"
+    }
+  },
+  "public_pages": {
+    "canaries": [
+      "economic_change_dossier",
+      "contingent_within_leu",
+      "Westinghouse displayed revenue",
+      "PRE_EVENT_TIMESTAMPED_VALUE"
+    ]
+  },
+  "schema": "energy.nuclear_non_regression.v1",
+  "section_sha256": {
+    "basket_membership": "210b19ac93d3e3a175d548f7ddc1a5a41468a07a147562a716e0b52199e8a542",
+    "public_pages": "6f33102a5420d47be2ff2b6b64fcf20b6d9b8d331d471102aa63245344a9e2c2",
+    "theme_state": "15e9856e4a39efabdc648adb3055c56f18398091f0902104307e66149cc2931a",
+    "theme_tracker": "7d8701c925f87cf1b5b50f6b2f9220c94f34b0955a7987d6fa5f5708a64e4565"
+  },
+  "theme_state": {
+    "frozen": {
+      "basket_ids": [
+        "nuclear_power",
+        "uranium_miners"
+      ],
+      "name_en": "Nuclear & SMR Power",
+      "name_zh": "核能与小型模块堆",
+      "subsector_keys": [
+        "Energy Renewable"
+      ],
+      "theme_id": "nuclear_power"
+    },
+    "shape": {
+      "basket_intel": "array",
+      "divergence_board": "null",
+      "foresight": "object",
+      "narrative": "null",
+      "radar": "array",
+      "subsector_rotation": "object"
+    }
+  },
+  "theme_tracker": {
+    "frozen": {
+      "name_en": "Nuclear & SMR Power",
+      "name_zh": "核能与小型模块堆",
+      "theme_id": "nuclear_power"
+    },
+    "shape": {
+      "caut_count": "number",
+      "entry_context": "null",
+      "falsifier_any_fired": "bool",
+      "falsifier_label": "string",
+      "fav_count": "number",
+      "filter_flags": "string",
+      "lane": "string",
+      "lane_rank": "array",
+      "leadership_context": "null",
+      "present_count": "number",
+      "stage_key": "string",
+      "stage_label_en": "string",
+      "stage_label_zh": "string",
+      "stage_raw": "string",
+      "stage_sort": "number",
+      "stance_en": "string",
+      "stance_zh": "string",
+      "story_en": "string",
+      "story_zh": "string"
+    }
+  }
+}

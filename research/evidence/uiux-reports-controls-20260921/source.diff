@@ -1,0 +1,92 @@
+--- a/templates/reports.html.j2
++++ b/templates/reports.html.j2
+@@ -258,6 +258,11 @@
+     .rc-controls-top{ gap:8px 10px; }
+     .rc-search{ flex:1 1 100%; order:-1; }
+   }
++
++  /* Native archive controls share the existing material and focus language. */
++  #tagBar .chip, #repSearch, #repSort, #repClear, #repClear2, #covBars .rc-cov-row{min-height:40px;touch-action:manipulation}
++  #tagBar button.chip{min-width:44px;font-family:var(--font-ui)}
++  #tagBar .chip:focus-visible, #repSearch:focus-visible, #repSort:focus-visible, #repClear:focus-visible, #repClear2:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+ {% endblock %}
+ 
+ {% block content %}
+@@ -329,7 +334,7 @@
+       <div class="rc-search">
+         <span class="mag" aria-hidden="true">🔎</span>
+         <input id="repSearch" type="text" autocomplete="off"
+-          placeholder="Search reports…" data-ph-en="Search reports…" data-ph-zh="搜索报告…" aria-label="Search reports">
++          placeholder="Search reports…" data-ph-en="Search reports…" data-ph-zh="搜索报告…" aria-label="Search reports" data-label-en="Search reports" data-label-zh="搜索报告">
+         <kbd>/</kbd>
+       </div>
+       <label class="rc-sort">{{ t('Sort', '排序') }}
+@@ -338,12 +343,12 @@
+           <option value="old" data-en="Oldest first" data-zh="最早优先">Oldest first</option>
+         </select>
+       </label>
+-      <span class="rc-count" id="repCount"></span>
++      <span class="rc-count" id="repCount" role="status" aria-live="polite" aria-atomic="true"></span>
+       <button type="button" class="rc-clear" id="repClear">✕ <span class="l-en">Clear</span><span class="l-zh">清除</span></button>
+     </div>
+-    <div class="rc-tagbar" id="tagBar" role="group" aria-label="Filter by topic">
+-      <span class="chip on" data-tag="all" tabindex="0" role="button">{{ t('All', '全部') }}</span>
+-      {% for tg in all_tags %}<span class="chip tag-{{ tg.key }}" data-tag="{{ tg.key }}" tabindex="0" role="button"><span class="l-en">{{ tg.en }}</span><span class="l-zh">{{ tg.zh }}</span> <span class="n">{{ tg.count }}</span></span>{% endfor %}
++    <div class="rc-tagbar" id="tagBar" role="group" aria-label="Filter by topic" data-label-en="Filter by topic" data-label-zh="按主题筛选">
++      <button type="button" class="chip on" data-tag="all" aria-pressed="true">{{ t('All', '全部') }}</button>
++      {% for tg in all_tags %}<button type="button" class="chip tag-{{ tg.key }}" data-tag="{{ tg.key }}" aria-pressed="false"><span class="l-en">{{ tg.en }}</span><span class="l-zh">{{ tg.zh }}</span> <span class="n">{{ tg.count }}</span></button>{% endfor %}
+     </div>
+   </div>
+ 
+@@ -405,13 +410,19 @@
+ 
+   function langSync(){ // keep non-span UI (placeholder, <option>s) in sync with language
+     var zh=isZh();
+-    if(search) search.placeholder=zh?(search.getAttribute('data-ph-zh')||''):(search.getAttribute('data-ph-en')||'');
++    if(search){
++      search.placeholder=search.getAttribute(zh?'data-ph-zh':'data-ph-en')||'';
++      search.setAttribute('aria-label',search.getAttribute(zh?'data-label-zh':'data-label-en'));
++    }
++    if(tagBar) tagBar.setAttribute('aria-label',tagBar.getAttribute(zh?'data-label-zh':'data-label-en'));
+     if(sortSel)[].forEach.call(sortSel.options,function(o){ o.textContent=zh?(o.getAttribute('data-zh')||o.textContent):(o.getAttribute('data-en')||o.textContent); });
+   }
+ 
+   function syncTagUI(){
+     [].forEach.call(tagBar.querySelectorAll('.chip'),function(x){
+-      x.classList.toggle('on',(x.getAttribute('data-tag')||'all')===activeTag);
++      var selected=(x.getAttribute('data-tag')||'all')===activeTag;
++      x.classList.toggle('on',selected);
++      x.setAttribute('aria-pressed',String(selected));
+     });
+     if(cov)[].forEach.call(cov.querySelectorAll('.rc-cov-row'),function(x){
+       x.setAttribute('aria-pressed',(x.getAttribute('data-tag')===activeTag)?'true':'false');
+@@ -445,7 +456,7 @@
+   }
+ 
+   function setTag(tag){ activeTag=tag||'all'; apply(); writeURL(true); }
+-  function reset(){ activeTag='all'; q=''; if(search) search.value=''; apply(); writeURL(true); }
++  function reset(){ activeTag='all'; q=''; if(search) search.value=''; apply(); writeURL(true); if(search) search.focus(); }
+ 
+   // ── shareable state: reflect search/topic/sort in the URL, restore on load + back/fwd ──
+   function writeURL(push){
+@@ -473,11 +484,6 @@
+   tagBar.addEventListener('click',function(e){
+     var c=e.target.closest('.chip'); if(!c) return;
+     setTag(c.getAttribute('data-tag'));
+-  });
+-  tagBar.addEventListener('keydown',function(e){
+-    if(e.key!=='Enter'&&e.key!==' ') return;
+-    var c=e.target.closest('.chip'); if(!c) return;
+-    e.preventDefault(); setTag(c.getAttribute('data-tag'));
+   });
+   if(cov) cov.addEventListener('click',function(e){
+     var r=e.target.closest('.rc-cov-row'); if(!r) return;
+@@ -500,7 +506,7 @@
+   });
+ 
+   // re-sync non-span UI + count when the global language toggle flips
+-  document.addEventListener('click',function(e){ if(e.target.closest('.lang-toggle')) setTimeout(function(){ langSync(); apply(); },0); });
++  document.addEventListener('langchange',function(){ langSync(); apply(); });
+ 
+   langSync(); readState(); writeURL(false);   // restore any shared ?q=/?tag=/?sort= then canonicalize
+ })();

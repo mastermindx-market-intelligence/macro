@@ -167,74 +167,16 @@ def _utc_now() -> datetime:
 
 
 def _read_sealed_bar_for_session(
-    source_root: Path,
-    *,
-    session: date,
+    source_root: Path, *, session: date, generation_id: str | None = None,
 ) -> dict[str, Any] | None:
-    """Read the most recent sealed SPY REST bar for session from the store.
-
-    Returns the bar dict (results[0]) or None if not found.
-    """
+    """Select one byte-bound, eligible owner seal from one source generation."""
     from engine.neuralweb.market_memory_sources_spy import (  # noqa: PLC0415
-        SPY_FAMILY,
-        _validate_spy_rest_receipt,
-        _load_store_state,
-        _read_receipt_copies_by_validate,
-        _read_store_object,
-        _object_path,
-        DEFAULT_STORE_ROOT,
-        _MAX_OBJECT_BYTES,
+        MarketMemorySourceError, read_verified_spy_rest_bar,
     )
-    from engine.neuralweb.market_memory_source_kernel import (  # noqa: PLC0415
-        _load_store_state as kernel_load_state,
-        SourceNotFound,
-        SourceStoreError,
-    )
-    from engine.neuralweb import market_memory as _mm  # noqa: PLC0415
-
-    # Check that the store manifest exists
-    from engine.neuralweb.market_memory_source_kernel import (  # noqa: PLC0415
-        _store_manifest_path,
-    )
-    if not _store_manifest_path(source_root).exists():
-        return None
-
     try:
-        state = kernel_load_state(
-            source_root, family=SPY_FAMILY, authority=dict(_mm.AUTHORITY)
-        )
-    except (SourceStoreError, SourceNotFound, Exception):
-        return None
-
-    session_str = session.isoformat()
-    # Iterate receipts looking for this session
-    for entry in reversed(state.generation["receipts"]):
-        try:
-            receipt, _ = _read_receipt_copies_by_validate(
-                source_root,
-                entry,
-                store_id=state.manifest["store_id"],
-                validate_fn=_validate_spy_rest_receipt,
-            )
-        except Exception:  # noqa: BLE001
-            continue
-        if receipt.get("session") != session_str:
-            continue
-        if not receipt.get("quality", {}).get("opportunity_eligible", False):
-            continue
-        try:
-            artifact, _ = _read_store_object(
-                _object_path(source_root, receipt["artifact_sha256"]),
-                limit=_MAX_OBJECT_BYTES,
-                label="SPY REST source object",
-            )
-        except Exception:  # noqa: BLE001
-            continue
-        results = artifact.get("results", [])
-        lookback = artifact.get("lookback_closes_20")
-        if results:
-            return {"bar": results[0], "session": session_str, "lookback": lookback}
-    return None
+        return read_verified_spy_rest_bar(source_root, session=session, generation_id=generation_id)
+    except (MarketMemorySourceError, OSError, ValueError) as exc:
+        raise TechnicalsV2SourceError(f"sealed SPY REST binding refused: {exc}") from exc
 
 
 # ---------------------------------------------------------------------------
@@ -365,10 +307,13 @@ def _ensure_store_v2(root: Path) -> dict[str, Any]:
     _mkdir_v2(root)
     manifest_path = _store_manifest_path_v2(root)
     if manifest_path.exists():
-        body = manifest_path.read_bytes()
-        manifest = json.loads(body)
-        if manifest.get("schema") != STORE_SCHEMA_V2:
-            raise TechnicalsV2StoreError("technicals-v2 store schema mismatch")
+        manifest, _ = _read_technical_json(
+            manifest_path, limit=_MAX_STORE_BYTES, label="technical manifest",
+        )
+        if (manifest.get("schema") != STORE_SCHEMA_V2
+                or manifest.get("profile") != STORE_PROFILE_V2
+                or manifest.get("store_id") != _content_id("mmtechv2store_", manifest, field="store_id")):
+            raise TechnicalsV2StoreError("technicals-v2 store identity mismatch")
         return manifest
     manifest = _new_store_manifest_v2()
     _write_json_v2(manifest_path, manifest, label="technicals-v2 store manifest")
@@ -454,8 +399,8 @@ def _build_capture_receipt_v2(
             "session": session.isoformat(),
             "profile": STORE_PROFILE_V2,
             "ticker": "SPY",
-            "regular_session_close_authenticated": False,
-            "price_basis": "unadjusted_daily_aggregate_sealed_rest_bar",
+            "regular_session_close_authenticated": True,
+            "price_basis": "massive_rest_day_aggs_unadjusted_rth_price_fullday_activity",
             "state": {
                 "open": o,
                 "high": h,
@@ -520,45 +465,6 @@ def capture_technicals_v2(
 
     session_str = session.isoformat()
 
-    # Read the sealed bar
-    sealed_data = _read_sealed_bar_for_session(validated_source, session=session)
-    if sealed_data is None:
-        raise TechnicalsV2SourceError(
-            f"no opportunity-eligible sealed bar for session {session_str} "
-            f"in source root {validated_source}"
-        )
-
-    bar = sealed_data["bar"]
-    lookback = sealed_data.get("lookback")
-
-    close = bar.get("c")
-    if close is None or not math.isfinite(float(close)):
-        raise TechnicalsV2SourceError(
-            f"sealed bar for {session_str} has invalid close: {close!r}"
-        )
-
-    close_ratio_20 = _compute_close_ratio_20(float(close), lookback)
-
-    # Get source generation id
-    from engine.neuralweb.market_memory_sources_spy import (  # noqa: PLC0415
-        SPY_FAMILY,
-        _load_store_state,
-    )
-    from engine.neuralweb.market_memory_source_kernel import (  # noqa: PLC0415
-        _load_store_state as kernel_load_state,
-    )
-    from engine.neuralweb import market_memory as _mm  # noqa: PLC0415
-
-    try:
-        state = kernel_load_state(
-            validated_source, family=SPY_FAMILY, authority=dict(_mm.AUTHORITY)
-        )
-        source_gen_id = state.generation["generation_id"]
-    except Exception:  # noqa: BLE001
-        source_gen_id = "unknown"
-
-    captured_at = clock_fn().isoformat().replace("+00:00", "Z")
-
     # Write to store
     _mkdir_v2(validated_store)
     lock_path = _safe_path_v2(validated_store, ".writer.lock")
@@ -569,31 +475,56 @@ def capture_technicals_v2(
     )
     try:
         fcntl.flock(lock_descriptor, fcntl.LOCK_EX)
+        # Existing opportunities keep the exact original source pin even if
+        # current HEAD has unrelated sessions or later-known corrections.
+        previous_generation = read_technicals_v2_head(validated_store)
+        existing = read_latest_capture_for_session(validated_store, session=session)
+        if existing is not None:
+            selected = _read_sealed_bar_for_session(
+                validated_source, session=session,
+                generation_id=existing["source_generation_id"],
+            )
+            if selected is None:
+                raise TechnicalsV2SourceError("original technical source selection is unavailable")
+            validate_capture_source_binding(existing, selected, session=session, as_of=clock_fn())
+            return TechnicalsV2CaptureResult(
+                session=session, capture_id=existing["capture_id"],
+                generation_id=previous_generation["generation_id"], created=False,
+                close_ratio_20=existing["feature_object"]["state"]["price"]["raw_close_ratio_20_sessions"],
+                source_generation_id=existing["source_generation_id"],
+            )
+
+        # A new capture selects one unambiguous source generation once.
+        sealed_data = _read_sealed_bar_for_session(validated_source, session=session)
+        if sealed_data is None:
+            raise TechnicalsV2SourceError(
+                f"no opportunity-eligible sealed bar for session {session_str} "
+                f"in source root {validated_source}"
+            )
+
+        bar = sealed_data["bar"]
+        lookback = sealed_data.get("lookback")
+
+        close = bar.get("c")
+        if close is None or not math.isfinite(float(close)):
+            raise TechnicalsV2SourceError(
+                f"sealed bar for {session_str} has invalid close: {close!r}"
+            )
+
+        close_ratio_20 = _compute_close_ratio_20(float(close), lookback)
+
+        # The selection already pins the exact generation. Never reload HEAD to
+        # label bytes selected from a different generation.
+        source_gen_id = sealed_data["source_generation_id"]
+        captured_at = clock_fn().isoformat().replace("+00:00", "Z")
+        from engine.neuralweb.market_memory_source_kernel import _parse_utc  # noqa: PLC0415
+        if _parse_utc(captured_at, field="captured_at")[0] < _parse_utc(
+            sealed_data["available_at"], field="source available_at"
+        )[0]:
+            raise TechnicalsV2SourceError("technical capture precedes its source observation")
+
         manifest = _ensure_store_v2(validated_store)
         store_id = manifest["store_id"]
-
-        # Check for existing capture with same session
-        head = _load_head_v2(validated_store)
-        if head is not None:
-            gen_id = head.get("generation_id")
-            if gen_id:
-                try:
-                    gen_path = _generation_path_v2(validated_store, gen_id)
-                    if gen_path.exists():
-                        gen = json.loads(gen_path.read_bytes())
-                        for entry in gen.get("captures", []):
-                            if entry.get("session") == session_str:
-                                # Already captured
-                                return TechnicalsV2CaptureResult(
-                                    session=session,
-                                    capture_id=entry["capture_id"],
-                                    generation_id=gen_id,
-                                    created=False,
-                                    close_ratio_20=close_ratio_20,
-                                    source_generation_id=source_gen_id,
-                                )
-                except Exception:  # noqa: BLE001
-                    pass
 
         receipt = _build_capture_receipt_v2(
             store_id=store_id,
@@ -609,17 +540,9 @@ def capture_technicals_v2(
         cap_path = _capture_path_v2(validated_store, capture_id)
         _write_json_v2(cap_path, receipt, label="technicals-v2 capture")
 
-        # Build new generation
-        prev_captures: list[dict[str, Any]] = []
-        prev_gen_id = head.get("generation_id") if head else None
-        if prev_gen_id:
-            try:
-                prev_gen_path = _generation_path_v2(validated_store, prev_gen_id)
-                if prev_gen_path.exists():
-                    prev_gen = json.loads(prev_gen_path.read_bytes())
-                    prev_captures = list(prev_gen.get("captures", []))
-            except Exception:  # noqa: BLE001
-                pass
+        # Build new generation from the already verified index.
+        prev_captures = list(previous_generation["captures"]) if previous_generation else []
+        prev_gen_id = previous_generation["generation_id"] if previous_generation else None
 
         if len(prev_captures) >= _MAX_GENERATION_CAPTURES:
             raise TechnicalsV2StoreError("technicals-v2 generation capacity exhausted")
@@ -672,38 +595,118 @@ def capture_technicals_v2(
 # ---------------------------------------------------------------------------
 
 
+def _read_technical_json(path: Path, *, limit: int, label: str) -> tuple[dict[str, Any], bytes]:
+    from engine.neuralweb.market_memory_source_kernel import (  # noqa: PLC0415
+        MarketMemorySourceError, _read_store_object,
+    )
+    try:
+        return _read_store_object(path, limit=limit, label=label)
+    except (MarketMemorySourceError, OSError, ValueError) as exc:
+        raise TechnicalsV2StoreError(f"{label} binding refused: {exc}") from exc
+
+
 def read_technicals_v2_head(store_root: str | Path) -> dict[str, Any] | None:
-    """Return the HEAD generation's capture list, or None."""
-    validated = validate_technicals_v2_store_root(store_root)
-    head = _load_head_v2(validated)
-    if head is None:
+    """Read one bounded HEAD and verify its manifest and generation bytes."""
+    root = validate_technicals_v2_store_root(store_root)
+    if not _store_head_path(root).exists():
         return None
+    manifest, _ = _read_technical_json(
+        _store_manifest_path_v2(root), limit=_MAX_STORE_BYTES, label="technical manifest",
+    )
+    if (manifest.get("schema") != STORE_SCHEMA_V2
+            or manifest.get("profile") != STORE_PROFILE_V2
+            or manifest.get("store_id") != _content_id("mmtechv2store_", manifest, field="store_id")):
+        raise TechnicalsV2StoreError("technical manifest identity mismatch")
+    head, _ = _read_technical_json(
+        _store_head_path(root), limit=_MAX_HEAD_BYTES, label="technical HEAD",
+    )
     gen_id = head.get("generation_id")
-    if not gen_id:
-        return None
-    gen_path = _generation_path_v2(validated, gen_id)
-    if not gen_path.exists():
-        return None
-    gen = json.loads(gen_path.read_bytes())
+    if (head.get("schema") != HEAD_SCHEMA_V2 or head.get("store_id") != manifest["store_id"]
+            or not isinstance(gen_id, str) or not re.fullmatch(r"mmtechv2gen_[a-f0-9]{64}", gen_id)):
+        raise TechnicalsV2StoreError("technical HEAD identity mismatch")
+    gen, body = _read_technical_json(
+        _generation_path_v2(root, gen_id), limit=_MAX_GENERATION_BYTES,
+        label="technical generation",
+    )
+    if (sha256(body).hexdigest() != head.get("generation_sha256")
+            or gen.get("generation_id") != gen_id
+            or gen_id != _content_id("mmtechv2gen_", gen, field="generation_id")
+            or gen.get("schema") != GENERATION_SCHEMA_V2
+            or gen.get("store_id") != manifest["store_id"]
+            or gen.get("profile") != STORE_PROFILE_V2):
+        raise TechnicalsV2StoreError("technical generation binding mismatch")
+    entries = gen.get("captures")
+    if not isinstance(entries, list) or len(entries) > _MAX_GENERATION_CAPTURES:
+        raise TechnicalsV2StoreError("technical capture index is malformed")
+    seen_sessions, seen_ids = set(), set()
+    for entry in entries:
+        if not isinstance(entry, dict) or set(entry) != {"capture_id", "session"}:
+            raise TechnicalsV2StoreError("technical capture index row is malformed")
+        cap_id, session_str = entry["capture_id"], entry["session"]
+        if (not isinstance(cap_id, str) or not re.fullmatch(r"mmtechv2cap_[a-f0-9]{64}", cap_id)
+                or not isinstance(session_str, str) or not _SESSION.fullmatch(session_str)
+                or cap_id in seen_ids or session_str in seen_sessions):
+            raise TechnicalsV2StoreError("technical capture index identity is ambiguous")
+        seen_ids.add(cap_id)
+        seen_sessions.add(session_str)
     return gen
 
 
 def read_latest_capture_for_session(
     store_root: str | Path, *, session: date
 ) -> dict[str, Any] | None:
-    """Return the most recent capture receipt for session, or None."""
-    validated = validate_technicals_v2_store_root(store_root)
-    gen = read_technicals_v2_head(validated)
+    """Read the sole exact-session, content-bound capture in one generation."""
+    root = validate_technicals_v2_store_root(store_root)
+    gen = read_technicals_v2_head(root)
     if gen is None:
         return None
-    session_str = session.isoformat()
-    for entry in gen.get("captures", []):
-        if entry.get("session") == session_str:
-            cap_id = entry["capture_id"]
-            cap_path = _capture_path_v2(validated, cap_id)
-            if cap_path.exists():
-                return json.loads(cap_path.read_bytes())
+    for entry in gen["captures"]:
+        if entry["session"] != session.isoformat():
+            continue
+        capture, _ = _read_technical_json(
+            _capture_path_v2(root, entry["capture_id"]),
+            limit=_MAX_CAPTURE_BYTES, label="technical capture",
+        )
+        source_gen_id = capture.get("source_generation_id")
+        if (capture.get("capture_id") != entry["capture_id"]
+                or capture.get("capture_id") != _content_id("mmtechv2cap_", capture, field="capture_id")
+                or capture.get("schema") != CAPTURE_RECEIPT_SCHEMA_V2
+                or capture.get("store_id") != gen["store_id"]
+                or capture.get("profile") != STORE_PROFILE_V2
+                or capture.get("session") != entry["session"]
+                or type(source_gen_id) is not str
+                or not re.fullmatch(r"mmsgen_[a-f0-9]{64}", source_gen_id)):
+            raise TechnicalsV2StoreError("technical capture binding mismatch")
+        return capture
     return None
+
+
+def validate_capture_source_binding(
+    capture: dict[str, Any], sealed: dict[str, Any], *, session: date, as_of: datetime,
+) -> None:
+    """Recompute this projection from the same verified source selection.
+
+    No repaired metadata is grafted onto an existing historical capture. A
+    previous false/unknown capture or any content/clock/lineage drift is refused.
+    """
+    from engine.neuralweb.market_memory_source_kernel import (  # noqa: PLC0415
+        MarketMemorySourceError, _parse_utc,
+    )
+    try:
+        captured = _parse_utc(capture.get("captured_at"), field="captured_at")[0]
+        available = _parse_utc(sealed.get("available_at"), field="source available_at")[0]
+    except MarketMemorySourceError as exc:
+        raise TechnicalsV2SourceError(str(exc)) from exc
+    if (as_of.tzinfo is None or not available <= captured <= as_of
+            or sealed.get("session") != session.isoformat()):
+        raise TechnicalsV2SourceError("technical/source clock or session mismatch")
+    expected = _build_capture_receipt_v2(
+        store_id=capture.get("store_id"), session=session, bar=sealed["bar"],
+        close_ratio_20=_compute_close_ratio_20(sealed["bar"]["c"], sealed.get("lookback")),
+        captured_at=capture["captured_at"], source_generation_id=sealed["source_generation_id"],
+    )
+    if _canonical_bytes(capture) != _canonical_bytes(expected):
+        raise TechnicalsV2SourceError("technical capture differs from its verified source projection")
 
 
 # ---------------------------------------------------------------------------

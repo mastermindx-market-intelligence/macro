@@ -1,0 +1,81 @@
+{
+  "activate": true,
+  "importance": 72,
+  "banner_days": 4,
+  "tone": "mixed",
+  "banner_title": "US bans Canadian alcohol & dairy, expands tariffs — trade war escalation hits both sides",
+  "banner_title_zh": "美国禁止加拿大酒类与乳制品进口并扩大关税——贸易战升级双向冲击",
+  "summary": "President Trump signed five Section 338 proclamations imposing import bans on certain Canadian alcohol, dairy, and other products, expanding tariff coverage to ATVs and additional dairy, while removing rock salt and cement. The action also directs removal of $50B in Canadian-origin products from GSA schedules.",
+  "summary_zh": "特朗普总统签署五项第338条公告，对部分加拿大酒类、乳制品及其他产品实施进口禁令，将关税范围扩大至全地形车等产品，同时移除岩盐和水泥，并指示从GSA采购计划中移除500亿美元加拿大原产产品。",
+  "analysis": "This is a direct, retaliatory escalation in the US-Canada trade conflict. Canada imposed $20 billion in new tariffs on US steel, dairy, and agricultural equipment today, and the US response goes further: outright import bans on Canadian alcohol and dairy products previously subject to 50% tariffs, plus new tariff coverage on ATVs and additional dairy. Unlike standard tariff adjustments, outright import bans under Section 338 represent a qualitatively more severe restriction — they eliminate the product from the US market entirely rather than merely raising its price.\n\nThe transmission mechanism runs through several channels. US dairy producers and domestic spirits/beer makers gain import protection and shelf space as Canadian supply is removed. Canadian producers — including Molson Coors' Canadian operations, Saputo, and others with US revenue exposure — lose access to a major market. The removal of rock salt and cement from tariff scope is a quiet admission that those tariffs were hurting US construction and winter-road-maintenance costs, signaling sensitivity to domestic input inflation. The $50B GSA procurement directive extends the conflict into federal government purchasing, directly redirecting that spend toward US suppliers.\n\nThe key uncertainty is the sustainability of this escalation spiral. With Canada and China as the only two countries refusing to negotiate, this bilateral conflict shows no sign of de-escalation. However, the product removals (rock salt, cement) suggest the administration is already feeling pressure on domestic cost inflation — a crack in the maximalist trade posture that could widen if stagflation persists.",
+  "sectors": [
+    {
+      "name": "US Dairy",
+      "impact": "tailwind",
+      "rationale": "Import bans on Canadian dairy reduce supply competition and support domestic milk and cheese prices"
+    },
+    {
+      "name": "US Alcohol / Spirits",
+      "impact": "tailwind",
+      "rationale": "Bans on Canadian alcohol imports free up shelf space and reduce price competition for domestic producers"
+    },
+    {
+      "name": "Construction Materials",
+      "impact": "tailwind",
+      "rationale": "Removal of rock salt and cement from tariff scope lowers input costs for US construction and infrastructure"
+    },
+    {
+      "name": "Canadian Dairy / Consumer Staples",
+      "impact": "headwind",
+      "rationale": "Canadian dairy exporters lose access to US market entirely under the import ban"
+    },
+    {
+      "name": "US Auto / Powersports",
+      "impact": "tailwind",
+      "rationale": "Tariffs on Canadian ATVs (e.g., BRP/Can-Am products) protect domestic powersports manufacturers"
+    },
+    {
+      "name": "Federal Procurement / Defense",
+      "impact": "tailwind",
+      "rationale": "$50B removal of Canadian-origin products from GSA schedules redirects contract spend to US suppliers"
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "DFIN",
+      "direction": "benefit",
+      "rationale": "Dean Foods successor and US dairy processors benefit from reduced Canadian dairy import competition"
+    },
+    {
+      "symbol": "STZ",
+      "direction": "benefit",
+      "rationale": "Constellation Brands' US beer and spirits portfolio faces less competition from banned Canadian alcohol imports"
+    },
+    {
+      "symbol": "TAP",
+      "direction": "hurt",
+      "rationale": "Molson Coors has significant Canadian production and US sales exposure, now hit with import restrictions on Canadian alcohol"
+    },
+    {
+      "symbol": "SAP",
+      "direction": "hurt",
+      "rationale": "Saputo, a major Canadian dairy processor with US revenue, loses access to the US market for covered products"
+    },
+    {
+      "symbol": "PII",
+      "direction": "benefit",
+      "rationale": "Polaris, a US ATV maker, gains protection against Canadian competitor BRP's Can-Am products now subject to tariffs"
+    },
+    {
+      "symbol": "VMC",
+      "direction": "benefit",
+      "rationale": "Vulcan Materials benefits from cement tariffs removal, reducing construction input costs and supporting demand"
+    },
+    {
+      "symbol": "MLM",
+      "direction": "benefit",
+      "rationale": "Martin Marietta benefits from the removal of cement from tariff scope, easing cost pressures on construction materials"
+    }
+  ],
+  "confidence": "high"
+}

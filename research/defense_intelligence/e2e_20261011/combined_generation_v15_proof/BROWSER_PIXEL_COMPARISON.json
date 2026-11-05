@@ -1,0 +1,497 @@
+{
+  "prior_source": "e652575ffd5162c62b4491585ff5ef632a97b064",
+  "current_source": "3cfc492d4c321c54ef0ce1bbe079a48b4862768a",
+  "cells": [
+    {
+      "cell": [
+        "dark",
+        "en",
+        "desktop",
+        null
+      ],
+      "old_sha256": "0daa9deb9d695e7a9cc8f59135e12b43fc1ca178755944a2c85c524c2a00ca72",
+      "new_sha256": "cd32ac8a8f0cf13920da9c85df7a0233f414fa0b66aec392775e69a65ce330bc",
+      "same_pixels": false,
+      "delta_bounds": [
+        1125,
+        34,
+        1419,
+        3897
+      ],
+      "size": [
+        1440,
+        4718
+      ]
+    },
+    {
+      "cell": [
+        "dark",
+        "en",
+        "desktop",
+        "investor-focus"
+      ],
+      "old_sha256": "2410525aa97fd5640fe459e6b64656170da8aff8ff31576c3959dfa0fc8deb08",
+      "new_sha256": "9fe632c597eaea396978ef6e439b87cfce2f291f0b88dc9ecfaaf103fc5fb8c5",
+      "same_pixels": false,
+      "delta_bounds": [
+        13,
+        267,
+        1350,
+        2172
+      ],
+      "size": [
+        1440,
+        4718
+      ]
+    },
+    {
+      "cell": [
+        "light",
+        "en",
+        "desktop",
+        null
+      ],
+      "old_sha256": "3504a14df6d508157e47cfba18a4020679c3ce923ea0f4d1d3304d256e4fe842",
+      "new_sha256": "9f44830ce6fd00b86e352cdea9441a42779eb338ccb37af8c93b986a72a254d6",
+      "same_pixels": false,
+      "delta_bounds": "size_changed",
+      "size": [
+        1440,
+        4685
+      ]
+    },
+    {
+      "cell": [
+        "light",
+        "en",
+        "desktop",
+        "investor-focus"
+      ],
+      "old_sha256": "abe7e244e0794695e95a4190bf6585e6f7e8ebb15e8ae0a177f6637166123647",
+      "new_sha256": "5da9daabda5fbf3ecf402741e6dcd8e2dfb535d6c1f21d545b02d51b3c309496",
+      "same_pixels": false,
+      "delta_bounds": "size_changed",
+      "size": [
+        1440,
+        4715
+      ]
+    },
+    {
+      "cell": [
+        "dark",
+        "zh",
+        "desktop",
+        null
+      ],
+      "old_sha256": "ae99e51b6bcef126d7ffaeaac49a233e23740f2f317d1178a9861096befbe1f7",
+      "new_sha256": "8342369845971bf64ed1cd7383f8ba7e6d887549ff2f323382e787cdb339b6d1",
+      "same_pixels": false,
+      "delta_bounds": [
+        1193,
+        19,
+        1419,
+        887
+      ],
+      "size": [
+        1440,
+        4533
+      ]
+    },
+    {
+      "cell": [
+        "dark",
+        "zh",
+        "desktop",
+        "investor-focus"
+      ],
+      "old_sha256": "385c7e45c2433ca92870b561bd905cfc024d83a2733b338f65aced7ca86b9ff7",
+      "new_sha256": "96da68f578feaf3af0088a4afe0a6390599b89d420b2375e084fef167fb3da99",
+      "same_pixels": false,
+      "delta_bounds": "size_changed",
+      "size": [
+        1440,
+        4533
+      ]
+    },
+    {
+      "cell": [
+        "light",
+        "zh",
+        "desktop",
+        null
+      ],
+      "old_sha256": "2923a8e10b17409fe7b0aca9e31d1583a5b8d0868db6ef503875b7158cdb96b0",
+      "new_sha256": "9b78984cd85e95cdd31ded9b5e39d96df8256cf4c4e515be06179ff2dfdc4bd5",
+      "same_pixels": false,
+      "delta_bounds": [
+        12,
+        19,
+        1419,
+        3760
+      ],
+      "size": [
+        1440,
+        4530
+      ]
+    },
+    {
+      "cell": [
+        "light",
+        "zh",
+        "desktop",
+        "investor-focus"
+      ],
+      "old_sha256": "c19728a9d49e30a5914ac13fdded28bbcc2f5e1f29579a7b32411935e8b40e67",
+      "new_sha256": "35832f04e99c045d3c079d8e9a30ff7c32fb10789957d28781311d84362cc85a",
+      "same_pixels": false,
+      "delta_bounds": [
+        95,
+        34,
+        1418,
+        3760
+      ],
+      "size": [
+        1440,
+        4530
+      ]
+    },
+    {
+      "cell": [
+        "dark",
+        "en",
+        "tablet",
+        null
+      ],
+      "old_sha256": "eeaf9368707938dea84cef6d66070b5bcc881d6b5d9be4328f9aba611b66e532",
+      "new_sha256": "16b1b4c7b3453e58578b58e879ecdb9347f8f52cb006a80bf01af4559a6e5e29",
+      "same_pixels": false,
+      "delta_bounds": [
+        30,
+        82,
+        798,
+        1167
+      ],
+      "size": [
+        820,
+        5493
+      ]
+    },
+    {
+      "cell": [
+        "dark",
+        "en",
+        "tablet",
+        "investor-focus"
+      ],
+      "old_sha256": "7918345ca540658aebd79a66ebcf1bfb2a8ee1eba361207727e22ee53cc0d2fe",
+      "new_sha256": "9599725195a546296246b2ded0cb07ed58a548cd436513e60906dd77742509bc",
+      "same_pixels": false,
+      "delta_bounds": [
+        0,
+        82,
+        820,
+        2978
+      ],
+      "size": [
+        820,
+        5493
+      ]
+    },
+    {
+      "cell": [
+        "light",
+        "en",
+        "tablet",
+        null
+      ],
+      "old_sha256": "0e60252777bc56e4e8c6b4f689165dfbb9095685bb91c4d8fa1eddd8d0af3d7c",
+      "new_sha256": "324be4e626c5575a98f3e92970ee2ae951c3cf1335755d5b462fdacb02d50eca",
+      "same_pixels": false,
+      "delta_bounds": [
+        33,
+        18,
+        798,
+        1161
+      ],
+      "size": [
+        820,
+        5490
+      ]
+    },
+    {
+      "cell": [
+        "light",
+        "en",
+        "tablet",
+        "investor-focus"
+      ],
+      "old_sha256": "32796d599cd2637fcc0009d22347118a4ded4d300dbf9e3d5f8ff15074060e10",
+      "new_sha256": "2767cba77111cb5113918fa7f002f147dffc9f0f10a704fc72cd4472149ce48e",
+      "same_pixels": false,
+      "delta_bounds": [
+        0,
+        82,
+        820,
+        2979
+      ],
+      "size": [
+        820,
+        5490
+      ]
+    },
+    {
+      "cell": [
+        "dark",
+        "zh",
+        "tablet",
+        null
+      ],
+      "old_sha256": "f0f4fd5f3860c17b454c29c5e30f8aa436f639d97473c29a64df0791c7fb65fd",
+      "new_sha256": "38f8475f22eb9238e71e5c89e18bcf39be3665742cd7e5869d6ccd00b0e215f1",
+      "same_pixels": false,
+      "delta_bounds": [
+        30,
+        18,
+        798,
+        1163
+      ],
+      "size": [
+        820,
+        5073
+      ]
+    },
+    {
+      "cell": [
+        "dark",
+        "zh",
+        "tablet",
+        "investor-focus"
+      ],
+      "old_sha256": "b12c5f8ff4c140e31083535176cdc14161f4db1b0952ce361cfec28ce8616ac3",
+      "new_sha256": "7fec08e5dff8761c82156d93e5f024984e925068e81e8ff5ae47d8ae043b3a7e",
+      "same_pixels": false,
+      "delta_bounds": [
+        0,
+        82,
+        820,
+        2655
+      ],
+      "size": [
+        820,
+        5073
+      ]
+    },
+    {
+      "cell": [
+        "light",
+        "zh",
+        "tablet",
+        null
+      ],
+      "old_sha256": "dd32ce5e2e4072520ef73c747ac6ee5acf178962c27ee199caa9a17a3f76ddb7",
+      "new_sha256": "1c126f79fb1261d99be60c0e743c4c4305d894b678fa1d5fa0cb09601e603229",
+      "same_pixels": false,
+      "delta_bounds": [
+        33,
+        82,
+        798,
+        1163
+      ],
+      "size": [
+        820,
+        5070
+      ]
+    },
+    {
+      "cell": [
+        "light",
+        "zh",
+        "tablet",
+        "investor-focus"
+      ],
+      "old_sha256": "4d3dd5724b035569d4c376de968eae0e2b7ef9d1ac3948b7de75f7741cff65c8",
+      "new_sha256": "612e4e65a67326a45e963d8441babba103dc32ac5808a6979307335d2337e4b3",
+      "same_pixels": false,
+      "delta_bounds": [
+        0,
+        82,
+        820,
+        2650
+      ],
+      "size": [
+        820,
+        5070
+      ]
+    },
+    {
+      "cell": [
+        "dark",
+        "en",
+        "mobile",
+        null
+      ],
+      "old_sha256": "64a7bf90e090488da85010ae548cdf606498884259b9c2f94d7e45ec79033d8b",
+      "new_sha256": "630c61b5379b96f16db14ed515fdcd3192a757afefbc1a6537cf7d719288c556",
+      "same_pixels": false,
+      "delta_bounds": [
+        12,
+        18,
+        380,
+        834
+      ],
+      "size": [
+        390,
+        8198
+      ]
+    },
+    {
+      "cell": [
+        "dark",
+        "en",
+        "mobile",
+        "investor-focus"
+      ],
+      "old_sha256": "45f223c0831f16cfcc24cc357a53534f057a8818401381aac82ae94cfcc59cb6",
+      "new_sha256": "ed8f52b63ec2a1060f8ac906d92c1facac356a8a44f3d04c4ef338261602199e",
+      "same_pixels": false,
+      "delta_bounds": [
+        0,
+        81,
+        390,
+        3193
+      ],
+      "size": [
+        390,
+        8198
+      ]
+    },
+    {
+      "cell": [
+        "light",
+        "en",
+        "mobile",
+        null
+      ],
+      "old_sha256": "d84893b809840c73a663fcd7c9ae02f8b3210fc41eba348b8bdd66da0f2d618c",
+      "new_sha256": "18313d32138776767ea80e0aad2969984a93587a24d79bb728df50d85087e3db",
+      "same_pixels": false,
+      "delta_bounds": [
+        75,
+        81,
+        376,
+        830
+      ],
+      "size": [
+        390,
+        8190
+      ]
+    },
+    {
+      "cell": [
+        "light",
+        "en",
+        "mobile",
+        "investor-focus"
+      ],
+      "old_sha256": "e748299716883fb978047c179928680d95d851aec155d27bd6f633018a3ab5b5",
+      "new_sha256": "15c75b5db2eb204f715c5c199af437c6d90941d64e256124d148cdc8d042c1a2",
+      "same_pixels": false,
+      "delta_bounds": [
+        0,
+        81,
+        390,
+        3306
+      ],
+      "size": [
+        390,
+        8190
+      ]
+    },
+    {
+      "cell": [
+        "dark",
+        "zh",
+        "mobile",
+        null
+      ],
+      "old_sha256": "855ce80229b5134de951a128cb2ea46495ea67f06b3f8b855655c5a13a328c11",
+      "new_sha256": "f9dd29a5fe7a8f9df1ea94f2b7d70dff35f14a0b3dcb41c6f420e54b40367c3b",
+      "same_pixels": false,
+      "delta_bounds": [
+        15,
+        331,
+        377,
+        830
+      ],
+      "size": [
+        390,
+        7339
+      ]
+    },
+    {
+      "cell": [
+        "dark",
+        "zh",
+        "mobile",
+        "investor-focus"
+      ],
+      "old_sha256": "daae82687557dccfdf6371464cce6e56962b8da94424e982f95f1a8f2d62e301",
+      "new_sha256": "e42ab204c207b79c65fae8b7487492571a5cb2e8b2f92d93dc7d4645202712c5",
+      "same_pixels": false,
+      "delta_bounds": [
+        0,
+        329,
+        390,
+        2877
+      ],
+      "size": [
+        390,
+        7339
+      ]
+    },
+    {
+      "cell": [
+        "light",
+        "zh",
+        "mobile",
+        null
+      ],
+      "old_sha256": "52bcbff7c89d98ef397d3ba244f2e3bd7f6df4b1e503192e0de44a7354643c56",
+      "new_sha256": "9a58009df683a4f4306fa08ca6d13bd57d4bd8c063fdb48ab4d03bfec5cbb1cb",
+      "same_pixels": false,
+      "delta_bounds": [
+        15,
+        81,
+        376,
+        830
+      ],
+      "size": [
+        390,
+        7331
+      ]
+    },
+    {
+      "cell": [
+        "light",
+        "zh",
+        "mobile",
+        "investor-focus"
+      ],
+      "old_sha256": "3f117a9313bc056aa596827c21920d8aef3f0b59255fa99050c3c8f078e067ab",
+      "new_sha256": "e27223a143f342109ffcca5ffb95a744d2d9622de2ad5a2ca50983d95e171bce",
+      "same_pixels": false,
+      "delta_bounds": [
+        0,
+        81,
+        390,
+        2860
+      ],
+      "size": [
+        390,
+        7331
+      ]
+    }
+  ],
+  "same_pixels_count": 0,
+  "total": 24
+}

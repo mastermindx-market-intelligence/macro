@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/membership_collection.v2.schema.json",
+  "title": "Incumbent PIT per-basket complete collection receipt v2",
+  "description": "Separate collection record in the incumbent parquet; a null ticker is never a member. Receipt clocks and member-set/generation hashes are validated by the PIT owner. Date-only legacy rows retain legacy meaning.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "collection_id",
+    "suite",
+    "basket_id",
+    "source_ref",
+    "generation_id",
+    "generation_sha256",
+    "collection_state",
+    "source_clock_grain",
+    "observed_at",
+    "known_at",
+    "member_count",
+    "members_sha",
+    "authority_caps"
+  ],
+  "properties": {
+    "schema": {
+      "const": "basket_membership_collection/v2"
+    },
+    "collection_id": {
+      "type": "string",
+      "pattern": "^collection:[a-f0-9]{64}$"
+    },
+    "suite": {
+      "type": "string",
+      "minLength": 1
+    },
+    "basket_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generation_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{16}$"
+    },
+    "generation_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "collection_state": {
+      "enum": [
+        "COMPLETE",
+        "RETIRED"
+      ]
+    },
+    "source_clock_grain": {
+      "const": "instant"
+    },
+    "observed_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+    },
+    "known_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+    },
+    "member_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "members_sha": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "authority_caps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_rank",
+        "may_size",
+        "may_gate",
+        "may_escalate"
+      ],
+      "properties": {
+        "may_rank": {
+          "const": false,
+          "type": "boolean"
+        },
+        "may_size": {
+          "const": false,
+          "type": "boolean"
+        },
+        "may_gate": {
+          "const": false,
+          "type": "boolean"
+        },
+        "may_escalate": {
+          "const": false,
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

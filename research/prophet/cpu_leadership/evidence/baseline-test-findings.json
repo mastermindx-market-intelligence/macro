@@ -1,0 +1,43 @@
+{
+  "source": "4bf1b3aee532114b0c67e06c532b6e4ed7884549",
+  "baseline_unchanged": true,
+  "checks": {
+    "gate": {
+      "summary": "8 failed, 19 passed, 5 skipped in 40.01s",
+      "failures": [
+        "FAILED tests/test_us_board_gate.py::test_shell_html_contains_only_the_preview_rows",
+        "FAILED tests/test_us_board_gate.py::test_ungated_path_writes_empty_payload_and_leaves_the_board_whole",
+        "FAILED tests/test_us_board_gate.py::test_honest_totals_survive_the_gate",
+        "FAILED tests/test_us_board_gate.py::test_ungated_shell_shows_the_same_true_total_the_gated_shell_does",
+        "FAILED tests/test_us_board_gate.py::test_stage_filter_bar_is_baked_full_and_marked_inert_while_gated",
+        "FAILED tests/test_us_board_gate.py::test_stages_missing_from_the_preview_still_bake_a_hidden_chip",
+        "FAILED tests/test_us_board_gate.py::test_the_panel_leak_check_can_actually_see_a_leak",
+        "FAILED tests/test_us_board_gate.py::test_panel_headings_and_counts_stay_honest"
+      ]
+    },
+    "hydration": {
+      "summary": "2 failed, 7 passed, 2 skipped in 6.05s",
+      "failures": [
+        "FAILED tests/test_us_board_hydration_merge.py::test_the_shell_no_longer_blind_appends_the_payload_block",
+        "FAILED tests/test_us_board_hydration_merge.py::test_the_lane_path_still_renders_its_heading_label"
+      ]
+    },
+    "candidate_broad_pre_hardening": {
+      "summary": "10 failed, 163 passed, 7 skipped in 82.61s (0:01:22)",
+      "failures": [
+        "FAILED tests/test_us_board_gate.py::test_shell_html_contains_only_the_preview_rows",
+        "FAILED tests/test_us_board_gate.py::test_ungated_path_writes_empty_payload_and_leaves_the_board_whole",
+        "FAILED tests/test_us_board_gate.py::test_honest_totals_survive_the_gate",
+        "FAILED tests/test_us_board_gate.py::test_ungated_shell_shows_the_same_true_total_the_gated_shell_does",
+        "FAILED tests/test_us_board_gate.py::test_stage_filter_bar_is_baked_full_and_marked_inert_while_gated",
+        "FAILED tests/test_us_board_gate.py::test_stages_missing_from_the_preview_still_bake_a_hidden_chip",
+        "FAILED tests/test_us_board_gate.py::test_the_panel_leak_check_can_actually_see_a_leak",
+        "FAILED tests/test_us_board_gate.py::test_panel_headings_and_counts_stay_honest",
+        "FAILED tests/test_us_board_hydration_merge.py::test_the_shell_no_longer_blind_appends_the_payload_block",
+        "FAILED tests/test_us_board_hydration_merge.py::test_the_lane_path_still_renders_its_heading_label"
+      ]
+    }
+  },
+  "new_failure_signatures": [],
+  "note": "All ten broad candidate failure signatures reproduce on untouched base. Not repaired/disabled. Focused final-head tests and browser proof are separate; omitted deployed-byte tests are not passing."
+}

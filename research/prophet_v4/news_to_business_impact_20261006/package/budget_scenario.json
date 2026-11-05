@@ -1,0 +1,64 @@
+{
+  "status": "ILLUSTRATIVE_NOT_OBSERVED",
+  "pricing_checked": "2026-10-06",
+  "calendar_days": 30,
+  "raw_items_per_day_assumption": 20000,
+  "stages": [
+    {
+      "name": "small-model extraction",
+      "decisions_per_day": 3000,
+      "input_tokens_per_decision": 2200,
+      "output_tokens_per_decision": 250,
+      "input_usd_per_million": "0.10",
+      "output_usd_per_million": "0.40",
+      "usd_per_day": "0.96",
+      "usd_per_30_days": "28.80"
+    },
+    {
+      "name": "selective stronger-model adjudication",
+      "decisions_per_day": 100,
+      "input_tokens_per_decision": 4500,
+      "output_tokens_per_decision": 700,
+      "input_usd_per_million": "2",
+      "output_usd_per_million": "10",
+      "usd_per_day": "1.6",
+      "usd_per_30_days": "48"
+    },
+    {
+      "name": "frontier thesis-change review",
+      "decisions_per_day": 5,
+      "input_tokens_per_decision": 12000,
+      "output_tokens_per_decision": 1500,
+      "input_usd_per_million": "10",
+      "output_usd_per_million": "50",
+      "usd_per_day": "0.975",
+      "usd_per_30_days": "29.25"
+    }
+  ],
+  "inference_base_usd": "106.05",
+  "inference_with_100_percent_overhead_usd": "212.10",
+  "all_raw_frontier_extraction_usd": "20700",
+  "three_times_work_two_times_prices_usd": "636.30",
+  "proposed_daily_cap_usd": "10",
+  "proposed_monthly_cap_usd": "250",
+  "proposed_initial_build_and_benchmark_cap_usd": "750",
+  "exclusions": [
+    "existing subscriptions",
+    "new data licenses",
+    "tax",
+    "paid search/tool charges",
+    "incremental hardware",
+    "storage and existing infrastructure"
+  ],
+  "caveats": [
+    "Token envelopes must count all attempts, retrieved context, and billable reasoning.",
+    "Quality, traffic, dedup ratio, route eligibility and throughput are not measured.",
+    "No cache or batch discount is assumed.",
+    "Rates anchor a scenario, not a provider purchase or routing authorization.",
+    "Caps require the existing metering/admission owner; this script does not enforce them."
+  ],
+  "sources": {
+    "small_model": "https://ai.google.dev/gemini-api/docs/pricing.md",
+    "strong_and_frontier": "https://platform.claude.com/docs/en/about-claude/pricing"
+  }
+}

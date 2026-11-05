@@ -1,0 +1,119 @@
+{
+  "schema": "tiingo.literal_vendor_audit_actual_parent_acceptance/v1",
+  "recorded_at_utc": "2026-10-13T00:43:39.968570+00:00",
+  "original_command_execution_id": "exec-8f3ae038-06fb-491b-af8f-7ecd0430599d",
+  "original_command_status": "completed",
+  "original_exit_code": 0,
+  "original_terminal_return_consumed": true,
+  "command_result_recovered_through_current_thread_read": true,
+  "actual_audit_sha256": "8d8b88982c009712bf0146d5bafc0271b7e2c5b8aa66c4cda9bd01430fb4b887",
+  "actual_raw_reader_acceptance_sha256": "f390a4bc160674bdd37582c45d03ceb5b01e7ad82bc3a22192a1c3a2cf65d95b",
+  "independent_source_review_sha256": "3cebbc62b97233280f76087fc1ed29e9f35430ec8bfc975c4175009050931e5f",
+  "method_sha256": "9e09cd8781c698b25e2ede28b4d58d864262688769d76c6f9df5cc0d1b1b8c82",
+  "selected_receipt_file_hashes_verified": 32,
+  "selection_order": "suffix of accepted receipt list sorted by receipt path",
+  "chronological_final_interval_proven": false,
+  "counts": {
+    "aapl": {
+      "events": 4,
+      "kinds": {
+        "B": 0,
+        "Q": 2,
+        "T": 2
+      },
+      "quality_flags": {}
+    },
+    "amzn": {
+      "events": 0,
+      "kinds": {
+        "B": 0,
+        "Q": 0,
+        "T": 0
+      },
+      "quality_flags": {}
+    },
+    "googl": {
+      "events": 22,
+      "kinds": {
+        "B": 0,
+        "Q": 18,
+        "T": 4
+      },
+      "quality_flags": {}
+    },
+    "meta": {
+      "events": 14,
+      "kinds": {
+        "B": 0,
+        "Q": 10,
+        "T": 4
+      },
+      "quality_flags": {
+        "event_epoch_out_of_arrival_order": 1
+      }
+    },
+    "msft": {
+      "events": 24,
+      "kinds": {
+        "B": 0,
+        "Q": 23,
+        "T": 1
+      },
+      "quality_flags": {}
+    },
+    "nvda": {
+      "events": 132,
+      "kinds": {
+        "B": 0,
+        "Q": 81,
+        "T": 51
+      },
+      "quality_flags": {
+        "event_epoch_out_of_arrival_order": 3,
+        "identical_frame_repeats_not_deduplicated": 22
+      }
+    },
+    "qqq": {
+      "events": 384,
+      "kinds": {
+        "B": 0,
+        "Q": 365,
+        "T": 19
+      },
+      "quality_flags": {
+        "event_epoch_out_of_arrival_order": 3
+      }
+    },
+    "spy": {
+      "events": 105,
+      "kinds": {
+        "B": 0,
+        "Q": 103,
+        "T": 2
+      },
+      "quality_flags": {
+        "event_epoch_out_of_arrival_order": 1
+      }
+    },
+    "tsla": {
+      "events": 59,
+      "kinds": {
+        "B": 0,
+        "Q": 42,
+        "T": 17
+      },
+      "quality_flags": {
+        "event_epoch_out_of_arrival_order": 3,
+        "identical_frame_repeats_not_deduplicated": 1
+      }
+    }
+  },
+  "literal_case_match_verified": true,
+  "all_original_uppercase_zero_match_reports_preserved": true,
+  "zero_amzn_is_only_selected_slice_observation": true,
+  "raw_or_reader_case_changed": false,
+  "full_session_or_continuity_or_production_acceptance": false,
+  "provider_requests": 0,
+  "archive_writes": 0,
+  "canonical_identity_or_alias_or_pit_admission": false
+}

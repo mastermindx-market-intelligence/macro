@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-12T12:06:47Z",
+ "accession": "0001534504-26-000010",
+ "cik": "0001534504",
+ "doc_byte_length": 3213354,
+ "doc_sha256": "9ca41153174466377e5ccce7f653ff81c747f3407bf7294c2777b1848f550dda",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-12",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "pbf-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1311764,
+  "byte_start": 1311574,
+  "normalized": "As of December 31, 2025 and December 31, 2024, only one customer, Shell, accounted for 10% or more of our total trade accounts receivable (approximately 14% and 18%, respectively).",
+  "normalized_sha256": "cec9a08b9f234700b3623c3190151ca1fc9bc4a05ab49f3651451964e3a3a952",
+  "raw": "As of December&#160;31, 2025 and December&#160;31, 2024, only one customer, Shell, accounted for 10% or more of our total trade accounts receivable (approximately 14% and 18%, respectively).",
+  "raw_sha256": "0aa4cce3778b695e74659c9d5f51431b0169ead13c8c1f54e5dc6ac7ca59b928"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1534504/000153450426000010/pbf-20251231.htm",
+ "xbrl_contexts": []
+}

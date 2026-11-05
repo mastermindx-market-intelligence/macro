@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-24T02:40:48Z",
+ "accession": "0001193125-26-064849",
+ "cik": "0000863436",
+ "doc_byte_length": 4762527,
+ "doc_sha256": "bd492fd6e7dde5f3d3b55d7e518a1cd7add7e5dc8f4f908b959efcc14c4ac31c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "bhe-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 841717,
+  "byte_start": 841166,
+  "normalized": "Sales to our ten largest customers represented 51% and 50% of our total sales in 2025 and in 2024, respectively. Sales to Applied Materials, Inc. and subsidiaries, our largest customer in 2025 and 2024 represented 14% of our total sales in both 2025 and 2024. After a period of unprecedented global labor and supply disruptions, we have seen a general easing of certain material constraints across commodity categories, with the exception of older technologies where semiconductor original equipment manufacturers are not adding incremental capacity.",
+  "normalized_sha256": "58f870c071232cbd0fdc4168a8feb7aa27d2b7b75af23bd62be7957b7bada8ca",
+  "raw": " Sales to our ten largest customers represented 51% and 50% of our total sales in 2025 and in 2024, respectively. Sales to Applied Materials, Inc. and subsidiaries, our largest customer in 2025 and 2024 represented 14% of our total sales in both 2025 and 2024. After a period of unprecedented global labor and supply disruptions, we have seen a general easing of certain material constraints across commodity categories, with the exception of older technologies where semiconductor original equipment manufacturers are not adding incremental capacity.",
+  "raw_sha256": "5457a7efc60ed0a14135db80a0626254ad812f085c01fbfe47fcc1d2ae0b338d"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/863436/000119312526064849/bhe-20251231.htm",
+ "xbrl_contexts": []
+}

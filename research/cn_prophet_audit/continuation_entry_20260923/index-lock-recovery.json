@@ -1,0 +1,9 @@
+{
+  "empty_lock_mtime_ns": 1790220740655610933,
+  "empty_lock_inode": 1555877656,
+  "open_holders": 0,
+  "active_git_cwd_holders": 0,
+  "head": "7fb604011c30f6c738e57c67eb7ed83d33424f83",
+  "merge_head_before": null,
+  "scope": "only pre-existing empty index.lock in original owned worktree; no user source reset"
+}

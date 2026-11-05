@@ -1,0 +1,34 @@
+{
+  "operation": "options-episode-nightly-runtime-observability-20260930-sol-001",
+  "parent": "mastermind-terminal#599",
+  "carrier": "macro#7265",
+  "skillpack": "6b91339a3bd7553292068c72d11b4227d30e371b",
+  "semantic_head": "493017027474266942fdf55d3bf6d5e5621033de",
+  "integration_head": "da69cd0e21ff9e5295595fa5f1d302cf8aaeb45b",
+  "integration_base": "a7e00a9af0f437a4907a32b4591d965e438ca42a",
+  "builder_ast_equal_after_removing_phase_wrappers": true,
+  "engine_and_contract_changed": false,
+  "source_sha256": {
+    "scripts/build_options_signal_episode.py": "37dea1f4c8c2cb252e0f44942b535ce3f744c5e1c350c5daa729763698499e5f",
+    "tests/test_options_signal_episode.py": "e3e6982597d2e4cc2d1bc00726bebe4a90a539236771fca686b94fbab05bfe07"
+  },
+  "verification": {
+    "owner_tests_passed": 270,
+    "skipped": 2,
+    "new_phase_tests": 5,
+    "full_macro_suite_run": false,
+    "optimization_applied": false,
+    "speedup_claimed": false,
+    "natural_append_observed": false,
+    "production_enabled": false
+  },
+  "logs_sha256": {
+    "phase-red.log": "e8237bbd16a43a21deaa9b6380c4b2a88ea93d9ff170b47d235357eb20095639",
+    "single-pass-red.log": "edcf0d0772e3739dbd1391e20d904f63f47586e15856e0c3353192349855b458",
+    "owner-suites.log": "a7296910bdaea253a4eccd3468c9123c75868f3474ee68008455e6656a234cd3",
+    "integrated-owner-suites.log": "f74b1094ea727a6eeafa5178b7287d9d30610fabf671c343672d0e4c8ebd1cc8",
+    "episode-valid-stage-baseline.json": "bd51e4ba00ec84875a35d42a7b1c04c56e8b51a18ad44c28e06fb3d9135852e0",
+    "episode-valid-stage-baseline.txt": "70127a0b21e81a83756bb31f67e604d0b9fc29fa6ded94e5c716ba26598127aa",
+    "unapplied-single-pass-regressions.txt": "5182f3ca4d3161a091821fa505ab7ad8e5f32f6d0bcc77c8458211611e4bb065"
+  }
+}

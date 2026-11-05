@@ -1070,13 +1070,24 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
   <div class="section-hdr">
     <span class="section-dot" style="background:var(--info)"></span>
     <h2>{{ t('Participation — Who\'s Trading &amp; How Hot', '参与度 — 谁在交易、热度几何') }}</h2>
-    {% if lpl.get('as_of') or participation.get('as_of') %}<span class="stale-chip" style="margin-left:auto">{{ t('as of', '截至') }} {{ lpl.get('as_of') or participation.get('as_of') }}</span>{% endif %}
+    {% set part_d = lpl.get('as_of') or lpl.get('date') or participation.get('as_of') %}
+    {% if part_d %}
+    <span class="stale-chip" style="margin-left:auto">{{ t('as of', '截至') }} {{ part_d }}</span>
+    {% endif %}
+    {% if part_d and participation.get('as_of') and participation.as_of != part_d %}
+    <span class="stale-chip">{{ t('charts through', '图表截至') }} {{ participation.as_of }}</span>
+    {% endif %}
   </div>
 
   <div style="padding:10px 14px;background:rgba(91,155,240,0.04);border-left:3px solid rgba(91,155,240,0.3);border-radius:0 6px 6px 0;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">
     <span class="l-en">Participation tells you whether real money is in the room and who's driving. Turnover compares today's volume to its recent normal; margin balance (融资余额) is borrowed money used to buy stocks; southbound flow is Hong Kong money buying A-shares; QVIX is the market's fear gauge.</span>
     <span class="l-zh">参与度告诉你是否有真实资金入场、由谁主导。成交量一栏把当天的量和近期的常态作比较；融资余额是借钱买股的杠杆资金；南向资金是港资买入A股；QVIX是市场恐慌指标。</span>
   </div>
+  {% if lpl.get('snapshot_note') %}
+  <div class="sub-val" style="color:var(--muted);font-size:10.5px;margin-bottom:12px">
+    {{ t('Data note', '数据说明') }}: {{ lpl.snapshot_note }}
+  </div>
+  {% endif %}
 
   <div class="heat-gauge-row">
     <div class="heat-arc-wrap">
@@ -1084,23 +1095,36 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
       <div class="ring-gauge" style="width:110px;height:110px">
         <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg" id="heatGaugeSvg"></svg>
         <div class="center-val">
-          {% set regime0 = (lpl.get('regime') or 'unclear').replace('_',' ').title() %}
+          {% set pl = participation_labels or {} %}
+          {% set rl = pl.get('regime') or {} %}
           <div class="v" style="color:var(--muted);font-size:13px;line-height:1.15">
-            <span class="l-en">{{ regime0 }}</span>
-            <span class="l-zh">{{ tr(regime0) }}</span>
+            <span class="l-en">{{ rl.get('en') or '—' }}</span>
+            <span class="l-zh">{{ rl.get('zh') or '—' }}</span>
           </div>
           <div class="u">{{ t('regime', '制度') }}</div>
         </div>
       </div>
     </div>
     <div class="heat-label-row">
-      {% set regime = lpl.get('regime') or 'unclear' %}
-      {% set who = lpl.get('who_controls') or '—' %}
-      {% set risk = lpl.get('risk') or '—' %}
+      {% set wl = pl.get('who') or {} %}
+      {% set kl = pl.get('risk') or {} %}
       <p>
-        <span class="l-en"><strong>Participation regime: {{ regime.replace('_',' ').title() }}.</strong> Who controls: {{ who.replace('_',' ') }}. Risk: {{ risk.replace('_',' ') }}.</span>
-        <span class="l-zh"><strong>参与制度：{{ tr(regime.replace('_',' ').title()) }}。</strong>控盘方：{{ tr(who) }}。风险：{{ tr(risk) }}。</span>
+        <span class="l-en"><strong>Participation regime: {{ rl.get('en') or '—' }}.</strong>
+          Who controls: {{ wl.get('en') or '—' }}. Risk: {{ kl.get('en') or '—' }}.</span>
+        <span class="l-zh"><strong>参与制度：{{ rl.get('zh') or '—' }}。</strong>控盘方：{{
+          wl.get('zh') or '—' }}。风险：{{ kl.get('zh') or '—' }}。</span>
+        {{ help('Who controls is a rule-based reading of which participation leg dominates '
+                '(turnover, southbound, margin, broker strength), not the identity of any '
+                'fund, seat or institution.',
+                '控盘方是基于规则判断哪一类参与资金占主导（成交、南向、融资、券商强度），并非任何基金、席位或机构的身份识别。') }}
       </p>
+      {% if lpl.get('evidence') %}
+      <p data-part="evidence" style="margin-top:8px;font-size:11.5px">
+        {% for e in lpl.evidence %}<span class="null-chip">{{ e }}</span> {% endfor %}
+        {{ help('The legs this participation reading rests on, as the producer recorded them.',
+                '本参与度判断所依据的各项指标，按数据源原样列出。') }}
+      </p>
+      {% endif %}
       {% set contradictions = lpl.get('contradictions') or [] %}
       {% if contradictions %}
       <p style="margin-top:8px;font-size:11.5px">
@@ -1292,6 +1316,17 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
         {% if phase.get('days_in_phase') is not none %}
         <div style="font-size:11px;color:var(--muted)">{{ t('Days in phase', '已持续天数') }}: {{ phase.days_in_phase }}</div>
         {% endif %}
+        {% if phase.get('phase_started') %}
+        <div style="font-size:11px;color:var(--muted)">
+          {{ t('Since', '始于') }} {{ phase.phase_started }}
+        </div>
+        {% endif %}
+        {% set pn = phase.get('prev_phase_name') or {} %}
+        {% if pn.get('name_en') %}
+        <div style="font-size:11px;color:var(--muted)">
+          {{ t('Previous phase', '前一阶段') }}: {{ t(pn.name_en, pn.name_zh) }}
+        </div>
+        {% endif %}
       </div>
       <div style="flex:1;min-width:200px">
         <div class="micro" style="margin-bottom:6px">{{ t('Phase Description', '阶段描述') }}</div>
@@ -1344,9 +1379,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
       <div class="ledger-item"><div class="lv info-color">{{ ls.get('total_graded', 0) }}</div><div class="ll">{{ t('Total Graded', '总评分') }}</div></div>
       <div class="ledger-item"><div class="lv up-color">{{ ls.get('held', 0) }}</div><div class="ll">{{ t('Held', '持守') }}</div></div>
       <div class="ledger-item"><div class="lv down-color">{{ ls.get('fired', 0) }}</div><div class="ll">{{ t('Fired', '触发') }}</div></div>
+      <div class="ledger-item">
+        <div class="lv muted-color">{{ ls.get('indeterminate', 0) }}</div>
+        <div class="ll">{{ t('Unresolved', '未决') }}</div>
+      </div>
     </div>
     <p style="font-size:10.5px;color:var(--muted);margin-top:10px;line-height:1.5">
       {{ t('"Held" = condition not triggered — phase call consistent with evidence. "Fired" = condition met — phase was subsequently updated. CN-SYS-R5.', '"持守"=条件未触发——阶段判断与证据一致。"触发"=条件满足——阶段随后更新。CN-SYS-R5。') }}
+      {{ t('"Unresolved" = the input metric was missing on the due date, so the call'
+           ~ ' graded neither way.', '"未决"=到期日输入指标缺失，该判断既未计为持守也未计为触发。') }}
     </p>
   </div>
   {% endif %}
