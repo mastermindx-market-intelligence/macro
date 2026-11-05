@@ -14,6 +14,7 @@ runtime_runner_group:
     - mastermindx-market-intelligence/macro/.github/workflows/engine-render.yml@refs/heads/main
     - mastermindx-market-intelligence/macro/.github/workflows/render.yml@refs/heads/main
     - mastermindx-market-intelligence/macro/.github/workflows/trusted-ci-executor.yml@refs/heads/main
+    - mastermindx-market-intelligence/macro/.github/workflows/options-intel.yml@refs/heads/main
 
 scenario_routes:
   same_repo_ordinary_pr: github-hosted

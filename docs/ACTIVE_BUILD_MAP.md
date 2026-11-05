@@ -2,1045 +2,1300 @@
 
 # Active Build Map
 
-Generated: 2026-09-29T13:51:42.503394+00:00  |  Open PRs: 100  |  Merged (window): 500  |  base: `3e294ac2fb70269db105cd71c4fb139734a53ea8`
+Generated: 2026-11-04T10:51:41.594464+00:00  |  Open PRs: 100  |  Merged (window): 487  |  base: `377feecac0630a807d3c7b69d5f3b7a27e514c25`
 
 ## Open PRs
 
 | PR | Title | Branch | Updated | Flags |
 |----|-------|--------|---------|-------|
-| #8194 | prophet: US journey correctness — readable decision labels, honest plan relation, source clocks (F1/F2/F3/F4) | `claude/prophet-us-journey-correction-20260929` | 2026-09-29 | DRAFT |
-| #8192 | feat(prophet): verify prospective H1 nightly accrual | `sol/prophet-h1-accrual-checker-20260929` | 2026-09-29 | ⚠ protected:1 |
-| #8191 | feat(options): expand daily stock selection to 1000–1500 with honest preflight | `claude/options-coverage-expansion-20260929` | 2026-09-29 | DRAFT |
-| #8189 | feat(prophet): version earnings evidence semantics without changing C1 default | `sol/prophet-earnings-semantics-v1-20260929` | 2026-09-29 | DRAFT |
-| #8188 | [MAS-258][DRAFT/HOLD] Show observed China pullbacks separately from forecast risk | `claude/ssd-cn-pullback-lifecycle-20260929-68e848e41de4db74` | 2026-09-29 | DRAFT |
-| #8187 | test(macro): isolate E4 fixture from live freshness | `sol/macro-command-e4-fixture-isolation-20260929` | 2026-09-29 | — |
-| #8186 | HOLD: Events & News desk component — integration blocked | `sol/macro-events-news-desk-20260929-sol-001` | 2026-09-29 | DRAFT |
-| #8184 | fix(china): link dashboard sectors to detail pages | `sol/china-sector-detail-links-20260929` | 2026-09-29 | — |
-| #8183 | fix(dataos): bind selected price reads to exact source evidence | `sol/dataos-selected-price-evidence-20260929` | 2026-09-29 | — |
-| #8182 | research(medtech): establish Catalyst R1 regulatory and materiality contract | `sol/medtech-catalyst-r1-20260929` | 2026-09-29 | DRAFT |
-| #8154 | [HOLD-FOR-SOL] fix(risk): preserve Reflex metadata and registry source isolation | `claude/prophet-reflex-record-integrity-20260928` | 2026-09-29 | DRAFT / ⚠ protected:1 |
-| #8144 | fix(china): wire a coherent Tushare-first live heatmap | `sol/china-heatmap-live-stream-20260927` | 2026-09-28 | DRAFT / ⚠ protected:2 |
-| #8142 | ops: auto-heal wedged M2 GitHub runner listeners | `sol/m2-runner-watchdog-20260928` | 2026-09-28 | — |
-| #8141 | [HOLD-FOR-SOL] feat(prophet): native GD-6A shadow build and publication | `claude/gd6a-us-shadow-intake-20260928` | 2026-09-29 | DRAFT |
-| #8136 | feat(hk): restore macro dashboard intelligence parity | `sol/hk-macro-parity-20260928` | 2026-09-28 | DRAFT / files-truncated |
-| #8133 | [DRAFT/HOLD] R3 regime-risk research: time-bounded replay and recipient outcomes | `sol/risk-regime-mechanism-research-20260927` | 2026-09-28 | DRAFT |
-| #8132 | [MAS-258][DRAFT] Grey Deer warning delivery, severe-banner repair and crash/recovery research | `claude/grey-deer-warning-delivery-20260927-sol-c1` | 2026-09-28 | DRAFT |
-| #8125 | feat(commodities): restore WTI physical evidence with honest source clocks | `claude/commodities-wti-eia-slice-a-20260927` | 2026-09-28 | DRAFT / ⚠ CONFLICTING |
-| #8108 | feat(prophet): journey reconciliation harness (release-integration proof tool) | `claude/prophet-journey-reconcile-20260927` | 2026-09-29 | DRAFT |
-| #8107 | fix(ship-loop): quarantine Claude sessions rebound to shared root | `sol/session-root-quarantine-20260927` | 2026-09-27 | ⚠ CONFLICTING |
-| #8096 | feat(forex): add R4 view-model contracts | `sol/forex-r4-contract-20260927-sol-001` | 2026-09-27 | DRAFT |
-| #8095 | docs(commodities): persist R2 direct Paper application packet | `sol/commodities-r2-direct-paper-handoff-20260927` | 2026-09-27 | DRAFT |
-| #8094 | perf(ci): bound curated closure inference in contract-delta | `sol/ci-contract-delta-curated-only-20260927` | 2026-09-28 | DRAFT / ⚠ CONFLICTING |
-| #8091 | fix(prophet): capture prospective peer evidence inputs | `sol/prophet-packet3-owner-consolidation-20260927` | 2026-09-29 | — |
-| #8090 | feat(research): add identity-safe W5 predecessor selector | `sol/market-cognition-w5-selector-7997` | 2026-09-27 | — |
-| #8088 | docs(agentos): checkpoint governed browser and writer-gate delivery | `sol/browser-convergence-checkpoint-20260927` | 2026-09-27 | DRAFT |
-| #8087 | docs(special-sits): horizontal Catalyst integration R2 | `sol/special-situations-horizontal-catalyst-r2-20260927` | 2026-09-27 | DRAFT |
-| #8083 | [RESEARCH][DRAFT/HOLD] Resources R5: successor claims and stream economics; code local | `astra/resources-catalyst-research-20260926` | 2026-09-27 | DRAFT |
-| #8082 | [Agent OS] Record adaptive economics Meta-CEO ownership and F1 continuation | `sol/adaptive-agent-economics-agentos-20260926-sol-001` | 2026-09-27 | DRAFT |
-| #8081 | feat(policy-watch): recover official-event feed on current main for R6 | `sol/policy-watch-r6-production-20260926` | 2026-09-27 | DRAFT |
-| #8079 | docs(catalysts): Wave 1 four Web CEO research/design handoffs | `sol/catalyst-wave1-four-web-ceos-20260927` | 2026-09-29 | DRAFT |
-| #8076 | [DRAFT] Audit Massive PIT universe against Data OS identity | `sol/web-market-experience-pit-universe-20260927` | 2026-09-27 | DRAFT / ⚠ protected:1 |
-| #8069 | [HOLD-FOR-SOL] research(prophet): Q06 SEC comparable-revenue capture | `claude/prophet-economic-evidence-research-20260926-sol-001` | 2026-09-29 | DRAFT |
-| #8068 | docs(forex): R4 production-port map + qualified design evidence | `sol/forex-design-r2-20260926` | 2026-09-27 | DRAFT |
-| #8066 | [NORTH STAR][W3][CONTRACT] Guard Yahoo archive refresh before full refetch | `sol/northstar-w3-yahoo-basis-refresh-20260926` | 2026-09-27 | DRAFT |
-| #8064 | [NORTH STAR][W3] Bound SRC-A1 revision lineage scans | `sol/northstar-w3-revisions-index-20260926` | 2026-09-28 | — |
-| #8063 | orch(audit): record terminal PR #747 plain-language/theme/validated-claims audit (2026-09-26) | `claude/idle-audit-pr-7835` | 2026-09-27 | DRAFT |
-| #8061 | ci(catalysts): enroll reviewed financial and related-evidence reference tests | `claude/sector-catalyst-recommendation-north-star-20260926` | 2026-09-29 | — |
-| #8058 | [WIP/HOLD] Basic Materials T6a data-free sector dossier shell | `sol/basic-materials-sector-shell-20260926` | 2026-09-27 | DRAFT |
-| #8057 | fix(news): retire stale generated context when story facts change | `sol/news-evidence-phrasing-20260927` | 2026-09-27 | DRAFT |
-| #8056 | [AGENTOS][HOLD] Checkpoint Astra Sol coordinator bundle and runtime gates | `claude/astra-sol-orchestrator-checkpoint-20260926-sol-001` | 2026-09-27 | DRAFT |
-| #8055 | [Agent OS] Bounded Sol Pro autonomy fast-win handoffs | `sol/autonomy-fast-wins-handoffs-20260926` | 2026-09-27 | — |
-| #8050 | Crypto + Bitcoin R2: chart-led redesign, interaction proof and release contract | `sol/crypto-vector-r2-20260926` | 2026-09-29 | DRAFT / files-truncated |
-| #8048 | docs(policy-watch): R6 source-ready redesign; Paper and source-owner gates remain | `sol/policy-watch-redesign-study-20260926` | 2026-09-27 | DRAFT |
-| #8045 | ci(data-health): close outcome-spine UK policy dependency | `sol/data-health-outcome-spine-jinja2-20260926` | 2026-09-26 | — |
-| #8044 | [HANDOFF] GitHub issue repair sweep — 2026-09-26 checkpoint | `sol/github-issue-repair-sweep-checkpoint-20260926` | 2026-09-26 | DRAFT |
-| #8043 | [Agent OS][CLAUDE-COO] Preserve adapter recovery and four end-to-end environment handoffs | `sol/claude-coo-environment-fanout-20260926` | 2026-09-26 | DRAFT |
-| #8042 | [NORTH STAR][W2] Bound qledger US nightly ledger scans | `sol/northstar-qledger-bounded-20260926` | 2026-09-28 | — |
-| #8041 | docs(design): human-first acceptance and one Sector Intelligence journey | `claude/sector-human-first-20260926` | 2026-09-27 | DRAFT |
-| #8039 | [DRAFT/HOLD] Communications A1 — live company routes proven; source enrollment held | `claude/communications-a1-measures-20260924` | 2026-09-27 | DRAFT |
-| #8026 | fix(china): keep EMERGING ENTER themes in Buy Now | `sol/cn-emerging-enter-theme-buy-now-20260925` | 2026-09-26 | DRAFT / ⚠ CONFLICTING / files-truncated |
-| #8024 | [DRAFT] Audit EDGAR earnings canonical filing identity | `claude/market-experience-sec-anchor-migration-20260925` | 2026-09-27 | DRAFT |
-| #8022 | fix(ci): a PASSING --selftest must not publish a GitHub annotation | `claude/ssd-selftest-quiet-annotation-391a5efe130e7e3a` | 2026-09-25 | ⚠ protected:4 |
-| #8020 | [MO-J1][RECORDS] Fix current-symbol identity seam | `sol/marketontology-mo-j1-current-symbol-fix-20260925` | 2026-09-25 | — |
-| #8019 | [DRAFT/HOLD] Validate China Market State construction and band semantics | `sol/cn-risk-p3-market-state-validation-20260923` | 2026-09-25 | DRAFT |
-| #8014 | feat(brain): make Copilot chart-aware and verify chart edits | `claude/cmx-a2c-stream-command-ack-20260925` | 2026-09-27 | DRAFT / ⚠ protected:7 |
-| #8012 | [RESEARCH][DRAFT] Measure narrative handoff event microstructure | `sol/geopolitical-relief-event-study-20260924` | 2026-09-27 | DRAFT |
-| #8008 | fix(daily): keep market checkpoint alive past the collect cap | `claude/prophet-delivery-nightly-collect-cap-20260925` | 2026-09-27 | ⚠ protected:1 |
-| #8007 | fix(seasonality): clearer modes and accessible symbol controls | `claude/uiux-stock-seasonality-controls-20260924` | 2026-09-25 | — |
-| #8005 | feat(brain): scope chart state and ACKs to Terminal origin | `claude/cmx-a2-origin-acks-20260925` | 2026-09-26 | DRAFT / ⚠ protected:1 |
-| #8004 | fix(prophet): bind episode security before issuer evidence | `claude/prophet-p4-d5-identity-binding-20260925` | 2026-09-25 | DRAFT |
-| #8002 | [DRAFT/HOLD \u2014 stacked, do not merge] Energy nuclear theme-research vertical module (built on #7870 @6cd958e9) | `claude/energy-nuclear-vertical-module` | 2026-09-28 | DRAFT |
-| #7992 | fix(deploy): fail closed before VPS disk exhaustion | `sol/vps-disk-hygiene-20260925` | 2026-09-25 | — |
-| #7990 | fix(darkpool): quarantine impossible participation shares | `claude/uiux-darkpool-participation-trust-20260924` | 2026-09-25 | — |
-| #7989 | [AGENTOS] Record three verification landmines: brief-fence-by-name, reused temproot, and defaulted-field wire drift | `claude/agentos-dsc-brief-guard-fence-temproot-20260925` | 2026-09-25 | — |
-| #7984 | [WIP/RED][HOLD] Basic Materials T4 pure economics core | `claude/basic-materials-core-v0` | 2026-09-25 | DRAFT |
-| #7983 | research: harden Alpha Leadership evaluation and continuity test | `claude/alpha-leadership-stage2-20260924` | 2026-09-25 | ⚠ CONFLICTING / ⚠ protected:2 |
-| #7982 | feat(news): project owner-bound guidance changes to ticker context | `claude/news-guidance-comparison-20260924-sol-001` | 2026-09-27 | DRAFT |
-| #7980 | docs(prophet): original-track product, recovery and scientific decisions | `sol/prophet-recovery-cohort1-20260924` | 2026-09-29 | DRAFT |
-| #7978 | perf(macro): move Release Radar off mobile cold path | `sol/macro-mobile-load-20260924` | 2026-09-25 | — |
-| #7976 | feat(themes): expose Finviz repricing participation context | `sol/sector-theme-rerating-shape-20260924` | 2026-09-26 | DRAFT |
-| #7967 | feat(heatmap): add US and China sector-theme switching | `sol/market-heatmap-sector-theme-toggle-20260924` | 2026-09-26 | ⚠ CONFLICTING |
-| #7965 | [RIC][HOLD-FOR-SOL] Repair regime-conditioned release reaction lookup | `sol/ric-reaction-regime-cell-fix-20260924` | 2026-09-25 | DRAFT |
-| #7963 | feat(market-os): join Prophet outlook into Security State | `sol/security-state-prophet-outlook-20260924` | 2026-09-25 | ⚠ CONFLICTING / ⚠ protected:1 |
-| #7949 | [DESIGN REVIEW / HOLD] Market OS shared shell: Paper studies and migration contract | `sol/market-os-shared-shell-design-20260924` | 2026-09-29 | DRAFT |
-| #7946 | research: record BuyingMyFreedom decision-support teardown | `sol/bmf-decision-support-research-20260924` | 2026-09-24 | — |
-| #7940 | [RIC][HOLD-FOR-SOL] Freeze policy repricing in existing nightly ledger | `claude/rates-direction-prospective-ledger-20260924-sol-004` | 2026-09-25 | DRAFT |
-| #7937 | [MO-A3] MOR-2b Lane A — round 4 (R11–R14): rates copy + block clock + cleanups + unreachable states | `claude/mo-a-3-a-mor2b-a-producer-r4-20260924` | 2026-09-24 | DRAFT / ⚠ CONFLICTING |
-| #7936 | [AGENT OS][DRAFT] Record market experience direction and Meta-CEO continuation | `claude/market-experience-direction-records-20260924-astra-001` | 2026-09-29 | DRAFT |
-| #7929 | research: Market Tide C1 benchmark, source bridge, and complete-history guards | `claude/market-tide-research-20260924-sol-001` | 2026-09-25 | DRAFT |
-| #7923 | [RIC][HOLD-FOR-SOL] Separate matched-contract changes from policy-path roll | `claude/rates-policy-constituents-20260924-sol-002` | 2026-09-25 | DRAFT |
-| #7909 | [RIC][RESEARCH][HOLD-FOR-SOL] Rates direction and oscillator swing studies | `claude/rates-direction-20260924-sol-001` | 2026-09-25 | DRAFT / ⚠ CONFLICTING / ⚠ protected:1 |
-| #7907 | docs(marketontology): Sol-led restart, B recovery and research-to-delivery packets | `sol/marketontology-meta-ceo-restart-20260924` | 2026-09-26 | DRAFT |
-| #7905 | feat(earnings): validate private PG economic facts at source scope (CDV-1 Task 1) | `claude/cdv1-t1-pg-profile-facts` | 2026-09-28 | DRAFT / ⚠ CONFLICTING |
-| #7899 | feat(themes): preserve event-first thesis evidence and SEC context | `sol/sector-strength-measurement-20260922` | 2026-09-24 | ⚠ CONFLICTING |
-| #7897 | [DRAFT/HOLD] Revalidate China Risk Radar probability and hazard claims | `sol/cn-risk-p1-revalidation-20260923` | 2026-09-25 | DRAFT |
-| #7893 | [GMI C][RESEARCH/HOLD] Automation, mobility and connected-systems qualification | `sol/gmi-theme-research-c-20260924` | 2026-09-24 | DRAFT |
-| #7892 | [GMI][RESEARCH/HOLD] Wave 1 B — healthcare, longevity and wearables | `sol/gmi-theme-research-b-20260924` | 2026-09-24 | DRAFT |
-| #7891 | [DRAFT/HOLD] Technology ex-Semiconductors Economic Change — implementation carrier | `claude/ssd-technology-ex-semis-impl-c887181119dd2aaf` | 2026-09-28 | DRAFT |
-| #7890 | [GMI A][RESEARCH/HOLD] Three cases and 19-leaf assessment returned for Meta-CEO review | `sol/gmi-theme-research-a-20260924` | 2026-09-24 | DRAFT |
-| #7889 | fix(ad-1): run the options-intel producer on the store-bearing host [HELD — needs W4 admission] | `claude/ad1t2-producer-placement-repair` | 2026-09-29 | DRAFT / ⚠ protected:2 |
-| #7888 | feat(baskets): complete cybersecurity monitoring universe | `sol/cybersecurity-basket-integrity-20260923` | 2026-09-25 | DRAFT / ⚠ CONFLICTING |
-| #7886 | [GMI][RESEARCH/HOLD] Public reader added; cross-domain semantics and snapshot proof bounded | `sol/gmi-theme-research-leadership-20260924` | 2026-09-27 | DRAFT |
-| #7885 | [AGENTOS][DRAFT] Record the Executive E1 worker-pair constraint and the E2 MiniMax gate map | `claude/agentos-dsc-executive-e1-e2-20260924` | 2026-09-25 | DRAFT |
-| #7884 | [DRAFT/HOLD] Validate China Risk Radar capital policy | `sol/cn-risk-p4-capital-policy-20260923` | 2026-09-25 | DRAFT |
-| #7883 | docs(agentos): record improvement-discovery source proof and continuation | `sol/improvement-discovery-agentos-20260924` | 2026-09-25 | — |
-| #7882 | [Agent OS] Checkpoint Claude fabric auth client | `claude/ssd-claude-fabric-auth-client-checkpoint-20260923-7238cda1cfdfd83f` | 2026-09-26 | — |
-| #7878 | [HOLD-FOR-SOL][Provider Control] Shadow-only MiniMax PAYG production canary | `sol/provider-production-minimax-canary-20260924` | 2026-09-24 | DRAFT / ⚠ protected:1 |
-| #7875 | [HOLD] Repair China risk state, hazard, and authority semantics | `sol/cn-risk-p0-semantics-20260923` | 2026-09-25 | DRAFT |
-| #7873 | ops(earnings): package native Ubuntu Qwen producer | `sol/native-ubuntu-earnings-worker-systemd-20260923` | 2026-09-24 | — |
+| #10731 | fix(pick-lab): add keyboard-safe tabs and book drill navigation (D03 T47) | `claude/ssd-d03-pick-lab-keyboard-navigation-20261104-c2-7ae8b28781766f3b` | 2026-11-04 | DRAFT / files-truncated |
+| #10730 | fix(foresight): report observed JSON write outcome [D03 T38] | `claude/ssd-d03-foresight-vintage-t38-20261104-c2-7cae207aaf1d9b23` | 2026-11-04 | DRAFT |
+| #10729 | feat(deploy): prepare dormant Vercel data and matching API origins | `sol/web-vercel-backend-origin-20261104-web` | 2026-11-04 | DRAFT |
+| #10728 | glt views: O8 note wording + R1 review nits (comments, O2 test depth, mixed/empty cells) | `claude/ssd-glt-o8-r1-tidyup-3f7c2a` | 2026-11-04 | — |
+| #10727 | Route Master Brain production inference through the existing API owner | `sol/fabric-application-integration-20261104` | 2026-11-04 | — |
+| #10726 | Bind Matrix selection questions to guarded Brain provider requests | `claude/ssd-options-matrix-brain-gateway-20261104-d4c00d90143690e2` | 2026-11-04 | DRAFT / ⚠ protected:3 |
+| #10725 | Restore daily AI Brief generation and China/HK render delivery | `sol/web-ai-brief-recovery-20261104-c4` | 2026-11-04 | ⚠ protected:4 |
+| #10723 | fix(foresight): retain pending outcomes beside graded results (D03 T37) | `claude/ssd-d03-foresight-pending-t37-20261104-c2-b181e904c380228d` | 2026-11-04 | DRAFT |
+| #10722 | fix(pick-lab): expose unconfirmed HTML publication and safe recovery (D03 T38) | `claude/ssd-d03-pick-lab-publication-state-20261104-c2-984c7053ee70656f` | 2026-11-04 | DRAFT |
+| #10721 | fix(foresight): qualify confirmation-only early reads (D03 T36) | `claude/ssd-d03-foresight-confirmer-t36-20261104-c2-4cdf52c0894d99c2` | 2026-11-04 | DRAFT / files-truncated |
+| #10720 | [HOLD-FOR-SOL] D03 T38: preserve Leader Radar outputs on render failure | `claude/ssd-d03-radar-render-coherence-20261104-c2-90803ae2c4d5b4db` | 2026-11-04 | DRAFT |
+| #10719 | [HOLD] feat(heatmap): preserve standalone US context on return | `sol/web-d04-us-heatmap-return-20261104` | 2026-11-04 | DRAFT |
+| #10718 | fix(shadow-board): distinguish unavailable inputs from empty results (D03 T46) | `claude/ssd-d03-v2-source-availability-20261104-c2-83f837d67b6f1244` | 2026-11-04 | DRAFT / files-truncated |
+| #10716 | Preserve actual persisted brief delivery observations | `claude/ssd-mmos-terminal-delivery-receipts-01a1a4df-80ea5f2da7ff9edd` | 2026-11-04 | — |
+| #10715 | feat(prophet): stage 3H/30m timing surface, capture and live-pass integration | `sol/web-prophet-us-intraday-pivot-checklist-20261104-c3` | 2026-11-04 | DRAFT / ⚠ protected:1 |
+| #10713 | fix(foresight): distinguish unavailable entry-window reads (D03 T35) | `claude/ssd-d03-foresight-gate-state-20261104-c2-1e2cf936cd83034a` | 2026-11-04 | DRAFT |
+| #10711 | Options: bind Matrix questions to exact processor and fresh policy | `claude/ssd-options-matrix-question-producer-20261104-6f1b8ab5d8876839` | 2026-11-04 | DRAFT |
+| #10710 | feat(options): bind exact-selection questions to fresh source authorization | `claude/ssd-options-lab-assistant-binding-20261104-c1ab3f0657cb895f` | 2026-11-04 | DRAFT / ⚠ protected:1 |
+| #10709 | fix(winner-health): publish warm state for impossible source dates (D03 T43) | `claude/ssd-d03-winner-health-source-date-20261104-c2-c1a4065d36e086ff` | 2026-11-04 | DRAFT |
+| #10708 | Wire real International Macro/Risk sources and receipt-bound Investigation projection | `claude/ssd-intl-real-data-20261103-dc6fb1a0b338120c` | 2026-11-04 | DRAFT |
+| #10707 | [HOLD] feat(sectors): source-qualified Dossier Cycle component and browser proof | `sol/web-sector-r41-dossier-cycle-impl-20261104-sol-001` | 2026-11-04 | DRAFT / files-truncated |
+| #10705 | [D04][HOLD] Qualify Confluence evidence and protected hydration | `sol/web-d04-confluence-evidence-20261104` | 2026-11-04 | DRAFT |
+| #10704 | T007.S11: initialize Scenario and Portfolio, compose selected path evidence | `claude/ssd-codex-mo-t007-s11-parity-20261104-3cb847f03d0fbc30` | 2026-11-04 | — |
+| #10703 | [HOLD] feat(sectors): native Cycles investigation in Central | `claude/d05-native-cycles-20261104` | 2026-11-04 | DRAFT |
+| #10702 | fix(rotation): make explicit notification consent survive stale preference saves | `sol/web-clear-workstream-blockers-20261104-rotation-consent` | 2026-11-04 | DRAFT |
+| #10701 | docs(market-memory): restore full programme continuity and recovery | `claude/market-memory-continuity-20261103` | 2026-11-04 | — |
+| #10700 | fix(prophet): preserve admission metadata and model outcome provenance | `sol/web-amzn-prophet-truth-macro-20261103` | 2026-11-04 | DRAFT |
+| #10698 | fix(f02): preserve missing-data gaps in illustrative line charts | `sol/web-f02-illus-gap-20261104-c2` | 2026-11-04 | DRAFT |
+| #10697 | docs(agentos): restore original Options Lab A-G programme mapping | `claude/ssd-options-lab-programme-map-20261103-3f28d5807473fbae` | 2026-11-04 | — |
+| #10696 | P12.T9: Publish GMI classifications and preserve public-carrier withdrawals | `claude/ssd-shared-shell-canonical-gmi-20261104-01a19e33` | 2026-11-04 | — |
+| #10692 | fix(ci): require dual-admin checks for oversized PR inventories | `sol/web-clear-workstream-blockers-20261104-auth-inventory` | 2026-11-04 | DRAFT |
+| #10689 | docs(agentos): reconcile Sector Intelligence partial landing and Cycles continuation | `sol/sector-cycle-agentos-20261104` | 2026-11-04 | DRAFT |
+| #10687 | design(D08C): options plan, compare and review candidate | `design/d08c-options-plan-review-20261103` | 2026-11-04 | DRAFT |
+| #10686 | D08B: Exposure, Volatility & 3D design and verified implementation return | `design/d08b-exposure-volatility-20261104-c3` | 2026-11-04 | DRAFT |
+| #10685 | design(D08D): futures and equity replay specification and evidence | `claude/d08d-options-futures-replay-20261104` | 2026-11-04 | DRAFT |
+| #10684 | docs(agentos): record session-owned reviews for Web, Codex and Claude | `sol/session-owned-review-rules-20261103` | 2026-11-04 | — |
+| #10683 | design(D08A): return Options overview and flow specification — Paper held | `design/d08a-options-overview-flow-20261104` | 2026-11-04 | DRAFT |
+| #10682 | fix(delivery): require independent current-head review before automatic release | `sol/web-macro-review-once-merge-guard-20261103-c3` | 2026-11-04 | DRAFT |
+| #10679 | perf(site): cap public HTML gate wait during Macro API stalls | `sol/shared-shell-origin-gate-timeout-20261103` | 2026-11-04 | DRAFT |
+| #10678 | Serve Monitor data and Forex UI through one guarded Caddy generation | `claude/ssd-caddy-group-planner-a4c3a4341e894be4` | 2026-11-04 | — |
+| #10677 | Restore public Forex shell presentation assets | `claude/ssd-shared-shell-forex-static-boundary-20261104-8b79d4dc5073594b` | 2026-11-04 | — |
+| #10676 | feat(gmi): evidence-led explorer and unified Paper product system | `claude/gmi-product-upgrade-20261103` | 2026-11-04 | DRAFT / files-truncated |
+| #10674 | fix(shared-shell): qualify retained family journeys and Business clocks | `claude/ssd-accepted-products-p12t2s5-20261103-7de64ea4ac4749d9` | 2026-11-04 | files-truncated |
+| #10673 | docs(research): specify Terminal Rotation & Pivot Intelligence | `claude/rotation-pivot-extension-20261103-c1` | 2026-11-04 | DRAFT |
+| #10671 | fix: restore bilingual tooltip and page-title contracts | `claude/ssd-shared-shell-locale-source-ready-20261103-ea69de0c8167c03f` | 2026-11-03 | ⚠ protected:1 |
+| #10670 | fix(terminal): return JSON for missing static data | `claude/ssd-shared-shell-caddy-missing-data-p12t30s2-ee2fd833393dce55` | 2026-11-04 | — |
+| #10669 | fix(prophet): scope J6/setup-table template reads to the <template> element (soupsieve 4.0) | `opusx/prophet-j6-soupsieve4-template-scope` | 2026-11-04 | ⚠ CONFLICTING |
+| #10668 | FIF statement graph: a factless title-block table carries the displayed title to the fact table after it (DEC:FIF-DISPLAYED-TITLE-BLOCK-CARRY-20261103, R1-R2) | `claude/fif-tbc1-ship-20261103` | 2026-11-03 | — |
+| #10665 | P12.T32 Preserve regional basket identity and unavailable observations | `claude/ssd-shared-shell-regional-basket-truth-20261103-0d528488abe8876b` | 2026-11-04 | DRAFT / ⚠ CONFLICTING |
+| #10661 | docs(agentos): retain Ubuntu4 Fabric integration gates and task tree | `sol/web-ubuntu4-fabric-integration-20261103-c3` | 2026-11-03 | DRAFT |
+| #10659 | test(watchlist): judge ?v= stamps against the branch point, not live main; bump watchlist.js to v17 | `claude/ssd-watchlist-stamp-merge-base-4fb4ef2476f7025a` | 2026-11-03 | — |
+| #10658 | perf(ci): run FIF kernel suites on two loadfile workers | `grok/fif-kernel-parallel-20261103` | 2026-11-04 | — |
+| #10657 | fix(massive): recover sealed missing QQQ and sector ETF sessions | `sol/massive-stock-day-pair-repair-20261103` | 2026-11-03 | DRAFT |
+| #10656 | ci: add shared authored and refresh proof admission foundation | `claude/ssd-ci-fair-proof-admission-64c85b780d6b7ba9` | 2026-11-04 | DRAFT / ⚠ protected:7 |
+| #10655 | design(D06): Terminal Phase 2A retention and source contracts | `design/d06-terminal-phase2a-20261103-c4` | 2026-11-04 | DRAFT / files-truncated |
+| #10654 | design: remove colored container edge stripes (dashboard, theme, intraday) | `claude/ssd-confident-khayyam-877b44-37f024569f201e61` | 2026-11-04 | ⚠ CONFLICTING |
+| #10653 | feat(storage): bounded opt-in pytest garbage reclamation through existing Ubuntu sentinel | `sol/fleet-storage-pytest-reclaim-20261102` | 2026-11-03 | DRAFT |
+| #10652 | perf(ci): cover 110 armed PRs with the existing quota-guarded sweeper | `sol/web-sweeper-capacity-no-starvation-20261103-sol-001` | 2026-11-04 | — |
+| #10651 | feat(radar): connect optional research cases to the native entrypoint | `codex/a-radar-case-entrypoint-20261103` | 2026-11-03 | DRAFT |
+| #10649 | design(D08): freeze the shared Options integration contract — Phase 2A | `design/d08-options-integration-20261103` | 2026-11-04 | DRAFT |
+| #10648 | fix(options): disclose structures date against the current card | `claude/ssd-mo-a-radar-entrypoint-68435c3a4ee92954` | 2026-11-03 | DRAFT |
+| #10647 | perf(fif): reuse exact source parsing within one pack evaluation | `sol/web-delivery-fif-parse-scope-20261103` | 2026-11-03 | DRAFT |
+| #10646 | docs(design): D02 Macro Phase 2A product, UX and data specification | `design/d02-macro-phase2a-20261103` | 2026-11-03 | DRAFT |
+| #10645 | design(F01): shared shell, navigation and joint foundation candidate | `design/f01-shared-shell-v1-20261103-c4` | 2026-11-04 | DRAFT / files-truncated |
+| #10643 | Preserve unknown plan state in support receipts | `b-f13-support-plan-read-truth-20261103` | 2026-11-03 | DRAFT / ⚠ CONFLICTING / ⚠ protected:1 |
+| #10642 | China Prophet: link A-share setups to sector and theme peer evidence | `sol/web-cn-prophet-peer-context-20261102-c3` | 2026-11-03 | DRAFT |
+| #10641 | research(theme_graph): GMI CN historical identity census + gap (237 themes / 919 nodes NOT_IN_MASTER) | `claude/gmi-cn-identity-00a82c` | 2026-11-03 | DRAFT |
+| #10640 | Fix dossier observation dates and isolate issuer source clocks | `claude/ssd-ticker-clock-p12t27-20261103-7b5aa940e0750b32` | 2026-11-04 | — |
+| #10639 | Register first-class beta intelligence without broadening unrelated route admission | `sol/web-beta-intelligence-registry-20261103-sol` | 2026-11-04 | — |
+| #10638 | gmi: bind activity-history fold to bridge receipts at the I/O layer (+ tier gate, idempotent reruns, repo-relative rulings) | `claude/gmi-activity-binding-20a0fab7` | 2026-11-03 | DRAFT |
+| #10634 | Restore Terminal Brain options coverage and qualify per-ticker volatility reads | `sol/web-brain-terminal-options-freshness-20261102` | 2026-11-03 | ⚠ protected:4 |
+| #10631 | [DRAFT/HOLD] F03 design directory, lineage and implementation specification | `design/f03-paper-directory-20261102-c2` | 2026-11-04 | DRAFT / files-truncated |
+| #10630 | design(F02): native Paper system candidate and builder contract | `design/f02-system-v1-20261102-c2` | 2026-11-04 | DRAFT / files-truncated |
+| #10626 | docs(design): P00 Paper capability return and source repair evidence | `design/p00-paper-qualification-20261102-c2` | 2026-11-04 | DRAFT / ⚠ CONFLICTING |
+| #10625 | fix(macro): surface established sector-theme leaders and null-safe temperature history | `sol/web-sector-temperature-leaders-20261102-sol1` | 2026-11-03 | DRAFT |
+| #10623 | Fix sector-breadth import-closure CI coverage in curated jobs | `sol/sector-breadth-ci-closure-20261102-c3` | 2026-11-03 | DRAFT |
+| #10622 | Options Flow: reserve coverage for Alphabet and 48 other single names | `sol/web-live-flow-single-name-admission-20261103-c3` | 2026-11-03 | — |
+| #10621 | Make China Explore theme names, charts and signals readable on desktop and mobile | `sol/china-explore-theme-layout-20261102-c3` | 2026-11-04 | — |
+| #10620 | fix(spr): retain unavailable weekly comparisons and partial evidence | `claude/ssd-spr-w9-p12t22-20261102-979694f90931b308` | 2026-11-04 | — |
+| #10619 | Retain prospective WTI session evidence and verify it at the scenario cutoff | `codex/a-wti-session-receipt-20261102` | 2026-11-03 | DRAFT |
+| #10617 | docs(design): Paper census and 36 Astra redesign handoffs | `design/paper-production-audit-20261102-ryan` | 2026-11-04 | DRAFT / files-truncated |
+| #10616 | ui-visual-evidence: give required rest cells the force_state byte-integrity floor | `claude/ssd-compassionate-montalcini-aa7e26-c3dfed1646f11ccb` | 2026-11-03 | ⚠ protected:1 |
+| #10615 | fix(merge-on-green): live-inherited red can fire in the sweeper's sparse checkout | `claude/ssd-mog-ci-control-plane-import-6eb3502f0ce22789` | 2026-11-02 | — |
+| #10614 | Wire WTI observations into the scenario baseline behind verified sessions | `claude/a-wti-series-baseline-20261102` | 2026-11-02 | DRAFT |
+| #10612 | fix(funds): retain original filing sources and holding drill paths | `claude/ssd-funds-w9-20261102-fa803f3cc51ffd81` | 2026-11-03 | — |
+| #10611 | P12.T21 Preserve dashboard escape through Terminal load fallback | `claude/ssd-shared-shell-portal-escape-p12t21-a334a87698ce5948` | 2026-11-03 | — |
+| #10610 | fix(news): disclose failed refresh while retaining source evidence | `claude/ssd-shared-shell-news-refresh-20261102-9ce6f73044cc7275` | 2026-11-03 | — |
+| #10609 | P12.T19: retain catalog review cues after earnings publication | `claude/ssd-shared-shell-publication-delta-p12t19-c01535c9a0673df1` | 2026-11-02 | DRAFT / ⚠ protected:2 |
+| #10608 | fix(merge-on-green): judge proof freshness by what main's change can select | `claude/ssd-freshness-r2-4e571e74c518bfd1` | 2026-11-03 | ⚠ protected:1 |
+| #10604 | Publish matched sector breadth history in the existing S&P heatmap | `sol/web-sector-breadth-endpoints-20261102-c3` | 2026-11-03 | DRAFT |
+| #10602 | fix(ci): carry pytest's CI mode into the exact-base replay | `claude/ssd-replay-ci-env-73aa08454393a90a` | 2026-11-03 | — |
+| #10598 | Expose Massive daily OHLC declarations to the ASC preaccess request | `codex/asc-t05-daily-source-contract` | 2026-11-03 | — |
+| #10597 | Bind the default-off portfolio digest to account consent and nightly snapshots | `b-f08-portfolio-digest-delivery-20261102` | 2026-11-04 | DRAFT |
+| #10596 | fix(merge-on-green): judge bounded legacy-manifest edits per job, not as a global stale | `claude/ssd-sweeper-proof-freshness-8a6397cf9db79ceb` | 2026-11-03 | ⚠ protected:1 |
+| #10592 | Bind F06 screener valuations to the right listing and require stated, finite inputs | `b-f06-listing-valuation-20261102` | 2026-11-02 | DRAFT |
+| #10590 | F06 screener: keep the next catalyst when an expired window is present | `b-f06-next-catalyst-20261102` | 2026-11-02 | DRAFT |
+| #10584 | fix(commodity): expose the selected strategy tab | `sol/web-macro-commodity-tab-state-20261102-c2` | 2026-11-02 | DRAFT |
+| #10582 | fix(macro-context): describe drawdown baseline by horizon | `sol/web-macro-context-tooltip-20261102-c2` | 2026-11-02 | DRAFT |
+| #10580 | ci-main-heartbeat: say what the heartbeat actually checks | `seat/opus-l-heartbeat-header` | 2026-11-02 | ⚠ protected:1 |
+| #10579 | Verify the selected writer before the Prophet #9495 merge | `claude/ssd-prophet-9495-controller-writer-3ed5662c0de7199e` | 2026-11-02 | DRAFT |
 
 > ⚠ CONFLICTING means mergeStateStatus=DIRTY — pull_request CI is suppressed on conflicting PRs (known repo failure mode).
+> ℹ 3 of 100 PRs: mergeability not yet computed by GitHub (UNKNOWN).
 
 ## File Collisions
 
 | PR A | PR B | Shared files | Files |
 |------|------|-------------|-------|
-| #8188 | #8184 | 2 | `site/china.html`, `templates/china.html.j2` |
-| #8188 | #7875 | 2 | `templates/_risk_radar_dlg.html.j2`, `templates/china.html.j2` |
-| #8144 | #8091 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8144 | #8061 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8144 | #7992 | 2 | `.github/ci/legacy-jobs.yml`, `app/deploy/update.sh` |
-| #8144 | #7982 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8144 | #7967 | 2 | `site/heatmap.js`, `templates/heatmap.js` |
-| #8144 | #7905 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8091 | #8061 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8091 | #7982 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8091 | #7905 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8076 | #8022 | 2 ⚠ | `.github/ci/legacy-jobs.yml`, `.github/workflows/ci.yml` |
-| #8061 | #7982 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8061 | #7905 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8014 | #8005 | 2 ⚠ | `engine/neuralweb/brain_gateway.py`, `tests/test_brain_gateway.py` |
-| #7982 | #7963 | 2 | `scripts/build_ticker_pages.py`, `templates/ticker.html.j2` |
-| #7982 | #7905 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8194 | #7978 | 1 | `templates/dashboard.html.j2` |
-| #8194 | #7949 | 1 | `templates/dashboard.html.j2` |
-| #8192 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8183 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8182 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8183 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8182 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8183 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8182 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8188 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8184 | #7875 | 1 | `templates/china.html.j2` |
-| #8183 | #8182 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8183 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8154 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8182 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8144 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8154 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #8141 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #8005 | 1 | `app/main.py` |
-| #8144 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8144 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #8136 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #7963 | 1 | `scripts/ci/daily_engine_prophet_checkpoint.sh` |
-| #8141 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8141 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #8125 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8136 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #8091 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8125 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #8076 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8091 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #8061 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8076 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #8057 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8061 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #8050 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8057 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #8045 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8050 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #8041 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8045 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #8039 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8041 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #8022 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8039 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8026 | #7875 | 1 | `docs/site_semantics/china.md` |
-| #8022 | #8012 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8022 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8022 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8022 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8022 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8022 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8022 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8022 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8022 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8022 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8012 | #7992 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8012 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8012 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8012 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8012 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8012 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8012 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8012 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8012 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8008 | #7889 | 1 ⚠ | `.github/workflows/daily.yml` |
-| #7992 | #7982 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7992 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7992 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7992 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7992 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7992 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7992 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7992 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7983 | #7909 | 1 ⚠ | `data/trial_ledger.jsonl` |
-| #7982 | #7976 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7982 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7982 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7982 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7982 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7982 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7978 | #7949 | 1 | `templates/dashboard.html.j2` |
-| #7976 | #7909 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7976 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7976 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7976 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7976 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7976 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7940 | #7923 | 1 | `tests/test_rates_command.py` |
-| #7909 | #7905 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7909 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7909 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7909 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7909 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7905 | #7899 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7905 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7905 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7905 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7899 | #7897 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7899 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7899 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7897 | #7891 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7897 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
-| #7891 | #7888 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10670 | 19 | `app/deploy/Caddyfile`, `docs/verification/shared-shell-caddy-missing-data-p12t30s2-20261103/CI-INTEGRATION.md`, `docs/verification/shared-shell-caddy-missing-data-p12t30s2-20261103/PACK4-LINE-PIN.md`, `docs/verification/shared-shell-caddy-missing-data-p12t30s2-20261103/README.md`, `docs/verification/shared-shell-caddy-missing-data-p12t30s2-20261103/adjacent.log`, `docs/verification/shared-shell-caddy-missing-data-p12t30s2-20261103/caddy-line-pin-base-control.log`, `docs/verification/shared-shell-caddy-missing-data-p12t30s2-20261103/caddy-line-pin-green.log`, `docs/verification/shared-shell-caddy-missing-data-p12t30s2-20261103/caddy-line-pin-red.log` +11 more |
+| #10656 | #10596 | 5 ⚠ | `.github/workflows/merge-on-green.yml`, `scripts/merge_on_green.py`, `scripts/run_ci_pack.py`, `tests/test_ci_pack.py`, `tests/test_merge_on_green.py` |
+| #10704 | #10678 | 4 | `.github/ci/legacy-jobs.yml`, `app/deploy/Caddyfile`, `config/site_access.yml`, `tests/test_site_access_boundary.py` |
+| #10704 | #10677 | 4 | `.github/ci/legacy-jobs.yml`, `app/deploy/Caddyfile`, `config/site_access.yml`, `tests/test_site_access_boundary.py` |
+| #10696 | #10639 | 4 | `config/product_experience/page_registry_overrides.yml`, `data/product_experience/page_registry.json`, `scripts/build_product_page_registry.py`, `tests/test_build_product_page_registry.py` |
+| #10678 | #10677 | 4 | `.github/ci/legacy-jobs.yml`, `app/deploy/Caddyfile`, `config/site_access.yml`, `tests/test_site_access_boundary.py` |
+| #10656 | #10654 | 4 | `.github/ci/legacy-jobs.yml`, `lib/macro_suite_labels.py`, `site/macro_business_activity.html`, `tests/test_ci_pack.py` |
+| #10656 | #10615 | 4 | `scripts/merge_on_green.py`, `scripts/run_ci_pack.py`, `tests/test_ci_pack.py`, `tests/test_merge_on_green.py` |
+| #10615 | #10596 | 4 | `scripts/merge_on_green.py`, `scripts/run_ci_pack.py`, `tests/test_ci_pack.py`, `tests/test_merge_on_green.py` |
+| #10715 | #10656 | 3 ⚠ | `.github/ci/legacy-jobs.yml`, `.github/workflows/ci.yml`, `tests/test_ci_pack.py` |
+| #10715 | #10654 | 3 | `.github/ci/legacy-jobs.yml`, `templates/dashboard.html.j2`, `tests/test_ci_pack.py` |
+| #10698 | #10654 | 3 | `mockups/evidence/prophet-p0b-zero-fouc/manifest.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json` |
+| #10698 | #10611 | 3 | `mockups/evidence/prophet-p0b-zero-fouc/manifest.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json` |
+| #10682 | #10656 | 3 | `.github/ci/legacy-jobs.yml`, `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10656 | #10608 | 3 ⚠ | `.github/workflows/merge-on-green.yml`, `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10654 | #10611 | 3 | `mockups/evidence/prophet-p0b-zero-fouc/manifest.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json` |
+| #10619 | #10614 | 3 | `engine/ontology_scenario_runtime.py`, `lib/store.py`, `tests/test_ontology_explorer_transport.py` |
+| #10608 | #10596 | 3 ⚠ | `.github/workflows/merge-on-green.yml`, `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10726 | #10634 | 2 ⚠ | `.github/ci/legacy-jobs.yml`, `engine/neuralweb/brain_gateway.py` |
+| #10722 | #10715 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
+| #10722 | #10656 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
+| #10722 | #10654 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
+| #10722 | #10643 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
+| #10718 | #10703 | 2 | `.github/ci/legacy-jobs.yml`, `design_refs/sector-paper-20261021/copy_deck.json` |
+| #10715 | #10643 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
+| #10704 | #10656 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_site_access_boundary.py` |
+| #10682 | #10652 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10682 | #10615 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10682 | #10608 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10682 | #10596 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10682 | #10579 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10679 | #10678 | 2 | `app/deploy/Caddyfile`, `tests/test_caddy_hub_boundary.py` |
+| #10679 | #10670 | 2 | `app/deploy/Caddyfile`, `tests/test_caddy_hub_boundary.py` |
+| #10678 | #10656 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_site_access_boundary.py` |
+| #10677 | #10656 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_site_access_boundary.py` |
+| #10674 | #10656 | 2 | `.github/ci/legacy-jobs.yml`, `lib/macro_suite_labels.py` |
+| #10674 | #10654 | 2 | `.github/ci/legacy-jobs.yml`, `lib/macro_suite_labels.py` |
+| #10656 | #10652 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10656 | #10643 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
+| #10656 | #10602 | 2 | `scripts/run_ci_pack.py`, `tests/test_ci_pack_semantic.py` |
+| #10656 | #10579 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10654 | #10643 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
+| #10652 | #10615 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10652 | #10608 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10652 | #10596 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10652 | #10579 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10643 | #10616 | 2 ⚠ | `scripts/check_ui_visual_evidence.py`, `tests/test_check_ui_visual_evidence.py` |
+| #10615 | #10608 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10615 | #10579 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10608 | #10579 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10596 | #10579 | 2 | `scripts/merge_on_green.py`, `tests/test_merge_on_green.py` |
+| #10592 | #10590 | 2 | `engine/research_screener.py`, `tests/test_research_screener.py` |
+| #10731 | #10730 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10726 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10725 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10722 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10718 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10716 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10713 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10711 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10710 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10709 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10708 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10731 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10726 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10725 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10722 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10718 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10716 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10713 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10711 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10710 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10709 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10708 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10730 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10728 | #10674 | 1 | `lib/macro_suite_labels.py` |
+| #10728 | #10656 | 1 | `lib/macro_suite_labels.py` |
+| #10728 | #10654 | 1 | `lib/macro_suite_labels.py` |
+| #10726 | #10725 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10722 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10718 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10716 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10713 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10711 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10710 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10709 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10708 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10726 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10722 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10718 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10716 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10713 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10711 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10710 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10709 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10708 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10725 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10723 | #10713 | 1 | `templates/foresight.html.j2` |
+| #10722 | #10718 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10716 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10713 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10711 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10710 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10709 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10708 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10615 | 1 | `tests/test_ci_pack.py` |
+| #10722 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10722 | #10596 | 1 | `tests/test_ci_pack.py` |
+| #10722 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10716 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10713 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10711 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10710 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10709 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10708 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10718 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10713 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10711 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10710 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10709 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10708 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10716 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10713 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10711 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10710 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10709 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10708 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10625 | 1 | `templates/dashboard.html.j2` |
+| #10715 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10615 | 1 | `tests/test_ci_pack.py` |
+| #10715 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10715 | #10596 | 1 | `tests/test_ci_pack.py` |
+| #10715 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10711 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10710 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10709 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10708 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10713 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10710 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10709 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10708 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10711 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10709 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10708 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10710 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10708 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10709 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10707 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10622 | 1 | `config.yml` |
+| #10708 | #10619 | 1 | `collectors/base.py` |
+| #10708 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10708 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10704 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10707 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10679 | 1 | `app/deploy/Caddyfile` |
+| #10704 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10670 | 1 | `app/deploy/Caddyfile` |
+| #10704 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10704 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10702 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10703 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10682 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10702 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10678 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10677 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10682 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10679 | #10677 | 1 | `app/deploy/Caddyfile` |
+| #10678 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10678 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10676 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10670 | 1 | `app/deploy/Caddyfile` |
+| #10677 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10677 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10674 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10676 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10674 | #10668 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10674 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10674 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10674 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10674 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10674 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10674 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10674 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10674 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10674 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10674 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10674 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10669 | #10656 | 1 | `tests/test_prophet_card_shared.py` |
+| #10668 | #10665 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10668 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10668 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10668 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10668 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10668 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10668 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10668 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10668 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10668 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10668 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10668 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10668 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10665 | #10658 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10665 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10665 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10665 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10665 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10665 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10665 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10665 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10665 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10665 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10665 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10665 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10658 | #10656 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10658 | #10654 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10658 | #10643 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10658 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10658 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10658 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10658 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10658 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10658 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10658 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10658 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10656 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10656 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10656 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10656 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10656 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10656 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10656 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10656 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10654 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10654 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10654 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10654 | #10625 | 1 | `templates/dashboard.html.j2` |
+| #10654 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10654 | #10615 | 1 | `tests/test_ci_pack.py` |
+| #10654 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10654 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10654 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10654 | #10596 | 1 | `tests/test_ci_pack.py` |
+| #10654 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10643 | #10642 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10643 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10643 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10643 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10643 | #10615 | 1 | `tests/test_ci_pack.py` |
+| #10643 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10643 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10643 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10643 | #10596 | 1 | `tests/test_ci_pack.py` |
+| #10643 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10642 | #10638 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10642 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10642 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10642 | #10621 | 1 | `templates/sector_central_china.html.j2` |
+| #10642 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10642 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10642 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10642 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10638 | #10634 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10638 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10638 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10638 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10638 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10638 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10634 | #10623 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10634 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10634 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10634 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10634 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10630 | #10626 | 1 | `research/design_candidates/production_design_20261102/SESSION_RETURNS.md` |
+| #10630 | #10617 | 1 | `research/design_candidates/production_design_20261102/SESSION_RETURNS.md` |
+| #10626 | #10617 | 1 | `research/design_candidates/production_design_20261102/SESSION_RETURNS.md` |
+| #10623 | #10609 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10623 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10623 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10623 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10615 | #10602 | 1 | `scripts/run_ci_pack.py` |
+| #10609 | #10598 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10609 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10609 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10602 | #10596 | 1 | `scripts/run_ci_pack.py` |
+| #10598 | #10597 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10598 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
+| #10597 | #10580 | 1 | `.github/ci/legacy-jobs.yml` |
 
 ## Recently Merged (last 14 days) (showing most recent 500; window truncated)
 
 | PR | Title | Merged |
 |----|-------|--------|
-| #8195 | agentos: EXECUTIVE-CAPACITY-FABRIC retract the credits/spend-control human gate | 2026-09-29 |
-| #8193 | agentos: EXECUTIVE-CAPACITY-FABRIC 2026-09-29 headless-delivery closer records | 2026-09-29 |
-| #8190 | agentos: record the Finance 09-28 wave (one date per observation; the wave handoff) | 2026-09-29 |
-| #8181 | worktree-gc: an external liveness check that can see a run that never happened (W17) | 2026-09-29 |
-| #8180 | docs(storage): the SSD tmp pool's proven reclaim is unreachable by this sweeper (W16) | 2026-09-29 |
-| #8179 | records: close W12-W14, correct the runner-store lever, name the four-day non-start cause | 2026-09-29 |
-| #8178 | gc: a protective key absent from an older config must not read as "off" | 2026-09-29 |
-| #8177 | records: fleet storage after the deny-list and availability waves — and the bound nobody had measured | 2026-09-29 |
-| #8176 | gc: the launchd sweeper's timeouts fail silently — 13 of 45 runs crashed, 15 swept nothing, 4 days never started | 2026-09-29 |
-| #8175 | worktree-gc: make the protection of human-driven checkouts deliberate (human_driven_roots) | 2026-09-29 |
-| #8174 | guards: two that printed a PASS having examined zero subjects | 2026-09-29 |
-| #8173 | agentos: fleet storage waves 7-9 records | 2026-09-29 |
-| #8172 | worktree_gc: state the sweeper's REACH and print its refusals | 2026-09-29 |
-| #8171 | law: fetch BEFORE the landed-bytes check -- the verifier false-alarmed on its own author | 2026-09-29 |
-| #8170 | law: arm merge-on-green LAST -- a push into an armed PR can land after its merge | 2026-09-29 |
-| #8169 | storage: the eleventh pool -- 201 GiB the sweeper is TCC-forbidden to read | 2026-09-29 |
-| #8168 | fix(agent): make internal blockers nonterminal | 2026-09-29 |
-| #8167 | fix(finance-intelligence): an observation has one date, and every reader reads it | 2026-09-29 |
-| #8166 | agentos: mint WS-FLEET-STORAGE-LIFECYCLE plus the sweeper-race landmine that orphaned it once | 2026-09-29 |
-| #8165 | fix(finance-intelligence): answer #8159's review; two inputs it made crash compose again | 2026-09-29 |
-| #8163 | storage: census the INTERNAL disk -- the agent bytes were never on either external volume | 2026-09-29 |
-| #8162 | storage: attribute /Volumes/Worktrees by bytes -- the fleet is 6.5% of it | 2026-09-29 |
-| #8161 | house-law: register the ten unregistered guards and give the census a code-gated home | 2026-09-29 |
-| #8160 | industrials: recover the plan's requirement index and refuse a fabricated anchor (IND-T04c) | 2026-09-29 |
-| #8159 | fix(finance-intelligence): an owner input reads the same whatever container holds its rows | 2026-09-29 |
-| #8158 | docs(worktree-gc): the non-git bucket judgement and the transfers pool (195 GiB landmine) | 2026-09-29 |
-| #8157 | fda(collector): completeness must compare raw_count, not the deduped unique_count — the feed could never qualify | 2026-09-29 |
-| #8156 | storage: record the SSD's first full attribution and two more null pools | 2026-09-29 |
-| #8155 | records(energy): round-10 closure, round-11 ruling R-ENE-40, the relay corrected again at source (#8002) | 2026-09-28 |
-| #8153 | docs(agentos): ruling 14b's remedy is in-class, and v1.1 subject_role is unemittable | 2026-09-28 |
-| #8152 | storage: correct #8150's runner-tree risk claim; record the scratchpad null result | 2026-09-28 |
-| #8151 | records(energy): round-9 closure, round-10 rulings R-ENE-37..39, relay corrected at source (#8002) | 2026-09-28 |
-| #8150 | storage: record the shared-mint-root and ungoverned-volume scope defects | 2026-09-28 |
-| #8149 | storage: reap the contract-delta base leak at its mint site; correct the widened-roots claim | 2026-09-28 |
-| #8148 | docs(energy): nuclear round-8 closure, rulings R-ENE-35/36, at-source corrections | 2026-09-28 |
-| #8146 | fix(finance-intelligence): the registration limitations read theme evidence as the dossier read it | 2026-09-29 |
-| #8145 | records(finance-intelligence): 2026-09-27 wave checkpoint through #8138 | 2026-09-28 |
-| #8143 | records(energy): round-7 closure, R-ENE-33/34, at-source corrections, registration dry-run | 2026-09-28 |
-| #8140 | worktree_sparse: clean --force never deletes files a nested include checked out | 2026-09-28 |
-| #8139 | records(energy): round-6 closure, R-ENE-31/32, registration packet re-verified at #7870 a0d7b054ff23 | 2026-09-28 |
-| #8138 | fix(finance-intelligence): the knowledge cutoff binds every dated owner row, not only the valuation anchor | 2026-09-28 |
-| #8137 | hc(d1): adjudicate the published falsifier — the UNAVAILABLE FDA chip is correct (R-D1-FALS-01) | 2026-09-28 |
-| #8135 | fix(finance-intelligence): a slice publishes only its own valuation anchor and constraints; a conflict reads what its plane publishes | 2026-09-28 |
-| #8134 | fix(finance-intelligence): the composer never mints an evidence ref, and a slice publishes no reading or date without one | 2026-09-28 |
-| #8131 | ci: move the packed self-mod fence payloads off argv | 2026-09-28 |
-| #8130 | fix(finance-intelligence): the composer looks an owner value up only as a string, so no malformed owner value crashes it | 2026-09-28 |
-| #8129 | mining ledger: five rows justified their status by a test NAME, which this file forbids | 2026-09-28 |
-| #8127 | mining tests: pin the two MGD clauses whose own cited tests could not observe them | 2026-09-28 |
-| #8126 | perf(ci): reuse immutable scope setup across packing-contract tests | 2026-09-28 |
-| #8124 | mining ledger: two rows cited a pin that does not assert what their note claims | 2026-09-28 |
-| #8123 | mining T08/T03: receipt the last unreceipted claims, and un-stale the evidence header | 2026-09-28 |
-| #8122 | ci-scope: drop full-line comments before tokenizing a run block | 2026-09-28 |
-| #8121 | fix(finance-intelligence): owner metric keys cross only through the schema vocabulary; the forbidden-key guard runs | 2026-09-28 |
-| #8120 | agentos: IND-T04b merged and proven; a correct CI verdict expires when the head moves | 2026-09-28 |
-| #8119 | mining T02: fix a delivery gate that could never have executed, and pin the premise three NOT_RUN reasons cite | 2026-09-28 |
-| #8118 | agentos: record the null-handle and run-block-quote CI landmines; hand off the contract-delta work | 2026-09-28 |
-| #8117 | consumer cyclical: pin the one producible degraded state, close the correctness sweep (wave 10) | 2026-09-28 |
-| #8116 | ci: let cancel-in-progress stop a superseded PR's packs | 2026-09-28 |
-| #8115 | agentos: a guard named in the docstring can have zero call sites (CC-V1 wave 9) | 2026-09-28 |
-| #8114 | fix(ci): accept the planner null handle on main proofs in the p0b closure gate | 2026-09-28 |
-| #8113 | fix(finance-intelligence): projection freshness fails closed — unknown is NO_EVIDENCE, never FRESH | 2026-09-28 |
-| #8111 | consumer-cyclical wave 8: make the authority guard enforce what it claims | 2026-09-28 |
-| #8110 | mining coverage: close the subject audit — all 40 rows measured, twelve rows moved, and MGD-19 pinned | 2026-09-28 |
-| #8109 | agentos: two landmines about reading an absent check as a passing one | 2026-09-27 |
-| #8106 | consumer-cyclical: refuse a provenance pointer that resolves to nothing | 2026-09-27 |
-| #8105 | industrials: build the 13 missing plan-named requirement anchors, cure 4 unenforced requirements (IND-T04b) | 2026-09-28 |
-| #8104 | agentos: Consumer Cyclical wave-6 closeout — two nulls, one landmine, dated gate re-measurement | 2026-09-27 |
-| #8103 | consumer-cyclical: the declared basis binds the pair, and the guard derives from the contract (CC-V1 wave 6) | 2026-09-27 |
-| #8102 | ci(contract-delta): gate packing probes, skip-only gates and trigger gaps on the PR's own head | 2026-09-27 |
-| #8101 | test(industrials): make T02's mandated two-run gate able to fail (IND-T02a) | 2026-09-27 |
-| #8100 | mining T04: close MGD-08 clause 2 — empty economic path no longer reports ready on W-R | 2026-09-27 |
-| #8099 | consumer-cyclical: refuse minted envelope values, not only empty ones (CC-V1 wave 5) | 2026-09-27 |
-| #8098 | test(options): run the session-ordinal fit guards on the code gate | 2026-09-27 |
-| #8097 | hc(d2): preflight — resolve T03's consumption symbols and rule v1-only scope | 2026-09-27 |
-| #8093 | fix(ci): make Intelligence Hub watch proof deterministic | 2026-09-27 |
-| #8092 | storage: the completion signal is the MERGED PR, not HEAD-ancestry (corrects R9) | 2026-09-27 |
-| #8086 | test(agentos): scope warning-tier assertions to their own fixture subject | 2026-09-27 |
-| #8085 | docs(agentos): restore the GMI Robotics operation record the #8013 revert removed | 2026-09-28 |
-| #8084 | records(industrials): close T04 in the checkpoint at its merge sha | 2026-09-27 |
-| #8080 | storage: only a POSITIVE completion signal authorizes worktree reclaim (incident 2026-09-26) | 2026-09-27 |
-| #8078 | consumer-cyclical: reconcile the synthetic case with its own contract | 2026-09-27 |
-| #8077 | records(industrials): land the T05/T06 dispatch rulings as repo records | 2026-09-27 |
-| #8075 | records(agentos): advance the Industrials workstream to the real wave boundary | 2026-09-27 |
-| #8074 | feat(news): ship scan-first News Intelligence experience | 2026-09-27 |
-| #8073 | records(agentos): two discoveries from the T04 adjudication | 2026-09-27 |
-| #8072 | records(industrials): correct the remaining-task ordering against the frozen plan | 2026-09-27 |
-| #8071 | mining(records): R-MIN-33g corrects the pack-presence rule, R-MIN-34 pins MGD-08 clause 2, mint MGD execution status | 2026-09-27 |
-| #8070 | records(industrials): T04 two-round adversarial adjudication + first-vertical checkpoint | 2026-09-27 |
-| #8067 | records(healthcare): D1 wave-2 — reviews, seat rulings, four discoveries, handoff, WS update | 2026-09-27 |
-| #8065 | [NORTH STAR][RECORDS] Persist current W2/W3 nightly frontier | 2026-09-27 |
-| #8062 | feat(industrials): result-to-cash derivations module and comparison receipts (T04) | 2026-09-27 |
-| #8060 | records(mining): T04a round 3 reviewed, repaired, armed (wave 3) | 2026-09-27 |
-| #8059 | docs(industrials): T01 W1 checkpoint + the three Opus red-team reports | 2026-09-27 |
-| #8054 | consumer-cyclical: refuse facts the projection cannot lawfully publish | 2026-09-27 |
-| #8053 | docs(mining): table R-MIN-31/R-MIN-32 and record the T04a round-3 state (WS:GMI-MINING-M1-INTEGRATION) | 2026-09-27 |
-| #8052 | [MO-A] MO-J1A: identity-safe affected-company continuation under each active transmission blast channel | 2026-09-28 |
-| #8051 | [MO-A][RIC-F3] W3: credit_momentum display-only yield_momentum block beside interim_tlt | 2026-09-27 |
-| #8047 | ci: deepen only the exact tested tree before history fallback | 2026-09-27 |
-| #8037 | feat(brain): route technician doctrine from chart context | 2026-09-26 |
-| #8035 | fix(macro): re-bake the liquidity page's next-action line with current copy | 2026-09-25 |
-| #8034 | [MO-A][RECORDS] RIC F3 W2 handoff + workstream next_action after #8030 | 2026-09-25 |
-| #8033 | ci: run the CI control plane's own contracts on the PR code gate | 2026-09-26 |
-| #8032 | fix(macro): stale-source next action drops banned copy; its tests stop reading the day's data | 2026-09-25 |
-| #8031 | ci: host the Finance site-wiring assertion in public-render-fastlane (frees one job on each packing probe) | 2026-09-25 |
-| #8030 | [MO-A] RIC F3 W2: trailing publication-lag tolerance — yield momentum measured at the last captured row (fixed_grid_origin.v4) | 2026-09-25 |
-| #8029 | fix(ci): strip the nightly's banner tag in the ontology byte guard (ci-pack-0 heal) | 2026-09-25 |
-| #8027 | feat(research): project rights-safe belief context | 2026-09-27 |
-| #8023 | records(energy): wave 2 module rounds 3–6 — reviews, rulings R-ENE-23..30, registration packet, handoff §12–13 | 2026-09-26 |
-| #8021 | fix(risk): keep missing evidence out of calm and recovery | 2026-09-26 |
-| #8018 | records(energy): wave 2 module review rounds 1–2, rulings R-ENE-10..22, handoff §10–11 | 2026-09-25 |
-| #8017 | test(ship-loop): run every hold-wrapper regression in fence-pack, and keep it that way | 2026-09-25 |
-| #8016 | docs(energy): Power-Demand vertical scope census (read-only; seat reviews before any merge) | 2026-09-25 |
-| #8015 | fix(china): refresh Act Now sector intelligence before assembly | 2026-09-29 |
-| #8013 | Revert #7908: heal main — 11 unresolved first-party imports block ci-pack-10 repo-wide | 2026-09-25 |
-| #8011 | ci(fleet): page-bake lanes are starved of a runner, not livelocked — dead-man switch for a job held queued with no carrier | 2026-09-26 |
-| #8010 | ci(finance): run the Finance page + hydration suites in the Finance job | 2026-09-25 |
-| #8009 | Finance Intelligence T11 — connected-state conformance (round 1 lane · round 2 seat · round 3 seat) | 2026-09-28 |
-| #8006 | feat(finance-intelligence): fixture-only shared-shell registration adapter + envelope contracts (Finance T10) | 2026-09-28 |
-| #8003 | ci(bc2): grade top-level page builders' display copy in the merge gate | 2026-09-25 |
-| #8001 | records(energy): wave 2 — nuclear vertical module built on B's shell (stacked, merges after #7870) | 2026-09-25 |
-| #8000 | fix(ship-loop): never PARK a hold whose rollup lacks the sweeper's proof anchors | 2026-09-25 |
-| #7999 | fix(brain): bind Chart Bus v2 wire identity | 2026-09-26 |
-| #7998 | ci(bc2): grade PR-authored 'validated' claims in the merge gate | 2026-09-25 |
-| #7996 | ci(markets): return the fresh-render byte guard to the code gate, retire the data twin | 2026-09-25 |
-| #7995 | [MO-A] agentos(market-os): Meta-CEO A wave-2 handoff (F04 served + MOR-2b landed); remove stray root PR_BODY.md | 2026-09-25 |
-| #7994 | fix(fable-mode): verify returns and qualify Codex discovery | 2026-09-25 |
-| #7993 | fix(ship-loop): never call a rollup without ci-gate "concluded clean" | 2026-09-25 |
-| #7991 | fix(render): own the three builders render runs but its push filter missed | 2026-09-25 |
-| #7988 | perf(agentos): batch canonical workstream Git dates | 2026-09-27 |
-| #7987 | [MO-J1][RECORDS] Freeze joined MarketOntology research journey seam | 2026-09-25 |
-| #7986 | test(markets): fresh-render byte guard bakes into tmp with the strip's inputs pinned from the committed page (heal markets-regime-strip) | 2026-09-25 |
-| #7985 | perf(ci): make font-ui guard token-directed | 2026-09-25 |
-| #7981 | docs(agentos): Finance T8/T9 production wave records (#7968 #7974 #7973 #7977 + T9 live) | 2026-09-25 |
-| #7979 | fix(bc-2): heal 75 unearned 'validated' claims red on the data gate | 2026-09-25 |
-| #7977 | fix(finance-intelligence): name the tracker card in the page language (Finance T9) | 2026-09-25 |
-| #7975 | [MO-A] evidence(f04-x1): served journey at the baked revision — nav-reachable WTI Live Path 8/8 + anonymous matrix 24/24 | 2026-09-25 |
-| #7974 | fix(finance-intelligence): paint the page canvas in both art directions (Finance T8) | 2026-09-25 |
-| #7973 | fix(finance-intelligence): connected-state review response — rights fail closed, missing states as words, resilient deep links (Finance T8) | 2026-09-25 |
-| #7972 | [MO-A3] A-MOR-2b-B: VPS premarket owner — scripts/am_edition_live.py, macro-am-edition.timer/.service, update.sh self-install, Caddy overlay, docs row | 2026-09-25 |
-| #7971 | ci(p0b): give the receipt-closure gate its own curated job so a sibling red cannot shadow it (#6872 postmortem) | 2026-09-25 |
-| #7970 | HOLD-FOR-SOL: [MO-A3] A-MOR-2b-C: Morning Orientation surface (3 blocks + aibrief band + nav entry) | 2026-09-25 |
-| #7968 | fix(finance-intelligence): load theme.js so the nav theme + EN/中文 toggles work (Finance T8) | 2026-09-25 |
-| #7966 | fix(news): preserve provider confidence, clocks, and ticker semantics | 2026-09-26 |
-| #7964 | fix(merge-on-green): an empty tested surface is an answer, not an unknown (#7958 records-only livelock) | 2026-09-25 |
-| #7962 | fix(p0b-evidence): re-mint the stock-dashboard browser receipts after #6872 moved the rendered fixture (ci-pack-9 main red) | 2026-09-24 |
-| #7961 | fix(tests): pin GITHUB_RUN_ATTEMPT in the workflow_dispatch acceptance test so ci-pack-9 re-runs can go green | 2026-09-24 |
-| #7960 | test(f04-x1): builder failure test renders into tmp_path — heals the ontology-explorer data-guard red on main | 2026-09-24 |
-| #7959 | fix(f04-x1): 'WTI Live Path' gate/eyebrow copy + drift guard tolerates the render-public re-stamp | 2026-09-24 |
-| #7958 | agentos(market-os): CEO A wave checkpoint 2026-09-24 — F04-X1 served proof + MOR-2b A2 ratified | 2026-09-24 |
-| #7957 | feat(finance-intelligence): Theme Tracker sector deep-dive entry + Financials launch module (Finance T9) | 2026-09-24 |
-| #7956 | fix(finance-intelligence): register the public shell assets at the Caddy regwall edge (mirror biocatalyst) | 2026-09-24 |
-| #7955 | fix(news): stop quiet and invalid attention from boosting stories | 2026-09-26 |
-| #7952 | feat(finance-intelligence): dossier page shell + client hydration from the frozen design spec (Finance T8) | 2026-09-24 |
-| #7951 | agentos(finance): D1 closed — design-rulings DEC, surgical-lane DSC, handoff + next_action | 2026-09-24 |
-| #7950 | feat(themes): closed Mining research schema and per-sector composition — no kernel copy (T04a) | 2026-09-27 |
-| #7948 | docs(healthcare): T02 red-team verdict + r2 repair checkpoint (seat records, wave 1) | 2026-09-24 |
-| #7945 | fix(consumer-cyclical): make the R6 §7.1 economic lead reachable | 2026-09-24 |
-| #7944 | agentos(mining): wave-1 close — T01' merged (#7932), R-MIN-29/30 tabled, MIN-W2 opened | 2026-09-24 |
-| #7943 | fable-mode: Revision 3 — the seat edition (Fable 5.1 orchestration doctrine) | 2026-09-24 |
-| #7942 | feat(consumer-cyclical): V1-CORE deterministic PLNT economic-change contract + projection | 2026-09-24 |
-| #7941 | [MO-B-REC] Meta-CEO B recovery handoff 2026-09-24 (records only) | 2026-09-24 |
-| #7939 | agentos(finance): T2 composer merged — workstream next_action + handoff addendum | 2026-09-24 |
-| #7938 | [MO-A3] A-MOR-2b-A2: AM Edition producer \u2014 context_planes / research_watch / owner_links (lane A seed re-based on reverted main + seat rulings R1\u2013R14) | 2026-09-25 |
-| #7935 | feat(risk): show issued caution duration inside Risk Radar | 2026-09-25 |
-| #7934 | [RIC][SOURCE] Restore Kalshi release probabilities and PIT summaries | 2026-09-24 |
-| #7933 | docs(agentos): mint WS-GMI-HEALTHCARE workstream record | 2026-09-24 |
-| #7932 | test(mining): synthetic casebook, dependency-binding validator, typed route_unbound harness + gate job (T01') | 2026-09-24 |
-| #7930 | feat(healthcare): D1 — truthful FDA supply meaning in the incumbent visible consumer (T02 collector qualification + T01 chip) | 2026-09-27 |
-| #7928 | docs(healthcare): GMI Healthcare CEO seat program record (pickup checkpoint) | 2026-09-24 |
-| #7927 | [MO-A3] revert: d41c5cce — unreviewed direct push of MOR-2b lane A round-1 producer code to main | 2026-09-24 |
-| #7926 | docs(cdv1): wave-1 seat records — ledger, workstream state, foundation-integration decision, handoff | 2026-09-24 |
-| #7924 | test(industrials): synthetic result-to-cash corpus, helper harness, delivery-input validator + gate job (T01) | 2026-09-27 |
-| #7922 | docs(mining): closed M1 domain definitions — copper W-C and rare-earth W-R content contract (T04a) | 2026-09-24 |
-| #7921 | agentos(mining): WS-GMI-MINING-M1-INTEGRATION, seat pickup handoff, R-MIN wave-1 rulings | 2026-09-24 |
-| #7920 | feat(sector-intelligence): compose finance owner reads (Finance T2) | 2026-09-24 |
-| #7919 | docs(agentos): mint DEC-IND-FIRST-VERTICAL-CARRIER-AND-ORDERING | 2026-09-24 |
-| #7918 | [MO-A3] A-REC-B1: F00C records pass B — Morning Edition page recorded (MO-PAID-011) + five A-side rows re-measured | 2026-09-24 |
-| #7917 | docs(consumer-defensive): CDV-1 foundation integration map (Semiconductors base) | 2026-09-24 |
-| #7915 | records(industrials): consume the Opus seam audit as R-IND-10..22 | 2026-09-24 |
-| #7914 | test: keep sparse flow observatory runs hermetic | 2026-09-24 |
-| #7913 | agentos(finance): Wave 1 close records — R-FIN-9 stepper ruling + design-spec audit-first discovery | 2026-09-24 |
-| #7912 | agentos(industrials): first-vertical implementation checkpoint + wave-1 seat rulings | 2026-09-24 |
-| #7911 | [MO-A3] A-F01-MOR-2b: premarket owner + placement ruling (DEC) and the MOR-2b build packet — records only | 2026-09-24 |
-| #7910 | docs(consumer-defensive): CDV-1 Task 8 release readiness census | 2026-09-24 |
-| #7908 | Robotics Theme Intelligence — implementation carrier (HOLD remains on label / release / live admission) | 2026-09-25 |
-| #7906 | docs(agentos): mint WS-CONSUMER-DEFENSIVE-CDV1 + DEC-CDV1-PLAN-SEAM-RULINGS | 2026-09-24 |
-| #7904 | docs(consumer-defensive): CDV-1 Task 7 dossier design spec (PROPOSED) | 2026-09-24 |
-| #7903 | design(finance): frozen Finance Intelligence dossier design spec + static mockup (Finance D1) | 2026-09-24 |
-| #7902 | agentos(finance): Wave 1 records — T1 merged, T3 delivered, Sol R4 consumed, rights hold + vault-fallback records | 2026-09-24 |
-| #7900 | feat(sector-intelligence): expose finance overlap context (Finance T3) | 2026-09-24 |
-| #7896 | feat(sector-intelligence): add finance read-model contract (Finance T1) | 2026-09-24 |
-| #7894 | feat(risk): freeze prospective model-validation readiness before outcomes | 2026-09-24 |
-| #7887 | agentos(finance): Wave 0 records — Finance Intelligence implementation carrier (gmi-finance-fable-ceo-e2e-20260924) | 2026-09-24 |
-| #7881 | [DRAFT/HOLD] Energy — Nuclear Value Capture first vertical (implementation carrier) | 2026-09-24 |
-| #7880 | docs(consumer-defensive): CDV-1 implementation program ledger + Opus plan-seam audit | 2026-09-24 |
-| #7877 | [MO-A3] A-RIC-F3-W1: yield momentum — US federal holidays are expected absences, not disqualifying carries | 2026-09-24 |
-| #7876 | [MO-A3] A-F01-MOR-2a: Morning Orientation premarket archaeology (records only) | 2026-09-24 |
-| #7864 | fix(ci): include options source-note test in payoff scope | 2026-09-24 |
-| #7863 | [MO-A3] A-F03-W3-2: payoff-fold catalyst chip — Fed decision before expiry (options.html index cards) | 2026-09-24 |
-| #7862 | [MO-A3] A-REC-A1: F00C records pass — skew chain closed (MO-PAID-013) + five A-side rows re-measured | 2026-09-24 |
-| #7859 | fix(macro): move volatility diagnostics into Risk Detail | 2026-09-24 |
-| #7856 | research(prophet-us r6/w3): D07 evidence-class register draft (read-only) | 2026-09-27 |
-| #7855 | research(prophet-us r6/w3): R6-D10-01 custody/admission ruling v2.2 + Opus audit record + wave-2 Agent OS records | 2026-09-24 |
-| #7854 | ci(pack): curate four fallback smears at the source — heal main's index-probe weight-ceiling red (B-HEAL-CI-PACK-CEILING-2) | 2026-09-24 |
-| #7853 | ci(pack): fetch the full tree instead of lazily fetching every blob at checkout | 2026-09-25 |
-| #7852 | [MO-A3] heal(main-red): suite-pages + recurring-briefs — QUIET lever label, hub flat-delta class, bake-proof weekly zh assertions | 2026-09-24 |
-| #7850 | research(prophet-us r6/w2): B04 evidence-dossier contract census (read-only) | 2026-09-23 |
-| #7848 | [HEAL ci-pack-6] test_intelligence_vector_units: use the registered anchor kind turn_watch_reset_low (main red after #7830 × #7828) | 2026-09-23 |
-| #7847 | research(prophet-us r6/w2): Cycle (a) macro-only diagnostic preregistration (no return computed) | 2026-09-23 |
-| #7846 | orch(audit): record macro PR #7835 plain-language/theme/validated-claims audit (2026-09-23) | 2026-09-26 |
-| #7845 | research(prophet-us r6/w2): Cycle (a) rule-4 era-treatment record (records only) | 2026-09-23 |
-| #7844 | [MO-A3] A-F03-W2-8: skew accrual lane — caught-up no-op exits clean (no verify, no publish) | 2026-09-23 |
-| #7843 | research(licenses): Prophet US source rights register (R6-D03-01 §4; records only) | 2026-09-23 |
-| #7842 | research(prophet-us r6/w2): B16-a D03 source-readiness matrix (read-only) | 2026-09-23 |
-| #7841 | research(prophet r6): D03 ruling R6-D03-01 + Opus red-team record + wave-1 close handoff | 2026-09-23 |
-| #7840 | fix(watchlist): honest sync states — read is not a write, retry failed pushes, tombstone failed removals (D05) | 2026-09-23 |
-| #7839 | design(prophet-us r6/w1): B20 flagship workspace design packet v1 (D09 input; document only) | 2026-09-23 |
-| #7838 | docs(prophet-us r6/w1): independent exact-head review record for #7572 (read-only) | 2026-09-23 |
-| #7837 | research(prophet): D03 issuer/event source-readiness census (R6 wave 2, B04/B08/B09 inputs) | 2026-09-23 |
-| #7836 | research(prophet): D03 Cycle source-readiness census (R6 wave 2, B16/B18 inputs) | 2026-09-23 |
-| #7835 | [MO-A3] A-F03-W2-7: MO-PAID-013 skew→ThetaData chain closure record (docs) | 2026-09-23 |
-| #7834 | docs(agentos): mint R6 decision records D02/D05/D11/C-01 from the seat rulings | 2026-09-23 |
-| #7833 | ci-pack-3 heal: render-contract test tolerates snapshot() fields that landed after the committed HK/CN artifact (participation_scope, #7505) | 2026-09-23 |
-| #7832 | [MO-A3] A-F03-W2-6: skew accrual resolves the complete store session; emit skips a thin newest session | 2026-09-23 |
-| #7831 | docs(prophet-us r6/w1): independent exact-head review record for #7180 (read-only) | 2026-09-23 |
-| #7830 | feat(prophet-b1): close the anchor vocabulary (ANCHOR_KINDS) with fail-closed refusal; registry rows ACCEPTED (R6-B02-01 step 1) | 2026-09-23 |
-| #7829 | docs(prophet-us d5): A13 resolved, A7 clause 2 current-body seams, two earnings planes, registry row refresh (R6-C-01 C-DOC) | 2026-09-23 |
-| #7828 | fix(prophet-lab d5): normalize fact:revenue to value_usd at admission; bound in USD (R6-C-01 C-UNITS) | 2026-09-23 |
-| #7827 | [MO-A3] skew accrual runner: read the gate verdict from stdout only (FRESH store read as STALE on the first scheduled run) | 2026-09-23 |
-| #7826 | docs(prophet-us r6/w1): B02 episode-registry census + seat ruling R6-B02-01 (anchor vocabulary, D02 gate) | 2026-09-23 |
-| #7825 | feat(signal-gate): emit signal_gate.validity/v1 — next-session validity contract on the confluence receipt (D01, Packet A1) | 2026-09-23 |
-| #7823 | research(prophet): amend B4 entry-policy calibration prereg (A1, pre-capture; R6-PREREG-01) | 2026-09-23 |
-| #7822 | docs(prophet-us r6/w0): D11 release-path census + seat ruling R6-D11-01 | 2026-09-23 |
-| #7820 | docs(agentos): prophet-us r6 wave-0 close — D01 decision record + handoff (D11 record to follow) | 2026-09-23 |
-| #7819 | [MO-A3] skew-ops launchd runners: reset/clean before the detach (12:30Z accrual abort) + runbook §3.8 | 2026-09-23 |
-| #7814 | fix(darkpool): accessible filters, sorting and mobile ticker context | 2026-09-23 |
-| #7813 | research(design): adjudicate Discovery Board structural subtypes | 2026-09-25 |
-| #7811 | docs(prophet-us r6): wave-0 census records (B carrier reconciliation; A/C/D05/D11 to follow) | 2026-09-23 |
-| #7809 | docs(prophet-us): adopt R6 Fable Meta-CEO handoff packet + delegation record (B00) | 2026-09-23 |
-| #7808 | feat(risk): accrue prospective probability evidence by exact model cohort | 2026-09-24 |
-| #7807 | ci-pack-11 heal: screener fresh-bake test ignores the post-build banner injection (main red since 10b8c5b3) | 2026-09-23 |
-| #7806 | ci-pack-6 heal: lens dot-symbol guard pins the template, not the nightly hub bake (main red since 10b8c5b3) | 2026-09-23 |
-| #7805 | feat(admin): make Site inventory searchable and bounded | 2026-09-23 |
-| #7803 | orch(audit): record macro PR #7771 plain-language/theme/validated-claims audit (2026-09-23) | 2026-09-23 |
-| #7801 | research(risk): reject expanding walk-forward probability refit | 2026-09-23 |
-| #7798 | fix(macro): separate hottest desk leadership from entry rating | 2026-09-24 |
-| #7790 | ci-pack-7 heal: pin availability CURRENT in the two fabricated-view P4 copy tests (main red since f4269027) | 2026-09-23 |
-| #7785 | orch(audit): record mastermind-terminal PR #709 + mastermind-terminal PR #7763 + macro PR #7782 plain-language/theme/validated-claims audits (2026-09-23) | 2026-09-23 |
-| #7784 | Checkpoint China selective-synthesis continuation | 2026-09-24 |
-| #7783 | [MO-A3] A-F03-W2-4c: skew source-break — source windows on site/options_skew/latest.json and one plain-language sentence on the Directional read (DEC-SKEW-PARITY-RULING-BACKFILL-COVERED-HISTORY; DRAFT until the seat ratifies) | 2026-09-24 |
-| #7782 | fix(risk): gate probability tuning on Brier and authority | 2026-09-23 |
-| #7781 | fix(transmission): accessible scenario details and bilingual assets | 2026-09-26 |
-| #7777 | feat(sector-intelligence): add governed dossier contract | 2026-09-25 |
-| #7776 | fix(stocks): distinguish canonical issuer names from numeric sentinels | 2026-09-26 |
-| #7774 | [MO-A3] A-F03-W3-1a: catalyst links producer — first production caller of bind_events (nightly step, gate:code suite, context-only; DRAFT until the seat ratifies) | 2026-09-23 |
-| #7771 | [MO-A2] A-F02-W2-4: UK policy desk — persist a no_new record on a quiet first cycle, warn on an empty feed, gate:code home for its suite (MO-PAID-023 proof unblock) | 2026-09-23 |
-| #7770 | [MO-A3] A-F03-W2-4b: Skew ledger backfill leg — recompute the covered legacy history from the ThetaData store (canonical-wins), exclude weekend as-of rows from emit, DEC record | 2026-09-23 |
-| #7768 | fix(admin): distinguish publisher records from delivery proof | 2026-09-23 |
-| #7766 | orch(audit): record macro PR #7768 plain-language/theme/validated-claims audit (2026-09-23, + carry audits #711 #717 #720 #7650 #7688 #7710 #7609 #7737 #7743 #7755 #7756 #7761) | 2026-09-23 |
-| #7765 | [MO-A3] A-F03-W3-0: catalyst→exposure→structure (Catalyst Picker) census (DRAFT, evidence only - not for merge) | 2026-09-23 |
-| #7764 | fix(markets): bump markets.css to ?v=6 — the ?v=5 edge key was pinned to the old body (#7761 follow-up) | 2026-09-23 |
-| #7763 | [MO-A3] A-F03-W2-5b: Payoff lab consumer — "What a structure pays" fold on the index cards (options.html) + R2→emit wiring on the render path | 2026-09-23 |
-| #7761 | fix(markets): mobile cycle-stage detail flows under the chart; zh regime card gets a designed null (#7712 follow-up) | 2026-09-23 |
-| #7760 | ci: gate PRs on the dashboard render contract + UD-B2-W2 spine bindings (gate:code dashboard-render-contract) | 2026-09-23 |
-| #7759 | [MO-A3] A-F03-W2-5a: Options payoff lab producer on the store host (canonical index-ETF structures from engine/options_payoff over the ThetaData chain, launchd + R2, no UI) | 2026-09-23 |
-| #7758 | [MO-A heal] sector-intelligence publish: run the shim/externalize/stamp chain before staging site/basket + site/sectors (raw pages red ci-pack-11 after every publish) | 2026-09-23 |
-| #7757 | orch(audit): record macro PR #7729 plain-language/theme/validated-claims audit (2026-09-22) | 2026-09-23 |
-| #7756 | [MO-A3] A-F03-W2-4: Skew methodology-parity audit — decompose the ThetaData-vs-polygon divergence (display-tier receipt, no engine change) | 2026-09-23 |
-| #7755 | [MO-A10] A-F10-W1: Retire the Intelligence Hub entry card to the admin-only Calibration Lab (MO-PAID-039 dead link) | 2026-09-23 |
-| #7753 | feat(china): connect source-bound US theme context to China intelligence | 2026-09-25 |
-| #7752 | [MO-A3] MO-PAID-013 docs: skew lane live on m1 — overlap audit receipt, DSC, handoff | 2026-09-23 |
-| #7751 | research(prophet): preregister B4 entry-policy calibration | 2026-09-23 |
-| #7750 | orch(audit): record macro PRs #7609 #7650 #7710 #7729 #7737 #7743 #7755 #7756 + terminal PR #720 plain-language/theme/validated-claims audits (2026-09-22..23) | 2026-09-23 |
-| #7748 | orch(audit): record macro PR #7712 plain-language/theme/validated-claims audit (2026-09-22) | 2026-09-22 |
-| #7747 | fix: preserve Macro Command fragment navigation when publishing | 2026-09-24 |
-| #7746 | orch(audit): record terminal PR #710 plain-language/theme/validated-claims audit (2026-09-22) | 2026-09-22 |
-| #7745 | orch(audit): record terminal PR #711 + macro PR #7688 plain-language/theme/validated-claims audits (2026-09-22) | 2026-09-22 |
-| #7744 | orch(audit): record macro PR #7501 plain-language/theme/validated-claims audit (2026-09-22) | 2026-09-22 |
-| #7743 | [MO-A3] A-F03-W2-3: Skew cutover — render hosts emit from the R2-hydrated ThetaData ledger (unpin the six legacy callers) | 2026-09-23 |
-| #7741 | fix(market-memory): preserve causal seal receipts | 2026-09-22 |
-| #7740 | orch(audit): record terminal PR #713 plain-language/theme/validated-claims audit (2026-09-22) | 2026-09-22 |
-| #7738 | feat(prophet): add shadow B4 fillability and gap/velocity policies | 2026-09-24 |
-| #7737 | [MO-A3] A-F03-W2-2: ThetaData skew accrual lane on the store host (launchd + R2 publish) + real-overlap audit tool | 2026-09-22 |
-| #7736 | orch(audit): record macro PR #7639 + #7520 plain-language/theme/validated-claims audits (2026-09-22) | 2026-09-22 |
-| #7735 | [MO-A UD-B2-W5] docs: record the markets-route recomposition (#7712) in UNIFIED_DASHBOARD_DISPOSITION | 2026-09-22 |
-| #7733 | noop: idempotent workspace re-stamp for idle audit pr 7701 reconciliation | 2026-09-22 |
-| #7732 | orch(audit): record terminal PR #716 plain-language/theme/validated-claims audit (2026-09-22) | 2026-09-22 |
-| #7730 | orch(audit): record macro PRs #7574 + #7634 + #7610 plain-language/theme/validated-claims audits (2026-09-22) | 2026-09-22 |
-| #7729 | fix(china): publish heatmap in settled Asia close lane | 2026-09-23 |
-| #7726 | feat(prophet): own B4 structural risk ceiling | 2026-09-22 |
-| #7716 | perf(admin): make Master Brain page near-instant | 2026-09-23 |
-| #7714 | orch(audit): record macro PR #7667 plain-language/theme/validated-claims audit (2026-09-22) | 2026-09-22 |
-| #7713 | feat(risk): expose probability evidence depth inside Risk Radar | 2026-09-23 |
-| #7712 | [MO-A UD-B2-W4B] markets.html risk-regime strip (US/HK/CN), with the PR-pack gate and dark/light evidence | 2026-09-22 |
-| #7710 | fix: validate capital-need facts and repair issuer panel rendering | 2026-09-22 |
-| #7707 | orch(audit): record macro PR #7687 plain-language/theme/validated-claims audit (2026-09-22) | 2026-09-22 |
-| #7704 | Checkpoint China dashboard selective synthesis | 2026-09-22 |
-| #7703 | orch(audit): record macro PR #7701 plain-language/theme/validated-claims audit (2026-09-22) | 2026-09-22 |
-| #7701 | [MO F07] event -> AssumptionChange: typed proposal, typed abstention, shadow scenario | 2026-09-22 |
-| #7699 | orch(audit): record macro PR #7613 plain-language/theme/validated-claims audit (2026-09-22) | 2026-09-22 |
-| #7698 | docs(ric): RIC F3 production proof — yield momentum is correct, unconsumed, and turn_watch is structurally dead | 2026-09-22 |
-| #7693 | fix(ci): restore integration baseline authority bounds | 2026-09-22 |
-| #7689 | orch(audit): record macro PRs #7632 + #7623 plain-language/theme/validated-claims audits (2026-09-21) | 2026-09-22 |
-| #7688 | feat(prophet): own B4 session eligibility policy | 2026-09-22 |
-| #7687 | fix(prophet): keep optional structural overlay from deadlocking B4 | 2026-09-22 |
-| #7686 | orch(audit): record terminal PR #706 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-22 |
-| #7683 | research(risk): audit complete displayed probability surface | 2026-09-22 |
-| #7682 | orch(audit): record terminal PR #706 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-22 |
-| #7679 | agentos: refresh sessionless continuity release frontier | 2026-09-22 |
-| #7678 | fix(ci): remove premature held-feature test references | 2026-09-22 |
-| #7677 | feat(brain): gate Fast synthesis on evidence coverage | 2026-09-23 |
-| #7673 | orch(audit): record macro PR #7662 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-22 |
-| #7671 | orch(audit): record terminal PR #704 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-22 |
-| #7670 | orch(audit): record macro PR #7629 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-22 |
-| #7667 | Add compact China regime driver rail | 2026-09-22 |
-| #7666 | research(risk): rerun Risk Radar evidence on exact live-state replay | 2026-09-22 |
-| #7665 | fix(admin): make Site inventory links and cache exact | 2026-09-24 |
-| #7662 | feat(brain): narrow Fast tool visibility by profile | 2026-09-22 |
-| #7659 | orch(audit): record macro PR #7577 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-22 |
-| #7654 | orch(audit): record macro PR #7614 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-23 |
-| #7651 | orch(audit): record macro PR #7619 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-21 |
-| #7650 | fix(sector-pulse): align leadership velocity with observation sessions | 2026-09-23 |
-| #7648 | docs(agentos): preserve chart-cache recovery discovery | 2026-09-22 |
-| #7644 | orch(audit): record terminal PR #701 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-21 |
-| #7643 | orch(audit): record macro PR #7586 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-22 |
-| #7640 | orch(audit): record mastermind-terminal PR #698 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-23 |
-| #7639 | [MO-A heal] design-governance deepen: bounded --shallow-since rung when full-history fetches fail | 2026-09-21 |
-| #7637 | [MO-A heal] design-governance deepen: fall back to main when the all-branches fetch fails | 2026-09-21 |
-| #7636 | orch(idle-audit): record macro PR #7600 + #7554 and terminal PR #695 plain-language/theme/validated-claims audits (2026-09-21) | 2026-09-21 |
-| #7635 | fix(intl): receive global regime overview and contain mobile layout | 2026-09-23 |
-| #7634 | fix(reports): accessible archive filters and keyboard locale updates | 2026-09-22 |
-| #7633 | feat(subsector): unify intelligence detail shell | 2026-09-23 |
-| #7632 | fix(risk): make historical replay match live state transitions | 2026-09-22 |
-| #7629 | Fix China public live client and shared reason Lens | 2026-09-22 |
-| #7628 | fix(ci): keep contamination probe reachable after dependency settlement | 2026-09-21 |
-| #7627 | orch(audit): record macro PR #7608 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-21 |
-| #7623 | fix(brain): remove the purple composer notice | 2026-09-22 |
-| #7621 | fix(ci): bind Bonds stylesheet fingerprint to canonical render | 2026-09-21 |
-| #7619 | agentos: advance Control Room sessionless continuity frontier | 2026-09-21 |
-| #7614 | fix(ci): checkpoint core engine outputs before tail desks | 2026-09-21 |
-| #7613 | [MO-A heal] Re-mint p0b receipts (#7603 staled them) + closure GUARD so it cannot recur | 2026-09-21 |
-| #7612 | orch(audit): record macro PR #7603 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-21 |
-| #7610 | fix(help): make tooltip affordances keyboard and touch reachable | 2026-09-22 |
-| #7609 | fix(admin): reliable Content Studio filtering and on-demand chart review | 2026-09-22 |
-| #7608 | research(risk): classify five-session caution persistence as context | 2026-09-21 |
-| #7607 | Publish China selective synthesis and unify reason Lens | 2026-09-21 |
-| #7606 | orch(audit): record macro PRs #7602 and #7585 plain-language/theme/validated-claims audits (2026-09-21) | 2026-09-21 |
-| #7605 | fix(tushare): distinguish transport outages from credential failures | 2026-09-22 |
-| #7603 | fix(render): heal shared dead refs and market-state guard | 2026-09-21 |
-| #7602 | Admin workspace revamp: cleaner navigation, truthful status, and recoverable pages | 2026-09-21 |
-| #7600 | fix(alt-data): make related-news access and recovery truthful | 2026-09-21 |
-| #7599 | research(risk): quantify gate selectivity versus warning latency | 2026-09-21 |
-| #7598 | orch(audit): record terminal PR #696 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-21 |
-| #7597 | [MO-A heal] Re-mint p0b browser receipts: navigation-refresh.css moved under them (#7500) | 2026-09-21 |
-| #7589 | fix(basket-detail): preserve sorting focus through late page load | 2026-09-21 |
-| #7588 | orch(audit): record macro PR #7573 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-21 |
-| #7587 | orch(audit): record terminal PR #689 plain-language/theme/validated-claims audit (2026-09-21) | 2026-09-21 |
-| #7586 | research(risk): measure warning persistence at fixed episodes | 2026-09-21 |
-| #7585 | [MO-A UD-B2-W3] Drivers fold: leadership + sentiment tiles, AI-breadth relocation (R6) | 2026-09-21 |
-| #7582 | orch(audit): record terminal PR #693 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-21 |
-| #7581 | feat(prophet): bind B4 runtime owner facts fail closed | 2026-09-23 |
-| #7580 | orch(audit): record macro PR #7568 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-21 |
-| #7577 | sector-theme-subtheme architecture + STSI-1 plan | 2026-09-21 |
-| #7576 | fix(commodities): pace China gold history after Massive rate limits | 2026-09-21 |
-| #7574 | China heatmap: exact observation truth and coherent refresh | 2026-09-22 |
-| #7573 | fix(prophet-live): emit positive per-name basis receipts | 2026-09-21 |
-| #7572 | feat(prophet): preserve every eligible candidate in a searchable view | 2026-09-23 |
-| #7571 | design ratchet: FUNC_COLOR_RE covers CSS Color 4/5 functions (color-mix, oklch, lab/lch, hwb, color()) | 2026-09-21 |
-| #7570 | orch(audit): record terminal PR #684 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-21 |
-| #7569 | feat(prophet): add strategy-bound B4 entry availability core | 2026-09-21 |
-| #7568 | [MO-A] ci: wire tests/test_unified_dashboard_b1.py (v2 — supersedes #7557) | 2026-09-21 |
-| #7567 | fix(china): retain continuing accumulation in action cards | 2026-09-26 |
-| #7566 | orch(audit): record macro PR #7514 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-21 |
-| #7565 | orch(audit): record macro PR #7346 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-21 |
-| #7564 | orch(audit): record terminal PR #685 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-21 |
-| #7561 | orch(audit): record macro PR #7416 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7560 | orch(audit): record macro PR #7534 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7558 | fix(ci): bind contract-delta to exact tested merge base | 2026-09-20 |
-| #7556 | orch(audit): record terminal PR #648 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7555 | orch(audit): record macro PR #7475 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7554 | [MO-A UD-B2-W2] Spine-scale bindings: HK/CN → market_state.score, Bonds/Commodities stay designed-null | 2026-09-21 |
-| #7549 | orch(audit): record macro PR #7325 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7548 | orch(audit): record macro PR #7463 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7547 | orch(audit): record terminal PR #658 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7546 | orch(audit): record macro PR #7445 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7545 | orch(audit): record macro PR #7450 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7544 | orch(audit): record macro PR #7527 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7543 | orch(audit): record macro PR #7442 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7541 | orch(audit): record macro PR #7506 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7540 | orch(audit): record macro PR #7356 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7539 | [MO-A UD-B2-W1] Fold vol-weather chips into Risk isle per R3 (rows 21+35) | 2026-09-20 |
-| #7538 | orch(audit): record macro PRs #7492 #7474 plain-language/theme/validated-claims audits (2026-09-20) | 2026-09-20 |
-| #7537 | orch(audit): record macro PR #7511 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7536 | orch(audit): record macro PR #7523 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7535 | feat(prophet): freeze first strategy definition owner projection | 2026-09-21 |
-| #7534 | Record China selective-synthesis design threshold | 2026-09-20 |
-| #7533 | feat(options): publish full intraday root coverage catalog | 2026-09-21 |
-| #7529 | orch(audit): record macro PR #7527 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7527 | dataos(commodities): promote China gold source stores | 2026-09-20 |
-| #7526 | fix(theme-intelligence): separate WATCH from thesis deterioration | 2026-09-21 |
-| #7525 | orch(audit): record macro PR #7514 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7523 | [MO-A] main-red-repair: rebind theme.css 665c4b34 — research-screener re-bake + stock-dashboard browser receipts re-mint | 2026-09-20 |
-| #7520 | fix(macro): source-dated opportunity desk with verified momentum | 2026-09-22 |
-| #7519 | orch(audit): record macro PRs #7482 #7498 plain-language/theme/validated-claims audits (2026-09-20) | 2026-09-20 |
-| #7516 | orch(audit): record macro PR #7498 plain-language/theme/validated-claims audit (2026-09-20) | 2026-09-20 |
-| #7514 | [MO-B-REC] Records pass rec5: two next_bounded_child cells that contradict their own real_producer (append-only, freeze-lawful) | 2026-09-20 |
-| #7511 | [MO-A UD-B1-R5] Unified dashboard hero fast-follow | 2026-09-20 |
-| #7509 | fix(risk): preserve native prices and known observations in replay | 2026-09-21 |
-| #7506 | fix(prophet): preserve B1 identity epoch in B3 state | 2026-09-20 |
-| #7505 | fix(macro): distinguish selective from broad risk-on | 2026-09-23 |
-| #7503 | fix(macro): remove stacked UD-B1 hero from primary dashboard | 2026-09-21 |
-| #7501 | fix(landing): prevent signed-in dark-theme blackout | 2026-09-22 |
-| #7500 | fix(nav): raise shared mobile chrome touch targets | 2026-09-21 |
-| #7498 | fix(risk): exclude unfinished replay windows and invalid comparisons | 2026-09-20 |
-| #7497 | fix(basket-detail): keep score explanations available when optional feeds are locked | 2026-09-21 |
-| #7492 | feat(risk): audit recorded probabilities against matched outcomes | 2026-09-20 |
-| #7487 | Marketing: separate Buffer acceptance from delivery truth | 2026-09-24 |
-| #7486 | orch(audit): record macro PR #7469 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-20 |
-| #7485 | Improve restored China dashboard with selective Archetype-D synthesis | 2026-09-21 |
-| #7482 | feat(macro): source-backed risk causes and live Radar context | 2026-09-20 |
-| #7478 | fix(ci): remove Vercel quota failures from merge gates | 2026-09-22 |
-| #7477 | fix(prophet): order B1 candidate clocks by instant | 2026-09-22 |
-| #7476 | orch(audit): record macro PRs #7125 #7414 #7456 #7458 #7465 #7472 + mastermind-terminal PRs #670 #673 plain-language/theme/validated-claims audits (2026-09-19) | 2026-09-20 |
-| #7475 | [RESEARCH][HOLD] Freeze prospective US Prophet fast-cycle × hidden-fragility test | 2026-09-20 |
-| #7474 | fix(briefs): wire recurring producer to incumbent Supabase runtime | 2026-09-20 |
-| #7472 | [MO-B F09 W8-1 follow-on] Direct unit tests for _resolve_cash_runway (7 tests; Grok h_7451_rv1 minor 1) | 2026-09-20 |
-| #7471 | Record canonical China dashboard product ruling | 2026-09-20 |
-| #7470 | orch(audit): record mastermind-terminal PR #670 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-20 |
-| #7469 | [MO-A UD-B1] Unified Macro Dashboard — spine primitive, tokens, specimen, hero skeleton + RIG disposition table | 2026-09-20 |
-| #7468 | orch(audit): record macro PR #7451 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-20 |
-| #7467 | fix(macro): move market internals into Risk Radar | 2026-09-20 |
-| #7465 | [MO-B F00C records] append-only pass after #7451: MO-DELTA-021 / MO-PAID-059 / MO-PAID-078 notes; 33 cells held for Sol | 2026-09-20 |
-| #7463 | Fix China rerender network stalls | 2026-09-20 |
-| #7460 | orch(audit): record macro PR #7390 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-20 |
-| #7459 | [MAIN-RED-REPAIR] fix(ci): align hosted-first pack predicate contract | 2026-09-20 |
-| #7458 | fix(theme-graph): preserve parquet evidence refs on PIT cutover | 2026-09-20 |
-| #7457 | feat(prophet): surface leaders waiting for entry | 2026-09-20 |
-| #7456 | Restore canonical China macro dashboard | 2026-09-19 |
-| #7454 | orch(audit): record macro PR #7447 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-20 |
-| #7451 | [MO-B F09 W8-1] Cash runway on the debt-maturity ladder: one annual filing's cash, operating cash and equipment spend → months of runway + next-12-month cover (MO-PAID-059 / MO-DELTA-018 second slice) | 2026-09-20 |
-| #7450 | fix(government-revenue): clarify workspace and repair mobile interactions | 2026-09-20 |
-| #7449 | fix(ui-evidence): require real interaction proof for inline CSS | 2026-09-19 |
-| #7448 | orch(audit): record macro PR #7407 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-22 |
-| #7447 | [MO-B F00C records] append-only pass after #7390: 8 union rows; 14 rows held for Sol's re-pin | 2026-09-19 |
-| #7446 | orch(audit): record macro PR #7436 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7445 | fix(policy-watch): simplify confidence and track-record UX | 2026-09-20 |
-| #7444 | orch(audit): record macro PR #7411 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7442 | fix(bonds): clarify snapshot and calibration UX | 2026-09-20 |
-| #7440 | orch(audit): record macro PR #7425 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7439 | orch(audit): record macro PR #7362 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7437 | fix(market-structure): simplify systematic-flow UX | 2026-09-21 |
-| #7436 | fix(flow-leaders): heal tracked strict-JSON artifact | 2026-09-19 |
-| #7435 | orch(audit): record mastermind-terminal PR #588 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7434 | orch(audit): record mastermind-terminal PR #669 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7433 | orch(audit): record macro PR #7431 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7432 | orch(audit): record macro PR #7430 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7431 | [MO-B F13-1] glossary: recapture the 8-cell design evidence with the fixed capture tool (post-#7427); retires the sun/moon flourish from the #7425 cells | 2026-09-19 |
-| #7430 | [MO-B F06-4] research screener: recapture the 8-cell design evidence at the merged round-4 head (826d31ad); retires recapture=NEEDED | 2026-09-19 |
-| #7429 | orch(audit): record macro PR #7427 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7428 | orch(audit): record macro PR #7377 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7427 | [MO-B evidence] capture_page_evidence: wait for theme.js's sky-fx flourish to finish before the full-page shot | 2026-09-19 |
-| #7425 | [MO-B F13-1] glossary: recapture the 8-cell design evidence at the merged ZH heal (480bc807); retires recapture=NEEDED | 2026-09-19 |
-| #7424 | orch(audit): record macro PR #7337 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7422 | orch(audit): record mastermind-terminal PR #586 plain-language/theme/validated-claims audit (2026-09-19) | 2026-09-19 |
-| #7416 | fix(macro-context): simplify regime confidence and context UX | 2026-09-20 |
-| #7414 | fix(briefs): close privacy, cadence, and read-truth gaps | 2026-09-20 |
-| #7412 | fix(basket-detail): simplify technical UX and score disclosures | 2026-09-20 |
-| #7411 | [MO-B F11-7b hotfix] recurring briefs DORMANT = no subscription read, no run(), no user text in workflow logs (Sol #7106 blocker 1 mitigation) | 2026-09-19 |
-| #7408 | fix(banner): make dismiss control touch reachable | 2026-09-21 |
-| #7407 | [MO-B F00C records] manifest mirrors the #7335 ledger; B-REC3 fence re-pinned; 4 in-cell corrections Sol's test demands (closes the reconciliation main-red) | 2026-09-19 |
-| #7406 | feat(brain): profile Fast questions for better evidence seeds | 2026-09-21 |
-| #7404 | perf(ci): reuse planner AST traversal | 2026-09-27 |
-| #7392 | fix(prophet): rebind P0B nav and theme asset receipts | 2026-09-19 |
-| #7391 | fix(flow-leaders): publish browser-parseable strict JSON | 2026-09-19 |
-| #7390 | records(market-ontology): correct MO-PAID-039 internal-route boundary | 2026-09-19 |
-| #7388 | [AGENT EVAL] Reconcile OL-V1 Executive runtime frontier | 2026-09-19 |
-| #7386 | [HOLD-FOR-SOL] ci: rescue legacy PR callers onto hosted packs | 2026-09-21 |
-| #7382 | feat(intraday-flow): add provenance-safe session history projection | 2026-09-22 |
-| #7377 | [MO-B W7-2] F02: public-news event layer on sanctions_map.html (UK→GBR path; EU/EA dated list; overlays 048-050 untouched) (MO-PAID-008) | 2026-09-19 |
-| #7373 | fix(brain): make panel explain affordance touch reachable | 2026-09-19 |
-| #7372 | docs(agentos): record MRKT integration Web CEO commissioning | 2026-09-22 |
-| #7364 | feat(marketing): wire Chronicle earnings calls into canonical outbox | 2026-09-19 |
-| #7362 | [MO-B W7-1] F02: Europe official-press panel on euro_area.html over the existing qbus join (MO-PAID-034) | 2026-09-19 |
-| #7361 | fix(intelligence-hub): simplify ranking and status UX | 2026-09-21 |
-| #7360 | fix(nav): tighten keyboard and press interactions | 2026-09-19 |
-| #7356 | feat(prophet): add conservative B3 candidate-state core | 2026-09-20 |
-| #7355 | perf(site): lazy-load row ticker logos | 2026-09-22 |
-| #7351 | [MO-F02] Activate the shipped UK policy desk on its sentinel lane | 2026-09-23 |
-| #7347 | docs(research): record Maerino capability gap census | 2026-09-19 |
-| #7346 | fix(hub): simplify signed-in home UX and truthful freshness | 2026-09-20 |
-| #7345 | Admin UX + performance sweep: navigation, slow panels, and Outbox | 2026-09-21 |
-| #7344 | [AGENT EVAL] Reconcile continuation frontier and C2 execution gates | 2026-09-19 |
-| #7342 | feat(commodities): wire Shanghai-close China gold basis proxy | 2026-09-19 |
-| #7341 | [MO-B F01] Re-pin the credit wiring-trace record to the moved E4 label | 2026-09-19 |
-| #7338 | [MO-B-REC] Agent OS handoff — MarketOntology HOLD decision docket (21 gates, 5 owners) | 2026-09-19 |
-| #7337 | [MO-B F01-1] Morning edition page before the US open | 2026-09-19 |
-| #7336 | [MO-B-REC] Agent OS handoff — Meta-CEO B seat transfer aa22a3d2 → 026851bd (records only) | 2026-09-19 |
-| #7335 | [MO-B-REC] F00C ledger reconciliation 2026-09-18 — ratified moves from the wave-3 records audits | 2026-09-19 |
-| #7334 | ci: default ordinary PR packs to GitHub-hosted Linux | 2026-09-19 |
-| #7333 | docs(prophet): record Chairman's rotation-participation Meta-CEO mandate | 2026-09-22 |
+| #10724 | agentos(GLT): final records — O3/O4 closed, O1/O2 landed, T27 release identity proven, rows pending nightly | 2026-11-04 |
+| #10714 | fix(govrev): keep missing headline counts unknown | 2026-11-04 |
+| #10712 | Options: repair Context Audit v2 charter determinism and recovery | 2026-11-04 |
+| #10706 | agentos(CI-MERGE-CONTROL-PLANE): 2026-11-04 acceleration checkpoint (records only) | 2026-11-04 |
+| #10699 | docs(agentos): preserve the full Fable programme across four workstreams | 2026-11-04 |
+| #10695 | P12.T32 Preserve regional basket identity and qualify current packing | 2026-11-04 |
+| #10694 | glt views: forecast section disposition (O1) + rule-c refused-key test (O2) | 2026-11-04 |
+| #10693 | agentos(GLT): 2026-11-04 scoped-commission closure handoff + workstream result | 2026-11-04 |
+| #10691 | fix(agentos): correct Tiingo handoff ended_because enum | 2026-11-04 |
+| #10690 | docs(tiingo): record live BOATS publication and three loaded schedules | 2026-11-04 |
+| #10681 | ci(glt): declare the LCB page's runtime Jinja templates in the exclusive GLT job (T25 AUDIT-N3 A1) | 2026-11-04 |
+| #10675 | prophet: select <template> bodies on the template element (soupsieve 4.0) | 2026-11-03 |
+| #10672 | agentos(grey-deer): records r7 — EW-P1 PRODUCTION_PROOF (two natural sessions), FU2 render coverage | 2026-11-03 |
+| #10667 | test(basket): skip the +1/-0 diff claim once the include is integrated | 2026-11-03 |
+| #10666 | test(risk-radar): select inert-shell hooks on the template (soupsieve 4.0) | 2026-11-03 |
+| #10664 | FIF statement graph: bare-year displayed columns take the filing's document period end (DEC:FIF-DISPLAYED-BARE-YEAR-COLUMNS-FROM-DOCUMENT-PERIOD-END-20261103) | 2026-11-03 |
+| #10663 | FIF statement graph: fold the displayed table title when the exact pass finds no rows (331 served, 0 regressions) | 2026-11-03 |
+| #10662 | docs(agentos): restore Executive programme continuity frontier | 2026-11-03 |
+| #10660 | FIF member capture: name 10-K/10-Q taxonomy members by the stem the archive index lists (DEC:FIF-TAXONOMY-STEM-FROM-INDEX-20261102) | 2026-11-03 |
+| #10650 | FIF statement graph: compose same-row, blank-gap and caption-led annual header periods (DEC:FIF-DISPLAYED-HEADER-PERIOD-COMPOSITION-20261103) | 2026-11-03 |
+| #10644 | Research Factory: bind private reviewer source links to retained diagnostics | 2026-11-03 |
+| #10637 | FIF statement graph: code the displayed-parse refusal family (layout, column-period, presentation-absent) | 2026-11-03 |
+| #10636 | gmi(rel m2): owner precision review report, blind non-authoring reviewer (E5/O1) | 2026-11-03 |
+| #10635 | [authority] gmi(explorer): plain company display names from the symbol directory (G-UI-7) | 2026-11-03 |
+| #10633 | fix(gmi-e3): attribute each judging dir's parse outcomes to its own domain | 2026-11-03 |
+| #10629 | gmi(O5 record): withdraw the G-UI-5 copy packet, already fixed by #10306 | 2026-11-03 |
+| #10628 | gmi(m1): first activity-history fold — MU → hbm_packaging under delegated C01 ruling | 2026-11-03 |
+| #10627 | gmi(W3B T-03): bind THS local themes to their PIT basket through the graph EXPRESSES edge | 2026-11-03 |
+| #10624 | GMI taxonomy owner review: 68 frozen-micro dispositions (64 KEEP, 4 RENAME) — Taxonomy gate PASS | 2026-11-03 |
+| #10618 | gmi: C01 graph_membership_use revision ruling + delegated curator A/B/C decision | 2026-11-03 |
+| #10613 | FIF member capture: bind issuer statement-title wording on the deep route, with a plain-income gate | 2026-11-03 |
+| #10607 | Restore retained Learning, Forex, Gold and Bio consumer workflows | 2026-11-03 |
+| #10606 | agentos(mi-buildout): records 2026-11-02 — #9527/#9025 production proofs, #976 classified | 2026-11-02 |
+| #10605 | P16.T1: preserve source identity clocks and evidence-cut links | 2026-11-02 |
+| #10603 | fix(bonds): keep unavailable health scores distinct from zero | 2026-11-03 |
+| #10601 | test(macro-command): heal ci-pack-6 — pin #policy freshness for M6 stance tests | 2026-11-02 |
+| #10600 | P12: Close Shared Shell publication gates and source-owned catalog metadata | 2026-11-04 |
+| #10599 | agentos(mi-buildout): records 2026-11-02 — W8 and W12 closed, NFLX live multi-report proof, listener self-cancel recurrence | 2026-11-02 |
+| #10595 | FIF Q1: fourth held-out generation with the split-3 PK12 labels (A37, g4) | 2026-11-03 |
+| #10594 | FIF publish: code R7 as a refusal and opt-in per-issuer exclusion of unpinned first-publication refusals | 2026-11-02 |
+| #10593 | FIF A36: manifest journey cell from the A1 journey ledger and contract SIC basis (both optional) | 2026-11-03 |
+| #10591 | test(markets): model render-sync's CSS externalization in the byte guard | 2026-11-02 |
+| #10589 | agentos(gmi): record PRODUCTION_PROOF of the GMI pages and the #10583 heal | 2026-11-02 |
+| #10588 | FIF A36 deep: coverage writer strict and deep verdicts mirror the prover | 2026-11-02 |
+| #10587 | FIF Q0: widen the pack quality report issuer enum to the split-decision-3 held-out issuers | 2026-11-02 |
+| #10586 | FIF parser: iXBRL 1.1 spec-conformance widening (hidden footnotes, unreferenced footnotes, 256-link continuation chains) | 2026-11-02 |
+| #10585 | reader fixes: Chinese early-reversal signals; CAGR-behind sentence names the trade | 2026-11-02 |
+| #10583 | deploy(gmi): make gmi.css and gmi.js public so the open GMI shell renders styled | 2026-11-02 |
+| #10581 | FIF A36: record the 2026-11-02 coverage remeasure on a fresh companyfacts pull (target not met) | 2026-11-02 |
+| #10578 | agentos(grey-deer): records r6 — EW-P4-ACT #10394 and EW-P5 FU2 #10401 merged; EW-P1 first natural session | 2026-11-02 |
+| #10577 | FIF packs: ship the PK10 and PK09 repairs with the A34 re-review record | 2026-11-02 |
+| #10576 | fix(capital-structure): resolve each issuer from its own decisions | 2026-11-02 |
+| #10575 | fix(capital-structure): candidates not yet visible at as_of are a typed unavailability, not a whole-run refusal | 2026-11-02 |
+| #10574 | perf(capital-structure): read each candidate/term parquet once per nightly, not once per issuer | 2026-11-02 |
+| #10573 | docs(capital-structure): Z0 closure map for V2 (masterplan #9115 §13 Z0) | 2026-11-02 |
+| #10572 | FIF specialist packs: ship six reviewed repairs (PK03, PK04, PK07, PK08, PK11, PK12) | 2026-11-02 |
+| #10570 | agentos(gmi): 2026-11-02 completion-ship checkpoint | 2026-11-02 |
+| #10569 | feat(capital-structure): select FIF production datasets for the nightly inputs step (F0c) | 2026-11-02 |
+| #10566 | FIF A36: record the 2026-11-02 coverage remeasure (target not met) | 2026-11-02 |
+| #10564 | feat(capital-structure): bind financials from the existing FIF query service (F0b) | 2026-11-02 |
+| #10563 | gmi coverage proof: owner-disposition contract (zero rows, owner null) | 2026-11-02 |
+| #10558 | FIF PK02: enforce R-F1 unit equivalence on the axes resolver | 2026-11-02 |
+| #10557 | fix(spr): date the US reserve figure and stop calling a weekly series live | 2026-11-02 |
+| #10556 | gmi: S3 reads the relationship_edges/v1 envelope at display tier (248 proposed edges + page receipt) | 2026-11-02 |
+| #10555 | fix(capital-structure): give the candidate compiler its source-store env | 2026-11-02 |
+| #10554 | capital_structure P130: Exhibit 107 parser 1.3.0 closes the measured B/C/D refusals (45→62 of 99), reseal 315 | 2026-11-02 |
+| #10552 | test(data-health): realign four suites with merged contracts (16 of 17 new reds) | 2026-11-02 |
+| #10548 | fix(capital-structure): validate a published inputs bundle once, bind it per request (V0) | 2026-11-02 |
+| #10547 | agentos(mi-buildout): records 2026-11-02 — R3 P2 polish shipped (terminal #1211) + spec §6 .change grant | 2026-11-02 |
+| #10546 | capital_structure: shed rows to fit the section budget; withheld page is a loud ::error | 2026-11-02 |
+| #10545 | FIF A36: wire governed not-presented rules into the coverage writer (--np-linkbases) | 2026-11-02 |
+| #10543 | feat(cs-v2-n0): typed capital-structure context leg in the integrated answer | 2026-11-02 |
+| #10541 | fix(gmi-explorer): read the v1 relationship-edges envelope as no edges; clear main's CI baseline | 2026-11-02 |
+| #10536 | agentos(news-estate): ninth handoff write — S15 and the seven §9.1 proof PRs reviewed and armed | 2026-11-03 |
+| #10535 | capital_structure A1-1: served active pair + branch-bound boundary; monitor records only outbox-proven firings | 2026-11-02 |
+| #10534 | fix(sector-cycles): stop calling a projected month already gone the next turn | 2026-11-02 |
+| #10533 | fix(cycle-pages): tell a reader without access that the page is for members | 2026-11-02 |
+| #10531 | FIF held-out wave 3: PK12 labels for the 18 admitted split-decision-3 filings (independent labeler) | 2026-11-02 |
+| #10530 | gmi: O5 verification verdicts + --activity-proposals double-count fix (G-UI-8) | 2026-11-02 |
+| #10529 | FIF: filing-catalog client follow-up (failed-request retry, prime reset guard, transition reports) | 2026-11-02 |
+| #10527 | feat(cs-v2-u1c): real Exhibit 107 fee terms sealed into served state | 2026-11-02 |
+| #10524 | agentos: record the VPS Macro git store kept tier, nightly repack and pull guard | 2026-11-02 |
+| #10523 | FIF FF: contract issuers CIK dedupe + limited-check action copy (#10404 contract follow-up) | 2026-11-02 |
+| #10520 | feat(nav): GMI Explorer joins the Research mega-menu (Find the Edge) | 2026-11-02 |
+| #10519 | fix(releases): honor report cooldowns and retain the CPI archive after a feed-only detection | 2026-11-02 |
+| #10518 | crypto(p0b): accept P0B on live 2026-10-31 as-of; OI percentile uses the canonical ordinal twin | 2026-11-02 |
+| #10517 | docs(dataos): R03 second-cycle read-back — sidecar on main, history price-identical, findings routed | 2026-11-02 |
+| #10516 | GLT T22: progressive views (conditional outlook, statistical forecast disposition, transmission, repricing evidence, source-known replay) on the liquidity and central banks workspace | 2026-11-03 |
+| #10514 | agentos(mi-buildout): records 2026-11-02 (R3 rail merged, deployed and proven live) | 2026-11-02 |
+| #10505 | V91 V4: committed-artifact proof of the policy or supply-chain event row (masterplan 9.1) | 2026-11-04 |
+| #10502 | FIF PK01: covenant span repairs after independent dev-corpus reviews | 2026-11-02 |
+| #10500 | research(news-r3): spec §1 amendment — light --warn carve-out not shipped (D-W1), step-only ladder underline | 2026-11-02 |
+| #10499 | Products and Learn hubs: count the records, date them, drop the real-time claim | 2026-11-02 |
+| #10497 | News V91 V7: quiet source, outage and rights-loss proof (offline fixture) | 2026-11-04 |
+| #10492 | fix(market-memory): say available now and prediction, not live and forecast | 2026-11-02 |
+| #10491 | V91 V3: offline proof of masterplan 9.1 row (Capital allocation or major contract) | 2026-11-04 |
+| #10488 | V91 V5: offline proof of the rumor, denial and confirmation row (masterplan 9.1) | 2026-11-04 |
+| #10487 | docs(agentos): preserve current-source News continuation decision | 2026-11-02 |
+| #10482 | company-intelligence: register the relationship suites (A25), registry rows (A26), F-03 envelope DEC — GMI ORCH-REL integration | 2026-11-02 |
+| #10481 | qledger carve restore: never destroy surviving bytes on a failed snapshot read (#9556 post-merge findings) | 2026-11-02 |
+| #10480 | F2 M07b: validator rule S15 — a quantity period must be able to evidence its claim slot | 2026-11-02 |
+| #10479 | agentos(mi-buildout): records 2026-11-01 (R2 rail shipped and proven, L4 unblocked, R3 spec frozen) | 2026-11-02 |
+| #10478 | agentos: news estate records r7 — eighth write + seat e3d62d36 takeover | 2026-11-02 |
+| #10477 | fix(sector-cycles): say when the turn hazard is withheld and why | 2026-11-02 |
+| #10476 | FIF PK04: value rpo_total from a single period-adjacent typed-axis aggregate | 2026-11-02 |
+| #10474 | fix(sector-cycles): on a phone, keep every cycle view on screen and every card readable | 2026-11-02 |
+| #10473 | FIF Q0 conformance: admit pack-scoped split cohorts from the held-out contract | 2026-11-02 |
+| #10472 | FIF PK09: repair auditor-opinion, auditor-firm and ICFR conclusion resolution (dev corpora) | 2026-11-02 |
+| #10470 | fix(landing): Prophet tag says winners only and stops promising two weeks | 2026-11-02 |
+| #10469 | agentos: FIF 2026-11-01 dev-corpus repair wave, split decision 3, pin re-record ruling | 2026-11-01 |
+| #10467 | FIF PK02: take the cash-flow share-based compensation total first (dev corpora diversified_v1, litigation_v1) | 2026-11-02 |
+| #10466 | docs(agentos): record catalyst A3 merge and production writer proof | 2026-11-01 |
+| #10465 | FIF PK01: value covenant_term_observation from the debt note text span (dev corpus diversified_v1) | 2026-11-02 |
+| #10464 | FIF held-out: split decision 3 predeclared rows + wave-3 digest-only packages (18 of 24 admitted) | 2026-11-02 |
+| #10463 | FIF PK07: repair business-combination consideration and acquisition-date resolution (dev corpus diversified_v1) | 2026-11-01 |
+| #10462 | fix(start): say on each market card how the read is moving, as of when, and name the page clock | 2026-11-02 |
+| #10461 | FIF PK05: pin the verified uncertain-tax-position rollforward resolution (dev corpus diversified_v1) | 2026-11-02 |
+| #10460 | ci(admin): a public link to an admin-only page fails before merge | 2026-11-02 |
+| #10459 | fix(research-vault): say when the saved copy was written and how new its newest report is | 2026-11-01 |
+| #10458 | FIF PK12: resolve stock-plan equity issuance in biotech financing (dev corpus biotech_v1) | 2026-11-01 |
+| #10456 | fix(heatmap): the China pulse says which line is the whole board and which is this map | 2026-11-01 |
+| #10455 | fix(special-situations): the heading names the list's date and the count says what it compares | 2026-11-01 |
+| #10454 | fix(etfs): each fund chip names its last holdings date, and the clock says page built | 2026-11-01 |
+| #10453 | Agent OS: FIF Q0 split decision 3 — predeclared PK12 biotech held-out cohort | 2026-11-01 |
+| #10451 | FIF PK03: repair segment, geographic and product revenue resolution (dev corpus diversified_v1) | 2026-11-01 |
+| #10450 | ci(boundary): the site access boundary suite runs on the merge gate | 2026-11-01 |
+| #10449 | fix(sector): XLY and XLB open their basket pages, and a basket's fund opens its sector page | 2026-11-01 |
+| #10448 | fix(sector-cycles): one dated sentence on the turn record under the US cards, not a count per card | 2026-11-02 |
+| #10447 | fix(sector-cycles): the hazard tooltip says what the figure is in the reader's language | 2026-11-01 |
+| #10446 | fix(prophet): a free reader is told a locked plan record exists, not its id and dates | 2026-11-01 |
+| #10445 | FIF PK11: resolve disclosed capital ratios and credit-loss aliases (dev corpus banks_v1) | 2026-11-01 |
+| #10444 | fix(sector-central): a tape file past 12 hours names the day it stopped | 2026-11-01 |
+| #10443 | feat(themes): let a theme card open the companies behind it | 2026-11-01 |
+| #10442 | fix(macro-suite): stop calling a later reference period a republication | 2026-11-01 |
+| #10441 | fix(macro-suite): print the claims cards' previous reading | 2026-11-01 |
+| #10440 | FIF dev corpus: disjoint-issuer bank corpus instrument + digest-only manifest (banks_v1) | 2026-11-01 |
+| #10439 | fix(macro-suite): name the trade page's drivers for what they hold | 2026-11-01 |
+| #10438 | fix(macro-suite): say which way Treasury cash moves bank reserves | 2026-11-01 |
+| #10437 | fix(sector-cycles): print the as-of date, say the RS rank is rebuilt | 2026-11-01 |
+| #10436 | FIF Q0: counts-only label-conformance gate for held-out splits (pre-seal) | 2026-11-01 |
+| #10435 | FIF data: append companyfacts period_start to statements_quarterly (A44 exact-start binding) | 2026-11-01 |
+| #10434 | fix(capital-structure): link the featured deal's company, drop a banned word | 2026-11-01 |
+| #10433 | fix(fundamental-forensics): date the coverage sentence | 2026-11-01 |
+| #10431 | fix(international-macro): give each country page a door to its own names | 2026-11-01 |
+| #10430 | FIF A37: g3 family diagnosis — PK11 recall defect, PK12 non-conforming label set | 2026-11-01 |
+| #10429 | fix(btc-alerts): print a leg the radar's re-check has not passed as background, not act | 2026-11-01 |
+| #10428 | fix(cycle): stop calling the measured cards live | 2026-11-01 |
+| #10427 | fix(subsectors): stop calling a dated board realtime in Chinese | 2026-11-01 |
+| #10426 | fix(subsectors-china): print the two stored break checks with their dates | 2026-11-01 |
+| #10425 | fix(leader-radar): name the clocks older than the price date | 2026-11-01 |
+| #10424 | ci(heartbeat): stop guard jobs being cancelled by their own checkout | 2026-11-01 |
+| #10423 | fix(us-board): stop the grader dying on a stored value the fresh column cannot hold | 2026-11-01 |
+| #10422 | FIF A34: count a held-out proof only when Q1 measured it | 2026-11-01 |
+| #10421 | fix(macro-suite): say how few recessions the catch rate rests on | 2026-11-01 |
+| #10420 | ci(data-health): say when no data test ran, and let two jobs finish | 2026-11-02 |
+| #10419 | fix(commodities): call the price lamps last, not live | 2026-11-01 |
+| #10418 | ci(qledger): carve the ledger from the White House sentinel, weekly and backfill | 2026-11-01 |
+| #10417 | chore(contracts): regenerate artifact_manifest.json from the generator | 2026-11-01 |
+| #10416 | fix(test): pin the XLU price-basis test at a cut date | 2026-11-01 |
+| #10415 | FIF page: bind compare and finding source links to their own period | 2026-11-01 |
+| #10414 | fix(ci): compile the dashboard once in the EW-P4 suite so the render job fits its limit | 2026-11-01 |
+| #10413 | fix(macro-suite): name a late source apart from a broken one | 2026-11-01 |
+| #10412 | fix(ci): fund the two tier-gate split jobs on the packing probes (main red since #10294) | 2026-11-01 |
+| #10411 | F2 M04: the producer grounds every stated quantity in its cited source bytes | 2026-11-01 |
+| #10410 | FIF page: show negated-label statement lines with the filing's sign | 2026-11-01 |
+| #10408 | FIF Z0 matrix: close A23 (saved research) and A21 (live observation) | 2026-11-01 |
+| #10407 | FIF (d): list coverage-contract issuers missing from the broad panel (SNOW) | 2026-11-02 |
+| #10406 | fix(site-shim): clear the four data-base shim guard reds | 2026-11-01 |
+| #10405 | news-impact: validator refuses fold-split role markers and control-split schemes (F2 NOTE-A) | 2026-11-01 |
+| #10404 | FIF: generation statement catalog route + served-filing page fixes (a/b/e/f) | 2026-11-02 |
+| #10403 | fix(tests): point the paywall denial test at a page that is still premium | 2026-11-01 |
+| #10402 | fix(btc-alerts): drop "Holdout-validated"/"经验证" from the impulse alert copy | 2026-11-01 |
+| #10401 | fix(rotation): EW-P5 FU2 — design review repairs for the rotation observation glance | 2026-11-02 |
+| #10400 | FIF Q1: third held-out generation (A37, g3 reports) | 2026-11-01 |
+| #10392 | FIF Z0 A23: saved research cannot alter canonical facts | 2026-11-01 |
+| #10399 | docs(intl-gs): records r11 — r10 merged, §14 row 19 DONE on the unrelated render (18/3/0), dislocation job re-measure | 2026-11-01 |
+| #10390 | research(options-intelligence): sealed OIF P1-P6 family preregistration (S0, AC28-AC35) [DRAFT] | 2026-11-03 |
+| #10388 | docs(intl-gs): records r10 — F10 / hygiene / R2-01 merged, served row-21 pack, §14 17/4/0 | 2026-11-01 |
+| #10398 | news-impact(thesis): fingerprint carries quantity terms so a unit change is a revision (F2 B2 / M05) | 2026-11-01 |
+| #10387 | FIF Z0 records: close A24, A38, A52, A49 and A50; narrow A23 | 2026-11-01 |
+| #10386 | news contract: flag provider stamps that postdate their own receipt (F2 T15) | 2026-11-01 |
+| #10385 | prophet(us): word a candidate's "Why it is here" exactly as its row does (J11 journey law) + R7 US journey trace | 2026-11-02 |
+| #10397 | research(options-intelligence): ORCH-2 product/integration census + Journey A entitled-render checklist | 2026-11-03 |
+| #10396 | FIF Z0 A21: pin the two untested withheld rows; record the live cycles | 2026-11-01 |
+| #10395 | research(options-intelligence): source/research census + Theta coverage + AC24 attrition receipts (records) | 2026-11-01 |
+| #10384 | evidence(intl-gs): R2-01 — scanner-abstain focus-state cells (W2A review NIT closed) | 2026-11-01 |
+| #10394 | feat(rotation): EW-P4-ACT gated latest-observation producer, point-in-time envelope lift and O06 receipt rule | 2026-11-02 |
+| #10382 | FIF held-out wave 2: labeler batch four (PK09) — independent lane commit carried unchanged | 2026-11-01 |
+| #10393 | news(F2 B4/R15): source_count counts information origins, not publishers | 2026-11-01 |
+| #10380 | FIF Z0 records: close A12, A33, A47 and A53 on evidence already on main | 2026-11-01 |
+| #10379 | Marketing X Catalyst: SEC rights decision D1–D5, live SEC source (A3), carried gaps | 2026-11-01 |
+| #10378 | news velocity F2 B3: count a report only once the store held it (T04 possession bound) | 2026-11-01 |
+| #10377 | fix(ci): use exact tested base for ruling-graph without redundant Git refetch | 2026-11-02 |
+| #10376 | test(ci-pack): F10 AUDIT-2 nits N5/N6 — isolate TESTED_TREE_SHA between tests; prove execute_pack publishes the plan tree (re-home of #10370) | 2026-11-01 |
+| #10375 | agentos: record the 10-31 VPS root-disk refill, the shallow-root pin and the quote-hub syslog flood | 2026-11-01 |
+| #10374 | agentos(market-os): signed-in beta proof for Today since-last-visit (r7) | 2026-11-02 |
+| #10373 | records(grey-deer): EW records r5 - EW-P4-FU merged, first EW-P5 pack census | 2026-11-01 |
+| #10372 | news-impact: F2 repairs — one-sign amounts, no unit scale inference, NFKC injection guard, rating-phrase refusal (M06a/M06b/M01c/M11) | 2026-11-01 |
+| #10371 | fix(risk-envelope): a same-session settled copy must qualify before it suppresses the live overlay (EW-P5 S02/S12) | 2026-11-01 |
+| #10369 | research(news-estate): §9.1 vertical proof readiness map (seven verticals, evidence only) | 2026-11-01 |
+| #10368 | docs(intl-gs): records r9 — pin1 served (row 4 production proof in full), r8 merge, review nits, F10 state | 2026-11-01 |
+| #10367 | ci(legacy-jobs): F10 — international-dislocation-explorer acquires canonical main through prepare_canonical_main | 2026-11-01 |
+| #10366 | research(news-estate): F2 negative controls — 7 BROKEN, 5 NO_MECHANISM across time, rights and model context | 2026-11-01 |
+| #10364 | ui(risk-radar): EW-P4-FU — the UI validator rejects what the lib validator rejects | 2026-11-01 |
+| #10362 | docs(intl-gs): records r8 (§14 closure + gb1/pin1 + Agent OS) | 2026-11-01 |
+| #10361 | agentos(news-estate): records r6 — #10351 merged; W3 F2 negative-control lanes commissioned | 2026-11-01 |
+| #10360 | agentos(fif): wave-two labels, generation-pin repair and the PK09 capacity wait | 2026-11-01 |
+| #10358 | agentos(market-os): slice 1 merged (Terminal db6168c2); beta release by receiver seat (r6) | 2026-11-01 |
+| #10357 | agentos(grey-deer-ew): records r4 - EW-P4 #10350 merged, EW-P4-FU, EW-P5 receipts | 2026-11-01 |
+| #10356 | fix(forex): fail closed on malformed and duplicated R4 currency rows | 2026-11-03 |
+| #10355 | feat(intl-gs): pin1 polish — chip in head row, W2A CSS pin, specimen-scan defaults | 2026-11-01 |
+| #10354 | feat(intl-gs): W2B dossier graph-boundary label (gb1) | 2026-11-01 |
+| #10353 | docs(intl-gs): records r7 (census + checkpoints + Agent OS) | 2026-10-31 |
+| #10352 | agentos(news-estate): records r5 — F1 merged (#10348), E4 census repaired and re-reviewed (#10351 open) | 2026-11-01 |
+| #10351 | research(news-estate): W4 E4 Brief binding census (B1-B6 mechanism inventory; all four P1-B bindings PARTIAL at HEAD; no design) | 2026-11-01 |
+| #10350 | ui(risk-radar): EW-P4 — comprehensible descriptive early-warning observation in the Radar inset and Sector Central (product A; no forecast, no delivery) | 2026-11-01 |
+| #10349 | agentos(marketing-x): Catalyst Loop records after #10257 merge — waves done, SHIP rung, seat handoff | 2026-11-01 |
+| #10348 | research(news-estate): W3 F1 claim/evidence denominator matrix (18 segments x 5 rungs; honest negatives) | 2026-10-31 |
+| #10347 | agentos(news-estate): W3 Section C censuses merged (#10344); review chain + capacity facts | 2026-10-31 |
+| #10346 | records(grey-deer): EW-P3 prereg dated + registered (merge 2026-10-31, start 2026-11-02), budgets 3+3 appended, EW-P1 superseded by #10255, wave states | 2026-10-31 |
+| #10345 | FIF Q1: generation pins fail closed when a report records no evaluated_at | 2026-11-01 |
+| #10344 | research(news-estate): W3 Section C censuses — C1 exposure joins, C3 F05 consequence delivery | 2026-10-31 |
+| #10343 | FIF held-out wave 2: labeler batch three (PK07, PK08, PK11, PK12) — independent lane commits carried unchanged | 2026-10-31 |
+| #10342 | FIF Q1: generation report pins account the label universe the generation recorded (later labeling waves no longer red earlier generations) | 2026-10-31 |
+| #10341 | ci(legacy-jobs): raise international-dislocation-explorer budget 8 -> 15 min (PR-side canonical-base fetch; unblocks full-suite packs) | 2026-10-31 |
+| #10340 | research(grey-deer): EW-P3 — claim-to-evidence contract v1 and one preregistered candidate (product B; no outcomes read) | 2026-10-31 |
+| #10339 | agentos(news-estate): ORCH-3 reviewed + #10338, ORCH-4 Journey 6 merged (#1196), Chairman disk law recorded | 2026-10-31 |
+| #10338 | [news-estate ORCH-3] B4 gated_v3 adjudication: quant claim matrix (DEFENSIBLE_NEGATIVE), sampler startup pin, 40 NEW-case routing, provenance (RECONSTRUCTION) | 2026-10-31 |
+| #10337 | FIF held-out wave 2: labels batch two (PK04, PK05, PK06) from independent labeler lanes | 2026-11-01 |
+| #10336 | FIF held-out wave 2: labels batch one (PK01, PK02, PK03) from independent labeler lanes | 2026-10-31 |
+| #10335 | Agent OS: FIF wave-two capture + envelope-repair handoff and post-wave-two ladder | 2026-10-31 |
+| #10334 | agentos(news-estate): Wave 1 landed, D2 producer merged, ORCH-3 seat-direct on the fabric | 2026-10-31 |
+| #10332 | FIF Q1: second held-out generation after the SIC-binding and nil-fact kernel repairs (A37, reports q1_held_out_20261031_g2) | 2026-10-31 |
+| #10330 | fix(seasonality): let the now chip wrap on a phone so its caveat stays visible | 2026-11-01 |
+| #10329 | fix(strategies): say why the book weight differs from the score's band | 2026-11-01 |
+| #10328 | docs(grey-deer): EW records r2 — EW-P0 merged, EW-P2 draft #10325 awaiting CI, EW-P3 contract in flight, run 41156792292 engine CANCELLED | 2026-10-31 |
+| #10327 | fix(sector): say how many holdings the panel shows and their share of the fund | 2026-11-02 |
+| #10326 | fix(strategies): make the strategy note agree with the page's own tiles | 2026-11-02 |
+| #10325 | rotation: EW-P2 — rotation observation continuity: successor of #10104 rebased onto main (dormant, default-off) | 2026-10-31 |
+| #10324 | fix(cycles): name the session a same-day cross printed on | 2026-11-02 |
+| #10323 | fix(foresight): name the rule behind a theme's next comment close | 2026-11-01 |
+| #10322 | FIF held-out: wave-2 digest-only packages for the 45 split-decision-2 accessions (DEC:FIF-Q0-SPLIT-DECISION-2-SECOND-LABELING-WAVE-20261031) | 2026-10-31 |
+| #10321 | fix(commodities): name what the oil strategies actually use | 2026-11-01 |
+| #10320 | fix(ai-desk): show directional accuracy beside each call type's holding rate | 2026-11-01 |
+| #10319 | fix(cycles): drop the unmeasured failed-cycle rate | 2026-11-02 |
+| #10318 | fix(help): send scorecard links to the page readers can open | 2026-11-01 |
+| #10317 | fix(china): replace "validated" with what the study measured | 2026-11-01 |
+| #10316 | FIF Q1 evaluator: envelope sic_source follows the production resolver vocabulary; binding route stays in the report note | 2026-10-31 |
+| #10315 | fix(macro-suite): date the What changed comparison | 2026-11-01 |
+| #10314 | FIF A34: regenerate the pack-proof ledger on current main (PK09 gold calibration tests 41 -> 45) | 2026-10-31 |
+| #10313 | Agent OS: FIF Q1 held-out wave — six decisions, workstream update and the 2026-10-31 handoff | 2026-10-31 |
+| #10312 | FIF held-out: predeclared split-row admission for the capture script and the split-decision-2 contract rows | 2026-10-31 |
+| #10311 | FIF kernel: tolerate inert attributes on nil numeric facts in the SEC filing parser (DEC:FIF-PARSER-NIL-FACT-INERT-ATTRIBUTES-TOLERATED-20261031) | 2026-10-31 |
+| #10310 | FIF Q1: evaluator binds issuer SIC from the held-out contract and surfaces duplicate targets (E1-3) | 2026-10-31 |
+| #10309 | fix(contracts): declare the new board and plan-book fields | 2026-10-31 |
+| #10308 | fix(ci): fetch the commit the red-first proof reads | 2026-11-01 |
+| #10306 | fix(copy): drop the unearned word from the commodity name stamp | 2026-10-31 |
+| #10305 | fix(tests): count the two ways a sheet is reached without a link | 2026-10-31 |
+| #10304 | fix(tests): re-pin the US tech merge order after #8708 | 2026-10-31 |
+| #10303 | fix(ci): give the heartbeat template-site-sync lane jinja2 | 2026-10-31 |
+| #10302 | c19(wp31): prereg §10 A5 — the submissions clock is true UTC | 2026-11-01 |
+| #10301 | fix(us-board): print no paid name on the free shell | 2026-10-31 |
+| #10300 | fix(sector-holdings): publish JSON atomically so interrupted writes preserve last good feed | 2026-11-02 |
+| #10299 | FIF A37: Q1 held-out re-adjudication record — all twelve packs unavailable_research_only (2026-10-31) | 2026-10-31 |
+| #10298 | FIF PK09: follow-up bundle — mapping_rule_id parity, cap re-enforcement, anaphoric/fiscal tests (reviews F5-3/F5-4/F6-1..3) | 2026-10-31 |
+| #10297 | agentos(c19): record the 2026-10-31 seat takeover and W15 wave | 2026-10-31 |
+| #10296 | intl-gs W5 hardening: kill surviving review mutants (test-only, DEFERRED F7) | 2026-10-31 |
+| #10294 | CI: give the paywall boundary suites their own jobs so a tier-preview red can't hide them | 2026-11-01 |
+| #10293 | FIF Q1: independent held-out evaluation of the labelled specialist packs (A37, reports q1_held_out_20261031) | 2026-10-31 |
+| #10292 | fix(tests): count locked China names, not rows, in the shell check | 2026-10-31 |
+| #10291 | fix(site): stop public pages sending readers to admin-only pages | 2026-10-31 |
+| #10290 | Sector Central: say what orders the board when fast ranks are stale | 2026-10-31 |
+| #10288 | feat(intl-gs): IM13 global scanner + coverage view (Wave 2) | 2026-10-31 |
+| #10286 | intl-gs §14 closures: graph-boundary label rule, cross-surface identity test, legacy continuity evidence | 2026-10-31 |
+| #10285 | fix(options): report archive outcomes and guard dated corrections | 2026-11-02 |
+| #10284 | c19(wp31): report the cause behind NOT_EVALUABLE counts; close #10074 review notes | 2026-11-01 |
+| #10283 | entry-timing-w2: frozen discovery vs curated-admission timing design (pre-outcome) | 2026-11-01 |
+| #10281 | agentos(news-estate): D2 consumer ruling + ORCH-2 return consumed | 2026-10-31 |
+| #10280 | feat(news): stamp source_asof and the retained flag on by_ticker.json (News D2 producer) | 2026-10-31 |
+| #10279 | fix(radar): make the open-checks copy match the record and the grader | 2026-10-31 |
+| #10278 | feat(intl-gs): IM14 market dossier (Wave 2) | 2026-10-31 |
+| #10276 | intl-gs W5 E3: correction receipts and dependent invalidation engine (§14 row 16) | 2026-10-31 |
+| #10275 | intl-gs W5 E1: point-in-time replay builder engine (IM18 engine half) | 2026-10-31 |
+| #10274 | intl-gs W5 E2: GS-local watch-condition evaluator engine (IM18 engine half) | 2026-10-31 |
+| #10273 | test(c19): WP28 capital-structure leg identity pins (offline, code-gated) | 2026-11-01 |
+| #10272 | FIF PK09: remediation-timing semantics for material_weakness_present (B.3 v6, review F4-1..F4-4) | 2026-10-31 |
+| #10271 | FIF PK08: word-boundary span for determine-losses + arm comment correction (F3-2) | 2026-10-31 |
+| #10270 | fix(research): escape the hub date, say no summary exists, strict top_pick | 2026-10-31 |
+| #10269 | Commodities: show world production and US import sources for critical minerals | 2026-10-31 |
+| #10268 | Clear stale PLNT registry and SEO rows; one ruling label | 2026-10-31 |
+| #10267 | prophet-b4: bind the capture's alias seam to the Data OS identity reader | 2026-10-31 |
+| #10265 | feat(intl): dislocation explorer UI from the IM15 contract (W3U) | 2026-10-31 |
+| #10263 | FIF A37: held-out labels L-B (PK02, PK03, PK04, PK05) sealed by an independent labeler lane | 2026-10-31 |
+| #10262 | Leader Radar: ticker links open the stock page; recovery rows show prior runs | 2026-10-31 |
+| #10260 | FIF A37: held-out labels L-C (PK07, PK08, PK12) sealed by an independent labeler lane | 2026-10-31 |
+| #10259 | fix(commodities): refuse a zero US aggregate stock instead of publishing 0.0 Mb (C19 WP26) | 2026-10-31 |
+| #10258 | feat(intl): transmission board UI from the IM17 contract (IM17 W4B) | 2026-10-31 |
+| #10257 | Marketing X: Catalyst Loop engine — A1 integration, A2/B witnesses, C1 asset factory, rights request | 2026-10-31 |
+| #10255 | fix(daily): carve the oversize qledger ledger out of every wholesale nightly commit (engine, collect_tail, stock_briefs) | 2026-11-01 |
+| #10254 | agentos(news-estate): Fable takeover 2026-10-31 + DEC:NEWS-ESTATE-B1-JOINS | 2026-10-31 |
+| #10253 | FIF records: 2026-10-31 resumption wave handoff + two durable seat rulings | 2026-10-31 |
+| #10252 | White House: link names to the stock page; calibration hub copy | 2026-10-31 |
+| #10251 | agentos: DSC an offloaded self-updating clone freezes silently under launchd | 2026-10-31 |
+| #10250 | agentos(chart-engine): Q03b v4 official receipt PASS lifts the P03 hold | 2026-10-31 |
+| #10249 | docs(grey-deer): EW-P0 — adopt the 2026-10-31 Chairman early-warning packet as an amendment to #10219; Fable CEO takeover record | 2026-10-31 |
+| #10248 | feat(options): options_capability_manifest/v0 pure read-time adapter (OPT-011 v0) | 2026-10-31 |
+| #10247 | fix(ontology): distinguish hidden observations from native verdicts | 2026-10-31 |
+| #10246 | FIF PK08: object-bound not-possible-to-determine form (review note F3-1) | 2026-10-31 |
+| #10243 | Finance Intelligence: an honest unbuilt page, no synthetic constants (Ruling F-5) | 2026-10-31 |
+| #10239 | agentos: Market OS flagship receiver takeover and first vertical wave | 2026-10-31 |
+| #10238 | fix(p0b): pin Chromium and fonts so the browser receipts reproduce across hosts | 2026-10-31 |
+| #10237 | Hold the synthetic PLNT card from the public site | 2026-10-31 |
+| #10234 | feat(ai-desk): split the track record by regime and put the badge in words (W35-LB) | 2026-10-31 |
+| #10233 | agentos(exec-ecosystem): 80f384b8 canary overtaken — host on f572, handed to root 01a15741 | 2026-10-31 |
+| #10232 | feat(radar): show what would break each of today's reads (W35-LA) | 2026-10-31 |
+| #10231 | docs(grey-deer): close GD-PB-W5 (#9128) at PRODUCTION_PROOF in the workstream record | 2026-10-31 |
+| #10230 | docs(market-os): flagship audit and open Fable delivery charter | 2026-10-31 |
+| #10228 | agentos: close WS-TERMINAL-ENHANCEMENTS20 (trains 5-6, E11 lineage pass, review folded) | 2026-10-31 |
+| #10194 | fix(aibrief): recompute upcoming-release countdown at render date | 2026-10-31 |
+| #10193 | fix(sector-holdings): guard weight contract before replacing feed | 2026-10-31 |
+| #10191 | fix(ontology): accept native UTC company master timestamps | 2026-10-29 |
+| #10184 | P1.T5 retain safe selected SEC publication metadata | 2026-10-30 |
+| #10183 | Preserve prospective WTI adapter temporal context | 2026-10-29 |
+| #10181 | fix(agentos): deliver complete compact recovery context and reconcile continuity | 2026-11-03 |
+| #10179 | fix(ci): bound International canonical-main acquisition | 2026-10-25 |
+| #10178 | Read coherent legacy identity snapshots in Intelligence Workspace | 2026-10-25 |
+| #10177 | P17.T1.S1: project registered W3AR methods without eligibility inference | 2026-10-26 |
+| #10175 | Press: keep market snapshot prompts descriptive | 2026-10-25 |
+| #10173 | Options: count observed prints through the existing Flow transaction | 2026-10-25 |
+| #10170 | Press: bind historical context hold adjudication to exact snapshot | 2026-10-24 |
+| #10169 | P1.T1 retain safe workspace read failures and truthful publish status | 2026-10-24 |
+| #10165 | docs(agentos): extend MARKET-OS with MarketOntology census and local waves | 2026-10-25 |
+| #10164 | Isolate Options statistics from caller Decimal settings | 2026-10-24 |
+| #10162 | Bind one default-off Oct26 SPY observation to existing daily CLI | 2026-10-24 |
+| #10161 | Measure Options print statistics with explicit population and coverage | 2026-10-24 |
+| #10160 | Compose opt-in frozen email delivery with current account and drain policy | 2026-10-24 |
+| #10159 | Prepare default-off, one-session SPY observation with bounded native transport | 2026-10-24 |
+| #10158 | Retain and validate selected SEC acquisition provenance | 2026-10-24 |
+| #10154 | Compose acknowledged server-only billing conversions | 2026-10-24 |
+| #10153 | feat(options): prepare private exact Plan expiry payoff | 2026-10-25 |
+| #10152 | docs: correct P052 native publisher output path | 2026-10-24 |
+| #10151 | Restore bounded active-build collection for oversized PRs | 2026-11-02 |
+| #10150 | Validate supplied reference generation transitions | 2026-10-25 |
+| #10149 | feat(transmission): retain prospective native input observation metadata | 2026-10-24 |
+| #10148 | fix: expand Reference entries after shell fragment navigation | 2026-10-24 |
+| #10147 | fix(onboarding): retain preferences through save errors and account changes | 2026-10-24 |
+| #10146 | feat(options): prepare exact Plan expiry payoff and quote context | 2026-10-24 |
+| #10145 | Add bounded canonical account observations for frozen options reader | 2026-10-24 |
+| #10144 | release: admit exact app origin to Shared Shell transport | 2026-10-24 |
+| #10143 | fix(billing): preserve revocation retries on customer lookup failure | 2026-10-24 |
+| #10142 | fix(onboarding): preserve first-touch attribution through email signup | 2026-10-24 |
+| #10141 | fix(thetadata): bound and retain four-root EOD catch-up | 2026-10-24 |
+| #10140 | perf(govrev): avoid cheap reference memo churn | 2026-10-24 |
+| #10139 | Retain prospective WTI observations from the ordinary Yahoo fetch | 2026-10-24 |
+| #10138 | Press: admit reviewed native market snapshots for private staging | 2026-10-24 |
+| #10137 | fix(company-intelligence): retain safe immutable-create diagnostics | 2026-10-24 |
+| #10135 | docs: record standing Chairman commercial data rights approval | 2026-10-24 |
+| #10134 | Share explicit dated Greek version selection across native writers | 2026-10-24 |
+| #10133 | perf(govrev): avoid memo churn for cheap primitive checks | 2026-10-24 |
+| #10132 | fix(prophet): distinguish signal-event and observation clocks | 2026-10-24 |
+| #10131 | perf(govrev): reuse successful property schema checks per validation | 2026-10-24 |
+| #10130 | Evaluation OS: connect required-tier, numeric verification and source-finding consumers | 2026-10-24 |
+| #10129 | feat(dossier): show isolated premarket quote with dated reference and expiry | 2026-10-24 |
+| #10128 | Heal MarketDesk T&Cs overlay instead of parking a live session | 2026-10-24 |
+| #10127 | fix(govrev): bind publisher to immutable event and settled caller source | 2026-10-24 |
+| #10125 | fix(govrev): isolate dossier validation memo [SOURCE HOLD] | 2026-10-24 |
+| #10124 | fix(data): qualify split evidence by owner recording cutoff | 2026-10-24 |
+| #10123 | Prepare exposure-node notification category with delivery withheld | 2026-10-24 |
+| #10122 | fix: give Pressure Watch research links a full row | 2026-10-24 |
+| #10120 | fix(macro-signals): order strongest Fear/Greed drivers by absolute z | 2026-10-24 |
+| #10119 | Press: qualify separately retained SEC issuer releases | 2026-10-23 |
+| #10118 | Add frozen EVAL-1 source projection with unconditional execution refusal | 2026-10-23 |
+| #10117 | docs(portfolio): refresh the canonical recovery handoff | 2026-10-23 |
+| #10116 | fix(prophet): bound WP03 entry-zone visits to PIT eligible OHLC sessions | 2026-10-24 |
+| #10115 | Compose protected exact-source scenario capture and resolution | 2026-10-24 |
+| #10114 | fix(press): distinguish signal admission from T1 confirmation | 2026-10-23 |
+| #10113 | fix(brain): preserve hovered OHLC on unchanged-width resize | 2026-10-23 |
+| #10112 | Carry Pressure Watch event selections into Ontology research | 2026-10-23 |
+| #10111 | research(prophet): freeze WP03 zone-vs-ledger temporal semantics and counterexamples | 2026-10-23 |
+| #10109 | fix(prophet): preserve prospective confidence input across plan to management | 2026-10-24 |
+| #10107 | fix(prophet): publish same-night forward-ledger closures consistently | 2026-10-23 |
+| #10106 | fix(macro): reactive Release Radar date countdown and honest forecast freshness | 2026-11-04 |
+| #10105 | docs: record Catalyst Macro release and remaining live acceptance | 2026-10-23 |
+| #10103 | Defensive rotation: evidence delivery and early-context rail | 2026-10-23 |
+| #10099 | GMI explorer: S1–S5 pages (map, index, issuer, relationships, coverage, states) | 2026-11-02 |
+| #10098 | fix(project-builds): fail closed on live stdout collection failure | 2026-10-24 |
+| #10091 | Ground Research turns in the selected owned thesis version | 2026-10-23 |
+| #10087 | fix(shell): refresh finite routes from a bound inventory commit | 2026-10-22 |
+| #10085 | Preserve uncertain CI process settlement within the original timeout budget | 2026-10-22 |
+| #10084 | Align native plan Brief prompts with receipt contracts | 2026-10-23 |
+| #10080 | fix(deploy): adopt Macro routes safely under Caddy autosave | 2026-10-22 |
+| #10078 | intl-gs records r6: W2 foundation #9949 MERGED → e6debbb0; DEC R14 freeze amended A1/A1.1/A1.2; burst W4B/W3U/W2A/W2B launched | 2026-10-22 |
+| #10077 | feat(nav): Expectation Surface row in the Research mega-menu | 2026-11-02 |
+| #10075 | feat(expectation-surface): company_page link-out gated on rendered ticker pages (ITP Wave 3a) | 2026-10-22 |
+| #10074 | c19(wp31): production adapter retries a transient revisions-reader failure (W10 live read 1) | 2026-10-31 |
+| #10073 | feat: deliver sealed US OHLC generations to the Portfolio site origin | 2026-10-23 |
+| #10071 | fix(fred): bound malformed-response retries and redact daily failures | 2026-10-22 |
+| #10070 | fix: preserve Movers shell navigation and missing-cap truthfulness | 2026-10-22 |
+| #10069 | feat(brain): ship reusable financial cards and shared intelligent output | 2026-10-22 |
+| #10068 | docs(agentos): preserve DeepSeek client delivery and original session gates | 2026-10-22 |
+| #10066 | docs(agentos): preserve the resumed Mastermind OS frontier | 2026-10-22 |
+| #10065 | docs(agentos): WS-V2 charter audit record (REPAIR_REQUIRED) + acceptor and test-3 discoveries | 2026-10-22 |
+| #10064 | fix(fabric): keep reused-worktree workers out of principal ship loops | 2026-10-22 |
+| #10061 | agentos(gmi): seat checkpoint 3 — PIPE merged, #10029, M1 receipt on main, design #10054 in repair | 2026-10-22 |
+| #10058 | Fix truthful CAGR copy feedback and guard the Movers cutover | 2026-10-22 |
+| #10057 | docs(itp): Expectation Surface records — #9969 merged as 6a4c0079 (D65–D67) | 2026-10-22 |
+| #10056 | [news-estate A5] transport/coverage observability gaps | 2026-10-31 |
+| #10054 | design(gmi): GMI Explorer reference designs + exact spec (S1-S5) | 2026-10-22 |
+| #10053 | feat(history): regime age, segment in force, flip countdown, analog hold (W33-LD) | 2026-11-02 |
+| #10052 | Assess the R26 source candidate policy and preserve the completion plan | 2026-10-25 |
+| #10050 | feat(cycle): watch census, proxy evidence and regime-flip margin (W34-LY) | 2026-10-22 |
+| #10049 | [news-estate NE-B1] B1 schema inventory of the news object families | 2026-10-31 |
+| #10048 | [news-estate NE-D1] D1 trace of news inputs into engines and consumers | 2026-10-31 |
+| #10047 | Reveal section targets inside the Shared Shell Macro workspaces | 2026-10-22 |
+| #10046 | [news-estate A1] source/endpoint/publisher delivery matrix | 2026-10-31 |
+| #10044 | [news-estate A3] correction/removal/rights propagation across qbus read models | 2026-10-31 |
+| #10043 | [news-estate P1D] news_llm fails closed when enabled is absent | 2026-10-31 |
+| #10042 | agentos: WS-PORTFOLIO-BOT-REBUILD workstream + 2026-10-22 commissioning handoff | 2026-10-22 |
+| #10039 | agentos: open WS-NEWS-INTELLIGENCE-ESTATE-CONVERGENCE + wave-1 handoff (records only) | 2026-10-22 |
+| #10038 | Revamp Commodities workspace from Paper composition | 2026-10-22 |
+| #10037 | Record Browser Fabric authenticated estate checkpoint | 2026-10-22 |
+| #10036 | agentos: R2 handoff complete — four PRs merged and live, P76 stays the human step | 2026-10-22 |
+| #10035 | research(options): estate supersession register 2026-10 (OPT-007) | 2026-10-22 |
+| #10033 | fix(market-memory): show truthful linked pinned controls | 2026-10-22 |
+| #10032 | docs(agentos): preserve Browser Fabric implementation continuation | 2026-10-22 |
+| #10029 | gmi-coverage: read the activity ledger by default (M3 proof input) | 2026-10-22 |
+| #10028 | agentos: R2 exposure-intelligence decision, two landmines and the 2026-10-22 handoff | 2026-10-22 |
+| #10027 | fix(dataos): honor Tiingo news publisher filters without rewriting receipts | 2026-10-22 |
+| #10026 | gmi(m1): seat curator receipt ratifies MU -> hbm_packaging (first activity witness) | 2026-10-22 |
+| #10025 | ci(daily): GMI M2 B2b — wire ACTIVITY_MEMBERSHIP_STATE into oracle_offrender (stacked on #10020) | 2026-10-22 |
+| #10024 | Qualify R26 Tiingo interval evidence and record approved product use | 2026-10-22 |
+| #10022 | fix(paywall): recover Bot membership checks from transient auth failures | 2026-10-23 |
+| #10021 | fix(market-memory): reopen exact citations without catalog discovery | 2026-10-22 |
+| #10020 | feat(thematic-state): ACTIVITY_MEMBERSHIP_STATE narrow mode + CI closure (GMI M2 B2a) | 2026-10-22 |
+| #10019 | agentos(c19): W9 done, W10 clock wave opened, 2026-10-22 handoff (seat 7ab343c8) | 2026-10-22 |
+| #10017 | theme-graph(gmi-micro): land the ratified 2026-10-21 micro-theme expansion (53 sub / 303 micro, additive display tier; frozen 68 intact) | 2026-10-22 |
+| #10016 | fix(gmi-coverage): frozen-68 acceptance tier + expansion micros out of the activity numerator (GMI M3) | 2026-10-22 |
+| #10014 | Bind native plan Brief evidence to source scope and dossier | 2026-10-22 |
+| #10013 | fix(shared-shell): serve the Baskets stub to trusted beta parents | 2026-10-22 |
+| #10012 | fix(research): correct adapter health and stale Desk status | 2026-10-22 |
+| #10011 | feat(theme_graph): bridge RATIFIED activity proposals to history APPEND events (GMI M1) | 2026-10-22 |
+| #10010 | fix(market-memory): exact Brain cutoff contract and private failure diagnostics | 2026-10-22 |
+| #10009 | agentos(mi-buildout): records 2026-10-22 (health lane landed, W11 proofs done, W12 R2 rail started) | 2026-10-22 |
+| #10008 | feat(theme-graph): wire activity-history fold into build + edges.v1 projection + narrow per-row pairing admission (GMI M1/M2 B1) | 2026-10-22 |
+| #10007 | research(gmi-micro): C2 union micro-theme proposals | 2026-10-22 |
+| #10006 | research(gmi-micro): C1 union micro-theme proposals | 2026-10-22 |
+| #10004 | fix(status): D04-A2 project pulse source clock + board quote meta; dead-man refuses missing source_asof in 15–19Z | 2026-10-22 |
+| #10003 | fix(flow): R04-B1 a board whose reads failed is read_failed, never no_data | 2026-10-31 |
+| #10002 | feat(theme-graph): native activity proposal ledger + propose/curate CLI (GMI M1 step 1) | 2026-10-22 |
+| #10001 | docs: preserve real-time candle delivery and remaining proof | 2026-10-22 |
+| #10000 | Research pages: record-backed report claims, honest hub copy, archive span | 2026-10-31 |
+| #9999 | prophet r7: B21 U2 — journey notifications pure producer half | 2026-10-22 |
+| #9998 | docs(news): require editorial acceptance for publisher coverage | 2026-10-22 |
+| #9997 | Fix HK lookup rendering and publish fixed redirect stubs | 2026-10-22 |
+| #9996 | docs(forex): retain release proof and native four-hour qualification | 2026-10-22 |
+| #9994 | fix(shell): prevent cached framing denial across parent variants | 2026-10-21 |
+| #9993 | Research: test funded recovery timing and guidance measurement | 2026-10-21 |
+| #9992 | Emit the weekly sector relative-trend feed (Options R1 W2A) | 2026-10-21 |
+| #9991 | Emit the sector holdings coverage feed with separate denominators (Options R1 W2B) | 2026-10-21 |
+| #9990 | Add versioned editorial views to curated ticker news | 2026-10-21 |
+| #9989 | research: separate durable lows from ownership and recovery capital | 2026-10-21 |
+| #9987 | docs(agentos): reconcile Portfolio release recovery and open gates | 2026-10-21 |
+| #9984 | research(gmi-micro): C3 micro-theme expansion proposals | 2026-10-22 |
+| #9982 | agentos: advance the Executive ecosystem integration frontier | 2026-10-21 |
+| #9981 | Foresight: show the score base, filing depth, flag dates and trend state | 2026-10-21 |
+| #9979 | ci(data-health): add the missing module installs to 10 legacy-jobs install lines | 2026-10-22 |
+| #9977 | [MAS-258] Bind admitted risk publication and isolated release qualification | 2026-10-21 |
+| #9976 | test(ci-health): pin PACK_DEPS to portfolio-ctx's rjsmin install set; seat-only install-line patches for 10 ModuleNotFoundError jobs | 2026-10-22 |
+| #9975 | contracts(gmi-activity): admit principal_business_activity species | 2026-10-22 |
+| #9974 | docs: audit news estate and plan Fable end-to-end completion | 2026-10-21 |
+| #9973 | intl-gs records: W4A IM17 engine #9960 MERGED → 5c6fdb2e; W4B held on the W2 gate | 2026-10-21 |
+| #9972 | test(government-revenue): give two isolated fixtures the builder's render assets | 2026-10-22 |
+| #9971 | test: repair four drifted data-health fixtures and pin all three verdict branches | 2026-10-22 |
+| #9970 | research: durable pivots and mechanism-led entry assessment | 2026-10-21 |
+| #9969 | feat(expectation-surface): Information→Price consensus layer page (wave 1 data+builder) | 2026-10-22 |
+| #9968 | fix(ci): complete truncated commit inventories before reproof | 2026-10-21 |
+| #9967 | Preserve project direction and bound Agent OS context history reads | 2026-10-21 |
+| #9964 | agentos(mi-buildout): ORCH-HEALTH records checkpoint 2026-10-21 (W10 done, W11 landing record) | 2026-10-22 |
+| #9963 | fix(news): close live editorial gaps in curated ticker feeds | 2026-10-21 |
+| #9960 | feat(intl): typed transmission evidence, qualified transmission events and US relevance ordering (IM17) | 2026-10-21 |
+| #9959 | prophet r7: capture-only nightly B4 same-read decision-time stamps (F22) | 2026-10-21 |
+| #9956 | prophet r7 Wave A: a2 | 2026-10-22 |
+| #9955 | prophet r7 Wave A: a3 | 2026-10-22 |
+| #9954 | prophet r7 Wave A: a1 | 2026-10-22 |
+| #9951 | prophet r7 B01: durable reconcile CLI refuses a caller-supplied recorded_at (writer clock only) | 2026-10-22 |
+| #9949 | feat(intl-gs): W2F surveillance foundation (IM13/IM14 Wave 2 base) | 2026-10-22 |
+| #9948 | fix(tiingo): retain bounded secret-safe stream diagnostics | 2026-10-22 |
 
 ---
 

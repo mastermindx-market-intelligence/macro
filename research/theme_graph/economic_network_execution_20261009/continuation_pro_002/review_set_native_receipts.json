@@ -1,0 +1,39 @@
+{
+  "artifacts": [
+    {
+      "bytes": 252,
+      "name": "run-001/pretest-check.json",
+      "path": "/private/tmp/gmi-economic-network-native-reader-20261009-pro-002-review-set/run-001/pretest-check.json",
+      "sha256": "81d66405fb340df373a251bfc748f102dc9d7bfe02b6776e63e297629b06571a",
+      "text": "{\n  \"current_tail_bytes\": 1511,\n  \"original_tail_bytes\": 1510,\n  \"phase\": \"run-001-pretest-check\",\n  \"pid\": 6467,\n  \"preflight_failure\": \"strict tail comparison: trailing whitespace only\",\n  \"source_mutated_after_v4\": false,\n  \"tests_started\": false\n}\n"
+    },
+    {
+      "bytes": 1292,
+      "name": "run-002/receipt.json",
+      "path": "/private/tmp/gmi-economic-network-native-reader-20261009-pro-002-review-set/run-002/receipt.json",
+      "sha256": "c672d0f5057678c49a588435ab02e3311f05589777c409c9650d7e90b462e258",
+      "text": "{\n  \"command\": [\n    \"/opt/homebrew/Caskroom/miniconda/base/bin/python3\",\n    \"-B\",\n    \"-m\",\n    \"pytest\",\n    \"-p\",\n    \"no:cacheprovider\",\n    \"tests/test_company_relationship_candidates.py\",\n    \"tests/test_company_relationship_review_set.py\",\n    \"-q\",\n    \"--basetemp=/private/tmp/gmi-economic-network-native-reader-20261009-pro-002-review-set/run-002/pytest-temp\"\n  ],\n  \"exit_code\": 0,\n  \"files\": {\n    \"engine/company_intelligence/relationship_candidates.py\": {\n      \"bytes\": 45473,\n      \"sha256\": \"a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55\"\n    },\n    \"tests/test_company_relationship_review_set.py\": {\n      \"bytes\": 35165,\n      \"sha256\": \"67636cc6eca4f9be84b383bb44b4835a3dc8447f6b288e2e99073f61182ce212\"\n    }\n  },\n  \"log\": \"/private/tmp/gmi-economic-network-native-reader-20261009-pro-002-review-set/run-002/pytest.log\",\n  \"original_functions_preserved\": [\n    \"_base\",\n    \"_bounded_json\",\n    \"_closed\",\n    \"_read_bytes\",\n    \"_reject_duplicate_keys\",\n    \"_require\",\n    \"_temporal\",\n    \"_text\",\n    \"_validate\",\n    \"inspect_candidate\"\n  ],\n  \"phase\": \"run-002\",\n  \"single_case_tail_preserved_except_terminal_blank_line\": true,\n  \"workspace\": \"/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-network-native-reader-20261009-pro-002\"\n}\n"
+    },
+    {
+      "bytes": 260,
+      "name": "run-002/pytest.log",
+      "path": "/private/tmp/gmi-economic-network-native-reader-20261009-pro-002-review-set/run-002/pytest.log",
+      "sha256": "110a64280e4b840e4985d704fe38b496c6e50c667acce85ba3c865a713a4d456",
+      "text": "........................................................................ [ 42%]\n........................................................................ [ 84%]\n...........................                                              [100%]\n171 passed in 3.50s\n"
+    },
+    {
+      "bytes": 982,
+      "name": "run-003-pinned/receipt.json",
+      "path": "/private/tmp/gmi-economic-network-native-reader-20261009-pro-002-review-set/run-003-pinned/receipt.json",
+      "sha256": "cf20ea42ec673d8c11f5bc0451f1a16b28508bc7d0283d7e91c50cdc243b6fcc",
+      "text": "{\n  \"command\": [\n    \"/opt/homebrew/Caskroom/miniconda/base/bin/python3\",\n    \"-B\",\n    \"-m\",\n    \"pytest\",\n    \"-p\",\n    \"no:cacheprovider\",\n    \"tests/test_company_pinned_relationship_candidates.py\",\n    \"-q\",\n    \"--basetemp=/private/tmp/gmi-economic-network-native-reader-20261009-pro-002-review-set/run-003-pinned/pytest-temp\"\n  ],\n  \"exit_code\": 0,\n  \"final_files\": {\n    \"engine/company_intelligence/relationship_candidates.py\": {\n      \"bytes\": 45473,\n      \"sha256\": \"a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55\"\n    },\n    \"tests/test_company_relationship_review_set.py\": {\n      \"bytes\": 35165,\n      \"sha256\": \"67636cc6eca4f9be84b383bb44b4835a3dc8447f6b288e2e99073f61182ce212\"\n    }\n  },\n  \"log\": \"/private/tmp/gmi-economic-network-native-reader-20261009-pro-002-review-set/run-003-pinned/pytest.log\",\n  \"phase\": \"run-003-pinned\",\n  \"workspace\": \"/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-network-native-reader-20261009-pro-002\"\n}\n"
+    },
+    {
+      "bytes": 99,
+      "name": "run-003-pinned/pytest.log",
+      "path": "/private/tmp/gmi-economic-network-native-reader-20261009-pro-002-review-set/run-003-pinned/pytest.log",
+      "sha256": "a740da298aac1a8dc98e3d2a6011cef26f78ba77b6d0767aab78da4c927273ba",
+      "text": "............................................                             [100%]\n44 passed in 2.06s\n"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "observed_at": "2026-10-15T11:28:55.972982+00:00",
+  "parent": "ff7912003742ebfaa172a30c68dc8d65ddc9330e",
+  "changed_job": "research-price-panel",
+  "relocated_existing_paths": 3,
+  "job_count": 319,
+  "all_execution_definitions_preserved": true,
+  "all_path_memberships_and_multiplicities_preserved": true,
+  "other_job_ordering_preserved": true,
+  "before_sha256": "5a244ac333f9e1730f2aadb152f46b34d7593e050ec396e25f55cc3d2c5cbb22",
+  "after_sha256": "931aead5ff45cadbca95198607787fc2902d8e2e83bbad29913ec326868f34b9",
+  "manual_base_integration": false,
+  "first_preview_rejected": "d0785958 relocation to list start collided with incoming main additions; unpublished. Move identical block to stable interior.",
+  "source_commit": "1bb4b0c394aa3dac5f0381345a95d6aa4c737dab",
+  "preview_main": "d93b884e92b7a56326f7fa3c944656767b8a8968",
+  "preview_tree": "e3e4ed71d334121a964915fe55c490480f14ce3d",
+  "preview_clean": true,
+  "focused_checks": {
+    "passed": 2,
+    "junit": "post-green-relocation-controls.xml"
+  },
+  "proof_reuse": "Execution definitions and exact dependency multisets unchanged; reuse ff791 terminal CI, closure and packing for unchanged semantics. New hosted checks required after publication and any incumbent refresh.",
+  "publication_admission": {
+    "at": "2026-10-15T12:12:53.406010+00:00",
+    "pr_head": "ff7912003742ebfaa172a30c68dc8d65ddc9330e",
+    "main": "24e858983c53494d0746c2b1dc988135ff6277ec",
+    "active_pr_proofs": 7,
+    "canonical_unindexed_reservations": 0,
+    "cap": 8,
+    "publication_admitted": true
+  },
+  "published_source": "1bb4b0c394aa3dac5f0381345a95d6aa4c737dab",
+  "current_main_preview": {
+    "observed_at": "2026-10-15T12:10:39.887165+00:00",
+    "a1_prepared_source": "1bb4b0c394aa3dac5f0381345a95d6aa4c737dab",
+    "main": "24e858983c53494d0746c2b1dc988135ff6277ec",
+    "clean": true,
+    "preview": "3810d367866bda7923e2ae1406f19fe1f50e7528\n",
+    "no_branch_integration": true,
+    "main_jobs": 319,
+    "preview_jobs": 320,
+    "main_execution_preserved_except_accepted_A1_suite_addition": true,
+    "inherited_A1_definition_delta": [
+      "neural-web"
+    ],
+    "both_parent_path_memberships_preserved": true,
+    "source_event": "Main63779f5d11a6 merged PR9462 at11:59Z; canonical12:12:53 admission7active/cap8/0reservations."
+  }
+}

@@ -16,11 +16,13 @@ import argparse
 import ast
 import hashlib
 import importlib.util
+import io
 import json
 import shutil
 import struct
 import subprocess
 import sys
+import tokenize
 import zlib
 from pathlib import Path
 from typing import Any
@@ -89,6 +91,18 @@ CONSOLE_ERRORS: tuple[dict[str, Any], ...] = (
     {"text": "TypeError: x is not a function", "source_url": "https://cdn.invalid/assets/app.js"},
 )
 
+# Deterministic lab timing a driver CAN report. The fake defaults to reporting
+# nothing (timing=None), because "driver without timing support" is the shape the
+# null discipline has to survive; tests that want numbers pass this in.
+FAKE_TIMING: dict[str, Any] = {
+    "lcp_ms": 1512.5,
+    "cls": 0.03,
+    "inp_proxy_ms": 96.0,
+    "resource_count": 18,
+    "transfer_bytes": 402_113,
+    "server_timing": ({"name": "edge", "duration": 8.5, "description": "cache miss"},),
+}
+
 
 class FakeDriver:
     """In-memory driver. Same seam as ``playwright_page_driver``; no browser."""
@@ -106,6 +120,7 @@ class FakeDriver:
         load_error: str | None = None,
         blank_screenshot: bool = False,
         force_refused: bool = False,
+        timing: dict[str, Any] | None = None,
     ) -> None:
         self.calls: list[tuple[str, str]] = []
         self._observed = dict(observed or OBSERVED)
@@ -115,6 +130,9 @@ class FakeDriver:
         self._console_errors = CONSOLE_ERRORS if console_errors is None else console_errors
         self._failed_responses = failed_responses
         self._per_cell_failures = per_cell_failures
+        # None is a driver with no timing support at all — the honest all-null
+        # shape — and a dict is what it observed, passed through untouched.
+        self._timing = timing
         # A driver that SAW things and then failed — the 401-then-timeout page, and
         # the page that settles but hands back no bytes. Distinct from
         # ``fail_routes``, which raises before the driver observed anything at all.
@@ -163,6 +181,7 @@ class FakeDriver:
                 if cell.force_state is None or self._force_refused
                 else cell.force_state.name
             ),
+            timing=None if self._timing is None else dict(self._timing),
         )
 
     def close(self) -> None:
@@ -860,6 +879,207 @@ def test_no_metric_is_a_score_or_a_verdict(tmp_path: Path, registry: Path):
     for page in manifest["pages"]:
         for key in page["metrics"]:
             assert not any(word in key.lower() for word in banned), key
+
+
+# --------------------------------------------------------------------------- #
+# narrow viewports + lab timing (B23 BU1)
+# --------------------------------------------------------------------------- #
+#
+# The BASE key inventories below are pinned on purpose: the timing addition must
+# be the ONLY shape change a default run sees, so the test names exactly what a
+# BASE manifest looked like and asserts the HEAD manifest is that plus timing.
+BASE_MANIFEST_KEYS = {
+    "schema", "generated_at", "tool", "target", "axes", "selection", "excluded",
+    "outcome", "totals", "honesty", "pages",
+}
+BASE_STATE_KEYS_ATTEMPTED = {
+    "viewport", "locale", "theme", "access", "viewport_width", "viewport_height",
+    "force_state", "captured",
+}
+BASE_STATE_KEYS_CAPTURED = BASE_STATE_KEYS_ATTEMPTED | {
+    "file", "sha256", "bytes", "width", "height", "applied_theme", "applied_locale",
+}
+
+
+def test_narrow_and_tablet768_are_accepted_viewport_keys_with_fallback_heights(
+    tmp_path: Path, registry: Path
+):
+    _code, manifest = _run(
+        tmp_path, registry, FakeDriver(), "--viewports", "narrow-320,tablet-768"
+    )
+    assert _code == cpe.EXIT_OK
+    # The B23 fallback heights (720 / 1024): the program design names widths only.
+    assert manifest["axes"]["viewports"] == {
+        "narrow-320": [320, 720],
+        "tablet-768": [768, 1024],
+    }
+    for page in manifest["pages"]:
+        sizes = {(s["viewport_width"], s["viewport_height"]) for s in page["states"]}
+        assert sizes <= {(320, 720), (768, 1024)}
+
+
+def test_an_unknown_viewport_key_is_still_a_usage_error(
+    tmp_path: Path, registry: Path, capsys
+):
+    code, manifest = _run(
+        tmp_path, registry, FakeDriver(), "--viewports", "narrow-320,phablet"
+    )
+    assert code == cpe.EXIT_USAGE
+    assert manifest == {}
+    assert "phablet" in capsys.readouterr().err
+
+
+def test_a_driver_that_reports_lab_timing_gets_it_recorded_per_cell(
+    tmp_path: Path, registry: Path
+):
+    _code, manifest = _run(
+        tmp_path, registry, FakeDriver(timing=dict(FAKE_TIMING)), "--viewports", "desktop"
+    )
+    expected = dict(FAKE_TIMING)
+    expected["server_timing"] = [dict(item) for item in FAKE_TIMING["server_timing"]]
+    captured = [
+        state for page in manifest["pages"] for state in page["states"] if state["captured"]
+    ]
+    assert captured
+    for state in captured:
+        assert state["timing"] == expected
+    # Timing is per-cell evidence, not a census number: the smell report and the
+    # metrics block keep exactly the shape they had.
+    assert set(cpe.METRIC_KEYS).isdisjoint(set(cpe.TIMING_KEYS))
+
+
+def test_a_driver_without_timing_records_nulls_never_zeros(tmp_path: Path, registry: Path):
+    _code, manifest = _run(
+        tmp_path,
+        registry,
+        FakeDriver(fail_routes=("/terminal.html",)),
+        "--viewports",
+        "desktop",
+        "--locales",
+        "en",
+    )
+    states = [state for page in manifest["pages"] for state in page["states"]]
+    assert any(state["captured"] for state in states)
+    assert any(not state["captured"] for state in states)  # the dead route's cells
+    for state in states:
+        assert set(state["timing"]) == set(cpe.TIMING_KEYS)
+        assert all(value is None for value in state["timing"].values()), state["timing"]
+
+
+def _every_key(node: Any):
+    if isinstance(node, dict):
+        for key, value in node.items():
+            yield key
+            yield from _every_key(value)
+    elif isinstance(node, list):
+        for item in node:
+            yield from _every_key(item)
+
+
+def test_every_manifest_declares_a_lab_timing_basis_and_never_a_field_label(
+    tmp_path: Path, registry: Path
+):
+    _code, manifest = _run(
+        tmp_path, registry, FakeDriver(timing=dict(FAKE_TIMING)), "--viewports", "mobile"
+    )
+    assert manifest["timing_basis"] == "lab"
+    assert cpe.TIMING_BASIS == "lab"
+    # "field" is the reserved word for real-user numbers; a lab value must never
+    # wear it, in a key or anywhere else in the manifest.
+    assert not [key for key in _every_key(manifest) if "field" in key.lower()]
+    assert "lab numbers" in MODULE_PATH.read_text(encoding="utf-8")
+
+
+def _normalized_to_base_shape(manifest: dict[str, Any]) -> bytes:
+    """Strip exactly what BU1 added, keeping BASE bytes comparable.
+
+    Documented normalization: the per-state lab timing block, the manifest-level
+    timing_basis, and the two provenance stamps that move with any module edit
+    (tool.version and tool.module_sha256 — the module sha is the same fact as the
+    version stamp: the header comment pins them to move together).
+    """
+
+    stripped = json.loads(json.dumps(manifest))
+    stripped["tool"]["version"] = "1.3.0"
+    stripped["tool"]["module_sha256"] = "<module>"
+    stripped.pop("timing_basis")
+    for page in stripped["pages"]:
+        for state in page["states"]:
+            state.pop("timing")
+    return cpe.canonical_json_bytes(stripped)
+
+
+def test_a_default_run_is_the_base_manifest_plus_only_the_timing_addition(
+    tmp_path: Path, registry: Path
+):
+    default_manifest = tmp_path / "default.json"
+    explicit_manifest = tmp_path / "explicit.json"
+    _run(tmp_path, registry, FakeDriver(), manifest=str(default_manifest))
+    _run(
+        tmp_path,
+        registry,
+        FakeDriver(),
+        "--viewports",
+        "desktop,tablet,mobile",
+        manifest=str(explicit_manifest),
+    )
+    default = json.loads(default_manifest.read_text(encoding="utf-8"))
+    explicit = json.loads(explicit_manifest.read_text(encoding="utf-8"))
+
+    # The default axis selection is unchanged: the same triple, same dimensions.
+    assert default["axes"]["viewports"] == {
+        "desktop": [1440, 900],
+        "tablet": [820, 1180],
+        "mobile": [390, 844],
+    }
+    assert _normalized_to_base_shape(default) == _normalized_to_base_shape(explicit)
+
+    # Shape: BASE key inventories plus the timing addition, and nothing else.
+    assert set(default) == BASE_MANIFEST_KEYS | {"timing_basis"}
+    for page in default["pages"]:
+        for state in page["states"]:
+            attempted = BASE_STATE_KEYS_ATTEMPTED | {"timing"}
+            captured = BASE_STATE_KEYS_CAPTURED | {"timing"}
+            assert attempted <= set(state) <= captured, sorted(set(state) - captured)
+            assert set(state["timing"]) == set(cpe.TIMING_KEYS)
+            assert all(value is None for value in state["timing"].values())
+
+
+def test_two_timing_runs_with_the_same_as_of_are_byte_equal(
+    tmp_path: Path, registry: Path
+):
+    one, two = tmp_path / "one.json", tmp_path / "two.json"
+    _run(
+        tmp_path, registry, FakeDriver(timing=dict(FAKE_TIMING)),
+        "--viewports", "narrow-320", manifest=str(one),
+    )
+    _run(
+        tmp_path, registry, FakeDriver(timing=dict(FAKE_TIMING)),
+        "--viewports", "narrow-320", manifest=str(two),
+    )
+    assert one.read_bytes() == two.read_bytes()
+
+
+def test_the_module_source_greps_clean_of_subprocess_and_enumeration_tokens():
+    """The CI job's LOAD-BEARING claim, checked at the token level.
+
+    The grep is over identifier tokens, not raw substrings: the module's own
+    docstrings narrate the absence of these edges ("no subprocess, no directory
+    enumeration"), and prose that documents a refusal is not an edge. An
+    identifier named for one of these tokens — an import, a call, or an alias —
+    is an offender wherever it appears, which is broader than the AST call scan
+    in ``test_the_module_carries_no_subprocess_or_enumeration_edge``.
+    """
+
+    source = MODULE_PATH.read_text(encoding="utf-8")
+    banned = {"subprocess", "glob", "iterdir", "listdir", "walk", "scandir"}
+    names = {
+        token.string
+        for token in tokenize.generate_tokens(io.StringIO(source).readline)
+        if token.type == tokenize.NAME
+    }
+    offenders = sorted(banned & names)
+    assert not offenders, offenders
 
 
 # --------------------------------------------------------------------------- #
