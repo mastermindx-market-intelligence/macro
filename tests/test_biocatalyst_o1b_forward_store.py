@@ -12,11 +12,18 @@ route, a source, or a pointer.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
 import pytest
 
+from engine.biocatalyst.history import build_history_exact_diff, derive_history_change_facts
+from engine.biocatalyst.outcome_accrual import (
+    OutcomeAccrualError,
+    append_trial_progression_outcome,
+    build_trial_progression_outcome,
+)
 from engine.biocatalyst.operational_store import (
     KIND_SCOPED_PAYLOAD_KEY_ALLOWANCES,
     MAX_QUERY_LIMIT,
@@ -35,6 +42,7 @@ from engine.biocatalyst.operational_store import (
 from engine.sector_intelligence.contracts import (
     ContractRegistry,
     ContractValidationError,
+    canonical_json_sha256,
 )
 
 
@@ -558,3 +566,499 @@ def test_an_unknown_o1b_record_kind_is_refused(store: OperationalStore) -> None:
             "forecast_snapshot_v2", _forecast_payload(), idempotency_key="fc:1"
         )
     assert error.value.code == "OPERATIONAL_RECORD_KIND_UNKNOWN"
+
+# ---- P5 prospective source-fact -> O1b accrual ----------------------------
+
+SOURCE_NCT = "NCT01234567"
+OUTCOME_CLOCK_OPENED_AT = "2026-08-11T20:20:43.514252Z"
+
+
+def _accrual_with_hash(payload: dict[str, Any], field: str) -> dict[str, Any]:
+    document = deepcopy(payload)
+    document[field] = canonical_json_sha256(document)
+    return document
+
+
+def _accrual_activation(**overrides: Any) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "contract_id": "biocatalyst_family_clock_activation.v1",
+        "schema_version": "1.0.0",
+        "family_id": "trial_progression_termination",
+        "policy_version": "m0a.3",
+        "policy_sha256": "a" * 64,
+        "clock_state": "opened",
+        "evaluated_at": OUTCOME_CLOCK_OPENED_AT,
+        "accrual_start_known_at": OUTCOME_CLOCK_OPENED_AT,
+        "satisfied_preconditions": [
+            "frozen_policy_version",
+            "eligible_source_registration",
+            "o1b_outcome_writer",
+        ],
+        "unsatisfied_preconditions": [],
+        "blockers": [],
+        "ineligible_source_ids": [],
+        "backfill": "forbidden_no_history_recorded",
+        "authority": "facts_and_context_only",
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _accrual_snapshot(
+    *,
+    retrieved_at: str = "2026-10-05T04:00:00Z",
+    transaction_from: str = "2026-10-05T04:00:01Z",
+    source_submitted_at: str = "2026-10-05",
+    source_version: int = 7,
+    source_status: str = "COMPLETED",
+) -> dict[str, Any]:
+    canonical_study = {"protocolSection": {
+        "identificationModule": {"nctId": SOURCE_NCT},
+        "statusModule": {"overallStatus": source_status},
+    }}
+    content_sha = canonical_json_sha256(canonical_study)
+    payload: dict[str, Any] = {
+        "contract_id": "trial_history_source_snapshot.v1",
+        "schema_version": "1.0.0",
+        "source_snapshot_id": "ctgov_history_snapshot_" + SOURCE_NCT + "_" + canonical_json_sha256({
+            "nct_id": SOURCE_NCT, "source_version": source_version,
+            "canonical_content_sha256": content_sha,
+            "run_ref": "ctgov_history_run_NCT01234567_deadbeefdeadbeef",
+        })[:24],
+        "nct_id": SOURCE_NCT,
+        "source_id": "clinicaltrials_gov_record_history",
+        "run_ref": "ctgov_history_run_NCT01234567_deadbeefdeadbeef",
+        "history_index_receipt_ref": (
+            "ctgov_history_receipt_NCT01234567_index_deadbeef"
+        ),
+        "history_version_receipt_ref": (
+            f"ctgov_history_receipt_NCT01234567_version_{source_version}_deadbeef"
+        ),
+        "source_version": source_version,
+        "display_version": source_version + 1,
+        "source_record_ref": (
+            f"src:ctgov-history:{SOURCE_NCT}:version:{source_version}:sha256:{content_sha}"
+        ),
+        "source_uri": (
+            f"https://clinicaltrials.gov/study/{SOURCE_NCT}"
+            f"?a={source_version + 1}&tab=history"
+        ),
+        "source_submitted_at": source_submitted_at,
+        "source_last_update_submit_qc_at": source_submitted_at,
+        "canonical_study": canonical_study,
+        "canonical_content_sha256": content_sha,
+        "retrieved_at": retrieved_at,
+        "source_fact": True,
+        "current_only": False,
+        "coverage_class": "record_history_complete",
+        "authority": {
+        "classification": "source_fact",
+        "decision_authority": False,
+        "allowed_uses": ["display", "context", "explain"],
+        "forbidden_uses": [
+            "originate_signal",
+            "rank_security",
+            "select_security",
+            "size_position",
+            "gate_decision",
+            "execute_trade",
+            "raise_authority",
+        ],
+    },
+        "transaction_from": transaction_from,
+        "transaction_to": None,
+        "hash_scope": "canonical_payload_excluding_snapshot_payload_sha256",
+    }
+    return _accrual_with_hash(payload, "snapshot_payload_sha256")
+
+
+def _accrual_proof(after_snapshot: dict[str, Any] | None = None) -> dict[str, Any]:
+    after = after_snapshot if after_snapshot is not None else _accrual_snapshot()
+    before = _accrual_snapshot(
+        source_version=after["source_version"] - 1,
+        source_status="RECRUITING",
+        retrieved_at=after["retrieved_at"],
+        transaction_from=after["transaction_from"],
+        source_submitted_at=after["source_submitted_at"],
+    )
+    diff = build_history_exact_diff(before, after, transaction_from=after["transaction_from"])
+    return {"before_snapshot": before, "diff": diff}
+
+
+def _accrual_fact(
+    *,
+    after_value: Any = "COMPLETED",
+    kind: str = "registry_status_changed",
+    source_version: int = 7,
+    after_snapshot: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    after = (after_snapshot if after_snapshot is not None
+             else _accrual_snapshot(source_version=source_version))
+    proof = _accrual_proof(after)
+    fact = next(item for item in derive_history_change_facts(
+        proof["before_snapshot"], after, proof["diff"]
+    ) if item["kind"] == "registry_status_changed")
+    fact["kind"], fact["after_value"] = kind, after_value
+    seed = canonical_json_sha256({key: fact[key] for key in (
+        "diff_ref", "kind", "source_json_paths", "before_value", "after_value"
+    )})
+    fact["change_fact_id"] = f"trial_registry_change_{SOURCE_NCT}_{seed[:24]}"
+    return _accrual_with_hash(
+        {key: value for key, value in fact.items() if key != "fact_payload_sha256"},
+        "fact_payload_sha256",
+    )
+
+
+def test_trial_progression_status_change_projects_to_source_native_nonterminal_outcome() -> None:
+    fact = _accrual_fact()
+    payload = build_trial_progression_outcome(
+        fact=fact,
+        after_snapshot=_accrual_snapshot(),
+        activation=_accrual_activation(),
+        **_accrual_proof(),
+    )
+    assert payload == {
+        "contract_id": "biocatalyst_outcome_record.v1",
+        "schema_version": "1.0.0",
+        "outcome_id": "oc:trial_progression:" + fact["fact_payload_sha256"][:24],
+        "family_id": "trial_progression_termination",
+        "subject_ref": f"nct:{SOURCE_NCT}",
+        "seed_layer": "study_conduct",
+        "value": "completed",
+        "value_authority": "source_native_status_only",
+        "censoring_state": "right_censored_open_window",
+        "terminality": "non_terminal",
+        "effective_at": "2026-10-05T04:00:01Z",
+        "known_at": "2026-10-05T04:00:01Z",
+        "observed_at": "2026-10-05T04:00:01Z",
+        "evidence_refs": [
+            "internal:ctgov_change_" + fact["fact_payload_sha256"][:32]
+        ],
+        "policy_version": "m0a.3",
+        "resolver_type": "deterministic_source_statement",
+        "revision_of": None,
+    }
+
+
+@pytest.mark.parametrize("submitted", ["2026-08-01", "2026-08-11"])
+def test_trial_progression_history_retrieved_late_is_not_backfilled(submitted: str) -> None:
+    # Old and clock-open-day versions remain excluded, even if retrieved later.
+    snapshot = _accrual_snapshot(
+        source_submitted_at=submitted,
+        retrieved_at="2026-08-18T02:21:00Z",
+        transaction_from="2026-08-18T02:21:01Z",
+    )
+    assert build_trial_progression_outcome(
+        fact=_accrual_fact(after_snapshot=snapshot), after_snapshot=snapshot,
+        activation=_accrual_activation(), **_accrual_proof(snapshot),
+    ) is None
+
+
+def test_trial_progression_pre_activation_fact_is_not_backfilled() -> None:
+    snapshot = _accrual_snapshot(
+        retrieved_at="2026-08-11T20:20:42Z",
+        transaction_from="2026-08-11T20:20:42.500000Z",
+    )
+    assert build_trial_progression_outcome(
+        fact=_accrual_fact(after_snapshot=snapshot), after_snapshot=snapshot,
+        activation=_accrual_activation(), **_accrual_proof(snapshot),
+    ) is None
+
+
+@pytest.mark.parametrize(
+    "activation",
+    [
+        _accrual_activation(
+            clock_state="closed",
+            accrual_start_known_at=None,
+            blockers=["source_dark"],
+        ),
+        _accrual_activation(family_id="timing_slip"),
+        _accrual_activation(blockers=["unexpected"]),
+    ],
+)
+def test_trial_progression_requires_clean_open_family_clock(
+    activation: dict[str, Any],
+) -> None:
+    with pytest.raises(OutcomeAccrualError):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(),
+            after_snapshot=_accrual_snapshot(),
+            activation=activation,
+            **_accrual_proof(),
+        )
+
+
+def test_trial_progression_non_status_fact_and_source_mismatch_fail_closed() -> None:
+    with pytest.raises(OutcomeAccrualError, match="FACT_KIND"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(kind="study_date_changed"),
+            after_snapshot=_accrual_snapshot(),
+            activation=_accrual_activation(),
+            **_accrual_proof(),
+        )
+    with pytest.raises(OutcomeAccrualError, match="SOURCE_BINDING"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(source_version=8),
+            after_snapshot=_accrual_snapshot(source_version=7),
+            activation=_accrual_activation(),
+            **_accrual_proof(),
+        )
+
+
+def test_trial_progression_source_status_must_be_registry_token() -> None:
+    with pytest.raises(OutcomeAccrualError, match="SOURCE_STATUS"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(after_value={"status": "COMPLETED"}),
+            after_snapshot=_accrual_snapshot(),
+            activation=_accrual_activation(),
+            **_accrual_proof(),
+        )
+
+
+def test_trial_progression_requires_complete_registered_owner_contracts() -> None:
+    partial_fact = _accrual_fact()
+    partial_fact.pop("diff_ref")
+    partial_fact["fact_payload_sha256"] = canonical_json_sha256(
+        {key: value for key, value in partial_fact.items() if key != "fact_payload_sha256"}
+    )
+    with pytest.raises(OutcomeAccrualError, match="FACT_INVALID"):
+        build_trial_progression_outcome(
+            fact=partial_fact,
+            after_snapshot=_accrual_snapshot(),
+            activation=_accrual_activation(),
+            **_accrual_proof(),
+        )
+
+    partial_snapshot = _accrual_snapshot()
+    partial_snapshot.pop("source_id")
+    partial_snapshot["snapshot_payload_sha256"] = canonical_json_sha256(
+        {
+            key: value
+            for key, value in partial_snapshot.items()
+            if key != "snapshot_payload_sha256"
+        }
+    )
+    with pytest.raises(OutcomeAccrualError, match="SNAPSHOT_INVALID"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(),
+            after_snapshot=partial_snapshot,
+            activation=_accrual_activation(),
+            **_accrual_proof(),
+        )
+
+
+def test_trial_progression_rechecks_fact_and_snapshot_hashes() -> None:
+    forged_fact = _accrual_fact()
+    forged_fact["after_value"] = "WITHDRAWN"
+    with pytest.raises(OutcomeAccrualError, match="FACT_HASH"):
+        build_trial_progression_outcome(
+            fact=forged_fact,
+            after_snapshot=_accrual_snapshot(),
+            activation=_accrual_activation(),
+            **_accrual_proof(),
+        )
+
+    forged_snapshot = _accrual_snapshot()
+    forged_snapshot["retrieved_at"] = "2026-10-05T03:00:00Z"
+    with pytest.raises(OutcomeAccrualError, match="SNAPSHOT_HASH"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(),
+            after_snapshot=forged_snapshot,
+            activation=_accrual_activation(),
+            **_accrual_proof(),
+        )
+
+
+def test_trial_progression_append_is_idempotent_on_existing_o1b_store(
+    store: OperationalStore,
+) -> None:
+    fact = _accrual_fact()
+    first = append_trial_progression_outcome(
+        store,
+        fact=fact,
+        after_snapshot=_accrual_snapshot(),
+        activation=_accrual_activation(),
+        **_accrual_proof(),
+        recorded_at="2026-10-05T04:00:02.000000Z",
+    )
+    second = append_trial_progression_outcome(
+        store,
+        fact=fact,
+        after_snapshot=_accrual_snapshot(),
+        activation=_accrual_activation(),
+        **_accrual_proof(),
+        recorded_at="2026-10-05T04:00:02.000000Z",
+    )
+    assert first is not None and second is not None
+    assert first.record_id == second.record_id
+    assert first.created is True
+    assert second.created is False
+
+    page = store.read("outcome_observation", limit=MAX_QUERY_LIMIT)
+    assert len(page.records) == 1
+    record = page.records[0]
+    assert record["payload"]["family_id"] == "trial_progression_termination"
+    encoded = str(record).casefold()
+    for forbidden in ("ticker", "issuer", "sponsor", "probability", "rank", "score"):
+        assert forbidden not in encoded
+
+
+# Cross-object evidence must agree even when every object's self-hash is valid.
+def _accrual_rehash(document: dict[str, Any], field: str) -> dict[str, Any]:
+    return _accrual_with_hash({key: value for key, value in document.items() if key != field}, field)
+
+
+def test_trial_progression_known_at_cannot_precede_its_fact_transaction() -> None:
+    fact = _accrual_fact()
+    payload = build_trial_progression_outcome(
+        fact=fact, after_snapshot=_accrual_snapshot(), activation=_accrual_activation(), **_accrual_proof()
+    )
+    assert payload is not None
+    assert payload["known_at"] == fact["transaction_from"]
+    assert payload["effective_at"] == fact["transaction_from"]
+
+
+@pytest.mark.parametrize("transaction", ["2026-10-05T03:59:59Z", "2026-10-05T04:00:02Z"])
+def test_trial_progression_rehashed_fact_transaction_must_bind_snapshot(transaction: str) -> None:
+    fact = _accrual_fact()
+    fact["transaction_from"] = transaction
+    fact = _accrual_rehash(fact, "fact_payload_sha256")
+    with pytest.raises(OutcomeAccrualError, match="SOURCE_BINDING"):
+        build_trial_progression_outcome(
+            fact=fact, after_snapshot=_accrual_snapshot(), activation=_accrual_activation(), **_accrual_proof()
+        )
+
+
+@pytest.mark.parametrize("status", [None, "RECRUITING"])
+def test_trial_progression_rehashed_snapshot_must_contain_claimed_status(status: str | None) -> None:
+    snapshot = _accrual_snapshot()
+    protocol = snapshot["canonical_study"]["protocolSection"]
+    if status is None:
+        protocol.pop("statusModule", None)
+    else:
+        protocol["statusModule"] = {"overallStatus": status}
+    digest = canonical_json_sha256(snapshot["canonical_study"])
+    snapshot["canonical_content_sha256"] = digest
+    snapshot["source_record_ref"] = f"src:ctgov-history:{SOURCE_NCT}:version:7:sha256:{digest}"
+    snapshot = _accrual_rehash(snapshot, "snapshot_payload_sha256")
+    with pytest.raises(OutcomeAccrualError, match="SOURCE_BINDING"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(), after_snapshot=snapshot, activation=_accrual_activation(), **_accrual_proof()
+        )
+
+
+@pytest.mark.parametrize("paths", [
+    ["/protocolSection/identificationModule/nctId"],
+    ["/protocolSection/statusModule/overallStatus", "/protocolSection/identificationModule/nctId"],
+])
+def test_trial_progression_rehashed_fact_must_claim_exact_status_path(paths: list[str]) -> None:
+    fact = _accrual_fact()
+    fact["source_json_paths"] = paths
+    seed = canonical_json_sha256({key: fact[key] for key in (
+        "diff_ref", "kind", "source_json_paths", "before_value", "after_value"
+    )})
+    fact["change_fact_id"] = f"trial_registry_change_{SOURCE_NCT}_{seed[:24]}"
+    fact = _accrual_rehash(fact, "fact_payload_sha256")
+    with pytest.raises(OutcomeAccrualError, match="SOURCE_BINDING"):
+        build_trial_progression_outcome(
+            fact=fact, after_snapshot=_accrual_snapshot(), activation=_accrual_activation(), **_accrual_proof()
+        )
+
+
+@pytest.mark.parametrize("missing", ["before_snapshot", "diff"])
+def test_trial_progression_refuses_a_pair_without_replay_evidence(missing: str) -> None:
+    proof = _accrual_proof()
+    proof.pop(missing)
+    with pytest.raises(OutcomeAccrualError, match="SOURCE_BINDING_REQUIRED"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(), after_snapshot=_accrual_snapshot(),
+            activation=_accrual_activation(), **proof,
+        )
+
+
+@pytest.mark.parametrize("transaction", ["2026-10-05T03:59:59Z", "2026-10-05T04:00:02Z"])
+def test_trial_progression_rehashed_diff_cannot_move_its_transaction(transaction: str) -> None:
+    proof = _accrual_proof()
+    proof["diff"]["transaction_from"] = transaction
+    proof["diff"] = _accrual_rehash(proof["diff"], "diff_payload_sha256")
+    with pytest.raises(OutcomeAccrualError, match="SOURCE_BINDING_INVALID"):
+        build_trial_progression_outcome(
+            fact=_accrual_fact(), after_snapshot=_accrual_snapshot(),
+            activation=_accrual_activation(), **proof,
+        )
+
+
+def test_trial_progression_coherent_false_status_claim_fails_semantic_replay() -> None:
+    snapshot = _accrual_snapshot(source_status="TERMINATED")
+    # The snapshot and diff are valid; the forged fact has a matching ID and
+    # self-hash but claims COMPLETED instead of the source's TERMINATED status.
+    fact = _accrual_fact(after_snapshot=snapshot, after_value="COMPLETED")
+    with pytest.raises(OutcomeAccrualError, match="SOURCE_BINDING_INVALID") as error:
+        build_trial_progression_outcome(
+            fact=fact, after_snapshot=snapshot, activation=_accrual_activation(),
+            **_accrual_proof(snapshot),
+        )
+    cause = error.value.__cause__
+    assert isinstance(cause, ContractValidationError)
+    assert any(issue.code == "history_change_fact.semantic_replay" for issue in cause.issues)
+
+
+def test_trial_progression_coherent_missing_status_fails_semantic_replay() -> None:
+    snapshot = _accrual_snapshot()
+    del snapshot["canonical_study"]["protocolSection"]["statusModule"]
+    digest = canonical_json_sha256(snapshot["canonical_study"])
+    snapshot["canonical_content_sha256"] = digest
+    snapshot["source_record_ref"] = f"src:ctgov-history:{SOURCE_NCT}:version:7:sha256:{digest}"
+    seed = canonical_json_sha256({key: snapshot[key] for key in (
+        "nct_id", "source_version", "canonical_content_sha256", "run_ref"
+    )})
+    snapshot["source_snapshot_id"] = f"ctgov_history_snapshot_{SOURCE_NCT}_{seed[:24]}"
+    snapshot = _accrual_rehash(snapshot, "snapshot_payload_sha256")
+    proof = _accrual_proof(snapshot)
+    # Bind all refs/versions/clocks and rehash the false semantic claim. Failure
+    # must come from replaying actual source content, not stale IDs or hashes.
+    fact = _accrual_fact()
+    fact["diff_ref"] = proof["diff"]["diff_id"]
+    for key in ("nct_id", "before_source_snapshot_ref", "after_source_snapshot_ref",
+                "before_source_version", "after_source_version", "transaction_from"):
+        fact[key] = proof["diff"][key]
+    seed = canonical_json_sha256({key: fact[key] for key in (
+        "diff_ref", "kind", "source_json_paths", "before_value", "after_value"
+    )})
+    fact["change_fact_id"] = f"trial_registry_change_{SOURCE_NCT}_{seed[:24]}"
+    fact = _accrual_rehash(fact, "fact_payload_sha256")
+    with pytest.raises(OutcomeAccrualError, match="SOURCE_BINDING_INVALID") as error:
+        build_trial_progression_outcome(
+            fact=fact, after_snapshot=snapshot, activation=_accrual_activation(), **proof,
+        )
+    cause = error.value.__cause__
+    assert isinstance(cause, ContractValidationError)
+    assert any(issue.code == "history_change_fact.semantic_replay" for issue in cause.issues)
+
+
+def test_trial_progression_transaction_crossing_activation_cannot_rescue_same_day_backfill() -> None:
+    snapshot = _accrual_snapshot(
+        source_submitted_at="2026-08-11", retrieved_at="2026-08-11T20:20:42Z",
+        transaction_from="2026-08-11T20:20:44Z",
+    )
+    assert build_trial_progression_outcome(
+        fact=_accrual_fact(after_snapshot=snapshot), after_snapshot=snapshot,
+        activation=_accrual_activation(), **_accrual_proof(snapshot),
+    ) is None
+
+
+def test_trial_progression_later_source_day_accrues_at_bound_transaction() -> None:
+    snapshot = _accrual_snapshot(
+        source_submitted_at="2026-08-12", retrieved_at="2026-08-12T00:00:00Z",
+        transaction_from="2026-08-12T00:00:01Z",
+    )
+    payload = build_trial_progression_outcome(
+        fact=_accrual_fact(after_snapshot=snapshot), after_snapshot=snapshot,
+        activation=_accrual_activation(accrual_start_known_at="2026-08-11T23:59:59Z"),
+        **_accrual_proof(snapshot),
+    )
+    assert payload is not None
+    assert payload["known_at"] == payload["effective_at"] == snapshot["transaction_from"]
+    assert payload["terminality"] == "non_terminal"
+    assert payload["value_authority"] == "source_native_status_only"
