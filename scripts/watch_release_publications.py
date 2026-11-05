@@ -22,6 +22,7 @@ the rest of the live loop.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import html
 import json
@@ -60,10 +61,63 @@ EVENT_ALERT_RETENTION = {
 UNRESOLVED_RETRY_INTERVAL_MIN = 15
 DEFECT_REPAIR_MAX_ATTEMPTS = 3
 DEFECT_REPAIR_BACKOFF_MIN = 60
+ARCHIVE_TRANSPORT_MAX_BACKOFF_MIN = 6 * 60
 DEFECT_REPAIR_STATE_KEY = "official_actual_defect_repairs"
 OFFICIAL_ACTUAL_DEFECTS_PATH = (
     _ROOT / "data" / "release_forecast" / "official_actual_defects.json"
 )
+
+# ---------------------------------------------------------------------------
+# Source-probe pacing (B1.LIVE.1 / B1.LIVE.2)
+# ---------------------------------------------------------------------------
+# The TIMER WAKE (how often systemd wakes the release lane) and the HTTP
+# PACING (how often a source is actually probed) are separate concerns. The
+# RETAINED per-source state is the sole pacing authority, so the same bounds
+# apply no matter which entry point ran the producer. Every value is bounded;
+# tests/test_vps_live_orchestration.py asserts the bounds.
+#
+#: Healthy-source engineering target, not a guarantee under upstream timeout,
+#: backoff or host contention. Runtime measurements must establish the actual gap.
+MAX_SOURCE_PROBE_GAP_S = 5
+#: Hot-window probe interval. Bounded by MAX_SOURCE_PROBE_GAP_S.
+HOT_PROBE_INTERVAL_S = 2
+#: Ordinary probe interval: the incumbent fast lane's own contract was
+#: ``OnUnitActiveSec=60s`` (plus up to 5s of jitter, mean ~62.5s), so this
+#: lane never probes a source more often than the lane it replaces.
+NORMAL_PROBE_INTERVAL_S = 60
+#: Ordinary cadence for a row past its poll window, kept for the bounded
+#: unresolved-retry sweep. Matches UNRESOLVED_RETRY_INTERVAL_MIN exactly.
+UNRESOLVED_PROBE_INTERVAL_S = UNRESOLVED_RETRY_INTERVAL_MIN * 60
+#: The hot window opens this long BEFORE the scheduled release time...
+HOT_WINDOW_LEAD = timedelta(minutes=2)
+#: ... and closes this long AFTER it, unless the release verifies first.
+HOT_WINDOW_TRAIL = timedelta(minutes=10)
+#: Bounded exponential backoff for a failing source.
+ERROR_BACKOFF_BASE_S = 5
+ERROR_BACKOFF_MAX_S = 60
+#: Upper bound on an upstream ``Retry-After`` this producer will honour.
+RETRY_AFTER_MAX_S = 3600
+
+#: Retained per-source pacing fields (existing source rows, not a new store).
+PROBE_LAST_AT_KEY = "last_probe_at"
+PROBE_NEXT_AT_KEY = "next_probe_at"
+PROBE_INTERVAL_KEY = "probe_interval_s"
+PROBE_FAILURES_KEY = "consecutive_failures"
+PROBE_RETRY_AFTER_KEY = "retry_after_at"
+PROBE_BACKOFF_KEY = "backoff_until"
+
+#: The single-writer lock for the release producer. It lives beside the
+#: durable state file and covers the whole load -> detect -> write sequence
+#: for EVERY entry point (the release lane, a manual run, a cron remnant).
+PRODUCER_LOCK_NAME = "release_publications.lock"
+#: Exit code used when another producer already holds the lock. The release
+#: lane maps it to a skipped tick; it is not a failure.
+PRODUCER_BUSY_EXIT = 75
+
+
+def _clamp(value: int, low: int, high: int) -> int:
+    """Bound one pacing parameter explicitly."""
+    return max(low, min(high, int(value)))
 
 
 @dataclass(frozen=True)
@@ -103,6 +157,8 @@ SOURCES: tuple[SourceSpec, ...] = (
         event_scoped=True,
         actual_parser="cpi",
         feed_kind="bls_cpi",
+        follow_entry_link=True,
+        actual_parser_version=2,
     ),
     SourceSpec(
         "bls_ppi",
@@ -159,16 +215,17 @@ SOURCES: tuple[SourceSpec, ...] = (
 )
 
 
-def atomic_write_json(path: Path, payload: dict[str, Any]) -> None:
+def atomic_write_json(path: Path, payload: dict[str, Any], *, mode: int = 0o600) -> None:
     """Write valid JSON by same-directory temp file + replace."""
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            json.dump(payload, fh, separators=(",", ":"), ensure_ascii=False)
+            json.dump(payload, fh, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
             fh.write("\n")
             fh.flush()
             os.fsync(fh.fileno())
+            os.fchmod(fh.fileno(), mode)
         os.replace(tmp_name, path)
     finally:
         try:
@@ -419,6 +476,30 @@ def active_events(events: list[dict[str, Any]], now: datetime) -> list[dict[str,
     ]
 
 
+def _parse_retry_after(value: Any, *, now: datetime) -> int | None:
+    """Parse an upstream ``Retry-After`` into a bounded number of seconds."""
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        seconds = int(float(text))
+    except (TypeError, ValueError):
+        try:
+            stamp = parsedate_to_datetime(text)
+        except (TypeError, ValueError, OverflowError):
+            return None
+        if stamp is None:
+            return None
+        if stamp.tzinfo is None:
+            stamp = stamp.replace(tzinfo=timezone.utc)
+        seconds = int((stamp - now).total_seconds())
+    if seconds < 0:
+        return 0
+    return _clamp(seconds, 0, RETRY_AFTER_MAX_S)
+
+
 def _fetch(spec: SourceSpec, prior: dict[str, Any], timeout: float) -> dict[str, Any]:
     headers = {"User-Agent": USER_AGENT, "Accept": "text/html,application/pdf;q=0.9,*/*;q=0.5"}
     if prior.get("etag"):
@@ -431,11 +512,15 @@ def _fetch(spec: SourceSpec, prior: dict[str, Any], timeout: float) -> dict[str,
             body = response.read(2_000_000)
             return {
                 "status": int(getattr(response, "status", 200)),
+                "url": response.geturl(),
                 "body": body,
                 "fingerprint": hashlib.sha256(body).hexdigest(),
                 "etag": response.headers.get("ETag"),
                 "last_modified": response.headers.get("Last-Modified"),
                 "content_type": response.headers.get("Content-Type"),
+                "retry_after": _parse_retry_after(
+                    response.headers.get("Retry-After"), now=datetime.now(timezone.utc)
+                ),
             }
     except urllib.error.HTTPError as exc:
         if exc.code == 304:
@@ -446,7 +531,17 @@ def _fetch(spec: SourceSpec, prior: dict[str, Any], timeout: float) -> dict[str,
                 "etag": prior.get("etag"),
                 "last_modified": prior.get("last_modified"),
                 "content_type": prior.get("content_type"),
+                "retry_after": None,
             }
+        # A blocked source (429/503) carries its own cool-down. Keep it on the
+        # exception so the caller can honour it instead of hammering the source
+        # on the next fast tick.
+        try:
+            exc.retry_after_s = _parse_retry_after(
+                exc.headers.get("Retry-After"), now=datetime.now(timezone.utc)
+            )
+        except (AttributeError, TypeError, ValueError):
+            pass
         raise
 
 
@@ -482,9 +577,16 @@ def _complete_source_attempt(
     now: datetime,
     source_url: str,
     result: dict[str, Any],
+    interval_s: int = NORMAL_PROBE_INTERVAL_S,
 ) -> dict[str, Any]:
     """Record a successful observation without erasing prior failure lineage."""
     completed = dict(attempt)
+    retry_after_until = None
+    retry_after_s = result.get("retry_after")
+    if retry_after_s:
+        retry_after_until = now + timedelta(
+            seconds=_clamp(int(retry_after_s), 0, RETRY_AFTER_MAX_S)
+        )
     completed.update(
         {
             "fingerprint": result.get("fingerprint"),
@@ -495,6 +597,16 @@ def _complete_source_attempt(
             "source_url": source_url,
             "last_attempt_status": "ok",
             "last_success_at": now.isoformat(),
+            PROBE_LAST_AT_KEY: now.isoformat(),
+            PROBE_INTERVAL_KEY: int(interval_s),
+            PROBE_FAILURES_KEY: 0,
+            PROBE_RETRY_AFTER_KEY: (
+                retry_after_until.isoformat() if retry_after_until else None
+            ),
+            PROBE_BACKOFF_KEY: None,
+            PROBE_NEXT_AT_KEY: _next_probe_at(
+                now=now, interval_s=interval_s, blocked_until=retry_after_until
+            ).isoformat(),
         }
     )
     return completed
@@ -506,9 +618,30 @@ def _fail_source_attempt(
     now: datetime,
     source_url: str,
     error: str,
+    interval_s: int = NORMAL_PROBE_INTERVAL_S,
+    retry_after_s: int | None = None,
 ) -> dict[str, Any]:
     """Persist coarse failure lineage while keeping validators and last success."""
     failed = dict(attempt)
+    try:
+        failures = max(0, int(attempt.get(PROBE_FAILURES_KEY) or 0)) + 1
+    except (TypeError, ValueError):
+        failures = 1
+    backoff_s = _clamp(
+        ERROR_BACKOFF_BASE_S * (2 ** min(max(failures - 1, 0), 16)),
+        1,
+        ERROR_BACKOFF_MAX_S,
+    )
+    backoff_until = now + timedelta(seconds=backoff_s)
+    retry_after_until = None
+    if retry_after_s:
+        retry_after_until = now + timedelta(
+            seconds=_clamp(int(retry_after_s), 0, RETRY_AFTER_MAX_S)
+        )
+    blocked_until = max(
+        [stamp for stamp in (backoff_until, retry_after_until) if stamp is not None],
+        default=None,
+    )
     failed.update(
         {
             "checked_at": now.isoformat(),
@@ -516,9 +649,102 @@ def _fail_source_attempt(
             "last_attempt_status": "error",
             "last_error": error,
             "last_error_at": now.isoformat(),
+            PROBE_LAST_AT_KEY: now.isoformat(),
+            PROBE_INTERVAL_KEY: int(interval_s),
+            PROBE_FAILURES_KEY: failures,
+            PROBE_RETRY_AFTER_KEY: (
+                retry_after_until.isoformat() if retry_after_until else None
+            ),
+            PROBE_BACKOFF_KEY: backoff_until.isoformat(),
+            PROBE_NEXT_AT_KEY: _next_probe_at(
+                now=now, interval_s=interval_s, blocked_until=blocked_until
+            ).isoformat(),
         }
     )
     return failed
+
+
+def _next_probe_at(
+    *,
+    now: datetime,
+    interval_s: int,
+    blocked_until: datetime | None,
+) -> datetime:
+    """The earliest time this source row may be probed upstream again."""
+    due = now + timedelta(seconds=max(1, int(interval_s)))
+    if blocked_until is not None and blocked_until > due:
+        due = blocked_until
+    return due
+
+
+def _probe_interval_s(
+    event: dict[str, Any] | None,
+    publication: dict[str, Any],
+    *,
+    now_et: datetime,
+    in_fast_window: bool,
+) -> int:
+    """The bounded probe cadence that applies to one source row right now.
+
+    * inside the bounded hot window -> the fast cadence (<= the 5s gap target);
+    * inside the ordinary poll window -> the incumbent one-minute cadence;
+    * past the poll window -> the incumbent unresolved-retry sweep cadence.
+
+    The hot window is bounded by the scheduled release time AND by the event's
+    own readiness: a VERIFIED release leaves it immediately, so a published
+    and verified event never keeps its source on the fast cadence.
+    """
+    if event is None:
+        return NORMAL_PROBE_INTERVAL_S
+    if publication.get("data_ready") is not True:
+        try:
+            event_at = _event_at(event)
+        except (KeyError, TypeError, ValueError):
+            event_at = None
+        if event_at is not None and (
+            event_at - HOT_WINDOW_LEAD <= now_et <= event_at + HOT_WINDOW_TRAIL
+        ):
+            return _clamp(HOT_PROBE_INTERVAL_S, 1, MAX_SOURCE_PROBE_GAP_S)
+    if not in_fast_window:
+        return UNRESOLVED_PROBE_INTERVAL_S
+    return NORMAL_PROBE_INTERVAL_S
+
+
+def _probe_blocked_until(*observations: dict[str, Any]) -> datetime | None:
+    """The later of an upstream Retry-After and this row's error backoff."""
+    stamps = [
+        _state_time(observation.get(key))
+        for observation in observations
+        for key in (PROBE_RETRY_AFTER_KEY, PROBE_BACKOFF_KEY)
+    ]
+    stamps = [stamp for stamp in stamps if stamp is not None]
+    return max(stamps) if stamps else None
+
+
+def _probe_due_at(
+    prior: dict[str, Any],
+    *,
+    now: datetime,
+    interval_s: int,
+    blocked_until: datetime | None,
+) -> datetime | None:
+    """When this source row may next be probed upstream.
+
+    The RETAINED STATE is the sole pacing authority: the row's own last probe
+    stamp plus the cadence in force, never a caller's in-memory clock. The
+    stamp is recomputed against the CURRENT cadence rather than read from the
+    stored ``next_probe_at``, so a cadence change (the hot window opening, or
+    a verified release closing it) takes effect on the very next tick instead
+    of one cadence later. ``None`` means "never probed" — due immediately.
+    """
+    last = _state_time(prior.get(PROBE_LAST_AT_KEY)) or _state_time(
+        prior.get("last_attempt_at")
+    )
+    if last is None:
+        return None
+    return _next_probe_at(
+        now=last, interval_s=interval_s, blocked_until=blocked_until
+    )
 
 
 def _resolved_spec(spec: SourceSpec, event: dict[str, Any] | None) -> SourceSpec:
@@ -661,6 +887,87 @@ def parse_fomc_actual(body: bytes) -> dict[str, Any] | None:
         "summary_en": summary_en,
         "summary_zh": summary_zh,
     }
+
+
+def _cpi_detail_matches_release(
+    actual: dict[str, Any], event: dict[str, Any], document: dict[str, Any]
+) -> bool:
+    """Qualify new CPI detail facts before they enter the existing display row."""
+    try:
+        day = datetime.strptime(str(event.get("date") or ""), "%Y-%m-%d")
+        parsed = urlparse(str(document.get("source_url") or ""))
+    except (TypeError, ValueError):
+        return False
+    if (
+        document.get("binding_kind") != "detail_document"
+        or parsed.scheme != "https"
+        or parsed.hostname not in {"www.bls.gov", "bls.gov"}
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.path != f"/news.release/archives/cpi_{day:%m%d%Y}.htm"
+    ):
+        return False
+    period = str(actual.get("reference_period") or "").strip()
+    expected = str(document.get("reference_period") or "").strip()
+    if not period or (expected and period.casefold() != expected.casefold()):
+        return False
+    metrics = actual.get("metrics")
+    required = {"cpi_headline_mom", "cpi_core_mom", "cpi_headline_yoy", "cpi_core_yoy"}
+    if not isinstance(metrics, list) or len(metrics) != len(required):
+        return False
+    if any(not isinstance(metric, dict) for metric in metrics):
+        return False
+    return (
+        {metric.get("metric_id") for metric in metrics} == required
+        and all(metric.get("unit") == "percent" and
+                str(metric.get("period") or "").strip().casefold() == period.casefold()
+                for metric in metrics)
+    )
+
+
+def _extraction_attempt(
+    previous: dict[str, Any], *, actual: dict[str, Any] | None,
+    now: datetime, error: str | None = None,
+    parser: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Display diagnostics on the existing publication, not a second job queue."""
+    succeeded = bool(actual)
+    return {
+        "status": "verified" if succeeded else ("source_unavailable" if error else "incomplete"),
+        "last_attempt_at": now.isoformat(),
+        "attempted_parser": dict(parser or {}),
+        "last_success_at": now.isoformat() if succeeded else previous.get("last_success_at"),
+        "error_code": None if succeeded else (error or "required_metrics_unavailable"),
+    }
+
+
+def _parser_upgrade_keys(
+    events: list[dict[str, Any]], publications: dict[str, Any]
+) -> set[str]:
+    """One ordinary-tick retry for unresolved rows after a parser deployment.
+
+    A failed fetch records the attempted version too, so this does not turn an
+    upgrade into an unbounded fast retry loop. Verified keep-first facts are not
+    revisited here; their existing governed repair path is unchanged.
+    """
+    keys: set[str] = set()
+    for event in events:
+        publication = _publication_for(publications, event)
+        if not publication or publication.get("data_ready") is True:
+            continue
+        extraction = publication.get("extraction") or {}
+        attempted = extraction.get("attempted_parser") if isinstance(extraction, dict) else None
+        previous = attempted or publication.get("parser") or {}
+        previous = previous if isinstance(previous, dict) else {}
+        for spec in SOURCES:
+            if not spec.actual_parser or event.get("type") not in spec.event_types:
+                continue
+            if (
+                previous.get("name") != spec.actual_parser
+                or previous.get("version") != spec.actual_parser_version
+            ):
+                keys.add(_event_key(event))
+    return keys
 
 
 def _parse_actual(spec: SourceSpec, body: bytes) -> dict[str, Any] | None:
@@ -832,14 +1139,43 @@ def _repair_event(publication: dict[str, Any]) -> dict[str, Any] | None:
     return {field: publication[field] for field in fields if field in publication}
 
 
+def _cpi_archive_for_event(event: dict[str, Any]) -> str | None:
+    day = date.fromisoformat(event["date"])
+    if event.get("event_id") == f"cpi:{day.isoformat()}":
+        return f"https://www.bls.gov/news.release/archives/cpi_{day:%m%d%Y}.htm"
+    return None
+
+
+def _retained_cpi_archive(publication: dict[str, Any]) -> str | None:
+    """Accept only the original BLS archive for this detected, unresolved release."""
+    if (
+        publication.get("type") != "CPI"
+        or publication.get("source_id") != "bls_cpi"
+        or publication.get("status") != "published_unparsed"
+        or publication.get("data_ready") is not False
+        or not str(publication.get("reference_period") or "").strip()
+    ):
+        return None
+    url = _cpi_archive_for_event(publication)
+    source = publication.get("source_url")
+    if source == url or (
+        source == "https://www.bls.gov/feed/cpi.rss"
+        and publication.get("feed_entry_document_url") == url
+    ):
+        return url
+    return None
+
+
 def _admit_governed_defect_repairs(
     *,
     publications: dict[str, Any],
     repair_state: dict[str, Any],
+    source_state: dict[str, Any],
     now: datetime,
 ) -> tuple[list[dict[str, Any]], set[str]]:
-    """Re-admit only exact aged URL/hash defects whose bounded retry is due."""
+    """Re-admit retained CPI archives and governed binding defects with bounded backoff."""
     defects = _governed_source_binding_defects()
+    cpi_spec = next((spec for spec in SOURCES if spec.source_id == "bls_cpi"), None)
     admitted: list[dict[str, Any]] = []
     admitted_keys: set[str] = set()
     for publication_key, value in publications.items():
@@ -860,6 +1196,8 @@ def _admit_governed_defect_repairs(
             and defect["recorded_source_sha256"] == source_sha256
         ]
         event = _repair_event(publication)
+        if event is None:
+            continue
         try:
             elapsed = now.astimezone(NY) - _event_at(publication)
         except (TypeError, ValueError):
@@ -869,18 +1207,20 @@ def _admit_governed_defect_repairs(
             and source.follow_entry_link
             for source in SOURCES
         )
-        if (
-            not matching
-            or event is None
-            or publication.get("status") != "published"
-            or publication.get("data_ready") is not True
-            or not isinstance(actual, dict)
-            or not actual
-            or content_sha256 != source_sha256
-            or actual_source_url != source_url
-            or not source_supports_repair
-            or elapsed <= _alert_retention(publication)
-        ):
+        if elapsed <= _alert_retention(publication):
+            continue
+        archive_url = _retained_cpi_archive(publication) if cpi_spec else None
+        confirmed_defect = (
+            matching
+            and publication.get("status") == "published"
+            and publication.get("data_ready") is True
+            and isinstance(actual, dict) and actual
+            and actual_source_url == source_url
+            and source_supports_repair
+        )
+        if (not (archive_url or confirmed_defect)
+                or not re.fullmatch(r"[0-9a-f]{64}", source_sha256)
+                or content_sha256 != source_sha256):
             continue
 
         event_key = _event_key(event)
@@ -893,6 +1233,8 @@ def _admit_governed_defect_repairs(
                 defect["receipt_id"] for defect in matching
             ),
         }
+        if archive_url and cpi_spec:
+            signature["archive_parser_version"] = cpi_spec.actual_parser_version
         prior = repair_state.get(event_key)
         record = dict(prior) if isinstance(prior, dict) else {}
         if any(record.get(field) != value for field, value in signature.items()):
@@ -907,6 +1249,18 @@ def _admit_governed_defect_repairs(
         if isinstance(attempts, bool) or not isinstance(attempts, int) or attempts < 0:
             attempts = 0
             record["attempts"] = 0
+        if (attempts == DEFECT_REPAIR_MAX_ATTEMPTS and archive_url and cpi_spec
+                and "archive_budget_version" not in record):
+            source_key, legacy_key = _scope_keys(cpi_spec, event)
+            failed_probe = source_state.get(source_key) or source_state.get(legacy_key) or {}
+            attempted_at = _state_time(record.get("last_attempt_at"))
+            if attempted_at and _legacy_archive_transport_failure(record, failed_probe, archive_url):
+                # Only the last old attempt is attributable; keep every earlier debit.
+                record["archive_budget_version"] = 2
+                record["restored_transport_attempt_at"] = record["last_attempt_at"]
+                attempts -= 1
+                record["attempts"] = attempts
+                _defer_archive_fetch(record, failed_probe, attempted_at)
         if attempts >= DEFECT_REPAIR_MAX_ATTEMPTS:
             record["status"] = "exhausted"
             repair_state[event_key] = record
@@ -943,6 +1297,42 @@ def _start_defect_repair_attempt(record: dict[str, Any], now: datetime) -> None:
 
 def _fail_defect_repair(record: dict[str, Any], error: str) -> None:
     record["last_error"] = str(error or "detail_document_unverified")
+
+
+def _legacy_archive_transport_failure(
+    record: dict[str, Any], source: dict[str, Any], archive_url: str,
+) -> bool:
+    # The old writer stored the exception type but no HTTP status. A generic
+    # HTTPError cannot be classified from that receipt alone.
+    return (
+        record.get("status") == "exhausted"
+        and isinstance(source, dict)
+        and source.get("source_url") == archive_url
+        and source.get("last_attempt_status") == "error"
+        and source.get("last_error_at") == record["last_attempt_at"]
+        and source.get("last_attempt_at") == record["last_attempt_at"]
+        and source.get("last_error") == record.get("last_error")
+        and record.get("last_error") in {
+            "TimeoutError", "ConnectionError", "ConnectionResetError",
+            "ConnectionRefusedError", "ConnectionAbortedError", "URLError",
+        }
+    )
+
+
+def _retryable_archive_fetch(exc: Exception) -> bool:
+    if isinstance(exc, urllib.error.HTTPError):
+        return exc.code in (408, 425, 429) or 500 <= exc.code < 600
+    return isinstance(exc, (TimeoutError, ConnectionError, urllib.error.URLError))
+
+
+def _defer_archive_fetch(record: dict[str, Any], source: dict[str, Any], attempted_at: datetime) -> None:
+    # No document was available to validate. Pace the next historical fetch
+    # at one, two, four, then six hours. Normal source Retry-After still applies.
+    failures = source.get(PROBE_FAILURES_KEY)
+    exponent = min(max(failures - 1, 0), 3) if isinstance(failures, int) else 0
+    delay = min(DEFECT_REPAIR_BACKOFF_MIN * 2**exponent, ARCHIVE_TRANSPORT_MAX_BACKOFF_MIN)
+    record["status"] = "retry_wait"
+    record["next_attempt_at"] = (attempted_at + timedelta(minutes=delay)).isoformat()
 
 
 def _complete_defect_repair(
@@ -1018,9 +1408,11 @@ def _prepare_official_document(
     if not detail_url:
         return document, True, "UnsafeFeedLink"
     detail_key = f"{state_key}:document"
-    detail_prior = (
-        {} if force_unconditional else dict(source_state.get(detail_key) or {})
-    )
+    detail_prior = dict(source_state.get(detail_key) or {})
+    if detail_prior.get("source_url") != detail_url:
+        detail_prior = {}
+    now = datetime.fromisoformat(checked_at)
+    detail_attempt = _begin_source_attempt(detail_prior, now=now, source_url=detail_url)
     detail_spec = replace(
         spec,
         url=detail_url,
@@ -1028,20 +1420,15 @@ def _prepare_official_document(
         follow_entry_link=False,
     )
     try:
-        detail = fetcher(detail_spec, detail_prior, timeout)
+        detail = fetcher(detail_spec, {} if force_unconditional else detail_prior, timeout)
         if detail.get("status") == 304 and force_unconditional:
             return document, True, "UnconditionalDetailNotModified"
         if detail.get("status") == 304:
             # An unresolved parser needs bytes, not only a validator.
             detail = fetcher(detail_spec, {}, timeout)
-        source_state[detail_key] = {
-            "fingerprint": detail.get("fingerprint"),
-            "etag": detail.get("etag"),
-            "last_modified": detail.get("last_modified"),
-            "content_type": detail.get("content_type"),
-            "checked_at": checked_at,
-            "source_url": detail_url,
-        }
+        source_state[detail_key] = _complete_source_attempt(
+            detail_attempt, now=now, source_url=detail_url, result=detail
+        )
         document.update(detail)
         document["source_url"] = detail_url
         document["source_released_at"] = entry.get("source_released_at")
@@ -1050,7 +1437,57 @@ def _prepare_official_document(
         document["binding_kind"] = "detail_document"
         return document, True, None
     except Exception as exc:  # noqa: BLE001 - retain exact feed publication evidence
+        source_state[detail_key] = _fail_source_attempt(
+            detail_attempt, now=now, source_url=detail_url, error=type(exc).__name__,
+            retry_after_s=getattr(exc, "retry_after_s", None),
+        )
         return document, True, type(exc).__name__
+
+
+def _source_scope_groups(due: list[dict[str, Any]]):
+    """Yield ``(spec, work_items)`` for the tick, in the producer's own order."""
+    for spec in SOURCES:
+        matching = [event for event in due if event["type"] in spec.event_types]
+        if not matching:
+            continue
+        yield spec, (
+            [(event, [event]) for event in matching]
+            if spec.event_scoped
+            else [(None, matching)]
+        )
+
+
+def _scope_keys(spec: SourceSpec, scoped_event: dict[str, Any] | None) -> tuple[str, str]:
+    """The retained row key (and its legacy spelling) for one work item."""
+    state_key = spec.source_id
+    legacy_state_key = spec.source_id
+    if scoped_event is not None:
+        state_key += f":{_event_key(scoped_event)}"
+        legacy_state_key += f":{scoped_event['type']}:{scoped_event['date']}"
+    return state_key, legacy_state_key
+
+
+def load_state(path: Path) -> dict[str, Any]:
+    """Read the retained durable state (empty when absent or unreadable)."""
+    return _load_json(path)
+
+
+def tick_due(*, now: datetime, state: dict[str, Any]) -> dict[str, Any]:
+    """Decide whether this tick may probe upstream. No network, no writes.
+
+    The release lane uses this as a cheap preflight: it lets the lane's timer
+    wake often while the ACTUAL request rate stays inside the retained
+    pacing bounds.
+    """
+    rows = detect(now=now, state=state, probe=False)
+    due_rows = [row for row in rows if row["due"]]
+    return {
+        "probe_due": bool(due_rows),
+        "rows": rows,
+        "due_rows": due_rows,
+        "hot": any(row["interval_s"] <= HOT_PROBE_INTERVAL_S for row in due_rows),
+        "forced": any(row["forced"] for row in due_rows),
+    }
 
 
 def detect(
@@ -1059,8 +1496,15 @@ def detect(
     state: dict[str, Any],
     fetcher=_fetch,
     timeout: float = 8.0,
-) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Run one detection tick; pure apart from the injected HTTP fetcher."""
+    probe: bool = True,
+) -> tuple[dict[str, Any], dict[str, Any]] | list[dict[str, Any]]:
+    """Run one detection tick; pure apart from the injected HTTP fetcher.
+
+    ``probe=False`` resolves the tick WITHOUT touching the network and
+    returns the per-source pacing decisions instead of ``(state, payload)``.
+    The release lane uses it as a cheap preflight, so the lane's timer may
+    wake often while the request rate stays with the retained pacing state.
+    """
     now = now.astimezone(timezone.utc)
     now_et = now.astimezone(NY)
     today_et = now_et.date()
@@ -1088,16 +1532,19 @@ def detect(
         )
     ]
     due = active_events(events, now)
+    fast_window_keys = {_event_key(event) for event in due}
     # Past the high-frequency window, keep every unresolved result-capable row
     # visible and retry at low frequency. A parser hotfix can therefore self-heal
     # CPI/GDP/PCE/payrolls/claims just as it can an FOMC statement.
     periodic_retry = (
         int(now.timestamp() // 60) % UNRESOLVED_RETRY_INTERVAL_MIN == 0
     )
-    if periodic_retry or new_coverage_types:
+    parser_upgrade_keys = _parser_upgrade_keys(events, publications)
+    if periodic_retry or new_coverage_types or parser_upgrade_keys:
         due_keys = {_event_key(event) for event in due}
         for event in events:
-            if not periodic_retry and event.get("type") not in new_coverage_types:
+            if (not periodic_retry and event.get("type") not in new_coverage_types
+                    and _event_key(event) not in parser_upgrade_keys):
                 continue
             event_key = _event_key(event)
             publication = _publication_for(publications, event)
@@ -1121,8 +1568,10 @@ def detect(
     repair_events, forced_repair_keys = _admit_governed_defect_repairs(
         publications=publications,
         repair_state=repair_state,
+        source_state=source_state,
         now=now,
     )
+    publications = _migrate_publication_keys(publications, repair_events)
     event_keys = {_event_key(event) for event in events}
     due_keys = {_event_key(event) for event in due}
     for event in repair_events:
@@ -1133,6 +1582,68 @@ def detect(
         if event_key not in due_keys:
             due.append(event)
             due_keys.add(event_key)
+
+    def scope_pacing(
+        source_id: str,
+        scoped_event: dict[str, Any] | None,
+        state_key: str,
+        legacy_state_key: str,
+        prior: dict[str, Any],
+    ) -> dict[str, Any]:
+        """The retained pacing decision for ONE source row (no network).
+
+        A row is due when the retained state says so.  Two governed paths
+        bypass the ordinary pacing and are deliberately NOT re-armed by a
+        tick: the FIRST parser-upgrade retry, and a governed defect repair
+        that is itself due (its own attempt budget and backoff still apply).
+        """
+        scoped_event_key = _event_key(scoped_event) if scoped_event else None
+        forced_repair = bool(
+            scoped_event_key and scoped_event_key in forced_repair_keys
+        )
+        parser_upgrade = bool(
+            scoped_event_key and scoped_event_key in parser_upgrade_keys
+        )
+        publication = (
+            _publication_for(publications, scoped_event) if scoped_event else {}
+        )
+        in_fast_window = bool(
+            scoped_event_key and scoped_event_key in fast_window_keys
+        )
+        interval_s = _probe_interval_s(
+            scoped_event,
+            publication,
+            now_et=now_et,
+            in_fast_window=in_fast_window,
+        )
+        # The feed and dated report are separate HTTP resources for this event.
+        detail_state = source_state.get(f"{state_key}:document") or {}
+        blocked_until = _probe_blocked_until(prior, detail_state)
+        due_at = _probe_due_at(
+            prior,
+            now=now,
+            interval_s=interval_s,
+            blocked_until=blocked_until,
+        )
+        return {
+            "state_key": state_key,
+            "source_id": source_id,
+            "legacy_state_key": legacy_state_key,
+            "event_key": scoped_event_key,
+            "forced": forced_repair or parser_upgrade,
+            "forced_repair": forced_repair,
+            "parser_upgrade": parser_upgrade,
+            "interval_s": interval_s,
+            "blocked_until": blocked_until,
+            "due_at": due_at,
+            "due": bool(
+                (blocked_until is None or now >= blocked_until)
+                and (forced_repair or parser_upgrade or due_at is None or now >= due_at)
+            ),
+            "in_fast_window": in_fast_window,
+        }
+
+    probe_rows: list[dict[str, Any]] = []
     health: list[dict[str, Any]] = []
     feed_fetch_cache: dict[tuple[str, str, str], dict[str, Any]] = {}
 
@@ -1151,46 +1662,89 @@ def detect(
             feed_fetch_cache[cache_key] = fetcher(source, prior_state, timeout)
         return dict(feed_fetch_cache[cache_key])
 
-    for spec in SOURCES:
-        matching = [event for event in due if event["type"] in spec.event_types]
-        if not matching:
-            continue
-        work_items = (
-            [(event, [event]) for event in matching]
-            if spec.event_scoped
-            else [(None, matching)]
-        )
+    for spec, work_items in _source_scope_groups(due):
         for scoped_event, scoped_matching in work_items:
             resolved = _resolved_spec(spec, scoped_event)
-            state_key = spec.source_id
-            if scoped_event is not None:
-                state_key += f":{_event_key(scoped_event)}"
-            legacy_state_key = spec.source_id
-            if scoped_event is not None:
-                legacy_state_key += (
-                    f":{scoped_event['type']}:{scoped_event['date']}"
-                )
+            state_key, legacy_state_key = _scope_keys(spec, scoped_event)
             prior = dict(
                 source_state.get(state_key)
                 or source_state.get(legacy_state_key)
                 or {}
             )
-            scoped_event_key = _event_key(scoped_event) if scoped_event else None
-            forced_repair = bool(
-                scoped_event_key and scoped_event_key in forced_repair_keys
+            pacing = scope_pacing(
+                spec.source_id,
+                scoped_event,
+                state_key,
+                legacy_state_key,
+                prior,
             )
+            if not probe:
+                probe_rows.append(pacing)
+                continue
+            if not pacing["due"]:
+                # PACED: the retained state says this source is not due yet.
+                # Nothing upstream was touched, so attempt_count, last_success_at
+                # and last_error stay exactly as the last real probe left them.
+                if state_key not in source_state and legacy_state_key in source_state:
+                    source_state[state_key] = source_state.pop(legacy_state_key)
+                if state_key in source_state:
+                    # Refresh the pacing fields WITHOUT claiming an upstream
+                    # attempt: attempt_count, last_success_at and last_error
+                    # stay exactly as the last real probe left them.
+                    paced = dict(source_state[state_key])
+                    paced[PROBE_NEXT_AT_KEY] = pacing["due_at"].isoformat()
+                    paced[PROBE_INTERVAL_KEY] = int(pacing["interval_s"])
+                    source_state[state_key] = paced
+                health.append(
+                    {
+                        "source_id": spec.source_id,
+                        "event_id": (
+                            scoped_event.get("event_id") if scoped_event else None
+                        ),
+                        "status": (
+                            "error"
+                            if prior.get("last_attempt_status") == "error"
+                            else "paced"
+                        ),
+                        "http_status": None,
+                        "changed": False,
+                        "document_urls": [],
+                        **(
+                            {"error": prior.get("last_error")}
+                            if prior.get("last_attempt_status") == "error"
+                            and prior.get("last_error")
+                            else {}
+                        ),
+                    }
+                )
+                continue
+            scoped_event_key = pacing["event_key"]
+            forced_repair = bool(pacing["forced_repair"])
             repair_record = (
                 repair_state.get(scoped_event_key) if scoped_event_key else None
             )
+            archive_url = None
+            if forced_repair and scoped_event and spec.actual_parser == "cpi":
+                retained = _publication_for(publications, scoped_event)
+                archive_url = _retained_cpi_archive(retained)
+                if archive_url:
+                    resolved = replace(spec, url=archive_url, feed_kind=None, follow_entry_link=False)
             if forced_repair and isinstance(repair_record, dict):
                 _start_defect_repair_attempt(repair_record, now)
+                if archive_url:
+                    repair_record["archive_budget_version"] = 2
             attempt = _begin_source_attempt(
                 prior,
                 now=now,
                 source_url=resolved.url,
             )
+            interval_s = int(pacing["interval_s"])
+            received_response = False
             try:
                 result = fetch_primary(resolved, {} if forced_repair else prior)
+                received_response = True
+                if archive_url and (result.get("status") != 200 or result.get("url") != archive_url):
+                    raise ValueError("CPIArchiveResponseMismatch")
                 # A statement can become visible seconds before the scheduled
                 # time.  That seed request stores validators, so the first
                 # post-time request will normally be a 304 with no body.  The
@@ -1219,6 +1773,7 @@ def detect(
                     now=now,
                     source_url=resolved.url,
                     result=result,
+                    interval_s=interval_s,
                 )
                 if legacy_state_key != state_key:
                     source_state.pop(legacy_state_key, None)
@@ -1241,6 +1796,11 @@ def detect(
                             force_unconditional=forced_repair,
                         )
                     )
+                    if archive_url:
+                        document.update(
+                            binding_kind="detail_document", source_url=archive_url,
+                            reference_period=retained["reference_period"],
+                        )
                     if detail_error:
                         detail_errors.append(detail_error)
                     document_url = str(document.get("source_url") or resolved.url)
@@ -1281,6 +1841,17 @@ def detect(
                         and document.get("binding_kind") != "detail_document"
                         else parsed_actual
                     )
+                    if (
+                        actual and resolved.actual_parser == "cpi"
+                        and (resolved.follow_entry_link or archive_url)
+                        and not _cpi_detail_matches_release(actual, event, document)
+                    ):
+                        actual = None
+                        detail_error = "CPIDocumentBindingMismatch"
+                        detail_errors.append(detail_error)
+                    if archive_url and not actual:
+                        # Keep the original binding on a wrong-period or malformed response.
+                        raise ValueError(detail_error or "CPIArchiveMetricsUnavailable")
                     primary_sha = str(result.get("fingerprint") or "").lower()
                     current_document_sha = str(
                         document.get("fingerprint") or ""
@@ -1335,6 +1906,9 @@ def detect(
                         event,
                         publication,
                     )
+                    if archive_url and publication.get("source_released_at"):
+                        source_released_at = publication["source_released_at"]
+                        source_time_basis = publication.get("source_time_basis")
                     if keep_verified_binding:
                         # The verified actual, permanent document URL, and document
                         # digest form one keep-first evidence tuple.  A later feed
@@ -1371,6 +1945,14 @@ def detect(
                                 document.get("fingerprint")
                                 or publication.get("source_sha256")
                             )
+                    if resolved.actual_parser == "cpi" and resolved.follow_entry_link:
+                        dated_url = _cpi_archive_for_event(event)
+                        if dated_url and (prior_source_url == dated_url or (
+                            publication_evidence and document_url == dated_url
+                        )):
+                            # The feed identifies this link even when its document is offline.
+                            # source_url and its digest still describe the bytes we obtained.
+                            publication["feed_entry_document_url"] = dated_url
                     publication.update(
                         {
                             **event,
@@ -1406,10 +1988,15 @@ def detect(
                                 "and forward-ledger scoring reconcile nightly."
                                 if has_verified_actual
                                 else "Official publication detected; verified values "
-                                "are still being extracted. Canonical scoring "
+                                "are unavailable; see extraction status. Canonical scoring "
                                 "reconciles nightly."
                             ),
                         }
+                    )
+                    publication["extraction"] = _extraction_attempt(
+                        dict(publication.get("extraction") or {}),
+                        actual=actual, now=now, error=detail_error,
+                        parser={"name": resolved.actual_parser, "version": resolved.actual_parser_version},
                     )
                     if resolved.actual_parser:
                         publication["parser"] = {
@@ -1424,7 +2011,7 @@ def detect(
                         publication["verified_at"] = now.isoformat()
                     publications[event_key] = publication
                     if forced_repair and isinstance(repair_record, dict):
-                        if successful_detail_repair:
+                        if successful_detail_repair or (archive_url and actual):
                             _complete_defect_repair(
                                 repair_record,
                                 now=now,
@@ -1459,16 +2046,30 @@ def detect(
                     }
                 )
             except Exception as exc:  # noqa: BLE001 - source failure is display health
+                for failed_event in scoped_matching:
+                    failed_publication = _publication_for(publications, failed_event)
+                    if failed_publication:
+                        failed_publication["extraction"] = _extraction_attempt(
+                            dict(failed_publication.get("extraction") or {}),
+                            actual=None, now=now, error=type(exc).__name__,
+                            parser={"name": resolved.actual_parser, "version": resolved.actual_parser_version},
+                        )
+                        publications[_event_key(failed_event)] = failed_publication
                 source_state[state_key] = _fail_source_attempt(
                     attempt,
                     now=now,
                     source_url=resolved.url,
                     error=type(exc).__name__,
+                    interval_s=interval_s,
+                    retry_after_s=getattr(exc, "retry_after_s", None),
                 )
                 if legacy_state_key != state_key:
                     source_state.pop(legacy_state_key, None)
                 if forced_repair and isinstance(repair_record, dict):
                     _fail_defect_repair(repair_record, type(exc).__name__)
+                    if archive_url and not received_response and _retryable_archive_fetch(exc):
+                        repair_record["attempts"] -= 1
+                        _defer_archive_fetch(repair_record, source_state[state_key], now)
                 log.warning(
                     "source %s failed for %s: %s: %s",
                     resolved.source_id,
@@ -1488,6 +2089,9 @@ def detect(
                         "error": type(exc).__name__,
                     }
                 )
+
+    if not probe:
+        return probe_rows
 
     lifecycle: list[dict[str, Any]] = []
     for event in events:
@@ -1526,7 +2130,9 @@ def detect(
     display_keys = {_event_key(row) for row in display_publications}
     for publication in sorted_publications:
         key = _event_key(publication)
-        if publication.get("status") == "published_unparsed" and key not in display_keys:
+        verified_at = _state_time(publication.get("verified_at"))
+        recently_verified = verified_at is not None and timedelta(0) <= now - verified_at <= timedelta(days=1)
+        if key not in display_keys and (publication.get("status") == "published_unparsed" or recently_verified):
             display_publications.append(publication)
             display_keys.add(key)
 
@@ -1544,6 +2150,18 @@ def detect(
         "poll_window": {
             "before_min": 12,
             "after_min": 360,
+            # The bounded source-probe cadence the release lane enforces. The
+            # timer wake is deliberately NOT published here: the wake rate and
+            # the request rate are separate concerns, and only the request rate
+            # is a promise about upstream load.
+            "hot_window_lead_min": round(HOT_WINDOW_LEAD.total_seconds() / 60),
+            "hot_window_trail_min": round(HOT_WINDOW_TRAIL.total_seconds() / 60),
+            "hot_probe_interval_s": _clamp(
+                HOT_PROBE_INTERVAL_S, 1, MAX_SOURCE_PROBE_GAP_S
+            ),
+            "target_max_source_probe_gap_s": MAX_SOURCE_PROBE_GAP_S,
+            "normal_probe_interval_s": NORMAL_PROBE_INTERVAL_S,
+            "unresolved_probe_interval_s": UNRESOLVED_PROBE_INTERVAL_S,
             "per_type_after_min": {
                 event_type: round(_poll_after({"type": event_type}).total_seconds() / 60)
                 for event_type in sorted(RESULT_EVENT_TYPES)
@@ -1578,6 +2196,47 @@ def detect(
     return new_state, payload
 
 
+def validate_publication_payload(payload: dict[str, Any]) -> None:
+    """Validate the browser contract before replacing either durable artifact."""
+    if payload.get("schema") != "release_publications.v2":
+        raise ValueError("invalid release publication schema")
+    for field in ("events", "publications", "due", "source_health"):
+        rows = payload.get(field)
+        if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
+            raise ValueError("invalid release publication rows")
+    built = datetime.fromisoformat(str(payload.get("built", "")).replace("Z", "+00:00"))
+    if built.tzinfo is None:
+        raise ValueError("release publication clock must include an offset")
+    json.dumps(payload, allow_nan=False)
+
+
+def publication_digest(payload: dict[str, Any]) -> str:
+    """Digest the exact UTF-8 bytes atomic_write_json publishes."""
+    body = json.dumps(payload, separators=(",", ":"), ensure_ascii=False, allow_nan=False) + "\n"
+    return hashlib.sha256(body.encode("utf-8")).hexdigest()
+
+
+def producer_lock(state_dir: Path):
+    """Take the single-writer lock for the release producer.
+
+    The lock is NON-blocking and covers the whole load -> detect -> state and
+    output write sequence, so no entry point — the release lane, a manual run,
+    or a retired cron remnant — can write the durable state and the published
+    artifact twice at once.  ``None`` means another producer already holds it.
+    """
+    state_dir.mkdir(parents=True, exist_ok=True)
+    lock_file = (state_dir / PRODUCER_LOCK_NAME).open("a+")
+    try:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        lock_file.close()
+        return None
+    except OSError:
+        lock_file.close()
+        raise
+    return lock_file
+
+
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     parser = argparse.ArgumentParser(description=__doc__)
@@ -1589,13 +2248,25 @@ def main() -> int:
 
     state_dir = Path(args.state_dir)
     state_path = state_dir / "release_publications_state.json"
-    state = _load_json(state_path)
     now = datetime.fromisoformat(args.now) if args.now else datetime.now(timezone.utc)
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
-    new_state, payload = detect(now=now, state=state, timeout=args.timeout)
-    atomic_write_json(state_path, new_state)
-    atomic_write_json(Path(args.out), payload)
+    lock_file = producer_lock(state_dir)
+    if lock_file is None:
+        log.info("release producer already active; skipping this tick")
+        return PRODUCER_BUSY_EXIT
+    try:
+        state = _load_json(state_path)
+        new_state, payload = detect(now=now, state=state, timeout=args.timeout)
+        validate_publication_payload(payload)
+        # This is the intended public digest, not a successful-publication claim.
+        # If the second replace fails, the normal lane detects the mismatch and
+        # retries publication even while upstream probes remain paced.
+        new_state["publication_candidate_sha256"] = publication_digest(payload)
+        atomic_write_json(state_path, new_state)
+        atomic_write_json(Path(args.out), payload, mode=0o644)
+    finally:
+        lock_file.close()
     log.info(
         "wrote %s — due=%d published=%d sources=%d",
         args.out,
