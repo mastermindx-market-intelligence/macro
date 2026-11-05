@@ -382,3 +382,222 @@ class TestBuilderAttach:
         assert "from engine import basket_history, basket_score, leadership_receipt" in src
         assert "lr = leadership_receipt.build_receipt(b, th, ti, region, site)" in src
         assert '"leadership_receipt": lr,' in src
+
+
+# ---------------------------------------------------------------------------
+# P12.T54.S1 — truthful construction copy (HK) + no monthly-rebalance claim
+# ---------------------------------------------------------------------------
+
+
+class TestTruthfulConstruction:
+    """The HK page inherited the membership file's construction line ("rebalanced
+    monthly"), which does not describe the series: engine.baskets._ew_level compounds
+    the DAILY arithmetic mean of the members active on each date."""
+
+    def test_hk_wrapper_construction_is_truthful_and_core_is_untouched(self, monkeypatch):
+        import copy
+
+        import pandas as pd
+
+        from engine import baskets_hk as bkhk
+        from engine import baskets_region as reg
+
+        idx = pd.date_range("2025-01-02", periods=40, freq="B")
+        closes = pd.DataFrame(
+            {
+                "AAA": [100.0 + i for i in range(40)],
+                "BBB": [200.0 + 2 * i for i in range(40)],
+                "CCC": [50.0 + 3 * i for i in range(40)],
+            },
+            index=idx,
+        )
+        bench = pd.DataFrame({"close": [400.0 * (1.0006 ** i) for i in range(40)]}, index=idx)
+        mem = {
+            "benchmark": "_HSI",
+            "benchmark_label": "HSI",
+            "benchmark_label_zh": "恒生指数",
+            "construction": "Equal-weight baskets, rebalanced monthly, measured against the Hang Seng Index.",
+            "history_note": "h",
+            "note": "n",
+            "baskets": {
+                "t": {
+                    "name": "T", "name_zh": "T", "category": "C", "category_zh": "类",
+                    "created": "2025-01-02",
+                    "members": [
+                        {"ticker": "AAA", "added": "2025-01-02", "name": "Aaa"},
+                        {"ticker": "BBB", "added": "2025-01-02", "name": "Bbb"},
+                        {"ticker": "CCC", "added": "2025-01-02", "name": "Ccc"},
+                    ],
+                }
+            },
+        }
+        mem_before = copy.deepcopy(mem)
+
+        monkeypatch.setattr(bkhk, "_closes", lambda: closes)
+        monkeypatch.setattr(bkhk, "_membership", lambda: mem)
+        monkeypatch.setattr(bkhk.store, "read", lambda g, n: bench if n == "_HSI" else None)
+
+        out = bkhk.compute_hk_baskets()
+        assert out is not None
+        assert out["construction"] == (
+            "Daily arithmetic mean of available active-member returns, compounded; "
+            "membership follows the supplied added/removed dates."
+        )
+        assert "monthly" not in out["construction"].lower()
+
+        # the shared core still reports the membership file's own wording
+        generic = reg.compute_region_baskets(closes, mem, bench, lambda s: None, name_key="name")
+        assert generic["construction"] == mem["construction"]
+
+        # construction is the ONLY difference between the wrapper output and the core output
+        assert {k: v for k, v in out.items() if k != "construction"} == \
+               {k: v for k, v in generic.items() if k != "construction"}
+
+        # the membership dict was not mutated
+        assert mem == mem_before
+
+    def test_hk_wrapper_still_returns_none_when_the_core_degrades(self, monkeypatch):
+        from engine import baskets_hk as bkhk
+
+        mem = {
+            "benchmark": "_HSI",
+            "baskets": {
+                "t": {
+                    "name": "T", "category": "C", "created": "2025-01-02",
+                    "members": [
+                        {"ticker": "AAA", "added": "2025-01-02"},
+                        {"ticker": "BBB", "added": "2025-01-02"},
+                        {"ticker": "CCC", "added": "2025-01-02"},
+                    ],
+                }
+            },
+        }
+        monkeypatch.setattr(bkhk, "_membership", lambda: mem)
+        monkeypatch.setattr(bkhk, "_closes", lambda: None)
+        monkeypatch.setattr(bkhk.store, "read", lambda g, n: None)
+        assert bkhk.compute_hk_baskets() is None
+
+    def test_ew_level_compounds_a_daily_mean_not_fixed_weights(self):
+        import pandas as pd
+
+        from engine.baskets import _ew_level
+
+        idx = pd.DatetimeIndex(["2026-01-02", "2026-01-05", "2026-01-06", "2026-01-07"])
+        closes = pd.DataFrame(
+            {
+                "A": [100.0, 100.0, 200.0, 200.0],   # daily returns 0, 1, 0
+                "B": [100.0, 100.0, 100.0, 200.0],   # daily returns 0, 0, 1
+                "C": [100.0, 100.0, 100.0, 100.0],   # daily returns 0, 0, 0
+            },
+            index=idx,
+        )
+        members = [
+            {"ticker": "A", "added": "2026-01-02"},
+            {"ticker": "B", "added": "2026-01-02"},
+            {"ticker": "C", "added": "2026-01-02"},
+        ]
+        rets = closes.pct_change(fill_method=None)
+        lvl = _ew_level(rets, members, idx)
+        window = lvl.loc["2026-01-05":"2026-01-07"]
+        assert abs(float(window.iloc[0]) - 1.0) < 1e-12
+        assert abs(float(window.iloc[1]) - 4 / 3) < 1e-12
+        assert abs(float(window.iloc[2]) - 16 / 9) < 1e-12
+
+        # a fixed-equal-weight series (each name's own growth averaged, no daily re-weighting)
+        # would read 5/3 at the end of this window; the daily-mean construction reads 16/9
+        fixed = (closes / closes.iloc[0]).mean(axis=1)
+        assert abs(float(fixed.loc["2026-01-07"]) - 5 / 3) < 1e-12
+        assert abs(float(window.iloc[2]) - float(fixed.loc["2026-01-07"])) > 1e-6
+
+
+class TestReceiptBenchmarkRow:
+    """The benchmark row claimed a monthly rebalance. The row is shared by every region and
+    the claim never described the series; it now states the weighting only."""
+
+    @staticmethod
+    def _bench_row(receipt: dict) -> dict:
+        return next(r for r in receipt["rows"] if r["key"] == "benchmark")
+
+    def test_ordinary_and_unavailable_rows_state_weighting_only(self, tmp_path: Path):
+        ordinary = build_receipt(_base_basket(), _theme(), _theme_intel(), "us", tmp_path)
+        b = _base_basket()
+        b["perf"]["20d"] = {"rel": None}
+        unavailable = build_receipt(b, _theme(), _theme_intel(), "us", tmp_path)
+        for rec in (ordinary, unavailable):
+            row = self._bench_row(rec)
+            assert "monthly" not in row["text_en"].lower()
+            assert "按月" not in row["text_zh"]
+            assert row["text_en"] == (
+                "S&P 500, cap-weighted. The basket uses equal weighting, "
+                "so part of any gap is weighting, not stock selection."
+            )
+            assert row["text_zh"] == (
+                "标普500，市值加权。篮子采用等权，"
+                "因此差距有一部分来自权重而非选股。"
+            )
+            assert [r["key"] for r in rec["rows"]] == ROW_KEYS
+
+
+    def test_emergency_literal_fallback_has_no_monthly_claim(self, monkeypatch):
+        import engine.leadership_receipt as lr
+
+        def _boom(**_kw):
+            raise RuntimeError("boom")
+
+        monkeypatch.setattr(lr, "_build_rows", _boom)
+        rec = lr.build_receipt({"perf": "x"}, {}, _theme_intel(), "us", None)
+        assert rec["state"] == "unavailable"
+        assert rec["reason_en"] == "receipt_error"
+        row = self._bench_row(rec)
+        assert row["text_en"] == (
+            "S&P 500, cap-weighted. The basket uses equal weighting, "
+            "so part of any gap is weighting, not stock selection."
+        )
+        assert row["text_zh"] == (
+            "标普500，市值加权。篮子采用等权，"
+            "因此差距有一部分来自权重而非选股。"
+        )
+        assert "monthly" not in row["text_en"].lower()
+        assert "按月" not in row["text_zh"]
+        assert [r["key"] for r in rec["rows"]] == ROW_KEYS
+
+
+# P12.T54.S2: both exception paths retain only explicitly supplied benchmark identity.
+@pytest.mark.parametrize("rows_also_fail", [False, True])
+@pytest.mark.parametrize("context,expected", [
+    ({"bench_label": " Hang Seng ", "bench_label_zh": " 恒生指数 "}, ("Hang Seng", "恒生指数")),
+    ({"bench_label": "S&P 500", "bench_label_zh": "标普500"}, ("S&P 500", "标普500")),
+    ({"bench_label": "HSI"}, ("HSI", "HSI")),
+    ({"bench_label_zh": "恒生指数"}, ("恒生指数", "恒生指数")),
+    ({}, None),
+    ({"bench_label": "  ", "bench_label_zh": 42}, None),
+    ({"bench_label": {"label": "wrong"}, "bench_label_zh": []}, None),
+    (None, None),
+    ([], None),
+])
+def test_s2_error_fallback_preserves_declared_benchmark_only(monkeypatch, rows_also_fail, context, expected):
+    import engine.leadership_receipt as lr
+
+    def fail(*_args, **_kwargs):
+        raise RuntimeError("synthetic internal failure")
+
+    monkeypatch.setattr(lr, "_build_receipt_core", fail)
+    if rows_also_fail:
+        monkeypatch.setattr(lr, "_build_rows", fail)
+    rec = lr.build_receipt(_base_basket(), _theme(), context, "hk", None)
+    assert rec["state"] == "unavailable" and rec["reason_en"] == "receipt_error"
+    assert rec["as_of"] == "—" and rec["theme_state"]["status"] == "missing"
+    assert rec["authority"]["display_only"] is True
+    assert all(rec["authority"][key] is False for key in ["may_rank", "may_size", "may_gate", "may_escalate"])
+    row = next(row for row in rec["rows"] if row["key"] == "benchmark")
+    assert [row["key"] for row in rec["rows"]] == ROW_KEYS
+    if expected:
+        assert rec["benchmark"] == {"label": expected[0], "label_zh": expected[1]}
+        assert expected[0] in row["text_en"] and expected[1] in row["text_zh"]
+        if expected[0] != "S&P 500":
+            assert "S&P" not in row["text_en"] and "标普" not in row["text_zh"]
+    else:
+        assert rec["benchmark"] == {"label": "Not published", "label_zh": "未发布"}
+        assert "not published" in row["text_en"].lower() and "未发布" in row["text_zh"]
+        assert "cap-weighted" not in row["text_en"] and "市值加权" not in row["text_zh"]
+        assert "S&P" not in row["text_en"] and "wrong" not in row["text_en"]

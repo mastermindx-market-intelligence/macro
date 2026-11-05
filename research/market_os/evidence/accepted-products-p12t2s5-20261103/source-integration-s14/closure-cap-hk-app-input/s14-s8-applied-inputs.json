@@ -1,0 +1,17 @@
+{
+  "protected": "95a4f76b3fde9dd8224b5d257a5e5a75390a55e1",
+  "prior": "d7c4789efd24d11c75dd8d4d9f2b876f859da36c",
+  "closure_patch": "e9aabe8ddedbd64588122519171ebca0ff87981c1c425ff0ca0c91aa85d040d1",
+  "cap": "actualprotected480 + exactpeer e7a512 preimage/post17f3;640notprotected,notborrowed",
+  "HK": "0317ef749a654f52a903842ebc61cb43705a1b75",
+  "HK_preimages": {
+    "engine/baskets_hk.py": "BASE_EXACT",
+    "engine/leadership_receipt.py": "BASE_EXACT",
+    "templates/basket_detail.html.j2": "BASE_EXACT",
+    "tests/test_basket_detail_glance_copy.py": "BASE_EXACT",
+    "tests/test_leadership_receipt.py": "BASE_EXACT"
+  },
+  "S2": "Rootaccepted b1a7e834 completecohort; exact5postimagesapplied; normalmath/clocks/authorityunchanged; S1sourceproofsreused",
+  "source_only_no_push_CI": true,
+  "HK_complete_patch_sha256": "7d58135e9ff47d599a88a74e58e7175d191feb3fa7d9d88560633beceb92af68"
+}

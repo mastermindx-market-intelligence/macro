@@ -1,0 +1,11 @@
+{
+  "source_context": "Current95a +exactacceptedclosure20/cap512/HK0317, no T55yet",
+  "actual_shared_helper": "scripts.run_ci_pack.curated_exclusive_closure_findings",
+  "affected_jobs": [
+    "unrun-subsector-themes",
+    "ftr-tape-surfaces",
+    "nw-lobe-unfreeze"
+  ],
+  "findings": {},
+  "scope": "Only three affected read-closure consumers; otherfullmanifestinput preservation/review reused; no acceptedcohort/basetimeout/providertest replay"
+}
