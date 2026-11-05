@@ -1,0 +1,13 @@
+# F03 structural-coverage note — scoped visual self-QA
+
+**PASS within the stated visual and source-preservation scope.** This is not browser, native input, resource-migration, foundation or formal reference acceptance.
+
+The only design addition is the dated coverage paragraph inside footer `6ZS2-0` on the original F03 Start Here board `5G0X-2`, file `01M2WGNCX9475G79JRKJTCM08P`, page `p-1P-0`. Its new nodes are `73VL-0` / `73VM-0`. The original Mastermind Paper direct app returned APPLIED for `f03-20261104-structural-coverage-summary-01`; exact JSX then contained the intended counts, limits and directory query. Only `5G0X-2` was released, through `f03-20261104-structural-coverage-finish-01`.
+
+Root inspected the [actual full-board image](../continuations/structural-coverage-20261104-final.jpg) and [actual note close-up](../continuations/structural-coverage-20261104-note.jpg). The addition sits below the existing foundation/source details without covering content. It retains the existing noir tokens, 13px body, 20px line height, 16px inset and 10px corner radius. The dated champagne heading is distinct, body and address are legible, and all four text lines fit without clipping. The original 27-family hierarchy and reference paths are unchanged. There is no finding requiring a second visual edit.
+
+[Exact JSX and capture hashes](../continuations/structural-coverage-20261104-captures.json) and [scoped preservation evidence](../../evidence/structural-coverage-preservation-20261104.json) retain all pre-existing node IDs and show only five inserted JSX lines. The named file's page list and Start Here artboard IDs/names are equal before and after. Both all-status comment reads on this page returned zero threads. These observations do not certify unseen assets, annotations, other boards or cross-file transfers.
+
+The note says that 106 previously listed-only pages were inspected, 1,837 compound artboard identities are searchable, and 12 pages returned zero artboards. It explicitly leaves ownership, content comparison and disposition open. Counts come from the [separate read-only observation](../continuations/listed-page-expansion-20261104.json); copies and QA files are not new product candidates.
+
+Only this existing desktop English note changed. The earlier mobile/light/Chinese compositions and their prior captures remain intact; they were not re-certified by this screenshot. English/Chinese structural-reference copy and query/filter/Back logic were exercised in the source harness. Link activation, keyboard/touch, focus visibility, screen readers, actual reflow, performance and formal acceptance remain unverified. The denied browser preview was not retried or rerouted.

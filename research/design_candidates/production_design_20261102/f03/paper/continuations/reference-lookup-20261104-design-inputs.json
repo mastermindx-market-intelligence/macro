@@ -1,0 +1,134 @@
+{
+  "purpose": "Editable affected reference-result layouts; not browser proof",
+  "source_head_before_repair": "e1ac30e1405d5fed4fa1a79d623a066505d47c52",
+  "boards": [
+    {
+      "key": "wide",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "node_id": "72K0-0",
+      "width": 1440,
+      "available_content_width": 1344,
+      "theme": "dark",
+      "locale": "EN",
+      "owner": "D08B",
+      "board": "1PVF-0",
+      "page": "p-14-0",
+      "source_pin": "a3356474cebbdd88e6448e05ffc3d2e44faa5ca6",
+      "parts": [
+        {
+          "key": "header",
+          "html": "<div layer-name=\"Directory header\" style=\"display:flex;flex-direction:column;padding:20px 48px;gap:12px;width:1440px;color:var(--mx-dark-text);font-family:Inter;border-bottom:1px solid var(--mx-dark-line);\"><div style=\"display:flex;justify-content:space-between;align-items:center;width:100%;gap:16px;\"><div style=\"font-size:15px;line-height:1.5;color:var(--mx-dark-text);font-weight:650;overflow-wrap:anywhere;\">MASTERMIND / DESIGN</div><div style=\"font-size:12px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">中文</div></div></div>"
+        },
+        {
+          "key": "hero",
+          "html": "<div layer-name=\"Reference lookup task\" style=\"display:flex;flex-direction:column;padding:20px 48px;gap:12px;width:1440px;color:var(--mx-dark-text);font-family:Inter;\"><div style=\"font-size:11px;line-height:1.5;color:var(--mx-dark-muted);font-weight:600;overflow-wrap:anywhere;\">DESIGN PROGRAMME · PAPER REFERENCES</div><div style=\"font-size:38px;line-height:1.5;color:var(--mx-dark-text);font-weight:650;overflow-wrap:anywhere;\">Find the right design.<br/>Keep its history.</div><div style=\"font-size:16px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Find an exact returned reference without losing its source or history.</div></div>"
+        },
+        {
+          "key": "toolbar",
+          "html": "<div layer-name=\"Exact search and owner filter\" style=\"display:flex;flex-direction:column;padding:20px 48px;gap:12px;width:1440px;color:var(--mx-dark-text);font-family:Inter;\"><div style=\"display:flex;flex-direction:row;gap:10px;width:100%;\"><div style=\"display:flex;flex-direction:column;gap:4px;background:var(--mx-dark-panel);border:1px solid var(--mx-dark-line);border-radius:8px;padding:10px 14px;min-height:50px;flex:1;\"><div style=\"font-size:11px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Search Paper titles or exact IDs</div><div style=\"font-size:15px;line-height:1.5;color:var(--mx-dark-text);font-weight:550;overflow-wrap:anywhere;\">1PVF-0</div></div><div style=\"display:flex;flex-direction:column;gap:4px;background:var(--mx-dark-panel);border:1px solid var(--mx-dark-line);border-radius:8px;padding:10px 14px;min-height:50px;flex:1;\"><div style=\"font-size:11px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Assignment</div><div style=\"font-size:15px;line-height:1.5;color:var(--mx-dark-text);font-weight:550;overflow-wrap:anywhere;\">D08B</div></div></div><div style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;\"><div style=\"font-size:12px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">1 result in this view</div><div style=\"font-size:12px;line-height:1.5;color:var(--mx-dark-link);font-weight:400;overflow-wrap:anywhere;\">Clear filters</div></div></div>"
+        },
+        {
+          "key": "result",
+          "html": "<div layer-name=\"Returned reference and direct destinations\" style=\"display:flex;flex-direction:column;padding:20px 48px;gap:12px;width:1440px;color:var(--mx-dark-text);font-family:Inter;background:var(--mx-dark-panel);border-top:1px solid var(--mx-dark-line);border-bottom:1px solid var(--mx-dark-line);\"><div style=\"font-size:11px;line-height:1.5;color:var(--mx-dark-muted);font-weight:550;overflow-wrap:anywhere;\">Returned page / unqualified</div><div style=\"font-size:22px;line-height:1.5;color:var(--mx-dark-link);font-weight:650;overflow-wrap:anywhere;\">Options Exposure, Volatility and 3D ↗</div><div style=\"font-family:Menlo;font-size:11px;line-height:1.6;color:var(--mx-dark-muted);overflow-wrap:anywhere;\">Terminal · p-14-0 · 1PVF-0</div><div style=\"font-size:13px;line-height:1.5;color:var(--mx-dark-text);font-weight:550;overflow-wrap:anywhere;\">Read me · D08B</div><div style=\"font-size:13px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Approval not established. Return evidence is separate from the frozen census.</div><div style=\"display:flex;flex-direction:row;gap:12px;\"><div style=\"display:flex;align-items:center;min-height:44px;padding:10px 0;\"><div style=\"font-size:14px;line-height:1.5;color:var(--mx-dark-link);font-weight:600;overflow-wrap:anywhere;\">D08B · Source contract ↗</div></div><div style=\"display:flex;align-items:center;min-height:44px;padding:10px 0;\"><div style=\"font-size:14px;line-height:1.5;color:var(--mx-dark-link);font-weight:400;overflow-wrap:anywhere;\">D08B · History & contract →</div></div></div></div>"
+        },
+        {
+          "key": "provenance",
+          "html": "<div layer-name=\"Expanded source evidence\" style=\"display:flex;flex-direction:column;padding:20px 48px;gap:12px;width:1440px;color:var(--mx-dark-text);font-family:Inter;\"><div style=\"font-size:14px;line-height:1.5;color:var(--mx-dark-text);font-weight:600;overflow-wrap:anywhere;\">Source pins, observation times and conditions</div><div style=\"font-size:12px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Observed · 2026-11-04 02:38 UTC</div><div style=\"font-family:Menlo;font-size:11px;line-height:1.6;color:var(--mx-dark-muted);overflow-wrap:anywhere;\">a3356474cebbdd88e6448e05ffc3d2e44faa5ca6</div><div style=\"font-size:13px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Candidate and source return observed; provisional foundation; RIG draft.</div><div style=\"font-size:12px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Source-return evidence—not a new native approval, route admission or product implementation.</div><div style=\"font-family:Menlo;font-size:11px;line-height:1.6;color:var(--mx-dark-muted);overflow-wrap:anywhere;\">01M3NSZGE8JWN2EZCSF0DT05RM / p-14-0</div></div>"
+        },
+        {
+          "key": "footer",
+          "html": "<div layer-name=\"Return context and proof boundary\" style=\"display:flex;flex-direction:column;padding:20px 48px;gap:12px;width:1440px;color:var(--mx-dark-text);font-family:Inter;border-top:1px solid var(--mx-dark-line);\"><div style=\"font-size:13px;line-height:1.5;color:var(--mx-dark-text);font-weight:400;overflow-wrap:anywhere;\">Query and assignment filters remain in the return link.</div><div style=\"font-size:11px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Editable desktop layout specimen. Source-logic checks do not establish browser interaction.</div></div>"
+        }
+      ]
+    },
+    {
+      "key": "mobile",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "node_id": "72K1-0",
+      "width": 390,
+      "available_content_width": 350,
+      "theme": "dark",
+      "locale": "EN",
+      "owner": "D08B",
+      "board": "1PVF-0",
+      "page": "p-14-0",
+      "source_pin": "a3356474cebbdd88e6448e05ffc3d2e44faa5ca6",
+      "parts": [
+        {
+          "key": "status",
+          "html": "<div layer-name=\"Status bar\" style=\"display: flex; align-items: center; gap: 154px; padding: 21px 24px 19px;\">\n  <div layer-name=\"Time\" style=\"display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1;\">\n    <div style=\"color: white; font-family: system-ui; font-size: 17px; font-weight: 600; text-align: center; width: fit-content\">\n      9:41\n    </div>\n  </div>\n  <div layer-name=\"Icons\" style=\"display: flex; flex-direction: column; flex: 1; align-items: center; justify-content: center;\">\n    <svg width=\"82\" height=\"22\" viewBox=\"0 0 82 22\" style=\"flex-shrink: 0\" fill=\"white\">\n      <path d=\"M3.7 13H2.5a1 1 0 0 0-1 1v2.5a1 1 0 0 0 1 1h1.2a1 1 0 0 0 1-1V14a1 1 0 0 0-1-1m5.2-2.5H7.7a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1.2a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1M14.1 8h-1.2a1 1 0 0 0-1 1v7.5a1 1 0 0 0 1 1h1.2a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1m5.2-2.5h-1.2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h1.2a1 1 0 0 0 1-1v-10a1 1 0 0 0-1-1\" />\n      <path fill-rule=\"evenodd\" d=\"M36.57 7.8c2.49 0 4.88.92 6.68 2.58.14.13.36.12.49 0l1.3-1.27a.34.34 0 0 0 0-.5 12.55 12.55 0 0 0-16.93 0 .34.34 0 0 0 0 .5l1.3 1.26c.13.13.34.14.48 0a10 10 0 0 1 6.68-2.57m0 4.22a5.4 5.4 0 0 1 3.67 1.44c.14.13.35.13.48 0l1.3-1.33a.37.37 0 0 0-.01-.52 7.9 7.9 0 0 0-10.88 0 .37.37 0 0 0 0 .52l1.29 1.32c.13.14.34.14.48 0 1-.92 2.31-1.43 3.67-1.43m2.52 2.8q0 .15-.1.28l-2.18 2.45a.3.3 0 0 1-.24.11.3.3 0 0 1-.24-.1l-2.18-2.46a.43.43 0 0 1 .01-.56 3.44 3.44 0 0 1 4.82 0 .4.4 0 0 1 .11.28\" clip-rule=\"evenodd\" />\n      <path fill-rule=\"evenodd\" d=\"M70.5 5c2.05 0 3.08 0 3.88.34a4.3 4.3 0 0 1 2.28 2.28c.34.8.34 1.83.34 3.88s0 3.08-.34 3.88a4.3 4.3 0 0 1-2.28 2.28c-.8.34-1.83.34-3.88.34h-12c-2.05 0-3.08 0-3.88-.34a4.3 4.3 0 0 1-2.28-2.28c-.34-.8-.34-1.83-.34-3.88s0-3.08.34-3.88a4.3 4.3 0 0 1 2.28-2.28C55.42 5 56.45 5 58.5 5zM58.28 6c-1.85 0-2.77 0-3.48.36a3.3 3.3 0 0 0-1.44 1.44C53 8.5 53 9.43 53 11.28v.44c0 1.85 0 2.77.36 3.48a3.3 3.3 0 0 0 1.44 1.44c.7.36 1.63.36 3.48.36h12.44c1.85 0 2.77 0 3.48-.36a3.3 3.3 0 0 0 1.44-1.44c.36-.7.36-1.63.36-3.48v-.44c0-1.85 0-2.77-.36-3.48a3.3 3.3 0 0 0-1.44-1.44C73.5 6 72.57 6 70.72 6z\" clip-rule=\"evenodd\" style=\"opacity: .35\" />\n      <path d=\"M54 11c0-1.4 0-2.1.27-2.63a2.5 2.5 0 0 1 1.1-1.1C55.9 7 56.6 7 58 7h13c1.4 0 2.1 0 2.64.27q.72.37 1.09 1.1C75 8.9 75 9.6 75 11v1c0 1.4 0 2.1-.27 2.64a2.5 2.5 0 0 1-1.1 1.09C73.1 16 72.4 16 71 16H58c-1.4 0-2.1 0-2.63-.27a2.5 2.5 0 0 1-1.1-1.1C54 14.1 54 13.4 54 12z\" />\n      <path d=\"M78 9.5v4.08a2.2 2.2 0 0 0 1.33-2.04A2.2 2.2 0 0 0 78 9.5\" style=\"opacity: .35\" />\n    </svg>\n  </div>\n</div>"
+        },
+        {
+          "key": "header",
+          "html": "<div layer-name=\"Directory header\" style=\"display:flex;flex-direction:column;padding:20px 20px;gap:12px;width:390px;color:var(--mx-dark-text);font-family:Inter;border-bottom:1px solid var(--mx-dark-line);\"><div style=\"display:flex;justify-content:space-between;align-items:center;width:100%;gap:16px;\"><div style=\"font-size:12px;line-height:1.5;color:var(--mx-dark-text);font-weight:650;overflow-wrap:anywhere;\">MASTERMIND / DESIGN</div><div style=\"font-size:12px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">中文</div></div></div>"
+        },
+        {
+          "key": "hero",
+          "html": "<div layer-name=\"Reference lookup task\" style=\"display:flex;flex-direction:column;padding:20px 20px;gap:12px;width:390px;color:var(--mx-dark-text);font-family:Inter;\"><div style=\"font-size:11px;line-height:1.5;color:var(--mx-dark-muted);font-weight:600;overflow-wrap:anywhere;\">DESIGN PROGRAMME · PAPER REFERENCES</div><div style=\"font-size:27px;line-height:1.5;color:var(--mx-dark-text);font-weight:650;overflow-wrap:anywhere;\">Find the right design.<br/>Keep its history.</div><div style=\"font-size:14px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Find an exact returned reference without losing its source or history.</div></div>"
+        },
+        {
+          "key": "toolbar",
+          "html": "<div layer-name=\"Exact search and owner filter\" style=\"display:flex;flex-direction:column;padding:20px 20px;gap:12px;width:390px;color:var(--mx-dark-text);font-family:Inter;\"><div style=\"display:flex;flex-direction:column;gap:10px;width:100%;\"><div style=\"display:flex;flex-direction:column;gap:4px;background:var(--mx-dark-panel);border:1px solid var(--mx-dark-line);border-radius:8px;padding:10px 14px;min-height:50px;\"><div style=\"font-size:11px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Search Paper titles or exact IDs</div><div style=\"font-size:15px;line-height:1.5;color:var(--mx-dark-text);font-weight:550;overflow-wrap:anywhere;\">1PVF-0</div></div><div style=\"display:flex;flex-direction:column;gap:4px;background:var(--mx-dark-panel);border:1px solid var(--mx-dark-line);border-radius:8px;padding:10px 14px;min-height:50px;\"><div style=\"font-size:11px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Assignment</div><div style=\"font-size:15px;line-height:1.5;color:var(--mx-dark-text);font-weight:550;overflow-wrap:anywhere;\">D08B</div></div></div><div style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;\"><div style=\"font-size:12px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">1 result in this view</div><div style=\"font-size:12px;line-height:1.5;color:var(--mx-dark-link);font-weight:400;overflow-wrap:anywhere;\">Clear filters</div></div></div>"
+        },
+        {
+          "key": "result",
+          "html": "<div layer-name=\"Returned reference and direct destinations\" style=\"display:flex;flex-direction:column;padding:20px 20px;gap:12px;width:390px;color:var(--mx-dark-text);font-family:Inter;background:var(--mx-dark-panel);border-top:1px solid var(--mx-dark-line);border-bottom:1px solid var(--mx-dark-line);\"><div style=\"font-size:11px;line-height:1.5;color:var(--mx-dark-muted);font-weight:550;overflow-wrap:anywhere;\">Returned page / unqualified</div><div style=\"font-size:19px;line-height:1.5;color:var(--mx-dark-link);font-weight:650;overflow-wrap:anywhere;\">Options Exposure, Volatility and 3D ↗</div><div style=\"font-family:Menlo;font-size:11px;line-height:1.6;color:var(--mx-dark-muted);overflow-wrap:anywhere;\">Terminal · p-14-0 · 1PVF-0</div><div style=\"font-size:13px;line-height:1.5;color:var(--mx-dark-text);font-weight:550;overflow-wrap:anywhere;\">Read me · D08B</div><div style=\"font-size:13px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Approval not established. Return evidence is separate from the frozen census.</div><div style=\"display:flex;flex-direction:column;gap:12px;\"><div style=\"display:flex;align-items:center;min-height:44px;padding:10px 0;\"><div style=\"font-size:14px;line-height:1.5;color:var(--mx-dark-link);font-weight:600;overflow-wrap:anywhere;\">D08B · Source contract ↗</div></div><div style=\"display:flex;align-items:center;min-height:44px;padding:10px 0;\"><div style=\"font-size:14px;line-height:1.5;color:var(--mx-dark-link);font-weight:400;overflow-wrap:anywhere;\">D08B · History & contract →</div></div></div></div>"
+        },
+        {
+          "key": "provenance",
+          "html": "<div layer-name=\"Expanded source evidence\" style=\"display:flex;flex-direction:column;padding:20px 20px;gap:12px;width:390px;color:var(--mx-dark-text);font-family:Inter;\"><div style=\"font-size:14px;line-height:1.5;color:var(--mx-dark-text);font-weight:600;overflow-wrap:anywhere;\">Source pins, observation times and conditions</div><div style=\"font-size:12px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Observed · 2026-11-04 02:38 UTC</div><div style=\"font-family:Menlo;font-size:11px;line-height:1.6;color:var(--mx-dark-muted);overflow-wrap:anywhere;\">a3356474cebbdd88e6448e05ffc3d2e44faa5ca6</div><div style=\"font-size:13px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Candidate and source return observed; provisional foundation; RIG draft.</div><div style=\"font-size:12px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Source-return evidence—not a new native approval, route admission or product implementation.</div><div style=\"font-family:Menlo;font-size:11px;line-height:1.6;color:var(--mx-dark-muted);overflow-wrap:anywhere;\">01M3NSZGE8JWN2EZCSF0DT05RM / p-14-0</div></div>"
+        },
+        {
+          "key": "footer",
+          "html": "<div layer-name=\"Return context and proof boundary\" style=\"display:flex;flex-direction:column;padding:20px 20px;gap:12px;width:390px;color:var(--mx-dark-text);font-family:Inter;border-top:1px solid var(--mx-dark-line);\"><div style=\"font-size:13px;line-height:1.5;color:var(--mx-dark-text);font-weight:400;overflow-wrap:anywhere;\">Query and assignment filters remain in the return link.</div><div style=\"font-size:11px;line-height:1.5;color:var(--mx-dark-muted);font-weight:400;overflow-wrap:anywhere;\">Editable 390px layout specimen.<br/>Browser and input-path verification remain separate.</div></div>"
+        }
+      ]
+    },
+    {
+      "key": "narrow",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "node_id": "72K2-0",
+      "width": 390,
+      "available_content_width": 320,
+      "theme": "light",
+      "locale": "ZH",
+      "owner": "D08C",
+      "board": "1S0R-0",
+      "page": "p-15-0",
+      "source_pin": "291f21aa8e9d757466412549a8d6537d889ab4d8",
+      "parts": [
+        {
+          "key": "status",
+          "html": "<div layer-name=\"Status bar\" style=\"display: flex; align-items: center; gap: 154px; padding: 21px 24px 19px;\">\n  <div layer-name=\"Time\" style=\"display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1;\">\n    <div style=\"color: black; font-family: system-ui; font-size: 17px; font-weight: 600; text-align: center; width: fit-content\">\n      9:41\n    </div>\n  </div>\n  <div layer-name=\"Icons\" style=\"display: flex; flex-direction: column; flex: 1; align-items: center; justify-content: center;\">\n    <svg width=\"82\" height=\"22\" viewBox=\"0 0 82 22\" style=\"flex-shrink: 0\" fill=\"black\">\n      <path d=\"M3.7 13H2.5a1 1 0 0 0-1 1v2.5a1 1 0 0 0 1 1h1.2a1 1 0 0 0 1-1V14a1 1 0 0 0-1-1m5.2-2.5H7.7a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1.2a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1M14.1 8h-1.2a1 1 0 0 0-1 1v7.5a1 1 0 0 0 1 1h1.2a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1m5.2-2.5h-1.2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h1.2a1 1 0 0 0 1-1v-10a1 1 0 0 0-1-1\" />\n      <path fill-rule=\"evenodd\" d=\"M36.57 7.8c2.49 0 4.88.92 6.68 2.58.14.13.36.12.49 0l1.3-1.27a.34.34 0 0 0 0-.5 12.55 12.55 0 0 0-16.93 0 .34.34 0 0 0 0 .5l1.3 1.26c.13.13.34.14.48 0a10 10 0 0 1 6.68-2.57m0 4.22a5.4 5.4 0 0 1 3.67 1.44c.14.13.35.13.48 0l1.3-1.33a.37.37 0 0 0-.01-.52 7.9 7.9 0 0 0-10.88 0 .37.37 0 0 0 0 .52l1.29 1.32c.13.14.34.14.48 0 1-.92 2.31-1.43 3.67-1.43m2.52 2.8q0 .15-.1.28l-2.18 2.45a.3.3 0 0 1-.24.11.3.3 0 0 1-.24-.1l-2.18-2.46a.43.43 0 0 1 .01-.56 3.44 3.44 0 0 1 4.82 0 .4.4 0 0 1 .11.28\" clip-rule=\"evenodd\" />\n      <path fill-rule=\"evenodd\" d=\"M70.5 5c2.05 0 3.08 0 3.88.34a4.3 4.3 0 0 1 2.28 2.28c.34.8.34 1.83.34 3.88s0 3.08-.34 3.88a4.3 4.3 0 0 1-2.28 2.28c-.8.34-1.83.34-3.88.34h-12c-2.05 0-3.08 0-3.88-.34a4.3 4.3 0 0 1-2.28-2.28c-.34-.8-.34-1.83-.34-3.88s0-3.08.34-3.88a4.3 4.3 0 0 1 2.28-2.28C55.42 5 56.45 5 58.5 5zM58.28 6c-1.85 0-2.77 0-3.48.36a3.3 3.3 0 0 0-1.44 1.44C53 8.5 53 9.43 53 11.28v.44c0 1.85 0 2.77.36 3.48a3.3 3.3 0 0 0 1.44 1.44c.7.36 1.63.36 3.48.36h12.44c1.85 0 2.77 0 3.48-.36a3.3 3.3 0 0 0 1.44-1.44c.36-.7.36-1.63.36-3.48v-.44c0-1.85 0-2.77-.36-3.48a3.3 3.3 0 0 0-1.44-1.44C73.5 6 72.57 6 70.72 6z\" clip-rule=\"evenodd\" style=\"opacity: .35\" />\n      <path d=\"M54 11c0-1.4 0-2.1.27-2.63a2.5 2.5 0 0 1 1.1-1.1C55.9 7 56.6 7 58 7h13c1.4 0 2.1 0 2.64.27q.72.37 1.09 1.1C75 8.9 75 9.6 75 11v1c0 1.4 0 2.1-.27 2.64a2.5 2.5 0 0 1-1.1 1.09C73.1 16 72.4 16 71 16H58c-1.4 0-2.1 0-2.63-.27a2.5 2.5 0 0 1-1.1-1.1C54 14.1 54 13.4 54 12z\" />\n      <path d=\"M78 9.5v4.08a2.2 2.2 0 0 0 1.33-2.04A2.2 2.2 0 0 0 78 9.5\" style=\"opacity: .35\" />\n    </svg>\n  </div>\n</div>"
+        },
+        {
+          "key": "header",
+          "html": "<div layer-name=\"Directory header\" style=\"display:flex;flex-direction:column;padding:20px 35px;gap:12px;width:390px;color:var(--mx-light-text);font-family:Inter;border-bottom:1px solid var(--mx-light-line);\"><div style=\"display:flex;justify-content:space-between;align-items:center;width:100%;gap:16px;\"><div style=\"font-size:12px;line-height:1.5;color:var(--mx-light-text);font-weight:650;overflow-wrap:anywhere;\">MASTERMIND / DESIGN</div><div style=\"font-size:12px;line-height:1.5;color:var(--mx-light-muted);font-weight:400;overflow-wrap:anywhere;\">EN</div></div></div>"
+        },
+        {
+          "key": "hero",
+          "html": "<div layer-name=\"Reference lookup task\" style=\"display:flex;flex-direction:column;padding:20px 35px;gap:12px;width:390px;color:var(--mx-light-text);font-family:Inter;\"><div style=\"font-size:11px;line-height:1.5;color:var(--mx-light-muted);font-weight:600;overflow-wrap:anywhere;\">设计计划 · Paper 参考</div><div style=\"font-size:27px;line-height:1.5;color:var(--mx-light-text);font-weight:650;overflow-wrap:anywhere;\">找到正确设计。<br/>保留完整历史。</div><div style=\"font-size:14px;line-height:1.5;color:var(--mx-light-muted);font-weight:400;overflow-wrap:anywhere;\">返回的设计说明与冻结基线一同可查；身份与审核状态保持独立。</div></div>"
+        },
+        {
+          "key": "toolbar",
+          "html": "<div layer-name=\"Exact search and owner filter\" style=\"display:flex;flex-direction:column;padding:20px 35px;gap:12px;width:390px;color:var(--mx-light-text);font-family:Inter;\"><div style=\"display:flex;flex-direction:column;gap:10px;width:100%;\"><div style=\"display:flex;flex-direction:column;gap:4px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:8px;padding:10px 14px;min-height:50px;\"><div style=\"font-size:11px;line-height:1.5;color:var(--mx-light-muted);font-weight:400;overflow-wrap:anywhere;\">搜索 Paper 名称或精确 ID</div><div style=\"font-size:15px;line-height:1.5;color:var(--mx-light-text);font-weight:550;overflow-wrap:anywhere;\">1S0R-0</div></div><div style=\"display:flex;flex-direction:column;gap:4px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:8px;padding:10px 14px;min-height:50px;\"><div style=\"font-size:11px;line-height:1.5;color:var(--mx-light-muted);font-weight:400;overflow-wrap:anywhere;\">任务筛选</div><div style=\"font-size:15px;line-height:1.5;color:var(--mx-light-text);font-weight:550;overflow-wrap:anywhere;\">D08C</div></div></div><div style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;\"><div style=\"font-size:12px;line-height:1.5;color:var(--mx-light-muted);font-weight:400;overflow-wrap:anywhere;\">1 条当前视图结果</div><div style=\"font-size:12px;line-height:1.5;color:var(--mx-light-link);font-weight:400;overflow-wrap:anywhere;\">清除筛选</div></div></div>"
+        },
+        {
+          "key": "result",
+          "html": "<div layer-name=\"Returned reference and direct destinations\" style=\"display:flex;flex-direction:column;padding:20px 35px;gap:12px;width:390px;color:var(--mx-light-text);font-family:Inter;background:var(--mx-light-panel);border-top:1px solid var(--mx-light-line);border-bottom:1px solid var(--mx-light-line);\"><div style=\"font-size:11px;line-height:1.5;color:var(--mx-light-muted);font-weight:550;overflow-wrap:anywhere;\">返回页面 / 未认定</div><div style=\"font-size:19px;line-height:1.5;color:var(--mx-light-link);font-weight:650;overflow-wrap:anywhere;\">期权计划、比较与复盘 ↗</div><div style=\"font-family:Menlo;font-size:11px;line-height:1.6;color:var(--mx-light-muted);overflow-wrap:anywhere;\">Terminal · p-15-0 · 1S0R-0</div><div style=\"font-size:13px;line-height:1.5;color:var(--mx-light-text);font-weight:550;overflow-wrap:anywhere;\">设计说明 · D08C</div><div style=\"font-size:13px;line-height:1.5;color:var(--mx-light-muted);font-weight:400;overflow-wrap:anywhere;\">批准尚未确立。返回证据不改写冻结清单。</div><div style=\"display:flex;flex-direction:column;gap:12px;\"><div style=\"display:flex;align-items:center;min-height:44px;padding:10px 0;\"><div style=\"font-size:14px;line-height:1.5;color:var(--mx-light-link);font-weight:600;overflow-wrap:anywhere;\">D08C · 源合同 ↗</div></div><div style=\"display:flex;align-items:center;min-height:44px;padding:10px 0;\"><div style=\"font-size:14px;line-height:1.5;color:var(--mx-light-link);font-weight:400;overflow-wrap:anywhere;\">D08C · 历史与合同 →</div></div></div></div>"
+        },
+        {
+          "key": "provenance",
+          "html": "<div layer-name=\"Expanded source evidence\" style=\"display:flex;flex-direction:column;padding:20px 35px;gap:12px;width:390px;color:var(--mx-light-text);font-family:Inter;\"><div style=\"font-size:14px;line-height:1.5;color:var(--mx-light-text);font-weight:600;overflow-wrap:anywhere;\">来源版本、观察时间与条件</div><div style=\"font-size:12px;line-height:1.5;color:var(--mx-light-muted);font-weight:400;overflow-wrap:anywhere;\">观察时间 · 2026-11-04 02:38 UTC</div><div style=\"font-family:Menlo;font-size:11px;line-height:1.6;color:var(--mx-light-muted);overflow-wrap:anywhere;\">291f21aa8e9d757466412549a8d6537d889ab4d8</div><div style=\"font-size:13px;line-height:1.5;color:var(--mx-light-muted);font-weight:400;overflow-wrap:anywhere;\">候选与源合同已返回；基础合同暂定；RIG 草稿。</div><div style=\"font-size:12px;line-height:1.5;color:var(--mx-light-muted);font-weight:400;overflow-wrap:anywhere;\">这是源返回证据，不代表新的原生批准、路由准入或产品实现。</div><div style=\"font-family:Menlo;font-size:11px;line-height:1.6;color:var(--mx-light-muted);overflow-wrap:anywhere;\">01M3NSZGE8JWN2EZCSF0DT05RM / p-15-0</div></div>"
+        },
+        {
+          "key": "footer",
+          "html": "<div layer-name=\"Return context and proof boundary\" style=\"display:flex;flex-direction:column;padding:20px 35px;gap:12px;width:390px;color:var(--mx-light-text);font-family:Inter;border-top:1px solid var(--mx-light-line);\"><div style=\"font-size:13px;line-height:1.5;color:var(--mx-light-text);font-weight:400;overflow-wrap:anywhere;\">查询与任务筛选保留在返回链接中。</div><div style=\"font-size:11px;line-height:1.5;color:var(--mx-light-muted);font-weight:400;overflow-wrap:anywhere;\">可编辑布局样稿 · 320px 内容列<br/>不是已运行的浏览器或输入路径证明。</div></div>"
+        }
+      ]
+    }
+  ]
+}

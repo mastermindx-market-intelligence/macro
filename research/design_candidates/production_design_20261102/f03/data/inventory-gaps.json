@@ -1,0 +1,65 @@
+[
+  {
+    "path": "/expectation_surface.html",
+    "is_full_document": true,
+    "export_disposition": "unregistered",
+    "canonical_registry_id": null,
+    "design_assignment": "D07",
+    "registry_source_owner": null,
+    "source_delta": true
+  },
+  {
+    "path": "/gmi-coverage.html",
+    "is_full_document": true,
+    "export_disposition": "unregistered",
+    "canonical_registry_id": null,
+    "design_assignment": "D13",
+    "registry_source_owner": null,
+    "source_delta": true
+  },
+  {
+    "path": "/gmi-index.html",
+    "is_full_document": true,
+    "export_disposition": "unregistered",
+    "canonical_registry_id": null,
+    "design_assignment": "D13",
+    "registry_source_owner": null,
+    "source_delta": true
+  },
+  {
+    "path": "/gmi-issuer-mu.html",
+    "is_full_document": true,
+    "export_disposition": "unregistered",
+    "canonical_registry_id": null,
+    "design_assignment": "D13",
+    "registry_source_owner": null,
+    "source_delta": true
+  },
+  {
+    "path": "/gmi-relationships.html",
+    "is_full_document": true,
+    "export_disposition": "unregistered",
+    "canonical_registry_id": null,
+    "design_assignment": "D13",
+    "registry_source_owner": null,
+    "source_delta": true
+  },
+  {
+    "path": "/gmi-states.html",
+    "is_full_document": true,
+    "export_disposition": "unregistered",
+    "canonical_registry_id": null,
+    "design_assignment": "D13",
+    "registry_source_owner": null,
+    "source_delta": true
+  },
+  {
+    "path": "/gmi.html",
+    "is_full_document": true,
+    "export_disposition": "unregistered",
+    "canonical_registry_id": null,
+    "design_assignment": "D13",
+    "registry_source_owner": null,
+    "source_delta": true
+  }
+]

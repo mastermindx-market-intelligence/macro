@@ -1,0 +1,1668 @@
+{
+  "receipt": {
+    "kind": "F03_existing_generator_native_source_inventory",
+    "observed_at": "2026-11-03T01:51:31.277525+00:00",
+    "generator_pin": "b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e",
+    "generator_path": "scripts/build_product_page_registry.py",
+    "generator_sha256": "ff8b3364545abe3f303d5762ee46e2106ce7aebe6394249d6dd56f7590f46ffd",
+    "terminal_pin": "b79b1e136290978ff7675087de979bb1b42b3713",
+    "terminal_method": "derive_terminal with exact ref",
+    "terminal_scope": "all terminal/app/**/page.tsx modules; not route admission",
+    "terminal_count": 29,
+    "mastermind_pin": "c57adacb338fe837c7d585f1e372c64d9b0118ec",
+    "mastermind_method": "derive_mastermind with exact git-show read_text injection",
+    "mastermind_source_path": "app/web.py",
+    "mastermind_source_blob": "66f48b51020e97beb08821e0e7ecf2c1daf2c8c5",
+    "mastermind_count": 7,
+    "discarded_metadata": "derive_mastermind default HEAD/branch/read_from=worktree metadata is not used as pinned provenance",
+    "limits": [
+      "Mastermind OS app/mastermind_os view modules are outside existing generator scope",
+      "Source access markers/hardcoded access are not entitlement or audience verification",
+      "Raw generated candidate IDs for unregistered modules are not canonical admission"
+    ],
+    "registry_modified": false,
+    "working_tree_modified": false,
+    "deployed": false,
+    "failures": []
+  },
+  "rows": [
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:legacypath",
+        "repo": "terminal",
+        "route": "/<legacyPath>",
+        "route_kind": "family",
+        "source_template": "terminal/app/(shell)/[...legacyPath]/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/[...legacyPath]/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:legacypath",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:admin",
+        "repo": "terminal",
+        "route": "/admin",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/admin/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "admin",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/admin/page.tsx",
+          "terminal/lib/adminGate.ts",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "gate marker `isAdminRequest` in the page module"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:admin",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:alerts",
+        "repo": "terminal",
+        "route": "/alerts",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/alerts/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "signed_in",
+        "payload_tier": "unknown",
+        "nav_family": "app_nav.rail",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/alerts/page.tsx",
+          "terminal/components/gates/SignupGate.tsx",
+          "terminal/components/AppNav.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "gate marker `SignupGate` in the page module"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:alerts",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:analysis",
+        "repo": "terminal",
+        "route": "/analysis",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/analysis/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "signed_in",
+        "payload_tier": "unknown",
+        "nav_family": "app_nav.rail",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/analysis/page.tsx",
+          "terminal/components/gates/SignupGate.tsx",
+          "terminal/components/AppNav.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "gate marker `SignupGate` in the page module"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:analysis",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:discover",
+        "repo": "terminal",
+        "route": "/discover",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/discover/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "signed_in",
+        "payload_tier": "unknown",
+        "nav_family": "app_nav.rail",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/discover/page.tsx",
+          "terminal/components/gates/SignupGate.tsx",
+          "terminal/components/AppNav.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "gate marker `SignupGate` in the page module"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:discover",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:dislocations",
+        "repo": "terminal",
+        "route": "/dislocations",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/dislocations/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "signed_in",
+        "payload_tier": "unknown",
+        "nav_family": "app_nav.rail",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/dislocations/page.tsx",
+          "terminal/components/gates/SignupGate.tsx",
+          "terminal/components/AppNav.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "gate marker `SignupGate` in the page module"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:dislocations",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:monitor",
+        "repo": "terminal",
+        "route": "/monitor",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/monitor/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "signed_in",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/monitor/page.tsx",
+          "terminal/components/gates/SignupGate.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "gate marker `SignupGate` in the page module"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:monitor",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:options_equity_replay",
+        "repo": "terminal",
+        "route": "/options/equity-replay",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/options/equity-replay/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "paid",
+        "payload_tier": "premium",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [
+          "entitlement feature terminal_live_options"
+        ],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/options/equity-replay/page.tsx",
+          "terminal/lib/entitlement.ts",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "gate marker `hasLiveOptions` in the page module"
+        ]
+      },
+      "present_in_existing_registry": false,
+      "canonical_registry_id": null,
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:options_futures",
+        "repo": "terminal",
+        "route": "/options/futures",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/options/futures/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "paid",
+        "payload_tier": "premium",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [
+          "entitlement feature terminal_live_options"
+        ],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/options/futures/page.tsx",
+          "terminal/lib/entitlement.ts",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "gate marker `hasLiveOptions` in the page module"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:options_futures",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:options",
+        "repo": "terminal",
+        "route": "/options",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/options/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "app_nav.rail",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/options/page.tsx",
+          "terminal/components/AppNav.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:options",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:portfolio",
+        "repo": "terminal",
+        "route": "/portfolio",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/portfolio/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "signed_in",
+        "payload_tier": "unknown",
+        "nav_family": "app_nav.rail",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/portfolio/page.tsx",
+          "terminal/components/gates/SignupGate.tsx",
+          "terminal/components/AppNav.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "gate marker `SignupGate` in the page module"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:portfolio",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:research",
+        "repo": "terminal",
+        "route": "/research",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/research/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "signed_in",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/research/page.tsx",
+          "terminal/components/gates/SignupGate.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "gate marker `SignupGate` in the page module"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:research",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:scripts",
+        "repo": "terminal",
+        "route": "/scripts",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/scripts/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "signed_in",
+        "payload_tier": "unknown",
+        "nav_family": "app_nav.rail",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/scripts/page.tsx",
+          "terminal/components/gates/SignupGate.tsx",
+          "terminal/components/AppNav.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "gate marker `SignupGate` in the page module"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:scripts",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:today",
+        "repo": "terminal",
+        "route": "/today",
+        "route_kind": "page",
+        "source_template": "terminal/app/(shell)/today/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "signed_in",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/(shell)/today/page.tsx",
+          "terminal/components/gates/SignupGate.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "gate marker `SignupGate` in the page module"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:today",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:dev_chart_bench",
+        "repo": "terminal",
+        "route": "/dev/chart-bench",
+        "route_kind": "page",
+        "source_template": "terminal/app/dev/chart-bench/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "dev_only",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/dev/chart-bench/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "under app/dev/ — developer surface, not customer content"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:dev_chart_bench",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:dev_futures_sample",
+        "repo": "terminal",
+        "route": "/dev/futures-sample",
+        "route_kind": "page",
+        "source_template": "terminal/app/dev/futures-sample/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "dev_only",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/dev/futures-sample/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "under app/dev/ — developer surface, not customer content"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:dev_futures_sample",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:dev_futures",
+        "repo": "terminal",
+        "route": "/dev/futures",
+        "route_kind": "page",
+        "source_template": "terminal/app/dev/futures/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "dev_only",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/dev/futures/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "under app/dev/ — developer surface, not customer content"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:dev_futures",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:dev_options_plan",
+        "repo": "terminal",
+        "route": "/dev/options-plan",
+        "route_kind": "page",
+        "source_template": "terminal/app/dev/options-plan/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "dev_only",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/dev/options-plan/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "under app/dev/ — developer surface, not customer content"
+        ]
+      },
+      "present_in_existing_registry": false,
+      "canonical_registry_id": null,
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:dev_settings",
+        "repo": "terminal",
+        "route": "/dev/settings",
+        "route_kind": "page",
+        "source_template": "terminal/app/dev/settings/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "dev_only",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/dev/settings/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "under app/dev/ — developer surface, not customer content"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:dev_settings",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:dev_theater",
+        "repo": "terminal",
+        "route": "/dev/theater",
+        "route_kind": "page",
+        "source_template": "terminal/app/dev/theater/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "dev_only",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/dev/theater/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "under app/dev/ — developer surface, not customer content"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:dev_theater",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:dev_workspaces",
+        "repo": "terminal",
+        "route": "/dev/workspaces",
+        "route_kind": "page",
+        "source_template": "terminal/app/dev/workspaces/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "dev_only",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/dev/workspaces/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)",
+          "under app/dev/ — developer surface, not customer content"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:dev_workspaces",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:embed_chart",
+        "repo": "terminal",
+        "route": "/embed/chart",
+        "route_kind": "page",
+        "source_template": "terminal/app/embed/chart/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/embed/chart/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:embed_chart",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:invite",
+        "repo": "terminal",
+        "route": "/invite",
+        "route_kind": "page",
+        "source_template": "terminal/app/invite/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/invite/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:invite",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:learn",
+        "repo": "terminal",
+        "route": "/learn",
+        "route_kind": "page",
+        "source_template": "terminal/app/learn/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/learn/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:learn",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:login",
+        "repo": "terminal",
+        "route": "/login",
+        "route_kind": "page",
+        "source_template": "terminal/app/login/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/login/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:login",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:landing",
+        "repo": "terminal",
+        "route": "/",
+        "route_kind": "page",
+        "source_template": "terminal/app/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:landing",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:reset_password",
+        "repo": "terminal",
+        "route": "/reset-password",
+        "route_kind": "page",
+        "source_template": "terminal/app/reset-password/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/reset-password/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:reset_password",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:terminal",
+        "repo": "terminal",
+        "route": "/terminal",
+        "route_kind": "page",
+        "source_template": "terminal/app/terminal/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "app_nav.rail",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/terminal/page.tsx",
+          "terminal/components/AppNav.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:terminal",
+      "observation_only": true
+    },
+    {
+      "repository_key": "terminal",
+      "raw_generator_row": {
+        "page_id": "terminal:x_slug",
+        "repo": "terminal",
+        "route": "/x/<slug>",
+        "route_kind": "family",
+        "source_template": "terminal/app/x/[slug]/page.tsx",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "unknown",
+        "payload_tier": "unknown",
+        "nav_family": "none",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": true,
+        "themes": [
+          "dark"
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "terminal/app/x/[slug]/page.tsx",
+          "terminal/app/layout.tsx",
+          "terminal/lib/i18n.tsx"
+        ],
+        "notes": [
+          "Next.js App Router page module (the module IS the page)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "terminal:x_slug",
+      "observation_only": true
+    },
+    {
+      "repository_key": "mastermind",
+      "raw_generator_row": {
+        "page_id": "mastermind:index",
+        "repo": "mastermind",
+        "route": "/",
+        "route_kind": "page",
+        "source_template": "app/static/index.html",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public",
+        "nav_family": "unknown",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": "unknown",
+        "themes": "unknown",
+        "locales": "unknown",
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "app/web.py:859",
+          "app/static/index.html",
+          "app/auth.py:13"
+        ],
+        "notes": [
+          "nav membership not derived: the dashboard nav is built client-side in the SPA, not from a server-side link inventory",
+          "all GETs are unauthenticated: the browser password/cookie login was removed; only mutating/LLM POSTs need a bearer token (app/auth.py)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "mastermind:index",
+      "observation_only": true
+    },
+    {
+      "repository_key": "mastermind",
+      "raw_generator_row": {
+        "page_id": "mastermind:research",
+        "repo": "mastermind",
+        "route": "/research",
+        "route_kind": "page",
+        "source_template": "app/static/index.html",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public",
+        "nav_family": "unknown",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": "unknown",
+        "themes": "unknown",
+        "locales": "unknown",
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "app/web.py:864",
+          "app/static/index.html",
+          "app/auth.py:13"
+        ],
+        "notes": [
+          "nav membership not derived: the dashboard nav is built client-side in the SPA, not from a server-side link inventory",
+          "all GETs are unauthenticated: the browser password/cookie login was removed; only mutating/LLM POSTs need a bearer token (app/auth.py)",
+          "same SPA shell as /: the client opens this view from the path"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "mastermind:research",
+      "observation_only": true
+    },
+    {
+      "repository_key": "mastermind",
+      "raw_generator_row": {
+        "page_id": "mastermind:self",
+        "repo": "mastermind",
+        "route": "/self",
+        "route_kind": "page",
+        "source_template": "app/static/index.html",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public",
+        "nav_family": "unknown",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": "unknown",
+        "themes": "unknown",
+        "locales": "unknown",
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "app/web.py:870",
+          "app/static/index.html",
+          "app/auth.py:13"
+        ],
+        "notes": [
+          "nav membership not derived: the dashboard nav is built client-side in the SPA, not from a server-side link inventory",
+          "all GETs are unauthenticated: the browser password/cookie login was removed; only mutating/LLM POSTs need a bearer token (app/auth.py)",
+          "same SPA shell as /: the client opens this view from the path"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "mastermind:self",
+      "observation_only": true
+    },
+    {
+      "repository_key": "mastermind",
+      "raw_generator_row": {
+        "page_id": "mastermind:desk",
+        "repo": "mastermind",
+        "route": "/desk",
+        "route_kind": "page",
+        "source_template": "app/static/index.html",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public",
+        "nav_family": "unknown",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": "unknown",
+        "themes": "unknown",
+        "locales": "unknown",
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "app/web.py:876",
+          "app/static/index.html",
+          "app/auth.py:13"
+        ],
+        "notes": [
+          "nav membership not derived: the dashboard nav is built client-side in the SPA, not from a server-side link inventory",
+          "all GETs are unauthenticated: the browser password/cookie login was removed; only mutating/LLM POSTs need a bearer token (app/auth.py)",
+          "same SPA shell as /: the client opens this view from the path"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "mastermind:desk",
+      "observation_only": true
+    },
+    {
+      "repository_key": "mastermind",
+      "raw_generator_row": {
+        "page_id": "mastermind:market_view",
+        "repo": "mastermind",
+        "route": "/market_view",
+        "route_kind": "page",
+        "source_template": "app/static/market_view.html",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public",
+        "nav_family": "unknown",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": "unknown",
+        "themes": "unknown",
+        "locales": "unknown",
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "app/web.py:882",
+          "app/static/market_view.html",
+          "app/auth.py:13"
+        ],
+        "notes": [
+          "nav membership not derived: the dashboard nav is built client-side in the SPA, not from a server-side link inventory",
+          "all GETs are unauthenticated: the browser password/cookie login was removed; only mutating/LLM POSTs need a bearer token (app/auth.py)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "mastermind:market_view",
+      "observation_only": true
+    },
+    {
+      "repository_key": "mastermind",
+      "raw_generator_row": {
+        "page_id": "mastermind:agenda",
+        "repo": "mastermind",
+        "route": "/agenda",
+        "route_kind": "page",
+        "source_template": "app/static/agenda.html",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public",
+        "nav_family": "unknown",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": "unknown",
+        "themes": "unknown",
+        "locales": "unknown",
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "app/web.py:891",
+          "app/static/agenda.html",
+          "app/auth.py:13"
+        ],
+        "notes": [
+          "nav membership not derived: the dashboard nav is built client-side in the SPA, not from a server-side link inventory",
+          "all GETs are unauthenticated: the browser password/cookie login was removed; only mutating/LLM POSTs need a bearer token (app/auth.py)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "mastermind:agenda",
+      "observation_only": true
+    },
+    {
+      "repository_key": "mastermind",
+      "raw_generator_row": {
+        "page_id": "mastermind:portfolio_desk",
+        "repo": "mastermind",
+        "route": "/portfolio_desk",
+        "route_kind": "page",
+        "source_template": "app/static/portfolio.html",
+        "builder": [],
+        "data_sources": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public",
+        "nav_family": "unknown",
+        "archetype": "unclassified",
+        "design_system": {
+          "compliant": false
+        },
+        "primary_user_question": "",
+        "owner": "unowned",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "generated": false,
+        "bilingual": "unknown",
+        "themes": "unknown",
+        "locales": "unknown",
+        "known_contracts": [],
+        "open_prs": [],
+        "source_evidence": [
+          "app/web.py:3644",
+          "app/static/portfolio.html",
+          "app/auth.py:13"
+        ],
+        "notes": [
+          "nav membership not derived: the dashboard nav is built client-side in the SPA, not from a server-side link inventory",
+          "all GETs are unauthenticated: the browser password/cookie login was removed; only mutating/LLM POSTs need a bearer token (app/auth.py)"
+        ]
+      },
+      "present_in_existing_registry": true,
+      "canonical_registry_id": "mastermind:portfolio_desk",
+      "observation_only": true
+    }
+  ]
+}

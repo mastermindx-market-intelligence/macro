@@ -1,0 +1,136 @@
+{
+  "kind": "F03_shared_Start_Here_native_pair_difference_read_only_not_backup",
+  "observed_date_utc": "2026-11-04",
+  "method": "Original-carrier Paper get_basic_info exact fileId/pageId; get_jsx inline-styles same 3 shared IDs on both files, warning-aware parsing; get_tree_summary depth 10 sampled",
+  "original_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "copy_file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+  "page_id": "p-1P-0",
+  "original_page": {
+    "artboards": 10,
+    "node_count": 605,
+    "boards": [
+      {
+        "id": "5G0X-2",
+        "name": "00A · START HERE · MASTERMIND PAGES Navigation",
+        "childCount": 5
+      },
+      {
+        "id": "5G1H-2",
+        "name": "00B · LINK MAP · Shared Shell → Page Families",
+        "childCount": 5
+      },
+      {
+        "id": "5G1Z-2",
+        "name": "00C · COVERAGE MAP · Device + Theme + Locale",
+        "childCount": 6
+      },
+      {
+        "id": "72CI-0",
+        "name": "00D · Options entry · Directory · Dark EN · 1440",
+        "childCount": 7
+      },
+      {
+        "id": "72EW-0",
+        "name": "00E · Options entry · 390 content · Dark EN",
+        "childCount": 6
+      },
+      {
+        "id": "72EX-0",
+        "name": "00F · Options entry · 320 content · Light ZH",
+        "childCount": 6
+      },
+      {
+        "id": "72EY-0",
+        "name": "00G · Directory states · 768 content · Light EN",
+        "childCount": 10
+      },
+      {
+        "id": "72K0-0",
+        "name": "00H · Returned reference lookup · 1440 · Dark EN · DRAFT",
+        "childCount": 6
+      },
+      {
+        "id": "72K1-0",
+        "name": "00I · Returned reference lookup · 390 · Dark EN · DRAFT",
+        "childCount": 7
+      },
+      {
+        "id": "72K2-0",
+        "name": "00J · Returned reference lookup · 320 content · Light ZH · DRAFT",
+        "childCount": 7
+      }
+    ]
+  },
+  "copy_page": {
+    "artboards": 3,
+    "node_count": 58,
+    "boards": [
+      {
+        "id": "5G0X-2",
+        "name": "00A · START HERE · MASTERMIND PAGES Navigation",
+        "childCount": 6
+      },
+      {
+        "id": "5G1H-2",
+        "name": "00B · LINK MAP · Shared Shell → Page Families",
+        "childCount": 5
+      },
+      {
+        "id": "5G1Z-2",
+        "name": "00C · COVERAGE MAP · Device + Theme + Locale",
+        "childCount": 6
+      }
+    ]
+  },
+  "original_only_board_ids": [
+    "72CI-0",
+    "72EW-0",
+    "72EX-0",
+    "72EY-0",
+    "72K0-0",
+    "72K1-0",
+    "72K2-0"
+  ],
+  "shared_board_visible_jsx_comparisons": [
+    {
+      "board_id": "5G0X-2",
+      "name": "00A · START HERE · MASTERMIND PAGES Navigation",
+      "source_child_count": 5,
+      "copy_child_count": 6,
+      "source_visible_jsx_characters": 56667,
+      "copy_visible_jsx_characters": 6694,
+      "exact_visible_jsx_equal": false
+    },
+    {
+      "board_id": "5G1H-2",
+      "name": "00B · LINK MAP · Shared Shell → Page Families",
+      "source_child_count": 5,
+      "copy_child_count": 5,
+      "source_visible_jsx_characters": 7360,
+      "copy_visible_jsx_characters": 7006,
+      "exact_visible_jsx_equal": false
+    },
+    {
+      "board_id": "5G1Z-2",
+      "name": "00C · COVERAGE MAP · Device + Theme + Locale",
+      "source_child_count": 6,
+      "copy_child_count": 6,
+      "source_visible_jsx_characters": 7429,
+      "copy_visible_jsx_characters": 7399,
+      "exact_visible_jsx_equal": false
+    }
+  ],
+  "summary": {
+    "original_only_board_count": 7,
+    "shared_board_count": 3,
+    "shared_board_visible_jsx_different": 3,
+    "total_original_only_artboard_placements_including_five_original_only_pages": 53,
+    "all_shared_board_jsx_compared_bytewise": true
+  },
+  "source_warning": "Warning: Your file is too large. Further changes will result in data loss. Please start a new file.",
+  "notes": [
+    "Three shared board get_jsx bodies were compared as returned strings; no semantic/asset/revision-history equivalence claimed.",
+    "F03's newer Start Here source has more native nodes and seven extra artboards than the historical copy.",
+    "The 53 total counts page/board placements, not unique unrecoverable assets. No clone, move or Paper mutation."
+  ]
+}

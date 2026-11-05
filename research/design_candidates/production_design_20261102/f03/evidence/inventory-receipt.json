@@ -1,0 +1,17 @@
+{
+  "kind": "F03_existing_exporter_read_only_inventory",
+  "inventory_ref": "b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e",
+  "source_registry_generated_at": "2026-10-21T16:34:10Z",
+  "observed_at": "2026-11-03T01:27:35.747650+00:00",
+  "elapsed_seconds": 15.222,
+  "registry_sha256": "8d6346856bf24eb42525cfd0a7cbb6de3ff00092a907874012d8187e44623fbe",
+  "exporter_sha256": "50c37c89e1375e44bada5d6ff307a593b330ce18c20dafbfd6d26d2f6ed9866c",
+  "registry_owner_sha256": "ff8b3364545abe3f303d5762ee46e2106ce7aebe6394249d6dd56f7590f46ffd",
+  "tracked_html_count": 14025,
+  "document_count": 14014,
+  "legacy_count": 13989,
+  "native_registry_projection_count": 17,
+  "directory_count": 290,
+  "qualification": "complete Macro immutable document enumeration using existing exporter; native registry remains historical; no deployment or route admission",
+  "failures": []
+}

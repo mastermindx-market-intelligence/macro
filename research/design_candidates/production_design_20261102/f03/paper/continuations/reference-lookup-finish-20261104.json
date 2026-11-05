@@ -1,0 +1,29 @@
+{
+  "operation_id": "f03-20261104-lookup-finish-owned-01",
+  "tool": "finish_working_on_nodes",
+  "state": "APPLIED_RESPONSE_OBSERVED",
+  "request_arguments": {
+    "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+    "nodeIds": [
+      "72K0-0",
+      "72K1-0",
+      "72K2-0"
+    ]
+  },
+  "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+  "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+      },
+      {
+        "type": "text",
+        "text": "OK"
+      }
+    ]
+  },
+  "recorded_at_utc": "2026-11-04T05:42:07.428Z",
+  "production_acceptance": false
+}

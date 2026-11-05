@@ -1,0 +1,257 @@
+{
+  "kind": "source_logic_regression_probes_not_browser_tests",
+  "status": "PASS",
+  "tests": [
+    {
+      "name": "Canonical identity count is separate from nine null-ID deltas",
+      "result": "PASS"
+    },
+    {
+      "name": "Exact held board search exposes the matched board and role",
+      "result": "PASS"
+    },
+    {
+      "name": "Reference search and assignment filter include all D17 WTI exceptions",
+      "result": "PASS"
+    },
+    {
+      "name": "Detail navigation preserves originating view, query and owner",
+      "result": "PASS"
+    },
+    {
+      "name": "Skip action moves focus without changing router state",
+      "result": "PASS"
+    },
+    {
+      "name": "Exact board detail contains anchor and focus target",
+      "result": "PASS"
+    },
+    {
+      "name": "Equity replay exposes integration D08 and design D08D",
+      "result": "PASS"
+    },
+    {
+      "name": "Recorded redirects and Returns history are exposed without approval",
+      "result": "PASS"
+    },
+    {
+      "name": "Observed historical China role overrides prior candidate classification",
+      "result": "PASS"
+    },
+    {
+      "name": "Original Earnings and Hub archives link to recorded destinations",
+      "result": "PASS"
+    },
+    {
+      "name": "Inventory return is bounded to local inventory with its exact state",
+      "result": "PASS"
+    },
+    {
+      "name": "Mixed historical and held pages surface warnings",
+      "result": "PASS"
+    },
+    {
+      "name": "Family routes expose concrete-member index, never wildcard live URLs",
+      "result": "PASS"
+    },
+    {
+      "name": "Seven unregistered documents are individual gaps with design responsibility",
+      "result": "PASS"
+    },
+    {
+      "name": "Chinese chrome retains language-marked source fields and labels",
+      "result": "PASS"
+    },
+    {
+      "name": "Missing-result state links alternative scopes and member lookup",
+      "result": "PASS"
+    },
+    {
+      "name": "User search values are escaped and history encoded",
+      "result": "PASS"
+    },
+    {
+      "name": "Fresh document execution honors an exact saved board URL",
+      "result": "PASS"
+    },
+    {
+      "name": "Default inventory row retains an explicit nonempty return fragment",
+      "result": "PASS"
+    },
+    {
+      "name": "Complete member index preserves included and excluded rows",
+      "result": "PASS"
+    },
+    {
+      "name": "Eight return observations preserve null native-approval receipts",
+      "result": "PASS"
+    },
+    {
+      "name": "D08B and D08C expose direct exact candidate, Read me and source links",
+      "result": "PASS"
+    },
+    {
+      "name": "Source-only D08A and D08D remain without admitted native candidates",
+      "result": "PASS"
+    },
+    {
+      "name": "D08 entry provides all four owner contracts without a third directory choice",
+      "result": "PASS"
+    },
+    {
+      "name": "New exact Read me board identity is searchable without mutating census",
+      "result": "PASS"
+    },
+    {
+      "name": "Changes view exposes immutable return observations and current resource gate",
+      "result": "PASS"
+    },
+    {
+      "name": "Current directory effects do not imply cross-file action application",
+      "result": "PASS"
+    },
+    {
+      "name": "Chinese returned-evidence chrome retains exact source identities",
+      "result": "PASS"
+    },
+    {
+      "name": "Evidence links reject executable or non-evidence URL schemes",
+      "result": "PASS"
+    },
+    {
+      "name": "Source return refresh does not erase query or owner context",
+      "result": "PASS"
+    },
+    {
+      "name": "Candidate and Read me compound identities use their own pages",
+      "result": "PASS"
+    },
+    {
+      "name": "Current D08B/C Read me links are not retained-original claims",
+      "result": "PASS"
+    },
+    {
+      "name": "Evidence links reject normalization outside the immutable source pin",
+      "result": "PASS"
+    },
+    {
+      "name": "Paper-reference search finds returned Read me board IDs with exact page and contract",
+      "result": "PASS"
+    },
+    {
+      "name": "Reference search accepts full returned URLs and exact compound identities",
+      "result": "PASS"
+    },
+    {
+      "name": "Returned reference owner filtering and result links preserve query context",
+      "result": "PASS"
+    },
+    {
+      "name": "Same-page candidate and Read me roles are retained without duplicate page results",
+      "result": "PASS"
+    },
+    {
+      "name": "Retained-only and no-native returns never become native candidates",
+      "result": "PASS"
+    },
+    {
+      "name": "Reference projection leaves all frozen data and approval fields unchanged",
+      "result": "PASS"
+    },
+    {
+      "name": "Returned references disclose observed source time and unresolved qualification",
+      "result": "PASS"
+    },
+    {
+      "name": "Chinese returned-reference labels retain exact identity and source contracts",
+      "result": "PASS"
+    },
+    {
+      "name": "Reference projection rejects mismatched identity tuples and untrusted Paper URLs",
+      "result": "PASS"
+    },
+    {
+      "name": "Compound page identity keeps equal page IDs in different files distinct",
+      "result": "PASS"
+    },
+    {
+      "name": "Repeated return records deduplicate claims without erasing distinct roles",
+      "result": "PASS"
+    },
+    {
+      "name": "New reference controls include narrow stacking and touch-target source rules",
+      "result": "PASS"
+    },
+    {
+      "name": "All concrete returned Read me board IDs resolve only to their own page",
+      "result": "PASS"
+    },
+    {
+      "name": "Returned status and timestamp injection stays escaped and malicious contract stays inert",
+      "result": "PASS"
+    },
+    {
+      "name": "Synthetic pending native effect is exposed as a snapshot, not approval or a retry action",
+      "result": "PASS"
+    },
+    {
+      "name": "Zero-unknown fixture produces no stale warning or invented pending operation",
+      "result": "PASS"
+    },
+    {
+      "name": "Effect warning visibility follows the actual ledger on detail views without changing router context",
+      "result": "PASS"
+    },
+    {
+      "name": "Chinese synthetic pending-effect warning preserves the exact operation and evidence link",
+      "result": "PASS"
+    },
+    {
+      "name": "Pending operation display rejects text and timestamp injection",
+      "result": "PASS"
+    },
+    {
+      "name": "Later structural reads expose all 106 pages and 1837 compound board identities",
+      "result": "PASS"
+    },
+    {
+      "name": "Supplemental tail boards are searchable through their exact file/page/board identity",
+      "result": "PASS"
+    },
+    {
+      "name": "Repeated short board IDs do not collapse copied files or inherit product ownership",
+      "result": "PASS"
+    },
+    {
+      "name": "Observed board navigation preserves query, owner, exact page, focus and Back context",
+      "result": "PASS"
+    },
+    {
+      "name": "Zero-artboard observations remain successful reads without becoming completion or disposal",
+      "result": "PASS"
+    },
+    {
+      "name": "Provider data-loss warning stays on the exact duplicate file and does not spread to other copies",
+      "result": "PASS"
+    },
+    {
+      "name": "Coverage row reports completed metadata discovery and links the exact observation scope",
+      "result": "PASS"
+    },
+    {
+      "name": "Chinese structural chrome preserves exact observed identities and cautious ownership",
+      "result": "PASS"
+    },
+    {
+      "name": "Observed names and provider warnings are escaped without executable markup",
+      "result": "PASS"
+    },
+    {
+      "name": "EN and ZH reference views render against recursively frozen source data",
+      "result": "PASS"
+    }
+  ],
+  "limitations": [
+    "No rendering, browser interaction, screen-reader, touch, focus-visibility, contrast, zoom or performance acceptance."
+  ]
+}

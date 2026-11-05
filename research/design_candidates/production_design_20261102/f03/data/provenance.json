@@ -1,0 +1,158 @@
+{
+  "kind": "F03_DERIVED_AUDIT_DIRECTORY_NOT_A_CANONICAL_REGISTRY",
+  "package_sha": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "procedure_sha": "c57adacb338fe837c7d585f1e372c64d9b0118ec",
+  "macro_observation_sha": "b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e",
+  "terminal_observation_sha": "b79b1e136290978ff7675087de979bb1b42b3713",
+  "source_blob_map": {
+    "README.md": "a5d433c0071c154baf8622aaeb372554743b5e4a",
+    "ORGANIZATION_RULES.md": "67d780e218b277892cd65855621ae2e2288f059d",
+    "SHARED_SHELL_CONTRACT.md": "16c3c364fe02263fa24e11a5878fd3b773467507",
+    "RE_AUDIT_CHECKLIST.md": "1ccb33875407e13f9b6047cc9e4671bc3ab11bf0",
+    "templates/PRODUCT_BUILD_CONTRACT.md": "0df90f0f4004ae139917b62ba8d3ea8ea72aca2c",
+    "paper-files.json": "3a15381b3002ebd4d837e5fba53c077dcffc0f3b",
+    "paper-pages.json": "461aefdb087c7de5d368936b76459ad290707281",
+    "paper-actions-proposed.json": "faf08d2f4ef26b48b5f45ef64c506a9cec5555d1",
+    "paper-artboards.json": "4f1b2dcbeccdbd41aeb929309b2c7802cf57ed7a",
+    "route-ownership.json": "9c4d86f26f5249ed0430557698c228d17b95abcb",
+    "source-delta.json": "6a4c252251f45391307de538def61e083290f419",
+    "session-manifest.json": "7133a31557bd384a2c74ced244dcecd1fe159312",
+    "paper-resources.json": "75d716616126e0f64013b28111646f4b757ae15d",
+    "options-slice-map.json": "98c5d49fe6da0680b7d1c7a540618f408a94d01b",
+    "PAPER_PAGE_CROSSWALK.md": "bf2193b66daf1e19743b22468e6e4653c8ead1a3",
+    "PAPER_FILE_CENSUS.md": "5cbd7321c680108497368e15fa99ec9ef0fdbf7e",
+    "F03-handoff.md": "6b3512a7fcecc09c37ae712cf189dbc7fbfb8a4a",
+    "current-registry.json": "f4cae40a4bafec7e2e9f94dfff1e84c45d1bd008"
+  },
+  "baseline": {
+    "files": 29,
+    "listed_pages": 299,
+    "expanded_pages": 193,
+    "artboards": 2450,
+    "canonical_records": 348,
+    "source_deltas": 9
+  },
+  "live_delta": {
+    "observed_additional_files": 1,
+    "observed_additional_pages": 2,
+    "full_live_team_census": false
+  },
+  "directory": {
+    "assignments": 36,
+    "proposed_destinations": 51,
+    "page_records": 301,
+    "new_reference_approvals": 0,
+    "paper_mutations": 144,
+    "paper_unresolved_effects": 0,
+    "paper_unresolved_operation_ids": []
+  },
+  "status": "PARTIAL / BLOCKED_RETURN",
+  "paper_application": "DIRECTORY_EDITS_OBSERVED__RESOURCE_ACTIONS_NOT_DISPATCHED",
+  "rig_state": "draft",
+  "rig_receipt": null,
+  "registry_generated_at": "2026-10-21T16:34:10Z",
+  "fresh_macro_inventory": {
+    "kind": "F03_existing_exporter_read_only_inventory",
+    "inventory_ref": "b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e",
+    "source_registry_generated_at": "2026-10-21T16:34:10Z",
+    "observed_at": "2026-11-03T01:27:35.747650+00:00",
+    "elapsed_seconds": 15.222,
+    "registry_sha256": "8d6346856bf24eb42525cfd0a7cbb6de3ff00092a907874012d8187e44623fbe",
+    "exporter_sha256": "50c37c89e1375e44bada5d6ff307a593b330ce18c20dafbfd6d26d2f6ed9866c",
+    "registry_owner_sha256": "ff8b3364545abe3f303d5762ee46e2106ce7aebe6394249d6dd56f7590f46ffd",
+    "tracked_html_count": 14025,
+    "document_count": 14014,
+    "legacy_count": 13989,
+    "native_registry_projection_count": 17,
+    "directory_count": 290,
+    "qualification": "complete Macro immutable document enumeration using existing exporter; native registry remains historical; no deployment or route admission",
+    "failures": []
+  },
+  "fresh_native_inventory": {
+    "kind": "F03_existing_generator_native_source_inventory",
+    "observed_at": "2026-11-03T01:51:31.277525+00:00",
+    "generator_pin": "b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e",
+    "generator_path": "scripts/build_product_page_registry.py",
+    "generator_sha256": "ff8b3364545abe3f303d5762ee46e2106ce7aebe6394249d6dd56f7590f46ffd",
+    "terminal_pin": "b79b1e136290978ff7675087de979bb1b42b3713",
+    "terminal_method": "derive_terminal with exact ref",
+    "terminal_scope": "all terminal/app/**/page.tsx modules; not route admission",
+    "terminal_count": 29,
+    "mastermind_pin": "c57adacb338fe837c7d585f1e372c64d9b0118ec",
+    "mastermind_method": "derive_mastermind with exact git-show read_text injection",
+    "mastermind_source_path": "app/web.py",
+    "mastermind_source_blob": "66f48b51020e97beb08821e0e7ecf2c1daf2c8c5",
+    "mastermind_count": 7,
+    "discarded_metadata": "derive_mastermind default HEAD/branch/read_from=worktree metadata is not used as pinned provenance",
+    "limits": [
+      "Mastermind OS app/mastermind_os view modules are outside existing generator scope",
+      "Source access markers/hardcoded access are not entitlement or audience verification",
+      "Raw generated candidate IDs for unregistered modules are not canonical admission"
+    ],
+    "registry_modified": false,
+    "working_tree_modified": false,
+    "deployed": false,
+    "failures": []
+  },
+  "native_projection_warning": "17 native routes are inherited from the registry, not a fresh native-module census or route admission.",
+  "source_rule": "Canonical registry fields retain literal unknown; null belongs only to unobserved F03 projection metadata.",
+  "native_effect_evidence": "paper/native-progress.json",
+  "continuation_procedure_sha": "8eb375fe081339be759888f74a7c93d855727190",
+  "native_effect_observed_at": "2026-11-04T08:35:26.470Z",
+  "assignment_return_observations": [
+    {
+      "id": "F01",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "abfecf1efc452383fe720cb3ea2016ad8d7088e0"
+    },
+    {
+      "id": "F02",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f"
+    },
+    {
+      "id": "D07",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "da8df94d647f06b34e5a7a743f147980e627e854"
+    },
+    {
+      "id": "D08",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "d0516e1bad9cb5982d43d20c4167d0355cb70e2c"
+    },
+    {
+      "id": "D08A",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "c3413d84650ce85ca0c875c16b53b5e519b46f35"
+    },
+    {
+      "id": "D08B",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "a3356474cebbdd88e6448e05ffc3d2e44faa5ca6"
+    },
+    {
+      "id": "D08C",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "291f21aa8e9d757466412549a8d6537d889ab4d8"
+    },
+    {
+      "id": "D08D",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "a6ffdef508eb6f6293c74242f85d50d8c8843e6f"
+    }
+  ],
+  "baseline_scope_note": "Original 299 listed pages + two observations and 2450 boards remain frozen; later returns are separate observations, not a recensus.",
+  "structural_observations": {
+    "evidence": "paper/continuations/listed-page-expansion-20261104.json",
+    "sha256": "f2a5dae9c0f7dc167eceb7604cb28b808f78774ad4c100b7ff817ac503e7b98d",
+    "source_head": "d0682f23f8a4b2b18ac6e767cdbcaa1cb4b0afb2",
+    "procedure_sha": "8eb375fe081339be759888f74a7c93d855727190",
+    "baseline_listed_only_pages": 106,
+    "observed_pages": 106,
+    "remaining_pages": 0,
+    "observed_artboards": 1837,
+    "zero_artboard_pages": 12,
+    "warning_files": 1,
+    "qualification": "Structural metadata only; full content, visual quality, comments, assets, link preservation, product ownership, successor relationships, disposal, reference approval and input-path acceptance remain unestablished. The snapshot is a drift guard, not a full-content revision."
+  }
+}

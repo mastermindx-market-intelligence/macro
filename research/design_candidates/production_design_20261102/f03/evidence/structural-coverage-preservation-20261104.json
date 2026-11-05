@@ -1,0 +1,26 @@
+{
+  "kind": "F03_scoped_append_only_native_readback_not_resource_preservation",
+  "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "page_id": "p-1P-0",
+  "artboard_id": "5G0X-2",
+  "recorded_at_utc": "2026-11-04T08:35:26.470Z",
+  "retained_jsx_node_ids": 176,
+  "added_node_ids": [
+    "73VL-0",
+    "73VM-0"
+  ],
+  "removed_or_changed_existing_jsx_lines": 0,
+  "page_list_equal": true,
+  "observed_file_page_entries": 61,
+  "start_here_artboard_id_names_equal": true,
+  "artboard_count": 10,
+  "page_comment_threads_before": 0,
+  "page_comment_threads_after": 0,
+  "before_jsx_sha256": "9fef33b7917a5ed2d50b1106f4427eb5671eed933d455e4f104b1c214f2cb9d9",
+  "after_jsx_sha256": "e325c9c57901b668e5dc62bfbaa10f1b2680b70b77be824a999f316b97bd8250",
+  "limits": [
+    "Only the named board JSX and exact page list/comments were compared.",
+    "No whole-file asset, annotation, cross-file link or migration preservation claim.",
+    "A drift guard is not a content revision; the guard stayed unchanged across this applied edit."
+  ]
+}

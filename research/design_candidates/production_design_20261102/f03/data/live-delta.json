@@ -1,0 +1,28 @@
+[
+  {
+    "kind": "page_added",
+    "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "page_id": "p-26-1",
+    "name": "Intraday Flow · R1 · Discovery workspace · DRAFT",
+    "file_name": "MASTERMIND PAGES",
+    "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-26-1",
+    "owner": "D09",
+    "owner_basis": "existing registry assignment",
+    "board_count": 0,
+    "effect": "OBSERVED_ONLY",
+    "next_action": "Domain owner confirms current writer/candidate; F03 preserves exact source location."
+  },
+  {
+    "kind": "file_observed",
+    "file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+    "page_id": "p-1-0",
+    "name": "Page 1",
+    "file_name": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+    "url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-1-0",
+    "owner": "D05",
+    "owner_basis": "proposed from family; not confirmed custody",
+    "board_count": 0,
+    "effect": "OBSERVED_ONLY",
+    "next_action": "Domain owner confirms current writer/candidate; F03 preserves exact source location."
+  }
+]

@@ -1,0 +1,62 @@
+{
+  "schema": "f03.native_capture_set.v1",
+  "kind": "actual_native_screenshots_and_jsx_not_interaction_proof",
+  "status": "first_pass_two_findings_retained",
+  "previous_capture_set": null,
+  "boards": [
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72K0-0",
+      "observed_at": "2026-11-04T05:36:45.444Z",
+      "capture": {
+        "path": "paper/captures/reference-lookup-wide-20261104-r1.jpg",
+        "bytes": 95729,
+        "sha256": "de685a710c8df40de901489fff87cb37ecdae012c78bcb4ad546373acc44fc25",
+        "git_blob_sha": "5df78e39c59f8586320589de3c5e0aa96433ab19"
+      },
+      "export": {
+        "path": "paper/exports/reference-lookup-wide-20261104-r1.jsx",
+        "bytes": 11137,
+        "sha256": "a2aa6402f8b770ebfcb70d22d674fb6ce38d7b271f54036d7d278d1e4cd94b77",
+        "git_blob_sha": "2d475245f28262e4429df074711a81ca40b9ee4f"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72K1-0",
+      "observed_at": "2026-11-04T05:36:47.673Z",
+      "capture": {
+        "path": "paper/captures/reference-lookup-mobile-20261104-r1.jpg",
+        "bytes": 76808,
+        "sha256": "ed486a125914686c5160272e22fc83056c6d8b3d9710e9dd8ebc4b2917699521",
+        "git_blob_sha": "ff6b9477b2251fbe11e623e07f21544268b27fa1"
+      },
+      "export": {
+        "path": "paper/exports/reference-lookup-mobile-20261104-r1.jsx",
+        "bytes": 14104,
+        "sha256": "e6a44301c9d33632421fc8fa1d2775fd5df3a7e7486d4f7cb6ec20b785f69f86",
+        "git_blob_sha": "fb079c0e32e367488586296d34fb3f17967d26f7"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72K2-0",
+      "observed_at": "2026-11-04T05:36:49.702Z",
+      "capture": {
+        "path": "paper/captures/reference-lookup-narrow-20261104-r1.jpg",
+        "bytes": 70126,
+        "sha256": "be172d63c0fdc935fa68a292c889cb20358c97ebd6ea1a68d0dbc90f37b95373",
+        "git_blob_sha": "cf009e2d5c23115a7455e21e0da5f4566fd30260"
+      },
+      "export": {
+        "path": "paper/exports/reference-lookup-narrow-20261104-r1.jsx",
+        "bytes": 14260,
+        "sha256": "eb981a56cde2032bd3e8c5885b12a82f6752874476b86dad0a44ee6ba09b830b",
+        "git_blob_sha": "89e8b935dd9e6bc109466430ead0ca83de7c809d"
+      }
+    }
+  ]
+}

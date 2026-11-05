@@ -1,0 +1,8 @@
+{
+  "source_head": "e1ac30e1405d5fed4fa1a79d623a066505d47c52",
+  "command": "node tools/verify_directory.mjs .",
+  "stage": "New regression tests against unchanged published directory.html",
+  "exit_code": 1,
+  "output": "node:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: 1PVF-0 must be discoverable in Paper references\n\n0 !== 1\n\n    at file:///workspace/scratch/4a597accd9b9/f03-return-enhancement.C9UzjX/tools/verify_directory.mjs:58:10\n    at check (file:///workspace/scratch/4a597accd9b9/f03-return-enhancement.C9UzjX/tools/verify_directory.mjs:16:25)\n    at file:///workspace/scratch/4a597accd9b9/f03-return-enhancement.C9UzjX/tools/verify_directory.mjs:55:1\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: 0,\n  expected: 1,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\nNode.js v24.22.1\n",
+  "scope": "Source-logic harness, not browser proof"
+}

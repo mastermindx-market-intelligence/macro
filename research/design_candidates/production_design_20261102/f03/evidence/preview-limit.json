@@ -1,0 +1,12 @@
+{
+  "surface": "connected browser",
+  "attempt": "open local review artifact as data:text/html URL",
+  "result": "REJECTED_BY_BROWSER_URL_POLICY",
+  "allowed_protocols": [
+    "http:",
+    "https:"
+  ],
+  "rejection_summary": "Requested URL protocol not allowed. No alternate surface, indirect execution or workaround used.",
+  "rendered_candidate_evidence": false,
+  "source_logic_checks_are_browser_tests": false
+}

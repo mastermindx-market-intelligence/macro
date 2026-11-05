@@ -1,0 +1,176 @@
+{
+  "comparison": {
+    "all_artboards_jsx_compared": false,
+    "atomic_native_revision_bound": false,
+    "candidate_file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+    "candidate_page_count": 57,
+    "complete_file_native_census_observed": false,
+    "file_list_token_stability_observed": true,
+    "missing_source_page_ids": [
+      "p-27-0",
+      "p-26-1",
+      "p-25-0",
+      "p-29-0",
+      "p-28-0"
+    ],
+    "native_page_comparisons": [
+      {
+        "candidate": {
+          "artboard_count": 3,
+          "artboards": [
+            {
+              "childCount": 6,
+              "id": "5G0X-2",
+              "name": "00A · START HERE · MASTERMIND PAGES Navigation"
+            },
+            {
+              "childCount": 5,
+              "id": "5G1H-2",
+              "name": "00B · LINK MAP · Shared Shell → Page Families"
+            },
+            {
+              "childCount": 6,
+              "id": "5G1Z-2",
+              "name": "00C · COVERAGE MAP · Device + Theme + Locale"
+            }
+          ],
+          "font_families": [
+            "Arial",
+            "IBM Plex Mono",
+            "Inter",
+            "Menlo",
+            "PingFang SC",
+            "System Monospace",
+            "System Sans-Serif"
+          ],
+          "node_count": 58,
+          "page_id": "p-1P-0"
+        },
+        "native_metadata_equal": false,
+        "page_id": "p-1P-0",
+        "source": {
+          "artboard_count": 10,
+          "artboards": [
+            {
+              "childCount": 5,
+              "id": "5G0X-2",
+              "name": "00A · START HERE · MASTERMIND PAGES Navigation"
+            },
+            {
+              "childCount": 5,
+              "id": "5G1H-2",
+              "name": "00B · LINK MAP · Shared Shell → Page Families"
+            },
+            {
+              "childCount": 6,
+              "id": "5G1Z-2",
+              "name": "00C · COVERAGE MAP · Device + Theme + Locale"
+            },
+            {
+              "childCount": 7,
+              "id": "72CI-0",
+              "name": "00D · Options entry · Directory · Dark EN · 1440"
+            },
+            {
+              "childCount": 6,
+              "id": "72EW-0",
+              "name": "00E · Options entry · 390 content · Dark EN"
+            },
+            {
+              "childCount": 6,
+              "id": "72EX-0",
+              "name": "00F · Options entry · 320 content · Light ZH"
+            },
+            {
+              "childCount": 10,
+              "id": "72EY-0",
+              "name": "00G · Directory states · 768 content · Light EN"
+            },
+            {
+              "childCount": 6,
+              "id": "72K0-0",
+              "name": "00H · Returned reference lookup · 1440 · Dark EN · DRAFT"
+            },
+            {
+              "childCount": 7,
+              "id": "72K1-0",
+              "name": "00I · Returned reference lookup · 390 · Dark EN · DRAFT"
+            },
+            {
+              "childCount": 7,
+              "id": "72K2-0",
+              "name": "00J · Returned reference lookup · 320 content · Light ZH · DRAFT"
+            }
+          ],
+          "font_families": [
+            "Arial",
+            "IBM Plex Mono",
+            "Inter",
+            "Menlo",
+            "PingFang SC",
+            "System Monospace",
+            "System Sans-Serif"
+          ],
+          "node_count": 605,
+          "page_id": "p-1P-0"
+        }
+      }
+    ],
+    "native_page_scope_ids": [
+      "p-1P-0"
+    ],
+    "native_restore_verified": false,
+    "ordered_page_metadata_equal": false,
+    "paper_mutations": 0,
+    "resource_actions_authorized": false,
+    "schema": "mastermind.paper_native_pair_observation.v1",
+    "selected_artboard_jsx_comparisons": [
+      {
+        "candidate_characters": 7399,
+        "candidate_jsx_sha256": "4f57ddc97844a4c3bfe784c9520c16e96483e3b0711262d1a075b27859cbed54",
+        "digest_encoding": "bridge.canonical_json_string_utf8",
+        "exact_jsx_equal": false,
+        "node_id": "5G1Z-2",
+        "source_characters": 7429,
+        "source_jsx_sha256": "ab2b92c2c7c050b9135c7208d3e968c917b66798470f69787b393b1b2337f9f2"
+      }
+    ],
+    "source_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "source_page_count": 62,
+    "state": "OBSERVED_SCOPE_DIVERGENCE",
+    "token_hash_equal": true,
+    "unexpected_candidate_page_ids": [],
+    "warnings": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": null,
+        "text": "Warning: Your file is too large. Further changes will result in data loss. Please start a new file."
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1P-0",
+        "text": "Warning: Your file is too large. Further changes will result in data loss. Please start a new file."
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "node_id": "5G1Z-2",
+        "text": "Warning: Your file is too large. Further changes will result in data loss. Please start a new file."
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": null,
+        "text": "Warning: Your file is too large. Further changes will result in data loss. Please start a new file."
+      }
+    ]
+  },
+  "guard_source_sha256": "08968a7a284ba3807d8ca150c0048218ab63ee323059849f4c1149345bf6a726",
+  "installed_guard_execution": false,
+  "kind": "F03_native_plugin_guard_offline_replay_v1",
+  "native_transport_reexecuted_by_replay": false,
+  "paper_mutations": 0,
+  "raw_readback_sha256": "e9eed5a2b85382af1e432fcd6f760e5b0038eb318630c1ea488b658a7561de01",
+  "read_finished_at": "2026-11-04T19:58:03.762Z",
+  "read_started_at": "2026-11-04T19:57:20.753Z",
+  "reads_consumed": 8,
+  "replays_recorded_original_carrier_reads": true
+}

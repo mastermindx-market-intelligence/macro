@@ -1,0 +1,30 @@
+{
+  "kind": "F03_actual_native_capture_set_not_browser_or_approval",
+  "captured_at_utc": "2026-11-04T08:35:26.470Z",
+  "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "page_id": "p-1P-0",
+  "artboard_id": "5G0X-2",
+  "note_id": "73VL-0",
+  "files": [
+    {
+      "path": "continuations/structural-coverage-20261104-before.jsx",
+      "bytes": 55769,
+      "sha256": "9fef33b7917a5ed2d50b1106f4427eb5671eed933d455e4f104b1c214f2cb9d9"
+    },
+    {
+      "path": "continuations/structural-coverage-20261104-final.jsx",
+      "bytes": 56782,
+      "sha256": "e325c9c57901b668e5dc62bfbaa10f1b2680b70b77be824a999f316b97bd8250"
+    },
+    {
+      "path": "continuations/structural-coverage-20261104-final.jpg",
+      "bytes": 496879,
+      "sha256": "309c33ab9b6e9a619b556f34c1d19a7ce50c59f4da07566b540148173d3db354"
+    },
+    {
+      "path": "continuations/structural-coverage-20261104-note.jpg",
+      "bytes": 24301,
+      "sha256": "cbc3a91f5a1a5afab3b1c4c7ced3142edf998001b32a2a62d596bdeeb5e56549"
+    }
+  ]
+}

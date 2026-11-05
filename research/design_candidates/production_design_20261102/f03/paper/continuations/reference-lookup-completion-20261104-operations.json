@@ -1,0 +1,364 @@
+{
+  "schema": "f03.native_completion_receipts.v1",
+  "carrier": "Mastermind Paper direct app",
+  "source_head": "e1ac30e1405d5fed4fa1a79d623a066505d47c52",
+  "reconciled_original_operation": "f03-20261104-lookup-wide-provenance-01",
+  "operations": [
+    {
+      "operation_id": "f03-20261104-lookup-mobile-status-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K1-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:mobile/status",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72LD-0\",\n      \"name\": \"Status bar\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LE-0\",\n      \"name\": \"Time\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LF-0\",\n      \"name\": \"9:41\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LG-0\",\n      \"name\": \"Icons\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LH-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LI-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LJ-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LK-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LL-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LM-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:33:18.929Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-mobile-header-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K1-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:mobile/header",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72LO-0\",\n      \"name\": \"Directory header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LP-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LQ-0\",\n      \"name\": \"MASTERMIND / DESIGN\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LR-0\",\n      \"name\": \"中文\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:33:26.051Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-mobile-hero-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K1-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:mobile/hero",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72LT-0\",\n      \"name\": \"Reference lookup task\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LU-0\",\n      \"name\": \"DESIGN PROGRAMME · P…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LV-0\",\n      \"name\": \"Find the right desig…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LW-0\",\n      \"name\": \"Find an exact return…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:33:28.767Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-mobile-toolbar-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K1-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:mobile/toolbar",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72LY-0\",\n      \"name\": \"Exact search and owner filter\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72M0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72M1-0\",\n      \"name\": \"Search Paper titles …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72M2-0\",\n      \"name\": \"1PVF-0\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72M3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72M4-0\",\n      \"name\": \"Assignment\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72M5-0\",\n      \"name\": \"D08B\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72M6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72M7-0\",\n      \"name\": \"1 result in this vie…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72M8-0\",\n      \"name\": \"Clear filters\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:33:32.426Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-mobile-result-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K1-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:mobile/result",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72MA-0\",\n      \"name\": \"Returned reference and direct destinations\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MB-0\",\n      \"name\": \"Returned page / unqu…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MC-0\",\n      \"name\": \"Options Exposure, Vo…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MD-0\",\n      \"name\": \"Terminal · p-14-0 · …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72ME-0\",\n      \"name\": \"Read me · D08B\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MF-0\",\n      \"name\": \"Approval not establi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MI-0\",\n      \"name\": \"D08B · Source contra…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MK-0\",\n      \"name\": \"D08B · History & con…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:33:36.331Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-mobile-provenance-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K1-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:mobile/provenance",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72MM-0\",\n      \"name\": \"Expanded source evidence\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MN-0\",\n      \"name\": \"Source pins, observa…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MO-0\",\n      \"name\": \"Observed · 2026-11-0…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MP-0\",\n      \"name\": \"a3356474cebbdd88e644…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MQ-0\",\n      \"name\": \"Candidate and source…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MR-0\",\n      \"name\": \"Source-return eviden…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MS-0\",\n      \"name\": \"01M3NSZGE8JWN2EZCSF0…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:33:39.711Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-mobile-footer-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K1-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:mobile/footer",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72MU-0\",\n      \"name\": \"Return context and proof boundary\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MV-0\",\n      \"name\": \"Query and assignment…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MW-0\",\n      \"name\": \"Editable 390px layou…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:33:44.828Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-narrow-status-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K2-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:narrow/status",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72MY-0\",\n      \"name\": \"Status bar\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72MZ-0\",\n      \"name\": \"Time\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72N0-0\",\n      \"name\": \"9:41\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72N1-0\",\n      \"name\": \"Icons\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72N2-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72N3-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72N4-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72N5-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72N6-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72N7-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:33:47.339Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-narrow-header-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K2-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:narrow/header",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72N9-0\",\n      \"name\": \"Directory header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NB-0\",\n      \"name\": \"MASTERMIND / DESIGN\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NC-0\",\n      \"name\": \"EN\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:33:49.820Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-narrow-hero-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K2-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:narrow/hero",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72NE-0\",\n      \"name\": \"Reference lookup task\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NF-0\",\n      \"name\": \"设计计划 · Paper 参考\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NG-0\",\n      \"name\": \"找到正确设计。 保留完整历史。\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NH-0\",\n      \"name\": \"返回的设计说明与冻结基线一同可查；身份与…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:33:52.288Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-narrow-toolbar-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K2-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:narrow/toolbar",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72NJ-0\",\n      \"name\": \"Exact search and owner filter\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NM-0\",\n      \"name\": \"搜索 Paper 名称或精确 ID\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NN-0\",\n      \"name\": \"1S0R-0\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NP-0\",\n      \"name\": \"任务筛选\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NQ-0\",\n      \"name\": \"D08C\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NS-0\",\n      \"name\": \"1 条当前视图结果\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NT-0\",\n      \"name\": \"清除筛选\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:33:54.259Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-narrow-result-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K2-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:narrow/result",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72NV-0\",\n      \"name\": \"Returned reference and direct destinations\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NW-0\",\n      \"name\": \"返回页面 / 未认定\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NX-0\",\n      \"name\": \"期权计划、比较与复盘 ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NY-0\",\n      \"name\": \"Terminal · p-15-0 · …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72NZ-0\",\n      \"name\": \"设计说明 · D08C\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72O0-0\",\n      \"name\": \"批准尚未确立。返回证据不改写冻结清单。\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72O1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72O2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72O3-0\",\n      \"name\": \"D08C · 源合同 ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72O4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72O5-0\",\n      \"name\": \"D08C · 历史与合同 →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:33:59.085Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-narrow-provenance-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K2-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:narrow/provenance",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72O7-0\",\n      \"name\": \"Expanded source evidence\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72O8-0\",\n      \"name\": \"来源版本、观察时间与条件\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72O9-0\",\n      \"name\": \"观察时间 · 2026-11-04 02…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72OA-0\",\n      \"name\": \"291f21aa8e9d75746641…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72OB-0\",\n      \"name\": \"候选与源合同已返回；基础合同暂定；RIG…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72OC-0\",\n      \"name\": \"这是源返回证据，不代表新的原生批准、路由…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72OD-0\",\n      \"name\": \"01M3NSZGE8JWN2EZCSF0…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:34:04.020Z",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-narrow-footer-01",
+      "tool": "write_html",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "target_node_id": "72K2-0",
+      "input_ref": "reference-lookup-20261104-design-inputs.json:narrow/footer",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72OF-0\",\n      \"name\": \"Return context and proof boundary\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72OG-0\",\n      \"name\": \"查询与任务筛选保留在返回链接中。\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72OH-0\",\n      \"name\": \"可编辑布局样稿 · 320px 内容列\\n…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "recorded_at_utc": "2026-11-04T05:34:08.472Z",
+      "production_acceptance": false
+    }
+  ],
+  "production_acceptance": false,
+  "read_precheck": {
+    "state": "UNAVAILABLE",
+    "mutations_dispatched": 0,
+    "qualification": "No effectful call followed the failed precheck. Subsequent new footer applied using the last original-target guard and adapter pre-dispatch verification."
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "schema": "f03.native_capture_set.v1",
+  "kind": "actual_native_screenshots_and_jsx_not_interaction_proof",
+  "status": "frozen_affected_second_pass_input",
+  "previous_capture_set": "pro-enhancement-20261104-captures-r1.json",
+  "boards": [
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "5G0X-2",
+      "observed_at": "2026-11-04T03:15:50.513Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-main-20261104-r2.jpg",
+        "bytes": 462854,
+        "sha256": "5c9d24df92a3bffe0908ba3c3e9ea5c46c0a67da36727d6e107b78d2f5c27cdf",
+        "git_blob_sha": "f0c688d95120a0c2a95dadf7fea0f764362e3332"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-main-20261104-r2.jsx",
+        "bytes": 55599,
+        "sha256": "6579b1f5b1cc478f97f4a8187b4cf41cbe135a492c2dda246abf912cd6f2299f",
+        "git_blob_sha": "13fb005f8c0492bd37ef2dc4c41b506415cf7a96"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72CI-0",
+      "observed_at": "2026-11-04T03:17:15.700Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-options-wide-20261104-r2.jpg",
+        "bytes": 256240,
+        "sha256": "922eefa22d1025552291298fb94ce83052f20f1bafa360a275c89cee6076d405",
+        "git_blob_sha": "0a203982a60dedb573cff63ca4e8ac4d57ca3d80"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-options-wide-20261104-r2.jsx",
+        "bytes": 21550,
+        "sha256": "f0a84ac10aa1041ac8994a126451e15bcfb36d88b83900ee0e8de8ba9eec1bf8",
+        "git_blob_sha": "7632bf2904a5793c715170e2a9c86531bb485199"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72EW-0",
+      "observed_at": "2026-11-04T03:17:19.162Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-options-390-dark-en-20261104-r2.jpg",
+        "bytes": 128769,
+        "sha256": "081863f6863e329fd50ef82e5ef89410d52e89995509a986418073a0823ab495",
+        "git_blob_sha": "6587e882295e3ba8430e19858f9b7d9a2396874a"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-options-390-dark-en-20261104-r2.jsx",
+        "bytes": 13715,
+        "sha256": "1487a8553b06d7b956f3c254848af28f8fda528fadb78c37cbc9d190c8c54aa9",
+        "git_blob_sha": "027566f9daa8278e43cf975823b6d25900115346"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72EX-0",
+      "observed_at": "2026-11-04T03:17:29.653Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-options-320-light-zh-20261104-r2.jpg",
+        "bytes": 104271,
+        "sha256": "ddcf7f6a033bcfa8ec01083aa60d7a8f09232bd486d16d9f1ea6e6fc1e7d2a01",
+        "git_blob_sha": "486d909e7c604feddf98cc07fef96c1b4d019d8b"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-options-320-light-zh-20261104-r2.jsx",
+        "bytes": 13531,
+        "sha256": "749b0a698b07a58a3e80b9ab77f3596b0978848a9812d87455ce551a5f6e218a",
+        "git_blob_sha": "81a96a97f51a8495b2d32718c1b039b1543bd8c0"
+      }
+    },
+    {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-R-0",
+      "artboard_id": "1NDQ-0",
+      "observed_at": "2026-11-04T03:17:33.817Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-terminal-20261104-r3.jpg",
+        "bytes": 329607,
+        "sha256": "17dba600131664c329d61ff654dc212f6f2300aae9c6cd3652422d358e5d5ce4",
+        "git_blob_sha": "bd6129ce631f147bbf6353e062e31d3722cc654d"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-terminal-20261104-r3.jsx",
+        "bytes": 24395,
+        "sha256": "e8de2fbbaf38f3cec6ddb0337a25e06c9a19f9cbde756c92f1581f13ce46092a",
+        "git_blob_sha": "662e19f101c129fe68195ab682bd1384728bbb4a"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72EY-0",
+      "observed_at": "2026-11-04T03:17:41.381Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-states-768-light-en-20261104-r3.jpg",
+        "bytes": 213240,
+        "sha256": "c51453199571dd2db6e940ca4bfdeca2c2c069edd88ed1822d5b3e8b50ebde1e",
+        "git_blob_sha": "0e5d9a9b23ebd6150d1061e228d7f2688284d1c6"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-states-768-light-en-20261104-r3.jsx",
+        "bytes": 15218,
+        "sha256": "2c5a4d573c7b0162ad05fb16ba3fa1b251929b92252cde48c8b513744097cb7b",
+        "git_blob_sha": "c5efd7c6872ed913eafe6ba4d3ccfd81fdee9d43"
+      }
+    }
+  ],
+  "superseded_intermediates": [
+    "paper/captures/f03-pro-terminal-20261104-r2.jpg",
+    "paper/exports/f03-pro-terminal-20261104-r2.jsx",
+    "paper/captures/f03-pro-states-768-light-en-20261104-r2.jpg",
+    "paper/exports/f03-pro-states-768-light-en-20261104-r2.jsx"
+  ]
+}

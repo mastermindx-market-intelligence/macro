@@ -1,0 +1,115 @@
+{
+  "kind": "read_evidence_identity_checks_not_acceptance",
+  "status": "PASS",
+  "check_count": 26,
+  "checks": [
+    {
+      "name": "raw read receipts reproduce the entire observation file",
+      "result": "PASS"
+    },
+    {
+      "name": "106 exact listed-only pages, 12 files and 1837 complete board identities",
+      "result": "PASS"
+    },
+    {
+      "name": "12 successful zero-artboard reads remain explicit",
+      "result": "PASS"
+    },
+    {
+      "name": "two capped lists require 26 individually observed tail boards",
+      "result": "PASS"
+    },
+    {
+      "name": "provider data-loss warning retained on the exact duplicate file only",
+      "result": "PASS"
+    },
+    {
+      "name": "repeated short IDs coexist with 1837 unique compound identities",
+      "result": "PASS"
+    },
+    {
+      "name": "frozen pages and board data remain unchanged",
+      "result": "PASS"
+    },
+    {
+      "name": "no product-owner, approval, successor or archival fields inferred",
+      "result": "PASS"
+    },
+    {
+      "name": "coverage separates completed metadata reads from remaining retention work",
+      "result": "PASS"
+    },
+    {
+      "name": "duplicate page observation is rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "unknown page cannot be promoted from a read",
+      "result": "PASS"
+    },
+    {
+      "name": "mismatched returned file is rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "mismatched returned page is rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "unsafe page URL is rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "a failed read is never a zero-artboard success",
+      "result": "PASS"
+    },
+    {
+      "name": "non-UTC timestamp offsets cannot be ordered as UTC strings",
+      "result": "PASS"
+    },
+    {
+      "name": "mixed timestamp precision cannot corrupt completion order",
+      "result": "PASS"
+    },
+    {
+      "name": "supplemental timestamp uses the same canonical UTC precision",
+      "result": "PASS"
+    },
+    {
+      "name": "missing tail-node reads cannot claim a completed capped list",
+      "result": "PASS"
+    },
+    {
+      "name": "missing root summary cannot certify tail-node membership",
+      "result": "PASS"
+    },
+    {
+      "name": "duplicate supplemental node is rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "board on another page is rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "nonfinite board geometry is rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "negative or Boolean counts are rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "raw digest failure attaches no partial projection",
+      "result": "PASS"
+    },
+    {
+      "name": "missing prior evidence cannot leave a stale completion claim",
+      "result": "PASS"
+    }
+  ],
+  "limits": [
+    "Metadata, not full-content or visual comparison.",
+    "No move, archival, input-path, browser or approval proof."
+  ]
+}

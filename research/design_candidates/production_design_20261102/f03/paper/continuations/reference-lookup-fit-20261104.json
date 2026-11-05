@@ -1,0 +1,45 @@
+{
+  "operation_id": "f03-20261104-lookup-fit-content-01",
+  "tool": "update_styles",
+  "state": "APPLIED_RESPONSE_OBSERVED",
+  "request_arguments": {
+    "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+    "updates": [
+      {
+        "nodeIds": [
+          "72K0-0"
+        ],
+        "styles": {
+          "height": "fit-content",
+          "minHeight": "900px"
+        }
+      },
+      {
+        "nodeIds": [
+          "72K1-0",
+          "72K2-0"
+        ],
+        "styles": {
+          "height": "fit-content",
+          "minHeight": "844px"
+        }
+      }
+    ]
+  },
+  "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+  "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"72K0-0\"\n    },\n    {\n      \"nodeId\": \"72K1-0\"\n    },\n    {\n      \"nodeId\": \"72K2-0\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  "recorded_at_utc": "2026-11-04T05:34:39.168Z",
+  "production_acceptance": false
+}

@@ -1,0 +1,41 @@
+{
+  "observed_on_utc": "2026-11-03",
+  "surface": "https://beta.mastermind-x.com/today",
+  "method": "connected browser UI and DOM",
+  "primary_destinations": [
+    "Today",
+    "Discover",
+    "Analysis",
+    "Monitor",
+    "Research",
+    "Portfolio"
+  ],
+  "market_contexts": [
+    "US",
+    "CN",
+    "HK",
+    "CA",
+    "International"
+  ],
+  "all_tools": {
+    "displayed_destinations": 291,
+    "loaded_anchors_observed": 48,
+    "categories": [
+      "All",
+      "Workspaces",
+      "Markets",
+      "Research",
+      "Learn",
+      "Tools",
+      "About"
+    ],
+    "findings": [
+      "Duplicate-looking Alternative Data entries need identity-aware disambiguation by F01",
+      "Sentence-length market research assistant label needs F01 taxonomy review"
+    ]
+  },
+  "screenshot": "capture attempt timed out; no screenshot evidence claimed",
+  "personal_data_retained": false,
+  "scope": "F03 directory/navigation evidence only, not full product behavior audit",
+  "site_modified": false
+}

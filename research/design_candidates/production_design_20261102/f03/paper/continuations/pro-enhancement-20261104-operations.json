@@ -1,0 +1,1421 @@
+{
+  "schema": "f03.paper_operation_receipts.v1",
+  "carrier": "Mastermind Paper direct app",
+  "scope": "F03 owned directory nodes and new directory specimens only",
+  "recorded_at": "2026-11-04T02:44:50Z",
+  "source_base": "d9e78dc6512bcc7c79de540fe8d69746801b93c7",
+  "protected_procedure": "910803421beca53ca25145392725ab2d84c7a8e9",
+  "snapshot_is_not_document_revision": true,
+  "operations": [
+    {
+      "operation_id": "f03-20261103-enhance-directory-copy-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_board_ids": [
+        "5G0X-2"
+      ],
+      "request_arguments": null,
+      "request_note": "Original emitted request is in the live session; compact receipt preserves returned result and target board. No request replay.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"5G0Z-2\"\n    },\n    {\n      \"nodeId\": \"5G10-2\"\n    },\n    {\n      \"nodeId\": \"5G1B-2\"\n    },\n    {\n      \"nodeId\": \"5G1C-2\"\n    },\n    {\n      \"nodeId\": \"70MP-0\"\n    },\n    {\n      \"nodeId\": \"70MQ-0\"\n    },\n    {\n      \"nodeId\": \"70MS-0\"\n    },\n    {\n      \"nodeId\": \"70MT-0\"\n    },\n    {\n      \"nodeId\": \"70MV-0\"\n    },\n    {\n      \"nodeId\": \"70MW-0\"\n    },\n    {\n      \"nodeId\": \"6ZNZ-0\"\n    },\n    {\n      \"nodeId\": \"6ZS3-0\"\n    },\n    {\n      \"nodeId\": \"6ZS4-0\"\n    },\n    {\n      \"nodeId\": \"6ZS5-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-enhance-directory-hierarchy-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "updates": [
+          {
+            "nodeIds": [
+              "5G0Z-2"
+            ],
+            "styles": {
+              "fontSize": "36px",
+              "lineHeight": "44px"
+            }
+          },
+          {
+            "nodeIds": [
+              "5G1A-2"
+            ],
+            "styles": {
+              "gap": "10px",
+              "backgroundColor": "var(--noir-canvas)",
+              "borderWidth": "0px",
+              "padding": "0px"
+            }
+          },
+          {
+            "nodeIds": [
+              "5G1B-2"
+            ],
+            "styles": {
+              "color": "var(--noir-text-tertiary)",
+              "fontSize": "11px",
+              "lineHeight": "16px",
+              "letterSpacing": "1px"
+            }
+          },
+          {
+            "nodeIds": [
+              "5G1C-2"
+            ],
+            "styles": {
+              "fontSize": "13px",
+              "lineHeight": "20px"
+            }
+          },
+          {
+            "nodeIds": [
+              "6ZNW-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--noir-raised)",
+              "padding": "14px",
+              "borderBottomWidth": "0px",
+              "borderRadius": "10px"
+            }
+          },
+          {
+            "nodeIds": [
+              "70MN-0"
+            ],
+            "styles": {
+              "padding": "16px"
+            }
+          }
+        ]
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"5G0Z-2\"\n    },\n    {\n      \"nodeId\": \"5G1A-2\"\n    },\n    {\n      \"nodeId\": \"5G1B-2\"\n    },\n    {\n      \"nodeId\": \"5G1C-2\"\n    },\n    {\n      \"nodeId\": \"6ZNW-0\"\n    },\n    {\n      \"nodeId\": \"70MN-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-enhance-terminal-status-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "request_arguments": {
+        "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "updates": [
+          {
+            "nodeId": "1NDV-0",
+            "html": "Start with the right reference."
+          },
+          {
+            "nodeId": "1NDW-0",
+            "html": "Read me first. Then choose the exact design, source contract or retained history. Full addresses stay visible; Paper link activation is unverified."
+          },
+          {
+            "nodeId": "1NDX-0",
+            "html": "DESIGN REFERENCE INDEX<br/>Final approval remains open"
+          },
+          {
+            "nodeId": "1NE0-0",
+            "html": "READ ME / ORIGINAL REFERENCE · EXACT ADDRESS"
+          },
+          {
+            "nodeId": "1NE1-0",
+            "html": "REFERENCE · CONTRACT · REVIEW"
+          },
+          {
+            "nodeId": "1NE8-0",
+            "html": "Read me · https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-11-0"
+          },
+          {
+            "nodeId": "1NE9-0",
+            "html": "Original reference · https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1-0"
+          },
+          {
+            "nodeId": "1NEA-0",
+            "html": "Reference: provisional task studies<br/>Contract: D07 source return observed<br/>Review: draft / unsubmitted"
+          },
+          {
+            "nodeId": "1NEH-0",
+            "html": "Exposure · https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-14-0<br/>Plan / Review · https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-15-0"
+          },
+          {
+            "nodeId": "1NEI-0",
+            "html": "Original reference · https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2-0"
+          },
+          {
+            "nodeId": "1NEJ-0",
+            "html": "Reference: D08B / D08C candidates<br/>Contracts: returned, not released<br/>Review: draft · D08 holds retained"
+          },
+          {
+            "nodeId": "1NES-0",
+            "html": "Reference: observed study<br/>Contract: not bound in this index<br/>Review: unverified"
+          },
+          {
+            "nodeId": "1NF1-0",
+            "html": "Reference: six recorded imports<br/>Contract: held source excluded<br/>Review: no new approval"
+          },
+          {
+            "nodeId": "1NFA-0",
+            "html": "Reference: North Star study<br/>Contract: D07 source return observed<br/>Review: draft / unsubmitted"
+          },
+          {
+            "nodeId": "1NFJ-0",
+            "html": "Reference: R3 research study<br/>Contract: not bound in this index<br/>Review: unverified"
+          },
+          {
+            "nodeId": "1NFN-0",
+            "html": "Preserved source index · all families and lineage"
+          },
+          {
+            "nodeId": "1NFO-0",
+            "html": "F03 evidence view · not product navigation"
+          },
+          {
+            "nodeId": "1NFP-0",
+            "html": "https://github.com/mastermindx-market-intelligence/macro/blob/d9e78dc6512bcc7c79de540fe8d69746801b93c7/research/design_candidates/production_design_20261102/f03/DIRECTORY.md"
+          },
+          {
+            "nodeId": "1NFQ-0",
+            "html": "Observed ≠ approved. A returned source contract is not released foundation or implemented behavior. All 301 cross-file organization actions remain NOT_DISPATCHED."
+          }
+        ]
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NDV-0\"\n    },\n    {\n      \"nodeId\": \"1NDW-0\"\n    },\n    {\n      \"nodeId\": \"1NDX-0\"\n    },\n    {\n      \"nodeId\": \"1NE0-0\"\n    },\n    {\n      \"nodeId\": \"1NE1-0\"\n    },\n    {\n      \"nodeId\": \"1NE8-0\"\n    },\n    {\n      \"nodeId\": \"1NE9-0\"\n    },\n    {\n      \"nodeId\": \"1NEA-0\"\n    },\n    {\n      \"nodeId\": \"1NEH-0\"\n    },\n    {\n      \"nodeId\": \"1NEI-0\"\n    },\n    {\n      \"nodeId\": \"1NEJ-0\"\n    },\n    {\n      \"nodeId\": \"1NES-0\"\n    },\n    {\n      \"nodeId\": \"1NF1-0\"\n    },\n    {\n      \"nodeId\": \"1NFA-0\"\n    },\n    {\n      \"nodeId\": \"1NFJ-0\"\n    },\n    {\n      \"nodeId\": \"1NFN-0\"\n    },\n    {\n      \"nodeId\": \"1NFO-0\"\n    },\n    {\n      \"nodeId\": \"1NFP-0\"\n    },\n    {\n      \"nodeId\": \"1NFQ-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-enhance-terminal-legibility-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "request_arguments": {
+        "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "updates": [
+          {
+            "nodeIds": [
+              "1NDQ-0"
+            ],
+            "styles": {
+              "height": "fit-content",
+              "gap": "16px"
+            }
+          },
+          {
+            "nodeIds": [
+              "1NDX-0"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-muted)",
+              "fontSize": "12px",
+              "lineHeight": "18px"
+            }
+          },
+          {
+            "nodeIds": [
+              "1NEA-0",
+              "1NEJ-0",
+              "1NES-0",
+              "1NF1-0",
+              "1NFA-0",
+              "1NFJ-0"
+            ],
+            "styles": {
+              "fontSize": "13px",
+              "lineHeight": "21px",
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "1NE8-0",
+              "1NEH-0",
+              "1NEQ-0",
+              "1NEZ-0",
+              "1NF8-0",
+              "1NFH-0"
+            ],
+            "styles": {
+              "fontSize": "12px",
+              "lineHeight": "20px"
+            }
+          },
+          {
+            "nodeIds": [
+              "1NE9-0",
+              "1NEI-0"
+            ],
+            "styles": {
+              "fontSize": "12px",
+              "lineHeight": "20px"
+            }
+          }
+        ]
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NDQ-0\"\n    },\n    {\n      \"nodeId\": \"1NDX-0\"\n    },\n    {\n      \"nodeId\": \"1NEA-0\"\n    },\n    {\n      \"nodeId\": \"1NEJ-0\"\n    },\n    {\n      \"nodeId\": \"1NES-0\"\n    },\n    {\n      \"nodeId\": \"1NF1-0\"\n    },\n    {\n      \"nodeId\": \"1NFA-0\"\n    },\n    {\n      \"nodeId\": \"1NFJ-0\"\n    },\n    {\n      \"nodeId\": \"1NE8-0\"\n    },\n    {\n      \"nodeId\": \"1NEH-0\"\n    },\n    {\n      \"nodeId\": \"1NEQ-0\"\n    },\n    {\n      \"nodeId\": \"1NEZ-0\"\n    },\n    {\n      \"nodeId\": \"1NF8-0\"\n    },\n    {\n      \"nodeId\": \"1NFH-0\"\n    },\n    {\n      \"nodeId\": \"1NE9-0\"\n    },\n    {\n      \"nodeId\": \"1NEI-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-create-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "pageId": "p-1P-0",
+        "name": "00D · Options entry · Directory · Dark EN · 1440",
+        "styles": {
+          "width": "1440px",
+          "height": "900px",
+          "backgroundColor": "var(--noir-canvas)",
+          "padding": "32px",
+          "gap": "20px",
+          "fontFamily": "Inter",
+          "color": "var(--noir-text-primary)"
+        }
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"72CI-0\",\n  \"name\": \"00D · Options entry · Directory · Dark EN · 1440\",\n  \"worldX\": 4560,\n  \"worldY\": 0,\n  \"width\": 1440,\n  \"height\": 900\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-header-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72CI-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Options directory header\" style=\"display:flex;flex-direction:column;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--noir-raised);width:100%;\">\n<div style=\"font-size:11px;line-height:16px;letter-spacing:1.2px;color:var(--noir-text-tertiary);\">F03 / DESIGN PROGRAMME / OPTIONS</div>\n<div style=\"font-size:36px;line-height:44px;font-weight:600;color:var(--noir-text-primary);\">One platform. Four research journeys.</div>\n<div style=\"font-size:16px;line-height:24px;color:var(--noir-text-secondary);\">Open a design reference or its source contract. Ownership and review status travel together.</div>\n<div style=\"display:flex;justify-content:space-between;gap:24px;padding-top:4px;font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\"><div>Draft references · Final joint foundation and reference approval remain open.</div><div>Source observations · 04 Nov 2026 · 02:25 UTC</div></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72CJ-0\",\n      \"name\": \"Options directory header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72CK-0\",\n      \"name\": \"F03 / DESIGN PROGRAM…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72CL-0\",\n      \"name\": \"One platform. Four r…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72CM-0\",\n      \"name\": \"Open a design refere…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72CN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72CO-0\",\n      \"name\": \"Draft references · F…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72CP-0\",\n      \"name\": \"Source observations …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-contract-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72CI-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Options integration contract\" style=\"display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;padding:18px 20px;background-color:var(--noir-panel);border-radius:12px;\">\n<div style=\"display:flex;flex-direction:column;gap:6px;\"><div style=\"font-size:16px;line-height:24px;font-weight:600;\">D08 owns integration</div><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);\">Four separately owned design slices. No new route registry, product UI or approval is created here.</div></div>\n<div style=\"display:flex;flex-direction:column;gap:4px;text-align:right;\"><div style=\"font-family:IBM Plex Mono;font-size:13px;line-height:20px;color:var(--noir-champagne);\">D08-OPTIONS/1.0.0</div><div style=\"font-family:IBM Plex Mono;font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\">d0516e1bad9cb5982d43d20c4167d0355cb70e2c</div></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72CR-0\",\n      \"name\": \"Options integration contract\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72CS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72CT-0\",\n      \"name\": \"D08 owns integration\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72CU-0\",\n      \"name\": \"Four separately owne…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72CV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72CW-0\",\n      \"name\": \"D08-OPTIONS/1.0.0\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72CX-0\",\n      \"name\": \"d0516e1bad9cb5982d43…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-d08a-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72CI-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"D08A design package\" style=\"display:flex;gap:24px;width:100%;padding:20px;background-color:var(--noir-panel);border-radius:12px;\">\n<div style=\"display:flex;flex-direction:column;gap:8px;width:272px;flex-shrink:0;\"><div style=\"font-size:11px;line-height:16px;letter-spacing:1px;color:var(--noir-champagne);\">D08A / DESIGN PACKAGE</div><div style=\"font-size:21px;line-height:28px;font-weight:600;\">Overview & Flow</div><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);\">Scan observations. Investigate deliberately. Return to the same evidence.</div></div>\n<div style=\"display:flex;flex-direction:column;gap:8px;width:390px;flex-shrink:0;\"><div style=\"font-size:11px;line-height:16px;letter-spacing:.8px;color:var(--noir-text-tertiary);\">DESIGN REFERENCE</div><a href=\"https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-25-0\" style=\"font-size:14px;line-height:22px;color:var(--noir-steel);text-decoration:none;\">Retained Brief / Flow reference ↗</a><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);word-break:break-all;\">https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-25-0</div><div style=\"font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\">New native candidate: not admitted</div></div>\n<div style=\"display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;\"><div style=\"font-size:11px;line-height:16px;letter-spacing:.8px;color:var(--noir-text-tertiary);\">SOURCE CONTRACT + REVIEW</div><a href=\"https://github.com/mastermindx-market-intelligence/macro/blob/c3413d84650ce85ca0c875c16b53b5e519b46f35/research/design_candidates/production_design_20261102/d08a/IMPLEMENTATION_HANDOFF.md\" style=\"font-size:14px;line-height:22px;color:var(--noir-steel);text-decoration:none;\">IMPLEMENTATION_HANDOFF.md ↗</a><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);word-break:break-all;\">https://github.com/mastermindx-market-intelligence/macro/blob/c3413d84650ce85ca0c875c16b53b5e519b46f35/research/design_candidates/production_design_20261102/d08a/IMPLEMENTATION_HANDOFF.md</div><div style=\"font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\">Source return observed · RIG draft</div></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72CZ-0\",\n      \"name\": \"D08A design package\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72D0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72D1-0\",\n      \"name\": \"D08A / DESIGN PACKAG…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72D2-0\",\n      \"name\": \"Overview & Flow\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72D3-0\",\n      \"name\": \"Scan observations. I…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72D4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72D5-0\",\n      \"name\": \"DESIGN REFERENCE\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72D6-0\",\n      \"name\": \"Retained Brief / Flo…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72D7-0\",\n      \"name\": \"https://app.paper.de…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72D8-0\",\n      \"name\": \"New native candidate…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72D9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DA-0\",\n      \"name\": \"SOURCE CONTRACT + RE…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DB-0\",\n      \"name\": \"IMPLEMENTATION_HANDO…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DC-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DD-0\",\n      \"name\": \"Source return observ…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-d08b-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72CI-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"D08B design package\" style=\"display:flex;gap:24px;width:100%;padding:20px;background-color:var(--noir-panel);border-radius:12px;\">\n<div style=\"display:flex;flex-direction:column;gap:8px;width:272px;flex-shrink:0;\"><div style=\"font-size:11px;line-height:16px;letter-spacing:1px;color:var(--noir-champagne);\">D08B / DESIGN PACKAGE</div><div style=\"font-size:21px;line-height:28px;font-weight:600;\">Exposure & Volatility</div><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);\">Open the dated book. Preserve source, clocks and uncertainty.</div></div>\n<div style=\"display:flex;flex-direction:column;gap:8px;width:390px;flex-shrink:0;\"><div style=\"font-size:11px;line-height:16px;letter-spacing:.8px;color:var(--noir-text-tertiary);\">DESIGN REFERENCE</div><a href=\"https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-14-0\" style=\"font-size:14px;line-height:22px;color:var(--noir-steel);text-decoration:none;\">Read me · exposure candidate ↗</a><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);word-break:break-all;\">https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-14-0</div><div style=\"font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\">Candidate page p-12-0 · 18 boards reported</div></div>\n<div style=\"display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;\"><div style=\"font-size:11px;line-height:16px;letter-spacing:.8px;color:var(--noir-text-tertiary);\">SOURCE CONTRACT + REVIEW</div><a href=\"https://github.com/mastermindx-market-intelligence/macro/blob/a3356474cebbdd88e6448e05ffc3d2e44faa5ca6/research/design_candidates/production_design_20261102/d08b/SOURCE_BUILD_CONTRACT.md\" style=\"font-size:14px;line-height:22px;color:var(--noir-steel);text-decoration:none;\">SOURCE_BUILD_CONTRACT.md ↗</a><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);word-break:break-all;\">https://github.com/mastermindx-market-intelligence/macro/blob/a3356474cebbdd88e6448e05ffc3d2e44faa5ca6/research/design_candidates/production_design_20261102/d08b/SOURCE_BUILD_CONTRACT.md</div><div style=\"font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\">Candidate and source returned · RIG draft</div></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72DF-0\",\n      \"name\": \"D08B design package\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DH-0\",\n      \"name\": \"D08B / DESIGN PACKAG…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DI-0\",\n      \"name\": \"Exposure & Volatilit…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DJ-0\",\n      \"name\": \"Open the dated book.…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DL-0\",\n      \"name\": \"DESIGN REFERENCE\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DM-0\",\n      \"name\": \"Read me · exposure c…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DN-0\",\n      \"name\": \"https://app.paper.de…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DO-0\",\n      \"name\": \"Candidate page p-12-…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DP-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DQ-0\",\n      \"name\": \"SOURCE CONTRACT + RE…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DR-0\",\n      \"name\": \"SOURCE_BUILD_CONTRAC…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DS-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DT-0\",\n      \"name\": \"Candidate and source…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-d08c-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72CI-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"D08C design package\" style=\"display:flex;gap:24px;width:100%;padding:20px;background-color:var(--noir-panel);border-radius:12px;\">\n<div style=\"display:flex;flex-direction:column;gap:8px;width:272px;flex-shrink:0;\"><div style=\"font-size:11px;line-height:16px;letter-spacing:1px;color:var(--noir-champagne);\">D08C / DESIGN PACKAGE</div><div style=\"font-size:21px;line-height:28px;font-weight:600;\">Plan, Compare & Review</div><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);\">State the thesis. Compare assumptions. Revisit without placing a trade.</div></div>\n<div style=\"display:flex;flex-direction:column;gap:8px;width:390px;flex-shrink:0;\"><div style=\"font-size:11px;line-height:16px;letter-spacing:.8px;color:var(--noir-text-tertiary);\">DESIGN REFERENCE</div><a href=\"https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-15-0\" style=\"font-size:14px;line-height:22px;color:var(--noir-steel);text-decoration:none;\">Read me · plan / review candidate ↗</a><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);word-break:break-all;\">https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-15-0</div><div style=\"font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\">Candidate page p-13-0 · 11 boards reported</div></div>\n<div style=\"display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;\"><div style=\"font-size:11px;line-height:16px;letter-spacing:.8px;color:var(--noir-text-tertiary);\">SOURCE CONTRACT + REVIEW</div><a href=\"https://github.com/mastermindx-market-intelligence/macro/blob/291f21aa8e9d757466412549a8d6537d889ab4d8/research/design_candidates/production_design_20261102/d08c/DATA_AND_BUILD.md\" style=\"font-size:14px;line-height:22px;color:var(--noir-steel);text-decoration:none;\">DATA_AND_BUILD.md ↗</a><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);word-break:break-all;\">https://github.com/mastermindx-market-intelligence/macro/blob/291f21aa8e9d757466412549a8d6537d889ab4d8/research/design_candidates/production_design_20261102/d08c/DATA_AND_BUILD.md</div><div style=\"font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\">Candidate and source returned · RIG draft</div></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72DV-0\",\n      \"name\": \"D08C design package\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DX-0\",\n      \"name\": \"D08C / DESIGN PACKAG…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DY-0\",\n      \"name\": \"Plan, Compare & Revi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72DZ-0\",\n      \"name\": \"State the thesis. Co…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72E0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72E1-0\",\n      \"name\": \"DESIGN REFERENCE\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72E2-0\",\n      \"name\": \"Read me · plan / rev…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72E3-0\",\n      \"name\": \"https://app.paper.de…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72E4-0\",\n      \"name\": \"Candidate page p-13-…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72E5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72E6-0\",\n      \"name\": \"SOURCE CONTRACT + RE…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72E7-0\",\n      \"name\": \"DATA_AND_BUILD.md ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72E8-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72E9-0\",\n      \"name\": \"Candidate and source…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-d08d-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72CI-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"D08D design package\" style=\"display:flex;gap:24px;width:100%;padding:20px;background-color:var(--noir-panel);border-radius:12px;\">\n<div style=\"display:flex;flex-direction:column;gap:8px;width:272px;flex-shrink:0;\"><div style=\"font-size:11px;line-height:16px;letter-spacing:1px;color:var(--noir-champagne);\">D08D / DESIGN PACKAGE</div><div style=\"font-size:21px;line-height:28px;font-weight:600;\">Futures & Equity Replay</div><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);\">Resolve the exact source observation. Keep futures and equity readers distinct.</div></div>\n<div style=\"display:flex;flex-direction:column;gap:8px;width:390px;flex-shrink:0;\"><div style=\"font-size:11px;line-height:16px;letter-spacing:.8px;color:var(--noir-text-tertiary);\">DESIGN REFERENCE</div><a href=\"https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2-0\" style=\"font-size:14px;line-height:22px;color:var(--noir-steel);text-decoration:none;\">Retained Options source reference ↗</a><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);word-break:break-all;\">https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2-0</div><div style=\"font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\">New native candidate: not admitted</div></div>\n<div style=\"display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;\"><div style=\"font-size:11px;line-height:16px;letter-spacing:.8px;color:var(--noir-text-tertiary);\">SOURCE CONTRACT + REVIEW</div><a href=\"https://github.com/mastermindx-market-intelligence/macro/blob/a6ffdef508eb6f6293c74242f85d50d8c8843e6f/research/design_candidates/production_design_20261102/d08d/TEMPORAL_BACKEND_CONTRACT.md\" style=\"font-size:14px;line-height:22px;color:var(--noir-steel);text-decoration:none;\">TEMPORAL_BACKEND_CONTRACT.md ↗</a><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);word-break:break-all;\">https://github.com/mastermindx-market-intelligence/macro/blob/a6ffdef508eb6f6293c74242f85d50d8c8843e6f/research/design_candidates/production_design_20261102/d08d/TEMPORAL_BACKEND_CONTRACT.md</div><div style=\"font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\">Source return observed · RIG draft</div></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72EB-0\",\n      \"name\": \"D08D design package\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EC-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72ED-0\",\n      \"name\": \"D08D / DESIGN PACKAG…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EE-0\",\n      \"name\": \"Futures & Equity Rep…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EF-0\",\n      \"name\": \"Resolve the exact so…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EH-0\",\n      \"name\": \"DESIGN REFERENCE\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EI-0\",\n      \"name\": \"Retained Options sou…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EJ-0\",\n      \"name\": \"https://app.paper.de…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EK-0\",\n      \"name\": \"New native candidate…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EM-0\",\n      \"name\": \"SOURCE CONTRACT + RE…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EN-0\",\n      \"name\": \"TEMPORAL_BACKEND_CON…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EO-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EP-0\",\n      \"name\": \"Source return observ…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-footer-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72CI-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Directory boundaries\" style=\"display:flex;flex-direction:column;gap:8px;padding:16px 0;width:100%;border-top:1px solid var(--noir-raised);\">\n<div style=\"font-size:13px;line-height:21px;color:var(--noir-text-secondary);\">Four design packages are not four route records. Proposed route grouping, canonical IDs and access rules remain separate.</div>\n<div style=\"font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\">Preserve original references and D08's held 1N2L-0. Exact addresses are visible; Paper exports do not retain anchor behavior. Native link activation, final foundation and RIG acceptance are not established.</div>\n<div style=\"font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\">F03 directory specimen · Source return is not product implementation · All 301 cross-file organization actions remain NOT_DISPATCHED.</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72ER-0\",\n      \"name\": \"Directory boundaries\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72ES-0\",\n      \"name\": \"Four design packages…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72ET-0\",\n      \"name\": \"Preserve original re…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72EU-0\",\n      \"name\": \"F03 directory specim…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-fit-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "updates": [
+          {
+            "nodeIds": [
+              "72CI-0"
+            ],
+            "styles": {
+              "height": "fit-content"
+            }
+          }
+        ]
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"72CI-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-contrast-repair-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "updates": [
+          {
+            "nodeIds": [
+              "72CT-0",
+              "72D2-0",
+              "72DI-0",
+              "72DY-0",
+              "72EE-0"
+            ],
+            "styles": {
+              "color": "var(--noir-text-primary)"
+            }
+          },
+          {
+            "nodeIds": [
+              "72D8-0",
+              "72DD-0",
+              "72DO-0",
+              "72DT-0",
+              "72E4-0",
+              "72E9-0",
+              "72EK-0",
+              "72EP-0"
+            ],
+            "styles": {
+              "fontSize": "13px",
+              "lineHeight": "21px"
+            }
+          }
+        ]
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"72CT-0\"\n    },\n    {\n      \"nodeId\": \"72D2-0\"\n    },\n    {\n      \"nodeId\": \"72DI-0\"\n    },\n    {\n      \"nodeId\": \"72DY-0\"\n    },\n    {\n      \"nodeId\": \"72EE-0\"\n    },\n    {\n      \"nodeId\": \"72D8-0\"\n    },\n    {\n      \"nodeId\": \"72DD-0\"\n    },\n    {\n      \"nodeId\": \"72DO-0\"\n    },\n    {\n      \"nodeId\": \"72DT-0\"\n    },\n    {\n      \"nodeId\": \"72E4-0\"\n    },\n    {\n      \"nodeId\": \"72E9-0\"\n    },\n    {\n      \"nodeId\": \"72EK-0\"\n    },\n    {\n      \"nodeId\": \"72EP-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-create-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "pageId": "p-1P-0",
+        "name": "00E · Options entry · 390 content · Dark EN",
+        "styles": {
+          "width": "390px",
+          "height": "844px",
+          "backgroundColor": "var(--noir-canvas)",
+          "padding": "20px",
+          "gap": "16px",
+          "fontFamily": "Inter",
+          "color": "var(--noir-text-primary)"
+        }
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"72EW-0\",\n  \"name\": \"00E · Options entry · 390 content · Dark EN\",\n  \"worldX\": 6080,\n  \"worldY\": 0,\n  \"width\": 390,\n  \"height\": 844\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-create-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "pageId": "p-1P-0",
+        "name": "00F · Options entry · 320 content · Light ZH",
+        "styles": {
+          "width": "320px",
+          "height": "844px",
+          "backgroundColor": "var(--mx-light-bg)",
+          "padding": "16px",
+          "gap": "16px",
+          "fontFamily": "Inter, PingFang SC",
+          "color": "var(--mx-light-text)"
+        }
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"72EX-0\",\n  \"name\": \"00F · Options entry · 320 content · Light ZH\",\n  \"worldX\": 6550,\n  \"worldY\": 0,\n  \"width\": 320,\n  \"height\": 844\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-create-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "pageId": "p-1P-0",
+        "name": "00G · Directory states · 768 content · Light EN",
+        "styles": {
+          "width": "768px",
+          "height": "1024px",
+          "backgroundColor": "var(--mx-light-bg)",
+          "padding": "28px",
+          "gap": "16px",
+          "fontFamily": "Inter",
+          "color": "var(--mx-light-text)"
+        }
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"72EY-0\",\n  \"name\": \"00G · Directory states · 768 content · Light EN\",\n  \"worldX\": 6950,\n  \"worldY\": 0,\n  \"width\": 768,\n  \"height\": 1024\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-header-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EW-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Narrow directory header\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding-bottom:8px;\">\n<div style=\"font-size:11px;line-height:16px;letter-spacing:1px;color:var(--noir-text-tertiary);\">F03 / DESIGN DIRECTORY / 390 CONTENT</div>\n<div style=\"font-size:30px;line-height:38px;font-weight:600;color:var(--noir-text-primary);\">Options, at a glance.</div>\n<div style=\"font-size:15px;line-height:23px;color:var(--noir-text-secondary);\">Choose a design reference or build contract. Keep ownership, history and review state visible.</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--noir-text-tertiary);\">Draft · Joint foundation and final review remain open.</div>\n<div style=\"font-size:12px;line-height:20px;color:var(--noir-text-tertiary);\">Sources observed 04 Nov 2026 · 02:25 UTC</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72EZ-0\",\n      \"name\": \"Narrow directory header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72F0-0\",\n      \"name\": \"F03 / DESIGN DIRECTO…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72F1-0\",\n      \"name\": \"Options, at a glance…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72F2-0\",\n      \"name\": \"Choose a design refe…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72F3-0\",\n      \"name\": \"Draft · Joint founda…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72F4-0\",\n      \"name\": \"Sources observed 04 …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-header-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EX-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Narrow directory header\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding-bottom:8px;\">\n<div style=\"font-size:11px;line-height:16px;letter-spacing:1px;color:var(--mx-light-muted);\">F03 / 设计目录 / 320 内容宽度</div>\n<div style=\"font-size:30px;line-height:38px;font-weight:600;color:var(--mx-light-text);\">期权：四个研究入口</div>\n<div style=\"font-size:15px;line-height:23px;color:var(--mx-light-muted);\">先选设计参考或构建合同。保留负责人、历史与审核状态。</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--mx-light-muted);\">草稿 · 联合基础规范与最终审核仍未完成</div>\n<div style=\"font-size:12px;line-height:20px;color:var(--mx-light-muted);\">来源观察：2026-11-04 02:25 UTC</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72F6-0\",\n      \"name\": \"Narrow directory header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72F7-0\",\n      \"name\": \"F03 / 设计目录 / 320 内容宽…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72F8-0\",\n      \"name\": \"期权：四个研究入口\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72F9-0\",\n      \"name\": \"先选设计参考或构建合同。保留负责人、历史…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FA-0\",\n      \"name\": \"草稿 · 联合基础规范与最终审核仍未完成\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FB-0\",\n      \"name\": \"来源观察：2026-11-04 02:2…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-d08a-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EW-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"D08A narrow package EN\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding:16px;background-color:var(--noir-panel);border-radius:12px;\">\n<div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--noir-text-tertiary);\">D08A / DESIGN PACKAGE</div>\n<div style=\"font-size:20px;line-height:28px;font-weight:600;color:var(--noir-text-primary);\">Overview & Flow</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--noir-text-secondary);\">Native candidate not admitted. Retained reference and source return remain available.</div>\n<div style=\"display:flex;gap:8px;width:100%;\">\n<a href=\"https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-25-0\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;background-color:var(--noir-raised);border-radius:8px;font-size:13px;line-height:20px;color:var(--noir-steel);text-decoration:none;\">Retained reference ↗</a>\n<a href=\"https://github.com/mastermindx-market-intelligence/macro/blob/c3413d84650ce85ca0c875c16b53b5e519b46f35/research/design_candidates/production_design_20261102/d08a/IMPLEMENTATION_HANDOFF.md\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;border:1px solid var(--noir-hover);border-radius:8px;font-size:13px;line-height:20px;color:var(--noir-text-primary);text-decoration:none;\">Build contract ↗</a></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72FD-0\",\n      \"name\": \"D08A narrow package EN\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FE-0\",\n      \"name\": \"D08A / DESIGN PACKAG…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FF-0\",\n      \"name\": \"Overview & Flow\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FG-0\",\n      \"name\": \"Native candidate not…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FI-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FJ-0\",\n      \"name\": \"Retained reference ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FL-0\",\n      \"name\": \"Build contract ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-d08b-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EW-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"D08B narrow package EN\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding:16px;background-color:var(--noir-panel);border-radius:12px;\">\n<div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--noir-text-tertiary);\">D08B / DESIGN PACKAGE</div>\n<div style=\"font-size:20px;line-height:28px;font-weight:600;color:var(--noir-text-primary);\">Exposure & Volatility</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--noir-text-secondary);\">Candidate p-12-0 · Source return observed · RIG draft</div>\n<div style=\"display:flex;gap:8px;width:100%;\">\n<a href=\"https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-14-0\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;background-color:var(--noir-raised);border-radius:8px;font-size:13px;line-height:20px;color:var(--noir-steel);text-decoration:none;\">Read me / design ↗</a>\n<a href=\"https://github.com/mastermindx-market-intelligence/macro/blob/a3356474cebbdd88e6448e05ffc3d2e44faa5ca6/research/design_candidates/production_design_20261102/d08b/SOURCE_BUILD_CONTRACT.md\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;border:2px solid var(--noir-text-primary);border-radius:8px;font-size:13px;line-height:20px;color:var(--noir-text-primary);text-decoration:none;\">Build contract ↗</a></div><div style=\"display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--noir-hover);width:100%;\">\n<div style=\"font-size:11px;line-height:17px;letter-spacing:.6px;color:var(--noir-text-tertiary);\">EXPANDED: EXACT ADDRESSES / FOCUS SPECIMEN</div>\n<div style=\"font-size:13px;line-height:20px;font-weight:600;color:var(--noir-text-primary);\">Read me · Terminal / p-14-0</div><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);word-break:break-all;width:100%;\">https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-14-0</div>\n<div style=\"font-size:13px;line-height:20px;font-weight:600;color:var(--noir-text-primary);\">Immutable source contract</div><div style=\"font-size:13px;line-height:20px;color:var(--noir-text-secondary);word-break:break-all;width:100%;\">https://github.com/mastermindx-market-intelligence/macro/blob/a3356474cebbdd88e6448e05ffc3d2e44faa5ca6/research/design_candidates/production_design_20261102/d08b/SOURCE_BUILD_CONTRACT.md</div>\n<div style=\"font-size:13px;line-height:20px;color:var(--noir-text-tertiary);\">Exact identities wrap, never truncate. A returned contract is not an approved reference.</div></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72FN-0\",\n      \"name\": \"D08B narrow package EN\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FO-0\",\n      \"name\": \"D08B / DESIGN PACKAG…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FP-0\",\n      \"name\": \"Exposure & Volatilit…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FQ-0\",\n      \"name\": \"Candidate p-12-0 · S…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FT-0\",\n      \"name\": \"Read me / design ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FV-0\",\n      \"name\": \"Build contract ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FX-0\",\n      \"name\": \"EXPANDED: EXACT ADDR…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FY-0\",\n      \"name\": \"Read me · Terminal /…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72FZ-0\",\n      \"name\": \"https://app.paper.de…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72G0-0\",\n      \"name\": \"Immutable source con…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72G1-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72G2-0\",\n      \"name\": \"Exact identities wra…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-d08a-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EX-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"D08A narrow package ZH\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding:16px;background-color:var(--mx-light-panel);border-radius:12px;\">\n<div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--mx-light-muted);\">D08A / 设计包</div>\n<div style=\"font-size:20px;line-height:28px;font-weight:600;color:var(--mx-light-text);\">概览与资金流</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--mx-light-muted);\">原生候选稿尚未获准建立。原参考与源合同仍可查阅。</div>\n<div style=\"display:flex;gap:8px;width:100%;\">\n<a href=\"https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-25-0\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;background-color:var(--mx-light-panel2);border-radius:8px;font-size:13px;line-height:20px;color:var(--mx-light-ink-link);text-decoration:none;\">保留原参考 ↗</a>\n<a href=\"https://github.com/mastermindx-market-intelligence/macro/blob/c3413d84650ce85ca0c875c16b53b5e519b46f35/research/design_candidates/production_design_20261102/d08a/IMPLEMENTATION_HANDOFF.md\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;border:1px solid var(--mx-light-line);border-radius:8px;font-size:13px;line-height:20px;color:var(--mx-light-text);text-decoration:none;\">构建合同 ↗</a></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72G4-0\",\n      \"name\": \"D08A narrow package ZH\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72G5-0\",\n      \"name\": \"D08A / 设计包\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72G6-0\",\n      \"name\": \"概览与资金流\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72G7-0\",\n      \"name\": \"原生候选稿尚未获准建立。原参考与源合同仍…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72G8-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72G9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GA-0\",\n      \"name\": \"保留原参考 ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GC-0\",\n      \"name\": \"构建合同 ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-d08b-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EX-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"D08B narrow package ZH\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding:16px;background-color:var(--mx-light-panel);border-radius:12px;\">\n<div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--mx-light-muted);\">D08B / 设计包</div>\n<div style=\"font-size:20px;line-height:28px;font-weight:600;color:var(--mx-light-text);\">敞口与波动率</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--mx-light-muted);\">候选页 p-12-0 · 源合同已返回 · RIG 草稿</div>\n<div style=\"display:flex;gap:8px;width:100%;\">\n<a href=\"https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-14-0\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;background-color:var(--mx-light-panel2);border-radius:8px;font-size:13px;line-height:20px;color:var(--mx-light-ink-link);text-decoration:none;\">设计说明与参考 ↗</a>\n<a href=\"https://github.com/mastermindx-market-intelligence/macro/blob/a3356474cebbdd88e6448e05ffc3d2e44faa5ca6/research/design_candidates/production_design_20261102/d08b/SOURCE_BUILD_CONTRACT.md\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;border:2px solid var(--mx-light-text);border-radius:8px;font-size:13px;line-height:20px;color:var(--mx-light-text);text-decoration:none;\">构建合同 ↗</a></div><div style=\"display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--mx-light-line);width:100%;\">\n<div style=\"font-size:11px;line-height:17px;letter-spacing:.6px;color:var(--mx-light-muted);\">已展开：精确地址 / 焦点示例</div>\n<div style=\"font-size:13px;line-height:20px;font-weight:600;color:var(--mx-light-text);\">设计说明 · Terminal / p-14-0</div><div style=\"font-size:13px;line-height:20px;color:var(--mx-light-muted);word-break:break-all;width:100%;\">https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-14-0</div>\n<div style=\"font-size:13px;line-height:20px;font-weight:600;color:var(--mx-light-text);\">不可变源合同</div><div style=\"font-size:13px;line-height:20px;color:var(--mx-light-muted);word-break:break-all;width:100%;\">https://github.com/mastermindx-market-intelligence/macro/blob/a3356474cebbdd88e6448e05ffc3d2e44faa5ca6/research/design_candidates/production_design_20261102/d08b/SOURCE_BUILD_CONTRACT.md</div>\n<div style=\"font-size:13px;line-height:20px;color:var(--mx-light-muted);\">目标 ID 不省略、不缩小字号。返回源合同不等于通过审核。</div></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72GE-0\",\n      \"name\": \"D08B narrow package ZH\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GF-0\",\n      \"name\": \"D08B / 设计包\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GG-0\",\n      \"name\": \"敞口与波动率\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GH-0\",\n      \"name\": \"候选页 p-12-0 · 源合同已返回 …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GI-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GK-0\",\n      \"name\": \"设计说明与参考 ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GM-0\",\n      \"name\": \"构建合同 ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GO-0\",\n      \"name\": \"已展开：精确地址 / 焦点示例\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GP-0\",\n      \"name\": \"设计说明 · Terminal / p-…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GQ-0\",\n      \"name\": \"https://app.paper.de…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GR-0\",\n      \"name\": \"不可变源合同\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GS-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GT-0\",\n      \"name\": \"目标 ID 不省略、不缩小字号。返回源合…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-d08c-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EW-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"D08C narrow package EN\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding:16px;background-color:var(--noir-panel);border-radius:12px;\">\n<div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--noir-text-tertiary);\">D08C / DESIGN PACKAGE</div>\n<div style=\"font-size:20px;line-height:28px;font-weight:600;color:var(--noir-text-primary);\">Plan, Compare & Review</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--noir-text-secondary);\">Candidate p-13-0 · Source return observed · RIG draft</div>\n<div style=\"display:flex;gap:8px;width:100%;\">\n<a href=\"https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-15-0\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;background-color:var(--noir-raised);border-radius:8px;font-size:13px;line-height:20px;color:var(--noir-steel);text-decoration:none;\">Read me / design ↗</a>\n<a href=\"https://github.com/mastermindx-market-intelligence/macro/blob/291f21aa8e9d757466412549a8d6537d889ab4d8/research/design_candidates/production_design_20261102/d08c/DATA_AND_BUILD.md\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;border:1px solid var(--noir-hover);border-radius:8px;font-size:13px;line-height:20px;color:var(--noir-text-primary);text-decoration:none;\">Build contract ↗</a></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72GV-0\",\n      \"name\": \"D08C narrow package EN\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GW-0\",\n      \"name\": \"D08C / DESIGN PACKAG…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GX-0\",\n      \"name\": \"Plan, Compare & Revi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GY-0\",\n      \"name\": \"Candidate p-13-0 · S…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72GZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72H0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72H1-0\",\n      \"name\": \"Read me / design ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72H2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72H3-0\",\n      \"name\": \"Build contract ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-d08d-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EW-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"D08D narrow package EN\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding:16px;background-color:var(--noir-panel);border-radius:12px;\">\n<div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--noir-text-tertiary);\">D08D / DESIGN PACKAGE</div>\n<div style=\"font-size:20px;line-height:28px;font-weight:600;color:var(--noir-text-primary);\">Futures & Equity Replay</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--noir-text-secondary);\">Native candidate not admitted. Retained source and temporal contract are separate.</div>\n<div style=\"display:flex;gap:8px;width:100%;\">\n<a href=\"https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2-0\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;background-color:var(--noir-raised);border-radius:8px;font-size:13px;line-height:20px;color:var(--noir-steel);text-decoration:none;\">Retained reference ↗</a>\n<a href=\"https://github.com/mastermindx-market-intelligence/macro/blob/a6ffdef508eb6f6293c74242f85d50d8c8843e6f/research/design_candidates/production_design_20261102/d08d/TEMPORAL_BACKEND_CONTRACT.md\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;border:1px solid var(--noir-hover);border-radius:8px;font-size:13px;line-height:20px;color:var(--noir-text-primary);text-decoration:none;\">Build contract ↗</a></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72H5-0\",\n      \"name\": \"D08D narrow package EN\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72H6-0\",\n      \"name\": \"D08D / DESIGN PACKAG…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72H7-0\",\n      \"name\": \"Futures & Equity Rep…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72H8-0\",\n      \"name\": \"Native candidate not…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72H9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HB-0\",\n      \"name\": \"Retained reference ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HC-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HD-0\",\n      \"name\": \"Build contract ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-d08c-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EX-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"D08C narrow package ZH\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding:16px;background-color:var(--mx-light-panel);border-radius:12px;\">\n<div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--mx-light-muted);\">D08C / 设计包</div>\n<div style=\"font-size:20px;line-height:28px;font-weight:600;color:var(--mx-light-text);\">计划、比较与复盘</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--mx-light-muted);\">候选页 p-13-0 · 源合同已返回 · RIG 草稿</div>\n<div style=\"display:flex;gap:8px;width:100%;\">\n<a href=\"https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-15-0\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;background-color:var(--mx-light-panel2);border-radius:8px;font-size:13px;line-height:20px;color:var(--mx-light-ink-link);text-decoration:none;\">设计说明与参考 ↗</a>\n<a href=\"https://github.com/mastermindx-market-intelligence/macro/blob/291f21aa8e9d757466412549a8d6537d889ab4d8/research/design_candidates/production_design_20261102/d08c/DATA_AND_BUILD.md\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;border:1px solid var(--mx-light-line);border-radius:8px;font-size:13px;line-height:20px;color:var(--mx-light-text);text-decoration:none;\">构建合同 ↗</a></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72HF-0\",\n      \"name\": \"D08C narrow package ZH\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HG-0\",\n      \"name\": \"D08C / 设计包\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HH-0\",\n      \"name\": \"计划、比较与复盘\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HI-0\",\n      \"name\": \"候选页 p-13-0 · 源合同已返回 …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HL-0\",\n      \"name\": \"设计说明与参考 ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HN-0\",\n      \"name\": \"构建合同 ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-d08d-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EX-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"D08D narrow package ZH\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding:16px;background-color:var(--mx-light-panel);border-radius:12px;\">\n<div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--mx-light-muted);\">D08D / 设计包</div>\n<div style=\"font-size:20px;line-height:28px;font-weight:600;color:var(--mx-light-text);\">期货与股票回放</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--mx-light-muted);\">原生候选稿尚未获准建立。保留源参考，时序合同单列。</div>\n<div style=\"display:flex;gap:8px;width:100%;\">\n<a href=\"https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2-0\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;background-color:var(--mx-light-panel2);border-radius:8px;font-size:13px;line-height:20px;color:var(--mx-light-ink-link);text-decoration:none;\">保留原参考 ↗</a>\n<a href=\"https://github.com/mastermindx-market-intelligence/macro/blob/a6ffdef508eb6f6293c74242f85d50d8c8843e6f/research/design_candidates/production_design_20261102/d08d/TEMPORAL_BACKEND_CONTRACT.md\" style=\"display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px;border:1px solid var(--mx-light-line);border-radius:8px;font-size:13px;line-height:20px;color:var(--mx-light-text);text-decoration:none;\">构建合同 ↗</a></div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72HP-0\",\n      \"name\": \"D08D narrow package ZH\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HQ-0\",\n      \"name\": \"D08D / 设计包\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HR-0\",\n      \"name\": \"期货与股票回放\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HS-0\",\n      \"name\": \"原生候选稿尚未获准建立。保留源参考，时序…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HV-0\",\n      \"name\": \"保留原参考 ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72HX-0\",\n      \"name\": \"构建合同 ↗\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-footer-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EW-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Narrow directory boundaries\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding:16px 0;border-top:1px solid var(--noir-raised);\">\n<div style=\"font-size:13px;line-height:21px;color:var(--noir-text-secondary);\">Four design packages ≠ four route records. D08 retains platform integration.</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--noir-text-secondary);\">Full addresses remain in 00D (72CI-0) and the source directory. Content-width and focus-style specimen, not a full phone shell. Click, keyboard and touch behavior remain unverified.</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--noir-text-secondary);\">Preserve the original 1N2L-0 hold. All 301 cross-file organization actions remain undispatched.</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72HZ-0\",\n      \"name\": \"Narrow directory boundaries\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72I0-0\",\n      \"name\": \"Four design packages…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72I1-0\",\n      \"name\": \"Full addresses remai…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72I2-0\",\n      \"name\": \"Preserve the origina…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-fit-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "updates": [
+          {
+            "nodeIds": [
+              "72EW-0"
+            ],
+            "styles": {
+              "height": "fit-content"
+            }
+          }
+        ]
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"72EW-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-footer-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EX-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Narrow directory boundaries\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding:16px 0;border-top:1px solid var(--mx-light-line);\">\n<div style=\"font-size:13px;line-height:21px;color:var(--mx-light-muted);\">四个设计包 ≠ 四条路由记录。D08 继续负责平台整合。</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--mx-light-muted);\">完整地址保留在 00D（72CI-0）与源目录中。此为内容宽度与焦点样式示例，不是完整手机外壳；点击、键盘及触控行为尚未验证。</div>\n<div style=\"font-size:13px;line-height:21px;color:var(--mx-light-muted);\">保留 1N2L-0 的原有限制。全部 301 项跨文件整理操作仍未发出。</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72I4-0\",\n      \"name\": \"Narrow directory boundaries\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72I5-0\",\n      \"name\": \"四个设计包 ≠ 四条路由记录。D08 继…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72I6-0\",\n      \"name\": \"完整地址保留在 00D（72CI-0）与…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72I7-0\",\n      \"name\": \"保留 1N2L-0 的原有限制。全部 3…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-fit-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "updates": [
+          {
+            "nodeIds": [
+              "72EX-0"
+            ],
+            "styles": {
+              "height": "fit-content"
+            }
+          }
+        ]
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"72EX-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-header-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EY-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Directory state specimen header\" style=\"display:flex;flex-direction:column;gap:10px;width:100%;padding-bottom:10px;\"><div style=\"font-size:11px;line-height:17px;letter-spacing:1px;color:var(--mx-light-muted);\">F03 / DIRECTORY STATE SPECIMENS / 768 CONTENT</div><div style=\"font-size:32px;line-height:40px;font-weight:600;color:var(--mx-light-text);\">A clear next step, even when evidence is missing.</div><div style=\"font-size:15px;line-height:23px;color:var(--mx-light-muted);\">Static state examples, not a report of live incidents. Source return, reference review and applied organization remain separate.</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72I9-0\",\n      \"name\": \"Directory state specimen header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IA-0\",\n      \"name\": \"F03 / DIRECTORY STAT…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IB-0\",\n      \"name\": \"A clear next step, e…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IC-0\",\n      \"name\": \"Static state example…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-ready-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EY-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"ready directory state\" style=\"display:flex;flex-direction:column;gap:8px;padding:20px;width:100%;background-color:var(--mx-light-panel);border-radius:12px;\"><div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--mx-light-muted);\">RETURNED SOURCE / VISIBLE FOCUS</div><div style=\"font-size:18px;line-height:26px;font-weight:600;color:var(--mx-light-text);\">D08B · Candidate and contract are findable.</div><div style=\"font-size:14px;line-height:22px;color:var(--mx-light-muted);\">Read me p-14-0 · Candidate p-12-0 · Exact source a3356474 · Review remains draft.</div><div style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:44px;padding:10px 14px;border:2px solid var(--mx-light-text);border-radius:8px;font-size:14px;line-height:20px;color:var(--mx-light-text);\">Open D08B source contract ↗</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72IE-0\",\n      \"name\": \"ready directory state\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IF-0\",\n      \"name\": \"RETURNED SOURCE / VI…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IG-0\",\n      \"name\": \"D08B · Candidate and…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IH-0\",\n      \"name\": \"Read me p-14-0 · Can…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72II-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IJ-0\",\n      \"name\": \"Open D08B source con…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-missing-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EY-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"missing directory state\" style=\"display:flex;flex-direction:column;gap:8px;padding:20px;width:100%;background-color:var(--mx-light-panel);border-radius:12px;\"><div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--mx-light-muted);\">MISSING CANDIDATE</div><div style=\"font-size:18px;line-height:26px;font-weight:600;color:var(--mx-light-text);\">Source returned. Native candidate not admitted.</div><div style=\"font-size:14px;line-height:22px;color:var(--mx-light-muted);\">Show the retained reference and the returned contract separately. Never turn a supporting image or an old page into an approved candidate.</div><div style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:44px;padding:10px 14px;border:1px solid var(--mx-light-line);border-radius:8px;font-size:14px;line-height:20px;color:var(--mx-light-text);\">View retained reference ↗</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72IL-0\",\n      \"name\": \"missing directory state\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IM-0\",\n      \"name\": \"MISSING CANDIDATE\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IN-0\",\n      \"name\": \"Source returned. Nat…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IO-0\",\n      \"name\": \"Show the retained re…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IP-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IQ-0\",\n      \"name\": \"View retained refere…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-loading-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EY-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"loading directory state\" style=\"display:flex;flex-direction:column;gap:8px;padding:20px;width:100%;background-color:var(--mx-light-panel);border-radius:12px;\"><div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--mx-light-muted);\">LOADING</div><div style=\"font-size:18px;line-height:26px;font-weight:600;color:var(--mx-light-text);\">Refreshing return evidence…</div><div style=\"font-size:14px;line-height:22px;color:var(--mx-light-muted);\">Keep the previous source pin, exact IDs and observation time visible. Loading must not erase available references or imply that source freshness has improved.</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72IS-0\",\n      \"name\": \"loading directory state\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IT-0\",\n      \"name\": \"LOADING\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IU-0\",\n      \"name\": \"Refreshing return ev…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IV-0\",\n      \"name\": \"Keep the previous so…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-empty-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EY-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"empty directory state\" style=\"display:flex;flex-direction:column;gap:8px;padding:20px;width:100%;background-color:var(--mx-light-panel);border-radius:12px;\"><div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--mx-light-muted);\">EMPTY SEARCH</div><div style=\"font-size:18px;line-height:26px;font-weight:600;color:var(--mx-light-text);\">No matches for “futurex”.</div><div style=\"font-size:14px;line-height:22px;color:var(--mx-light-muted);\">Keep the query visible. Offer a deliberate clear-search action and a separate way to browse the existing assignments.</div><div style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:44px;padding:10px 14px;border:1px solid var(--mx-light-line);border-radius:8px;font-size:14px;line-height:20px;color:var(--mx-light-text);\">Clear search</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72IX-0\",\n      \"name\": \"empty directory state\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IY-0\",\n      \"name\": \"EMPTY SEARCH\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72IZ-0\",\n      \"name\": \"No matches for “futu…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72J0-0\",\n      \"name\": \"Keep the query visib…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72J1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72J2-0\",\n      \"name\": \"Clear search\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-error-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EY-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"error directory state\" style=\"display:flex;flex-direction:column;gap:8px;padding:20px;width:100%;background-color:var(--mx-light-panel);border-radius:12px;\"><div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--mx-light-muted);\">READ ERROR</div><div style=\"font-size:18px;line-height:26px;font-weight:600;color:var(--mx-light-text);\">Could not refresh source evidence.</div><div style=\"font-size:14px;line-height:22px;color:var(--mx-light-muted);\">Retain the last successful observation and its timestamp. A failed read is not an empty directory, a permission change or a failed Paper mutation.</div><div style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:44px;padding:10px 14px;border:1px solid var(--mx-light-line);border-radius:8px;font-size:14px;line-height:20px;color:var(--mx-light-text);\">Retry source read</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72J4-0\",\n      \"name\": \"error directory state\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72J5-0\",\n      \"name\": \"READ ERROR\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72J6-0\",\n      \"name\": \"Could not refresh so…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72J7-0\",\n      \"name\": \"Retain the last succ…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72J8-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72J9-0\",\n      \"name\": \"Retry source read\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-stale-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EY-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"stale directory state\" style=\"display:flex;flex-direction:column;gap:8px;padding:20px;width:100%;background-color:var(--mx-light-panel);border-radius:12px;\"><div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--mx-light-muted);\">STALE / CHANGED SOURCE</div><div style=\"font-size:18px;line-height:26px;font-weight:600;color:var(--mx-light-text);\">A newer source return is available.</div><div style=\"font-size:14px;line-height:22px;color:var(--mx-light-muted);\">Keep the reviewed or captured pin intact. Compare the newer observed return separately; refresh only affected evidence. Do not transfer approval to a changed head.</div><div style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:44px;padding:10px 14px;border:1px solid var(--mx-light-line);border-radius:8px;font-size:14px;line-height:20px;color:var(--mx-light-text);\">Compare source pins</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72JB-0\",\n      \"name\": \"stale directory state\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JC-0\",\n      \"name\": \"STALE / CHANGED SOUR…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JD-0\",\n      \"name\": \"A newer source retur…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JE-0\",\n      \"name\": \"Keep the reviewed or…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JG-0\",\n      \"name\": \"Compare source pins\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-access-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EY-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"access directory state\" style=\"display:flex;flex-direction:column;gap:8px;padding:20px;width:100%;background-color:var(--mx-light-panel);border-radius:12px;\"><div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--mx-light-muted);\">ACCESS UNAVAILABLE</div><div style=\"font-size:18px;line-height:26px;font-weight:600;color:var(--mx-light-text);\">The Paper destination cannot be opened.</div><div style=\"font-size:14px;line-height:22px;color:var(--mx-light-muted);\">Keep the exact destination address and the source contract available. Request authorized access; do not substitute another account, file or unverified look-alike.</div><div style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:44px;padding:10px 14px;border:1px solid var(--mx-light-line);border-radius:8px;font-size:14px;line-height:20px;color:var(--mx-light-text);\">Open source contract ↗</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72JI-0\",\n      \"name\": \"access directory state\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JJ-0\",\n      \"name\": \"ACCESS UNAVAILABLE\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JK-0\",\n      \"name\": \"The Paper destinatio…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JL-0\",\n      \"name\": \"Keep the exact desti…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JN-0\",\n      \"name\": \"Open source contract…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-unknown-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EY-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"unknown directory state\" style=\"display:flex;flex-direction:column;gap:8px;padding:20px;width:100%;background-color:var(--mx-light-panel);border-radius:12px;\"><div style=\"font-size:11px;line-height:17px;letter-spacing:.8px;color:var(--mx-light-muted);\">UNCERTAIN ORGANIZATION EFFECT</div><div style=\"font-size:18px;line-height:26px;font-weight:600;color:var(--mx-light-text);\">Reconcile the original target before another write.</div><div style=\"font-size:14px;line-height:22px;color:var(--mx-light-muted);\">Show the original operation ID, target and last readback. Keep mutation controls inactive. A timeout is not proof that nothing happened; do not resend or change carriers.</div></div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72JP-0\",\n      \"name\": \"unknown directory state\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JQ-0\",\n      \"name\": \"UNCERTAIN ORGANIZATI…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JR-0\",\n      \"name\": \"Reconcile the origin…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JS-0\",\n      \"name\": \"Show the original op…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-footer-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72EY-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"State acceptance boundary\" style=\"font-size:13px;line-height:21px;color:var(--mx-light-muted);padding-top:8px;\">Reference only · Focus is drawn, not keyboard-tested. Do not add save or mutation controls to the read-only directory. Actual source freshness and effect status must come from existing owners, not these fixtures.</div>"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72JU-0\",\n      \"name\": \"State acceptance boundary\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72JV-0\",\n      \"name\": \"Reference only · Foc…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-fit-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "updates": [
+          {
+            "nodeIds": [
+              "72EY-0"
+            ],
+            "styles": {
+              "height": "fit-content"
+            }
+          }
+        ]
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"72EY-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    }
+  ]
+}
