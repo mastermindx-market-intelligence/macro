@@ -20,6 +20,7 @@ the state.
 
 from __future__ import annotations
 
+import contextvars
 import copy
 import fcntl
 import json
@@ -27,6 +28,7 @@ import math
 import os
 import re
 import stat
+import sys
 import time as time_module
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -42,6 +44,7 @@ from engine.neuralweb import market_memory_trusted as trusted_store
 from lib import nyse_calendar
 
 REGISTRATION_SCHEMA = "market_memory.spy_experience_registration.v1"
+REGISTRATION_SCHEMA_V2 = "market_memory.spy_experience_registration.v2"
 OPPORTUNITY_SCHEMA = "market_memory.spy_experience_opportunity.v1"
 OUTCOME_SCHEMA = "market_memory.spy_experience_outcome_revision.v1"
 POPULATION_SCHEMA = "market_memory.spy_experience_population_receipt.v1"
@@ -718,6 +721,97 @@ def _expected_registration_spec() -> dict[str, Any]:
     }
 
 
+def _expected_registration_spec_v2() -> dict[str, Any]:
+    """Return the frozen v2 registration spec dict.
+
+    Distinct from _expected_registration_spec() which must remain byte-identical
+    for v1.  V2 reads from the sealed REST source (sources-spy-rest-v1),
+    projects technicals-v2, and uses a strict prospective activation policy.
+    """
+    return {
+        "activation_policy": (
+            "first_xnys_regular_open_strictly_after_registration_on_origin_main"
+            "_AND_verified_install"
+        ),
+        "authority": dict(market_memory.AUTHORITY),
+        "calendar": {
+            "calendar_id": (
+                "mmcalendar_a102c5367c17f9c0b4df3af5c2826824fc112935ec76e6d18d55833f53644e0c"
+            ),
+            "market_session": "XNYS_REGULAR",
+            "owner_path": "lib/nyse_calendar.py",
+            "owner_sha256": (
+                "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce"
+            ),
+        },
+        "cutoff": {
+            "admission_window_seconds": 900,
+            "following_calendar_days": 1,
+            "window_opens_utc_time": "04:30:00Z",
+        },
+        "evidence_policy": {
+            "activation_policy": (
+                "first_xnys_regular_open_strictly_after_registration_on_origin_main"
+                "_AND_verified_install"
+            ),
+            "promotion_eligible": False,
+            "prospective_only": True,
+            "training_eligible": False,
+        },
+        "profile": "market_memory.private.spy_experience_accrual.v2",
+        "source_seal": {
+            "opportunity_per_session": "exactly_one_opportunity_eligible_capture",
+            "seal_window_closes_utc_time": "04:05:00Z",
+            "seal_window_on_day": "D+1",
+            "seal_window_opens_utc_time": "04:00:00Z",
+            "source_family": "sources-spy-rest-v1",
+            "source_id": "massive_rest:SPY:unadjusted_daily",
+            "source_schema": "market_memory.source.spy_rest_unadjusted_daily.v1",
+            "stability_predicate": {
+                "absent_by_04_05_policy": "source_absent_no_capture",
+                "differing_digest_policy": "unstable_no_capture",
+                "digest_uniformity_required": True,
+                "min_span_seconds": 240,
+                "min_successful_observations": 3,
+                "require_observation_after_04_04_00z": True,
+                "require_observation_in_first_60s": True,
+                "rule": "rest_daily_bar_seal_stability.v1",
+                "transient_transport_failure_policy": (
+                    "does_not_invent_bar_coverage_minima_still_required"
+                ),
+            },
+        },
+        "state_inputs": {
+            "source_family": "sources-spy-rest-v1",
+            "technical_profile": (
+                "market_memory.private.spy_rth_price_fullday_activity_daily_aggregate.v2"
+            ),
+            "technical_session_field": "feature_object.session",
+            "trusted_v1_read_only": True,
+        },
+        "store_roots": {
+            "disjoint_from_v1": True,
+            "experience_leaf": "experience-v2",
+            "source_leaf": "sources-spy-rest-v1",
+            "technicals_leaf": "technicals-v2",
+        },
+        "subject": {
+            "currency": "USD",
+            "identity_version": (
+                "mmidentityv_65ec5e55473e953b55fa2d146f40e8b56dfae2e68a3df7423405db1034d16903"
+            ),
+            "instrument_id": (
+                "mmsecurity_6f361f5bad9f06a3b2ff157585d5728f55f77198420959aadd8922d1045c3fea"
+            ),
+            "mic": "ARCX",
+            "subject_id": (
+                "mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c"
+            ),
+            "symbol": "SPY",
+        },
+    }
+
+
 def validate_registration(
     value: Mapping[str, Any], *, body: bytes | None = None
 ) -> dict[str, Any]:
@@ -1045,7 +1139,12 @@ def _decision_state_projection(
 
 
 def validate_experience_store_root(root: str | Path) -> Path:
-    """Require the disjoint private ``state/experience-v1`` owner root."""
+    """Require the disjoint private ``state/experience-v1`` owner root.
+
+    B6: v1 only.  v2 accrual uses validate_experience_v2_store_root() in
+    scripts/accrue_market_memory_spy_experience_v2.py — that validator requires
+    the leaf to be experience-v2 and refuses experience-v1 paths.
+    """
 
     unresolved = Path(root).expanduser()
     absolute = Path(os.path.abspath(os.fspath(unresolved)))
@@ -1150,6 +1249,15 @@ def _publish_boundary(_stage: str, _path: Path) -> None:
     """Fault-injection seam for durability-boundary crash tests."""
 
 
+# Set only while accrue_spy_experience holds writer.lock (LOCK_EX); read-only
+# authentication and the completed-pilot fast path never hold it.
+_WRITER_LOCK_HELD: contextvars.ContextVar[bool] = contextvars.ContextVar(
+    "w2c_writer_lock_held", default=False
+)
+
+_PENDING_CREATE_NAME = re.compile(r"\.(?P<final>.+)\.(?P<digest>[a-f0-9]{64})\.pending")
+
+
 def _pending_create_path(path: Path, body: bytes) -> Path:
     return path.parent / f".{path.name}.{_digest(body)}.pending"
 
@@ -1161,6 +1269,54 @@ def _pending_create_paths(path: Path) -> list[Path]:
         raise MarketMemoryExperienceStoreError(
             "W2C create-once pending publications cannot be inspected"
         ) from exc
+
+
+def _discard_torn_prepublication_pending(
+    pending: Path, *, final: Path, body: bytes, label: str
+) -> bool:
+    """Discard one torn pre-publication pending; False when it must stay.
+
+    The create-once publisher links the final only after the pending's fsync,
+    and the pending name binds sha256 of its intended body, so a pending whose
+    bytes do not hash to that digest, with no final beside it, provably never
+    published.  Only the writer-lock holder may discard it; lock-free readers
+    keep failing closed.  A 0-byte technical-view pending wedged every later
+    run from 2026-09-05 until this recovery existed.
+    """
+
+    if not _WRITER_LOCK_HELD.get():
+        return False
+    match = _PENDING_CREATE_NAME.fullmatch(pending.name)
+    if match is None or match.group("final") != final.name:
+        _fail(f"pending {label} filename does not bind its bytes")
+    if _digest(body) == match.group("digest"):
+        return False
+    if final.exists() or final.is_symlink():
+        _fail(f"pending {label} filename does not bind its bytes")
+    try:
+        pending.unlink()
+    except OSError as exc:
+        raise MarketMemoryExperienceStoreError(
+            f"torn pending {label} cannot be removed"
+        ) from exc
+    _fsync_directory(pending.parent)
+    print(
+        "W2C_TORN_PENDING_DISCARDED "
+        + json.dumps(
+            {
+                "label": label,
+                "directory": pending.parent.name,
+                "pending": pending.name,
+                "bytes": len(body),
+                "observed_sha256": _digest(body),
+                "bound_sha256": match.group("digest"),
+            },
+            sort_keys=True,
+        ),
+        file=sys.stderr,
+        flush=True,
+    )
+    return True
 
 
 def _write_create_once(path: Path, body: bytes, *, limit: int, label: str) -> None:
@@ -1248,9 +1404,12 @@ def _read_one_pending_create(
         return None
     if len(pending) != 1:
         _fail(f"{label} has multiple pending publications")
-    raw, body = _read_json_path(
-        pending[0], limit=limit, label=f"pending {label}"
-    )
+    body = _read_bounded(pending[0], limit=limit, label=f"pending {label}")
+    if _discard_torn_prepublication_pending(
+        pending[0], final=path, body=body, label=label
+    ):
+        return None
+    raw = _strict_json(body, label=f"pending {label}")
     if pending[0] != _pending_create_path(path, body):
         _fail(f"pending {label} filename does not bind its bytes")
     return raw, body
@@ -2300,8 +2459,9 @@ def _recover_technical_view_chain_head(
             label="W2C technical view",
             validator=validate_view,
         )
-        if clean is None:  # pragma: no cover - inventory proves a candidate
-            _fail("W2C technical-view publication disappeared during recovery")
+        if clean is None:
+            # Its only candidate was a torn pre-publication pending, discarded under writer.lock.
+            continue
         views[view_id] = clean
     if not views:
         if head_path.exists() or head_path.is_symlink() or _pending_create_paths(
@@ -3637,11 +3797,20 @@ def _cleanup_unsealed_prepared_staging(
         )
         if prepared_id in referenced_ids:
             continue
-        raw, body = _read_json_path(
+        body = _read_bounded(
             item,
             limit=_MAX_PREPARED_BYTES,
             label="W2C unsealed prepared staging object",
         )
+        if pending_match is not None and _discard_torn_prepublication_pending(
+            item,
+            final=_safe_path(root, "prepared_objects", f"{prepared_id}.json"),
+            body=body,
+            label="W2C unsealed prepared staging object",
+        ):
+            removed = True
+            continue
+        raw = _strict_json(body, label="W2C unsealed prepared staging object")
         prepared = _validate_prepared(raw, registration=registration)
         if (
             prepared["prepared_id"] != prepared_id
@@ -5768,6 +5937,7 @@ def _new_population_receipt(
     observed_at: str,
     writer_commit: str,
     previous_population_receipt_id: str | None = None,
+    outcome_chain_reader: Callable[..., list[dict[str, Any]]] | None = None,
 ) -> dict[str, Any]:
     if not expected_sessions:
         _fail("W2C cannot issue a population receipt before the first obligation")
@@ -5798,7 +5968,8 @@ def _new_population_receipt(
         if observed_dt < _window(target)[0]:
             continue
         matured.append(opportunity)
-        chain = _load_outcome_chain(
+        chain_reader = outcome_chain_reader or _load_outcome_chain
+        chain = chain_reader(
             root, registration=registration, opportunity=opportunity
         )
         chain = [
@@ -6609,7 +6780,10 @@ def _current_population_receipt(
     expected_sessions: list[date] | None = None,
     opportunities: list[dict[str, Any]] | None = None,
     recover_unheaded: bool = False,
+    outcome_chain_reader: Callable[..., list[dict[str, Any]]] | None = None,
+    json_reader: Callable[..., tuple[dict[str, Any], bytes]] | None = None,
 ) -> dict[str, Any] | None:
+    read_json = json_reader or _read_json_path
     if registration is not None and (
         expected_sessions is None or opportunities is None
     ):
@@ -6669,6 +6843,7 @@ def _current_population_receipt(
             previous_population_receipt_id=clean[
                 "previous_population_receipt_id"
             ],
+            outcome_chain_reader=outcome_chain_reader,
         )
         if _canonical_bytes(recomputed) != _canonical_bytes(clean):
             _fail("W2C population recovery receipt differs from its as-of ledger")
@@ -6740,7 +6915,7 @@ def _current_population_receipt(
             or not _POPULATION_ID.fullmatch(receipt_id)
         ):
             _fail("W2C population HEAD is malformed")
-        raw, body = _read_json_path(
+        raw, body = read_json(
             _safe_path(root, "population_receipts", f"{receipt_id}.json"),
             limit=_MAX_POPULATION_BYTES,
             label="W2C current population receipt",
@@ -6772,7 +6947,7 @@ def _current_population_receipt(
         if _pending_create_paths(head_path):
             _fail("W2C read-only population state contains a pending HEAD")
         if head_path.exists() or head_path.is_symlink():
-            raw_head, head_body = _read_json_path(
+            raw_head, head_body = read_json(
                 head_path,
                 limit=_MAX_HEAD_BYTES,
                 label="W2C population HEAD",
@@ -6789,7 +6964,7 @@ def _current_population_receipt(
     for item in sorted(receipts_directory.iterdir()):
         if not re.fullmatch(r"mmspyexppop_[a-f0-9]{64}\.json", item.name):
             _fail("W2C population recovery inventory is noncanonical")
-        raw, body = _read_json_path(
+        raw, body = read_json(
             item,
             limit=_MAX_POPULATION_BYTES,
             label="W2C population recovery receipt",
@@ -8190,8 +8365,10 @@ def accrue_spy_experience(
     opportunity_ids: list[str] = []
     outcome_ids: list[str] = []
     population_id: str | None = None
+    lock_token: contextvars.Token[bool] | None = None
     try:
         fcntl.flock(descriptor, fcntl.LOCK_EX)
+        lock_token = _WRITER_LOCK_HELD.set(True)
         _manifest, _installation = _initialize_or_load_store(
             root,
             registration=registration,
@@ -8568,6 +8745,8 @@ def accrue_spy_experience(
                     root, registration=registration, marker=marker
                 )
     finally:
+        if lock_token is not None:
+            _WRITER_LOCK_HELD.reset(lock_token)
         fcntl.flock(descriptor, fcntl.LOCK_UN)
         os.close(descriptor)
     return AccrualResult(
@@ -8578,12 +8757,367 @@ def accrue_spy_experience(
     )
 
 
+OUTCOME_BLIND_LEDGER_SCHEMA = (
+    "market_memory.spy_experience_outcome_blind_ledger.v1"
+)
+_MAX_OUTCOME_BLIND_LEDGER_BYTES = 4 * 1024 * 1024
+_MAX_OUTCOME_BLIND_READ_BYTES = 64 * 1024 * 1024
+_MAX_OUTCOME_BLIND_RECEIPTS = 4096
+_MAX_OUTCOME_BLIND_READ_CALLS = 32768
+
+
+class _OutcomeBlindReadBudget:
+    """One cumulative bounded read pass, including repeated outcome verification."""
+    def __init__(self) -> None:
+        self.bytes_read = 0
+        self.calls = 0
+
+    def read_json(self, path: Path, *, limit: int, label: str):
+        remaining = _MAX_OUTCOME_BLIND_READ_BYTES - self.bytes_read
+        if self.calls >= _MAX_OUTCOME_BLIND_READ_CALLS or remaining <= 0:
+            _fail("W2C outcome-blind aggregate read bound exceeded")
+        self.calls += 1
+        value, body = _read_json_path(path, limit=min(limit, remaining), label=label)
+        self.bytes_read += len(body)
+        return value, body
+
+    def bound_receipt_inventory(self, directory: Path) -> None:
+        if not directory.exists():
+            return
+        for index, _item in enumerate(directory.iterdir()):
+            if index >= _MAX_OUTCOME_BLIND_RECEIPTS:
+                _fail("W2C outcome-blind receipt inventory bound exceeded")
+
+
+def _load_outcome_chain_read_only(
+    root: Path, *, registration: Registration, opportunity: Mapping[str, Any],
+    json_reader: Callable[..., tuple[dict[str, Any], bytes]] = _read_json_path,
+) -> list[dict[str, Any]]:
+    """Validate final outcome bytes without invoking publication recovery."""
+    directory = _outcome_directory(root, str(opportunity["opportunity_id"]))
+    if not directory.exists():
+        return []
+    metadata = directory.lstat()
+    if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISDIR(metadata.st_mode):
+        _fail("W2C outcome path is not a real directory")
+    numbers: set[int] = set()
+    for index, item in enumerate(directory.iterdir()):
+        if index >= MAX_OUTCOME_REVISIONS:
+            _fail("W2C read-only outcome inventory exceeds its bound")
+        metadata = item.lstat()
+        if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISREG(metadata.st_mode):
+            _fail("W2C outcome directory contains a non-regular artifact")
+        match = re.fullmatch(r"([0-9]{6})\.json", item.name)
+        if match is None:
+            _fail("W2C read-only outcome inventory is pending or noncanonical")
+        numbers.add(int(match.group(1)))
+    if sorted(numbers) != list(range(1, len(numbers) + 1)):
+        _fail("W2C read-only outcome revision files are gapped")
+    chain: list[dict[str, Any]] = []
+    for number in sorted(numbers):
+        path = _safe_path(root, "outcomes", str(opportunity["opportunity_id"]),
+                          f"{number:06d}.json")
+        if _pending_create_paths(path):
+            _fail("W2C read-only outcome publication is pending")
+        raw, _body = json_reader(
+            path, limit=_MAX_OUTCOME_BYTES, label="W2C read-only outcome revision"
+        )
+        chain.append(validate_outcome_revision(
+            raw, registration=registration, opportunity=opportunity,
+            previous=chain[-1] if chain else None, history=chain,
+        ))
+    return chain
+
+
+def _load_recorded_opportunity_read_only(
+    root: Path, *, registration: Registration, session: date,
+    json_reader: Callable[..., tuple[dict[str, Any], bytes]] = _read_json_path,
+) -> dict[str, Any] | None:
+    """Read one immutable opportunity row without any in-place recovery."""
+
+    path = _opportunity_path(root, session)
+    if _pending_create_paths(path):
+        _fail("W2C outcome-blind read found a pending opportunity publication")
+    if not (path.exists() or path.is_symlink()):
+        return None
+    raw, _body = json_reader(
+        path, limit=_MAX_OPPORTUNITY_BYTES, label="W2C opportunity"
+    )
+    clean = validate_opportunity(raw, registration=registration)
+    if clean["session"] != session.isoformat():
+        _fail("W2C opportunity row belongs to another session")
+    return clean
+
+
+def _read_population_state_read_only(
+    root: Path, *, registration: Registration, budget: _OutcomeBlindReadBudget,
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    """Authenticate the current population receipt without any recovery."""
+    json_reader = budget.read_json
+    budget.bound_receipt_inventory(_safe_path(root, "population_receipts"))
+
+    head_path = _safe_path(root, "population_HEAD.json")
+    if _pending_create_paths(head_path):
+        _fail("W2C outcome-blind read found a pending population HEAD")
+    receipts_directory = _safe_path(root, "population_receipts")
+    if not (head_path.exists() or head_path.is_symlink()):
+        if receipts_directory.exists():
+            for item in sorted(receipts_directory.iterdir()):
+                if re.fullmatch(
+                    r"(?:\.)?mmspyexppop_[a-f0-9]{64}\.json(?:\.[a-f0-9]{64})?"
+                    r"\.pending|"
+                    r"mmspyexppop_[a-f0-9]{64}\.json",
+                    item.name,
+                ):
+                    _fail(
+                        "W2C outcome-blind read found receipts without their HEAD"
+                    )
+        return None, None
+    if receipts_directory.exists():
+        for item in sorted(receipts_directory.iterdir()):
+            if re.fullmatch(
+                r"\.mmspyexppop_[a-f0-9]{64}\.json\.[a-f0-9]{64}\.pending",
+                item.name,
+            ):
+                _fail(
+                    "W2C outcome-blind read found a pending population receipt"
+                )
+    try:
+        raw_head, _head_body = json_reader(
+            head_path, limit=_MAX_HEAD_BYTES, label="W2C population HEAD"
+        )
+    except FileNotFoundError as exc:
+        raise MarketMemoryExperienceStoreError(
+            "W2C outcome-blind read lost its population HEAD"
+        ) from exc
+    receipt_id = (
+        raw_head.get("population_receipt_id")
+        if type(raw_head) is dict
+        else None
+    )
+    if (
+        raw_head.get("schema") != POPULATION_HEAD_SCHEMA
+        or type(receipt_id) is not str
+        or not _POPULATION_ID.fullmatch(receipt_id)
+    ):
+        _fail("W2C outcome-blind read found a malformed population HEAD")
+    receipt_path = _safe_path(root, "population_receipts", f"{receipt_id}.json")
+    try:
+        raw_receipt, _body = json_reader(
+            receipt_path,
+            limit=_MAX_POPULATION_BYTES,
+            label="W2C population receipt denominator peek",
+        )
+    except FileNotFoundError as exc:
+        raise MarketMemoryExperienceStoreError(
+            "W2C population HEAD does not bind an available receipt"
+        ) from exc
+    declared = (
+        raw_receipt.get("expected_sessions")
+        if type(raw_receipt) is dict
+        else None
+    )
+    if (
+        type(declared) is not list
+        or not declared
+        or len(declared) > PILOT_EXPECTED_SESSIONS
+        or any(type(item) is not str for item in declared)
+    ):
+        _fail("W2C population receipt denominator peek is not bounded")
+    try:
+        expected = [date.fromisoformat(item) for item in declared]
+    except ValueError as exc:
+        raise MarketMemoryExperienceStoreError(
+            "W2C population receipt denominator peek is malformed"
+        ) from exc
+    frozen_calendar = nyse_calendar.sessions_between(ACTIVATION_SESSION, SUNSET_SESSION)
+    if expected != frozen_calendar[:len(expected)]:
+        _fail("W2C read-only population denominator is not the frozen calendar prefix")
+    opportunities: list[dict[str, Any]] = []
+    for session in expected:
+        row = _load_recorded_opportunity_read_only(
+            root, registration=registration, session=session, json_reader=json_reader
+        )
+        if row is not None:
+            opportunities.append(row)
+    current = _current_population_receipt(
+        root,
+        registration=registration,
+        expected_sessions=expected,
+        opportunities=opportunities,
+        recover_unheaded=False,
+        outcome_chain_reader=lambda *args, **kwargs: _load_outcome_chain_read_only(
+            *args, json_reader=json_reader, **kwargs
+        ),
+        json_reader=json_reader,
+    )
+    if current is None or str(current["population_receipt_id"]) != receipt_id:
+        _fail("W2C population HEAD moved during its outcome-blind read")
+    if _digest(_canonical_bytes(current)) != raw_head.get(
+        "population_receipt_sha256"
+    ):
+        _fail("W2C population receipt audit digest differs from its HEAD")
+    return current, raw_head
+
+
+def read_outcome_blind_population_ledger(
+    repository_root: str | Path,
+    *,
+    experience_root: str | Path,
+) -> dict[str, Any]:
+    """PUBLIC outcome-blind read seam over one private W2C census ledger.
+
+    This is the only supported read surface for consumers that need the
+    outcome-blind census: it authenticates the tracked registration, the
+    immutable installation/manifest closure, every recorded opportunity row
+    and the current population receipt, then returns only outcome-blind
+    identities.  Outcome revisions, maturity state, scoreable filtering and
+    every writer path stay private, no clock is sampled, no writer lock is
+    taken, no in-place recovery runs, and no store path is published.  Any
+    pending publication, corruption, missing authentic closure, or store
+    whose registration identity drifts fails closed.
+    """
+
+    registration = load_registration(repository_root)
+    root = validate_experience_store_root(experience_root)
+    try:
+        metadata = root.lstat()
+    except FileNotFoundError as exc:
+        raise MarketMemoryExperienceStoreError(
+            "W2C outcome-blind store does not exist"
+        ) from exc
+    if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISDIR(metadata.st_mode):
+        _fail("W2C outcome-blind store is not one real directory")
+    installation, manifest = _read_installation_manifest(
+        root, registration=registration, expected_writer_commit=None
+    )
+    budget = _OutcomeBlindReadBudget()
+    json_reader = budget.read_json
+    receipt, population_head = _read_population_state_read_only(
+        root, registration=registration, budget=budget
+    )
+    expected_sessions = nyse_calendar.sessions_between(
+        ACTIVATION_SESSION, SUNSET_SESSION
+    )
+    rows: list[dict[str, Any]] = []
+    if receipt is not None:
+        recorded = {
+            date.fromisoformat(str(item["session"])): item
+            for item in receipt["opportunities"]
+        }
+        for row_session in sorted(recorded):
+            row = _load_recorded_opportunity_read_only(
+                root, registration=registration, session=row_session, json_reader=json_reader
+            )
+            if row is None:
+                _fail("W2C authenticated denominator row lost its opportunity")
+            original = recorded[row_session]
+            if (row["opportunity_id"] != original["opportunity_id"]
+                    or row["disposition"] != original["disposition"]):
+                _fail("W2C opportunity changed during its read-only census")
+            projected: dict[str, Any] = {
+                "session": row["session"],
+                "opportunity_id": row["opportunity_id"],
+                "disposition": row["disposition"],
+                "reason": row["reason"],
+                "target_session": row["target_session"],
+                "cutoff": copy.deepcopy(dict(row["cutoff"])),
+                "source_pins": (
+                    None
+                    if row["source_pins"] is None
+                    else copy.deepcopy(dict(row["source_pins"]))
+                ),
+                "decision_state_projection": (
+                    None
+                    if row["decision_state_projection"] is None
+                    else copy.deepcopy(dict(row["decision_state_projection"]))
+                ),
+                "decision_state_projection_reason": row[
+                    "decision_state_projection_reason"
+                ],
+            }
+            _require_value_bound(
+                projected,
+                limit=_MAX_OPPORTUNITY_BYTES,
+                label="W2C outcome-blind row",
+            )
+            rows.append(projected)
+    population: dict[str, Any] | None = None
+    if receipt is not None and population_head is not None:
+        population = {
+            "population_receipt_id": receipt["population_receipt_id"],
+            "population_receipt_sha256": population_head[
+                "population_receipt_sha256"
+            ],
+            "population_receipt_bytes": population_head[
+                "population_receipt_bytes"
+            ],
+            "through_session": receipt["through_session"],
+            "expected_sessions": copy.deepcopy(
+                list(receipt["expected_sessions"])
+            ),
+            "observed_at": receipt["observed_at"],
+            "writer_commit": receipt["writer_commit"],
+            "complete": receipt["complete"],
+            "terminal_status": receipt["terminal"]["status"],
+            "owner_generation_refs": (
+                None
+                if receipt["owner_generation_refs"] is None
+                else copy.deepcopy(dict(receipt["owner_generation_refs"]))
+            ),
+        }
+    value: dict[str, Any] = {
+        "schema": OUTCOME_BLIND_LEDGER_SCHEMA,
+        "census_basis": (
+            "frozen_activation_plus_xnys_calendar_not_presence_or_timer_runs"
+        ),
+        "registration": {
+            "registration_id": registration.registration_id,
+            "registration_sha256": registration.content_sha256,
+            "content_bytes": int(registration.value["content_bytes"]),
+        },
+        "store": {
+            "store_id": manifest["store_id"],
+            "store_schema": manifest["schema"],
+            "store_profile": manifest["profile"],
+            "installation_id": installation["installation_id"],
+            "installation_writer_commit": installation["writer_commit"],
+            "installation_status": installation["installation_status"],
+        },
+        "calendar": {
+            "activation_session": ACTIVATION_SESSION.isoformat(),
+            "sunset_session": SUNSET_SESSION.isoformat(),
+            "expected_session_count": len(expected_sessions),
+            "expected_sessions": [
+                item.isoformat() for item in expected_sessions
+            ],
+        },
+        "rows": rows,
+        "population": population,
+        "claims": _population_claims(),
+    }
+    if population_head is not None:
+        final_head, _body = json_reader(
+            _safe_path(root, "population_HEAD.json"),
+            limit=_MAX_HEAD_BYTES, label="W2C outcome-blind final HEAD",
+        )
+        if final_head != population_head:
+            _fail("W2C population HEAD changed during its outcome-blind read")
+    _require_value_bound(
+        value,
+        limit=_MAX_OUTCOME_BLIND_LEDGER_BYTES,
+        label="W2C outcome-blind ledger",
+    )
+    return value
+
+
 __all__ = [
     "ACTIVATION_SESSION",
     "CORRECTION_OBSERVATION_SESSIONS",
     "CORRECTION_SUNSET_SESSION",
     "FINAL_TARGET_SESSION",
     "MAX_OWNER_GENERATION_CAPTURES",
+    "OUTCOME_BLIND_LEDGER_SCHEMA",
     "MarketMemoryExperienceAccrualError",
     "MarketMemoryExperienceError",
     "MarketMemoryExperienceRegistrationError",
@@ -8597,6 +9131,7 @@ __all__ = [
     "AccrualResult",
     "accrue_spy_experience",
     "expected_sessions_due",
+    "read_outcome_blind_population_ledger",
     "load_registration",
     "validate_experience_store_root",
     "validate_opportunity",

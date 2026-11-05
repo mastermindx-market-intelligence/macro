@@ -8,6 +8,7 @@ Routes
 ------
 GET  /api/research/catalog            public  — latest 3 summaries; full catalog for Pro
 GET  /api/research/search?q=&…        public  — preview-only results; full search for Pro
+GET  /api/research/read/{doc_id}      PRO     — bounded current-revision text; pinned reopen
 GET  /api/research/view/{doc_id}      PRO     — stream PDF inline (rate-limited, no quota)
 POST /api/research/download/{doc_id}  PRO     — watermark + attachment (daily quota
                                                 10/day; 50/day on a lifetime grant)
@@ -48,7 +49,9 @@ from fastapi.responses import JSONResponse, Response
 
 from engine.research_vault import catalog as catalog_mod
 from engine.research_vault import corpus as corpus_mod
+from engine.research_vault import fulltext, fulltext_store
 from engine.research_vault import download_quota, view_ratelimit, watermark
+from engine.research_vault.read_service import FETCH_MAX_SEGMENTS, SEGMENT_MAX_BYTES
 
 log = logging.getLogger("research_vault.api")
 
@@ -128,39 +131,103 @@ _CATALOG_TTL = 60.0  # seconds (masterplan §9)
 _CATALOG_LOCK = threading.Lock()
 
 
-def _load_catalog() -> dict:
-    """Fetch catalog.json from the private bucket, TTL-cached, stale on refresh fail.
+def _cached_good() -> dict | None:
+    """The last catalog that PASSED validation, or None. Never a synthetic empty."""
+    with _CATALOG_LOCK:
+        hit = _CATALOG_CACHE.get(_CATALOG_KEY)
+    return hit[0] if hit is not None else None
 
-    Returns the parsed dict. On a refresh failure with a prior copy → last copy +
-    ``{"stale": True}``. Raises HTTPException(503) only if never fetched. Uses the
-    W1 ``catalog.load`` (which itself degrades a corrupt/missing catalog to empty).
+
+def _with_health(catalog: dict, reason: str = "") -> dict:
+    """Attach the freshness projection to a shallow copy of ``catalog``.
+
+    ``catalog_health`` is the explicit block (state/generated_at/age_seconds/
+    reason); ``stale`` is retained as the pre-Wave-4 boolean so an un-updated
+    client keeps working. Both are DERIVED from the document's own producer clock
+    on every call — nothing is persisted, so there is no second health store to
+    fall out of sync with the catalog (freeze §A).
+    """
+    out = dict(catalog)
+    try:
+        state = catalog_mod.health(catalog, reason=reason)
+    except catalog_mod.CatalogUnavailable as exc:
+        # A cached copy always validated on the way in, so this is unreachable in
+        # practice; fail toward "not live" rather than inventing a fresh label.
+        state = {"state": catalog_mod.STATE_STALE, "generated_at": "",
+                 "age_seconds": None, "reason": exc.reason}
+    out["catalog_health"] = state
+    out["stale"] = state["state"] != catalog_mod.STATE_FRESH
+    return out
+
+
+def _load_catalog() -> dict:
+    """Authoritative catalog + its freshness verdict; 503 when nothing is valid.
+
+    Fail-CLOSED read (``catalog.read_strict``) behind the 60s TTL cache. The cache
+    holds only documents that PASSED validation, so a corrupt or missing object can
+    never be served as an empty-but-healthy vault (Defect 3), and a successful read
+    of an arbitrarily old object can never be labelled live (Defect 1) — age is
+    recomputed from ``generated_at`` on every call, including cache hits, so a
+    cached copy ages into ``stale`` on its own.
+
+    Degradation ladder, in order:
+      1. fresh/old-but-valid authoritative read → serve it, health says which;
+      2. read failed (missing / corrupt / store outage) but a validated copy is
+         cached → serve that copy as STALE, carrying the failure ``reason``;
+      3. no valid copy has ever been seen → HTTPException(503).
     """
     now = time.monotonic()
     with _CATALOG_LOCK:
         hit = _CATALOG_CACHE.get(_CATALOG_KEY)
         if hit is not None and (now - hit[1]) < _CATALOG_TTL:
-            return hit[0]
+            return _with_health(hit[0])
 
     store = _build_store()
     if store is None:
-        with _CATALOG_LOCK:
-            hit = _CATALOG_CACHE.get(_CATALOG_KEY)
-        if hit is not None:
-            return {**hit[0], "stale": True}
+        cached = _cached_good()
+        if cached is not None:
+            return _with_health(cached, reason="store_unavailable")
         raise HTTPException(503, "research catalog unavailable (no store configured)")
 
     try:
-        cat = catalog_mod.load(store)  # never raises; empty on miss/corrupt
-    except Exception:  # noqa: BLE001 — belt-and-suspenders; load already degrades
-        with _CATALOG_LOCK:
-            hit = _CATALOG_CACHE.get(_CATALOG_KEY)
-        if hit is not None:
-            return {**hit[0], "stale": True}
+        cat = catalog_mod.read_strict(store)
+        # Display heals (markdown summaries, desk-type-safe titles, institution
+        # spellings) on the serving copy. The producer of those artifacts is the
+        # upstream sidecar, which this repo does not write; ingest republishes
+        # the same repair into R2 on the next hourly run.
+        catalog_mod.heal_display(cat)
+    except catalog_mod.CatalogUnavailable as exc:
+        log.warning("research_vault: catalog unavailable (%s) — %s", exc.reason, exc.detail)
+        cached = _cached_good()
+        if cached is not None:
+            return _with_health(cached, reason=exc.reason)
+        raise HTTPException(503, f"research catalog unavailable ({exc.reason})") from None
+    except Exception as exc:  # noqa: BLE001 — belt: read_strict already classifies
+        log.warning("research_vault: catalog read raised (%s)", exc)
+        cached = _cached_good()
+        if cached is not None:
+            return _with_health(cached, reason="store_error")
         raise HTTPException(503, "research catalog unavailable") from None
 
     with _CATALOG_LOCK:
         _CATALOG_CACHE[_CATALOG_KEY] = (cat, now)
-    return cat
+    return _with_health(cat)
+
+
+def _catalog_ids() -> set[str]:
+    """The ids the CURRENT catalog admits — the universal visibility set.
+
+    Every user-visible surface is restricted to this set, for every tier. The
+    corpus is published BEFORE the catalog (freeze §A), so between those two puts
+    the corpus can legitimately hold a row the catalog has not admitted yet; that
+    row must stay invisible until the catalog publishes. Raises the same 503 as
+    :func:`_load_catalog` when visibility cannot be established at all — refusing
+    to answer is correct, because with no catalog we cannot prove ANY id is public.
+    """
+    return {
+        str((item or {}).get("id") or "")
+        for item in (_load_catalog().get("items") or [])
+    }
 
 
 def _catalog_has(doc_id: str) -> bool:
@@ -466,17 +533,36 @@ def research_search(
     limit: int = Query(_SEARCH_LIMIT_DEFAULT),
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    """FTS search over the corpus, restricted to preview IDs unless caller is Pro.
+    """FTS search over the corpus, restricted to CATALOG-ADMITTED ids for every tier.
 
     Input is clamped (limit ≤ 50) and malformed queries degrade to an empty result.
-    Anonymous, free, and Essential callers can receive hits only for the three
-    public preview reports; an authenticated Pro can search the complete corpus.
+
+    Two nested visibility gates, in order:
+
+      1. **catalog admission — universal.** The catalog is the visibility commit
+         (freeze §A) and the corpus is published BEFORE it, so a corpus row whose
+         catalog publish has not landed yet is legitimately AHEAD of the public
+         inventory. Every result, Pro included, is filtered to the ids the current
+         catalog admits; before Wave 4 only the non-Pro branch did this, so a Pro
+         search could surface a report that the vault had not admitted and whose
+         PDF may not exist. If visibility cannot be established at all (no valid
+         catalog anywhere) the route reports ``available: False`` rather than
+         answering from the corpus alone.
+      2. **tier preview — non-Pro only.** Anonymous, free, and Essential callers
+         are then narrowed further to the three public preview reports.
     """
     try:
         lim = int(limit)
     except (TypeError, ValueError):
         lim = _SEARCH_LIMIT_DEFAULT
     lim = max(1, min(_SEARCH_LIMIT_MAX, lim))
+
+    # Establish the admitted id set BEFORE touching the corpus: with no valid
+    # catalog there is no id we can prove is public, so there is nothing to search.
+    try:
+        admitted = _catalog_ids()
+    except HTTPException:
+        return {"items": [], "count": 0, "available": False}
 
     conn = _corpus_conn()
     if conn is None:
@@ -500,6 +586,10 @@ def research_search(
         except Exception:  # noqa: BLE001
             pass
 
+    # Gate 1 — catalog admission, applied to EVERY tier (see the docstring).
+    items = [item for item in items if str((item or {}).get("id") or "") in admitted]
+
+    # Gate 2 — the non-Pro preview narrowing, applied on top.
     if not _can_view(_optional_tier(authorization)):
         preview_ids = {
             str((item or {}).get("id") or "")
@@ -513,6 +603,108 @@ def research_search(
 # ---------------------------------------------------------------------------
 # PAID routes (require_user + paid tier)
 # ---------------------------------------------------------------------------
+
+@router.get("/api/research/read/{doc_id}")
+def research_read(
+    doc_id: str,
+    request: Request,
+    source_pdf_sha256: str | None = Query(default=None, max_length=64),
+    extracted_text_sha256: str | None = Query(default=None, max_length=64),
+    segment_start: int = Query(default=0, ge=0),
+    max_segments: int = Query(default=2, ge=1, le=FETCH_MAX_SEGMENTS),
+    user: dict = Depends(require_user),
+) -> Response:
+    """Read bounded stored text without replacing a caller's selected revision.
+
+    Initial selection omits both hashes. Every subsequent read (including the next
+    segment window) sends BOTH hashes returned in selection. Opening a newer revision
+    is a deliberate new initial selection. The incumbent current-source guard remains:
+    corrected historical bodies are unavailable here, even if an old derivative exists.
+    No extraction, PDF read, store write, download quota debit or latest fallback occurs.
+    """
+    headers = {"Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, noimageindex"}
+
+    def reply(body: dict, status: int = 200) -> JSONResponse:
+        return JSONResponse(body, status_code=status, headers=headers)
+
+    user_id = _user_id_of(user)
+    tier = _resolve_tier(user_id)
+    if not _can_view(tier):
+        return reply({"error": "paid_required", "tier": tier, "upgrade": _UPGRADE_URL}, 402)
+
+    # Shape and catalog admission precede any private derivative/receipt key construction.
+    doc_id = _validate_doc_id(doc_id)
+    selected = source_pdf_sha256 is not None or extracted_text_sha256 is not None
+    if selected and not all(
+        isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value)
+        for value in (source_pdf_sha256, extracted_text_sha256)
+    ):
+        return reply({"error": "invalid revision selection"}, 400)
+    if segment_start > 0 and not selected:
+        return reply({"error": "revision selection required for continuation"}, 400)
+
+    allowed, info = view_ratelimit.allow(user_id, _client_ip(request))
+    if not allowed:
+        return JSONResponse(
+            {"error": "rate_limited", "limit": info.get("limit"), "remaining": 0},
+            status_code=429, headers={**headers, "Retry-After": "3600"},
+        )
+
+    def changed() -> JSONResponse:
+        if not selected:
+            # No selection exists yet. A correction race is temporarily unavailable,
+            # not an instruction to discard or silently replace a selected revision.
+            return reply({"error": "research text unavailable"}, 503)
+        return reply({"error": "selected_revision_unavailable", "report_id": doc_id}, 409)
+
+    try:
+        store = _build_store()
+        current_digest = fulltext_store.source_digest(store, doc_id)
+        if current_digest is None:
+            return reply({"error": "research text unavailable"}, 503)
+        if selected and current_digest != source_pdf_sha256:
+            return changed()
+        # Default V1 only: this browser surface does not activate candidate extractors.
+        record = fulltext_store.load_extracted_text(store, doc_id, {})
+        if record is None:
+            return reply({"error": "research text unavailable"}, 503)
+        # Receipt can advance between the first read, the loader, and final composition.
+        # Follow the existing ResearchReadService SOURCE_REVISION_CHANGED guard.
+        if (record["source_pdf_sha256"] != current_digest
+                or fulltext_store.source_digest(store, doc_id) != current_digest):
+            return changed()
+        if selected and record["extracted_text_sha256"] != extracted_text_sha256:
+            return changed()
+        segments = fulltext.build_segments(
+            dict(record), segmenter_version=fulltext.SEGMENTER_VERSION,
+            max_bytes=SEGMENT_MAX_BYTES,
+        )
+        catalog = _load_catalog()
+        if not any(item.get("id") == doc_id for item in catalog.get("items", [])):
+            return reply({"error": "document not found"}, 404)
+    except Exception:
+        # No raw store errors, internal keys or configuration escape the read boundary.
+        return reply({"error": "research text unavailable"}, 503)
+
+    return reply({
+        "schema": "research_vault.browser_read.v1",
+        "report_id": doc_id,
+        "selection": {
+            "source_pdf_sha256": record["source_pdf_sha256"],
+            "extracted_text_sha256": record["extracted_text_sha256"],
+            "extractor_version": record["extractor_version"],
+            "segmenter_version": fulltext.SEGMENTER_VERSION,
+            "segment_max_bytes": SEGMENT_MAX_BYTES,
+        },
+        "source": {
+            "catalog_generated_at": catalog.get("generated_at"),
+            "catalog_health": catalog.get("catalog_health"),
+        },
+        "text_layer_state": record["text_layer_state"],
+        "segment_count_total": len(segments),
+        "segments": segments[segment_start:segment_start + max_segments],
+    })
+
 
 @router.get("/api/research/view/{doc_id}")
 def research_view(doc_id: str, request: Request,
@@ -565,20 +757,34 @@ def research_download(doc_id: str, request: Request,
                       user: dict = Depends(require_user)) -> Response:
     """Metered, watermarked PDF download for an authenticated PRO user.
 
-    Gate order:
+    Gate order (Wave 4, Defect 7 reordered steps 4-6 — see below):
       1. auth (require_user).
       2. tier resolve → non-pro (essential/free/unknown) → 402 paid_required.
       3. doc_id validate (400/404) BEFORE any R2 key.
-      4. ``download_quota.check_and_increment`` (day-keyed; pro 10/day, 50/day for a
-         lifetime holder). allowed=False → 402 quota_exhausted (server-authoritative
-         — increments only on allow, so a scripted POST past the limit is refused
-         here regardless of the button).
-      5. fetch PDF (404 if absent), watermark with the buyer's identity, return as
-         ``attachment`` · ``private, no-store`` · ``X-Robots-Tag: noindex``.
+      4. ``download_quota.peek`` — read-only. Exhausted → 402 WITHOUT fetching, so
+         an exhausted caller can never be used to hammer R2.
+      5. fetch PDF. Absent → 404 with the ledger UNTOUCHED.
+      6. ``download_quota.check_and_increment`` — the authoritative debit, taken
+         only once the bytes are in hand. A concurrent request that consumed the
+         final slot between the peek and here is still refused: the increment,
+         not the peek, is the server-authoritative gate.
+      7. watermark with the buyer's identity, return as ``attachment`` ·
+         ``private, no-store`` · ``X-Robots-Tag: noindex``.
 
-    NOTE the deliberate asymmetry: the tier resolve fails CLOSED (unknown→free→402)
-    while the quota counter fails OPEN (broken ledger → allow, LOUD) — the first
-    guards the paywall, the second guards a paid subscriber's availability.
+    WHY the reorder: the debit used to happen BEFORE the fetch and was explicitly
+    never refunded, so a missing object spent one of a paid subscriber's ten daily
+    downloads and returned them nothing. That was rationalized as a rare
+    just-deleted-document race — but Defect 5 in this same wave made missing PDFs
+    PERSISTENT (a failed promotion still admitted the report to the catalog), which
+    turns a rare race into a repeatable way to burn a paid allowance. Peek-then-
+    fetch-then-debit removes the false debit without opening an unmetered fetch
+    path, and needs no refund subsystem — there is nothing to refund.
+
+    NOTE the deliberate asymmetry, unchanged: the tier resolve fails CLOSED
+    (unknown→free→402) while the quota counter fails OPEN (broken ledger → allow,
+    LOUD) — the first guards the paywall, the second guards a paid subscriber's
+    availability. The peek inherits that: a ledger it cannot read reports the full
+    allowance, so an outage never blocks a paying reader.
     """
     user_id = _user_id_of(user)
     email = str((user or {}).get("email") or user_id)
@@ -590,9 +796,9 @@ def research_download(doc_id: str, request: Request,
 
     doc_id = _validate_doc_id(doc_id)  # 400 / 404
 
-    allowed, info = download_quota.check_and_increment(
-        user_id, tier, lifetime=_lifetime_for(tier, user_id))
-    if not allowed:
+    lifetime = _lifetime_for(tier, user_id)
+
+    def _exhausted(info: dict) -> JSONResponse:
         return JSONResponse(
             {
                 "error": "quota_exhausted",
@@ -604,12 +810,28 @@ def research_download(doc_id: str, request: Request,
             status_code=402,
         )
 
+    # (4) Read-only pre-check. Refusing here keeps an exhausted caller from
+    # reaching R2 at all, which is what stops "no debit before fetch" from
+    # becoming "unlimited un-metered fetches".
+    peeked = download_quota.peek(user_id, tier, lifetime=lifetime)
+    if int(peeked.get("remaining") or 0) <= 0:
+        return _exhausted(peeked)
+
+    # (5) Fetch BEFORE debiting: an object we cannot serve must cost nothing.
     store = _build_store()
     pdf = store.get_bytes(_pdf_key(doc_id)) if store is not None else None
     if not pdf:
-        # Object vanished after the quota debit. We do NOT refund (a rare race on a
-        # just-deleted doc); surfacing 404 is honest and the daily cap self-heals.
+        log.warning("research_vault: %s is catalog-admitted but its canonical PDF "
+                    "is absent — 404 served, quota NOT debited", doc_id)
         raise HTTPException(404, "document not available")
+
+    # (6) The authoritative debit, now that delivery is certain. peek() is advisory
+    # only — between it and here a concurrent request may have taken the last slot,
+    # and this call, which increments before it returns an allow, is what decides.
+    allowed, info = download_quota.check_and_increment(
+        user_id, tier, lifetime=lifetime)
+    if not allowed:
+        return _exhausted(info)
 
     from datetime import datetime, timezone  # noqa: PLC0415
     stamp_text = (

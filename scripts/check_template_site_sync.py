@@ -33,8 +33,8 @@ theme.js legitimately differs from its template by the baked-in public Supabase
 config and bundled Terminal overlay (lib.site_assets.emit_theme_js, deterministic
 from committed sources/config.yml). Where PyYAML is available the comparison is
 exact against the emitted output; in stdlib-only contexts (pages.yml publish) it
-degrades to a token-split check (the prefix/suffix around the placeholder plus
-the overlay suffix must match byte-for-byte).
+fails the theme pair closed with an actionable dependency error. Raw token
+segments cannot verify minified output.
 
 Usage:
     python -m scripts.check_template_site_sync             # report + exit 1 on divergence
@@ -64,8 +64,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 _SKIP_SUFFIXES = (".j2",)
-# Keep in sync with lib/site_assets.SUPABASE_TOKEN (asserted when lib is importable).
+# Keep in sync with lib/site_assets (asserted when lib is importable). EVERY bake
+# token theme.js carries must be listed: the stdlib fallback below compares the
+# INVARIANT text around them, so a token this list does not know about reads as a
+# real divergence and refuses the publish (pages.yml) on a perfectly healthy tree.
 _THEME_TOKEN = "/*__SUPABASE_CFG__*/null"
+_MM_BRAIN_VER_TOKEN = "/*__MM_BRAIN_VER__*/''"
+_THEME_TOKENS = (_THEME_TOKEN, _MM_BRAIN_VER_TOKEN)
 # OUR ?v= stamp shape, as written by lib.pages.optimize_assets_text: an 8-hex
 # sha256 prefix and nothing else. A hand-written query (?v=3, ?foo=bar) is not
 # ours and is deliberately not audited here — same rule the stamper applies.
@@ -73,16 +78,57 @@ _STAMP_RE = re.compile(r"""(?:href|src)=["']([^"'?#>]+)\?v=([0-9a-f]{8})["']""")
 
 
 def _bake_theme(tpl: Path) -> str | None:
-    """Emitted theme.js content, or None when the bake is unavailable (no PyYAML)."""
+    """Emitted theme.js content, or None when a build dependency is unavailable."""
     try:
         from lib import site_assets
         assert site_assets.SUPABASE_TOKEN == _THEME_TOKEN, "SUPABASE_TOKEN drifted"
+        assert site_assets.MM_BRAIN_VER_TOKEN == _MM_BRAIN_VER_TOKEN, "MM_BRAIN_VER_TOKEN drifted"
         return site_assets.emit_theme_js(tpl)
     except AssertionError:
         raise
-    except Exception as e:  # noqa: BLE001 — stdlib-only context (pages.yml publish)
-        print(f"WARNING: theme.js bake unavailable ({e}) — using token-split compare")
+    except Exception as e:  # noqa: BLE001 — report unavailable build dependencies
+        print(f"WARNING: theme.js bake unavailable ({e}) — theme verification will fail closed")
         return None
+
+
+def _token_segments(text: str, tokens: tuple[str, ...]) -> list[str]:
+    """``text`` split on every bake token, in the order the tokens appear.
+
+    The result is the INVARIANT text: the parts the bake never rewrites. N tokens
+    yield N+1 segments (any of them possibly empty).
+    """
+    segs: list[str] = []
+    rest = text
+    while True:
+        hits = [(rest.find(t), t) for t in tokens]
+        hits = [(i, t) for i, t in hits if i >= 0]
+        if not hits:
+            segs.append(rest)
+            return segs
+        i, tok = min(hits)
+        segs.append(rest[:i])
+        rest = rest[i + len(tok):]
+
+
+def _matches_around_tokens(site_text: str, segs: list[str]) -> bool:
+    """Whether ``site_text`` is ``segs`` in order with anything at the token slots.
+
+    Historical token-segmentation utility retained for its regression tests.
+    This cannot validate a minified emitted bundle and is never a fallback for
+    the production theme check, which requires the exact canonical emitter.
+    """
+    if len(segs) == 1:
+        return site_text == segs[0]
+    if not site_text.startswith(segs[0]):
+        return False
+    pos = len(segs[0])
+    for seg in segs[1:-1]:
+        if seg:
+            j = site_text.find(seg, pos)
+            if j < 0:
+                return False
+            pos = j + len(seg)
+    return site_text.endswith(segs[-1]) and len(site_text) >= pos + len(segs[-1])
 
 
 def _stamp_audit(text: str, site_dir: Path) -> tuple[int, int]:
@@ -176,16 +222,11 @@ def check(root: Path, fix: bool = False) -> list[str]:
                 expected = baked.encode("utf-8")
                 ok = site_bytes == expected
             else:
-                # stdlib fallback: everything around the baked token must match.
-                expected = None  # cannot reproduce the bake here — report-only
-                site_text = site_bytes.decode("utf-8", errors="replace")
-                head, sep, tail = tpl_text.partition(_THEME_TOKEN)
-                overlay = tpl.with_name("terminal_overlay.js")
-                if overlay.is_file():
-                    tail = f"{tail.rstrip()}\n\n{overlay.read_text().lstrip()}"
-                ok = (site_text == tpl_text) if not sep else (
-                    site_text.startswith(head) and site_text.endswith(tail)
-                    and len(site_text) >= len(head) + len(tail))
+                expected = None
+                ok = False
+                print("::error title=theme emitter unavailable::Cannot verify site/theme.js "
+                      "without the canonical emitter; install PyYAML and rjsmin==1.2.5 "
+                      "(or requirements.txt), then rerun this guard.")
         else:
             ok = site_bytes == tpl_bytes
         if ok:

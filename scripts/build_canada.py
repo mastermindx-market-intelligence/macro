@@ -266,19 +266,14 @@ def canada_regime_timeline(hist: pd.DataFrame) -> dict:
 
 
 def _lifespan_rows(quad: pd.Series) -> list[dict]:
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
-    trans = transition_stats(quad)
-    rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        rows.append({
-            "quad": QUAD_SHORT[q],           # display name (template reads row.quad)
-            "n": trans["n_by_quad"].get(q, "—"),
-            "median_days": trans["median_days"].get(q, "—"),  # template reads row.median_days
-            "next": next_quads_line(nxt),
-            "next_zh": next_quads_line(nxt, zh=True),
-        })
-    return rows
+    """canada.html's table: canada_history.html's rows under this template's keys."""
+    from engine.playbook import finished_lifespan_rows
+    return [{"quad": row["name"],             # display name (template reads row.quad)
+             "n": row["n"],
+             "median_days": row["median"],    # template reads row.median_days
+             "next": row["next"],
+             "next_zh": row["next_zh"]}
+            for row in finished_lifespan_rows(quad)]
 
 
 def _drilldown_closes() -> tuple[pd.DataFrame, str | None]:
@@ -591,7 +586,7 @@ def _housing_note() -> dict | None:
 
 
 def _build_history(env, latest: dict, generated: str) -> None:
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
+    from engine.playbook import finished_lifespan_rows, transition_stats
     hist = store.read("canada_regime", "regime_history")
     if hist is None or "quad" not in hist.columns:
         log.warning("canada history: no regime_history; skipping history page")
@@ -600,12 +595,7 @@ def _build_history(env, latest: dict, generated: str) -> None:
     mdf = store.read("canada", mi)
     px = mdf["close"] if mdf is not None else pd.Series(dtype=float)
     trans = transition_stats(hist["quad"])
-    rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        rows.append({"name": QUAD_SHORT[q], "n": trans["n_by_quad"].get(q, "—"),
-                     "median": trans["median_days"].get(q, "—"),
-                     "next": next_quads_line(nxt), "next_zh": next_quads_line(nxt, zh=True)})
+    rows = finished_lifespan_rows(hist["quad"])
     html = env.get_template("canada_history.html.j2").render(
         latest=latest, generated_utc=generated,
         chart_regime=_chart_regime(px, hist) if not px.empty else "", chart_axes=_chart_axes(hist),
@@ -681,12 +671,20 @@ def _canada_board_ledger(setups: dict | None, latest: dict) -> list[dict]:
 
     Fail-open-LOUD: any failure yields a visible health row rather than a silent pass —
     the board's scoreboard must never fail invisibly."""
-    rows = (setups or {}).get("buy") or []
-    if not rows:
-        return [{"en": "Board ledger (no ranked names to log)", "zh": "榜单账本（无可记录个股）",
-                 "status": "SKIP", "rows": 0, "last": "—"}]
+    # Zero-official-buy liveness (masterplan §10.4): a MISSING board object keeps
+    # today's SKIP return, but a real board whose official buy subset is empty must
+    # NOT bail out here — only the ledger append is withheld below (zero official
+    # buys stay append-free); the scorecard attach, grade, track_ledger emit and
+    # zero-authority shadow write all still run, so full-pool research capture and
+    # the honestly-empty track panel survive a zero-buy session.
+    _skip_row = {"en": "Board ledger (no ranked names to log)",
+                 "zh": "榜单账本（无可记录个股）",
+                 "status": "SKIP", "rows": 0, "last": "—"}
+    if setups is None or not isinstance(setups, dict):
+        return [_skip_row]
+    rows = setups.get("buy") or []
     asof = _board_asof(latest)
-    from scripts.build_canada_library import _ENTRY_STATE
+    from scripts.build_canada_library import _ENTRY_STATE, CA_BOARD_DEFINITION
     calls = []
     for r in rows:
         es = r.get("entry_signal") or {}
@@ -719,6 +717,9 @@ def _canada_board_ledger(setups: dict | None, latest: dict) -> list[dict]:
             # (The watch strip below carries no verdict, so its rows stay None.)
             "anchor_era": sig.get("anchor_era"),
             "sq_anchor_era": sig.get("sq_anchor_era"),
+            # CA-TRUTH (masterplan §5.0): the selection instrument that produced this
+            # board_pos — every row is Branch-B, so every row stamps the same value.
+            "board_definition": CA_BOARD_DEFINITION,
         })
     # W0.2 Stage C (§5.2 move 2): the CA WATCH strip was never appended — its
     # strong-but-blocked rows are exactly the near-miss cohort the rejection
@@ -740,20 +741,29 @@ def _canada_board_ledger(setups: dict | None, latest: dict) -> list[dict]:
                                          if w.get("watch_reason") == "knife" else None),
             "block_reason": w.get("block_reason"),
             "knife_demoted": (w.get("watch_reason") == "knife"),
+            "board_definition": CA_BOARD_DEFINITION,
         })
-    health: list[dict] = []
+    health: list[dict] = [] if rows else [_skip_row]
     try:
         from engine import board_ledger
-        n = board_ledger.append_board(calls, market="CA", asof=asof)
-        if n <= 0:
-            health.append({"en": "Board ledger (append wrote 0 rows — see build log)",
-                           "zh": "榜单账本（写入 0 行 — 查看构建日志）",
-                           "status": "ERROR", "rows": 0, "last": asof})
-            log.error("CA board ledger: append_board wrote 0 rows for %s (%d calls)",
-                      asof, len(calls))
+        if not rows:
+            log.info("CA board ledger: zero official buys for %s — append skipped "
+                     "(%d watch calls); scorecard/grade/track/shadow still run",
+                     asof, len(calls))
+        elif _ledger_advance_enabled():
+            n = board_ledger.append_board(calls, market="CA", asof=asof)
+            if n <= 0:
+                health.append({"en": "Board ledger (append wrote 0 rows — see build log)",
+                               "zh": "榜单账本（写入 0 行 — 查看构建日志）",
+                               "status": "ERROR", "rows": 0, "last": asof})
+                log.error("CA board ledger: append_board wrote 0 rows for %s (%d calls)",
+                          asof, len(calls))
+            else:
+                log.info("CA board ledger: logged %d ranked names for %s (ledger=%d)",
+                         len(calls), asof, n)
         else:
-            log.info("CA board ledger: logged %d ranked names for %s (ledger=%d)",
-                     len(calls), asof, n)
+            log.info("CA board ledger: off-nightly render — append skipped for %s "
+                     "(%d calls); read projections remain available", asof, len(calls))
         # nightly grade of matured calls — 'accruing' until forward returns exist. The
         # track-record PANEL (W6, §7.4) ships in 'accruing' state from day one, so ALWAYS
         # attach the scorecard (it self-reports status='accruing' with first_read_est until
@@ -785,6 +795,17 @@ def _canada_board_ledger(setups: dict | None, latest: dict) -> list[dict]:
                      _ca_doc.get("meta", {}).get("n_total", 0))
         except Exception as _cale:  # noqa: BLE001 — ledger is additive; never fatal
             log.warning("ca track_ledger emit failed (%s) — render continues", _cale)
+        # Zero-authority shadow substrate (WS:PROPHET-HK-CA-REVAMP,
+        # research/PROPHET_SHADOW_CONTRACT_V1.md §4). Placed DOWNSTREAM of the
+        # append_board call and the track_ledger emit above — reuses the exact
+        # same `calls` population and `asof` handed to append_board. One
+        # fail-soft call; write_shadow() never raises, but this is wrapped
+        # anyway so a defect here can never touch the board-ledger block above.
+        try:
+            from engine import board_shadow
+            board_shadow.write_shadow(calls, market="CA", asof=asof)
+        except Exception as _cse:  # noqa: BLE001 — additive research telemetry; never fatal
+            log.warning("ca board_shadow write failed (%s) — render continues", _cse)
     except Exception as e:  # noqa: BLE001 — fail-open-LOUD (health row + log)
         health.append({"en": "Board ledger (FAILED — see build log)",
                        "zh": "榜单账本（失败 — 查看构建日志）",
@@ -817,9 +838,8 @@ def _tailwind_freshness_gate(setups: dict | None, latest: dict) -> dict | None:
     except Exception as e:  # noqa: BLE001
         log.warning("CA tailwind freshness: panel unreadable (%s)", e)
         return None
-    # trading-day staleness ≈ business days between the two dates (calendar-day / weekend
-    # aware; holidays make this a slight over-count, which fails SAFE — suppress sooner).
-    stale_td = int(pd.bdate_range(tw_date, board_date).size - 1) if tw_date < board_date else 0
+    from lib.market_session import missed_sessions
+    stale_td = missed_sessions("CA", tw_date.date(), board_date.date())
     setups["tailwind_stale_days"] = stale_td
     if stale_td > 3:
         setups["tailwind_suppressed"] = True
@@ -1428,28 +1448,33 @@ def main() -> int:
             vm["alpha"] = None
 
         # build the per-ticker stock library NOW (records carry ladder + alpha) and
-        # capture the cross-sectional alpha-led "Top setups" ranking for canada.html.
+        # capture the CANONICAL Canada Prophet board (CA-TRUTH, masterplan §5.0):
+        # build_canada_library.main() computes + orders + writes canada_standouts.json
+        # ONCE and returns that SAME object — the page must render it verbatim, never
+        # re-derive or re-rank it (a second standouts-enrich pass used to run here,
+        # producing a page object that could silently diverge from the artifact).
         setups = None
         try:
             from scripts import build_canada_library
-            setups = build_canada_library.main(alpha=alpha)
+            setups = build_canada_library.main(alpha=alpha, overlay=(latest.get("overlay") or {}))
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.error("canada stock library build failed (%s); skipping", e)
+        # CA-TRUTH (masterplan §5.0): `setups` IS the canonical board — do not
+        # recompute the standouts enrichment, re-rank via the old open-entry-
+        # first helper (or any other named re-rank), or otherwise mutate
+        # vm["setups"]["buy"]'s order below this line.
+        # tests/test_canada_canonical_board.py::
+        # test_canada_page_render_has_no_rederive_or_resort_tokens source-checks
+        # for the two known re-rank call sites; a novel raw sorted()/.sort() call
+        # naming neither one is NOT caught by any test at reasonable cost — this
+        # comment plus the owed-session digest receipt (execution packet §17)
+        # are the guard for that residual form.
         vm["setups"] = setups
 
-        # enrich the alpha-led setups shortlist into "Standout individual stocks" cards
-        # AND apply the BRANCH-B ripe-list contract order (C7 verdict: all momentum
-        # trials ACCRUE → composite suppressed, board = grouped ripe-list, rank pill).
-        try:
-            from scripts.build_canada_library import compute_canada_standouts
-            vm["setups"] = compute_canada_standouts(setups, overlay=latest.get("overlay") or {})
-        except Exception as e:  # noqa: BLE001 — additive, never fatal
-            log.error("canada standouts enrich failed (%s); using raw setups", e)
-
         # ── top_setups: top-5 buy rows for the glance card ───────────────────
-        # MUST run AFTER vm["setups"] is assigned + standouts-enriched above
-        # (the first cut ran before it → vm.get("setups") was None → the card
-        # said "No active setups" while 10 buys existed). Never fatal.
+        # MUST run AFTER vm["setups"] is assigned above (the first cut ran before it
+        # → vm.get("setups") was None → the card said "No active setups" while 10
+        # buys existed). Never fatal.
         try:
             _su = vm.get("setups") or {}
             _buys = list((_su.get("buy") or []))
@@ -1497,6 +1522,14 @@ def main() -> int:
         except Exception as _rdlg_e:  # noqa: BLE001 — additive, never fatal
             log.warning("canada radar_dlg ctx failed (%s); dialog renders core only", _rdlg_e)
             vm["radar_dlg"] = {}
+
+        # Per-candidate Added / 入榜 date (engine/prophet_board_since.py). Display-only.
+        try:
+            from engine.prophet_board_since import stamp_hkca_board_since_fail_open
+            vm["setups"] = stamp_hkca_board_since_fail_open(
+                "ca", vm.get("setups"), data_dir=config.data_dir(), log=log)
+        except Exception as _bse:  # noqa: BLE001 — additive, never fatal
+            log.warning("ca board_since stamp failed (%s)", _bse)
 
         env = Environment(loader=FileSystemLoader(
             str(Path(__file__).resolve().parent.parent / "templates")), autoescape=False)

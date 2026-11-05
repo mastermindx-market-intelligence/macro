@@ -5,6 +5,7 @@ never kill the run — it logs the gap, marks the source stale, and moves on.
 from __future__ import annotations
 
 import logging
+import re
 import time
 import traceback
 from dataclasses import dataclass, field
@@ -18,6 +19,95 @@ from lib import config, store
 log = logging.getLogger(__name__)
 
 CIRCUIT_BREAKER_FAILS = 3  # consecutive run failures -> mark dead, skip
+
+# Preventive hardening: redact secrets from retried-request log lines AND from
+# FetchResult.error (which is serialized into the TRACKED data/run_status.json —
+# see run_adapter below). `requests`' default HTTPError/ConnectionError text
+# embeds the FULL request URL — query string and all — via `raise_for_status()`
+# and friends, so a bare `str(exc)` interpolation carries any credential value
+# straight into a log line or a committed file, even one that otherwise takes
+# care to log a query-stripped URL separately.
+#
+# Widened per the AD-1C0 adversarial review (2026-08-19, two rounds) — the
+# enumerated leak shapes a single "name=value" regex missed: a quoted JSON
+# body value ("apiKey":"…" AND 'apiKey':'…', either quote style — N4(i)), a
+# header-name credential repr (X-API-Key / Api-Key / X-Auth-Token — N4(ii)),
+# an `Authorization: Bearer …` header repr, a URL-encoded assignment
+# (name%3Dvalue), a bare "name value" mention with no `=` at all, a
+# basic-auth netloc (://user:pass@ — N4(iii)), and a vendor secret embedded as
+# a URL PATH SEGMENT with no adjacent keyword at all (Stripe-style
+# sk_live_…/pk_test_… prefixes). Several passes, most specific first; each is
+# independently idempotent so their order does not matter for correctness,
+# only for keeping the output readable.
+#
+# DOCUMENTED RESIDUAL (N4): an OPAQUE path-token secret with NEITHER a
+# recognizable vendor prefix (sk_/pk_) NOR any adjacent credential keyword —
+# e.g. a bare vendor API key value dropped directly into a URL path segment
+# with no "key=" or "/api-key/" context at all — cannot be redacted here
+# without a rule general enough to mangle ordinary URL path segments (release
+# tags, hashes, slugs...) that are not secrets. The mitigation is upstream:
+# collectors never embed the API key in a URL PATH (only as a query param,
+# which the passes below and _QUERY_TAIL_RE's catch-all both cover), so this
+# residual is a defense-in-depth gap for a shape none of THIS repo's vendor
+# clients currently produce, not an open path for the key this PR protects.
+_CRED_PARAM_NAMES = (
+    r'(?:x[_-])?(?:api[_-]?key|apikey|access[_-]?key|auth[_-]?token|token|'
+    r'secret|password|key)'
+)
+# Header-name credential reprs (N4-ii): the alternation above already covers
+# hyphenated X-Api-Key / X-Auth-Token forms via the optional `x[_-]` prefix
+# and `[_-]` separators — reused by both _CRED_JSON_RE and _CRED_ASSIGN_RE
+# below rather than a separate pattern.
+
+# "apiKey": "value" / 'apiKey': 'value' (JSON/dict-repr body, EITHER quote
+# style for the key and independently for the value, case-insensitive).
+_CRED_JSON_RE = re.compile(
+    rf'''(?i)((['"])(?:{_CRED_PARAM_NAMES})\2\s*:\s*)(['"])[^'"]*\3''')
+# Authorization: Bearer <token>
+_BEARER_RE = re.compile(r'(?i)\b(Bearer\s+)\S+')
+# name=value / name%3Dvalue (url-encoded '=') — query string or bare mention.
+# Deliberately NO leading \b: a url-encoded '?' (%3F) immediately preceding the
+# param name (e.g. "...%3FapiKey%3D...") glues the trailing 'F' of %3F straight
+# onto 'apiKey' with no word-boundary between them, and that exact shape is how
+# a URL-encoded assignment actually renders once its '?' is also encoded.
+_CRED_ASSIGN_RE = re.compile(
+    rf'(?i)({_CRED_PARAM_NAMES}\s*(?:=|%3[dD])\s*)[^\s&"\'%)}}]+')
+# name value (space-separated free-text mention) — bare "key" excluded here,
+# too generic a word to redact on adjacency alone outside an assignment shape.
+_CRED_SPACED_RE = re.compile(
+    r'(?i)\b((?:api[_-]?key|apikey|access[_-]?key|token|secret|password)\s+)'
+    r'[^\s&"\')}]+')
+# Basic-auth netloc (N4-iii): scheme://user:pass@host -> scheme://REDACTED@host.
+# Redacts the WHOLE user:pass pair (not just the password) — no legitimate log
+# line needs either half once a credential is present in the URL at all.
+_BASIC_AUTH_RE = re.compile(r'(?i)(://)[^\s/@]+:[^\s/@]+@')
+# Common vendor secret-token prefixes that leak with NO adjacent keyword at all
+# (e.g. a URL path segment like /api/v1/sk_live_XXXX/chain).
+_TOKEN_PREFIX_RE = re.compile(r'(?i)\b(?:sk|pk)_[A-Za-z0-9_]{4,}')
+# Whatever is left of a URL query string after the above — final catch-all.
+_QUERY_TAIL_RE = re.compile(r'\?[^\s"\')]+')
+
+
+def redact_secrets(text: str) -> str:
+    """Strip secrets from an arbitrary string (an exception's str(), a formatted
+    traceback, ...). safe_exc_text() is the exception-typed convenience wrapper;
+    this is the reusable text-level primitive (M5: also applied to FetchResult.
+    error and its traceback, which land in the TRACKED data/run_status.json)."""
+    text = _CRED_JSON_RE.sub(lambda m: f"{m.group(1)}{m.group(3)}REDACTED{m.group(3)}", text)
+    text = _BEARER_RE.sub(lambda m: f"{m.group(1)}REDACTED", text)
+    text = _CRED_ASSIGN_RE.sub(lambda m: f"{m.group(1)}REDACTED", text)
+    text = _CRED_SPACED_RE.sub(lambda m: f"{m.group(1)}REDACTED", text)
+    text = _BASIC_AUTH_RE.sub(lambda m: f"{m.group(1)}REDACTED@", text)
+    text = _TOKEN_PREFIX_RE.sub("REDACTED", text)
+    text = _QUERY_TAIL_RE.sub("?REDACTED", text)
+    return text
+
+
+def safe_exc_text(exc: BaseException) -> str:
+    """Render `exc` for logging (or for a tracked-file field) with secrets
+    stripped — never surface a raw exception that may have travelled through a
+    keyed vendor URL, header, or JSON body."""
+    return redact_secrets(str(exc))
 
 # An open breaker is HALF-OPEN, not permanently dead: after this long it lets ONE
 # probe through. A success closes it; a failure re-opens it for another window.
@@ -86,6 +176,9 @@ class Adapter:
     name: str = "base"
     group: str = "misc"
     stale_after_days: int = 5   # weekly/lagged sources override (COT: 12, H4.1: 10)
+    # Explicit cash-observation clock. Operational receipts and mixed feeds stay opt-out.
+    session_calendar: str | None = None
+    session_completed_only: bool = False
     expected_failure: str | None = None  # set to a reason string when a source is
     # known-broken (e.g. bot-blocked); failures then report status 'blocked'
     overwrite_overlap: bool = False  # True for dividend/split-ADJUSTED series (yfinance
@@ -112,6 +205,10 @@ class Adapter:
         if df.empty:
             raise ValueError(f"{self.name}/{name}: all-NaN after cleaning")
         return df
+
+    def session_calendar_for_series(self, name: str) -> str | None:
+        """Cash venue for this observation series; None preserves its ordinary cadence."""
+        return self.session_calendar
 
     def last_good_date(self) -> date | None:
         dates = [d for d in (store.last_date(self.group, n) for n in self.stored_series()) if d]
@@ -150,7 +247,8 @@ class Adapter:
                 last_exc = e
                 wait = backoff_base * (2 ** attempt)
                 log.warning("%s GET %s attempt %d/%d failed (%s); retry in %.0fs",
-                            self.name, url.split("?")[0], attempt + 1, retries, e, wait)
+                            self.name, url.split("?")[0], attempt + 1, retries,
+                            safe_exc_text(e), wait)
                 if attempt < retries - 1:
                     time.sleep(wait)
         raise last_exc  # type: ignore[misc]
@@ -171,18 +269,45 @@ def is_connection_error(exc: Exception) -> bool:
             or "connection aborted" in s or "connection refused" in s)
 
 
+def _series_session_calendar(adapter: Adapter, name: str) -> str | None:
+    resolver = getattr(adapter, "session_calendar_for_series", None)
+    return resolver(name) if callable(resolver) else getattr(adapter, "session_calendar", None)
+
+
+def _unverified_future_calendar(market: str, now: datetime) -> bool:
+    """Identify an unpublished future slate without changing historical observation handling."""
+    from lib.exchange_holidays import calendar_coverage
+    from lib.market_session import market_local_date, session_freshness
+
+    venues = ("CN", "HK") if market.upper() == "CONNECT" else (market.upper(),)
+    years = set.intersection(*(set(calendar_coverage(venue)["verified_years"]) for venue in venues))
+    return (market_local_date(market, now).year > max(years, default=0)
+            and not session_freshness(market, None, now)["calendar_verified"])
+
+
+def _cash_observation_rows(df: pd.DataFrame, market: str, now: datetime,
+                           *, completed_only: bool = False) -> pd.DataFrame:
+    """Use the shared acceptance rule for returned and independently persisted observations."""
+    from lib.market_observations import filter_session_observations
+
+    return filter_session_observations(df, market, now=now, completed_only=completed_only)
+
+
 def detect_stale_series(
     group: str,
     frames: dict[str, pd.DataFrame],
     cadence_days: int,
     *,
     multiplier: float = 3.0,
+    session_calendars: dict[str, str | None] | None = None,
+    now: datetime | None = None,
 ) -> list[dict]:
     """Frozen-tail detector: after a SUCCESSFUL 200-OK fetch, compare each series'
     stored last-observation date against the expected cadence.
 
     A series is "frozen" when its last observation is older than
-    ``cadence_days * multiplier`` days — i.e. multiple release cycles have passed
+    ``cadence_days * multiplier`` days (actual sessions for explicitly opted-in
+    cash observations) — i.e. multiple release cycles have passed
     without any new data. This catches discontinued upstream series that return
     200-OK with stale history (the failure mode that silently killed JP/KR CPI,
     EZ unemployment, and the intl M2 group: FRED kept serving historical data with
@@ -194,7 +319,8 @@ def detect_stale_series(
     by design — the caller writes these to run_status["stale_series"] for the
     health surface.
     """
-    today = datetime.now(timezone.utc).date()
+    instant = now or datetime.now(timezone.utc)
+    today = instant.date()
     threshold = int(cadence_days * multiplier)
     stale: list[dict] = []
     for name, df in frames.items():
@@ -204,7 +330,17 @@ def detect_stale_series(
                 continue
             last_obs: date = pd.Timestamp(df_clean.index.max()).date()
             age = (today - last_obs).days
-            if age > threshold:
+            market = (session_calendars or {}).get(name)
+            lag_sessions = None
+            if market:
+                from lib.market_session import session_freshness
+                freshness = session_freshness(market, last_obs, instant)
+                lag_sessions = freshness["lag_sessions"]
+                frozen = (freshness["state"] in ("missing", "invalid", "unverified")
+                          or lag_sessions is None or lag_sessions > threshold)
+            else:
+                frozen = age > threshold
+            if frozen:
                 log.warning(
                     "stale_series detected: %s/%s last_obs=%s age=%dd (threshold=%dd, "
                     "cadence=%dd×%.1f)",
@@ -216,6 +352,7 @@ def detect_stale_series(
                     "last_obs": str(last_obs),
                     "cadence_days": cadence_days,
                     "age_days": age,
+                    **({"lag_sessions": lag_sessions, "session_calendar": market} if market else {}),
                 })
         except Exception:  # noqa: BLE001 — staleness check must never crash the run
             pass
@@ -457,7 +594,9 @@ def _probe_due(last_probe: str | None,
 
 
 def run_adapter(adapter: Adapter, full_history: bool = False,
-                stale_after_days: int | None = None) -> FetchResult:
+                stale_after_days: int | None = None, *,
+                capture_yahoo_receipts: bool = False,
+                capture_wti_receipts: bool = False) -> FetchResult:
     """Execute one adapter with circuit breaker + graceful degradation."""
     if stale_after_days is None:
         stale_after_days = adapter.stale_after_days
@@ -472,25 +611,112 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
         log.info("adapter %s breaker half-open: probing after %d fails", adapter.name, fails)
 
     try:
-        frames = adapter.fetch(full_history=full_history)
+        if type(capture_yahoo_receipts) is not bool or type(capture_wti_receipts) is not bool:
+            raise ValueError("capture flags must be boolean")
+        if capture_yahoo_receipts or capture_wti_receipts:
+            from collectors.yahoo import YahooAdapter
+            if type(adapter) is not YahooAdapter or adapter.group != "yahoo":
+                raise ValueError("availability capture requires incumbent Yahoo adapter")
+            frames = adapter.fetch(full_history=full_history, capture_source_metadata=True)
+            adapter_known_by = datetime.now(timezone.utc)
+        else:
+            frames = adapter.fetch(full_history=full_history)
         rows, last = 0, None
         today = datetime.now(timezone.utc).date()
         dark_found: list[dict] = []
+        observation_notes: list[str] = []
+        capture_attempted: set[str] = set()
+        session_bad = False
+        wall_last = None
+        health_frames: dict[str, pd.DataFrame] = {}
+        session_calendars: dict[str, str | None] = {}
+        instant = datetime.now(timezone.utc)
         for series_name, df in frames.items():
             df = adapter.validate(series_name, df)
-            merged = store.upsert(adapter.group, series_name, df,
-                                  outlier_col=df.columns[0] if len(df.columns) == 1 else None,
-                                  normalize_index=getattr(adapter, "normalize_index", True),
-                                  overwrite_overlap=getattr(adapter, "overwrite_overlap", False))
-            rows += len(df)
-            last = max(filter(None, [last, merged.index.max()]))
+            market = _series_session_calendar(adapter, series_name)
+            session_calendars[series_name] = market
+            unverified = bool(market and _unverified_future_calendar(market, instant))
+            if unverified:
+                session_bad = True
+                observation_notes.append(
+                    f"{series_name}: unverified calendar; provider-dated past/current weekdays "
+                    "retained without a holiday freshness exemption")
+            if market:
+                accepted = _cash_observation_rows(
+                    df, market, instant,
+                    completed_only=getattr(adapter, "session_completed_only", False))
+                if len(accepted) != len(df):
+                    observation_notes.append(
+                        f"{series_name}: ignored {len(df) - len(accepted)} non-session/future rows; "
+                        "retained last good observations")
+                df = accepted
+            if df.empty:
+                # A holiday snapshot is not an observation. Never upsert an empty frame.
+                merged = store.read(adapter.group, series_name)
+                if merged is not None and not merged.empty:
+                    merged = _cash_observation_rows(merged, market, instant)
+                if merged is None or merged.empty:
+                    session_bad = True
+                    observation_notes.append(f"{series_name}: no retained cash-session observations")
+                    continue
+            else:
+                merged = store.upsert(adapter.group, series_name, df,
+                                      outlier_col=df.columns[0] if len(df.columns) == 1 else None,
+                                      normalize_index=getattr(adapter, "normalize_index", True),
+                                      overwrite_overlap=getattr(adapter, "overwrite_overlap", False))
+                rows += len(df)
+                if capture_yahoo_receipts and series_name in store.YAHOO_CAPTURE_COHORT:
+                    capture_attempted.add(series_name)
+                    try:
+                        capture = store.capture_yahoo_observation(
+                            series_name, df, merged,
+                            lineage=adapter.availability_source_metadata(series_name),
+                            adapter_return_known_by=adapter_known_by)
+                        observation_notes.append(
+                            f"yahoo availability: {series_name} receipt={capture['receipt_sha256']}")
+                    except Exception:  # Capture failure must not erase a successful cache write.
+                        # Safe fixed notes: no private paths, raw provider data or exception text.
+                        observation_notes.append(
+                            f"yahoo availability: {series_name} refused; publication outcome unqualified")
+                if capture_wti_receipts and series_name == "CL=F":
+                    capture_attempted.add(series_name)
+                    try:
+                        capture = store.capture_yahoo_wti_observation(
+                            df, merged, lineage=adapter.wti_source_metadata(),
+                            adapter_return_known_by=adapter_known_by,
+                            temporal_context=adapter.wti_temporal_metadata())
+                        exported = store.export_yahoo_wti_observation(capture, df, merged)
+                        observation_notes.append(
+                            f"yahoo WTI observation: receipt={capture['receipt_sha256']}; "
+                            f"export={exported['sha256']}; scenario adoption unqualified")
+                    except Exception:
+                        # Preserve the canonical write and exact uncertain objects.
+                        # Do not retry acquisition/publication to manufacture a receipt.
+                        observation_notes.append(
+                            "yahoo WTI observation refused; publication outcome unqualified")
+            health_frames[series_name] = merged
+            series_last = merged.dropna(how="all").index.max()
+            last = max(filter(None, [last, series_last]))
+            if market:
+                from lib.market_session import session_freshness
+                freshness = session_freshness(market, series_last.date(), instant)
+                lag = freshness["lag_sessions"]
+                session_bad |= (freshness["state"] in ("missing", "invalid", "unverified")
+                                or lag is None or lag > getattr(adapter, "stale_after_sessions", stale_after_days))
+            else:
+                wall_last = max(filter(None, [wall_last, series_last]))
             # Column-grain contract check on the MERGED frame (store ground truth —
             # the fetch window is a short recent slice and cannot say when a column
             # last had a value). Opt-in: adapters declaring no contracts are untouched.
             dark_found.extend(_contract_entries(adapter, series_name, merged, today))
-        status = "ok"
-        if last is not None:
-            age = (datetime.now(timezone.utc).date() - last.date()).days
+        if capture_wti_receipts and "CL=F" not in capture_attempted:
+            observation_notes.append("yahoo WTI observation: no qualified returned observation")
+        if capture_yahoo_receipts:
+            for name in sorted(store.YAHOO_CAPTURE_COHORT - capture_attempted):
+                observation_notes.append(f"yahoo availability: {name} no qualified returned observation")
+        status = "stale" if session_bad else "ok"
+        if wall_last is not None:
+            age = (instant.date() - wall_last.date()).days
             if age > stale_after_days:
                 status = "stale"
         # fetch_result_status is an OPTIONAL adapter protocol (2 of ~228 define it) —
@@ -500,19 +726,24 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
         if declared_status is not None:
             if declared_status not in {"ok", "stale", "blocked"}:
                 raise ValueError(f"{adapter.name}: unsupported declared fetch status {declared_status!r}")
-            status = declared_status
+            # A source declaration cannot launder a missing/invalid/unverified cash
+            # observation into success. Noncash declared-status behavior stays intact.
+            if declared_status != "ok" or not session_bad:
+                status = declared_status
         # Frozen-tail detector: a 200-OK fetch whose last observation never advances
         # (series discontinued upstream) is invisible to is_connection_error. Compare
         # each fetched series' last observation against cadence. Non-fatal; writes
         # named stale_series entries to run_status.json for the health surface.
         stale_found = detect_stale_series(
-            adapter.group, frames, cadence_days=stale_after_days)
+            adapter.group, health_frames, cadence_days=stale_after_days,
+            session_calendars=session_calendars, now=instant)
         if stale_found:
             _write_stale_series(stale_found)
             notes = [f"frozen tail: {e['series']} last={e['last_obs']} age={e['age_days']}d"
                      for e in stale_found]
         else:
             notes = []
+        notes += observation_notes
         # Column-grain alarms: bare-print annotations + run_status["dark_columns"].
         notes += _emit_dark_columns(dark_found)
         res = FetchResult(adapter.name, status, rows=rows,
@@ -523,11 +754,18 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
         # attribute-safe or one duck-typing gap crashes the whole collect pass.
         expected = getattr(adapter, "expected_failure", None)
         if expected:
-            log.info("adapter %s blocked (known): %s", adapter.name, e)
+            log.info("adapter %s blocked (known): %s", adapter.name, safe_exc_text(e))
             res = FetchResult(adapter.name, "blocked", error=expected)
         else:
-            log.error("adapter %s failed: %s\n%s", adapter.name, e, traceback.format_exc(limit=3))
-            res = FetchResult(adapter.name, "failed", error=f"{type(e).__name__}: {e}")
+            # M5 (AD-1C0 review): FetchResult.error lands in the TRACKED
+            # data/run_status.json via collect.py's asdict(r) — a raw credential
+            # in a vendor URL/header/JSON body must never reach a committed file,
+            # not just a log line. Both the logged traceback AND the persisted
+            # `error` field are sanitized.
+            tb = redact_secrets(traceback.format_exc(limit=3))
+            log.error("adapter %s failed: %s\n%s", adapter.name, safe_exc_text(e), tb)
+            res = FetchResult(adapter.name, "failed",
+                              error=f"{type(e).__name__}: {safe_exc_text(e)}")
     if half_open:
         res.probed_at = datetime.now(timezone.utc).isoformat()
     return res

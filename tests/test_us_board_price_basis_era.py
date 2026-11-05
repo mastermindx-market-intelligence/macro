@@ -79,6 +79,38 @@ def test_every_price_derived_column_is_frozen(col, new):
     assert out.iloc[0][col] == stored.iloc[0][col], f"{col} was restated"
 
 
+@pytest.mark.parametrize("stored_values,expected", [
+    (["held", "stopped"], ["held", "stopped"]),     # text in the store
+    ([None, None], [None, None]),                   # all None: the 2026-10-05 crash
+    (["held", None], ["held", None]),
+])
+def test_a_stored_value_that_does_not_fit_the_fresh_column_still_freezes(stored_values, expected):
+    """A column no fresh row has a value for comes out of the grade as all-NaN float64.
+    Pandas 3 refuses to write the store's text or None into it, which killed the grader
+    on 2026-10-05 and left every later board ungraded. The stored value must win."""
+    col = "terminal_state_clean15_126"
+    stored = _frame(_row(**{col: stored_values[0]}),
+                    _row(ticker="OTHER", **{col: stored_values[1]}))
+    fresh = _frame(_row(), _row(ticker="OTHER"))
+    fresh[col] = pd.Series([float("nan"), float("nan")], dtype="float64")
+    out = G._freeze_graded_prices(fresh, stored, KEYS)
+    for pos, want in enumerate(expected):
+        got = out.iloc[pos][col]
+        assert (pd.isna(got) if want is None else got == want), f"{col} row {pos}: {got!r}"
+
+
+def test_a_fresh_row_beside_a_frozen_one_keeps_its_own_value_when_the_column_changes_type():
+    """Widening the column for the frozen row must not cost the new row its grade."""
+    stored = _frame(_row(ticker="OLD", ret=0.055809, spy_ret=0.01))
+    fresh = _frame(_row(ticker="OLD", ret=0.047458), _row(ticker="NEW", ret=0.0474))
+    stored["spy_ret"] = stored["spy_ret"].astype(object)
+    out = G._freeze_graded_prices(fresh, stored, KEYS).set_index("ticker")
+    assert float(out.loc["OLD", "ret"]) == pytest.approx(0.055809)
+    assert float(out.loc["NEW", "ret"]) == pytest.approx(0.0474)
+    assert float(out.loc["OLD", "spy_ret"]) == pytest.approx(0.01)
+    assert float(out.loc["NEW", "spy_ret"]) == pytest.approx(-0.02377)
+
+
 def test_an_unscored_row_that_matured_still_takes_the_fresh_grade():
     """The freeze must not stop the nightly doing its job: a row whose stored `ret` is
     null has no point-in-time claim to protect."""

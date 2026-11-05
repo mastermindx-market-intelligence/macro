@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import pathlib
 import sys
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import pytest
@@ -312,8 +314,8 @@ def test_thin_ticker_excluded():
 # ---------------------------------------------------------------------------
 # 4. Builder smoke test
 # ---------------------------------------------------------------------------
-def test_builder_returns_0_when_panel_missing(tmp_path, monkeypatch):
-    """Builder should return 0 (not raise) when the panel file is absent.
+def test_builder_reports_failure_when_panel_missing(tmp_path, monkeypatch):
+    """Missing canonical input retains prior artifacts but is not a success.
 
     BOTH panel paths must be nulled: _load_panel() reads PANEL_DEEP_PATH *and*
     PANEL_PATH and returns their union, so nulling only the collector panel left
@@ -340,8 +342,82 @@ def test_builder_returns_0_when_panel_missing(tmp_path, monkeypatch):
 
     result = bdd.main()
 
-    assert result == 0
+    assert result != 0
     assert not wrote, f"panel-missing path must write nothing, wrote: {sorted(wrote)}"
+
+
+def test_finra_expected_available_session_owns_1830_et_release_clock():
+    from collectors.finra_short_volume import expected_available_session
+
+    et = ZoneInfo("America/New_York")
+    assert expected_available_session(datetime(2026, 8, 19, 18, 29, tzinfo=et)).isoformat() == "2026-08-18"
+    assert expected_available_session(datetime(2026, 8, 19, 18, 30, tzinfo=et)).isoformat() == "2026-08-19"
+    assert expected_available_session(datetime(2026, 8, 21, 19, 0, tzinfo=et)).isoformat() == "2026-08-21"  # Friday evening
+    assert expected_available_session(datetime(2026, 8, 22, 12, 0, tzinfo=et)).isoformat() == "2026-08-21"  # Saturday
+    assert expected_available_session(datetime(2026, 8, 24, 18, 29, tzinfo=et)).isoformat() == "2026-08-21"  # Monday pre-release
+    assert expected_available_session(datetime(2026, 9, 7, 20, 0, tzinfo=et)).isoformat() == "2026-09-04"   # Labor Day
+
+
+def test_mixed_ticker_dates_partition_current_authority_from_browse_history():
+    import inspect
+    import scripts.build_darkpool_desk as bdd
+
+    rows = [
+        {"ticker": "AAPL", "asof": "2026-08-19", "participation": 0.41},
+        {"ticker": "MSFT", "asof": "2026-08-19", "participation": 0.38},
+        {"ticker": "QQQ", "asof": "2026-08-04", "participation": 0.52},
+    ]
+    current, stale, coverage = bdd._partition_session_rows(
+        rows, panel_latest="2026-08-19", tracked_universe=3
+    )
+    assert [r["ticker"] for r in current] == ["AAPL", "MSFT"]
+    assert [r["ticker"] for r in stale] == ["QQQ"]
+    assert stale[0]["session_status"] == "stale"
+    assert coverage == {
+        "tracked_universe": 3,
+        "current_session_rows": 2,
+        "stale_rows": 1,
+        "missing_rows": 0,
+        "current_session_pct": 66.7,
+    }
+
+    # The single admission seam feeds every current-authority consumer.
+    source = inspect.getsource(bdd.main)
+    assert "for r in current_stats" in source          # market gauge
+    assert "_dpc.build_context_feed(\n            current_clean" in source
+    assert "_emit_pane_json(\n            current_clean" in source
+
+
+def test_darkpool_pane_separates_current_universe_from_historical_rows(tmp_path):
+    import json
+    import scripts.build_darkpool_desk as bdd
+
+    current = [{"ticker": "AAPL", "asof": "2026-08-19", "session_status": "current"}]
+    historical = [{"ticker": "QQQ", "asof": "2026-08-04", "session_status": "stale"}]
+    out = tmp_path / "darkpool_eod.json"
+    bdd._emit_pane_json(
+        current, {}, panel_latest="2026-08-19", panel_dates=100, below_floor=False,
+        n_with_oe=1, n_with_ats=0, ats_lag_note=None, built="test",
+        coverage={"tracked_universe": 2, "current_session_rows": 1,
+                  "stale_rows": 1, "missing_rows": 0, "current_session_pct": 50.0},
+        historical_rows=historical, out_path=out,
+    )
+    payload = json.loads(out.read_text())
+    assert [r["ticker"] for r in payload["universe"]] == ["AAPL"]
+    assert [r["ticker"] for r in payload["historical_rows"]] == ["QQQ"]
+    assert all(r["asof"] == payload["asof"] for r in payload["universe"])
+
+
+def test_darkpool_static_settled_copy_never_uses_wall_clock_today():
+    from engine.darkpool_context import _hero
+
+    template = (pathlib.Path(__file__).resolve().parents[1] / "templates" / "darkpool.html.j2").read_text()
+    assert "today" not in template.lower()
+    assert "今日" not in template
+    active = _hero({"heavy_into_weakness": 1}, {"participation_dollar_wtd": 0.4})
+    quiet = _hero({}, {"participation_dollar_wtd": 0.4})
+    assert "settled session" in active["en"] and "today" not in active["en"].lower()
+    assert "settled session" in quiet["en"] and "today" not in quiet["en"].lower()
 
 
 def test_builder_disabled_by_config(tmp_path, monkeypatch):
@@ -771,3 +847,131 @@ def test_forward_ledger_accrues_and_is_same_day_idempotent(tmp_path):
     # records inputs only — never an outcome or a direction
     rec = _json.loads(two[0])
     assert "direction" not in rec and "score" not in rec and "outcome" not in rec
+
+
+# UIUX native browse controls: public presentation only, no change to ranking/filter math.
+def _desk_ui_source():
+    return (pathlib.Path(__file__).resolve().parents[1] / 'templates/darkpool.html.j2').read_text()
+
+
+def _desk_ui_fragment(start, end):
+    from jinja2 import Environment
+    src = _desk_ui_source()
+    preamble = src[:src.index('<!DOCTYPE html>')]
+    first = src.index(start)
+    return Environment(autoescape=True).from_string(preamble + src[first:src.index(end, first)]).render(n_tickers_total=372)
+
+
+def test_desk_ui_presets_are_native_pressed_buttons():
+    import re
+    html = _desk_ui_fragment('<div class="presets-row"', '<div class="filters-row">')
+    assert len(re.findall(r'<button[^>]*class="chip preset"', html)) == 4
+    assert html.count('aria-pressed="false"') == 4
+    assert 'role="group"' in html
+    assert '<span class="chip preset"' not in html
+
+
+def test_desk_ui_sort_buttons_do_not_wrap_explanatory_tips():
+    import re
+    html = _desk_ui_fragment('<thead>', '<tbody id="dp-tbody">')
+    assert html.count('class="dp-sort"') == 13
+    assert html.count('scope="col"') == 14
+    for body in re.findall(r'<button[^>]*class="dp-sort"[^>]*>(.*?)</button>', html, re.S):
+        assert 'tip-wrap' not in body
+        assert 'l-en' in body and 'l-zh' in body
+    src = _desk_ui_source()
+    handlers = src[src.index("document.querySelectorAll('#dp-table .dp-sort')"):src.index("['dp-search'")]
+    assert "button.addEventListener('click'" in handlers
+    assert "th.addEventListener('click'" not in handlers
+    assert 'keydown' not in handlers
+
+
+def test_desk_ui_active_sort_and_preset_states_are_projected_once():
+    src = _desk_ui_source()
+    sync = src[src.index('function syncDeskControls'):src.index('function renderTable')]
+    assert "setAttribute('aria-pressed', String(selected))" in sync
+    assert "setAttribute('aria-sort', sortDir === -1 ? 'descending' : 'ascending')" in sync
+    assert "removeAttribute('aria-sort')" in sync
+    render = src[src.index('function renderTable'):src.index("document.querySelectorAll('#dp-table .dp-sort')")]
+    assert 'syncDeskControls();' in render
+
+
+@pytest.mark.parametrize('field', ['dp-search', 'dp-min-share', 'dp-trend', 'dp-norm'])
+def test_desk_ui_filter_fields_have_visible_labels(field):
+    html = _desk_ui_fragment('<div class="filters-row">', '<div id="dp-row-count"')
+    assert f'<label for="{field}">' in html
+    assert 'l-en' in html and 'l-zh' in html
+
+
+def test_desk_ui_clear_restores_search_without_stealing_preset_focus():
+    src = _desk_ui_source()
+    assert "if (focusSearch) document.getElementById('dp-search').focus()" in src
+    assert "addEventListener('click', function() { clearFilters(true); })" in src
+    assert 'if (activePreset === p) { clearFilters(false); return; }' in src
+    assert "document.getElementById('dp-clear').click()" not in src
+
+
+def test_desk_ui_locale_updates_accessible_names_without_replacing_controls():
+    src = _desk_ui_source()
+    locale = src[src.index('function updatePlaceholders'):src.index("document.addEventListener('langchange', updatePlaceholders)")]
+    assert "'.dp-shell [data-label-en]'" in locale
+    assert "el.setAttribute('aria-label'" in locale
+    assert 'innerHTML' not in locale
+    assert 'MutationObserver' not in locale
+
+
+def test_desk_ui_empty_results_remain_explained_and_announced():
+    src = _desk_ui_source()
+    assert 'role="status" aria-live="polite" aria-atomic="true"' in src
+    assert 'No matching stocks. Adjust or clear the filters.' in src
+    assert '没有匹配的股票。请调整或清除筛选。' in src
+    assert 'class="dp-empty"' in src
+    assert 'sorted.length ? sorted.map(renderRow)' in src
+    assert 'allRows.length ?' in src
+    assert 'No stock data is available in this snapshot.' in src
+    assert '当前快照暂无股票数据。' in src
+
+
+def test_desk_ui_summary_and_touch_targets_do_not_use_fragmented_copy():
+    html = _desk_ui_fragment('<summary class="dp-desk-summary">', '<div class="sb">')
+    assert 'Browse all stocks' in html and '浏览全部股票' in html
+    assert '372' in html
+    assert 'tracked rows — sortable desk' not in html
+    src = _desk_ui_source()
+    assert '.shelf summary.dp-desk-summary{display:grid;' in src
+    assert 'min-height:40px' in src
+    assert '#dp-table .dp-sort:focus-visible' in src
+    assert 'outline:2px solid currentColor' in src
+
+
+def test_desk_ui_published_script_and_stylesheet_match_template():
+    import re, hashlib
+    root = pathlib.Path(__file__).resolve().parents[1]
+    src = _desk_ui_source()
+    html = (root / 'site/darkpool.html').read_text()
+    script = re.compile(r"<script>\s*\(function\(\) \{\s*'use strict';.*?</script>", re.S)
+    assert script.search(src).group(0) == script.search(html).group(0)
+    style = re.search(r'<style>(.*?)</style>', src, re.S).group(1).strip()
+    matches = []
+    for ref in re.findall(r'assets/css/([0-9a-f]{8})\.css\?v=\1', html):
+        path = root / 'site/assets/css' / (ref + '.css')
+        if path.is_file() and '.dp-desk-summary' in path.read_text():
+            matches.append(path)
+            assert hashlib.sha256(path.read_bytes()).hexdigest()[:8] == ref
+            assert path.read_text().strip() == style
+    assert len(matches) == 1
+
+
+def test_desk_ui_snapshot_status_wraps_after_language_switch():
+    src = _desk_ui_source()
+    assert '.dp-asof { max-width:100%; }' in src
+    assert '.dp-asof .l-en,.dp-asof .l-zh { white-space:normal; min-width:0; }' in src
+    assert '.dp-asof .l-en,.dp-asof .l-zh { white-space:nowrap; }' not in src
+
+
+def test_desk_ui_keeps_ticker_visible_while_scrolling():
+    src = _desk_ui_source()
+    assert '#dp-table th:first-child,#dp-table tr:not(.dp-empty)>td:first-child{position:sticky;left:0;' in src
+    assert 'background:var(--panel);box-shadow:1px 0 0 var(--line)' in src
+    assert '#dp-table th:first-child{z-index:2}' in src
+    assert '#dp-table tr:not(.dp-empty):hover>td:first-child{background:var(--panel2)}' in src

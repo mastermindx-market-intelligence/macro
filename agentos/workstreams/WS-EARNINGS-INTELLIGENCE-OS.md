@@ -6,7 +6,7 @@ objective: >
   provenance substrate. Done for this workstream's first arc means E0 artifacts
   are merged, E1 binds AAPL FY2026 Q3 into event_workspace.v1, and E2 renders
   that payload in the existing Terminal workspace and dossier glance.
-status: active
+status: done
 program: earnings-intelligence
 repos: [macro, terminal]
 owner: coo-fable
@@ -14,9 +14,9 @@ class: research
 blast_radius: user_facing
 ambiguity: specified
 next_action: >
-  Merge this E0 artifact PR, then start a new session on E1 exactly as
-  research/earnings_intelligence/E1_IMPLEMENTATION_HANDOFF.md — do not begin E1
-  in the E0 session.
+  E2 arc is complete (E2-T1 Terminal + E2-D public dossier live). Return to Sol
+  for E3 reassessment. Do not begin E3, slides, Q&A ML, publisher work, or
+  corpus backfill from this workstream.
 owns_paths:
   - research/earnings_intelligence/**
   - research/EARNINGS_INTELLIGENCE_E0_FREEZE_ARCHAEOLOGY_AND_EXPERIENCE_HANDOFF_2026-08-16.md
@@ -31,11 +31,19 @@ decisions:
 discoveries:
   - "DSC:EARNINGS-PROVENANCE-SUBSTRATE-OUTRAN-THE-PRODUCT"
   - "DSC:EARNINGS-WIRE-AND-CI-DIVERGE-ON-THE-SAME-ISSUER"
+  - "DSC:E1-READER-IS-NOT-THE-PRODUCTION-OBJECT"
+  - "DSC:EDGAR-INDEX-HEADERS-ARE-HTML-ESCAPED"
+  - "DSC:CN-POST-EVENT-TAPES-SHARE-NO-EVENT-ID"
 do_not_redo:
   - Rebuild Terminal transcripts, Stage, Group Reads, TIL, or a standalone earnings app.
   - Treat Earnings Wire excerpt archive as the finished intelligence product.
   - Listing-key dual-class events (GOOG/GOOGL) as two issuers.
-  - Use golden-corpus synthetic CIKs as production company_id.
+  - Treat a production-shaped reader test as proof the R2 object exists.
+  - Publish E1 test fixtures as production event_workspace truth.
+  - Parse EDGAR `-index-headers.html` without html.unescape.
+  - Re-read the closed v1 score overlay for the E2 glance.
+  - Broaden E2 into E3+, slides, Q&A ML, or a second publisher.
+  - Reopen Terminal E2-T1 product, Results taxonomy, receipt copy, or #420 CSS ownership.
 landmines:
   - v1 CI requires claim_citations_pending == true; do not flip the v1 invariant.
   - public_wire completeness is forced transcript-only; changing it is a contract change.
@@ -44,18 +52,33 @@ landmines:
 waves:
   - id: E0
     title: Freeze archaeology, ownership, golden universe, experience, E1/E2 contracts
-    status: in_progress
-    next_action: Land the E0 artifact files and stop; do not implement E1 here.
+    status: done
+    next_action: Frozen; do not reopen unless the contract itself is superseded.
   - id: E1
     title: Canonical truth convergence for AAPL FY2026 Q3
-    status: todo
+    status: done
     depends_on: [E0]
-    next_action: Execute research/earnings_intelligence/E1_IMPLEMENTATION_HANDOFF.md after E0 merges.
+    pr: 5817
+    next_action: Implementation accepted; production object is E1P, not a second E1.
+  - id: E1P
+    title: Production activation of the AAPL FY2026 Q3 event_workspace nest
+    status: done
+    depends_on: [E1]
+    pr: 5841
+    next_action: Live on generation f709a0a6ec514282d5769e7d; E2 is unblocked.
   - id: E2
     title: Golden Event Workspace in existing Terminal + dossier
-    status: todo
-    depends_on: [E1]
-    next_action: Execute research/earnings_intelligence/E2_IMPLEMENTATION_HANDOFF.md after E1 is live.
+    status: done
+    depends_on: [E1P]
+    next_action: Arc complete. E2-T1 live on Terminal #418 / abf87195c7ea; E2-D live via Macro #6021 / 12f087aec3c1.
+  - id: E2-D
+    title: Macro dossier glance from the live AAPL FY2026 Q3 workspace
+    status: done
+    depends_on: [E2]
+    pr: 6021
+    next_action: >
+      Landed. Public AAPL dossier is v2 on generation f709a0a6ec514282d5769e7d.
+      Do not begin E3 from this record.
 ---
 
 E0 is research/design only. E1/E2 are the first vertical slice. Later waves E3–E15 live in the V2 masterplan and are out of this workstream's immediate next_action.

@@ -47,8 +47,15 @@
   .dp-brand .gn { background:linear-gradient(96deg,var(--acc),var(--dpb) 60%,var(--unc)); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .dp-sub { color:var(--muted); font-size:14px; margin:5px 0 0; max-width:640px; }
   .dp-verdict { font-size:clamp(20px,3vw,28px); font-weight:800; color:var(--ink); letter-spacing:-.022em; line-height:1.3; margin:18px 0 4px; max-width:900px; }
-  .dp-asof { display:inline-flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); margin-top:8px; }
+  .dp-asof { display:inline-flex; align-items:center; flex-wrap:wrap; gap:6px 8px; font-size:12px; line-height:1.45; color:var(--muted); margin-top:8px; }
+  .dp-asof { max-width:100%; }
+  .dp-asof .l-en,.dp-asof .l-zh { white-space:normal; min-width:0; }
   .dp-dot { width:7px; height:7px; border-radius:50%; background:var(--up); animation:dpBreathe 2.8s ease-in-out infinite; flex:none; }
+  .dp-census { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; font-size:11.5px; color:var(--muted); }
+  .dp-census span { padding:4px 9px; border:1px solid var(--line); border-radius:999px; background:var(--panel); }
+  .dp-census b { color:var(--ink); font-variant-numeric:tabular-nums; }
+  .session-badge { display:inline-flex; margin-left:7px; padding:2px 6px; border-radius:999px; border:1px solid color-mix(in srgb,var(--unc) 45%,var(--line)); color:var(--unc); font-size:9.5px; font-weight:750; white-space:nowrap; vertical-align:middle; }
+  tr.is-stale td { color:color-mix(in srgb,var(--muted) 86%,transparent); }
 
   /* ---------- market gauge ---------- */
   .dp-gauge { margin:16px 0 2px; }
@@ -205,6 +212,31 @@
   @media (max-width:900px) { .sc-hide { display:none; } }
   @media (max-width:640px) { .sc-hide-sm { display:none; } }
   @media (max-width:480px) { .sc-hide-xs { display:none; } }
+
+/* Native browse controls: one compact desk, keyboard/touch parity in both themes. */
+.shelf summary.dp-desk-summary{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px}
+.dp-desk-summary .si{grid-column:1;grid-row:1 / span 2}
+.dp-desk-summary .dp-desk-title{grid-column:2;min-width:0}
+.shelf summary.dp-desk-summary .sh{grid-column:2;grid-row:2;margin-left:0}
+.dp-desk-summary .sc{grid-column:3;grid-row:1 / span 2}
+.presets-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.presets-row .chip.preset{min-height:40px;white-space:normal;text-align:center;justify-content:center;padding:6px 8px;font:inherit;font-size:12px;line-height:1.3;touch-action:manipulation}
+.presets-row .chip.preset.active{color:var(--ink);background:var(--panel2);border-color:var(--dpb);font-weight:700}
+.filters-row{display:grid;grid-template-columns:minmax(120px,1.2fr) minmax(100px,.8fr) repeat(2,minmax(145px,1fr)) auto auto;align-items:end}
+.dp-filter{display:flex;flex-direction:column;gap:4px;min-width:0}
+.dp-filter label{font-size:11px;font-weight:600;color:var(--muted)}
+.dp-filter .dp-input,.dp-filter .dp-select{width:100%;min-width:0;min-height:40px}
+.filters-row .clear-btn,.filters-row .export-btn{min-height:40px;touch-action:manipulation}
+.dp-sort{border:0;padding:4px 0;min-height:40px;background:transparent;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;touch-action:manipulation}
+#dp-table th[data-col]{cursor:default}
+/* Keep the stock identity visible while browsing the wide data table. */
+#dp-table th:first-child,#dp-table tr:not(.dp-empty)>td:first-child{position:sticky;left:0;z-index:1;background:var(--panel);box-shadow:1px 0 0 var(--line)}
+#dp-table th:first-child{z-index:2}
+#dp-table tr:not(.dp-empty):hover>td:first-child{background:var(--panel2)}
+.presets-row .preset:focus-visible,.filters-row :is(input,select,button):focus-visible,#dp-table .dp-sort:focus-visible,.dp-desk-summary:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+#dp-table .dp-empty td{text-align:left;padding:16px 8px;font-weight:400;white-space:normal;color:var(--muted)}
+@media(max-width:820px){.filters-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.presets-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -225,11 +257,18 @@
     <span class="dp-mark"><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13" fill="none" stroke="var(--dpb)" stroke-width="1.4" opacity=".5"/><path d="M15 2a13 13 0 0 0 0 26z" fill="var(--acc)" opacity=".9"/><circle cx="15" cy="15" r="4.4" fill="var(--bg)"/></svg></span>
     <span class="gn">{{ t('Dark Pool', '暗池') }}</span>
   </div>
-  <p class="dp-sub">{{ t("How much of each stock's volume traded away from the public tape today — and what the price was doing while it did.", '今日每只个股有多少成交发生在公开报价带之外——以及成交发生时股价的表现。') }}</p>
+  <p class="dp-sub">{{ t("How much of each stock's volume traded away from the public tape in the latest settled session — and what the price was doing while it did.", '最近结算交易日中，每只个股有多少成交发生在公开报价带之外——以及成交发生时股价的表现。') }}</p>
   {% if dp and dp.hero %}<div class="dp-verdict">{{ bl(dp.hero) }}</div>{% endif %}
   <div class="dp-asof"><span class="dp-dot"></span>{{ t('As of', '截至') }} {{ panel_latest }}
     {% if below_floor %}· <span style="color:var(--ink-warn, var(--warn))">{{ t('thin history (' ~ panel_dates ~ ' dates)', '历史较短（' ~ panel_dates ~ ' 天）') }}</span>{% endif %}
     · {{ t('settled off-exchange tape · positioning context, not trade calls', '结算后的场外成交 · 仅为仓位背景，非交易信号') }}</div>
+{% if coverage %}
+  <div class="dp-census" aria-label="Current-session coverage">
+    <span><b>{{ coverage.current_session_rows }}</b> / <b>{{ coverage.tracked_universe }}</b> {{ t('current-session names', '只当前交易日个股') }} · {{ coverage.current_session_pct }}%</span>
+    <span><b>{{ coverage.stale_rows }}</b> {{ t('older-session rows', '只较早交易日记录') }}</span>
+    <span><b>{{ coverage.missing_rows }}</b> {{ t('missing', '只缺失') }}</span>
+  </div>
+{% endif %}
 
   {# Market gauge — dollar-weighted, so a $3 name and a $300 name do not count the same. #}
   {% if gauge and gauge.participation_dollar_wtd is not none %}
@@ -280,9 +319,9 @@
 </div>
 
 <!-- ═════════════════════════ STANDOUTS BOARD ═════════════════════════ -->
-<div class="sec"><span class="sd" style="--sc:var(--unc)"></span><h2>{{ t('Standouts today', '今日焦点个股') }}</h2>
+<div class="sec"><span class="sd" style="--sc:var(--unc)"></span><h2>{{ t('Standouts this settled session', '本结算交易日焦点个股') }}</h2>
   <span class="cnt">{{ dp.standouts|length }} {{ t('of', '/') }} {{ dp.n_standouts }} {{ t('names with unusual dark activity', '只出现异常暗池活动') }}</span></div>
-<p class="sec-sub">{{ t("The names trading furthest from their OWN off-exchange norm right now — ranked by how unusual they are, not by how dark they always are. The complete desk is one click below.", '当前最偏离自身场外成交常态的个股——按异常程度排序，而非按其一贯的暗池占比。完整数据台见下方一键展开。') }}</p>
+<p class="sec-sub">{{ t("The names furthest from their OWN off-exchange norm in this settled session — ranked by how unusual they were, not by how dark they usually are. The complete desk is one click below.", '本结算交易日中最偏离自身场外成交常态的个股——按异常程度排序，而非按其一贯的暗池占比。完整数据台见下方一键展开。') }}</p>
 <div class="board">
   {% for s in dp.standouts %}
   <div class="name {{ LC[s.pattern] }}">
@@ -309,7 +348,7 @@
   {% endfor %}
 </div>
 {% else %}
-<div class="dp-quiet">{{ t("Off-exchange activity is quiet today — no names are trading unusually heavily in the dark versus their own history. The full desk is still available below.", '今日场外活动平静——没有个股相对自身历史出现异常沉重的暗池成交。完整数据台仍可在下方查看。') }}</div>
+<div class="dp-quiet">{{ t("Off-exchange activity was quiet in this settled session — no names traded unusually heavily in the dark versus their own history. The full desk is still available below.", '本结算交易日场外活动平静——没有个股相对自身历史出现异常沉重的暗池成交。完整数据台仍可在下方查看。') }}</div>
 {% endif %}
 
 <!-- ═══════════════════════════ VENUE FLOW ════════════════════════════ -->
@@ -339,62 +378,66 @@
 <!-- Full desk (demoted) -->
 <div class="shelf">
   <details>
-    <summary><span class="si">▦</span>{{ t('Browse all', '浏览全部') }} {{ n_with_oe }} {{ t('names — sortable desk', '只 — 可排序数据台') }}<span class="sh">{{ t('off-exchange share · trend · vs-norm · short ratio · venue', '场外占比 · 趋势 · vs常态 · 融券比率 · 场所') }}</span><span class="sc">▶</span></summary>
+    <summary class="dp-desk-summary"><span class="si" aria-hidden="true">▦</span><span class="dp-desk-title">{{ t('Browse all stocks', '浏览全部股票') }}</span><span class="sh">{{ n_tickers_total }} {{ t('tracked rows', '条跟踪记录') }}</span><span class="sc" aria-hidden="true">▶</span></summary>
     <div class="sb">
       {# JSON data payload — consumed by client-side table renderer #}
       <script id="dp-data" type="application/json">{{ table_json | safe }}</script>
 
-      <div class="presets-row">
-        <span class="chip preset" data-preset="heavy-oe"><span class="l-en">Off-exchange heavy</span><span class="l-zh">场外占比高</span></span>
-        <span class="chip preset" data-preset="rising-oe"><span class="l-en">Rising off-ex</span><span class="l-zh">场外占比上升</span></span>
-        <span class="chip preset" data-preset="short-spike"><span class="l-en">Short-volume spike</span><span class="l-zh">融券成交激增</span></span>
-        <span class="chip preset" data-preset="fading-oe"><span class="l-en">Fading off-ex</span><span class="l-zh">场外占比下降</span></span>
+      <div class="presets-row" role="group" aria-label="Quick filters" data-label-en="Quick filters" data-label-zh="快捷筛选">
+        <button type="button" class="chip preset" data-preset="heavy-oe" aria-pressed="false">{{ t('Off-exchange heavy','场外占比高') }}</button>
+        <button type="button" class="chip preset" data-preset="rising-oe" aria-pressed="false">{{ t('Rising off-exchange','场外占比上升') }}</button>
+        <button type="button" class="chip preset" data-preset="short-spike" aria-pressed="false">{{ t('Short-volume spike','卖空成交激增') }}</button>
+        <button type="button" class="chip preset" data-preset="fading-oe" aria-pressed="false">{{ t('Falling off-exchange','场外占比下降') }}</button>
       </div>
 
       <div class="filters-row">
-        <input id="dp-search" class="dp-input" type="text" placeholder="Filter ticker…" data-ph-en="Filter ticker…" data-ph-zh="筛选代码…" autocomplete="off">
-        <input id="dp-min-share" class="dp-input" type="number" min="0" max="100" step="1" placeholder="Min OE %" data-ph-en="Min OE %" data-ph-zh="最低场外占比%" autocomplete="off">
-        <select id="dp-trend" class="dp-select">
-          <option value="all" data-en="All trends" data-zh="全部趋势">All trends</option>
-          <option value="rising" data-en="Rising (≥+1pp)" data-zh="上升（≥+1pp）">Rising (≥+1pp)</option>
-          <option value="falling" data-en="Falling (≤−1pp)" data-zh="下降（≤−1pp）">Falling (≤−1pp)</option>
-        </select>
-        <select id="dp-norm" class="dp-select">
-          <option value="all" data-en="All vs norm" data-zh="全部vs基准">All vs norm</option>
-          <option value="above" data-en="Above norm (z≥1)" data-zh="高于基准（z≥1）">Above norm (z≥1)</option>
-          <option value="below" data-en="Below norm (z≤−1)" data-zh="低于基准（z≤−1）">Below norm (z≤−1)</option>
-        </select>
-        <button class="clear-btn" id="dp-clear">{{ t('Clear', '清除') }}</button>
-        <button class="export-btn" id="dp-export">{{ t('Export CSV', '导出CSV') }}</button>
+        <div class="dp-filter"><label for="dp-search">{{ t('Ticker','代码') }}</label>
+          <input id="dp-search" class="dp-input" type="search" placeholder="Filter ticker…" data-ph-en="Filter ticker…" data-ph-zh="筛选代码…" autocomplete="off"></div>
+        <div class="dp-filter"><label for="dp-min-share">{{ t('Min share (%)','最低占比 (%)') }}</label>
+          <input id="dp-min-share" class="dp-input" type="number" min="0" max="100" step="1" placeholder="0" aria-label="Minimum off-exchange share (%)" data-label-en="Minimum off-exchange share (%)" data-label-zh="最低场外占比 (%)" autocomplete="off"></div>
+        <div class="dp-filter"><label for="dp-trend">{{ t('Share trend','占比趋势') }}</label>
+          <select id="dp-trend" class="dp-select">
+            <option value="all" data-en="All trends" data-zh="全部趋势">All trends</option>
+            <option value="rising" data-en="Rising (≥+1pp)" data-zh="上升（≥+1百分点）">Rising (≥+1pp)</option>
+            <option value="falling" data-en="Falling (≤−1pp)" data-zh="下降（≤−1百分点）">Falling (≤−1pp)</option>
+          </select></div>
+        <div class="dp-filter"><label for="dp-norm">{{ t('Versus usual','相对常态') }}</label>
+          <select id="dp-norm" class="dp-select">
+            <option value="all" data-en="Any level" data-zh="全部水平">Any level</option>
+            <option value="above" data-en="Above usual (z≥1)" data-zh="高于常态（z≥1）">Above usual (z≥1)</option>
+            <option value="below" data-en="Below usual (z≤−1)" data-zh="低于常态（z≤−1）">Below usual (z≤−1)</option>
+          </select></div>
+        <button type="button" class="clear-btn" id="dp-clear">{{ t('Clear', '清除') }}</button>
+        <button type="button" class="export-btn" id="dp-export">{{ t('Export CSV', '导出CSV') }}</button>
       </div>
-      <div id="dp-row-count" class="row-count"></div>
+      <div id="dp-row-count" class="row-count" role="status" aria-live="polite" aria-atomic="true"></div>
 
       <div class="tbl-wrap">
-        <table class="dp-tbl" id="dp-table">
+        <table class="dp-tbl" id="dp-table" aria-label="Off-exchange stock data" data-label-en="Off-exchange stock data" data-label-zh="个股场外成交数据">
           <thead>
             <tr>
-              <th data-col="ticker" data-type="str">{{ t('Ticker','代码') }}</th>
-              <th data-col="asof" data-type="str" class="sc-hide-sm">{{ t('Date','日期') }}</th>
-              <th data-col="participation" data-type="num">{{ t('Off-Ex Share','场外占比') }}
+              <th data-col="ticker" data-type="str" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Ticker" data-label-en="Sort by Ticker" data-label-zh="按代码排序">{{ t('Ticker','代码') }}</button></th>
+              <th data-col="asof" data-type="str" class="sc-hide-sm" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Date" data-label-en="Sort by Date" data-label-zh="按日期排序">{{ t('Date','日期') }}</button></th>
+              <th data-col="participation" data-type="num" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Off-Ex Share" data-label-en="Sort by Off-Ex Share" data-label-zh="按场外占比排序">{{ t('Off-Ex Share','场外占比') }}</button>
                 {{ tip('FINRA-facility total volume ÷ consolidated day volume (exact date match). What fraction of this name\'s daily volume routed through off-exchange facilities.','FINRA设施总成交量÷综合日成交量（精确日期匹配）。该股当日成交量中路由至场外设施的比例。') }}</th>
-              <th data-col="spark" data-type="none" class="spark-cell sc-hide">{{ t('20d trend','20日走势') }}</th>
-              <th data-col="participation_trend_pp" data-type="num">{{ t('OE trend pp','场外趋势pp') }}
+              <th data-col="spark" data-type="none" class="spark-cell sc-hide" scope="col">{{ t('20d trend','20日走势') }}</th>
+              <th data-col="participation_trend_pp" data-type="num" scope="col"><button type="button" class="dp-sort" aria-label="Sort by OE trend pp" data-label-en="Sort by OE trend pp" data-label-zh="按场外趋势pp排序">{{ t('OE trend pp','场外趋势pp') }}</button>
                 {{ tip('5-day mean off-exchange share minus 40-day mean, in percentage points. Positive = off-exchange share rising recently vs its own longer-term level.','近5日平均场外占比减去40日平均，单位百分点。正值=场外占比近期相对自身较长期水平上升。') }}</th>
-              <th data-col="participation_z" data-type="num">{{ t('vs norm','对比基准') }}
-                {{ tip('Today\'s off-exchange share against this name\'s OWN trailing baseline (median/MAD over up to 252 sessions, EXCLUDING today, ≥40 obs required). Blank means not enough comparable history — never a substituted zero. A baseline is restarted after a share split, because the vendor re-bases its volume history and FINRA does not.','当日场外占比相对该股自身滚动基准的Z值（最多252个交易日的中位数/MAD，不含当日，需≥40个观测值）。空白表示可比历史不足——绝不以0代替。股票拆分后基准将重新起算，因为数据商会追溯调整成交量历史而FINRA不会。') }}</th>
-              <th data-col="short_rate" data-type="num">{{ t('Short Ratio','融券比率') }}
+              <th data-col="participation_z" data-type="num" scope="col"><button type="button" class="dp-sort" aria-label="Sort by vs norm" data-label-en="Sort by vs norm" data-label-zh="按对比基准排序">{{ t('vs norm','对比基准') }}</button>
+                {{ tip('This session\'s off-exchange share against this name\'s OWN trailing baseline (median/MAD over up to 252 prior sessions, ≥40 obs required). Blank means not enough comparable history — never a substituted zero. A baseline is restarted after a share split, because the vendor re-bases its volume history and FINRA does not.','本交易日场外占比相对该股自身滚动基准的Z值（最多252个此前交易日的中位数/MAD，需≥40个观测值）。空白表示可比历史不足——绝不以0代替。股票拆分后基准将重新起算，因为数据商会追溯调整成交量历史而FINRA不会。') }}</th>
+              <th data-col="short_rate" data-type="num" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Short Ratio" data-label-en="Sort by Short Ratio" data-label-zh="按融券比率排序">{{ t('Short Ratio','融券比率') }}</button>
                 {{ tip('Short-sale volume ÷ FINRA-facility total volume for this session. NOT the NYSE/Nasdaq consolidated tape ratio.','卖空成交量÷当日FINRA设施总成交量，非NYSE/纳斯达克综合报价带比率。') }}</th>
-              <th data-col="short_trend_pp" data-type="num" class="sc-hide-sm">{{ t('SR trend pp','融券趋势pp') }}
+              <th data-col="short_trend_pp" data-type="num" class="sc-hide-sm" scope="col"><button type="button" class="dp-sort" aria-label="Sort by SR trend pp" data-label-en="Sort by SR trend pp" data-label-zh="按融券趋势pp排序">{{ t('SR trend pp','融券趋势pp') }}</button>
                 {{ tip('Recent 5d volume-weighted short ratio minus 40d baseline, in pp. Positive = short-marked selling building.','近5日量加权融券比率减去40日基准，单位百分点。正值=卖空标记增加。') }}</th>
-              <th data-col="top_ats_venue" data-type="str" class="sc-hide">{{ t('ATS top venue','ATS主场所') }}
+              <th data-col="top_ats_venue" data-type="str" class="sc-hide" scope="col"><button type="button" class="dp-sort" aria-label="Sort by ATS top venue" data-label-en="Sort by ATS top venue" data-label-zh="按ATS主场所排序">{{ t('ATS top venue','ATS主场所') }}</button>
                 {{ tip('Top registered dark pool (ATS) by share for the latest published week. The publication lag is measured and shown beside the venue section. Source: FINRA OTC Transparency.','最新公布周按成交量排名第一的注册暗池（ATS）。公布延迟为实测值，显示于场所板块旁。来源：FINRA场外透明度。') }}</th>
-              <th data-col="streak" data-type="num">{{ t('Run','连续') }}
+              <th data-col="streak" data-type="num" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Run" data-label-en="Sort by Run" data-label-zh="按连续排序">{{ t('Run','连续') }}</button>
                 {{ tip('Consecutive sessions with off-exchange share strictly above this name\'s own trailing median. A ten-session run is a campaign; one session is noise.','场外占比连续严格高于该股自身滚动中位数的交易日数。连续十日属于持续行为；单日则多为噪音。') }}</th>
-              <th data-col="ats_frac" data-type="num" class="sc-hide-sm">{{ t('In dark pools','进入暗池比例') }}
+              <th data-col="ats_frac" data-type="num" class="sc-hide-sm" scope="col"><button type="button" class="dp-sort" aria-label="Sort by In dark pools" data-label-en="Sort by In dark pools" data-label-zh="按进入暗池比例排序">{{ t('In dark pools','进入暗池比例') }}</button>
                 {{ tip('Share of this name\'s off-exchange volume that reached a REGISTERED dark pool (ATS), as opposed to being internalized by a wholesaler against retail order flow. Weekly, lagged. Typically 17–31% for large names — so most "dark" volume is not dark-pool volume.','该股场外成交中真正进入注册暗池（ATS）的比例，其余为批发商针对散户订单流的内部化成交。数据为周频且有延迟。大型个股通常为17–31%——因此多数「暗池」成交其实并非暗池成交。') }}</th>
-              <th data-col="price_change_pct" data-type="num" class="sc-hide">{{ t('Price 5d %','5日涨跌%') }}</th>
-              <th data-col="finra_total_vol" data-type="num" class="sc-hide-xs">{{ t('FINRA vol','FINRA量') }}</th>
-              <th data-col="n_days" data-type="num" class="sc-hide">{{ t('Days','天数') }}</th>
+              <th data-col="price_change_pct" data-type="num" class="sc-hide" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Price 5d %" data-label-en="Sort by Price 5d %" data-label-zh="按5日涨跌%排序">{{ t('Price 5d %','5日涨跌%') }}</button></th>
+              <th data-col="finra_total_vol" data-type="num" class="sc-hide-xs" scope="col"><button type="button" class="dp-sort" aria-label="Sort by FINRA vol" data-label-en="Sort by FINRA vol" data-label-zh="按FINRA量排序">{{ t('FINRA vol','FINRA量') }}</button></th>
+              <th data-col="n_days" data-type="num" class="sc-hide" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Days" data-label-en="Sort by Days" data-label-zh="按天数排序">{{ t('Days','天数') }}</button></th>
             </tr>
           </thead>
           <tbody id="dp-tbody"></tbody>
@@ -419,8 +462,8 @@
         {{ t('Off-exchange volume hides who is trading and which side initiated, so it cannot call direction on its own — and roughly half of it is short-marked by default, which is a feature of how market makers hedge rather than evidence of bearish intent. This desk therefore reports what was observed: how far a name\'s off-exchange share ran from its OWN norm, how long the run has lasted, where it printed, and what the price did over the same stretch. It does not tell you which way the stock goes next.',
            '场外成交隐藏了交易方身份与主动方，因此本身无法判断方向——且其中约一半默认被标记为卖空，这是做市商对冲机制的特征，而非看空意图的证据。因此本数据台只报告观察到的事实：个股场外占比偏离自身常态的幅度、已持续多久、成交发生在哪里，以及同期股价的表现。它不预测股价接下来的走向。') }}</p>
       <p><b>{{ t('How a name gets on the board.', '个股如何进入焦点板。') }}</b>
-        {{ t('Its off-exchange share must be both well above its own norm (≥1.5σ against a trailing baseline that EXCLUDES the day being measured) and material (≥40% of that day\'s volume). Ranking is by distance from each name\'s own norm, not by raw level — a stock that always prints 55% off-exchange is not news, a stock that normally prints 28% and printed 42% today is. Names without enough comparable history show no score at all rather than a made-up one.',
-           '其场外占比必须既明显高于自身常态（相对于一个不含当日的滚动基准 ≥1.5σ），又足够显著（≥当日成交量的40%）。排序依据是偏离自身常态的程度，而非绝对水平——一只长期场外占比55%的个股并非新闻，而一只常态28%、今日却达42%的个股才是。历史可比数据不足的个股不显示评分，而非给出杜撰的数值。') }}</p>
+        {{ t('Its off-exchange share must be both well above its own norm (≥1.5σ against a trailing baseline that EXCLUDES the session being measured) and material (≥40% of that session\'s volume). Ranking is by distance from each name\'s own norm, not by raw level — a stock that always prints 55% off-exchange is not news, while one that normally prints 28% and printed 42% in the measured session is. Names without enough comparable history show no score at all rather than a made-up one.',
+           '其场外占比必须既明显高于自身常态（相对于一个不含本次测量交易日的滚动基准 ≥1.5σ），又足够显著（≥该交易日成交量的40%）。排序依据是偏离自身常态的程度，而非绝对水平——一只长期场外占比55%的个股并非新闻，而一只常态28%、本次测量交易日却达42%的个股才是。历史可比数据不足的个股不显示评分，而非给出杜撰的数值。') }}</p>
       <p><b>{{ t('Dark pools are the smaller half.', '暗池只是较小的一半。') }}</b>
         {{ t('Off-exchange volume is registered dark pools (ATS) PLUS wholesaler internalisation — broker-dealers filling order flow, largely retail, against their own book. The second is the bigger half: across large names only about 17–31% of off-exchange volume actually reaches a dark pool. Each card shows that split, so "trading in the dark" is never confused with "institutions are accumulating".',
            '场外成交由注册暗池（ATS）与批发商内部化两部分构成——后者是券商以自有账簿承接订单流（多为散户订单）。后者才是较大的一半：在大型个股中，实际进入暗池的场外成交通常仅占约17–31%。每张卡片都显示这一构成，以免将「暗池成交」误读为「机构在吸筹」。') }}</p>
@@ -434,11 +477,15 @@
   </details>
 </div>
 
-{# Printed nulls — house doctrine. What the desk could NOT see today, stated plainly. #}
+{# Printed nulls — house doctrine. What the settled read could not see, stated plainly. #}
 {% if coverage %}
 <div class="dp-limits">
-  <div class="lh">{{ t('What this read could not see today', '今日数据未能覆盖的部分') }}</div>
+  <div class="lh">{{ t('What this settled-session read could not see', '本结算交易日数据未能覆盖的部分') }}</div>
   <ul>
+    <li><b>{{ coverage.current_session_rows }}</b> / <b>{{ coverage.tracked_universe }}</b>
+        {{ t('tracked names have an observation for ' ~ panel_latest ~ ';', '只跟踪个股具有 ' ~ panel_latest ~ ' 的观测；') }}
+        <b>{{ coverage.stale_rows }}</b> {{ t('have only an older observation and', '只仅有较早观测，') }}
+        <b>{{ coverage.missing_rows }}</b> {{ t('have no qualifying stored row. Older rows remain in Browse All but carry no current rank authority.', '只没有符合条件的存储记录。较早记录保留在「浏览全部」中，但不具备当前排名权威。') }}</li>
     <li>{{ t('Off-exchange share computed for', '已计算场外占比的个股') }}
         <b>{{ coverage.n_with_participation }}</b> / <b>{{ coverage.n_total }}</b>
         {{ t('names; the rest have no matching consolidated-volume record.', '只；其余个股无匹配的综合成交量记录。') }}</li>
@@ -467,6 +514,9 @@
     });
     document.querySelectorAll('.dp-select option[data-en]').forEach(function(opt) {
       opt.textContent = lang === 'zh' ? (opt.getAttribute('data-zh') || opt.getAttribute('data-en')) : opt.getAttribute('data-en');
+    });
+    document.querySelectorAll('.dp-shell [data-label-en]').forEach(function(el) {
+      el.setAttribute('aria-label', el.getAttribute(lang === 'zh' ? 'data-label-zh' : 'data-label-en') || el.getAttribute('data-label-en'));
     });
   }
   document.addEventListener('langchange', updatePlaceholders);
@@ -519,8 +569,11 @@
   function renderRow(r) {
     var tc = trendCls(r.participation_trend_pp);
     var sc = srTrendCls(r.short_trend_pp);
-    return '<tr>' +
-      '<td>' + esc(r.ticker) + '</td>' +
+    var stale = r.session_status === 'stale';
+    var lang = document.documentElement.getAttribute('data-lang') || 'en';
+    var older = stale ? '<span class="session-badge">' + (lang === 'zh' ? '较早 ' : 'Older ') + esc(r.asof || '') + '</span>' : '';
+    return '<tr' + (stale ? ' class="is-stale"' : '') + '>' +
+      '<td>' + esc(r.ticker) + older + '</td>' +
       '<td class="muted sc-hide-sm">' + esc(r.asof || '') + '</td>' +
       '<td>' + (r.participation !== null && r.participation !== undefined ? fmtPct(r.participation) : '<span class="muted">—</span>') + '</td>' +
       '<td class="spark-cell sc-hide">' + sparkSVG(r.spark20) + '</td>' +
@@ -569,11 +622,30 @@
       return true;
     });
   }
+  function syncDeskControls() {
+    document.querySelectorAll('.chip.preset').forEach(function(button) {
+      var selected = button.getAttribute('data-preset') === activePreset;
+      button.classList.toggle('active', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    document.querySelectorAll('#dp-table th[data-col]').forEach(function(th) {
+      var selected = th.getAttribute('data-col') === sortCol;
+      th.classList.toggle('sort-asc', selected && sortDir === 1);
+      th.classList.toggle('sort-desc', selected && sortDir === -1);
+      if (selected) th.setAttribute('aria-sort', sortDir === -1 ? 'descending' : 'ascending');
+      else th.removeAttribute('aria-sort');
+    });
+  }
   function renderTable() {
     var filtered = getFiltered();
     var sorted = sortRows(filtered);
     var tbody = document.getElementById('dp-tbody');
-    if (tbody) tbody.innerHTML = sorted.map(renderRow).join('');
+    if (tbody) tbody.innerHTML = sorted.length ? sorted.map(renderRow).join('') :
+      '<tr class="dp-empty"><td colspan="14">' +
+      (allRows.length ?
+        (document.documentElement.getAttribute('data-lang') === 'zh' ? '没有匹配的股票。请调整或清除筛选。' : 'No matching stocks. Adjust or clear the filters.') :
+        (document.documentElement.getAttribute('data-lang') === 'zh' ? '当前快照暂无股票数据。' : 'No stock data is available in this snapshot.')) + '</td></tr>';
+    syncDeskControls();
     var rc = document.getElementById('dp-row-count');
     if (rc) {
       var lang = document.documentElement.getAttribute('data-lang') || 'en';
@@ -581,13 +653,10 @@
     }
   }
 
-  document.querySelectorAll('table.dp-tbl th[data-col]').forEach(function(th) {
-    if (th.getAttribute('data-type') === 'none') return;
-    th.addEventListener('click', function() {
-      var col = th.getAttribute('data-col');
+  document.querySelectorAll('#dp-table .dp-sort').forEach(function(button) {
+    button.addEventListener('click', function() {
+      var col = button.closest('th').getAttribute('data-col');
       if (sortCol === col) { sortDir = -sortDir; } else { sortCol = col; sortDir = -1; }
-      document.querySelectorAll('table.dp-tbl th').forEach(function(h) { h.classList.remove('sort-asc', 'sort-desc'); });
-      th.classList.add(sortDir === -1 ? 'sort-desc' : 'sort-asc');
       renderTable();
     });
   });
@@ -595,21 +664,21 @@
     var el = document.getElementById(id);
     if (el) el.addEventListener('input', function() {
       activePreset = null; hiddenRatioZ = null;
-      document.querySelectorAll('.chip.preset').forEach(function(c) { c.classList.remove('active'); });
       renderTable();
     });
   });
-  document.getElementById('dp-clear').addEventListener('click', function() {
+  function clearFilters(focusSearch) {
     document.getElementById('dp-search').value = ''; document.getElementById('dp-min-share').value = '';
     document.getElementById('dp-trend').value = 'all'; document.getElementById('dp-norm').value = 'all';
     hiddenRatioZ = null; activePreset = null;
-    document.querySelectorAll('.chip.preset').forEach(function(c) { c.classList.remove('active'); });
     renderTable();
-  });
+    if (focusSearch) document.getElementById('dp-search').focus();
+  }
+  document.getElementById('dp-clear').addEventListener('click', function() { clearFilters(true); });
   document.querySelectorAll('.chip.preset').forEach(function(chip) {
     chip.addEventListener('click', function() {
       var p = chip.getAttribute('data-preset');
-      if (activePreset === p) { document.getElementById('dp-clear').click(); return; }
+      if (activePreset === p) { clearFilters(false); return; }
       document.getElementById('dp-search').value = ''; document.getElementById('dp-min-share').value = '';
       document.getElementById('dp-trend').value = 'all'; document.getElementById('dp-norm').value = 'all'; hiddenRatioZ = null;
       if (p === 'heavy-oe')   { document.getElementById('dp-min-share').value = '45'; }
@@ -617,8 +686,6 @@
       if (p === 'short-spike'){ hiddenRatioZ = 2; }
       if (p === 'fading-oe')  { document.getElementById('dp-trend').value = 'falling'; }
       activePreset = p;
-      document.querySelectorAll('.chip.preset').forEach(function(c) { c.classList.remove('active'); });
-      chip.classList.add('active');
       renderTable();
     });
   });
@@ -644,8 +711,6 @@
     URL.revokeObjectURL(url);
   });
   document.addEventListener('langchange', renderTable);
-  var defaultTh = document.querySelector('th[data-col="participation_z"]');
-  if (defaultTh) defaultTh.classList.add('sort-desc');
   renderTable();
 })();
 </script>

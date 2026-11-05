@@ -9,17 +9,19 @@ Prophet.
 """
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from dataclasses import dataclass
+from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
 from pathlib import Path
 import re
 import tempfile
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping, Sequence, Union
 
 from .contracts import (
     ContractError,
     canonical_json_bytes,
     iso_timestamp,
+    safe_ticker,
 )
 from .documents import (
     TypedAbsence,
@@ -31,7 +33,21 @@ from .identity import IssuerIdentity, IssuerRegistry, ListingAlias, company_id_f
 
 
 WORKSPACE_SCHEMA = "event_workspace.v1"
-MANIFEST_SCHEMA = "event_workspace_manifest.v1"
+# IMCE A5C (Sol A5C directive, 2026-08-23, item A): the manifest chain.
+# v1 stays readable forever as the chain ROOT/backward-compatible generation
+# (A2) -- nothing ever rewrites or deletes a v1 object.  Every generation
+# minted BY THIS MODULE going forward (write_workspace_generation) is v2:
+# v1's exact closed key set PLUS previous_generation_id/previous_manifest_
+# sha256, so a source revision's bytes are never stranded with no
+# discoverable predecessor pointer once a newer generation supersedes it.
+MANIFEST_SCHEMA_V1 = "event_workspace_manifest.v1"
+MANIFEST_SCHEMA_V2 = "event_workspace_manifest.v2"
+MANIFEST_SCHEMA_V3 = "event_workspace_manifest.v3"
+# Legacy alias -- historically "the" manifest schema constant.  Nothing
+# outside this module keys off its current value (grep-verified); kept
+# pointing at v1 so a caller that only ever compared against the OLD
+# published schema string keeps comparing against a real, still-valid value.
+MANIFEST_SCHEMA = MANIFEST_SCHEMA_V1
 PROCESSOR_VERSION = "event_workspace/1.0.0"
 NEST = "event_workspaces"
 AUTHORITY = AUTHORITY
@@ -77,6 +93,11 @@ MANIFEST_KEYS = (
     "warnings",
 )
 
+# v2 = v1's exact key set PLUS the two chain-link keys (A1).  Both are
+# REQUIRED in a v2 manifest -- never optional-and-silently-absent (A3).
+MANIFEST_KEYS_V2 = MANIFEST_KEYS + ("previous_generation_id", "previous_manifest_sha256")
+MANIFEST_KEYS_V3 = MANIFEST_KEYS_V2 + ("source_clock",)
+
 WORKSPACE_WARNINGS = frozenset({
     "wire_record_not_found",
     "collector_filing_unjoinable",
@@ -105,6 +126,7 @@ class WorkspaceError(ContractError):
 
 
 def _utc(value: object, *, field_name: str) -> datetime:
+    # Naive ISO timestamps (no timezone) are interpreted as UTC by convention.
     if isinstance(value, datetime):
         parsed = value
     elif isinstance(value, date):
@@ -121,6 +143,51 @@ def _utc(value: object, *, field_name: str) -> datetime:
 
 def _iso(value: datetime) -> str:
     return value.isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def _ceil_second(value: datetime) -> datetime:
+    """The first whole second at or after *value*.
+
+    A generation clock is published in whole seconds.  Cutting a sub-second observation
+    down would publish a clock earlier than the observation it was derived from.
+    """
+    if value.microsecond == 0:
+        return value
+    return value.replace(microsecond=0) + timedelta(seconds=1)
+
+
+_LIFECYCLE_CLOCKS = ("observed_at", "source_available_at")
+
+
+def _explicit_utc_lifecycle(row: dict[str, Any]) -> dict[str, Any]:
+    """Publish a zone-less lifecycle clock with the UTC designator it was read under.
+
+    ``_utc`` reads a zone-less clock as UTC and the generation clocks are derived from
+    that reading.  Left zone-less, a reader that requires an explicit zone accepts the
+    manifest and loses the clock of the very row the manifest was built from.  A clock
+    that already names its zone is published exactly as given.
+    """
+    lifecycle = row.get("lifecycle")
+    if not isinstance(lifecycle, Mapping):
+        return row
+    changed: dict[str, str] = {}
+    for field in _LIFECYCLE_CLOCKS:
+        value = lifecycle.get(field)
+        if not isinstance(value, str):
+            continue
+        try:
+            parsed = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if parsed.tzinfo is None:
+            changed[field] = (
+                parsed.replace(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
+            )
+    if not changed:
+        return row
+    out = dict(row)
+    out["lifecycle"] = {**lifecycle, **changed}
+    return out
 
 
 def _require_mapping(value: object, *, name: str) -> dict[str, Any]:
@@ -156,6 +223,35 @@ def apple_issuer() -> IssuerIdentity:
 
 def apple_registry() -> IssuerRegistry:
     return IssuerRegistry([apple_issuer()])
+
+
+def production_registry() -> IssuerRegistry:
+    """``apple_registry()`` plus the four A5A homebuilders (DHI/PHM/KBH/TOL),
+    plus the T05a semiconductor witnesses (TSM/ON).
+
+    Identity for DHI/PHM/KBH/TOL lives in ``engine/company_intelligence/
+    issuer_profiles.py`` (CIKs sourced from ``data/edgar/ticker_cik_ledger.json``
+    at commit time; MIC and fiscal-year-end verified against each issuer's own
+    SEC submissions JSON — see that module's docstring for the receipts). The
+    import is deferred to the function body: ``issuer_profiles`` imports
+    private helpers from this module for its Apple transcript-claims profile,
+    so a module-level import here would cycle.
+    """
+    from .issuer_profiles import dhi_issuer, kbh_issuer, on_issuer, phm_issuer, tol_issuer, tsm_issuer
+
+    from .defense_profiles import DEFENSE_TICKERS, defense_issuer
+    from .gd_profile import gd_issuer
+    return IssuerRegistry([
+        apple_issuer(),
+        dhi_issuer(),
+        phm_issuer(),
+        kbh_issuer(),
+        tol_issuer(),
+        tsm_issuer(),
+        on_issuer(),
+        *(defense_issuer(ticker) for ticker in DEFENSE_TICKERS),
+        gd_issuer(),
+    ])
 
 
 def flagship_fiscal_period() -> FiscalPeriod:
@@ -269,6 +365,37 @@ def validate_event_workspace(payload: object) -> None:
     for name in ("facts", "deltas", "guidance", "claims", "sources", "aliases", "qa_exchanges"):
         if not isinstance(item.get(name), list):
             raise WorkspaceError(f"{name} must be a list")
+    transcript_source = next(
+        (
+            source for source in item.get("sources") or []
+            if isinstance(source, Mapping) and source.get("kind") == "transcript"
+        ),
+        None,
+    )
+    transcript_document_id = None
+    transcript_sha256 = None
+    transcript_clock = None
+    if isinstance(transcript_source, Mapping) and transcript_source.get("receipt_state") == "byte_replayed":
+        transcript_document_id = transcript_source.get("document_id")
+        transcript_sha256 = transcript_source.get("source_sha256")
+        clock = transcript_source.get("source_clock")
+        if clock is not None:
+            from .qa_exchange import validate_source_clock
+            transcript_clock = validate_source_clock(
+                clock,
+                document_id=str(transcript_document_id or ""),
+                source_sha256=str(transcript_sha256 or ""),
+            )
+    elif isinstance(transcript_source, Mapping) and transcript_source.get("source_clock") is not None:
+        raise WorkspaceError("typed-absence transcript cannot carry a revision clock")
+    from .qa_exchange import validate_qa_exchanges
+    validate_qa_exchanges(
+        item.get("qa_exchanges"),
+        event_id=str(item.get("event_id") or ""),
+        document_id=str(transcript_document_id) if transcript_document_id else None,
+        document_sha256=str(transcript_sha256) if transcript_sha256 else None,
+        transcript_clock=transcript_clock,
+    )
     for delta in item["deltas"]:
         if not isinstance(delta, Mapping):
             raise WorkspaceError("delta must be an object")
@@ -280,13 +407,27 @@ def validate_event_workspace(payload: object) -> None:
 
 def validate_workspace_manifest(payload: object) -> None:
     item = _require_mapping(payload, name="event_workspace_manifest")
-    _require_exact_keys(item, MANIFEST_KEYS, name="event_workspace_manifest")
-    if item.get("schema") != MANIFEST_SCHEMA:
+    schema = item.get("schema")
+    if schema == MANIFEST_SCHEMA_V3:
+        _require_exact_keys(item, MANIFEST_KEYS_V3, name="event_workspace_manifest")
+    elif schema == MANIFEST_SCHEMA_V2:
+        _require_exact_keys(item, MANIFEST_KEYS_V2, name="event_workspace_manifest")
+    elif schema == MANIFEST_SCHEMA_V1:
+        _require_exact_keys(item, MANIFEST_KEYS, name="event_workspace_manifest")
+    else:
         raise WorkspaceError("workspace manifest schema mismatch")
     if not _GENERATION_RE.fullmatch(str(item.get("generation_id") or "")):
         raise WorkspaceError("invalid manifest generation_id")
     if iso_timestamp(item.get("generated_at")) is None:
         raise WorkspaceError("manifest generated_at missing")
+    if schema == MANIFEST_SCHEMA_V3:
+        source_clock = item.get("source_clock")
+        if iso_timestamp(source_clock) is None:
+            raise WorkspaceError("manifest source_clock missing")
+        generated_dt = _utc(item.get("generated_at"), field_name="generated_at")
+        source_dt = _utc(source_clock, field_name="source_clock")
+        if source_dt > generated_dt:
+            raise WorkspaceError("manifest source_clock is later than generated_at")
     if item.get("authority") != AUTHORITY:
         raise WorkspaceError("workspace manifest authority must be context_only")
     if item.get("status") not in {"ready", "degraded", "partial", "empty"}:
@@ -326,24 +467,242 @@ def validate_workspace_manifest(payload: object) -> None:
     warnings = item.get("warnings")
     if not isinstance(warnings, list) or warnings != sorted(set(warnings)):
         raise WorkspaceError("manifest warnings invalid")
+    if schema in {MANIFEST_SCHEMA_V2, MANIFEST_SCHEMA_V3}:
+        previous_id = item.get("previous_generation_id")
+        previous_sha = item.get("previous_manifest_sha256")
+        # A2: previous_generation_id may be null ONLY for a genuine
+        # first-ever generation of the nest -- but a v2 manifest ALWAYS
+        # carries both keys (A3); when there is no predecessor, both are
+        # null together, never one without the other.
+        if previous_id is None:
+            if previous_sha is not None:
+                raise WorkspaceError(
+                    "manifest previous_manifest_sha256 must be null when "
+                    "previous_generation_id is null"
+                )
+        else:
+            if not _GENERATION_RE.fullmatch(str(previous_id)):
+                raise WorkspaceError("invalid manifest previous_generation_id")
+            if (
+                not isinstance(previous_sha, str)
+                or len(previous_sha) != 64
+                or any(ch not in "0123456789abcdef" for ch in previous_sha)
+            ):
+                raise WorkspaceError("invalid manifest previous_manifest_sha256")
+            if str(previous_id) == str(item.get("generation_id") or ""):
+                raise WorkspaceError("manifest previous_generation_id cannot equal its own generation_id")
 
 
 def _strip_private(workspace: Mapping[str, Any]) -> dict[str, Any]:
     return {key: workspace[key] for key in WORKSPACE_KEYS}
 
 
+def _register_alias(alias_map: dict[str, str], alias: object, event_id: str) -> None:
+    """Bind one alias to a canonical event before marker promotion.
+
+    Same alias → same event is idempotent. Same alias → a different canonical
+    event raises ``WorkspaceError`` so dictionary assignment cannot silently
+    overwrite ownership.
+    """
+    key = str(alias or "").strip()
+    if not key:
+        return
+    existing = alias_map.get(key)
+    if existing is None:
+        alias_map[key] = event_id
+        return
+    if existing != event_id:
+        raise WorkspaceError(
+            f"alias {key!r} is already owned by {existing}; "
+            f"cannot reassign to {event_id}"
+        )
+
+
+def _lifecycle_clock(
+    row: Mapping[str, Any],
+    event_id: str,
+    field: str,
+) -> datetime:
+    lifecycle = row.get("lifecycle")
+    value = lifecycle.get(field) if isinstance(lifecycle, Mapping) else None
+    if not isinstance(lifecycle, Mapping):
+        raise WorkspaceError(f"{event_id}: lifecycle.{field} missing or unparseable (got {repr(value)[:80]})")
+    try:
+        return _utc(value, field_name=field)
+    except (WorkspaceError, ValueError, TypeError, OverflowError):
+        raise WorkspaceError(f"{event_id}: lifecycle.{field} missing or unparseable (got {repr(value)[:80]})") from None
+
+
+def _issuer_release_acquisition_clock(source: Mapping[str, Any], *, event_id: str) -> datetime | None:
+    """Bound observation for generation cutoffs, never a source-use grant.
+
+    The builder replays the complete acquisition receipt against the body. This
+    writer/reader check only binds its clock to the retained source metadata;
+    downstream authorization must still validate provenance and policy itself.
+    """
+    if source.get("kind") != "issuer_release" or "acquisition_receipt" not in source:
+        return None
+    receipt = source["acquisition_receipt"]
+    if (not isinstance(receipt, Mapping)
+            or receipt.get("schema") != "earnings_release.sec_acquisition.v1"
+            or not source.get("source_sha256")
+            or receipt.get("source_sha256") != source.get("source_sha256")
+            or not source.get("filing_key") or receipt.get("filing_key") != source.get("filing_key")
+            or not source.get("url") or receipt.get("requested_url") != source.get("url")):
+        raise WorkspaceError(f"{event_id}: acquisition clock is not bound to the issuer release")
+    stamp = receipt.get("acquired_at")
+    if not isinstance(stamp, str) or not re.fullmatch(
+        r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,6})?Z", stamp
+    ):
+        raise WorkspaceError(f"{event_id}: acquisition clock is not explicit UTC")
+    try:
+        return datetime.fromisoformat(stamp[:-1] + "+00:00")
+    except ValueError as exc:
+        raise WorkspaceError(f"{event_id}: acquisition clock is invalid") from exc
+
+
+def _generation_clocks(cleaned: Mapping[str, Mapping[str, Any]]) -> tuple[str, str]:
+    latest_observed: datetime | None = None
+    latest_source: datetime | None = None
+    for event_id, row in cleaned.items():
+        observed_dt = _lifecycle_clock(row, event_id, "observed_at")
+        source_dt = _lifecycle_clock(row, event_id, "source_available_at")
+        if observed_dt < source_dt:
+            raise WorkspaceError(f"{event_id}: observed_at precedes source_available_at")
+        latest_observed = observed_dt if latest_observed is None else max(latest_observed, observed_dt)
+        latest_source = source_dt if latest_source is None else max(latest_source, source_dt)
+        for source in row.get('sources') or []:
+            if isinstance(source, Mapping):
+                acquisition_observed = _issuer_release_acquisition_clock(source, event_id=event_id)
+                if acquisition_observed is not None:
+                    latest_observed = max(latest_observed, acquisition_observed)
+            if isinstance(source, Mapping) and source.get('kind') == 'issuer_supplement':
+                from .issuer_supplements import validate_supplement_source
+                supplemental_observed, supplemental_available = validate_supplement_source(source, event_id=event_id)
+                latest_observed = max(latest_observed, supplemental_observed)
+                latest_source = max(latest_source, supplemental_available)
+
+    if latest_observed is None or latest_source is None:
+        raise WorkspaceError("write_workspace_generation requires at least one workspace")
+    return _iso(_ceil_second(latest_observed)), _iso(_ceil_second(latest_source))
+
+
 def _generation_identity(
     workspaces: Mapping[str, Mapping[str, Any]],
     generated_at: str,
+    *,
+    previous_generation_id: str | None = None,
 ) -> str:
+    """Content address for one nest generation.
+
+    A4: *previous_generation_id* is folded into the hash so identical
+    workspace content atop a DIFFERENT predecessor mints a DISTINCT
+    generation_id -- a content cycle A -> B -> A must mint a distinct third
+    generation, never collide with the original A.  The semantic no-op (an
+    unchanged-source re-run atop the SAME predecessor) is preserved: same
+    content + same previous_generation_id -> same hash -> short-circuits
+    before any new generation is minted.
+    """
     pre_id = {
         event_id: {key: payload[key] for key in WORKSPACE_KEYS if key != "generation_id"}
         for event_id, payload in sorted(workspaces.items())
     }
     return sha256(canonical_json_bytes({
         "generated_at": generated_at,
+        "previous_generation_id": previous_generation_id,
         "workspaces": pre_id,
     })).hexdigest()[:24]
+
+
+def _generation_identity_v3(
+    workspaces: Mapping[str, Mapping[str, Any]],
+    generated_at: str,
+    source_clock: str,
+    *,
+    previous_generation_id: str | None = None,
+) -> str:
+    pre_id = {
+        event_id: {
+            key: payload[key]
+            for key in WORKSPACE_KEYS
+            if key not in ("generation_id", "generated_at")
+        }
+        for event_id, payload in sorted(workspaces.items())
+    }
+    return sha256(canonical_json_bytes({
+        "generated_at": generated_at,
+        "previous_generation_id": previous_generation_id,
+        "source_clock": source_clock,
+        "workspaces": pre_id,
+    })).hexdigest()[:24]
+
+
+def preview_generation_identity_v3(
+    workspaces: Mapping[str, Mapping[str, Any]],
+    *,
+    previous_generation_id: str | None = None,
+) -> str:
+    cleaned = {
+        event_id: _explicit_utc_lifecycle(_strip_private(payload))
+        for event_id, payload in workspaces.items()
+    }
+    generated_at, source_clock = _generation_clocks(cleaned)
+    return _generation_identity_v3(
+        cleaned,
+        generated_at,
+        source_clock,
+        previous_generation_id=previous_generation_id,
+    )
+
+
+def validate_generation_clocks(manifest: Mapping[str, Any], rows: Mapping[str, Mapping[str, Any]]) -> None:
+    if manifest.get("schema") != MANIFEST_SCHEMA_V3:
+        return
+    manifest_generated = str(manifest.get("generated_at") or "")
+    generated_dt = _utc(manifest_generated, field_name="generated_at")
+    for event_id, row in rows.items():
+        if str(row.get("generated_at") or "") != manifest_generated:
+            raise WorkspaceError(
+                f"{event_id}: row generated_at must match manifest generated_at"
+            )
+        observed_dt = _lifecycle_clock(row, event_id, "observed_at")
+        source_dt = _lifecycle_clock(row, event_id, "source_available_at")
+        if generated_dt < observed_dt or observed_dt < source_dt:
+            raise WorkspaceError(
+                f"{event_id}: generated_at must be >= observed_at >= source_available_at"
+            )
+        for source in row.get('sources') or []:
+            if isinstance(source, Mapping):
+                acquisition_observed = _issuer_release_acquisition_clock(source, event_id=event_id)
+                if acquisition_observed is not None and generated_dt < acquisition_observed:
+                    raise WorkspaceError(f"{event_id}: generation predates issuer release acquisition")
+            if isinstance(source, Mapping) and source.get('kind') == 'issuer_supplement':
+                from .issuer_supplements import validate_supplement_source
+                supplemental_observed, supplemental_available = validate_supplement_source(source, event_id=event_id)
+                if generated_dt < supplemental_observed:
+                    raise WorkspaceError(f"{event_id}: generation predates supplemental source observation")
+                if _utc(manifest['source_clock'], field_name='source_clock') < supplemental_available:
+                    raise WorkspaceError(f"{event_id}: source_clock predates supplemental source availability")
+
+
+
+def preview_generation_identity(
+    workspaces: Mapping[str, Mapping[str, Any]],
+    generated_at: str,
+    *,
+    previous_generation_id: str | None = None,
+) -> str:
+    """Pure preview of the ``generation_id`` :func:`write_workspace_generation`
+    would mint for *workspaces* at *generated_at* atop *previous_generation_id*
+    — no disk writes.  A caller that must decide, BEFORE writing, whether a
+    cycle's freshly-assembled content reproduces the CURRENTLY published
+    generation (the semantic no-op, A4) needs this: with
+    ``previous_generation_id`` folded into the hash, that decision requires
+    computing the candidate id against the CURRENT generation's OWN
+    predecessor first (see ``scripts/refresh_event_workspaces.py``'s
+    chain-pointer resolution)."""
+    cleaned = {event_id: _strip_private(payload) for event_id, payload in workspaces.items()}
+    return _generation_identity(cleaned, str(generated_at), previous_generation_id=previous_generation_id)
 
 
 def write_workspace_generation(
@@ -352,23 +711,49 @@ def write_workspace_generation(
     *,
     generated_at: str | None = None,
     status: str = "ready",
+    previous_generation_id: str | None = None,
+    previous_manifest_sha256: str | None = None,
 ) -> Path:
     """Write immutable workspace objects, then atomically advance the nest marker.
 
     ``out_dir`` is the Company Intelligence product prefix
     (``company_intelligence/``).  Objects land under ``event_workspaces/``.
+
+    IMCE A5C (manifest chain, frozen spec A): *previous_generation_id* is the
+    predecessor generation's id -- the currently-published generation (v1 OR
+    v2; A2) at the moment this generation is minted, or the immediately
+    prior generation minted EARLIER in the SAME publish cycle when several
+    source revisions are being chained in one run (frozen spec B3).
+    *previous_manifest_sha256* is the sha256 of that predecessor's own
+    immutable ``manifest.json`` bytes -- the verification receipt for the
+    link (A1).  Both are ``None`` ONLY for a genuine first-ever generation of
+    the nest (A2); every OTHER call must supply the real predecessor, or the
+    resulting v2 manifest's chain link would be undiscoverable.  Every
+    generation minted by this function is v2 going forward -- v1 stays
+    readable only as pre-existing history.
     """
     if not workspaces:
         raise WorkspaceError("write_workspace_generation requires at least one workspace")
+    if generated_at is not None:
+        raise WorkspaceError(
+            "generated_at is derived from the rows' observation clocks and can no longer be supplied"
+        )
+    if previous_generation_id is not None and not previous_manifest_sha256:
+        raise WorkspaceError(
+            "previous_manifest_sha256 is required whenever previous_generation_id is set"
+        )
     stamped: dict[str, dict[str, Any]] = {}
-    generated = generated_at or next(iter(workspaces.values())).get("generated_at")
-    if not generated:
-        generated = _iso(datetime.now(timezone.utc))
     cleaned = {
-        event_id: _strip_private(payload)
+        event_id: _explicit_utc_lifecycle(_strip_private(payload))
         for event_id, payload in workspaces.items()
     }
-    generation_id = _generation_identity(cleaned, str(generated))
+    generated, source_clock = _generation_clocks(cleaned)
+    generation_id = _generation_identity_v3(
+        cleaned,
+        generated,
+        source_clock,
+        previous_generation_id=previous_generation_id,
+    )
     alias_map: dict[str, str] = {}
     for event_id, payload in cleaned.items():
         if event_id != payload.get("event_id"):
@@ -378,19 +763,20 @@ def write_workspace_generation(
         row["generated_at"] = str(generated)
         validate_event_workspace(row)
         stamped[event_id] = row
-        alias_map[event_id] = event_id
+        _register_alias(alias_map, event_id, event_id)
         for alias in row.get("aliases") or []:
-            alias_map[str(alias)] = event_id
+            _register_alias(alias_map, alias, event_id)
         private = workspaces[event_id]
         extra = private.get("_aliases") if isinstance(private, Mapping) else None
         if isinstance(extra, Mapping):
-            for group in (
+            _register_alias(alias_map, extra.get("canonical_event_id"), event_id)
+            for family in (
                 extra.get("company_intelligence_ids") or [],
                 extra.get("earnings_narrative_keys") or [],
                 extra.get("public_slugs") or [],
             ):
-                for alias in group:
-                    alias_map[str(alias)] = event_id
+                for alias in family:
+                    _register_alias(alias_map, alias, event_id)
 
     nest = Path(out_dir) / NEST
     generation_dir = nest / "generations" / generation_id
@@ -415,12 +801,16 @@ def write_workspace_generation(
         "files": dict(sorted(file_blocks.items())),
         "generated_at": str(generated),
         "generation_id": generation_id,
-        "schema": MANIFEST_SCHEMA,
+        "schema": MANIFEST_SCHEMA_V3,
+        "source_clock": source_clock,
         "status": status,
         "warnings": [],
+        "previous_generation_id": previous_generation_id,
+        "previous_manifest_sha256": previous_manifest_sha256,
     }
-    # Re-order to MANIFEST_KEYS.
-    manifest = {key: manifest[key] for key in MANIFEST_KEYS}
+    validate_generation_clocks(manifest, stamped)
+    # Re-order to MANIFEST_KEYS_V3.
+    manifest = {key: manifest[key] for key in MANIFEST_KEYS_V3}
     validate_workspace_manifest(manifest)
     manifest_body = canonical_json_bytes(manifest)
     immutable_manifest_path = generation_dir / "manifest.json"
@@ -442,6 +832,103 @@ def resolve_workspace_event_id(event_id: object, aliases: Mapping[str, str]) -> 
     if _EVENT_ID_RE.fullmatch(text):
         return text
     raise WorkspaceError(f"unresolved event id: {text}")
+
+
+@dataclass(frozen=True)
+class SelectedEvent:
+    """Result of ``select_current_event_from_aliases``.
+
+    ``alias`` is the T/YYYYQn key that matched (e.g. ``"AAPL/2026Q3"``).
+    """
+
+    event_id: str
+    ticker: str
+    year: int
+    quarter: int
+    alias: str
+
+
+def select_current_event_from_aliases(
+    ticker: str,
+    aliases: Union[Mapping[str, str], Sequence[tuple[str, str]]],
+) -> SelectedEvent:
+    """Select the most-recent T/YYYYQn event for *ticker* from *aliases*.
+
+    *aliases* is the ``aliases`` dict from an ``event_workspace_manifest.v1``
+    (a ``Mapping[str, str]``), or a sequence of ``(alias, canonical)`` pairs
+    so tests can inject duplicate keys that a plain dict cannot represent.
+
+    Rules
+    -----
+    * Only aliases whose key matches ``^TICKER/YYYYQn$`` (after
+      ``safe_ticker``) are admitted.
+    * At most one distinct canonical ``event_id`` is permitted per fiscal
+      period (year, quarter).  If a period maps to two or more distinct ids,
+      the call fails closed with a ``WorkspaceError`` whose message contains
+      ``"ambiguous"``.
+    * When no admitted alias exists the error message contains
+      ``"does not cover"``.
+    * The admitted alias with the greatest ``(year, quarter)`` is returned.
+    """
+    try:
+        normalized = safe_ticker(ticker)
+    except ContractError as exc:
+        raise WorkspaceError(str(exc)) from exc
+
+    # Build per-ticker pattern: ^AAPL/(\d{4})Q([1-4])$ for ticker AAPL.
+    pattern = re.compile(r"^" + re.escape(normalized) + r"/(\d{4})Q([1-4])$")
+
+    # Normalize to a sequence of pairs so duplicate keys are visible.
+    if isinstance(aliases, Mapping):
+        pairs: list[tuple[str, str]] = list(aliases.items())
+    else:
+        pairs = [(str(a), str(c)) for a, c in aliases]
+
+    # period → set of distinct canonical event_ids admitted under that period.
+    period_ids: dict[tuple[int, int], set[str]] = {}
+    # period → the first matching alias key (for the return value).
+    period_alias: dict[tuple[int, int], str] = {}
+
+    for alias_key, canonical in pairs:
+        m = pattern.fullmatch(str(alias_key))
+        if m is None:
+            continue
+        canonical_str = str(canonical)
+        if not _EVENT_ID_RE.fullmatch(canonical_str):
+            continue
+        year = int(m.group(1))
+        quarter = int(m.group(2))
+        period = (year, quarter)
+        if period not in period_ids:
+            period_ids[period] = set()
+            period_alias[period] = alias_key
+        period_ids[period].add(canonical_str)
+
+    if not period_ids:
+        raise WorkspaceError(
+            f"Event workspace does not cover {normalized}"
+        )
+
+    # Fail closed on any fiscal period with >1 distinct canonical owner.
+    for (year, quarter), ids in period_ids.items():
+        if len(ids) > 1:
+            raise WorkspaceError(
+                f"{normalized}/{year}Q{quarter} is ambiguous: "
+                f"{len(ids)} distinct canonical ids"
+            )
+
+    best_period = max(period_ids)
+    best_year, best_quarter = best_period
+    best_event_id = next(iter(period_ids[best_period]))
+    best_alias = period_alias[best_period]
+
+    return SelectedEvent(
+        event_id=best_event_id,
+        ticker=normalized,
+        year=best_year,
+        quarter=best_quarter,
+        alias=best_alias,
+    )
 
 
 def index_from_workspace(payload: Mapping[str, Any]) -> EventAliasIndex:

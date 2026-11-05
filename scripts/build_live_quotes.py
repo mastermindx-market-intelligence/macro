@@ -127,25 +127,141 @@ DISPLAY_SYMBOLS = [
     "^N225", "^KS11", "^TWII",                        # macro overnight/Asia strip
 ]
 
-# BOARD leg of the display universe (2026-08-13). The Prophet act-now cards render
-# a price + a `.nb-chg` percentage pill per card (show_change=true, pinned by
-# tests/test_prophet_card_live_change.py) — but DISPLAY_SYMBOLS above is a hand-kept
-# list of macro TILE symbols only, so every single-name card asked live.js for a
-# symbol this snapshot never fetched: `pick()` returned an empty reading,
-# patchChgNode() bailed on `chg == null`, and all 133 A-share pills on
-# china_stocks.html held their baked "—" through an entire live A-share session.
-# The board's names are re-picked nightly, so this leg is SCRAPED from the built
-# page rather than hard-listed — same contract as the full-universe scrape below
-# ("whatever the page renders goes live"), just narrowed to the board pages so the
-# once-a-minute same-origin snapshot stays small.
-# CHINA ONLY, deliberately: .SS/.SZ names route to the keyless Yahoo leg (measured
-# 2026-08-13: 133 symbols resolve in seconds, +~25 KB on a 6.7 KB file), whereas the
-# US board's names would route the every-60s lane through the Polygon leg. The other
-# three boards (dashboard/hk/canada .j2 also pass show_change — us_stocks.html emits
-# 70 data-sym, hk_stocks.html 11, canada.html 6) carry the SAME dead pill and want
-# their own measured decision; adding a page here is the whole change.
-DISPLAY_BOARD_PAGES = ("china_stocks.html",)
-DISPLAY_BOARD_CAP = 240
+# BOARD leg of the display universe (2026-08-13, expanded 2026-08-19 #wave2).
+# The Prophet act-now cards render a price + a `.nb-chg` percentage pill per card
+# (show_change=true, pinned by tests/test_prophet_card_live_change.py) — but
+# DISPLAY_SYMBOLS above is a hand-kept list of macro TILE symbols only, so every
+# single-name card asked live.js for a symbol this snapshot never fetched:
+# `pick()` returned an empty reading, patchChgNode() bailed on `chg == null`, and
+# every board's pills held their baked "—" through a live session no matter how
+# the tape actually moved. The board's names are re-picked nightly, so this leg
+# is SCRAPED from the built pages rather than hard-listed — same contract as the
+# full-universe scrape below ("whatever the page renders goes live"), just
+# narrowed to the board pages so the once-a-minute same-origin snapshot stays
+# small.
+#
+# EVERY VISIBLE nb-chg BOARD, not just China (2026-08-19). The original
+# China-only cut (2026-08-13) was a scoped-decision placeholder, not a permanent
+# split: us_stocks.html, hk_stocks.html and canada_stocks.html render the exact
+# same live-change pill and were shipping the exact same dead-pill bug (measured
+# in production 2026-08-19 against https://www.mastermind-x.com/live/quotes.json,
+# 89 symbols: china_stocks.html 54/54 covered, us_stocks.html 0/3, hk_stocks.html
+# 0/4, canada_stocks.html 0/10). Measured in THIS checkout (`site/` scan,
+# 2026-08-19): every page below is a page this repo actually builds that emits a
+# `.nb-chg` tag carrying a `data-sym` — us_stocks.html 4, china_stocks.html 54,
+# hk_stocks.html 4, canada_stocks.html 10, crypto.html 27 distinct (30 tags),
+# macro.html 10, canada.html 5, china.html 4, commodities.html 4, hk.html 4.
+# Full-site scan found no OTHER built page emitting visible nb-chg+data-sym
+# markup outside this list (sector_central.html is the one deliberate exemption
+# — see DISPLAY_BOARD_EXEMPT_PAGES below). Board leg went 54 -> 128 distinct
+# symbols (still under DISPLAY_BOARD_CAP); universe 89 -> 144 (+55). Vendor
+# split of the expanded universe: 12 Polygon-routable US names (one chunk, at
+# most 100/chunk, so +1 request) + 132 keyless-Yahoo-routable (batch size 20);
+# a free keyless probe of all 45 NEW Yahoo-routable symbols resolved 45/45 in
+# 2.13s. Per-symbol serialized size is ~183B median, so 144 symbols is ~26KB —
+# nowhere near the 500KB browser-fetch budget. The quality gate
+# (scripts/vps_live_orchestrator.py min_resolved=50 / min_coverage=0.10) stays
+# far above both floors at the observed resolve rate, so this expansion cannot
+# starve the gate or freeze the published file, and the China leg is additive
+# only — nothing about china_stocks.html's scrape changes.
+DISPLAY_BOARD_PAGES = (
+    "us_stocks.html", "china_stocks.html", "hk_stocks.html", "canada_stocks.html",
+    "crypto.html", "macro.html", "canada.html", "china.html", "commodities.html",
+    "hk.html",
+)
+# Pages that DO emit `.nb-chg` + `data-sym` markup but are deliberately excluded
+# from the fetched board leg, with the reason on record so a future session
+# doesn't either (a) silently re-add a dead-pill board with no measurement, or
+# (b) "fix" this omission by adding sector_central.html without reading why.
+DISPLAY_BOARD_EXEMPT_PAGES = {
+    # sector_central.html emits 702 nb-chg spans (measured 2026-08-19), but they
+    # live inside a `display:none` `aria-hidden="true"` registry div
+    # (templates/sector_central.html.j2:2472, the FTR W2a basket-member scraper
+    # hook) — never rendered as a visible live-change claim to a user, so there
+    # is no dead pill to fix. Adding it would also blow DISPLAY_BOARD_CAP (240)
+    # on its own. Its basket members are already covered by the separate
+    # basket_member_symbols() leg used by build_universe().
+    "sector_central.html": (
+        "702 nb-chg spans are a display:none/aria-hidden basket-member registry "
+        "(FTR W2a scraper hook), not visible live UI; already covered via "
+        "basket_member_symbols()"
+    ),
+}
+
+# THE GATED HALF OF A BOARD PAGE (2026-08-20). Scraping `site/<page>.html` finds
+# only the cards the SHELL ships. Every tier-gated board (docs/TIER_PREVIEW_PATTERN.md)
+# server-renders just `preview_rows` cards into the HTML and writes the withheld
+# remainder to `site/premiumdata/<page>.json` as pre-rendered `*_html` blocks, which
+# the page fetches post-auth and splices into the very same `.nbgrid`
+# (dashboard.html.j2 `hydrate()`). Those cards are rendered from the SAME partial
+# with the SAME `.nb-chg` pill — they are not a different, lesser surface — so a
+# scrape that stops at the .html covers the preview and abandons the rest.
+#
+# MEASURED IN PRODUCTION 2026-08-20 (www.mastermind-x.com): us_stocks.html emitted
+# 3 board data-sym values (BIIB/JNJ/TRGP, all covered and all moving) while
+# premiumdata/us_stocks.json carried 60 more (HWM/GNW/SWX/KMI/UGI/SPOT/CELH/NU/…),
+# none of which reached /live/quotes.json's 146 symbols. Every one of those 60 cards
+# showed a live price beside a dead "—" percentage, all night, every night — the
+# exact defect DISPLAY_BOARD_PAGES was added to fix, reintroduced for the paying
+# tier only, because the gate moved the cards but nothing moved the scrape.
+#
+# This is also why the invariant test could not see it: a gated page's VISIBLE pills
+# really are covered, so the page passes while the payload beside it is dead.
+# tests/test_build_live_quotes.py scans the payloads too for that reason.
+DISPLAY_BOARD_PAYLOAD_DIR = "premiumdata"
+
+# Cap raised 240 -> 320 with the payload leg (2026-08-20). Measured on this
+# checkout's built site: board leg 130 -> 190, display universe 146 -> 206. The
+# headroom is the point — the US board is re-picked nightly and its 63 names are
+# now ALL in the leg instead of 3, so a heavier board night that used to cost 1
+# slot can cost 60. At 240 that leaves ~50 slots of swing before `out[:cap]`
+# starts eating late-alphabet names ALPHABETICALLY (a truncation that reads, on
+# the page, as exactly the dead-pill bug this leg exists to fix); 320 restores the
+# ~2x margin the 240 cap had over its own 128. Cost at the new ceiling: ~59KB
+# serialized (~183B/symbol median, vs the 500KB browser-fetch budget), <=16
+# keyless-Yahoo batch requests (20/batch) plus <=4 Polygon chunks (100/chunk),
+# ~9s at the measured ~37 symbols/s — still cheap for both producers (the hourly
+# 24/7 btc-live Action and the 30-min intraday fastpath). The
+# vps_live_orchestrator quality gate (min_resolved=50, min_coverage=0.10) is
+# unaffected: more requested symbols only raises the resolved count.
+#
+# Cap raised 320 -> 480 (2026-10-09) after main's own ci.yml proof went red on
+# test_the_board_leg_has_headroom_over_the_cap (320/320) and on the payload
+# coverage test (us_stocks.json pills WLK..ZTS uncovered). Measured on main's
+# committed site/ bytes at 3d90aad6 with this module's own board_display_symbols:
+# uncapped board leg 342 (china_stocks 149, us_stocks 105, hk_stocks 30, crypto
+# 26, canada_stocks 10, macro 10, canada 6, china/commodities/hk 4 each), so the
+# 22 names sorting last (WLK..ZTS, then the ^-index symbols) were being cut.
+# The leg grew 190 -> 342 in seven weeks; 480 puts it at 71% of the cap (~138
+# slots of swing). Cost at the new ceiling: ~88KB serialized at the
+# same ~183B/symbol (vs the 500KB budget), <=24 Yahoo batch requests plus <=5
+# Polygon chunks, ~13s at ~37 symbols/s — still cheap for both producers; the
+# orchestrator gate above is unaffected for the same reason.
+DISPLAY_BOARD_CAP = 480
+
+
+def payload_html(path: Path) -> str:
+    """The concatenated pre-rendered card HTML inside one tier payload, or ``""``.
+
+    Every block the page splices into the DOM is a top-level string value whose
+    key ends in ``_html`` (`cards_html`, `actnow_html`, `leaders_html`,
+    `ran_html`, `tape_html` — scripts/build_site.py::_write_us_payload). Parsed as
+    JSON rather than regex-scraped off the raw bytes because the payload stores
+    the markup JSON-escaped (`data-sym=\\"HWM\\"`), which `_DATA_SYM_RE` would
+    silently never match — a scrape that finds nothing looks exactly like a page
+    that renders nothing.
+
+    Unreadable, non-JSON or unexpectedly-shaped payloads return "" (never raise):
+    this feeds the once-a-minute snapshot lane, where a hard failure costs every
+    tile its feed to save a few board pills."""
+    try:
+        data = json.loads(path.read_text(errors="ignore"))
+    except (OSError, ValueError):
+        return ""
+    if not isinstance(data, dict):
+        return ""
+    return "".join(v for k, v in data.items()
+                   if isinstance(k, str) and k.endswith("_html") and isinstance(v, str))
 
 
 def scrape_site_symbols(site_dir: Path) -> list[str]:
@@ -173,6 +289,13 @@ def board_display_symbols(site_dir: Path,
     """Every distinct ``data-sym`` the named BOARD pages emit — the single-name
     cards whose price/percentage pills live.js patches from this snapshot.
 
+    Each page's TIER PAYLOAD is scraped with it (see DISPLAY_BOARD_PAYLOAD_DIR):
+    on a gated board the .html holds only the preview cards and the withheld
+    remainder — same partial, same visible `.nb-chg` pill — lives in
+    `premiumdata/<page>.json`. An absent payload is the normal ungated case and
+    is silent; a payload that IS there and carries cards is counted into the same
+    de-duped set, so a symbol on both sides costs one slot, not two.
+
     A missing page is logged and skipped, never fatal: the snapshot then simply
     carries the macro tiles it always did and the board keeps its baked numbers
     (the pre-2026-08-13 behaviour), rather than the whole once-a-minute lane
@@ -194,7 +317,21 @@ def board_display_symbols(site_dir: Path,
                 page_syms.add(s)
         if not page_syms:
             log.warning("live display board page emits no data-sym: %s", path)
-        found |= page_syms
+        # The gated remainder of the SAME grid — cards the shell withheld, not a
+        # separate surface. Counted per page so the log line below can name which
+        # board's paid half is (or is not) reaching the feed.
+        payload = (Path(site_dir) / DISPLAY_BOARD_PAYLOAD_DIR
+                   / (Path(name).stem + ".json"))
+        locked_syms: set[str] = set()
+        if payload.exists():
+            for raw in _DATA_SYM_RE.findall(payload_html(payload)):
+                s = raw.strip().upper()
+                if _SYMBOL_RE.match(s):
+                    locked_syms.add(s)
+            if locked_syms:
+                log.info("live display board %s: %d shell + %d tier-gated symbol(s)",
+                         name, len(page_syms), len(locked_syms - page_syms))
+        found |= page_syms | locked_syms
     out = sorted(found)
     if len(out) > cap:
         log.warning("live display board universe %d exceeds cap %d — truncating "
@@ -304,13 +441,24 @@ def _to_ms(quote_ts: str | None) -> int | None:
         return None
 
 
-def to_worker_quotes(raw: dict) -> dict:
-    """engine.live_quotes {sym: {price, quote_ts, source, price_basis, prev_close,
-    currency, delay_min, day_volume, day_high, day_low}} -> the Worker /quotes shape.
+def to_worker_quotes(
+    raw: dict,
+    *,
+    include_private_provenance: bool = False,
+) -> dict:
+    """Project engine.live_quotes records into the long-standing Worker shape.
 
-    New fields (IFT A1): vol, hi, lo — from the same Yahoo/Polygon batch response,
-    zero extra requests.  Size estimate: +~68KB over full ~1942-symbol universe
-    (343KB projected vs 500KB budget) — fields carried for all symbols.
+    The default/public contract intentionally stays narrow: epoch-ms ``ts``,
+    ``basis`` and display fields only. The VPS root-readable ``quotes_full.json``
+    may opt into the source-native ``quote_ts`` and ``quote_ts_synthetic`` fields
+    that provenance-sensitive server consumers require. It also retains the
+    source-native session-open/NBBO fields when supplied by the engine, without
+    re-deriving prices or clocks. These are evidence only: identity, session, freshness and
+    strategy fillability remain the downstream owner's responsibility. Missing
+    evidence is preserved as ``None`` and never inferred from price or timestamps.
+
+    New display fields (IFT A1): vol, hi, lo — from the same Yahoo/Polygon batch
+    response, zero extra requests.
     """
     out: dict[str, dict] = {}
     for sym, q in (raw or {}).items():
@@ -322,7 +470,7 @@ def to_worker_quotes(raw: dict) -> dict:
         chg = round((price / prev - 1) * 100, 2) if prev else None
         entry: dict = {
             "price": price,
-            "ts": _to_ms(q.get("quote_ts")),
+            "ts": None if q.get("quote_ts_synthetic") else _to_ms(q.get("quote_ts")),
             "source": q.get("source"),
             "basis": q.get("price_basis"),
             "prevClose": prev,
@@ -330,6 +478,22 @@ def to_worker_quotes(raw: dict) -> dict:
             "currency": q.get("currency"),
             "delayMin": q.get("delay_min"),     # measured age of THIS quote (honest, per-symbol)
         }
+        if q.get("quote_ts_synthetic"):
+            entry["tsSynthetic"] = True
+        if include_private_provenance:
+            from lib.quote_native_metadata import copy_response_identity
+            identity = copy_response_identity(q.get("native_quote_identity"))
+            if identity is not None:
+                entry["native_quote_identity"] = identity
+            synthetic = q.get("quote_ts_synthetic")
+            entry["quote_ts"] = q.get("quote_ts")
+            entry["quote_ts_synthetic"] = (
+                synthetic if type(synthetic) is bool else None
+            )
+            # Preserve the engine's source-native evidence only in the private
+            # full snapshot. No clock fallback, spread policy or gate verdict.
+            for field in ("day_open", "bid_price", "ask_price", "nbbo_ts", "nbbo_source"):
+                entry[field] = q.get(field)
         # IFT A1: intraday volume + range from same batch response.
         # Keys kept short (vol/hi/lo) to minimise payload bytes.
         dv = q.get("day_volume")
@@ -358,8 +522,15 @@ def _validate_symbols(syms: list[str]) -> list[str]:
     return ordered
 
 
-def build(site_dir: Path, *, offline: bool = False, extra: list[str] | None = None,
-          cap: int = 3000, symbols: list[str] | None = None) -> dict:
+def build(
+    site_dir: Path,
+    *,
+    offline: bool = False,
+    extra: list[str] | None = None,
+    cap: int = 3000,
+    symbols: list[str] | None = None,
+    include_private_provenance: bool = False,
+) -> dict:
     now = datetime.now(timezone.utc)
     lcfg = config.load().get("live") or {}
     # symbols= builds an EXACT-universe snapshot (bypasses CORE + site scrape +
@@ -369,8 +540,17 @@ def build(site_dir: Path, *, offline: bool = False, extra: list[str] | None = No
                 else build_universe(site_dir, extra=extra, cap=cap))
     diag: dict = {}
     raw = live_quotes.fetch_quotes(universe, offline=offline, diag=diag)
-    quotes = to_worker_quotes(raw)
+    quotes = to_worker_quotes(
+        raw,
+        include_private_provenance=include_private_provenance,
+    )
+    # The incumbent fast snapshot runs around the clock, including Asia hours
+    # and weekends. Calendar receipts must not depend on the US-hours overlay.
+    from lib.market_session import session_status
+    sessions = {market: session_status(market, now)
+                for market in ("us", "cn", "hk", "ca", "connect")}
     return {
+        "sessions": sessions,
         "ts": int(now.timestamp() * 1000),
         "asof": now.isoformat(),
         "source": "snapshot",
@@ -405,6 +585,15 @@ def main() -> None:
                          "same-origin site/live/quotes.json producer preset used by the "
                          "VPS fast lane (60s), btc-live (hourly 24/7) and "
                          "intraday-fastpath (30-min)")
+    ap.add_argument(
+        "--private-provenance",
+        action="store_true",
+        help=(
+            "preserve source-native quote_ts and quote_ts_synthetic in the "
+            "root-readable/private snapshot; never enable this for the public "
+            "browser/live-data Worker contract"
+        ),
+    )
     args = ap.parse_args()
 
     site_dir = (Path(args.site) if args.site
@@ -416,8 +605,14 @@ def main() -> None:
         log.info("display universe: %d tiles + %d board symbols from %s",
                  len(DISPLAY_SYMBOLS), len(symbols) - len(DISPLAY_SYMBOLS),
                  ", ".join(DISPLAY_BOARD_PAGES))
-    snap = build(site_dir, offline=args.offline, extra=extra, cap=args.max,
-                 symbols=symbols)
+    snap = build(
+        site_dir,
+        offline=args.offline,
+        extra=extra,
+        cap=args.max,
+        symbols=symbols,
+        include_private_provenance=args.private_provenance,
+    )
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

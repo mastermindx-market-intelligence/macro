@@ -51,6 +51,7 @@ from engine.fundamental_forensics.sec_document_spine import (
     manifest_content_key,
     manifest_from_json_bytes,
     manifest_json_bytes,
+    sec_document_id,
     select_periodic_comparables,
     validate_manifest,
     with_archive_documents,
@@ -69,6 +70,24 @@ RECORDED_AT = "2026-08-01T12:00:00Z"
 def test_sec_identifiers_are_ascii_decimal_only(value: str):
     with pytest.raises(FilingManifestError, match="invalid CIK"):
         canonical_cik(value)
+
+
+def test_sec_document_id_normalizes_cik_and_validates_spine_path_law():
+    a1 = "0000320193-25-000079"
+    name = "aapl-20250927.htm"
+    expected = stable_id("sec_document", "0000320193", a1, "primary", name)
+    assert expected == "sec_document_d23a609841f9a32489dd7abc952d39622540f8a24905612bda1d43e5577860b8"
+    assert sec_document_id("0000320193", a1, "primary", name) == expected
+    assert sec_document_id("320193", a1, "primary", name) == expected
+    assert sec_document_id(320193, a1, "primary", name) == expected
+    a2 = sec_document_id("0000320193", "0000320193-26-000020", "primary", "aapl-20260627.htm")
+    assert a2 == "sec_document_29a36fa46a0bc5309f17bd254c3061f20c4b3de7e05898a2fec9ee58f89e8760"
+    with pytest.raises(FilingManifestError, match="invalid accession"):
+        sec_document_id("0000320193", "0000320193-25-79", "primary", name)
+    with pytest.raises(FilingManifestError, match="invalid document role"):
+        sec_document_id("0000320193", a1, "Primary", name)
+    with pytest.raises(FilingManifestError, match="unsafe archive document name"):
+        sec_document_id("0000320193", a1, "primary", "../aapl-20250927.htm")
 
 
 @pytest.mark.parametrize(
@@ -1229,3 +1248,22 @@ def test_reuse_lookup_returns_none_without_a_stored_prior_manifest(tmp_path):
     (directory / ".hidden.json").write_bytes(b"{}")
     (directory / "notes.txt").write_bytes(b"operator scratch")
     assert find_reusable_primary_retrieval(tmp_path, tonight) is None
+
+
+def test_collector_reexports_the_exact_native_reader_contracts():
+    from collectors import sec_document_spine as collector
+    from engine.fundamental_forensics import sec_document_spine as spine
+
+    public = (
+        "ArchiveReceipt", "ArchiveStoreError", "archive_receipt_from_json_bytes",
+        "content_storage_key", "manifest_storage_key", "read_archive_object_bytes",
+        "receipt_storage_key",
+    )
+    private = ("_decode_receipt", "_http_metadata", "_receipt_bytes", "_receipt_id", "_utc_text")
+    bounds = ("HARD_MAX_DOCUMENT_BYTES", "HARD_MAX_ARCHIVE_RECEIPT_BYTES")
+    for name in (*public, *private, *bounds):
+        assert getattr(collector, name) is getattr(spine, name), name
+    for name in public:
+        assert name in collector.__all__ and name in spine.__all__
+    assert collector.ChecksumMismatch.__bases__ == (spine.ArchiveStoreError,)
+    assert collector.ArchiveResponseTooLarge.__bases__ == (spine.ArchiveStoreError,)

@@ -46,21 +46,86 @@
 # invocation — see the publish_r2 module docstring.
 #
 # SMOKE-TESTING THE TAIL ALONE (skips the ~20 min rebuild; pushes whatever
-# parquets are already in flow-ops-wt):
-#   INDEXGEX_SKIP_ENGINE=1 /Users/chriswong/flow-ops-wt/ops/launchd/run_with_env.sh \
+# parquets are already in the artifact root). Do not execute this from CI.
+#   INDEXGEX_SKIP_ENGINE=1 /Users/chriswong/macro-publisher-runtime/ops/launchd/run_with_env.sh \
 #     /Users/chriswong/flow-ops-wt/.env \
-#     /Users/chriswong/flow-ops-wt/ops/launchd/run_index_gex_history.sh
+#     /usr/bin/env \
+#     MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy \
+#     INDEXGEX_ARTIFACT_ROOT=/Users/chriswong/flow-ops-wt/data/index_gex_history \
+#     PYTHONPATH=/Users/chriswong/flow-ops-wt \
+#     /bin/sh \
+#     /Users/chriswong/macro-publisher-runtime/ops/launchd/run_index_gex_history.sh
+#
+# The launchd template pins MACRO_INDEX_GEX_HISTORY_ROOT and PYTHONPATH to
+# /Users/chriswong/indexgex-ops-wt and runs the reviewed script from that
+# checkout. It also pins INDEXGEX_ARTIFACT_ROOT to the existing physical
+# directory /Users/chriswong/flow-ops-wt/data/index_gex_history. There is no
+# index-history symlink: the five tracked files stay in git, and this lane
+# writes the separate directory named by the artifact root. An empty or unset
+# code root keeps the flow-ops-wt default above, which is an absolute path,
+# never the current directory. An unset artifact root uses $REPO/$ART_DIR.
+# A present empty, relative, missing, or non-directory artifact root is refused.
 #
 # LOG TAILING:
 #   tail -f /tmp/index_gex_history.stdout.log /tmp/index_gex_history.stderr.log
 
-set -u
+set -eu
 
-REPO="/Users/chriswong/flow-ops-wt"
-PUSH_REPO="/Users/chriswong/indexgex-push-repo"
-REMOTE_URL="https://github.com/mastermindx-market-intelligence/macro.git"
+# Empty or unset keeps the historical lane. ${VAR:-default} treats an empty
+# string as unset, so it cannot become the current directory.
+REPO="${MACRO_INDEX_GEX_HISTORY_ROOT:-/Users/chriswong/flow-ops-wt}"
+RUNTIME="/Users/chriswong/macro-publisher-runtime"
+PUSH_REPO="/Users/chriswong/indexgex-push-repo-private"
+REMOTE_URL="git@github.com:mastermindx-market-intelligence/macro.git"
+MACHINE_GIT="$RUNTIME/scripts/macro_machine_git.py"
 PYTHON="/opt/homebrew/Caskroom/miniconda/base/bin/python"
 ART_DIR="data/index_gex_history"
+
+# Refuse a relative or missing code root before the key check, engine, R2, or publisher.
+case "$REPO" in
+    /*) ;;
+    *)
+        echo "[index_gex_history] ERROR: REPO must be an absolute existing directory, not '$REPO'"
+        exit 1
+        ;;
+esac
+if [ ! -d "$REPO" ]; then
+    echo "[index_gex_history] ERROR: REPO is not an existing directory: $REPO"
+    exit 1
+fi
+if [ ! -f "$REPO/scripts/build_index_gex_history.py" ]; then
+    echo "[index_gex_history] ERROR: REPO is not the index-history code checkout (missing scripts/build_index_gex_history.py): $REPO"
+    exit 1
+fi
+
+# Unset selects the legacy output directory. A present empty value is not
+# unset: ${VAR:-default} would hide it, and this lane must not invent a root.
+if [ "${INDEXGEX_ARTIFACT_ROOT+x}" = "x" ]; then
+    ARTIFACT_ROOT="$INDEXGEX_ARTIFACT_ROOT"
+else
+    ARTIFACT_ROOT="$REPO/$ART_DIR"
+fi
+case "$ARTIFACT_ROOT" in
+    /*) ;;
+    *)
+        echo "[index_gex_history] ERROR: ARTIFACT_ROOT must be an absolute existing directory, not '$ARTIFACT_ROOT'"
+        exit 1
+        ;;
+esac
+if [ ! -d "$ARTIFACT_ROOT" ]; then
+    echo "[index_gex_history] ERROR: ARTIFACT_ROOT is not an existing directory: $ARTIFACT_ROOT"
+    exit 1
+fi
+
+: "${MACRO_PUBLISH_GIT_SSH_KEY:?MACRO_PUBLISH_GIT_SSH_KEY is required}"
+[ -f "$MACHINE_GIT" ] || { echo "[index_gex_history] ERROR: machine Git helper missing"; exit 1; }
+
+machine_git() {
+    /usr/bin/python3 "$MACHINE_GIT" "$@"
+}
+
+# The launcher is current and disposable; the engine remains deliberately pinned.
+export PYTHONPATH="$REPO"
 
 cd "$REPO" || { echo "[index_gex_history] ERROR: cannot cd $REPO"; exit 1; }
 
@@ -69,7 +134,7 @@ if [ "${INDEXGEX_SKIP_ENGINE:-0}" = "1" ]; then
     echo "[index_gex_history] INDEXGEX_SKIP_ENGINE=1 — skipping rebuild, pushing existing parquets"
 else
     echo "[index_gex_history] rebuilding (THETADATA_STORE=${THETADATA_STORE:-unset})"
-    if ! "$PYTHON" -m scripts.build_index_gex_history; then
+    if ! "$PYTHON" -m scripts.build_index_gex_history --out "$ARTIFACT_ROOT"; then
         echo "[index_gex_history] ERROR: rebuild failed — not committing"
         exit 1
     fi
@@ -83,7 +148,7 @@ fi
 # there only after it actually wrote that root's parquet, and the shrink guard
 # deliberately omits a refused root. Also fails when the run refused any root.
 if [ "${INDEXGEX_SKIP_ENGINE:-0}" != "1" ]; then
-    if ! "$PYTHON" - "$REPO/$ART_DIR/_manifest.json" <<'PYGATE'
+    if ! "$PYTHON" - "$ARTIFACT_ROOT/_manifest.json" <<'PYGATE'
 import json, sys
 required = {"SPY", "QQQ", "IWM", "DIA"}
 try:
@@ -111,25 +176,29 @@ fi
 
 # The files must also be present on disk (a torn write, a cleaned worktree).
 for f in SPY.parquet QQQ.parquet IWM.parquet DIA.parquet _manifest.json; do
-    if [ ! -f "$REPO/$ART_DIR/$f" ]; then
-        echo "[index_gex_history] ERROR: $ART_DIR/$f missing in $REPO — nothing to push"
+    if [ ! -f "$ARTIFACT_ROOT/$f" ]; then
+        echo "[index_gex_history] ERROR: $ART_DIR/$f missing in $ARTIFACT_ROOT — nothing to push"
         exit 1
     fi
 done
 
 # ── R2 offsite sync (best effort — a failure here must not block the push) ────
+# The store mapping is temporary to this invocation. It must not leak into the
+# builder, the manifest gate, or the git tail.
 echo "[index_gex_history] syncing offsite copy to R2"
-if ! "$PYTHON" -m scripts.publish_r2 --dirs index_gex_history --no-manifest; then
+if ! INDEX_GEX_HISTORY_STORE="$ARTIFACT_ROOT" "$PYTHON" -m scripts.publish_r2 --dirs index_gex_history --no-manifest; then
     echo "[index_gex_history] WARNING: R2 sync failed — continuing to the git push"
 fi
 
 # ── commit tail (in the $HOME push repo — see TCC LAW above) ─────────────────
 if [ ! -d "$PUSH_REPO/.git" ]; then
     echo "[index_gex_history] push repo absent — cloning (sparse, blob-less, depth 1)"
-    git clone --depth 1 --filter=blob:none --sparse "$REMOTE_URL" "$PUSH_REPO" \
+    machine_git clone --depth 1 --filter=blob:none --sparse "$REMOTE_URL" "$PUSH_REPO" \
         || { echo "[index_gex_history] ERROR: clone failed"; exit 1; }
-    git -C "$PUSH_REPO" sparse-checkout set "$ART_DIR" \
+    machine_git -C "$PUSH_REPO" sparse-checkout set "$ART_DIR" \
         || { echo "[index_gex_history] ERROR: sparse-checkout failed"; exit 1; }
+    [ -d "$PUSH_REPO/$ART_DIR" ] \
+        || { echo "[index_gex_history] ERROR: sparse projection did not materialize"; exit 1; }
 fi
 
 cd "$PUSH_REPO" || { echo "[index_gex_history] ERROR: cannot cd $PUSH_REPO"; exit 1; }
@@ -137,8 +206,8 @@ cd "$PUSH_REPO" || { echo "[index_gex_history] ERROR: cannot cd $PUSH_REPO"; exi
 # Standalone-repo guard: gitdir must resolve INSIDE the push repo. A gitdir anywhere
 # else (worktree layout, or fall-through to an enclosing repo) would reintroduce the
 # TCC failure or commit into the wrong tree.
-TOPLEVEL=$(git rev-parse --show-toplevel 2>/dev/null || echo "")
-GITDIR=$(git rev-parse --absolute-git-dir 2>/dev/null || echo "")
+TOPLEVEL=$(machine_git -C "$PUSH_REPO" rev-parse --show-toplevel 2>/dev/null || echo "")
+GITDIR=$(machine_git -C "$PUSH_REPO" rev-parse --absolute-git-dir 2>/dev/null || echo "")
 if [ "$TOPLEVEL" != "$PUSH_REPO" ] || [ "$GITDIR" != "$PUSH_REPO/.git" ]; then
     echo "[index_gex_history] ERROR: push repo layout wrong (toplevel='$TOPLEVEL' gitdir='$GITDIR') — aborting"
     exit 1
@@ -146,20 +215,21 @@ fi
 
 n=1
 while [ "$n" -le 5 ]; do
-    if git fetch --depth 1 origin main \
-        && git reset --hard refs/remotes/origin/main >/dev/null; then
+    if machine_git -C "$PUSH_REPO" fetch --no-tags --no-recurse-submodules --depth 1 "$REMOTE_URL" \
+            +refs/heads/main:refs/remotes/origin/main \
+        && machine_git -C "$PUSH_REPO" reset --hard refs/remotes/origin/main >/dev/null; then
         mkdir -p "$ART_DIR" || exit 1
         for f in SPY.parquet QQQ.parquet IWM.parquet DIA.parquet _manifest.json; do
-            cp "$REPO/$ART_DIR/$f" "$ART_DIR/$f" || exit 1
+            cp "$ARTIFACT_ROOT/$f" "$ART_DIR/$f" || exit 1
         done
-        git add -- "$ART_DIR"
-        if git diff --cached --quiet -- "$ART_DIR"; then
+        machine_git -C "$PUSH_REPO" add -- "$ART_DIR"
+        if machine_git -C "$PUSH_REPO" diff --cached --quiet -- "$ART_DIR"; then
             echo "[index_gex_history] parquets identical to origin/main — nothing to push"
             exit 0
         fi
-        if git -c user.name="dashboard-bot" -c user.email="actions@users.noreply.github.com" \
+        if machine_git -C "$PUSH_REPO" -c user.name="dashboard-bot" -c user.email="actions@users.noreply.github.com" \
                 commit -q -m "data: index dealer-gamma history rebuild $(date -u +%F)" -- "$ART_DIR" \
-            && git push origin main; then
+            && machine_git -C "$PUSH_REPO" push --recurse-submodules=no "$REMOTE_URL" HEAD:refs/heads/main; then
             echo "[index_gex_history] pushed parquets on attempt $n"
             exit 0
         fi
@@ -169,5 +239,5 @@ while [ "$n" -le 5 ]; do
     n=$((n + 1))
 done
 
-echo "[index_gex_history] ERROR: could not push after 5 attempts — parquets remain in $REPO; next run retries"
+echo "[index_gex_history] ERROR: could not push after 5 attempts — parquets remain in $ARTIFACT_ROOT; next run retries"
 exit 1

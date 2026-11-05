@@ -440,6 +440,12 @@ CANDIDATE_SOURCE_MODULES = frozenset({
     # Keep it on the source side of this fail-closed boundary unless/until the
     # architecture gives non-candidate evidence builders their own class.
     "engine.government_revenue.sbir_progression",
+    # D5/D6 create or compose procurement evidence; none is a selector that
+    # only decorates an already-admitted Prophet plan. Keep all three on the
+    # forbidden source side, including the dossier that consumes the ontology.
+    "engine.government_revenue.fms_cases",
+    "engine.government_revenue.program_ontology",
+    "engine.government_revenue.program_dossier",
 })
 
 #: The sanctioned annotate-only seam: selectors that may only decorate a row
@@ -454,6 +460,10 @@ ANNOTATION_SEAM_MODULES = frozenset({
     # Semantic labels/refusals only: this module cannot read observations or
     # construct a candidate and is safe on the annotate-only side.
     "engine.government_revenue.amount_semantics",
+    # Display-only per-issuer identity projector (D2 Identity Atlas): exact-ID
+    # graph traversal into its own artifact, no candidate mint/grade path and
+    # no ledger/queue write — the candidate builder does not import it.
+    "engine.government_revenue.identity_atlas",
 })
 
 def _prophet_modules() -> tuple[str, ...]:
@@ -860,3 +870,19 @@ def test_annotation_without_a_packet_still_satisfies_the_contract() -> None:
     assert envelope["annotations"][0]["shadow_context_reason_code"] == (
         "no_shadow_packet_builder_supplied"
     )
+
+
+@pytest.mark.parametrize("source_module", [
+    "engine.government_revenue.fms_cases",
+    "engine.government_revenue.program_ontology",
+    "engine.government_revenue.program_dossier",
+])
+def test_new_evidence_producers_cannot_enter_the_annotation_seam(monkeypatch, source_module):
+    # Isolate the new edge: unrelated transitive imports must not make this
+    # test pass while the newly added producer itself remains unclassified.
+    monkeypatch.setitem(
+        globals(), "_module_imports",
+        lambda path: {source_module} if path.name == "prophet_annotation.py" else set(),
+    )
+    with pytest.raises(AssertionError):
+        test_the_annotation_adapter_itself_imports_no_candidate_source()

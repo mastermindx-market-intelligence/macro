@@ -6,8 +6,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   # Serialized batch lane shared with backfill / special-sits-backfill. daily has its own
@@ -50,27 +48,11 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs attention || echo "::warning::attention restore failed (non-fatal — attention chip absent/stale this render)"
-      # The library build (build_site) needs every S&P 1500 constituent close
-      # matrix present. Weekly does not re-collect them, so restore from the
-      # cache the daily run saved (caches are gitignored, not committed).
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-weekly-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-weekly-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-weekly-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # The S&P 500/600/400 close panels are Git-tracked committed inputs.
+      # Weekly consumes their checkout bytes and must never overlay them from
+      # Actions cache. Only daily.collect may seed those panels because it
+      # refreshes and commits the canonical files. Russell is separately
+      # gitignored and remains cache-backed for this reader.
       # 2026-07-25: this step was missing — the weekly deep-dive stamped a 1,704-name
       # us_calls universe between 2,966-name nightly stamps (keep-FIRST PIT: permanent).
       # Every lane that restores the S&P trio for the library must restore Russell too.
@@ -208,6 +190,19 @@ jobs:
           run_py "build vector + landing hub" scripts.build_vector
           run_py "AI brief page (build_aibrief)" scripts.build_aibrief
           exit 0
+      - name: recurring briefs producer (F11 — each subscription its brief or an honest miss)
+        # AFTER this job's brief producers (build_aibrief above). Slot =
+        # site/master_brief.json field state_asof. Writes public.brief_deliveries
+        # only (insert on conflict do nothing). Fail-soft: absent creds/tables
+        # -> typed miss, 0 rows, exit 0.
+        # Dormant unless RECURRING_BRIEFS_ENABLE=1. No second cron.
+        env:
+          # Reuse the incumbent repo service-role secret already consumed by
+          # production Supabase jobs. The producer's SUPABASE_URL has a reviewed
+          # project default, so do not inject an absent secret as an empty string.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}
+        run: python -m scripts.build_recurring_briefs --cadence weekly_saturday || echo "::warning::recurring briefs producer failed (non-fatal)"
       - name: rebuild stock-search libraries (resilient — guarantees the analyzers ship)
         # build_china/build_hk/build_canada (and build_intl via a build_vector hook)
         # swallow errors; rebuild the per-stock search JSON (site/chinastockdata,
@@ -237,6 +232,20 @@ jobs:
         run: |
           printf '{"last_run": "%s", "run_id": "%s", "workflow": "weekly"}\n' \
             "$(date -u +%FT%T+00:00)" "${GITHUB_RUN_ID:-local}" > data/weekly_status.json
+      # W1 repair (2026-08-26 experiments audit §3): the BH-FDR consumer the cortex
+      # evaluator has promised since W7b PR2 and that did not exist — H5's "queued for
+      # FDR" pass sat in the experiments panel with nothing to read it.
+      #
+      # It rides WEEKLY, not with the nightly evaluator that feeds it. daily.yml is
+      # ~250 bytes under the 487,000-byte budget that guards GitHub's silent
+      # ~512,000-byte processing cap (#5416: over it, cron stops firing and dispatched
+      # runs strand queued with zero jobs, uncancellable) — a quarter-scoped batch is
+      # not worth spending that headroom on. Cadence is not correctness here: the batch
+      # groups by QUARTER, is idempotent, and appends a governance event only when the
+      # BH decision changes, so a weekly re-run of the same quarter is a no-op.
+      - name: quarterly cortex FDR batch (W1 — promotes nothing; records the BH account)
+        run: |
+          python -m scripts.quarterly_cortex_fdr || echo "::warning title=cortex_fdr::batch failed (non-fatal)"
       - name: inject data-base shim (site-wide; a re-render would strip it otherwise)
         run: |
           python -m scripts.inject_data_base || echo "data-base shim inject skipped (additive)"
@@ -316,6 +325,9 @@ jobs:
                      data/hk_fundamentals/fundamentals.parquet 2>/dev/null || true
           # Stock-search libraries are gitignored — force-add so the committed-tree
           # deploy ships their index/detail JSON. See daily.yml.
+          # GH001 carve (scripts/ci/qledger_carve.sh): the broad add above staged the ledger,
+          # and a staged ledger rejects the whole weekly commit. Withheld reds the run.
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 1
           if git diff --cached --quiet; then echo "no weekly changes to commit"; exit 0; fi
           # Fail-closed conflict gate (P0 2026-08-01, d29e4dd44d / #4167): same
           # broad-add + autostash-pull + always()-artifact shape as the daily
@@ -363,25 +375,11 @@ jobs:
             push_backoff
           done
           push_lost
-          echo "::error title=weekly outputs NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — the weekly data/ outputs exist only on this runner and are lost at the next checkout (the site still deploys via artifact). Check the per-attempt [class] tags above: repeated [contention] means main is simply busier than this budget, repeated [rebase-conflict] means a NEW deterministic conflict class — see scripts/rebase_autoresolve_hashed_css.sh."
-          echo "### ❌ weekly outputs NOT pushed after $PUSH_ATTEMPT attempts — weekly data day at risk (site still deploys via artifact)" >> "$GITHUB_STEP_SUMMARY"
-      - name: strip heavy per-ticker stores from the Pages artifact (served from R2 now)
-        if: always()
-        run: |
-          rm -rf site/ohlc site/chinaohlc site/hkohlc site/intlohlc site/canadaohlc site/subsectorohlc site/subsectorohlc_china site/subsectorohlc_russell site/subsectorohlc_nasdaq site/stockdata site/chinastockdata site/hkstockdata site/canadastockdata site/intlstockdata site/intraday site/oddsmatrix 2>/dev/null || true
-      - name: upload pages artifact
-        if: always()   # deploy must not hinge on the commit-push above succeeding
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site/
+          echo "::error title=weekly outputs NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — the weekly data/ outputs exist only on this runner and are lost at the next checkout (no Pages-artifact fallback anymore — the VPS/origin deploy only gets this render once it lands on main). Check the per-attempt [class] tags above: repeated [contention] means main is simply busier than this budget, repeated [rebase-conflict] means a NEW deterministic conflict class — see scripts/rebase_autoresolve_hashed_css.sh."
+          echo "### ❌ weekly outputs NOT pushed after $PUSH_ATTEMPT attempts — weekly data day at risk (no Pages-artifact fallback anymore)" >> "$GITHUB_STEP_SUMMARY"
 
-  publish:
-    needs: weekly-report
-    if: always()            # deploy the artifact even if a builder/commit step warned
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+  # The `publish` GitHub Pages deploy job (needs: weekly-report, deploy-pages@v4) was
+  # RETIRED pre-private-cutover (DEC:B1-MACRO-PRIVATE-CUTOVER) — the Pages mirror
+  # served the premium book/premiumdata anonymously and must not keep re-publishing
+  # once the repo goes private. The VPS/origin deploy (the site's real serving path)
+  # is untouched; only the Pages producer went away.

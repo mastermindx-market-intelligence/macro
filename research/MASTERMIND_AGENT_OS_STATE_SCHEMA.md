@@ -73,8 +73,68 @@ action. Target cardinality **20–40 live**. This is the join key that makes eve
 | `runtime_ref` | ◻ | object | `{service, deployed_sha, freshness_artifact}`. Interface to the runtime-truth program; Agent OS never discovers these itself. |
 | `claim` | ◻ | object | `{by, at, expires}`. **Advisory only — blocks nothing.** |
 | `needs_ceo` | ◻ | object | `{question, options, recommendation, by_when}`. Presence promotes it into the CEO brief. |
+| `wait` | ◻ | object | `{kind, review_after, condition}`. **Declared intentional inactivity — schedules nothing, gates nothing.** See §1.2. Also valid per wave. |
 | `next_action` | ✅ | string | The single next concrete action. Not a goal — a command, a file, or a decision. |
 | `created` / `updated` | ✖ | — | **DERIVED, never authored.** The generator computes them from `git log` over the record file. Writing them by hand made every session touching a record rewrite the same line — the one verified concurrent-edit conflict site in this schema — and made staleness circular, since the field asserting freshness was typed by the session claiming it. |
+
+### §1.0A Optional mission-scoped acceptance declarations
+
+`acceptance_contracts` is a bounded list (at most 16) in the existing workstream.
+Each closed declaration has an explicit unique `commission_id`; it never becomes
+one global ruler for a shared workstream. Required fields are `commission_ref`,
+`continuity_ref`, `original_intent_ref`, `proof_contract_ref`,
+`original_proof_contract_ref`, `current_intent_revision`, `correction_state`,
+`correction_chain`, `criteria_objective`, `criteria_sources`,
+`original_source_status` and `proof_obligations`. Source references have exactly
+`repository`, `commit`, `path`, `content_sha256`; they preserve source identity
+and publication/missingness, never permission. No referenced path or network
+endpoint is opened by this addition. The immutable programme implementation
+input remains separate from continuity evidence and real Runtime commissioning.
+
+Optional `execution_commission_refs` defaults to an empty list and admits at
+most 16 unique exact Mastermind source references. It records a knowledge
+association after an actual fixed-path commission is published. Empty means
+`EXECUTION_COMMISSION_NOT_ASSOCIATED`. Runtime independently compares its own
+actual root commissioning reference with this explicit list. Prompt strings,
+matching text, static programme references and public hashes cannot create the
+association, select a Runtime root, admit work or issue an accepted result.
+
+`NO_CORRECTION_DECLARED_AT_THIS_REVISION` requires an explicit empty chain and
+only describes this declared revision. `CORRECTIONS_DECLARED_AT_THIS_REVISION`
+requires a nonempty chain. `MISSING` and `UNRESOLVED` remain unavailable; no newest
+handoff or absence of evidence is substituted. The native READ/SEND experiment
+is not a programme amendment. Authored revision labels are not clocks or grants.
+
+The compiler returns additive `acceptance_basis.by_commission`, with
+`authoritative=false`; the caller must select its exact commission under its
+existing trusted grant. The current intent and source-record references bind
+actual selected WS bytes and checked-out Git commit. `CURRENT` means those
+bytes match that commit, not protected publication or runtime eligibility.
+`UNPUBLISHED`, `UNKNOWN`, `MISSING`, `DENIED` and `STALE` remain explicit. The
+existing `source_records_digest` binds the actual records opened by the compiler;
+external references are declared and not retrieved/authenticated here. Issuance
+revalidates source, workstream, root provenance, currentness and actual caller.
+
+`criteria_objective` is literal text of at most 4,000 UTF-8 bytes for the sole
+existing Mastermind criterion parser; this compiler neither parses its suffix
+nor derives criterion digests. One to six `criteria_sources` records have exact
+`criterion_index`, `source_ref`, `locators` fields and contiguous zero-based
+positions. One to 64 `proof_obligations` preserve exact `source_ref`, `section`,
+`label`, `required_outcome` rows; labels are original source names, not invented
+criterion IDs. Every original must-have remains independently unproven until
+its actual required evidence exists. Clause summaries and hash presence are
+not proof of fulfillment. Adjacent normative prose remains required: the R2
+declaration includes both section15 credible boundary enforcement and rollback
+with preserved in-flight IDs/effects/results/pending consumption, administrative
+pause and exact reconciliation without relying on a responsive Dot. Tables
+alone are not the complete proof contract. Emitted `proof_obligation_digests` is a parallel list
+in original row order, each SHA-256 over its exact four-key row JSON using sorted
+keys, compact separators, UTF-8, ensure_ascii=false and allow_nan=false. This is
+byte identity, not another requirements parser. Consumers recompute every row
+and require all individual dispositions. `acceptance_basis_digest` is SHA-256 of the canonical
+entry JSON excluding only that digest field, with source/text/revision/states
+included. JSON and text preserve declarations and honest budget overhead;
+mandatory acceptance clauses are never silently clipped to fit a budget.
 
 ### §1.1 Wave (inline)
 
@@ -86,10 +146,41 @@ action. Target cardinality **20–40 live**. This is the join key that makes eve
 | `pr` | ◻ | int \| list[int] | Joined to `active_builds.v1` at generation. |
 | `depends_on` | ◻ | list[wave id] | Within this workstream. |
 | `next_action` | ◻ | string | Overrides the workstream-level one while `in_progress`. |
+| `wait` | ◻ | object | Same closed contract as the workstream-scope field. See §1.2. |
 
 **Waves exist so there is no Task store.** They carry the two things a PR genuinely cannot
 (`depends_on`, `next_action`) at ~4 fields instead of 20, and they match the W0/W1/W2 decomposition
 every masterplan in this repo already uses. See architecture §3 and conflict C1.
+
+### §1.2 Typed intentional wait (`wait`) — optional, at workstream OR wave scope
+
+A workstream can be quiet for two entirely different reasons: it was abandoned, or its author
+decided that waiting IS the correct next move — the sample has to mature, an operator has to act,
+a counterparty has to answer, a calendar window has to arrive. Nothing in the record distinguished
+those, so the only way to tell was to read `next_action` prose and guess. `wait` is the author
+saying which one it is, in a shape a reader can trust without parsing English.
+
+| Field | Req | Type | Notes |
+|---|---|---|---|
+| `kind` | ✅ | enum | `natural_evidence` · `external_dependency` · `calendar_window` · `external_action`. |
+| `review_after` | ✅ | date | Date-only `YYYY-MM-DD`. The date a **human looks again** — not a predicted resolution, not an expiry, not a timer. |
+| `condition` | ✅ | string | Non-empty opaque human context. **Never parsed** for authority, action, or completion. |
+
+**The contract is CLOSED.** Unknown fields are a hard `bad-wait` error at both scopes, validated by
+one shared rule. An open vocabulary would let each author mint a private reason, and "why is this
+still sitting here" would need a parser again — which is the thing this field exists to remove.
+
+**It executes nothing (I1).** No scheduler, no queue, no wake, no timer, no status transition, no
+completion, no gate reads this field. It is testimony carried into `agent_os_state.v1` and
+`context_bundle.v1` for a reader, and that is its entire reach.
+
+**A past `review_after` stays schema-valid.** It is an OVERDUE REVIEW, not an expired lease —
+degrading it automatically would be this file deciding something, and a review nobody performed is
+exactly the fact a reader needs to see.
+
+**Absence is never inferred.** A record with no `wait` is making no claim at all — it is not
+thereby "abandoned", and a record WITH one is not thereby "alive". Like `claim`, presence is an
+author's note in git, never evidence that anyone is working now.
 
 ### Example — a real, current workstream
 
@@ -177,6 +268,51 @@ chooses — not reconstructed later, because reconstruction is exactly what fail
 | `supersedes` | ◻ | list[`DEC:`] | |
 | `superseded_by` | ◻ | `DEC:` | Set on the OLD record when a new one lands. Never delete. |
 | `review_by` | ◻ | date | For decisions taken under acknowledged uncertainty. |
+| `project_plan_adoption` | ◻ | closed object | Explicit planning content decision; §2.1. Absence makes no adoption claim. |
+
+### §2.1 Optional planning content decision and proposal
+
+`project_plan_adoption` has exactly `schema`, `work_ref`, `adopted_source`,
+`predecessor`, `proposal_source`, and `display_revision`. Its schema is
+`agentos.project_plan_adoption.v1`. The selected `WS:<KEY>` must occur in the
+decision's existing `affects` list. `adopted_source` contains exactly repository,
+relative Markdown path, immutable 40-character Git commit and `content_sha256`
+of the exact Git bytes. Supported repositories are the existing Macro and
+Mastermind repositories. A Macro workstream reference must name this exact WS.
+References are data, never authority to fetch a path, repository, network endpoint
+or credentials. Bodies resolve only from already-qualified captured source roots.
+An unavailable referenced body stays unresolved; digest metadata is not a read or
+a content comparison.
+
+`predecessor` is null for an explicitly chosen first baseline or the exact prior
+`DEC:<KEY>`. Successor `supersedes` and predecessor `superseded_by` must reciprocate.
+The pure selector refuses incomplete, cyclic, competing or disconnected lineage;
+dates never elect a winner. `proposal_source` is null or an exact source reference.
+`display_revision` is null or a literal authored label, never an inferred version.
+The current authored WS may evolve independently of the retained adopted bytes.
+Legacy decisions without this optional field retain their existing meaning.
+
+A proposal is an immutable Markdown artifact associated through the existing
+workstream `artifacts` field, not a second plan or task registry. Its closed
+`agentos.project_plan_proposal.v1` header contains `schema`, `proposal_id`,
+`work_ref`, `base_adoption`, `base_source`, `candidate_sha256`, `rationale`, and
+`evidence`. The candidate hash binds exact proposed UTF-8 bytes; the actual owner
+must separately bind the enclosing artifact and the candidate body. The proposal
+artifact starts with an exact `---` line, its YAML header, and a closing `---`
+line, each terminated by LF or CRLF. Every byte after the closing fence's line
+terminator is the candidate body, including leading blank lines, indentation,
+line endings and any UTF-8 BOM in that body. The existing owner YAML loader parses
+the header; `parse_project_plan_proposal` preserves this exact byte boundary.
+A proposal's base must match the selected adopted decision and its exact source reference.
+With no adopted baseline, null `base_adoption` records a comparison basis only.
+It does not establish acceptance. No declaration creates a Job, dispatch,
+permission, adoption command, protected release or runtime/product acceptance.
+
+The existing `draft-decision` serializer validates and preserves this optional
+metadata and remains stdout-only. The pure expected-predecessor check is not a
+write transaction. The commissioned Git writer must qualify actual captured
+source, check the current lineage against its exact publication base, and use
+the normal protected publication path; no stale write is authorized by a draft.
 
 ### Relationship to `DO_NOT_REBUILD.md`
 
@@ -273,6 +409,23 @@ A discovery is written **only if both hold**. This is the anti-hoarding mechanis
 | `cited_by` | ◻ | list | Auto-maintained by the generator. Drives GC. |
 | `superseded_by` | ◻ | `DSC:` | |
 | `expires` | ◻ | date | Default: `verified_at` + 90d if never cited. Flagged, never auto-deleted. |
+| `evaluation_finding` | ◻ | object | Optional six-field Evaluation OS evidence; no discovery admission is inferred. |
+
+An `evaluation_finding` has exactly `engine`, `metric`, `observed_change`,
+`segment`, `evidence_link`, and `suggested_tier`. Engine, metric, segment and
+link are non-empty valid UTF-8 strings of at most 2,048 bytes each. The link is
+an authored locator; drafting and validation do not fetch or verify its contents.
+`observed_change` is explicit null, bounded non-empty qualitative text, or exactly
+`{baseline, current, unit}`. Baseline/current are finite numbers or explicit null;
+unit is bounded non-empty text. Zero remains zero. Qualitative snapshot findings
+need not invent a numerical or temporal comparison. `suggested_tier` is T0–T4 or
+explicit null; it never means a tier was executed or passed. Existing discovery
+admission, falsifier, verification, scope and confidence are still mandatory and
+caller-authored. Both `draft-discovery` and raw record validation enforce this
+shape. The drafter prints the finding in YAML to stdout; it does not publish,
+prioritise, schedule or route an issue. Knowledge excerpts retain their existing
+claim/so_what/falsifier projection with the record locator. This optional DSC
+emission path does not make every research finding a verified discovery.
 
 ### Example
 
@@ -350,12 +503,28 @@ command produced it.
     "worktrees": 31,
     "degraded": ["terminal repo not checked out — terminal workstreams show stale PR state"]
   },
+  "program_registry": {
+    "schema": "agentos.program_registry.v1",
+    "available": true,
+    "source": "config/mastermind_programs.yml",
+    "programs": [
+      {
+        "key": "prophet-us",
+        "name": "US Prophet",
+        "lifecycle_state": "building",
+        "scope": "project",
+        "kind": "intelligence_program",
+        "category": "market_intelligence"
+      }
+    ]
+  },
   "workstreams": [
     {
       "key": "PROPHET-US-ENTRY-TIMING",
       "status": "active", "program": "prophet-us", "p0": "US_PROPHET_ENTRY_TIMING",
       "owner": "coo-fable", "next_action": "Verify the 22:30Z bake (W1).",
       "waves": {"done": 1, "in_progress": 1, "todo": 1},
+      "wait": null,
       "prs": [{"number": 5370, "state": "merged"}],
       "claim": {"by": "claude/prophet-bake-verify-7f3a21", "expires": "2026-08-15T00:00:00Z", "stale": false},
       "needs_ceo": null,
@@ -386,6 +555,13 @@ command produced it.
 `degraded` and `warnings` are first-class: a view that silently omits a missing input reads as
 "everything is fine," which is the failure I4 exists to prevent.
 
+`program_registry` is a read-only bounded projection of `config/mastermind_programs.yml` for
+exact semantic key joins. Macro's registry remains the owner of program identity, lifecycle
+ontology, and metadata; projecting it does not make Agent OS the owner of runtime or program
+execution state. `available: false` is explicit and semantically distinct from an available
+registry containing zero programs. An unavailable rich projection does not fail `status` or alter
+the legacy key-membership validation join.
+
 The two degradation scopes are intentionally different. Parent `inputs.degraded` reports all
 missing or stale auxiliary joins used by the broader status view. `readiness.degraded` reports
 only hard workstream-authoring problems that excluded or made ambiguous a readiness identity;
@@ -402,7 +578,8 @@ same with the unavailable canonical ref named.
 **Envelope vs pure section.** `generated_at`, `inputs.worktrees`,
 `inputs.active_builds_age_hours`, and `inputs.degraded` are the volatile ENVELOPE and are
 excluded from the byte-identity guarantee. `workstreams`, `needs_ceo`, the complete
-`readiness` envelope, and `warnings` are a pure function of the authored records plus the join
+`program_registry` projection, `readiness` envelope, and `warnings` are a pure function of the
+authored records plus the join
 inputs, and are
 compared byte-for-byte across runs by `tests/test_agentos_status.py`. The split is what
 makes the test meaningful: a byte-identity test that required a frozen clock to pass at
@@ -503,3 +680,61 @@ nobody will use this system."*
 The steady-state cost for a working session is **1–2 fields at a wave boundary**. Everything
 heavier is written at a moment the session was already stopping to write prose. Phase 4 moves
 `status`, `prs`, and `updated` to hook auto-capture, taking the steady-state cost to ~0.
+
+
+### Explicit accepted Direction association (P16.T1.S11)
+
+A workstream may declare `accepted_direction: DEC:<KEY>`. The same reference must
+occur in its existing `decisions` index. Absence remains absence: objectives,
+source revisions, generic decisions and plan-adoption records are different facts.
+The selected DEC carries exactly `direction: {schema:
+agentos.direction_acceptance.v1, state: ACCEPTED, work_ref: WS:<KEY>, predecessor:
+null | DEC:<KEY>}`. The scope occurs in `affects`; `decided_at` has day precision.
+A Direction DEC does not also carry `project_plan_adoption`.
+
+The predecessor is the sole `supersedes` entry; its retained record reciprocates
+with `superseded_by`. The current WS pointer selects the head, never timestamps.
+A read validates at most eight explicit revisions, keeps unknown totals unknown
+when history continues, and does not change current Direction while inspecting a
+previous revision. Missing or conflicting links cannot be presented as accepted
+history. Prospective app authoring uses the existing fixed publisher with a
+distinct `ACCEPT_DIRECTION` grant, original operation fingerprint and source CAS.
+A source-only Root decision may be prepared and published through the existing
+protected Git workflow under its actual commission. Publication grants no app,
+Runtime, placement, admission or execution power. No history is reconstructed.
+
+### Optional explicit project archive declaration
+
+A WS may declare `archive` with exactly `schema: agentos.workstream_archive.v1`,
+`state: ARCHIVED`, an authored `archived_on` calendar day (`YYYY-MM-DD`),
+`archived_by` (nonempty, at most256 UTF-8 bytes), and `reason` (nonempty,
+at most2000 UTF-8 bytes). The original declaration clock has day precision;
+Git commit time is separate source provenance. Absence means no declaration.
+Workstream status (`done`, `parked`, `killed` included), retained history,
+source freshness and archived chats never imply this fact. This additive read
+semantics does not implement Archive/Restore, reopen work or grant sending.
+A bounded qualified catalogue read describes its observed coverage; an empty
+sample is never a company-wide claim that no archived projects exist.
+
+### Explicit project files, communication preferences and standing instructions
+
+Optional WS `project_files` indexes at most32 user file declarations. Each closed
+row carries file_id/content_sha256 digests, a fixed per-project artifact_ref also
+in `artifacts`, basename-only display_name≤128UTF8 bytes, media_type exactly
+text/plain or text/markdown, and PRINCIPAL_UPLOAD origin with workspace principal
+actor and original request SHA. User bytes and WS index are published atomically
+by the separately granted typed recipe. A path or actor label alone grants nothing.
+
+A fixed `DEC-PROJECT-COMMUNICATION-PREFERENCE-<WSKEY>` may explicitly declare
+`project_preference` (schema agentos.project_preference.v1, exactWS, COMMUNICATION,
+literal value≤2000UTF8 equal to answer, USER_EDIT origin with null source refs,
+last_edit actor/request SHA). Standard DEC facts and WS decisions/affects joins
+remain required. CAS edits preserve origin. Conversation-derived origin is not
+accepted until its real qualified source-reference contract exists. No generated
+model memory or generic title matching implies a preference.
+
+Optional `standing_instructions` is a literal authored list of at most16 closed
+{instruction_ref,text} rows, unique project-scoped INS:UPPER-KEBAB key2..64 and
+nonblank valid UTF-8 text≤4096 Unicode codepoints (only LF/CR/TAB controls). Absence and supplied-empty are distinct.
+Revision is derived from exact canonical ref/text. No clock, activation, pause,
+scheduler or execution grant is authored here. Runtime admission remains separate.

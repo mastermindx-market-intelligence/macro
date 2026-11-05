@@ -18,13 +18,66 @@ markup that is safe under autoescape (build_vector) and inert without it
 """
 from __future__ import annotations
 
+import re
+
 from markupsafe import Markup
+
+# Detects the dual-language twin markup t()/td() emit. Used to make twin-inside-
+# twin nesting structurally impossible (see `t()` below) — a caller that passes
+# the OUTPUT of a prior t()/td() call as an argument to another t()/td() call
+# produces a twin with a full nested twin baked into one of its own legs
+# (templates/china.html.j2:2582 shipped exactly this: the turnover-percentile
+# call's English argument was `pctile ~ t('th percentile', 'th百分位')`).
+_TWIN_MARKUP = re.compile(r'class="l-(?:en|zh)"')
 
 
 def t(en: str, zh: str | None = None) -> Markup:
-    """Inline dual-language span. `zh` falls back to `en` when omitted."""
+    """Inline dual-language span. `zh` falls back to `en` when omitted.
+
+    Guarded against nesting: an `en`/`zh` argument that already contains
+    l-en/l-zh span markup means a t()/td() call's rendered output was passed
+    straight into another t()/td() call — the classic "twin inside a twin"
+    defect — so this raises instead of silently baking the nested markup into
+    one leg of the outer twin. Compose the plain string FIRST, then wrap the
+    finished string in ONE t()/td() call.
+    """
     zh = en if zh is None else zh
+    for _leg, _val in (("en", en), ("zh", zh)):
+        if isinstance(_val, str) and _TWIN_MARKUP.search(_val):
+            raise ValueError(
+                f"t({_leg}=...) received an argument that already contains "
+                "dual-language span markup (l-en/l-zh) -- a t()/td() call's "
+                "output was nested inside another t()/td() call. Compose the "
+                "plain string first, then wrap it in ONE t()/td() call. "
+                f"offending {_leg!r} argument: {_val!r}"
+            )
     return Markup('<span class="l-en">{}</span><span class="l-zh">{}</span>').format(en, zh)
+
+
+# Canonical English ordinal suffix for a percentile RANK (1st/2nd/3rd/4th/…, with
+# the 11th/12th/13th exception). Correct for every non-negative integer, incl. the
+# teens exception that the ad hoc hardcoded "th" callers kept getting wrong.
+def _ordinal_suffix(n: int) -> str:
+    tens = n % 100
+    if 11 <= tens <= 13:
+        return "th"
+    ones = n % 10
+    return {1: "st", 2: "nd", 3: "rd"}.get(ones, "th")
+
+
+def t_pctile(n: float | int) -> Markup:
+    """Canonical single twin for a percentile RANK — the ONE place that composes
+    "Nth percentile" / "第N百分位" so no call site hand-rolls the ordinal suffix or
+    the Chinese word order again. EN: number + correct ordinal suffix + the word
+    "percentile" (82nd percentile). ZH: the ordinal marker FIRST, then the number,
+    then the percentile word (第82百分位) — the house form used by the `rrx-ev-p`
+    Risk Radar evidence chip (templates/_risk_radar_card.html.j2 rr_pctile()).
+
+    Returns ONE correct twin, never a nested one: pass the raw number here, never
+    the output of another t()/td() call.
+    """
+    n_int = int(round(float(n)))
+    return t(f"{n_int}{_ordinal_suffix(n_int)} percentile", f"第{n_int}百分位")
 
 
 # Tokens that must keep their casing when a machine slug is prettified.
@@ -257,6 +310,12 @@ LEX: dict[str, str] = {
     "Nuclear & SMR Power": "核电与小型模块化反应堆",
     "Rare Earth & Critical Minerals": "稀土与关键矿产",
     "Data Center Power & Cooling": "数据中心供电与散热",
+    "Uranium": "铀矿",
+    "Junior Gold Miners": "小型黄金矿商",
+    "Meme / Retail": "迷因股／散户",
+    "AI & Big Data": "人工智能与大数据",
+    "AI Data Center": "人工智能数据中心",
+    "Neocloud / AI Data Center": "新型 GPU 云服务商 / AI 数据中心",
     "Memory, HBM & Storage": "存储、HBM 与存储设备",
     "AI Semiconductors": "AI 半导体",
     "Semiconductor Equipment (WFE)": "半导体设备（WFE）",
@@ -481,6 +540,13 @@ LEX: dict[str, str] = {
     "Telecom & Utilities": "电信与公用事业",
     "Gaming & Leisure": "博彩与休闲",
     "Exchange & Diversified": "交易所与综合企业",
+    "Industrials & Transport": "工业与运输",
+    "Buy now": "立即买入",
+    "Stand aside": "观望",
+    "Hang Seng Tech": "恒生科技",
+    "HK dollar peg": "港元联汇",
+    "Offshore yuan": "离岸人民币",
+    "HK overnight rate": "港元隔夜利率",
     # HK global-risk factor labels (engine.hk_global.FACTOR_LABELS)
     "US Dollar (DXY)": "美元指数（DXY）",
     "Volatility (VIX)": "波动率（VIX）",
@@ -665,6 +731,61 @@ LEX: dict[str, str] = {
     "Regulatory headwind": "监管逆风",
     "Competitive threat": "竞争压力",
     "Macro-sensitive": "受宏观影响",
+    # macro_context / macro_signals glance-tier state chips. Keys are the
+    # English as it appears in the .l-zh span (or after prettify() of a slug).
+    # Gold / Copper are already mapped above; percentile ranks use t_pctile().
+    "Q1": "Q1 理想增长",
+    "Q2": "Q2 再通胀",
+    "Q3": "Q3 滞胀",
+    "Q4": "Q4 增长恐慌",
+    "TOP WATCH": "见顶观察",
+    "TURN SIGNALED": "转向已触发",
+    "RALLY ON": "上涨进行中",
+    "Trend follow": "顺势跟随",
+    "Buy the dip": "逢低买入",
+    "Sell": "卖出",
+    "Elevated": "偏高",
+    "Watch": "观察",
+    "Caution": "警戒",
+    "Normalizing": "正常化",
+    "Quiet": "清淡",
+    "Contango": "升水",
+    "collapsing (de-risk)": "骤降（减仓避险）",
+    "Blowoff": "冲顶",
+    "Long": "多头",
+    "Short": "空头",
+    "Confirm": "确认",
+    "Diverge": "背离",
+    "Broad": "全面",
+    "Greed": "贪婪",
+    "Risk on": "风险偏好",
+    "Growth scare / defensive rotation": "增长恐慌 / 防御性轮动",
+    "Stress expansion": "承压扩张",
+    "Neutral hollow": "中性空心",
+    "Soft": "偏弱",
+    "Pressure": "上行压力",
+    "Lean long": "偏多",
+    "Bullish": "看多",
+    "Bearish": "看空",
+    "Bear flattener": "熊市平坦化",
+    "Bull flattener": "牛市平坦化",
+    "Bull steepener": "牛市陡峭化",
+    "Down": "下行",
+    "Fair": "合理",
+    "Hawkish repricing": "鹰派重定价",
+    "Dovish repricing": "鸽派重定价",
+    "Carry unwind": "套息交易平仓",
+    "Intervention risk": "干预风险",
+    "Lean IN": "倾向参与",
+    "Lean in": "倾向参与",
+    "Contraction (easing)": "收缩（宽松中）",
+    "US equities": "美股",
+    "EM equities": "新兴市场股票",
+    "Bitcoin": "比特币",
+    "Oil (WTI)": "原油（WTI）",
+    "Gold, Silver": "黄金、白银",
+    "Loosening": "转松",
+    "mixed backdrop": "环境喜忧参半",
 }
 
 

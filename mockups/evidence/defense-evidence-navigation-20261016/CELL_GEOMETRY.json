@@ -1,0 +1,242 @@
+[
+  {
+    "cell_id": "macro:government_revenue|desktop|en|dark|anonymous",
+    "viewport": "desktop",
+    "theme": "dark",
+    "locale": "en",
+    "force_state": null,
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 4718
+  },
+  {
+    "cell_id": "macro:government_revenue|desktop|en|dark|anonymous|investor-focus",
+    "viewport": "desktop",
+    "theme": "dark",
+    "locale": "en",
+    "force_state": "investor-focus",
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 4688
+  },
+  {
+    "cell_id": "macro:government_revenue|desktop|en|light|anonymous",
+    "viewport": "desktop",
+    "theme": "light",
+    "locale": "en",
+    "force_state": null,
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 4685
+  },
+  {
+    "cell_id": "macro:government_revenue|desktop|en|light|anonymous|investor-focus",
+    "viewport": "desktop",
+    "theme": "light",
+    "locale": "en",
+    "force_state": "investor-focus",
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 4685
+  },
+  {
+    "cell_id": "macro:government_revenue|desktop|zh|dark|anonymous",
+    "viewport": "desktop",
+    "theme": "dark",
+    "locale": "zh",
+    "force_state": null,
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 4533
+  },
+  {
+    "cell_id": "macro:government_revenue|desktop|zh|dark|anonymous|investor-focus",
+    "viewport": "desktop",
+    "theme": "dark",
+    "locale": "zh",
+    "force_state": "investor-focus",
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 4533
+  },
+  {
+    "cell_id": "macro:government_revenue|desktop|zh|light|anonymous",
+    "viewport": "desktop",
+    "theme": "light",
+    "locale": "zh",
+    "force_state": null,
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 4530
+  },
+  {
+    "cell_id": "macro:government_revenue|desktop|zh|light|anonymous|investor-focus",
+    "viewport": "desktop",
+    "theme": "light",
+    "locale": "zh",
+    "force_state": "investor-focus",
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 4530
+  },
+  {
+    "cell_id": "macro:government_revenue|tablet|en|dark|anonymous",
+    "viewport": "tablet",
+    "theme": "dark",
+    "locale": "en",
+    "force_state": null,
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 5493
+  },
+  {
+    "cell_id": "macro:government_revenue|tablet|en|dark|anonymous|investor-focus",
+    "viewport": "tablet",
+    "theme": "dark",
+    "locale": "en",
+    "force_state": "investor-focus",
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 5493
+  },
+  {
+    "cell_id": "macro:government_revenue|tablet|en|light|anonymous",
+    "viewport": "tablet",
+    "theme": "light",
+    "locale": "en",
+    "force_state": null,
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 5490
+  },
+  {
+    "cell_id": "macro:government_revenue|tablet|en|light|anonymous|investor-focus",
+    "viewport": "tablet",
+    "theme": "light",
+    "locale": "en",
+    "force_state": "investor-focus",
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 5490
+  },
+  {
+    "cell_id": "macro:government_revenue|tablet|zh|dark|anonymous",
+    "viewport": "tablet",
+    "theme": "dark",
+    "locale": "zh",
+    "force_state": null,
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 5073
+  },
+  {
+    "cell_id": "macro:government_revenue|tablet|zh|dark|anonymous|investor-focus",
+    "viewport": "tablet",
+    "theme": "dark",
+    "locale": "zh",
+    "force_state": "investor-focus",
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 5073
+  },
+  {
+    "cell_id": "macro:government_revenue|tablet|zh|light|anonymous",
+    "viewport": "tablet",
+    "theme": "light",
+    "locale": "zh",
+    "force_state": null,
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 5070
+  },
+  {
+    "cell_id": "macro:government_revenue|tablet|zh|light|anonymous|investor-focus",
+    "viewport": "tablet",
+    "theme": "light",
+    "locale": "zh",
+    "force_state": "investor-focus",
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 5070
+  },
+  {
+    "cell_id": "macro:government_revenue|mobile|en|dark|anonymous",
+    "viewport": "mobile",
+    "theme": "dark",
+    "locale": "en",
+    "force_state": null,
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 8198
+  },
+  {
+    "cell_id": "macro:government_revenue|mobile|en|dark|anonymous|investor-focus",
+    "viewport": "mobile",
+    "theme": "dark",
+    "locale": "en",
+    "force_state": "investor-focus",
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 8198
+  },
+  {
+    "cell_id": "macro:government_revenue|mobile|en|light|anonymous",
+    "viewport": "mobile",
+    "theme": "light",
+    "locale": "en",
+    "force_state": null,
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 8190
+  },
+  {
+    "cell_id": "macro:government_revenue|mobile|en|light|anonymous|investor-focus",
+    "viewport": "mobile",
+    "theme": "light",
+    "locale": "en",
+    "force_state": "investor-focus",
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 8190
+  },
+  {
+    "cell_id": "macro:government_revenue|mobile|zh|dark|anonymous",
+    "viewport": "mobile",
+    "theme": "dark",
+    "locale": "zh",
+    "force_state": null,
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 7339
+  },
+  {
+    "cell_id": "macro:government_revenue|mobile|zh|dark|anonymous|investor-focus",
+    "viewport": "mobile",
+    "theme": "dark",
+    "locale": "zh",
+    "force_state": "investor-focus",
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 7339
+  },
+  {
+    "cell_id": "macro:government_revenue|mobile|zh|light|anonymous",
+    "viewport": "mobile",
+    "theme": "light",
+    "locale": "zh",
+    "force_state": null,
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 7331
+  },
+  {
+    "cell_id": "macro:government_revenue|mobile|zh|light|anonymous|investor-focus",
+    "viewport": "mobile",
+    "theme": "light",
+    "locale": "zh",
+    "force_state": "investor-focus",
+    "loaded": true,
+    "horizontal_overflow": false,
+    "document_height_px": 7331
+  }
+]

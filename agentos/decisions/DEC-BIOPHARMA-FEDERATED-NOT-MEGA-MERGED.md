@@ -1,5 +1,91 @@
 ---
 key: BIOPHARMA-FEDERATED-NOT-MEGA-MERGED
+question: How should the August16 BCI federation proposal be preserved while its architecture remains
+  unadopted?
+answer: Preserve the complete proposal as dated source evidence. The original federation ruling, specialist
+  freeze and BCI execution sequence remain unadopted; publication does not activate them. Existing
+  accepted BioCatalyst, JV, company-event, Market Memory and other specialist owners remain controlling.
+  Keep the BCI proposal workstream parked under the existing biocatalyst semantic parent; no BCI-0B
+  commission or new program authority follows.
+rationale: Accepted BioCatalyst P1 architecture explicitly treats PR5821 as a candidate and neither
+  adopts nor rejects it. Later accepted core ownership and source-native catalyst composition rulings
+  resolve narrower questions independently. This bounded records qualification preserves the original
+  product thesis and evidence without replaying stale instructions or pretending the proposed programme
+  has shipped.
+alternatives:
+- option: Publish the original freeze and execution instructions as current authority
+  why_not: The accepted P1 source leaves BCI unadopted and the backlog publication task does not activate
+    its proposed programme.
+- option: Close the proposal as implemented or superseded
+  why_not: No accepted successor disposes of the BCI federation question; the unique proposed journeys
+    and design remain useful historical source.
+- option: Discard or rewrite the original proposal history
+  why_not: That would lose the original rationale, alternatives, ownership hypotheses and prospective
+    acceptance design.
+evidence:
+- Macro PR5821 original head77f39f3ff25e35f7ad40e0d53cb90d2229097571
+- research/BIOCATALYST_P1_RECHARTER_AND_FIRST_VERTICAL_ARCHITECTURE_2026-08-20.md
+- agentos/decisions/DEC-BIOCATALYST-RECOVERY-V2-CORE-NOT-JV-OR-BCI.md
+- agentos/decisions/DEC-BPC-CATALYST-COMPOSES-WITH-COMPANY-EVENT-NOT-FISCAL-WORKSPACE.md
+- agentos/workstreams/WS-BIOCATALYST-RECOVERY-V2.md
+- agentos/workstreams/WS-BIOCATALYST-CORE-PRODUCT.md
+- config/mastermind_programs.yml
+affects:
+- WS:BIOPHARMA-CYCLE-INTELLIGENCE
+- biocatalyst
+confidence: high
+reversibility: easy
+decided_by: ceo-sol
+decided_at: '2026-11-05'
+---
+
+# Publication boundary — dated, unadopted BCI proposal
+
+**Reconciliation date: 2026-11-05.** This file preserves the August16 proposal
+from Macro PR5821 at `77f39f3ff25e35f7ad40e0d53cb90d2229097571`. Its
+original product thesis, journeys, methods, alternatives and proposed wave sequence
+remain available below. Publication does not adopt that architecture, freeze other
+programs, create an active execution front door or commission BCI-0B.
+
+The accepted [P1 architecture](https://github.com/mastermindx-market-intelligence/Macro/blob/fe0693fe579c8f3025b41127e4e92b514f568692/research/BIOCATALYST_P1_RECHARTER_AND_FIRST_VERTICAL_ARCHITECTURE_2026-08-20.md)
+explicitly keeps #5821 a candidate, neither adopted nor rejected. Its BCI decision
+remains open. That is why this carrier is preserved as a parked proposal rather than
+closed as implemented or promoted into a new program by a documentation merge.
+
+## Current accepted boundaries
+
+- The existing `biocatalyst` semantic parent remains canonical. The parked BCI
+  record owns only these six proposal documents, not a runtime/domain source.
+- [Recovery V2 ownership](https://github.com/mastermindx-market-intelligence/Macro/blob/fe0693fe579c8f3025b41127e4e92b514f568692/agentos/decisions/DEC-BIOCATALYST-RECOVERY-V2-CORE-NOT-JV-OR-BCI.md)
+  keeps core recovery separate from draft BCI and finite JV reconstruction.
+  The inspected Recovery V2 workstream is done; Core Product is parked after its
+  accepted P1-1 work. This proposal does not reset either owner's state or reopen it.
+- [The accepted catalyst composition ruling](https://github.com/mastermindx-market-intelligence/Macro/blob/fe0693fe579c8f3025b41127e4e92b514f568692/agentos/decisions/DEC-BPC-CATALYST-COMPOSES-WITH-COMPANY-EVENT-NOT-FISCAL-WORKSPACE.md)
+  uses company identity and event lifecycle/publication clocks, with source-native
+  catalyst identities and the existing owner event plane. Fiscal
+  `event_workspace.v1` IDs and earnings payload keys are not catalyst identities.
+  This accepted ruling governs over the older proposal's reuse hypotheses.
+- Current protected source, registry and accepted owner records govern any future
+  work. The original proposal's precedence, concurrency freeze, supersession and
+  automatic-next-wave language has no present operational effect. Its audited
+  `5d600641bc3513f69a37cfb8cac1f1d86238e896` base is a historical reference,
+  not a current checkout or production receipt.
+- No new program card, collector, truth store, publication owner, runtime,
+  portfolio/Prophet/Neural Web decision authority or live acquisition is created.
+  Future architecture adoption and any execution require their own current
+  authorized decision and bounded commission. None is implied by this publication.
+
+## Original proposal — complete source retained verbatim
+
+The fenced source below is the immutable August16–17 proposal, including its
+original metadata where present. Words such as "binding", "current", "freeze",
+"next" and "execute" inside that archive describe the unadopted proposal and its
+observation epoch. The qualified metadata and current accepted owners above govern
+the publication; the archive is not an instruction to perform those actions.
+
+``````markdown
+---
+key: BIOPHARMA-FEDERATED-NOT-MEGA-MERGED
 question: >
   Should BioCatalyst, Biopharma Seasonality/Cycle Intelligence, Market Memory,
   Financial Intelligence Fabric, Defense Procurement, and future specialist
@@ -92,3 +178,4 @@ This decision is proposed on the BCI architecture branch and becomes durable
 company architecture only when the Chairman accepts or amends the draft PR.
 It grants no runtime, schema, source, product, Neural Web, Prophet, Portfolio,
 or trading authority.
+``````

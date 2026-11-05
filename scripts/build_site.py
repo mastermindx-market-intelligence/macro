@@ -30,8 +30,19 @@ from collectors.sponsors import flows_table  # noqa: E402
 from engine.i18n import prettify as _prettify, t as T  # noqa: E402
 from engine.inputs import build_features  # noqa: E402
 from engine.market_gamma import view as market_gamma_view  # noqa: E402 — SHARED deriver: FE banner + contract (engine/run.py) call the SAME function so they can't drift
+# P-MP1-SHELL §8a (MP-1-prophet-board.md, b1 ruling): the SAME Q7 bucket table
+# engine/us_board_rank.py already ships for the entry/actionability axis — imported
+# read-only (engine/* stays out of this packet's scope; we consume, never patch the
+# exporter) so the stance projection below can never drift into a second mapping.
+from engine.us_board_rank import (  # noqa: E402
+    _BLOCKED_STATUSES as _US_BLOCKED_STATUSES,
+    _LIVE_STATUSES as _US_LIVE_STATUSES,
+    _RAN_STATUSES as _US_RAN_STATUSES,
+    _SETTING_UP_STATUSES as _US_SETTING_UP_STATUSES,
+)
 from lib import config, site_assets, store  # noqa: E402
 from lib.chat_allowance import chat_allowance_view_model  # noqa: E402
+from lib.help_directory import help_page_view_model, refresh_disclosure  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -2206,14 +2217,29 @@ def action_board(sector_timing: dict, notable: list[dict],
     bi = basket_items or {}
     # FIX 3 — pass more counts from basket_items through to the VM
     _bi_more = bi.get("more") or {}
-    return {"buy_now": (bi.get("buy_now") or []) + buy_now,
-            "buy_soon": (bi.get("buy_soon") or []) + buy_soon,
-            "on_the_run": (bi.get("on_the_run") or []) + on_the_run,
-            "take_profits": (bi.get("take_profits") or []) + take_profits,
-            "hold": (bi.get("hold") or []) + hold,
-            "avoid": (bi.get("avoid") or []) + avoid,
+    _ab_buy_now = (bi.get("buy_now") or []) + buy_now
+    _ab_buy_soon = (bi.get("buy_soon") or []) + buy_soon
+    _ab_on_the_run = (bi.get("on_the_run") or []) + on_the_run
+    _ab_take_profits = (bi.get("take_profits") or []) + take_profits
+    _ab_hold = (bi.get("hold") or []) + hold
+    _ab_avoid = (bi.get("avoid") or []) + avoid
+    return {"buy_now": _ab_buy_now,
+            "buy_soon": _ab_buy_soon,
+            "on_the_run": _ab_on_the_run,
+            "take_profits": _ab_take_profits,
+            "hold": _ab_hold,
+            "avoid": _ab_avoid,
             "more": _bi_more,
-            "notable": notable_clean[:CAP]}
+            "notable": notable_clean[:CAP],
+            # P-MP1-SHELL §8 "Groups header total" — a single published total across every
+            # lane this board buckets rows into (the six urgency lanes the five rendered
+            # .actcol columns fold from — take_profits/avoid share the "stand aside" column).
+            # Computed ONCE here, at the same place the lanes themselves are assembled, so
+            # the template quotes this field rather than re-deriving a count from row
+            # iteration (the estate's count law — see lifecycle_counts for the sibling
+            # device this mirrors).
+            "total": (len(_ab_buy_now) + len(_ab_buy_soon) + len(_ab_on_the_run)
+                      + len(_ab_take_profits) + len(_ab_hold) + len(_ab_avoid))}
 
 
 def sector_setup_view(latest: dict, timing: dict | None = None) -> dict | None:
@@ -2283,7 +2309,12 @@ def sector_setup_view(latest: dict, timing: dict | None = None) -> dict | None:
                 r["rate_pos"] = br["exc63"] >= 0
             else:
                 r["rate_str"], r["rate_pos"] = T("—", "—"), None
+            r["rate_hit"] = br.get("hit") if br else None
+            r["rate_n"] = br.get("n") if br else None
+            r["rate_exc"] = br.get("exc63") if br else None
             r["season_str"], _ = _compact_season(st.get("season_this"))
+            _sm = r["season_str"]
+            r["season_magnitude"] = _sm.split(" (", 1)[0] if _sm and " (" in _sm else _sm
             r["season_tip"] = _season_tooltip(st.get("season_all"), st.get("season_month") or month)
             # TS-R6 two-reads reconciliation chip: when this ETF's setup-side verdict
             # (3D tactical) conflicts with the cycle timing action (slow, cap-weighted).
@@ -2528,18 +2559,32 @@ def _flip_confirmation_view() -> dict | None:
 
 
 def _sector_heat_view() -> dict | None:
-    """Compact sector-heat strip for the macro.html dashboard: up to 4 heating themes
-    and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
+    """Compact sector-heat strip for the macro.html dashboard: up to 4 producer-declared
+    heating themes and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
     rotation lane for the risk dialog; each links straight to basket/<id>.html.
     DISPLAY-ONLY — data comes from engine.sector_pulse.build_pulse('us') at build time.
     Returns None (never raises) so the strip is simply hidden when pulse is unavailable."""
     try:
         from engine.sector_pulse import build_pulse as _sp_build
+        from lib.sector_desk_view import opportunity_desk
         pulse = _sp_build("us")
         if not pulse:
             return None
         themes = pulse.get("themes") or []
-        heating = [t for t in themes if t.get("heat") in ("heating", "hot")][:4]
+        by_id = {t.get("id"): t for t in themes if t.get("id")}
+        # sector_pulse deliberately separates acceleration (heating) from an
+        # incumbent top-quartile state (hot). The homepage used to merge both
+        # labels and then slice by trailing rank, so already-hot Crypto / AI
+        # Software could suppress an actually accelerating AI Semiconductors
+        # theme. Consume the producer-owned heating roster first; when reading a
+        # legacy/mocked pulse without that top-level list, fall back only to rows
+        # whose own tier is literally heating (never hot).
+        producer_heating = pulse.get("heating")
+        if isinstance(producer_heating, list):
+            heating = [by_id[theme_id] for theme_id in producer_heating
+                       if isinstance(theme_id, str) and theme_id in by_id]
+        else:
+            heating = [t for t in themes if t.get("heat") == "heating"]
         cooling = [t for t in themes if t.get("heat") in ("cooling", "broken")][:4]
         def _row(t):
             return {
@@ -2569,7 +2614,6 @@ def _sector_heat_view() -> dict | None:
             "semicap_equipment": ("Semicap Equipment", "半导体设备"),
             "memory_storage": ("Memory & Storage", "存储与内存"),
         }
-        by_id = {t.get("id"): t for t in themes if t.get("id")}
         rotation = []
         for theme_id in rotation_order:
             t = by_id.get(theme_id)
@@ -2582,7 +2626,8 @@ def _sector_heat_view() -> dict | None:
             return None
         return {
             "as_of": pulse.get("as_of"),
-            "heating": [_row(t) for t in heating],
+            "heating": [_row(t) for t in heating[:4]],
+            "desk": opportunity_desk(heating, pulse.get("as_of"), history=pulse.get("history")),
             "cooling": [_row(t) for t in cooling],
             "rotation": rotation,
         }
@@ -2611,19 +2656,32 @@ def _policy_lever_view() -> dict | None:
         return None
 
 
-def holdings_rows() -> list[dict]:
-    """Compact teaser for the dashboard's "real fund moves" panel: the top
-    conviction-ranked ACCUMULATION decisions across the thematic/active fund
-    universe (same engine as the full radar at etfs.html). Conviction = pp of
-    fund weight committed, so a tiny-position double doesn't outrank a real add."""
-    from engine.holdings_signals import top_etf_accumulation
+def holdings_panel() -> tuple[list[dict], int | None]:
+    """Sliced teaser rows + destination-true accumulate N for the etfs.html link.
+
+    N is the number of accumulate rows the destination actually renders
+    (``drop_cash(all_etf_signals())`` → ``split_by_conviction`` accumulate side
+    → ``page_top_n``). If that chain fails, N is None and the template drops
+    the count rather than print a number the board will not show.
+    """
+    from engine.holdings_signals import (
+        all_etf_signals, drop_split_events, etf_page_accumulation,
+    )
     n = config.load()["holdings_signals"].get("panel_top_n", 12)
     try:
-        acc = top_etf_accumulation().get("accumulation", [])[:n]
+        raw = all_etf_signals()
+        acc_all = [r for r in drop_split_events(raw)
+                   if (r.get("conviction_pp") or 0) > 0]
+        acc = sorted(acc_all, key=lambda r: -r["conviction_pp"])[:n]
     except Exception as e:  # noqa: BLE001 — panel is additive, never fatal
         log.error("fund moves panel failed: %s", e)
-        return []
-    return [{
+        return [], None
+    try:
+        universe_n = len(etf_page_accumulation(raw))
+    except Exception as e:  # noqa: BLE001 — a bad count is worse than none
+        log.warning("etfs.html accumulate count failed (%s) — dropping N", e)
+        universe_n = None
+    rows = [{
         "fund": s["etf"], "fund_name": s.get("etf_name", s["etf"]),
         "ticker": s["ticker"], "name": s["name"], "sector": s.get("sector", ""),
         "weight_pct": s.get("weight_pct"), "conviction_pp": s.get("conviction_pp"),
@@ -2631,6 +2689,40 @@ def holdings_rows() -> list[dict]:
         "is_active": s.get("is_active", False), "confirmed": s.get("confirmed", False),
         "ladder": s.get("ladder"), "window": s.get("window", ""),
     } for s in acc]
+    return rows, universe_n
+
+
+def holdings_rows() -> list[dict]:
+    """Compact teaser for the dashboard's "real fund moves" panel: the top
+    conviction-ranked ACCUMULATION decisions across the thematic/active fund
+    universe (same engine as the full radar at etfs.html). Conviction = pp of
+    fund weight committed, so a tiny-position double doesn't outrank a real add."""
+    rows, _uni = holdings_panel()
+    return rows
+
+
+def accumulation_panel() -> tuple[list[dict], int | None]:
+    """Sliced accumulation-watch rows + residual-universe N from the same pass."""
+    from engine.holdings_signals import sector_residual_panel
+    from engine.playbook import SECTOR_NAMES
+    n = config.load()["holdings_signals"].get("panel_top_n", 12)
+    rows = []
+    try:
+        raw, universe_n = sector_residual_panel(n)
+        for s in raw:
+            rows.append({
+                "fund": s["fund"], "sector": SECTOR_NAMES.get(s["fund"], s["fund"]),
+                "ticker": s["ticker"], "name": s["name"],
+                "raw_change": s["raw_change"], "active_change": s["active_change"],
+                "active_pct": s["active_pct"],
+                "flow_str": _fmt_money_mn(s["est_flow_mn"]) if s.get("est_flow_mn") is not None else "—",
+                "flow_mn": s["est_flow_mn"] if s.get("est_flow_mn") is not None else None,
+                "direction": s["direction"], "confirmed": s["confirmed"],
+                "ladder": s["ladder"], "window": f"{s['t0']}..{s['t1']}"})
+    except Exception as e:  # noqa: BLE001 — panel is additive, never fatal
+        log.error("accumulation panel failed: %s", e)
+        return [], None
+    return rows, universe_n
 
 
 def accumulation_rows() -> list[dict]:
@@ -2638,23 +2730,10 @@ def accumulation_rows() -> list[dict]:
     holding's weight change split into a price part and a residual ('active'), with
     the stock's cycle state attached. See engine/holdings_signals.py.
 
-    Uses ``top_sector_residuals`` (the strongest residual movers, no alert gate) so
+    Uses ``sector_residual_panel`` (the strongest residual movers, no alert gate) so
     the panel is always populated — on passive SPDRs the residual is tiny by
     construction and the thresholded list is almost always empty."""
-    from engine.holdings_signals import top_sector_residuals
-    from engine.playbook import SECTOR_NAMES
-    n = config.load()["holdings_signals"].get("panel_top_n", 12)
-    rows = []
-    for s in top_sector_residuals(n):
-        rows.append({
-            "fund": s["fund"], "sector": SECTOR_NAMES.get(s["fund"], s["fund"]),
-            "ticker": s["ticker"], "name": s["name"],
-            "raw_change": s["raw_change"], "active_change": s["active_change"],
-            "active_pct": s["active_pct"],
-            "flow_str": _fmt_money_mn(s["est_flow_mn"]) if s.get("est_flow_mn") is not None else "—",
-            "flow_mn": s["est_flow_mn"] if s.get("est_flow_mn") is not None else None,
-            "direction": s["direction"], "confirmed": s["confirmed"],
-            "ladder": s["ladder"], "window": f"{s['t0']}..{s['t1']}"})
+    rows, _uni = accumulation_panel()
     return rows
 
 
@@ -3706,6 +3785,25 @@ def build_support_page(env: Environment, site: Path, generated: str) -> None:
     log.info("wrote support.html (public support desk)")
 
 
+def build_help_page(env: Environment, site: Path, generated: str) -> None:
+    """Render the public, source-validated bilingual owner directory.
+
+    This is deliberately fail-closed. A missing source label or invalid target
+    aborts the render instead of leaving a stale or inferred help destination.
+
+    Uses lib.help_directory.help_page_view_model — the SAME builder
+    scripts.build_public_pages.build calls — so this render path can never
+    drift from that one and hand the template a partial context again
+    (review finding B-F13-3 BLOCKER-1: this call site used to splat only
+    entries/categories/directory_state and raise UndefinedError on
+    ``changelog``, which this function's except-and-log swallowed silently).
+    """
+    vm = help_page_view_model(config.ROOT)
+    html = env.get_template("help.html.j2").render(generated_utc=generated, refresh=refresh_disclosure(config.ROOT, generated), **vm)
+    write_page(site / "help.html", html)
+    log.info("wrote help.html (%d source-validated links)", len(vm["entries"]))
+
+
 def build_unsubscribe_page(env: Environment, site: Path, generated: str) -> None:
     """✨ Unsubscribe — the public bilingual opt-out page (SEE W4, masterplan R5).
 
@@ -3737,13 +3835,13 @@ ETF_GICS = {                       # SPDR sector fund -> GICS sector (residual-a
 }
 
 
-def build_alpha_data(site: Path) -> dict | None:
+def build_alpha_data(site: Path, *, asof=None) -> dict | None:
     """Compute the sector-neutral residual-momentum cross-section and write
     factordata/alpha.json (consumed by the sector pages + per-stock panels).
     Additive — any failure logs and skips. See research/RESIDUAL_ALPHA_MOMENTUM.md."""
     from engine.residual_alpha import compute_residual_alpha
     try:
-        alpha = compute_residual_alpha()
+        alpha = compute_residual_alpha(asof=asof)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("residual-alpha engine failed: %s", e)
         return None
@@ -4280,6 +4378,7 @@ def build_advanced_page(env: Environment, site: Path, generated: str, latest: di
         accumulation=accumulation_rows(), holdings_changes=holdings_rows(),
         holdings_threshold=config.load()["holdings"]["active_change_alert_pct"],
         flows_html=flows_html_table(),
+        breadth_split=_breadth_split_view(),  # UD-B2-W3 R6: relocated from macro dialog
     )
     write_page(site / "advanced.html", html)
     log.info("wrote advanced.html (%.0f KB)", (site / "advanced.html").stat().st_size / 1024)
@@ -4348,9 +4447,10 @@ def _ms_history_view(current: dict | None = None) -> list[dict] | None:
     disagree, the card ships two numbers for the same date: on 2026-07-31 the
     gauge baked 69 / Risk-on while the chart's endpoint baked 66, and the header's
     "last graded <date>" stamp disclosed nothing, because the two dates matched.
-    The DISPLAY endpoint therefore follows the measured blend on the board it sits next to;
-    the logged row on disk is left exactly as it was written. Legacy rows without raw_score
-    fall back to score."""
+    The DISPLAY endpoint therefore follows the measured blend on the board it sits next to.
+    If the settled board is newer than the ledger tail, it is appended to the display path so
+    the chart cannot stop on an older score. The logged rows on disk are left exactly as written.
+    Legacy rows without raw_score fall back to score."""
     try:
         p = config.data_dir() / "market_state" / "forward_log.jsonl"
         if not p.exists():
@@ -4377,12 +4477,19 @@ def _ms_history_view(current: dict | None = None) -> list[dict] | None:
         cur_score = (current or {}).get("raw_score")
         if cur_score is None:
             cur_score = (current or {}).get("score")
-        if cur_asof and cur_score is not None and cur_asof == out[-1]["asof"] \
-                and int(cur_score) != out[-1]["score"]:
-            log.info("ms_history: display endpoint %s %d -> %d (measured board blend; "
-                     "forward_log row untouched)",
-                     cur_asof, out[-1]["score"], int(cur_score))
-            out[-1] = {"asof": cur_asof, "score": int(cur_score)}
+        if cur_asof and cur_score is not None:
+            cur_score = int(cur_score)
+            last_asof = out[-1]["asof"]
+            if cur_asof == last_asof and cur_score != out[-1]["score"]:
+                log.info("ms_history: display endpoint %s %d -> %d (measured board blend; "
+                         "forward_log row untouched)",
+                         cur_asof, out[-1]["score"], cur_score)
+                out[-1] = {"asof": cur_asof, "score": cur_score}
+            elif cur_asof > last_asof:
+                log.info("ms_history: appending settled display endpoint %s=%d after ledger %s "
+                         "(forward_log untouched)", cur_asof, cur_score, last_asof)
+                out.append({"asof": cur_asof, "score": cur_score})
+                out = out[-60:]
         return out
     except Exception:  # noqa: BLE001 — additive, never fatal
         return None
@@ -4485,11 +4592,10 @@ def chart_risk_model(cf: pd.DataFrame) -> str:
 
 
 def chart_curve(cf: pd.DataFrame) -> str:
-    """Yield curve: the 2s10s slope RAW vs TERM-PREMIUM-ADJUSTED, ~25y, NBER-shaded.
-    Inversion (below 0) is the classic recession lead; the TP-adjusted line strips
-    the term premium so a low-TP flattening isn't misread as a recession signal
-    (it's why 2022-24's raw inversion didn't fire the composite). Colours sit
-    outside the zh swap map (a curve isn't a price-direction read)."""
+    """Yield curve: raw 2s10s vs the legacy TP10 compatibility heuristic.
+    The heuristic is 2s10s plus the 10y term-premium model estimate. It is context,
+    not a matched-maturity expectations-only decomposition and does not identify why
+    an inversion occurred. Colours sit outside the zh swap map."""
     start = cf.index.max() - pd.Timedelta(days=365 * 25)
     raw = cf.loc[start:, "curve_raw"].dropna().resample("W-FRI").last().dropna().round(2)
     adj = cf.loc[start:, "curve_tp_adj"].dropna().resample("W-FRI").last().dropna().round(2)
@@ -4505,7 +4611,7 @@ def chart_curve(cf: pd.DataFrame) -> str:
                               fillcolor="#8b93a1", opacity=0.16, line_width=0)
     fig.add_trace(go.Scatter(x=raw.index, y=raw, name="2s10s (raw)",
                              line={"color": "#7aa7e0", "width": 1.3}))
-    fig.add_trace(go.Scatter(x=adj.index, y=adj, name="2s10s (term-premium adj.)",
+    fig.add_trace(go.Scatter(x=adj.index, y=adj, name="2s10s + TP10 heuristic",
                              line={"color": "#c08af0", "width": 1.3}))
     fig.add_hline(y=0, line={"color": "#9aa4b2", "width": 0.8, "dash": "dot"})
     fig.update_layout(**PLOT_LAYOUT)
@@ -4574,10 +4680,25 @@ def _attach_board_display_chips(site: Path, doc: "dict | None") -> "dict | None"
     # DISPLAY-ONLY — zero effect on selection, rank, or gating. Missing sector or
     # sector_central data -> field absent, chip silently omitted. Ordering: sector_central.json
     # is written by build_sector_rotation before build_site.main() runs (nightly DAG order).
+    # A second attach must not retain a receipt from a missing/replaced sidecar.
+    for _card in (doc.get("buy") or []):
+        if isinstance(_card, dict):
+            _card.pop("sector_stance_source", None)
     _sc_path = site / "sectordata" / "sector_central.json"
     if _sc_path.exists():
         try:
             _sc_doc = json.loads(_sc_path.read_text())
+            # Keep the sidecar's own snapshot clock. It is not the stock signal's
+            # date or an admission/freshness decision; never substitute build time.
+            _sc_stamp = _sc_doc.get("as_of")
+            _sc_date = None
+            if isinstance(_sc_stamp, str) and len(_sc_stamp) == 10:
+                try:
+                    _parsed = datetime.strptime(_sc_stamp, "%Y-%m-%d").date().isoformat()
+                    if _parsed == _sc_stamp:
+                        _sc_date = _parsed
+                except ValueError:
+                    pass
             # Build ETF-ticker -> (label_en, label_zh) from the sectors list
             _sc_by_etf: dict[str, tuple[str, str]] = {}
             for _sec in (_sc_doc.get("sectors") or []):
@@ -4598,6 +4719,11 @@ def _attach_board_display_chips(site: Path, doc: "dict | None") -> "dict | None"
                     _lbl_en, _lbl_zh = _sc_by_etf[_etf]
                     _card["sector_stance"] = _lbl_en
                     _card["sector_stance_zh"] = _lbl_zh
+                    _card["sector_stance_source"] = {
+                        "schema": "sector_stance_source/v1",
+                        "etf": _etf,
+                        "snapshot_as_of": _sc_date,
+                    }
         except Exception as _rlt6e:  # noqa: BLE001 — additive, never fatal
             log.warning("RLT-R6 sector-stance enrich failed (%s)", _rlt6e)
     # OEU M-PRO: display-tier options context → up to two extra ⚠ popover rows per
@@ -4687,6 +4813,17 @@ def _attach_board_display_chips(site: Path, doc: "dict | None") -> "dict | None"
                   "— no receipt rendered", flush=True)
     except Exception as _bse:  # noqa: BLE001 — additive, never fatal
         log.warning("W-L1 board state attach failed (%s)", _bse)
+    # Per-candidate Added / 入榜 date: current continuous published-board membership
+    # start (engine/prophet_board_since.py). Display-only; reads the existing
+    # data/us_board_ledger/snapshots.jsonl fossil (memoized per-process, so the
+    # post-build_library re-render below does not re-parse the 33MB file). Threaded
+    # through this ONE shared attach so both call sites (the first-pass render and
+    # the post-build_library re-render) can never silently diverge.
+    try:
+        from engine.prophet_board_since import stamp_us_board_since_fail_open
+        doc = stamp_us_board_since_fail_open(doc, data_dir=config.data_dir(), log=log)
+    except Exception as _bse:  # noqa: BLE001 — additive, never fatal
+        log.warning("us board_since stamp failed (%s)", _bse)
     return doc
 
 
@@ -4757,7 +4894,1414 @@ def _us_prophet_refusals(site: Path, doc: "dict | None") -> "dict | None":
         return None
 
 
+# ── US Prophet board tier gate (docs/TIER_PREVIEW_PATTERN.md) ──────────────────
+# us_stocks.html server-rendered ALL of us_standouts.buy into #us-stocktable-data
+# and the .nbgrid card grid while templates/tier_preview.js only capped rows
+# CLIENT-SIDE — the whole ranked board was one view-source away from an anonymous
+# visitor. The fix follows the ratified split: the shell ships only
+# `preview_rows` (system order preserved, never resorted — this board is a single
+# confluence-ranked feed like the ETF board, not a newest-first queue), and the
+# withheld remainder renders into site/premiumdata/us_stocks.json from the SAME
+# card partial (templates/_us_board_cards.html.j2) the shell includes, so the two
+# can never drift apart. Reference: _etf_gated/_write_etf_payload above.
+
+US_PAYLOAD_DIR = "premiumdata"
+US_PAYLOAD_NAME = "us_stocks.json"
+US_PAYLOAD_URL = f"/{US_PAYLOAD_DIR}/{US_PAYLOAD_NAME}"
+
+# The two heading vocabularies templates/dashboard.html.j2's `_render_list`
+# construction can group by — priority `stage` (G0.1, the artifact's newer
+# shape) or legacy `lane` (an older artifact takes this path when no row
+# carries `stage`). See dashboard.html.j2:15966-15980 (stage) and
+# :15861-15880 (lane). Only one path is active per build, but stage_counts
+# below computes both so the gate dict stays correct either way.
+_US_STAGE_KEYS = ["live", "setting_up", "ran", "basing", "blocked"]
+_US_LANE_KEYS = ["bottoming", "continuation", "trend", "recovery", "watch"]
+
+# The exact lane -> flat "stage" mapping #us-stocktable-data emits
+# (dashboard.html.j2:15797-15823) — NOT the same vocabulary as row.get('stage')
+# above (that is the priority-engine bucket; this is the JS table's own
+# ENTRY/RIPENING/RAN_LATE grouping). Kept identical so a payload row merges into
+# stocktable.js with no JS change.
+_US_LANE_TO_TABLE_STAGE = {
+    "bottoming": "ENTRY", "continuation": "ENTRY", "trend": "ENTRY",
+    "recovery": "RIPENING", "watch": "RAN_LATE",
+}
+
+
+def _us_board_gate_cfg() -> dict:
+    """The US board's tier-gate switch, from config.yml (`us_board_gate`).
+    A config read must NEVER fail the render — mirrors `_etf_gated()`."""
+    try:
+        cfg = config.load().get("us_board_gate") or {}
+        return {"gated": bool(cfg.get("gated", False)),
+                "preview_rows": int(cfg.get("preview_rows") or 3),
+                "today_preview_rows": int(cfg.get("today_preview_rows") or 6),
+                "panels": bool(cfg.get("panels", False)),
+                "panel_preview_rows": int(cfg.get("panel_preview_rows")
+                                          or US_PANEL_PREVIEW_DEFAULT)}
+    except Exception:  # noqa: BLE001
+        return {"gated": False, "preview_rows": 3, "today_preview_rows": 6,
+                "panels": False, "panel_preview_rows": US_PANEL_PREVIEW_DEFAULT}
+
+
+def _us_board_stage_counts(full_buy: list[dict]) -> dict:
+    """TRUE counts over the FULL board (never the sliced preview), keyed exactly
+    the way the template groups headings on both paths it can take. Used so a
+    gated shell's heading counts ("Live now · 12") stay honest even though only
+    the preview slice of cards renders under them (docs/TIER_PREVIEW_PATTERN.md:
+    "state and totals are free, names are paid")."""
+    counts = {sk: 0 for sk in _US_STAGE_KEYS}
+    counts.update({lk: 0 for lk in _US_LANE_KEYS})
+    for r in full_buy:
+        sk = r.get("stage")
+        if sk in counts:
+            counts[sk] += 1
+        lk = r.get("lane")
+        if lk in counts:
+            counts[lk] += 1
+    return counts
+
+
+def _us_board_group_items(rows: list[dict], sg_any: bool, stage_counts: dict) -> list[dict]:
+    """Group `rows` into the same heading-sentinel + card list shape
+    `_render_list.items` builds in dashboard.html.j2 (the priority `stage_hd`
+    path at :15966-15980 when `sg_any`, else the legacy `lane` path at
+    :15837-15880), so _us_board_cards.html.j2 renders identically whichever side
+    of the wall it came from. Heading `count` is the TRUE full-board count
+    (`stage_counts`), never `len(group)` here — this only ever groups the LOCKED
+    remainder, so a raw length would undercount every bucket."""
+    items: list[dict] = []
+    if sg_any:
+        for sk in _US_STAGE_KEYS:
+            grp = [r for r in rows if r.get("stage") == sk]
+            if grp:
+                items.append({"_heading": True, "stage_hd": sk, "count": stage_counts.get(sk, len(grp))})
+                items.extend(grp)
+        for r in rows:
+            if r.get("stage") not in _US_STAGE_KEYS:
+                items.append(r)
+    else:
+        for r in rows:
+            if not r.get("lane"):
+                items.append(r)
+        for lk in _US_LANE_KEYS:
+            grp = [r for r in rows if r.get("lane") == lk]
+            if grp:
+                items.append({"_heading": True, "lane": lk, "count": stage_counts.get(lk, len(grp))})
+                items.extend(grp)
+        for r in rows:
+            if r.get("lane") and r.get("lane") not in _US_LANE_KEYS:
+                items.append(r)
+    return items
+
+
+# ── PROPHET BOARD STANCE PROJECTION (P-MP1-SHELL §8a, MP-1-prophet-board.md) ──────
+# b1 ruling (verdict.yml rulings.b1_actionability_axis, routed to Sol for veto,
+# effective unless countermanded): display-tier stance sources `entry_status` when
+# present on a plan row, else `board_read.fields.status` (ticker-scoped, the SAME
+# twelve/fifteen-value vocabulary, the SAME us_stock_library producer the board
+# already partitions), projected through the SAME Q7 bucket table
+# engine/us_board_rank.py ships (_LIVE_/_SETTING_UP_/_RAN_/_BLOCKED_STATUSES) —
+# never a second mapping (DESIGN_NOTES.md Q7, R4.2, table verified against the
+# imported constants below). "No read yet" (BLOCKED_DATA, Q7b) renders only when
+# BOTH sources are absent for a row — neither source absent alone is sufficient.
+# DNR:KILL-PROPHET-POP-MERGE confronted: this changes no population, no blend, no
+# rank, no gate — only the display verb's source field, inside the same library
+# the board already consumes.
+_US_STANCE_VERB_BY_STATUS: dict[str, str] = {}
+for _s in _US_BLOCKED_STATUSES:
+    _US_STANCE_VERB_BY_STATUS[_s] = "avoid"
+for _s in _US_RAN_STATUSES:
+    _US_STANCE_VERB_BY_STATUS[_s] = "hold"
+for _s in _US_SETTING_UP_STATUSES:
+    _US_STANCE_VERB_BY_STATUS[_s] = "wait"
+# _LIVE_STATUSES splits at the verb layer (Q7 table): buy_now/partial -> Buy,
+# buy_soon -> Near. Asserted against the imported set so a future engine-side
+# addition to _LIVE_STATUSES fails loudly here instead of silently defaulting.
+assert _US_LIVE_STATUSES == frozenset({"buy_now", "partial", "buy_soon"}), (
+    "engine.us_board_rank._LIVE_STATUSES changed shape — the Q7 Buy/Near split "
+    "below (DESIGN_NOTES.md Q7) needs a matching update, not a silent default."
+)
+_US_STANCE_VERB_BY_STATUS["buy_now"] = "buy"
+_US_STANCE_VERB_BY_STATUS["partial"] = "buy"
+_US_STANCE_VERB_BY_STATUS["buy_soon"] = "near"
+# wait_pullback / later / await carry an _ENTRY_VALUE but sit in no engine bucket
+# (DESIGN_NOTES.md Q7); stage_for() routes wait_pullback to setting_up, so all
+# three join Wait here rather than falling through to an undocumented default.
+for _s in ("wait_pullback", "later", "await"):
+    _US_STANCE_VERB_BY_STATUS.setdefault(_s, "wait")
+
+
+def us_stance_projection(entry_status: "str | None", board_read: "dict | None") -> dict:
+    """b1 ruling projection for one plan row.
+
+    Returns ``{"verb": <one of buy/near/wait/hold/avoid, or None>,
+    "stance_basis": "entry_status" | "board_read" | "no_read"}``.
+
+    `verb` is None only when `stance_basis == "no_read"` — the caller renders
+    the disclosed no-read state (Q7b), never a guessed "wait". An unrecognized
+    but truthy status value fails soft to "wait" (matching the pre-existing
+    `_us_board_cards.html.j2` legacy verb fallback for an unbucketed but
+    present status), never raises and never silently drops the row.
+    """
+    if entry_status:
+        return {"verb": _US_STANCE_VERB_BY_STATUS.get(entry_status, "wait"),
+                "stance_basis": "entry_status"}
+    br_status = None
+    if board_read:
+        status_field = (board_read.get("fields") or {}).get("status") or {}
+        if status_field.get("state") == "available":
+            br_status = status_field.get("value")
+    if br_status:
+        return {"verb": _US_STANCE_VERB_BY_STATUS.get(br_status, "wait"),
+                "stance_basis": "board_read"}
+    return {"verb": None, "stance_basis": "no_read"}
+
+
+def _us_today_featured_preview(
+    us_standouts: "dict | None", preview_rows: int
+) -> list[dict]:
+    """Bounded Today shelf from the FULL owner-ordered Featured population.
+
+    The Screener gate intentionally exposes only a prefix of buy. Today used
+    to filter that already-sliced prefix, so a healthy 12-name Featured shelf
+    could collapse to two visible cards merely because rank #3 was not Featured.
+    This projection reads the full board before the split, preserves owner order,
+    and changes neither membership nor timing/entry semantics.
+    """
+    rows = (us_standouts or {}).get("buy") or []
+    limit = max(0, int(preview_rows))
+    return [row for row in rows if row.get("featured")][:limit]
+
+
+def _us_today_source_binding(
+    raw_sha: "str | None", owner_doc: "dict | None"
+) -> "dict | None":
+    """Exact Today provenance pair from two facts this build already owns.
+
+    `raw_sha` is the frozen lowercase 64-hex sha256 of the raw
+    us_standouts.json bytes (computed once at read time) and `owner_doc` is
+    the ORIGINAL json.loads of those same bytes, captured BEFORE
+    _attach_board_display_chips enriches the board. Valid input returns
+    {"source_sha256": "sha256:" + raw_sha, "pair_id": <emit.pair_id>};
+    anything malformed or unavailable returns None. No re-hash, no re-read,
+    no normalization: uppercase or padded values are refused, never repaired.
+    """
+    if (not isinstance(raw_sha, str) or len(raw_sha) != 64
+            or any(c not in "0123456789abcdef" for c in raw_sha)):
+        return None
+    if not isinstance(owner_doc, dict):
+        return None
+    emit = owner_doc.get("emit")
+    if not isinstance(emit, dict):
+        return None
+    pair_id = emit.get("pair_id")
+    if (not isinstance(pair_id, str) or len(pair_id) != 32
+            or any(c not in "0123456789abcdef" for c in pair_id)):
+        return None
+    return {"source_sha256": "sha256:" + raw_sha, "pair_id": pair_id}
+
+
+def _us_today_native_binding(source_bytes: "bytes | None") -> "dict | None":
+    """Genuine three-field Today binding via the ORIGINAL owner callable.
+
+    Consumes the EXACT finalized raw us_standouts.json bytes through
+    scripts.build_stock_library.today_selection_source_binding, which validates
+    the full buy[] roster and returns schema
+    prophet.today_selection_source_binding/v1 carrying source_sha256, pair_id,
+    selection_receipt and ordered_rows (the original zero-based buy[] index and
+    that row's canonical receipt each). Invoked here BEFORE any display
+    attachment or tier splitting, on both the first and the post-library fresh
+    read. Any failure — owner runtime absent, malformed roster, unusable
+    emit/session — is a typed unavailable (logged, never raised): the board
+    renders exactly as before and no binding, receipt or index is invented.
+    """
+    if not isinstance(source_bytes, (bytes, bytearray)) or not source_bytes:
+        return None
+    try:
+        from scripts.build_stock_library import today_selection_source_binding
+    except Exception as exc:  # noqa: BLE001 — an absent owner runtime is unavailable
+        log.warning("Today native source binding unavailable (%s)", type(exc).__name__)
+        return None
+    try:
+        return today_selection_source_binding(bytes(source_bytes))
+    except Exception as exc:  # noqa: BLE001 — invalid source keeps ordinary rendering
+        log.warning("Today native source binding unavailable (%s)", type(exc).__name__)
+        return None
+
+
+def _us_today_bind_rows(
+    us_standouts: "dict | None", binding: "dict | None"
+) -> "dict | None":
+    """Carry owner-issued selection metadata into COPIED buy presentation rows.
+
+    Positional only, straight from the binding's own ordered_rows: each copied
+    row gains `_today_selection_index`/`_today_row_receipt` from the SAME
+    original buy[] position. The source dict and its row dicts are never
+    mutated, tickers are never searched or joined, and no index is inferred
+    from sort order. Anything short of a full 1:1 positional match returns the
+    board unchanged, so a partially bound shelf can never half-hydrate.
+    """
+    if not binding or not isinstance(us_standouts, dict):
+        return us_standouts
+    rows = us_standouts.get("buy")
+    ordered = binding.get("ordered_rows")
+    if not isinstance(rows, list) or not isinstance(ordered, list):
+        return us_standouts
+    if len(ordered) != len(rows):
+        return us_standouts
+    bound_rows = []
+    for position, row in enumerate(rows):
+        meta = ordered[position]
+        receipt = meta.get("row_receipt") if isinstance(meta, dict) else None
+        if (not isinstance(row, dict) or not isinstance(receipt, str)
+                or meta.get("selection_index") != position):
+            return us_standouts
+        bound_rows.append({**row, "_today_selection_index": position,
+                           "_today_row_receipt": receipt})
+    bound = dict(us_standouts)
+    bound["buy"] = bound_rows
+    return bound
+
+
+def _us_today_rows_meta(rows: "list[dict] | None") -> "list[dict]":
+    """Entitled Today indices/receipts for the protected payload, render order.
+
+    Positional carry from the bound COPIED rows only (never re-derived from a
+    ticker, a value or a sort); one missing/malformed field empties the whole
+    list, so an incompletely bound shelf ships no hydratable metadata.
+    """
+    meta = []
+    for row in rows or []:
+        index = row.get("_today_selection_index") if isinstance(row, dict) else None
+        receipt = row.get("_today_row_receipt") if isinstance(row, dict) else None
+        if (not isinstance(index, int) or isinstance(index, bool) or index < 0
+                or not isinstance(receipt, str)):
+            return []
+        meta.append({"selection_index": index, "row_receipt": receipt})
+    return meta
+
+
+def _us_today_native_emit_for(binding: "dict | None", today_nonempty: bool) -> "str | None":
+    """Protected payload URL when the ungated Today shelf is genuinely bound.
+
+    Genuine means the owner-issued three-field binding (selection_receipt
+    present alongside both legacy pins); the loader may then ride the SAME
+    trampoline and payload URL even with no tier gate on the page. Anything
+    less — legacy two-field pair, explicit None, empty shelf — emits no native
+    loader fallback.
+    """
+    if not today_nonempty or not isinstance(binding, dict):
+        return None
+    receipt = binding.get("selection_receipt")
+    if (not isinstance(receipt, str)
+            or not isinstance(binding.get("source_sha256"), str)
+            or not isinstance(binding.get("pair_id"), str)):
+        return None
+    return US_PAYLOAD_URL
+
+
+def _us_names(rows: "list | None", key: str = "ticker") -> set:
+    """The names on one US list."""
+    return {r.get(key) for r in rows or [] if r.get(key)}
+
+
+def _us_preview_split(rows: list, preview: int, withheld=frozenset(),
+                      key: str = "ticker") -> "tuple[list, list]":
+    """(shell_rows, rest) in row order. The shell takes the first `preview` rows whose
+    name is not withheld, so a name locked on another list stays out of the free shell.
+    Every other row goes to rest. With nothing withheld this is a plain prefix slice."""
+    shell, rest = [], []
+    for row in rows:
+        if len(shell) < preview and row.get(key) not in withheld:
+            shell.append(row)
+        else:
+            rest.append(row)
+    return shell, rest
+
+
+def _us_panel_lists(vm: dict) -> "tuple[list, list, list]":
+    """The rows of the setups residual, the leaders strip and the recently fired list,
+    in display order and at their display caps."""
+    su = vm.get("us_standouts") or {}
+    carded = _us_names(su.get("buy"))
+    eb = set(((su.get("earnings_blackout_note") or {}).get("tickers")) or [])
+    resid = [r for r in ((vm.get("top_setups") or {}).get("buy") or [])
+             if r.get("ticker") and r["ticker"] not in eb and r["ticker"] not in carded][:_US_SETUPS_CAP]
+    ldrs = list(su.get("leaders") or [])[:_US_LEADERS_CAP]
+    ran = list(su.get("ran") or []) if any(r.get("stage") for r in (su.get("buy") or [])) else []
+    return resid, ldrs, ran
+
+
+def _us_withheld_names(vm: dict, panel_preview: int) -> set:
+    """Every name the free US shell may not print, on any surface.
+
+    The board and the panels split separately and their populations overlap, so a name
+    locked on one list could print on another. Which names are on the paid list is part
+    of what it sells (ruling R-14). The set is the board's locked rows and each panel's
+    rows past its preview. A name on the free board preview is already public, so it
+    stays printable.
+
+    Two lists do not count. The candidate pool and the leader observations hold names
+    the board prints for free. The plan book holds most of the covered universe, closed
+    records included (686 names on 804 plans on 2026-10-30), so being in it says nothing,
+    and these surfaces print no plan field. The pool row does print one: see
+    `_us_open_plan_locked_names`.
+    """
+    cfg = _us_board_gate_cfg()
+    shell_su, _gate, board_locked = _split_us_board(
+        vm.get("us_standouts"), cfg["preview_rows"], gated=cfg["gated"])
+    names = _us_names(board_locked)
+    if cfg["panels"]:
+        for rows in _us_panel_lists(vm):
+            names |= _us_names(rows[panel_preview:])
+    return names - _us_names((shell_su or {}).get("buy"))
+
+
+def _us_open_plan_locked_names(vm: dict, withheld: set) -> set:
+    """Names with an open plan past the plan preview. A pool row prints its name's open
+    plans (id, status, dates), so a free pool row must not hold one of these."""
+    cfg = _us_board_gate_cfg()
+    _shell, _life_gate, plans_locked = _split_us_prophet_board(
+        vm.get("us_prophet_book"), cfg["preview_rows"], gated=_us_life_gate_cfg(), withheld=withheld)
+    return _us_names([p for p in plans_locked if not p.get("closed")], "asset")
+
+
+def _split_us_board(us_standouts: "dict | None", preview_rows: int, *, gated: bool = True):
+    """Tier-preview split for the US Prophet board.
+
+    `gated` is the caller-supplied switch (read once via _us_board_gate_cfg() in
+    main() and threaded through) rather than re-read from config.yml here — this
+    keeps the split itself a pure function of its arguments, so a test can
+    exercise both branches without monkeypatching config.load().
+
+    Returns (shell_su, gate, locked_rows):
+      shell_su    — a SHALLOW COPY of us_standouts with `buy` sliced to the first
+                    `preview_rows` entries (system order preserved). NEVER the
+                    original object/dict — vm["us_standouts"] is shared with
+                    other page renders (macro.html).
+      gate        — {tier, payload, preview, locked, total, stage_counts} when
+                    gated and there is a board to split, else None.
+      locked_rows — the withheld remainder of `buy`.
+    """
+    if not gated or not us_standouts or not us_standouts.get("buy"):
+        return us_standouts, None, []
+    full_buy = us_standouts["buy"]
+    preview_n = max(0, preview_rows)
+    preview = full_buy[:preview_n]
+    locked = full_buy[preview_n:]
+    if not locked:
+        # Nothing withheld (board smaller than the preview cap) — ship it whole,
+        # same as the ungated path, rather than baking a wall over nothing.
+        return us_standouts, None, []
+    shell_su = dict(us_standouts)
+    shell_su["buy"] = preview
+    gate = {
+        "tier": "essential",  # config/site_access.yml premium.default_tier
+        "payload": US_PAYLOAD_URL,
+        "preview": len(preview),
+        "locked": len(locked),
+        "total": len(full_buy),
+        "stage_counts": _us_board_stage_counts(full_buy),
+    }
+    return shell_su, gate, locked
+
+
+# ── PROPHET BOARD LIFECYCLE GRID tier gate (P-MP1-SHELL central act, §8b) ─────────
+# _split_us_board above splits the CANDIDATE screener array (us_standouts.buy);
+# this is the SAME re-plumb, never a re-draw (Amendment 2 §8b ruling), applied to
+# the PLAN BOOK array the migrated Setups grid now renders from
+# (site/prophet/index.json.plans, loaded fail-soft into vm["us_prophet_book"]).
+# Split points and preview-row COUNT are identical to the candidate board's own
+# gate config (_us_board_gate_cfg) — the observable boundary (anon 1 / Free 3 /
+# paid full, by the SAME client-side tier_preview.js treatment) is unchanged in
+# effect; only which array gets sliced moves.
+def _split_us_prophet_board(book: "dict | None", preview_rows: int, *, gated: bool = True,
+                            withheld=frozenset()):
+    """Tier-preview split for the US Prophet lifecycle grid (plan book).
+
+    Returns (shell_book, life_gate, locked_plans):
+      shell_book  — a SHALLOW COPY of `book` with `plans` sliced to the first
+                    `preview_rows` entries (published sort order preserved,
+                    never re-sorted here). NEVER the original object — the
+                    caller's `vm["us_prophet_book"]` is not mutated.
+      life_gate   — {tier, payload, preview, locked, total} when gated and
+                    there is a board to split, else None. Deliberately carries
+                    NO lifecycle counts of its own: the ladder always quotes
+                    `book['lifecycle_counts']` / `lifecycle_live_total`
+                    / `lifecycle_grand_total` off the FULL (unsliced) book —
+                    those are published totals, free at every tier
+                    (docs/TIER_PREVIEW_PATTERN.md: "state and totals are free,
+                    names are paid") — so gating never touches them.
+      locked_plans — the withheld remainder of `plans`.
+    """
+    if not gated or not book or not book.get("plans"):
+        return book, None, []
+    full_plans = book["plans"]
+    # `withheld`: a plan whose name is locked on the candidate board stays out of the
+    # free preview. Counts are unchanged; hydration appends it after the preview cards.
+    preview, locked = _us_preview_split(full_plans, max(0, preview_rows), withheld, key="asset")
+    if not locked:
+        # Board smaller than the preview cap — ship it whole (same as ungated).
+        return book, None, []
+    shell_book = dict(book)
+    shell_book["plans"] = preview
+    life_gate = {
+        "tier": "essential",  # config/site_access.yml premium.default_tier
+        "payload": US_PAYLOAD_URL,
+        "preview": len(preview),
+        "locked": len(locked),
+        "total": len(full_plans),
+    }
+    return shell_book, life_gate, locked
+
+
+
+def _split_us_leader_observations(
+    projection: "dict | None", preview_rows: int, *, gated: bool = True,
+    withheld=frozenset(),
+):
+    """Server-side preview split for the display-only leader observation shelf.
+
+    Source status, provenance and aggregate counts remain on the shell; only ticker rows
+    beyond the configured preview move into the existing protected US payload. The input
+    projection is never mutated.
+    """
+    if not gated or not projection or not projection.get("rows"):
+        return projection, None, []
+    rows = list(projection.get("rows") or [])
+    preview, locked = _us_preview_split(rows, max(0, preview_rows), withheld)
+    if not locked:
+        return projection, None, []
+    shell = dict(projection)
+    shell["rows"] = preview
+    gate = {
+        "preview": len(preview),
+        "locked": len(locked),
+        "total": len(rows),
+        "tier": "essential",
+        "payload": US_PAYLOAD_URL,
+    }
+    return shell, gate, locked
+
+def _us_life_gate_cfg() -> bool:
+    """P-MP1-SHELL repair round, finding S1: fail-CLOSED sibling of
+    _us_board_gate_cfg(), for the PLAN-BOOK split only.
+
+    _us_board_gate_cfg() (above) is deliberately fail-OPEN (`gated: False` on
+    a config-load exception or on the `gated` key being absent) — modelled on
+    _etf_gated()'s "a config read must never fail the render" law, and that
+    default is left untouched here (candidate-board behavior, §8b out of this
+    finding's scope). But the SAME fail-open default applied to the plan
+    book's own split (_split_us_prophet_board) silently bakes the full plan
+    book — up to 262 rows, each carrying an entry-zone/price target — into
+    anonymous-public us_stocks.html on a config hiccup: a revenue and trust
+    surface (§8b), not a display nicety. This reader is used ONLY for that
+    split's `gated` argument; `preview_rows` still comes from
+    _us_board_gate_cfg() (§8b: "preview-row COUNT are identical to the
+    candidate board's own gate config" — unchanged by this finding).
+
+    Absence of the `gated` key, or a config-load exception, both default to
+    True (gated) here — the opposite of _us_board_gate_cfg()'s default.
+    """
+    try:
+        cfg = config.load().get("us_board_gate") or {}
+        return bool(cfg.get("gated", True))
+    except Exception:  # noqa: BLE001 — a config read must never fail the render
+        return True
+
+
+def _us_candidate_no_plan_sample(full_buy: "list[dict]", plan_tickers: "set[str]",
+                                  sample_size: int = 3, withheld=frozenset()) -> dict:
+    """P-MP1-SHELL repair round, finding B4: the Candidates shelf's "carries no
+    plan yet" sample, computed against the FULL (pre-slice) candidate board —
+    never the gate-sliced preview, which on a gated build (preview_rows=3) can
+    never reach `sample_size` and forced the template's old fallback to sample
+    ANY board row regardless of plan membership (reproduced: GPCR/BWA/FTI
+    rendered as both Setups and Candidates under a "carries no plan yet"
+    caption).
+
+    Round-2 fix, finding R2 (§8b-adjacent — a real tier-boundary leak, not a
+    display nicety): `sample_size` MUST be called with the actual preview cap
+    (`gate.preview`, i.e. `_us_gate_cfg["preview_rows"]` — 3 in production),
+    never a larger constant. The round-1 fix computed `all_no_plan` honestly
+    but then baked up to 6 real candidate rows (name/price) into the
+    anonymous-public document relying on tier_preview.js's CLIENT-SIDE cap to
+    hide the extra ones — exactly what config/site_access.yml's own law
+    forbids ("a client-side hide is a marketing wall, not a gate"; view-source
+    still reads them). Pre-migration and the round-1-repaired build both baked
+    3. The default here matches that; the caller still passes the real
+    preview_rows explicitly so a config change is never silently stale.
+
+    Returns {'sample': [...], 'all_no_plan': bool}: `sample` is up to
+    `sample_size` rows (published order preserved, never re-sorted) — the
+    ONLY rows threaded to the template, so nothing beyond the tier boundary
+    ever reaches the rendered HTML. `all_no_plan` is computed over the FULL
+    no-plan POOL (never just the truncated sample) so the honesty check does
+    not itself depend on the leak-safe truncation: a pool that reaches
+    `sample_size` is genuinely honest even though the pool itself may hold
+    many more no-plan names than are ever shown.
+    """
+    full_buy = [r for r in full_buy if r.get("ticker") not in withheld]
+    pool = [r for r in full_buy if r.get("ticker") and r.get("ticker") not in plan_tickers]
+    if len(pool) >= sample_size:
+        return {"sample": pool[:sample_size], "all_no_plan": True}
+    sample = [r for r in full_buy if r.get("ticker")][:sample_size]
+    all_no_plan = all(r.get("ticker") not in plan_tickers for r in sample)
+    return {"sample": sample, "all_no_plan": all_no_plan}
+
+
+def _us_life_visible_preview_count(shell_book: "dict | None") -> int:
+    """P-MP1-SHELL repair round, finding S8: the plan-book preview slice is
+    taken BEFORE the default-hidden `resolved` lifecycle filter (CSS hides
+    `[data-life="resolved"]` rows outside the Resolved filter — ruling §6
+    two-total law), so a night where a resolved plan sorts into the top
+    `preview_rows` renders FEWER visible cards than `life_gate.preview`
+    claims. Counts only the non-resolved rows already present in the
+    (already-sliced) shell book — the honest "first N" the tier wall should
+    quote instead of the raw slice count."""
+    if not shell_book:
+        return 0
+    return sum(1 for p in (shell_book.get("plans") or [])
+               if (p.get("lifecycle_state") or "") != "resolved")
+
+
+def _us_life_repair_context(vm: dict, us_life_shell: "dict | None",
+                             life_gate: "dict | None" = None,
+                             preview_rows: int = 3) -> dict:
+    """P-MP1-SHELL repair round: the B4/S2/S8/R2/R4 context pieces threaded
+    into the stocks-mode dashboard.html.j2 render call, computed once so the
+    primary render and the one-build-lag re-render in main() stay identical
+    and never drift. Reads only `vm["us_standouts"]`/`vm["us_prophet_book"]`,
+    which are NEVER mutated by _split_us_board/_split_us_prophet_board (both
+    return a shallow-copied shell), so `_full_buy`/plan tickers here are
+    always the TRUE full board regardless of gating — never re-derives or
+    touches the §8b split functions themselves.
+
+    `preview_rows` MUST be the caller's real gate preview-row count
+    (`_us_gate_cfg["preview_rows"]`) — round-2 finding R2 threads it into
+    `_us_candidate_no_plan_sample` so the Candidates shelf never bakes more
+    real rows into the document than the tier boundary allows (see that
+    function's docstring). `life_gate` (round-2 finding R4) is the ALREADY
+    gate-sliced dict from `_split_us_prophet_board` — needed only to keep
+    the wall's "N more" figure arithmetically honest against the S8-fixed
+    visible-preview count; never re-derives its `total`/`preview`/`locked`.
+
+    Returns the vm keys:
+      us_candidate_map          — S2: ticker -> full us_standouts.buy row,
+                                 the SAME map _write_us_payload's payload
+                                 builder already uses, so a plan card's
+                                 ticker not in the (possibly gate-sliced)
+                                 preview candidate rows still gets its
+                                 name/sector/price/spark.
+      cand_no_plan               — B4/R2: {'sample', 'all_no_plan'}, see
+                                 _us_candidate_no_plan_sample(); `sample` is
+                                 capped at `preview_rows`.
+      life_gate_visible_preview  — S8: see _us_life_visible_preview_count().
+      life_gate_visible_locked   — R4: `life_gate['total'] - visible_preview`
+                                 when `life_gate` is present, else None — the
+                                 complement of what the wall actually claims
+                                 to show, so `visible_preview + this ==
+                                 life_gate['total']` always holds even on a
+                                 night a resolved plan sorts into the preview
+                                 slice (S8). `life_gate['locked']` itself is
+                                 untouched (it is `_split_us_prophet_board`'s
+                                 own, correct, RAW-slice arithmetic — the
+                                 wall's DISPLAYED "N more" is what needed the
+                                 honest complement, not the split's return).
+    """
+    _full_buy = (vm.get("us_standouts") or {}).get("buy") or []
+    _full_plan_tickers = {p.get("asset") for p in ((vm.get("us_prophet_book") or {}).get("plans") or [])
+                           if p.get("asset")}
+    _visible_preview = _us_life_visible_preview_count(us_life_shell)
+    return {
+        "us_candidate_map": {r.get("ticker"): r for r in _full_buy if r.get("ticker")},
+        "cand_no_plan": _us_candidate_no_plan_sample(_full_buy, _full_plan_tickers,
+                                                      sample_size=preview_rows),
+        "life_gate_visible_preview": _visible_preview,
+        "life_gate_visible_locked": ((life_gate["total"] - _visible_preview)
+                                      if life_gate else None),
+    }
+
+
+def _fmt_episode_open_date(raw: "str | None") -> "tuple[str | None, str | None]":
+    """P-MP1-SHELL repair round, finding S6: format an ISO-ish date string as
+    the MP-1 §10-ratified episode-chip pair ('Aug 5', '8月5日') — never the
+    raw ISO string the template used to concatenate verbatim. Returns
+    (None, None) when `raw` is absent or unparseable, so the caller drops the
+    date clause entirely (fail-soft) rather than print a malformed fragment.
+    """
+    if not raw:
+        return None, None
+    try:
+        d = datetime.fromisoformat(str(raw)[:10])
+    except Exception:  # noqa: BLE001 — never fail the render over a date string
+        return None, None
+    return f"{d.strftime('%b')} {d.day}", f"{d.month}月{d.day}日"
+
+
+def _us_prophet_episode_map(plans: "list[dict]") -> dict:
+    """Per-plan {id: {'ep', 'eps', 'newer'}} for the multi-episode chip (MP-1
+    §10 "Episode chip"), computed over the FULL (unsliced) plan book so a
+    ticker's episode numbers are the same whether a given row falls in the free
+    preview or behind the wall. Mirrors mockups/refs/institutionalize/
+    us_stocks/tools/gen_fixture.py's episode/newer-link derivation exactly (the
+    mockup's own real-payload projection), never re-invented here.
+
+    `newer` is the id of the newest OPEN row on a ticker with >1 plan, attached
+    only to a CLOSED row of that ticker (P-B2 — the affordance points forward
+    from a resolved episode to the live one, never sideways or backward).
+    """
+    by_ticker: dict = {}
+    for r in plans:
+        by_ticker.setdefault(r.get("asset"), []).append(r)
+
+    def _opened(r: dict) -> str:
+        return r.get("entry_date") or r.get("recorded_at") or r.get("signal_date") or ""
+
+    episode_of: dict = {}
+    multi = set()
+    for tk, rows in by_ticker.items():
+        if len(rows) < 2:
+            continue
+        multi.add(tk)
+        for i, r in enumerate(sorted(rows, key=lambda x: (_opened(x), x.get("id") or "")), start=1):
+            episode_of[r.get("id")] = i
+
+    newest_open: dict = {}
+    for tk in multi:
+        opens = [r for r in by_ticker[tk] if r.get("closed") is not True]
+        if opens:
+            newest_open[tk] = max(opens, key=lambda x: (_opened(x), x.get("id") or "")).get("id")
+
+    out: dict = {}
+    for r in plans:
+        pid = r.get("id")
+        tk = r.get("asset")
+        if tk not in multi:
+            continue
+        # S6 (P-MP1-SHELL repair round): the MP-1 §10-ratified chip text is
+        # "Episode N · opened Aug 5" — a formatted date, never the raw ISO
+        # string, and "of N" is dropped. Computed once here (server-side,
+        # over the same `_opened(r)` value the episode ordering already
+        # uses) so the template never re-derives or re-formats a date.
+        _dopen_en, _dopen_zh = _fmt_episode_open_date(_opened(r))
+        out[pid] = {
+            "ep": episode_of.get(pid),
+            "eps": len(by_ticker[tk]),
+            "newer": (newest_open.get(tk)
+                      if (r.get("closed") is True and newest_open.get(tk) != pid) else None),
+            "dopen_en": _dopen_en,
+            "dopen_zh": _dopen_zh,
+        }
+    return out
+
+
+def _us_board_row_flat(n: dict) -> dict:
+    """Same flat key schema #us-stocktable-data emits (dashboard.html.j2:
+    15797-15823, including the lane->stage mapping dict), so a payload row
+    merges into stocktable.js with no JS change."""
+    conviction = n.get("conviction") or {}
+    signal = n.get("signal") or {}
+    entry_signal = n.get("entry_signal") or {}
+    return {
+        "ticker": n.get("ticker"),
+        "name": n.get("name"),
+        "sector": n.get("sector") or "",
+        "lane": n.get("lane") or "",
+        "stage": _US_LANE_TO_TABLE_STAGE.get(n.get("lane") or "watch", "ENTRY"),
+        "price": n.get("price"),
+        "conviction_score": conviction.get("score"),
+        "alpha": n.get("alpha"),
+        "off_high": n.get("off_high"),
+        "factor_z": n.get("factor_z"),
+        "sue_z": n.get("sue_z"),
+        "insider_buyers": n.get("insider_buyers"),
+        "sig_tier": signal.get("tier_cascade") or "",
+        "entry_status": entry_signal.get("status") or "",
+        "days_since_signal": n.get("days_since_signal"),
+        "dir": n.get("dir") or "",
+    }
+
+
+def _read_us_prophet_book(path: Path) -> "tuple[dict | None, bool]":
+    """Admit the published book before its stock-route consumers use it.
+
+    A missing file retains the existing loading state. An unreadable collection
+    uses the existing error state, rather than masquerading as an empty book.
+    Valid books pass through unchanged, including published order and totals.
+    """
+    if not path.exists():
+        return None, False
+    try:
+        book = json.loads(path.read_text())
+        if not isinstance(book, dict):
+            raise ValueError("plan book must be an object")
+        counts = book.get("lifecycle_counts")
+        if counts is not None and not isinstance(counts, dict):
+            raise ValueError("lifecycle counts must be an object when provided")
+        intake = book.get("intake")
+        if intake and not isinstance(intake, (dict, list, str)):
+            raise ValueError("intake must support the published membership check")
+        plans = book.get("plans", [])
+        if not isinstance(plans, list):
+            raise ValueError("plan collection must be a list")
+        for plan in plans:
+            # Closed rows also reach the episode map and lifecycle context.
+            if not isinstance(plan, dict):
+                raise ValueError("plan record must be an object")
+            for field in ("id", "asset"):
+                value = plan.get(field)
+                if not isinstance(value, str) or not value.strip():
+                    raise ValueError(f"plan {field} must be a nonblank string")
+            opened = plan.get("entry_date") or plan.get("recorded_at") or plan.get("signal_date") or ""
+            if not isinstance(opened, str):
+                raise ValueError("episode opening date must be a string")
+            # Existing lifecycle labels use this value as a dictionary key.
+            # Preserve hashable historical values; reject collection values.
+            hash(plan.get("lifecycle_state"))
+        return book, False
+    except Exception as exc:  # noqa: BLE001 — unreadable books never stop the build
+        log.warning("prophet/index.json unreadable (%s)", exc)
+        return None, True
+
+
+def _plan_relations_for(
+    book: "dict | None", book_error: object = False
+) -> "tuple[str, dict[str, list[dict]]]":
+    """Return open, same-security plan summaries keyed by normalized ticker.
+
+    A malformed plans container, or any malformed open record, leaves the
+    whole owner unreadable: the result is ("unknown", {}) rather than a
+    silent skip. Truthy ``closed`` records are excluded before validation.
+    """
+    if book_error or not isinstance(book, dict):
+        return "unknown", {}
+    plans = book.get("plans", [])
+    if not isinstance(plans, list):
+        return "unknown", {}
+    by_ticker: dict[str, list[dict]] = {}
+    for plan in plans:
+        if not isinstance(plan, dict):
+            return "unknown", {}
+        if plan.get("closed"):
+            continue
+        plan_id = plan.get("id")
+        asset = plan.get("asset")
+        if not isinstance(plan_id, str) or not plan_id.strip():
+            return "unknown", {}
+        if not isinstance(asset, str) or not asset.strip():
+            return "unknown", {}
+        try:
+            hash(plan.get("lifecycle_state"))
+        except TypeError:
+            return "unknown", {}
+        by_ticker.setdefault(asset.strip().upper(), []).append({
+            "id": plan_id,
+            "lifecycle_state": plan.get("lifecycle_state"),
+            "formation_date": plan.get("formation_date"),
+            "signal_date": plan.get("signal_date"),
+            "signal_date_basis": plan.get("signal_date_basis"),
+            "observed_date": plan.get("observed_date"),
+            "price_basis_date": plan.get("price_basis_date"),
+            "recorded_at": plan.get("recorded_at"),
+            "plan_asof": plan.get("plan_asof"),
+        })
+    for grouped in by_ticker.values():
+        grouped.sort(key=lambda entry: (
+            str(entry.get("formation_date") or ""), str(entry.get("id") or "")), reverse=True)
+    return "none", by_ticker
+
+
+def _plan_relations_for_shell(full, locked_plans):
+    """Open plans the free shell may print, keyed by ticker.
+
+    ``full`` is ``(state, by_ticker)`` from ``_plan_relations_for``.
+    ``locked_plans`` is the plan-book remainder. A plan whose id is in
+    that remainder is dropped. A ticker left with no open plan gets one
+    gated marker, not an empty list: empty is the copy that says no
+    record exists. The caller's full map is not mutated.
+    """
+    if not full or full[0] == "unknown":
+        return {}
+    by_ticker = full[1] if isinstance(full[1], dict) else {}
+    locked_ids = set()
+    for row in locked_plans or []:
+        if not isinstance(row, dict):
+            continue
+        plan_id = row.get("id")
+        if isinstance(plan_id, str) and plan_id:
+            locked_ids.add(plan_id)
+    shell = {}
+    for ticker, plans in by_ticker.items():
+        if not isinstance(plans, list):
+            continue
+        kept = [plan for plan in plans if plan.get("id") not in locked_ids]
+        if kept:
+            shell[ticker] = kept
+        elif plans:
+            shell[ticker] = [{"shell_state": "gated"}]
+    return shell
+
+
+def _plan_relation_for_row(
+    plan_relations: "tuple[str, dict[str, list[dict]]] | None", row: dict
+) -> dict:
+    """Return the security-level relation payload for one already-entitled row."""
+    if not plan_relations:
+        return {"state": "none", "plans": []}
+    state, by_ticker = plan_relations
+    if state == "unknown":
+        return {"state": "unknown", "plans": []}
+    plans = by_ticker.get(str(row.get("ticker") or "").strip().upper(), [])
+    return {"state": "related_security" if plans else "none", "plans": plans}
+
+
+def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
+                       locked_rows: list[dict], us_standouts: "dict | None",
+                       top_setups: "dict | None", built: str,
+                       today_rows: "list[dict] | None" = None,
+                       today_source_binding: "dict | None" = None,
+                       pgate: "dict | None" = None,
+                       panel_blocks: "dict | None" = None,
+                       life_gate: "dict | None" = None,
+                       locked_plans: "list[dict] | None" = None,
+                       cand_map: "dict | None" = None,
+                       trg_map: "dict | None" = None,
+                       episode_map: "dict | None" = None,
+                       plan_relations: "tuple[str, dict[str, list[dict]]] | None" = None) -> None:
+    """Render the paid remainder of the US Prophet board into
+    site/premiumdata/us_stocks.json.
+
+    Written on EVERY build — including the ungated one, where it is an empty
+    payload — so flipping `us_board_gate.gated` off never strands a readable
+    full board at a path the page has stopped asking for.
+
+    `cards_html` is rendered from the SAME partial the shell includes
+    (_us_board_cards.html.j2) for the LEGACY candidate-board locked remainder
+    (kept, unused by the current hydrate() JS, for payload-shape stability).
+
+    `preview_cards_html` is that same partial for the free buy prefix, with
+    the full plan map, so hydrate can replace a shell card in place.
+
+    `plan_cards_html` (P-MP1-SHELL §8b) is the CENTRAL ACT's own locked
+    remainder — rendered from the SAME partial the shell includes
+    (_us_prophet_plan_cards.html.j2) for `locked_plans` (the plan-book rows
+    past `life_gate['preview']`), so the migrated grid's hydrated cards can
+    never drift from its server-rendered ones. Independent switch from `gate`
+    (§8b: "a re-plumb, never a re-draw" — same mechanism, different array).
+    `today_source_binding` carries the exact raw-source pair to every payload
+    shape, or explicit None when unavailable, for the shell hydration gate.
+    `today_rows_meta` carries the owner-issued entitled Today indices/receipts
+    (positional with `today_cards_html`) for that same gate; empty whenever the
+    board is ungated (nothing withheld) or the rows carry no full binding.
+    """
+    # Add only the presentation for this same entitled row. Failure keeps its
+    # native flat facts, with no detail action, rather than dropping the payload.
+    def _table_row(n):
+        flat = _us_board_row_flat(n)
+        try:
+            presenter = env.get_template("_prophet_setup_detail.html.j2").module.table_action
+            flat["setup_detail"] = str(presenter(
+                n, (us_standouts or {}).get("as_of"),
+                plan_rel=_plan_relation_for_row(plan_relations, n)))
+        except Exception as exc:  # noqa: BLE001 — a missing detail is not a missing row
+            log.error("us_stocks: table detail unavailable (%s)", exc)
+            flat["setup_detail"] = None
+        return flat
+
+    path = site / US_PAYLOAD_DIR / US_PAYLOAD_NAME
+    path.parent.mkdir(parents=True, exist_ok=True)
+    panel_blocks = panel_blocks or {}
+    today_rows = list(today_rows or [])
+    if gate is None:
+        # The board itself is whole (ungated, or smaller than the preview cap) but
+        # the ADJACENT panels can still be withholding rows, so the payload is not
+        # necessarily empty here — `gated` reports the BOARD, `panels` the rest.
+        payload = {"schema": "tier_payload.v1", "page": "us_stocks", "gated": False,
+                   "built": built, "cards_html": "", "rows": [],
+                   "today_cards_html": "", "today_preview": 0, "today_total": 0,
+                   "preview_cards_html": "",
+                   # Honest empty remainder — the protected native binding above
+                   # is what still permits Today native context for the unchanged
+                   # server-rendered shelf.
+                   "today_rows_meta": []}
+        payload["today_source_binding"] = today_source_binding
+    else:
+        full_buy = (us_standouts or {}).get("buy") or []
+        # sg_any/bs_adj/xu_allfeat/trg_map mirror dashboard.html.j2's own derivation
+        # of `_sg.any` (:15916-15918), `_bs_adj` (:15698), `_xu_allfeat`
+        # (:15915-15919) and `_trg_map` (:15862) so the payload cards carry the
+        # same chips/marks the shell's cards would have.
+        sg_any = any(r.get("stage") for r in full_buy)
+        bs = (us_standouts or {}).get("board_state_view") or {}
+        bs_adj = bs.get("note") == "confirmed"
+        feat = [r for r in full_buy if r.get("featured")]
+        xu_allfeat = bool(feat) and all(r.get("ext_unknown") for r in feat)
+        trg_map: dict = {}
+        if top_setups and top_setups.get("buy"):
+            for r in top_setups["buy"]:
+                if r.get("ticker"):
+                    trg_map[r["ticker"]] = r
+        # rw_en/rw_zh mirror dashboard.html.j2's M1 runway-coverage receipt
+        # (:15952-15960) — board-level (from us_standouts.ranking), not
+        # row-derived, so it is identical on both sides of the wall.
+        _rwc = (((us_standouts or {}).get("ranking") or {}).get("component_coverage") or {}).get("runway")
+        _rw_n = (_rwc.get("n") or 0) if _rwc else 0
+        _rw_dead = not (_rwc and (_rwc.get("nonzero") or 0) > 0)
+        rw_en = ((" Room to run could not be checked for "
+                  + (("all " + str(_rw_n) + " names") if _rw_n else "these names")
+                  + " tonight, so that part adds no points.") if _rw_dead else "")
+        rw_zh = (("今晚无法检查"
+                  + (("全部 " + str(_rw_n) + " 只股票") if _rw_n else "这些股票")
+                  + "的上行空间，因此这一项不加分。") if _rw_dead else "")
+
+        # Today is a paid/full-access presentation shelf. Keep its extra rows in
+        # the already protected payload instead of baking them into anonymous HTML.
+        try:
+            today_cards_html = env.get_template("_us_board_cards.html.j2").render(
+                items=today_rows, sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
+                trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh,
+                setup_as_of=(us_standouts or {}).get("as_of"),
+                plan_rel={"state": plan_relations[0] if plan_relations else "none",
+                          "plans": []},
+                plan_rel_by_ticker=(plan_relations[1] if plan_relations else {}))
+        except Exception as e:  # noqa: BLE001 — front shelf fails soft to shell
+            log.error("us_stocks: Today card render failed (%s)", e)
+            today_cards_html = ""
+        _today_declared = ((us_standouts or {}).get("ranking") or {}).get("featured_count")
+        _today_total = (_today_declared
+                        if isinstance(_today_declared, int) and not isinstance(_today_declared, bool)
+                        and _today_declared >= len(feat)
+                        else len(feat))
+
+        items = _us_board_group_items(locked_rows, sg_any, gate["stage_counts"])
+        try:
+            cards_html = env.get_template("_us_board_cards.html.j2").render(
+                items=items, sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
+                trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh,
+                setup_as_of=(us_standouts or {}).get("as_of"),
+                plan_rel={"state": plan_relations[0] if plan_relations else "none",
+                          "plans": []},
+                plan_rel_by_ticker=(plan_relations[1] if plan_relations else {}))
+        except Exception as e:  # noqa: BLE001 — payload must still write with an
+            # honest empty card block rather than aborting the whole build.
+            log.error("us_stocks: locked card render failed (%s)", e)
+            cards_html = ""
+        preview_buy = full_buy[:gate["preview"]]
+        preview_items = _us_board_group_items(
+            preview_buy, sg_any, gate["stage_counts"])
+        try:
+            preview_cards_html = env.get_template(
+                "_us_board_cards.html.j2").render(
+                items=preview_items, sg_any=sg_any, bs_adj=bs_adj,
+                xu_allfeat=xu_allfeat, trg_map=trg_map,
+                rw_en=rw_en, rw_zh=rw_zh,
+                setup_as_of=(us_standouts or {}).get("as_of"),
+                plan_rel={
+                    "state": plan_relations[0] if plan_relations else "none",
+                    "plans": [],
+                },
+                plan_rel_by_ticker=(
+                    plan_relations[1] if plan_relations else {}))
+        except Exception as e:  # noqa: BLE001 — preview cards fail soft
+            log.error("us_stocks: preview card render failed (%s)", e)
+            preview_cards_html = ""
+        payload = {
+            "schema": "tier_payload.v1", "page": "us_stocks", "gated": True,
+            "required_tier": gate["tier"], "built": built,
+            "total": gate["total"], "preview": gate["preview"],
+            "locked": gate["locked"], "as_of": (us_standouts or {}).get("as_of") or "",
+            "cards_html": cards_html,
+            "preview_cards_html": preview_cards_html,
+            "rows": [_table_row(n) for n in locked_rows],
+            "today_cards_html": today_cards_html,
+            "today_preview": len(today_rows),
+            "today_total": _today_total,
+            "today_rows_meta": _us_today_rows_meta(today_rows),
+            "today_source_binding": today_source_binding,
+        }
+    if pgate:
+        payload["panels"] = {k: v for k, v in pgate.items()
+                             if k in ("setups", "leaders", "ran", "actnow", "tape",
+                                      "plv_names", "leader_observations", "candidate_pool",
+                                      "what_changed", "passed")}
+        payload.update(panel_blocks)
+    # P-MP1-SHELL §8b — the Setups grid's OWN locked remainder, independent of
+    # `gate`/`cards_html` above. Always present in the payload shape (empty
+    # string / life_gate:None when the plan board is whole), same "written on
+    # every build" law as the rest of this function.
+    locked_plans = locked_plans or []
+    if life_gate and locked_plans:
+        try:
+            plan_cards_html = env.get_template("_us_prophet_plan_cards.html.j2").render(
+                items=locked_plans, cand_map=(cand_map or {}), trg_map=(trg_map or {}),
+                episode_map=(episode_map or {}))
+        except Exception as e:  # noqa: BLE001 — payload must still write with an
+            # honest empty card block rather than aborting the whole build.
+            log.error("us_stocks: locked plan-card render failed (%s)", e)
+            plan_cards_html = ""
+    else:
+        plan_cards_html = ""
+    payload["life_gate"] = life_gate
+    payload["plan_cards_html"] = plan_cards_html
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    log.info("us_stocks: premium payload %s (%d locked board rows, %d locked plans, %d locked panels)",
+              US_PAYLOAD_URL, len(locked_rows), len(locked_plans),
+              len(payload.get("panels") or {}))
+
+
+# ── us_stocks ADJACENT PANELS tier gate (docs/TIER_PREVIEW_PATTERN.md) ────────
+# PR #5840 split the `us_standouts.buy` board out of the shell but was scoped to
+# that ONE board. Four sibling panels on the same page were fed by DIFFERENT
+# artifacts, so the one-payload split never touched them and they stayed gated
+# only by templates/tier_preview.js — a DOM overlay (anon 1 / free 3, blur +
+# aria-hidden) with every row still readable in view-source. Measured on the live
+# page right after #5840 landed: 24 `tr.ts-row`, 43 `.actitem`, 12 `.pbr-r` and
+# 15 `.tt-names` member lists.
+#
+# Same mechanism as the board, extended rather than duplicated: the withheld
+# remainder rides the SAME site/premiumdata/us_stocks.json the page already
+# fetches once post-auth, as extra `*_html` blocks, so hydration stays one
+# request and one code path. Every block is rendered from the SAME template the
+# shell renders — three of them from new row partials, and the act-now board and
+# theme tape from their own files in a rows-only/names-only mode — so a markup
+# change moves both sides of the wall at once.
+#
+# What stays free is what the board's split kept free: state and totals. Every
+# lane heading keeps its true full-board count, the tape keeps every count on
+# its ladder (the panel's whole argument), the "recently fired" header keeps its
+# true N. Only the per-name rows move behind the wall.
+US_PANEL_PREVIEW_DEFAULT = 3
+
+# lane key -> (the .actbody id the rows were sliced out of, does the lane wrap
+# theme rows in the TS-R5 data-theme-id div?). Stand aside is ONE .actbody fed by
+# two arrays, so `hold` and `avoid` share a destination.
+_US_ACTNOW_LANES = [
+    ("buy_now", "ab-buy-fold", False),
+    ("buy_soon", "ab-soon-fold", False),
+    ("on_the_run", "ab-run-fold", False),
+    ("take_profits", "ab-trim-fold", False),
+    ("hold", "dash-hold-fold", True),
+    ("avoid", "dash-hold-fold", True),
+]
+
+# The in-template display caps these two tables have always had
+# (dashboard.html.j2 `_tsn.resid[:10]` and `_ldrs[:15]`). The gate splits what
+# the page SHOWS, so these are the totals — not the untrimmed artifact arrays.
+_US_SETUPS_CAP = 10
+_US_LEADERS_CAP = 15
+
+
+def _us_panel_split(rows: "list | None", preview: int,
+                    withheld=frozenset()) -> "tuple[list, list]":
+    """(shell_rows, locked_rows) for one panel. A list at or under the preview
+    cap ships whole — baking a wall over nothing is worse than no wall — unless it
+    holds a name withheld elsewhere."""
+    rows = list(rows or [])
+    if len(rows) <= preview and not (_us_names(rows) & withheld):
+        return rows, []
+    return _us_preview_split(rows, preview, withheld)
+
+
+def _us_apply_panel_withholding(vm: dict, shell_su: "dict | None", repair: dict, pov: dict,
+                                preview_rows: int) -> "tuple[dict | None, dict]":
+    """Apply the two results of `_split_us_panels` that the render call sets after
+    `**pov`: the patched shell board and the Screener sample. Never mutates vm."""
+    patch = pov.pop("us_standouts_shell", None)
+    hide = pov.pop("us_withheld_names", None)
+    if patch:
+        shell_su = {**(shell_su or {}), **patch}
+    if hide:
+        plans = (vm.get("us_prophet_book") or {}).get("plans") or []
+        repair = {**repair, "cand_no_plan": _us_candidate_no_plan_sample(
+            (vm.get("us_standouts") or {}).get("buy") or [], _us_names(plans, "asset"),
+            sample_size=preview_rows, withheld=hide)}
+    return shell_su, repair
+
+
+def _us_tape_locked_count(theme_tape: "dict | None") -> int:
+    """How many member NAMES the tape withholds, counted the way
+    _theme_tape.html.j2's `tt_slot` counts them (a `+N more` chip stands for N
+    names). Used only for the honest disclosure line — the lists themselves are
+    rendered by the template, never rebuilt here."""
+    if not isinstance(theme_tape, dict):
+        return 0
+    n = 0
+    for group in ("rows", "washout_turns"):
+        for row in theme_tape.get(group) or []:
+            for members in (row.get("members") or {}).values():
+                n += len(members or [])
+            if row.get("quiet_sample"):
+                n += len(row["quiet_sample"]) + (row.get("quiet_more") or 0)
+    return n
+
+
+def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
+    """Tier-preview split for the four panels adjacent to the US board.
+
+    Pure in `vm`: returns the overrides the stocks-mode render call should be
+    given, never mutating the shared view-model (`top_setups`, `action_board`
+    and `theme_tape` are all read again by other page renders).
+
+    Returns (overrides, pgate, locked):
+      overrides — what the render call sets over `vm`: the pool and leader
+                  observation shells, the board's name list, and the setups and
+                  "Passed on tonight" lists once a name has left them. Setups,
+                  leaders and ran are still sliced INSIDE the template from
+                  `pgate`, because the shell's own empty-state branches and heading
+                  counts read the FULL lists and must keep reading them
+                  (docs/TIER_PREVIEW_PATTERN.md: "Empty-state branches read the
+                  sliced list"). `us_standouts_shell` and `us_withheld_names` are for
+                  `_us_apply_panel_withholding`, which pops them.
+      pgate     — the `pgate` dict the template reads, or None when nothing is
+                  withheld anywhere.
+      locked    — {"setups": [...], "leaders": [...], "ran": [...],
+                   "actnow": [{lane, rows, wrap}], "tape": bool,
+                   "what_changed": [...], "passed": {...}} for the payload.
+    """
+    if not gated:
+        return {}, None, {}
+    preview = max(0, preview)
+    su = vm.get("us_standouts") or {}
+    ts = vm.get("top_setups") or {}
+    ab = vm.get("action_board") or {}
+    tape = vm.get("theme_tape")
+
+    pgate: dict = {"tier": "essential", "payload": US_PAYLOAD_URL, "preview": preview}
+    locked: dict = {}
+    overrides: dict = {}
+
+    # What each panel holds, read first because no free surface may print a name
+    # locked on any list. One pass settles it: each panel's rows past its preview are
+    # in `hide`, so a shell row always comes from within that panel's own preview. A
+    # panel with a withheld name in its preview shows fewer rows and no replacement.
+    carded = _us_names(su.get("buy"))
+    resid, ldrs, ran = _us_panel_lists(vm)
+    hide = _us_withheld_names(vm, preview)
+    su_patch: dict = {}
+
+    # The complete eligible pool uses the SAME protected row split and payload.
+    # No withheld ticker is copied into the anonymous shell, search index or JS.
+    pool_shell, pool_gate, pool_locked = _split_us_leader_observations(
+        vm.get("us_candidate_visibility"), preview, gated=True,
+        withheld=hide | _us_open_plan_locked_names(vm, hide)
+    )
+    if pool_gate:
+        overrides["us_candidate_visibility"] = pool_shell
+        pgate["candidate_pool"] = {key: pool_gate[key] for key in ("preview", "locked", "total")}
+        locked["candidate_pool"] = pool_locked
+
+    # ── Leader observations — a separate display population, never Candidates/Plans.
+    leader_shell, leader_gate, leader_locked = _split_us_leader_observations(
+        vm.get("us_leader_observations"), preview, gated=True, withheld=hide
+    )
+    if leader_gate:
+        overrides["us_leader_observations"] = leader_shell
+        pgate["leader_observations"] = {
+            "preview": leader_gate["preview"],
+            "locked": leader_gate["locked"],
+            "total": leader_gate["total"],
+        }
+        locked["leader_observations"] = leader_locked
+
+    # ── .topsetups — the residual fresh-trigger table. The template filters
+    # top_setups.buy against the carded board and caps at 10; that filter is
+    # display logic and stays there, so the builder only needs the CEILING to
+    # report an honest total. The exact residual set is re-derived in-template.
+    shell_ts, locked_ts = _us_panel_split(resid, preview, hide)
+    if locked_ts:
+        pgate["setups"] = {"preview": len(shell_ts), "locked": len(locked_ts), "total": len(resid)}
+        locked["setups"] = locked_ts
+    if shell_ts != resid[:len(shell_ts)]:
+        # The template slices this list by the preview count, so shell rows lead it.
+        placed = _us_names(resid)
+        overrides["top_setups"] = {**ts, "buy": shell_ts + locked_ts + [
+            r for r in (ts.get("buy") or []) if r.get("ticker") not in placed]}
+    # The template's residual has to skip the whole board, as `resid` does. Against the
+    # sliced board it printed locked names under "More fresh triggers".
+    if carded:
+        overrides["us_board_tickers"] = sorted(carded)
+
+    # ── .topsetups.leaders-strip — us_standouts.leaders, same 15-row display cap.
+    shell_ld, locked_ld = _us_panel_split(ldrs, preview, hide)
+    if shell_ld != ldrs[:len(shell_ld)]:
+        su_patch["leaders"] = shell_ld + locked_ld + list(su.get("leaders") or [])[_US_LEADERS_CAP:]
+    if locked_ld:
+        pgate["leaders"] = {"preview": len(shell_ld), "locked": len(locked_ld), "total": len(ldrs)}
+        locked["leaders"] = locked_ld
+        # `lth_any` is a BOARD-level fact over the whole 15-row slice, so the
+        # shell's <th> and the payload's <td> agree on the column count.
+        locked["leaders_lth_any"] = any(
+            (r.get("theme") or {}).get("name") for r in ldrs)
+
+    # ── .pbr-l — the "recently fired" list. Only rendered on the priority path.
+    shell_ran, locked_ran = _us_panel_split(ran, preview, hide)
+    if shell_ran != ran[:len(shell_ran)]:
+        su_patch["ran"] = shell_ran + locked_ran
+    if locked_ran:
+        pgate["ran"] = {"preview": len(shell_ran), "locked": len(locked_ran), "total": len(ran)}
+        locked["ran"] = locked_ran
+
+    # ── #action-board — five lanes, each capped independently. Stand aside is one
+    # .actbody fed by hold+avoid, so its budget is spent on `hold` first exactly
+    # as the template slices it.
+    ab_locked: list[dict] = []
+    ab_total = 0
+    hold_shown = 0
+    for key, dest, wrap in _US_ACTNOW_LANES:
+        rows = list(ab.get(key) or [])
+        ab_total += len(rows)
+        if key == "avoid":
+            budget = max(0, preview - hold_shown)
+        else:
+            budget = preview
+        shell_rows, lane_locked = _us_panel_split(rows, budget)
+        if key == "hold":
+            hold_shown = len(shell_rows)
+        if lane_locked:
+            ab_locked.append({"lane": dest, "rows": lane_locked, "wrap": wrap})
+    if ab_locked:
+        n_locked = sum(len(L["rows"]) for L in ab_locked)
+        pgate["actnow"] = {"preview": preview, "locked": n_locked, "total": ab_total}
+        locked["actnow"] = ab_locked
+
+    # ── #theme-tape — the member lists. Nothing is sliced: a list is either the
+    # names or the count it already collapses to for anonymous readers today.
+    tape_n = _us_tape_locked_count(tape)
+    if tape_n:
+        pgate["tape"] = {"locked": tape_n}
+        locked["tape"] = True
+
+    # ── #plv-names — the prophet-live strip's ticker -> COMPANY NAME island. Not a
+    # panel: a label lookup. But it is built from watch u buy u leaders u laggards,
+    # so on a gated build it re-published by name every leader the strip above had
+    # just withheld (77 entries, measured anonymously on the live page 2026-08-17)
+    # and the two populations that have no panel here at all. The shell now emits
+    # only the tickers it renders; the remainder ships here and the hydration script
+    # merges it into the live lookup.
+    plv: dict = {}
+    shell_names = _us_names(shell_ld)
+    for key in ("watch", "leaders", "laggards"):
+        for r in su.get(key) or []:
+            tk, nm = r.get("ticker"), r.get("name")
+            if tk and nm and tk not in shell_names:
+                plv[tk] = nm
+    if plv:
+        pgate["plv_names"] = {"locked": len(plv)}
+        locked["plv_names"] = plv
+
+    # ── "What changed today" — one row per name. A withheld name's entry stays as a
+    # stub with no ticker, so the dialog's tallies and total stay true and no row prints.
+    delta = su.get("delta") or {}
+    entries = delta.get("entries") or []
+    wc_locked = [e for e in entries if e.get("ticker") in hide]
+    if wc_locked:
+        su_patch["delta"] = {**delta, "entries": [
+            {**e, "ticker": None} if e.get("ticker") in hide else e for e in entries]}
+        pgate["what_changed"] = {"locked": len(wc_locked)}
+        locked["what_changed"] = wc_locked
+
+    # ── "Passed on tonight" — the names leave and each group keeps its count (`n`).
+    # `declined` and `considered` stay as the engine wrote them.
+    refusals = vm.get("us_prophet_refusals")
+    if refusals and refusals.get("groups"):
+        groups, passed_n = [], 0
+        for g in refusals["groups"]:
+            names = g.get("names") or []
+            kept = [nm for nm in names if nm.get("ticker") not in hide]
+            n_out = len(names) - len(kept)
+            if n_out and g.get("reason") != "already_open":
+                passed_n += n_out
+                g = {**g, "names": kept, "withheld_n": n_out}
+            groups.append(g)
+        if passed_n:
+            overrides["us_prophet_refusals"] = {**refusals, "groups": groups}
+            pgate["passed"] = {"locked": passed_n}
+            locked["passed"] = refusals
+
+    if su_patch:
+        overrides["us_standouts_shell"] = su_patch
+    if hide:
+        overrides["us_withheld_names"] = hide
+    if len(pgate) <= 3:                       # tier/payload/preview only
+        return overrides, None, {}
+    return overrides, pgate, locked
+
+
+def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dict,
+                             vm: dict,
+                             plan_relations: "tuple[str, dict[str, list[dict]]] | None" = None) -> dict:
+    """Render the withheld panels into the `*_html` blocks that ride the board's
+    payload. Every block comes from the SAME template the shell renders, so the
+    hydrated page and a full server render cannot drift apart.
+
+    Never fatal: a panel whose render raises ships as an empty string and its
+    rows simply stay withheld, exactly as they are for a locked reader.
+    """
+    if not pgate:
+        return {}
+    out: dict = {}
+
+    def _render(key: str, template: str, **ctx) -> None:
+        try:
+            out[key] = env.get_template(template).render(**ctx)
+        except Exception as e:  # noqa: BLE001 — a panel must not abort the build
+            log.error("us_stocks: locked %s render failed (%s)", key, e)
+            out[key] = ""
+
+    if locked.get("candidate_pool"):
+        _render("candidate_pool_html", "_us_candidate_pool_rows.html.j2",
+                rows=locked["candidate_pool"],
+                setup_as_of=(vm.get("us_candidate_visibility") or {}).get("as_of"),
+                plan_rel={"state": plan_relations[0] if plan_relations else "none",
+                          "plans": []},
+                plan_rel_by_ticker=(plan_relations[1] if plan_relations else {}))
+        candidate_view = vm.get("us_candidate_visibility") or {}
+        out["candidate_pool_source"] = {
+            "as_of": candidate_view.get("as_of"),
+            "digest": candidate_view.get("source_digest"),
+            "total": (candidate_view.get("counts") or {}).get("eligible"),
+        }
+    if locked.get("leader_observations"):
+        _render(
+            "leader_observations_html",
+            "_us_leader_observation_rows.html.j2",
+            rows=locked["leader_observations"],
+        )
+    if locked.get("setups"):
+        _render("setups_html", "_us_setups_rows.html.j2", rows=locked["setups"])
+    if locked.get("leaders"):
+        _render("leaders_html", "_us_leader_rows.html.j2", rows=locked["leaders"],
+                lth_any=locked.get("leaders_lth_any", False))
+    if locked.get("ran"):
+        _render("ran_html", "_us_ran_rows.html.j2", rows=locked["ran"])
+    if locked.get("actnow"):
+        _render("actnow_html", "_us_act_now_board.html.j2",
+                action_board=vm.get("action_board"), ab_locked=locked["actnow"],
+                shock_state=vm.get("shock_state"))
+    if locked.get("tape"):
+        _render("tape_html", "_theme_tape.html.j2",
+                theme_tape=vm.get("theme_tape"), tt_names_only=True)
+    if locked.get("plv_names"):
+        out["plv_names"] = locked["plv_names"]
+
+    # Rows the free "What changed today" and "Passed on tonight" leave out.
+    if locked.get("what_changed"):
+        _render("what_changed_html", "_what_changed_rows.html.j2", rows=locked["what_changed"])
+    if locked.get("passed"):
+        _render("passed_html", "_us_passed_shelf.html.j2", cx=locked["passed"])
+    return out
+
+
 def main() -> int:
+    from lib import nyse_calendar as _us_nyse_calendar  # noqa: PLC0415
+
+    _us_board_observed_at = datetime.now(timezone.utc)
+    _us_completed_session = _us_nyse_calendar.expected_last_session(
+        _us_board_observed_at
+    ).isoformat()
     site = config.ROOT / config.load()["storage"]["site_dir"]
     site.mkdir(parents=True, exist_ok=True)
 
@@ -4776,9 +6320,23 @@ def main() -> int:
     env = Environment(loader=FileSystemLoader(config.ROOT / "templates"),
                       autoescape=True)
     env.filters["min"] = lambda seq: min(seq)
+    import re as _re
+    env.filters["regex_replace"] = (
+        lambda s, pattern, repl: _re.sub(pattern, repl, s)
+        if isinstance(s, str) else s
+    )
     from engine import i18n
     from lib.seo import SITE_BASE as _SITE_BASE
-    env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip, SITE_BASE=_SITE_BASE)  # bilingual helpers for templates
+    from engine.macro_news import CHANNEL_LABEL as _CHANNEL_LABEL
+    env.globals.update(td=i18n.td, tr=i18n.tr, t_pctile=i18n.t_pctile, zip=zip,
+                       SITE_BASE=_SITE_BASE,  # bilingual helpers for templates
+                       CHANNEL_LABEL=_CHANNEL_LABEL)  # ZH twins for all 21 news channels
+    # P-MP1-SHELL central act: expose the b1-ruling stance projection to the
+    # template so the Setups card grid (re-sourced to the plan book, below) can
+    # call it per row — the SAME function scripts/build_site.py already ships
+    # and tests (tests/test_p_mp1_shell_stance_projection.py), never a second
+    # template-side mapping (MP-1 §8a: "never a second mapping").
+    env.globals["us_stance_projection"] = us_stance_projection
     confirming, contradicting = component_chips(latest)
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
 
@@ -4786,7 +6344,7 @@ def main() -> int:
     sector_timing, notable = {}, []
     alpha_data = None
     try:
-        alpha_data = build_alpha_data(site)
+        alpha_data = build_alpha_data(site, asof=_us_completed_session)
         _tmark("alpha_data")
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("alpha data failed: %s", e)
@@ -4853,6 +6411,11 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("support page failed: %s", e)
     try:
+        build_help_page(env, site, generated)
+        _tmark("help_page")
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.error("help page failed: %s", e)
+    try:
         build_unsubscribe_page(env, site, generated)
         _tmark("plans_support_unsub_pages")
     except Exception as e:  # noqa: BLE001 — additive, never fatal
@@ -4885,10 +6448,14 @@ def main() -> int:
     # (theme.js signInWithOAuth redirectTo), not a fixed host — the allowed
     # origins live in the Supabase dashboard (see ACCOUNTS_SETUP.md).
     # copy shared static assets (theme + visual widgets) into the site
-    for asset in ("theme.css", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
+    for asset in ("government-revenue-parity.css","government-revenue-dossiers.js","government-revenue-candidate-radar.js","government-revenue-briefcase.js","government-revenue-briefcase-ui.js","government-revenue-sbir.js","government-revenue-sbir.css","government-revenue-investor.js","government-revenue-investor.css","government-revenue-theme-context.js","government-revenue-theme-context.css",
+                  "theme.css", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
                   "theme.js", "terminal_overlay.js", "mtf.js", "chart_i18n.js", "timemachine.js",
                   "illus.css", "illus.js",
+                  "mm_brain.js", "mm_brain_visuals.js", "mm_brain_visuals.css", "mm_brain_presentation.js", "mm_brain_markdown.js", "mm_brain_finance.js", "mm_brain_finance.css", "mm_brain_finance_math_v1.js", "mm_brain_math.js",
                   "account.js",
+                  "market_memory.css", "market_memory.js", "market_memory_intent.js",
+                  "market_memory_retained.css", "market_memory_retained.js",
                   # landing onboarding sheet (paired templates/ -> site/ byte copy)
                   "onboard.js", "onboard.css",
                   "stockdata.js", "logo_config.js", "stock-logos.js", "watchlist.js", "factor_exposure.js", "auth.js",
@@ -4898,12 +6465,16 @@ def main() -> int:
                   # portfolio cockpit, and the market-books derived view. These shipped
                   # ONLY as committed templates/->site/ pairs; copying them here too means
                   # a render self-heals them like every other page asset.
-                  "watchstore.js", "portfolio.js", "market_books.js",
+                  "portfolio_import.css", "portfolio_import.js", "watchstore.js", "portfolio.js",
+                  "portfolio_import_ui.js",
+                  "market_books.js",
                   "tablesort.js", "charts.js",
                   "aibrief.js", "stockbrief.js", "aidesk_lean.js",
                   "stockview.js",
+                  "ticker_news.js", "ticker_news.css",
                   "lightweight-charts.js",
                   "allocation_scorecard.js", "live.js", "risk_state_live.js",
+                  "risk_envelope_live.js",
                   "china_risk_state_live.js", "release_publications_live.js",
                   "wh_banner.js", "heatmap.js",
                   "subsector_rotation.js", "subsectors.js", "subsectors_china.js",
@@ -4990,16 +6561,63 @@ def main() -> int:
     # surfaced via the card's as_of). Absent (first run) => the strip degrades to the
     # action_board notable cards below.
     us_standouts = None
+    _us_w3c = None
+    _us_w3c_refusal = None
+    _us_w3c_binding = None
+    _us_today_binding = None
+    _us_source_bytes = None
     _us = site / "factordata" / "us_standouts.json"
     if _us.exists():
         try:
-            us_standouts = json.loads(_us.read_text())
+            _us_source_bytes = _us.read_bytes()
+            us_standouts = json.loads(_us_source_bytes)
+            # Freeze raw owner binding before display attachments and tier splitting.
+            # An optional provenance import/read failure cannot hide the board.
+            try:
+                from hashlib import sha256 as _w3c_sha256
+                _us_w3c_binding = _w3c_sha256(_us_source_bytes).hexdigest()
+                from engine.theme_graph.selection_cohort_publication import (
+                    consume_us_source, default_capture_capability)
+                try:
+                    from functools import partial as _w3c_partial
+                    from engine.theme_graph.selection_cohort_reads import publication_reads as _w3c_reads
+                    _w3c_attempts = (_w3c_partial(_w3c_reads, data_dir=config.data_dir()), None)
+                except Exception as _w3c_qr_e:  # noqa: BLE001 — receipt-only read survives a missing reads owner
+                    log.warning("W3C qualified reads unavailable (%s); receipt-only", _w3c_qr_e)
+                    _w3c_attempts = (None,)
+                for _w3c_qr in _w3c_attempts:
+                    _us_w3c_read = consume_us_source(
+                        _us_source_bytes, data_dir=config.data_dir(),
+                        authorize_capture=default_capture_capability(), qualified_reads=_w3c_qr)
+                    if _us_w3c_read["status"] == "AVAILABLE":
+                        _us_w3c = _us_w3c_read
+                        break
+                    _us_w3c_refusal = _us_w3c_read
+                    if _w3c_qr is not None:
+                        log.warning("W3C US qualified reads refused (%s); receipt-only", _us_w3c_read["reason_codes"])
+            except Exception as _us_w3c_e:  # noqa: BLE001 — preserve incumbent source rendering
+                log.warning("W3C US source binding unavailable (%s)", _us_w3c_e)
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("us_standouts.json unreadable (%s)", e)
+        # Bind the existing frozen raw SHA to the original decoded source.
+        _us_today_binding = _us_today_source_binding(_us_w3c_binding, us_standouts)
+    # Native three-field binding: the ORIGINAL owner callable consumes the exact
+    # frozen raw bytes BEFORE any attachment or tier splitting, and its ordered
+    # metadata rides COPIED presentation rows by original position only. Typed
+    # unavailable on any failure — ordinary source rendering is preserved.
+    _us_today_native = _us_today_native_binding(_us_source_bytes)
+    if _us_today_native is not None:
+        us_standouts = _us_today_bind_rows(us_standouts, _us_today_native)
+        _us_today_binding = {**_us_today_binding, **_us_today_native} if _us_today_binding \
+            else _us_today_native
     # DISPLAY-ONLY board attaches (personality chips + RLT-R6 sector-stance) — factored
     # into _attach_board_display_chips so the post-build_library re-render (one-build-lag
     # fix, below) reuses the EXACT same enrichment and can never silently diverge.
     us_standouts = _attach_board_display_chips(site, us_standouts)
+    # Read the existing lossless pool; never rescore or re-admit a candidate here.
+    from engine.us_candidate_lanes import project_candidate_visibility, load_candidate_archive_status
+    us_candidate_visibility = project_candidate_visibility(
+        us_standouts, archive=load_candidate_archive_status(us_standouts))
     # ANTICIPATION §6.9 R5 — the per-name "why not" shelf under the board. Derived from
     # the SAME board dict the cards render from; see _us_prophet_refusals for the
     # build-order reason it cannot read the published prophet index for its reason list.
@@ -5016,6 +6634,43 @@ def main() -> int:
                 us_board_outcomes = _uod
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("us_board_outcomes.json unreadable (%s)", e)
+
+    # PROPHET BOARD LIFECYCLE LADDER (P-MP1-SHELL, MP-1-prophet-board.md §8, §8a).
+    # The plan book (site/prophet/index.json, published by build_prophet.py / PR-0(c))
+    # carries per-row `lifecycle_state` + the `lifecycle_counts` block the ladder quotes
+    # verbatim (ruling §6 count law: every rendered quantity of setups quotes this block
+    # or a difference of its values — never re-derived from row iteration). This is a
+    # READ of an already-published artifact; build_prophet.py / engine/us_board_rank.py
+    # are untouched (MP-1 §7/§9 — engine judgment is out of this packet's scope).
+    # Fail-soft like every other board load above: an absent/unreadable artifact leaves
+    # `us_prophet_book` None and the Setups region falls back to its loading/empty state
+    # rather than raising the build.
+    # us_prophet_book_error (MP-1 §10, Amendment 1 V-B4) distinguishes the
+    # ladder's two non-live states by CAUSE, not just by "book is falsy":
+    #   - not yet published (file absent) -> loading (the build hasn't caught
+    #     up to a nightly that hasn't run/published yet — normal, wordless).
+    #   - published but unreadable (file present, JSON/read failure) -> error
+    #     (§10's ".mx-error" state, names what failed, offers Retry).
+    # Both leave us_prophet_book None; only the flag differs, and only the
+    # flag decides which of the two non-live states the ladder renders.
+    us_prophet_book, us_prophet_book_error = _read_us_prophet_book(
+        site / "prophet" / "index.json")
+
+    # P1 — read the incumbent leader-pullback coverage independently of Candidates and
+    # Plans. The full roster exists only in this in-memory view and the existing protected
+    # US payload; the Prophet index carries aggregate source/count telemetry only.
+    from engine.us_leader_pullback_coverage import (  # noqa: PLC0415
+        load_prophet_observations,
+    )
+    _leader_reference_session = (
+        (us_prophet_book or {}).get("source_asof")
+        or ((us_standouts or {}).get("staleness") or {}).get("price_through")
+        or (us_standouts or {}).get("as_of")
+    )
+    us_leader_observations = load_prophet_observations(
+        site_root=site,
+        reference_session=_leader_reference_session,
+    )
 
     # THEME TAPE (W2) — the hottest themes reconciled against the board above, so a
     # heating theme the board is SILENT on still prints a line saying so. Pure
@@ -5083,7 +6738,9 @@ def main() -> int:
     # Macro news & catalysts (LEAF, additive, never fatal). Catalysts (FOMC + jobs
     # report) are keyless and always on; filtered headlines + the optional LLM brief
     # only when macro_news.enabled. News NEVER feeds any score.
-    macro_catalysts, macro_news_data, macro_brief_data = [], None, None
+    # None = fetch failed (unknown/cautious lane). [] = genuinely empty calendar.
+    # Never pre-set []: a failed fetch would then assert "nothing scheduled".
+    macro_catalysts, macro_news_data, macro_brief_data = None, None, None
     event_strip, catalyst_line = [], ""
     event_risk = {"show": False}
     macro_news_disclaimer = macro_news_disclaimer_zh = ""
@@ -5092,20 +6749,22 @@ def main() -> int:
         from engine import macro_news as _mnews
         _mncfg = config.load().get("macro_news", {}) or {}
         _horizon = _mncfg.get("catalysts_horizon_days", 14)
-        macro_catalysts = _mnews.upcoming_catalysts(horizon_days=_horizon)
+        macro_catalysts = _mnews.load_upcoming_catalysts(horizon_days=_horizon)
         # RIC W3: enrich OPEX event rows with the window level chip (display-only;
         # reads site/vol/regime.json['opex_risk'] — never blocks on absence).
-        try:
-            import json as _json
-            _site_dir = config.ROOT / config.load()["storage"]["site_dir"]
-            _vr_path = _site_dir / "vol" / "regime.json"
-            _or_snap = None
-            if _vr_path.exists():
-                _vr = _json.loads(_vr_path.read_text())
-                _or_snap = _vr.get("opex_risk")
-            macro_catalysts = _ec.enrich_opex_events(macro_catalysts, _or_snap)
-        except Exception as _e:  # noqa: BLE001
-            pass   # enrichment is additive; failure leaves catalysts unchanged
+        # Skip enrich when the fetch failed (None): leave the unknown-lane signal.
+        if macro_catalysts is not None:
+            try:
+                import json as _json
+                _site_dir = config.ROOT / config.load()["storage"]["site_dir"]
+                _vr_path = _site_dir / "vol" / "regime.json"
+                _or_snap = None
+                if _vr_path.exists():
+                    _vr = _json.loads(_vr_path.read_text())
+                    _or_snap = _vr.get("opex_risk")
+                macro_catalysts = _ec.enrich_opex_events(macro_catalysts, _or_snap)
+            except Exception as _e:  # noqa: BLE001
+                pass   # enrichment is additive; failure leaves catalysts unchanged
         # compact "US high-impact next 14 days" glance strip + the imminent-catalyst
         # text line fed to the LLM brief below (context only; never a scored input)
         event_strip = _ec.high_impact_strip(horizon_days=_horizon)
@@ -5685,6 +7344,53 @@ def main() -> int:
     except Exception:  # noqa: BLE001 — additive, never break the build
         pass
 
+    # UD-B2-W2: ingest the HK + CN ratified market_state snapshots + score-log history.
+    # These are READ-ONLY on the macro lane (persisted by build_hk / build_china on
+    # their own nightly cadences) — the macro page never recomputes the blender
+    # itself. Named `_persisted_ms_view` (not `_intl_ms_view`) because R-W2-2
+    # forbids `intl_market_state` as a HK/CN source; the name must not reopen
+    # that trap. The entry shape is fixed by DEC-SPINE-SCALE-BINDINGS:
+    # {score, label_en, label_zh, asof, caveat_en, caveat_zh, display_only:true};
+    # ms_history is added so the spine row can compute month-ago travel the same way
+    # the US subject row does (>=22 rows → real, shorter → designed-null travel
+    # with a real today marker, matching _unified_dashboard_hero.html.j2 lines
+    # ~:362-384 — never substitute raw_score).
+    def _persisted_ms_view(market_key: str) -> dict | None:
+        try:
+            from engine.market_state import load_persisted as _lp  # noqa: PLC0415
+            _snap = _lp(market_key=market_key)
+            if not _snap:
+                return None
+            _view = {
+                "score": _snap.get("score"),
+                "raw_score": _snap.get("raw_score"),
+                "verdict": _snap.get("verdict"),
+                "label_en": _snap.get("label_en"),
+                "label_zh": _snap.get("label_zh"),
+                "asof": _snap.get("asof"),
+                "caveat_en": _snap.get("caveat_en") or "",
+                "caveat_zh": _snap.get("caveat_zh") or "",
+                "display_only": True,
+                "market": market_key,
+                "ms_history": [],      # filled below from the parquet log
+            }
+            # score_log.parquet is keyed by the per-market directory; CN lives
+            # under data/china_market_state/ (the existing convention used by
+            # build_china.py:1888), HK under data/hk_market_state/.
+            _log_dir = "china_market_state" if market_key == "cn" else f"{market_key}_market_state"
+            _sl_path = config.data_dir() / _log_dir / "score_log.parquet"
+            if _sl_path.exists():
+                _all = pd.read_parquet(_sl_path).sort_values("date")
+                _view["ms_history"] = _all.tail(60).to_dict(orient="records")
+            return _view
+        except Exception as _e:  # noqa: BLE001 — additive, never fatal
+            log.warning("%s_market_state ingest failed (%s); degrading to None",
+                        market_key, _e)
+            return None
+
+    _hk_ms_view = _persisted_ms_view("hk")
+    _cn_ms_view = _persisted_ms_view("cn")
+
     # CA-W3: cross_asset radar chip — display-only concentration context.
     # Sources: data/regime/latest.json["cross_asset"] + data/crossasset_shadow/latest.json
     # Both fail-open; skips attach entirely if no data.
@@ -5756,13 +7462,31 @@ def main() -> int:
     except Exception as _fse:  # noqa: BLE001 — additive display chip, never fatal
         log.warning("factor_season chip read failed: %s", _fse)
 
+    # Grey Deer GD-2: compose the settled Risk Envelope and hand it to the macro
+    # band. Built HERE (not read from disk) so the artifact and the page it renders
+    # always describe the same session — reading a stale committed copy is exactly
+    # the drift the per-source clocks exist to expose. The builder also writes both
+    # canonical copies (data/ + site/riskdata/) atomically. Additive display band:
+    # a failure leaves risk_envelope=None and the band renders nothing at all,
+    # which is the honest outcome — never a fabricated calm read.
+    _risk_envelope = None
+    try:
+        from scripts.build_risk_envelope import write as _write_risk_envelope
+        _risk_envelope = _write_risk_envelope() or None
+    except Exception as _ree:  # noqa: BLE001 — additive display band, never fatal
+        log.warning("risk_envelope compose/write skipped: %s", _ree)
+
     # MSX-2: pre-compute chart_liquidity_meta (needed by _msig_stances before vm assembles)
     _chart_liq_meta = _chart_liquidity_meta(f)
     _fx_context = _build_fx_context()
     _msig_stances_val = _msig_stances(_us_ms_view, _chart_liq_meta, f)
 
+    _hold_rows, _hold_uni = holdings_panel()
+    _acc_rows, _acc_uni = accumulation_panel()
+
     vm = dict(
         latest=latest,
+        risk_envelope=_risk_envelope,
         mtf=mtf_data,
         macro_catalysts=macro_catalysts,
         event_strip=event_strip,
@@ -5783,6 +7507,13 @@ def main() -> int:
         action_board=_ab,
         top_setups=top_setups,
         us_standouts=us_standouts,
+        # Internal machine binding only; no template/public-rights/tier expansion.
+        us_selection_cohort_internal=_us_w3c,
+        us_today_source_binding=_us_today_binding,
+        us_today_native_binding=_us_today_native,
+        us_candidate_visibility=us_candidate_visibility,
+        us_prophet_book=us_prophet_book,
+        us_leader_observations=us_leader_observations,
         us_prophet_refusals=us_prophet_refusals,
         theme_tape=theme_tape,
         us_board_outcomes=us_board_outcomes,
@@ -5808,9 +7539,11 @@ def main() -> int:
         msig_stances=_msig_stances_val,          # MSX-2: stance {en,zh} pairs per section
         fx_context=_fx_context,                  # MSX-2: FX context block (fail-open None)
         positioning=positioning_rows(f),
-        holdings_changes=holdings_rows(),
+        holdings_changes=_hold_rows,
+        holdings_universe_n=_hold_uni,
         holdings_threshold=config.load()["holdings"]["active_change_alert_pct"],
-        accumulation=accumulation_rows(),
+        accumulation=_acc_rows,
+        accumulation_universe_n=_acc_uni,
         flows_html=flows_html_table(),
         health=health_rows(),
         factor_leadership=factor_leadership,
@@ -5820,13 +7553,18 @@ def main() -> int:
         alloc_card=alloc_card_state(),           # macro-page allocation CTA card
         risk_model=risk_model_view(f, hist, _cf),  # de-risk score + leg breakdown
         chart_risk_model=chart_risk_model(_cf),    # drawdown/recession risk-model chart
-        chart_curve=chart_curve(_cf),              # 2s10s raw vs term-premium-adjusted
+        chart_curve=chart_curve(_cf),              # raw 2s10s vs legacy TP10 heuristic
         chart_vix_term=chart_vix_term(f, _cf),     # VIX level + term-structure ratio
         cross_asset=cross_asset_snap,
         fear_euphoria=fear_euphoria_synthesis(latest, f),
         regime_snap=_rs_view,
         market_state=_us_ms_view,  # Green/Yellow/Red market-state command-center (display-only)
         ms_history=_ms_history_view(_us_ms_view),  # v5 scorecard: measured blend, last <=60 sessions
+        # UD-B2-W2 (DEC-SPINE-SCALE-BINDINGS): HK + CN spine rows bind to the
+        # HK_PROFILE / CN_PROFILE market_state snapshots persisted by build_hk /
+        # build_china. Read-only on this lane; off the heavy render path.
+        hk_market_state=_hk_ms_view,
+        cn_market_state=_cn_ms_view,
         idx_spark=_idx_spark_view(),      # v5 scorecard: 20-point sparklines SPY/QQQ/^DJI/^RUT — graceful absent
         signal_stack=build_signal_stack(latest),  # consolidated cross-subsystem read (display-only)
         vol_shock=_vol_shock_view(latest, event_risk),  # forward vol-shock risk gauge (display-only)
@@ -5869,6 +7607,24 @@ def main() -> int:
     # regressing to the dashboard when build_vector doesn't run after this.
     out = site / "macro.html"
     write_page(out, env.get_template("dashboard.html.j2").render(**vm, mode="macro"))
+
+    # The cross-market component belongs to intl.html, not the primary US route.
+    # Publish the same rendered view, preserving all per-market evidence/clocks.
+    from lib.global_regime_fragment import (
+        internationalize_hero_styles,
+        write_global_regime_fragment,
+    )
+    _intl_hero_css = internationalize_hero_styles(
+        (Path(__file__).resolve().parent.parent / "templates" / "theme.css").read_text()
+    )
+    _intl_hero_html = env.get_template("_unified_dashboard_hero.html.j2").render(
+        **vm, ud_international=True
+    )
+    write_global_regime_fragment(
+        site,
+        f"<style>\n{_intl_hero_css}\n</style>\n{_intl_hero_html}",
+        source_asof=(vm.get("market_state") or {}).get("asof"),
+    )
     log.info("wrote %s (%.0f KB)", out, out.stat().st_size / 1024)
 
     # Dedicated macro news feed. Uses the same context-only news/catalyst/sentiment
@@ -5987,6 +7743,30 @@ def main() -> int:
         log.warning("news_feed build failed: %s", _e)
         _news_feed = []
 
+    # F05/MO-PAID-017: bounded chronicle consequence surface for News Feed.
+    # Read-time projection over a recent window — never a nightly-committed
+    # impact.jsonl dump. Explicitly not a Market-Feed-branded surface.
+    _chronicle_impact = None
+    try:
+        from engine.chronicle import impact as _impact_mod  # noqa: PLC0415
+        from engine.chronicle import spine as _spine_mod  # noqa: PLC0415
+        _ev_path = Path(config.data_dir()) / "chronicle" / "events.jsonl"
+        _evs = _spine_mod.load_events_jsonl(_ev_path) if _ev_path.exists() else []
+        _chronicle_impact = _impact_mod.glance_consequence_surface(_evs)
+    except Exception as _e:  # noqa: BLE001 — additive; never fatal
+        log.warning("chronicle_impact glance failed: %s", _e)
+        _chronicle_impact = {
+            "served_as_market_feed": False,
+            "market_feed_disposition": "explicitly_does_not_serve_market_feed",
+            "stance_en": "Not available yet",
+            "stance_zh": "暂不可用",
+            "reason_en": "Consequence projection failed to load.",
+            "reason_zh": "后果投影未能加载。",
+            "families": {},
+            "rows": [],
+            "event_count": 0,
+        }
+
     out_news = site / "news.html"
     # vm already carries a 'macro_news' key (assigned above), so we must NOT splat
     # **vm AND pass macro_news= explicitly — that collides at argument binding and
@@ -6007,6 +7787,7 @@ def main() -> int:
             news_calibration=_news_calibration_data,
             financial_news=_financial_news_data,
             news_feed=_news_feed,
+            chronicle_impact=_chronicle_impact,
         )
     except Exception as _e:  # noqa: BLE001 — degrade, never raise
         log.error("news.html render failed (%s: %s) — retrying without side-artifacts",
@@ -6020,6 +7801,7 @@ def main() -> int:
                 news_calibration=None,
                 financial_news=None,
                 news_feed=_news_feed,
+                chronicle_impact=_chronicle_impact,
             )
         except Exception as _e2:  # noqa: BLE001 — degrade, never raise
             log.error("news.html artifact-free render failed too (%s: %s) — "
@@ -6037,8 +7819,75 @@ def main() -> int:
     log.info("wrote %s (%.0f KB)", out_news, out_news.stat().st_size / 1024)
 
     # US Stock Dashboard — same VM, the "looking for stocks" half of the split.
+    # Tier gate (docs/TIER_PREVIEW_PATTERN.md): _split_us_board NEVER mutates
+    # vm["us_standouts"] (shared with the macro.html render above/below) — the
+    # sliced shell and the `gate` dict are passed only into THIS render call via
+    # an overridden copy of vm, and the withheld remainder is written to
+    # site/premiumdata/us_stocks.json regardless of the switch (empty when off).
+    _us_gate_cfg = _us_board_gate_cfg()
+    _us_today_featured = _us_today_featured_preview(
+        vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
+    # The loader emits for a GENUINE bound nonempty ungated Today too (same
+    # trampoline, same protected payload URL, no extra auth path): three real
+    # owner pins plus at least one Featured row, else None.
+    _us_today_emit = _us_today_native_emit_for(
+        vm.get("us_today_source_binding"), bool(_us_today_featured))
+    _us_shell_su, _us_gate, _us_locked = _split_us_board(
+        vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
+    # P-MP1-SHELL central act, §8b: the SAME re-plumb as the candidate split
+    # above, applied to the plan book the migrated Setups grid renders from.
+    # Ladder counts are NEVER affected by this split (life_gate carries no
+    # count fields — see _split_us_prophet_board docstring); only which CARD
+    # ROWS render past the preview slice moves.
+    # Repair round, finding S1: the plan book's OWN `gated` switch is a
+    # fail-CLOSED read (_us_life_gate_cfg), not the fail-open
+    # _us_board_gate_cfg()["gated"] the candidate split above still uses —
+    # `preview_rows` itself stays shared (§8b: identical to the candidate
+    # board's own gate config).
+    _us_life_shell, _us_life_gate, _us_life_locked = _split_us_prophet_board(
+        vm.get("us_prophet_book"), _us_gate_cfg["preview_rows"], gated=_us_life_gate_cfg(),
+        withheld=_us_withheld_names(vm, _us_gate_cfg["panel_preview_rows"]))
+    _us_life_episodes = _us_prophet_episode_map((vm.get("us_prophet_book") or {}).get("plans") or [])
+    # Repair round, findings B4/S2/S8/R2/R4 — see _us_life_repair_context().
+    _us_life_repair = _us_life_repair_context(vm, _us_life_shell, _us_life_gate,
+                                               _us_gate_cfg["preview_rows"])
+    # The four panels ADJACENT to the board (fresh triggers, market leaders,
+    # recently fired, act-now, theme tape) are fed by different artifacts, so the
+    # board's split never reached them — they ride the same payload as extra
+    # *_html blocks. Same rule: NEVER mutate the shared vm.
+    _us_pov, _us_pgate, _us_plocked = _split_us_panels(
+        vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"])
+    _us_shell_su, _us_life_repair = _us_apply_panel_withholding(
+        vm, _us_shell_su, _us_life_repair, _us_pov, _us_gate_cfg["preview_rows"])
+    _us_plan_state, _us_plan_by_ticker = _plan_relations_for(
+        vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
+    vm["plan_rel_by_ticker"] = _plan_relations_for_shell(
+        (_us_plan_state, _us_plan_by_ticker), _us_life_locked)
+    vm["plan_rel"] = {"state": _us_plan_state, "plans": []}
+    _write_us_payload(env, site, _us_gate, locked_rows=_us_locked,
+                       us_standouts=vm.get("us_standouts"),
+                       top_setups=vm.get("top_setups"), built=generated,
+                       today_rows=_us_today_featured,
+                       today_source_binding=vm.get("us_today_source_binding"),
+                       pgate=_us_pgate,
+                       panel_blocks=_render_us_panel_payload(
+                                       env, _us_pgate, _us_plocked, vm,
+                                       (_us_plan_state, _us_plan_by_ticker)),
+                       life_gate=_us_life_gate, locked_plans=_us_life_locked,
+                       cand_map=_us_life_repair["us_candidate_map"],
+                       trg_map={r.get("ticker"): r for r in ((vm.get("top_setups") or {}).get("buy") or [])
+                                if r.get("ticker")},
+                       episode_map=_us_life_episodes,
+                       plan_relations=(_us_plan_state, _us_plan_by_ticker))
     out_st = site / "us_stocks.html"
-    write_page(out_st, env.get_template("dashboard.html.j2").render(**vm, mode="stocks"))
+    write_page(out_st, env.get_template("dashboard.html.j2").render(
+        **{**vm, **_us_pov, "us_standouts": _us_shell_su,
+           "gate": _us_gate, "pgate": _us_pgate,
+           "us_today_native_emit": _us_today_emit,
+           "us_prophet_book": _us_life_shell, "life_gate": _us_life_gate,
+           "us_prophet_episodes": _us_life_episodes,
+           "us_prophet_book_error": us_prophet_book_error,
+           **_us_life_repair}, mode="stocks"))
     _tmark("dashboard_vm+render")
     log.info("wrote %s (%.0f KB)", out_st, out_st.stat().st_size / 1024)
 
@@ -6159,40 +8008,14 @@ def main() -> int:
     # Additive — never fatal to the daily run.
     try:
         from scripts.build_market_heatmap import build_all as build_market_heatmaps
-        from engine.market_heatmap import PAGE_META as _HM_MK
-        from engine.market_heatmap import page_summary as _hm_summary
-        from engine.market_heatmap import sibling_markets as _hm_siblings
-        from lib.seo import is_public_path as _is_public
+        from scripts.build_market_heatmap import render_pages as render_market_heatmap_pages
+
         _hm_payloads = build_market_heatmaps(site, generated_utc=generated)
         _tmark("intl_heatmaps")
-        _hm_tmpl = env.get_template("market_heatmap.html.j2")
-        for _m, _mk in _HM_MK.items():
-            out_mh = site / f"{_m}_heatmap.html"
-            # Read the tile map back off disk rather than trusting the in-memory
-            # return: build_all() swallows a single market's failure so one dead
-            # feed cannot take the site down, and on that path the committed JSON
-            # from the last good run is what the browser will actually fetch — so
-            # it is what the server-rendered summary must describe.
-            _pay = _hm_payloads.get(_m)
-            if not _pay:
-                try:
-                    _pay = json.loads((site / "marketdata" / f"{_m}_heatmap.json")
-                                      .read_text(encoding="utf-8"))
-                except Exception:  # noqa: BLE001 — no map, no summary; the shell still ships
-                    _pay = None
-            # The wall shows exactly when the page is anonymous-public. One source
-            # of truth (config/site_access.yml) means a sibling market adopts the
-            # tier preview by moving one line of policy — no template edit, no
-            # second flag that can disagree with the boundary.
-            _gated = _is_public(f"/{_m}_heatmap.html")
-            _sum = _hm_summary(_pay)
-            write_page(out_mh, _hm_tmpl.render(
-                mk=_mk, summary=_sum, gated=_gated,
-                n_tiles=(_sum or {}).get("n_tiles") or (_pay or {}).get("n_tiles") or 0,
-                siblings=_hm_siblings(_m),
-            ))
-            log.info("wrote %s (%.0f KB, ssr=%s, gated=%s)", out_mh,
-                     out_mh.stat().st_size / 1024, bool(_sum), _gated)
+        # The shared publisher owns JSON→SSR fallback and boundary projection.
+        # Asia close calls the same owner for China alone, so no second page
+        # renderer can drift from the full-site path.
+        render_market_heatmap_pages(_hm_payloads, site=site, env=env)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("market heatmaps (cn/hk/ca) failed: %s", e)
 
@@ -6311,27 +8134,18 @@ def main() -> int:
     # a "results ready" flag, so the owner is told exactly when to return for the next step.
     try:
         from engine import experiments_registry
-        experiments_registry.build(site)
+        experiments_registry.build_published(site)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("experiments registry build failed: %s", e)
 
     # --- history page: the longer-window charts + lifespan base rates ----------
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
-    trans = transition_stats(hist["quad"])
-    lifespan_rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        lifespan_rows.append({"name": QUAD_SHORT[q],
-                              "n": trans["n_by_quad"].get(q, "—"),
-                              "median": trans["median_days"].get(q, "—"),
-                              "next": next_quads_line(nxt),
-                              "next_zh": next_quads_line(nxt, zh=True)})
+    from engine.playbook import finished_lifespan_rows
     hist_html = env.get_template("history.html.j2").render(
         latest=latest,
         generated_utc=generated,
         chart_regime=chart_regime(f, hist, days=1095),
         chart_axes=chart_axes(hist, days=1095),
-        lifespan_rows=lifespan_rows,
+        lifespan_rows=finished_lifespan_rows(hist["quad"]),
     )
     out2 = site / "history.html"
     write_page(out2, hist_html)
@@ -6361,7 +8175,7 @@ def main() -> int:
             log.warning("profile translation step failed (%s); blurbs stay English", e)
         _tmark("profile_translation")
         from scripts.build_stock_library import main as build_library
-        build_library()
+        build_library(now=_us_board_observed_at)
         _tmark("stock_library")
 
         # One-build-lag fix (us_stocks staleness banner): build_library() just wrote
@@ -6382,14 +8196,80 @@ def main() -> int:
         # error leaves the first-pass pages in place.
         try:
             _us_path = site / "factordata" / "us_standouts.json"
-            _fresh_su = _attach_board_display_chips(
-                site, json.loads(_us_path.read_text())) if _us_path.exists() else None
+            _fresh_source_bytes = _us_path.read_bytes() if _us_path.exists() else None
+            _fresh_w3c = None
+            _fresh_w3c_refusal = None
+            _fresh_w3c_binding = None
+            _fresh_today_binding = None
+            if _fresh_source_bytes is not None:
+                try:
+                    from hashlib import sha256 as _w3c_sha256
+                    _fresh_w3c_binding = _w3c_sha256(_fresh_source_bytes).hexdigest()
+                    from engine.theme_graph.selection_cohort_publication import (
+                        consume_us_source, default_capture_capability)
+                    try:
+                        from functools import partial as _w3c_partial
+                        from engine.theme_graph.selection_cohort_reads import publication_reads as _w3c_reads
+                        _w3c_attempts = (_w3c_partial(_w3c_reads, data_dir=config.data_dir()), None)
+                    except Exception as _w3c_qr_e:  # noqa: BLE001 — receipt-only read survives a missing reads owner
+                        log.warning("W3C qualified reads unavailable (%s); receipt-only", _w3c_qr_e)
+                        _w3c_attempts = (None,)
+                    for _w3c_qr in _w3c_attempts:
+                        _fresh_w3c_read = consume_us_source(
+                            _fresh_source_bytes, data_dir=config.data_dir(),
+                            authorize_capture=default_capture_capability(), qualified_reads=_w3c_qr)
+                        if _fresh_w3c_read["status"] == "AVAILABLE":
+                            _fresh_w3c = _fresh_w3c_read
+                            break
+                        _fresh_w3c_refusal = _fresh_w3c_read
+                        if _w3c_qr is not None:
+                            log.warning("W3C US qualified reads refused (%s); receipt-only", _fresh_w3c_read["reason_codes"])
+                except Exception as _fresh_w3c_e:  # noqa: BLE001 — keep ordinary fresh-board rendering
+                    log.warning("W3C fresh US source binding unavailable (%s)", _fresh_w3c_e)
+            _fresh_owner_doc = (json.loads(_fresh_source_bytes)
+                                if _fresh_source_bytes is not None else None)
+            _fresh_su = None
+            _fresh_today_native = None
+            if _fresh_owner_doc is not None:
+                # Same first/fresh rule: bind the frozen raw SHA to the ORIGINAL
+                # decoded doc BEFORE display attachment touches it.
+                _fresh_today_binding = _us_today_source_binding(
+                    _fresh_w3c_binding, _fresh_owner_doc)
+                # Same owner callable, same exact fresh bytes, still before any
+                # attachment or split.
+                _fresh_today_native = _us_today_native_binding(_fresh_source_bytes)
+                if _fresh_today_native is not None:
+                    _fresh_owner_doc = _us_today_bind_rows(
+                        _fresh_owner_doc, _fresh_today_native)
+                    _fresh_today_binding = (
+                        {**_fresh_today_binding, **_fresh_today_native}
+                        if _fresh_today_binding else _fresh_today_native)
+                _fresh_su = _attach_board_display_chips(site, _fresh_owner_doc)
             _prior_as_of = (us_standouts or {}).get("as_of")
             _prior_stale = (us_standouts or {}).get("staleness") or {}
+            _fresh_candidate_visibility = project_candidate_visibility(
+                _fresh_su, archive=load_candidate_archive_status(_fresh_su))
             if _fresh_su and (
                     _fresh_su.get("as_of") != _prior_as_of
-                    or (_fresh_su.get("staleness") or {}) != _prior_stale):
+                    or (_fresh_su.get("staleness") or {}) != _prior_stale
+                    # A same-session correction can change names, exclusion reasons,
+                    # or availability without advancing the date/freshness clock.
+                    # Compare the existing allowlisted view, not unrelated raw fields.
+                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")
+                    # Same-session source/reason/explanation corrections cannot pair
+                    # the fresh board with an older first-pass internal context.
+                    or _fresh_w3c_binding != _us_w3c_binding
+                    or _fresh_w3c != vm.get("us_selection_cohort_internal")
+                    # A same-session native binding change (availability or value)
+                    # must not pair a fresh source with older Today metadata.
+                    or _fresh_today_native != vm.get("us_today_native_binding")):
+                vm["us_selection_cohort_internal"] = _fresh_w3c
+                _us_w3c_binding = _fresh_w3c_binding
+                _us_w3c_refusal = _fresh_w3c_refusal
+                vm["us_today_source_binding"] = _fresh_today_binding
+                vm["us_today_native_binding"] = _fresh_today_native
                 vm["us_standouts"] = _fresh_su
+                vm["us_candidate_visibility"] = _fresh_candidate_visibility
                 # §6.9 R5: the "passed on tonight" shelf is DERIVED from this board, so
                 # it moves with it for the same reason the Theme Tape below does — the
                 # whole point of deriving it from us_standouts (rather than from the
@@ -6432,9 +8312,71 @@ def main() -> int:
                         vm["top_setups"] = json.loads(_setups_path.read_text())
                     except Exception:  # noqa: BLE001 — keep prior setups on parse error
                         pass
+                # Tier gate (docs/TIER_PREVIEW_PATTERN.md): the fresh board just
+                # replaced vm["us_standouts"] above, so re-split it and rewrite the
+                # payload from THIS generation — otherwise the re-render would bake
+                # the fresh board's full row set straight into the shell and
+                # silently reopen the leak on every one-build-lag refresh.
+                _us_today_featured2 = _us_today_featured_preview(
+                    vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
+                # Same genuine-bound emit rule as the first pass, from THIS
+                # generation's binding and Featured shelf.
+                _us_today_emit2 = _us_today_native_emit_for(
+                    vm.get("us_today_source_binding"), bool(_us_today_featured2))
+                _us_shell_su2, _us_gate2, _us_locked2 = _split_us_board(
+                    vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
+                # The plan book is not touched by this one-build-lag re-render
+                # (only us_standouts/top_setups/theme_tape are refreshed above),
+                # so re-splitting it here is idempotent — done anyway so this
+                # render call is self-contained rather than reaching back into
+                # the first pass's locals.
+                # Repair round, finding S1: fail-CLOSED plan-book gate, same
+                # reader as the first pass — see _us_life_gate_cfg().
+                _us_life_shell2, _us_life_gate2, _us_life_locked2 = _split_us_prophet_board(
+                    vm.get("us_prophet_book"), _us_gate_cfg["preview_rows"], gated=_us_life_gate_cfg(),
+                    withheld=_us_withheld_names(vm, _us_gate_cfg["panel_preview_rows"]))
+                _us_life_episodes2 = _us_prophet_episode_map(
+                    (vm.get("us_prophet_book") or {}).get("plans") or [])
+                # Repair round, findings B4/S2/S8/R2/R4 — see _us_life_repair_context().
+                _us_life_repair2 = _us_life_repair_context(vm, _us_life_shell2, _us_life_gate2,
+                                                            _us_gate_cfg["preview_rows"])
+                # Same for the adjacent panels: this pass replaced us_standouts,
+                # top_setups and theme_tape above, so re-split from THIS generation
+                # or the re-render bakes their full row sets back into the shell.
+                _us_pov2, _us_pgate2, _us_plocked2 = _split_us_panels(
+                    vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"])
+                _us_shell_su2, _us_life_repair2 = _us_apply_panel_withholding(
+                    vm, _us_shell_su2, _us_life_repair2, _us_pov2, _us_gate_cfg["preview_rows"])
+                _us_plan_state2, _us_plan_by_ticker2 = _plan_relations_for(
+                    vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
+                vm["plan_rel_by_ticker"] = _plan_relations_for_shell(
+                    (_us_plan_state2, _us_plan_by_ticker2), _us_life_locked2)
+                vm["plan_rel"] = {"state": _us_plan_state2, "plans": []}
+                _write_us_payload(env, site, _us_gate2, locked_rows=_us_locked2,
+                                   us_standouts=vm.get("us_standouts"),
+                                   top_setups=vm.get("top_setups"), built=generated,
+                                   today_rows=_us_today_featured2,
+                                   today_source_binding=vm.get("us_today_source_binding"),
+                                   pgate=_us_pgate2,
+                                   panel_blocks=_render_us_panel_payload(
+                                       env, _us_pgate2, _us_plocked2, vm,
+                                       (_us_plan_state2, _us_plan_by_ticker2)),
+                                   life_gate=_us_life_gate2, locked_plans=_us_life_locked2,
+                                   cand_map=_us_life_repair2["us_candidate_map"],
+                                   trg_map={r.get("ticker"): r for r in ((vm.get("top_setups") or {}).get("buy") or [])
+                                            if r.get("ticker")},
+                                   episode_map=_us_life_episodes2,
+                                   plan_relations=(_us_plan_state2, _us_plan_by_ticker2))
                 _dash = env.get_template("dashboard.html.j2")
                 write_page(site / "macro.html", _dash.render(**vm, mode="macro"))
-                write_page(site / "us_stocks.html", _dash.render(**vm, mode="stocks"))
+                write_page(site / "us_stocks.html", _dash.render(
+                    **{**vm, **_us_pov2, "us_standouts": _us_shell_su2,
+                       "gate": _us_gate2, "pgate": _us_pgate2,
+                       "us_today_native_emit": _us_today_emit2,
+                       "us_prophet_book": _us_life_shell2, "life_gate": _us_life_gate2,
+                       "us_prophet_episodes": _us_life_episodes2,
+                       "us_prophet_book_error": us_prophet_book_error,
+                       **_us_life_repair2}, mode="stocks"))
                 log.info(
                     "one-build-lag fix: re-rendered macro/us_stocks from fresh board "
                     "(as_of %s -> %s, delayed %s -> %s)",
@@ -6444,6 +8386,12 @@ def main() -> int:
         except Exception as _rr_e:  # noqa: BLE001 — additive, never fatal
             log.warning("one-build-lag re-render skipped (%s)", _rr_e)
         _tmark("one_build_lag_rerender")
+        try:
+            from engine.theme_graph.selection_cohort_projection import write_product_projection
+            # A typed refusal reaches only the product projection (gate #8: preserve reasons); the internal binding stays None.
+            write_product_projection(site, "us", vm.get("us_selection_cohort_internal") or _us_w3c_refusal)
+        except Exception as _scp_e:  # noqa: BLE001 — projection never breaks ordinary rendering
+            log.warning("selection-cohort projection (us) not written (%s)", _scp_e)
 
         # Bespoke single-stock chart data: a compact per-ticker OHLC JSON
         # (site/ohlc/<T>.json) read client-side by chart.js. Pure serialisation of
@@ -6668,8 +8616,68 @@ def main() -> int:
         from scripts.build_capital_structure_page import render as _render_capital_structure
         _cs_page = _render_capital_structure(config.ROOT)
         log.info("wrote %s", _cs_page)
-    except Exception as _cs_e:  # noqa: BLE001 — additive; never break main build
-        log.warning("capital_structure.html render failed (%s); page skipped", _cs_e)
+    except Exception as _cs_e:  # noqa: BLE001 — annotate loudly; never break main build
+        # A withheld page keeps the last build's bytes, whose "in N days" copy is
+        # wrong a day later. A log WARNING let that ride a green run from 10-24 to
+        # 11-02. Bare print, NOT a logger call: GitHub only parses a workflow
+        # command when "::" starts the line (see the sitemap note below).
+        _cs_msg = ("capital_structure.html NOT rebuilt, stale page retained — "
+                   f"{type(_cs_e).__name__}: {(str(_cs_e).splitlines() or [''])[0]}")
+        print(f"::error title=capital_structure::{_cs_msg}", flush=True)
+        try:
+            if os.environ.get("GITHUB_STEP_SUMMARY"):
+                with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as _cs_fh:
+                    _cs_fh.write(f"### ❌ {_cs_msg}\n")
+        except OSError:
+            pass
+
+    # Finance Intelligence dossier — render only the registered preview shell.
+    # Per Chairman directive 2026-09-24 (relayed from Astra CEO): Finance ships
+    # no private store, no publish lane, and no serving route — the read model
+    # is consumed at runtime from the same-origin foundation route behind the
+    # site_full access policy; this static renderer never reads or republishes
+    # any read-model payload.
+    try:
+        from scripts.build_finance_intelligence_page import render_from_state as _render_finance
+        _fi_page = _render_finance(config.ROOT)
+        log.info("wrote %s", _fi_page)
+    except Exception as _fi_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("finance_intelligence.html render failed (%s); page skipped", _fi_e)
+
+    # Expectation Surface — Information→Price wave 1 descriptive consensus page
+    # (schema expectation_surface.page.v1, financial_influence=false everywhere).
+    # Degrade-safe: an import or render fault skips the page, never the build.
+    try:
+        from scripts.build_expectation_surface import build as _build_es
+        _es_summary = _build_es(write=True)
+        log.info("wrote site/expectation_surface.html (%s)", _es_summary.get("state"))
+    except Exception as _es_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("expectation_surface render failed (%s); page skipped", _es_e)
+
+    # Consumer Cyclical PLNT synthetic display card — one static card mounting
+    # display_packet over the committed synthetic fixture. It writes no data,
+    # fetches nothing, and a native-admitted refusal raises before any page
+    # exists; this hook only keeps a full-site rebuild from leaving the card
+    # behind the templates.
+    try:
+        from scripts.build_consumer_cyclical_plnt_page import render as _render_plnt
+        _plnt_page = _render_plnt(config.ROOT)
+        log.info("wrote %s", _plnt_page)
+    except Exception as _plnt_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("consumer_cyclical_plnt.html render failed (%s); page skipped", _plnt_e)
+
+    # F01 Macro & Monetary suite — server-rendered workspace pages over the
+    # validated mastermind.macro_workspace_snapshot.v1 artifacts. The builder
+    # fails CLOSED on its own (a refused snapshot renders the typed refusal page,
+    # never a stale or empty one), so this hook only keeps a full-site rebuild
+    # from leaving the suite's pages and shared assets behind the templates.
+    try:
+        from scripts.build_macro_suite_pages import render as _render_macro_suite
+        _macro_suite_pages = _render_macro_suite(config.ROOT)
+        for _mq_page in _macro_suite_pages:
+            log.info("wrote %s", _mq_page)
+    except Exception as _mq_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("macro suite pages render failed (%s); pages skipped", _mq_e)
 
     # W4: TIL State of Themes terminal — cross-theme matrix with asymmetry legs,
     # falsifier health, filter chips, and weekly-delta strip. Reads the four
@@ -6698,6 +8706,18 @@ def main() -> int:
         log.info("wrote %s", site / "market_structure.html")
     except Exception as _msp_e:  # noqa: BLE001 — additive; never break main build
         log.warning("market_structure.html render failed (%s); page skipped", _msp_e)
+
+    # U1 — Theme Map (house hierarchy, category → theme → sub-theme → micro-theme).
+    # Reads the breadth-display reader; never writes to data/. Render failure
+    # never breaks main build (builder emits `.mx-empty` on store unreadable).
+    try:
+        import scripts.build_theme_tree_page as _ttb
+        _ttb_html = _ttb.render(config.ROOT)
+        write_page(site / "theme_tree.html", _ttb_html)
+        _tmark("theme_tree")
+        log.info("wrote %s", site / "theme_tree.html")
+    except Exception as _ttb_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("theme_tree render failed (%s); page skipped", _ttb_e)
 
     # Market Memory — data-free authenticated shell over existing macro analogue
     # and Signal Episode Atlas APIs.  The page never republishes analytical data.

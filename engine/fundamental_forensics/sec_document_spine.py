@@ -14,12 +14,19 @@ The SEC Submissions endpoint does not identify which exact prior accession an
 ``/A`` amends.  Where an unambiguous same-form/same-report-period predecessor
 is available, we retain that relationship as an *inference*, not a claimed SEC
 fact.  Otherwise the amendment remains explicitly unresolved.
+
+Canonical archive receipts, storage keys, and bounded retained-byte replay
+also live here. The acquisition collector re-exports these same objects;
+reading retained evidence does not initialize its HTTP dependencies.
 """
 from __future__ import annotations
 
+from dataclasses import asdict, dataclass
 from datetime import date, datetime
+import gzip
 import hashlib
 import hmac
+import io
 import json
 import re
 from typing import Any, Iterable, Mapping, Sequence
@@ -38,12 +45,16 @@ MANIFEST_CONTENT_KEY_PREFIX = "ffsec_content_"
 ARCHIVE_ORIGIN = "https://www.sec.gov/Archives/edgar/data"
 HARD_MAX_FILING_MANIFEST_BYTES = 8 * 1024 * 1024
 HARD_MAX_ARCHIVE_DOCUMENT_BYTES = 32 * 1024 * 1024
+# Shared retained-document bounds, also re-exported by the acquisition collector.
+HARD_MAX_DOCUMENT_BYTES = HARD_MAX_ARCHIVE_DOCUMENT_BYTES
+HARD_MAX_ARCHIVE_RECEIPT_BYTES = 64 * 1024
 HARD_MAX_ARCHIVE_INDEX_MEMBERS = 20_000
 HARD_MAX_HTTP_METADATA_BYTES = 8 * 1024
 
 _ACCESSION_RE = re.compile(r"^[0-9]{10}-[0-9]{2}-[0-9]{6}$")
 _CIK_RE = re.compile(r"^[0-9]{1,10}$")
 _DOCUMENT_SEGMENT_RE = re.compile(r"^[A-Za-z0-9._-]+$")
+_DOCUMENT_ROLES = frozenset({"primary", "exhibit", "archive"})
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _AVAILABILITY = {"declared", "stored", "missing"}
@@ -178,6 +189,24 @@ def archive_document_url(cik: int | str, accession: str, document_name: str) -> 
     return archive_directory_url(cik, accession) + f"/{document_name}"
 
 
+def sec_document_id(
+    cik: int | str, accession: str, role: str, document_name: str
+) -> str:
+    """Canonical SEC document-spine identity: CIK + accession + role + document name.
+
+    CIK is normalized to the ten-digit ASCII spelling so ``320193`` and
+    ``0000320193`` mint one identity. Accession, role, and document name are
+    validated through the existing spine path law; they are not rewritten.
+    """
+    cik10 = canonical_cik(cik)
+    if not isinstance(accession, str) or not _ACCESSION_RE.fullmatch(accession):
+        raise FilingManifestError(f"invalid accession: {accession!r}")
+    if not isinstance(role, str) or role not in _DOCUMENT_ROLES:
+        raise FilingManifestError(f"invalid document role: {role!r}")
+    name = _check_document_name(document_name)
+    return stable_id("sec_document", cik10, accession, role, name)
+
+
 def _check_document_name(value: Any) -> str:
     name = str(value or "").strip()
     # SEC Submissions occasionally uses a safe relative primary-document path
@@ -236,7 +265,7 @@ def _primary_document(cik: str, accession: str, value: Any) -> dict[str, Any] | 
         return None
     name = _check_document_name(value)
     return {
-        "document_id": stable_id("sec_document", cik, accession, "primary", name),
+        "document_id": sec_document_id(cik, accession, "primary", name),
         "document_name": name,
         "document_type": None,
         "sequence": None,
@@ -351,11 +380,9 @@ def _validate_document(document: Mapping[str, Any], *, cik: str, accession: str)
     if availability not in _AVAILABILITY:
         raise FilingManifestError(f"invalid document availability: {availability!r}")
     role = document["role"]
-    if not isinstance(role, str) or role not in {"primary", "exhibit", "archive"}:
+    if not isinstance(role, str) or role not in _DOCUMENT_ROLES:
         raise FilingManifestError(f"invalid document role: {role!r}")
-    expected_document_id = stable_id(
-        "sec_document", cik, accession, role, name
-    )
+    expected_document_id = sec_document_id(cik, accession, role, name)
     if document["document_id"] != expected_document_id:
         raise FilingManifestError("document_id does not bind its filing identity")
     if availability == "stored":
@@ -525,10 +552,10 @@ def _document_metadata(
 ) -> dict[str, Any]:
     name = _check_document_name(name)
     role = str(role).strip().lower()
-    if role not in {"primary", "exhibit", "archive"}:
+    if role not in _DOCUMENT_ROLES:
         raise FilingManifestError(f"unsupported archive document role: {role!r}")
     return {
-        "document_id": stable_id("sec_document", cik, accession, role, name),
+        "document_id": sec_document_id(cik, accession, role, name),
         "document_name": name,
         "document_type": str(document_type).strip() if document_type else None,
         "sequence": (
@@ -902,7 +929,182 @@ def manifest_from_json_bytes(content: bytes) -> dict[str, Any]:
     return record
 
 
+# Pure retained-byte contracts. The collector imports these exact objects.
+class ArchiveStoreError(OSError):
+    """An immutable archive object or its receipt failed integrity checks."""
+
+
+@dataclass(frozen=True)
+class ArchiveReceipt:
+    """A checksum-bound receipt for one exact archive-document retrieval."""
+
+    schema: str
+    receipt_id: str
+    status: str
+    document_id: str
+    archive_url: str
+    retrieved_at: str
+    content_sha256: str
+    byte_length: int
+    storage_key: str
+    http_etag: str | None
+    http_last_modified: str | None
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+def _utc_text(value: str | datetime, *, field: str) -> str:
+    try:
+        parsed = parse_utc(value, field=field)
+    except ValueError as exc:
+        raise ArchiveStoreError(str(exc)) from exc
+    if parsed is None:  # pragma: no cover - required argument contract
+        raise ArchiveStoreError(f"{field} is required")
+    return utc_text(parsed) or ""  # pragma: no cover - parsed is non-null
+
+
+def _http_metadata(value: Any, *, field: str) -> str | None:
+    if value is None:
+        return None
+    if not isinstance(value, str) or any(char in value for char in ("\x00", "\r", "\n")):
+        raise ArchiveStoreError(f"SEC archive {field} metadata is invalid")
+    try:
+        if len(value.encode("utf-8")) > HARD_MAX_HTTP_METADATA_BYTES:
+            raise ArchiveStoreError(f"SEC archive {field} metadata exceeds byte safety limit")
+    except UnicodeError as exc:
+        raise ArchiveStoreError(f"SEC archive {field} metadata is not valid UTF-8") from exc
+    return value
+
+
+def content_storage_key(content_sha256: str) -> str:
+    if not isinstance(content_sha256, str) or len(content_sha256) != 64 or any(
+        char not in "0123456789abcdef" for char in content_sha256
+    ):
+        raise ArchiveStoreError("content_sha256 must be lowercase SHA-256 hex")
+    return f"objects/sha256/{content_sha256[:2]}/{content_sha256}.bin.gz"
+
+
+def receipt_storage_key(receipt_id: str) -> str:
+    if not receipt_id.startswith("sec_archive_receipt_"):
+        raise ArchiveStoreError("invalid archive receipt id")
+    digest = receipt_id.removeprefix("sec_archive_receipt_")
+    if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
+        raise ArchiveStoreError("invalid archive receipt id")
+    return f"receipts/sha256/{digest[:2]}/{digest}.json"
+
+
+def _receipt_id(body: Mapping[str, Any]) -> str:
+    return stable_id("sec_archive_receipt", body)
+
+
+def _receipt_bytes(receipt: ArchiveReceipt) -> bytes:
+    content = canonical_json(receipt.to_dict()).encode("utf-8")
+    if len(content) > HARD_MAX_ARCHIVE_RECEIPT_BYTES:
+        raise ArchiveStoreError("archive receipt exceeds byte safety limit")
+    return content
+
+
+def _decode_receipt(content: bytes) -> ArchiveReceipt:
+    if not isinstance(content, bytes) or len(content) > HARD_MAX_ARCHIVE_RECEIPT_BYTES:
+        raise ArchiveStoreError("archive receipt exceeds byte safety limit")
+    try:
+        value = json.loads(content.decode("utf-8"), parse_int=parse_json_int64)
+    except (UnicodeError, json.JSONDecodeError, RecursionError, ValueError) as exc:
+        raise ArchiveStoreError("archive receipt is not UTF-8 JSON") from exc
+    fields = set(ArchiveReceipt.__dataclass_fields__)
+    if not isinstance(value, dict) or set(value) != fields:
+        raise ArchiveStoreError("archive receipt shape is invalid")
+    try:
+        receipt = ArchiveReceipt(**value)
+    except TypeError as exc:
+        raise ArchiveStoreError("archive receipt shape is invalid") from exc
+    body = receipt.to_dict()
+    actual = body.pop("receipt_id")
+    expected = _receipt_id(body)
+    if actual != expected:
+        raise ArchiveStoreError("archive receipt identity mismatch")
+    if receipt.schema != ARCHIVE_RECEIPT_SCHEMA or receipt.status != "retrieved":
+        raise ArchiveStoreError("unsupported archive receipt")
+    if (
+        isinstance(receipt.byte_length, bool)
+        or not isinstance(receipt.byte_length, int)
+        or receipt.byte_length < 0
+        or receipt.byte_length > HARD_MAX_DOCUMENT_BYTES
+    ):
+        raise ArchiveStoreError(
+            "archive receipt byte_length must be a non-negative integer "
+            f"no larger than {HARD_MAX_DOCUMENT_BYTES}"
+        )
+    if content_storage_key(receipt.content_sha256) != receipt.storage_key:
+        raise ArchiveStoreError("archive receipt storage key does not bind checksum")
+    if _utc_text(receipt.retrieved_at, field="retrieved_at") != receipt.retrieved_at:
+        raise ArchiveStoreError("archive receipt retrieved_at is not UTC-normalized")
+    _http_metadata(receipt.http_etag, field="ETag")
+    _http_metadata(receipt.http_last_modified, field="Last-Modified")
+    if _receipt_bytes(receipt) != content:
+        raise ArchiveStoreError("archive receipt is not canonically encoded")
+    return receipt
+
+
+def archive_receipt_from_json_bytes(content: bytes) -> ArchiveReceipt:
+    """Restore one canonical retrieved receipt from exact source bytes."""
+    return _decode_receipt(content)
+
+
+def read_archive_object_bytes(
+    compressed_content: bytes,
+    receipt: ArchiveReceipt,
+) -> bytes:
+    """Bounded-decompress an in-memory archive object against its exact receipt.
+
+    Source-snapshot attestation reads the receipt sidecar and gzip object as two
+    independent outer objects. This helper validates the inner receipt again,
+    inflates no more than its trusted raw length plus one byte, and verifies the
+    uncompressed checksum/length without requiring a temporary filesystem path.
+    """
+    if not isinstance(compressed_content, bytes):
+        raise ArchiveStoreError("compressed SEC archive object must be bytes")
+    if len(compressed_content) > HARD_MAX_DOCUMENT_BYTES * 2:
+        raise ArchiveStoreError("compressed SEC archive object exceeds byte safety limit")
+    if type(receipt) is not ArchiveReceipt:
+        if isinstance(receipt, ArchiveReceipt):
+            raise ArchiveStoreError("invalid archive receipt subclass")
+        raise ArchiveStoreError(
+            "archive receipt must come from canonical sidecar decoding"
+        )
+    verified_receipt = _decode_receipt(_receipt_bytes(receipt))
+    try:
+        with gzip.GzipFile(fileobj=io.BytesIO(compressed_content), mode="rb") as handle:
+            content = handle.read(verified_receipt.byte_length + 1)
+    except (OSError, EOFError, OverflowError, ValueError) as exc:
+        raise ArchiveStoreError("corrupt compressed SEC archive object") from exc
+    if len(content) > verified_receipt.byte_length:
+        raise ArchiveStoreError("SEC archive byte length exceeds trusted receipt")
+    if len(content) != verified_receipt.byte_length:
+        raise ArchiveStoreError("SEC archive byte length mismatch")
+    if hashlib.sha256(content).hexdigest() != verified_receipt.content_sha256:
+        raise ArchiveStoreError("SEC archive checksum mismatch")
+    return content
+
+
+def manifest_storage_key(manifest: Mapping[str, Any]) -> str:
+    validate_manifest(manifest)
+    cik = str(manifest["issuer"]["cik"])
+    accession = str(manifest["filing"]["accession"])
+    manifest_id = str(manifest["manifest_id"])
+    return f"manifests/{cik}/{accession}/{manifest_id}.json"
+
+
 __all__ = [
+    "ArchiveReceipt",
+    "ArchiveStoreError",
+    "HARD_MAX_ARCHIVE_RECEIPT_BYTES",
+    "HARD_MAX_DOCUMENT_BYTES",
+    "archive_receipt_from_json_bytes",
+    "content_storage_key",
+    "read_archive_object_bytes",
+    "receipt_storage_key",
     "ARCHIVE_ORIGIN",
     "ARCHIVE_RECEIPT_SCHEMA",
     "FILING_MANIFEST_SCHEMA",
@@ -920,12 +1122,14 @@ __all__ = [
     "base_form",
     "build_filing_manifests",
     "canonical_cik",
+    "sec_document_id",
     "document_with_retrieval",
     "documents_from_archive_index",
     "manifest_content_key",
     "manifest_from_json_bytes",
     "manifest_id_for",
     "manifest_json_bytes",
+    "manifest_storage_key",
     "parse_json_int64",
     "select_periodic_comparables",
     "validate_manifest",

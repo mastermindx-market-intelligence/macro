@@ -36,9 +36,17 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 
+from engine.government_revenue.defense_economics import validate_defense_economics_payload
+from engine.government_revenue.research_state import load_research_state
+
 from engine.government_revenue.budget_program import (
     BUDGET_PROGRAM_GRAPH_CONTRACT,
     is_valid_budget_program_graph,
+)
+from engine.government_revenue.fms_cases import (
+    AUTHORITY as FMS_CASE_GRAPH_AUTHORITY,
+    FMS_CASE_GRAPH_CONTRACT,
+    fms_case_graph_content_id,
 )
 from engine.government_revenue.candidates import (
     CONTRACT as CANDIDATE_CONTRACT,
@@ -81,6 +89,7 @@ from engine.government_revenue.subaward_dossiers import (
     subaward_dossier_content_id,
 )
 from engine.government_revenue.workspace import is_valid_procurement_workspace
+from engine.government_revenue.sbir_progression import is_valid_sbir_progression_payload
 
 def require_site_full_user(authorization: str | None = Header(default=None)) -> dict:
     """Authenticate first and enforce the paid payload even while staging.
@@ -102,6 +111,10 @@ def require_site_full_user(authorization: str | None = Header(default=None)) -> 
 router = APIRouter(dependencies=[Depends(require_site_full_user)])
 
 _REPO = Path(os.environ.get("MACRO_REPO", "/opt/macro"))
+_RESEARCH_STATE_PATHS = (
+    _REPO / "data/government_revenue/candidate_research_state.json",
+    _REPO / "site/government-revenue-data/research-state.json",
+)
 _PATHS = (
     _REPO / "data" / "government_revenue" / "latest.json",
     _REPO / "site" / "government-revenue-data" / "latest.json",
@@ -117,6 +130,27 @@ _SUBAWARD_DOSSIER_PATHS = (
 _BUDGET_PROGRAM_PATHS = (
     _REPO / "data" / "government_revenue" / "budget_program_graph.json",
     _REPO / "site" / "government-revenue-data" / "budget-program.json",
+)
+_FMS_CASE_GRAPH_PATHS = (
+    _REPO / "data" / "government_revenue" / "fms_case_graph.json",
+    _REPO / "site" / "government-revenue-data" / "fms-cases.json",
+)
+_FMS_CASE_GRAPH_SCHEMA_PATH = _REPO / "contracts" / "government_revenue" / "government_fms_case.v1.schema.json"
+_SBIR_PROGRESSION_PATHS = (
+    _REPO / "data/government_revenue/sbir_progression.json",
+    _REPO / "site/government-revenue-data/sbir-progression.json",
+)
+_THEME_REFERENCE_PATHS = (
+    _REPO / "data/government_revenue/program_theme_context.json",
+    _REPO / "site/government-revenue-data/program-theme-context.json",
+)
+_THEME_PUBLIC_PATHS = (
+    _REPO / "data/government_revenue/program_theme_public_disclosure.json",
+    _REPO / "site/government-revenue-data/theme-context.json",
+)
+_DEFENSE_ECONOMICS_PATHS = (
+    _REPO / "data/government_revenue/defense_economics.json",
+    _REPO / "site/government-revenue-data/defense-economics.json",
 )
 _IDV_DOSSIER_PATHS = (
     _REPO / "data" / "government_revenue" / "idv_dossiers.json",
@@ -148,11 +182,13 @@ _SUBAWARD_KEY = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:|+-]{0,599}$")
 _BUDGET_LINE_KEY = re.compile(r"^dod:[a-z0-9:_-]{8,600}$")
 _BUDGET_PROGRAM_KEY = re.compile(r"^dod-program:[a-z0-9:_-]{8,600}$")
 _CANDIDATE_ID = re.compile(r"^grc1-[a-f0-9]{24}$")
+_FMS_CASE_KEY = re.compile(r"^fms:(transmittal:\d{2}-\d{1,3}|urlpath:[a-f0-9]{24})$")
 _LOCK = threading.RLock()
 _CACHE: dict = {"path": None, "mtime_ns": None, "payload": None}
 _DOSSIER_CACHE: dict = {"state": None, "payload": None}
 _SUBAWARD_DOSSIER_CACHE: dict = {"state": None, "payload": None}
 _BUDGET_PROGRAM_CACHE: dict = {"state": None, "payload": None}
+_FMS_CASE_GRAPH_CACHE: dict = {"state": None, "payload": None}
 _IDV_DOSSIER_CACHE: dict = {"state": None, "payload": None}
 _IDV_BRIDGE_CACHE: dict = {"state": None, "payload": None}
 _CANDIDATE_CACHE: dict = {"state": None, "payload": None}
@@ -474,6 +510,103 @@ def _load_budget_program_graph() -> dict:
         _validate_budget_program_award_bindings(payload, prime_payload)
         _BUDGET_PROGRAM_CACHE.update(state=state, payload=payload)
         return payload
+
+
+def _is_valid_fms_case_graph(payload: object) -> bool:
+    """Admit only a schema-valid, content-addressed FMS case graph.
+
+    The FMS rail carries no award-key/dossier binding (its program_links are
+    always the display-tier ``not_reviewed`` const, spec §4/§6), so unlike
+    the DoD budget graph this validation is fully self-contained -- no prime
+    dossier is consulted.
+    """
+    try:
+        from jsonschema import Draft202012Validator, FormatChecker  # noqa: PLC0415
+
+        if not isinstance(payload, dict) or payload.get("contract") != FMS_CASE_GRAPH_CONTRACT:
+            return False
+        schema = json.loads(_FMS_CASE_GRAPH_SCHEMA_PATH.read_text(encoding="utf-8"))
+        Draft202012Validator(schema, format_checker=FormatChecker()).validate(payload)
+        return (
+            fms_case_graph_content_id(payload) == payload.get("content_id")
+            and payload.get("authority") == FMS_CASE_GRAPH_AUTHORITY
+        )
+    except Exception:  # malformed external artifacts must fail closed for callers
+        return False
+
+
+def _load_fms_case_graph() -> dict:
+    """Load one exact, precomputed FMS case graph or fail closed.
+
+    Mirrors :func:`_load_budget_program_graph`. This route family never
+    recomputes cases from observations, never advances stage from elapsed
+    time, and never opens a prime-dossier binding the FMS rail does not have.
+    """
+    canonical, site = _FMS_CASE_GRAPH_PATHS
+    try:
+        canonical_state = canonical.stat()
+        site_state = site.stat()
+    except OSError as exc:
+        raise HTTPException(status_code=503, detail="government revenue FMS case graph unavailable") from exc
+    state = (
+        canonical_state.st_mtime_ns,
+        canonical_state.st_size,
+        site_state.st_mtime_ns,
+        site_state.st_size,
+    )
+    with _LOCK:
+        if _FMS_CASE_GRAPH_CACHE["payload"] is not None and _FMS_CASE_GRAPH_CACHE["state"] == state:
+            return _FMS_CASE_GRAPH_CACHE["payload"]
+        try:
+            canonical_bytes = canonical.read_bytes()
+            site_bytes = site.read_bytes()
+            payload = json.loads(canonical_bytes)
+        except (OSError, ValueError, TypeError) as exc:
+            raise HTTPException(status_code=503, detail="government revenue FMS case graph unreadable") from exc
+        if canonical_bytes != site_bytes:
+            raise HTTPException(status_code=503, detail="government revenue FMS case graph twin mismatch")
+        if (
+            not isinstance(payload, dict)
+            or payload.get("contract") != FMS_CASE_GRAPH_CONTRACT
+            or not _is_valid_fms_case_graph(payload)
+        ):
+            raise HTTPException(status_code=503, detail="government revenue FMS case graph schema mismatch")
+        _FMS_CASE_GRAPH_CACHE.update(state=state, payload=payload)
+        return payload
+
+
+def _public_fms_case_graph_envelope(payload: dict) -> dict:
+    """Expose the FMS coverage manifest without cross-case totals (T13/§7)."""
+    return _scrub_public({
+        "contract": payload.get("contract"),
+        "schema_version": payload.get("schema_version"),
+        "content_id": payload.get("content_id"),
+        "as_of": payload.get("as_of"),
+        "known_at": payload.get("known_at"),
+        "authority": payload.get("authority"),
+        "scope": payload.get("scope"),
+        "coverage": payload.get("coverage"),
+        "limitations": payload.get("limitations"),
+    })
+
+
+def _public_fms_case(row: dict) -> dict:
+    """Return one FMS case exactly as precomputed by the graph rail.
+
+    Every field here is already display-tier and null-safe by contract
+    (schema ``additionalProperties: false``); this allowlist exists so a
+    future case field cannot ride an entitled response without a reviewed
+    addition here, matching this router's other public projections.
+    """
+    allowed = (
+        "case_key", "transmittal_number", "identity_basis", "case_identity_state", "aliases",
+        "customer_country", "capability_title", "source_item_enumeration",
+        "stage", "later_stages", "advancement_condition",
+        "estimated_notification_value", "currency", "source_caveat", "value_provenance",
+        "contractors", "contractor_note", "program_links",
+        "clocks", "source_coverage", "observations", "case_state",
+    )
+    return _scrub_public({key: row[key] for key in allowed if key in row})
 
 
 def _validate_idv_dossier_bindings(payload: dict, prime_payload: dict) -> None:
@@ -1072,6 +1205,42 @@ def _public_workspace_event(row: dict) -> dict:
     return _scrub_public({key: row[key] for key in allowed if key in row})
 
 
+def _workspace_read_identity(source: dict) -> str:
+    # Exclude assembly clocks only; unchanged evidence keeps its identity.
+    stable = {key: value for key, value in source.items() if key not in {"generated_at", "bundle_id"}}
+    raw = json.dumps(stable, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _reader_binding(source: dict, query: dict) -> str:
+    identity = _workspace_read_identity(source)
+    raw = json.dumps(query, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+    return hashlib.sha256((identity + ":" + raw).encode("utf-8")).hexdigest()[:32]
+
+
+def _encode_bound_workspace_cursor(offset: int, *, binding: str) -> str:
+    raw = f"v3:{binding}:{offset}"
+    return base64.urlsafe_b64encode(raw.encode("ascii")).decode("ascii").rstrip("=")
+
+
+def _decode_bound_workspace_cursor(cursor: str | None, *, binding: str) -> int:
+    if cursor is None:
+        return 0
+    if not cursor or len(cursor) > 96 or not re.fullmatch(r"[A-Za-z0-9_-]+", cursor):
+        raise HTTPException(status_code=400, detail="invalid cursor")
+    try:
+        raw = base64.urlsafe_b64decode((cursor + "=" * (-len(cursor) % 4)).encode("ascii")).decode("ascii")
+        version, claimed, offset = raw.split(":", 2)
+        value = int(offset)
+    except (ValueError, UnicodeError, binascii.Error) as exc:
+        raise HTTPException(status_code=400, detail="invalid cursor") from exc
+    if version != "v3" or not re.fullmatch(r"[a-f0-9]{32}", claimed) or value < 0 or value > 10_000:
+        raise HTTPException(status_code=400, detail="invalid cursor")
+    if claimed != binding:
+        raise HTTPException(status_code=409, detail="workspace or query changed; restart the reader")
+    return value
+
+
 def _workspace_cursor_version(workspace: dict) -> str:
     return "v2" if workspace.get("schema_version") == "government_procurement_workspace.v2" else "v1"
 
@@ -1157,6 +1326,18 @@ def _validated_budget_line_key(value: str) -> str:
 def _validated_budget_program_key(value: str) -> str:
     if not _BUDGET_PROGRAM_KEY.fullmatch(value):
         raise HTTPException(status_code=400, detail="invalid budget program key")
+    return value
+
+
+def _validated_fms_case_key(value: str) -> str:
+    """Validate an FMS case key against the D6-B1 contract regex (spec §8).
+
+    422, not 400: a malformed FMS case key is a well-formed-but-invalid
+    request path per the commission's explicit acceptance gate, distinct
+    from this router's other identifier families.
+    """
+    if not _FMS_CASE_KEY.fullmatch(value):
+        raise HTTPException(status_code=422, detail="invalid FMS case key")
     return value
 
 
@@ -1499,7 +1680,7 @@ def _public_subaward(row: dict) -> dict:
 
 
 def _public_budget_graph_envelope(payload: dict) -> dict:
-    """Expose stored DoD request evidence without a funding or issuer claim."""
+    """Expose stored DoD documentary evidence with its exact source stage."""
     documents = []
     for raw in payload.get("documents") or []:
         if not isinstance(raw, dict):
@@ -1514,6 +1695,12 @@ def _public_budget_graph_envelope(payload: dict) -> dict:
             if key in raw
         }
         document["source_url"] = _dod_budget_source_url(raw.get("source_url"))
+        if raw.get("document_kind") == "legislative_allocation_spend_plan":
+            from engine.government_revenue.budget_allocation_context import allocation_context_display
+            document["document_context"] = allocation_context_display(raw)
+            document["document_kind"] = raw["document_kind"]
+            document["document_stage"] = raw["document_stage"]
+            document["context_id"] = raw["context_id"]
         documents.append(document)
     return _scrub_public({
         "contract": payload.get("contract"),
@@ -1541,7 +1728,11 @@ def _public_budget_line(row: dict) -> dict:
     source = row.get("source")
     if isinstance(source, dict):
         out["source"] = {
-            "publisher": "Office of the Under Secretary of Defense (Comptroller)",
+            # Pass through the build-time-validated publisher (the graph
+            # builder pins it against the collection receipt); a hardcoded
+            # era string here silently misstated the source after the
+            # Department of War rebrand.
+            "publisher": source.get("publisher"),
             "source_url": _dod_budget_source_url(source.get("source_url")),
             "document_sha256": source.get("document_sha256"),
             "receipt_id": source.get("receipt_id"),
@@ -2565,8 +2756,8 @@ def workspace(
 ) -> dict:
     """Return a stable cursor page in the backend-prioritized workspace order."""
     source = _procurement_workspace(_load())
-    cursor_version = _workspace_cursor_version(source)
-    offset = _decode_cursor(cursor, expected_version=cursor_version)
+    binding = _reader_binding(source, {"route": "workspace"})
+    offset = _decode_bound_workspace_cursor(cursor, binding=binding)
     events = [
         _public_workspace_event(row)
         for row in (source.get("events") or [])[offset:offset + limit]
@@ -2577,15 +2768,17 @@ def workspace(
     metadata = {
         key: source.get(key)
         for key in (
-            "schema_version", "event_contract", "as_of", "known_at", "generated_at",
+            "bundle_id", "schema_version", "event_contract", "as_of", "known_at", "generated_at",
             "authority", "freshness", "coverage", "facets", "total", "display_sort",
             "federation_contract", "limitations",
         )
         if key in source
     }
     return _scrub_public(metadata | {
+        "input_refs": ["workspace-sha256:" + _workspace_read_identity(source)],
+        "reader_identity": binding,
         "events": events,
-        "next_cursor": _encode_cursor(next_offset, version=cursor_version) if next_offset < total else None,
+        "next_cursor": _encode_bound_workspace_cursor(next_offset, binding=binding) if next_offset < total else None,
     })
 
 
@@ -2626,7 +2819,6 @@ def events(
 ) -> dict:
     """Filter the prebuilt event ledger without recalculating intelligence."""
     source = _procurement_workspace(_load())
-    cursor_version = _workspace_cursor_version(source)
     effective_scope = scope or ("all" if mode == "awards" else "mapped")
     ticker = _validated_ticker(ticker)
     needle = q.casefold().strip() if q else None
@@ -2730,11 +2922,21 @@ def events(
         rows.sort(key=_event_primary_amount, reverse=True)
     # priority retains the audited order already serialized by the engine.
 
-    offset = _decode_cursor(cursor, expected_version=cursor_version)
+    normalized_query = {
+        "route": "events", "mode": mode, "q": needle, "ticker": ticker,
+        "agency_id": agency_needle, "notice_type": notice_needle,
+        "evidence_class": evidence_needle, "impact": impact, "deadline": deadline,
+        "scope": effective_scope, "sort": sort,
+    }
+    binding = _reader_binding(source, normalized_query)
+    offset = _decode_bound_workspace_cursor(cursor, binding=binding)
     total = len(rows)
     page = rows[offset:offset + limit]
     next_offset = offset + len(page)
     return {
+        "bundle_id": source.get("bundle_id"),
+        "input_refs": ["workspace-sha256:" + _workspace_read_identity(source)],
+        "reader_identity": binding,
         "schema_version": source.get("schema_version"),
         "event_contract": source.get("event_contract"),
         "as_of": source.get("as_of"),
@@ -2747,7 +2949,7 @@ def events(
             "impact": impact, "deadline": deadline, "scope": effective_scope, "sort": sort,
         },
         "events": [_public_workspace_event(row) for row in page],
-        "next_cursor": _encode_cursor(next_offset, version=cursor_version) if next_offset < total else None,
+        "next_cursor": _encode_bound_workspace_cursor(next_offset, binding=binding) if next_offset < total else None,
         "total": total,
     }
 
@@ -2773,3 +2975,98 @@ def event(event_id: str) -> dict:
         "authority": source.get("authority"),
         "event": _public_workspace_event(row),
     }
+
+
+@router.get("/api/government-revenue/sbir-progression")
+def sbir_progression() -> dict:
+    """Serve the bounded, precomputed source evidence after router entitlement.
+
+    Both projections must bind the same bytes. Never collect, resolve entities,
+    or turn missing source input into a ready-empty result at request time.
+    """
+    try:
+        canonical, twin = (path.read_bytes() for path in _SBIR_PROGRESSION_PATHS)
+        payload = json.loads(canonical)
+    except (OSError, ValueError, TypeError) as exc:
+        raise HTTPException(status_code=503, detail="SBIR progression unavailable") from exc
+    if canonical != twin:
+        raise HTTPException(status_code=503, detail="SBIR progression twin mismatch")
+    if not is_valid_sbir_progression_payload(payload):
+        raise HTTPException(status_code=503, detail="SBIR progression schema mismatch")
+    return payload
+
+
+@router.get("/api/government-revenue/theme-context")
+def theme_context() -> dict:
+    """Serve the builder-precomputed closed public sibling after entitlement.
+
+    Reference binding validation is pure. No source/financial owner is opened,
+    reconstructed, acquired or joined at request time.
+    """
+    from engine.government_revenue.program_theme_publication import validate_precomputed_theme_pair
+    try:
+        reference, reference_twin = (path.read_bytes() for path in _THEME_REFERENCE_PATHS)
+        public, public_twin = (path.read_bytes() for path in _THEME_PUBLIC_PATHS)
+        if reference != reference_twin or public != public_twin:
+            raise ValueError("program theme twins differ")
+        payload = json.loads(public)
+        validate_precomputed_theme_pair(json.loads(reference), payload)
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        raise HTTPException(status_code=503, detail="Program theme context could not be verified") from exc
+    return payload
+
+
+@router.get("/api/government-revenue/defense-economics")
+def defense_economics() -> dict:
+    """Return the committed owner-qualified view after router entitlement."""
+    try:
+        canonical, twin = (path.read_bytes() for path in _DEFENSE_ECONOMICS_PATHS)
+        if canonical != twin:
+            raise ValueError("defense economics twins differ")
+        payload = json.loads(canonical)
+        validate_defense_economics_payload(payload)
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        raise HTTPException(status_code=503, detail="Defense economics could not be verified") from exc
+    return payload
+
+
+@router.get("/api/government-revenue/fms-cases")
+def fms_cases() -> dict:
+    """List the D6-B1 FMS congressional-notification read model.
+
+    Display/context tier only (authority.tier == "display",
+    context_only == true): stage is always "congressional_notification" in
+    v1, values are proposed-sale estimates never summed across cases, and
+    program/contractor links are always "not_reviewed". See
+    ``research/defense_intelligence/DEFENSE_D6B1_FMS_IMPLEMENTATION_SPEC_2026-08-25.md``.
+    """
+    payload = _load_fms_case_graph()
+    return _public_fms_case_graph_envelope(payload) | {
+        "cases": [_public_fms_case(row) for row in payload.get("cases") or []],
+        "total": len(payload.get("cases") or []),
+    }
+
+
+@router.get("/api/government-revenue/fms-case/{case_key}")
+def fms_case(case_key: str) -> dict:
+    """Return one FMS congressional-notification case."""
+    case_key = _validated_fms_case_key(case_key)
+    payload = _load_fms_case_graph()
+    row = next(
+        (item for item in payload.get("cases") or [] if isinstance(item, dict) and item.get("case_key") == case_key),
+        None,
+    )
+    if row is None:
+        raise HTTPException(status_code=404, detail="FMS case not covered")
+    return _public_fms_case_graph_envelope(payload) | {
+        "case": _public_fms_case(row),
+    }
+
+
+@router.get("/api/government-revenue/research-state")
+def research_state() -> dict:
+    """Read precomputed research state after the existing site_full entitlement."""
+    try:
+        return load_research_state(_RESEARCH_STATE_PATHS)
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        raise HTTPException(status_code=503, detail="Research state could not be verified") from exc

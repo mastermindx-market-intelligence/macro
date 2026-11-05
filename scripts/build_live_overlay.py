@@ -28,6 +28,7 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlparse
 
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
@@ -88,10 +89,13 @@ def build_universe() -> list[str]:
 # --------------------------------------------------------------- baselines ----
 
 def _load_baseline(ticker: str, close) -> dict | None:
-    """Nightly per-ticker record from site/stockdata/<T>.json when present, else a
-    minimal baseline synthesised from the close series (so a GTAA asset with no
-    single-stock page still gets tech + a prev_close to diverge against)."""
-    p = config.ROOT / config.load()["storage"]["site_dir"] / "stockdata" / f"{ticker}.json"
+    """Nightly record from the existing regional stockdata directory, else a
+    minimal baseline from the actual close series. A GTAA asset with no stock
+    page still gets technicals and a real prior-close observation date."""
+    market = live_overlay.cash_market_for_symbol(ticker)
+    directory = {"cn": "chinastockdata", "hk": "hkstockdata", "ca": "canadastockdata"}.get(
+        market, "stockdata")
+    p = config.ROOT / config.load()["storage"]["site_dir"] / directory / f"{ticker}.json"
     if p.exists():
         try:
             return json.loads(p.read_text())
@@ -105,11 +109,16 @@ def _load_baseline(ticker: str, close) -> dict | None:
 
 # ----------------------------------------------------------- allocations ----
 
-def _usable_mark(quote, base_close, stale_after, max_chg, now):
+def _usable_mark(quote, base_close, stale_after, max_chg, now, *, symbol=None):
     """(price, chg_pct, stale) for marking a GTAA leg to live — only a FRESH, real
     live trade that passes the limit-move guard is used; otherwise stale=True and
     no live price is carried, so a consumer never marks NAV off a stale/glitch tick."""
-    st = live_overlay.staleness(quote, stale_after, now)
+    market = live_overlay.cash_market_for_symbol(symbol or "")
+    if market:
+        session = live_overlay.market_session(market, now)
+        if session.get("data_frozen") or not session.get("calendar_verified"):
+            return None, None, True
+    st = live_overlay.staleness(quote, stale_after, now, require_timestamp=bool(market))
     if st["stale"] or not quote or quote.get("price") is None:
         return None, None, True
     price = float(quote["price"])
@@ -118,6 +127,19 @@ def _usable_mark(quote, base_close, stale_after, max_chg, now):
         return None, None, True            # outlier print
     chg = round((price / float(ref) - 1) * 100, 2) if ref else None
     return round(price, 4), chg, False
+
+
+def _mark_data_status(symbol, close, now):
+    """Carry source observation time separately from the current market clock."""
+    asof = str(close.index[-1].date()) if close is not None and not close.empty else None
+    market = live_overlay.cash_market_for_symbol(symbol)
+    if not market:
+        return {"data_frozen": False, "data_through": asof}
+    health = live_overlay.session_freshness(market, asof, now)
+    session = live_overlay.market_session(market, now)
+    return {"data_frozen": session["data_frozen"], "data_through": asof,
+            "data_state": health["state"], "session_state": session["state"],
+            "expected_session": health["expected_session"]}
 
 
 def _live_allocations(quotes, stale_after, max_chg, now) -> dict:
@@ -143,9 +165,11 @@ def _live_allocations(quotes, stale_after, max_chg, now) -> dict:
             for a in c.get("alloc", []) or []:
                 base = live_overlay.read_close(a.get("asset", ""))
                 base_close = float(base.iloc[-1]) if base is not None and not base.empty else None
-                price, chg, stale = _usable_mark(quotes.get(a.get("asset")), base_close,
-                                                 stale_after, max_chg, now)
-                alloc.append({**a, "live_price": price, "chg_pct": chg, "stale": stale})
+                asset = a.get("asset", "")
+                price, chg, stale = _usable_mark(quotes.get(asset), base_close,
+                                                 stale_after, max_chg, now, symbol=asset)
+                alloc.append({**a, "live_price": price, "chg_pct": chg, "stale": stale,
+                              **_mark_data_status(asset, base, now)})
             cards.append({"key": c.get("key"), "name": c.get("name"),
                           "asof": c.get("asof"), "alloc": alloc})
         if cards:
@@ -169,11 +193,13 @@ def _market_context(quotes, stale_after, max_chg, now) -> dict:
     for sym in (cfg.get("market_context") or ["SPY", "QQQ", "^VIX"]):
         base = live_overlay.read_close(sym)
         base_close = float(base.iloc[-1]) if base is not None and not base.empty else None
-        price, chg, stale = _usable_mark(quotes.get(sym), base_close, stale_after, max_chg, now)
+        price, chg, stale = _usable_mark(quotes.get(sym), base_close, stale_after, max_chg, now,
+                                         symbol=sym)
         key = "VIX" if sym in ("^VIX", "_VIX") else sym
         shown = price if price is not None else (round(base_close, 4) if base_close else None)
         rec = {"price": shown, "chg_pct": chg, "stale": stale,
-               "source": (quotes.get(sym) or {}).get("source")}
+               "source": (quotes.get(sym) or {}).get("source"),
+               **_mark_data_status(sym, base, now)}
         if key == "VIX":
             rec["band"] = _vix_band(rec["price"])
         out[key] = rec
@@ -196,21 +222,51 @@ def resolve_worker_url() -> str:
     return url.rstrip("/")
 
 
+# GitHub anonymous-distribution hosts being retired for the private-repo cutover
+# (DEC:B1-MACRO-PRIVATE-CUTOVER). raw.githubusercontent.com/*.github.io serve the
+# macro repo's tree without auth even once the repo goes private (raw-git + Pages
+# are public planes independent of repo visibility); cdn.jsdelivr.net mirrors any
+# public GitHub ref via its jsDelivr-GH backend. None of these are approved public
+# serving planes going forward — same-origin or an approved plane (e.g. R2) only.
+_ANON_GITHUB_HOSTS = {"raw.githubusercontent.com", "cdn.jsdelivr.net"}
+
+
+def _is_anon_github_host(host: str) -> bool:
+    host = (host or "").lower()
+    return host in _ANON_GITHUB_HOSTS or host.endswith(".github.io")
+
+
 def resolve_snapshot_url() -> str:
     """The static live-quotes SNAPSHOT URL (the keyless, no-Worker fallback that
     live.js fetches when no Worker is configured). ENV override
     LIVE_QUOTES_SNAPSHOT_URL wins over config.yml live.snapshot_url; a non-https
     value is rejected so a malformed variable can't break live.js. Default points
     at the `live-data` branch raw.githubusercontent path the live-quotes Action
-    force-pushes (CORS '*', ~5-min CDN cache)."""
+    force-pushes (CORS '*', ~5-min CDN cache).
+
+    Pre-private-cutover guard: an absolute URL whose host is a GitHub anonymous-
+    distribution host (raw.githubusercontent.com, any *.github.io, or
+    cdn.jsdelivr.net) is rejected the same way a bad scheme is — those planes stay
+    reachable after the macro repo flips private and must not be re-wired in by a
+    future config change."""
     cfg = config.load().get("live") or {}
     url = (os.environ.get("LIVE_QUOTES_SNAPSHOT_URL", "").strip()
            or str(cfg.get("snapshot_url", "") or "").strip())
+    if not url:
+        return url
+    parsed = urlparse(url)
+    is_absolute = bool(parsed.scheme)
     # Allow a SAME-ORIGIN relative path (e.g. "live/quotes.json" — China-safe, no
     # raw.githubusercontent) OR an absolute https URL. Reject only an absolute URL
     # with a non-https scheme (malformed / mixed-content), which would break live.js.
-    if url and "://" in url and not url.startswith("https://"):
+    if is_absolute and not url.startswith("https://"):
         log.warning("live snapshot URL ignored (must be https:// or same-origin relative): %r", url)
+        return ""
+    if is_absolute and _is_anon_github_host(parsed.hostname or ""):
+        log.warning(
+            "live snapshot URL ignored (GitHub anonymous distribution is being "
+            "retired for the private-repo cutover; use a same-origin path or an "
+            "approved public plane): %r", url)
         return ""
     return url
 
@@ -280,7 +336,7 @@ def build(offline: bool = False, limit: int | None = None,
             fresh += 1
 
     sessions = {r: live_overlay.market_session(r, now)
-                for r in ("us", "cn", "hk", "ca", "jp", "kr", "tw", "gb", "eu")}
+                for r in ("us", "cn", "hk", "ca", "connect", "jp", "kr", "tw", "gb", "eu")}
     ts_vals = [q["quote_ts"] for q in quotes.values() if q.get("quote_ts")]
     out = {
         "schema": "live.overlay.v2",

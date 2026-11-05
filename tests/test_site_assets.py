@@ -62,10 +62,11 @@ def test_copy_asset_bakes_theme_js(tmp_path: Path) -> None:
             "Expected baked theme.js to contain 'anonKey' JSON key."
         )
 
-    overlay = (TEMPLATES / "terminal_overlay.js").read_text()
     assert "window.MDXTerminalOverlay" in out
-    assert out.endswith(overlay)
-    assert out.count("/* Mastermind Terminal overlay") == 1
+    assert out.count("window.MDXTerminalOverlay=") == 1
+    assert len(out.encode()) < 0.75 * sum(
+        (TEMPLATES / name).stat().st_size for name in ("theme.js", "terminal_overlay.js")
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -185,3 +186,142 @@ def test_no_builder_writes_theme_js_raw() -> None:
         raise AssertionError(
             f"Builder(s) found that may copy theme.js without baking:\n{msg}"
         )
+
+
+# ---------------------------------------------------------------------------
+# 6. the mm_brain.js content hash baked into theme.js
+# ---------------------------------------------------------------------------
+# theme.js requests the assistant bundle dynamically, so its ?v= cannot come from
+# scripts.optimize_assets — that pass rewrites HTML references, and this URL only
+# exists at runtime. It is baked here instead, from the SAME sha256[:8] the
+# stamper uses, so the ~3,500 pages carrying a page-authored
+# <script src="../../mm_brain.js?v=…"> and every page that loads it on demand
+# share ONE cache key. Diverge them and a reader crossing between the two kinds of
+# page pays for 232 KB twice — and once mm_brain.js reaches the edge's immutable
+# matcher, the losing URL pins that reader to stale bytes for a year.
+
+MM_BRAIN_VER_TOKEN = "/*__MM_BRAIN_VER__*/''"
+
+
+def test_mm_brain_version_is_the_stamper_hash() -> None:
+    """mm_brain_version() == sha256(mm_brain.js)[:8], the optimize_assets rule."""
+    import hashlib
+
+    expected = hashlib.sha256((TEMPLATES / "mm_brain.js").read_bytes()).hexdigest()[:8]
+    assert site_assets.mm_brain_version(TEMPLATES / "theme.js") == expected
+    assert re.fullmatch(r"[0-9a-f]{8}", expected), "stamp shape drifted from 8 hex"
+
+
+def test_mm_brain_version_token_never_survives_the_bake() -> None:
+    """The deployed theme.js carries a real hash, never the placeholder."""
+    emitted = site_assets.emit_theme_js(TEMPLATES / "theme.js")
+    assert MM_BRAIN_VER_TOKEN not in emitted, (
+        "the mm_brain version placeholder survived into the emitted theme.js — "
+        "the launcher would request an unversioned URL and miss the immutable cache"
+    )
+    assert site_assets.MM_BRAIN_VER_TOKEN == MM_BRAIN_VER_TOKEN, "token drifted"
+    expected = site_assets.mm_brain_version(TEMPLATES / "theme.js")
+    assert re.search(r'var MM_BRAIN_VER\s*=\s*' + re.escape(f'"{expected}"'), emitted)
+
+
+def test_unbaked_theme_js_is_still_valid_javascript() -> None:
+    """Both placeholders must read as valid JS when the bake never runs.
+
+    A local/custom build serving templates/ raw is a supported mode. A token that
+    is not itself a valid expression would take the ENTIRE shared script down —
+    navigation, theme switch, account UI, everything — rather than degrading the
+    one feature it configures.
+    """
+    src = (TEMPLATES / "theme.js").read_text()
+    assert f"var _bakedSupabaseCfg = {TOKEN};" in src, "the Supabase token must remain a valid null expression"
+    assert f"= {MM_BRAIN_VER_TOKEN};" in src, (
+        "the mm_brain version token is no longer a valid empty-string literal"
+    )
+
+
+def test_missing_bundle_degrades_to_an_unversioned_request(tmp_path) -> None:
+    """No sibling mm_brain.js -> empty version, not a crash and not a stale hash."""
+    (tmp_path / "theme.js").write_text("x")
+    assert site_assets.mm_brain_version(tmp_path / "theme.js") == ""
+
+
+# Final-bundle regressions execute JavaScript, including the real overlay, rather
+# than treating removed whitespace/comments as runtime evidence.
+def _node_json(script: str):
+    import json
+    import subprocess
+    result = subprocess.run(["node", "-e", script], capture_output=True, text=True, check=True)
+    return json.loads(result.stdout)
+
+
+def test_final_minified_bundle_keeps_config_hash_and_real_overlay_runtime(tmp_path, monkeypatch):
+    import hashlib
+    import json
+
+    monkeypatch.setattr(config, "load", lambda: {"watchlist": {"supabase": {
+        "url": "https://project-ref.supabase.co", "browser_url": "https://proxy.example/",
+        "anon_key": 'public-key-with-quote-"-and-slash-\\',
+    }}})
+    theme = tmp_path / "theme.js"
+    theme.write_text("/*! retained license */\nwindow.SUPABASE_CFG = window.SUPABASE_CFG || "
+                     + TOKEN + ";\nwindow.brain = " + MM_BRAIN_VER_TOKEN + ";\n")
+    brain = b"assistant-bundle-test"
+    (tmp_path / "mm_brain.js").write_bytes(brain)
+    (tmp_path / "terminal_overlay.js").write_text((TEMPLATES / "terminal_overlay.js").read_text())
+    emitted = site_assets.emit_theme_js(theme)
+    assert "/*! retained license */" in emitted
+    # Real overlay must initialize exactly once after the theme establishes cfg.
+    runtime = """
+const vm = require('node:vm');
+const listeners = [], events = [];
+const ctx = {window: {addEventListener: (name) => listeners.push(name),
+ dispatchEvent: (e) => events.push({name:e.type,cfg:ctx.window.SUPABASE_CFG})},
+ CustomEvent: function(type){this.type=type;}};
+vm.createContext(ctx);
+""" + "vm.runInContext(" + json.dumps(emitted) + ",ctx);" + """
+const first = ctx.window.MDXTerminalOverlay;
+""" + "vm.runInContext(" + json.dumps(emitted) + ",ctx);" + """
+console.log(JSON.stringify({cfg:ctx.window.SUPABASE_CFG,brain:ctx.window.brain,
+ same:first===ctx.window.MDXTerminalOverlay,closed:!first.isOpen(),
+ api:Object.keys(first).sort(),listeners,events}));
+"""
+    result = _node_json(runtime)
+    assert result["cfg"] == {"url":"https://proxy.example", "anonKey":'public-key-with-quote-"-and-slash-\\', "ref":"project-ref"}
+    assert result["brain"] == hashlib.sha256(brain).hexdigest()[:8]
+    assert result["same"] and result["closed"]
+    assert result["api"] == ["close", "isOpen", "open", "terminalDestination", "terminalHandoff"]
+    assert result["listeners"] == ["message", "keydown", "popstate"]
+    assert result["events"] == [{"name":"mdx-terminal-overlay-ready", "cfg":result["cfg"]}]
+
+
+def test_emitter_preserves_javascript_lexical_behavior(tmp_path, monkeypatch):
+    import json
+    monkeypatch.setattr(config, "load", lambda: {})
+    source = r"""/*! lexical license */
+window.SUPABASE_CFG = window.SUPABASE_CFG || /*__SUPABASE_CFG__*/null;
+window.brain = /*__MM_BRAIN_VER__*/'';
+function newlineReturn() { return
+{value:1}; }
+function regexTest() { return /https?:\/\//.test('https://example.com'); }
+var n=2; var sum=n + +n; var difference=n - -n;
+window.report = [newlineReturn() === undefined, regexTest(), sum, difference,
+ `literal with // and ${sum}`, 'unicode: 中文', '/* not comment */'];
+"""
+    theme = tmp_path / "theme.js"; theme.write_text(source)
+    emitted = site_assets.emit_theme_js(theme)
+    def evaluate(code):
+        return _node_json("global.window={};" + code + ";console.log(JSON.stringify(window));")
+    raw = source.replace(TOKEN, "null").replace(MM_BRAIN_VER_TOKEN, "''")
+    assert evaluate(emitted) == evaluate(raw)
+    assert evaluate(emitted)["report"] == [True, True, 4, 4, "literal with // and 4", "unicode: 中文", "/* not comment */"]
+    assert evaluate(emitted)["SUPABASE_CFG"] is None
+    # Page-provided config retains the original precedence in the emitted code.
+    result = _node_json('global.window={SUPABASE_CFG:{existing:true}};' + emitted + ';console.log(JSON.stringify(window.SUPABASE_CFG));')
+    assert result == {"existing":True}
+
+
+def test_actual_emitted_bundle_is_valid_javascript(tmp_path):
+    import subprocess
+    emitted = site_assets.emit_theme_js(TEMPLATES / "theme.js")
+    candidate = tmp_path / "theme.js"; candidate.write_text(emitted)
+    subprocess.run(["node", "--check", str(candidate)], capture_output=True, text=True, check=True)

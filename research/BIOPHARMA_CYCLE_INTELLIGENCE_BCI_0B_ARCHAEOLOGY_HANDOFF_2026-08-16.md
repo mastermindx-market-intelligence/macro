@@ -1,3 +1,48 @@
+# Publication boundary — dated, unadopted BCI proposal
+
+**Reconciliation date: 2026-11-05.** This file preserves the August16 proposal
+from Macro PR5821 at `77f39f3ff25e35f7ad40e0d53cb90d2229097571`. Its
+original product thesis, journeys, methods, alternatives and proposed wave sequence
+remain available below. Publication does not adopt that architecture, freeze other
+programs, create an active execution front door or commission BCI-0B.
+
+The accepted [P1 architecture](https://github.com/mastermindx-market-intelligence/Macro/blob/fe0693fe579c8f3025b41127e4e92b514f568692/research/BIOCATALYST_P1_RECHARTER_AND_FIRST_VERTICAL_ARCHITECTURE_2026-08-20.md)
+explicitly keeps #5821 a candidate, neither adopted nor rejected. Its BCI decision
+remains open. That is why this carrier is preserved as a parked proposal rather than
+closed as implemented or promoted into a new program by a documentation merge.
+
+## Current accepted boundaries
+
+- The existing `biocatalyst` semantic parent remains canonical. The parked BCI
+  record owns only these six proposal documents, not a runtime/domain source.
+- [Recovery V2 ownership](https://github.com/mastermindx-market-intelligence/Macro/blob/fe0693fe579c8f3025b41127e4e92b514f568692/agentos/decisions/DEC-BIOCATALYST-RECOVERY-V2-CORE-NOT-JV-OR-BCI.md)
+  keeps core recovery separate from draft BCI and finite JV reconstruction.
+  The inspected Recovery V2 workstream is done; Core Product is parked after its
+  accepted P1-1 work. This proposal does not reset either owner's state or reopen it.
+- [The accepted catalyst composition ruling](https://github.com/mastermindx-market-intelligence/Macro/blob/fe0693fe579c8f3025b41127e4e92b514f568692/agentos/decisions/DEC-BPC-CATALYST-COMPOSES-WITH-COMPANY-EVENT-NOT-FISCAL-WORKSPACE.md)
+  uses company identity and event lifecycle/publication clocks, with source-native
+  catalyst identities and the existing owner event plane. Fiscal
+  `event_workspace.v1` IDs and earnings payload keys are not catalyst identities.
+  This accepted ruling governs over the older proposal's reuse hypotheses.
+- Current protected source, registry and accepted owner records govern any future
+  work. The original proposal's precedence, concurrency freeze, supersession and
+  automatic-next-wave language has no present operational effect. Its audited
+  `5d600641bc3513f69a37cfb8cac1f1d86238e896` base is a historical reference,
+  not a current checkout or production receipt.
+- No new program card, collector, truth store, publication owner, runtime,
+  portfolio/Prophet/Neural Web decision authority or live acquisition is created.
+  Future architecture adoption and any execution require their own current
+  authorized decision and bounded commission. None is implied by this publication.
+
+## Original proposal — complete source retained verbatim
+
+The fenced source below is the immutable August16–17 proposal, including its
+original metadata where present. Words such as "binding", "current", "freeze",
+"next" and "execute" inside that archive describe the unadopted proposal and its
+observation epoch. The qualified metadata and current accepted owners above govern
+the publication; the archive is not an instruction to perform those actions.
+
+``````markdown
 # BCI-0B — Current-State Archaeology, Contract Reuse, and Supersession Handoff
 
 **Program:** Mastermind Biopharma Cycle Intelligence OS  
@@ -859,3 +904,4 @@ The final handoff must state:
 - stop confirmation.
 
 A continuation prompt that says only “continue the masterplan” is invalid.
+``````

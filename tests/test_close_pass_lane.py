@@ -44,6 +44,33 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+#: Marker identifying the nightly's us-board ``pv_card`` call site.
+_NIGHTLY_CARD_MARKER = "'href': 'stock.html#' ~ n.ticker, 'tk': n.ticker, 'mkt': 'us',"
+
+
+def _nightly_card_call_site() -> Path:
+    """The ONE template holding the nightly's us-board ``pv_card`` call.
+
+    Resolved by search rather than hardcoded, because it has already moved once:
+    the call site left ``dashboard.html.j2`` for ``_us_board_cards.html.j2`` when
+    the us_stocks board gained its server-side tier split
+    (docs/TIER_PREVIEW_PATTERN.md — the free shell and the /premiumdata/ payload
+    render cards from one source so they cannot drift). A hardcoded path turns
+    the next such move into a confusing "literal missing" failure that reads like
+    the convention was deleted, instead of naming the relocation.
+
+    Exactly one owner is the property the two tests below exist to protect: a
+    second call site is a second URL/price convention, which is the drift the
+    evening board must never introduce.
+    """
+    owners = sorted(p for p in (ROOT / "templates").glob("*.j2")
+                    if _NIGHTLY_CARD_MARKER in p.read_text(encoding="utf-8"))
+    assert len(owners) == 1, (
+        "expected exactly ONE template to own the nightly's us-board pv_card "
+        f"call site; found {[p.name for p in owners]}"
+    )
+    return owners[0]
+
 import scripts.close_pass_mirror as M  # noqa: E402
 import scripts.close_pass_publish as P  # noqa: E402
 import scripts.close_pass_reconcile as RC  # noqa: E402
@@ -319,7 +346,17 @@ def test_the_public_live_exceptions_are_exactly_the_reviewed_files():
     """A prefix would have swept this artifact in with them. There is no prefix —
     each entry is an individually reviewed file."""
     live_public = sorted(p for p in _caddy_public_exclusions() if p.startswith("/live/"))
-    assert live_public == ["/live/breadth.json", "/live/quotes.json",
+    # flow_pulse.json and intraday_quotes.json were added to the Caddyfile by
+    # #6105 "Restore Intraday Flow live transport truth" (2026-08-20), which
+    # deliberately made both anonymously fetchable so the Intraday Flow surface
+    # could read them — but that PR never updated this reviewed-inventory list or
+    # its twin in tests/test_entry_radar_w4_lane.py, so BOTH have been red on main
+    # ever since. CI's path scoping hid it: this suite only runs when the
+    # close-pass / entry-radar lanes are touched, so main's routine data pushes
+    # never triggered it. Recorded here as reviewed rather than re-litigated —
+    # the exposure was the intent of a merged PR, not an accident.
+    assert live_public == ["/live/breadth.json", "/live/flow_pulse.json",
+                           "/live/intraday_quotes.json", "/live/quotes.json",
                            "/live/release_publications.json", "/live/staleness.json"]
     assert not any(p.startswith("/live/") for p in POLICY["public"]["prefixes"])
 
@@ -676,7 +713,7 @@ def test_the_card_href_is_the_nightlys_own_ticker_page_url():
     """Read out of the nightly's pv_card call site, never invented. A second URL
     convention would send the evening board's cards somewhere the morning
     board's cards do not go, and the reader would find it before we did."""
-    call_site = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    call_site = _nightly_card_call_site().read_text(encoding="utf-8")
     assert "'href': 'stock.html#' ~ n.ticker, 'tk': n.ticker, 'mkt': 'us'," in call_site
     card = CB.board_state(_carded())["board"]["cards"][0]
     assert card["href"] == f"stock.html#{card['tk']}"
@@ -684,7 +721,7 @@ def test_the_card_href_is_the_nightlys_own_ticker_page_url():
 
 
 def test_the_price_is_formatted_as_the_nightly_formats_it():
-    call_site = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    call_site = _nightly_card_call_site().read_text(encoding="utf-8")
     assert "'price_txt': ('$' ~ ('%.2f'|format(n.price)))" in call_site
     assert CB.board_state(_carded())["board"]["cards"][0]["price_txt"] == "$187.46"
 
@@ -1077,6 +1114,166 @@ def test_the_strip_annotation_is_independent_of_the_full_board_copy(tmp_path,
 def test_the_strip_annotation_can_be_switched_off():
     assert M.PLV_SERVED_PATH.endswith("/live/prophet_live.json")
     assert M.STATE_KEY == "board_state"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# run()'s material/benign classification (FROZEN SPEC Part B). Before this fix
+# run() called annotate_live_strip and discarded its boolean outright, so an
+# absent served target — the exact shape of the 27-day 2026-07-30→08-26 US
+# Prophet Live freeze — produced the SAME silence as every benign reason to
+# write nothing. These pin the caller, not the CAS mechanics (already covered
+# above by the annotate_live_strip-level tests, unchanged).
+# ─────────────────────────────────────────────────────────────────────────────
+def _warnings(out: str) -> list[str]:
+    return [ln for ln in out.splitlines() if "::warning" in ln]
+
+
+def test_run_emits_a_loud_annotation_when_the_target_is_absent(tmp_path, capsys):
+    """Area 7. The served target never existing at all — literally the shape of
+    the incident this fix closes."""
+    served = tmp_path / "us_board_provisional.json"
+    plv = tmp_path / "prophet_live.json"          # never created
+    payload = _payload()
+    served.write_text(json.dumps(payload))
+    assert M.run(served=str(served), plv=str(plv),
+                 fetch=lambda key, **kw: payload) == 0
+    warn = _warnings(capsys.readouterr().out)
+    assert warn, "a material failure must not stay silent"
+    assert warn[0].startswith("::warning title=close-pass::")
+    assert "absent" in warn[0]
+    assert not plv.exists()          # still never creates the artifact
+
+
+def test_run_emits_a_loud_annotation_when_the_target_is_unparseable(tmp_path, capsys):
+    """Area 8. A half-written file, an error shell — malformed JSON is just as
+    material as the file not existing at all."""
+    served = tmp_path / "us_board_provisional.json"
+    plv = tmp_path / "prophet_live.json"
+    plv.write_text('{"states": ')                  # broken JSON
+    payload = _payload()
+    served.write_text(json.dumps(payload))
+    assert M.run(served=str(served), plv=str(plv),
+                 fetch=lambda key, **kw: payload) == 0
+    warn = _warnings(capsys.readouterr().out)
+    assert warn and "unparseable" in warn[0]
+    assert plv.read_text() == '{"states": '        # left exactly as it is, not repaired
+
+
+def test_run_emits_a_loud_annotation_when_publish_served_fails(tmp_path, monkeypatch,
+                                                                capsys):
+    """Area 9. The read/CAS half succeeds; the write itself fails."""
+    served = tmp_path / "us_board_provisional.json"
+    plv = tmp_path / "prophet_live.json"
+    plv.write_text(json.dumps({"states": {}}))
+    payload = _payload()
+    served.write_text(json.dumps(payload))
+    monkeypatch.setattr(M, "publish_served", lambda *a, **kw: False)
+    assert M.run(served=str(served), plv=str(plv),
+                 fetch=lambda key, **kw: payload) == 0
+    warn = _warnings(capsys.readouterr().out)
+    assert warn and "publish_served" in warn[0]
+
+
+def test_run_stays_silent_when_the_strip_is_already_annotated(tmp_path, capsys):
+    """Area 10. The common tick — ~40 passes a day, one write. Must never page."""
+    served = tmp_path / "us_board_provisional.json"
+    plv = tmp_path / "prophet_live.json"
+    payload = _payload()
+    served.write_text(json.dumps(payload))
+    plv.write_text(json.dumps({"states": {}}))
+    assert M.run(served=str(served), plv=str(plv), fetch=lambda key, **kw: payload) == 0
+    capsys.readouterr()  # the first pass writes the key — discard its output
+    assert M.run(served=str(served), plv=str(plv), fetch=lambda key, **kw: payload) == 0
+    assert _warnings(capsys.readouterr().out) == []
+
+
+def test_run_dry_run_never_emits_a_material_warning(tmp_path, capsys):
+    """Area 11. dry-run prints its own plain notice, never a ::warning."""
+    served = tmp_path / "us_board_provisional.json"
+    plv = tmp_path / "prophet_live.json"
+    payload = _payload()
+    served.write_text(json.dumps(payload))
+    plv.write_text(json.dumps({"states": {}}))
+    assert M.run(served=str(served), plv=str(plv), dry_run=True,
+                 fetch=lambda key, **kw: payload) == 0
+    out = capsys.readouterr().out
+    assert _warnings(out) == []
+    assert "dry-run: would annotate" in out
+
+
+def test_run_stays_silent_on_a_cas_skip_and_does_not_clobber(tmp_path, monkeypatch,
+                                                              capsys):
+    """Area 12. The concurrent-rewrite skip is CORRECT behaviour, not a failure —
+    paging on it would be exactly the false-alarm factory the falsifier law
+    forbids. The evaluator's fresh document must also survive untouched."""
+    served = tmp_path / "us_board_provisional.json"
+    plv = tmp_path / "prophet_live.json"
+    stale = {"schema": "prophet_live.states/v1", "states": {"AAA": {"state": "forming"}}}
+    plv.write_text(json.dumps(stale))
+    fresh = {"schema": "prophet_live.states/v1",
+             "states": {"AAA": {"state": "buyable"}}}
+
+    real = CB.board_state
+    def evaluator_wins(payload, **kw):
+        plv.write_text(json.dumps(fresh))           # the evaluator's whole rewrite
+        return real(payload, **kw)
+    monkeypatch.setattr(M.CB, "board_state", evaluator_wins)
+
+    payload = _payload()
+    served.write_text(json.dumps(payload))
+    assert M.run(served=str(served), plv=str(plv), fetch=lambda key, **kw: payload) == 0
+    out = capsys.readouterr().out
+    assert _warnings(out) == []
+    landed = json.loads(plv.read_text())
+    assert landed == fresh                # the evaluator's document, untouched
+    assert M.STATE_KEY not in landed
+
+
+def test_run_success_writes_board_state_and_emits_no_warning(tmp_path, capsys):
+    """Area 13. The ordinary evening pass: a healthy annotate must never trip
+    the material-failure path, and the write itself is unchanged."""
+    served = tmp_path / "us_board_provisional.json"
+    plv = tmp_path / "prophet_live.json"
+    payload = _payload()
+    served.write_text(json.dumps(payload))
+    plv.write_text(json.dumps({"states": {}}))
+    assert M.run(served=str(served), plv=str(plv), fetch=lambda key, **kw: payload) == 0
+    out = capsys.readouterr().out
+    assert _warnings(out) == []
+    assert json.loads(plv.read_text())[M.STATE_KEY] == CB.board_state(payload)
+
+
+def test_the_outcome_helper_is_the_single_source_of_truth_for_both_callers(tmp_path):
+    """The classification split (Part B) reads off the SAME single read/CAS
+    pass annotate_live_strip always performed — never a second read — proven
+    directly against the private helper both the public wrapper and run() now
+    share, and that its outcome vocabulary matches MATERIAL_ANNOTATE_OUTCOMES."""
+    plv = tmp_path / "prophet_live.json"
+    plv.write_text(json.dumps({"states": {}}))
+    payload = _payload()
+
+    wrote, outcome = M._annotate_live_strip_outcome(plv, payload)
+    assert wrote is True and outcome == M.ANNOTATE_OUTCOME_ANNOTATED
+    assert json.loads(plv.read_text())[M.STATE_KEY] == CB.board_state(payload)
+    # The public wrapper agrees — same call, same file, same result.
+    assert M.annotate_live_strip(plv, payload) is False   # already annotated now
+
+    # Second pass, unchanged document: benign, no write, outcome says why.
+    wrote2, outcome2 = M._annotate_live_strip_outcome(plv, payload)
+    assert wrote2 is False and outcome2 == M.ANNOTATE_OUTCOME_ALREADY_ANNOTATED
+
+    # Absent and unparseable are both MATERIAL, and distinguishably so.
+    missing = tmp_path / "missing.json"
+    wrote3, outcome3 = M._annotate_live_strip_outcome(missing, payload)
+    assert wrote3 is False and outcome3 == M.ANNOTATE_OUTCOME_ABSENT
+    broken = tmp_path / "broken.json"
+    broken.write_text('{"states": ')
+    wrote4, outcome4 = M._annotate_live_strip_outcome(broken, payload)
+    assert wrote4 is False and outcome4 == M.ANNOTATE_OUTCOME_UNPARSEABLE
+    assert M.MATERIAL_ANNOTATE_OUTCOMES == {
+        M.ANNOTATE_OUTCOME_ABSENT, M.ANNOTATE_OUTCOME_UNPARSEABLE,
+        M.ANNOTATE_OUTCOME_PUBLISH_FAILED,
+    }
 
 
 def test_an_empty_plane_is_a_notice_not_an_alarm(monkeypatch, tmp_path, capsys):
@@ -1499,7 +1696,7 @@ def _cron_field(spec: str, lo: int, hi: int) -> set[int]:
 @pytest.mark.parametrize("field,lo,hi,expected", [
     ("*/2", 0, 23, {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22}),   # codex-research
     ("13-23/2", 0, 23, {13, 15, 17, 19, 21, 23}),                  # smart-money-filings
-    ("7,37", 0, 59, {7, 37}),                                      # 13f-census
+    ("5,35", 0, 59, {5, 35}),                                      # live-breadth
     ("*", 0, 23, set(range(24))),
     ("25", 0, 59, {25}),
 ])
@@ -1508,11 +1705,23 @@ def test_the_cron_expander_reads_every_form_in_this_repo(field, lo, hi, expected
 
 
 def test_the_minute_avoids_the_other_crons_on_the_two_host_pool():
-    """MEASURED 2026-08-09: plain `macstudio` is TWO live physical hosts
-    (mac-builder-1/2, which also serve the `codex` and `theta-m1` labels), and
-    closing-bell holds one of them for the whole window every weekday. So the
-    minute is not cosmetic — it decides whether this lane starts or queues
-    behind another job on the one remaining slot.
+    """RE-MEASURED 2026-08-17 against `gh api repos/{owner}/{repo}/actions/runners`:
+    plain `macstudio` is TWO live hosts — mac-builder-5 (`macstudio,parked`) and
+    mac-builder-light (`macstudio,render-heavy`) — and closing-bell holds one of
+    them for the whole window every weekday. So the minute is not cosmetic; it
+    decides whether this lane starts or queues behind another job on the one
+    remaining slot.
+
+    SUPERSEDED MODEL, kept as the warning it earned. This test used to say the
+    pool was mac-builder-1/2 "which also serve the `codex` and `theta-m1`
+    labels". Those are the retired M1 host's runners, deregistered ~2026-08-15.
+    `codex` now has NO live runner at all, and `theta-m1` was restored onto
+    mac-builder-3 — which carries `macstudio-light`, NOT `macstudio`, so
+    theta-m1 jobs no longer contend with this lane. A stale pool model is not
+    cosmetic either: the same orphaned-label class froze every Prophet board
+    2026-08-14→17 (research/PROPHET_OUTAGE_2026_08_17_POSTMORTEM.md,
+    DSC:QUEUED-JOB-HOSTAGE-HOLDS-THE-NIGHTLY-CRON-GROUP). The checked-in model
+    this comment now defers to is `.github/runner-policy.yml` `label_registry`.
 
     Derived from the live workflow files rather than a hardcoded list, so a lane
     that later moves ONTO this minute reds here instead of silently contending.
@@ -1521,10 +1730,14 @@ def test_the_minute_avoids_the_other_crons_on_the_two_host_pool():
     """
     ours = {int(c.split()[0]) for c in _crons()}
     assert ours == {25}
-    #: The labels mac-builder-1/2 actually carry. EXACT match, never substring:
-    #: `macstudio-light` is a different host, and matching it would flag lanes
-    #: that share no capacity at all.
-    POOL = {"macstudio", "codex", "theta-m1"}
+    #: Labels that route onto a runner ALSO carrying `macstudio` — i.e. whose
+    #: jobs consume a slot this lane could otherwise have. EXACT match, never
+    #: substring: `macstudio-light` is a different host (mac-builder-3) and
+    #: matching it would flag lanes that share no capacity at all.
+    #: `render-heavy` → mac-builder-light and `parked` → mac-builder-5 are both
+    #: macstudio-carrying hosts; neither is on a cron today, so both are inert
+    #: now and load-bearing the moment one is.
+    POOL = {"macstudio", "render-heavy", "parked"}
     clashes: list[str] = []
     for path in sorted((ROOT / ".github" / "workflows").glob("*.yml")):
         if path.name == "close-pass.yml":
@@ -1709,7 +1922,13 @@ def test_macro_update_never_restarts_the_closepass_oneshot():
 def test_live_setup_installs_and_arms_the_mirror():
     """A fresh provision must not need a second manual step to arm the lane."""
     assert "macro-live-closepass.service macro-live-closepass.timer" in LIVE_SETUP
-    assert "macro-live-closepass.timer >/dev/null" in LIVE_SETUP
+    # Assert the lane is inside the `systemctl enable --now` batch, NOT that its
+    # line happens to be the one carrying the trailing `>/dev/null`. The original
+    # assertion pinned that redirect, which only ever sat on the LAST timer in the
+    # batch, so it silently broke the moment macro-live-breadth.timer was appended
+    # after closepass — testing list order, not the arming it means to guarantee.
+    enable_block = LIVE_SETUP.split("systemctl enable --now", 1)[1].split("\n\n", 1)[0]
+    assert "macro-live-closepass.timer" in enable_block
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1936,8 +2155,10 @@ def test_the_header_names_the_primary_and_keeps_the_old_reasoning():
     assert "BOUNDED BACKSTOP" in head
     assert "20:52" in head and "95 minutes" in head        # the measurement
     assert "DEC-LER-LIVE-LANE-VPS-5MIN-REST" in head
-    # Unchanged, and still the only definition of the window in this file.
-    assert "MEASURED POOL CAPACITY (2026-08-09)" in WORKFLOW_SRC
+    # Still the only definition of the window in this file — re-measured
+    # 2026-08-17 (label registry: .github/runner-policy.yml label_registry),
+    # not rewritten.
+    assert "MEASURED POOL CAPACITY (2026-08-09, pool re-measured 2026-08-17)" in WORKFLOW_SRC
     assert "SCHEDULE — DST pair, one window" in WORKFLOW_SRC
 
 
@@ -2039,11 +2260,42 @@ def test_the_installed_runner_is_plumbing_and_the_lane_is_the_policy():
     """The copy under Application Support is frozen at install time — which is
     fine, and is the same contract scripts/prophet_rescue_launchd.py carries:
     the wrapper is plumbing, the POLICY it launches always comes from
-    origin/main. Both vintages land in every receipt so drift is visible."""
+    origin/main."""
     runner = HOST_RUNNER.read_text(encoding="utf-8").replace("'", '"')
     assert '"reset", "--hard", "origin/main"' in runner
-    assert "runner_sha" in runner and "code_sha" in runner
+    assert "bootstrap" in runner and "code_sha" in runner
     assert "re-run this installer" in INSTALLER.read_text(encoding="utf-8").lower()
+
+
+def test_the_freeze_is_disclosed_every_run_because_merging_deploys_nothing():
+    """THE COST OF THE FREEZE IS PAID BY THE RECEIPT, not by a self-update.
+
+    Freezing the snapshot at install time is correct — a mid-day push to main
+    must not change what the clock executes mid-session — but it means a merged
+    fix is not a deployed fix, and on 2026-08-18 that gap was invisible in every
+    instrument the estate owns: PR #5862 merged as af416e4a1066 while the host
+    kept running the Aug-15 bytes, and its receipts read perfectly because
+    `code_sha` (the lane's HEAD) is reset to origin/main every single run.
+
+    So the runner GRADES its own executing bytes against origin/main's copy and
+    says so out loud, the report fails on it, and the installer still owns the
+    only act that deploys the file.
+    """
+    runner = HOST_RUNNER.read_text(encoding="utf-8")
+    # It reads origin/main's copy of ITSELF out of the lane the reset just made.
+    assert "compare_bootstrap_to_main" in runner and "RUNNER_REPO_REL" in runner
+    # ...and the finding carries the only remedy there is.
+    assert "bash scripts/install_closepass_launchd.sh" in runner
+    assert "::error" in runner.replace("f\"", "\"")
+    # The report is the second instrument, off the launchd log entirely.
+    report = (ROOT / "scripts" / "close_pass_slo_report.py").read_text(encoding="utf-8")
+    assert "bootstrap_verdict" in report and "install_closepass_launchd.sh" in report
+
+    installer = INSTALLER.read_text(encoding="utf-8")
+    # THE FREEZE ITSELF IS UNCHANGED: exactly one copy of the runner into the
+    # support dir, at install time, by the operator. Nothing else may deploy it.
+    assert installer.count('cp "$REPO_SRC/scripts/close_pass_host_runner.py"') == 1
+    assert "shasum -a 256" in installer          # says what the install moved
 
 
 def test_the_primary_and_the_backstop_publish_the_same_artifact_the_same_way():

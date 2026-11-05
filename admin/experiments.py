@@ -32,8 +32,11 @@ _RENDER_KEYS = (
     # live reader produced, so a frozen hand-authored string never reads as this morning's truth
     "state_live", "state_as_of",
 )
-# statuses that are already concluded (don't re-flag their come-back date as "newly ready")
-_DONE = {"validated", "proven"}
+# statuses that are already concluded (don't re-flag their come-back date as "newly ready").
+# Keep in step with engine/experiments_registry._DONE — the panel re-derives `ready` with
+# THIS set, so a status the engine considers concluded (gate_open, no_go) but the panel
+# does not re-flags daily forever (2026-08-26 audit: the no_go cortex hypotheses).
+_DONE = {"validated", "proven", "gate_open", "no_go"}
 # kinds that never auto-mature a result on their come-back date (a re-check prompt, not a result)
 _NO_AUTO_READY = {"parked_research"}
 
@@ -72,9 +75,11 @@ def _decorate(e: dict) -> dict:
 def panel() -> dict:
     """The full Experiments registry with live timing, sorted ready-first then soonest."""
     reg = _read_json(_REGISTRY)
-    if not reg or not reg.get("experiments"):
+    diagnostics, diagnostic_state = _research_diagnostics(reg)
+    if not reg or not reg.get("experiments") and not diagnostics:
         return {
             "ok": False, "experiments": [], "ready_count": 0, "n": 0,
+            "research_diagnostics": [], "research_diagnostics_state": diagnostic_state,
             "reason": ("No experiments registry yet — the macro build emits "
                        "site/marketdata/experiments.json (engine.experiments_registry). "
                        "Run a build (or wait for the nightly) to populate it."),
@@ -95,7 +100,27 @@ def panel() -> dict:
         "ok": True, "as_of": reg.get("as_of"), "generated_at": reg.get("generated_at"),
         "today": _today().isoformat(), "n": len(exps), "ready_count": len(ready),
         "by_status": by_status, "experiments": slim, "note": reg.get("note"),
+        "research_diagnostics": diagnostics, "research_diagnostics_state": diagnostic_state,
     }
+
+
+def _research_diagnostics(reg):
+    """Only the fixed aggregate projection is exposed; all dispositions or none."""
+    if type(reg) is not dict or "research_diagnostics" not in reg:
+        return [], "DISABLED"
+    rows = reg["research_diagnostics"]
+    if type(rows) is not list or len(rows) > 32:
+        return [], "UNAVAILABLE"
+    if not rows:
+        return [], "UNAVAILABLE" if reg.get("research_diagnostics_state") == "UNAVAILABLE" else "DISABLED"
+    try:
+        from engine.research_codegen.bridge import validate_public_projection
+        projected = [validate_public_projection(r) for r in rows]
+        if len({r["diagnostic_id"] for r in projected}) != len(projected):
+            return [], "UNAVAILABLE"
+        return projected, "AVAILABLE"
+    except (ImportError, ValueError, TypeError, KeyError, OverflowError):
+        return [], "UNAVAILABLE"
 
 
 def alert_summary() -> dict:

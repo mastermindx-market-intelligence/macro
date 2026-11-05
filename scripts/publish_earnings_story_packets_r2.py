@@ -123,6 +123,15 @@ def _audit_bound_evidence(
     mapping, but deduplicates immutable objects and packet replays by their
     content ids.  Corrections remain distinct packet ids and therefore retain
     full historical source provenance.
+
+    A bounded catch-up generation is intentionally allowed to project a strict
+    subset of its bound evidence root. Completeness is measured by the
+    story/evidence lag and backlog, not manufactured by pretending an hourly
+    batch contains the entire upstream generation. The audit therefore proves
+    every published packet belongs to and exactly replays its bound evidence;
+    it rejects only packets outside that evidence root. This keeps partial
+    recovery roots and their immutable ancestors auditable while preserving the
+    complete object/evidence replay for everything they actually published.
     """
     from engine.earnings_narrative.story_packets import (  # noqa: PLC0415
         evidence_receipts_from_manifest,
@@ -164,8 +173,8 @@ def _audit_bound_evidence(
             or sha256_bytes(evidence_raw) != evidence_ref.get("manifest_sha256")
         ):
             raise ImmutableAddressIntegrityError("bound earnings evidence manifest receipt mismatch")
-        if set(evidence_manifest["events"]) != set(story_manifest["packets"]):
-            raise ImmutableAddressIntegrityError("story packet catalog does not exactly project its evidence root")
+        if not set(story_manifest["packets"]) <= set(evidence_manifest["events"]):
+            raise ImmutableAddressIntegrityError("story packet catalog contains an event outside its bound evidence root")
 
         policy = story_manifest["policy"]["snapshot"]
         for key, index in story_manifest["packets"].items():
@@ -644,12 +653,29 @@ def _generation_id(manifest: Mapping[str, Any]) -> str:
     return generation_id
 
 
+def _changed_receipts(manifest: Mapping[str, Any], remote: Mapping[str, Any] | None) -> list[tuple[str, Mapping[str, Any]]]:
+    local = _file_receipts(manifest)
+    remote_files = remote.get("files") if isinstance(remote, Mapping) else None
+    if not isinstance(remote_files, Mapping):
+        return sorted(local.items())
+    return [(path, receipt) for path, receipt in sorted(local.items()) if remote_files.get(path) != receipt]
+
+
 def _validate_staging(
     out_dir: Path,
     manifest: Mapping[str, Any],
     *,
+    remote_manifest: Mapping[str, Any] | None = None,
     lineage_depth: int | None = None,
 ) -> None:
+    """Validate either a complete first root or one verified bounded child delta.
+
+    A child generation may legitimately omit unchanged packet bodies locally:
+    the immutable current R2 parent already binds those bytes.  In that case we
+    require exact receipt reuse for the unchanged catalog and locally verify
+    only changed/new objects plus correction lineage.  Full remote audits still
+    replay every object in every retained generation.
+    """
     root = Path(out_dir)
     marker = canonical_json_bytes(manifest)
     try:
@@ -658,13 +684,27 @@ def _validate_staging(
         generation = root / "generations" / _generation_id(manifest)
         if (generation / "manifest.json").read_bytes() != marker:
             raise ImmutableAddressIntegrityError("local immutable story packet manifest differs from root")
-        for relative, receipt in _file_receipts(manifest).items():
+        receipts = (
+            _changed_receipts(manifest, remote_manifest)
+            if remote_manifest is not None
+            else sorted(_file_receipts(manifest).items())
+        )
+        for relative, receipt in receipts:
             object_key = str(receipt["object_key"])
             body = (root / object_key).read_bytes()
             if len(body) != receipt["bytes"] or sha256_bytes(body) != receipt["sha256"]:
                 raise ImmutableAddressIntegrityError(f"local story packet receipt mismatch: {relative}")
             _canonical_object(body, label=f"local story packet object {relative}")
-        health = _verify_store(root, manifest, lineage_depth=lineage_depth)
+        if remote_manifest is None:
+            health = _verify_store(root, manifest, lineage_depth=lineage_depth)
+        else:
+            from engine.earnings_narrative.story_store import verify_story_packet_delta_store  # noqa: PLC0415
+
+            health = verify_story_packet_delta_store(
+                root,
+                manifest,
+                prior_manifest=remote_manifest,
+            )
         if health.get("status") != "ready":
             raise ImmutableAddressIntegrityError("local story packet store is not ready")
     except ImmutableAddressIntegrityError:
@@ -716,14 +756,6 @@ def _put_immutable(s3: Any, bucket: str, key: str, body: bytes, *, dry_run: bool
         raise ImmutableAddressIntegrityError(f"immutable create failed: {key}") from exc
 
 
-def _changed_receipts(manifest: Mapping[str, Any], remote: Mapping[str, Any] | None) -> list[tuple[str, Mapping[str, Any]]]:
-    local = _file_receipts(manifest)
-    remote_files = remote.get("files") if isinstance(remote, Mapping) else None
-    if not isinstance(remote_files, Mapping):
-        return sorted(local.items())
-    return [(path, receipt) for path, receipt in sorted(local.items()) if remote_files.get(path) != receipt]
-
-
 def _shrink_allowed(local: Mapping[str, Any], remote: Mapping[str, Any] | None) -> bool:
     if not isinstance(remote, Mapping) or remote.get("status") != "ready":
         return True
@@ -735,8 +767,11 @@ def _hydrate_and_verify_current_story_root(
     s3: Any | None = None,
     bucket: str | None = None,
     require_publication_journal: bool = True,
+    discovery_out: Path | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Return a sealed binding plus the original detailed audit health."""
+    if discovery_out is not None and Path(discovery_out).exists():
+        raise ImmutableAddressIntegrityError("discovery destination already exists")
     client = s3 if s3 is not None else _client()
     if client is None:
         raise ImmutableAddressIntegrityError("R2 credentials are required for a public story packet audit")
@@ -819,6 +854,45 @@ def _hydrate_and_verify_current_story_root(
                 story_root=root,
                 story_manifests=story_chain,
             )
+            discovery = None
+            if discovery_out is not None:
+                # Discovery reuses the fully replayed bytes, never another
+                # transport, synthetic admission, or caller-supplied packet.
+                # List the whole catalog in canonical key order; do not rank
+                # candidates, choose tiers, or retain transcript/prose bodies.
+                packets = []
+                for key, index in sorted(marker["packets"].items()):
+                    packet = json.loads((root / index["object_key"]).read_bytes())
+                    receipt = marker["files"][index["object_key"]]
+                    packets.append({
+                        "event_key": key,
+                        "event_date": packet["digest"]["event"]["date"],
+                        "packet_id": index["packet_id"],
+                        "story_revision_id": index["story_revision_id"],
+                        "source_sha256": index["source_sha256"],
+                        "object_key": index["object_key"],
+                        "packet_sha256": receipt["sha256"],
+                        "tier": packet["promotion"]["tier"],
+                    })
+                discovery = {
+                    "schema": "earnings.story_packet_discovery/v1",
+                    "authority": AUTHORITY,
+                    "operation": "discovery_only",
+                    "status": "current_root_verified",
+                    "generation_id": generation_id,
+                    "manifest_sha256": sha256_bytes(marker_raw),
+                    "evidence_root": dict(marker["evidence_root"]),
+                    "policy_sha256": marker["policy"]["sha256"],
+                    "packet_count": len(packets),
+                    "packets": packets,
+                    # The closed source packet contract has no publication
+                    # rights receipt. Integrity/tier eligibility cannot grant it.
+                    "rights": {"status": "unresolved", "public_article_approved": False},
+                    "allow_stage": False,
+                    "allow_emit": False,
+                    "requires_fresh_ingress_audit": True,
+                    "execution": dict(EXECUTION_RECEIPT),
+                }
         if health.get("status") != "ready":
             raise ValueError("full public story packet replay is not ready")
         current, current_etag = _remote_marker(client, target_bucket)
@@ -841,6 +915,13 @@ def _hydrate_and_verify_current_story_root(
             or canonical_json_bytes(final) != canonical_json_bytes(current)
         ):
             raise ValueError("public story packet root moved during journal proof")
+        if discovery_out is not None:
+            # Only the final successful currentness/journal proof may produce
+            # a receipt. Exclusive creation preserves any prior evidence.
+            with Path(discovery_out).open("xb") as output:
+                output.write(canonical_json_bytes(discovery))
+                output.flush()
+                os.fsync(output.fileno())
         return {
             "schema": ROOT_AUDIT_SCHEMA,
             "authority": AUTHORITY,
@@ -988,9 +1069,14 @@ def load_exact_current_story_packet(
     return packet
 
 
-def audit_remote_generation(*, s3: Any | None = None, bucket: str | None = None) -> dict[str, Any]:
+def audit_remote_generation(
+    *, s3: Any | None = None, bucket: str | None = None,
+    discovery_out: Path | None = None,
+) -> dict[str, Any]:
     """Replay every public root receipt and all immutable objects it cites."""
-    _binding, health = _hydrate_and_verify_current_story_root(s3=s3, bucket=bucket)
+    _binding, health = _hydrate_and_verify_current_story_root(
+        s3=s3, bucket=bucket, discovery_out=discovery_out,
+    )
     return health
 
 
@@ -1109,7 +1195,6 @@ def publish(
         if manifest.get("status") != "ready":
             raise ImmutableAddressIntegrityError("only ready story packet catalogs may advance the public root")
         _catalog_keys(manifest)
-        _validate_staging(Path(out_dir), manifest, lineage_depth=verify_lineage_depth)
         remote, remote_etag = _remote_marker(client, target_bucket)
         if remote is not None and remote_etag is None:
             raise ImmutableAddressIntegrityError(
@@ -1201,6 +1286,12 @@ def publish(
         if not _shrink_allowed(manifest, remote):
             log.error("refusing story packet root shrink below last-good ready packet set")
             return 1
+        _validate_staging(
+            Path(out_dir),
+            manifest,
+            remote_manifest=remote,
+            lineage_depth=verify_lineage_depth,
+        )
         objects: dict[str, bytes] = {}
         for relative, receipt in _changed_receipts(manifest, remote):
             object_key = str(receipt["object_key"])
@@ -1315,10 +1406,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out-dir", type=Path)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--audit-remote", action="store_true", help="Read and replay the complete public packet catalog")
+    parser.add_argument("--discovery-out", type=Path, help="Retain body-free packet identities after a successful remote audit; grants no staging or publication authority")
     parser.add_argument("--initialize-journal", action="store_true", help="Explicitly anchor one already-audited legacy root")
     parser.add_argument("--expected-generation-id")
     parser.add_argument("--expected-manifest-sha256")
     args = parser.parse_args(argv)
+    if args.discovery_out is not None and not args.audit_remote:
+        parser.error("--discovery-out requires --audit-remote")
     if args.audit_remote and args.initialize_journal:
         parser.error("--audit-remote and --initialize-journal are mutually exclusive")
     if args.initialize_journal:
@@ -1336,7 +1430,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.audit_remote:
         try:
-            health = audit_remote_generation()
+            health = audit_remote_generation(discovery_out=args.discovery_out)
         except ImmutableAddressIntegrityError as exc:
             print(f"earnings story packets: public audit failed: {exc}", file=sys.stderr)
             return 1

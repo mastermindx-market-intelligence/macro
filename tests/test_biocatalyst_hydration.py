@@ -69,26 +69,145 @@ def _meta(**extra: object) -> dict:
     return body
 
 
-def milestone_empty() -> dict:
+def catalyst_radar_empty() -> dict:
+    """A valid, empty Catalyst Radar envelope (BioCatalyst P1-1).
+
+    Shape matches ``GET /api/biocatalyst/v1/catalyst-radar`` exactly: the
+    ``catalyst_radar`` row array, the ``effective_horizon`` block, the
+    ``coverage.radar`` denominators, and a query echo of the milestones
+    mode's real default request (horizon=next_365d, milestone_kind=all).
+    """
     return _meta(
-        milestones=[],
+        catalyst_radar=[],
         pagination={"limit": 50, "total": 0, "next_cursor": None},
         query={
-            "milestone_kind": "primary_completion",
-            "window": "next_90d",
-            "from_date": "",
-            "to_date": "",
+            "horizon": "next_365d",
+            "milestone_kind": "all",
             "q": "",
             "phase": "",
             "status": "",
             "condition": "",
         },
-        effective_window={
-            "from_date": "2026-08-16",
-            "to_date": "2026-11-14",
+        effective_horizon={
+            "horizon": "next_365d",
+            "horizon_days": 365,
             "anchor_date": "2026-08-16",
         },
+        coverage={
+            "class": "current_only",
+            "radar": {
+                "trials_in_cohort": 0,
+                "trials_with_events": 0,
+                "events_total": 0,
+                "events_in_horizon": 0,
+                "events_occurred": 0,
+                "events_current": 0,
+                "events_beyond_horizon": 0,
+                "unusable_date_events": 0,
+                "absent_date_events": 0,
+                "trials_missing_identity": 0,
+                "kinds": ["primary_completion", "completion"],
+                "horizon_days": 365,
+                "anchor_date": "2026-08-16",
+            },
+        },
     )
+
+
+def catalyst_radar_with_lineage() -> dict:
+    """A valid radar page whose selected milestone has three revisions."""
+
+    payload = catalyst_radar_empty()
+    lineage = [
+        {
+            "from": None,
+            "to": "2026-09",
+            "from_version": 1,
+            "to_version": 2,
+            "observed_at": "2026-01-10T12:00:00Z",
+            "relation": "no_prior_recorded_value",
+            "predecessor_source_version": None,
+            "predecessor_exact_operation_index": None,
+        },
+        {
+            "from": "2026-09",
+            "to": "2026-11",
+            "from_version": 2,
+            "to_version": 3,
+            "observed_at": "2026-03-10T12:00:00Z",
+            "relation": "supersedes_prior_recorded_value",
+            "predecessor_source_version": 2,
+            "predecessor_exact_operation_index": 4,
+        },
+        {
+            "from": "2026-11",
+            "to": "2026-12",
+            "from_version": 3,
+            "to_version": 4,
+            "observed_at": "2026-06-10T12:00:00Z",
+            "relation": "supersedes_prior_recorded_value",
+            "predecessor_source_version": 3,
+            "predecessor_exact_operation_index": 8,
+        },
+    ]
+    payload["catalyst_radar"] = [
+        {
+            "event_id": "nct:NCT00000001:primary_completion",
+            "nct_id": "NCT00000001",
+            "kind": "primary_completion",
+            "trial": {
+                "title": "Alpha Study",
+                "brief_title": "Alpha Study",
+                "study_type": "INTERVENTIONAL",
+                "phases": ["PHASE2"],
+                "conditions": ["Oncology"],
+                "enrollment": {"count": 100, "type": "ACTUAL"},
+            },
+            "milestone": {
+                "kind": "primary_completion",
+                "date": "2026-12",
+                "date_type": "ESTIMATED",
+                "precision": "month",
+                "interval_start": "2026-12-01",
+                "interval_end": "2026-12-31",
+                "unusable_reason": None,
+            },
+            "timing": {
+                "state": "upcoming",
+                "anchor_date": "2026-08-16",
+                "days_to_milestone": {"exact": None, "min": 107, "max": 137},
+                "days_since_milestone": None,
+            },
+            "trial_status": {"value": "RECRUITING", "activity": "active", "reason_code": None},
+            "issuer": {
+                "state": "unresolved_sponsor",
+                "sponsor_name": "Acme",
+                "ticker": None,
+                "relationship": None,
+                "source": None,
+            },
+            "revision": {
+                "state": "has_revisions",
+                "count": len(lineage),
+                "latest": lineage[-1],
+                "lineage": lineage,
+            },
+            "evidence": {
+                "provider": "ClinicalTrials.gov",
+                "record_id": "NCT00000001",
+                "url": "https://clinicaltrials.gov/study/NCT00000001",
+                "source_clocks": {"updated_at": AS_OF, "retrieved_at": AS_OF},
+            },
+        }
+    ]
+    payload["pagination"] = {"limit": 50, "total": 1, "next_cursor": None}
+    payload["coverage"]["radar"].update(
+        trials_in_cohort=1,
+        trials_with_events=1,
+        events_total=1,
+        events_in_horizon=1,
+    )
+    return payload
 
 
 def prospective_pre_baseline_empty() -> dict:
@@ -221,6 +340,169 @@ def _run(tmp_path: Path, scenario: dict, js_text: str | None = None) -> dict:
     return json.loads(result.stdout)
 
 
+def _verified_refresh_scenario(actions: list[dict], *, lang: str = "en", mobile: bool = False) -> dict:
+    """Incumbent synthetic fixture, not a clinical claim or a new source cohort."""
+    return {
+        "authSubject": "fixture-user-a", "lang": lang, "mobile": mobile,
+        "routes": {
+            "/api/biocatalyst/v1/catalyst-radar": _route(200, _json(catalyst_radar_with_lineage())),
+            "/api/biocatalyst/v1/trials/NCT00000001": _route(200, _json(trial_detail())),
+        },
+        "actions": actions,
+    }
+
+
+def _radar_failure(status: int = 503) -> dict:
+    return {"/api/biocatalyst/v1/catalyst-radar": _route(status, '{"detail":"unavailable"}')}
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_same_scope_outage_preserves_dated_milestone_dossier_and_return(tmp_path: Path, lang: str) -> None:
+    out = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "trial", "id": "NCT00000001"},
+        {"type": "refresh", "routes": _radar_failure()},
+        {"type": "close"},
+    ], lang=lang, mobile=True))["snapshots"]
+    initial, opened, delayed, closed = out
+    assert delayed["workspaceState"] == "source_outage"
+    assert delayed["queue"] == opened["queue"]
+    assert "Alpha Study" in delayed["queue"]
+    assert delayed["inspector"] == opened["inspector"]
+    assert delayed["sourceAsOf"] == opened["sourceAsOf"]
+    assert delayed["links"] == opened["links"]
+    assert "https://clinicaltrials.gov/study/NCT00000001" in delayed["links"]
+    assert delayed["url"] == opened["url"]
+    assert ("Last verified page" if lang == "en" else "最近已核验页面") in delayed["status"]
+    assert ("Last successful check" if lang == "en" else "最近成功核验") in delayed["notice"]
+    assert ("Failed check" if lang == "en" else "失败核验") in delayed["notice"]
+    assert "2026-08-16" in delayed["notice"]
+    assert not closed["inspectorOpen"]
+    assert closed["activeTrial"] == "NCT00000001"
+    assert closed["url"] == initial["url"]
+
+
+@needs_node
+def test_success_after_retained_outage_recovers_without_relabelling_source_clock(tmp_path: Path) -> None:
+    snapshots = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "refresh", "routes": _radar_failure()},
+        {"type": "refresh", "routes": {"/api/biocatalyst/v1/catalyst-radar": _route(200, _json(catalyst_radar_with_lineage()))}},
+    ]))["snapshots"]
+    assert "Alpha Study" in snapshots[1]["queue"]
+    assert snapshots[2]["workspaceState"] == "ready"
+    assert "Failed check" not in snapshots[2]["notice"]
+    assert snapshots[2]["sourceAsOf"] == snapshots[0]["sourceAsOf"]
+
+
+@needs_node
+@pytest.mark.parametrize("status", [401, 402, 403, 404])
+def test_access_or_missing_scope_does_not_retain_private_rows(tmp_path: Path, status: int) -> None:
+    snapshots = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "trial", "id": "NCT00000001"},
+        {"type": "refresh", "routes": _radar_failure(status)},
+    ]))["snapshots"]
+    assert "Alpha Study" not in snapshots[-1]["queue"]
+    assert "Alpha Study" not in snapshots[-1]["inspector"]
+    assert "Last verified page" not in snapshots[-1]["status"]
+
+
+@needs_node
+@pytest.mark.parametrize("subject,event", [("", "SIGNED_OUT"), ("fixture-user-b", "SIGNED_IN"), ("fixture-user-a", "TOKEN_REFRESHED")])
+def test_auth_scope_transition_clears_verified_rows_before_unavailable_successor(tmp_path: Path, subject: str, event: str) -> None:
+    snapshots = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "trial", "id": "NCT00000001"},
+        {"type": "auth", "subject": subject, "event": event, "routes": _radar_failure()},
+    ]))["snapshots"]
+    assert "Alpha Study" not in snapshots[-1]["queue"]
+    assert "Alpha Study" not in snapshots[-1]["inspector"]
+    assert "Last verified page" not in snapshots[-1]["status"]
+
+
+@needs_node
+def test_changed_query_and_invalid_success_do_not_reuse_prior_verified_population(tmp_path: Path) -> None:
+    changed = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "mode", "mode": "screen", "routes": {"/api/biocatalyst/v1/trials:screen": _route(503, '{}')}},
+    ]))["snapshots"][-1]
+    assert "Alpha Study" not in changed["queue"]
+    invalid = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "refresh", "routes": {"/api/biocatalyst/v1/catalyst-radar": _route(200, '{}')}},
+    ]))["snapshots"][-1]
+    assert invalid["workspaceState"] == "integrity_block"
+    assert "Alpha Study" not in invalid["queue"]
+
+
+@needs_node
+def test_changed_radar_filter_unknown_principal_and_empty_success_do_not_reuse_rows(tmp_path: Path) -> None:
+    changed = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "field", "value": "primary_completion", "routes": _radar_failure()},
+    ]))["snapshots"][-1]
+    assert "Alpha Study" not in changed["queue"]
+    unknown = _verified_refresh_scenario([{"type": "refresh", "routes": _radar_failure()}])
+    unknown.pop("authSubject")
+    assert "Alpha Study" not in _run(tmp_path, unknown)["snapshots"][-1]["queue"]
+    changed_user = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "silent-principal-refresh", "subject": "fixture-user-b", "routes": _radar_failure()},
+    ]))["snapshots"][-1]
+    assert "Alpha Study" not in changed_user["queue"]
+    empty = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "refresh", "routes": _radar_failure()},
+        {"type": "refresh", "routes": {"/api/biocatalyst/v1/catalyst-radar": _route(200, _json(catalyst_radar_empty()))}},
+    ]))["snapshots"][-1]
+    assert empty["workspaceState"] == "empty"
+    assert "Alpha Study" not in empty["queue"]
+
+
+@needs_node
+def test_operational_check_clocks_do_not_relabel_registry_or_revision_dates(tmp_path: Path) -> None:
+    scene = _verified_refresh_scenario([
+        {"type": "trial", "id": "NCT00000001"},
+        {"type": "refresh", "routes": _radar_failure(), "clientNow": "2026-11-03T17:01:00Z"},
+    ])
+    scene["clientNow"] = "2026-11-03T17:00:00Z"
+    first = _run(tmp_path, scene)["snapshots"][-1]
+    assert "2026-11-03 17:00:00.000 UTC" in first["notice"]
+    assert "2026-11-03 17:01:00.000 UTC" in first["notice"]
+    assert "2026-08-16 12:00:00 UTC" in first["notice"]
+    scene["clientNow"] = "2040-01-01T00:00:00Z"
+    scene["actions"][-1]["clientNow"] = "2040-01-02T00:00:00Z"
+    other_clock = _run(tmp_path, scene)["snapshots"][-1]
+    assert first["sourceAsOf"] == other_clock["sourceAsOf"]
+    assert first["queue"] == other_clock["queue"]
+    assert first["inspector"] == other_clock["inspector"]
+
+
+@needs_node
+def test_nonretained_failure_invalidates_a_later_selected_detail_response(tmp_path: Path) -> None:
+    # Reviewer's controlled two-trial population; no real clinical records.
+    payload = catalyst_radar_with_lineage()
+    other = json.loads(_json(payload["catalyst_radar"][0]))
+    other.update(event_id="nct:NCT00000002:primary_completion", nct_id="NCT00000002")
+    other["trial"].update(title="Beta Synthetic Study", brief_title="Beta Synthetic Study")
+    other["evidence"].update(record_id="NCT00000002", url="https://clinicaltrials.gov/study/NCT00000002")
+    payload["catalyst_radar"].append(other)
+    payload["pagination"]["total"] = 2
+    for key in ("trials_in_cohort", "trials_with_events", "events_total", "events_in_horizon"):
+        payload["coverage"]["radar"][key] = 2
+    detail = {"trial": {"nct_id": "NCT00000002", "title": "Beta Synthetic Study"}}
+    failure = _radar_failure()
+    failure["/api/biocatalyst/v1/catalyst-radar"]["holdKey"] = "list"
+    failure["/api/biocatalyst/v1/trials/NCT00000002"] = {
+        **_route(200, _json(detail)), "holdKey": "detail",
+    }
+    scene = _verified_refresh_scenario([
+        {"type": "trial", "id": "NCT00000001"},
+        {"type": "selection-race", "id": "NCT00000002", "routes": failure},
+    ])
+    scene["routes"]["/api/biocatalyst/v1/catalyst-radar"] = _route(200, _json(payload))
+    after = _run(tmp_path, scene)["snapshots"][-1]
+    before = after["beforeLateDetail"]
+    assert before["workspaceState"] == after["workspaceState"] == "source_outage"
+    assert "Beta Synthetic Study" not in before["inspector"]
+    assert after["inspector"] == before["inspector"]
+    assert not after["links"]
+    assert not after["inspectorOpen"]
+
+
 def _forbidden_machine_text(text: str) -> None:
     lowered = text.lower()
     for token in (
@@ -243,7 +525,7 @@ def test_401_paints_locked_not_generic_unavailable(tmp_path: Path) -> None:
         tmp_path,
         {
             "routes": {
-                "/api/biocatalyst/v1/trials/milestones": _route(401, '{"detail":"auth"}')
+                "/api/biocatalyst/v1/catalyst-radar": _route(401, '{"detail":"auth"}')
             }
         },
     )["first"]
@@ -278,11 +560,11 @@ def test_trial_screen_valid_nonzero_is_normal(tmp_path: Path) -> None:
 def test_milestones_valid_zero_is_empty_not_outage(tmp_path: Path) -> None:
     out = _run(
         tmp_path,
-        {"routes": {"/api/biocatalyst/v1/trials/milestones": _route(200, _json(milestone_empty()))}},
+        {"routes": {"/api/biocatalyst/v1/catalyst-radar": _route(200, _json(catalyst_radar_empty()))}},
     )["first"]
     assert out["workspaceState"] == "empty"
     assert out["decisionState"] == "empty"
-    assert "No recorded dates" in out["queue"]
+    assert "No trial milestones" in out["queue"]
     assert "Registry page unavailable" not in out["queue"]
     assert "source_outage" not in (out["workspaceState"], out["decisionState"])
 
@@ -308,12 +590,53 @@ def test_first_seen_pre_baseline_zero_is_valid_empty(tmp_path: Path) -> None:
 
 
 @needs_node
+@pytest.mark.parametrize(
+    ("lang", "heading", "order_copy"),
+    [
+        ("en", "Recorded date lineage", "newest recorded change first"),
+        ("zh", "记录日期沿革", "最新记录变更在前"),
+    ],
+)
+def test_milestone_inspector_renders_every_revision_in_both_languages(
+    tmp_path: Path, lang: str, heading: str, order_copy: str
+) -> None:
+    out = _run(
+        tmp_path,
+        {
+            "lang": lang,
+            "routes": {
+                "/api/biocatalyst/v1/catalyst-radar": _route(
+                    200, _json(catalyst_radar_with_lineage())
+                ),
+                "/api/biocatalyst/v1/trials/NCT00000001": _route(
+                    200, _json(trial_detail())
+                ),
+            },
+            "clickTrial": "NCT00000001",
+        },
+    )["second"]
+
+    assert out["workspaceState"] == "ready"
+    assert heading in out["inspector"]
+    assert order_copy in out["inspector"]
+    assert "2026-11 → 2026-12" in out["inspector"]
+    assert "2026-09 → 2026-11" in out["inspector"]
+    if lang == "en":
+        assert "Not available → 2026-09" in out["inspector"]
+        assert out["inspector"].index("2026-11 → 2026-12") < out["inspector"].index(
+            "2026-09 → 2026-11"
+        )
+    else:
+        assert "暂无 → 2026-09" in out["inspector"]
+
+
+@needs_node
 def test_503_paints_source_outage(tmp_path: Path) -> None:
     out = _run(
         tmp_path,
         {
             "routes": {
-                "/api/biocatalyst/v1/trials/milestones": _route(
+                "/api/biocatalyst/v1/catalyst-radar": _route(
                     503, '{"detail":"trial intelligence temporarily unavailable"}'
                 )
             }
@@ -333,8 +656,8 @@ def test_valid_json_wrong_contract_is_integrity_block(tmp_path: Path) -> None:
         tmp_path,
         {
             "routes": {
-                "/api/biocatalyst/v1/trials/milestones": _route(
-                    200, _json({"schema_version": "not-the-contract", "milestones": []})
+                "/api/biocatalyst/v1/catalyst-radar": _route(
+                    200, _json({"schema_version": "not-the-contract", "catalyst_radar": []})
                 )
             }
         },
@@ -353,7 +676,7 @@ def test_malformed_200_json_is_integrity_block(tmp_path: Path) -> None:
         tmp_path,
         {
             "routes": {
-                "/api/biocatalyst/v1/trials/milestones": _route(200, "{not json", "application/json")
+                "/api/biocatalyst/v1/catalyst-radar": _route(200, "{not json", "application/json")
             }
         },
     )["first"]
@@ -373,7 +696,7 @@ def test_validator_throw_cannot_reach_generic_unavailable_painter(tmp_path: Path
         tmp_path,
         {
             "routes": {
-                "/api/biocatalyst/v1/trials/milestones": _route(
+                "/api/biocatalyst/v1/catalyst-radar": _route(
                     200, _json({"ok": True, "rows": "this is not a milestone envelope"})
                 )
             }
@@ -390,7 +713,7 @@ def test_switching_from_failed_mode_to_healthy_mode_clears_failure(tmp_path: Pat
         tmp_path,
         {
             "routes": {
-                "/api/biocatalyst/v1/trials/milestones": _route(503, '{"detail":"down"}')
+                "/api/biocatalyst/v1/catalyst-radar": _route(503, '{"detail":"down"}')
             },
             "clickMode": "screen",
             "secondRoutes": {
@@ -412,13 +735,13 @@ def test_same_mode_refresh_from_integrity_to_503_is_source_outage(tmp_path: Path
         tmp_path,
         {
             "routes": {
-                "/api/biocatalyst/v1/trials/milestones": _route(
-                    200, _json({"schema_version": "not-the-contract", "milestones": []})
+                "/api/biocatalyst/v1/catalyst-radar": _route(
+                    200, _json({"schema_version": "not-the-contract", "catalyst_radar": []})
                 )
             },
             "clickRefresh": True,
             "secondRoutes": {
-                "/api/biocatalyst/v1/trials/milestones": _route(
+                "/api/biocatalyst/v1/catalyst-radar": _route(
                     503, '{"detail":"trial intelligence temporarily unavailable"}'
                 )
             },
@@ -441,14 +764,14 @@ def test_same_mode_refresh_from_503_to_wrong_contract_is_integrity_block(tmp_pat
         tmp_path,
         {
             "routes": {
-                "/api/biocatalyst/v1/trials/milestones": _route(
+                "/api/biocatalyst/v1/catalyst-radar": _route(
                     503, '{"detail":"trial intelligence temporarily unavailable"}'
                 )
             },
             "clickRefresh": True,
             "secondRoutes": {
-                "/api/biocatalyst/v1/trials/milestones": _route(
-                    200, _json({"schema_version": "not-the-contract", "milestones": []})
+                "/api/biocatalyst/v1/catalyst-radar": _route(
+                    200, _json({"schema_version": "not-the-contract", "catalyst_radar": []})
                 )
             },
         },
@@ -469,8 +792,8 @@ def test_html_content_type_on_valid_json_is_integrity_block(tmp_path: Path) -> N
         tmp_path,
         {
             "routes": {
-                "/api/biocatalyst/v1/trials/milestones": _route(
-                    200, _json(milestone_empty()), "text/html"
+                "/api/biocatalyst/v1/catalyst-radar": _route(
+                    200, _json(catalyst_radar_empty()), "text/html"
                 )
             }
         },
@@ -499,7 +822,7 @@ def test_post_validation_render_exception_is_not_source_or_integrity(tmp_path: P
     assert mutated != source
     out = _run(
         tmp_path,
-        {"routes": {"/api/biocatalyst/v1/trials/milestones": _route(200, _json(milestone_empty()))}},
+        {"routes": {"/api/biocatalyst/v1/catalyst-radar": _route(200, _json(catalyst_radar_empty()))}},
         js_text=mutated,
     )["first"]
     copy = (out["queue"] + out["notice"] + out["status"] + out["statusDetail"] + out["why"]).lower()
@@ -588,8 +911,8 @@ def test_mutation_routing_validator_through_generic_unavailable_fails_regression
     """If a later edit sends validator failure back through handleUnavailable, fail."""
 
     mutated = JS.read_text(encoding="utf-8").replace(
-        "handleHydrationFailure(error, { append: append });",
-        "handleUnavailable(error, { append: append });",
+        "      handleHydrationFailure(error,",
+        "      handleUnavailable(error,",
         1,
     )
     assert mutated != JS.read_text(encoding="utf-8")
@@ -597,7 +920,7 @@ def test_mutation_routing_validator_through_generic_unavailable_fails_regression
         tmp_path,
         {
             "routes": {
-                "/api/biocatalyst/v1/trials/milestones": _route(
+                "/api/biocatalyst/v1/catalyst-radar": _route(
                     200, _json({"schema_version": "not-the-contract"})
                 )
             }

@@ -36,17 +36,20 @@ import functools
 import hashlib
 import json
 import os
+import platform
 import re
+import shlex
 import signal
 import shutil
 import subprocess
 import sys
+import sysconfig
 import tempfile
 import threading
 import time
 from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Any, Iterable, Iterator, Mapping, Sequence
+from typing import Any, Iterable, Iterator, Mapping, NamedTuple, Sequence
 
 import yaml
 
@@ -60,6 +63,7 @@ from scripts.ci_semantic_proof import (  # noqa: E402
     PLAN_SCHEMA,
     FailureAtomCollector,
     SemanticProofError,
+    _validate_base_replay,
     effective_proof_id,
     job_exec_sha256,
     step_spec_sha256,
@@ -68,23 +72,90 @@ from scripts.ci_authority_paths import (  # noqa: E402
     AuthorityPathError,
     is_ci_authority_path,
 )
+from scripts.ci_scope_dependencies import (  # noqa: E402
+    planner_path_exists,
+    planner_path_is_file,
+    planner_tracked_path_inventory,
+)
 
 
 PACK_JOB_ID = "ci-pack"
+LEGACY_MANIFEST_PATH = ".github/ci/legacy-jobs.yml"
 DISABLED_IF = "${{ false }}"
-ALLOWED_JOB_KEYS = {"if", "paths", "runs-on", "scope", "steps", "timeout-minutes"}
-ALLOWED_STEP_KEYS = {"name", "proof_id", "run", "uses", "with"}
+ALLOWED_JOB_KEYS = {
+    "gate",
+    "if",
+    "paths",
+    "runs-on",
+    "scope",
+    "steps",
+    "timeout-minutes",
+}
+
+#: Every job must declare which tree moves its verdict. `code`: the verdict is
+#: a function of the pull request's tree only (pure logic, tmp_path fixtures,
+#: committed goldens, config/contracts). `data`: a nightly/wire data commit
+#: alone — no code change — can change the verdict (assertions over live
+#: `data/**`, rendered `site/**`, or any ledger the nightly advances). The
+#: merge gate packs only `gate: code` jobs once the data-health lane exists
+#: (W2 of research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_2026_08_19.md);
+#: `gate: data` jobs still run and still red something a human reads — the
+#: field never deletes a receipt.
+GATE_VALUES = ("code", "data")
+ALLOWED_STEP_KEYS = {"name", "proof_id", "run", "uses", "with", "phase", "timeout-minutes", "acquisition"}
 
 # Changing any item in this string changes the job execution contract digest.
 # It deliberately describes only the infrastructure shared by all legacy jobs;
 # pack index and matrix position are transport trivia and never enter it.
-RUNNER_CONTRACT = "ci-pack/ubuntu-latest/python-3.12/node-20/v1"
+#
+# v2 (2026-08-25, P0R diagnostic bridge, issue #6351): "ubuntu-latest" was
+# aspirational, not a runtime fact — it named the hosted image, not what a
+# self-hosted diagnostic runner actually is. "linux-x86_64" is a truthful
+# logical claim both hosted (ubuntu-latest is Linux/x86_64) and self-hosted
+# (Homebrew CPython on Linux/x86_64 PC canary hosts) execution can attest to
+# byte-identically, which is the whole point of reconciling their semantic
+# fragments. `attest_execution_profile` below enforces every clause of this
+# string at runtime before any legacy job executes; production ci.yml already
+# pins python-version "3.12.13" and node-version "20" (see ci.yml's ci-pack
+# setup-python comment), so this bump does not change what production already
+# runs — it only makes the contract string match reality and makes a runtime
+# that DISAGREES with it fail closed instead of silently minting evidence.
+RUNNER_CONTRACT = "ci-pack/linux-x86_64/python-3.12.13/node-20/v2"
+
+# Admitted ONLY for (role, event) == ("pr_head", "workflow_dispatch"), and ONLY
+# when `workflow` equals this exact name (issue #6351 P0R diagnostic bridge).
+# SUPPORTED_PLAN_ROLE_EVENTS stays CLOSED — this is a second, narrower, named
+# admission on top of it, not a widening of the set itself. The diagnostic
+# canary dispatches under workflow_dispatch (GitHub gives no `pull_request`
+# transport for a same-repository PR run triggered by hand) but still needs to
+# plan and replay an exact PR candidate's changed-file inventory the same way
+# `ci.yml`'s real `pr_head/pull_request` plan does, so every existing pr_head
+# invariant (exact changed inventory, changed_from == base_sha) still applies
+# unchanged. No other workflow name may use this pair; a merge-gating plan
+# (`workflow == "ci"`) is refused independently by
+# scripts/ci_semantic_proof.py's own narrower pair set and its own
+# `workflow == "ci"` assertion, which this constant does not touch.
+DIAGNOSTIC_CANARY_WORKFLOW = "infrastructure-selfhosted-ci-canary"
+TRUSTED_EXECUTOR_WORKFLOW = "trusted-ci-executor"
+DIAGNOSTIC_PR_WORKFLOWS = frozenset(
+    {DIAGNOSTIC_CANARY_WORKFLOW, TRUSTED_EXECUTOR_WORKFLOW}
+)
 
 # Failure output is streamed live.  These caps cover only the small structured
 # atom collector retained alongside the stream; raw logs never enter evidence.
 FAILURE_CAPTURE_MAX_BYTES = 131_072
 FAILURE_CAPTURE_MAX_ATOMS = 64
 FAILURE_CAPTURE_MAX_LINE_BYTES = 4_096
+
+# Retry exactly the transport corruption observed on the sealed PC runner in
+# #6505.  This is deliberately not a generic "network error" bucket: package
+# resolution, certificate validation, authentication, hash, and build failures
+# must remain terminal on their first attempt.  Matching is performed over the
+# live byte stream with only a marker-sized tail retained; raw dependency logs
+# never enter semantic evidence or memory.
+DEPENDENCY_TRANSPORT_RETRY_MARKERS = (
+    b"[SSL: DECRYPTION_FAILED_OR_BAD_RECORD_MAC]",
+)
 
 DEFAULT_BASE_REPLAY_BUDGET_SECONDS = 15 * 60
 SEMANTIC_DETAIL_MAX_BYTES = 1_024
@@ -146,8 +217,8 @@ GLOBAL_INVALIDATORS = (
     "scripts/ci_scope_dependencies.py",
     "scripts/check_ci_trigger_closure.py",
     "scripts/audit_unrun_tests.py",
-    "config/dag.yml",
-    "config/synapse.yml",
+    "config/dag.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
+    "config/synapse.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
     "conftest.py",
     "**/conftest.py",
     "requirements*.txt",
@@ -249,6 +320,28 @@ EXPRESSION_RE = re.compile(r"\$\{\{[^}]+\}\}")
 PIP_INSTALL_RE = re.compile(
     r"^\s*(?:(?:python|python3) -m )?pip install [^\n]+\s*$"
 )
+SHELL_CONTROL_CHARS = frozenset(";&|<>()`")
+
+
+def _is_standalone_pip_install(command: str) -> bool:
+    """Accept one pip invocation, never a compound or substituted shell body."""
+    if not PIP_INSTALL_RE.fullmatch(command):
+        return False
+    try:
+        lexer = shlex.shlex(
+            command,
+            posix=True,
+            punctuation_chars=";&|<>()`",
+        )
+        lexer.whitespace_split = True
+        lexer.commenters = ""
+        tokens = list(lexer)
+    except ValueError:
+        return False
+    return not any(
+        token and all(char in SHELL_CONTROL_CHARS for char in token)
+        for token in tokens
+    )
 # Command-only timings from successful ci run 30173070380.  These few outliers
 # dominate wall time; checkout/setup/install were deliberately excluded because
 # packs share or group that work.  The fallback heuristic handles every other
@@ -269,12 +362,70 @@ PIP_INSTALL_RE = re.compile(
 # express carries an explicit allowance above its 112s share. These are
 # estimates from a measured shape, not a second hosted run — replace them from
 # a green post-split run's step timings when one exists.
+# Which (role, event) pairs may mint or consume a semantic plan.
+#
+# ``role`` carries the SUBSTANCE and is enforced separately below: ``pr_head``
+# requires an exact changed-file inventory and ``changed_from == base_sha``;
+# ``main`` requires one identical tree/head/base SHA and no ``changed_from``.
+# The event is the TRANSPORT, and it is allowlisted rather than ignored so a
+# combination nobody has reasoned about fails closed instead of silently
+# planning something unintended.
+#
+# The two ``main`` triggers below the dispatch were added 2026-08-19 because
+# leaving them out did not fail closed in the useful sense — it left the lane
+# that runs every ``gate: data`` job unable to run ANY of them. ``data-health.yml``
+# (W2 of research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_2026_08_19.md) took the
+# 74 data-gated jobs off the merge gate on the promise that this lane would still
+# grade them AFTER the nightly writes the tree they assert against. It fires on
+# ``workflow_run`` (daily completed) and on a 13:30 UTC ``schedule`` backstop,
+# and both resolve role ``main`` — so both raised ManifestError before a single
+# legacy job ran. Measured: run 32262001614 (schedule, 2026-08-19T14:06Z) died
+# with ``main/schedule is unsupported``, exit 2, in all SIX packs; the
+# ``workflow_run`` run 32246816331 only escaped the same fate because its packs
+# were skipped by the daily-success condition. The single execution that lane
+# achieved all day came from a manual ``workflow_dispatch``, and it graded the
+# universe against ``data/symbol_directory/snapshots/2026-08-10.parquet`` — nine
+# days stale, because the 2026-08-19 snapshot (6f3fd8b3ea1f) was not committed
+# until 12:16Z, after it. The schedule that exists to catch exactly that ordering
+# is the one that could not start.
+#
+# Both events describe the same shape ``main`` already means: a whole-tree run at
+# one checked-out SHA with no diff. Nothing about the substance is relaxed here —
+# the ``role == "main"`` invariants still reject a plan that is not that shape.
+# The set stays CLOSED; ``push`` is deliberately absent (no gating workflow uses
+# it, and ci.yml has no push trigger).
+#
+# ``ci_semantic_proof._identity`` keeps its OWN, narrower pair set on purpose —
+# do not "unify" it with this one. That gate also asserts ``workflow == "ci"``:
+# it judges merge-gate proofs, and a data-health plan is not one. Widening it
+# would let a non-gating lane's plan pose as authority for a merge.
+SUPPORTED_PLAN_ROLE_EVENTS = frozenset({
+    ("pr_head", "pull_request"),
+    ("main", "workflow_dispatch"),
+    ("main", "workflow_run"),
+    ("main", "schedule"),
+})
+
 PACK_TARGET_SECONDS = 600
 OBSERVED_COMMAND_SECONDS = {
-    "engine-render-guards": 860,
+    "engine-render-guards": 875,
     "express-render-guards": 150,
     "attested-history-guards": 60,
-    "workflow-yaml": 438,
+    # 2026-09-25 split of workflow-yaml. On a hosted pack (data-health run
+    # 36097809562, pack 1) the "hosted-runner packing contract" step took 1,122 s
+    # and the structure step 25 s (0.84x and 0.51x their local times). The later
+    # steps never ran there because the packing step failed first, so they are
+    # local timings scaled by 0.7. workflow-yaml keeps the parse gate, the
+    # render-lane contracts and the options/sparse suites: about 90 s including
+    # its data-stack install.
+    "ci-control-plane-contracts": 1400,
+    # Hosted command groups, 2026-10-19: FIF historical kernel median 1618 s
+    # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
+    # These calibrate balancing only; install/checkout/queue are excluded.
+    # Evidence and sensitivity replay: research/ci_pack_throughput_20261019/.
+    "fif-kernel-guards": 1630,
+    "earnings-economic-dossier": 1070,
+    "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,
     "biocatalyst-worker": 274,
@@ -320,6 +471,10 @@ class LegacyJob:
     # `paths:` then REPLACE inference instead of being unioned under it, and
     # the declaration is coverage-audited fatally at load time.
     exclusive: bool = False
+    # Which tree moves this job's verdict: "code" (the PR's tree only) or
+    # "data" (a nightly/wire data commit alone can flip it). Mandatory in the
+    # manifest; see GATE_VALUES.
+    gate: str = "code"
 
     @property
     def is_scoped(self) -> bool:
@@ -371,6 +526,15 @@ class CommandObservation:
     returncode: int | None
     failure_signature: Mapping[str, Any] | None = None
     detail: str | None = None
+    retryable_dependency_transport: bool = False
+    # Group signalling/reaping cannot prove detached descendants settled.
+    timeout_settlement: str | None = None
+
+
+class _ProcessSettlementUnknown(RuntimeError):
+    def __init__(self, detail: str, *, outcome: str = "timed_out"):
+        super().__init__(detail)
+        self.original_outcome = outcome
 
 
 @dataclass(frozen=True)
@@ -382,6 +546,7 @@ class JobExecution:
     infrastructure: Mapping[str, Any]
     steps: tuple[Mapping[str, Any], ...]
     failure: str | None
+    timeout_settlement: str | None = None
 
     def fragment_dict(self) -> dict[str, Any]:
         return {
@@ -392,9 +557,33 @@ class JobExecution:
         }
 
 
+def _describe_failure(value: object) -> str:
+    """Render a failure WITH the child's own stderr, never the exit status alone.
+
+    ``CalledProcessError`` stringifies to "returned non-zero exit status 1" and
+    drops everything the command actually said. That is how a fleet-wide
+    base-replay checkout failure stayed undiagnosable: every consumer saw the
+    command line and an exit code, while git's one explanatory line
+    ("unable to read sha1 file of ...") existed only in the raw runner log.
+    A classifier that degrades to ``unknown`` must at least say why.
+    """
+    if not isinstance(value, subprocess.CalledProcessError):
+        return str(value)
+    parts = [str(value)]
+    for label, stream in (("stderr", value.stderr), ("stdout", value.stdout)):
+        if isinstance(stream, (bytes, bytearray)):
+            text = bytes(stream).decode("utf-8", "replace")
+        else:
+            text = stream or ""
+        text = text.strip()
+        if text:
+            parts.append(f"{label}: {text}")
+    return " | ".join(parts)
+
+
 def _bounded_detail(value: object, *, limit: int = SEMANTIC_DETAIL_MAX_BYTES) -> str:
     """Return a deterministic one-line diagnostic with a strict UTF-8 bound."""
-    text = _one_line(str(value))
+    text = _one_line(_describe_failure(value))
     encoded = text.encode("utf-8", "replace")
     if len(encoded) <= limit:
         return text
@@ -402,6 +591,127 @@ def _bounded_detail(value: object, *, limit: int = SEMANTIC_DETAIL_MAX_BYTES) ->
     return (encoded[: max(0, limit - len(suffix))] + suffix).decode(
         "utf-8", "ignore"
     )
+
+
+def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
+    from scripts.ci_browser_dependency_capture import capture_commands
+
+    return capture_commands()
+
+
+# Native activation is closed to these existing owners and their original
+# TOTAL grants. Each setup still shares that total and its finite setup bound.
+NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 10
+NATIVE_BROWSER_LOGICAL_JOB_ID = "ontology-explorer"
+NATIVE_BRAIN_LOGICAL_JOB_ID = "unrun-brain-gateway"
+NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES = 15
+NATIVE_BEA_LOGICAL_JOB_ID = "bea-gvc-current-descriptive-consumer"
+NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES = 10
+
+
+def _incumbent_browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
+    """Opt-in attribution only; setup consumes the original logical deadline."""
+    if "phase" not in step:
+        if "timeout-minutes" in step:
+            raise ManifestError("browser setup timeout requires its explicit phase")
+        return None
+    if (
+        step.get("phase") != "browser_setup"
+        or set(step) - {"name", "phase", "timeout-minutes", "run"}
+        or not isinstance(step.get("run"), str)
+        or step["run"].strip() != "python -m playwright install --with-deps chromium"
+        or type(step.get("timeout-minutes")) is not int
+        or not 1 <= step["timeout-minutes"] <= 10
+    ):
+        raise ManifestError("browser setup must be the exact standalone installer with a finite <=10 minute bound")
+    return {
+        "phase": "browser_setup", "command": step["run"],
+        "timeout_minutes": step["timeout-minutes"],
+        "budget": "within_original_logical_job_deadline",
+    }
+
+def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
+    # Unmarked jobs retain the protected projection, validation and digest.
+    if "acquisition" not in step:
+        return _incumbent_browser_setup_spec(step)
+    if type(step.get("acquisition")) is not str or step.get("acquisition") != "native_parallel" or step.get("phase") != "browser_setup":
+        raise ManifestError("native acquisition requires its explicit browser setup phase")
+    incumbent = _incumbent_browser_setup_spec({key: value for key, value in step.items() if key != "acquisition"})
+    assert incumbent is not None
+    from scripts.ci_browser_native_setup import BOUND_FILES
+    return {
+        **incumbent,
+        "acquisition": "native_parallel",
+        "executed_strategy": "native_apt_transaction_download4_no_download_install_then_playwright_chromium",
+        "native_source_sha256": {
+            name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest() for name in BOUND_FILES
+        },
+        "diagnostics": _browser_dependency_diagnostic_commands(),
+        "diagnostic_source_sha256": {
+            name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest()
+            for name in ("ci_browser_dependency_inputs.py", "ci_browser_dependency_capture.py")
+        },
+    }
+
+
+def _run_native_browser_setup(
+    setup: Mapping[str, Any], *, job_deadline: float, setup_started_at: float, command_env: Mapping[str, str],
+) -> CommandObservation:
+    """Explicit owner capture/acquisition shares original job and setup deadlines."""
+    commands = (*setup["diagnostics"], setup["command"])
+    setup_deadline = min(job_deadline, setup_started_at + setup["timeout_minutes"] * 60)
+    for command_index, command in enumerate(commands):
+        now = setup_started_at if command_index == 0 else time.monotonic()
+        remaining = max(0.0, setup_deadline - now)
+        if remaining <= 0:
+            return CommandObservation(
+                outcome="timed_out", returncode=None, failure_signature=None,
+                detail="logical job timeout exhausted before this command started",
+                timeout_settlement="not_started",
+            )
+        if command_index == len(commands) - 1:
+            from scripts.ci_browser_native_setup import run_native_setup
+            return CommandObservation(**run_native_setup(
+                deadline=setup_deadline, command_env=command_env,
+                expected_sources=setup["native_source_sha256"], browser_stream=_stream_command,
+            ))
+        result = _stream_command(command, env=command_env, timeout_seconds=remaining)
+        if result.outcome == "timed_out" or result.timeout_settlement == "unknown":
+            return replace(result, detail="dependency input capture: " + (result.detail or result.outcome))
+        if result.outcome != "passed":
+            print("::warning title=browser-dependency-inputs::capture unavailable; required installation remains unchanged", flush=True)
+    raise AssertionError("native browser setup has no installer command")
+
+
+
+def _browser_setup_contract(job: LegacyJob) -> tuple[dict[str, Any], ...]:
+    contract = tuple(
+        {**spec, "step_index": index}
+        for index, step in enumerate(job.definition.get("steps", []))
+        if isinstance(step, Mapping) and (spec := _browser_setup_spec(step)) is not None
+    )
+    if len(contract) > 1:
+        raise ManifestError("browser setup may appear at most once per logical job")
+    if contract and (
+        type(job.definition.get("timeout-minutes")) is not int
+        or job.definition["timeout-minutes"] <= 0
+    ):
+        raise ManifestError("browser setup requires a finite original logical-job deadline")
+    if any(spec.get("acquisition") == "native_parallel" for spec in contract):
+        admitted_totals = {
+            NATIVE_BROWSER_LOGICAL_JOB_ID: NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BRAIN_LOGICAL_JOB_ID: NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BEA_LOGICAL_JOB_ID: NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES,
+        }
+        if job.job_id not in admitted_totals:
+            raise ManifestError("native browser acquisition is restricted to ontology-explorer, unrun-brain-gateway and bea-gvc-current-descriptive-consumer")
+        contract = tuple(
+            {**spec, "logical_job_timeout_minutes": admitted_totals[job.job_id],
+             "activation_job_id": job.job_id}
+            if spec.get("acquisition") == "native_parallel" else spec
+            for spec in contract
+        )
+    return contract
 
 
 def _is_dependency_step(step: Mapping[str, Any]) -> bool:
@@ -457,12 +767,13 @@ def semantic_step_specs(job: LegacyJob) -> tuple[SemanticStepSpec, ...]:
     Checkout/setup actions and the validated standalone dependency install are
     infrastructure.  They intentionally receive no proof identity.
     """
+    setup_indices = {spec["step_index"] for spec in _browser_setup_contract(job)}
     specs: list[SemanticStepSpec] = []
     seen: dict[str, int] = {}
     for index, step in enumerate(job.definition.get("steps", [])):
         if not isinstance(step, Mapping) or "run" not in step:
             continue
-        if _is_dependency_step(step):
+        if index in setup_indices or _is_dependency_step(step):
             continue
         try:
             proof_id = effective_proof_id(step)
@@ -501,10 +812,15 @@ def semantic_job_digest(job: LegacyJob) -> str:
             separators=(",", ":"),
         ).encode("utf-8")
     ).hexdigest()
+    setup = _browser_setup_contract(job)
+    setup_contract = ""
+    if setup:
+        setup_digest = hashlib.sha256(json.dumps(setup, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        setup_contract = f"/browser-setup-{setup_digest}"
     return job_exec_sha256(
         dependency_install_command=dependency_command(job),
         timeout_minutes=job.definition.get("timeout-minutes"),
-        runner_contract=f"{RUNNER_CONTRACT}/actions-{action_digest}",
+        runner_contract=f"{RUNNER_CONTRACT}/actions-{action_digest}{setup_contract}",
     )
 
 
@@ -657,6 +973,11 @@ def _is_peer_python_or_unpatterned_glob(pattern: str) -> bool:
     return True
 
 
+def _has_glob(segment: str) -> bool:
+    """Does this path fragment contain a glob metacharacter?"""
+    return any(char in segment for char in "*?")
+
+
 def scope_pattern_is_startable(pattern: str, triggers: Iterable[str]) -> bool:
     """Can an edit to something ``pattern`` covers start the gating workflow?
 
@@ -684,10 +1005,27 @@ def scope_pattern_is_startable(pattern: str, triggers: Iterable[str]) -> bool:
         # `app/*` is a single-level subset of `app/**`. Any edit it covers
         # also matches that ancestor trigger, so the run starts. Exclusive
         # declarations use this form on purpose (`*` does not cross `/`).
-        if pattern.endswith("/*"):
-            parent = pattern[: -len("/*")]
-            if f"{parent}/**" in triggers:
-                return True
+        #
+        # This covers `app/*.py` too, not just a bare `app/*`. SUFFIX_NARROWED_RE
+        # requires a `**/` before the suffix, so a SINGLE-LEVEL suffix glob
+        # matched neither it nor the bare-`/*` test below and fell through to
+        # False — even though `engine/*.py` is as strictly contained in
+        # `engine/**` as `app/*` is. Measured 2026-08-26: `defense-rail-laws`
+        # derived an `engine/*.py` scope and reported an unstartable gap against
+        # a trigger list that carries `engine/**`, `*` AND `**`. Because
+        # ci-pack is path-scoped, only a PR touching .github/ci/ ever ran the
+        # test that says so, so the gap sat green on every unrelated PR.
+        #
+        # Ancestors are walked for the same containment reason as the subtree
+        # branch below: `a/b/*.py` ⊂ `a/b/**` ⊂ `a/**`. A glob anywhere in the
+        # PARENT is not proven and still fails.
+        head, sep, last = pattern.rpartition("/")
+        if sep and _has_glob(last) and not _has_glob(head):
+            segments = head.split("/")
+            while segments:
+                if "/".join(segments) + "/**" in triggers:
+                    return True
+                segments.pop()
         return False
     # A subtree scope is startable when an ANCESTOR subtree is a trigger, for the
     # same reason: `data/smart_money/**` matches a subset of `data/**`.
@@ -720,7 +1058,7 @@ def _scope_coverage_findings(job_id: str, definition: dict[str, Any],
     findings: list[str] = []
     for reference in sorted(set(SCOPE_REFERENCE_RE.findall(commands))):
         referenced = reference.split("::", 1)[0].rstrip(".,;:'\")")
-        if not Path(referenced).exists():
+        if not planner_path_exists(Path(referenced)):
             continue
         if _matches_any(GLOBAL_INVALIDATORS, referenced):
             continue
@@ -1029,8 +1367,15 @@ def infer_job_scopes(jobs: Iterable[LegacyJob]) -> tuple[list[LegacyJob], str]:
 
             for reference in SCOPE_REFERENCE_RE.findall(command):
                 rel = reference.split("::", 1)[0].rstrip(".,;:'\")")
+                # Named suites already contributed their complete closure above.
+                # They also match the generic path scanner, sometimes repeatedly
+                # (multiple node IDs in one suite). Rewalking the same graph adds
+                # no ownership: pytest ambiguity was checked before either pass,
+                # and the final named_pytest filter applies to both fallbacks.
+                if rel in named_here:
+                    continue
                 path = Path(rel)
-                if not path.is_file():
+                if not planner_path_is_file(path):
                     continue
                 owned.add(rel)
                 named_any = True
@@ -1108,26 +1453,74 @@ def _job_diff_match(job: LegacyJob, changed: Iterable[str]) -> tuple[str, str] |
     return None
 
 
+def _global_invalidator_paths(
+    changed: Iterable[str],
+    *,
+    bounded_manifest_delta: bool = False,
+) -> list[str]:
+    """Return changed paths that make per-job scope unknowable.
+
+    legacy-jobs.yml remains a global invalidator by default. The only
+    exception is caller-supplied positive evidence that its semantic delta is
+    bounded to existing logical jobs. The exact path is
+    exempted before glob matching so the broader .github/ci/** rule keeps
+    every other CI-manifest/control file fail-closed.
+    """
+    return [
+        path
+        for path in changed
+        if not (
+            bounded_manifest_delta
+            and path == LEGACY_MANIFEST_PATH
+        )
+        and _matches_any(GLOBAL_INVALIDATORS, path)
+    ]
+
+
 def select_jobs(
-    jobs: Iterable[LegacyJob], changed: list[str] | None
+    jobs: Iterable[LegacyJob],
+    changed: list[str] | None,
+    *,
+    manifest_changed_job_ids: Iterable[str] | None = None,
 ) -> tuple[list[LegacyJob], str]:
-    """Pick the jobs a diff can actually affect, erring toward running more."""
+    """Pick the jobs a diff can actually affect, erring toward running more.
+
+    manifest_changed_job_ids is tri-state. None means there is no positive
+    proof that a legacy-manifest edit is bounded, so the historical full-suite
+    invalidation remains. A tuple (including empty for a semantic no-op) means
+    the higher-level planner compared exact base and candidate manifests and
+    proved the semantic delta is limited to existing logical jobs. Every job
+    named by that proof is forced into the selection.
+    """
     jobs = list(jobs)
     if changed is None:
         return jobs, "full suite: changed-file set unavailable"
-    invalidators = [path for path in changed if _matches_any(GLOBAL_INVALIDATORS, path)]
+    bounded_manifest = manifest_changed_job_ids is not None
+    invalidators = _global_invalidator_paths(
+        changed,
+        bounded_manifest_delta=bounded_manifest,
+    )
     if invalidators:
         return jobs, f"full suite: global invalidator changed ({invalidators[0]})"
+    forced_job_ids = set(manifest_changed_job_ids or ())
     scoped_jobs = [job for job in jobs if job.is_scoped]
     unowned = [
         path for path in changed
-        if not any(_job_diff_match(job, [path]) for job in scoped_jobs)
+        if not (
+            bounded_manifest
+            and path == LEGACY_MANIFEST_PATH
+        )
+        and not any(_job_diff_match(job, [path]) for job in scoped_jobs)
         and not _matches_any(PASSIVE_UNOWNED_PATTERNS, path)
     ]
     selected = [
         job
         for job in jobs
-        if not job.is_scoped or _job_diff_match(job, changed)
+        if (
+            not job.is_scoped
+            or _job_diff_match(job, changed)
+            or job.job_id in forced_job_ids
+        )
     ]
     unscoped = sum(1 for job in jobs if not job.is_scoped)
     reason = (
@@ -1139,6 +1532,14 @@ def select_jobs(
         reason += (
             f"; {len(unowned)} unowned path(s) did not widen "
             f"({unowned[0]})"
+        )
+    if bounded_manifest and LEGACY_MANIFEST_PATH in changed:
+        forced_present = sum(
+            1 for job in selected if job.job_id in forced_job_ids
+        )
+        reason += (
+            "; bounded manifest job delta "
+            f"changed {forced_present} selected job(s)"
         )
     return selected, reason
 
@@ -1152,6 +1553,121 @@ def _workflow_jobs(path: Path) -> dict[str, dict[str, Any]]:
         raise ManifestError(f"{path} must contain a jobs mapping")
     return payload["jobs"]
 
+
+def _classify_bounded_manifest_job_delta(
+    base_document: object,
+    candidate_document: object,
+) -> tuple[str, ...] | None:
+    """Return exactly the existing jobs whose manifest semantics changed.
+
+    This proves the legacy manifest edit is job-local rather than globally
+    semantic. The candidate manifest has already passed load_legacy_jobs
+    validation before this classifier is consulted. We still fail closed when
+    the YAML document shape changes, any non-jobs top-level semantic changes,
+    an incumbent job is removed/renamed/reordered, or a job moves between the
+    code/data gate planes. Those cases preserve the historical full-suite
+    invalidation. Additive jobs are admitted because candidate validation plus
+    forced selection proves their complete new execution surface.
+
+    Within one existing job, any candidate-local change is bounded to that job:
+    commands, setup dependencies, paths/scope, timeout, proof IDs and step
+    structure cannot change what an unchanged sibling job means. The changed
+    job is forced into the candidate plan regardless of its new path scope, so
+    narrowing its own declaration cannot hide the job on the PR that makes the
+    change.
+    """
+    if not isinstance(base_document, dict) or not isinstance(candidate_document, dict):
+        return None
+    if set(base_document) != set(candidate_document):
+        return None
+    for key in base_document:
+        if key != "jobs" and base_document[key] != candidate_document[key]:
+            return None
+
+    base_jobs = base_document.get("jobs")
+    candidate_jobs = candidate_document.get("jobs")
+    if not isinstance(base_jobs, dict) or not isinstance(candidate_jobs, dict):
+        return None
+    base_order = list(base_jobs)
+    candidate_order = list(candidate_jobs)
+    if any(job_id not in candidate_jobs for job_id in base_order):
+        # Deletion/rename removes a proof surface and remains full-suite.
+        return None
+    if [job_id for job_id in candidate_order if job_id in base_jobs] != base_order:
+        # Reordering existing jobs changes ordinal/partition semantics. Additive
+        # jobs may be inserted anywhere, but incumbent relative order is frozen.
+        return None
+
+    changed_job_ids: list[str] = []
+    for job_id in candidate_order:
+        after = candidate_jobs[job_id]
+        if job_id not in base_jobs:
+            # The loader validates every ordinary candidate job before this
+            # classifier. PACK_JOB_ID is a synthetic-fixture compatibility hole
+            # in that loader and is therefore never eligible for bounded add.
+            if job_id == PACK_JOB_ID or not isinstance(after, dict):
+                return None
+            changed_job_ids.append(str(job_id))
+            continue
+        before = base_jobs[job_id]
+        if before == after:
+            continue
+        if not isinstance(before, dict) or not isinstance(after, dict):
+            return None
+        # Moving a job between code and post-nightly data proof planes changes
+        # which authority workflow can execute it. Preserve the full-suite
+        # invalidator rather than treating that as an ordinary job-local edit.
+        if before.get("gate", "code") != after.get("gate", "code"):
+            return None
+        changed_job_ids.append(str(job_id))
+    return tuple(changed_job_ids)
+
+
+def _safe_manifest_changed_job_ids(
+    workflow: Path,
+    changed_from: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> tuple[str, ...] | None:
+    """Prove a job-local manifest delta from exact base/candidate YAML bytes.
+
+    Any inability to bind the repository path, exact 40-hex base commit, base
+    object, UTF-8 bytes or YAML structure returns None and therefore keeps the
+    historical full-suite invalidation. The candidate itself is validated
+    separately through load_legacy_jobs before this proof is used.
+    """
+    if changed_from is None or not re.fullmatch(r"[0-9a-f]{40}", changed_from):
+        return None
+    if repo_root is None:
+        try:
+            from scripts.audit_unrun_tests import ROOT as audit_repository_root
+        except (ImportError, OSError, RuntimeError, SyntaxError):
+            return None
+        root = Path(audit_repository_root).resolve()
+    else:
+        root = repo_root.resolve()
+    try:
+        relative = workflow.resolve().relative_to(root).as_posix()
+    except (OSError, ValueError):
+        return None
+    if relative != LEGACY_MANIFEST_PATH:
+        return None
+    try:
+        base = subprocess.run(
+            ["git", "-C", str(root), "show", f"{changed_from}:{LEGACY_MANIFEST_PATH}"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+        candidate = workflow.read_text(encoding="utf-8")
+        base_document = yaml.safe_load(base)
+        candidate_document = yaml.safe_load(candidate)
+    except (OSError, UnicodeError, subprocess.CalledProcessError, yaml.YAMLError):
+        return None
+    return _classify_bounded_manifest_job_delta(
+        base_document,
+        candidate_document,
+    )
 
 def _job_weight(job_id: str, definition: dict[str, Any]) -> int:
     """Estimate work well enough to avoid putting both giant suites together."""
@@ -1168,11 +1684,18 @@ def _job_weight(job_id: str, definition: dict[str, Any]) -> int:
     return max(1, len(commands) + text.count("tests/test_") * 2 + len(text) // 800)
 
 
-def load_legacy_jobs(path: Path) -> list[LegacyJob]:
+def load_legacy_jobs(path: Path, *, gate: str | None = None) -> list[LegacyJob]:
     """Load and fail-closed validate every job in the legacy manifest.
 
     PACK_JOB_ID is still ignored when present so small historical test fixtures
     remain valid; the production manifest intentionally contains no pack job.
+
+    ``gate`` (optional, one of ``GATE_VALUES``) filters the returned jobs to
+    that ``LegacyJob.gate`` value. Filtering happens here — the single load
+    choke point — so every caller (plan-only, plan-json execution, and the
+    unpinned fallback) sees an identically filtered manifest before any
+    partition/weight arithmetic runs. ``None`` (the default) returns every
+    job, unchanged from before this parameter existed.
     """
     jobs = _workflow_jobs(path)
 
@@ -1214,6 +1737,10 @@ def load_legacy_jobs(path: Path) -> list[LegacyJob]:
                     f"{step_prefix} has unsupported keys: "
                     f"{', '.join(unknown_step_keys)}"
                 )
+            try:
+                _browser_setup_spec(step)
+            except ManifestError as exc:
+                findings.append(f"{step_prefix} {exc}")
             has_run = "run" in step
             has_uses = "uses" in step
             if has_run == has_uses:
@@ -1249,11 +1776,15 @@ def load_legacy_jobs(path: Path) -> list[LegacyJob]:
         ]
         if len(installs) > 1:
             findings.append(f"{prefix} has more than one dependency-install step")
-        elif installs and not PIP_INSTALL_RE.fullmatch(installs[0]):
+        elif installs and not _is_standalone_pip_install(installs[0]):
             findings.append(
                 f"{prefix} dependency install is not a standalone pip command"
             )
 
+        try:
+            _browser_setup_contract(LegacyJob(str(job_id), raw_definition, ordinal, 1))
+        except ManifestError as exc:
+            findings.append(f"{prefix} {exc}")
         scope, scope_findings = _validate_scope(prefix, raw_definition.get("paths"))
         findings.extend(scope_findings)
         if scope and not scope_findings:
@@ -1281,6 +1812,19 @@ def load_legacy_jobs(path: Path) -> list[LegacyJob]:
                 "any pull request"
             )
 
+        # Absent defaults to "code": an undeclared job STAYS a merge
+        # precondition — nothing can leave the merge gate silently. An invalid
+        # value is fatal. The real manifest is additionally required to declare
+        # the field on every job (tests/test_ci_pack.py), so the default only
+        # serves synthetic fixtures.
+        raw_gate = raw_definition.get("gate", "code")
+        if raw_gate not in GATE_VALUES:
+            findings.append(
+                f"{prefix} gate must be one of {'/'.join(GATE_VALUES)} when "
+                f"present, got {raw_gate!r}"
+            )
+            raw_gate = "code"
+
         job = LegacyJob(
             job_id=str(job_id),
             definition=raw_definition,
@@ -1288,6 +1832,7 @@ def load_legacy_jobs(path: Path) -> list[LegacyJob]:
             weight=_job_weight(str(job_id), raw_definition),
             paths=scope,
             exclusive=exclusive,
+            gate=str(raw_gate),
         )
         try:
             semantic_step_specs(job)
@@ -1299,7 +1844,214 @@ def load_legacy_jobs(path: Path) -> list[LegacyJob]:
         raise ManifestError("\n".join(findings))
     if not legacy:
         raise ManifestError("workflow contains no legacy jobs")
+    if gate is not None:
+        legacy = [job for job in legacy if job.gate == gate]
     return legacy
+
+
+def inferred_as_if_not_exclusive(manifest_path: Path) -> dict[str, LegacyJob]:
+    """What inference WOULD derive for every job, exclusivity aside.
+
+    Canonical home for a computation that used to live only as a local helper in
+    ``tests/test_ci_pack.py``. Two callers now share this single copy: that test
+    (``test_curated_exclusive_scopes_cover_their_own_import_closure`` and its
+    siblings) and ``scripts/check_contract_delta.py``'s PR-vs-base contract-delta
+    gate. Neither may keep a private re-derivation — see
+    ``curated_exclusive_closure_findings`` below for why that matters.
+    """
+    jobs = [replace(job, exclusive=False) for job in load_legacy_jobs(manifest_path)]
+    inferred, _note = infer_job_scopes(jobs)
+    return {job.job_id: job for job in inferred}
+
+
+def curated_exclusive_closure_findings(manifest_path: Path) -> dict[str, tuple[str, ...]]:
+    """``{job_id: uncovered closure paths}`` for every ``scope: exclusive`` job.
+
+    This IS ``tests/test_ci_pack.py::
+    test_curated_exclusive_scopes_cover_their_own_import_closure``'s check, factored
+    out so that test and ``scripts/check_contract_delta.py`` import one copy instead
+    of drifting apart. ``scope: exclusive`` REPLACES inference, so the declared
+    ``paths:`` are the whole scope; a closure file matched by no declared pattern is
+    a job that silently stops running when its own dependency changes.
+
+    Raises ``ValueError`` if a curated job derives no closure at all (curation
+    cannot be checked) — the same hard-fail posture the test's own ``assert``
+    took before this factoring, preserved so behavior does not change.
+    """
+    would_infer = inferred_as_if_not_exclusive(manifest_path)
+    declared = {job.job_id: job for job in load_legacy_jobs(manifest_path) if job.exclusive}
+    misses: dict[str, tuple[str, ...]] = {}
+    for job_id, job in sorted(declared.items()):
+        closure = [p for p in would_infer[job_id].paths if "*" not in p]
+        if not closure:
+            raise ValueError(f"{job_id} derives no closure — curation cannot be checked")
+        uncovered = tuple(p for p in closure if not _matches_any(job.paths, p))
+        if uncovered:
+            misses[job_id] = uncovered
+    return misses
+
+
+# Ancestor inits are not part of the curated-exclusive closure audit, but they
+# execute every time Python imports a sibling — a curated job that misses one
+# has the same shape of silent false green. The allow-list ships empty: naming
+# entries is a later reviewed decision, so the census reports every pair.
+ANCESTOR_INIT_ALLOWLIST: frozenset[str] = frozenset()
+
+
+class AncestorInitFinding(NamedTuple):
+    """One ``(job, declared_path, init_path)`` triple the audit must cover.
+
+    ``init_bytes`` comes from ``os.stat`` only — the function never opens the
+    file. Missing inits (namespace packages) are not findings; the census
+    only emits when the path exists on disk.
+    """
+
+    job: str
+    declared_path: str
+    init_path: str
+    init_bytes: int
+
+
+def _ancestor_init_paths(declared_path: str) -> tuple[str, ...]:
+    """Return each ancestor directory strictly below the synthesized root.
+
+    The function then resolves each against ``repo_root`` independently —
+    keeping this helper purely lexical means the disk truth stays a single
+    ``os.stat`` call, never a traversal of the real working directory.
+    """
+    parts = declared_path.split("/")
+    if len(parts) < 2:
+        return ()
+    return tuple("/".join(parts[:depth]) for depth in range(1, len(parts)))
+
+
+def ancestor_init_census(
+    jobs: Iterable[LegacyJob],
+    *,
+    repo_root: Path,
+    allowlist: frozenset[str] = ANCESTOR_INIT_ALLOWLIST,
+) -> tuple[AncestorInitFinding, ...]:
+    """Tally ``__init__.py`` files that executed-but-weren't-declared.
+
+    The curated-exclusive tier REPLACES inference, so the declared ``paths:``
+    ARE the entire scope. Importing ``pkg/sub/mod.py`` executes
+    ``pkg/__init__.py`` AND ``pkg/sub/__init__.py``, but the curated closure
+    check above (``curated_exclusive_closure_findings``) only walks the files
+    Python's importer named — not the ancestor inits that ran alongside
+    them. A curated job that names the module without either parent init
+    stops running the moment one of those inits changes, while every
+    adjacent curated job still claims ``scope: exclusive`` is honest.
+
+    Rule, per curated-exclusive job and per NON-GLOB declared path: walk
+    each ancestor directory strictly below ``repo_root``; whenever
+    ``<dir>/__init__.py`` EXISTS on disk and is not (i) declared literally,
+    (ii) matched by one of the job's declared globs, nor (iii) in
+    ``allowlist``, emit one candidate. Deduplicate per ``(job, init_path)``
+    keeping the lexicographically first ``declared_path``. Walking is limited
+    to LITERAL declarations: the lexical ancestors of GLOB entries are NOT
+    walked — a declared path containing ``*`` or ``?`` contributes no ancestor
+    traversal of its own (the ``_has_glob(declared)`` skip), and a glob can
+    only ever SUPPRESS a candidate found under a literal path, never create
+    one.
+
+    A missing init (namespace package) is never a finding. The file is
+    never read — ``os.stat`` size only. The function does not import the
+    module under any name.
+    """
+    repo_root_resolved = repo_root.resolve()
+    raw: dict[tuple[str, str], AncestorInitFinding] = {}
+    for job in jobs:
+        if not job.exclusive:
+            continue
+        declared_set = frozenset(job.paths)
+        for declared in job.paths:
+            if _has_glob(declared):
+                continue
+            for rel_dir in _ancestor_init_paths(declared):
+                init_path = f"{rel_dir}/__init__.py"
+                if init_path in declared_set:
+                    continue
+                if _matches_any(job.paths, init_path):
+                    continue
+                if init_path in allowlist:
+                    continue
+                abs_dir = repo_root_resolved / rel_dir
+                abs_init = abs_dir / "__init__.py"
+                try:
+                    stat = abs_init.stat()
+                except OSError:
+                    # No init on disk: a namespace package (or an unreadable
+                    # path) runs no ancestor code, so it is never a finding.
+                    continue
+                key = (job.job_id, init_path)
+                candidate = AncestorInitFinding(
+                    job=job.job_id,
+                    declared_path=declared,
+                    init_path=init_path,
+                    init_bytes=stat.st_size,
+                )
+                existing = raw.get(key)
+                if existing is None or candidate.declared_path < existing.declared_path:
+                    raw[key] = candidate
+    return tuple(sorted(raw.values(), key=lambda item: (item.job, item.init_path)))
+
+
+def packing_probe_measurements(
+    manifest_path: Path,
+    probes: Iterable[tuple[str, int, int]],
+    *,
+    max_packs: int,
+) -> list[dict[str, Any]]:
+    """One row per packing probe: what an ordinary code PR touching it selects.
+
+    This IS ``tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs``'s
+    measurement, factored out so that test and ``scripts/check_contract_delta.py``
+    import one copy, for the reason ``curated_exclusive_closure_findings`` gives
+    above. ``probes`` is that test's ``PACKING_PROBES``: ``(changed path, max
+    selected jobs, max selected weight-seconds)``. The ceilings stay in the test,
+    beside the history that set them; this function only measures, and each row
+    carries its ceilings so ``packing_probe_breaches`` can judge it.
+
+    The verdict depends on the whole tree, not on the probe files: inference
+    walks every job's suites, so a suite that starts reading a probe file puts
+    its job on that probe without touching the manifest.
+    """
+    jobs, _note = infer_job_scopes(load_legacy_jobs(manifest_path))
+    rows: list[dict[str, Any]] = []
+    for probe, max_jobs, max_weight in probes:
+        selected, reason = select_jobs(jobs, [probe])
+        weight = sum(job.weight for job in selected)
+        rows.append({
+            "probe": probe,
+            "jobs": len(selected),
+            "weight": weight,
+            # Runners are what the incident actually spends: the pack count
+            # follows the SELECTED weight, so the weight cut is a runner cut.
+            "packs": max(1, min(12, -(-weight // PACK_TARGET_SECONDS))),
+            "max_jobs": max_jobs,
+            "max_weight": max_weight,
+            "max_packs": max_packs,
+            "job_ids": sorted(job.job_id for job in selected),
+            "reason": reason,
+        })
+    return rows
+
+
+PACKING_PROBE_AXES = (("jobs", "max_jobs"), ("weight", "max_weight"), ("packs", "max_packs"))
+
+
+def packing_probe_breaches(rows: Iterable[dict[str, Any]]) -> list[tuple[str, str, int, int]]:
+    """``(probe, axis, measured, ceiling)`` for every probe axis over its ceiling.
+
+    The packing contract's verdict over ``packing_probe_measurements`` rows. An
+    empty list is a pass. Shared by the test and ``check_contract_delta.py``.
+    """
+    return [
+        (row["probe"], axis, row[axis], row[ceiling])
+        for row in rows
+        for axis, ceiling in PACKING_PROBE_AXES
+        if row[axis] > row[ceiling]
+    ]
 
 
 def partition_jobs(jobs: Iterable[LegacyJob], pack_count: int) -> list[list[LegacyJob]]:
@@ -1560,6 +2312,7 @@ def build_plan(
     changed_from: str | None,
     scope_mode: str,
     pack_count: int = 12,
+    manifest_changed_job_ids: Iterable[str] | None = None,
     workflow_run_id: str | None = None,
     workflow: str | None = None,
     event: str | None = None,
@@ -1579,7 +2332,11 @@ def build_plan(
     # one is not merely useless — it spends a minute deriving ownership that
     # select_jobs is about to discard.
     invalidated = bool(
-        changed and any(_matches_any(GLOBAL_INVALIDATORS, path) for path in changed)
+        changed
+        and _global_invalidator_paths(
+            changed,
+            bounded_manifest_delta=manifest_changed_job_ids is not None,
+        )
     )
     scope_summary = "scope inference not needed"
     if (
@@ -1590,7 +2347,11 @@ def build_plan(
     ):
         jobs, scope_summary = infer_job_scopes(jobs)
 
-    eligible, reason = select_jobs(jobs, changed)
+    eligible, reason = select_jobs(
+        jobs,
+        changed,
+        manifest_changed_job_ids=manifest_changed_job_ids,
+    )
     predicted_job_ids = tuple(job.job_id for job in eligible)
     if scope_mode == "off" and changed_from:
         eligible = jobs
@@ -1640,10 +2401,16 @@ def build_plan(
     role = role or os.environ.get("CI_SEMANTIC_ROLE") or (
         "pr_head" if event == "pull_request" else "main"
     )
-    if (role, event) not in {
-        ("pr_head", "pull_request"),
-        ("main", "workflow_dispatch"),
-    }:
+    # `workflow` is resolved HERE, before the role/event validation below, so
+    # the narrow main-owned diagnostic admission can be evaluated in the same gate instead of
+    # a second, later, easy-to-miss check. Moving this resolution earlier does
+    # not change what any OTHER caller gets: it was unconditional before too.
+    workflow = workflow or os.environ.get("GITHUB_WORKFLOW") or "ci"
+    if (role, event) not in SUPPORTED_PLAN_ROLE_EVENTS and not (
+        role == "pr_head"
+        and event == "workflow_dispatch"
+        and workflow in DIAGNOSTIC_PR_WORKFLOWS
+    ):
         raise ManifestError(
             f"semantic plan role/event combination {role}/{event} is unsupported"
         )
@@ -1666,7 +2433,6 @@ def build_plan(
     workflow_run_id = (
         workflow_run_id or os.environ.get("GITHUB_RUN_ID") or "local"
     )
-    workflow = workflow or os.environ.get("GITHUB_WORKFLOW") or "ci"
     try:
         authority_changed = bool(
             role == "pr_head"
@@ -1746,6 +2512,7 @@ def plan_from_workflow(
     scope_mode: str,
     pack_count: int = 12,
     changed_files_file: str | Path | None = None,
+    tracked_paths_file: str | Path | None = None,
     workflow_run_id: str | None = None,
     workflow_name: str | None = None,
     event: str | None = None,
@@ -1753,24 +2520,47 @@ def plan_from_workflow(
     tested_tree_sha: str | None = None,
     subject_head_sha: str | None = None,
     base_sha: str | None = None,
+    gate: str | None = None,
 ) -> CIPackPlan:
     """Load the manifest, resolve the diff, and plan — the whole decision."""
-    legacy = load_legacy_jobs(workflow)
-    changed = resolve_changed_files(changed_from, explicit_file=changed_files_file)
-    return build_plan(
-        legacy,
-        changed,
-        changed_from=changed_from,
-        scope_mode=scope_mode,
-        pack_count=pack_count,
-        workflow_run_id=workflow_run_id,
-        workflow=workflow_name,
-        event=event,
-        role=role,
-        tested_tree_sha=tested_tree_sha,
-        subject_head_sha=subject_head_sha,
-        base_sha=base_sha,
+    if tracked_paths_file is not None and tested_tree_sha is None:
+        raise RuntimeError(
+            "--tracked-paths-file requires --tested-tree-sha so repository "
+            "existence cannot drift to a different checkout"
+        )
+    inventory = (
+        planner_tracked_path_inventory(
+            Path(tracked_paths_file), tested_tree_sha or ""
+        )
+        if tracked_paths_file is not None
+        else contextlib.nullcontext()
     )
+    with inventory:
+        legacy = load_legacy_jobs(workflow, gate=gate)
+        changed = resolve_changed_files(
+            changed_from, explicit_file=changed_files_file
+        )
+        manifest_changed_job_ids: tuple[str, ...] | None = None
+        if changed and LEGACY_MANIFEST_PATH in changed:
+            manifest_changed_job_ids = _safe_manifest_changed_job_ids(
+                workflow,
+                changed_from,
+            )
+        return build_plan(
+            legacy,
+            changed,
+            changed_from=changed_from,
+            scope_mode=scope_mode,
+            pack_count=pack_count,
+            manifest_changed_job_ids=manifest_changed_job_ids,
+            workflow_run_id=workflow_run_id,
+            workflow=workflow_name,
+            event=event,
+            role=role,
+            tested_tree_sha=tested_tree_sha,
+            subject_head_sha=subject_head_sha,
+            base_sha=base_sha,
+        )
 
 
 def _load_json_object(path: Path, *, max_bytes: int = 5_000_000) -> dict[str, Any]:
@@ -1810,12 +2600,18 @@ def load_authoritative_plan(
     expect_tested_tree_sha: str | None = None,
     expect_subject_head_sha: str | None = None,
     expect_base_sha: str | None = None,
+    gate: str | None = None,
 ) -> CIPackPlan:
     """Load the planner artifact without recomputing scope or partition.
 
     The manifest is still validated and its semantic contracts must byte-for-
     byte agree with the plan.  What is forbidden here is re-deciding selection:
     the planner's selected jobs and pack assignment are the sole authority.
+
+    ``gate`` must match what produced the published plan: it narrows the
+    manifest used for the consistency/semantic checks below to the same set
+    the planner selected from, exactly as ``plan_from_workflow`` does for the
+    unpinned path.
     """
     document = _load_json_object(path)
     if document.get("schema") != PLAN_SCHEMA:
@@ -1905,7 +2701,7 @@ def load_authoritative_plan(
     ):
         raise ManifestError("authoritative plan skipped_jobs is malformed")
 
-    all_jobs = load_legacy_jobs(workflow)
+    all_jobs = load_legacy_jobs(workflow, gate=gate)
     by_id = {job.job_id: job for job in all_jobs}
     manifest_ids = set(by_id)
     if set(eligible) | set(skipped) != manifest_ids:
@@ -1940,10 +2736,16 @@ def load_authoritative_plan(
     if role not in {"pr_head", "main"}:
         raise ManifestError("authoritative plan role must be pr_head or main")
     event = required_text("event")
-    if (role, event) not in {
-        ("pr_head", "pull_request"),
-        ("main", "workflow_dispatch"),
-    }:
+    # `workflow` is read HERE, before the role/event validation below, so the
+    # same narrow main-owned diagnostic admission build_plan() grants can be
+    # evaluated in this reader too, rather than only when the published
+    # `workflow` field is reached later (still needed for the hash payload).
+    workflow = required_text("workflow")
+    if (role, event) not in SUPPORTED_PLAN_ROLE_EVENTS and not (
+        role == "pr_head"
+        and event == "workflow_dispatch"
+        and workflow in DIAGNOSTIC_PR_WORKFLOWS
+    ):
         raise ManifestError(
             f"authoritative plan role/event combination {role}/{event} is unsupported"
         )
@@ -1981,7 +2783,7 @@ def load_authoritative_plan(
 
     payload = plan_hash_payload(
         workflow_run_id=required_text("workflow_run_id"),
-        workflow=required_text("workflow"),
+        workflow=workflow,
         event=event,
         role=role,
         tested_tree_sha=identities["tested_tree_sha"],
@@ -2044,7 +2846,7 @@ def load_authoritative_plan(
             index for index, job_ids in enumerate(pack_jobs) if job_ids
         ),
         workflow_run_id=required_text("workflow_run_id"),
-        workflow=required_text("workflow"),
+        workflow=workflow,
         event=event,
         role=role,
         tested_tree_sha=identities["tested_tree_sha"],
@@ -2304,6 +3106,15 @@ def dependency_command(job: LegacyJob) -> str | None:
     for step in job.definition["steps"]:
         command = str(step.get("run", ""))
         if "pip install" in command:
+            # Manifest validation normally closes this invariant before
+            # execution.  Keep it local as well: retrying an entire mixed shell
+            # body merely because it contains these words would replay unrelated
+            # and potentially non-idempotent work.
+            if not _is_standalone_pip_install(command):
+                raise ManifestError(
+                    f"job {job.job_id!r} dependency install is not a standalone "
+                    "pip command"
+                )
             return command
     return None
 
@@ -2633,6 +3444,235 @@ def _current_commit_sha(root: Path) -> str:
     return value
 
 
+_EXACT_TESTED_TREE_DEPTHS = (2, 8, 32, 128, 512, 2048)
+
+
+def _tested_tree_ancestry_ready(
+    root: Path,
+    git_env: Mapping[str, str],
+    tested_tree_sha: str,
+) -> bool:
+    """Return whether the tested tree exposes all ancestry current consumers need.
+
+    Pull-request runs execute a synthetic two-parent merge. The six current
+    fetch-depth-0 consumers need the merge parents to be visible and need a real
+    merge base between those parents so PR commit trailers and diff-scoped
+    guards can walk to the branch point. They do not need unrelated refs/tags or
+    history older than that merge base. Main/workflow-dispatch runs use a normal
+    zero/one-parent commit, where making the immediate parent visible is enough:
+    each consumer explicitly fetches its canonical base before its own guard.
+    """
+
+    raw = _git_cmd(root, git_env, "cat-file", "-p", tested_tree_sha)
+    if raw.returncode != 0:
+        return False
+    raw_parents = [
+        line.split()[1].lower()
+        for line in raw.stdout.splitlines()
+        if line.startswith("parent ") and len(line.split()) == 2
+    ]
+    if len(raw_parents) > 2 or any(
+        not re.fullmatch(r"[0-9a-f]{40}", parent) for parent in raw_parents
+    ):
+        return False
+
+    visible = _git_cmd(
+        root,
+        git_env,
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        tested_tree_sha,
+    )
+    if visible.returncode != 0:
+        return False
+    parts = visible.stdout.strip().lower().split()
+    if not parts or parts[0] != tested_tree_sha.lower():
+        return False
+    if parts[1:] != raw_parents:
+        return False
+
+    if len(raw_parents) < 2:
+        return True
+
+    merge_base = _git_cmd(
+        root,
+        git_env,
+        "merge-base",
+        raw_parents[0],
+        raw_parents[1],
+    )
+    value = merge_base.stdout.strip().lower()
+    return merge_base.returncode == 0 and bool(re.fullmatch(r"[0-9a-f]{40}", value))
+
+
+# Exact paths compared by the international-workspace-browser frozen guard
+# (tests/test_intl_gs_foundation.py). The international-dislocation-explorer
+# job passes its own compared paths from its manifest step (F10) so that this
+# module's closure never names that guard's builder script.
+INTERNATIONAL_FOUNDATION_FROZEN_PATHS = (
+    "templates/theme.css",
+    "templates/_navlinks.html.j2",
+    "engine/intl_global_universe.py",
+    "engine/intl_global_observation.py",
+    "lib/intl_global_observation_adapter.py",
+)
+
+
+def prepare_canonical_main(
+    root: Path, *, tested_tree_sha: str, base_ref: str = "main",
+    frozen_paths: tuple[str, ...] = INTERNATIONAL_FOUNDATION_FROZEN_PATHS,
+) -> str:
+    """Acquire actual main once, then deepen only its pinned history as needed.
+
+    ``frozen_paths`` are the exact repository paths the calling job's frozen
+    guard compares at the canonical base and the tested tree; every one must be
+    present offline at both before this returns.
+
+    The International frozen-file guard reads origin/main and its merge base
+    with HEAD. Its fetch-depth-0 preparation already establishes tested-tree
+    ancestry; an unrestricted second fetch need not reacquire unrelated history
+    or auto-follow tags. Retain that ancestry with relative deepening, explicitly
+    create origin/main, and never repin to a main tip that moves during this call.
+
+    The manifest runs each synchronous fetch under the logical job's existing
+    deadline and process group. A failed/unknown fetch propagates immediately: only a completed
+    acquisition with valid bindings but insufficient ancestry earns a deeper rung.
+    Filter only this canonical acquisition, with child-only declarations so Git
+    does not persist a partial-clone policy on the fully materialized checkout.
+    Required guard objects must be present offline before returning. There is no
+    transport retry, private timeout, workspace restoration, or replay.
+    """
+    if base_ref != "main":
+        raise RuntimeError("canonical-main preparation requires base_ref='main'")
+    if not isinstance(tested_tree_sha, str) or not re.fullmatch(
+        r"[0-9a-f]{40}", tested_tree_sha
+    ):
+        raise RuntimeError("canonical-main preparation requires an exact tested-tree SHA")
+    if (not isinstance(frozen_paths, tuple) or not frozen_paths or not all(
+            isinstance(path, str) and path and not path.startswith("/")
+            and ".." not in path.split("/") for path in frozen_paths)):
+        raise RuntimeError("canonical-main preparation requires exact relative frozen paths")
+
+    root = root.resolve()
+    # Only the explicit acquisition may use transport. All readiness/object
+    # probes fail closed rather than silently repairing a missing promisor blob.
+    fetch_env = _trusted_git_environment(root)
+    fetch_env.update({
+        "GIT_CONFIG_COUNT": "2",
+        "GIT_CONFIG_KEY_0": "remote.origin.promisor",
+        "GIT_CONFIG_VALUE_0": "true",
+        "GIT_CONFIG_KEY_1": "remote.origin.partialclonefilter",
+        "GIT_CONFIG_VALUE_1": "blob:none",
+    })
+    git_env = _trusted_git_environment(root)
+    git_env.update(GIT_NO_LAZY_FETCH="1", GIT_ALLOW_PROTOCOL="")
+    canonical_sha: str | None = None
+    previous_depth = 0
+
+    def commit(ref: str) -> str:
+        result = _git_cmd(root, git_env, "rev-parse", "--verify", f"{ref}^{{commit}}")
+        value = result.stdout.strip().lower()
+        if result.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", value):
+            raise RuntimeError(f"canonical-main preparation cannot resolve {ref!r}")
+        return value
+
+    def check_bindings() -> None:
+        if commit("HEAD") != tested_tree_sha:
+            raise RuntimeError("canonical-main preparation changed/mismatched tested HEAD")
+        if canonical_sha is not None and commit("origin/main") != canonical_sha:
+            raise RuntimeError("canonical-main preparation lost its pinned origin/main")
+
+    def is_shallow() -> bool:
+        result = _git_cmd(root, git_env, "rev-parse", "--is-shallow-repository")
+        if result.returncode != 0 or result.stdout.strip() not in {"true", "false"}:
+            raise RuntimeError("canonical-main preparation cannot determine shallow state")
+        return result.stdout.strip() == "true"
+
+    def require_local_objects(canonical_base: str) -> None:
+        # ``frozen_paths`` are the exact paths compared by the caller's guard.
+
+        def required(*args: str) -> str:
+            result = _git_cmd(root, git_env, *args)
+            if result.returncode != 0:
+                raise RuntimeError("canonical-main required local object unavailable")
+            return result.stdout.strip()
+
+        raw = required("cat-file", "-p", tested_tree_sha)
+        parents = [line.split()[1] for line in raw.splitlines()
+                   if line.startswith("parent ")]
+        commits = {canonical_sha, tested_tree_sha, canonical_base, *parents}
+        if len(parents) == 2:
+            commits.add(required("merge-base", *parents))
+        for oid in commits:
+            if not isinstance(oid, str) or not re.fullmatch(r"[0-9a-f]{40}", oid):
+                raise RuntimeError("canonical-main required object identity unavailable")
+            required("cat-file", "-e", f"{oid}^{{commit}}")
+            required("cat-file", "-e", f"{oid}^{{tree}}")
+        for ref in (canonical_base, tested_tree_sha):
+            for path in frozen_paths:
+                entry = required("ls-tree", ref, "--", path)
+                fields = entry.split()
+                if (len(fields) != 4 or fields[1] != "blob" or fields[3] != path
+                        or not re.fullmatch(r"[0-9a-f]{40}", fields[2])):
+                    raise RuntimeError("canonical-main required frozen object unavailable")
+                required("cat-file", "-e", f"{fields[2]}^{{blob}}")
+
+    for depth in _EXACT_TESTED_TREE_DEPTHS:
+        check_bindings()
+        command = ["git", "fetch", "--no-recurse-submodules", "--no-tags",
+                   "--filter=blob:none"]
+        # Absolute --depth can shorten already-qualified tested-tree history.
+        # Reuse the existing finite ancestry ladder as *additional* generations.
+        increment = depth - previous_depth
+        if is_shallow():
+            command.append(f"--deepen={increment}")
+        canonical_want = (
+            "+refs/heads/main:refs/remotes/origin/main"
+            if canonical_sha is None else canonical_sha
+        )
+        command.extend(["origin", canonical_want, tested_tree_sha])
+        print(
+            "::notice title=international-workspace-browser::acquiring canonical "
+            f"main {'tip' if canonical_sha is None else canonical_sha}; "
+            f"additional ancestry limit {depth}",
+            flush=True,
+        )
+        subprocess.run(command, cwd=root, env=fetch_env, check=True)
+        fetched_sha = commit("FETCH_HEAD")
+        if canonical_sha is None:
+            canonical_sha = commit("origin/main")
+        if fetched_sha != canonical_sha:
+            raise RuntimeError("canonical-main acquisition did not retain its first fetched main")
+        check_bindings()
+
+        merge_base = _git_cmd(root, git_env, "merge-base", canonical_sha, tested_tree_sha)
+        value = merge_base.stdout.strip().lower()
+        if merge_base.returncode not in (0, 1) or (
+            merge_base.returncode == 0 and not re.fullmatch(r"[0-9a-f]{40}", value)
+        ):
+            raise RuntimeError("canonical-main merge-base probe failed")
+        if merge_base.returncode == 0 and _tested_tree_ancestry_ready(
+            root, git_env, tested_tree_sha
+        ):
+            require_local_objects(value)
+            check_bindings()
+            print(
+                "::notice title=international-workspace-browser::canonical main "
+                f"{canonical_sha}; tested tree {tested_tree_sha}; merge base {value}",
+                flush=True,
+            )
+            return canonical_sha
+        if not is_shallow():
+            raise RuntimeError("canonical-main ancestry is unavailable in a complete repository")
+        previous_depth = depth
+
+    raise RuntimeError(
+        "canonical-main ancestry remained unavailable after the bounded deepen ladder"
+    )
+
+
 def _prepare_provided_actions(
     job: LegacyJob,
     *,
@@ -2643,10 +3683,17 @@ def _prepare_provided_actions(
 
     setup-python 3.12 and setup-node 20 are supplied by the pack job itself.
     The ordinary checkout is represented by the exact-tree reset. A manifest
-    checkout requesting fetch-depth 0 additionally receives every advertised
-    branch and tag with complete history, matching checkout@v4's closed input
-    contract. Exact-base replay points ``origin`` at its isolated base-only
-    remote, so this same operation can never substitute moving current main.
+    checkout requesting fetch-depth 0 first deepens only the authoritative
+    tested tree, in bounded steps, until the synthetic merge parents have a
+    usable merge base. That is the actual history contract of every current
+    fetch-depth-0 consumer: each fetches its canonical base itself, none reads
+    tags/unrelated remote refs, and self-mod-fence needs the PR-commit ancestry
+    only through the branch point.
+
+    If exact-tree ancestry cannot be established within the bounded ladder, or
+    any exact fetch fails, preserve the established all-branches -> main-only
+    -> 30-day recovery ladder. Exact-base replay points ``origin`` at its
+    isolated base-only remote, so the same fail-closed recovery remains intact.
     """
     contracts = _job_action_contract(job)
     if not any(
@@ -2661,21 +3708,137 @@ def _prepare_provided_actions(
         raise RuntimeError(
             f"job {job.job_id!r} requires fetch-depth 0 without an exact tested tree"
         )
-    subprocess.run(
-        [
-            "git",
-            "fetch",
-            "--no-recurse-submodules",
-            "--prune",
-            "--tags",
-            "--depth=2147483647",
-            "origin",
-            "+refs/heads/*:refs/remotes/origin/*",
-        ],
-        cwd=root,
-        env=_trusted_git_environment(root),
-        check=True,
-    )
+
+    git_env = _trusted_git_environment(root)
+    # Recheck this exact repository/tree before fetching: a later consumer must
+    # not re-shallow history already established by an earlier consumer.
+    if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
+        print(
+            "::notice title=run-ci-pack::exact tested-tree ancestry already "
+            "complete; retaining local history",
+            flush=True,
+        )
+        return
+    exact_fetch_failed = False
+    for index, depth in enumerate(_EXACT_TESTED_TREE_DEPTHS):
+        try:
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--no-tags",
+                    f"--depth={depth}",
+                    "origin",
+                    tested_tree_sha,
+                ],
+                cwd=root,
+                env=git_env,
+                check=True,
+            )
+        except subprocess.CalledProcessError:
+            exact_fetch_failed = True
+            print(
+                "::warning title=run-ci-pack::exact tested-tree ancestry fetch failed "
+                f"at depth {depth}; retrying legacy all-branches deepen",
+                flush=True,
+            )
+            break
+
+        if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
+            return
+
+        if index + 1 < len(_EXACT_TESTED_TREE_DEPTHS):
+            print(
+                "::notice title=run-ci-pack::exact tested-tree ancestry incomplete "
+                f"at depth {depth}; deepening to "
+                f"{_EXACT_TESTED_TREE_DEPTHS[index + 1]}",
+                flush=True,
+            )
+
+    if not exact_fetch_failed:
+        print(
+            "::warning title=run-ci-pack::exact tested-tree ancestry remained "
+            f"incomplete through depth {_EXACT_TESTED_TREE_DEPTHS[-1]}; "
+            "retrying legacy all-branches deepen",
+            flush=True,
+        )
+
+    try:
+        subprocess.run(
+            [
+                "git",
+                "fetch",
+                "--no-recurse-submodules",
+                "--prune",
+                "--tags",
+                "--depth=2147483647",
+                "origin",
+                "+refs/heads/*:refs/remotes/origin/*",
+            ],
+            cwd=root,
+            env=git_env,
+            check=True,
+        )
+    except subprocess.CalledProcessError:
+        # One broken sibling ref must not fail every fetch-depth-0 job. On
+        # 2026-09-21 an all-branches deepen died fleet-wide with "fatal:
+        # missing blob object ..." / "error: remote did not send all
+        # necessary objects" — a ref whose objects the server could not
+        # serve — and every design-governance run after it red as
+        # "infrastructure unknown". The checks behind this contract diff
+        # against main and the PR's own refs (already present in the
+        # workspace), so full main history is the part that must succeed.
+        print(
+            "::warning title=run-ci-pack::all-branches deepen failed; "
+            "retrying with refs/heads/main only",
+            flush=True,
+        )
+        try:
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--tags",
+                    "--depth=2147483647",
+                    "origin",
+                    "+refs/heads/main:refs/remotes/origin/main",
+                ],
+                cwd=root,
+                env=git_env,
+                check=True,
+            )
+        except subprocess.CalledProcessError:
+            # 2026-09-21 16:08Z: even the main-only full deepen died the same
+            # way ("fatal: missing blob object 9cd3bb31..."), while the
+            # all-branches fetch had SUCCEEDED on sibling runs minutes
+            # earlier — the failures are intermittent server-side pack
+            # assembly on these enormous full-history fetches, not one
+            # broken ref. The checks behind this contract only ever diff
+            # against a merge base that is hours-to-days old, so a bounded
+            # window is always sufficient in practice and is orders of
+            # magnitude smaller to assemble. Tags are dropped on this rung:
+            # none of the gated checks read tags, and a tag pinning
+            # unreachable history would re-break the fetch.
+            print(
+                "::warning title=run-ci-pack::main-only deepen failed; "
+                "retrying refs/heads/main with --shallow-since=30 days",
+                flush=True,
+            )
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--shallow-since=30 days ago",
+                    "origin",
+                    "+refs/heads/main:refs/remotes/origin/main",
+                ],
+                cwd=root,
+                env=git_env,
+                check=True,
+            )
 
 
 def _run_job(
@@ -2700,20 +3863,32 @@ def _run_job(
         semantic_env["GIT_NO_REPLACE_OBJECTS"] = "1"
     timeout_minutes = job.definition.get("timeout-minutes")
     timeout_seconds = int(timeout_minutes) * 60 if timeout_minutes else None
+    job_started_at = time.monotonic() if timeout_seconds is not None else None
     job_deadline = (
-        time.monotonic() + timeout_seconds if timeout_seconds is not None else None
+        job_started_at + timeout_seconds if timeout_seconds is not None else None
     )
     specs = semantic_step_specs(job)
     by_index = {spec.step_index: spec for spec in specs}
+    setups = {spec["step_index"]: spec for spec in _browser_setup_contract(job)}
+    native_limits = [spec["logical_job_timeout_minutes"] for spec in setups.values()
+                     if spec.get("acquisition") == "native_parallel"]
+    if native_limits:
+        timeout_minutes = min(timeout_minutes, *native_limits)
+        timeout_seconds = int(timeout_minutes) * 60
+        job_deadline = job_started_at + timeout_seconds
     observations: list[dict[str, Any]] = []
     failure: str | None = None
     infrastructure: dict[str, Any] = {"outcome": "passed"}
+    timeout_settlement = None
 
     for index, step in enumerate(job.definition["steps"]):
         spec = by_index.get(index)
-        if spec is None:
+        setup = setups.get(index)
+        if spec is None and setup is None:
             continue  # checkout/setup/dependency-install infrastructure.
         if failure is not None:
+            if spec is None:
+                continue
             infrastructure_failed = infrastructure.get("outcome") != "passed"
             observations.append(
                 {
@@ -2732,50 +3907,64 @@ def _run_job(
                 }
             )
             continue
-        step_name = spec.display_name or spec.proof_id
+        step_name = (spec.display_name or spec.proof_id) if spec is not None else str(step.get("name") or "browser setup")
         group_open = False
+        command_attempted = False
         try:
             command = render_command(
                 str(step["run"]), base_ref=base_ref, head_ref=head_ref
             )
             print(f"::group::{job.job_id} — {step_name}", flush=True)
             group_open = True
+            command_started_at = time.monotonic() if job_deadline is not None else None
             remaining = (
-                max(0.0, job_deadline - time.monotonic())
-                if job_deadline is not None
+                max(0.0, job_deadline - command_started_at)
+                if command_started_at is not None
                 else None
             )
+            if setup is not None and remaining is not None:
+                remaining = min(remaining, setup["timeout_minutes"] * 60)
             if remaining is not None and remaining <= 0:
                 result = CommandObservation(
                     outcome="timed_out",
                     returncode=None,
                     failure_signature=None,
                     detail="logical job timeout exhausted before this step started",
+                    timeout_settlement="not_started",
                 )
             else:
-                result = _stream_command(
-                    command,
-                    env=semantic_env,
-                    timeout_seconds=remaining,
-                )
+                command_attempted = True
+                if setup is not None and setup.get("acquisition") == "native_parallel":
+                    result = _run_native_browser_setup(
+                        setup, job_deadline=job_deadline, setup_started_at=command_started_at, command_env=semantic_env,
+                    )
+                else:
+                    result = _stream_command(
+                        command,
+                        env=semantic_env,
+                        timeout_seconds=remaining,
+                    )
         except Exception as exc:  # noqa: BLE001 — preserve earlier observations
+            if command_attempted:
+                timeout_settlement = "unknown"
             detail = _bounded_detail(exc)
             infrastructure = {"outcome": "unknown", "detail": detail}
-            observations.append(
-                {
-                    **spec.plan_dict(),
-                    "outcome": "infrastructure_blocked",
-                    "failure_signature": None,
-                    "detail": detail,
-                }
-            )
+            if spec is not None:
+                observations.append(
+                    {
+                        **(spec.plan_dict() if spec is not None else {}),
+                        "outcome": "infrastructure_blocked",
+                        "failure_signature": None,
+                        "detail": detail,
+                    }
+                )
             failure = f"{job.job_id}: infrastructure unknown ({detail})"
             continue
         finally:
             if group_open:
                 print("::endgroup::", flush=True)
         record: dict[str, Any] = {
-            **spec.plan_dict(),
+            **(spec.plan_dict() if spec is not None else {}),
             "outcome": result.outcome,
             "failure_signature": (
                 dict(result.failure_signature)
@@ -2785,10 +3974,19 @@ def _run_job(
         }
         if result.detail:
             record["detail"] = result.detail
-        if tested_tree_sha is not None:
-            # Always leave for-each-ref/rev-parse working for the next step.
-            # A timed-out step was SIGKILL'd and may have smashed packed-refs;
-            # heal first, then only a *passed* step can still hide a rewrite.
+        if result.timeout_settlement == "unknown" or (
+            result.outcome == "timed_out" and result.timeout_settlement != "not_started"
+        ):
+            timeout_settlement = "unknown"
+            infrastructure = {
+                "outcome": "unknown",
+                "detail": "command settlement unknown; original outcome retained",
+            }
+            if result.outcome not in {"failed", "timed_out"}:
+                failure = f"{job.job_id}: original {result.outcome} command has unknown settlement"
+        if tested_tree_sha is not None and timeout_settlement is None:
+            # Retain existing Git checks outside uncertain termination. Healing
+            # itself writes, so it is withheld while descendants may still act.
             try:
                 healed = _ensure_pack_git_usable(Path.cwd(), tested_tree_sha)
             except Exception:  # noqa: BLE001 — last-ditch; proof already lost
@@ -2814,12 +4012,25 @@ def _run_job(
                         _ensure_pack_git_usable(Path.cwd(), tested_tree_sha)
                     infrastructure = {"outcome": "unknown", "detail": detail}
                     record = {
-                        **spec.plan_dict(),
+                        **(spec.plan_dict() if spec is not None else {}),
                         "outcome": "infrastructure_blocked",
                         "failure_signature": None,
                         "detail": detail,
                     }
                     failure = f"{job.job_id}: infrastructure unknown ({detail})"
+        if setup is not None:
+            if result.outcome != "passed" and failure is None:
+                original = {
+                    "phase": "browser_setup", "outcome": result.outcome,
+                    "returncode": result.returncode, "failure_signature": result.failure_signature,
+                    "detail": result.detail,
+                }
+                infrastructure = {
+                    "outcome": "unknown" if timeout_settlement else "dependency_failed",
+                    "detail": _bounded_detail(json.dumps(original, sort_keys=True)),
+                }
+                failure = f"{job.job_id}: browser setup {result.outcome} (exit {result.returncode}); original outcome retained"
+            continue
         observations.append(record)
         if failure is not None and record["outcome"] == "infrastructure_blocked":
             continue
@@ -2835,7 +4046,25 @@ def _run_job(
         infrastructure=infrastructure,
         steps=tuple(observations),
         failure=failure,
+        timeout_settlement=timeout_settlement,
     )
+
+
+class _DependencyTransportMarkerDetector:
+    """Recognize an exact retry marker without retaining the dependency log."""
+
+    def __init__(self, markers: Sequence[bytes]):
+        self._markers = tuple(marker for marker in markers if marker)
+        self._tail = b""
+        self.matched = False
+        self._tail_size = max((len(marker) for marker in self._markers), default=1) - 1
+
+    def feed(self, chunk: bytes) -> None:
+        if self.matched or not self._markers:
+            return
+        window = self._tail + bytes(chunk)
+        self.matched = any(marker in window for marker in self._markers)
+        self._tail = window[-self._tail_size :] if self._tail_size else b""
 
 
 def _stream_command(
@@ -2843,6 +4072,7 @@ def _stream_command(
     *,
     env: Mapping[str, str],
     timeout_seconds: int | float | None,
+    detect_retryable_dependency_transport: bool = False,
 ) -> CommandObservation:
     """Stream a child live while retaining only bounded structured atoms."""
     deadline = (
@@ -2854,6 +4084,11 @@ def _stream_command(
         max_bytes=FAILURE_CAPTURE_MAX_BYTES,
         max_atoms=FAILURE_CAPTURE_MAX_ATOMS,
         max_line_bytes=FAILURE_CAPTURE_MAX_LINE_BYTES,
+    )
+    dependency_transport = _DependencyTransportMarkerDetector(
+        DEPENDENCY_TRANSPORT_RETRY_MARKERS
+        if detect_retryable_dependency_transport
+        else ()
     )
     process = subprocess.Popen(
         ["bash", "-eo", "pipefail", "-c", command],
@@ -2874,6 +4109,7 @@ def _stream_command(
                 chunk = process.stdout.read(4_096)
                 if not chunk:
                     break
+                dependency_transport.feed(chunk)
                 # Normal Actions output remains live.  Decode only for display;
                 # the collector receives the original bounded byte line.
                 print(chunk.decode("utf-8", "replace"), end="", flush=True)
@@ -2896,6 +4132,9 @@ def _stream_command(
                 collector.feed(bytes(pending))
         except Exception as exc:  # noqa: BLE001 — never hide child completion
             pump_error.append(_bounded_detail(exc))
+        finally:
+            with contextlib.suppress(OSError):
+                process.stdout.close()
 
     reader = threading.Thread(target=pump, name="ci-pack-output", daemon=True)
     reader.start()
@@ -2909,7 +4148,7 @@ def _stream_command(
         process.wait(timeout=wait_seconds)
     except subprocess.TimeoutExpired:
         timed_out = True
-        with contextlib.suppress(ProcessLookupError):
+        with contextlib.suppress(OSError):
             os.killpg(process.pid, signal.SIGKILL)
         with contextlib.suppress(subprocess.TimeoutExpired):
             process.wait(
@@ -2928,15 +4167,19 @@ def _stream_command(
             )
         )
         stream_incomplete = reader.is_alive()
-        with contextlib.suppress(OSError):
-            process.stdout.close()
+        # Closing a pipe from this thread can block behind a surviving child's
+        # inherited writer. The reader owns closing an incomplete stream.
+        if not stream_incomplete:
+            with contextlib.suppress(OSError):
+                process.stdout.close()
 
     if timed_out:
         return CommandObservation(
             outcome="timed_out",
             returncode=process.returncode,
             failure_signature=None,
-            detail="semantic step exceeded its job timeout",
+            detail="semantic step exceeded its job timeout; descendant settlement unknown",
+            timeout_settlement="unknown",
         )
     if pump_error:
         return CommandObservation(
@@ -2944,6 +4187,7 @@ def _stream_command(
             returncode=process.returncode,
             failure_signature=None,
             detail=f"output stream failed: {pump_error[0]}",
+            timeout_settlement="unknown",
         )
     if stream_incomplete:
         return CommandObservation(
@@ -2951,6 +4195,7 @@ def _stream_command(
             returncode=process.returncode,
             failure_signature=None,
             detail="output stream did not close with the semantic command",
+            timeout_settlement="unknown",
         )
     if process.returncode:
         signature = collector.signature()
@@ -2959,6 +4204,7 @@ def _stream_command(
             returncode=process.returncode,
             failure_signature=signature,
             detail=f"exited {process.returncode}",
+            retryable_dependency_transport=dependency_transport.matched,
         )
     return CommandObservation(outcome="passed", returncode=0)
 
@@ -2986,6 +4232,23 @@ def _child_environment(
     return _child_git_environment(command_env)
 
 
+def _export_tested_tree_sha(bound_tree_sha: str | None) -> bool:
+    """Publish the plan-bound tested tree to legacy steps as ``TESTED_TREE_SHA``.
+
+    The International canonical-main gates read ``CI_TESTED_TREE_SHA`` first and
+    ``TESTED_TREE_SHA`` second. ci.yml exports ``TESTED_TREE_SHA`` in the pack
+    step's ``env:``; the trusted and canary executors pass only CLI flags, so a
+    pack that knows its plan publishes the value once here, before either child
+    environment is assembled. An explicit value is never overridden (exact-base
+    replay sets ``CI_TESTED_TREE_SHA`` deliberately and keeps precedence).
+    Returns True only when this call set the variable.
+    """
+    if bound_tree_sha is None or os.environ.get("TESTED_TREE_SHA"):
+        return False
+    os.environ["TESTED_TREE_SHA"] = bound_tree_sha
+    return True
+
+
 def _child_git_environment(command_env: Mapping[str, str]) -> dict[str, str]:
     """Drop repo-binding Git vars so a child can `git init` in tmp_path."""
     cleaned = dict(command_env)
@@ -3011,23 +4274,61 @@ def _dependency_environment(
     if not runner_temp:
         raise RuntimeError("RUNNER_TEMP is required to isolate legacy dependencies")
     environment = Path(runner_temp).resolve() / "ci-pack-job-env"
-    if environment.exists():
-        shutil.rmtree(environment)
-    subprocess.run([sys.executable, "-m", "venv", str(environment)], check=True)
-    command_env["PATH"] = (
-        str(environment / "bin") + os.pathsep + command_env.get("PATH", "")
-    )
-    print(f"::group::dependency environment — {install_command}", flush=True)
-    result = subprocess.run(
-        ["bash", "-eo", "pipefail", "-c", install_command],
-        env=command_env,
-    )
-    print("::endgroup::", flush=True)
-    if result.returncode:
-        raise RuntimeError(
-            f"dependency install exited {result.returncode}: {install_command}"
+    inherited_path = command_env.get("PATH", "")
+    retry_used = False
+    for attempt in (1, 2):
+        # A retry never inherits a partly-installed environment.  Recreate the
+        # same bounded path so adjacent jobs still share only a fully successful
+        # dependency set, exactly as the single-attempt contract did.
+        if environment.exists():
+            shutil.rmtree(environment)
+        subprocess.run([sys.executable, "-m", "venv", str(environment)], check=True)
+        command_env["PATH"] = (
+            str(environment / "bin") + os.pathsep + inherited_path
         )
-    return command_env
+        print(
+            f"::group::dependency environment attempt {attempt} — {install_command}",
+            flush=True,
+        )
+        try:
+            result = _stream_command(
+                install_command,
+                env=command_env,
+                timeout_seconds=None,
+                detect_retryable_dependency_transport=True,
+            )
+        except Exception as exc:
+            raise _ProcessSettlementUnknown(
+                "dependency command did not return a settled observation", outcome="unavailable"
+            ) from exc
+        finally:
+            print("::endgroup::", flush=True)
+        if result.timeout_settlement == "unknown" or result.outcome == "timed_out":
+            raise _ProcessSettlementUnknown(
+                "dependency command settlement unknown; original outcome " + result.outcome,
+                outcome=result.outcome,
+            )
+        if result.outcome == "passed":
+            return command_env
+        if attempt == 1 and result.retryable_dependency_transport:
+            retry_used = True
+            print(
+                "::warning title=ci dependency transport retry::"
+                "classified transient TLS record on attempt 1; recreating the "
+                "isolated environment once",
+                flush=True,
+            )
+            continue
+        returncode = result.returncode if result.returncode is not None else result.outcome
+        retry_detail = (
+            " after one classified TLS retry"
+            if attempt == 2 and retry_used
+            else ""
+        )
+        raise RuntimeError(
+            f"dependency install exited {returncode}{retry_detail}: {install_command}"
+        )
+    raise AssertionError("dependency retry loop exhausted without a verdict")
 
 
 def _blocked_job_execution(
@@ -3075,6 +4376,186 @@ def _write_semantic_fragment(path: Path, fragment: Mapping[str, Any]) -> None:
     _atomic_write_json(path, fragment)
 
 
+def _timing_observation(
+    logical_job_id: str,
+    phase: str,
+    started_monotonic_ns: int,
+    ended_monotonic_ns: int,
+) -> dict[str, Any]:
+    """Return one process-local observation with no semantic authority."""
+    ended = max(started_monotonic_ns, ended_monotonic_ns)
+    return {
+        "logical_job_id": logical_job_id,
+        "phase": phase,
+        "status": "observed",
+        "started_monotonic_ns": started_monotonic_ns,
+        "ended_monotonic_ns": ended,
+        "duration_ns": ended - started_monotonic_ns,
+    }
+
+
+def _write_timing_observations(
+    path: Path,
+    observations: Sequence[Mapping[str, Any]],
+) -> None:
+    """Publish optional JSONL telemetry without changing the pack verdict."""
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        payload = "".join(
+            json.dumps(observation, sort_keys=True, separators=(",", ":")) + "\n"
+            for observation in observations
+        )
+        temporary.write_text(payload, encoding="utf-8")
+        os.replace(temporary, path)
+    except OSError as exc:
+        print(
+            "::warning title=ci timing telemetry degraded::"
+            f"could not publish logical-job observations ({_bounded_detail(exc)})",
+            flush=True,
+        )
+    finally:
+        with contextlib.suppress(OSError):
+            temporary.unlink()
+
+
+class ExecutionProfileError(RuntimeError):
+    """The runtime executing ``--execute`` disagrees with RUNNER_CONTRACT.
+
+    RUNNER_CONTRACT's ``linux-x86_64/python-3.12.13/node-20`` clause is baked
+    into every job's semantic digest (`semantic_job_digest`), and hosted and
+    self-hosted execution are reconciled bytewise against that digest. A
+    runner whose actual OS/arch/interpreter silently disagrees with the
+    string would let two genuinely different environments compare as one
+    attested contract, so this is a distinct, fail-closed error raised
+    before any legacy job executes — never folded into a generic
+    infrastructure outcome a reader might mistake for a transient flake.
+    """
+
+
+def _selected_python_loader_environment() -> dict[str, str]:
+    """Derive the Linux loader path from the attested interpreter itself.
+
+    ``actions/setup-python`` selects a versioned shared-library build.  Re-execing
+    that interpreter with a deliberately small environment must retain only its
+    own library directory.  The action can expose that directory through a
+    runner-local alias while ``sysconfig`` reports its canonical tool-cache path,
+    so preserve an ambient alias only after proving it resolves to the declared
+    directory inside ``sys.base_prefix`` and contains a declared Python SONAME.
+    """
+    if platform.system() != "Linux":
+        return {}
+    raw_library_dir = sysconfig.get_config_var("LIBDIR")
+    raw_library_names = [
+        sysconfig.get_config_var("LDLIBRARY"),
+        sysconfig.get_config_var("INSTSONAME"),
+    ]
+    library_names = [
+        name for name in raw_library_names if isinstance(name, str) and name
+    ]
+    if not isinstance(raw_library_dir, str) or not raw_library_dir:
+        raise ExecutionProfileError("selected Python does not declare LIBDIR")
+    if not library_names:
+        raise ExecutionProfileError(
+            "selected Python does not declare LDLIBRARY or INSTSONAME"
+        )
+    try:
+        prefix = Path(sys.base_prefix).resolve(strict=True)
+        declared_library_dir = Path(raw_library_dir).resolve(strict=True)
+        declared_library_dir.relative_to(prefix)
+    except (OSError, ValueError) as exc:
+        raise ExecutionProfileError(
+            "selected Python library directory is outside selected interpreter prefix"
+        ) from exc
+
+    candidates: list[Path] = []
+    for entry in os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep):
+        if not entry:
+            continue
+        candidate = Path(entry)
+        try:
+            if candidate.resolve(strict=True) == declared_library_dir:
+                candidates.append(candidate)
+        except OSError:
+            continue
+    candidates.append(Path(raw_library_dir))
+    for candidate in candidates:
+        if any((candidate / name).is_file() for name in library_names):
+            return {"LD_LIBRARY_PATH": str(candidate)}
+    raise ExecutionProfileError(
+        "selected Python shared library is absent: "
+        f"{declared_library_dir} ({', '.join(library_names)})"
+    )
+
+
+def _node_major_version() -> int | None:
+    """Return node's major version, or None if node is missing/unparseable."""
+    try:
+        result = subprocess.run(
+            ["node", "--version"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    match = re.fullmatch(r"v(\d+)\.\d+\.\d+\s*", result.stdout)
+    return int(match.group(1)) if match else None
+
+
+def attest_execution_profile(plan: "CIPackPlan | None") -> None:
+    """Fail closed before any legacy job runs unless this runtime matches
+    the portable Linux execution profile v2 RUNNER_CONTRACT declares.
+
+    Invoked on the ``--execute`` path whenever a run consumes an
+    authoritative plan (``--plan-json``) or mints a semantic fragment
+    (``--emit-semantic-fragment``) — the two cases that publish evidence a
+    reconciler or comparator will trust. Checks, in order: OS family Linux;
+    machine x86_64; interpreter patch exactly 3.12.13; node major exactly
+    20; and, when a plan is present, that the checkout HEAD equals the
+    plan's ``tested_tree_sha`` (already independently enforced earlier in
+    `execute_pack` via ``--expect-tested-tree-sha``; repeated here so the
+    attestation itself is a complete, self-contained claim).
+
+    There is deliberately no env/CLI bypass. A unit test monkeypatches this
+    function itself to exercise the surrounding plumbing, or monkeypatches
+    its module-level primitives (``platform``, `_node_major_version`,
+    `_current_commit_sha`) to exercise the real refusal logic.
+    """
+    system = platform.system()
+    if system != "Linux":
+        raise ExecutionProfileError(
+            f"execution profile requires Linux, runtime reports {system!r}"
+        )
+    machine = platform.machine()
+    if machine != "x86_64":
+        raise ExecutionProfileError(
+            f"execution profile requires x86_64, runtime reports {machine!r}"
+        )
+    python_version = platform.python_version()
+    if python_version != "3.12.13":
+        raise ExecutionProfileError(
+            "execution profile requires Python 3.12.13, runtime reports "
+            f"{python_version!r}"
+        )
+    node_major = _node_major_version()
+    if node_major != 20:
+        raise ExecutionProfileError(
+            f"execution profile requires node 20.x, runtime reports major "
+            f"{node_major!r}"
+        )
+    if plan is not None:
+        observed = _current_commit_sha(_workspace_root())
+        if observed != plan.tested_tree_sha:
+            raise ExecutionProfileError(
+                f"checkout HEAD {observed} does not match attested tested "
+                f"tree {plan.tested_tree_sha}"
+            )
+
+
 def _remaining_seconds(deadline: float) -> float:
     return max(0.0, deadline - time.monotonic())
 
@@ -3086,6 +4567,8 @@ def _git_run_bounded(
     deadline: float,
     check: bool = True,
     capture_output: bool = True,
+    env: Mapping[str, str] | None = None,
+    stdin_text: str | None = None,
 ) -> subprocess.CompletedProcess[str]:
     remaining = _remaining_seconds(deadline)
     if remaining <= 0:
@@ -3097,7 +4580,143 @@ def _git_run_bounded(
         capture_output=capture_output,
         text=True,
         timeout=remaining,
+        env=None if env is None else dict(env),
+        input=stdin_text,
     )
+
+
+def _promisor_remote(root: Path, *, deadline: float) -> str | None:
+    """Name the remote that backs this repository's omitted objects, if any."""
+    probe = _git_run_bounded(
+        ["git", "config", "--get-regexp", r"^remote\..*\.promisor$"],
+        cwd=root,
+        deadline=deadline,
+        check=False,
+    )
+    if probe.returncode:
+        return None
+    for line in probe.stdout.splitlines():
+        key, _, value = line.partition(" ")
+        if value.strip().lower() != "true":
+            continue
+        name = key[len("remote.") : -len(".promisor")]
+        if name:
+            return name
+    return None
+
+
+def _missing_tree_objects(root: Path, sha: str, *, deadline: float) -> list[str]:
+    """Blob OIDs at ``sha`` that are absent from the local object store.
+
+    ``git rev-list --missing=print`` cannot answer this. A blob a partial clone
+    omitted is an EXPECTED absence, so it is never printed — measured against a
+    real ``blob:none`` clone, a tree with three genuinely absent blobs reported
+    zero missing objects. ``GIT_NO_LAZY_FETCH`` makes ``cat-file`` report those
+    same objects as ``missing`` instead of silently fetching them back one
+    network round trip at a time, which is both the accurate detector and the
+    cheap one.
+    """
+    listing = _git_run_bounded(
+        ["git", "ls-tree", "-r", "-z", sha],
+        cwd=root,
+        deadline=deadline,
+    ).stdout
+    oids: list[str] = []
+    seen: set[str] = set()
+    for entry in listing.split("\0"):
+        meta, _, _path = entry.partition("\t")
+        fields = meta.split()
+        if len(fields) < 3 or fields[1] != "blob":
+            continue
+        oid = fields[2]
+        if oid not in seen:
+            seen.add(oid)
+            oids.append(oid)
+    if not oids:
+        return []
+    probe = _git_run_bounded(
+        ["git", "cat-file", "--batch-check"],
+        cwd=root,
+        deadline=deadline,
+        check=False,
+        env={**os.environ, "GIT_NO_LAZY_FETCH": "1"},
+        stdin_text="".join(f"{oid}\n" for oid in oids),
+    )
+    return [
+        line.split(" ", 1)[0]
+        for line in probe.stdout.splitlines()
+        if line.endswith(" missing")
+    ]
+
+
+def _hydrate_exact_base_objects(root: Path, sha: str, *, deadline: float) -> None:
+    """Materialise every blob at ``sha`` before the replay borrows this odb.
+
+    The replay checkout runs in a private repository that borrows only this
+    one's object database through ``objects/info/alternates``. Alternates share
+    OBJECTS, never the partial-clone extension or the promisor remote that can
+    go and get the omitted ones — so on a ``blob:none`` runner checkout
+    (every hosted pack's shape until 2026-09-23; see
+    DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION for why the hosted packs now fetch
+    the full tree, which makes this a no-op there) the borrowing repository
+    cannot lazily fetch, and ``git checkout`` dies with "unable to read sha1
+    file" on precisely the blobs the PR changed. Hydrating here, in the
+    checkout that DOES hold the promisor remote and its credentials, is what
+    keeps the replay repository's isolation free of network configuration.
+    """
+    remote = _promisor_remote(root, deadline=deadline)
+    if remote is None:
+        return
+    missing = _missing_tree_objects(root, sha, deadline=deadline)
+    if not missing:
+        return
+    # git's own lazy-fetch path issues ONE fetch PER OBJECT (measured: three
+    # missing blobs, three `git fetch` invocations), so the bulk `--stdin`
+    # form it uses internally is the first move and the per-object path is
+    # only the fallback for a git that does not accept it.
+    bulk = _git_run_bounded(
+        [
+            "git",
+            "fetch",
+            remote,
+            "--no-tags",
+            "--no-write-fetch-head",
+            "--recurse-submodules=no",
+            "--filter=blob:none",
+            "--stdin",
+        ],
+        cwd=root,
+        deadline=deadline,
+        check=False,
+        stdin_text="".join(f"{oid}\n" for oid in missing),
+    )
+    residual = _missing_tree_objects(root, sha, deadline=deadline)
+    fallback: subprocess.CompletedProcess[str] | None = None
+    if residual:
+        fallback = _git_run_bounded(
+            ["git", "cat-file", "--batch-check"],
+            cwd=root,
+            deadline=deadline,
+            check=False,
+            stdin_text="".join(f"{oid}\n" for oid in residual),
+        )
+        residual = _missing_tree_objects(root, sha, deadline=deadline)
+    if residual:
+        sample = ", ".join(residual[:5])
+        if len(residual) > 5:
+            sample += f", …(+{len(residual) - 5})"
+        detail = (
+            f"exact-base hydration left {len(residual)} object(s) of "
+            f"{len(missing)} unresolved for {sha} via promisor remote "
+            f"{remote!r}: {sample}; bulk rc={bulk.returncode} "
+            f"stderr={_one_line(bulk.stderr or '')}"
+        )
+        if fallback is not None:
+            detail += (
+                f"; per-object rc={fallback.returncode} "
+                f"stderr={_one_line(fallback.stderr or '')}"
+            )
+        raise RuntimeError(detail)
 
 
 def _ensure_exact_commit(root: Path, sha: str, *, deadline: float) -> str:
@@ -3125,7 +4744,9 @@ def _ensure_exact_commit(root: Path, sha: str, *, deadline: float) -> str:
         raise RuntimeError(
             f"exact-base acquisition resolved {resolved!r}, expected {sha!r}"
         )
-    return resolved.lower()
+    exact = resolved.lower()
+    _hydrate_exact_base_objects(root, exact, deadline=deadline)
+    return exact
 
 
 def _bounded_rmtree(path: Path, *, deadline: float) -> None:
@@ -3159,6 +4780,7 @@ def _exact_base_worktree(
     worktree = holder / "worktree"
     repository = holder / "repository.git"
     pinned_origin = holder / "origin.git"
+    preserve_unsettled = False
     try:
         common_dir_text = _git_run_bounded(
             ["git", "rev-parse", "--git-common-dir"],
@@ -3262,7 +4884,6 @@ def _exact_base_worktree(
             ],
             cwd=root,
             deadline=deadline,
-            capture_output=False,
         )
         (worktree / ".git").write_text(
             f"gitdir: {repository}\n",
@@ -3284,8 +4905,14 @@ def _exact_base_worktree(
                 f"{exact_sha}"
             )
         yield worktree
+    except _ProcessSettlementUnknown:
+        preserve_unsettled = True
+        raise
     finally:
-        _bounded_rmtree(holder, deadline=deadline)
+        if preserve_unsettled:
+            print(f"::warning title=ci-base-replay::settlement unknown; preserving original checkout {holder}", flush=True)
+        else:
+            _bounded_rmtree(holder, deadline=deadline)
 
 
 def _stream_process_with_deadline(
@@ -3308,11 +4935,22 @@ def _stream_process_with_deadline(
     try:
         return process.wait(timeout=_remaining_seconds(deadline)), False
     except subprocess.TimeoutExpired:
-        with contextlib.suppress(ProcessLookupError):
+        # A failed signal or second wait cannot erase the original timeout or
+        # escape the typed preservation boundary. Neither proves settlement.
+        with contextlib.suppress(Exception):
             os.killpg(process.pid, signal.SIGKILL)
-        with contextlib.suppress(subprocess.TimeoutExpired):
+        with contextlib.suppress(Exception):
             process.wait(timeout=_remaining_seconds(deadline))
-        return process.returncode, True
+        raise _ProcessSettlementUnknown(
+            "exact-base runner budget expired; original timed_out outcome; descendant settlement unknown"
+        )
+
+    except Exception as exc:
+        with contextlib.suppress(Exception):
+            os.killpg(process.pid, signal.SIGKILL)
+        raise _ProcessSettlementUnknown(
+            "base runner did not return a settled observation", outcome="unavailable"
+        ) from exc
 
 
 def _base_replay_unavailable(base_sha: str, detail: object) -> dict[str, Any]:
@@ -3343,6 +4981,7 @@ def _run_exact_base_replays(
         return
     deadline = time.monotonic() + max(1, budget_seconds)
     base_sha = plan.base_sha
+    current_steps: list[dict[str, Any]] = []
     try:
         with _exact_base_worktree(root, base_sha, deadline=deadline) as base_root:
             base_runner = base_root / "scripts" / "run_ci_pack.py"
@@ -3353,6 +4992,7 @@ def _run_exact_base_replays(
                     for step in record["steps"]
                     if step.get("outcome") in {"failed", "timed_out"}
                 ]
+                current_steps = target_steps
                 if _remaining_seconds(deadline) <= 0:
                     replay = {
                         "tested_tree_sha": base_sha,
@@ -3414,6 +5054,10 @@ def _run_exact_base_replays(
                     for key, value in os.environ.items()
                     if key in safe_parent_names or key.startswith("LC_")
                 }
+                # Re-exec the selected setup-python interpreter without copying
+                # candidate-controlled loader state.  The directory is derived
+                # and containment-checked against sys.base_prefix above.
+                child_env.update(_selected_python_loader_environment())
                 child_home = child_temp / "home"
                 child_home.mkdir(exist_ok=True)
                 child_env.update(
@@ -3482,17 +5126,33 @@ def _run_exact_base_replays(
                     replay: dict[str, Any] = {
                         "tested_tree_sha": base_sha,
                         "outcome": "timed_out",
-                        "detail": "exact-base replay budget exhausted",
+                        "detail": "exact-base replay budget exhausted; settlement unknown",
                     }
+                    for step in target_steps:
+                        step["base_replay"] = replay
+                    raise _ProcessSettlementUnknown(replay["detail"])
                 elif not replay_path.is_file():
-                    replay = _base_replay_unavailable(
-                        base_sha,
-                        "base runner did not emit semantic replay evidence "
-                        "(the base may predate the semantic epoch)",
+                    raise _ProcessSettlementUnknown(
+                        "base runner did not emit original evidence; descendant settlement unproven",
+                        outcome="unavailable",
                     )
                 else:
                     try:
                         replay_doc = _load_json_object(replay_path)
+                        raw_jobs = replay_doc.get("jobs", [])
+                        old_timeout = isinstance(raw_jobs, list) and any(
+                            isinstance(job, dict) and isinstance(job.get("steps"), list)
+                            and any(isinstance(step, dict) and step.get("outcome") == "timed_out" for step in job["steps"])
+                            for job in raw_jobs
+                        )
+                        if old_timeout or any(
+                            isinstance(row, dict) and row.get("outcome") == "unknown"
+                            for row in replay_doc.get("infrastructure", [])
+                        ):
+                            raise _ProcessSettlementUnknown(
+                                f"base runner reported infrastructure unknown; retaining original result {replay_path}",
+                                outcome="unavailable",
+                            )
                         if replay_doc.get("schema") != FRAGMENT_SCHEMA:
                             raise ManifestError("base replay fragment schema mismatch")
                         if replay_doc.get("tested_tree_sha") != base_sha:
@@ -3515,26 +5175,133 @@ def _run_exact_base_replays(
                                     "base replay must contain exactly one logical job"
                                 )
                             base_job = replay_jobs[0]
+                            if not isinstance(base_job, dict):
+                                raise ManifestError("base replay logical job must be an object")
                             if base_job.get("logical_job_id") != record["logical_job_id"]:
                                 raise ManifestError("base replay logical job mismatch")
                             replay = {
                                 "tested_tree_sha": base_sha,
                                 "job_present": True,
                                 "logical_job_id": base_job["logical_job_id"],
-                                "job_exec_sha256": base_job["job_exec_sha256"],
-                                "infrastructure": base_job["infrastructure"],
-                                "steps": base_job["steps"],
+                                "job_exec_sha256": base_job.get("job_exec_sha256"),
+                                "infrastructure": base_job.get("infrastructure"),
+                                "steps": base_job.get("steps"),
                             }
-                    except (ManifestError, OSError, json.JSONDecodeError) as exc:
-                        replay = _base_replay_unavailable(base_sha, exc)
+                        # Reuse the existing exact-base evidence validator before
+                        # this original result can qualify safe teardown/reuse.
+                        _validate_base_replay(replay, expected_base_sha=base_sha)
+                    except _ProcessSettlementUnknown:
+                        raise
+                    except Exception as exc:  # qualification must preserve the original on any failure
+                        raise _ProcessSettlementUnknown(
+                            "base runner original result could not be qualified: " + _bounded_detail(exc),
+                            outcome="unavailable",
+                        ) from exc
                 for step in target_steps:
                     step["base_replay"] = replay
+    except _ProcessSettlementUnknown as exc:
+        for step in current_steps:
+            step.setdefault("base_replay", {
+                "tested_tree_sha": base_sha,
+                "outcome": exc.original_outcome,
+                "detail": _bounded_detail(exc),
+            })
+        unavailable = _base_replay_unavailable(base_sha, "an original replay has unknown descendant settlement")
+        for record in failed_records:
+            for step in record.get("steps", []):
+                if step.get("outcome") in {"failed", "timed_out"}:
+                    step.setdefault("base_replay", unavailable)
     except (RuntimeError, subprocess.SubprocessError, TimeoutError, OSError) as exc:
         replay = _base_replay_unavailable(base_sha, exc)
         for record in failed_records:
             for step in record.get("steps", []):
                 if step.get("outcome") in {"failed", "timed_out"}:
-                    step["base_replay"] = replay
+                    step.setdefault("base_replay", replay)
+
+
+def _find_repo_root(workflow_path: Path) -> Path:
+    """Resolve the repo root for the ancestor-init census.
+
+    Prefers ``git rev-parse --show-toplevel`` from the workflow's directory —
+    the canonical answer when the call is real. When the workflow sits in a
+    non-repo tree (a fixture under ``tmp_path``, for example), git fails
+    closed and the function falls back to the workflow's parent directory.
+    The ``relative_to`` sanity check keeps a silently-discovered parent
+    repo from being honoured when the manifest lives elsewhere — but note
+    what it does NOT do: a manifest inside a SUBDIRECTORY of an enclosing
+    checkout passes that check and resolves against that checkout's root,
+    so discovery is not bounded to the manifest's own tree unless the
+    caller sets ``GIT_CEILING_DIRECTORIES`` (which blocks git from chdir'ing
+    up INTO a listed directory; naming the fixture's parent pins the walk).
+    """
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            cwd=str(workflow_path.resolve().parent),
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            candidate = Path(result.stdout.strip()).resolve()
+            try:
+                workflow_path.resolve().relative_to(candidate)
+                return candidate
+            except ValueError:
+                pass
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return workflow_path.resolve().parent
+
+
+def _run_ancestor_init_census(args: argparse.Namespace) -> int:
+    """Print the report-only ancestor-init census; exit 0 on a loadable manifest.
+
+    The census is informational only: every curated-exclusive job's declared
+    NON-GLOB paths are walked for ancestor inits, and each undeclared init
+    that exists on disk is emitted as one finding. The flag never validates
+    pack selection and never gates. It DOES exit nonzero when
+    ``load_legacy_jobs`` refuses the manifest — a ``ManifestError`` propagates
+    to ``main``'s fail-closed handler (observed rc=2 on an unparseable
+    fixture) — and the curator already owns closure failure in
+    ``curated_exclusive_closure_findings``. The ``pairs=… jobs=…/<n>`` line
+    is the published baseline; per-init rows follow sorted by cross-job
+    count descending then path. ``--gate`` is forwarded to
+    ``load_legacy_jobs`` (the single gate filter choke point); its argparse
+    default is ``None``, so the default census stays whole-manifest and
+    byte-identical. ``--semantic-replay-job`` is the one mode that loads
+    ``load_legacy_jobs`` ungated (``main`` calls
+    ``load_legacy_jobs(args.workflow)`` without ``gate=``).
+    """
+    jobs = load_legacy_jobs(args.workflow, gate=args.gate)
+    repo_root = _find_repo_root(Path(args.workflow))
+    findings = ancestor_init_census(jobs, repo_root=repo_root)
+    per_init_count: dict[str, int] = {}
+    per_init_bytes: dict[str, int] = {}
+    jobs_with: set[str] = set()
+    nonempty = 0
+    for finding in findings:
+        jobs_with.add(finding.job)
+        per_init_count[finding.init_path] = (
+            per_init_count.get(finding.init_path, 0) + 1
+        )
+        per_init_bytes.setdefault(finding.init_path, finding.init_bytes)
+        if finding.init_bytes > 0:
+            nonempty += 1
+    n_exclusive = sum(1 for job in jobs if job.exclusive)
+    print(
+        f"ANCESTOR_INIT_CENSUS pairs={len(findings)} "
+        f"jobs={len(jobs_with)}/{n_exclusive} "
+        f"nonempty_pairs={nonempty} distinct_inits={len(per_init_count)}"
+    )
+    for init_path, count in sorted(
+        per_init_count.items(), key=lambda item: (-item[1], item[0])
+    ):
+        print(
+            f"{init_path} bytes={per_init_bytes[init_path]} jobs={count}"
+        )
+    return 0
 
 
 def execute_pack(
@@ -3544,9 +5311,11 @@ def execute_pack(
     plan: CIPackPlan | None = None,
     pack_index: int = 0,
     emit_semantic_fragment: Path | None = None,
+    emit_timing_observations: Path | None = None,
     enable_base_replay: bool = True,
     base_replay_budget_seconds: int = DEFAULT_BASE_REPLAY_BUDGET_SECONDS,
     changed_files_file: str | Path | None = None,
+    require_attestation: bool = False,
 ) -> int:
     """Execute a pack, account completely, and emit raw bounded evidence."""
     root = _workspace_root()
@@ -3555,8 +5324,10 @@ def execute_pack(
     failures: list[str] = []
     records: list[dict[str, Any]] = []
     pack_infrastructure: list[dict[str, str]] = []
+    timing_observations: list[dict[str, Any]] = []
     current_dependency: object = object()
     dependency_error: str | None = None
+    unsettled_detail: str | None = None
     bound_tree_sha = plan.tested_tree_sha if plan is not None else os.environ.get(
         "CI_TESTED_TREE_SHA"
     )
@@ -3564,6 +5335,9 @@ def execute_pack(
         r"[0-9a-f]{40}", bound_tree_sha
     ):
         bound_tree_sha = None
+    # F10 review F1: both international legacy gates need the tested tree in the
+    # step environment on every executor, not only the ci.yml pack step.
+    _export_tested_tree_sha(bound_tree_sha)
     command_env = _child_environment(changed_files_file)
     if plan is not None:
         try:
@@ -3618,6 +5392,90 @@ def execute_pack(
             )
             print("CI_PACK_FAILED_JOBS=" + json.dumps(failed_ids), flush=True)
             return 1
+    if require_attestation:
+        try:
+            attest_execution_profile(plan)
+        except Exception as exc:  # noqa: BLE001 — emit an explicit blocked pack
+            detail = _bounded_detail(exc)
+            records = [
+                _blocked_job_execution(
+                    job,
+                    infrastructure_outcome="attestation_failed",
+                    detail=detail,
+                ).fragment_dict()
+                for job in jobs
+            ]
+            failures = [
+                f"{job.job_id}: infrastructure attestation_failed ({detail})"
+                for job in jobs
+            ] or [f"ci-pack: attestation_failed ({detail})"]
+            # A distinct annotation FIRST — the whole point of a distinct
+            # fail-closed error is that a reader searching the log for
+            # "attestation" finds it, not just the generic per-job title.
+            print(f"::error title=ci-attestation::{_one_line(detail)}", flush=True)
+            for failure in failures:
+                job_id = failure.split(":", 1)[0]
+                print(f"::error title=legacy-job-{job_id}::{failure}", flush=True)
+            if emit_semantic_fragment is not None:
+                _write_semantic_fragment(
+                    emit_semantic_fragment,
+                    {
+                        "schema": FRAGMENT_SCHEMA,
+                        "workflow_run_id": (
+                            plan.workflow_run_id
+                            if plan is not None
+                            else os.environ.get("GITHUB_RUN_ID", "local")
+                        ),
+                        "workflow": (
+                            plan.workflow
+                            if plan is not None
+                            else os.environ.get("GITHUB_WORKFLOW", "ci")
+                        ),
+                        "event": (
+                            plan.event
+                            if plan is not None
+                            else os.environ.get("GITHUB_EVENT_NAME", "local")
+                        ),
+                        "role": (
+                            plan.role
+                            if plan is not None
+                            else os.environ.get("CI_SEMANTIC_ROLE", "main")
+                        ),
+                        "tested_tree_sha": (
+                            plan.tested_tree_sha
+                            if plan is not None
+                            else (
+                                os.environ.get("CI_TESTED_TREE_SHA")
+                                or os.environ.get(
+                                    "GITHUB_SHA", "unbound-tested-tree"
+                                )
+                            )
+                        ),
+                        "subject_head_sha": (
+                            plan.subject_head_sha
+                            if plan is not None
+                            else os.environ.get("CI_SUBJECT_HEAD_SHA", "")
+                        ),
+                        "base_sha": (
+                            plan.base_sha
+                            if plan is not None
+                            else os.environ.get("CI_BASE_SHA", "")
+                        ),
+                        "plan_sha256": (
+                            plan.plan_sha256 if plan is not None else "replay-only"
+                        ),
+                        "pack_index": pack_index,
+                        "infrastructure": [
+                            {"outcome": "attestation_failed", "detail": detail}
+                        ],
+                        "jobs": records,
+                    },
+                )
+            failed_ids = sorted(
+                failure.split(":", 1)[0] for failure in failures
+            )
+            print("CI_PACK_FAILED_JOBS=" + json.dumps(failed_ids), flush=True)
+            return 1
     try:
         # Adjacent jobs with an identical declared dependency set share that
         # exact environment.  A different set recreates the venv from scratch,
@@ -3627,48 +5485,91 @@ def execute_pack(
             jobs, key=lambda job: (dependency_command(job) or "", job.ordinal)
         )
         for job in ordered_jobs:
-            dependency = dependency_command(job)
-            if dependency != current_dependency:
-                current_dependency = dependency
-                dependency_error = None
-                try:
-                    command_env = _dependency_environment(
-                        dependency,
-                        changed_files_file=changed_files_file,
-                    )
-                except Exception as exc:  # noqa: BLE001 — evidence must survive
-                    dependency_error = _bounded_detail(exc)
-            if dependency_error is not None:
+            settlement_before = unsettled_detail
+            if unsettled_detail is not None:
                 execution = _blocked_job_execution(
-                    job,
-                    infrastructure_outcome="dependency_failed",
-                    detail=dependency_error,
+                    job, infrastructure_outcome="unknown", detail=unsettled_detail
                 )
             else:
-                try:
-                    execution = _coerce_job_execution(
-                        job,
-                        _run_job(
-                            job,
-                            base_ref=base_ref,
-                            head_ref=head_ref,
-                            command_env=command_env,
-                            tested_tree_sha=bound_tree_sha,
-                        ),
+                dependency = dependency_command(job)
+                if dependency != current_dependency:
+                    current_dependency = dependency
+                    dependency_error = None
+                    dependency_started = (
+                        time.monotonic_ns()
+                        if emit_timing_observations is not None
+                        else None
                     )
-                except Exception as exc:  # noqa: BLE001 — complete accounting
+                    try:
+                        command_env = _dependency_environment(
+                            dependency,
+                            changed_files_file=changed_files_file,
+                        )
+                    except _ProcessSettlementUnknown as exc:
+                        unsettled_detail = _bounded_detail(exc)
+                        dependency_error = unsettled_detail
+                    except Exception as exc:  # noqa: BLE001 — evidence must survive
+                        dependency_error = _bounded_detail(exc)
+                    finally:
+                        if dependency_started is not None:
+                            timing_observations.append(
+                                _timing_observation(
+                                    job.job_id,
+                                    "dependency_install",
+                                    dependency_started,
+                                    time.monotonic_ns(),
+                                )
+                            )
+                if dependency_error is not None:
                     execution = _blocked_job_execution(
                         job,
-                        infrastructure_outcome=(
-                            "timed_out"
-                            if isinstance(
-                                exc,
-                                (TimeoutError, subprocess.TimeoutExpired),
-                            )
-                            else "unknown"
-                        ),
-                        detail=exc,
+                        infrastructure_outcome="unknown" if unsettled_detail else "dependency_failed",
+                        detail=dependency_error,
                     )
+                else:
+                    test_started = (
+                        time.monotonic_ns()
+                        if emit_timing_observations is not None
+                        else None
+                    )
+                    try:
+                        execution = _coerce_job_execution(
+                            job,
+                            _run_job(
+                                job,
+                                base_ref=base_ref,
+                                head_ref=head_ref,
+                                command_env=command_env,
+                                tested_tree_sha=bound_tree_sha,
+                            ),
+                        )
+                    except Exception as exc:  # noqa: BLE001 — complete accounting
+                        execution = _blocked_job_execution(
+                            job,
+                            infrastructure_outcome=(
+                                "timed_out"
+                                if isinstance(
+                                    exc,
+                                    (TimeoutError, subprocess.TimeoutExpired),
+                                )
+                                else "unknown"
+                            ),
+                            detail=exc,
+                        )
+                    finally:
+                        if test_started is not None:
+                            timing_observations.append(
+                                _timing_observation(
+                                    job.job_id,
+                                    "test",
+                                    test_started,
+                                    time.monotonic_ns(),
+                                )
+                            )
+            if execution.timeout_settlement == "unknown":
+                unsettled_detail = "original command settlement unknown; no reuse, restoration or replay permitted"
+            if settlement_before is None and unsettled_detail is not None:
+                pack_infrastructure.append({"outcome": "unknown", "detail": unsettled_detail})
             failure = execution.failure
             records.append(execution.fragment_dict())
             if failure:
@@ -3693,16 +5594,19 @@ def execute_pack(
                     flush=True,
                 )
     finally:
-        try:
-            _restore_workspace(bound_tree_sha)
-        except Exception as exc:  # noqa: BLE001 — fragment still gets written
-            detail = _bounded_detail(exc)
-            failures.append(f"ci-pack: final workspace restore failed ({detail})")
-            pack_infrastructure.append(
-                {"outcome": "unknown", "detail": f"workspace restore: {detail}"}
-            )
+        if unsettled_detail is None:
+            try:
+                _restore_workspace(bound_tree_sha)
+            except Exception as exc:  # noqa: BLE001 — fragment still gets written
+                detail = _bounded_detail(exc)
+                failures.append(f"ci-pack: final workspace restore failed ({detail})")
+                pack_infrastructure.append(
+                    {"outcome": "unknown", "detail": f"workspace restore: {detail}"}
+                )
+        else:
+            print("::warning title=run-ci-pack::original command settlement unknown; workspace restoration and base replay withheld", flush=True)
 
-    if plan is not None and enable_base_replay and not os.environ.get(
+    if unsettled_detail is None and plan is not None and enable_base_replay and not os.environ.get(
         "CI_DISABLE_BASE_REPLAY"
     ):
         try:
@@ -3760,6 +5664,12 @@ def execute_pack(
         }
         _write_semantic_fragment(emit_semantic_fragment, fragment)
 
+    if emit_timing_observations is not None:
+        _write_timing_observations(
+            emit_timing_observations,
+            timing_observations,
+        )
+
     failed_ids = sorted(
         {failure.split(":", 1)[0] for failure in failures if ":" in failure}
     )
@@ -3777,8 +5687,33 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--workflow", type=Path, required=True)
     parser.add_argument("--pack-index", type=int, default=0)
     parser.add_argument("--pack-count", type=int, default=2)
+    parser.add_argument(
+        "--gate",
+        choices=GATE_VALUES,
+        default=None,
+        help=(
+            "filter the manifest to jobs declaring this gate value before "
+            "selection/partition; absent runs the whole manifest as before "
+            "this flag existed (research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_"
+            "2026_08_19.md W2)"
+        ),
+    )
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--validate-only", action="store_true")
+    parser.add_argument(
+        "--ancestor-init-census",
+        action="store_true",
+        help=(
+            "report-only: list ``__init__.py`` files a curated-exclusive job "
+            "executes on import but never declares — never gates, never "
+            "validates pack selection; exits 0 on a loadable manifest and "
+            "nonzero (observed 2) when load_legacy_jobs refuses the manifest; "
+            "pairs the curated-tier closure audit with the silent "
+            "ancestor-init blind spot the closure audit cannot see; "
+            "``--gate`` narrows the census to that gate's jobs (default: "
+            "whole-manifest)"
+        ),
+    )
     parser.add_argument(
         "--plan-json",
         type=Path,
@@ -3836,6 +5771,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--tracked-paths-file",
+        default=None,
+        metavar="PATH",
+        help=(
+            "planner-only handle containing the exact tested tree's tracked paths; "
+            "preserves repository-existence semantics in a sparse ci-plan checkout"
+        ),
+    )
+    parser.add_argument(
         "--expect-plan-sha",
         default=None,
         help="refuse to execute unless the authoritative plan has this sha256",
@@ -3855,6 +5799,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=Path,
         default=None,
         help="write the bounded raw ci.semantic_fragment.v1 pack artifact",
+    )
+    parser.add_argument(
+        "--emit-timing-observations",
+        type=Path,
+        default=None,
+        help=(
+            "write optional process-local logical-job timing JSONL; this file "
+            "is telemetry only and is never read by semantic proof"
+        ),
     )
     parser.add_argument(
         "--base-replay-budget-seconds",
@@ -3895,6 +5848,42 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("--execute and --plan-only are mutually exclusive")
     if args.plan_json is not None and args.plan_only:
         parser.error("--plan-json consumes a plan and cannot pair with --plan-only")
+    for _census_conflict, _flag in (
+        (args.execute, "--execute"),
+        (args.validate_only, "--validate-only"),
+        (args.plan_only, "--plan-only"),
+        # ``--plan-json`` (``type=Path, default=None``) and ``--emit-plan-json``
+        # (``default=None``) are not ``store_true``: the census dispatched
+        # first in ``main`` silently WON over both (observed rc=0, the plan
+        # never read/never emitted), so presence — ``is not None``, not
+        # truthiness — is the conflict test. The seven flags after them are
+        # the same class: ``default=None``, not ``store_true``, and only read
+        # after the census has already returned. ``--github-output`` and
+        # ``--changed-from`` (#9378 P3-a) join it: the census never reads them.
+        (args.plan_json is not None, "--plan-json"),
+        (args.emit_plan_json is not None, "--emit-plan-json"),
+        (args.emit_changed_files is not None, "--emit-changed-files"),
+        (args.changed_files_file is not None, "--changed-files-file"),
+        (args.expect_plan_sha is not None, "--expect-plan-sha"),
+        (args.emit_semantic_fragment is not None, "--emit-semantic-fragment"),
+        (args.emit_timing_observations is not None, "--emit-timing-observations"),
+        (args.github_output is not None, "--github-output"),
+        (args.changed_from is not None, "--changed-from"),
+    ):
+        if args.ancestor_init_census and _census_conflict:
+            parser.error(
+                "--ancestor-init-census is a terminal report-only mode and "
+                f"cannot pair with {_flag}"
+            )
+    # P3-b (#9378), deliberately NOT refused: --tested-tree-sha
+    # --subject-head-sha --base-sha --workflow-run-id --workflow-name --event
+    # --role --expect-tested-tree-sha --expect-subject-head-sha --expect-base-sha,
+    # and the env-/int-defaulted --scope-mode --matrix-mode --base-replay-budget-seconds
+    # --pack-index --pack-count: census reads only args.workflow/args.gate.
+    if args.tracked_paths_file is not None and not args.plan_only:
+        parser.error("--tracked-paths-file is planner-only and requires --plan-only")
+    if args.tracked_paths_file is not None and not args.tested_tree_sha:
+        parser.error("--tracked-paths-file requires --tested-tree-sha")
     if args.semantic_replay_job and not args.execute:
         parser.error("--semantic-replay-job requires --execute")
     if args.semantic_replay_job and args.emit_semantic_fragment is None:
@@ -3909,6 +5898,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
+        if args.ancestor_init_census:
+            return _run_ancestor_init_census(args)
         if args.semantic_replay_job:
             jobs = load_legacy_jobs(args.workflow)
             target = next(
@@ -3950,7 +5941,13 @@ def main(argv: list[str] | None = None) -> int:
                 [target],
                 pack_index=0,
                 emit_semantic_fragment=args.emit_semantic_fragment,
+                emit_timing_observations=args.emit_timing_observations,
                 enable_base_replay=False,
+                # parse_args already requires --emit-semantic-fragment here,
+                # so this replay always mints evidence and always attests —
+                # cheaply, since it runs on the same already-attested runner
+                # as the pack invocation that spawned it.
+                require_attestation=True,
             )
 
         changed_handle = args.changed_files_file or os.environ.get(
@@ -3965,6 +5962,7 @@ def main(argv: list[str] | None = None) -> int:
                 expect_tested_tree_sha=args.expect_tested_tree_sha,
                 expect_subject_head_sha=args.expect_subject_head_sha,
                 expect_base_sha=args.expect_base_sha,
+                gate=args.gate,
             )
         else:
             plan = plan_from_workflow(
@@ -3973,6 +5971,7 @@ def main(argv: list[str] | None = None) -> int:
                 scope_mode=args.scope_mode,
                 pack_count=args.pack_count,
                 changed_files_file=args.changed_files_file,
+                tracked_paths_file=args.tracked_paths_file,
                 workflow_run_id=args.workflow_run_id,
                 workflow_name=args.workflow_name,
                 event=args.event,
@@ -3980,6 +5979,7 @@ def main(argv: list[str] | None = None) -> int:
                 tested_tree_sha=args.tested_tree_sha,
                 subject_head_sha=args.subject_head_sha,
                 base_sha=args.base_sha,
+                gate=args.gate,
             )
         shadow = args.scope_mode == "shadow" and args.changed_from
         if shadow:
@@ -4072,11 +6072,21 @@ def main(argv: list[str] | None = None) -> int:
             plan=plan,
             pack_index=args.pack_index,
             emit_semantic_fragment=args.emit_semantic_fragment,
+            emit_timing_observations=args.emit_timing_observations,
             enable_base_replay=(
                 args.plan_json is not None and not args.disable_base_replay
             ),
             base_replay_budget_seconds=args.base_replay_budget_seconds,
             changed_files_file=changed_handle,
+            # Attest only when this run consumes an authoritative plan
+            # (--plan-json) or mints a semantic fragment
+            # (--emit-semantic-fragment) — the two cases that publish
+            # evidence downstream. A bare local `--execute` (neither flag)
+            # stays unattested: it mints no semantic evidence, so there is
+            # nothing for a wrong runtime to falsely certify.
+            require_attestation=(
+                args.plan_json is not None or args.emit_semantic_fragment is not None
+            ),
         )
     except Exception as exc:  # noqa: BLE001 — see _emit_planner_fallback
         # LAW: uncertainty WIDENS. On the ci-plan path an unplannable manifest

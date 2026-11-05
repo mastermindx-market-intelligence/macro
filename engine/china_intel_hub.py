@@ -24,10 +24,12 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 from datetime import date, datetime, timezone
 from pathlib import Path
 
 from lib import config
+from engine import narrative_crossmarket
 
 log = logging.getLogger(__name__)
 
@@ -98,6 +100,39 @@ def _read_json(rel: str) -> dict | list | None:
 
 
 # ── Input loaders ─────────────────────────────────────────────────────────── #
+
+def _unavailable_us_theme_context(reason: str) -> dict:
+    return {
+        "schema": narrative_crossmarket.CHINA_US_CONTEXT_SCHEMA,
+        **narrative_crossmarket.CONTEXT_AUTHORITY,
+        "status": "UNAVAILABLE", "reason": reason, "themes": {}, "sources": {},
+        "validated_lead_lag": False, "historical_availability_proven": False,
+    }
+
+
+def _load_us_theme_context(today: date, *, observed_at: datetime | None = None) -> dict:
+    """Add live foreign/local observations AFTER ranking, never to its inputs.
+
+    The hub's existing `today` uses the host calendar day. A dated rebuild must
+    not acquire current theme context and falsely present it as historical input.
+    `observed_at` is injectable for deterministic tests, not an archive receipt.
+    """
+    try:
+        observed = observed_at if observed_at is not None else datetime.now(timezone.utc)
+        if observed.tzinfo is None or observed.utcoffset() is None:
+            return _unavailable_us_theme_context("INVALID_OBSERVATION_CLOCK")
+        if today != observed.astimezone().date():
+            result = _unavailable_us_theme_context("DATED_BUILD_REQUIRES_ARCHIVED_CONTEXT")
+            result["requested_build_date"] = today.isoformat()
+            result["observed_at_utc"] = observed.astimezone(timezone.utc).isoformat()
+            return result
+        return narrative_crossmarket.compute_china_us_context(
+            config.site_dir(), observed_at=observed,
+        )
+    except Exception as exc:  # noqa: BLE001 — optional context cannot erase the China command
+        log.warning("china_intel_hub: US theme context unavailable (%s)", type(exc).__name__)
+        return _unavailable_us_theme_context("CONSUMER_FAILURE")
+
 
 def _load_news_by_ticker() -> dict:
     """site/chinanews/by_ticker.json → {ticker: [headline_items]}."""
@@ -249,6 +284,357 @@ def _load_special_by_ticker() -> dict:
     except Exception as e:  # noqa: BLE001
         log.debug("china_intel_hub: special by_ticker failed (%s)", e)
     return {}
+
+
+# ── Institutional-visit tape (P1, China Alpha Intelligence) ────────────────── #
+# DESCRIPTIVE ONLY — no score, no rank input (masterplan §11.4 serial firewall).
+# Source: data/china_visits/visits.parquet (collectors/china_visits.py), a
+# store DERIVED from china_filings' own CNInfo stream — see RIGHTS_REGISTRY.md
+# §1/§10 for the rights basis and collectors/china_visits.py for the PIT/
+# coverage-start/health contract this block reads.
+
+_VISIT_SUFFIX_TO_EXCHANGE = {"SZ": "szse", "SS": "sse"}
+_VISIT_STALE_AFTER_DAYS = 4   # mirrors ChinaVisitsAdapter.stale_after_days
+
+
+def _ticker_to_sec_code(ticker: str) -> tuple[str, str] | None:
+    """('000001', 'szse') from '000001.SZ'; None for a non-A-share ticker
+    (e.g. an HK 4/5-digit code) — those are NOT_APPLICABLE to this CNInfo
+    plane, never a false 'no event'. Pure."""
+    if not ticker or "." not in ticker:
+        return None
+    code, _, suf = ticker.upper().rpartition(".")
+    exch = _VISIT_SUFFIX_TO_EXCHANGE.get(suf)
+    if not exch or not code:
+        return None
+    return code, exch
+
+
+
+_CNINFO_STATIC_BASE = "https://static.cninfo.com.cn/"
+_CNINFO_RELATIVE_PATH = re.compile(r"^finalpage/[A-Za-z0-9._/-]+$")
+
+
+def _cninfo_source_url(adjunct_url: str | None) -> str | None:
+    """Return a safe absolute CNInfo PDF URL for the stored relative source path.
+
+    The filing owner stores adjunct_url exactly as CNInfo supplied it and never
+    fetches the body. This reader may expose a user-navigable source reference,
+    but it must not turn arbitrary stored text into an outbound URL. Only the
+    observed CNInfo finalpage/ path family is accepted; absolute URLs,
+    traversal, backslashes and control characters fail closed.
+    """
+    raw = str(adjunct_url or "").strip()
+    if not raw or "://" in raw or "\\" in raw or ".." in raw:
+        return None
+    if any(ord(ch) < 32 for ch in raw):
+        return None
+    rel = raw.lstrip("/")
+    if not _CNINFO_RELATIVE_PATH.fullmatch(rel):
+        return None
+    return _CNINFO_STATIC_BASE + rel
+
+
+def _load_visits_context() -> dict:
+    """One-time load of the whole china_visits plane for this build: rows
+    grouped by sec_code, plus the plane's coverage_start and health record.
+    Degrade-safe — an absent/corrupt store (or the module itself missing)
+    reads as 'no_coverage', never a crash and never a false 'measured_no_event'.
+
+    P1-R3 (durable scoped key-exclusion recovery) additionally returns:
+      exception_codes     — sec_codes carrying >=1 OPEN coverage exception.
+      unscoped_exceptions — count of OPEN exceptions with no usable sec_code
+                             (a malformed row whose company could not be
+                             identified — a PLANE-wide, not company-scoped,
+                             gap).
+      exceptions_readable — False -> the ledger itself could not be read
+                             this build; _visit_block() then fails closed
+                             GLOBALLY (blocks measured_no_event for every
+                             name) rather than trusting an unreadable ledger
+                             to mean "no exceptions".
+    Absent keys (a caller/test building visit_ctx by hand without them) must
+    degrade to the normal empty state — see _visit_block()'s defaults below.
+    """
+    try:
+        from collectors import china_visits as cv
+    except Exception as e:  # noqa: BLE001
+        log.debug("china_intel_hub: collectors.china_visits import failed (%s)", e)
+        # exceptions_readable=False, NOT True: the ledger provably could not
+        # be read on this path (the module that owns it never even
+        # imported) — "I could not look" must never report as "I looked and
+        # it is clean". Harmless TODAY only because coverage_start is also
+        # None here and _visit_block() short-circuits to no_coverage before
+        # it ever reaches the exception logic — but that is safety by
+        # accident, not by contract, and must not depend on staying that way.
+        return {"by_code": {}, "coverage_start": None,
+                "health": {"status": "no_coverage", "detail": str(e)},
+                "exception_codes": set(), "unscoped_exceptions": 0,
+                "exceptions_readable": False}
+    # FIX (correction, 2026-08-22): read_visits_strict(), NOT load_visits().
+    # load_visits() deliberately SWALLOWS a read error and always answers an
+    # EMPTY frame (its own docstring says so — write_visits() is where
+    # strictness lives). A present-but-UNREADABLE visits.parquet would
+    # otherwise be indistinguishable from a genuinely empty one: by_code
+    # stays {}, health.status can still read "ok" from a PRIOR successful
+    # run, coverage_start is set — and _visit_block() walks every A-share
+    # name straight to a false, clean measured_no_event over a tape that
+    # cannot currently be read at all. Product law cuts both ways: "a
+    # malformed key creates a coverage exception, not ... a permanent
+    # all-China outage" — but an UNREADABLE store must not create a clean
+    # all-China absence either.
+    visits_store_unreadable = False
+    try:
+        df = cv.read_visits_strict()
+    except Exception as e:  # noqa: BLE001
+        log.debug("china_intel_hub: china_visits.read_visits_strict() failed (%s)", e)
+        df = None
+    if df is None:
+        visits_store_unreadable = True
+    by_code: dict = {}
+    if df is not None and not df.empty:
+        for row in df.to_dict("records"):
+            code = str(row.get("sec_code") or "").strip()
+            if not code:
+                continue
+            # Plain-word filing-type label, computed ONCE per plane load (not
+            # per-dossier-call) — descriptive only, never routes/scores.
+            try:
+                kind_en, kind_zh = cv.visit_kind_label(row.get("title") or "")
+            except Exception:  # noqa: BLE001
+                kind_en, kind_zh = "investor visit", "机构调研"
+            row = {**row, "kind_en": kind_en, "kind_zh": kind_zh}
+            by_code.setdefault(code, []).append(row)
+    try:
+        coverage_start = cv.read_coverage_start()
+    except Exception:  # noqa: BLE001
+        coverage_start = None
+    try:
+        health = cv.read_health()
+    except Exception:  # noqa: BLE001
+        health = {"status": "no_coverage", "detail": "health read failed"}
+    if visits_store_unreadable:
+        # Override whatever health.json says (it may still read "ok" from a
+        # PRIOR successful run — health.json and the tape it describes are
+        # two different files) — the tape itself cannot be read RIGHT NOW,
+        # so _visit_block()'s EXISTING source_failure branch must fire for
+        # EVERY name, exactly as it already does for an unreadable
+        # china_filings store one plane over.
+        health = {"status": "source_failure",
+                  "detail": "visits.parquet is present but unreadable"}
+
+    # P1-R3: OPEN coverage-exception scoping. A present-but-UNREADABLE
+    # ledger fails CLOSED (exceptions_readable=False), which _visit_block()
+    # then treats as an UNSCOPED, plane-wide condition — never as "no
+    # exceptions". sec_code is normalized with cv.is_unscoped_sec_code()/
+    # cv._fp_norm(), the SAME predicate refresh()'s own open_scoped/
+    # open_unscoped accounting uses, so the two can never diverge on what
+    # counts as scoped (in particular: a NaN-derived sec_code must count as
+    # UNSCOPED, never as a literal company code "nan").
+    exception_codes: set = set()
+    unscoped_exceptions = 0
+    exceptions_readable = True
+    try:
+        exc_df = cv.read_coverage_exceptions_strict()
+    except Exception as e:  # noqa: BLE001
+        log.debug("china_intel_hub: china_visits.read_coverage_exceptions_strict() failed (%s)", e)
+        exc_df = None
+    if exc_df is None:
+        exceptions_readable = False
+    elif not exc_df.empty and "status" in exc_df.columns:
+        open_exc = exc_df[exc_df["status"] == "open"]
+        for code in open_exc.get("sec_code", []):
+            if cv.is_unscoped_sec_code(code):
+                unscoped_exceptions += 1
+            else:
+                exception_codes.add(cv._fp_norm(code))
+
+    return {"by_code": by_code, "coverage_start": coverage_start, "health": health,
+            "exception_codes": exception_codes, "unscoped_exceptions": unscoped_exceptions,
+            "exceptions_readable": exceptions_readable}
+
+
+def _visit_block(ticker: str, visit_ctx: dict) -> dict:
+    """Descriptive visit-tape block for one ticker — recent filings, visitor
+    identity (typed, never guessed), and a first-seen-since-coverage-start
+    flag. Always names its state from the house ten-state taxonomy
+    (masterplan §9.3); NEVER presents a source failure as a quiet tape.
+
+    health.status == "upstream_degraded" (P1-R1: the same-run china_filings
+    refresh this collection's china_visits derivation consumed was itself
+    degraded) never routes into the source_failure branch — the visit tape
+    history is still readable and stays visible. With no rows for this name
+    it reads like a stale refusal instead of a clean "measured_no_event": a
+    degraded upstream proves no absence. Rows present render normally either
+    way — positive evidence from a degraded run is real evidence.
+
+    P1-R3: an OPEN coverage exception (durable, company-scoped memory for "we
+    observed source evidence relevant to this company but could not
+    canonically admit it") suppresses `measured_no_event` PER COMPANY
+    (`scoped = code in exception_codes`) or, when the excluded observation's
+    company could not even be identified, PLANE-WIDE (`unscoped =
+    unscoped_exceptions > 0 or not exceptions_readable` — an unreadable
+    ledger fails closed exactly like an unscoped exception, never like "no
+    exceptions"). This routes to the existing "not_yet_available" state
+    (already in the house ten-state taxonomy, already documented in
+    collectors/china_visits.py) rather than minting a new one. visit_ctx
+    keys absent entirely (a caller building the dict by hand without them)
+    degrade to the pre-P1-R3 behavior — no scoping, no coverage_exception.
+
+    NO-ROWS PRECEDENCE (FIX, correction 2026-08-22): the scoped/unscoped
+    coverage-exception branch is evaluated BEFORE the generic
+    "upstream_degraded" branch, not after — it is strictly MORE SPECIFIC.
+    "A visit filing was observed for this company but could not be read"
+    is actionable; "upstream was degraded" is the generic fallback, and it
+    is also FALSE ON THE FACTS for the ledger-present-but-unreadable cause
+    (nothing upstream degraded — a SIDECAR ledger was unreadable, transport
+    was fine). Both branches block measured_no_event identically, so no
+    absence authority is gained or lost by this ordering — only which
+    sentence renders. Final order for the no-rows branch: source_failure
+    (checked earlier, outside this block) -> no coverage_start (checked
+    earlier) -> stale -> scoped/unscoped coverage exception ->
+    upstream_degraded -> measured_no_event. Without this ordering, the
+    commission's four-category distinguishability requirement (transport
+    degraded / scoped unresolved / unscoped unresolved / clean measured
+    absence) would collapse two of the four into one whenever a same-run
+    upstream_degraded status AND an open exception coexist.
+    """
+    try:
+        parsed = _ticker_to_sec_code(ticker)
+        if parsed is None:
+            return {"state": "not_applicable",
+                    "detail": "not a CNInfo A-share (SSE/SZSE) ticker", "recent": []}
+        code, _exch = parsed
+        coverage_start = visit_ctx.get("coverage_start")
+        health = visit_ctx.get("health") or {}
+        status = health.get("status")
+
+        # P1-R3 scoping inputs. Absent keys (pre-P1-R3 visit_ctx shape, still
+        # built by several existing tests/callers) degrade to "no scoping" —
+        # exception_codes empty, unscoped_exceptions 0, exceptions_readable
+        # True — never to a false global block.
+        exception_codes = visit_ctx.get("exception_codes") or set()
+        unscoped_exceptions = visit_ctx.get("unscoped_exceptions") or 0
+        exceptions_readable = visit_ctx.get("exceptions_readable", True)
+        if exceptions_readable is None:
+            exceptions_readable = True
+        scoped = code in exception_codes
+        unscoped = unscoped_exceptions > 0 or not exceptions_readable
+
+        if status == "source_failure":
+            return {"state": "source_failure",
+                    "detail": health.get("detail") or "visit-tape source unreadable "
+                              "on the last collection run", "recent": []}
+        if not coverage_start:
+            return {"state": "no_coverage",
+                    "detail": "visit-tape plane has not completed its first "
+                              "collection run yet", "recent": []}
+
+        stale = False
+        stale_days = None
+        last_success = health.get("last_success_utc")
+        if last_success:
+            try:
+                stale_days = (datetime.now(timezone.utc)
+                              - datetime.fromisoformat(last_success)).days
+                stale = stale_days > _VISIT_STALE_AFTER_DAYS
+            except Exception:  # noqa: BLE001
+                stale = False
+                stale_days = None
+
+        rows = (visit_ctx.get("by_code") or {}).get(code) or []
+        if not rows:
+            if stale:
+                return {"state": "stale", "stale_days": stale_days,
+                        "detail": "visit-tape source has not refreshed recently — "
+                                  "absence of visits cannot be confirmed right now",
+                        "recent": [], "coverage_start": coverage_start}
+            # P1-R3 FIX (correction, 2026-08-22): the coverage-exception
+            # branch is evaluated BEFORE the generic upstream_degraded
+            # branch, not after — it is strictly MORE SPECIFIC. "A visit
+            # filing was observed for this company but could not be read"
+            # tells the reader something actionable; "upstream was
+            # degraded" is the generic fallback and is also FALSE ON THE
+            # FACTS for the ledger-unreadable cause (nothing upstream
+            # degraded — a SIDECAR ledger was unreadable, the source
+            # transport was fine). Both branches block measured_no_event
+            # identically, so no absence authority is gained or lost by
+            # this ordering — only which sentence renders. The commission's
+            # four-category distinguishability requirement (transport
+            # degraded / scoped unresolved / unscoped unresolved / clean
+            # measured absence) would otherwise collapse two of the four
+            # into one whenever a same-run cause AND an exception coexist.
+            if scoped or unscoped:
+                exc_scope = "company" if scoped else "plane"
+                return {"state": "not_yet_available",
+                        "detail": (
+                            "a visit filing was observed for this company but could "
+                            "not be read yet" if scoped else
+                            "some visit filings could not be read this cycle and the "
+                            "affected companies are unknown"
+                        ),
+                        "recent": [], "coverage_start": coverage_start,
+                        "coverage_exception": {
+                            "scope": exc_scope,
+                            # scoped: we only track SET membership (>= 1),
+                            # never a fabricated per-code count. unscoped:
+                            # the exact plane-wide count when known, else 0
+                            # (the state name — not this count — carries the
+                            # "we don't know" signal).
+                            "open": 1 if scoped else max(unscoped_exceptions, 0),
+                        }}
+            if status == "upstream_degraded":
+                return {"state": "stale", "stale_days": stale_days,
+                        "detail": "visit-tape upstream was degraded on the last "
+                                  "collection run — absence of visits cannot be "
+                                  "confirmed right now",
+                        "recent": [], "coverage_start": coverage_start}
+            return {"state": "measured_no_event",
+                    "detail": "no institutional-visit filing observed for this name "
+                              "since coverage start", "recent": [],
+                    "coverage_start": coverage_start}
+
+        rows_sorted = sorted(rows, key=lambda r: r.get("source_published_at") or "",
+                              reverse=True)
+        earliest_ts = min((r.get("source_published_at") or "" for r in rows), default="")
+        recent = []
+        for r in rows_sorted[:5]:
+            recent.append({
+                "title": r.get("title"),
+                "kind_en": r.get("kind_en") or "investor visit",
+                "kind_zh": r.get("kind_zh") or "机构调研",
+                "announcement_id": r.get("announcement_id"),
+                "source_published_at": r.get("source_published_at"),
+                "system_recorded_at": r.get("system_recorded_at"),
+                "source_url": _cninfo_source_url(r.get("adjunct_url")),
+                "visitor_raw": r.get("visitor_raw"),
+                "visitor_class": r.get("visitor_class"),
+                "ontology_version": r.get("ontology_version"),
+                "adjunct_url": r.get("adjunct_url"),
+                # Never "first ever" — we did not observe this company before
+                # coverage_start, so the strongest honest claim is "since".
+                "first_seen_since_coverage_start":
+                    bool(r.get("source_published_at") == earliest_ts and earliest_ts),
+            })
+        result = {
+            "state": "stale" if stale else "ok",
+            "stale_days": stale_days if stale else None,
+            "detail": ("visit-tape source has not refreshed recently" if stale else None),
+            "recent": recent,
+            "n_total": len(rows),
+            "coverage_start": coverage_start,
+        }
+        # ROWS PRESENT (either scope): positive evidence is never hidden —
+        # completeness is simply not asserted alongside it.
+        if scoped or unscoped:
+            result["coverage_exception"] = {
+                "scope": "company" if scoped else "plane",
+                "open": 1 if scoped else max(unscoped_exceptions, 0),
+            }
+        return result
+    except Exception as e:  # noqa: BLE001 — a visit-block failure must never sink a dossier
+        log.debug("china_intel_hub: visit block failed for %s (%s)", ticker, e)
+        return {"state": "source_failure", "detail": f"visit block error: {e}",
+                "recent": []}
 
 
 # ── Price trajectories ────────────────────────────────────────────────────── #
@@ -605,12 +991,114 @@ def _read_for(stage: str, lean: int, dirs: dict, edge_score: int, gap: int,
             f"温和偏积极（剩余边际约 {pct}%）。")
 
 
+# ── Bounded company evidence packet (CIE-04/05/06) ─────────────────────────── #
+
+_COMPANY_EVIDENCE_SCHEMA = "china_intel.company_evidence.v1"
+
+
+def _company_evidence_block(
+    visits: dict | None,
+    traj: dict | None,
+    concern_en: str | None,
+    concern_zh: str | None,
+) -> dict:
+    """Compose owner-native company evidence without creating a new authority.
+
+    This is a read-time packet inside the existing China Hub command artifact,
+    not a persistent evidence store. It preserves the visit plane's exact typed
+    coverage state, source/publication/recording clocks, existing market
+    context, and current Hub risk/contradiction text. It never scores, ranks,
+    gates, sizes, mutates an owner store, or performs a network/model call.
+    """
+    visits = visits or {"state": "no_coverage", "recent": []}
+    traj = traj or {}
+    state = str(visits.get("state") or "no_coverage")
+    recent = list(visits.get("recent") or [])[:5]
+
+    evidence: list[dict] = []
+    unknowns: list[str] = []
+    for row in recent:
+        visitor_class = row.get("visitor_class")
+        visitor_unknown = visitor_class in (None, "", "not_yet_available", "unresolved")
+        if visitor_unknown:
+            unknowns.append("visitor_identity_not_available")
+        evidence.append({
+            "kind": "institutional_visit_filing",
+            "source": "CNInfo",
+            "source_id": row.get("announcement_id"),
+            "source_url": row.get("source_url"),
+            "title": row.get("title"),
+            "source_published_at": row.get("source_published_at"),
+            "system_recorded_at": row.get("system_recorded_at"),
+            "visitor_identity_state": "unknown" if visitor_unknown else "resolved",
+        })
+
+    state_unknown = {
+        "no_coverage": "visit_coverage_not_started",
+        "stale": "visit_source_stale",
+        "source_failure": "visit_source_unavailable",
+        "not_yet_available": "visit_observation_incomplete",
+    }.get(state)
+    if state_unknown:
+        unknowns.append(state_unknown)
+    if visits.get("coverage_exception"):
+        unknowns.append("visit_coverage_incomplete")
+
+    latest = evidence[0] if evidence else {}
+    previous = evidence[1] if len(evidence) > 1 else {}
+    market_context = {
+        "ret_20d": traj.get("ret_20d"),
+        "rs_20d": traj.get("rs_20d"),
+        "rs_60d": traj.get("rs_60d"),
+        "off_high_pct": traj.get("off_high_pct"),
+        "rolling_over": bool(traj.get("rolling_over")) if traj else None,
+    }
+    if not traj:
+        unknowns.append("market_context_unavailable")
+
+    contradictions = []
+    if concern_en:
+        contradictions.append({
+            "basis": "existing_hub_risk_context",
+            "detail_en": concern_en,
+            "detail_zh": concern_zh or concern_en,
+        })
+
+    return {
+        "schema": _COMPANY_EVIDENCE_SCHEMA,
+        "is_context_only": True,
+        "authority": {
+            "identity": "existing_hub_ticker",
+            "ranking": "none",
+            "prophet": "none",
+            "trade": "none",
+        },
+        "source_state": state,
+        "coverage_start": visits.get("coverage_start"),
+        "evidence": evidence,
+        "change": {
+            "basis": "observed_visit_filing_sequence",
+            "latest_source_published_at": latest.get("source_published_at"),
+            "previous_source_published_at": previous.get("source_published_at"),
+        },
+        "clocks": {
+            "coverage_start": visits.get("coverage_start"),
+            "latest_source_published_at": latest.get("source_published_at"),
+            "latest_system_recorded_at": latest.get("system_recorded_at"),
+        },
+        "market_context": market_context,
+        "contradictions": contradictions,
+        "unknowns": sorted(set(unknowns)),
+    }
+
+
 # ── Per-ticker dossier ────────────────────────────────────────────────────── #
 
 def _dossier(ticker: str, altdata_row: dict | None, radar_row: dict | None,
              news_items: list | None, board_row: dict | None,
              special_flags: dict | None, traj: dict | None,
-             board_member: bool, gov: dict | None = None) -> dict:
+             board_member: bool, gov: dict | None = None,
+             visit_ctx: dict | None = None) -> dict:
     """Build the per-ticker command dossier."""
     dirs = _dirs(altdata_row, radar_row, news_items, board_row)
     gap_rec = _leading_gap(dirs)
@@ -661,6 +1149,15 @@ def _dossier(ticker: str, altdata_row: dict | None, radar_row: dict | None,
 
     read, read_zh = _read_for(stage, lean, dirs, edge_rec["score"], gap_rec["gap"], altdata_row)
 
+    # CIE-04/05/06 owner-native context packet. Compute after every scoring
+    # input is already fixed so this packet cannot feed the rank calculation.
+    visits = _visit_block(
+        ticker,
+        visit_ctx or {"by_code": {}, "coverage_start": None,
+                      "health": {"status": "no_coverage"}},
+    )
+    company_evidence = _company_evidence_block(visits, traj, fals, fals_zh)
+
     # desk directions matrix for display (present=True/False + direction)
     desk_matrix = {
         "news":    {"present": news_items is not None,   "dir": dirs["news"]},
@@ -707,6 +1204,13 @@ def _dossier(ticker: str, altdata_row: dict | None, radar_row: dict | None,
         "directions": dirs,
         "desk_matrix": desk_matrix,
         "off_desk": not board_member,
+        # Descriptive only — NEVER a desk, NEVER a score/rank input (masterplan
+        # §11.4 serial firewall). visit_ctx absent (e.g. a test that does not
+        # pass it) degrades to the plane's honest no_coverage state.
+        "visits": visits,
+        # CIE-04/05/06: bounded read-time evidence composition. It carries no
+        # scoring/ranking/Prophet/trade authority and creates no owner store.
+        "company_evidence": company_evidence,
         "traj": {
             "ret_20d": traj.get("ret_20d"),
             "rs_20d": traj.get("rs_20d"),
@@ -1232,6 +1736,8 @@ def _empty(today: date) -> dict:
         "as_of": today.isoformat(),
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "command": [], "discovery": [], "n_universe": 0,
+        "us_theme_context": _unavailable_us_theme_context("HUB_BUILD_FAILED"),
+        "visits_coverage_start": None,
         "desks": {}, "counts": {}, "disclaimer": DISCLAIMER,
     }
 
@@ -1262,6 +1768,7 @@ def _build_inner(today: date, top: int) -> dict:
 
     # ── 3. Load price data once ─────────────────────────────────────────── #
     closes, bench = _load_closes_and_benchmark()
+    visit_ctx = _load_visits_context()
 
     # ── 4. Per-ticker dossiers ──────────────────────────────────────────── #
     # SIGNAL GOVERNOR (CN) — per-feeder trust map (de-escalation only). Absent/corrupt ⇒ {}
@@ -1281,7 +1788,7 @@ def _build_inner(today: date, top: int) -> dict:
         special_flags = special_bt.get(ticker)
         traj = _price_trajectory(ticker, closes, bench)
         d = _dossier(ticker, altdata_row, radar_row, news_items, board_row,
-                     special_flags, traj, board_member, gov=gov)
+                     special_flags, traj, board_member, gov=gov, visit_ctx=visit_ctx)
 
         # ── BLOCKER 3b: price-plane missing → veto_blind, honest opportunity ── #
         veto_blind = traj is None  # No price data from either source
@@ -1370,6 +1877,12 @@ def _build_inner(today: date, top: int) -> dict:
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "n_universe": len(all_dossiers),
         "command": command,
+        # Distinct regional theme observations; never an input to dossiers or ranking.
+        "us_theme_context": _load_us_theme_context(today),
+        # Plane-level fact (P1, China Alpha Intelligence) — the visit tape's own
+        # coverage_start, exposed ONCE here rather than re-derived per row by a
+        # template scanning every dossier's nested visits.coverage_start.
+        "visits_coverage_start": visit_ctx.get("coverage_start"),
         "discovery": discovery_queue,
         "analogs": analogs,
         "desks": _desks_summary(command),

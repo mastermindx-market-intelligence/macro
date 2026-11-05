@@ -335,6 +335,128 @@ def test_legacy_status_transitions():
     assert tm._status_llm(opened, heat_now=0.68, phys_now=True, n_now=2) == "WEAKENING"   # lost a surface
 
 
+# ── LLM BROKEN kill-condition attribution (W16-B) ────────────────────────────
+
+def test_llm_broken_reasons_each_condition_alone():
+    """Each kill condition can fire alone, and alone it is exactly the one reported."""
+    cases = [
+        ({"heat_at_open": 0.70, "physical_at_open": True, "n_surfaces_at_open": 3},
+         0.68, False, 3, ["physical_lost"]),
+        ({"heat_at_open": 0.70, "physical_at_open": False, "n_surfaces_at_open": 3},
+         0.69, True, 1, ["below_quorum"]),
+        ({"heat_at_open": 0.70, "physical_at_open": False, "n_surfaces_at_open": 3},
+         0.40, True, 3, ["heat_drop"]),
+    ]
+    for opened, heat_now, phys_now, n_now, expected in cases:
+        reasons = tm._llm_broken_reasons(opened, heat_now, phys_now, n_now)
+        assert reasons == expected, (opened, heat_now, phys_now, n_now, reasons)
+        assert tm._status_llm(opened, heat_now, phys_now, n_now) == "BROKEN"
+
+
+def test_llm_broken_reasons_order_and_combination():
+    """All three at once report in the fixed order; a vanished theme skips physical_lost."""
+    opened = {"heat_at_open": 0.70, "physical_at_open": True, "n_surfaces_at_open": 3}
+    assert tm._llm_broken_reasons(opened, 0.10, False, 0) == [
+        "physical_lost", "below_quorum", "heat_drop"]
+
+    gone = {"heat_at_open": 0.5, "physical_at_open": False, "n_surfaces_at_open": 3}
+    assert tm._llm_broken_reasons(gone, 0.0, False, 0) == ["below_quorum", "heat_drop"]
+
+
+def test_llm_broken_reasons_boundaries():
+    """drop >= BROKEN_DROP keeps equality; n_now == MIN_SURFACES is NOT below quorum."""
+    opened = {"heat_at_open": 0.5, "physical_at_open": False, "n_surfaces_at_open": 2}
+    assert "heat_drop" in tm._llm_broken_reasons(opened, 0.25, True, 2)
+
+    assert tm._llm_broken_reasons(opened, 0.5, True, tm.MIN_SURFACES) == []
+    assert tm._status_llm(opened, 0.5, True, tm.MIN_SURFACES) != "BROKEN"
+
+    assert "physical_lost" not in tm._llm_broken_reasons(opened, 0.5, False, 2)
+
+
+def test_llm_broken_reasons_empty_when_not_broken():
+    """An INTACT input and a WEAKENING input both have zero BROKEN kill conditions."""
+    opened = {"heat_at_open": 0.70, "physical_at_open": True, "n_surfaces_at_open": 3}
+    assert tm._status_llm(opened, 0.68, True, 3) == "INTACT"
+    assert tm._llm_broken_reasons(opened, 0.68, True, 3) == []
+    assert tm._status_llm(opened, 0.55, True, 3) == "WEAKENING"
+    assert tm._llm_broken_reasons(opened, 0.55, True, 3) == []
+
+
+def test_llm_broken_reasons_agree_with_status_grid():
+    """Each reason fires exactly when its own condition holds (an oracle independent of
+    _status_llm, which now delegates), and reasons are non-empty exactly on BROKEN."""
+    for h0 in (None, 0.0, 0.2, 0.5):
+        for heat_now in (None, 0.0, 0.25, 0.5):
+            for p0 in (None, False, True, 0, 1, "yes"):
+                for phys_now in (False, True):
+                    for n_now in (0, 1, 2, 3):
+                        opened = {"heat_at_open": h0, "physical_at_open": p0,
+                                  "n_surfaces_at_open": 3}
+                        got = tm._llm_broken_reasons(opened, heat_now, phys_now, n_now)
+                        broken = (tm._status_llm(opened, heat_now, phys_now, n_now)
+                                  == "BROKEN")
+                        assert bool(got) == broken, (h0, heat_now, p0, phys_now, n_now,
+                                                     got, broken)
+                        drop = (h0 or 0.0) - (heat_now or 0.0)
+                        case = (h0, heat_now, p0, phys_now, n_now, got)
+                        assert ("physical_lost" in got) == bool(p0 and not phys_now), case
+                        assert ("below_quorum" in got) == (n_now < tm.MIN_SURFACES), case
+                        assert ("heat_drop" in got) == (drop >= tm.BROKEN_DROP), case
+
+
+def test_llm_rows_carry_broken_reasons(monkeypatch, tmp_path):
+    """Standalone LLM rows carry broken_reasons; a folded row carries llm_broken_reasons."""
+    _patch_paths(monkeypatch, tmp_path)
+    _write_llm_ledger(tmp_path, [
+        {"theme": "solar", "asof": "2026-06-01",
+         "heat_at_open": 0.70, "physical_at_open": True, "n_surfaces_at_open": 3},
+        {"theme": "wind", "asof": "2026-06-01",
+         "heat_at_open": 0.70, "physical_at_open": True, "n_surfaces_at_open": 3},
+    ])
+    conv = {"asof": "2026-07-02", "ranked": [
+        {"theme": "solar", "heat": 0.40, "physical_confirmed": True, "n_signals": 3},
+        {"theme": "wind", "heat": 0.69, "physical_confirmed": True, "n_signals": 3},
+    ]}
+
+    out = tm.compute_thesis_monitor(conv, write_state=False)
+    assert out is not None
+    rows = {m["theme"]: m for m in out["monitored"]}
+    assert rows["solar"]["status"] == "BROKEN"
+    assert rows["solar"]["broken_reasons"] == ["heat_drop"]
+    assert rows["wind"]["status"] == "INTACT"
+    assert rows["wind"]["broken_reasons"] == []
+
+    # B3 fold case (setup as in test_b3_same_theme_both_producers_counted_once):
+    # LLM thesis lands on a deterministic row, so the reason key is namespaced.
+    _write_det_ledger(tmp_path, [
+        {"theme": "ag_fertilizer", "opened": "2026-06-01",
+         "source": "deterministic", "stage_at_open": "PRECIPICE (text)",
+         "kill_criteria": [
+             {"kind": "stage_regressed_to_watch",
+              "detail": "cascade stage no longer thesis-stage"},
+         ]},
+    ])
+    _write_log(tmp_path, [
+        {"theme": "ag_fertilizer", "asof": "2026-07-02",
+         "stage": "WATCH", "bottleneck_band": None, "revision_breadth": 0.02},
+    ])
+    _write_llm_ledger(tmp_path, [
+        {"theme": "ag_fertilizer", "asof": "2026-06-01",
+         "heat_at_open": 0.80, "physical_at_open": True, "n_surfaces_at_open": 3},
+    ])
+
+    out2 = tm.compute_thesis_monitor(None, write_state=False)
+    assert out2 is not None
+    folded = [m for m in out2["monitored"] if m["theme"] == "ag_fertilizer"]
+    assert len(folded) == 1
+    assert folded[0]["source"] == "deterministic"
+    assert folded[0]["llm_status"] == "BROKEN"
+    assert folded[0]["llm_broken_reasons"] == [
+        "physical_lost", "below_quorum", "heat_drop"]
+    assert "broken_reasons" not in folded[0]
+
+
 # ── N4 new regression tests ──────────────────────────────────────────────────
 
 # (a) two REAL builds same asof with write_state=True → counter does NOT double-increment

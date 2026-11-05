@@ -172,7 +172,7 @@ So the sweep is now BUDGET-AWARE, in three places. It preflights `GET
 /rate_limit` (which does not itself count against the core budget) and DEFERS —
 exit 0 with a notice, never a red run — when the remaining budget cannot fund a
 useful pass. It sizes the pull-request window from the live core limit (25 at the
-historical 1,000/hour limit, up to 100 on Enterprise), in a rotating order that no
+historical 1,000/hour limit, up to 128 on Enterprise), in a rotating order that no
 pull request can be starved out of, and it says which ones it deferred. And it
 re-reads the budget as it goes, stopping cleanly rather than dying half-way
 through on a 403. A deferred sweep merges strictly FEWER pull requests than a
@@ -243,6 +243,7 @@ import base64
 import datetime as dt
 import io
 import json
+import math
 import os
 import re
 import secrets
@@ -345,35 +346,42 @@ _LAST_INTEGRATION_BASELINE_SHA = ""
 # pull request. The Enterprise transfer raised this repository's live limit to
 # 15,000/hour, but the old fixed cap kept deferring a 29-pull backlog with 14,904
 # calls still available (run 31536402658). Scale from the proven 25/1,000 ratio,
-# but stop at the pull-list API's 100-item page. If the quota cannot be read, the
-# known-safe 25 remains the fallback.
+# but retain a bounded 128-PR evaluation ceiling: paginated discovery already
+# spans the full backlog independently of this cap. If quota cannot be read,
+# the known-safe 25 remains the fallback.
 REFERENCE_CORE_LIMIT = 1_000
 FALLBACK_PULL_CAP = 25
-MAX_PULL_CAP = 100
+MAX_PULL_CAP = 128
 # Fixed overhead and worst-case marginal cost used to shrink the window when the
 # live bucket is partly spent. These are deliberately pessimistic: the merge writes
 # normally charge MERGE_TOKEN, not READ_TOKEN, but counting them here makes an
 # admitted window affordable even on the fallback token.
+# Extra commit-file pagination reads shared by every PR and commit in one sweep.
+# Exhaustion keeps the affected inventory incomplete; it never clears a proof.
+COMMIT_FILE_PAGE_READ_CAP = 100
 FULL_SWEEP_FIXED_REQUESTS = 87
-MAX_REQUESTS_PER_PULL = 19
-# A 25-pull reference pass now needs 87 fixed + 25 x up-to-19 + refresh headroom =
-# 542 in its pessimistic shape, so the floor funds useful work while preserving
+AUTHORITY_RUN_LOOKUP_CAP = 8
+MAX_REQUESTS_PER_PULL = 19 + AUTHORITY_RUN_LOOKUP_CAP
+# A 25-pull reference pass now models 87 fixed + 25 x up-to-27 + 8 refresh
+# attempts = 770 calls. The floor retains the reference 90-percent bound while
 # room for other lanes in the ordinary cheaper shape. Larger buckets do
 # not need a proportionally larger dead zone: `pull_cap` shrinks to what the
 # remaining requests can actually afford.
-RATE_LIMIT_FLOOR = 600
+RATE_LIMIT_FLOOR = 700
 # A mark-only failure wake-up costs ~4-8 calls and protects a correctness marker,
 # so it has a separate small floor instead of inheriting the full-sweep floor.
 MARK_ONLY_RATE_LIMIT_FLOOR = 20
 # Mid-sweep reserve. It covers the in-flight pull request's remaining reads and
 # writes plus the calls spendable between two budget polls, so the stop is clean
 # rather than a 403 half-way through.
-RATE_LIMIT_RESERVE = 120
-# Poll `GET /rate_limit` every N evaluated pull requests rather than every one. It
-# costs no core budget but it is still a round trip; at <=18 calls per pull request
-# (proof identity, live compare, and lease bookkeeping included) the reserve above
-# covers one worst-case pull while the fixed preflight and live cap bound the pass.
+# Fund the entire shared pagination allowance even if one PR spends it between
+# rate-limit polls. pull_cap_for_budget subtracts this reserve at admission too.
+# Poll every five evaluated PRs. Native authority supersession may add eight
+# reads to each; fund that entire interval without consuming the original slack.
 BUDGET_RECHECK_EVERY = 5
+RATE_LIMIT_RESERVE = (
+    120 + BUDGET_RECHECK_EVERY * AUTHORITY_RUN_LOOKUP_CAP + COMMIT_FILE_PAGE_READ_CAP
+)
 # Each `update-branch` is a write AND a fresh CI run on a saturated pool (36-91
 # minutes, 8 self-hosted runners). The base-inherited-red path makes most of a red
 # backlog eligible at once — measured 84 of 93 armed pull requests — so uncapped,
@@ -456,6 +464,12 @@ COMMIT_FILES_TRUNCATED_AT = 300
 # we cannot fully see, and an UNDER-read footprint under-detects, so it is re-proven.
 PR_FILE_PAGE_CAP = 3
 OPEN_PULL_PAGE_CAP = 10
+# `/issues/{n}/comments` pages, 100 each, for the recorded-hold guard below. A pull
+# request carrying more than this many comments is not fully readable, and an
+# under-read comment inventory could hide either a HOLD or its HOLD-RELEASED — so
+# `fetch_issue_comments` fails closed (returns None) past this cap, exactly like
+# `_semantic_pull_paths` does for an oversized files inventory.
+HOLD_COMMENT_PAGE_CAP = 5
 
 
 def _annotate(level: str, title: str, message: str) -> None:
@@ -648,6 +662,10 @@ def is_spurious_check(name: str) -> bool:
 #: ``ci-authority/main`` stays binding. Do not widen this to the active
 #: context, and do not fold it into :func:`is_spurious_check`.
 CI_AUTHORITY_INACTIVE_CONTEXT = "ci-authority/codex/merge-queue-pilot"
+# Vercel is not part of the repository-owned proof contract. The connected legacy
+# project currently posts a failing status for every commit when its build-rate
+# quota is exhausted; that external quota state must not be attributed to PR code.
+VERCEL_STATUS_CONTEXT = "Vercel"
 
 
 def is_non_binding_check(name: str, *, base_ref: str = "main") -> bool:
@@ -667,11 +685,12 @@ def is_non_binding_check(name: str, *, base_ref: str = "main") -> bool:
     Call this from a gate; do not re-spell the inactive literal at the call
     site — that is how ``decide_verdict`` and ``failing_check_names`` drifted.
     """
-    if is_spurious_check(str(name or "")):
+    check = str(name or "")
+    if is_spurious_check(check) or check == VERCEL_STATUS_CONTEXT:
         return True
     return (
         str(base_ref or "main") == "main"
-        and str(name or "") == CI_AUTHORITY_INACTIVE_CONTEXT
+        and check == CI_AUTHORITY_INACTIVE_CONTEXT
     )
 
 
@@ -996,6 +1015,154 @@ def decide_verdict(runs: list[dict[str, Any]]) -> tuple[str, list[str]]:
     return "clean", []
 
 
+def _authority_workflow_binding(
+    repo: str, pull: dict[str, Any], check: dict[str, Any], run: dict[str, Any]
+) -> tuple[tuple[Any, ...], dt.datetime] | None:
+    """Authenticate the workload, not merely a same-name Actions check."""
+    head = pull.get("head") or {}
+    base = pull.get("base") or {}
+    if not isinstance(head, dict) or not isinstance(base, dict):
+        return None
+    association = run.get("pull_requests")
+    if not isinstance(association, list) or len(association) != 1:
+        return None
+    associated = association[0]
+    if not isinstance(associated, dict):
+        return None
+    nodes = [
+        head, base, head.get("repo"), base.get("repo"),
+        run.get("repository"), run.get("head_repository"),
+        associated.get("head"), associated.get("base"), check.get("check_suite"),
+    ]
+    if not all(isinstance(node, dict) for node in nodes):
+        return None
+    head_repo, base_repo = head["repo"], base["repo"]
+    event_head, event_base = associated["head"], associated["base"]
+    if not all(isinstance(node.get("repo"), dict) for node in (event_head, event_base)):
+        return None
+    ids = [
+        pull.get("number"), check.get("id"), check["check_suite"].get("id"),
+        run.get("workflow_id"), run.get("id"), head_repo.get("id"), base_repo.get("id"),
+    ]
+    if any(type(value) is not int or value <= 0 for value in ids):
+        return None
+    head_sha = head.get("sha")
+    base_sha = event_base.get("sha")
+    created_text = run.get("created_at")
+    # Unlike baseline age calculations, supersession cannot invent a missing zone.
+    if not isinstance(created_text, str) or not re.fullmatch(
+        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})",
+        created_text,
+    ):
+        return None
+    created = _parse_dt(created_text)
+    if (
+        not isinstance(head_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", head_sha)
+        or not isinstance(base_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", base_sha)
+        or created is None
+        or run.get("status") != "completed"
+        or run.get("conclusion") != check.get("conclusion")
+        or run.get("path") != ".github/workflows/ci-authority.yml"
+        or run.get("event") != "pull_request_target"
+        or run.get("head_sha") != head_sha
+        or run.get("check_suite_id") != check["check_suite"]["id"]
+        or associated.get("number") != pull["number"]
+        or associated.get("url") != f"{GITHUB_API}/repos/{repo}/pulls/{pull['number']}"
+        or event_head.get("sha") != head_sha
+        or event_head.get("ref") != head.get("ref")
+        or event_base.get("ref") != base.get("ref")
+        or base_repo.get("full_name") != repo
+        or run["repository"].get("id") != base_repo["id"]
+        or run["repository"].get("full_name") != repo
+        or run["head_repository"].get("id") != head_repo["id"]
+        or run["head_repository"].get("full_name") != head_repo.get("full_name")
+        or event_head["repo"].get("id") != head_repo["id"]
+        or event_head["repo"].get("url") != f"{GITHUB_API}/repos/{head_repo.get('full_name')}"
+        or event_base["repo"].get("id") != base_repo["id"]
+        or event_base["repo"].get("url") != f"{GITHUB_API}/repos/{repo}"
+    ):
+        return None
+    # Matching event bases is separate from the existing current-main freshness gate.
+    return (run["workflow_id"], head_repo["id"], base_repo["id"], base["ref"], base_sha), created
+
+
+def authority_effective_checks(
+    repo: str, pull: dict[str, Any], runs: list[dict[str, Any]], token: str
+) -> list[dict[str, Any]]:
+    """Drop only an older cancelled native authority job replaced by a success.
+
+    The workflow cancels older pull_request_target events in its concurrency
+    group. GitHub still returns their checks beside the replacement suite even
+    with filter=latest. Keep raw evidence intact and require native run identity
+    before excluding anything from the judgment set. Failures and newer/pending
+    cancellations are never made nonbinding by a same-name success.
+    """
+    head_sha = (pull.get("head") or {}).get("sha")
+    candidates: list[tuple[dict[str, Any], int]] = []
+    for check in runs:
+        if (
+            check.get("name") != "ci-authority"
+            or check.get("status") != "completed"
+            or check.get("conclusion") not in {"cancelled", "success"}
+            or not isinstance(check.get("app"), dict)
+            or check["app"].get("id") != 15368
+            or check.get("head_sha") != head_sha
+            or type(check.get("id")) is not int
+        ):
+            continue
+        match = re.fullmatch(
+            rf"https://github\.com/{re.escape(repo)}/actions/runs/([1-9][0-9]*)/job/{check['id']}",
+            str(check.get("details_url") or ""),
+        )
+        if match:
+            candidates.append((check, int(match.group(1))))
+    if {check["conclusion"] for check, _ in candidates} != {"cancelled", "success"}:
+        return runs
+    # No unbounded historical scan. An unusually crowded head remains incomplete.
+    run_ids = {run_id for _, run_id in candidates}
+    if len(run_ids) > AUTHORITY_RUN_LOOKUP_CAP:
+        return runs
+    native_runs: dict[int, dict[str, Any]] = {}
+    try:
+        for run_id in sorted(run_ids):
+            status, native = _request(
+                "GET", f"{GITHUB_API}/repos/{repo}/actions/runs/{run_id}", token
+            )
+            if status >= 400 or not isinstance(native, dict):
+                raise _read_failed(status, native, "authority supersession lookup failed")
+            if type(native.get("id")) is not int or native["id"] != run_id:
+                return runs
+            native_runs[run_id] = native
+    except RateLimited:
+        raise
+    except (OSError, ValueError, RuntimeError) as exc:
+        _annotate("warning", "authority supersession", f"PR #{pull.get('number')}: {exc}")
+        return runs
+    bound = [
+        (check, run_id, _authority_workflow_binding(repo, pull, check, native_runs[run_id]))
+        for check, run_id in candidates
+    ]
+    superseded = {
+        check["id"]
+        for check, run_id, identity in bound
+        if check["conclusion"] == "cancelled" and identity is not None
+        and any(
+            other["conclusion"] == "success" and other_id != run_id
+            and other_identity is not None and identity[0] == other_identity[0]
+            and identity[1] < other_identity[1]
+            for other, other_id, other_identity in bound
+        )
+    }
+    if superseded:
+        if any(sum(check.get("id") == ident for check in runs) != 1 for ident in superseded):
+            return runs
+        print(
+            f"PR #{pull.get('number')}: later successful native authority run "
+            f"supersedes cancelled check(s) {sorted(superseded)}.", flush=True,
+        )
+    return [check for check in runs if check.get("id") not in superseded]
+
+
 def head_check_runs(repo: str, head_sha: str, token: str) -> list[dict[str, Any]]:
     """Every check run on ``head_sha``, paginated to the end (fail-closed).
 
@@ -1277,26 +1444,70 @@ def _semantic_evidence_for_run(
         )
     source = _semantic_json_from_archive(_download_semantic_artifact(download_url, token))
     expected_tree = head_sha if role == "main" else None
+    # PR-head evidence seals the tested merge commit's FIRST PARENT as
+    # ``base_sha``; the advertised ``pull_requests[].base`` is GitHub's lazily
+    # refreshed PR-object snapshot and lags it whenever main moves between PR
+    # creation and the run (PR #8844, 2026-10-11).  The exact identity is the
+    # head; the base is resolved below by ancestry, never by byte equality.
     loaded = semantic_proof.load_semantic_evidence(
         source,
         advertised=True,
         expected_run_id=run_id,
         expected_subject_head_sha=head_sha,
         expected_tested_tree_sha=expected_tree,
-        expected_base_sha=bound_base_sha or None,
+        expected_base_sha=None if role == "pr_head" else (bound_base_sha or None),
         expected_event=expected_event,
         expected_role=role,
         expected_workflow="ci",
     )
     if role == "pr_head":
+        proof_base_sha = semantic_proof.resolve_pr_proof_base(
+            loaded,
+            advertised_base_sha=bound_base_sha,
+            subject_head_sha=head_sha,
+            is_ancestor=lambda ancestor, descendant: _github_is_ancestor(
+                repo, token, ancestor, descendant
+            ),
+        )
         return _bind_pr_tested_tree(
             repo,
             token,
             loaded,
-            bound_base_sha=bound_base_sha,
+            bound_base_sha=proof_base_sha,
             subject_head_sha=head_sha,
         )
     return loaded
+
+
+def _github_is_ancestor(repo: str, token: str, ancestor: str, descendant: str) -> bool:
+    """True when ``ancestor`` is reachable from ``descendant`` on GitHub.
+
+    One compare call (``per_page=1`` — only ``status`` is read).  ``identical``
+    and ``ahead`` mean the descendant contains the ancestor; ``behind`` and
+    ``diverged`` mean it does not.  A quota refusal surfaces as ``RateLimited``
+    and any other failure or unknown relation as ``RuntimeError`` so the caller's
+    existing handlers keep an unanswerable probe from reading as a clean base.
+    """
+    ancestor = str(ancestor or "").lower()
+    descendant = str(descendant or "").lower()
+    if ancestor == descendant:
+        return True
+    status, payload = _request(
+        "GET",
+        f"{GITHUB_API}/repos/{repo}/compare/{ancestor}...{descendant}?per_page=1",
+        token,
+    )
+    if status >= 400 or not isinstance(payload, dict):
+        raise _read_failed(status, payload, "semantic proof-base ancestry compare failed")
+    relation = str(payload.get("status") or "")
+    if relation in {"identical", "ahead"}:
+        return True
+    if relation in {"behind", "diverged"}:
+        return False
+    raise RuntimeError(
+        "semantic proof-base ancestry compare returned an unknown relation "
+        f"({relation or 'missing'})"
+    )
 
 
 def _semantic_pr_base_sha(
@@ -1791,6 +2002,48 @@ def ownership_matches(rel: str, patterns: list[str] | None) -> list[str]:
     return matching_patterns(rel, owned)
 
 
+def _is_full_sha(value: Any) -> bool:
+    """True for a full lowercase 40-character hex git sha."""
+    return (
+        isinstance(value, str)
+        and len(value) == 40
+        and all(char in "0123456789abcdef" for char in value)
+    )
+
+
+def _commit_identity(payload: Any) -> tuple[str, str, tuple[str, ...]] | None:
+    """``(sha, tree_sha, parent_shas)`` from a commit body, else ``None``.
+
+    The pagination stitch compares this tuple across every page, so each
+    identity must be present and a full lowercase 40-hex sha: a short,
+    uppercased or absent sha is not something this lane can prove page
+    equality on, and a page that moved underneath the sweep must never be
+    stitched into one commit's footprint.
+    """
+    if not isinstance(payload, dict):
+        return None
+    sha = payload.get("sha")
+    commit = payload.get("commit")
+    tree = commit.get("tree") if isinstance(commit, dict) else None
+    if not _is_full_sha(sha) or not isinstance(tree, dict):
+        return None
+    tree_sha = tree.get("sha")
+    if not _is_full_sha(tree_sha):
+        return None
+    parents = payload.get("parents")
+    if not isinstance(parents, list):
+        return None
+    parent_shas: list[str] = []
+    for parent in parents:
+        if not isinstance(parent, dict):
+            return None
+        parent_sha = parent.get("sha")
+        if not _is_full_sha(parent_sha):
+            return None
+        parent_shas.append(parent_sha)
+    return sha, tree_sha, tuple(parent_shas)
+
+
 class ProofFreshness:
     """Per-sweep answer to: has main moved under this pull request's proof?
 
@@ -1804,7 +2057,10 @@ class ProofFreshness:
     unreadable proof identity is ``None`` — defer without mutation, because changing
     a branch cannot repair missing control-plane evidence. A surface that silently
     resolves to "nothing changed" would turn the gate into a no-op that reviews as
-    protection, which is the single worst outcome available here.
+    protection, which is the single worst outcome available here — so "could not
+    be read" and "read, classified, and owned by no gate" are kept DISTINCT
+    (``surface_of``): the first re-proves, the second is an affirmative answer
+    that no main move inside a gate path can invalidate.
     """
 
     def __init__(
@@ -1843,6 +2099,7 @@ class ProofFreshness:
         self._merge_bases: dict[str, str | None] = {}
         self._proof_bound_sha: str | None = None
         self.commit_file_reads = 0
+        self._commit_file_page_reads = 0
 
     # -- construction ---------------------------------------------------------
 
@@ -2245,6 +2502,80 @@ class ProofFreshness:
             for root in sorted(changed_roots & pipeline_roots)
         ]
 
+    def _complete_commit_files(
+        self, sha: str, probe: dict[str, Any]
+    ) -> list[str] | None:
+        """Complete a truncated inventory, or retain its conservative verdict.
+
+        The tree shortcut runs first. This fallback accepts at most ten 100-row
+        pages of the same SHA/tree/ordered parents, ending in a short page. The
+        sweep shares an additional-read budget and caches incomplete results too.
+        Every original file/rename binding must survive the completed inventory.
+        """
+        identity = _commit_identity(probe)
+        if identity is None or identity[0] != sha:
+            return None
+
+        def bindings(rows: Any) -> dict[str, tuple[Any, str | None]] | None:
+            if not isinstance(rows, list):
+                return None
+            result: dict[str, tuple[Any, str | None]] = {}
+            for row in rows:
+                if not isinstance(row, dict):
+                    return None
+                name = row.get("filename")
+                previous = row.get("previous_filename")
+                status = row.get("status")
+                if not isinstance(status, str) or status not in {
+                    "added", "removed", "modified", "renamed", "copied", "changed", "unchanged"
+                }:
+                    return None
+                if not isinstance(name, str) or not name or name in result:
+                    return None
+                if "previous_filename" in row and (
+                    not isinstance(previous, str) or not previous
+                ):
+                    return None
+                if row.get("status") == "renamed" and previous is None:
+                    return None
+                result[name] = (row.get("status"), previous)
+            return result
+
+        original = bindings(probe.get("files"))
+        if not original:
+            return None
+        collected: dict[str, tuple[Any, str | None]] = {}
+        rows: list[dict[str, Any]] = []
+        for page in range(1, 11):
+            if self._commit_file_page_reads >= COMMIT_FILE_PAGE_READ_CAP:
+                return None
+            self._commit_file_page_reads += 1
+            self.commit_file_reads += 1
+            try:
+                status, payload = _request(
+                    "GET",
+                    f"{GITHUB_API}/repos/{self.repo}/commits/{sha}"
+                    f"?per_page=100&page={page}",
+                    self.token,
+                )
+            except (RuntimeError, OSError, ValueError):
+                return None
+            if status != 200 or _commit_identity(payload) != identity:
+                return None
+            page_rows = payload.get("files")
+            page_bindings = bindings(page_rows)
+            if page_bindings is None or len(page_rows) > 100:
+                return None
+            if collected.keys() & page_bindings.keys():
+                return None
+            collected.update(page_bindings)
+            rows.extend(page_rows)
+            if len(page_rows) < 100:
+                if any(collected.get(name) != binding for name, binding in original.items()):
+                    return None
+                return _changed_file_paths(rows)
+        return None
+
     def files_of(self, sha: str) -> tuple[list[str], bool]:
         """``(files, truncated)`` for one main commit. Cached for the whole sweep."""
         cached = self._commit_files.get(sha)
@@ -2266,6 +2597,11 @@ class ProofFreshness:
             if proven_pipeline_paths is not None:
                 names = proven_pipeline_paths
                 truncated = False
+            else:
+                complete = self._complete_commit_files(sha, payload)
+                if complete is not None:
+                    names = complete
+                    truncated = False
         answer = (names, truncated)
         self._commit_files[sha] = answer
         return answer
@@ -2437,19 +2773,41 @@ class ProofFreshness:
         rejected strict one: `site/**` is in the surface of a pull request that
         edits `site/`, and is not in the surface of one that does not.
 
-        None means undeterminable — which includes the empty result. A pull request
-        whose files satisfy no entry of any path-filtered gate has a surface that
-        "silently resolves to the empty set", and merging on that would be the
-        no-op this gate exists to prevent.
+        None means undeterminable: the file inventory could not be read (an
+        error status, a malformed row, a truncated page set) or names no file
+        at all — a zero-file footprint is the clobbered-head shape, and it can
+        be shown to be outside nothing.
+
+        The EMPTY SET is a different, affirmative answer and is returned as
+        such: every changed file was read and classified against every
+        path-filtered gate, and none of them is owned. That pull request's
+        proof is the exact-head checks that ran, and a main commit inside
+        `engine/**` cannot invalidate a proof that never covered `engine/**`.
+        Until 2026-09-24 this case was folded into ``None`` ("silently resolves
+        to the empty set") and re-proved, which under a main that moves every
+        few minutes with 60-110 min packs is a livelock: #7958 (files only under
+        `agentos/handoffs/` and `mockups/evidence/`) was refreshed 0ee772f1 ->
+        d3f8bd8a -> fad0e00d -> 25e4a451, the third refresh 25 s AFTER run
+        36052314696 at fad0e00d had concluded green (sweep 36064269045,
+        21:53:55Z), and had to be disarmed and merged by hand.
+
+        Returning the empty set does not reopen the no-op-that-reviews-as-
+        protection hole the ``None`` rule guards. ``stale_for`` consults the
+        surface only after the SAME matcher, over the SAME gates, has already
+        found main's files inside a gate path (a non-empty ``candidates`` set);
+        a broken matcher or an unloaded gate set therefore never reaches this
+        branch — it short-circuits earlier as "none inside any gate's path
+        filter", exactly as it did before. An empty surface here means the
+        matcher works and the pull request's files are simply outside it.
         """
         files = self.pull_files(number)
-        if files is None:
+        if not files:
             return None
         surface: set[str] = set()
         for gate in self.gates:
             for name in files:
                 surface.update(ownership_matches(name, gate["patterns"]))
-        return surface or None
+        return surface
 
     def stale_for(
         self, pull: dict[str, Any], runs: list[dict[str, Any]]
@@ -2569,6 +2927,19 @@ class ProofFreshness:
             return True, (
                 "the pull request's own changed files could not be established, so "
                 "its tested surface is unknown"
+            )
+        if not surface:
+            # Files read and classified; none owned by any path-filtered gate
+            # (the #7958 records-only shape). The exact-head checks that ran
+            # are the whole proof, and main cannot have moved inside a surface
+            # this pull request does not have. Named distinctly so a sweep log
+            # says WHY the proof is current, not merely that it is.
+            file_count = len(self.pull_files(number) or [])
+            return False, (
+                f"main took {len(window)} commit(s) since the proof, none inside this "
+                f"pull request's tested surface — its {file_count} changed file(s) own "
+                "no path-filtered gate entry, so the exact-head checks that ran are "
+                "the whole proof"
             )
         hit = sorted(candidates & surface)
         if hit:
@@ -3512,9 +3883,9 @@ def pull_cap_for_limit(limit: Any) -> int:
 
     The 25-at-1,000 baseline is measured production behavior, not a guessed
     request cost. Scaling that ratio preserves the old budget share after an
-    account-tier change; the 100 ceiling matches the single pull-list page and
-    keeps one reconciliation bounded. An unreadable or malformed limit falls
-    back to the known-safe baseline.
+    account-tier change; the 128 ceiling covers the measured 110-PR backlog
+    using existing paginated discovery while keeping one reconciliation bounded.
+    An unreadable or malformed limit falls back to the known-safe baseline.
     """
     if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
         return FALLBACK_PULL_CAP
@@ -3701,10 +4072,16 @@ def sweep_order(
     The rotation is what makes the cap fair. This script keeps NO state between
     runs — it is a level-triggered reconciler, and that property is load-bearing
     for the overlapping-sweep safety argument — so it cannot remember where the
-    last sweep stopped. The wall clock is the cursor instead: the window start
-    advances by `cap` every `bucket_seconds`, which walks the whole ring and
-    therefore reaches every pull request within ceil(N / cap) buckets no matter
-    how long it has sat. Sorting by `updated_at` was the obvious alternative and
+    last sweep stopped. The wall clock is the cursor instead. Within a cycle,
+    the evaluation window advances by `cap` every `bucket_seconds`. That covers
+    evaluation, but can leave the smaller refresh-attempt prefix permanently
+    fixed: with 100 pulls and cap=100, only the same first eight get attempts.
+    After each distinct-offset cycle, advance its phase by a value coprime to
+    gcd(cap, N). The cycles then visit every residue class, so each ordinary pull
+    gets the first ordinary position within an aligned N-bucket epoch (assuming
+    a stable backlog and priority membership). Higher-priority tiers and actual
+    admission still decide whether it receives a refresh. No state or extra
+    requests are introduced. Sorting by `updated_at` was the obvious alternative and
     it starves: a pull request nothing acts on never has its timestamp bumped, so
     it would hold its place — or lose it — forever.
 
@@ -3719,7 +4096,19 @@ def sweep_order(
     stable = sorted(pulls, key=lambda pull: int(pull.get("number") or 0))
     span = len(stable)
     when = int(dt.datetime.now(dt.timezone.utc).timestamp() if now is None else now)
-    offset = ((when // max(1, bucket_seconds)) * max(1, cap)) % span
+    step = max(1, cap)
+    divisor = math.gcd(step, span)
+    cycle_length = span // divisor
+    # Keep the existing cap-sized evaluation windows, but move their phase when
+    # they repeat. A coprime phase visits all residue classes. Start near the
+    # bounded attempt width so scarce refresh prefixes cover the backlog sooner;
+    # this changes ordering only, never either workload or API-attempt admission.
+    phase_step = min(MAX_REFRESHES_PER_SWEEP, divisor)
+    while math.gcd(phase_step, divisor) != 1:
+        phase_step -= 1
+    bucket = when // max(1, bucket_seconds)
+    phase = (bucket // cycle_length) * phase_step
+    offset = (bucket * step + phase) % span
     wanted = str(trigger_head_sha or "").strip().lower()
     lease_number = str(refresh_lease_number or "")
 
@@ -5082,6 +5471,602 @@ def failing_check_names(runs: list[dict[str, Any]]) -> set[str]:
     }
 
 
+# --- recorded-hold guard --------------------------------------------------------
+#
+# WHY (2026-08-20, PR #6109). A HOLD-FOR-SOL comment was posted on #6109 by its
+# author, and the shared account squash-merged it anyway a short while later with
+# no release comment. Fleet law already says a recorded hold binds every merge
+# path (`DEC:SOL-HOLD-IS-A-MERGE-BARRIER`), but the automation had no way to SEE a
+# recorded hold — its only hold mechanism was the hardcoded `NEVER_AUTO_MERGE_PULLS`
+# frozenset above, which nobody had (or reasonably could have) added #6109 to. A
+# re-armed `merge-on-green` label — any session can add labels — silently overrode
+# an authority hold that lived only in prose. This guard closes that gap: it reads
+# the pull request's own body and comments for a hold marker immediately before the
+# irreversible merge call, so the label can never again be the last word.
+#
+# SCOPE (documented, not built — 2026-08-21 adjudication item m7): a hold binds
+# via the PR BODY and issue COMMENTS only. Review bodies and inline review
+# comments are a distinct GitHub API surface (`/pulls/{n}/reviews` and
+# `/pulls/{n}/comments`) this guard does not read; an authority posting a hold
+# there instead is not yet covered, and this is a known, accepted boundary
+# rather than a bug — see the same line repeated in `hold_guard_comment`.
+#
+# MARKER CONTRACT (2026-08-21 adversarial-review fix set, item B1). A marker
+# must BEGIN a candidate line — see `_candidate_marker_lines` — not merely
+# appear anywhere in the text. The first cut of this guard matched anywhere in
+# the body/comment text (`re.search`), which the live PR corpus falsified
+# immediately: ordinary prose that MENTIONS a hold ("PR #6109 was merged over a
+# recorded HOLD-FOR-SOL...") matched exactly as hard as a real declared hold,
+# so this guard's own explanatory PR body would have held ITSELF forever, and
+# any records/handoff PR narrating the #6109 incident would have been silently
+# blocked too (measured false positives: #6149 this PR, #6143, #6146, #6151).
+HOLD_GUARD_SENTINEL = "[merge-on-green hold-guard]"
+HOLD_GUARD_AUTHOR_TYPE = "Bot"
+# Case-insensitive on purpose: a hold posted as `hold-for-sol` or `Hold-For-Sol`
+# binds exactly as hard as `HOLD-FOR-SOL` — the marker is a convention, not a
+# cryptographic token, and treating case as significant would let a typo silently
+# defeat the barrier.
+#
+# `HOLD_RELEASE_RE` is checked BEFORE `HOLD_MARKER_RE` on every comment, in
+# `_classify_comment` below, and wins outright when both match — release
+# outranks hold WITHIN one comment (item M1(a)). `HOLD-RELEASED` itself starts
+# with `HOLD-` and therefore satisfies the generic `HOLD\s*[—:-]` hold
+# sub-pattern; without this precedence rule a release comment would register as
+# BOTH a release and (at its own timestamp) the newest hold, so "strictly later
+# than the newest hold" could never be true and no release could ever fire —
+# the exact defect the live corpus's own natural release sentence exposed
+# ("HOLD-RELEASED — the HOLD-FOR-SOL is lifted.").
+HOLD_MARKER_RE = re.compile(
+    r"\bHOLD-FOR-[A-Z0-9_-]+|\bHELD[- ]FOR[- ][A-Z0-9_-]+|\bHOLD\s*[—:-]|\bDO\s+NOT\s+MERGE\b",
+    re.IGNORECASE,
+)
+# 2026-08-21 round-4 item R2: the TITLE scan (see `recorded_hold`'s `title`
+# parameter) uses this NARROWER pattern, not `HOLD_MARKER_RE` — the generic
+# bare `HOLD\s*[—:-]` branch matches any hyphenated word that starts with
+# "hold", and this feature's OWN vocabulary is exactly that shape ("hold-
+# guard"), so a title like "fix(merge-on-green): hold-guard regression test"
+# would otherwise hold itself. `HOLD_MARKER_RE` itself is UNCHANGED and still
+# used as-is for the body/comment line-start machinery, where the same bare
+# branch is safe (a real bare hold is written `HOLD:`/`HOLD—`, at a line
+# start, never as a mid-word hyphen).
+TITLE_HOLD_MARKER_RE = re.compile(
+    r"\bHOLD-FOR-[A-Z0-9_-]+|\bHELD[- ]FOR[- ][A-Z0-9_-]+|\bDO\s+NOT\s+MERGE\b",
+    re.IGNORECASE,
+)
+HOLD_RELEASE_RE = re.compile(r"\bHOLD-RELEASED\b", re.IGNORECASE)
+_QUOTE_LINE_RE = re.compile(r"^\s*>")
+_FENCE_LINE_RE = re.compile(r"^\s*```")
+_BOLD_SPAN_RE = re.compile(r"\*\*(.+?)\*\*")
+# 2026-08-21 round-4 item R1: a bold span that FOLLOWS a field separator
+# (middle dot, em-dash, or pipe — the punctuation this corpus uses to chain
+# multiple "**Label:** value" clauses on one line, e.g. PR #6080's real body
+# ``**Program:** X · **HELD FOR SOL — draft, unarmed, do NOT merge**``) is
+# ALSO a candidate, in addition to (never instead of) the line's single
+# FIRST bold span from `_leading_bold_span`. This does not reopen the N3
+# mid-sentence defect: ordinary prose has no separator character sitting
+# immediately before the bold span ("This sweeper now refuses
+# **HOLD-FOR-SOL** pull requests..." has no ``·``/``—``/``|`` before it).
+_SEPARATOR_BOLD_RE = re.compile(r"[·—|]\s*\*\*(.+?)\*\*")
+_HEADING_LINE_RE = re.compile(r"^\s*#+\s+(.+)$")
+# 2026-08-21 round-3 item N1(b): the separator a heading commonly uses between
+# its descriptive title and a trailing status clause — "Title — STATUS",
+# "Title: STATUS" (colon conventionally touches the preceding word, no space
+# before it), "Title - STATUS". Whitespace before the separator is OPTIONAL
+# (covers the colon convention); whitespace after is REQUIRED, so a bare
+# hyphenated word ("Turn-3", "co-located") never fires — there is no space on
+# either side of THAT hyphen for either half of this pattern to match.
+_HEADING_SEPARATOR_RE = re.compile(r"\s*[—:-]\s+")
+# The characters/tokens a markdown heading/bullet/checklist/ordered-list PREFIX
+# is built from: whitespace, a run of '#' (heading), a run of '-' (bullet),
+# a checklist marker ('[ ]'/'[x]'/'[X]', item N4), or an ordered-list leader
+# ('1.'/'1)', item N4) — repeated in any combination/order from the very start.
+#
+# '*' is DELIBERATELY EXCLUDED (round-3 item N3): a leading bold span is its
+# own candidate, handled by `_leading_bold_span` below, not folded in here —
+# folding it in here would strip "**" off "**Program:** ..." before the bold
+# check ever saw it. Backtick is ALSO deliberately excluded (item N3): a
+# marker wrapped in inline code (`` `HOLD-FOR-SOL` ``) is a MENTION of the
+# marker, not a declaration of it, so it must not bind merely by opening a
+# line — round-2 treated backtick as decoration to strip, which is exactly
+# what let `` `HOLD-FOR-SOL` is the marker this guard looks for. `` bind.
+_LEADING_DECORATION_RE = re.compile(r"^(?:[ \t]+|#+|-+|\[[ xX]\]|\d+[.)])+")
+
+
+def _strip_leading_decoration(text: str) -> str:
+    return _LEADING_DECORATION_RE.sub("", text, count=1)
+
+
+def _leading_bold_span(line: str) -> str | None:
+    """This line's bold span content, ONLY when '**' opens the line (item N3).
+
+    Round-2 collected EVERY `**bold**` span anywhere on a line as a candidate,
+    which re-opened mid-sentence prose matching: "This sweeper now refuses
+    **HOLD-FOR-SOL** pull requests automatically." held, because the bolded
+    MENTION was treated as a marker position regardless of what preceded it.
+    Only a bold span that is the FIRST non-decoration content of its line — a
+    field label, e.g. ``**Program:** X · **STATUS**`` — is a candidate, and
+    only ITS content is; a second, later bold span on the same physical line
+    (the STATUS span in that example) is no longer independently checked.
+    """
+    content = _strip_leading_decoration(line)
+    if not content.startswith("**"):
+        return None
+    match = _BOLD_SPAN_RE.match(content)
+    return match.group(1) if match else None
+
+
+_TRAILING_PUNCTUATION_RE = re.compile(r"[\s.!,;:]*$")
+
+
+def _candidate_marker_lines(text: str) -> list[tuple[str, bool]]:
+    """Every position a hold/release marker is allowed to BEGIN (item B1).
+
+    Returns `(candidate_text, terminal_only)` pairs. `terminal_only=True`
+    (item R3, round-4) means the candidate binds ONLY when the marker match
+    consumes the candidate to its end (allowing trailing whitespace/simple
+    punctuation) — see `_marker_at_line_start`. Every source below is
+    `terminal_only=False` EXCEPT the heading-separator segment, source 4.
+
+    Four sources, because the live corpus writes status markers four ways:
+
+    1. The start of a physical line, after stripping leading markdown/list
+       decoration (see `_strip_leading_decoration`).
+    2. The start of a **bold** span that itself opens the line — see
+       `_leading_bold_span` — e.g. a field label like ``**Program:** X``.
+    3. A **bold** span that FOLLOWS a field separator (``·``/``—``/``|``,
+       item R1, round-4) — e.g. PR #6080's real body
+       ``**Program:** X · **HELD FOR SOL — draft, unarmed, do NOT merge**``,
+       where the marker's own bold span is the SECOND one on the line (only
+       the first is source 2's candidate) but is immediately preceded by the
+       ``·`` chaining it to the field before it.
+    4. The segment following a HEADING line's ``—``/``:``/``-`` separator
+       (item N1(b)) — e.g. PR #6051's
+       ``## Scratch research harness — DO NOT MERGE``. TERMINAL ONLY (item
+       R3): the marker must be the LAST thing in the segment (optional
+       trailing punctuation aside) — a heading NARRATING a hold, e.g.
+       ``## Incident - HOLD-FOR-SOL was ignored on #6109``, has real prose
+       after the marker phrase and must not bind.
+
+    A line beginning with '>' (a markdown blockquote — a quote-reply) is
+    dropped ENTIRELY before any source is derived from it, so quoting the
+    guard's own text back at it can neither hold nor release (item
+    B1-amplifier/M1(b)). A fenced code block (delimited by a line starting
+    with three backticks) is ALSO dropped entirely — every line strictly
+    between an opening and closing fence, plus the fence delimiters
+    themselves — because example/quoted CODE is not a declaration (item N3);
+    without this, a body pasting a sample commit message or comment
+    containing the marker text inside a ``` block would bind.
+    """
+    candidates: list[tuple[str, bool]] = []
+    in_fence = False
+    for line in (text or "").splitlines():
+        if _FENCE_LINE_RE.match(line):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        if _QUOTE_LINE_RE.match(line):
+            continue
+        candidates.append((_strip_leading_decoration(line), False))
+        bold = _leading_bold_span(line)
+        if bold is not None:
+            candidates.append((_strip_leading_decoration(bold), False))
+        for separator_bold in _SEPARATOR_BOLD_RE.finditer(line):
+            candidates.append(
+                (_strip_leading_decoration(separator_bold.group(1)), False)
+            )
+        heading = _HEADING_LINE_RE.match(line)
+        if heading is not None:
+            for segment in _HEADING_SEPARATOR_RE.split(heading.group(1))[1:]:
+                candidates.append((_strip_leading_decoration(segment), True))
+    return candidates
+
+
+def _marker_at_line_start(text: str, pattern: "re.Pattern[str]") -> str | None:
+    """First candidate line (see above) matching `pattern` at its own start.
+
+    A `terminal_only` candidate (item R3, round-4 — currently only the
+    heading-separator segment) additionally requires the match to consume
+    the candidate to its end, modulo trailing whitespace/simple punctuation:
+    a heading NARRATING a hold has real prose after the marker phrase, and
+    a bare prefix match there would bind on that narration.
+    """
+    for candidate, terminal_only in _candidate_marker_lines(text):
+        match = pattern.match(candidate)
+        if not match:
+            continue
+        if terminal_only and not _TRAILING_PUNCTUATION_RE.match(
+            candidate, match.end()
+        ):
+            continue
+        return match.group(0)
+    return None
+
+
+def _classify_comment(text: str) -> tuple[str, str] | None:
+    """`('release', matched)` / `('hold', matched)` / `None` for ONE comment.
+
+    Release is checked first and, when found, is the comment's ENTIRE
+    classification — see the module comment above `HOLD_RELEASE_RE` for why a
+    comment can never be counted as both (item M1(a)).
+    """
+    release_match = _marker_at_line_start(text, HOLD_RELEASE_RE)
+    if release_match:
+        return ("release", release_match)
+    hold_match = _marker_at_line_start(text, HOLD_MARKER_RE)
+    if hold_match:
+        return ("hold", hold_match)
+    return None
+
+
+def _is_guard_own_comment(comment: dict[str, Any]) -> bool:
+    """Is this the guard's OWN prior explanation? (item m6, 2026-08-21 fix.)
+
+    Requires BOTH the sentinel prefix AND `user.type == "Bot"` — the type
+    GitHub's API reports for the Actions bot identity this workflow posts as.
+    A comment that merely STARTS WITH the sentinel text but was posted by a
+    human (forged, or an honest copy-paste) is scanned NORMALLY: its holds
+    count against the pull request, and its presence does not suppress a real
+    explanation. The first cut of this guard excluded on the sentinel prefix
+    alone, which is a live two-way forgery: a forged sentinel comment SILENCED
+    a genuine hold's explanation, and a forged sentinel comment wrapped around
+    a real hold marker (smuggling: `sentinel + "\\nHOLD-FOR-SOL"`) HID that
+    hold from the scanner entirely, in both directions defeating the barrier
+    with a single unauthenticated comment.
+    """
+    body = str((comment or {}).get("body") or "")
+    if not body.startswith(HOLD_GUARD_SENTINEL):
+        return False
+    author_type = str(((comment or {}).get("user") or {}).get("type") or "")
+    return author_type == HOLD_GUARD_AUTHOR_TYPE
+
+
+def _is_bot_comment(comment: dict[str, Any]) -> bool:
+    """`user.type == "Bot"` — ANY bot, not only the guard's own (item N7).
+
+    A stricter exclusion than `_is_guard_own_comment` (sentinel + bot): every
+    bot-authored comment is excluded from `recorded_hold`'s scanning entirely
+    — hold, release, and the "newest comment" ranking alike — because holding
+    and releasing are human acts. Without this, the sweeper's OWN red-check
+    refusal comment (`red_check_comment`, posted by the same Bot identity) —
+    or any other CI bot's chatter — posted after a genuine human release
+    would become "the newest comment", read as non-release, and silently
+    RE-ARM an already-released body hold. `_is_guard_own_comment` stays
+    separate and narrower: it is used only by `apply_recorded_hold_block`'s
+    POSTING dedup, which must ask "has THE GUARD already explained this",
+    not "has any bot ever commented" — collapsing the two would let an
+    unrelated bot comment (e.g. a red-check refusal) silently suppress the
+    guard's own explanation.
+    """
+    return (
+        str(((comment or {}).get("user") or {}).get("type") or "")
+        == HOLD_GUARD_AUTHOR_TYPE
+    )
+
+
+def recorded_hold(
+    body: str, comments: list[dict[str, Any]], title: str = ""
+) -> str | None:
+    """Is this pull request currently under a recorded hold? Pure, no network.
+
+    A HOLD marker (`HOLD-FOR-<...>`, `HELD FOR <...>`, bare `HOLD:`/`HOLD—`, or
+    `DO NOT MERGE`; see `HOLD_MARKER_RE`) must BEGIN a candidate line — see
+    `_candidate_marker_lines` — in the pull request BODY or in any issue
+    COMMENT. A RELEASE is a comment whose own candidate line begins with
+    `HOLD-RELEASED`.
+
+    `title` (item N1(a), round-3) is `pull["title"]`, matched with a plain
+    ANYWHERE `.search()` — not the line-start-anchored candidate machinery
+    the body and comments go through. Titles are short, single-line, and
+    declarative by GitHub convention (this repo's own titles read
+    ``fix(x): ... — DO NOT MERGE`` or ``HOLD-FOR-SOL · sol(...): ...``), so
+    the false-positive surface a `.search()` opens is near-zero — verified
+    against the corpus: none of #6149/#6143/#6146/#6151's titles contain any
+    marker substring. A body-only false negative on a live true positive
+    (PR #6051's ``## Scratch research harness — DO NOT MERGE`` heading, whose
+    body ALSO catches it via item N1(b) below — the title is a second,
+    independent source, not the only fix) is what this closes.
+
+    Body-carried and comment-carried holds are classified THE SAME WAY (item
+    N2, round-3): both go through `_classify_comment`, so a body LINE that
+    states a RELEASE (``HOLD-RELEASED by Sol 2026-08-21``) is never
+    mis-registered as a hold via the generic `HOLD\\s*[—:-]` sub-pattern —
+    round-2 scanned the body with `HOLD_MARKER_RE` directly, skipping the
+    release-outranks-hold precedence entirely for body text.
+
+    Comment-carried hold: cleared only by a release comment strictly LATER than
+    the newest DATED hold-carrying comment. An UNDATED hold comment (no
+    parseable `created_at`) is tracked separately and is cleared by ANY dated
+    release comment at all, since an undated timestamp cannot be compared
+    against anything (item m5) — an undated release, symmetrically, can never
+    clear anything, since it cannot be proven "strictly later".
+
+    Body/title hold (no comment carries the marker): released only by a
+    release comment that is BOTH strictly later than every dated
+    hold-carrying comment AND the newest non-excluded, non-BOT comment on the
+    whole pull request (item M1(c), narrowed by item N7 round-3). ACCEPTED
+    TRADE-OFF, intentional: this makes body-hold release asymmetric in both
+    directions. An old, otherwise-unchallenged release still clears a body
+    hold added long after it, because there is no per-edit body timestamp to
+    compare against (an old release with zero later HUMAN comments IS, by
+    definition, still "the newest comment"). And ANY HUMAN comment posted
+    after a release — even unrelated chatter — re-arms a still-present body
+    hold, because the release is no longer the newest human comment. Only
+    HUMAN comments participate in this "newest comment" contest (item N7):
+    holding and releasing are human acts, so a Bot's chatter posted after a
+    release — including this sweeper's OWN red-check refusal comment — must
+    never re-arm it. The honest, unambiguous escape for an authority is
+    always to edit the marker out of the body directly; this function
+    re-reads current text on every call, never a cached copy.
+
+    A comment is excluded from EVERY match here — hold, release, and the
+    "newest comment" ranking — whenever `_is_bot_comment` says it was posted
+    by a Bot identity (item N7, round-3; strictly broader than round-2's
+    `_is_guard_own_comment`-only exclusion, which this function no longer
+    uses directly — every guard comment is itself Bot-authored, so the
+    broader check still excludes it, while ALSO excluding every other bot's
+    chatter from re-arming a release).
+
+    Returns the matched marker text (for the explanation), or None when the
+    pull request is not currently held.
+    """
+    dated_hold_at: dt.datetime | None = None
+    dated_hold_text: str | None = None
+    undated_hold_text: str | None = None
+    dated_release_ats: list[dt.datetime] = []
+    newest_comment_at: dt.datetime | None = None
+    newest_comment_is_release = False
+
+    for comment in comments or ():
+        if _is_bot_comment(comment):
+            continue
+        text = str((comment or {}).get("body") or "")
+        created_at = _parse_dt((comment or {}).get("created_at"))
+        classification = _classify_comment(text)
+        is_release = classification is not None and classification[0] == "release"
+
+        if created_at is not None:
+            if newest_comment_at is None or created_at > newest_comment_at:
+                newest_comment_at = created_at
+                newest_comment_is_release = is_release
+            elif created_at == newest_comment_at:
+                # A tie cannot be PROVEN to be the sole newest comment — fail
+                # closed for the body-release "is it THE newest" requirement.
+                newest_comment_is_release = False
+
+        if classification is None:
+            continue
+        kind, matched = classification
+        if kind == "release":
+            if created_at is not None:
+                dated_release_ats.append(created_at)
+            # An undated release is never trusted to clear anything (item m5).
+        else:
+            if created_at is not None:
+                if dated_hold_at is None or created_at > dated_hold_at:
+                    dated_hold_at = created_at
+                    dated_hold_text = matched
+            else:
+                undated_hold_text = matched
+
+    if dated_hold_text is not None:
+        if not any(at > dated_hold_at for at in dated_release_ats):
+            return dated_hold_text
+    elif undated_hold_text is not None:
+        if not dated_release_ats:
+            return undated_hold_text
+        # Any DATED release clears an undated hold (item m5) — fall through to
+        # the body/title check below.
+
+    # Body classified through the SAME release-outranks-hold logic as a
+    # comment (item N2): a body candidate line matching the release pattern
+    # is never allowed to fall through to the hold pattern.
+    body_classification = _classify_comment(body or "")
+    body_match = (
+        body_classification[1]
+        if body_classification is not None and body_classification[0] == "hold"
+        else None
+    )
+    if body_match is None:
+        # Title fallback (item N1(a)): plain anywhere-search, not line-start.
+        # `TITLE_HOLD_MARKER_RE` (item R2, round-4), NOT `HOLD_MARKER_RE` — the
+        # generic bare `HOLD\s*[—:-]` branch fires on this feature's own
+        # vocabulary ("hold-guard") mid-title; see the constant's own comment.
+        title_match = TITLE_HOLD_MARKER_RE.search(title or "")
+        if title_match:
+            body_match = title_match.group(0)
+    if body_match is None:
+        return None
+    body_released = (
+        newest_comment_is_release
+        and newest_comment_at is not None
+        and newest_comment_at
+        > (dated_hold_at or dt.datetime.min.replace(tzinfo=dt.timezone.utc))
+    )
+    return None if body_released else body_match
+
+
+class CommentCapExceeded(RuntimeError):
+    """The comment inventory could not be FULLY read within the page cap.
+
+    Distinct from a plain read failure (item m4): every page that WAS read
+    came back clean, there is simply more history than `HOLD_COMMENT_PAGE_CAP`
+    can see. `sweep_pull` still refuses to merge either way, but it explains
+    the two cases differently and, in this case, blocks the pull request
+    (using the partial inventory for the one-shot comment's dedup) rather than
+    silently deferring — a PR whose comment history is too large to verify
+    should not sit invisibly unmerged with no marker explaining why.
+    """
+
+    def __init__(self, comments: list[dict[str, Any]]):
+        super().__init__(
+            f"comment inventory exceeds HOLD_COMMENT_PAGE_CAP "
+            f"({len(comments)}+ comments read)"
+        )
+        self.comments = comments
+
+
+def fetch_issue_comments(
+    repo: str, number: Any, token: str
+) -> list[dict[str, Any]] | None:
+    """Every issue comment on a pull request.
+
+    Fails closed in TWO distinct ways (item m4), deliberately not collapsed
+    into one: a genuine read failure (an erroring page, or a non-list body)
+    returns `None` — nothing was learned, so `sweep_pull` defers silently,
+    exactly like any other broken read on this merge path. Exceeding
+    `HOLD_COMMENT_PAGE_CAP` instead RAISES `CommentCapExceeded` carrying every
+    comment read so far — every one of those pages read cleanly, there is just
+    more history than the cap can see, and the caller uses the partial
+    inventory rather than treating this as an ordinary API outage.
+
+    Called from exactly one place: `sweep_pull`'s about-to-merge path, immediately
+    before the merge call and after every other gate (checks, freshness, the
+    clobbered-head invariant) has already concluded clean — this module's API
+    budget doctrine spends a call here only on a pull request that has earned it.
+    """
+    if number is None:
+        return None
+    comments: list[dict[str, Any]] = []
+    for page in range(1, HOLD_COMMENT_PAGE_CAP + 1):
+        query = urllib.parse.urlencode({"per_page": "100", "page": str(page)})
+        status, payload = _request(
+            "GET",
+            f"{GITHUB_API}/repos/{repo}/issues/{number}/comments?{query}",
+            token,
+        )
+        if status >= 400 or not isinstance(payload, list):
+            return None
+        comments.extend(item for item in payload if isinstance(item, dict))
+        if len(payload) < 100:
+            return comments
+    raise CommentCapExceeded(comments)
+
+
+def newest_issue_comments_page(
+    repo: str, number: Any, token: str, *, per_page: int = 20
+) -> list[dict[str, Any]] | None:
+    """The NEWEST page of comments — the cap-overflow dedup probe (item N6).
+
+    `fetch_issue_comments`'s cap-exceeded partial inventory is OLDEST-first
+    (page 1 first) and stops at the cap; the guard's own prior explanatory
+    comment is, by construction, one of the NEWEST comments on a thread — it
+    was posted BY this guard AFTER seeing everything that came before it. On
+    a >cap-comment pull request that partial inventory therefore never
+    contains the guard's own comment, so a naive dedup check against it would
+    re-post the cap-exceeded explanation every single sweep, forever, each
+    one WORSENING the very overflow that triggered it.
+
+    One targeted call, sorted newest-first, answers "has the guard already
+    explained this" without re-reading the full history. `None` on any read
+    failure — the caller falls back to the (correct, if incomplete) OLDEST
+    partial inventory rather than losing the dedup signal entirely.
+    """
+    if number is None:
+        return None
+    query = urllib.parse.urlencode(
+        {"per_page": str(per_page), "sort": "created", "direction": "desc"}
+    )
+    status, payload = _request(
+        "GET",
+        f"{GITHUB_API}/repos/{repo}/issues/{number}/comments?{query}",
+        token,
+    )
+    if status >= 400 or not isinstance(payload, list):
+        return None
+    return [item for item in payload if isinstance(item, dict)]
+
+
+def hold_guard_comment(marker: str) -> str:
+    """The one-shot explanation posted when a recorded hold blocks the merge."""
+    return (
+        f"{HOLD_GUARD_SENTINEL} **not merging.** This pull request carries a "
+        f"recorded hold — matched marker: `{marker}` — in its body or an issue "
+        "comment.\n\n"
+        "A recorded hold binds every merge path — this sweeper, a re-armed "
+        "`merge-on-green` label, and a manual merge alike — regardless of label "
+        "state, per `DEC:SOL-HOLD-IS-A-MERGE-BARRIER`. The `merge-on-green` label "
+        "stays armed so the next sweep merges automatically once the hold clears; "
+        "nothing here needs to be re-armed by hand.\n\n"
+        "Release: the hold's named authority posts a new issue comment whose own "
+        "line begins with the word HOLD, immediately followed by RELEASED — dated "
+        "after every hold-carrying comment above — or edits the hold marker "
+        "directly out of the pull request body. A quote-reply of THIS comment "
+        "does not count as a release: GitHub prefixes quoted lines with '>', and "
+        "quoted lines are never read as a release or a hold.\n\n"
+        "Scope: this guard reads the pull request body and issue comments only — "
+        "not review bodies, not inline review comments."
+    )
+
+
+def hold_guard_cap_exceeded_comment(comment_count: int) -> str:
+    """The one-shot explanation for an UNVERIFIABLE (too-large) comment history."""
+    return (
+        f"{HOLD_GUARD_SENTINEL} **not merging.** This pull request's issue "
+        f"comments exceed `HOLD_COMMENT_PAGE_CAP` ({comment_count}+ read, page "
+        "cap reached) so its comment history cannot be FULLY verified for a "
+        "recorded hold. An unverifiable hold state is not permission to merge, "
+        "so the sweeper blocks rather than guesses; the `merge-on-green` label "
+        "stays armed for a later sweep with a smaller cost to re-check.\n\n"
+        "To clear: reduce the comment count below the cap (a records/history "
+        "cleanup on this thread), or raise `HOLD_COMMENT_PAGE_CAP` in "
+        "`scripts/merge_on_green.py` deliberately, with the added API cost in "
+        "mind."
+    )
+
+
+def apply_recorded_hold_block(
+    repo: str,
+    pull: dict[str, Any],
+    comment_body: str,
+    comments: list[dict[str, Any]],
+    token: str,
+) -> None:
+    """Label + one-shot comment for a recorded-hold (or unverifiable-hold) refusal.
+
+    Deduplicates on the presence of a prior guard comment — see
+    `_is_guard_own_comment` — in the ALREADY-FETCHED `comments` list, not on the
+    `merge-blocked` label transition `mark_blocked` uses for red checks: the
+    label can already be armed for an unrelated red-check reason, and keying
+    dedup off the label would silently swallow the hold explanation on a pull
+    request that happens to already be labeled for something else. The caller
+    is responsible for handing this the RIGHT comments to dedup against — the
+    normal path's full `recorded_hold` inventory, or `newest_issue_comments_page`
+    for the cap-exceeded path (item N6), never the oldest-first partial alone.
+    """
+    number = pull.get("number")
+    if MERGE_BLOCKED_LABEL not in label_names(pull):
+        status, _ = _request(
+            "POST",
+            f"{GITHUB_API}/repos/{repo}/issues/{number}/labels",
+            token,
+            {"labels": [MERGE_BLOCKED_LABEL]},
+        )
+        if status >= 400:
+            _annotate(
+                "error",
+                "merge-on-green hold-guard",
+                f"PR #{number}: could not add `{MERGE_BLOCKED_LABEL}` for the "
+                f"recorded hold (HTTP {status}); posting the explanation anyway "
+                "so the refusal stays visible.",
+            )
+    if any(_is_guard_own_comment(comment) for comment in comments):
+        return
+    comment_status, _ = _request(
+        "POST",
+        f"{GITHUB_API}/repos/{repo}/issues/{number}/comments",
+        token,
+        {"body": comment_body},
+    )
+    if comment_status >= 400:
+        _annotate(
+            "error",
+            "merge-on-green hold-guard",
+            f"PR #{number}: could not post the recorded-hold explanation "
+            f"(HTTP {comment_status}).",
+        )
+
+
 def red_check_comment(names: list[str]) -> str:
     """The refusal a red head gets, worded ONCE for both callers.
 
@@ -5404,6 +6389,21 @@ def update_branch_conflict(detail: str) -> bool:
     return "merge conflict" in normalized or "merge conflicts" in normalized
 
 
+def affirmatively_conflicted(pull: dict[str, Any]) -> bool:
+    """Affirmative conflict fields on a LIVE pull, never unknown or stale state.
+
+    GitHub answers ``mergeable: null`` while it is still computing and may omit
+    both fields on error shapes, so only the strict pair — ``mergeable`` is
+    exactly ``False`` AND ``mergeable_state`` is ``dirty`` — classifies a real
+    conflict. Anything else (unknown, missing, clean, blocked, unstable) keeps
+    the pull on the existing write-then-classify admission path, where
+    `update_branch` judges the 422 it actually receives.
+    """
+    if pull.get("mergeable") is not False:
+        return False
+    return str(pull.get("mergeable_state") or "").lower() == "dirty"
+
+
 def update_branch(repo: str, pull: dict[str, Any], token: str) -> str:
     """Merge `main` into a judged head and classify any live-state race.
 
@@ -5550,6 +6550,25 @@ def attempt_update_branch(
             "sweep budget; no branch write attempted.",
         )
         return "refresh-deferred"
+    if affirmatively_conflicted(live):
+        # The same fresh authorized read that just proved head/open/main/armed/
+        # draft also carried GitHub's own computed merge verdict: this head can
+        # take no update-branch write at all. Declining here keeps a known
+        # conflicting pull request from consuming a workload slot, a bounded
+        # attempt, or — at saturation — the ONE durable lease claim a clean head
+        # behind it needs (observed live: one conflicting owner drained the only
+        # high-load slot, released the lease on the decline, and the sweep's
+        # claim latch still denied every later pull at 0/1 used). Only the
+        # affirmative pair classifies; unknown/missing mergeability falls
+        # through to the write-then-classify path below unchanged.
+        _annotate(
+            "notice",
+            "merge-on-green",
+            f"PR #{pull.get('number')}: GitHub reports the live head unmergeable "
+            "against main (mergeable=false, mergeable_state=dirty); declining the "
+            "refresh — no update-branch write attempted, no refresh budget spent.",
+        )
+        return "declined"
     if not budget.take_refresh(live):
         return refresh_deferred(pull.get("number"), why, budget)
     if budget.requires_refresh_lease:
@@ -5694,9 +6713,9 @@ def reprove(
             f"but the proof is no longer trustworthy: {reason}.\n\n"
             "A check proves the head against the base it was handed, not against the "
             "base that exists at merge time — that is how PR #4583's honest 15-hour-old "
-            "green turned main red. The sweeper tried to merge `main` into this branch "
-            "so fresh checks could re-prove it, and GitHub declined, which means a REAL "
-            "content conflict. Resolve it by hand and the next sweep will pick it up "
+            "green turned main red. GitHub reports a REAL content conflict that prevents "
+            "refreshing this branch with `main` for fresh checks. Resolve the conflict "
+            "and the next sweep will pick it up "
             "(the label stays armed)."
         ),
         merge_token,
@@ -5765,9 +6784,10 @@ def sweep_pull(
         _annotate("warning", "merge-on-green", f"PR #{number}: no head sha; skipped.")
         return "unproven"
 
-    runs = check_runs if check_runs is not None else head_check_runs(
+    raw_runs = check_runs if check_runs is not None else head_check_runs(
         repo, head_sha, read_token
     )
+    runs = authority_effective_checks(repo, pull, raw_runs, read_token)
     anchor_verdict, anchor_names = proof_anchor_verdict(runs)
     if budget is not None:
         budget.observed_anchor_states[number] = anchor_verdict
@@ -5801,6 +6821,15 @@ def sweep_pull(
                 return False
             return lease.release(live_generation_pull, reason)
 
+        # `"recorded-hold"` (the sweep_pull VERDICT the hold guard returns, much
+        # further down this function) is intentionally ABSENT from every set
+        # below. `anchor_verdict` is `proof_anchor_verdict(runs)` — a
+        # check-run-anchor classification computed near the top of this
+        # function, long before the hold guard ever runs — and can only ever be
+        # one of that function's own outputs (`clean`/`blocked`/`pending`/
+        # `incomplete`/...). A recorded hold is a PR-body/comment fact, not a
+        # check-run fact, so it can never appear here; do not "complete" this
+        # set by adding it (item n9, 2026-08-21 adjudication).
         if generation_advanced and anchor_verdict in {"clean", "blocked"}:
             # The exact repository-owned proof workload this lease reserved has
             # settled on a head newer than the pre-update generation. Release BEFORE
@@ -6103,20 +7132,21 @@ def sweep_pull(
             return "lease-rotation-deferred"
         return reprove(repo, pull, reason, read_token, merge_token, budget)
     print(f"PR #{number}: proof still current — {reason}.", flush=True)
-    if MERGE_BLOCKED_LABEL in label_names(pull):
-        # A prior wake stamped merge-blocked (packing-leak inherited red, a
-        # skip-ci-only behind, a since-healed base). Current concluded checks
-        # have no genuine own-red and the proof is still current, so the label
-        # is stale: drop it in this same wake before the squash.
-        clear_blocked(repo, pull, merge_token)
-        pull = {
-            **pull,
-            "labels": [
-                label
-                for label in (pull.get("labels") or [])
-                if str((label or {}).get("name") or "") != MERGE_BLOCKED_LABEL
-            ],
-        }
+    # NOTE (item N5, round-3 adjudication, 2026-08-21): a stale-`merge-blocked`
+    # cleanup used to run HERE, unconditionally. Round-2 (item m3) narrowed it
+    # to skip when a cheap, network-free BODY-only pre-check thought the pull
+    # request might be held — closing the churn for a BODY hold, but not for
+    # the #6109 SHAPE itself: a hold that lives ONLY in a comment, which that
+    # pre-check cannot see, still got its label deleted here and RE-ADDED a
+    # few lines later by the guard, every sweep, forever. Round-3 removes the
+    # pre-check entirely and moves the cleanup to AFTER the recorded-hold
+    # guard's real, comments-inclusive verdict (see "not held" branch below) —
+    # the guard already KNOWS, authoritatively, whether the label is genuinely
+    # stale by the time it returns, so clearing it there needs no guessing and
+    # covers a comment-only hold exactly like a body-only one. The guard
+    # itself stays at its ORIGINAL, late position (after the clobbered-head
+    # invariant, freshness, and live re-authorization) so an early exit still
+    # never spends the comments read.
 
     # THE CLOBBERED-HEAD INVARIANT (the 2026-08-09 phantom merges: #5055 #5061
     # #5078 #5091 — module docstring; #5074 in the same drain was not one).
@@ -6254,6 +7284,100 @@ def sweep_pull(
             "the merge call.",
         )
         return "main-moved"
+
+    # RECORDED-HOLD GUARD (2026-08-20, PR #6109 — see the module comment above
+    # `recorded_hold`). Every other gate has now concluded clean, so this is the
+    # single point immediately before the irreversible merge call. Fetched here and
+    # only here: a comments read is spent solely on a pull request that has already
+    # earned it, matching this module's API-budget doctrine for the merge step —
+    # and confirmed by `test_F7_no_early_exit_path_spends_a_comments_read`-style
+    # regression coverage that an empty-diff, a stale-freshness, or a pending head
+    # never reaches this line.
+    try:
+        hold_comments = fetch_issue_comments(repo, number, read_token)
+    except CommentCapExceeded as exc:
+        # Every page read cleanly; there is simply more comment history than the
+        # cap can see. Unlike a plain read failure, block (not merely defer) —
+        # and say so distinctly (item m4, 2026-08-21 adjudication). Dedup against
+        # a fresh NEWEST-first probe, not the partial OLDEST-first inventory the
+        # cap exception carries: the guard's own prior comment, if it exists, is
+        # itself one of the newest comments on the thread and is therefore never
+        # inside that partial read — dedupping against it alone would re-post the
+        # cap-exceeded explanation every sweep, forever, each one worsening the
+        # very overflow that triggered it (item N6, round-3 adjudication).
+        dedup_comments = (
+            newest_issue_comments_page(repo, number, read_token) or exc.comments
+        )
+        apply_recorded_hold_block(
+            repo,
+            pull,
+            hold_guard_cap_exceeded_comment(len(exc.comments)),
+            dedup_comments,
+            merge_token,
+        )
+        _annotate(
+            "warning",
+            "merge-on-green hold-guard",
+            f"PR #{number}: comment inventory exceeds HOLD_COMMENT_PAGE_CAP "
+            f"({len(exc.comments)}+ comments read); cannot fully verify a "
+            "recorded hold. Blocking rather than merging on partial information.",
+        )
+        return "recorded-hold-unverifiable"
+    if hold_comments is None:
+        _annotate(
+            "warning",
+            "merge-on-green hold-guard",
+            f"PR #{number}: could not read issue comments to check for a recorded "
+            "hold; an unreadable hold state is not permission to merge. Left "
+            "armed for the next sweep.",
+        )
+        return "error"
+    hold_marker = recorded_hold(
+        str(pull.get("body") or ""),
+        hold_comments,
+        title=str(pull.get("title") or ""),
+    )
+    if hold_marker is None:
+        # AUTHORITATIVE stale-label cleanup (item N5, round-3 adjudication,
+        # replaces round-2's pre-probe body-only precheck at this function's
+        # freshness-gate print above): the guard has now DEFINITIVELY confirmed
+        # no hold exists anywhere it can see — body, title, or comments — so any
+        # `merge-blocked` label still present is genuinely stale, whether the
+        # earlier hold lived in the body (item m3's original case) or ONLY in a
+        # comment (the #6109 SHAPE itself, which the round-2 body-only precheck
+        # could not see and therefore still churned every sweep). One clear,
+        # informed by the full picture, instead of a guess that might delete a
+        # label the guard is about to re-affirm two lines later.
+        if MERGE_BLOCKED_LABEL in label_names(pull):
+            clear_blocked(repo, pull, merge_token)
+            pull = {
+                **pull,
+                "labels": [
+                    label
+                    for label in (pull.get("labels") or [])
+                    if str((label or {}).get("name") or "") != MERGE_BLOCKED_LABEL
+                ],
+            }
+    else:
+        # Deliberately NOT written into `blocked_names` (item M2, 2026-08-21
+        # adjudication): that set is the evidence `ensure_main_baseline` uses to
+        # decide whether the sweep's own staleness cost anything CHECK-related —
+        # a recorded hold is never a check failure, so a held-but-green pull
+        # request must never be able to order a main.yml dispatch it can never
+        # use. The hold is fully accounted for by the verdict returned below and
+        # by the label/comment `apply_recorded_hold_block` just applied.
+        apply_recorded_hold_block(
+            repo, pull, hold_guard_comment(hold_marker), hold_comments, merge_token
+        )
+        _annotate(
+            "warning",
+            "merge-on-green hold-guard",
+            f"PR #{number}: recorded hold ({hold_marker!r}) blocks every merge "
+            "path per DEC:SOL-HOLD-IS-A-MERGE-BARRIER; not merging. The "
+            "merge-on-green label stays armed for the next sweep once the hold "
+            "clears.",
+        )
+        return "recorded-hold"
 
     def finish_ambiguous_merge(cause: str) -> str:
         """Consume this snapshot after a merge whose outcome is not definitive."""
@@ -6432,9 +7556,8 @@ def sweep_pull(
             (
                 "`merge-on-green` sweeper: **not merging.** Every check was clean, but "
                 f"GitHub refused the squash merge: _{detail}_\n\n"
-                "The sweeper then tried to merge `main` into this branch itself and "
-                "GitHub declined that too, which means a REAL content conflict rather "
-                "than a stale base. Resolve it by hand and the next sweep will pick it "
+                "GitHub also reports a REAL content conflict that prevents refreshing this "
+                "branch with `main`. Resolve the conflict and the next sweep will pick it "
                 "up (the label stays armed)."
             ),
             merge_token,

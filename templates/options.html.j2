@@ -128,6 +128,10 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 .oew-stamp-row .k{color:var(--muted)}
 .oew-stamp-row .v{margin-left:auto;color:var(--ink-2);font-weight:600}
 .oew-stamp-row .v.brass{color:var(--oew-stamp)}
+.oew-source-receipt{margin-top:7px;border-top:1px solid var(--hair);padding-top:6px}
+.oew-source-receipt summary{cursor:pointer;color:var(--muted);font-size:10px;letter-spacing:.04em}
+.oew-source-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:4px;font-size:10px;color:var(--muted)}
+.oew-source-row .stale{color:var(--orange);font-weight:650}.oew-source-row .current{color:var(--up)}
 
 /* ── THE POSTURE CONSOLE — four co-displayed readings, NEVER fused ─────────
    Four equal cells, hairline-divided, no arithmetic between them. The refusal
@@ -156,6 +160,7 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 .oew-pips.sm .oew-pip{width:9px;height:5px}
 
 .oew-nofuse{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-top:var(--s4);font-size:12.5px;color:var(--ink-2)}
+.oew-aib>.oew-nofuse{margin:0;padding:10px var(--s4);border-bottom:1px solid var(--hair);background:var(--tile)}
 
 /* ── STANCE CHIP — the most important words on the page ─────────────────── */
 .oew-stance{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:11.5px;font-weight:700;
@@ -169,6 +174,11 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
   background:color-mix(in srgb,var(--oew-st-protect) 10%,var(--tile))}
 .st-aside{color:var(--oew-st-aside);border-color:var(--hair);background:transparent;opacity:.85}
 .st-ignore{color:var(--oew-st-ignore);border:1px solid transparent;background:transparent;opacity:.7}
+/* Data-outage chip — NOT a doctrine stance. Same geometry as .oew-stance so
+   the lede row does not jump; info tint, never the aside posture colour. */
+.oew-aib-lede-chip{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:11.5px;font-weight:700;
+  letter-spacing:.01em;white-space:nowrap;padding:4px 11px;border-radius:var(--r-pill);
+  border:1px solid var(--hair);color:var(--ink-info, var(--info));background:var(--tile)}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ★ THE SIGNATURE — THE CLOSE LINE ★
@@ -218,6 +228,11 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 .oew-pbody{padding:var(--s4)}
 .oew-pfoot{padding:10px var(--s4);border-top:1px solid var(--hair);background:var(--tile);
   font-size:11px;color:var(--muted);display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap}
+/* F03-W2-4c · one-sentence footnote about the source break in put-skew
+   history. Inherits --muted from the panel foot; the wrapped paragraph is
+   allowed to grow to two lines on narrow viewports. No new tokens. */
+.oew-pfoot .oew-aib-note{flex-basis:100%;font-size:12px;color:var(--muted);
+  margin:var(--s2) 0 0;line-height:1.45}
 .oew-asof{margin-left:auto;font-size:10px;color:var(--oew-stamp);opacity:.9;letter-spacing:.02em}
 /* the ? help affordance — the Tier-2 home for mechanics (LENS popover) */
 .oew-help{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;
@@ -237,6 +252,222 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
   background:color-mix(in srgb,var(--warn) 8%,var(--tile));color:var(--ink-2)}
 .oew-banner .ico{color:var(--ink-warn, var(--warn));font-weight:900;flex:none}
 .oew-empty{font-size:12.5px;color:var(--ink-2);line-height:1.5}
+
+/* ── BRIEF: AD-1 · OPTIONS INTELLIGENCE BRIEF ─────────────────────────────
+   contracts/options/OPTIONS_INTEL_BRIEF_V1.md.  scripts/build_options_command.py
+   is a PASS-THROUGH adapter (zero scoring here); state hues bind to the
+   EXISTING --up/--down/--info/--warn ink tokens only — no new palette. */
+.oew-aib-stamps{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;
+  padding:8px var(--s4);border-bottom:1px solid var(--hair);font-size:10.5px;color:var(--muted)}
+.oew-aib-pending{color:var(--oew-stamp)}
+.oew-aib-elig{margin-left:auto}
+.oew-aib-honesty{font-size:10px;color:var(--ink-2);font-weight:600;white-space:nowrap}
+.oew-aib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--s3)}
+@media (max-width:700px){.oew-aib-grid{grid-template-columns:1fr}}
+.oew-aib-card{border:1px solid var(--hair);border-left:3px solid var(--hair);border-radius:var(--r-ctl);
+  background:var(--tile);padding:var(--s3);display:flex;flex-direction:column;gap:7px;min-width:0}
+.oew-aib-card.is-up{border-left-color:var(--ink-up, var(--up))}
+.oew-aib-card.is-down{border-left-color:var(--ink-down, var(--down))}
+.oew-aib-card.is-vol{border-left-color:var(--ink-info, var(--info))}
+.oew-aib-card.is-risk{border-left-color:var(--ink-warn, var(--warn))}
+.oew-aib-top{display:flex;align-items:baseline;gap:7px}
+.oew-aib-rank{font-size:10px;color:var(--muted)}
+.oew-aib-sym{font-size:14px;font-weight:700}
+.oew-aib-state{margin-left:auto;font-size:11.5px;font-weight:650;text-align:right}
+.oew-aib-card.is-up .oew-aib-state{color:var(--ink-up, var(--up))}
+.oew-aib-card.is-down .oew-aib-state{color:var(--ink-down, var(--down))}
+.oew-aib-card.is-vol .oew-aib-state{color:var(--ink-info, var(--info))}
+.oew-aib-card.is-risk .oew-aib-state{color:var(--ink-warn, var(--warn))}
+.oew-aib-legs{display:flex;align-items:center;gap:8px;font-size:11px;cursor:help;flex-wrap:wrap}
+.oew-aib-legs .leg{display:inline-flex;align-items:center;gap:3px;font-weight:700}
+.oew-aib-legs .leg.up{color:var(--ink-up, var(--up))}
+.oew-aib-legs .leg.down{color:var(--ink-down, var(--down))}
+.oew-aib-legs .leg.flat{color:var(--muted)}
+.oew-aib-legverdict{margin-left:auto;font-size:10px;color:var(--ink-2)}
+.oew-aib-meter{display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--ink-2)}
+.oew-aib-meter .lbl{color:var(--muted)}
+.oew-aib-band{margin-left:auto;font-size:10px;font-weight:700}
+.oew-aib-band.band-tentative{color:var(--muted)}
+.oew-aib-band.band-moderate{color:var(--ink-2)}
+.oew-aib-band.band-firm{color:var(--text)}
+.oew-aib-why{font-size:12px;color:var(--ink-2);line-height:1.4;margin:0}
+.oew-aib-facts{display:flex;gap:var(--s3);flex-wrap:wrap;font-size:10.5px;color:var(--muted)}
+.oew-aib-chips{display:flex;gap:6px;flex-wrap:wrap}
+.oew-aib-prophet,.oew-aib-crowd{font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--r-pill);
+  border:1px solid var(--hair);background:var(--panel);color:var(--ink-2);cursor:help}
+.oew-aib-crowd{border-color:color-mix(in srgb,var(--warn) 45%,var(--hair));color:var(--ink-warn, var(--warn))}
+.oew-aib-detail{border-top:1px solid var(--hair);margin-top:2px;padding-top:6px}
+.oew-aib-detail summary{font-size:10.5px;color:var(--ink-2);cursor:pointer;font-weight:600}
+.oew-aib-detail summary:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
+.oew-aib-detailbody{margin-top:6px;display:flex;flex-direction:column;gap:7px}
+.oew-aib-dline{display:flex;flex-direction:column;gap:2px;font-size:11px}
+/* ── A-F03-W2-5b · PAYOFF LAB fold (dark + light are two art directions, TP-0
+   2026-08-27). Dark = command center (luminance depth: the accent dots are
+   the brightest thing in the fold, no glow). Light = research workspace
+   (ink weight instead of luminance; hairline discipline). Geometry is shared;
+   only the treatment of the wall/spot/flip marks changes — see html[data-
+   theme="light"] override below.  Inline `left:%` values are data-driven
+   geometry (allowed); nothing else inline. */
+.oew-lab-track{position:relative;height:4px;background:var(--hair);
+  border:1px solid var(--tile);margin-top:6px}
+.oew-lab-track i{position:absolute;display:block}
+.oew-lab-wall{top:-3px;width:1px;height:10px;background:var(--ink-2)}
+.oew-lab-flip{top:-3px;width:1px;height:4px;background:var(--muted)}
+.oew-lab-spot{top:-1px;width:6px;height:6px;background:var(--ink-2);margin-left:-3px}
+.oew-lab-be{top:-2px;width:7px;height:7px;background:var(--oew-accent);margin-left:-3.5px;
+  outline:1px solid var(--tile)}
+.oew-lab-legend{display:flex;justify-content:space-between;gap:var(--s2);
+  font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;
+  margin-top:4px}
+html[data-lang="zh"] .oew-lab-legend{letter-spacing:.02em;text-transform:none}
+.oew-lab-verdict{font-size:12px;font-weight:650;margin:0}
+.oew-lab-row{display:grid;grid-template-columns:auto 1fr;gap:6px var(--s2);
+  font-size:11.5px;align-items:baseline;padding:2px 0}
+.oew-lab-row .k{font-weight:650;color:var(--text)}
+.oew-lab-row .v{color:var(--ink-2);line-height:1.35}
+.oew-lab-row .v.oew-lab-null{color:var(--muted);font-style:normal}
+.oew-lab-foot{font-size:10.5px;color:var(--muted);margin:2px 0 0}
+/* ── A-F03-W3-2 · Payoff-fold catalyst chip ───────────────────────────────
+   Same geometry family as `.oew-aib-lede-chip` (the data-outage chip the
+   page already ships): no leading dot, info tint via `var(--ink-info,
+   var(--info))` text color, hairline border in `var(--hair)`, no glow,
+   no shadow, no color-mix blends on the added lines (every added value
+   is a token reference — see design-system gate).  Two real outcomes —
+   `is-before-expiry` (info tint, fed decision lands inside the expiry)
+   and `is-clear` (muted, none scheduled); the light override keeps the
+   fill transparent on both states so the chip never competes with the
+   cards' white material.
+   LIGHT TREATMENT (research workspace): white material, ink-weight
+   hairline, no fill, no shadow — the SAME chip on both themes, only
+   the fill flips from `var(--tile)` to transparent; tokens stay on the
+   page's own `--ink-info` / `--info` / `--muted` / `--hair` family. */
+.oew-lab-cat{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin:0;font-size:11px;font-weight:650;letter-spacing:.01em;white-space:nowrap;padding:3px 9px;border-radius:var(--r-pill);border:1px solid var(--hair);color:var(--ink-2);background:var(--tile)}
+.oew-lab-cat.is-before-expiry{color:var(--ink-info, var(--info));border-color:var(--ink-info, var(--info))}
+.oew-lab-cat.is-clear{color:var(--muted);background:transparent}
+html[data-theme="light"] .oew-lab-cat.is-before-expiry{background:transparent;border-color:var(--ink-info, var(--info))}
+html[data-theme="light"] .oew-lab-cat.is-clear{border-color:var(--hair)}
+@media (max-width:480px){.oew-lab-cat{white-space:normal}}
+/* Light override: ink-weight ticks (2px walls) instead of luminance dots;
+   accent stays the page's light-mode token (set on html[data-theme="light"]
+   .oew above) — no redefinition, no ring, no shadow. */
+html[data-theme="light"] .oew-lab-wall{width:2px}
+html[data-theme="light"] .oew-lab-be{outline:none}
+@media (max-width:640px){
+  .oew-lab-row{grid-template-columns:1fr;gap:2px}
+  .oew-lab-track{width:100%}
+}
+.oew-aib-dline .k{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.oew-aib-dline .v{color:var(--ink-2);line-height:1.4}
+.oew-aib-empty,.oew-aib-degraded{font-size:12.5px;color:var(--ink-2);line-height:1.5}
+.oew-aib-empty-lead{margin:0 0 4px}
+.oew-aib-empty-sub{margin:0;color:var(--muted);font-size:11px}
+.oew-aib-more{margin-left:auto;font-size:10.5px;color:var(--muted)}
+
+/* ── A-F03-W2-2 · BRIEF glance-tier lede ──────────────────────────────────
+   Dark (default, this page's bare selectors) = raised instrument slab —
+   luminance depth via an inner top highlight, no shadow. Light
+   (html[data-theme="light"], the page's own light-mode mechanism — see
+   html[data-theme="light"] .oew above) = white material on the cool canvas —
+   the highlight is deleted (a white-on-white bevel is a smudge) and a
+   hairline + one shallow shadow carry the depth instead. Same structure,
+   same semantics (lede -> evidence -> detail, stance vocabulary, EN/ZH
+   parity); only the material differs. Packet A-F03-W2-2 §6. */
+.oew-aib-lede{padding:var(--s3) var(--s4);border-bottom:1px solid var(--hair);
+  background:var(--tile);border-left:3px solid var(--hair);
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--text) 6%,transparent)}
+.oew-aib-lede.is-current{border-left-color:var(--oew-accent)}
+.oew-aib-lede.is-lagging{border-left-color:var(--ink-info, var(--info))}
+.oew-aib-lede.is-stale,
+.oew-aib-lede.is-unknown{border-left-color:var(--ink-warn, var(--warn))}
+
+.oew-aib-lede-head{margin:0 0 6px;font-size:15.5px;line-height:1.35;font-weight:680;
+  letter-spacing:-.005em;color:var(--text)}
+.oew-aib-lede-stance{margin:0 0 7px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.oew-aib-lede-todo{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.oew-aib-lede-said{font-size:12.5px;line-height:1.45;color:var(--ink-2)}
+
+.oew-aib-fresh{margin:0;display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;
+  font-size:11px;color:var(--muted)}
+.oew-aib-fresh-age{padding:2px 8px;border-radius:var(--r-pill);
+  background:var(--tile);border:1px solid var(--hair);font-weight:600}
+.oew-aib-fresh-age.lvl-stale,
+.oew-aib-fresh-age.lvl-unknown{color:var(--ink-warn, var(--warn));
+  background:color-mix(in srgb,var(--warn) 12%,var(--tile));border-color:transparent}
+
+.oew-aib-degraded-lead{margin:0 0 4px;font-weight:620;color:var(--text)}
+.oew-aib-degraded-why{margin:0 0 8px;font-size:12px;color:var(--ink-2);line-height:1.5}
+.oew-aib-degraded-rcp{font-size:11.5px}
+.oew-aib-degraded-rcp>summary{cursor:pointer;color:var(--muted)}
+
+/* LIGHT — white material: delete the inner highlight, add a hairline (top +
+   right; bottom + left are already set above) and one shallow shadow — the
+   page's OWN shallow-shadow token (--card-shadow, already themed light/dark
+   at :theme.css), reused here rather than a new literal so this stays within
+   existing token discipline. The stale/unknown chip re-weights its fill down
+   (12% -> 8%) and gains a defined border, which the dark tile-fill version
+   does not need. */
+html[data-theme="light"] .oew-aib-lede{box-shadow:var(--card-shadow);
+  border-top:1px solid var(--hair);border-right:1px solid var(--hair)}
+html[data-theme="light"] .oew-aib-lede.is-current{border-left-color:var(--oew-accent)}
+html[data-theme="light"] .oew-aib-lede.is-lagging{border-left-color:var(--ink-info, var(--info))}
+html[data-theme="light"] .oew-aib-lede.is-stale,
+html[data-theme="light"] .oew-aib-lede.is-unknown{border-left-color:var(--ink-warn, var(--warn))}
+html[data-theme="light"] .oew-aib-lede-chip{background:transparent;border-color:var(--hair)}
+html[data-theme="light"] .oew-aib-fresh-age{background:transparent}
+html[data-theme="light"] .oew-aib-fresh-age.lvl-stale,
+html[data-theme="light"] .oew-aib-fresh-age.lvl-unknown{
+  background:color-mix(in srgb,var(--warn) 8%,transparent);
+  border-color:color-mix(in srgb,var(--warn) 35%,var(--hair))}
+
+@media (max-width:520px){
+  .oew-aib-lede{padding:var(--s3)}
+  .oew-aib-lede-head{font-size:14.5px}
+  .oew-aib-lede-stance{align-items:flex-start}
+  .oew-aib-fresh{gap:6px 10px}
+}
+
+/* ── AD-1 B5 band 2 · directional watch: a CONTINUATION of the ranked grid, so it
+      reuses .oew-tkchip verbatim (incl. its data-goto jump) and adds only the
+      machine-supplied rank + direction word.  The keyline, not a box, is what
+      says "same list, below the cut". */
+.oew-aib-watch{display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap;
+  margin-top:var(--s3);padding-left:var(--s3);border-left:2px solid var(--hair)}
+.oew-aib-wlbl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);flex:none;cursor:help}
+.oew-aib-wchip{display:inline-flex;align-items:baseline;gap:5px}
+.oew-aib-wchip .rk{font-size:9.5px;font-weight:600;color:var(--muted)}
+.oew-aib-wchip .dir{font-size:10.5px;font-weight:700}
+.oew-aib-wchip.is-up .dir{color:var(--ink-up, var(--up))}
+.oew-aib-wchip.is-down .dir{color:var(--ink-down, var(--down))}
+.oew-aib-wnull{font-size:11.5px;color:var(--ink-2);margin-top:var(--s3)}
+
+/* ── AD-1 B5 band 3 · evidence rail.  Two lanes, .oew-rg surface reused; the 860px
+      breakpoint is the page's existing .oew-rail value, not a new one. */
+.oew-aib-rail{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s3);margin-top:var(--s4)}
+@media (max-width:860px){.oew-aib-rail{grid-template-columns:1fr}}
+.oew-aib-rgbody{display:flex;flex-direction:column;gap:7px}
+.oew-aib-rghead{display:flex;align-items:baseline;gap:6px;margin-bottom:7px}
+.oew-aib-rrow{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;font-size:11.5px;min-width:0}
+.oew-aib-rsym{font-family:var(--font-mono);font-size:11.5px;font-weight:700;flex:none}
+.oew-aib-rline{color:var(--ink-2);min-width:0;overflow-wrap:anywhere;line-height:1.4}
+.oew-aib-rmeta{margin-left:auto;flex:none;font-family:var(--font-mono);font-size:10px;color:var(--muted)}
+.oew-aib-rref{font-size:9.5px;color:var(--muted);flex:none}
+.oew-aib-rempty{font-size:11.5px;color:var(--muted);line-height:1.45}
+.oew-aib-rmore{font-size:10px;color:var(--muted)}
+
+/* ── AD-1 B5 band 4 · the control line.  Deliberately NOT a card, NOT a chip and
+      NOT clickable — it must never read as a seventh opportunity. */
+.oew-aib-control{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;
+  margin-top:var(--s4);padding-top:10px;border-top:1px solid var(--hair);
+  font-size:11.5px;color:var(--muted);line-height:1.45}
+.oew-aib-ctlk{flex:none;font-size:9.5px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-2);cursor:help}
+.oew-aib-ctlsym{flex:none;font-family:var(--font-mono);font-weight:700;color:var(--ink-2)}
+
+/* ── AD-1 B5 Prophet separation: AD evidence chips sit left, the external echo sits
+      far right with a dashed edge.  Dashed = "context, not our evidence" with no
+      new token and no extra word.  (Amends .oew-aib-prophet above.) */
+.oew-aib-chips .oew-aib-prophet{margin-left:auto;border-style:dashed}
 
 /* ── BRIEF: what-changed chips ── */
 .oew-chips{display:flex;gap:var(--s2);flex-wrap:wrap}
@@ -794,7 +1025,7 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 
     <!-- THE SESSION STAMP -->
     <div class="oew-stampblock">
-      <div class="oew-stamp-k">{{ t('Session closed', '收盘场次') }}</div>
+      <div class="oew-stamp-k">{{ t('Latest completed session', '最近完成场次') }}</div>
       <div class="oew-stamp-date mono">{{ sess.date if sess.date else '—' }}</div>
       <div class="oew-stamp-closed">
         {% if sess.weekday_en %}
@@ -815,6 +1046,15 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
           <span class="v" data-tip-en="{{ sess.quality_tip_en }}" data-tip-zh="{{ sess.quality_tip_zh }}">{{ t(sess.quality_en, sess.quality_zh) }}</span>
         </div>
       </div>
+      <details class="oew-source-receipt">
+        <summary>{{ t('Source-session receipt', '数据源场次凭证') }}</summary>
+        {%- for src in sess.sources %}
+        <div class="oew-source-row">
+          <span>{{ t(src.name_en, src.name_zh) }}</span>
+          <span class="mono {{ src.status }}">{{ src.source_session or t('unavailable', '不可用') }}{% if src.sessions_behind %} · {{ src.sessions_behind }} {{ t('sessions behind', '个交易日落后') }}{% endif %}</span>
+        </div>
+        {%- endfor %}
+      </details>
     </div>
 
     <!-- THE POSTURE CONSOLE — four readings, side by side, never combined -->
@@ -888,6 +1128,281 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 
 <!-- ══════════════════ MODE 1 · DAILY BRIEF (baked inline) ══════════════════ -->
 <section class="oew-mode active" id="mode-brief" role="tabpanel" aria-labelledby="tab-brief">
+  <!-- ══ AD-1 · OPTIONS INTELLIGENCE BRIEF (contracts/options/OPTIONS_INTEL_BRIEF_V1.md) ══
+       PASS-THROUGH ONLY: every score/order/state/text below is copied verbatim from
+       site/options_intel_brief.json via scripts/build_options_command.py's `aib`
+       context (build_aib()/`_aib_card()`).  No ranking, ordering or scoring happens
+       in this template. -->
+  <div class="oew-panel oew-aib" id="aib"
+       data-aib-state="{{ aib.board_state or 'unavailable' }}"
+       data-aib-asof="{{ aib.freshness.asof_date or '' }}"
+       data-aib-receipt="{{ (aib.receipt_id or '')[:12] }}"
+       data-aib-fresh="{{ aib.freshness.level }}">
+    {%- if sess.quality_en == 'Stale' %}
+    <div class="oew-nofuse" role="status">
+      <span>{{ t('The latest completed session is ' ~ sess.target_session ~ '. The panels below are retained prior-session context; each footer keeps its actual source date and none describes the target close.',
+                 '最近完成场次为 ' ~ sess.target_session ~ '。以下面板仅保留为较早场次背景；每个页脚均保留真实数据源日期，均不代表目标收盘。') }}</span>
+    </div>
+    {%- endif %}
+    <div class="oew-phead">
+      <h2 class="oew-ph-title">{{ t('Options Intelligence Brief', '期权情报简报') }}</h2>
+      <span class="oew-ph-sub">{{ t('ranked priorities, event and crowding reads, and one quiet control', '优先级排序、事件与拥挤读数，以及一个平静对照') }}</span>
+      <div class="oew-ph-right">
+        <span class="oew-aib-honesty">{{ t('Research priority · not a probability or trade signal', '研究优先级 · 非概率或交易信号') }}</span>
+        <span class="oew-help" tabindex="0" role="button"
+          data-tip-en="Ranked by evidence strength and confidence — never a probability, an edge, or a buy/sell signal. Two independent facts (open-interest positioning and skew change) must agree before a card gets a direction; Prophet context is display-only and never changes this ranking."
+          data-tip-zh="按证据强度与置信度排序——绝非概率、优势或买卖信号。未平仓合约仓位与偏度变化两个独立事实须一致，卡片才会给出方向；Prophet 参考仅供展示，不影响本排序。">?</span>
+      </div>
+    </div>
+    {% if aib.available %}
+    <div class="oew-aib-stamps">
+      {% if aib.as_of_session %}<span class="mono">{{ t('Settled', '已结算') }} {{ aib.as_of_session }}</span>{% endif %}
+      {% if aib.oi_counted_date %}<span class="mono">{{ t('Positions counted', '持仓统计于') }} {{ aib.oi_counted_date }}</span>{% endif %}
+      {% if aib.pending_session %}
+      <span class="oew-aib-pending mono">{{ t('Newer session', '更新交易日') }} {{ aib.pending_session }} {{ t('awaiting position counts', '等待持仓统计') }}</span>
+      {% endif %}
+      {%- if aib.healthy %}
+      <span class="oew-aib-elig mono">{{ aib.eligible }}/{{ aib.present }} {{ t('names eligible', '名称符合条件') }}</span>
+      {%- endif %}
+    </div>
+    {% endif %}
+    {#- ── GLANCE TIER · lede ────────────────────────────────────────────────
+        The answer before the evidence: what today's brief says, what to do
+        about it, and how fresh it is.  Every string is a closed-vocabulary
+        lookup from build_aib() keyed on the payload's own board_state and
+        card count — no scoring, no ranking and no generated prose here. -#}
+    <div class="oew-aib-lede is-{{ aib.freshness.level }}">
+      <h3 class="oew-aib-lede-head">{{ t(aib.lede_head_en, aib.lede_head_zh) }}</h3>
+      <p class="oew-aib-lede-stance">
+        <span class="oew-aib-lede-todo">{{ t('What to do', '该怎么做') }}</span>
+        {%- if aib.lede_stance_slug == 'data' %}
+        <span class="oew-aib-lede-chip">{{ t(aib.lede_stance_word_en, aib.lede_stance_word_zh) }}</span>
+        {%- else %}
+        <span class="oew-stance st-{{ aib.lede_stance_slug }}">{{ t(aib.lede_stance_word_en, aib.lede_stance_word_zh) }}</span>
+        {%- endif %}
+        <span class="oew-aib-lede-said">{{ t(aib.lede_stance_en, aib.lede_stance_zh) }}</span>
+      </p>
+      <p class="oew-aib-fresh">
+        {%- if aib.freshness.asof_en %}
+        <span class="oew-aib-fresh-asof">{{ t('As of', '数据截至') }} {{ t(aib.freshness.asof_en, aib.freshness.asof_zh) }}</span>
+        {%- endif %}
+        <span class="oew-aib-fresh-age lvl-{{ aib.freshness.level }}">{{ t(aib.freshness.age_en, aib.freshness.age_zh) }}</span>
+        {%- if aib.freshness.built_en %}
+        <span class="oew-aib-fresh-built">{{ t(aib.freshness.built_en, aib.freshness.built_zh) }}</span>
+        {%- else %}
+        <span class="oew-aib-fresh-built">{{ t('Update time not recorded', '未记录更新时间') }}</span>
+        {%- endif %}
+      </p>
+    </div>
+    <div class="oew-pbody">
+      {% if aib.available and aib.healthy %}
+
+      {# ── BAND 1 · canon: the ranked top six, exactly as ranked ── #}
+      {% if aib.cards %}
+      <div class="oew-aib-grid">
+        {% for c in aib.cards %}
+        <article class="oew-aib-card is-{{ c.state_slug }}">
+          <header class="oew-aib-top">
+            <span class="oew-aib-rank mono">№{{ c.board_rank }}</span>
+            {# board_rank is machine-supplied (contract §5a); the template no longer derives rank from loop.index #}
+            <span class="oew-aib-sym mono">{{ c.symbol }}</span>
+            <span class="oew-aib-state">{{ t(c.display_state_en, c.display_state_zh) }}</span>
+          </header>
+          <div class="oew-aib-legs" role="img"
+            data-tip-en="Two independent facts must agree before we call a direction: how open interest grew (calls vs puts) and how the skew moved. One arrow per fact."
+            data-tip-zh="必须两个独立事实一致才判定方向：未平仓合约的增长结构（看涨与看跌）与偏度的变化。每个事实一个箭头。">
+            <span class="leg leg-oi {{ c.oi_cls }}">{{ c.oi_glyph }} OI</span>
+            <span class="leg leg-skew {{ c.skew_cls }}">{{ c.skew_glyph }} {{ t('Skew', '偏度') }}</span>
+            <span class="oew-aib-legverdict">{{ t(c.leg_verdict_en, c.leg_verdict_zh) }}</span>
+          </div>
+          <div class="oew-aib-meter">
+            <span class="lbl">{{ t('Evidence', '证据') }}</span>
+            <span class="oew-pips" role="img"
+              data-tip-en="Evidence strength, {{ c.pips }} of {{ c.pips_total }}."
+              data-tip-zh="证据强度，{{ c.pips_total }} 格中第 {{ c.pips }} 格。">
+              {% for i in range(c.pips_total) %}<i class="oew-pip{% if i < c.pips %} on{% endif %}"></i>{% endfor %}
+            </span>
+            <span class="oew-aib-band band-{{ c.band_slug }}">{{ t(c.band_en, c.band_zh) }}</span>
+          </div>
+          <p class="oew-aib-why">{{ t(c.why_lead_en, c.why_lead_zh) }}</p>
+          <div class="oew-aib-facts mono">
+            <span>{{ t('Horizon', '周期') }} {{ t(c.horizon_en, c.horizon_zh) }}</span>
+            {% if c.move_pct %}<span>±{{ c.move_pct }}% {{ t('implied', '隐含') }}</span>{% endif %}
+            <span>{{ t('Fresh until', '有效至') }} {{ c.fresh_until }}</span>
+          </div>
+          <div class="oew-aib-chips">
+            {% if c.crowding %}<span class="oew-aib-crowd">{{ t('Crowded tape', '拥挤交易') }}</span>{% endif %}
+            <span class="oew-aib-prophet"
+              data-tip-en="Prophet context only — it does not change this board's ranking.{% if c.prophet_asof %} As of {{ c.prophet_asof }}.{% endif %}"
+              data-tip-zh="仅为 Prophet 参考——不影响本板块排序。{% if c.prophet_asof %}截至 {{ c.prophet_asof }}。{% endif %}">Prophet · {{ t(c.prophet_en, c.prophet_zh) }}</span>
+          </div>
+          <details class="oew-aib-detail">
+            <summary>{{ t('Why & what would change it', '依据与变化条件') }}</summary>
+            <div class="oew-aib-detailbody">
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('OI evidence', '未平仓量证据') }}</span>
+                <span class="v">{{ t(c.detail.oi_line_en, c.detail.oi_line_zh) }}</span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Skew evidence', '偏度证据') }}</span>
+                <span class="v">{{ t(c.detail.skew_line_en, c.detail.skew_line_zh) }}</span>
+              </div>
+              {% if c.detail.mechanics_en %}
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Mechanics', '机制背景') }}</span>
+                <span class="v">{{ t(c.detail.mechanics_en, c.detail.mechanics_zh) }}</span>
+              </div>
+              {% endif %}
+              {% for w in c.detail.why_now %}
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Evidence', '证据') }}</span>
+                <span class="v">{{ t(w.en, w.zh) }}</span>
+              </div>
+              {% endfor %}
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Would confirm', '确认条件') }}</span>
+                <span class="v">{{ t(c.detail.trigger_en, c.detail.trigger_zh) }}</span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Would change it', '变化条件') }}</span>
+                <span class="v">{{ t(c.detail.invalidation_en, c.detail.invalidation_zh) }}</span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Priority score', '优先级分数') }}</span>
+                <span class="v mono">{{ c.research_priority_score }}</span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Receipt', '回执') }}</span>
+                <span class="v mono">{{ c.signal_id }}</span>
+              </div>
+            </div>
+          </details>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="oew-aib-empty">
+        <p class="oew-aib-empty-lead">{{ t('No name clears the research-priority threshold today.', '今日没有名称达到研究优先级门槛。') }}</p>
+        <p class="oew-aib-empty-sub">{{ aib.eligible }} {{ t('names fully eligible · source healthy', '个名称完全符合条件 · 数据源正常') }}</p>
+      </div>
+      {% endif %}
+
+      {# ── BAND 2 · directional watch — same ranked list, below the cut ── #}
+      {% if aib.watch %}
+      <div class="oew-aib-watch">
+        <span class="oew-aib-wlbl" tabindex="0" role="button"
+          data-tip-en="Names that met the same evidence bar as the six above but ranked below the cut. The numbers are their place in the full ranking, so a gap means a higher-ranked volatility name sits between them. Order comes from the board's own ranking and is never re-sorted here."
+          data-tip-zh="与上方六个达到同一证据标准、但排名未进前六的名称。编号为其在完整排序中的位次，因此编号跳跃表示中间有排名更高的波动率名称。顺序沿用板块自身排序，此处不重新排序。"
+        >{{ t('Qualified below the cut', '达标但未入前六') }}</span>
+        {% for w in aib.watch %}
+        <button class="oew-tkchip oew-aib-wchip is-{{ w.dir_slug }}" type="button" data-goto="{{ w.symbol }}">
+          <span class="rk">№{{ w.board_rank }}</span>
+          <span>{{ w.symbol }}</span>
+          <span class="dir">{{ t(w.dir_en, w.dir_zh) }}</span>
+        </button>
+        {% endfor %}
+        {% if aib.watch_overflow > 0 %}
+        <span class="oew-aib-rmore">+{{ aib.watch_overflow }} {{ t('more', '个') }}</span>
+        {% endif %}
+      </div>
+      {% elif aib.no_directional %}
+      <p class="oew-aib-wnull">{{ t('No upside or downside hypothesis qualified today.', '今日没有上行或下行假设达标。') }}</p>
+      {% endif %}
+
+      {# ── BAND 3 · evidence rail — event premium | crowded tape ── #}
+      <div class="oew-aib-rail">
+
+        <div class="oew-rg oew-aib-rgbody">
+          <div class="oew-aib-rghead">
+            <span class="oew-rg-h">{{ t('Ahead of an event', '事件前') }}</span>
+            <span class="oew-help" tabindex="0" role="button"
+              data-tip-en="Names with a known event inside the next 45 days, ordered by how far their event pricing sits from other event names today. Cross-sectional comparison only — it never says an event move is cheap or expensive."
+              data-tip-zh="未来 45 天内有已知事件的名称，按其事件定价与当前其他事件名称的偏离程度排序。仅为横截面比较——绝不表示某次事件变动是便宜还是昂贵。">?</span>
+          </div>
+          {% if aib.events %}
+            {% for e in aib.events %}
+            <div class="oew-aib-rrow">
+              <span class="oew-aib-rsym">{{ e.symbol }}</span>
+              <span class="oew-aib-rline">{{ t(e.state_en, e.state_zh) }}</span>
+              {% if e.board_rank %}<span class="oew-aib-rref">№{{ e.board_rank }} {{ t('above', '见上') }}</span>{% endif %}
+              <span class="oew-aib-rmeta">{{ t('Event', '事件') }} {{ e.event_date }}{% if e.move_pct %} · ±{{ e.move_pct }}%{% endif %}</span>
+            </div>
+            {% endfor %}
+            {% if aib.events_overflow > 0 %}
+            <div class="oew-aib-rmore">+{{ aib.events_overflow }} {{ t('more', '个') }}</div>
+            {% endif %}
+          {% else %}
+          <p class="oew-aib-rempty">{{ t(aib.events_empty_en, aib.events_empty_zh) }}</p>
+          {% endif %}
+        </div>
+
+        <div class="oew-rg oew-aib-rgbody">
+          <div class="oew-aib-rghead">
+            <span class="oew-rg-h">{{ t('Crowded tape', '拥挤交易') }}</span>
+            <span class="oew-help" tabindex="0" role="button"
+              data-tip-en="Names where activity looks crowded: same-day expiries dominating the tape, options costly while price sits at a high, or both running for days. Crowding cuts how tradeable an idea is; it never gives a direction."
+              data-tip-zh="活跃度显示拥挤的名称：当日到期主导盘面、价格高位时期权偏贵，或两者持续数日。拥挤会削弱想法的可执行性；它从不给出方向。">?</span>
+          </div>
+          {% if aib.risks %}
+            {% for r in aib.risks %}
+            <div class="oew-aib-rrow">
+              <span class="oew-aib-rsym">{{ r.symbol }}</span>
+              <span class="oew-aib-rline">{{ t(r.cause_en, r.cause_zh) }}</span>
+              {% if r.board_rank %}<span class="oew-aib-rref">№{{ r.board_rank }} {{ t('above', '见上') }}</span>{% endif %}
+            </div>
+            {% endfor %}
+            {% if aib.risks_overflow > 0 %}
+            <div class="oew-aib-rmore">+{{ aib.risks_overflow }} {{ t('more', '个') }}</div>
+            {% endif %}
+          {% else %}
+          <p class="oew-aib-rempty">{{ t('Nothing looks crowded today.', '今日无拥挤迹象。') }}</p>
+          {% endif %}
+        </div>
+
+      </div>
+
+      {# ── BAND 4 · the control — never a card, never clickable ── #}
+      <div class="oew-aib-control">
+        <span class="oew-aib-ctlk" tabindex="0" role="button"
+          data-tip-en="A healthy, fully covered name that cleared nothing today — shown so you can tell 'nothing here' apart from 'no data'. It is not a research priority and is never ranked."
+          data-tip-zh="一个数据完整、今日无任何状态达标的健康名称——用以区分「无信号」与「无数据」。它不是研究优先级，也从不参与排序。"
+        >{{ t('Control', '对照') }}</span>
+        {% if aib.control %}
+        <span class="oew-aib-ctlsym">{{ aib.control.symbol }}</span>
+        <span>— {{ t(aib.control.reason_en, aib.control.reason_zh) }}</span>
+        {% else %}
+        <span>— {{ t('no fully covered quiet name today.', '今日无数据完整的平静名称。') }}</span>
+        {% endif %}
+      </div>
+
+      {% else %}
+      <div class="oew-aib-degraded">
+        <p class="oew-aib-degraded-lead">{{ t(aib.degraded_en or 'This board is unavailable for this close.', aib.degraded_zh or '本次收盘该板块暂不可用。') }}</p>
+        <p class="oew-aib-degraded-why">{{ t(aib.degraded_why_en or 'This is a data gap, not a quiet market.',
+                                              aib.degraded_why_zh or '这是数据缺口，并非市场平静。') }}</p>
+        <details class="oew-aib-degraded-rcp">
+          <summary>{{ t('What we checked', '我们检查了什么') }}</summary>
+          <div class="oew-aib-detailbody">
+            <div class="oew-aib-dline"><span class="k">{{ t('Last settled close', '最近结算收盘') }}</span><span class="v mono">{{ aib.as_of_session or t('not recorded', '未记录') }}</span></div>
+            <div class="oew-aib-dline"><span class="k">{{ t('Positions counted', '持仓统计于') }}</span><span class="v mono">{{ aib.oi_counted_date or t('not recorded', '未记录') }}</span></div>
+            <div class="oew-aib-dline"><span class="k">{{ t('Built', '生成于') }}</span><span class="v">{% if aib.freshness.built_en %}{{ t(aib.freshness.built_en, aib.freshness.built_zh) }}{% else %}{{ t('not recorded', '未记录') }}{% endif %}</span></div>
+            <div class="oew-aib-dline"><span class="k">{{ t('Receipt', '回执') }}</span><span class="v mono">{{ (aib.receipt_id or '')[:12] or t('not recorded', '未记录') }}</span></div>
+          </div>
+        </details>
+      </div>
+      {% endif %}
+    </div>
+    <div class="oew-pfoot">
+      <span>{{ t('Hypotheses to research, ranked by evidence — none is a trade on its own.', '按证据排序的研究假设——均非独立交易信号。') }}</span>
+      {% if aib.overflow > 0 %}<span class="oew-aib-more"
+        data-tip-en="Counts every direction above the threshold, including volatility names. The strip above names only the upside and downside ones."
+        data-tip-zh="统计门槛之上的全部方向，含波动率名称。上方条带仅列出上行与下行名称。">{{ aib.overflow }} {{ t('more above threshold', '个更多超过门槛') }}</span>{% endif %}
+      {% if aib.as_of_session %}
+      <span class="oew-asof mono" data-tip-en="Receipt {{ aib.receipt_id[:12] }}" data-tip-zh="回执 {{ aib.receipt_id[:12] }}">{{ aib.as_of_session }}</span>
+      {% endif %}
+      {% if skew_source_note_en %}<p class="oew-aib-note" data-skew-source-note>{{ t(skew_source_note_en, skew_source_note_zh) }}</p>{% endif %}
+    </div>
+  </div>
 
   <div class="oew-panel">
     <div class="oew-phead">
@@ -949,6 +1464,47 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
             {% else %}<span class="oew-stance st-watch">{{ t("Watch — don't chase", '观察—勿追高') }}</span>{% endif %}
             <span class="oew-ic-em mono">{{ ix.em }}</span>
           </div>
+          {%- set lab = payoff_lab.get(ix.sym) if payoff_lab else None -%}
+          {%- if lab -%}
+          <details class="oew-aib-detail oew-lab"{% if payoff_lab_force_open %} open{% endif %}>
+            <summary>{{ t(lab.summary_en, lab.summary_zh) }}</summary>
+            <div class="oew-aib-detailbody oew-lab-body">
+              {%- if lab.bracket -%}
+              <div class="oew-lab-track" role="img"
+                data-tip-en="The two dots are where a straddle bought at this close breaks even at expiry — the move the options market is charging for. The ticks are the dealer-hedging walls measured today. Walls can move before expiry; this compares a to-expiry price with a same-day map. Model estimate from end-of-day mid prices, no fees, not a quote."
+                data-tip-zh="两个圆点标示收盘时买入跨式到期盈亏平衡的价格——即期权市场正在定价的波动幅度。刻度为今日测算的做市商对冲墙位。墙位在到期前可能移动；这里比较的是到期价格与当日墙位。模型估算来自收盘中间价，不含费用，并非实时报价。">
+                <i class="oew-lab-wall" style="left:{{ lab.bracket.floor_pct }}%"></i>
+                <i class="oew-lab-wall" style="left:{{ lab.bracket.ceiling_pct }}%"></i>
+                <i class="oew-lab-flip" style="left:{{ lab.bracket.flip_pct }}%"></i>
+                <i class="oew-lab-spot" style="left:{{ lab.bracket.spot_pct }}%"></i>
+                <i class="oew-lab-be" style="left:{{ lab.bracket.lo_pct }}%"></i>
+                <i class="oew-lab-be" style="left:{{ lab.bracket.hi_pct }}%"></i>
+              </div>
+              <div class="oew-lab-legend mono">
+                <span>{{ t('Floor', '下方墙') }}</span>
+                <span>{{ t('Flip', '翻转位') }}</span>
+                <span>{{ t('Ceiling', '上方墙') }}</span>
+              </div>
+              <p class="oew-lab-verdict">{{ t(lab.bracket.verdict_en, lab.bracket.verdict_zh) }}</p>
+              {%- endif -%}
+              {%- if lab.catalyst -%}<p class="oew-lab-cat is-{{ lab.catalyst.state }}" data-payoff-catalyst-chip data-tip-en="{{ lab.catalyst.tip_en }}" data-tip-zh="{{ lab.catalyst.tip_zh }}">{{ t(lab.catalyst.chip_en, lab.catalyst.chip_zh) }}</p>{%- endif -%}
+              {%- for r in lab.rows -%}
+              <div class="oew-lab-row{% if not r.built %} is-null{% endif %}"
+                data-tip-en="{{ r.what_en }}" data-tip-zh="{{ r.what_zh }}">
+                <span class="k">{{ t(r.name_en, r.name_zh) }}</span>
+                {%- if r.built %}
+                <span class="v mono">{{ t(r.cost_en, r.cost_zh) }}</span>
+                <span class="v mono">{{ t(r.pays_en, r.pays_zh) }}</span>
+                <span class="v mono">{{ t(r.risk_en, r.risk_zh) }}</span>
+                {%- else %}
+                <span class="v oew-lab-null">{{ t(r.null_en, r.null_zh) }}</span>
+                {%- endif %}
+              </div>
+              {%- endfor -%}
+              <p class="oew-lab-foot">{{ t('End-of-day mid prices, ' ~ lab.expiry_en ~ ' expiry · ThetaData', '收盘中间价，' ~ lab.expiry_zh ~ '到期 · ThetaData') }}{% if lab.asof_note_en %} · {{ t(lab.asof_note_en, lab.asof_note_zh) }}{% endif %}</p>
+            </div>
+          </details>
+          {%- endif -%}
         </div>
         {% endfor %}
       </div>
@@ -1290,6 +1846,9 @@ function getJSON(url){
    .catch(→ null), and an honest labelled absence on every failure path.
    ══════════════════════════════════════════════════════════════════════════ */
 var flDesk = null, flTide = null;
+/* Generated from the canonical NYSE calendar at bake time.  It is null on a
+   weekend/holiday, so the literal Today panel cannot invent a session. */
+var LIVE_SESSION_DATE = {{ live_session_date|tojson }};
 
 function r2Url(path){
   var base = String((window && window.DATA_BASE) || '').replace(/\/+$/, '');
@@ -1620,6 +2179,17 @@ function flApplyTide(tide){
   }
   flDrawUnfold();
 }
+
+function flTideValidity(tide){
+  if(!tide || tide.schema !== 'live_flow.tide/v1') return 'schema';
+  if(!LIVE_SESSION_DATE || tide.session_date !== LIVE_SESSION_DATE) return 'session';
+  if(typeof tide.asof !== 'string' || !tide.asof || isNaN(Date.parse(tide.asof))) return 'asof';
+  if(!Array.isArray(tide.minutes) || tide.minutes.length < 2) return 'minutes';
+  var valid = tide.minutes.every(function(m){
+    return m && typeof m.t === 'string' && num(m.ncp) !== null && num(m.npp) !== null;
+  });
+  return valid ? null : 'minutes';
+}
 function renderFlow(host, desk, cohorts){
   if(!desk || !desk.sector_heatmap){
     host.innerHTML = emptyPanel('The flow desk did not report for this close. It returns with the next options tape.',
@@ -1640,7 +2210,9 @@ function renderFlow(host, desk, cohorts){
   fetch(url, { cache:'no-cache' })
     .then(function(r){ return r.ok ? r.json() : null; })
     .catch(function(){ return null; })
-    .then(function(t){ if(t){ try{ flApplyTide(t); }catch(e){} } });
+    .then(function(t){
+      if(t && !flTideValidity(t)){ try{ flApplyTide(t); }catch(e){} }
+    });
 }
 
 /* ══════════ SCANNER ══════════ */

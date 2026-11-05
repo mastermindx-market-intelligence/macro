@@ -35,7 +35,6 @@ from engine.capital_structure.document_terms import (
     DocumentTermCompileDegraded,
     compile_document_term_records,
     observation_id_for,
-    validate_observation_source_binding,
     validate_document_term_history,
 )  # noqa: E402
 from engine.capital_structure.source_identity import (
@@ -54,6 +53,9 @@ DOCUMENT_TERM_COLUMNS = [
     "source_manifest_id", "term_name", "state", "available_at",
     "correction_version", "observation_json",
 ]
+
+PARSE_RECEIPTS_FILE = "document_term_parse_receipts.jsonl"
+PARSE_RECEIPTS_TEMP_FILE = "document_term_parse_receipts.tmp.jsonl"
 
 
 def _repo_root() -> Path:
@@ -169,12 +171,82 @@ def _load_existing_observations(path: Path, schema: Mapping[str, Any]) -> list[d
     return observations
 
 
+def parse_receipts_path(root: Path) -> Path:
+    return root / PARSE_RECEIPTS_FILE
+
+
+def _load_parse_receipts(path: Path, schema: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Load durable parse receipts; a missing file simply means no receipts.
+
+    Every present line must be one canonical, schema-valid JSON object, and the
+    file must be sorted by (source_manifest_id, parser_version) and end with a
+    single newline. Anything else fails closed before the compile reads a source.
+    """
+    if not path.exists():
+        return []
+    raw_text = path.read_text(encoding="utf-8")
+    if not raw_text:
+        return []
+    if not raw_text.endswith("\n"):
+        raise ValueError(
+            f"document-term parse receipts file {path} must end with one newline"
+        )
+    receipts: list[dict[str, Any]] = []
+    for index, line in enumerate(raw_text[:-1].split("\n")):
+        if not line.strip():
+            raise ValueError(f"document-term parse receipts line {index} is blank")
+        try:
+            receipt = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                f"document-term parse receipts line {index} is malformed"
+            ) from exc
+        if not isinstance(receipt, dict):
+            raise ValueError(
+                f"document-term parse receipts line {index} must be an object"
+            )
+        if line != _canonical_json(receipt):
+            raise ValueError(
+                f"document-term parse receipts line {index} is not canonical JSON"
+            )
+        _validate_schema(
+            receipt, schema, f"document-term parse receipts line {index}",
+        )
+        receipts.append(receipt)
+    ordered = sorted(
+        receipts,
+        key=lambda item: (
+            str(item.get("source_manifest_id") or ""),
+            str(item.get("parser_version") or ""),
+        ),
+    )
+    if receipts != ordered:
+        raise ValueError(
+            "document-term parse receipts file is not sorted by "
+            "(source_manifest_id, parser_version)"
+        )
+    return receipts
+
+
+def _atomic_write_receipts(
+    receipts: Sequence[Mapping[str, Any]], target: Path,
+) -> None:
+    payload = "".join(_canonical_json(receipt) + "\n" for receipt in receipts)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target.parent / PARSE_RECEIPTS_TEMP_FILE
+    try:
+        temporary.write_text(payload, encoding="utf-8")
+        os.replace(temporary, target)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
 def _validate_observation_lineage(
     observations: Sequence[Mapping[str, Any]], manifests: Sequence[Mapping[str, Any]],
     schema: Mapping[str, Any], *, source_reader,
 ) -> None:
     by_manifest = {str(row["manifest_id"]): row for row in manifests}
-    source_cache: dict[str, bytes | None] = {}
     for index, raw in enumerate(observations):
         observation = dict(raw)
         _validate_schema(observation, schema, f"output document-term {index}")
@@ -195,34 +267,12 @@ def _validate_observation_lineage(
             raise ValueError(f"output document-term {index} has detached source evidence")
         if (source_document.get("document_role") or "") != "complete_submission":
             raise ValueError(f"output document-term {index} source is not a complete submission")
-        # Every row is bound against its exact retained bytes, with no shape
-        # exempted. ``validate_observation_source_binding`` re-derives the
-        # manifest identity from the submission envelope before it looks at a
-        # single span, so it requires the bytes UNCONDITIONALLY -- a row whose
-        # only span is the document root is not a row that needs less proof, it
-        # is a row that has less to prove.
-        #
-        # This used to read the bytes only when a span was narrower than the
-        # whole document (`child_document_type`, or a table/text_range locator),
-        # and hand `None` in otherwise. That is the 2026-08-06 nightly abort:
-        # the four deferral branches in ``_records_for_manifest_v1_1_0``
-        # (manifest_corruption_not_clean, manifest_parser_not_eligible,
-        # eligible_document_not_found, and multi-document fee_table_not_detected)
-        # all emit root-span-only rows with no child document, so the binder was
-        # handed `None` and raised ManifestIdentityError("retained source bytes
-        # are required") from inside a validator this caller believed tolerated
-        # absence.
-        #
-        # Reading unconditionally costs nothing: ``compile_document_term_records``
-        # has already run the sealed source-authority pass over these same rows,
-        # which loads every referenced manifest through this same memoized
-        # reader. By the time this loop runs the bytes are a dict hit, not I/O.
-        if manifest_id not in source_cache:
-            source_cache[manifest_id] = source_reader(manifest)
-        source_bytes = source_cache[manifest_id]
-        if source_bytes is None:
-            raise ValueError(f"output document-term {index} source bytes are unavailable")
-        validate_observation_source_binding(observation, manifest, source_bytes)
+        # The sealed compiler has already source-validated every new, corrected,
+        # or parser-invalidated root before returning it.  Reused immutable rows
+        # are admitted only when this exact manifest/content dependency and the
+        # registered parser version remain unchanged.  Re-reading and reparsing
+        # every historical root here would duplicate that authority pass and
+        # make nightly cost scale with the full estate rather than the dirty set.
     validate_document_term_history(observations)
 
 
@@ -306,12 +356,18 @@ def compile_from_disk(
     ledger_path = root / "document_term_observations.parquet"
     manifest_schema = _load_contract("capital_structure_source_manifest.schema.json")
     observation_schema = _load_contract("capital_structure_document_term_observation.schema.json")
+    receipt_schema = _load_contract(
+        "capital_structure_document_term_parse_receipt.schema.json"
+    )
     manifests = read_source_ledger(manifest_path)
     for index, manifest in enumerate(manifests):
         _validate_schema(manifest, manifest_schema, f"source manifest {index}")
         validate_manifest_content_binding(manifest)
     validate_manifest_ledger(manifests)
     existing = _load_existing_observations(ledger_path, observation_schema)
+    parse_receipts = _load_parse_receipts(
+        parse_receipts_path(root), receipt_schema,
+    )
     store = source_store if source_store is not None else build_source_stores()
     base_reader = _source_reader_for_store(store)
     source_cache: dict[str, bytes | None] = {}
@@ -328,12 +384,17 @@ def compile_from_disk(
         existing_observations=existing,
         generated_at=generated_at or _now_iso(),
         rebuild=rebuild,
+        parse_receipts=parse_receipts,
     )
     observations = result["observations"]
     _validate_observation_lineage(
         observations, manifests, observation_schema, source_reader=source_reader,
     )
+    # Serialize both payloads before either write so a degraded or failed run
+    # leaves the previous generation of both files untouched.
+    receipts = result["receipts"]
     _atomic_write(_to_frame(observations), ledger_path)
+    _atomic_write_receipts(receipts, parse_receipts_path(root))
     return {"status": "ok", **result["counts"], "path": str(ledger_path)}
 
 

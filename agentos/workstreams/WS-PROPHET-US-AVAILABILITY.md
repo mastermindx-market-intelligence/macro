@@ -16,9 +16,16 @@ class: build
 blast_radius: reversible
 ambiguity: specified
 next_action: >
-  Land the availability-hardening PR (W0), then hand W1 to the operator: run the
-  launchd installer once on the Mac Studio, and close the outstanding arbitration of
-  the cancelling codex session.
+  PR #7180 remains the active bounded producer/source-bound carrier. Its reviewed
+  semantic head 99b9bc18 composes conflict-free with current main 3df8685c and
+  passes the current-base local release matrix; publish the documentation-only
+  qualification on the same branch, require fresh terminal hosted CI and genuine
+  independent approval, and merge only after release-owner acceptance. Then
+  integrate existing PR #7187 and reconcile existing PR #7457 once, in that order.
+  PR #7161 already merged as bdad6706 and is DO_NOT_REDO. Keep the parent capability
+  BUILT_NOT_PROVEN until exact deployed-commit source, protected-serving, browser,
+  and subsequent scheduled-refresh proof. China run 35021696056 remains proven and
+  must not be retried.
 owns_paths:
   - scripts/prophet_rescue.py
   - .github/workflows/prophet-rescue.yml
@@ -31,8 +38,10 @@ waves:
     title: Response + resilience layers (rescue lane, hook protection, launchd pack, laws)
     status: in_progress
     next_action: >
-      Land the availability-hardening PR (branch claude/prophet-us-availability-hardening);
-      complements PR #5487 nightly-liveness (detection) — zero file overlap by design.
+      The original "land the availability-hardening PR" action is stale because its
+      response/liveness/rescue layers are on main. Re-pin their accepted receipts and
+      identify the bounded W0 closure delta before changing status; this A1 acceptance
+      is not W0 acceptance and does not authorize recreating the original carrier.
   - id: W1
     title: Operator acts — install launchd backstop; arbitrate the cancelling codex session
     status: todo
@@ -47,14 +56,29 @@ waves:
     depends_on: [W0]
     next_action: >
       Inject each failure class in staging form (stale fixture, mock cancelled run) and
-      verify catch+heal+receipt paths; then declare the workstream's done-bar met or
-      iterate.
+      verify catch+heal+receipt paths — now including W3's wedge/hostage class (a run
+      held alive by an unschedulable queued job) and the ruleset push-freeze class;
+      then declare the workstream's done-bar met or iterate.
+  - id: W3
+    title: 2026-08-17 outage response — hostage-class + freeze-class hardening
+    status: in_progress
+    depends_on: [W0]
+    next_action: >
+      The original "merge the hardening PR" action is stale. A1 proves one US
+      natural-night absorption and the separate-cron behavior only; W3 remains in
+      progress until all five Prophet boards and its outstanding operator asks are
+      reconciled. Then carry wedge/hostage/ruleset classes into W2's injection matrix.
 landmines:
+  - "A queued job on a runner label with no live runner holds its RUN alive ~24h and the run holds its per-cron concurrency group — the next night pends with zero jobs (DSC:QUEUED-JOB-HOSTAGE-HOLDS-THE-NIGHTLY-CRON-GROUP). Check job runs-on labels against the live pool before any other diagnosis."
+  - "A push-blocking ruleset kills publishes while builds stay green; `gh api repos/{o}/{r}/rulesets` is the FIRST check on mysterious GH013s (DSC:RULESET-FREEZE-BLINDS-EVERY-BUILD-INSTRUMENT)."
+  - "Rescue §0.4a is amended (DEC:PROPHET-NIGHTLY-WEDGE-HARDENING): a PROVEN wedge dispatches through; everything unproven still refuses. Do not 'simplify' the fail-closed inputs."
   - "Top-level index.json asof is wall-clock — sentinels must read source_asof + cohorts (DSC:PROPHET-ASOF-IS-WALL-CLOCK)."
   - "Run conclusions decouple from Prophet delivery in both directions (DSC:CANCELLED-DAILY-RUN-CAN-STILL-DELIVER-PROPHET)."
   - "Never dispatch over a queued/in_progress daily run; never exceed the 2/night auto-budget — livelock and dispatch-storm classes are both measured, not hypothetical."
-  - "2026-08-11 has no origination event and no bake-time board; backfill refused absent operator override (DEC:PROPHET-RESCUE-SEPARATE-FROM-LIVENESS alternatives)."
+  - "Force-majeure reconstruction defaults to the narrow authority in DEC:FORCE-MAJEURE-SESSIONS-ARE-BACKFILLED-BY-DEFAULT: the one authorized Aug-14 PIT replay is absorbed and must not be rerun; reconstructed rows stay unmarked, and data-defect windows remain outside that authority. The 2026-08-11 no-origination/no-bake-time facts remain historical evidence, not a blanket prohibition that supersedes the later DEC."
   - "GitHub concurrency supersedes PENDING runs even when cancel-in-progress is false (DSC:GITHUB-CONCURRENCY-SUPERSEDES-PENDING). daily.yml DST crons must keep distinct groups (DEC:DAILY-CRON-SLOT-CONCURRENCY-GROUPS)."
+  - "A pre-close vendor daily bar can be provisional even when its date is today. Clip the full non-crypto scoring plane to one expected_last_session BEFORE ranking; never weaken mixed-vintage refusal to make picks appear."
+  - "Hashing a source path before and after a build is not enough if consumers reopen it: an ABA rewrite can restore the original hash after different bytes were consumed. Every Prophet consumer must use the one frozen parsed source object."
 do_not_redo:
   - "Do not re-investigate GitHub platform incidents for Aug 11-13 2026 — githubstatus history checked, zero Actions incidents; the outage was self-inflicted (workflow-size strand, fleet force-cancels, runner disk-full)."
   - "Do not build a second detection check duplicating PR #5487's run-created/run-concluded/source_asof arms."

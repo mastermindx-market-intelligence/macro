@@ -11,8 +11,10 @@ no relation to the wall clock (a guard whose fixtures age is a scheduled red).
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
+import jsonschema
 import pandas as pd
 import pytest
 
@@ -21,6 +23,7 @@ from scripts import check_theme_graph_contracts as guard
 
 STAMP = "2024-01-02T00:00:00Z"
 EV_ID = "ev:00000000000000aa"
+FIXTURES = Path(__file__).resolve().parent / "fixtures" / "semiconductor_theme_research"
 
 
 # ---------------------------------------------------------------------------
@@ -33,7 +36,7 @@ def _evidence_row(**over) -> dict:
            "source_ref": "fixture://membership.json",
            "licensing_internal_ok": True, "licensing_display_ok": True,
            "licensing_redistribution_ok": True, "retention": None,
-           "computed_at": STAMP}
+           "computed_at": STAMP, "curation_assertion": None}
     row.update(over)
     return row
 
@@ -169,7 +172,12 @@ def test_a_ratified_epoch_passes(tmp_path):
     bfile.write_text(
         "breaks:\n  - symbol: AAA\n    market: us\n    break_date: '2024-01-01'\n"
         "    prior_node_retired_as: co:us:AAA\n    new_epoch: 2\n"
-        "    evidence: fixture\n    ratified_by: fixture\n", encoding="utf-8")
+        "    evidence: fixture\n    ratified_by: fixture\n"
+        # V4-D2B3 R-A9: every breaks row must carry a parseable ratified_at,
+        # fail-closed — this fixture's prior node (co:us:AAA, epoch 1) is absent from
+        # this store (only co:us:AAA#2 exists), so the break-retirement invariant is a
+        # no-op here (ABX shape) and this row exists purely to satisfy R-A9.
+        "    ratified_at: '2024-01-02'\n", encoding="utf-8")
     root = _write_store(
         tmp_path / "epoch_ok",
         nodes=[_node_row(node_id="co:us:AAA#2", identity_epoch=2),
@@ -270,3 +278,418 @@ def test_every_annotation_starts_its_own_line(tmp_path, breaks, capsys):
 def test_main_wires_both_flags(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(guard, "selftest", lambda *a, **k: 0)
     assert guard.main(["--selftest"]) == 0
+
+
+# ---------------------------------------------------------------------------
+# 5. V4-D2A — the identity resolution side-car (independently built fixtures)
+# ---------------------------------------------------------------------------
+
+def _idres_row(**over) -> dict:
+    row = {
+        "schema": "gmi.identity_resolution/v1", "node_id": "co:us:AAA",
+        "graph_kind": "company", "market_scope": "us", "graph_identity_epoch": 1,
+        "source_native_symbol": "AAA", "resolution_asof": "2024-01-01",
+        "resolution_state": "NOT_IN_MASTER", "issuer_id": None, "security_id": None,
+        "listing_key": None, "join_method": "refused", "master_generated_at": None,
+        "master_symbol_directory_snapshot": None, "master_code_version": None,
+        "refusal_reason": "fixture: no master row", "source_receipts": "{}",
+        "computed_at": STAMP, "engine_version": store.ENGINE_VERSION,
+    }
+    row.update(over)
+    return row
+
+
+def _write_idres(root: Path, rows: list[dict]) -> None:
+    pd.DataFrame(rows).reindex(columns=list(store.IDENTITY_RESOLUTION_COLUMNS)).to_parquet(
+        root / "identity_resolution.parquet", index=False)
+
+
+def test_identity_resolution_absent_is_a_notice_when_company_nodes_exist(tmp_path, breaks):
+    root = _write_store(tmp_path / "idres_absent")
+    b, n = guard.audit(root, breaks)
+    assert not b
+    assert any("half-finished build" in x for x in n)
+
+
+def test_identity_resolution_clean_passes_and_prints_a_census(tmp_path, breaks, capsys):
+    root = _write_store(tmp_path / "idres_clean")
+    _write_idres(root, [_idres_row()])
+    assert guard.run(strict=True, store_dir=root, breaks_file=breaks) == 0
+    out = capsys.readouterr().out
+    assert "identity resolution census" in out
+
+
+def test_identity_resolution_missing_company_coverage_breaches(tmp_path, breaks):
+    root = _write_store(tmp_path / "idres_missing")
+    _write_idres(root, [])  # sidecar present, empty — the company node AAA is uncovered
+    assert any("no current identity_resolution row" in x for x in _breaches(root, breaks))
+
+
+def test_identity_resolution_orphan_row_breaches(tmp_path, breaks):
+    root = _write_store(tmp_path / "idres_orphan")
+    _write_idres(root, [_idres_row(),
+                        _idres_row(node_id="co:us:GHOST", source_native_symbol="GHOST")])
+    assert any("resolution of nothing" in x for x in _breaches(root, breaks))
+
+
+def test_identity_resolution_not_in_master_is_never_a_breach(tmp_path, breaks):
+    """NOT_IN_MASTER is a required honest refusal state, never a guard failure (§7)."""
+    root = _write_store(tmp_path / "idres_notinmaster")
+    _write_idres(root, [_idres_row(resolution_state="NOT_IN_MASTER")])
+    assert _breaches(root, breaks) == []
+
+
+def test_identity_resolution_out_of_enum_state_breaches(tmp_path, breaks):
+    root = _write_store(tmp_path / "idres_badenum")
+    _write_idres(root, [_idres_row(resolution_state="MOSTLY_RESOLVED")])
+    assert any("identity_resolution.resolution_state" in x for x in _breaches(root, breaks))
+
+
+def test_identity_resolution_same_security_duplicates_appear_in_the_census(
+    tmp_path, breaks, capsys,
+):
+    """The SATS/ECHO / FI/FISV machine-visible duplicate report (§7e)."""
+    root = _write_store(
+        tmp_path / "idres_dupes",
+        nodes=[_node_row(), _node_row(node_id="co:us:BBB", external_ids='{"symbol":"BBB"}'),
+               _node_row(node_id="basket:baskets:demo", kind="basket")],
+    )
+    rows = [
+        _idres_row(node_id="co:us:AAA", resolution_state="RESOLVED",
+                   join_method="master_inception_exact", security_id="SEC:US-XNYS-DUP",
+                   issuer_id="ISS:US-XNYS-DUP", listing_key="US-XNYS-DUP",
+                   refusal_reason=None, source_receipts='{"security_id":"SEC:US-XNYS-DUP"}'),
+        _idres_row(node_id="co:us:BBB", source_native_symbol="BBB",
+                  resolution_state="RESOLVED", join_method="vendor_alias",
+                  security_id="SEC:US-XNYS-DUP", issuer_id="ISS:US-XNYS-DUP",
+                  listing_key="US-XNYS-DUP", refusal_reason=None,
+                  source_receipts='{"security_id":"SEC:US-XNYS-DUP"}'),
+    ]
+    _write_idres(root, rows)
+    assert guard.run(strict=True, store_dir=root, breaks_file=breaks) == 0
+    out = capsys.readouterr().out
+    assert "SEC:US-XNYS-DUP" in out
+    assert "co:us:AAA" in out and "co:us:BBB" in out
+
+
+# ---------------------------------------------------------------------------
+# 6. V4-D2B1 FIX 8 (m3) — issuer_id lawful iff the master's issuer_state is RESOLVED
+# ---------------------------------------------------------------------------
+
+def _write_master(root: Path, rows: list[dict]) -> None:
+    """A minimal committed ``security_master.parquet`` at ``root.parent/reference``
+    — the same path :func:`scripts.check_theme_graph_contracts.audit` reads
+    (``store_dir.parent / "reference" / "security_master.parquet"``)."""
+    ref = root.parent / "reference"
+    ref.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).to_parquet(ref / "security_master.parquet", index=False)
+
+
+def test_identity_resolution_null_issuer_ok_when_master_says_no_issuer_evidence(
+    tmp_path, breaks,
+):
+    """FIX 8 legalizes a null sidecar issuer_id whenever the master's OWN
+    issuer_state for that security is anything OTHER than RESOLVED —
+    NO_ISSUER_EVIDENCE (a legacy/new row with no CIK evidence yet) is the common
+    case, and must NOT breach."""
+    root = _write_store(tmp_path / "idres_null_issuer_ok")
+    _write_idres(root, [_idres_row(
+        resolution_state="RESOLVED", join_method="master_inception_exact",
+        security_id="SEC:US-XNYS-AEP", issuer_id=None, listing_key="US-XNYS-AEP",
+        refusal_reason=None, source_receipts='{"security_id":"SEC:US-XNYS-AEP"}',
+    )])
+    _write_master(root, [{
+        "security_id": "SEC:US-XNYS-AEP", "issuer_id": "ISS:US-XNYS-AEP",
+        "issuer_state": "NO_ISSUER_EVIDENCE", "listing_key": "US-XNYS-AEP",
+        "country": "US", "mic": "XNYS", "inception_code": "AEP",
+    }])
+    assert _breaches(root, breaks) == []
+
+
+def test_identity_resolution_null_issuer_breaches_when_master_says_resolved(
+    tmp_path, breaks,
+):
+    """The other half of FIX 8: a null sidecar issuer_id is NOT lawful once the
+    master itself has CIK evidence (RESOLVED) — that combination is a bridge defect
+    (dropped real evidence), not an honest disclosure, and must breach."""
+    root = _write_store(tmp_path / "idres_null_issuer_breach")
+    _write_idres(root, [_idres_row(
+        resolution_state="RESOLVED", join_method="master_inception_exact",
+        security_id="SEC:US-XNAS-GOOG", issuer_id=None, listing_key="US-XNAS-GOOG",
+        refusal_reason=None, source_receipts='{"security_id":"SEC:US-XNAS-GOOG"}',
+    )])
+    _write_master(root, [{
+        "security_id": "SEC:US-XNAS-GOOG", "issuer_id": "ISS:US-XNAS-GOOG",
+        "issuer_state": "RESOLVED", "listing_key": "US-XNAS-GOOG",
+        "country": "US", "mic": "XNAS", "inception_code": "GOOG",
+    }])
+    assert any("state<->ids biconditional" in x for x in _breaches(root, breaks))
+
+
+def test_identity_resolution_null_issuer_breaches_when_master_absent(tmp_path, breaks):
+    """Fail-closed (the third FIX 6 case): with no master to consult at all, a null
+    issuer_id on a RESOLVED sidecar row falls back to the strict pre-D2B1 rule
+    (issuer_id must be present) and breaches."""
+    root = _write_store(tmp_path / "idres_null_issuer_no_master")
+    _write_idres(root, [_idres_row(
+        resolution_state="RESOLVED", join_method="master_inception_exact",
+        security_id="SEC:US-XNYS-NOMASTER", issuer_id=None,
+        listing_key="US-XNYS-NOMASTER", refusal_reason=None,
+        source_receipts='{"security_id":"SEC:US-XNYS-NOMASTER"}',
+    )])
+    # No data/reference/security_master.parquet written at all.
+    assert any("state<->ids biconditional" in x for x in _breaches(root, breaks))
+
+
+def test_identity_resolution_non_null_issuer_breaches_when_master_not_resolved(
+    tmp_path, breaks,
+):
+    """The mirror mutation control: a NON-null sidecar issuer_id whose master row is
+    NOT RESOLVED (e.g. EVIDENCE_CONFLICT) must also breach — the bridge would be
+    smuggling a disputed/unevidenced value in as if it were confirmed identity."""
+    root = _write_store(tmp_path / "idres_nonnull_issuer_breach")
+    _write_idres(root, [_idres_row(
+        resolution_state="RESOLVED", join_method="master_inception_exact",
+        security_id="SEC:US-XNAS-DISPUTED", issuer_id="ISS:US-XNAS-DISPUTED",
+        listing_key="US-XNAS-DISPUTED", refusal_reason=None,
+        source_receipts='{"security_id":"SEC:US-XNAS-DISPUTED"}',
+    )])
+    _write_master(root, [{
+        "security_id": "SEC:US-XNAS-DISPUTED", "issuer_id": "ISS:US-XNAS-DISPUTED",
+        "issuer_state": "EVIDENCE_CONFLICT", "listing_key": "US-XNAS-DISPUTED",
+        "country": "US", "mic": "XNAS", "inception_code": "DISPUTED",
+    }])
+    assert any("state<->ids biconditional" in x for x in _breaches(root, breaks))
+
+
+# ---------------------------------------------------------------------------
+# 7. AMENDMENT §1 ruling 8 (m1/m2) — the §6.2 superseded-reference guard clause,
+# as an actual pytest test (independently built, same house pattern this file
+# uses throughout) rather than only reachable via `--selftest`.
+# ---------------------------------------------------------------------------
+
+def test_r1_section_6_2_a_resolution_row_referencing_a_superseded_master_row_breaches(
+    tmp_path, breaks,
+):
+    """A sidecar row whose security_id EXISTS in the committed master but that
+    master row is security-axis-superseded (a tombstone): a DISTINCT violation
+    class from "absent entirely" — every consumer join index must exclude it."""
+    root = _write_store(tmp_path / "idres_r1_superseded")
+    _write_idres(root, [_idres_row(
+        resolution_state="RESOLVED", join_method="master_inception_exact",
+        security_id="SEC:US-XNYS-VMRK", issuer_id=None,
+        listing_key="US-XNYS-VMRK", refusal_reason=None,
+        source_receipts='{"security_id":"SEC:US-XNYS-VMRK"}',
+    )])
+    _write_master(root, [
+        {
+            "security_id": "SEC:US-XNYS-EQR", "issuer_id": "ISS:US-XNYS-EQR",
+            "issuer_state": "RESOLVED", "listing_key": "US-XNYS-EQR",
+            "country": "US", "mic": "XNYS", "inception_code": "EQR",
+            "security_state": None, "superseded_by": None,
+        },
+        {
+            "security_id": "SEC:US-XNYS-VMRK", "issuer_id": None,
+            "issuer_state": "NO_ISSUER_EVIDENCE", "listing_key": "US-XNYS-VMRK",
+            "country": "US", "mic": "XNYS", "inception_code": "VMRK",
+            "security_state": "SUPERSEDED_DUPLICATE_MINT",
+            "superseded_by": "SEC:US-XNYS-EQR",
+        },
+    ])
+    assert any("security-axis-superseded" in x for x in _breaches(root, breaks))
+
+
+def test_r1_section_6_2_a_resolution_row_referencing_the_canonical_row_does_not_breach(
+    tmp_path, breaks,
+):
+    """The mirror case: a sidecar row pointing at the CANONICAL (active) row the
+    tombstone was corrected onto must pass cleanly — the guard targets the
+    superseded id specifically, never the whole master."""
+    root = _write_store(tmp_path / "idres_r1_canonical_ok")
+    _write_idres(root, [_idres_row(
+        resolution_state="RESOLVED", join_method="master_inception_exact",
+        security_id="SEC:US-XNYS-EQR", issuer_id="ISS:US-XNYS-EQR",
+        listing_key="US-XNYS-EQR", refusal_reason=None,
+        source_receipts='{"security_id":"SEC:US-XNYS-EQR"}',
+    )])
+    _write_master(root, [
+        {
+            "security_id": "SEC:US-XNYS-EQR", "issuer_id": "ISS:US-XNYS-EQR",
+            "issuer_state": "RESOLVED", "listing_key": "US-XNYS-EQR",
+            "country": "US", "mic": "XNYS", "inception_code": "EQR",
+            "security_state": None, "superseded_by": None,
+        },
+        {
+            "security_id": "SEC:US-XNYS-VMRK", "issuer_id": None,
+            "issuer_state": "NO_ISSUER_EVIDENCE", "listing_key": "US-XNYS-VMRK",
+            "country": "US", "mic": "XNYS", "inception_code": "VMRK",
+            "security_state": "SUPERSEDED_DUPLICATE_MINT",
+            "superseded_by": "SEC:US-XNYS-EQR",
+        },
+    ])
+    assert not any("security-axis-superseded" in x for x in _breaches(root, breaks))
+
+
+# ---------------------------------------------------------------------------
+# 8. T02 — the curation_assertion evidence cell (additive, optional per row)
+# ---------------------------------------------------------------------------
+
+def _load_case(name: str) -> dict:
+    """Tiny local loader for the synthetic semiconductor fixtures (the shared
+    helpers module belongs to a sibling task; this file only needs one case)."""
+    doc = json.loads((FIXTURES / f"{name}.json").read_text(encoding="utf-8"))
+    assert doc["synthetic"] is True
+    return doc
+
+
+def _valid_encoded_assertion() -> str:
+    """A real encoded assertion produced by the module itself (via the fixture
+    the generator built with encode_assertion) — no builder duplicated here."""
+    return _load_case("same_url_different_statements")["native_rows"][0]["curation_assertion"]
+
+
+def _evidence_schema() -> dict:
+    return json.loads((guard.CONTRACTS / "evidence.v1.schema.json")
+                      .read_text(encoding="utf-8"))
+
+
+def test_a_legacy_evidence_row_with_a_null_curation_assertion_passes_the_schema():
+    jsonschema.Draft202012Validator(_evidence_schema()).validate(_evidence_row())
+
+
+def test_an_evidence_row_with_a_valid_encoded_assertion_passes_the_schema():
+    row = _evidence_row(curation_assertion=_valid_encoded_assertion())
+    jsonschema.Draft202012Validator(_evidence_schema()).validate(row)
+
+
+def test_the_per_row_curation_check_reports_each_breach_class():
+    encoded = _valid_encoded_assertion()
+    wrong_stamp = json.loads(encoded)
+    wrong_stamp["curation_revision"] = "gmirca_" + "f" * 32
+    unknown_key = json.loads(encoded)
+    unknown_key["mystery_key"] = 1
+    for bad in ("{not json",
+                json.dumps(wrong_stamp),
+                json.dumps(unknown_key)):
+        breaches = guard.curation_assertion_breaches(EV_ID, bad)
+        assert breaches, f"no breach for {bad[:40]!r}"
+        assert breaches[0].startswith(f"evidence {EV_ID} curation_assertion invalid:")
+
+
+def test_null_and_empty_and_valid_curation_cells_are_never_a_breach():
+    assert guard.curation_assertion_breaches(EV_ID, None) == []
+    assert guard.curation_assertion_breaches(EV_ID, "") == []
+    assert guard.curation_assertion_breaches(EV_ID, _valid_encoded_assertion()) == []
+
+
+def test_the_audit_names_a_bad_curation_cell_when_the_column_exists(tmp_path, breaks):
+    """Wiring, not just the helper: a store whose evidence parquet carries the
+    column with a corrupt cell must be named by the audit itself. Until #7462
+    lands, the extra column ALSO trips column-set drift — today's correct
+    verdict — so this test pins only that the curation breach is named."""
+    root = _write_store(tmp_path / "curation_bad")
+    df = pd.read_parquet(root / "evidence.parquet")
+    df["curation_assertion"] = "{not json"
+    df.to_parquet(root / "evidence.parquet", index=False)
+    assert any("curation_assertion invalid" in x for x in _breaches(root, breaks))
+
+
+@pytest.mark.xfail(strict=True, reason="EVIDENCE_COLUMNS append frozen pending #7462 custody release (ruling R2)")
+def test_distinct_statements_and_corrections_survive_native_store(tmp_path, monkeypatch):
+    from engine.theme_graph import store
+    from engine.theme_graph.curation_assertion import decode_assertion
+    monkeypatch.setattr(store.config, 'data_dir', lambda: tmp_path)
+    rows = _load_case('same_url_different_statements')['native_rows']
+    assert store.write_evidence(rows, lane='nightly') == 3
+    got = store.read_evidence()
+    assert len(got) == 3
+    decoded = [decode_assertion(x) for x in got['curation_assertion']]
+    assert len({x['curation_revision'] for x in decoded}) == 3
+    assert any(x['correction']['predecessor_revision'] for x in decoded)
+    assert store.write_evidence(rows, lane='nightly') == 0
+
+
+# ---------------------------------------------------------------------------
+# B1 fold-seam (r6): the curated activity-history fold (engine.theme_graph.
+# materialize, ACTIVITY_HISTORY_CONFIDENCE_BASIS) is the ONE owned path that may
+# emit a company→theme MEMBER_OF — admitted per ROW by its exact provenance
+# triple, never by pair.
+# ---------------------------------------------------------------------------
+
+ACTIVITY_PROVENANCE = {"source_class": "curated",
+                       "date_provenance": "activity_history",
+                       "confidence_basis": "activity_history.v1"}
+
+
+def test_an_activity_history_member_of_company_to_theme_passes(tmp_path, breaks):
+    """The fold emits company→theme MEMBER_OF rows; a row carrying the exact
+    provenance triple must pass cleanly — no pairing breach, no §9.6 tag breach,
+    nothing."""
+    root = _write_store(
+        tmp_path / "activity_ok",
+        nodes=[_node_row(),
+               _node_row(node_id="theme:activity_fixture", kind="theme",
+                         tier="theme")],
+        edges=[_edge_row(
+            edge_id="member_of:co:us:AAA->theme:activity_fixture@2024-01-01",
+            dst="theme:activity_fixture", **ACTIVITY_PROVENANCE)])
+    assert not _breaches(root, breaks)
+
+
+def test_a_company_to_theme_member_of_with_other_provenance_still_breaches(
+    tmp_path, breaks,
+):
+    """Same pair, other provenance: admission is per row, so a crosswalk
+    company→theme MEMBER_OF is still the refused derived edge."""
+    root = _write_store(
+        tmp_path / "crosswalk_member",
+        nodes=[_node_row(),
+               _node_row(node_id="theme:crosswalk_fixture", kind="theme",
+                         tier="theme")],
+        edges=[_edge_row(
+            edge_id="member_of:co:us:AAA->theme:crosswalk_fixture@2024-01-01",
+            dst="theme:crosswalk_fixture", date_provenance="crosswalk")])
+    assert any("is not a pairing this type may carry" in x
+               for x in _breaches(root, breaks))
+
+
+def test_activity_history_admission_is_per_row_not_per_pair(tmp_path, breaks):
+    """One admitted activity row AND one non-activity company→theme row in the
+    SAME store: exactly the non-activity row is reported."""
+    root = _write_store(
+        tmp_path / "mixed",
+        nodes=[_node_row(),
+               _node_row(node_id="theme:activity_fixture", kind="theme",
+                         tier="theme")],
+        edges=[
+            _edge_row(
+                edge_id="member_of:co:us:AAA->theme:activity_fixture@2024-01-01",
+                dst="theme:activity_fixture", **ACTIVITY_PROVENANCE),
+            _edge_row(
+                edge_id="member_of:co:us:AAA->theme:activity_fixture@2024-01-02",
+                dst="theme:activity_fixture", date_provenance="crosswalk"),
+        ])
+    breaches = _breaches(root, breaks)
+    assert breaches, "the non-activity company→theme row must breach"
+    assert not any("@2024-01-01" in x for x in breaches), \
+        f"the admitted activity row must not be reported: {breaches}"
+    assert any("@2024-01-02" in x and "is not a pairing this type may carry" in x
+               for x in breaches)
+
+
+def test_activity_history_admission_requires_the_exact_confidence_basis(
+    tmp_path, breaks,
+):
+    """Right date_provenance, wrong confidence_basis: the triple is exact or the
+    row is just another company→theme smuggle."""
+    root = _write_store(
+        tmp_path / "wrong_basis",
+        nodes=[_node_row(),
+               _node_row(node_id="theme:activity_fixture", kind="theme",
+                         tier="theme")],
+        edges=[_edge_row(
+            edge_id="member_of:co:us:AAA->theme:activity_fixture@2024-01-01",
+            dst="theme:activity_fixture", date_provenance="activity_history",
+            confidence_basis="activity_history.v2")])
+    assert any("is not a pairing this type may carry" in x
+               for x in _breaches(root, breaks))

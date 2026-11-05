@@ -43,13 +43,70 @@ _REQUIRED_CANDIDATE_MARKERS = (
     'data-mode="companies"',
 )
 _CANDIDATE_SCRIPT_MARKER = 'src="government-revenue-candidate-radar.js"'
-_REQUIRED_TEMPLATE_CANDIDATE_MARKERS = (
-    *_REQUIRED_CANDIDATE_MARKERS,
-    _CANDIDATE_SCRIPT_MARKER,
+_REQUIRED_TEMPLATE_CANDIDATE_MARKERS = _REQUIRED_CANDIDATE_MARKERS
+_CANDIDATE_START_MARKER = 'government-revenue-investor-start.js'
+_CANDIDATE_START_RE = re.compile(
+    r'\bsrc="government-revenue-investor-start\.js(?:\?v=[0-9a-f]{8})?"'
 )
+_CANDIDATE_MODULE_MARKER = "'government-revenue-candidate-radar.js'"
+
 _CANDIDATE_SCRIPT_RE = re.compile(
     r'\bsrc="government-revenue-candidate-radar\.js(?:\?v=[0-9a-f]{8})?"'
 )
+
+
+def _candidate_loader_is_verified(root: Path, template: str) -> bool:
+    """Admit the current deferred Candidate Radar loader, never an absent module.
+
+    Older projections put the Candidate Radar script directly into the HTML.
+    The current authenticated bootstrap loads the same module on demand.
+    Both routes must remain source-bound; a filename mention alone is not proof.
+    """
+    if _CANDIDATE_SCRIPT_MARKER in template:
+        return False  # Legacy direct-script route retains the original site guard.
+
+    if not (
+        "asset_url('government-revenue-investor-start.js')" in template
+        or 'src="government-revenue-investor-start.js"' in template
+    ):
+        raise ProjectionDriftError(
+            "Government Revenue template is missing candidate markers: "
+            + _CANDIDATE_SCRIPT_MARKER + " or verified investor startup"
+        )
+
+    script_names = (
+        _CANDIDATE_START_MARKER,
+        "government-revenue-candidate-radar.js",
+    )
+    for name in script_names:
+        source = root / "templates" / name
+        public = root / "site" / name
+        try:
+            source_bytes, public_bytes = source.read_bytes(), public.read_bytes()
+        except OSError as exc:
+            raise ProjectionDriftError(
+                "Government Revenue deferred Candidate Radar script is missing: " + name
+            ) from exc
+        if source_bytes != public_bytes:
+            raise ProjectionDriftError(
+                "Government Revenue deferred Candidate Radar script is not a canonical public twin: "
+                + name
+            )
+
+    loader = (root / "templates" / _CANDIDATE_START_MARKER).read_text(
+        encoding="utf-8"
+    )
+    if not (
+        _CANDIDATE_MODULE_MARKER in loader
+        and "document.createElement('script')" in loader
+        and "script.src=name" in loader
+        and "appendChild(script)" in loader
+    ):
+        raise ProjectionDriftError(
+            "Government Revenue deferred Candidate Radar script is not loaded "
+            "by the canonical investor startup"
+        )
+    return True
 
 
 class ProjectionDriftError(ValueError):
@@ -191,6 +248,11 @@ def validate_projection(
         public_dir / "idv-dossiers.json",
         label="IDV dossier",
     )
+    optional_identity_atlas = _read_optional_exact_twin(
+        canonical_dir / "identity_atlas.json",
+        public_dir / "identity-atlas.json",
+        label="Identity Atlas",
+    )
     try:
         from scripts import build_government_revenue_candidates
 
@@ -293,6 +355,15 @@ def validate_projection(
             raise ProjectionDriftError("canonical IDV dossier is invalid") from exc
         if build_government_revenue._canonical_json(idv_dossier).encode("utf-8") != idv_dossier_raw:
             raise ProjectionDriftError("canonical IDV dossier bytes are non-canonical")
+    identity_atlas = None
+    if optional_identity_atlas is not None:
+        identity_atlas_raw, identity_atlas = optional_identity_atlas
+        if not build_government_revenue.is_valid_identity_atlas_payload(identity_atlas):
+            raise ProjectionDriftError(
+                "canonical Identity Atlas failed schema/content-id admission"
+            )
+        if build_government_revenue._canonical_json(identity_atlas).encode("utf-8") != identity_atlas_raw:
+            raise ProjectionDriftError("canonical Identity Atlas bytes are non-canonical")
 
     embedded_workspace = _object(
         canonical_latest.get("procurement_workspace"),
@@ -340,6 +411,7 @@ def validate_projection(
             + ", ".join(missing_template)
         )
 
+    dynamic_candidate_loader = _candidate_loader_is_verified(root, template)
     required_site_markers = _REQUIRED_SITE_MARKERS
     if candidate_projection.get("status") != "absent":
         required_site_markers += _REQUIRED_CANDIDATE_MARKERS
@@ -347,6 +419,7 @@ def validate_projection(
     if (
         candidate_projection.get("status") != "absent"
         and _CANDIDATE_SCRIPT_RE.search(html) is None
+        and not (dynamic_candidate_loader and _CANDIDATE_START_RE.search(html))
     ):
         missing.append(_CANDIDATE_SCRIPT_MARKER)
     if missing:
@@ -401,6 +474,12 @@ def validate_projection(
             idv_dossier.get("content_id") if idv_dossier is not None else None
         ),
         "idv_relationships": len(idv_dossier.get("relationships") or []) if idv_dossier is not None else 0,
+        "identity_atlas_content_id": (
+            identity_atlas.get("content_id") if identity_atlas is not None else None
+        ),
+        "identity_atlas_issuers": (
+            len(identity_atlas.get("issuers") or []) if identity_atlas is not None else 0
+        ),
         "candidate_content_id": candidate_projection.get("queue_content_id"),
         "candidates": candidate_projection.get("candidate_count", 0),
         "candidate_mapping_backlog": candidate_projection.get("mapping_backlog_count", 0),

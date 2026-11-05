@@ -1,6 +1,6 @@
 {
  "schema": "artifact_manifest/v1",
- "as_of": "2026-08-13",
+ "as_of": "2026-11-04",
  "cadence_basis": "trading_calendar",
  "note": "Per-artifact expected freshness in TRADING-calendar days. A consumer compares the artifact's as_of against `today` counting only trading days; older than expected_max_age_td \u21d2 abstain + flag (fail-closed on genuine staleness, audit #9). Benign weekend/holiday lag is NOT stale because the cadence excludes non-trading days.",
  "artifacts": [
@@ -95,7 +95,7 @@
   {
    "artifact": "site/factordata/us_standouts.json",
    "kind": "board",
-   "schema_version": "1.10.0",
+   "schema_version": "1.11.0",
    "schema_fields": [
     "as_of",
     "board_definition",
@@ -125,7 +125,8 @@
     "candidate_pool",
     "earnings_soon",
     "post_earnings_move",
-    "universe_sources"
+    "universe_sources",
+    "w3c_source"
    ],
    "schema_item_fields": [
     "above_trend",
@@ -205,7 +206,7 @@
   {
    "artifact": "site/factordata/china_standouts.json",
    "kind": "board",
-   "schema_version": "2.2.0",
+   "schema_version": "2.3.0",
    "schema_fields": [
     "actionable",
     "as_of",
@@ -240,6 +241,7 @@
     "qvix_regime",
     "reversal_ledger",
     "reversal_watch",
+    "w3c_source",
     "watch"
    ],
    "schema_item_fields": [
@@ -314,7 +316,7 @@
   {
    "artifact": "site/factordata/canada_standouts.json",
    "kind": "board",
-   "schema_version": "1.2.0",
+   "schema_version": "1.3.0",
    "schema_fields": [
     "as_of",
     "branch",
@@ -326,8 +328,14 @@
     "universe"
    ],
    "optional_fields": [
+    "authority",
+    "board_definition",
     "dispersion_regime",
-    "sector_concentration"
+    "legacy_buy_key_semantics",
+    "official_pick_authority",
+    "sector_concentration",
+    "selection_status",
+    "watch"
    ],
    "schema_item_fields": [
     "align_tier",
@@ -367,7 +375,7 @@
    "consumers": [
     "bot:canada_book"
    ],
-   "note": "Prophet Canada board. dispersion_regime + sector_concentration are conditional (optional_fields) \u2014 bot:canada_book must treat both as may-be-absent, unchanged from prior behaviour (they were always emitted conditionally; 1.2.0 only corrects the contract classification)"
+   "note": "Prophet Canada board \u2014 one canonical Branch-B ripe-list SCREEN, not a scored official-pick list (authority='screen', selection_status='accruing', official_pick_authority=False). `buy` is a projection of the canonical board (legacy_buy_key_semantics='ripe_list_screen'); membership does NOT imply official-pick authority. dispersion_regime + sector_concentration stay conditional (optional_fields) \u2014 bot:canada_book must treat both as may-be-absent, unchanged from prior behaviour. bot:canada_book is a stale manifest declaration with no live reader in macro/Mastermind/terminal as of this census (CA-TRUTH); nothing depends on `buy` row order, so the canonical-board switch is additive-compatible"
   },
   {
    "artifact": "site/data/portfolio_ctx.json",
@@ -582,7 +590,7 @@
   {
    "artifact": "site/prophet/index.json",
    "kind": "plan_book",
-   "schema_version": "1.0.0",
+   "schema_version": "1.2.0",
    "schema_fields": [
     "active_count",
     "active_count_by_age",
@@ -591,6 +599,7 @@
     "cadence",
     "gate_go",
     "intake",
+    "leader_observation_summary",
     "ledger_corrections",
     "ledger_quarantine",
     "note",
@@ -606,11 +615,16 @@
     "source_asof",
     "source_basis",
     "source_board_asof",
+    "source_board_sha256",
+    "source_board_snapshot_encoding",
+    "source_board_snapshot_path",
     "source_delayed",
     "source_mixed_vintage",
     "source_unknown"
    ],
    "optional_fields": [
+    "board_read_coverage",
+    "board_read_lineage",
     "lifecycle_counts",
     "lifecycle_grand_total",
     "lifecycle_live_total",

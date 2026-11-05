@@ -35,7 +35,7 @@ from engine import risk_sizing  # noqa: E402 — vol-managed inverse-vol sizing 
 from engine import dispersion  # noqa: E402 — cross-sectional dispersion regime (selection-gross dial)
 from engine.cycles import analyze  # noqa: E402
 from engine.residual_alpha import compute_residual_alpha  # noqa: E402
-from engine.setups import CA_ALPHA_WEIGHT, entry_open_first, rank_setups, setup_score  # noqa: E402
+from engine.setups import CA_ALPHA_WEIGHT, rank_setups, setup_score  # noqa: E402
 from engine import signal_gate  # noqa: E402 — owner's confluence T1->T4 cascade (layered ON main's alpha/alignment gate)
 from engine.technicals import season_line, seasonality, snapshot  # noqa: E402
 from lib import config, store  # noqa: E402
@@ -45,6 +45,15 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("canada_library")
 
 TSX_INDEX = "^GSPTSE"   # cap-weighted TSX market proxy for the residual-alpha leg
+
+# CA-TRUTH (masterplan §5.0): the single canonical Canada Prophet board is the
+# Branch-B ripe-list order compute_canada_standouts() applies — a SCREEN, not a
+# validated official-pick authority. board_definition is the selection-instrument
+# stamp threaded onto every board_ledger row (mirrors hk_prophet_v1/us_prophet_v1);
+# authority/selection_status/official_pick_authority are the artifact-level honesty
+# stamps that say plainly this board is accruing evidence, not a scored pick list.
+CA_BOARD_DEFINITION = "ca_prophet_branch_b_v1"
+CA_BOARD_AUTHORITY = "screen"
 
 
 # ── per-ticker analyze() fan-out (mirrors build_stock_library's process pool) ──
@@ -115,6 +124,27 @@ def current_liquidity() -> str | None:
     except Exception:  # noqa: BLE001
         return None
     return liq if liq in ("expanding", "contracting", "neutral") else None
+
+
+def _last_rendered_overlay() -> dict:
+    """The commodity/FX overlay the engine last classified (canada_regime/latest.json
+    `overlay`, written by engine.canada_run.run() — same file current_liquidity()
+    reads). Fallback for a standalone `python -m scripts.build_canada_library` run
+    (weekly.yml, engine-render.yml scope=all, daily.yml/render.yml failure-path
+    nets) that never threads a fresh `overlay` through main(): without this, those
+    lanes would stamp oil_tailwind/lead_en/lead_zh with overlay={} (oil regime
+    always OFF) instead of the last-rendered page's overlay, flipping those
+    registered schema_item_fields with the CI lane rather than the oil regime.
+    Best-effort — {} on any absence/failure, never raises; canada_overlay.snapshot()
+    already shapes `overlay["factors"]` the way _oil_regime_on expects."""
+    p = config.data_dir() / "canada_regime" / "latest.json"
+    if not p.exists():
+        return {}
+    try:
+        ov = json.loads(p.read_text()).get("overlay")
+    except Exception:  # noqa: BLE001 — additive, never fatal
+        return {}
+    return ov if isinstance(ov, dict) else {}
 
 
 def _basket_tailwind_map() -> dict[str, dict]:
@@ -690,8 +720,8 @@ def compute_canada_standouts(setups: dict | None, overlay: dict | None = None) -
         _w8g_r["days_since_signal"] = _w8g_days_since(_tk) if _tk else None
 
     # BRANCH B: group (entry_open > setting_up) then rank within group by the momentum
-    # SCREEN z. Replaces the entry_open_first composite sort — the composite is NOT the
-    # order under the zero-GO branch (masterplan §4.1 / §5.0).
+    # SCREEN z. Replaces the old open-entry-first composite sort — the composite is
+    # NOT the order under the zero-GO branch (masterplan §4.1 / §5.0).
     setups["buy"] = _branch_b_order(setups["buy"], overlay)
     setups["branch"] = "B"          # honest marker: ripe-list contract, composite suppressed
     setups["rank_basis"] = "momentum_screen_accruing"
@@ -767,13 +797,251 @@ def _setup_score(rec: dict) -> tuple[float, dict] | None:
     return setup_score(rec, alpha_weight=CA_ALPHA_WEIGHT)
 
 
-def main(alpha: dict | None = None) -> dict | None:
+# ── Canada original-source binding (bounded first phase) ────────────────────
+# A closed DESCRIPTIVE receipt binding the exact serialized canada_standouts.json
+# bytes to the board they encode — issued at the incumbent publication seam (this
+# writer) so a later consumer can capture what was actually published without
+# recomputing from enriched presentation rows. Evidence of source identity only:
+# NOT proof of live publication, NOT a native CA candidate/Plan owner, and NOT any
+# change to the board's "screen — accruing" authority. Byte identity is not
+# authority.
+#
+# Fail-closed by contract: any unusable source — malformed / duplicate-key /
+# non-finite JSON, wrong top shape, non-canonical as_of, unknown board_definition,
+# dishonest authority stamps, missing/non-list buy/watch, non-object rows, an
+# as_of that is not an actual CA session, or a year the incumbent calendar has
+# not verified — returns None, and the legacy board still publishes unchanged.
+# No coercion, no normalize/filter/cap/sort, no host-clock read, no network: the
+# session and coverage checks delegate entirely to the incumbent owner
+# lib.market_session (tsx_calendar rules). The helper never raises.
+import hashlib  # noqa: E402
+import re  # noqa: E402
+from datetime import date  # noqa: E402
+try:
+    from lib import market_session  # noqa: E402
+except Exception:  # receipt-only owner failure must not stop legacy publication
+    market_session = None
+
+_CA_BINDING_SCHEMA = "prophet.canada_selection_source_binding/v1"
+_CA_BINDING_TZ = "America/Toronto"
+_CA_BINDING_INFINITY = float("inf")
+
+
+def _ca_binding_digest(material: dict) -> str:
+    """sha256 over canonical digest material: explicit sorted keys, compact
+    separators, unescaped Unicode, non-finite refused, UTF-8. Every value is
+    taken from the decoded exact published bytes — nothing recomputed, nothing
+    enriched, no presentation-row substitution."""
+    payload = json.dumps(material, sort_keys=True, separators=(",", ":"),
+                         ensure_ascii=False, allow_nan=False).encode("utf-8")
+    return "sha256:" + hashlib.sha256(payload).hexdigest()
+
+
+def _ca_binding_pairs(pairs: list[tuple[str, object]]) -> dict:
+    """object_pairs_hook that refuses duplicate JSON object keys (fail closed)."""
+    out: dict = {}
+    for key, value in pairs:
+        if key in out:
+            raise ValueError(f"duplicate JSON object key: {key!r}")
+        out[key] = value
+    return out
+
+
+def _ca_binding_constant(name: str) -> None:
+    """parse_constant hook: NaN / Infinity / -Infinity literals are refused."""
+    raise ValueError(f"non-finite JSON literal: {name}")
+
+
+def _ca_binding_float(text: str) -> float:
+    """parse_float hook: a finite-syntax number that overflows (e.g. 1e999) is
+    refused, so a decoded binding can never carry a silent infinity."""
+    value = float(text)
+    if value != value or value in (_CA_BINDING_INFINITY, -_CA_BINDING_INFINITY):
+        raise ValueError(f"non-finite JSON number: {text}")
+    return value
+
+
+def canada_selection_source_binding(source_bytes: bytes) -> dict | None:
+    """Bind the EXACT serialized Canada board bytes to a closed descriptive
+    receipt, or return None when the source is unusable — never raise, never
+    coerce, never touch the board itself.
+
+    Decodes only the exact serialized original JSON bytes; preserves every
+    original key and row order (repeated tickers and identical rows stay
+    distinct; lane order in the receipt is descriptive only). Requires the
+    original canonical as_of to BE an actual CA session through the incumbent
+    owner (lib.market_session.is_session_date('CA', as_of)) and that owner's
+    calendar to have VERIFIED coverage of the year
+    (lib.market_session.calendar_verified('CA', year)) before producing a
+    session-validated receipt — an original session outside measured calendar
+    coverage returns None while the original bytes still publish unchanged.
+
+    The receipt says what the source IS, nothing more: market/timezone are the
+    owner's (America/Toronto), calendar_status is VERIFIED only because the
+    coverage gate passed, and the three authority stamps are copied verbatim
+    from the source, which must already state them honestly. No host read-time
+    is relabeled as source session; no freshness is implied.
+    """
+    try:
+        if not isinstance(source_bytes, (bytes, bytearray)) or not source_bytes:
+            return None
+        data = bytes(source_bytes)
+        board = json.loads(data.decode("utf-8"),
+                           object_pairs_hook=_ca_binding_pairs,
+                           parse_constant=_ca_binding_constant,
+                           parse_float=_ca_binding_float)
+        if not isinstance(board, dict):
+            return None
+        as_of = board.get("as_of")
+        if not isinstance(as_of, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", as_of):
+            return None
+        try:
+            as_of_day = date.fromisoformat(as_of)
+        except ValueError:
+            return None
+        if board.get("board_definition") != CA_BOARD_DEFINITION:
+            return None
+        if board.get("authority") != CA_BOARD_AUTHORITY:        # identity, not falsey
+            return None
+        if board.get("selection_status") != "accruing":         # identity, not falsey
+            return None
+        if board.get("official_pick_authority") is not False:   # strict bool identity
+            return None
+        ordered_rows: list[dict] = []
+        for lane in ("buy", "watch"):
+            rows = board.get(lane)
+            if not isinstance(rows, list):
+                return None
+            for index, row in enumerate(rows):
+                if not isinstance(row, dict):
+                    return None
+                ordered_rows.append({
+                    "lane": lane,
+                    "selection_index": index,   # original zero-based lane position
+                    "row_receipt": _ca_binding_digest(row),
+                })
+        # Session + coverage through the incumbent CA owner — never the host clock.
+        if market_session is None:
+            return None
+        if not market_session.is_session_date("CA", as_of_day):
+            return None
+        if not market_session.calendar_verified("CA", as_of_day.year):
+            return None
+        material = {
+            "schema": _CA_BINDING_SCHEMA,
+            "receipt_kind": "EXACT_SERIALIZED_SOURCE",
+            "market": "CA",
+            "timezone": _CA_BINDING_TZ,
+            "source_sha256": "sha256:" + hashlib.sha256(data).hexdigest(),
+            "as_of": as_of,
+            "market_session": as_of,
+            "calendar_status": "VERIFIED",
+            "board_definition": board["board_definition"],
+            "authority": board["authority"],
+            "selection_status": board["selection_status"],
+            "official_pick_authority": board["official_pick_authority"],
+            "ordered_rows": ordered_rows,
+        }
+        # Digest is taken BEFORE the receipt appends its own field: the closed
+        # material is exactly the keys above, no self-reference.
+        material["selection_receipt"] = _ca_binding_digest(material)
+        return material
+    except Exception:  # noqa: BLE001 — the receipt is best-effort and NEVER fatal
+        return None
+
+
+def _write_canada_standouts(board: dict, site: Path) -> dict | None:
+    """The ONE write site for canada_standouts.json — CA-TRUTH: main() writes and
+    returns the exact same `board` object (no re-derive, no re-sort, no partial
+    copy). Extracted so a test can execute the real write and assert byte-for-byte
+    parity against the returned object, rather than pattern-matching main()'s
+    source text.
+
+    Bounded amendment (original-source binding): the board is still serialized
+    EXACTLY ONCE with the historical dumps call, and those exact bytes are both
+    what lands on disk and what the returned receipt binds. On write success the
+    writer returns canada_selection_source_binding(bytes_written) — a closed
+    descriptive receipt, or None when the source is not binding-eligible (the
+    legacy board is published unchanged either way; the helper never raises, so
+    a receipt failure cannot alter emission). A write failure still raises and
+    produces no receipt. main() may ignore this return; the board object carries
+    no receipt field and no second artifact is written."""
+    (site / "factordata").mkdir(parents=True, exist_ok=True)
+    payload = json.dumps(board, separators=(",", ":"), default=str)
+    # ensure_ascii defaults True, so `payload` is pure ASCII and encode("utf-8")
+    # is byte-identical to what the historical write_text() put on disk — while
+    # letting the receipt bind the exact bytes actually written.
+    data = payload.encode("utf-8")
+    (site / "factordata" / "canada_standouts.json").write_bytes(data)
+    return canada_selection_source_binding(data)
+
+
+def _build_canonical_board(cand: list, as_of, align_map: dict, sig_verdict: dict,
+                           profiles: dict, entry_sig: dict, risk_sig: dict,
+                           eligible: int, disp_regime: dict | None,
+                           overlay: dict | None) -> dict:
+    """Build the ONE canonical Canada Prophet board (CA-TRUTH, masterplan §5.0):
+    Branch-B ripe-list order (compute_canada_standouts -> _branch_b_order), enriched
+    with the per-row signal/conviction/entry_signal/risk_sizing stamps (order-
+    neutral) + the watch strip, then stamped with the board-level authority fields.
+
+    NO sort of any kind may run after compute_canada_standouts() returns — that IS
+    the canonical order. This is the single place main() builds the board; the SAME
+    object it returns is both written to canada_standouts.json and returned to the
+    caller (build_canada.py), so the artifact, the page, and the forward ledger can
+    never structurally disagree."""
+    # n_lag=6 (NOT 12): the canonical board keeps the PAGE's historical laggards
+    # count. templates/canada.html.j2 renders setups.laggards UNSLICED, and the
+    # page object this replaced was built with rank_setups' default n_lag=6 — using
+    # n_lag=12 here would silently double the user-visible "Weakest screen
+    # (laggards)" strip from 6 to 12 names (review finding, PR #5926). The
+    # artifact's own laggards count going 12->6 is declared-safe: the consumer
+    # census found zero live consumers of canada_standouts.json laggards.
+    board = compute_canada_standouts(
+        rank_setups(cand, as_of=as_of, rank_by="alpha", n_buy=100, n_lag=6,
+                    align_map=align_map),
+        overlay=overlay)
+    for r in board["buy"] + board.get("laggards", []):
+        t = r.get("ticker")
+        r["signal"] = signal_gate.compact(sig_verdict.get(t))   # confluence T1->T4 tier badge
+        if r.get("conviction") is None and profiles.get(t):
+            r["conviction"] = profiles[t]
+        if entry_sig.get(t):
+            r["entry_signal"] = entry_sig[t]     # the entry-timing gauge for the card
+        if risk_sig.get(t):
+            r["risk_sizing"] = risk_sig[t]       # the vol-managed sizing for the card / bot
+    board["watch"] = _build_watch(cand, board["buy"], align_map, profiles)
+    board["eligible"] = eligible          # how many passed the alignment gate
+    board["universe"] = len(cand)
+    if disp_regime:                      # selection-regime gross dial (board + bot)
+        board["dispersion_regime"] = disp_regime
+    # board-level authority stamps: this is a SCREEN (accruing evidence), never a
+    # scored official-pick list — membership does NOT imply official-pick authority.
+    board["board_definition"] = CA_BOARD_DEFINITION
+    board["authority"] = CA_BOARD_AUTHORITY
+    board["selection_status"] = "accruing"
+    board["official_pick_authority"] = False
+    board["legacy_buy_key_semantics"] = "ripe_list_screen"
+    return board
+
+
+def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
+    """Build the per-ticker CA library + write the canonical Canada Prophet board
+    (site/factordata/canada_standouts.json). Returns that canonical board dict (the
+    SAME object written to the artifact) — CA-TRUTH: one board, one order, one
+    return value; the caller (build_canada.py) must not re-derive or re-rank it.
+    Returns None when no candidate survives scoring (no artifact write)."""
     site = config.ROOT / config.load()["storage"]["site_dir"]
     outdir = site / "canadastockdata"
     outdir.mkdir(parents=True, exist_ok=True)
 
     if alpha is None:
         alpha = compute_canada_alpha()
+    if overlay is None:
+        # standalone-lane fallback (F2): a caller that never threads a fresh overlay
+        # through (weekly.yml / engine-render.yml scope=all / daily.yml+render.yml
+        # failure-path nets) stamps from the LAST-RENDERED overlay instead of {}.
+        overlay = _last_rendered_overlay()
     alpha_pt = (alpha or {}).get("per_ticker", {})
     if alpha:
         fdir = site / "factordata"
@@ -1082,6 +1350,7 @@ def main(alpha: dict | None = None) -> dict | None:
 
     # cross-sectional alpha-led "Top setups" — selection (alpha) × timing (cycle)
     setups = None
+    board = None   # the CANONICAL board this function returns (CA-TRUTH)
     # BOTTOMING-ALIGNMENT gate (mirrors the US/CN/HK fix): the buy shortlist is gated on
     # multi-timeframe alignment (weekly not-falling + 3-day nearing a bullish cross + daily
     # just-crossed/about-to) so a mid-weekly-bear falling knife is kept off the strip;
@@ -1112,46 +1381,23 @@ def main(alpha: dict | None = None) -> dict | None:
         (site / "factordata").mkdir(parents=True, exist_ok=True)
         (site / "factordata" / "canada_setups.json").write_text(
             json.dumps(setups, separators=(",", ":"), default=str))
-        # WIDE "Standout individual stocks" board persisted as its own artifact, so a
-        # transient build failure leaves a stale-but-present file (mirrors us_standouts.json).
-        # Ranked by the validated alpha leg; enriched with price/off-high/sparkline + the
-        # Conviction profile; eligible = how many cleared the +0.5 alpha floor.
-        wide = compute_canada_standouts(
-            rank_setups(cand, as_of=as_of, rank_by="alpha", n_buy=100, n_lag=12,
-                        align_map=align_map))
-        # COMBINE re-rank: keep the alpha/alignment inclusion, order WITHIN each alignment tier by
-        # the owner's weighted cascade blend (setup-score percentile lifted by the T1->T4 weight).
-        # Weightless names keep their rank. Eligibility/membership UNCHANGED.
-        import bisect as _bisect
-        _scores = sorted((r.get("setup") or 0.0) for r in wide["buy"])
-        _bn = len(_scores) or 1
-
-        def _combine_key(r):
-            w = (sig_verdict.get(r.get("ticker")) or {}).get("weight") or 0.0
-            pct = _bisect.bisect_right(_scores, r.get("setup") or 0.0) / _bn
-            return (0 if r.get("align_tier") == "aligned" else 1, -(pct + 0.5 * w))
-        wide["buy"] = sorted(wide["buy"], key=_combine_key)
-        for r in wide["buy"] + wide.get("laggards", []):
-            t = r.get("ticker")
-            r["signal"] = signal_gate.compact(sig_verdict.get(t))   # confluence T1->T4 tier badge
-            if r.get("conviction") is None and profiles.get(t):
-                r["conviction"] = profiles[t]
-            if entry_sig.get(t):
-                r["entry_signal"] = entry_sig[t]     # the entry-timing gauge for the card
-            if risk_sig.get(t):
-                r["risk_sizing"] = risk_sig[t]       # the vol-managed sizing for the card / bot
-        wide["buy"] = entry_open_first(wide["buy"])   # entry-open-first, then score (stable)
-        wide["eligible"] = eligible          # how many passed the alignment gate
-        wide["universe"] = len(cand)
-        if disp_regime:                      # selection-regime gross dial (board + bot)
-            wide["dispersion_regime"] = disp_regime
-        (site / "factordata" / "canada_standouts.json").write_text(
-            json.dumps(wide, separators=(",", ":"), default=str))
+        # CANONICAL "Standout individual stocks" board persisted as its own artifact
+        # (mirrors us_standouts.json), built ONCE by _build_canonical_board — this IS
+        # the object returned by main() and the object canada_standouts.json is
+        # written from (CA-TRUTH, masterplan §5.0). NO sort of any kind may run after
+        # it: compute_canada_standouts() already applied the Branch-B ripe-list order
+        # (_branch_b_order, stamping board_pos/group/lead_*) — that IS the canonical
+        # order. The former composite re-rank and the open-entry-first re-sort that
+        # used to run after it are gone, not moved.
+        board = _build_canonical_board(cand, as_of, align_map, sig_verdict, profiles,
+                                       entry_sig, risk_sig, eligible, disp_regime,
+                                       overlay)
+        _write_canada_standouts(board, site)
         log.info("wrote canada_standouts.json (%d buy of %d eligible / %d universe)",
-                 len(wide["buy"]), eligible, len(cand))
+                 len(board["buy"]), eligible, len(cand))
     log.info("canada library: %d analyzed, %d limited (recent listings), %d skipped (empty/failed), %d setups",
              built, limited, failed, len(cand))
-    return setups
+    return board
 
 
 if __name__ == "__main__":

@@ -20,13 +20,30 @@ is true even when nothing renders — an absence test written that way is vacuou
 `priority_overlay()` is also the fixture the preview/screenshot pass uses against
 the LIVE artifact (see the module docstring on how to run it) — keeping it here,
 deterministic and site/-free, means the picture and the test see the same shapes.
+
+P-MP1-SHELL RETIREMENT NOTE (2026-08-20): the candidate-card rendering this file
+exercises (stage/lane headings, the pbf-bar filter, the featured glow chip, the
+marks row, the ⚡/NEW/absence marks — all sourced from `us_standouts.buy`) was
+RETIRED from the Setups grid by MP-1-prophet-board.md §6 row 4 / §12 item 4: the
+grid re-sources from the plan book (site/prophet/index.json.plans) instead. 22
+of this file's tests are marked `@pytest.mark.skip` with that citation rather
+than deleted or rewritten to assert vacuously — this is disclosed test debt
+(worker report, P-MP1-SHELL commission), not a silent coverage loss. The
+retirement itself is proven positively in
+tests/test_dashboard_template_render.py::
+test_candidate_stage_rail_absent_from_setups_grid. The 36 tests left unskipped
+in this file exercise `priority_overlay()`/`_stage_of()` as pure helpers or
+assert on us_standouts-driven surfaces this packet does not touch (the
+Recently-fired `pbr` lane, the theme tape) and remain valid.
 """
 from __future__ import annotations
 
 import re
+from html.parser import HTMLParser
 from zlib import crc32
 
 import jinja2
+import pytest
 
 from tests.test_dashboard_template_render import _base_vm, _board_row, _env, _setup_row
 
@@ -300,6 +317,7 @@ def _legacy_html() -> str:
 # G0.1 — priority order and stage buckets
 # --------------------------------------------------------------------------- #
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_stage_headings_render_in_fixed_order():
     html = _priority_html()
     positions = []
@@ -311,6 +329,7 @@ def test_stage_headings_render_in_fixed_order():
     assert positions == sorted(positions), f"stage headings out of order: {positions}"
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_the_basing_shelf_renders_between_ran_and_blocked():
     """W-E.1 / D18. The shelf is the whole deliverable: a BOTTOM WATCH name used to
     render inside `Blocked` beside the falling knives, which is where the operator
@@ -325,6 +344,7 @@ def test_the_basing_shelf_renders_between_ran_and_blocked():
     assert html.find('data-ticker="HL"') < html.find('data-ticker="NXE"')
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_the_basing_shelf_speaks_watch_words_in_both_languages():
     """P2/G0.4: a watch lane that never makes a claim. The shelf says what the state
     is and what to do about it — and 'buy' is not one of the things it can say."""
@@ -348,6 +368,7 @@ def test_the_basing_shelf_takes_a_direction_neutral_tone():
     assert ".sg-blocked    { --sgc: var(--pv-avoid); }" in html
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_the_basing_bucket_is_filterable_like_every_other():
     html = _priority_html()
     assert 'data-stagepick="basing"' in html
@@ -357,21 +378,23 @@ def test_the_basing_bucket_is_filterable_like_every_other():
             '.sm-hidden[data-stage="basing"]') in html
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_stage_headings_carry_label_count_and_stance():
     """Tier-1 budget: the bucket name IS the stance, the count is a pill, and the
     tail sentence stays under the 14-word subtitle cap."""
     html = _priority_html()
-    assert '<span class="l-en">Live now</span><span class="l-zh">现在可操作</span>' in html
+    assert '<span class="l-en">Active setups</span><span class="l-zh">活跃形态</span>' in html
     # The ZH separator is the em-dash the EN label uses, not a middot: the two halves
     # are a state and a stance, and every sibling ZH label on this surface
     # (`尚未触发 — 做好准备`) already joins them that way.
     assert '<span class="l-en">Ran — don’t chase</span><span class="l-zh">已启动 — 勿追</span>' in html
     assert "已启动 · 勿追" not in html
-    assert '<span class="l-en">entry window is open</span>' in html
+    assert '<span class="l-en">Check each card’s dated entry read</span>' in html
     assert '<span class="l-en">stand aside for now</span>' in html
     assert '<span class="sh-n">' in html
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_no_blocked_or_ran_card_renders_above_the_first_live_card():
     """The measured defect this program exists to fix: 'Extended — don't chase' and
     DOWNTREND rows outranking fresh buy_now rows."""
@@ -385,10 +408,14 @@ def test_no_blocked_or_ran_card_renders_above_the_first_live_card():
     assert html.find('data-ticker="AAPL"') < html.find('data-ticker="NXE"')
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_legacy_artifact_keeps_the_lane_partition_and_grows_no_priority_surface():
     """Fail-soft proof: no stage on the rows -> today's board, unchanged."""
     html = _legacy_html()
-    assert '<div class="nb-lane-hd">' in html            # legacy headings still render
+    # legacy headings still render. `data-lane` was added 2026-08-20 as the
+    # hydration join key (tests/test_us_board_hydration_merge.py) — additive,
+    # same class, same label; the class is what this test is about.
+    assert '<div class="nb-lane-hd" data-lane="' in html
     assert '<div class="nb-stage-hd sg-' not in html     # …and nothing new appears
     assert '<div class="pbf-bar" id="us-stage-filter"' not in html
     assert '<div class="pbt">' not in html
@@ -403,6 +430,7 @@ def test_legacy_artifact_keeps_the_lane_partition_and_grows_no_priority_surface(
 # G0.2 — featured glow
 # --------------------------------------------------------------------------- #
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_featured_class_and_chip_land_only_on_featured_rows():
     vm = _priority_vm()
     html = _render(vm)
@@ -422,6 +450,7 @@ def test_featured_class_and_chip_land_only_on_featured_rows():
         assert "pv-mk-feat" not in card, f"{ticker} must not carry the Featured chip"
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_featured_chip_is_bilingual_and_supersedes_the_triage_ring():
     html = _priority_html()
     assert '<span class="l-en">★ Featured</span><span class="l-zh">★ 精选</span>' in html
@@ -496,6 +525,7 @@ def _ext_vm(mode: str) -> tuple[dict, list[str]]:
     return vm, featured
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_an_unmeasured_featured_card_says_so_and_a_measured_one_does_not():
     """The deliverable: the reader can see WHICH picks the chase-risk check skipped."""
     vm, featured = _ext_vm("mixed")
@@ -530,6 +560,7 @@ def test_the_absence_mark_stays_off_rows_whose_featured_claim_it_would_not_quali
             f"{ticker} is not featured — it makes no claim for the mark to qualify")
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_the_absence_mark_is_bilingual_and_asserts_nothing_about_the_name():
     """The honest stance is "we could not check", never "this name IS extended" and
     never an all-clear.  The question mark is what carries that — the chip poses the
@@ -605,6 +636,7 @@ def test_the_legacy_board_grows_no_absence_mark():
 # G0.6 — stage filter chips + NEW badge
 # --------------------------------------------------------------------------- #
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_filter_chip_row_renders_real_buttons_with_counts_and_aria():
     vm = _priority_vm()
     html = _render(vm)
@@ -634,6 +666,7 @@ def test_filter_chips_meet_the_mobile_touch_target():
     assert "@media (max-width: 680px) { .pbf-bar button { min-height: 44px;" in html
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_new_badge_renders_only_on_fresh_rows():
     vm = _priority_vm()
     html = _render(vm)
@@ -782,6 +815,7 @@ def test_ran_row_without_anchor_reads_as_a_marker_row():
     assert _APPROX_TIP_EN not in section and _APPROX_TIP_ZH not in section
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_ran_section_absent_when_the_artifact_carries_no_ran_array():
     vm = _priority_vm()
     vm["us_standouts"] = dict(vm["us_standouts"])
@@ -795,6 +829,7 @@ def test_ran_section_absent_when_the_artifact_carries_no_ran_array():
 # G0.5 — theme linkage without a duplicate Prophet mini-strip
 # --------------------------------------------------------------------------- #
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_prophet_does_not_repeat_the_theme_tape_above_its_cards():
     """Theme membership remains on the cards and in the full Theme Heat panel.
     The retired mini-strip duplicated that context, and its regime-age tail made a
@@ -855,6 +890,7 @@ def test_all_earnings_window_triggers_get_an_honest_empty_state():
     assert "Every actionable signal is already on the board above" not in html
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_theme_chip_and_demoted_lane_chip_ride_the_card_marks_row():
     html = _priority_html()
     assert '<div class="pv-mk">' in html
@@ -864,6 +900,7 @@ def test_theme_chip_and_demoted_lane_chip_ride_the_card_marks_row():
     assert '<span class="l-en">Bottoming</span><span class="l-zh">筑底</span>' in html
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_watch_lane_is_not_chipped_on_the_priority_path():
     """`watch` names TIMING, and timing is the stage bucket's job now.  Chipped, it put
     two stances on one card — a live featured pick reading "★ Featured · Watch"."""
@@ -932,6 +969,7 @@ def test_the_card_chips_carry_no_hover_cards():
     assert "pv-cau" in _priority_html()
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_legacy_rows_keep_the_edge_label_untouched():
     html = _legacy_html()
     assert '<span class="l-en">Edge</span><span class="l-zh">优势</span>' in html
@@ -1116,6 +1154,7 @@ def test_no_dead_empty_bucket_css_ships():
 # Degradation + i18n hygiene
 # --------------------------------------------------------------------------- #
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_rows_with_no_stage_render_last_never_above_a_live_row():
     """A row the engine forgot to stamp (or a stage newer than this template) must stay
     visible — but below every classified bucket, so G0.1's ordering rule still holds."""
@@ -1129,6 +1168,7 @@ def test_rows_with_no_stage_render_last_never_above_a_live_row():
     assert html.find('data-ticker="STRAY"') > html.find('<div class="nb-stage-hd sg-blocked"')
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_degraded_vm_with_lane_none_still_renders_the_priority_board():
     vm = _priority_vm()
     board = [dict(r, lane=None) for r in vm["us_standouts"]["buy"]]
@@ -1139,6 +1179,7 @@ def test_degraded_vm_with_lane_none_still_renders_the_priority_board():
     assert '<span class="pv-mk-i pv-mk-lane"' not in html   # no lane -> no lane chip
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_unmarked_cards_still_reserve_the_marks_slot_on_the_priority_path():
     """The card macro's founding contract is that the layout never moves between cards.
     A card with nothing to mark used to pull its tracker and zone rows ~18px up, out of
@@ -1178,15 +1219,74 @@ def test_both_shapes_render_in_both_modes_without_raising():
 # helpers
 # --------------------------------------------------------------------------- #
 
+@pytest.mark.parametrize("tag", ["article", "a"])
+def test_card_markup_isolates_current_and_historical_card_roots(tag):
+    inner = '<a href="stock.html#MSCI">MSCI</a>' if tag == "article" else '<span>MSCI</span>'
+    wanted = f'<{tag} class="pvcard pv-near" data-ticker="MSCI">{inner}<span>Near</span></{tag}>'
+    sibling = '<article class="pvcard pv-buy" data-ticker="ADSK"><span>Buy</span></article>'
+    html = '<div data-ticker="MSCI">outside card</div>' + wanted + sibling
+    assert _card_markup(html, "MSCI") == wanted
+    assert _card_markup(html, "ADSK") == sibling
+    with pytest.raises(AssertionError, match="card for MISSING not found"):
+        _card_markup(html, "MISSING")
+
+
 def _card_markup(html: str, ticker: str) -> str:
-    """The one card's markup, from its opening <a> to the next card boundary — so a
-    per-row assertion can never be satisfied by a different row's markup."""
-    start = html.rfind("<a class=\"pvcard", 0, html.find(f'data-ticker="{ticker}"'))
-    assert start != -1, f"card for {ticker} not found"
-    end = html.find("<a class=\"pvcard", start + 10)
-    return html[start:end if end != -1 else len(html)]
+    """Return one complete current article or historical anchor card only."""
+    class CardParser(HTMLParser):
+        def __init__(self):
+            super().__init__(convert_charrefs=False)
+            self.root_tag = None
+            self.depth = 0
+            self.found = False
+            self.parts = []
+
+        def handle_starttag(self, tag, attrs):
+            attributes = dict(attrs)
+            if not self.depth and not self.found:
+                if (tag in {"article", "a"}
+                        and "pvcard" in attributes.get("class", "").split()
+                        and attributes.get("data-ticker") == ticker):
+                    self.root_tag = tag
+                else:
+                    return
+            if not self.found:
+                if tag == self.root_tag:
+                    self.depth += 1
+                if self.depth:
+                    self.parts.append(self.get_starttag_text())
+
+        def handle_startendtag(self, tag, attrs):
+            if self.depth:
+                self.parts.append(self.get_starttag_text())
+
+        def handle_endtag(self, tag):
+            if self.depth:
+                self.parts.append(f"</{tag}>")
+                if tag == self.root_tag:
+                    self.depth -= 1
+                    self.found = not self.depth
+
+        def handle_data(self, data):
+            if self.depth:
+                self.parts.append(data)
+
+        def handle_entityref(self, name):
+            self.handle_data(f"&{name};")
+
+        def handle_charref(self, name):
+            self.handle_data(f"&#{name};")
+
+        def handle_comment(self, data):
+            self.handle_data(f"<!--{data}-->")
+
+    parser = CardParser()
+    parser.feed(html)
+    assert parser.found, f"card for {ticker} not found"
+    return "".join(parser.parts)
 
 
+@pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")
 def test_card_markup_helper_isolates_one_card():
     """Guard the guard: if the slicer ever returned the whole document, every
     per-row assertion above would pass vacuously."""

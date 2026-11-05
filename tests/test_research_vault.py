@@ -248,6 +248,147 @@ def test_clean_title_never_raises_on_junk():
         assert isinstance(sidecar_mod.clean_title(junk), str)
 
 
+def test_clean_title_does_not_collapse_repeated_lead_or_strip_trailing_date():
+    """Slug path: clean_title must stay byte-identical to origin/main."""
+    doubled = "GS Vol Views GS Vol Views 9 Sep 2026"
+    assert sidecar_mod.clean_title(doubled) == doubled
+    assert sidecar_mod.clean_title("Oil Market Report Sep 9, 2026") == "Oil Market Report Sep 9, 2026"
+    assert sidecar_mod.clean_title("US Econ Notes July 24") == "US Econ Notes July 24"
+
+
+
+def test_display_title_date_removal_does_not_leave_orphaned_commas():
+    from engine.research_vault import title as title_mod
+    from engine.research_vault.slugs import slug_map
+
+    cases = (
+        ("The Point for Europe: Thursday, 24 September 2026", "The Point for Europe: Thursday"),
+        ("The Point for Europe Wednesday, 23 September 2026", "The Point for Europe Wednesday"),
+        ("Oil Market Report, Sep 9, 2026", "Oil Market Report"),
+    )
+    for raw, expected in cases:
+        item = {"id": "synthetic-title-123abc", "title": raw}
+        original_slug = slug_map([item])[item["id"]]
+        assert sidecar_mod.display_title(raw) == expected
+        assert sidecar_mod.display_title(expected) == expected
+        assert not title_mod.looks_filename_derived(expected)
+        assert sidecar_mod.clean_title(raw) == raw
+        assert item["title"] == raw
+        assert slug_map([item])[item["id"]] == original_slug
+    # A weekday or comma without a stripped complete date is source content.
+    for raw in ("Black Thursday", "The Point for Europe Thursday,", "US Econ Notes July 24", "Europe Wednesday, September 2026"):
+        assert sidecar_mod.display_title(raw) == raw
+
+def test_display_title_collapses_repeated_lead_and_trailing_calendar_date():
+    assert sidecar_mod.display_title("GS Vol Views GS Vol Views 9 Sep 2026") == "GS Vol Views"
+    assert sidecar_mod.display_title("GS Vol Views") == "GS Vol Views"
+    assert sidecar_mod.display_title("Oil Market Report Sep 9, 2026") == "Oil Market Report"
+    # month+day without a year is a real title, not auto-titler furniture
+    assert sidecar_mod.display_title("US Econ Notes July 24") == "US Econ Notes July 24"
+    # paren repair still lands on the display path
+    assert sidecar_mod.display_title("Carrefour (CARR") == "Carrefour (CARR)"
+
+
+def test_clean_summary_points_strips_markdown_and_rejoins_vs_split():
+    pts = sidecar_mod.clean_summary_points([
+        "**China’s Economic Data & Structural Risks**: CPI at 0.8% y-o-y (up from 0.5%), PPI at 3.8% y-o-y (vs.",
+        "6% consensus); tobacco monopoly’s $54bn capital funding signals inflationary pressures and bad loan risks.",
+        "**Volatility Compression**: the range holds.",
+    ])
+    assert pts == [
+        "China’s Economic Data & Structural Risks: CPI at 0.8% y-o-y (up from 0.5%), PPI at 3.8% y-o-y (vs. 6% consensus); tobacco monopoly’s $54bn capital funding signals inflationary pressures and bad loan risks.",
+        "Volatility Compression: the range holds.",
+    ]
+    assert all("**" not in p for p in pts)
+
+
+def test_clean_summary_points_does_not_glue_finished_bullets():
+    pts = sidecar_mod.clean_summary_points(["Only 33% looks credible.", "Hyperscalers control 42%."])
+    assert pts == ["Only 33% looks credible.", "Hyperscalers control 42%."]
+
+
+def test_clean_summary_points_does_not_glue_sentence_final_abbrev_to_year():
+    pts = sidecar_mod.clean_summary_points([
+        "Growth is slowing in the U.S.",
+        "2026 GDP is cut to 1.2%.",
+    ])
+    assert pts == ["Growth is slowing in the U.S.", "2026 GDP is cut to 1.2%."]
+    pts2 = sidecar_mod.clean_summary_points([
+        "Risks: tariffs, FX, rates, etc.",
+        "3 of 5 desks now see a cut.",
+    ])
+    assert pts2 == ["Risks: tariffs, FX, rates, etc.", "3 of 5 desks now see a cut."]
+
+
+def test_clean_summary_points_keeps_lone_and_multiplication_asterisks():
+    pts = sidecar_mod.clean_summary_points([
+        "Non-GAAP EBITDA* rose 12%; margin* stable at 30%.",
+    ])
+    assert pts == ["Non-GAAP EBITDA* rose 12%; margin* stable at 30%."]
+    pts2 = sidecar_mod.clean_summary_points([
+        "Positioning is 3*ATR wide, roughly 2*vol of the index.",
+    ])
+    assert pts2 == ["Positioning is 3*ATR wide, roughly 2*vol of the index."]
+    pts3 = sidecar_mod.clean_summary_points(["**Heading**: the range holds."])
+    assert pts3 == ["Heading: the range holds."]
+    pts4 = sidecar_mod.clean_summary_points(["A *soft* print vs a hard one."])
+    assert pts4 == ["A soft print vs a hard one."]
+
+
+def test_clean_summary_points_keeps_lone_and_dunder_underscores():
+    pts = sidecar_mod.clean_summary_points(["The ticker is foo__bar in the tape."])
+    assert pts == ["The ticker is foo__bar in the tape."]
+    pts2 = sidecar_mod.clean_summary_points(["See `__init__` in the quoted code."])
+    assert pts2 == ["See `__init__` in the quoted code."]
+    pts3 = sidecar_mod.clean_summary_points(["Score is 3__ATR by construction."])
+    assert pts3 == ["Score is 3__ATR by construction."]
+    pts4 = sidecar_mod.clean_summary_points(["A __soft phrase__ print vs a hard one."])
+    assert pts4 == ["A soft phrase print vs a hard one."]
+    pts5 = sidecar_mod.clean_summary_points(["__Heading wrap__: the range holds."])
+    assert pts5 == ["Heading wrap: the range holds."]
+
+
+def test_normalize_cleans_summary_markdown():
+    item = sidecar_mod.normalize({
+        "title": "T", "institution": "GS",
+        "summary_points": ["**Thesis**: the range holds."],
+    })
+    assert item["summary_points"] == ["Thesis: the range holds."]
+
+
+def test_desk_type_is_never_a_rating():
+    assert sidecar_mod.desk_type("sell") == ("Sell-side", "卖方", "sell-side")
+    assert sidecar_mod.desk_type("buy") == ("Buy-side", "买方", "buy-side")
+    assert sidecar_mod.desk_type("independent") == ("Independent", "独立", "indep")
+    assert sidecar_mod.desk_type("wat") == ("Independent", "独立", "indep")
+    for _, zh, _ in (sidecar_mod.desk_type(s) for s in ("buy", "sell", "independent")):
+        assert zh not in ("看多", "看空")
+
+
+def test_canon_institution_merges_spellings_and_drops_folder_names_from_facet():
+    assert sidecar_mod.canon_institution("Blackrock") == "BlackRock"
+    assert sidecar_mod.canon_institution("ScotiaBank") == "Scotiabank"
+    assert sidecar_mod.canon_institution("ING Direct") == "ING"
+    assert sidecar_mod.canon_institution("Goldman Sachs") == "Goldman Sachs"
+    assert sidecar_mod.canon_institution("SG Prime") == "Société Générale"
+    assert sidecar_mod.institution_is_desk("New folder") is False
+    assert sidecar_mod.institution_is_desk("S&T") is False
+    assert sidecar_mod.institution_is_desk("Goldman Sachs") is True
+    assert sidecar_mod.institution_is_desk("Société Générale") is True
+    assert sidecar_mod.institution_display("S&T") == "Institutional desk"
+    assert sidecar_mod.institution_display("New folder") == "Institutional desk"
+    assert sidecar_mod.institution_display("SG Prime") == "Société Générale"
+    assert sidecar_mod.institution_display("Goldman Sachs") == "Goldman Sachs"
+    assert sidecar_mod.institution_display_pair("Unknown") == ("Unknown", "未知")
+    assert sidecar_mod.institution_display_pair("") == ("Unknown", "未知")
+
+
+def test_desk_stamp_classes_emit_legacy_and_desk_type_names():
+    assert sidecar_mod.desk_stamp_classes("sell") == "sell-side sell"
+    assert sidecar_mod.desk_stamp_classes("buy") == "buy-side buy"
+    assert sidecar_mod.desk_stamp_classes("independent") == "indep"
+
+
 def test_clean_title_is_slug_stable_for_paren_repair():
     """The repair must never move an already-indexed /research/ URL.
 
@@ -419,6 +560,14 @@ def test_public_summary_describes_the_full_catalog_not_a_preview_slice():
     )
 
     assert summary == {
+        "source_clock": {
+            "schema": "research_vault.source_clock.v1",
+            "complete": True,
+            "report_count": 4,
+            "valid_clock_count": 4,
+            "invalid_clock_count": 0,
+            "latest_report_published_at": "2026-07-31T10:00:00+00:00",
+        },
         "total": 4,
         "new_this_week": 3,
         "desks_this_week": 2,
@@ -430,6 +579,42 @@ def test_public_summary_describes_the_full_catalog_not_a_preview_slice():
             {"name": "Desk C", "count": 1},
         ],
     }
+
+
+def test_public_summary_merges_institution_spellings_and_drops_folder_names():
+    cat = {
+        "items": [
+            {"id": "a", "institution": "Blackrock", "published_at": "2026-07-31T10:00:00Z"},
+            {"id": "b", "institution": "BlackRock", "published_at": "2026-07-30T10:00:00Z"},
+            {"id": "c", "institution": "New folder", "published_at": "2026-07-29T10:00:00Z"},
+            {"id": "d", "institution": "S&T", "published_at": "2026-07-28T10:00:00Z"},
+        ]
+    }
+    summary = catalog_mod.public_summary(
+        cat, now=datetime(2026, 7, 31, 12, tzinfo=timezone.utc)
+    )
+    names = [row["name"] for row in summary["institutions"]]
+    assert names == ["BlackRock"]
+    assert summary["institutions"][0]["count"] == 2
+    assert "New folder" not in names and "S&T" not in names
+
+
+def test_heal_display_repairs_published_summaries_without_touching_id():
+    cat = _cat([{
+        "id": "keep-me",
+        "title": "GS Vol Views GS Vol Views 9 Sep 2026",
+        "institution": "Blackrock",
+        "summary_points": ["**Heading**: PPI at 3.8% (vs.", "6% consensus)."],
+    }])
+    n = catalog_mod.heal_display(cat)
+    assert n >= 2
+    row = cat["items"][0]
+    assert row["id"] == "keep-me"
+    # catalog storage stays slug-stable; display polish is render-only
+    assert row["title"] == "GS Vol Views GS Vol Views 9 Sep 2026"
+    assert sidecar_mod.display_title(row["title"]) == "GS Vol Views"
+    assert row["institution"] == "BlackRock"
+    assert row["summary_points"] == ["Heading: PPI at 3.8% (vs. 6% consensus)."]
 
 
 def test_catalog_upsert_is_idempotent_by_id():
@@ -450,7 +635,7 @@ def test_catalog_load_write_roundtrip_local_store(tmp_path):
     store = LocalStore(tmp_path / "store")
     cat = catalog_mod.empty()
     catalog_mod.upsert_item(cat, _item("a", "GS", "2026-07-01", top=True))
-    data = catalog_mod.write(store, cat)
+    data = catalog_mod.publish(store, cat).data
     assert store.exists(catalog_mod.CATALOG_KEY)
     reloaded = catalog_mod.load(store)
     assert reloaded["count"] == 1
@@ -502,7 +687,7 @@ def test_catalog_load_heals_already_published_titles(tmp_path):
     assert [it["id"] for it in cat["items"]] == ["md-1", "md-2", "md-3"]  # ids never move
 
     # Idempotent: writing the healed catalog back and reloading changes nothing.
-    catalog_mod.write(store, cat)
+    catalog_mod.publish(store, cat)
     assert {it["id"]: it["title"] for it in catalog_mod.load(store)["items"]} == titles
 
 
@@ -1274,10 +1459,68 @@ def test_build_store_env_local(tmp_path, monkeypatch):
     assert isinstance(store, LocalStore)
 
 
+def _clear_research_store_env(monkeypatch):
+    for name in (
+        "RESEARCH_LOCAL_STORE",
+        "R2_RESEARCH_ENDPOINT",
+        "R2_RESEARCH_ACCESS_KEY_ID",
+        "R2_RESEARCH_SECRET_ACCESS_KEY",
+        "R2_RESEARCH_BUCKET",
+        "R2_ENDPOINT",
+        "R2_ACCESS_KEY_ID",
+        "R2_SECRET_ACCESS_KEY",
+        "R2_BUCKET",
+    ):
+        monkeypatch.delenv(name, raising=False)
+
+
 def test_build_store_none_without_creds(monkeypatch):
-    monkeypatch.delenv("RESEARCH_LOCAL_STORE", raising=False)
-    monkeypatch.delenv("R2_RESEARCH_BUCKET", raising=False)
+    _clear_research_store_env(monkeypatch)
     assert build_store() is None
+
+
+def test_build_store_does_not_inherit_shared_r2_credentials(monkeypatch):
+    """A private research bucket is not allowed to borrow the public/shared
+    delivery-plane credential namespace merely because those variables exist."""
+    _clear_research_store_env(monkeypatch)
+    monkeypatch.setenv("R2_ENDPOINT", "https://shared.example.com")
+    monkeypatch.setenv("R2_ACCESS_KEY_ID", "shared-ak")
+    monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "shared-sk")
+    monkeypatch.setenv("R2_BUCKET", "mastermindx-public")
+    monkeypatch.setenv("R2_RESEARCH_BUCKET", "mastermindx-research")
+
+    assert build_store() is None
+
+
+def test_build_store_refuses_partial_research_config_even_with_shared_values(
+        monkeypatch, caplog):
+    """One dedicated variable plus generic fallbacks is still partial config."""
+    _clear_research_store_env(monkeypatch)
+    monkeypatch.setenv("R2_ENDPOINT", "https://shared.example.com")
+    monkeypatch.setenv("R2_ACCESS_KEY_ID", "shared-ak")
+    monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "shared-sk")
+    monkeypatch.setenv("R2_BUCKET", "mastermindx-public")
+    monkeypatch.setenv("R2_RESEARCH_BUCKET", "mastermindx-research")
+    monkeypatch.setenv("R2_RESEARCH_ENDPOINT", "https://research.example.com")
+
+    assert build_store() is None
+    assert "shared-ak" not in caplog.text
+    assert "shared-sk" not in caplog.text
+
+
+def test_build_store_refuses_shared_bucket_alias_before_client_construction(
+        monkeypatch, caplog):
+    """Even complete research credentials cannot make the public bucket private."""
+    _clear_research_store_env(monkeypatch)
+    monkeypatch.setenv("R2_BUCKET", "mastermindx")
+    monkeypatch.setenv("R2_RESEARCH_BUCKET", "mastermindx")
+    monkeypatch.setenv("R2_RESEARCH_ENDPOINT", "https://research.example.com")
+    monkeypatch.setenv("R2_RESEARCH_ACCESS_KEY_ID", "research-ak")
+    monkeypatch.setenv("R2_RESEARCH_SECRET_ACCESS_KEY", "research-sk")
+
+    assert build_store() is None
+    assert "aliases shared R2_BUCKET" in caplog.text
+    assert "research-sk" not in caplog.text
 
 
 def test_local_store_rejects_traversal(tmp_path):
@@ -1304,24 +1547,57 @@ def test_local_store_list_prefix(tmp_path):
     assert "research_vault/a.pdf" not in inbox
 
 
-def test_r2_client_prefers_research_account_creds(monkeypatch):
-    """R2_RESEARCH_* (a separate Cloudflare account) is preferred over the shared
-    R2_* creds, and each falls back to R2_* when unset. Skipped where boto3 is
-    absent (the minimal CI lane); client construction is offline (creds aren't
-    validated until a call), so we can assert the resolved endpoint."""
+def test_r2_client_requires_explicit_research_credentials(monkeypatch):
+    """Generic R2 credentials never substitute for the private research family."""
     import pytest as _pytest
     _pytest.importorskip("boto3")
     from engine.research_vault import r2_store as rs
+
+    _clear_research_store_env(monkeypatch)
     monkeypatch.setenv("R2_ENDPOINT", "https://shared.example.com")
     monkeypatch.setenv("R2_ACCESS_KEY_ID", "shared-ak")
     monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "shared-sk")
+    assert rs._r2_client() is None
+
     monkeypatch.setenv("R2_RESEARCH_ENDPOINT", "https://research.example.com")
     monkeypatch.setenv("R2_RESEARCH_ACCESS_KEY_ID", "research-ak")
     monkeypatch.setenv("R2_RESEARCH_SECRET_ACCESS_KEY", "research-sk")
     assert rs._r2_client().meta.endpoint_url == "https://research.example.com"
-    for _k in ("R2_RESEARCH_ENDPOINT", "R2_RESEARCH_ACCESS_KEY_ID", "R2_RESEARCH_SECRET_ACCESS_KEY"):
-        monkeypatch.delenv(_k, raising=False)
-    assert rs._r2_client().meta.endpoint_url == "https://shared.example.com"
+
+    # Same-account credentials remain possible only when the research namespace
+    # is populated explicitly; deleting one member never falls through to shared.
+    monkeypatch.setenv("R2_RESEARCH_ACCESS_KEY_ID", "shared-ak")
+    monkeypatch.setenv("R2_RESEARCH_SECRET_ACCESS_KEY", "shared-sk")
+    monkeypatch.delenv("R2_RESEARCH_ENDPOINT")
+    assert rs._r2_client() is None
+
+
+def test_build_store_allows_explicit_same_account_credentials_on_distinct_bucket(
+        monkeypatch):
+    """Value equality is not implicit inheritance: dedicated names + distinct
+    bucket express an intentional same-account configuration."""
+    import pytest as _pytest
+    _pytest.importorskip("boto3")
+    from engine.research_vault import r2_store as rs
+
+    _clear_research_store_env(monkeypatch)
+    for name, value in (
+        ("R2_ENDPOINT", "https://same-account.example.com"),
+        ("R2_ACCESS_KEY_ID", "same-ak"),
+        ("R2_SECRET_ACCESS_KEY", "same-sk"),
+        ("R2_RESEARCH_ENDPOINT", "https://same-account.example.com"),
+        ("R2_RESEARCH_ACCESS_KEY_ID", "same-ak"),
+        ("R2_RESEARCH_SECRET_ACCESS_KEY", "same-sk"),
+    ):
+        monkeypatch.setenv(name, value)
+    monkeypatch.setenv("R2_BUCKET", "mastermindx-public")
+    monkeypatch.setenv("R2_RESEARCH_BUCKET", "mastermindx-research")
+
+    store = build_store()
+    assert isinstance(store, rs.R2Store)
+    assert store.available is True
+    assert store.bucket == "mastermindx-research"
+    assert store._s3.meta.endpoint_url == "https://same-account.example.com"
 
 
 # ===========================================================================
@@ -1479,7 +1755,7 @@ def test_repair_titles_heals_documents_already_in_the_catalog(tmp_path, canned_p
     # Simulate the pre-fix state: put the filename title back into both stores.
     cat = catalog_mod.load(store)
     cat["items"][0]["title"] = "Rates Weekly Outlook en 1663849 1"
-    catalog_mod.write(store, cat)
+    catalog_mod.publish(store, cat)
     conn = corpus_mod.open_db(corpus_path)
     conn.execute("UPDATE documents SET title=?, body=? WHERE doc_id=?",
                  ("Rates Weekly Outlook en 1663849 1",
@@ -1520,7 +1796,7 @@ def test_repair_titles_survives_a_missing_corpus_row(tmp_path, canned_pdftotext)
     # A catalog row with no corpus body at all (id never ingested here).
     cat["items"].append({"id": "ghost-1", "title": "Swiss economy en 1663943 1",
                          "institution": "UBS", "published_at": "2026-07-01"})
-    catalog_mod.write(store, cat)
+    catalog_mod.publish(store, cat)
 
     summary = ingest_mod.run(store, corpus_path)
     assert summary["titles_repaired"] == 1
@@ -1699,7 +1975,7 @@ def test_sidecar_refresh_survives_a_catalog_row_with_an_unhashable_id(tmp_path, 
     cat = catalog_mod.load(store)
     cat["items"].append({"id": ["not", "hashable"], "title": "Broken",
                          "published_at": "2026-07-28T09:00:00Z"})
-    catalog_mod.write(store, cat)
+    catalog_mod.publish(store, cat)
     store.put_bytes("research_inbox/ok.json", json.dumps({
         "id": "marketdesk-ok-000010", "title": "Fine Row", "institution": "UBS",
         "published_at": "2026-07-28T09:00:00Z", "summary_points": ["Still healed"],
@@ -1852,9 +2128,15 @@ def test_the_cap_keeps_undated_rows_the_ones_it_exists_for(tmp_path, canned_pdft
 
 
 def test_corpus_summary_resync_heals_a_failed_corpus_publish(tmp_path, canned_pdftotext):
-    """run() writes the catalog BEFORE publishing the corpus, so a failed publish
-    strands bullets in the catalog with a blank corpus summary — and that row is
-    no longer a refresh candidate, so search would rank it on stale text forever."""
+    """A catalog row with bullets whose corpus row has none is unreachable by the
+    refresh pass (its summary_points is non-empty), so search would rank it on
+    stale text forever.
+
+    Wave 4 removed the mechanism that CREATED this skew — the catalog used to
+    publish before the corpus — but rows skewed by that historical ordering are
+    still in the published store, so the heal is still load-bearing. The skew is
+    manufactured directly below rather than by ordering, which is what keeps this
+    test meaningful under the corpus → catalog order."""
     store = LocalStore(tmp_path / "store")
     corpus_path = tmp_path / "corpus.sqlite"
     # Every refresh field filled, so the row is NOT a refresh candidate — the
@@ -2698,3 +2980,1486 @@ def test_probe_rungs_agree_on_the_page_count():
     data = _REAL_PDF.read_bytes()
     assert probe_mod._probe_pypdf(data).get("pages") == \
         probe_mod._probe_pdfinfo(data).get("pages")
+
+
+# ###########################################################################
+# WAVE 4 — PUBLICATION INTEGRITY
+# ###########################################################################
+# Folded into this ALREADY-WIRED suite rather than shipped as new
+# tests/test_*.py files. `scripts/audit_unrun_tests.py` reds `unrun-suite` for a
+# collecting suite no `run:` step names, and the documented remedy — adding a
+# step to .github/ci/legacy-jobs.yml — is a CI_AUTHORITY path AND a global
+# invalidator, which drops this PR's path scoping and makes it inherit main's
+# entire red set (measured 2026-08-19, #5960). Module-level helpers below carry a
+# `_w4_` prefix because this file already defines _item/_seed_pdf/_cat/_dt.
+import subprocess
+import sys
+import tempfile
+from datetime import timedelta
+
+import scripts.ingest_research  # noqa: F401 — import-time smoke for the CLI module
+
+_W4_ROOT = Path(__file__).resolve().parents[1]
+
+_W4_NOW = datetime(2026, 8, 19, 12, 0, 0, tzinfo=timezone.utc)
+
+
+def _w4_cat(generated_at: str, items: list | None = None, schema: str = catalog_mod.SCHEMA) -> dict:
+    """A catalog document with an explicitly controlled producer clock."""
+    items = [] if items is None else items
+    return {
+        "schema": schema,
+        "generated_at": generated_at,
+        "count": len(items),
+        "institutions": [],
+        "items": items,
+    }
+
+
+def _w4_item(doc_id: str = "desk-2026-08-19-note") -> dict:
+    return {"id": doc_id, "title": "A Note", "institution": "Desk",
+            "side": "sell", "published_at": "2026-08-19T09:00:00Z"}
+
+
+def _w4_iso(delta: timedelta) -> str:
+    return (_W4_NOW + delta).isoformat()
+
+
+# ===========================================================================
+# validate() — the structural + producer-clock contract
+# ===========================================================================
+
+def test_fresh_nonempty_catalog_validates():
+    cat = _w4_cat(_w4_iso(timedelta(minutes=-5)), [_w4_item()])
+    assert catalog_mod.validate(cat, now=_W4_NOW) is cat
+
+
+def test_legitimate_zero_report_vault_is_valid_and_fresh():
+    """A real empty vault is a VALID FRESH state, not a failure.
+
+    This is the case the strict contract most easily gets wrong: the whole point
+    of Defect 3 is that corruption used to look like emptiness, and an
+    over-eager fix would make emptiness look like corruption instead. A vault
+    with a recent clock and no reports is honest, and must serve as fresh.
+    """
+    cat = _w4_cat(_w4_iso(timedelta(minutes=-1)), [])
+    assert catalog_mod.validate(cat, now=_W4_NOW) is cat
+    health = catalog_mod.health(cat, now=_W4_NOW)
+    assert health["state"] == catalog_mod.STATE_FRESH
+    assert cat["count"] == 0
+
+
+@pytest.mark.parametrize("bad_schema", ["research_vault.catalog.v2", "", None, "nope"])
+def test_wrong_schema_is_unavailable(bad_schema):
+    cat = _w4_cat(_w4_iso(timedelta(minutes=-5)), [_w4_item()], schema=bad_schema)
+    with pytest.raises(catalog_mod.CatalogUnavailable) as exc:
+        catalog_mod.validate(cat, now=_W4_NOW)
+    assert exc.value.reason == "schema_mismatch"
+
+
+@pytest.mark.parametrize("items", [
+    "not-a-list",
+    {"id": "x"},
+    None,
+    42,
+])
+def test_items_must_be_a_list(items):
+    cat = _w4_cat(_w4_iso(timedelta(minutes=-5)))
+    cat["items"] = items
+    with pytest.raises(catalog_mod.CatalogUnavailable) as exc:
+        catalog_mod.validate(cat, now=_W4_NOW)
+    assert exc.value.reason == "malformed_items"
+
+
+@pytest.mark.parametrize("bad_item", [
+    "a string row",
+    None,
+    ["nested"],
+    {"title": "no id at all"},
+    {"id": ""},
+    {"id": "   "},
+    {"id": 17},
+    {"id": ["list-id"]},
+])
+def test_malformed_item_invalidates_the_catalog(bad_item):
+    """One unusable row invalidates the whole answer — it is not skipped.
+
+    The catalog's only job at the serving tier is to say WHICH ids are admitted.
+    A row we cannot identify means the admitted set is unknown, and silently
+    dropping it would publish a smaller inventory while reporting success.
+    """
+    cat = _w4_cat(_w4_iso(timedelta(minutes=-5)), [_w4_item(), bad_item])
+    with pytest.raises(catalog_mod.CatalogUnavailable) as exc:
+        catalog_mod.validate(cat, now=_W4_NOW)
+    assert exc.value.reason == "malformed_items"
+
+
+def test_derived_count_drift_does_not_invalidate():
+    """A stale derived `count` is a cosmetic nit, never an outage.
+
+    ``_reindex`` rewrites count/institutions on every publish, so a disagreement
+    is not evidence the item set is untrustworthy — and the serving tier reads
+    the items themselves. Raising here would turn drift into a 503.
+    """
+    cat = _w4_cat(_w4_iso(timedelta(minutes=-5)), [_w4_item()])
+    cat["count"] = 999
+    cat.pop("institutions")
+    assert catalog_mod.validate(cat, now=_W4_NOW) is cat
+
+
+def test_blank_generated_at_is_unavailable():
+    """The signature of a published `empty()` — the Defect 2 fault, seen from the API."""
+    with pytest.raises(catalog_mod.CatalogUnavailable) as exc:
+        catalog_mod.validate(_w4_cat("", [_w4_item()]), now=_W4_NOW)
+    assert exc.value.reason == "blank_generated_at"
+
+
+@pytest.mark.parametrize("raw", ["   ", None, 12345, [], "not-a-date", "2026-13-45T99:99:99Z"])
+def test_unparseable_generated_at_is_unavailable(raw):
+    cat = _w4_cat(_w4_iso(timedelta(minutes=-5)), [_w4_item()])
+    cat["generated_at"] = raw
+    with pytest.raises(catalog_mod.CatalogUnavailable) as exc:
+        catalog_mod.validate(cat, now=_W4_NOW)
+    assert exc.value.reason in {"blank_generated_at", "unparseable_generated_at"}
+
+
+def test_materially_future_producer_clock_is_unavailable():
+    cat = _w4_cat(_w4_iso(timedelta(minutes=30)), [_w4_item()])
+    with pytest.raises(catalog_mod.CatalogUnavailable) as exc:
+        catalog_mod.validate(cat, now=_W4_NOW)
+    assert exc.value.reason == "future_generated_at"
+
+
+def test_benign_clock_skew_inside_tolerance_is_accepted():
+    """Producer and server hosts differ by seconds; that must not be an outage."""
+    cat = _w4_cat(_w4_iso(timedelta(minutes=2)), [_w4_item()])
+    assert catalog_mod.validate(cat, now=_W4_NOW) is cat
+    assert catalog_mod.health(cat, now=_W4_NOW)["state"] == catalog_mod.STATE_FRESH
+
+
+# ===========================================================================
+# health() — the fresh / stale split
+# ===========================================================================
+
+@pytest.mark.parametrize("age,expected", [
+    (timedelta(minutes=1), catalog_mod.STATE_FRESH),
+    (timedelta(minutes=30), catalog_mod.STATE_FRESH),
+    (timedelta(hours=1, minutes=59), catalog_mod.STATE_FRESH),
+    (timedelta(hours=2), catalog_mod.STATE_FRESH),            # boundary: inclusive
+    (timedelta(hours=2, seconds=1), catalog_mod.STATE_STALE),  # first stale second
+    (timedelta(hours=3), catalog_mod.STATE_STALE),
+    (timedelta(days=9), catalog_mod.STATE_STALE),
+])
+def test_freshness_is_read_from_the_producer_clock(age, expected):
+    cat = _w4_cat(_w4_iso(-age), [_w4_item()])
+    health = catalog_mod.health(cat, now=_W4_NOW)
+    assert health["state"] == expected
+    assert health["age_seconds"] == int(age.total_seconds())
+    assert (health["reason"] == "") is (expected == catalog_mod.STATE_FRESH)
+
+
+def test_freshness_ignores_the_newest_item_published_at():
+    """A nine-day-old REPORT in a catalog rebuilt one minute ago is FRESH.
+
+    The producer rewrites the catalog hourly regardless of new arrivals, so the
+    newest ``published_at`` measures the desks' output, not our pipeline's
+    liveness. Keying freshness on it would red a correctly-running vault during
+    any quiet week.
+    """
+    old_report = _w4_item()
+    old_report["published_at"] = (_W4_NOW - timedelta(days=9)).isoformat()
+    cat = _w4_cat(_w4_iso(timedelta(minutes=-1)), [old_report])
+    assert catalog_mod.health(cat, now=_W4_NOW)["state"] == catalog_mod.STATE_FRESH
+
+
+def test_explicit_reason_forces_stale_however_young_the_copy():
+    """A copy we could not re-verify is never presentable as live."""
+    cat = _w4_cat(_w4_iso(timedelta(seconds=-30)), [_w4_item()])
+    health = catalog_mod.health(cat, now=_W4_NOW, reason="store_error")
+    assert health["state"] == catalog_mod.STATE_STALE
+    assert health["reason"] == "store_error"
+
+
+# ===========================================================================
+# read_strict() — unavailable is never absence
+# ===========================================================================
+
+def test_read_strict_round_trips_a_published_catalog(tmp_path):
+    store = LocalStore(tmp_path / "store")
+    cat = catalog_mod.empty()
+    catalog_mod.upsert_item(cat, _w4_item())
+    catalog_mod.publish(store, cat)
+    loaded = catalog_mod.read_strict(store)
+    assert [it["id"] for it in loaded["items"]] == [_w4_item()["id"]]
+
+
+def test_authoritative_miss_raises_missing_not_empty(tmp_path):
+    """The exact case ``load()`` degrades to ``empty()``."""
+    store = LocalStore(tmp_path / "store")
+    assert catalog_mod.load(store) == catalog_mod.empty()      # documented old behavior
+    with pytest.raises(catalog_mod.CatalogUnavailable) as exc:
+        catalog_mod.read_strict(store)
+    assert exc.value.reason == "missing"
+
+
+def test_malformed_json_raises_rather_than_starting_fresh(tmp_path):
+    store = LocalStore(tmp_path / "store")
+    store.put_bytes(catalog_mod.CATALOG_KEY, b"{not json at all", "application/json")
+    assert catalog_mod.load(store) == catalog_mod.empty()      # documented old behavior
+    with pytest.raises(catalog_mod.CatalogUnavailable) as exc:
+        catalog_mod.read_strict(store)
+    assert exc.value.reason == "malformed_json"
+
+
+def test_store_operational_failure_is_not_a_miss(tmp_path):
+    """A timeout/credential failure must NOT read as 'the catalog does not exist'."""
+
+    class BrokenStore(LocalStore):
+        def get_bytes_strict(self, key):  # noqa: ANN001, ANN201
+            raise TimeoutError("R2 read timed out")
+
+    store = BrokenStore(tmp_path / "store")
+    with pytest.raises(catalog_mod.CatalogUnavailable) as exc:
+        catalog_mod.read_strict(store)
+    assert exc.value.reason == "store_error"
+    assert "TimeoutError" in exc.value.detail
+
+
+def test_store_without_strict_reads_fails_closed():
+    """No strict primitive → we cannot tell absence from outage → refuse."""
+
+    class FailOpenOnly:
+        def get_bytes(self, key):  # noqa: ANN001, ANN201
+            return None
+
+    with pytest.raises(catalog_mod.CatalogUnavailable) as exc:
+        catalog_mod.read_strict(FailOpenOnly())
+    assert exc.value.reason == "store_unavailable"
+
+
+def test_none_store_fails_closed():
+    with pytest.raises(catalog_mod.CatalogUnavailable):
+        catalog_mod.read_strict(None)
+
+
+# ===========================================================================
+# the real published catalog must survive the new validator
+# ===========================================================================
+
+def test_committed_repo_mirror_validates():
+    """The live 1,400-row mirror must pass — a validator that reds production is
+    worse than the defect it fixes. Skipped on a sparse checkout, where the
+    omitted ``data/`` tree has no bytes on disk to read."""
+    mirror = _W4_ROOT / "data" / "research_vault" / "catalog.json"
+    if not mirror.is_file():
+        pytest.skip("sparse checkout — data/ not materialized")
+    obj = json.loads(mirror.read_text(encoding="utf-8"))
+    generated = catalog_mod.parse_generated_at(obj.get("generated_at"))
+    # Validate against the mirror's OWN clock: the committed snapshot ages with
+    # the repo, so asserting it is fresh today would rot within two hours.
+    catalog_mod.validate(obj, now=generated)
+    assert obj["items"], "the committed mirror should not be empty"
+
+_W4_PDF = (
+    b"%PDF-1.4\n"
+    b"1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n"
+    b"2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n"
+    b"3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]>>endobj\n"
+    b"trailer<</Root 1 0 R>>\n"
+    b"%%EOF\n"
+)
+
+
+@pytest.fixture
+def w4_canned_pdftotext(monkeypatch):
+    """Deterministic body text — the host's poppler must not decide these tests."""
+    monkeypatch.setattr(ingest_mod, "extract_pdf_text",
+                        lambda b: "credible pipeline capacity in texas")
+    return True
+
+
+def _w4_seed_pdf(store, key: str, sidecar: dict) -> None:
+    store.put_bytes(key, _W4_PDF, "application/pdf")
+    store.put_bytes(key[:-4] + ".json",
+                    json.dumps(sidecar).encode("utf-8"), "application/json")
+
+
+def _w4_sidecar(doc_id: str, title: str = "A Report") -> dict:
+    return {"id": doc_id, "title": title, "institution": "UBS", "side": "sell",
+            "published_at": "2026-07-28T09:00:00Z",
+            "summary_points": ["A point worth reading."]}
+
+
+class W4FailingPutStore(LocalStore):
+    """A LocalStore whose ``put_bytes`` refuses keys matching ``fail_on``.
+
+    Mirrors the real failure shape exactly: R2Store.put_bytes catches its own
+    exception and returns False, so a caller that ignores the Boolean sees a
+    successful-looking call. Refusing (rather than raising) is what makes these
+    tests reproduce the production defect rather than a different one.
+    """
+
+    fail_on: tuple = ()
+
+    def put_bytes(self, key, data, content_type="application/octet-stream"):  # noqa: ANN001
+        if any(pattern in key for pattern in self.fail_on):
+            self.last_put_error = RuntimeError(f"injected put failure for {key}")
+            return False
+        return super().put_bytes(key, data, content_type)
+
+
+def _w4_store(tmp_path, fail_on=()) -> W4FailingPutStore:
+    store = W4FailingPutStore(tmp_path / "store")
+    store.fail_on = tuple(fail_on)
+    return store
+
+
+def _w4_receipt_ids(store) -> set[str]:
+    return {Path(k).stem for k in store.list_prefix(ingest_mod.PROCESSED_PREFIX)
+            if k.endswith(".json")}
+
+
+def _w4_catalog_ids(store) -> set[str]:
+    try:
+        cat = catalog_mod.read_strict(store, check_future_clock=False,
+                                      check_items=False)
+    except catalog_mod.CatalogUnavailable:
+        return set()
+    # str() every id: one test deliberately plants an unhashable list id, and
+    # the helper must observe that row rather than raise on it.
+    return {str(it.get("id")) for it in cat.get("items") or []}
+
+
+# ===========================================================================
+# Defect 5 — a failed PDF promotion fails the ITEM, and only the item
+# ===========================================================================
+
+def test_failed_pdf_promotion_omits_the_report_everywhere(tmp_path, w4_canned_pdftotext):
+    """No catalog row, no corpus row, no receipt — and the batch keeps going."""
+    store = _w4_store(tmp_path, fail_on=("research_vault/bad-",))
+    _w4_seed_pdf(store, "research_inbox/bad.pdf", _w4_sidecar("bad-000001"))
+    _w4_seed_pdf(store, "research_inbox/good.pdf", _w4_sidecar("good-000002"))
+
+    summary = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+
+    assert summary["failed"] == 1
+    assert summary["ingested"] == 1, "the next PDF in the batch must still process"
+
+    assert "bad-000001" not in _w4_catalog_ids(store)
+    assert "good-000002" in _w4_catalog_ids(store)
+    assert "bad-000001" not in _w4_receipt_ids(store)
+    assert "good-000002" in _w4_receipt_ids(store)
+    assert not store.exists("research_vault/bad-000001.pdf")
+
+    conn = corpus_mod.open_db(tmp_path / "corpus.sqlite")
+    rows = {r[0] for r in conn.execute("SELECT doc_id FROM documents").fetchall()}
+    conn.close()
+    assert "bad-000001" not in rows, (
+        "a report whose canonical PDF does not exist must not be searchable — that "
+        "is the row a Pro reader opens and receives a 404 for"
+    )
+
+
+def test_a_failed_promotion_retries_cleanly_next_run(tmp_path, w4_canned_pdftotext):
+    """No receipt was written, so the document is NOT stranded."""
+    store = _w4_store(tmp_path, fail_on=("research_vault/bad-",))
+    _w4_seed_pdf(store, "research_inbox/bad.pdf", _w4_sidecar("bad-000001"))
+    ingest_mod.run(store, tmp_path / "corpus.sqlite")
+    assert "bad-000001" not in _w4_receipt_ids(store)
+
+    store.fail_on = ()          # the store recovers
+    summary = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+    assert summary["ingested"] == 1
+    assert "bad-000001" in _w4_catalog_ids(store)
+    assert store.exists("research_vault/bad-000001.pdf")
+
+
+# ===========================================================================
+# Defect 4 — the publication commit gates receipts and the repo mirror
+# ===========================================================================
+
+def test_catalog_publish_failure_does_not_flush_receipts(tmp_path, w4_canned_pdftotext):
+    """PDF ok + corpus ok + catalog FAILED → nothing may be marked processed."""
+    store = _w4_store(tmp_path, fail_on=(catalog_mod.CATALOG_KEY,))
+    _w4_seed_pdf(store, "research_inbox/a.pdf", _w4_sidecar("a-000001"))
+
+    summary = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+
+    assert summary["corpus_published"] is True
+    assert summary["catalog_published"] is False
+    assert summary["error"] == "catalog_publish_failed"
+    assert summary["receipts_unflushed"] == 1
+    assert _w4_receipt_ids(store) == set(), (
+        "a receipt makes a document unre-ingestable; writing one for content that "
+        "never published strands it permanently"
+    )
+    assert store.exists("research_vault/a-000001.pdf"), "the PDF itself did publish"
+
+
+def test_catalog_publish_failure_is_retried_and_completes_next_run(tmp_path,
+                                                                   w4_canned_pdftotext):
+    store = _w4_store(tmp_path, fail_on=(catalog_mod.CATALOG_KEY,))
+    _w4_seed_pdf(store, "research_inbox/a.pdf", _w4_sidecar("a-000001"))
+    ingest_mod.run(store, tmp_path / "corpus.sqlite")
+
+    store.fail_on = ()
+    summary = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+    assert summary["catalog_published"] is True
+    assert summary["ingested"] == 1, "unreceipted, so it re-ingests cleanly"
+    assert "a-000001" in _w4_catalog_ids(store)
+    assert "a-000001" in _w4_receipt_ids(store)
+
+
+def test_corpus_publish_failure_does_not_advance_the_catalog(tmp_path,
+                                                             w4_canned_pdftotext):
+    """Corpus FAILED → the catalog must not admit rows search cannot answer for."""
+    store = _w4_store(tmp_path)
+    _w4_seed_pdf(store, "research_inbox/seed.pdf", _w4_sidecar("seed-000001"))
+    ingest_mod.run(store, tmp_path / "corpus.sqlite")      # a clean baseline
+    store.fail_on = ("research_vault/corpus.sqlite",)      # now break the corpus
+
+    before = _w4_catalog_ids(store)
+    _w4_seed_pdf(store, "research_inbox/new.pdf", _w4_sidecar("new-000002"))
+    summary = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+
+    assert summary["corpus_published"] is False
+    assert summary["catalog_published"] is False
+    assert summary["error"] == "corpus_publish_failed"
+    assert _w4_catalog_ids(store) == before, "the prior catalog stays the authority"
+    assert "new-000002" not in _w4_receipt_ids(store)
+
+
+def test_publish_result_separates_bytes_from_publication(tmp_path):
+    """The Defect 4 root cause: a function returning bytes cannot express failure."""
+    store = _w4_store(tmp_path, fail_on=(catalog_mod.CATALOG_KEY,))
+    cat = catalog_mod.empty()
+    catalog_mod.upsert_item(cat, {"id": "x-1", "title": "T",
+                                  "published_at": "2026-07-28T09:00:00Z"})
+    result = catalog_mod.publish(store, cat)
+    assert result.published is False
+    assert result.data, "the serialized bytes are still available for inspection"
+    assert result.error
+    assert not store.exists(catalog_mod.CATALOG_KEY)
+
+
+# ===========================================================================
+# Defect 2 (P0) — a mature vault is never bootstrapped from empty
+# ===========================================================================
+
+def _w4_mature_vault(tmp_path, canned=True):
+    """A vault with published history: receipts, promoted PDFs, corpus, catalog."""
+    store = _w4_store(tmp_path)
+    for n in range(3):
+        _w4_seed_pdf(store, f"research_inbox/hist{n}.pdf", _w4_sidecar(f"hist-00000{n}"))
+    ingest_mod.run(store, tmp_path / "corpus.sqlite")
+    assert len(_w4_receipt_ids(store)) == 3
+    return store
+
+
+def test_missing_catalog_over_a_mature_vault_refuses_to_publish(tmp_path,
+                                                                w4_canned_pdftotext):
+    """THE P0. Storage corruption must not become fresh, published data loss."""
+    store = _w4_mature_vault(tmp_path)
+    receipts_before = _w4_receipt_ids(store)
+
+    (Path(store.root) / catalog_mod.CATALOG_KEY).unlink()      # catalog disappears
+    _w4_seed_pdf(store, "research_inbox/new.pdf", _w4_sidecar("new-000009"))
+
+    summary = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+
+    assert summary["error"] == "catalog_unavailable"
+    assert summary["catalog_state"] == "unavailable"
+    assert summary["vault_history"]["has_history"] is True
+    assert summary["vault_history"]["receipts"] == 3
+    # Nothing published, nothing receipted, nothing lost.
+    assert not store.exists(catalog_mod.CATALOG_KEY), (
+        "a truncated replacement catalog must NOT have been published"
+    )
+    assert _w4_receipt_ids(store) == receipts_before, "receipts are untouched"
+    assert summary.get("ingested", 0) == 0
+
+
+@pytest.mark.parametrize("corrupt", [
+    b"{not json",
+    b"[]",
+    b'{"schema": "research_vault.catalog.v2", "generated_at": "2026-07-28T09:00:00Z", "items": []}',
+    b'{"schema": "research_vault.catalog.v1", "generated_at": "", "count": 0, "items": []}',
+    b'{"schema": "research_vault.catalog.v1", "generated_at": "2026-07-28T09:00:00Z", "count": 0, "items": []}',
+])
+def test_corrupt_or_empty_catalog_over_a_mature_vault_refuses(tmp_path, corrupt,
+                                                              w4_canned_pdftotext):
+    """Every input that would start the rebuild from ZERO rows is refused.
+
+    The last case is the subtle one: a catalog that parses perfectly and is
+    schema-valid, but carries no items. It clears every structural check and would
+    otherwise sail straight into the same truncation the P0 describes.
+    """
+    store = _w4_mature_vault(tmp_path)
+    receipts_before = _w4_receipt_ids(store)
+    store.put_bytes(catalog_mod.CATALOG_KEY, corrupt, "application/json")
+
+    summary = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+
+    assert summary["error"] == "catalog_unavailable"
+    assert _w4_receipt_ids(store) == receipts_before
+    assert store.get_bytes(catalog_mod.CATALOG_KEY) == corrupt, (
+        "the damaged object is left exactly as found — recovery is an operator "
+        "action against known-good evidence, never an automatic start-fresh"
+    )
+
+
+def test_a_malformed_ROW_does_not_refuse_the_run(tmp_path, w4_canned_pdftotext):
+    """One unidentifiable row truncates nothing, so it must not stop the lane.
+
+    This is the other half of the line: refusing here would recreate the "one bad
+    document kills the batch" failure the ingest module exists to avoid. Strict
+    per-row validation is a SERVING rule (see catalog.validate).
+    """
+    store = _w4_mature_vault(tmp_path)
+    cat = catalog_mod.read_strict(store, check_future_clock=False, check_items=False)
+    cat["items"].append({"id": ["not", "hashable"], "title": "Broken",
+                         "published_at": "2026-07-28T09:00:00Z"})
+    catalog_mod.publish(store, cat)
+
+    _w4_seed_pdf(store, "research_inbox/new.pdf", _w4_sidecar("new-000009"))
+    summary = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+
+    assert summary.get("error") is None
+    assert summary["ingested"] == 1
+    assert summary["catalog_published"] is True
+    assert "new-000009" in _w4_catalog_ids(store)
+
+
+def test_genuine_first_bootstrap_is_still_allowed(tmp_path, w4_canned_pdftotext):
+    """An empty start is legitimate when the store can PROVE it never published."""
+    store = _w4_store(tmp_path)
+    _w4_seed_pdf(store, "research_inbox/first.pdf", _w4_sidecar("first-000001"))
+
+    summary = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+
+    assert summary.get("error") is None
+    assert summary["catalog_state"] == "bootstrap"
+    assert summary["ingested"] == 1
+    assert "first-000001" in _w4_catalog_ids(store)
+    assert "first-000001" in _w4_receipt_ids(store)
+
+
+def test_history_probe_failure_counts_as_history(tmp_path, w4_canned_pdftotext):
+    """Fail CLOSED: an unlistable store cannot prove it is virgin."""
+
+    class UnlistableStore(W4FailingPutStore):
+        def list_prefix(self, prefix):  # noqa: ANN001, ANN201
+            if prefix == ingest_mod.PROCESSED_PREFIX:
+                raise ConnectionError("listing unavailable")
+            return super().list_prefix(prefix)
+
+    store = UnlistableStore(tmp_path / "store")
+    store.fail_on = ()
+    _w4_seed_pdf(store, "research_inbox/first.pdf", _w4_sidecar("first-000001"))
+
+    summary = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+    # The receipt probe raises, so we cannot prove this store is virgin.
+    assert summary["error"] == "catalog_unavailable"
+    assert summary["vault_history"]["probe_failed"] is True
+    assert not store.exists(catalog_mod.CATALOG_KEY)
+
+
+# ===========================================================================
+# Defect 6 — plane failures exit non-zero; document failures do not
+# ===========================================================================
+
+def _w4_run_cli(tmp_path, store_root: Path, *extra: str) -> subprocess.CompletedProcess:
+    """Run the real CLI as a subprocess, with its repo snapshots redirected.
+
+    --repo-dir is NOT optional hygiene here. Without it a scratch-store run
+    snapshots its two-document vault straight over the committed
+    data/research_vault/catalog.json — which is exactly how writing these tests
+    truncated the live 1,402-row mirror to 1 row.
+    """
+    return subprocess.run(
+        [sys.executable, "-m", "scripts.ingest_research", "--local", str(store_root),
+         "--corpus", str(tmp_path / "cli_corpus.sqlite"),
+         "--repo-dir", str(tmp_path / "repo_snapshot"), *extra],
+        cwd=_W4_ROOT, capture_output=True, text=True, timeout=180,
+    )
+
+
+def test_cli_exits_zero_when_only_a_DOCUMENT_failed(tmp_path):
+    """One unusable PDF must never red the hourly lane."""
+    store = LocalStore(tmp_path / "store")
+    store.put_bytes("research_inbox/broken.pdf", b"not a pdf at all", "application/pdf")
+    store.put_bytes("research_inbox/broken.json", b"{bad json", "application/json")
+
+    proc = _w4_run_cli(tmp_path, Path(store.root))
+    assert proc.returncode == 0, proc.stderr[-2000:]
+
+
+def test_cli_exits_nonzero_when_the_catalog_publish_failed(tmp_path, monkeypatch):
+    """The plane failed, so the lane must be red even though documents were fine."""
+    store = LocalStore(tmp_path / "store")
+    _w4_seed_pdf(store, "research_inbox/a.pdf", _w4_sidecar("a-000001"))
+    # Make the catalog key unwritable: a directory cannot be replaced by a file.
+    (Path(store.root) / catalog_mod.CATALOG_KEY).mkdir(parents=True, exist_ok=True)
+
+    proc = _w4_run_cli(tmp_path, Path(store.root))
+    assert proc.returncode == 1, (
+        f"expected a plane failure to exit 1\nstdout={proc.stdout[-2000:]}\n"
+        f"stderr={proc.stderr[-2000:]}"
+    )
+    assert "publication plane FAILED" in proc.stdout
+
+
+def test_cli_exits_nonzero_with_require_store_and_no_store(tmp_path, monkeypatch):
+    """On the scheduled run, 'no store' means the secrets never arrived."""
+    env = {"PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "HOME": str(tmp_path)}
+    proc = subprocess.run(
+        [sys.executable, "-m", "scripts.ingest_research", "--require-store"],
+        cwd=_W4_ROOT, capture_output=True, text=True, timeout=180, env=env,
+    )
+    assert proc.returncode == 1
+    assert "no research store configured" in proc.stdout
+
+
+def test_cli_exits_zero_without_require_store_and_no_store(tmp_path):
+    """A developer box genuinely has nothing to do — unchanged behavior."""
+    env = {"PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "HOME": str(tmp_path)}
+    proc = subprocess.run(
+        [sys.executable, "-m", "scripts.ingest_research"],
+        cwd=_W4_ROOT, capture_output=True, text=True, timeout=180, env=env,
+    )
+    assert proc.returncode == 0
+
+
+def test_cli_does_not_advance_the_repo_mirror_on_a_plane_failure(tmp_path,
+                                                                 monkeypatch):
+    """Freeze §B: the git mirror may never be independently newer than R2."""
+    import scripts.ingest_research as cli
+
+    mirror = tmp_path / "repo" / "catalog.json"
+    mirror.parent.mkdir(parents=True)
+    mirror.write_bytes(b'{"schema": "research_vault.catalog.v1", "sentinel": true}\n')
+    monkeypatch.setattr(ingest_mod, "extract_pdf_text", lambda b: "body text here")
+
+    store = _w4_store(tmp_path, fail_on=(catalog_mod.CATALOG_KEY,))
+    _w4_seed_pdf(store, "research_inbox/a.pdf", _w4_sidecar("a-000001"))
+    monkeypatch.setattr(sys, "argv", ["ingest_research", "--local", str(store.root),
+                                      "--corpus", str(tmp_path / "c.sqlite"),
+                                      "--repo-dir", str(mirror.parent)])
+    # --local builds a plain LocalStore, so point the CLI at our failing one.
+    monkeypatch.setattr("engine.research_vault.r2_store.build_store",
+                        lambda local_dir=None: store)
+
+    rc = cli.main()
+    assert rc == 1
+    assert json.loads(mirror.read_text())["sentinel"] is True, (
+        "the mirror must still hold the last FULLY PUBLISHED generation"
+    )
+
+
+def test_cli_advances_the_repo_mirror_on_success(tmp_path, monkeypatch):
+    import scripts.ingest_research as cli
+
+    mirror = tmp_path / "repo" / "catalog.json"
+    mirror.parent.mkdir(parents=True)
+    mirror.write_bytes(b'{"sentinel": true}\n')
+    monkeypatch.setattr(ingest_mod, "extract_pdf_text", lambda b: "body text here")
+
+    store = _w4_store(tmp_path)
+    _w4_seed_pdf(store, "research_inbox/a.pdf", _w4_sidecar("a-000001"))
+    monkeypatch.setattr(sys, "argv", ["ingest_research", "--local", str(store.root),
+                                      "--corpus", str(tmp_path / "c.sqlite"),
+                                      "--repo-dir", str(mirror.parent)])
+    monkeypatch.setattr("engine.research_vault.r2_store.build_store",
+                        lambda local_dir=None: store)
+
+    rc = cli.main()
+    assert rc == 0
+    written = json.loads(mirror.read_text())
+    assert [it["id"] for it in written["items"]] == ["a-000001"]
+
+
+# ===========================================================================
+# source-content freshness acknowledgement + workflow wiring
+# ===========================================================================
+
+def _w4_source_guard_payload(stamp: str = "2026-09-04T17:00:00Z") -> dict:
+    return {
+        "schema": "research_vault.catalog.v1",
+        "generated_at": "2026-09-05T04:00:00Z",
+        "count": 1,
+        "items": [{"id": "one", "published_at": stamp}],
+    }
+
+
+def _w4_run_source_guard(tmp_path, capsys, payload, *extra_args):
+    import scripts.check_research_vault_source_freshness as guard
+
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    catalog = tmp_path / "catalog.json"
+    if payload is not None:
+        catalog.write_text(json.dumps(payload), encoding="utf-8")
+    rc = guard.main([
+        "--catalog", str(catalog),
+        "--now", "2026-09-09T12:00:00Z",
+        "--ack-producer-stale",
+        *extra_args,
+    ])
+    lines = capsys.readouterr().out.splitlines()
+    assert lines, "the guard must always emit its typed JSON receipt"
+    return rc, json.loads(lines[0]), lines[1:]
+
+
+def test_source_outage_ack_softens_only_typed_producer_stale(tmp_path, capsys):
+    rc, report, annotations = _w4_run_source_guard(
+        tmp_path, capsys, _w4_source_guard_payload())
+
+    assert rc == 0
+    assert report["status"] == "PRODUCER_STALE"
+    assert report["ok"] is False, "acknowledgement must not rewrite the typed verdict"
+    assert any(line.startswith("::warning title=research-vault-source::")
+               and "acknowledged" in line.lower() for line in annotations)
+    assert not any(line.startswith("::error title=research-vault-source::")
+                   for line in annotations)
+
+
+@pytest.mark.parametrize(
+    ("case", "payload", "extra_args", "expected_status", "reason_fragment"),
+    [
+        ("empty", {"count": 0, "items": []}, (), "NO_REPORTS", "no report"),
+        ("invalid-clock", _w4_source_guard_payload("bad"), (),
+         "LATEST_REPORT_INVALID", "unusable published_at"),
+        ("future-clock", _w4_source_guard_payload("2026-09-09T12:10:01Z"), (),
+         "FUTURE_REPORT_CLOCK", "future-clock tolerance"),
+        ("invalid-catalog", {"count": 1, "items": "bad"}, (),
+         "CATALOG_UNAVAILABLE", "items is missing"),
+        ("invalid-configuration", _w4_source_guard_payload(),
+         ("--max-age-hours", "nan"), "CATALOG_UNAVAILABLE", "configuration"),
+        ("transport", None, (), "CATALOG_UNAVAILABLE", "catalog read failed"),
+    ],
+)
+def test_source_outage_ack_keeps_every_non_stale_failure_red(
+        tmp_path, capsys, case, payload, extra_args, expected_status, reason_fragment):
+    rc, report, annotations = _w4_run_source_guard(
+        tmp_path / case, capsys, payload, *extra_args)
+
+    assert rc == 1
+    assert report["status"] == expected_status
+    assert reason_fragment in report["reason"]
+    assert any(line.startswith("::error title=research-vault-source::")
+               for line in annotations)
+    assert not any("acknowledged" in line.lower() for line in annotations)
+
+
+def _w4_workflow_run(filename: str, job_name: str, *, step_id: str | None = None,
+                     step_name: str | None = None) -> str:
+    import yaml
+
+    payload = yaml.safe_load(
+        (_W4_ROOT / ".github" / "workflows" / filename).read_text(encoding="utf-8"))
+    steps = payload["jobs"][job_name]["steps"]
+    for step in steps:
+        if step_id is not None and step.get("id") == step_id:
+            return step["run"]
+        if step_name is not None and step.get("name") == step_name:
+            return step["run"]
+    raise AssertionError(f"workflow step not found: {filename} {step_id or step_name}")
+
+
+def _w4_fake_python_env(tmp_path, *, rc: int, ack: str = "true"):
+    import os
+
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir(parents=True)
+    capture = tmp_path / "python-args.txt"
+    fake = fake_bin / "python"
+    fake.write_text(
+        "#!/usr/bin/env bash\n"
+        "printf '%s\\n' \"$@\" > \"$FAKE_PYTHON_ARGS\"\n"
+        "exit \"$FAKE_PYTHON_RC\"\n",
+        encoding="utf-8",
+    )
+    fake.chmod(0o755)
+    env = os.environ.copy()
+    env.update({
+        "PATH": f"{fake_bin}:{env['PATH']}",
+        "FAKE_PYTHON_ARGS": str(capture),
+        "FAKE_PYTHON_RC": str(rc),
+        "RESEARCH_VAULT_SOURCE_OUTAGE_ACK": ack,
+        "RESEARCH_VAULT_SOURCE_MAX_AGE_HOURS": "",
+    })
+    return env, capture
+
+
+def test_research_ingest_passes_stale_only_ack_to_typed_guard(tmp_path):
+    script = _w4_workflow_run(
+        "research-ingest.yml", "ingest", step_id="source_freshness")
+    env, capture = _w4_fake_python_env(tmp_path, rc=1)
+    env["GITHUB_OUTPUT"] = str(tmp_path / "github-output")
+
+    proc = subprocess.run(
+        ["bash", "-c", script], cwd=_W4_ROOT, env=env,
+        capture_output=True, text=True, timeout=60)
+
+    assert proc.returncode == 0, proc.stderr
+    assert "--ack-producer-stale" in capture.read_text().splitlines()
+    assert Path(env["GITHUB_OUTPUT"]).read_text().strip() == "rc=1"
+
+
+def test_workflow_fails_the_lane_on_ingest_or_unacknowledged_guard_failure():
+    """Execute the actual final shell step, including the acknowledged-outage env.
+
+    A nonzero source rc represents a non-stale typed failure after acknowledgement
+    has already been applied inside the guard. The workflow must never green it.
+    """
+    import os
+
+    wf = (_W4_ROOT / ".github" / "workflows" / "research-ingest.yml").read_text(
+        encoding="utf-8")
+    failure_name = "fail the lane if ingest or source freshness failed"
+    assert wf.index("commit catalog snapshot (salvage-push)") < wf.index(failure_name)
+    script = _w4_workflow_run(
+        "research-ingest.yml", "ingest", step_name=failure_name)
+    env = os.environ.copy()
+    env["RESEARCH_VAULT_SOURCE_OUTAGE_ACK"] = "true"
+
+    cases = [
+        ("0", "0", "success", 0),
+        ("1", "0", "success", 1),
+        ("", "0", "success", 1),
+        ("0", "1", "success", 1),
+        ("0", "", "success", 1),
+        ("0", "", "failure", 1),
+    ]
+    for ingest_rc, source_rc, checkout, expected in cases:
+        rendered = (script
+                    .replace("${{ steps.ingest.outputs.rc }}", ingest_rc)
+                    .replace("${{ steps.source_freshness.outputs.rc }}", source_rc)
+                    .replace("${{ steps.checkout.outcome }}", checkout))
+        proc = subprocess.run(
+            ["bash", "-c", rendered], cwd=_W4_ROOT, env=env,
+            capture_output=True, text=True, timeout=60)
+        assert proc.returncode == expected, (
+            f"ingest={ingest_rc!r}, source={source_rc!r}, checkout={checkout!r} "
+            f"should exit {expected}; got {proc.returncode}\n"
+            f"stdout={proc.stdout}\nstderr={proc.stderr}"
+        )
+
+
+def test_hosted_source_deadman_delegates_ack_and_preserves_non_stale_red(tmp_path):
+    script = _w4_workflow_run(
+        "vps-live-heartbeat.yml", "research-vault-source-url",
+        step_name="verify Research Vault source-content freshness (public URL)")
+    env, capture = _w4_fake_python_env(tmp_path, rc=1)
+
+    proc = subprocess.run(
+        ["bash", "-c", script], cwd=_W4_ROOT, env=env,
+        capture_output=True, text=True, timeout=60)
+
+    assert proc.returncode == 1, (
+        "the hosted workflow may not turn an arbitrary guard failure green merely "
+        f"because outage acknowledgement is set\n{proc.stdout}\n{proc.stderr}"
+    )
+    assert "--ack-producer-stale" in capture.read_text().splitlines()
+
+
+def test_workflow_passes_require_store_on_the_scheduled_run():
+    wf = (_W4_ROOT / ".github" / "workflows" / "research-ingest.yml").read_text(
+        encoding="utf-8")
+    assert "python -m scripts.ingest_research --require-store" in wf
+
+
+def test_repo_snapshot_dir_is_overridable_and_defaults_to_the_committed_mirror(
+        tmp_path, monkeypatch):
+    """The guard that keeps a scratch run out of the live mirror.
+
+    Writing this file's CLI tests truncated data/research_vault/catalog.json from
+    1,402 rows to 1, because a `--local` subprocess snapshotted its two-document
+    scratch vault over the real path. A store override without a matching snapshot
+    override is a footgun; this pins that the override exists and wins.
+    """
+    import scripts.ingest_research as cli
+
+    monkeypatch.delenv("RESEARCH_REPO_SNAPSHOT_DIR", raising=False)
+    assert cli._repo_snapshot_dir() == cli._REPO_SNAPSHOT_DIR
+    assert cli._repo_snapshot_dir().parts[-2:] == ("data", "research_vault")
+
+    monkeypatch.setenv("RESEARCH_REPO_SNAPSHOT_DIR", str(tmp_path / "env"))
+    assert cli._repo_snapshot_dir() == tmp_path / "env"
+    # An explicit flag beats the environment.
+    assert cli._repo_snapshot_dir(str(tmp_path / "flag")) == tmp_path / "flag"
+
+
+def test_committed_mirror_is_not_written_by_the_cli_tests():
+    """Belt: the live mirror must still hold a real vault after this module runs."""
+    mirror = _W4_ROOT / "data" / "research_vault" / "catalog.json"
+    if not mirror.is_file():
+        pytest.skip("sparse checkout — data/ not materialized")
+    obj = json.loads(mirror.read_text(encoding="utf-8"))
+    assert obj.get("count", 0) > 100, (
+        f"the committed mirror holds {obj.get('count')} rows — a test wrote its "
+        f"scratch vault over the real catalog (use --repo-dir)"
+    )
+
+
+# ===========================================================================
+# the correction-audit census (read-only)
+# ===========================================================================
+
+def test_census_reports_every_mismatch_direction_and_never_mutates(tmp_path,
+                                                                    w4_canned_pdftotext,
+                                                                    monkeypatch):
+    """The audit must CLASSIFY mismatches, not force the sets equal — and it must
+    be provably read-only, because it runs against the live production vault."""
+    import scripts.research_vault_census as census
+
+    store = _w4_store(tmp_path)
+    for n in range(3):
+        _w4_seed_pdf(store, f"research_inbox/d{n}.pdf", _w4_sidecar(f"desk-00000{n}"))
+    ingest_mod.run(store, tmp_path / "corpus.sqlite")
+
+    # Manufacture one of each direction.
+    (Path(store.root) / "research_vault" / "desk-000000.pdf").unlink()
+    cat = catalog_mod.read_strict(store, check_future_clock=False, check_items=False)
+    cat["items"] = [it for it in cat["items"] if it["id"] != "desk-000001"]
+    catalog_mod.publish(store, cat)
+
+    before = {k: store.get_bytes(k) for k in store.list_prefix("")}
+
+    out = tmp_path / "census.json"
+    # --repo-dir travels with --local: comparing a scratch store against the REAL
+    # committed mirror prints a nonsense lag and can raise a false freeze-§B alarm.
+    monkeypatch.setattr(sys, "argv", ["census", "--local", str(store.root),
+                                      "--repo-dir", str(tmp_path / "no_mirror"),
+                                      "--json", str(out)])
+    monkeypatch.setattr("engine.research_vault.r2_store.build_store",
+                        lambda local_dir=None: store)
+    assert census.main() == 0
+
+    report = json.loads(out.read_text())
+    mm = report["mismatches"]
+    health = report["corpus"]["body_health"]
+    assert health["schema"] == "research_vault.corpus_health.v1"
+    assert health["body_nonempty_rows"] == report["corpus"]["rows"]
+    assert health["body_empty_rows"] == 0
+    assert health["corpus_bytes"] > 0
+    assert mm["catalog_minus_pdf"] == ["desk-000000"]
+    assert mm["receipt_minus_catalog"] == ["desk-000001"]
+    assert mm["corpus_minus_catalog"] == ["desk-000001"]
+    assert mm["pdf_minus_catalog"] == ["desk-000001"]
+    # The receipt's source key is what makes a stranded row deterministically
+    # recoverable instead of a guess.
+    assert report["recovery_sources"]["desk-000001"] == "research_inbox/d1.pdf"
+    assert report["repo_mirror"] == {"present": False}, (
+        "an absent --repo-dir mirror must read as absent, never fall back to the "
+        "real committed one"
+    )
+
+    after = {k: store.get_bytes(k) for k in store.list_prefix("")}
+    assert after == before, "the census must not mutate a single object"
+
+
+def test_census_body_health_distinguishes_identity_from_text_retrieval(
+        tmp_path, w4_canned_pdftotext, monkeypatch):
+    """Rows may all exist while retrieval is still degraded.
+
+    This fixture keeps all three catalog/corpus identities intact, then changes
+    only the published corpus bytes: one healthy full-text row, one bodyless
+    unavailable row that needs repair, and one bodyless scan that is a typed
+    no-text exclusion. The census must classify those states without returning
+    licensed body text or mutating the store.
+    """
+    import scripts.research_vault_census as census
+
+    store = _w4_store(tmp_path)
+    ids = [f"health-00000{n}" for n in range(3)]
+    for n, doc_id in enumerate(ids):
+        _w4_seed_pdf(
+            store,
+            f"research_inbox/h{n}.pdf",
+            _w4_sidecar(doc_id),
+        )
+    ingest_mod.run(store, tmp_path / "corpus.sqlite")
+
+    corpus_bytes = store.get_bytes(ingest_mod.CORPUS_KEY)
+    assert corpus_bytes
+    scratch = tmp_path / "health-corpus.sqlite"
+    scratch.write_bytes(corpus_bytes)
+    conn = sqlite3.connect(str(scratch))
+    healthy_body = (
+        "Institutional demand remains durable across the measured channel and "
+        "the research desk expects capacity additions to stay disciplined.\n\n"
+        "This second page preserves enough literal source structure for the "
+        "excerpt sampler to derive a bounded opening passage."
+        "\f"
+        "Tail page evidence remains present after the explicit PDF page break."
+    )
+    try:
+        conn.execute(
+            "UPDATE documents SET body=?, text_layer='full', char_count=?, pages=2 "
+            "WHERE doc_id=?",
+            (healthy_body, len(healthy_body), ids[0]),
+        )
+        conn.execute(
+            "UPDATE documents SET body='', text_layer='unavailable', "
+            "char_count=900, pages=4 WHERE doc_id=?",
+            (ids[1],),
+        )
+        conn.execute(
+            "UPDATE documents SET body='', text_layer='none', "
+            "char_count=0, pages=7 WHERE doc_id=?",
+            (ids[2],),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    store.put_bytes(ingest_mod.CORPUS_KEY, scratch.read_bytes(),
+                    "application/vnd.sqlite3")
+
+    before = {key: store.get_bytes(key) for key in store.list_prefix("")}
+    out = tmp_path / "health-census.json"
+    monkeypatch.setattr(
+        sys, "argv",
+        ["census", "--local", str(store.root),
+         "--repo-dir", str(tmp_path / "no_mirror"), "--json", str(out)],
+    )
+    monkeypatch.setattr(
+        "engine.research_vault.r2_store.build_store",
+        lambda local_dir=None: store,
+    )
+    assert census.main() == 0
+
+    report = json.loads(out.read_text())
+    assert report["mismatches"]["catalog_minus_corpus"] == []
+    assert report["mismatches"]["corpus_minus_catalog"] == []
+
+    health = report["corpus"]["body_health"]
+    assert health["body_nonempty_rows"] == 1
+    assert health["body_empty_rows"] == 2
+    assert health["text_layer"] == {
+        "full": 1,
+        "thin": 0,
+        "none": 1,
+        "unavailable": 1,
+        "null_or_unknown": 0,
+    }
+    assert health["measured_source_char_count_present_rows"] == 3
+    assert health["stored_body_chars_eq_source_rows"] == 2
+    assert health["stored_body_chars_lt_source_rows"] == 1
+    assert health["stored_body_chars_gt_source_or_inconsistent_rows"] == 0
+    assert health["page_separator_rows"] == 1
+    assert health["page_count_present_rows"] == 3
+    assert health["excerpt_derivable_rows"] == 1
+    assert health["catalog_rows_with_corpus_row_but_no_usable_body_count"] == 2
+    assert health["catalog_rows_with_corpus_row_but_no_usable_body_ids"] == ids[1:]
+    assert (
+        health["catalog_rows_with_corpus_row_but_no_usable_body_needing_repair_ids"]
+        == [ids[1]]
+    )
+    assert (
+        health["catalog_rows_with_corpus_row_but_no_usable_body_needing_repair_count"]
+        == 1
+    )
+    assert health["catalog_rows_with_corpus_row_typed_no_text_count"] == 1
+    assert health["valid_pdf_content_sha256_rows"] == 3
+    encoded_health = json.dumps(health)
+    assert healthy_body[:48] not in encoded_health
+    assert "Institutional demand remains durable" not in encoded_health
+
+    after = {key: store.get_bytes(key) for key in store.list_prefix("")}
+    assert after == before, "body-health census must remain byte-for-byte read-only"
+
+
+def test_census_refuses_rather_than_auditing_an_unreadable_catalog(tmp_path,
+                                                                   monkeypatch):
+    import scripts.research_vault_census as census
+
+    store = _w4_store(tmp_path)
+    store.put_bytes(catalog_mod.CATALOG_KEY, b"{broken", "application/json")
+    monkeypatch.setattr(sys, "argv", ["census", "--local", str(store.root)])
+    monkeypatch.setattr("engine.research_vault.r2_store.build_store",
+                        lambda local_dir=None: store)
+    assert census.main() == 1
+
+
+def test_readonly_census_workflow_cannot_ingest_publish_or_cancel_ingest():
+    """The operator proof lane must stay observational, not a disguised ingest."""
+    import yaml
+
+    path = _W4_ROOT / ".github" / "workflows" / "research-vault-census.yml"
+    raw = path.read_text(encoding="utf-8")
+    payload = yaml.safe_load(raw)
+
+    assert payload["permissions"] == {"contents": "read"}
+    assert payload["concurrency"] == {
+        "group": "research-vault-readonly-census",
+        "cancel-in-progress": False,
+    }
+    job = payload["jobs"]["census"]
+    assert job["if"] == "github.ref == 'refs/heads/main'"
+
+    before_permissions = raw.split("permissions:", 1)[0]
+    assert "workflow_dispatch:" in before_permissions
+    assert "schedule:" not in before_permissions
+
+    runs = "\n".join(
+        step.get("run", "")
+        for step in job["steps"]
+        if isinstance(step, dict)
+    )
+    assert "python -m scripts.research_vault_census" in runs
+    # Adjacent Python literals can split this message across source lines.
+    # Inspect compiler-folded constants instead of weakening the config guard
+    # or requiring a particular formatting of the workflow's heredoc.
+    import ast
+    constants = [
+        node.value for node in ast.walk(ast.parse(_census_preflight_python()))
+        if isinstance(node, ast.Constant) and isinstance(node.value, str)
+    ]
+    assert any("missing required private R2 configuration name(s)" in text
+               for text in constants)
+    assert "research bucket aliases shared/public bucket" in runs
+    for required_name in (
+        "R2_BUCKET",
+        "R2_RESEARCH_ENDPOINT",
+        "R2_RESEARCH_ACCESS_KEY_ID",
+        "R2_RESEARCH_SECRET_ACCESS_KEY",
+        "R2_RESEARCH_BUCKET",
+    ):
+        assert required_name in runs
+    for forbidden in (
+        "scripts.ingest_research",
+        "git push",
+        "git commit",
+        "put_object",
+        "put_bytes",
+        "delete_object",
+        "publish_r2",
+    ):
+        assert forbidden not in runs
+
+    env = job["env"]
+    assert "R2_RESEARCH_ENDPOINT" in env
+    assert "R2_RESEARCH_ACCESS_KEY_ID" in env
+    assert "R2_RESEARCH_SECRET_ACCESS_KEY" in env
+    assert "R2_RESEARCH_BUCKET" in env
+    assert "R2_BUCKET" in env, "shared bucket name is needed only for F1 anti-alias"
+    assert "R2_ENDPOINT" not in env
+    assert "R2_ACCESS_KEY_ID" not in env
+    assert "R2_SECRET_ACCESS_KEY" not in env
+
+# ===========================================================================
+# Market Cognition: rights-safe Research Intelligence belief context
+# ===========================================================================
+
+def _market_cognition_belief_rio():
+    return {
+        "schema": "mastermind.research_intelligence.v1",
+        "document": {
+            "id": "belief-r1",
+            "source_type": "institutional_research",
+            "source_name": "Example Research",
+            "institution": "Example",
+            "desk": "Equity Strategy",
+            "title": "Rally review",
+            "published_at": "2026-09-24T20:00:00Z",
+            "content_sha256": "a" * 64,
+        },
+        "claims": [
+            {
+                "statement": "Clients remain cautious after the rally.",
+                "evidence": [{"quote_span": "Clients remain cautious after the rally."}],
+                "numbers": [],
+                "entities": ["clients"],
+                "horizon": "current",
+                "explicit": True,
+            },
+            {
+                "statement": "Consensus forecasts still assume slower growth.",
+                "evidence": [{"quote_span": "Consensus forecasts still assume slower growth."}],
+                "numbers": [],
+                "entities": ["consensus"],
+                "horizon": "next year",
+                "explicit": True,
+            },
+        ],
+        "analysis": {
+            "thesis": {
+                "summary": "The note describes caution despite stronger price action.",
+                "direction": "mixed",
+                "mechanism": [],
+                "conviction": "",
+                "support_claim_indices": [0, 1],
+            },
+            "assumptions": [],
+            "forecasts": [],
+            "catalysts": [],
+            "falsifiers": [],
+            "counterarguments": [],
+            "implications": [],
+            "belief_delta": {
+                "statement": "The desk is more constructive than in its prior note.",
+                "support_claim_indices": [0],
+            },
+            "consensus_relation": {
+                "statement": "The desk remains more cautious than the cited consensus view.",
+                "support_claim_indices": [1],
+            },
+            "uncertainties": [],
+        },
+        "authority": "descriptive_research_only",
+    }
+
+
+def test_market_cognition_belief_context_projects_only_grounded_relationships():
+    from engine.research_intelligence import belief_context_points
+
+    rows = belief_context_points(_market_cognition_belief_rio())
+    assert [row["relation"] for row in rows] == [
+        "belief_delta", "consensus_relation",
+    ]
+    assert [row["support_claim_indices"] for row in rows] == [[0], [1]]
+    assert all(row["schema"] == "mastermind.research_belief_context.v1" for row in rows)
+    assert all(row["source_document_id"] == "belief-r1" for row in rows)
+    assert all(row["source_content_sha256"] == "a" * 64 for row in rows)
+    assert all(row["published_at"] == "2026-09-24T20:00:00Z" for row in rows)
+    assert all(row["epistemic_layer"] == "model_synthesis" for row in rows)
+    assert all(row["text_visibility"] == "derived_summary" for row in rows)
+    assert all(row["authority"] == "descriptive_research_only" for row in rows)
+
+
+def test_market_cognition_belief_context_absence_does_not_become_neutral():
+    from engine.research_intelligence import belief_context_points
+
+    obj = _market_cognition_belief_rio()
+    obj["analysis"]["belief_delta"] = {"statement": "", "support_claim_indices": []}
+    obj["analysis"]["consensus_relation"] = {"statement": "", "support_claim_indices": []}
+    assert belief_context_points(obj) == []
+
+
+def test_market_cognition_belief_context_rejects_private_evidence_reproduction():
+    from engine.research_intelligence import belief_context_points
+
+    obj = _market_cognition_belief_rio()
+    obj["analysis"]["belief_delta"] = {
+        "statement": obj["claims"][0]["evidence"][0]["quote_span"],
+        "support_claim_indices": [0],
+    }
+    with pytest.raises(ValueError, match="belief_delta.*verbatim private evidence"):
+        belief_context_points(obj)
+
+
+def test_market_cognition_belief_context_rejects_ungrounded_source_claims():
+    from engine.research_intelligence import belief_context_points
+
+    obj = _market_cognition_belief_rio()
+    obj["claims"][0]["evidence"] = []
+    with pytest.raises(ValueError, match="grounded evidence"):
+        belief_context_points(obj)
+
+
+def test_market_cognition_belief_context_carries_no_market_authority():
+    from engine.research_intelligence import belief_context_points
+
+    encoded = json.dumps(belief_context_points(_market_cognition_belief_rio()), sort_keys=True)
+    for forbidden in (
+        '"score"', '"confidence"', '"direction"', '"rank"', '"gate"',
+        '"sizing"', '"positioning"', '"constraints"', '"market_response"',
+        '"trade"',
+    ):
+        assert forbidden not in encoded
+    assert "Clients remain cautious after the rally." not in encoded
+    assert "Consensus forecasts still assume slower growth." not in encoded
+
+
+
+# F3 recovery: a read failure or reset must never publish a fresh empty corpus
+# over mature, receipt-idempotent history. These stores contain synthetic PDFs.
+class _F3ReadFaultStore(LocalStore):
+    corpus_fault = ""
+
+    def __init__(self, root):
+        super().__init__(root)
+        self.published_keys = []
+
+    def get_bytes(self, key):
+        if key == ingest_mod.CORPUS_KEY and self.corpus_fault == "unavailable":
+            return None  # legacy R2 getter conflates outage with absent object
+        return super().get_bytes(key)
+
+    def get_bytes_strict(self, key):
+        if key == ingest_mod.CORPUS_KEY and self.corpus_fault == "unavailable":
+            raise RuntimeError("synthetic corpus read outage")
+        return super().get_bytes_strict(key)
+
+    def put_bytes(self, key, data, content_type="application/octet-stream"):
+        self.published_keys.append(key)
+        return super().put_bytes(key, data, content_type)
+
+
+def _f3_mature_store(tmp_path):
+    store = _F3ReadFaultStore(tmp_path / "store")
+    _w4_seed_pdf(store, "research_inbox/old.pdf", _w4_sidecar("old-000001"))
+    first = ingest_mod.run(store, tmp_path / "first" / "corpus.sqlite")
+    assert first["ingested"] == 1
+    assert _w4_receipt_ids(store) == {"old-000001"}
+    store.published_keys.clear()
+    return store
+
+
+def test_f3_corpus_outage_never_becomes_a_bootstrap(tmp_path, w4_canned_pdftotext):
+    store = _f3_mature_store(tmp_path)
+    original = store.get_bytes(ingest_mod.CORPUS_KEY)
+    local = tmp_path / "second" / "corpus.sqlite"
+    local.parent.mkdir()
+    local.write_bytes(b"preserve-local-until-authoritative-read")
+    store.corpus_fault = "unavailable"
+
+    result = ingest_mod.run(store, local)
+
+    assert result.get("error") == "corpus_restore_failed"
+    assert store.published_keys == []
+    assert local.read_bytes() == b"preserve-local-until-authoritative-read"
+    assert LocalStore.get_bytes(store, ingest_mod.CORPUS_KEY) == original
+    assert _w4_receipt_ids(store) == {"old-000001"}
+
+
+@pytest.mark.parametrize("reset", ["missing", "empty_database"])
+def test_f3_zero_row_corpus_cannot_replace_mature_history(
+        tmp_path, w4_canned_pdftotext, reset):
+    store = _f3_mature_store(tmp_path)
+    if reset == "missing":
+        store._p(ingest_mod.CORPUS_KEY).unlink()
+    else:
+        empty = tmp_path / "empty.sqlite"
+        db = corpus_mod.open_db(empty)
+        db.close()
+        store.put_bytes(ingest_mod.CORPUS_KEY, empty.read_bytes())
+    store.published_keys.clear()
+    catalog_before = store.get_bytes(catalog_mod.CATALOG_KEY)
+
+    result = ingest_mod.run(store, tmp_path / "second" / "corpus.sqlite")
+
+    assert result.get("error") == "corpus_history_unavailable"
+    assert store.published_keys == []
+    assert store.get_bytes(catalog_mod.CATALOG_KEY) == catalog_before
+    assert _w4_receipt_ids(store) == {"old-000001"}
+
+
+@pytest.mark.parametrize("bad_bytes", [b"", b"not a sqlite database"])
+def test_f3_invalid_corpus_bytes_fail_before_local_replacement(tmp_path, bad_bytes):
+    store = LocalStore(tmp_path / "store")
+    store.put_bytes(ingest_mod.CORPUS_KEY, bad_bytes)
+    local = tmp_path / "corpus.sqlite"
+    local.write_bytes(b"existing-local-recovery-copy")
+
+    assert ingest_mod._restore_corpus(store, local) == "error"
+    assert local.read_bytes() == b"existing-local-recovery-copy"
+
+
+def test_f3_restore_refuses_legacy_only_unknown_absence(tmp_path):
+    class LegacyOnly:
+        def get_bytes(self, key):
+            raise AssertionError("ambiguous legacy getter must not be consulted")
+
+    local = tmp_path / "corpus.sqlite"
+    local.write_bytes(b"preserve")
+    assert ingest_mod._restore_corpus(LegacyOnly(), local) == "error"
+    assert local.read_bytes() == b"preserve"
+
+
+def test_f3_real_empty_store_still_bootstraps(tmp_path, w4_canned_pdftotext):
+    store = _F3ReadFaultStore(tmp_path / "store")
+    _w4_seed_pdf(store, "research_inbox/new.pdf", _w4_sidecar("new-000001"))
+    result = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+    assert result.get("error") is None
+    assert result["ingested"] == 1
+    assert result["corpus_published"] is True
+    assert _w4_receipt_ids(store) == {"new-000001"}
+
+
+def test_f3_nonempty_catalog_alone_forbids_zero_row_republication(
+        tmp_path, w4_canned_pdftotext):
+    store = _f3_mature_store(tmp_path)
+    store._p(ingest_mod.CORPUS_KEY).unlink()
+    for key in store.list_prefix(ingest_mod.PROCESSED_PREFIX):
+        store._p(key).unlink()
+    store.published_keys.clear()
+    result = ingest_mod.run(store, tmp_path / "second" / "corpus.sqlite")
+    assert result.get("error") == "corpus_history_unavailable"
+    assert store.published_keys == []
+
+
+def test_f3_nonzero_degraded_corpus_is_not_mistaken_for_empty_bootstrap(
+        tmp_path, w4_canned_pdftotext):
+    store = _f3_mature_store(tmp_path)
+    _w4_seed_pdf(store, "research_inbox/other.pdf", _w4_sidecar("other-000002"))
+    local = tmp_path / "second" / "corpus.sqlite"
+    assert ingest_mod.run(store, local)["ingested"] == 1
+    conn = corpus_mod.open_db(local)
+    conn.execute("DELETE FROM documents WHERE doc_id=?", ("other-000002",))
+    conn.commit()
+    conn.close()
+    store.put_bytes(ingest_mod.CORPUS_KEY, local.read_bytes())
+    store.published_keys.clear()
+
+    result = ingest_mod.run(store, tmp_path / "third" / "corpus.sqlite")
+
+    assert result.get("error") is None
+    assert result["ingested"] == 0
+    assert result["skipped"] == 2
+    assert _w4_catalog_ids(store) == {"old-000001", "other-000002"}
+    assert _w4_receipt_ids(store) == {"old-000001", "other-000002"}
+    assert result["corpus_published"] is True
+    # The guard prevents a reset and never replays the receipted document
+    # (ingested == 0 and the receipts are unchanged above). The missing row is
+    # restored by the F3 catalog-gap backfill from the canonical vault PDF, not
+    # by re-ingestion.
+    assert result["backfill_rows"] == 1
+    conn = corpus_mod.open_db(tmp_path / "third" / "corpus.sqlite")
+    assert conn.execute("SELECT COUNT(*) FROM documents").fetchone()[0] == 2
+    conn.close()
+
+
+def _census_preflight_python():
+    import yaml
+    workflow = yaml.safe_load((_W4_ROOT / ".github/workflows/research-vault-census.yml").read_text())
+    script = next(step["run"] for step in workflow["jobs"]["census"]["steps"]
+                  if step.get("name") == "Fail closed on private R2 configuration")
+    return script.split("<<'PY'\n", 1)[1].rsplit("\nPY", 1)[0]
+
+
+@pytest.mark.parametrize("case,expected", [
+    ("missing", 2), ("generic_only", 2), ("whitespace", 2),
+    ("aliased_bucket", 2), ("distinct_private", 0),
+])
+def test_census_private_config_guard_executes_fail_closed(case, expected):
+    import subprocess
+    # Only synthetic configuration enters this subprocess; no inherited secrets,
+    # network, store construction, ingestion, or shell command is involved.
+    env = {
+        "R2_BUCKET": "fixture-public",
+        "R2_RESEARCH_BUCKET": "fixture-private",
+        "R2_RESEARCH_ENDPOINT": "fixture-endpoint-no-network",
+        "R2_RESEARCH_ACCESS_KEY_ID": "fixture-private-access",
+        "R2_RESEARCH_SECRET_ACCESS_KEY": "fixture-private-secret",
+    }
+    if case == "missing":
+        env = {}
+    elif case == "generic_only":
+        env["R2_ENDPOINT"] = env.pop("R2_RESEARCH_ENDPOINT")
+    elif case == "whitespace":
+        env["R2_RESEARCH_ACCESS_KEY_ID"] = "  "
+    elif case == "aliased_bucket":
+        env["R2_RESEARCH_BUCKET"] = " fixture-public "
+    result = subprocess.run([sys.executable, "-I", "-c", _census_preflight_python()],
+                            env=env, capture_output=True, text=True, timeout=5)
+    assert result.returncode == expected, result.stderr
+    if case == "aliased_bucket":
+        assert "research bucket aliases shared/public bucket" in result.stdout
+    elif expected:
+        assert "missing required private R2 configuration name(s)" in result.stdout
+    else:
+        assert "bucket anti-alias passed" in result.stdout
+    for value in ("fixture-private-access", "fixture-private-secret",
+                  "fixture-endpoint-no-network"):
+        assert value not in result.stdout + result.stderr

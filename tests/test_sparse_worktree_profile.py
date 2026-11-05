@@ -25,8 +25,12 @@ What is actually being pinned, and why each one has bitten:
 from __future__ import annotations
 
 import importlib.util
+import hashlib
+import io
 import json
+import os
 import subprocess
+import sys
 import tomllib
 from pathlib import Path
 
@@ -43,10 +47,29 @@ CODEX_HOOKS_PATH = ROOT / ".codex" / "hooks.json"
 CURSOR_HOOKS_PATH = ROOT / ".cursor" / "hooks.json"
 CURSOR_WORKTREES_PATH = ROOT / ".cursor" / "worktrees.json"
 GROK_HOOKS_PATH = ROOT / ".grok" / "hooks" / "sparse-worktree.json"
+GROK_SESSION_START_PATH = ROOT / ".grok" / "hooks" / "session_start_sparse.py"
+WARP_SESSION_START_PATH = ROOT / ".warp" / "hooks" / "session_start_sparse.py"
+WARP_SKILL_PATH = ROOT / ".agents" / "skills" / "macro-sparse-worktree" / "SKILL.md"
 
 
 def _load_hook():
     spec = importlib.util.spec_from_file_location("worktree_create_sparse", HOOK_PATH)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _load_grok_hook():
+    spec = importlib.util.spec_from_file_location(
+        "session_start_sparse", GROK_SESSION_START_PATH)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _load_warp_hook():
+    spec = importlib.util.spec_from_file_location(
+        "warp_session_start_sparse", WARP_SESSION_START_PATH)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -80,6 +103,17 @@ def synthetic_repo(tmp_path: Path) -> Path:
 def _make_sparse(repo: Path, keep: list[str]) -> None:
     _git(repo, "sparse-checkout", "init", "--cone")
     _git(repo, "sparse-checkout", "set", "--cone", "--", *keep)
+
+
+def _wire_origin_main(repo: Path, tmp_path: Path) -> Path:
+    """Give strict Warp mint tests a real fetchable ``origin/main``."""
+    origin = tmp_path / "origin.git"
+    subprocess.run(("git", "init", "--bare", "-q", "-b", "main", str(origin)),
+                   capture_output=True, check=True)
+    _git(repo, "remote", "add", "origin", str(origin))
+    _git(repo, "push", "origin", "HEAD:main")
+    _git(repo, "fetch", "origin", "main")
+    return origin
 
 
 # --------------------------------------------------------------------------
@@ -272,6 +306,347 @@ def test_stray_content_inside_an_omitted_tree_is_reported(synthetic_repo: Path):
 
 
 # --------------------------------------------------------------------------
+# A NESTED include makes a tree partial, never cleanable as if omitted
+# --------------------------------------------------------------------------
+
+_NESTED = "data/sector_intelligence/fixtures"
+
+
+def _commit_nested_tree(repo: Path) -> dict[str, bytes]:
+    """Commit a fixture subtree plus out-of-cone tracked files under data/ —
+    the shape of the 2026-09-27 Finance worktree. Returns every file a
+    `git sparse-checkout add data/sector_intelligence/fixtures` checks out,
+    including the files sitting directly in its parent directories, which cone
+    mode checks out too."""
+    files = {
+        f"{_NESTED}/a.json": b'{"a": 1}\n',
+        f"{_NESTED}/deep/b.bin": bytes(range(256)),
+        "data/sector_intelligence/README.md": b"cone-parent file\n",
+        "data/sector_intelligence/other/c.json": b'{"c": 3}\n',
+        "data/hk/holdings.parquet": b"PAR1" + b"\x00" * 4096 + b"PAR1",
+    }
+    for rel, body in files.items():
+        (repo / rel).parent.mkdir(parents=True, exist_ok=True)
+        (repo / rel).write_bytes(body)
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-qm", "nested fixtures")
+    checked_out = {rel: body for rel, body in files.items()
+                   if rel.startswith(f"{_NESTED}/") or rel.endswith("README.md")}
+    checked_out["data/keep.txt"] = b"data content\n"
+    return checked_out
+
+
+def _make_nested_sparse(repo: Path, checked_out: dict[str, bytes]) -> None:
+    _make_sparse(repo, ["engine", "scripts", "templates"])
+    _git(repo, "sparse-checkout", "add", _NESTED)
+    for rel, body in checked_out.items():
+        assert (repo / rel).read_bytes() == body, f"precondition: {rel} is checked out"
+    assert not (repo / "data" / "hk").exists(), "precondition: data/hk is omitted"
+
+
+def test_clean_force_spares_every_file_a_nested_include_checked_out(synthetic_repo: Path):
+    """Measured 2026-09-27: `clean --force` in a worktree that had run
+    `git sparse-checkout add data/sector_intelligence/fixtures` deleted 25
+    tracked, deliberately checked-out files. `missing_dirs` names `data` (the
+    tree is not FULLY materialized), the old stray scan called every file under
+    it a stray, and the purge `rmtree`d the whole tree; `reapply` restores
+    nothing. Only files git does not check out may go.
+    """
+    checked_out = _commit_nested_tree(synthetic_repo)
+    _make_nested_sparse(synthetic_repo, checked_out)
+
+    # Two genuine strays in the omitted part of data/: an unredirected writer
+    # truncating a committed artifact, and a brand-new output file.
+    truncated = synthetic_repo / "data" / "hk" / "holdings.parquet"
+    truncated.parent.mkdir(parents=True)
+    truncated.write_bytes(b"PAR1 truncated")
+    new_output = synthetic_repo / "data" / "new_output" / "x.csv"
+    new_output.parent.mkdir(parents=True)
+    new_output.write_text("a,b\n", encoding="utf-8")
+
+    assert WS.clean_stray(synthetic_repo, force=False) == 0
+    assert truncated.exists() and new_output.exists(), "report-first: nothing deleted yet"
+
+    assert WS.clean_stray(synthetic_repo, force=True) == 0
+    assert not truncated.exists() and not new_output.exists(), "both strays are removed"
+    assert not (synthetic_repo / "data" / "hk").exists()
+    assert not (synthetic_repo / "data" / "new_output").exists()
+    for rel, body in checked_out.items():
+        path = synthetic_repo / rel
+        assert path.is_file(), f"clean --force deleted checked-out {rel}"
+        assert path.read_bytes() == body, f"clean --force altered checked-out {rel}"
+    assert _git(synthetic_repo, "ls-files", "-d") == "", "no tracked file is left deleted"
+    assert _git(synthetic_repo, "status", "--porcelain") == ""
+
+
+def test_a_nested_include_leaves_its_tree_partial_not_omitted(
+    synthetic_repo: Path, capsys, monkeypatch,
+):
+    """Pins what `missing_dirs` / `is_sparse` MEAN once a tree holds a nested
+    include. It is still missing to every GATE — a walk over a partial tree is
+    as incomplete as a walk over an absent one, so require_full_checkout, the
+    `needs_full_checkout` marker and the template-sync guard keep refusing —
+    but it is PARTIAL, not omitted: nothing git checked out under it may be
+    reported as stray, which is the misreading that turned `clean`'s report
+    into a delete list.
+    """
+    checked_out = _commit_nested_tree(synthetic_repo)
+    (synthetic_repo / "site" / "sub").mkdir()
+    (synthetic_repo / "site" / "sub" / "page.html").write_text("<p>x</p>\n", encoding="utf-8")
+    _git(synthetic_repo, "add", "-A")
+    _git(synthetic_repo, "commit", "-qm", "nested site page")
+    _make_nested_sparse(synthetic_repo, checked_out)
+    _git(synthetic_repo, "sparse-checkout", "add", "site/sub")
+
+    assert WS.stray_content(synthetic_repo, WS.missing_dirs(synthetic_repo)) == [], (
+        "a file git checked out is never a stray, whichever tree it sits in")
+
+    assert WS.missing_dirs(synthetic_repo) == ["data", "mockups", "site"]
+    assert WS.is_sparse(synthetic_repo) is True
+    assert WS.partial_dirs(synthetic_repo) == ["data", "site"]
+    with pytest.raises(RuntimeError, match="data"):
+        WS.require_full_checkout(["data"], synthetic_repo)
+
+    import scripts.check_template_site_sync as sync
+    assert sync._sparse_refusal(synthetic_repo) is not None, (
+        "a partial site/ yields a truncated pair walk — it must still refuse")
+
+    conftest = _conftest_module()
+    monkeypatch.setattr(conftest, "_SPARSE_MISSING", WS.missing_dirs(synthetic_repo))
+    needs_data = _FakeItem("data")
+    conftest.pytest_collection_modifyitems(None, [needs_data])
+    assert len(needs_data.added) == 1, "needs_full_checkout('data') still skips on a partial tree"
+
+    assert WS.status(synthetic_repo, heal=False) == 0
+    out = capsys.readouterr().out
+    assert "omitting mockups\n" in out, out
+    assert f"data is PARTIALLY materialized (nested include: {_NESTED})" in out, out
+    assert "site is PARTIALLY materialized (nested include: site/sub)" in out, out
+    assert "WARNING" not in out, out
+
+    payload = WS.status_json(synthetic_repo, heal=False)
+    assert payload["missing_dirs"] == ["data", "mockups", "site"]
+    assert payload["partial_dirs"] == ["data", "site"]
+    assert payload["sparse"] is True
+
+
+def test_non_ascii_names_are_compared_raw_on_both_sides(synthetic_repo: Path):
+    """`git ls-tree` and `git sparse-checkout list` both C-quote a non-ASCII
+    path by default (`"\\346\\226\\207\\346\\241\\243"`). Comparing quoted to
+    quoted happened to work for a top-level dir; a nested include is quoted as
+    one whole string (`"data/\\346..."`), so its tree could not be recognized
+    as partial. Both sides now read raw names."""
+    for rel in ("文档/notes.md", "data/数据/x.md"):
+        (synthetic_repo / rel).parent.mkdir(parents=True, exist_ok=True)
+        (synthetic_repo / rel).write_text(f"{rel} checked out\n", encoding="utf-8")
+    _git(synthetic_repo, "add", "-A")
+    _git(synthetic_repo, "commit", "-qm", "non-ascii paths")
+    _make_sparse(synthetic_repo, ["engine", "scripts", "templates", "文档"])
+    _git(synthetic_repo, "sparse-checkout", "add", "data/数据")
+
+    assert "文档" in WS.tracked_top_level_dirs(synthetic_repo)
+    assert WS.missing_dirs(synthetic_repo) == ["data", "mockups", "site"]
+    assert WS.partial_dirs(synthetic_repo) == ["data"]
+    assert WS.clean_stray(synthetic_repo, force=True) == 0
+    for rel in ("文档/notes.md", "data/数据/x.md", "data/keep.txt"):
+        assert (synthetic_repo / rel).is_file(), f"clean --force removed checked-out {rel}"
+
+
+def test_clean_force_under_a_non_cone_pattern_file_deletes_nothing_checked_out(
+    synthetic_repo: Path,
+):
+    """A pattern file git cannot read as cone mode is listed back as raw
+    patterns, none of which equals a directory name — so every tracked dir read
+    as omitted, and `clean --force` would have removed checked-out code. git's
+    own per-file answer still holds: it falls back to plain pattern matching."""
+    _make_sparse(synthetic_repo, ["engine", "scripts", "templates"])
+    pattern_file = Path(_git(synthetic_repo, "rev-parse", "--path-format=absolute",
+                             "--git-path", "info/sparse-checkout"))
+    pattern_file.write_text("/*\n!/*/\n/engine/\n/scripts/\n/templates/*.js\n", encoding="utf-8")
+    _git(synthetic_repo, "sparse-checkout", "reapply")
+    kept = {rel: (synthetic_repo / rel).read_bytes()
+            for rel in ("engine/keep.txt", "scripts/keep.txt", "templates/asset.js")}
+    stray = synthetic_repo / "data" / "stray.txt"
+    stray.parent.mkdir(exist_ok=True)
+    stray.write_text("written by a test\n", encoding="utf-8")
+
+    assert WS.clean_stray(synthetic_repo, force=True) == 0
+    assert not stray.exists()
+    for rel, body in kept.items():
+        assert (synthetic_repo / rel).read_bytes() == body, f"clean --force removed {rel}"
+
+
+def test_clean_deletes_nothing_when_git_cannot_classify(synthetic_repo: Path, monkeypatch):
+    """The classification decides what is safe to DELETE, so a git that cannot
+    answer (older than 2.41, or failing) must fail the run, never default to
+    'everything is stray'."""
+    _make_sparse(synthetic_repo, ["engine", "scripts", "templates"])
+    stray = synthetic_repo / "data" / "keep.txt"
+    stray.parent.mkdir(exist_ok=True)
+    stray.write_text("written by a test\n", encoding="utf-8")
+
+    def _no_answer(root, paths):
+        raise RuntimeError("`git sparse-checkout check-rules` exited 129")
+
+    monkeypatch.setattr(WS, "_sparse_rules_include", _no_answer)
+    assert WS.clean_stray(synthetic_repo, force=True) == 1
+    assert stray.exists(), "an unclassified file must never be deleted"
+
+
+def test_clean_force_never_deletes_a_file_git_wrote_for_a_conflict(synthetic_repo: Path):
+    """git writes a conflicted file to disk even outside the sparse rules, and
+    it may hold a resolution in progress. The rules still exclude it, so a
+    rules-only scan called it a stray and deleted it, and the run exited 0: the
+    casualty check subtracts the strays, so it cannot see a file wrongly
+    called one."""
+    repo = synthetic_repo
+    conflicted = repo / "data" / "other" / "o.txt"
+    conflicted.parent.mkdir()
+    conflicted.write_text("base\n", encoding="utf-8")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-qm", "base o.txt")
+    main = _git(repo, "rev-parse", "--abbrev-ref", "HEAD")
+    _git(repo, "checkout", "-qb", "side")
+    conflicted.write_text("side\n", encoding="utf-8")
+    _git(repo, "commit", "-qam", "side")
+    _git(repo, "checkout", "-q", main)
+    conflicted.write_text("main\n", encoding="utf-8")
+    _git(repo, "commit", "-qam", "main")
+    _make_sparse(repo, ["engine", "scripts", "templates"])
+    merge = subprocess.run(("git", "-C", str(repo), "merge", "side"),
+                           capture_output=True, text=True)
+    assert merge.returncode != 0 and conflicted.is_file(), (
+        "precondition: git wrote the conflict outside the sparse rules")
+    conflicted.write_text("my careful resolution\n", encoding="utf-8")
+    stray = repo / "data" / "new" / "n.txt"
+    stray.parent.mkdir()
+    stray.write_text("written by a test\n", encoding="utf-8")
+
+    assert WS.stray_content(repo, WS.missing_dirs(repo)) == ["data/new/n.txt"]
+    assert WS.clean_stray(repo, force=True) == 0
+    assert not stray.exists()
+    assert conflicted.read_text(encoding="utf-8") == "my careful resolution\n"
+    assert _git(repo, "ls-files", "-u"), "the conflict is still git's to resolve"
+
+
+def test_clean_force_under_a_non_cone_negation_leaves_no_stray(synthetic_repo: Path):
+    """Under a pattern file git reads as non-cone, `list` echoes the raw
+    patterns, and `data/sub` looked like a nested include. A scan that skipped
+    nested includes never entered `data/sub/secret/`, which `!data/sub/secret`
+    excludes, so a truncated tracked file there survived a `clean --force` that
+    exited 0 saying 'no stray content'. git's per-file answer now decides alone."""
+    repo = synthetic_repo
+    for rel, body in (("data/sub/s.txt", "s\n"), ("data/sub/secret/k.txt", "k\n")):
+        (repo / rel).parent.mkdir(parents=True, exist_ok=True)
+        (repo / rel).write_text(body, encoding="utf-8")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-qm", "sub")
+    _make_sparse(repo, ["engine", "scripts", "templates"])
+    pattern_file = Path(_git(repo, "rev-parse", "--path-format=absolute",
+                             "--git-path", "info/sparse-checkout"))
+    pattern_file.write_text("/*\n!/*/\n/engine/\n/scripts/\n/templates/\n"
+                            "data/sub\n!data/sub/secret\n", encoding="utf-8")
+    _git(repo, "sparse-checkout", "reapply")
+    included = repo / "data" / "sub" / "s.txt"
+    assert included.read_text(encoding="utf-8") == "s\n", "precondition: data/sub is checked out"
+    truncated = repo / "data" / "sub" / "secret" / "k.txt"
+    assert not truncated.exists(), "precondition: the negation excludes it"
+    truncated.parent.mkdir(exist_ok=True)
+    truncated.write_text("TRUNC", encoding="utf-8")
+
+    assert "data/sub/secret/k.txt" in WS.stray_content(repo, WS.missing_dirs(repo))
+    assert WS.clean_stray(repo, force=True) == 0
+    assert not truncated.exists()
+    assert included.read_text(encoding="utf-8") == "s\n"
+    assert _git(repo, "status", "--porcelain") == ""
+
+
+def test_clean_force_unlinks_a_symlinked_omitted_tree_without_following_it(
+    synthetic_repo: Path, tmp_path: Path,
+):
+    """An omitted top-level tree replaced by a symlink (say, to another
+    checkout's data/) was skipped whole, so `clean` exited 0 saying 'no stray
+    content' while `git status` stayed dirty. The link itself is the stray, since
+    git never checks out a link there, and removing it never touches the target."""
+    other = tmp_path / "other_data"
+    (other / "big").mkdir(parents=True)
+    (other / "keep.txt").write_text("another checkout's data\n", encoding="utf-8")
+    (other / "big" / "x.bin").write_bytes(b"X" * 64)
+    _make_sparse(synthetic_repo, ["engine", "scripts", "templates"])
+    link = synthetic_repo / "data"
+    assert not link.exists(), "precondition: data/ is omitted"
+    link.symlink_to(other, target_is_directory=True)
+
+    assert WS.stray_content(synthetic_repo, WS.missing_dirs(synthetic_repo)) == ["data"]
+    assert WS.clean_stray(synthetic_repo, force=True) == 0
+    assert not link.is_symlink() and not link.exists()
+    assert (other / "keep.txt").read_text(encoding="utf-8") == "another checkout's data\n"
+    assert (other / "big" / "x.bin").read_bytes() == b"X" * 64
+    assert _git(synthetic_repo, "status", "--porcelain") == ""
+
+
+def test_names_git_still_quotes_are_read_raw(synthetic_repo: Path):
+    """`core.quotePath=false` only stops git octal-escaping non-ASCII bytes. A
+    name holding `"`, `\\` or a tab is still C-quoted by `sparse-checkout list`
+    (`"data/q\\"uote"`), so such a nested include read as a top-level dir named
+    `"data`, and its tree was reported omitted instead of partial."""
+    names = ('data/q"uote', "data/b\\s", "data/t\tab")
+    for name in (*names, 'we"ird'):
+        (synthetic_repo / name).mkdir(parents=True)
+        (synthetic_repo / name / "f.txt").write_text("checked out\n", encoding="utf-8")
+    _git(synthetic_repo, "add", "-A")
+    _git(synthetic_repo, "commit", "-qm", "names git quotes")
+    _make_sparse(synthetic_repo, ["engine", "scripts", "templates", 'we"ird'])
+    _git(synthetic_repo, "sparse-checkout", "add", *names)
+
+    assert 'we"ird' in WS.tracked_top_level_dirs(synthetic_repo)
+    assert WS.missing_dirs(synthetic_repo) == ["data", "mockups", "site"]
+    assert WS.partial_dirs(synthetic_repo) == ["data"]
+    assert sorted(WS._nested_includes(synthetic_repo)["data"]) == sorted(names)
+    assert WS.clean_stray(synthetic_repo, force=True) == 0
+    for name in (*names, 'we"ird'):
+        assert (synthetic_repo / name / "f.txt").is_file(), f"clean --force removed {name}"
+
+
+def test_clean_force_refuses_while_a_sparse_checkout_lock_is_held(synthetic_repo: Path):
+    """`git sparse-checkout add` writes the newly included files BEFORE it
+    writes the new rules, holding info/sparse-checkout.lock throughout. A clean
+    in that window would judge those files by the old rules and delete them."""
+    _make_sparse(synthetic_repo, ["engine", "scripts", "templates"])
+    stray = synthetic_repo / "data" / "keep.txt"
+    stray.parent.mkdir(exist_ok=True)
+    stray.write_text("written by a test\n", encoding="utf-8")
+    lock = WS.sparse_checkout_lock_path(synthetic_repo)
+    lock.write_text("", encoding="utf-8")
+
+    assert WS.clean_stray(synthetic_repo, force=True) == 1
+    assert stray.exists(), "nothing is deleted while git holds the lock"
+    assert lock.exists(), "a young lock is never removed"
+
+
+@pytest.mark.skipif(hasattr(os, "geteuid") and os.geteuid() == 0,
+                    reason="root can list a mode-000 directory")
+def test_clean_deletes_nothing_when_a_directory_cannot_be_read(synthetic_repo: Path):
+    """`os.walk` silently skips a directory it cannot list, so a stray inside
+    one was invisible to the scan and to the post-delete re-check alike, and
+    the run exited 0. An unreadable directory now fails the scan."""
+    _make_sparse(synthetic_repo, ["engine", "scripts", "templates"])
+    visible = synthetic_repo / "data" / "keep.txt"
+    visible.parent.mkdir(exist_ok=True)
+    visible.write_text("written by a test\n", encoding="utf-8")
+    unreadable = synthetic_repo / "data" / "unreadable"
+    unreadable.mkdir()
+    (unreadable / "hidden.txt").write_text("written by a test\n", encoding="utf-8")
+    unreadable.chmod(0)
+    try:
+        assert WS.clean_stray(synthetic_repo, force=True) == 1
+        assert visible.exists(), "nothing is deleted when the scan is incomplete"
+    finally:
+        unreadable.chmod(0o755)
+    assert (unreadable / "hidden.txt").exists()
+
+
+# --------------------------------------------------------------------------
 # The two properties the operator named: no vacuous green, guard still sees dirt
 # --------------------------------------------------------------------------
 
@@ -418,8 +793,144 @@ def test_grok_session_start_applies_the_same_sparse_profile():
     settings = json.loads(GROK_HOOKS_PATH.read_text(encoding="utf-8"))
     entries = settings["hooks"]["SessionStart"]
     commands = [hook["command"] for entry in entries for hook in entry["hooks"]]
-    assert any("scripts/worktree_sparse.py" in command and command.endswith(" auto")
+    assert any(".grok/hooks/session_start_sparse.py" in command
                for command in commands), commands
+
+
+def test_warp_session_start_script_and_skill_are_checked_in():
+    """Warp has no SessionStart event; the mint script + skill are the analog."""
+    assert WARP_SESSION_START_PATH.is_file(), WARP_SESSION_START_PATH
+    assert WARP_SKILL_PATH.is_file(), WARP_SKILL_PATH
+    skill = WARP_SKILL_PATH.read_text(encoding="utf-8")
+    assert ".warp/hooks/session_start_sparse.py" in skill
+    assert "WORKSPACE=" in skill
+
+
+def test_aionui_temp_predicate_matches_only_grok_temp_workspaces(tmp_path: Path):
+    aion = tmp_path / ".aionui" / "conversations" / "users" / "u1" / "2026" / "08" / "18" / "grok-temp-abcd1234"
+    aion.mkdir(parents=True)
+    assert WS.is_aionui_temp(aion) is True
+    other = tmp_path / ".aionui" / "conversations" / "users" / "u1" / "notes"
+    other.mkdir(parents=True)
+    assert WS.is_aionui_temp(other) is False
+    assert WS.is_aionui_temp(tmp_path / "macro-main") is False
+
+
+def test_mint_session_worktree_is_sparse_and_skips_heavy_trees(
+        synthetic_repo: Path, tmp_path: Path):
+    dest = tmp_path / ".grok" / "worktrees" / "grok-temp-test"
+    assert WS.mint_session_worktree(
+        synthetic_repo, dest, branch="grok/grok-temp-test",
+        base="HEAD", fetch=False,
+    ) == 0
+    assert WS.is_session_worktree(dest) is True
+    assert WS.missing_dirs(dest) == ["data", "mockups", "site"]
+    assert (dest / "engine" / "keep.txt").is_file()
+    assert not (dest / "data").exists()
+    assert _git(dest, "status", "--porcelain") == ""
+
+
+def test_mint_session_worktree_default_keeps_legacy_best_effort_origin_behavior(
+        synthetic_repo: Path, tmp_path: Path):
+    """Grok/AionUi retain their pre-Warp fetch/base fallback contract."""
+    dest = tmp_path / ".grok" / "worktrees" / "grok-best-effort-origin"
+    assert WS.mint_session_worktree(
+        synthetic_repo, dest, branch="grok/grok-best-effort-origin",
+        base="refs/remotes/origin/main", fetch=True,
+    ) == 0
+    assert WS.is_session_worktree(dest) is True
+    assert WS.missing_dirs(dest) == ["data", "mockups", "site"]
+
+
+def test_mint_session_worktree_refuses_a_path_outside_session_roots(
+        synthetic_repo: Path, tmp_path: Path):
+    dest = tmp_path / "not-a-session-root" / "tree"
+    assert WS.mint_session_worktree(
+        synthetic_repo, dest, branch="grok/outside",
+        base="HEAD", fetch=False,
+    ) == 1
+    assert not dest.exists()
+
+
+def test_mint_session_worktree_reuses_an_existing_sparse_tree(
+        synthetic_repo: Path, tmp_path: Path):
+    dest = tmp_path / ".grok" / "worktrees" / "grok-temp-reuse"
+    assert WS.mint_session_worktree(
+        synthetic_repo, dest, branch="grok/grok-temp-reuse",
+        base="HEAD", fetch=False,
+    ) == 0
+    _git(dest, "sparse-checkout", "add", "--", "site")
+    assert (dest / "site" / "asset.js").is_file()
+    assert WS.mint_session_worktree(
+        synthetic_repo, dest, branch="grok/grok-temp-reuse",
+        base="HEAD", fetch=False,
+    ) == 0
+    assert (dest / "site" / "asset.js").is_file(), (
+        "a second SessionStart must not undo an explicit add site"
+    )
+
+
+def test_grok_session_start_hook_mints_from_an_aionui_temp(
+        synthetic_repo: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    hook = _load_grok_hook()
+    temp = (
+        tmp_path / ".aionui" / "conversations" / "users" / "u"
+        / "2026" / "08" / "18" / "grok-temp-hooktest"
+    )
+    temp.mkdir(parents=True)
+    monkeypatch.setattr(hook, "discover_donor", lambda cwd: synthetic_repo)
+    monkeypatch.setattr(hook, "_load_ws", lambda donor: WS)
+    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps({"cwd": str(temp)})))
+    assert hook.main() == 0
+    dest = synthetic_repo / ".grok" / "worktrees" / "grok-temp-hooktest"
+    assert dest.is_dir()
+    assert (temp / ".session-worktree").read_text(encoding="utf-8").strip() == str(dest)
+    assert WS.missing_dirs(dest) == ["data", "mockups", "site"]
+
+
+def test_warp_hook_mints_from_a_macro_host_without_writing_pointer(
+        synthetic_repo: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    hook = _load_warp_hook()
+    _wire_origin_main(synthetic_repo, tmp_path)
+    (synthetic_repo / ".git").mkdir(exist_ok=True)
+    monkeypatch.setattr(hook, "discover_donor", lambda cwd: synthetic_repo)
+    monkeypatch.setattr(hook, "is_macro_checkout", lambda root: True)
+    monkeypatch.setattr(hook, "_load_ws", lambda donor: WS)
+    payload = {"cwd": str(synthetic_repo), "conversationId": "profile-warp-host"}
+    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(payload)))
+    assert hook.main() == 0
+    name, proven = hook.worktree_name(payload)
+    assert proven is True
+    assert name == f"warp-{hashlib.sha256(b'profile-warp-host').hexdigest()}"
+    dest = synthetic_repo / ".warp" / "worktrees" / name
+    assert dest.is_dir()
+    assert not (synthetic_repo / ".session-worktree").exists(), (
+        "a pointer inside a git checkout is dirt"
+    )
+    assert WS.missing_dirs(dest) == ["data", "mockups", "site"]
+
+
+def test_warp_hook_does_not_sparsify_the_operator_local_root(
+        synthetic_repo: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """macro-main is a linked worktree; Warp SessionStart must mint beside it."""
+    hook = _load_warp_hook()
+    _wire_origin_main(synthetic_repo, tmp_path)
+    linked = tmp_path / "macro-main-analog"
+    _git(synthetic_repo, "worktree", "add", "-q", "--detach", str(linked), "HEAD")
+    monkeypatch.setattr(hook, "discover_donor", lambda cwd: linked)
+    monkeypatch.setattr(hook, "is_macro_checkout", lambda root: True)
+    monkeypatch.setattr(hook, "_load_ws", lambda donor: WS)
+    payload = {"cwd": str(linked), "conversationId": "profile-warp-linked"}
+    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(payload)))
+    assert hook.main() == 0
+    assert WS.is_sparse(linked) is False
+    assert (linked / "data" / "keep.txt").is_file()
+    name, proven = hook.worktree_name(payload)
+    assert proven is True
+    assert name == f"warp-{hashlib.sha256(b'profile-warp-linked').hexdigest()}"
+    dest = linked / ".warp" / "worktrees" / name
+    assert dest.is_dir()
+    assert WS.missing_dirs(dest) == ["data", "mockups", "site"]
 
 
 def test_hook_name_validation_rejects_path_traversal():

@@ -96,11 +96,17 @@
   var TOTAL_COUNT = 0;       // full inventory count; the public bake carries only 3 items
   var CATALOG_SUMMARY = null;// whole-vault, public-safe aggregates (even for the 3-item preview)
   var CATALOG_PREVIEW = false;
-  var CATALOG_SOURCE = 'loading'; // 'loading' | 'live' | 'snapshot'
+  var CATALOG_SOURCE = 'loading'; // 'loading' | 'live' | 'snapshot' | 'unavailable'
+  var CATALOG_FRESH = false; // did the painted copy clear the freshness threshold?
+  var CATALOG_OBJECT = null; // selected copy only; never borrow live metadata for a snapshot
+  var CATALOG_GENERATED = '';// producer clock (generated_at) of the painted copy
   var CATALOG_REQ = 0;       // newest-request-wins guard for auth/bootstrap refresh races
   var CATALOG_ABORT = null;
   var LANE = 'latest';
   var FILT = { inst: '', side: '', theme: '', q: '' };
+  var SEARCH_REQ = 0;
+  var SEARCH_STATE = 'metadata'; // metadata | loading | server | unavailable
+  var SEARCH_RESPONSE = null;
   var SEARCH_HITS = null;    // set of ids from the live search API, or null (no server search)
   // Teaser gate: reading full PDFs is Pro-only. Every non-Pro visitor sees the
   // same fixed latest-three preview, and the app starts locked while auth resolves
@@ -136,8 +142,8 @@
     var date = (pub.split('T')[0]) || '';
     return {
       id: x.id || '',
-      inst: (x.institution || '').trim() || 'Unknown',
-      logo: logoFor(x.institution),
+      inst: canonInst((x.institution || '').trim()) || 'Unknown',
+      logo: logoFor(canonInst((x.institution || '').trim())),
       desk: x.desk || '',
       side: (x.side || 'independent').toLowerCase(),
       date: date,
@@ -171,9 +177,46 @@
     return isFinite(n) && n >= 0 ? Math.floor(n) : null;
   }
 
-  /* side stamp */
-  function stampLabel(side) { return side === 'buy' ? T('BUY', '看多') : (side === 'sell' ? T('SELL', '看空') : T('IND', '独立')); }
-  function stampClass(side) { return side === 'buy' ? 'buy' : (side === 'sell' ? 'sell' : 'indep'); }
+  /* desk-type chip — `side` is buy-side/sell-side institution type, never a rating */
+  var INST_CANON = { blackrock: 'BlackRock', scotiabank: 'Scotiabank', commbank: 'CommBank',
+                     'commonwealth bank': 'CommBank', ing: 'ING', 'ing econ': 'ING', 'ing direct': 'ING',
+                     'sg prime': 'Société Générale' };
+  var NON_DESK = { 'new folder': 1, 's&t': 1, other: 1, prime: 1, pb: 1,
+                   'week ahead': 1, 'weekly preview': 1, '13f summary': 1, 'greed and fear': 1,
+                   nuclear: 1, 'zh ai': 1 };
+  function canonInst(name) {
+    var s = String(name || '').trim();
+    if (!s) return s;
+    return INST_CANON[s.toLowerCase()] || s;
+  }
+  function isDeskInst(name) {
+    var s = String(name || '').trim();
+    if (!s || s === 'Unknown') return false;
+    return !NON_DESK[s.toLowerCase()];
+  }
+  function instDisplay(name) {
+    var s = canonInst(name);
+    if (!s || s === 'Unknown') return T('Unknown', '未知');
+    if (!isDeskInst(s)) return T('Institutional desk', '机构研究台');
+    return s;
+  }
+  function displayTitle(t) {
+    var s = String(t || '').replace(/\s+/g, ' ').trim();
+    if (!s) return s;
+    var words = s.split(' '), n = words.length, k, i, same;
+    for (k = Math.floor(n / 2); k >= 2; k--) {
+      same = true;
+      for (i = 0; i < k; i++) { if (words[i] !== words[k + i]) { same = false; break; } }
+      if (same) { s = words.slice(0, k).concat(words.slice(2 * k)).join(' '); break; }
+    }
+    var stripped = s.replace(/\s+\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}\s*$/i, '');
+    stripped = stripped.replace(/\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4}\s*$/i, '').trim();
+    if (stripped !== s) stripped = stripped.replace(/[ ,]+$/, '');
+    if (stripped && stripped !== s && stripped.split(/\s+/).length >= 2) s = stripped;
+    return s;
+  }
+  function stampLabel(side) { return side === 'buy' ? T('Buy-side', '买方') : (side === 'sell' ? T('Sell-side', '卖方') : T('Independent', '独立')); }
+  function stampClass(side) { return side === 'buy' ? 'buy-side buy' : (side === 'sell' ? 'sell-side sell' : 'indep'); }
   function fmtDate(d) {
     if (!d) return T('date pending', '日期待定');
     var p = d.split('-');
@@ -196,6 +239,92 @@
     return fmtDate(d) + t;
   }
 
+  /* ── catalog freshness (mirrors engine/research_vault/catalog.py) ────────────
+     A successful fetch is NOT evidence of fresh data: the API happily returns an
+     arbitrarily old object, and the SSR bake is by construction a lagging copy.
+     The only clock that ticks every hour is the producer's own `generated_at` —
+     the ingest rewrites the catalog every run even when it admits no new report —
+     so both copies are judged, and compared to each other, on that one field.
+     Thresholds are kept identical to the server's (2h fresh window, 5min future
+     tolerance) so the two tiers never disagree about the same document. */
+  var FRESH_MAX_AGE_MS = 2 * 60 * 60 * 1000;
+  var FUTURE_TOLERANCE_MS = 5 * 60 * 1000;
+
+  function genMs(catalog) {
+    // Epoch ms of a catalog's producer clock, or null when it cannot be trusted.
+    if (!catalog || typeof catalog !== 'object') return null;
+    var raw = catalog.generated_at;
+    if (typeof raw !== 'string' || !raw.trim()) return null;
+    var t = Date.parse(raw);
+    if (isNaN(t)) return null;
+    // A materially future producer clock makes every age we could derive from it
+    // meaningless, so the copy is unusable rather than merely young.
+    if (t - Date.now() > FUTURE_TOLERANCE_MS) return null;
+    return t;
+  }
+
+  function validCatalog(catalog) {
+    // Structurally a catalog AND datable. An empty items[] is VALID — a vault
+    // that genuinely holds zero reports is a real state, and conflating it with
+    // corruption is the exact defect this wave removes. What is never valid is a
+    // document we cannot date, because no freshness claim about it can be honest.
+    if (!catalog || typeof catalog !== 'object') return false;
+    if (!Array.isArray(catalog.items)) return false;
+    return genMs(catalog) !== null;
+  }
+
+  function isFresh(catalog) {
+    var health = catalog && catalog.catalog_health;
+    if (!catalog || catalog.stale === true) return false;
+    if (health && (health.state !== 'fresh' || health.reason)) return false;
+    var t = genMs(catalog);
+    return t !== null && (Date.now() - t) <= FRESH_MAX_AGE_MS;
+  }
+
+  function fmtStamp(iso, useZh) {
+    // The generation time for the status line, rendered in an EXPLICIT language.
+    // fmtWhen/fmtDate read the live <html data-lang>, which is wrong here: the EN
+    // and ZH status spans are both written in a single paint and only one is ever
+    // visible, so deriving both from the current language leaves the hidden span
+    // carrying the other language's date until something repaints it.
+    var hasT = iso && iso.indexOf('T') > -1;
+    var d = (hasT ? iso.split('T')[0] : '') || '';
+    var p = d.split('-');
+    var day = d;
+    if (p.length >= 3) {
+      day = useZh ? p[0] + '年' + (+p[1]) + '月' + (+p[2]) + '日'
+                  : _MON[+p[1] - 1] + ' ' + (+p[2]) + ', ' + p[0];
+    }
+    var t = '';
+    if (hasT) {
+      var hm = iso.split('T')[1].slice(0, 5);
+      if (/^\d\d:\d\d$/.test(hm)) t = ' · ' + hm + ' UTC';
+    }
+    return day + t;
+  }
+
+  function pickCatalog(api, bake) {
+    // Newest valid producer clock wins, whichever transport it arrived on. The
+    // bake is committed by the same hourly job that publishes to R2, so after an
+    // R2 outage it can genuinely be the fresher of the two — but it is never
+    // RELABELLED live, and a live copy is never assumed newer than it.
+    var a = validCatalog(api)
+      ? { catalog: api, source: 'live', at: genMs(api), n: api.items.length } : null;
+    var b = validCatalog(bake)
+      ? { catalog: bake, source: 'snapshot', at: genMs(bake), n: bake.items.length } : null;
+    if (!a) return b;
+    if (!b) return a;
+    // ...with one guard: a snapshot may never displace a live copy that carries
+    // MORE reports. The bake is a deliberately truncated three-item public preview
+    // (scripts/build_research_vault._preview_items), so for an entitled Pro reader
+    // "newer" would otherwise mean trading 1,400 reports for 3. A complete catalog
+    // labelled stale is strictly more useful than a fresh stub, and the status line
+    // carries the real generation time in both cases — so nothing is misrepresented.
+    // Ties go to the live copy (same document; prefer the authoritative transport).
+    if (b.at > a.at && b.n >= a.n) return b;
+    return a;
+  }
+
   /* ── ticker dossier deep-link: the site routes tickers to the Terminal.
        (No same-origin /stocks/<T> dossier route exists; the search box in the
        nav resolves tickers, and the Terminal is the canonical dossier host.) ── */
@@ -206,11 +335,60 @@
     return 'https://app.mastermind-x.com/terminal?sym=' + encodeURIComponent(tk);
   }
 
+  /* The baked line describes the copy written into this page. A settled catalog can be a
+     different copy, whose clock the status line already prints. So the line keeps only the
+     newest report of the copy on screen, and goes away unless that copy is saved and old. */
+  function paintSavedClock() {
+    var p = $('rv-saved-clock');
+    if (!p) return;
+    var latest = '';
+    ITEMS.forEach(function (x) { if (x.date && x.date > latest) latest = x.date; });
+    if (CATALOG_SOURCE === 'unavailable' || CATALOG_FRESH || !latest) { p.hidden = true; return; }
+    p.hidden = false;
+    var en = p.querySelector('.l-en'), zh = p.querySelector('.l-zh');
+    if (en) en.textContent = 'Newest report in this copy: ' + latest + '.';
+    if (zh) zh.textContent = '该副本中最新研报：' + latest + '。';
+  }
+
   /* ═══════════ hero counts (client-side, descriptive only) ═══════════ */
   function updateHero() {
+    // An unavailable catalog knows NOTHING about the vault, so every figure stays
+    // neutral. "0 new institutional reports this week · 0 highlighted · 0 desks
+    // publishing" is the SAME false empty-vault claim the feed's unavailable state
+    // exists to prevent — just in bigger type, above the fold. The '—' path
+    // already exists for the entitlement-preview case; this reuses it.
+    if (CATALOG_SOURCE === 'unavailable') {
+      $('fig-new').textContent = '—';
+      $('fig-desks').textContent = '—';
+      $('fig-theme').textContent = '—';
+      $('fig-total').textContent = '—';
+      buildWeb();
+      $('v-en-lead').textContent =
+        'The research catalog could not be loaded. This is a loading problem, not an empty vault.';
+      $('v-zh-lead').textContent = '无法载入研报目录。这是加载问题，并非研报库为空。';
+      return;
+    }
+
+    // Language can change while the first catalog request is still pending.
+    // Preserve the loading shell until an actual catalog source has settled.
+    if (CATALOG_SOURCE === 'loading') return;
+
+    // Saved weekly figures cannot describe current activity. Retain the
+    // archive total; the status line already carries the saved timestamp.
+    if (!CATALOG_FRESH) {
+      $('fig-new').textContent = '—';
+      $('fig-desks').textContent = '—';
+      $('fig-theme').textContent = '—';
+      $('fig-total').textContent = TOTAL_COUNT;
+      buildWeb();
+      $('v-en-lead').textContent =
+        'Research updates are delayed. Showing the saved catalog.';
+      $('v-zh-lead').textContent = '研报更新延迟，正在显示已保存的目录。';
+      return;
+    }
     var wk = ITEMS.filter(isThisWeek);
     var derivedNewN = wk.length;
-    var desks = {}; wk.forEach(function (x) { if (x.inst && x.inst !== 'Unknown') desks[x.inst] = 1; });
+    var desks = {}; wk.forEach(function (x) { if (isDeskInst(x.inst)) desks[x.inst] = 1; });
     var derivedDeskN = Object.keys(desks).length;
     // most-covered theme this week (falls back to all-time if none this week)
     var pool = wk.length ? wk : ITEMS;
@@ -275,12 +453,12 @@
     var rosterUnknown = CATALOG_PREVIEW && !summaryHasRoster;
     var counts = {};
     if (!rosterUnknown && !summaryHasRoster) {
-      ITEMS.forEach(function (x) { var n = x.inst; if (n && n !== 'Unknown') counts[n] = (counts[n] || 0) + 1; });
+      ITEMS.forEach(function (x) { var n = x.inst; if (isDeskInst(n)) counts[n] = (counts[n] || 0) + 1; });
     }
     var roster = summaryHasRoster
       ? CATALOG_SUMMARY.institutions.map(function (x) {
           return { name: String(x && x.name || '').trim(), count: Math.max(0, Number(x && x.count) || 0) };
-        }).filter(function (x) { return x.name && x.name !== 'Unknown'; })
+        }).filter(function (x) { return isDeskInst(x.name); })
       : Object.keys(counts).map(function (n) { return { name: n, count: counts[n] }; });
     roster.sort(function (a, b) { return b.count - a.count || a.name.localeCompare(b.name); });
     var N = roster.length;
@@ -456,7 +634,7 @@
     // keep the "All" button; rebuild the rest from the catalog institutions (top 6 by count)
     grp.querySelectorAll('.aff:not([data-v=""])').forEach(function (b) { b.remove(); });
     var counts = {}; ITEMS.forEach(function (x) { if (x.inst && x.inst !== 'Unknown') counts[x.inst] = (counts[x.inst] || 0) + 1; });
-    Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 6).forEach(function (inst) {
+    Object.keys(counts).filter(isDeskInst).sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 6).forEach(function (inst) {
       var b = doc.createElement('button'); b.className = 'aff'; b.setAttribute('data-f', 'inst'); b.setAttribute('data-v', inst); b.textContent = inst;
       grp.appendChild(b);
     });
@@ -526,17 +704,32 @@
     // reset the pager whenever the result set (lane + filters + search) changes
     var sig = LANE + '|' + FILT.inst + '|' + FILT.side + '|' + FILT.theme + '|' + FILT.q;
     if (sig !== _feedSig) { _feedSig = sig; shownN = PAGE_SIZE; }
-    if (!ITEMS.length) {
+    if (CATALOG_SOURCE === 'unavailable') {
+      // NOT the onboarding copy below: "we hold no reports yet" is a claim about
+      // the vault, and we have no basis for it when we could not read a verified
+      // catalog at all. Saying so plainly is the whole point of this state.
+      feed.innerHTML = emptyState(
+        T('Research is temporarily unavailable', '研报暂时不可用'),
+        T('We could not reach a verified copy of the research catalog. This is a loading problem, not an empty vault — please try again shortly.',
+          '暂时无法获取经校验的研报目录。这是加载问题，并非研报库为空 —— 请稍后重试。'));
+    } else if (!ITEMS.length) {
       feed.innerHTML = emptyState(
         T('Institutional research is being onboarded', '机构研报正在接入'),
-        T('New buy-side and sell-side desk reports arrive hourly — check back shortly.', '买方与卖方研究每小时更新 —— 请稍后再来查看。'));
+        T('New reports appear after publication — check back later.', '新研报发布后陆续收录 —— 可稍后再查看。'));
     } else if (picksGate) {
       feed.innerHTML = picksUpgradePanel();          // Top Picks is Pro-only
     } else if (!rows.length) {
       var savedLane = LANE === 'saved';
       feed.innerHTML = emptyState(
-        savedLane ? T('Nothing saved yet', '还没有收藏') : T('No reports match', '没有匹配的研报'),
+        savedLane ? T('Nothing saved yet', '还没有收藏')
+          : FILT.q ? (SEARCH_STATE === 'server'
+            ? T('No matches in searchable text', '可搜索正文中未找到匹配')
+            : T('No title or summary matches', '标题或摘要中未找到匹配'))
+          : T('No reports match', '没有匹配的研报'),
         savedLane ? T('Tap the bookmark on any report to keep it here for later.', '点击任意报告上的书签，即可收藏到此处。')
+          : FILT.q ? (SEARCH_STATE === 'server'
+            ? T('Search may cover only part of a report. Open the PDF to check the rest.', '搜索可能仅覆盖部分研报。可打开 PDF 核对其余内容。')
+            : T('Report text search is not verified. Try clearing a filter or opening the PDF.', '研报正文搜索尚未核验。可清除筛选或打开 PDF 核对。'))
           : T('Try clearing a filter or widening your search.', '试试清除筛选或放宽搜索条件。'));
     } else if (feedUnlocked()) {
       // Pro: paged — show the first shownN, then a "Show more" button
@@ -553,6 +746,18 @@
     }
     $('cnt-n').textContent = picksGate ? 0 : (feedUnlocked() ? Math.min(shownN, rows.length) : previewRows.length);
     $('cnt-t').textContent = feedUnlocked() ? rows.length : TOTAL_COUNT;
+    var note = $('rv-coverage-note');
+    if (note) note.textContent = !feedUnlocked()
+      ? T('Search is limited to the public preview.', '搜索仅限公开预览。')
+      : SEARCH_STATE === 'unavailable' && FILT.q
+        ? T('Text search unavailable; showing title and summary matches.', '正文搜索暂不可用；显示标题与摘要匹配。')
+        : T('Search coverage unverified.', '搜索覆盖尚未核验。');
+    if (note) {
+      var clocks = CATALOG_SUMMARY && CATALOG_SUMMARY.source_clock;
+      var latest = clocks && clocks.complete && clocks.latest_report_published_at;
+      note.setAttribute('data-tip-en', 'Catalog published: ' + (CATALOG_GENERATED ? fmtStamp(CATALOG_GENERATED, false) : 'Unknown') + '. Latest report: ' + (latest ? fmtStamp(latest, false) : 'Unknown') + '. Search index generation: Unknown. Searchable body coverage: Unknown. Current full report text: Unknown. Current analysis: Unknown. PDF access follows your plan.');
+      note.setAttribute('data-tip-zh', '目录发布：' + (CATALOG_GENERATED ? fmtStamp(CATALOG_GENERATED, true) : '未知') + '。最新研报：' + (latest ? fmtStamp(latest, true) : '未知') + '。搜索索引版本：未知。正文搜索覆盖：未知。当前完整正文：未知。当前版本分析：未知。PDF 访问依照订阅权限。');
+    }
     renderActiveChips();
   }
   function emptyState(h, p) {
@@ -600,7 +805,7 @@
     var pts = x.points, hasPts = pts.length > 0;
     var visible = pts.slice(0, 2), extra = pts.slice(2), ptsHtml;
     if (!hasPts) {
-      ptsHtml = '<ul class="rep-points pend"><li>' + T('Summary pending — full report available to read.', '摘要生成中 —— 全文已可查看。') + '</li></ul>';
+      ptsHtml = '<ul class="rep-points pend"><li>' + T('No summary is available for this report. The full report is available to read.', '本篇暂无摘要。全文已可查看。') + '</li></ul>';
     } else {
       ptsHtml = '<ul class="rep-points">'
         + visible.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('')
@@ -619,13 +824,13 @@
       + '<div class="rep-top">'
         + '<span class="rep-logo">' + esc(x.logo) + '</span>'
         + '<span class="rep-unread" aria-hidden="true"></span>'
-        + '<span class="rep-inst">' + esc(x.inst) + '</span>' + deskBits
+        + '<span class="rep-inst">' + esc(instDisplay(x.inst)) + '</span>' + deskBits
         + '<span class="stamp ' + stampClass(x.side) + '"><span class="dt"></span>' + stampLabel(x.side) + '</span>' + pinBadge
         + '<button class="rep-savebtn' + (saved ? ' on' : '') + '" aria-pressed="' + (saved ? 'true' : 'false') + '" aria-label="' + T('Save report', '收藏报告') + '" data-act="save">' + BOOK_SVG + '</button>'
       + '</div>'
       + '<h3>' + (x.slug && feedUnlocked()
-          ? '<a class="rep-titlelink" href="research/' + esc(x.slug) + '.html" data-act="view">' + esc(x.title) + '</a>'
-          : esc(x.title)) + '</h3>'
+          ? '<a class="rep-titlelink" href="research/' + esc(x.slug) + '.html" data-act="view">' + esc(displayTitle(x.title)) + '</a>'
+          : esc(displayTitle(x.title))) + '</h3>'
       + ptsHtml + moreBtn
       + '<div class="rep-foot"><div class="rep-meta">'
         + '<span class="rep-date">' + CAL_SVG + esc(fmtWhen(x.at, x.date)) + '</span>'
@@ -639,7 +844,7 @@
 
   /* active-filter chips */
   function labelFor(dim, val) {
-    if (dim === 'side') return val === 'buy' ? T('Buy-side', '看多') : (val === 'sell' ? T('Sell-side', '看空') : T('Independent', '独立'));
+    if (dim === 'side') return val === 'buy' ? T('Buy-side', '买方') : (val === 'sell' ? T('Sell-side', '卖方') : T('Independent', '独立'));
     return val;
   }
   function renderActiveChips() {
@@ -654,8 +859,18 @@
 
   /* ═══════════ live search (debounced → /api/research/search) ═══════════ */
   var _searchTimer = null;
+  function invalidateSearchContext() {
+    ++SEARCH_REQ;
+    clearTimeout(_searchTimer);
+    SEARCH_HITS = null;
+    SEARCH_RESPONSE = null;
+    SEARCH_STATE = 'metadata';
+  }
   function onSearchInput() {
     FILT.q = $('q').value.trim();
+    var searchReq = ++SEARCH_REQ;
+    SEARCH_STATE = FILT.q ? 'loading' : 'metadata';
+    SEARCH_RESPONSE = null;
     SEARCH_HITS = null;              // fall back to instant client match while the server call is in flight
     renderFeed();
     clearTimeout(_searchTimer);
@@ -667,11 +882,18 @@
       withAuth().then(function (h) { return fetch(url, { headers: h, credentials: 'include' }); })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (j) {
-          if (!j || FILT.q !== q) return;      // stale response
+          if (FILT.q !== q || searchReq !== SEARCH_REQ) return;
+          if (!j || !Array.isArray(j.items)) throw new Error('invalid search response');      // stale response
+          SEARCH_RESPONSE = j;
+          if (j.available !== true) { SEARCH_STATE = 'unavailable'; SEARCH_HITS = null; renderFeed(); return; }
+          SEARCH_STATE = 'server';
           var hits = {}; (j.items || []).forEach(function (it) { if (it && it.id) hits[it.id] = 1; });
           SEARCH_HITS = hits; renderFeed();
         })
-        .catch(function () { /* keep the client-side fallback result */ });
+        .catch(function () {
+          if (FILT.q !== q || searchReq !== SEARCH_REQ) return;
+          SEARCH_STATE = 'unavailable'; SEARCH_RESPONSE = null; SEARCH_HITS = null; renderFeed();
+        });
     }, 280);
   }
 
@@ -727,6 +949,7 @@
   function setUserTier(t) {
     t = (t || 'free');
     if (t === USER_TIER) return;
+    invalidateSearchContext();
     USER_TIER = t;
     if (USER_TIER === 'pro') refreshFromApi();
     else renderFeed();
@@ -752,10 +975,10 @@
 
     // header
     $('vh-logo').textContent = x.logo;
-    $('vh-inst').textContent = x.inst;
+    $('vh-inst').textContent = instDisplay(x.inst);
     var dk = $('vh-desk'); dk.textContent = x.desk || '';
     $('vh-desk-sep').style.display = x.desk ? '' : 'none';
-    $('vh-title').textContent = x.title;
+    $('vh-title').textContent = displayTitle(x.title);
     var st = $('vh-stamp'); st.className = 'stamp ' + stampClass(x.side); st.innerHTML = '<span class="dt"></span>' + stampLabel(x.side);
     buildRelated(x);
 
@@ -1172,31 +1395,52 @@
   }
 
   /* ═══════════ unread count ═══════════ */
+  function savedBadgeText(n) {
+    return n > 0 ? String(n) : T('none yet', '暂无');
+  }
   function updateUnread() {
     var n = ITEMS.filter(function (x) { return !DocState.isRead(x.id); }).length;
-    $('unread-n').textContent = n;
-    $('badge-latest').textContent = TOTAL_COUNT;
+    var unknown = CATALOG_SOURCE === 'unavailable';   // no catalog → no counts
+    $('unread-n').textContent = unknown ? '—' : n;
+    $('badge-latest').textContent = unknown ? '—' : TOTAL_COUNT;
     var picks = summaryNumber('highlighted');
-    $('badge-picks').textContent = picks !== null ? picks : (CATALOG_PREVIEW ? '—' : ITEMS.filter(function (x) { return x.top; }).length);
-    $('badge-saved').textContent = ITEMS.filter(function (x) { return DocState.isSaved(x.id); }).length;
+    $('badge-picks').textContent = unknown ? '—'
+      : (picks !== null ? picks : (CATALOG_PREVIEW ? '—' : ITEMS.filter(function (x) { return x.top; }).length));
+    $('badge-saved').textContent = savedBadgeText(ITEMS.filter(function (x) { return DocState.isSaved(x.id); }).length);
   }
 
   /* ═══════════ hydrate + refresh ═══════════ */
-  function finishCatalogPaint(source) {
+  function finishCatalogPaint(source, catalog) {
     CATALOG_SOURCE = source;
+    CATALOG_OBJECT = catalog || null;
+    CATALOG_GENERATED = catalog && catalog.generated_at || '';
+    CATALOG_FRESH = source === 'live' && isFresh(catalog);
     doc.documentElement.classList.remove('rv-awaiting-live');
     if (window.__rvShellTimer) { clearTimeout(window.__rvShellTimer); window.__rvShellTimer = null; }
     var shell = $('feed-shell'); if (shell) shell.setAttribute('aria-busy', 'false');
     var en = $('rv-status-en'), cn = $('rv-status-zh');
-    if (source === 'snapshot') {
-      if (en) en.textContent = 'Saved snapshot · live update unavailable';
-      if (cn) cn.textContent = '已保存快照 · 实时更新暂不可用';
+    // "Updated hourly" is a claim about the PRODUCER, so only a live copy still
+    // inside the freshness window may make it. Every other outcome states that
+    // the data is saved and shows the clock it was actually generated on, so a
+    // reader can judge the lag themselves instead of trusting an adjective.
+    if (source === 'unavailable') {
+      if (en) en.textContent = 'Research unavailable · try again shortly';
+      if (cn) cn.textContent = '研报暂不可用 · 请稍后重试';
+    } else if (CATALOG_FRESH) {
+      if (en) en.textContent = 'Catalog recently updated';
+      if (cn) cn.textContent = '目录近期已更新';
     } else {
-      if (en) en.textContent = 'This week · Updated hourly';
-      if (cn) cn.textContent = '本周 · 每小时更新';
+      var iso = CATALOG_GENERATED;
+      if (en) en.textContent = 'Saved snapshot · refresh delayed'
+        + (iso ? ' · updated ' + fmtStamp(iso, false) : '');
+      if (cn) cn.textContent = '已保存快照 · 更新延迟'
+        + (iso ? ' · 更新于 ' + fmtStamp(iso, true) : '');
     }
+    paintSavedClock();
   }
   function ingest(catalog, source) {
+    // A selected catalog is a new search context, even when the query is unchanged.
+    invalidateSearchContext();
     var items = (catalog && Array.isArray(catalog.items)) ? catalog.items : [];
     ITEMS = items.map(normItem);
     CATALOG_SUMMARY = catalog && catalog.summary && typeof catalog.summary === 'object' ? catalog.summary : null;
@@ -1204,15 +1448,32 @@
     TOTAL_COUNT = Math.max(ITEMS.length, Number(catalog && catalog.count) || 0, aggregateTotal || 0);
     CATALOG_PREVIEW = !!(catalog && catalog.preview) || TOTAL_COUNT > ITEMS.length;
     buildInstFacets(); buildThemeFacets();
+    // Source + freshness BEFORE the feed paints: renderFeed's empty state has to
+    // be able to tell an unavailable catalog from a vault that genuinely holds
+    // zero reports, and those two must never render as the same screen.
+    finishCatalogPaint(source || 'live', catalog);
     buildTree(); updateHero(); updateUnread(); renderFeed();
-    finishCatalogPaint(source || 'live');
     openDeepLink();
   }
-  function hydrateFromBake() {
-    var el = $('rv-catalog'); if (!el) return;
-    try { ingest(JSON.parse(el.textContent || '{}'), 'snapshot'); return true; }
-    catch (e) { ingest({ items: [] }, 'snapshot'); return false; }
+  function bakedCatalog() {
+    // The SSR snapshot, or null when it is absent, unparseable, or undatable.
+    // Deliberately never a manufactured empty document: an unusable bake must not
+    // be able to paint a "0 reports" vault that reads as a real inventory.
+    var el = $('rv-catalog'); if (!el) return null;
+    var parsed;
+    try { parsed = JSON.parse(el.textContent || '{}'); }
+    catch (e) { return null; }
+    return validCatalog(parsed) ? parsed : null;
   }
+  function paintChoice(choice) {
+    // No valid copy anywhere → the honest unavailable state. We do NOT fall back
+    // to an empty catalog here: "0 reports" and "we could not read the catalog"
+    // are different facts, and only one of them is true.
+    if (!choice) { ingest({ items: [] }, 'unavailable'); return false; }
+    ingest(choice.catalog, choice.source);
+    return true;
+  }
+  function hydrateFromBake() { return paintChoice(pickCatalog(null, bakedCatalog())); }
   function refreshFromApi() {
     var req = ++CATALOG_REQ;
     if (CATALOG_ABORT) { try { CATALOG_ABORT.abort(); } catch (e) {} }
@@ -1232,8 +1493,12 @@
       .then(function (j) {
         if (req !== CATALOG_REQ) return false;
         if (!j || !Array.isArray(j.items)) throw new Error('invalid catalog payload');
-        ingest(j, j.stale ? 'snapshot' : 'live');
-        return true;
+        // Both copies are judged on the producer clock, never on which one the
+        // transport happened to deliver. The server's own catalog_health verdict
+        // is carried in `j` and agrees with genMs() by construction (same
+        // thresholds); we recompute locally so the page stays truthful even when
+        // it is served by an older API that predates the health block.
+        return paintChoice(pickCatalog(j, bakedCatalog()));
       });
     // Cover auth bootstrap as well as network/body time. AbortController alone
     // cannot settle a hung withAuth() promise, which could otherwise leave the
@@ -1246,7 +1511,13 @@
     });
     return Promise.race([request, deadline])
       .catch(function () {
-        if (req === CATALOG_REQ && CATALOG_SOURCE === 'loading') hydrateFromBake();
+        if (req === CATALOG_REQ) {
+          if (CATALOG_SOURCE === 'loading') hydrateFromBake();
+          else if (CATALOG_OBJECT) {
+            finishCatalogPaint('snapshot', CATALOG_OBJECT);
+            updateHero(); renderFeed();
+          }
+        }
         return false;
       })
       .then(function (ok) {
@@ -1312,7 +1583,7 @@
       var save = e.target.closest('[data-act="save"]');
       if (save) {
         var on = DocState.toggleSaved(id); save.classList.toggle('on', on); save.setAttribute('aria-pressed', on ? 'true' : 'false');
-        $('badge-saved').textContent = ITEMS.filter(function (x) { return DocState.isSaved(x.id); }).length;
+        $('badge-saved').textContent = savedBadgeText(ITEMS.filter(function (x) { return DocState.isSaved(x.id); }).length);
         if (LANE === 'saved') renderFeed();
         return;
       }
@@ -1367,6 +1638,9 @@
     mo.observe(doc.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
     // re-render feed on auth resolve so the teaser + quota/gate reflect the real session
     function onAuthResolved() {
+      // Same-tier account switches must fence responses before new reads settle.
+      invalidateSearchContext();
+      renderFeed();
       resolveTier();   // sets USER_TIER → re-renders the feed (teaser for non-Pro)
       refreshFromApi(); // auth may change the catalog from the 3-item preview to full Pro
       if ($('overlay').classList.contains('open')) { refreshQuota(); if (!V.pdf) loadDocument(V.item); }

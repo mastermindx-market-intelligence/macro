@@ -20,6 +20,12 @@
       return headers;
     }).catch(function(){return headers});
   }
+  function authSettled(){
+    if(global.__govrevAuthSettled)return true;
+    try{if(global.MDXAuth&&typeof global.MDXAuth.enabled==='function'&&!global.MDXAuth.enabled())return true;}catch(e){}
+    return false;
+  }
+  function markAuthSettled(){global.__govrevAuthSettled=true;}
 
   global.createGovernmentRevenueCandidateRadar=function(api){
     var obj=api.obj,arr=api.arr,esc=api.esc,text=api.text,n=api.n,money=api.money,date=api.date,tr=api.tr,safeUrl=api.safeUrl,hostFor=api.host;
@@ -40,9 +46,27 @@
       if(obj(value))return scalar(value,'');
       return '';
     }
+    /* Candidate source links are clickable only for an explicit absolute HTTPS
+     * URL that a reference itself supplies. Identifiers (ref_id-only objects,
+     * govws/usaspending strings), relative or scheme-relative strings, unsafe
+     * schemes and credential-bearing URLs must stay visible as text and never
+     * resolve against the page URL, so this gate runs before the permissive
+     * shared safeUrl is consulted. An invalid or absent alias falls through to
+     * the next explicit alias; no official URL is ever synthesized from an ID. */
+    function explicitSourceUrl(value){
+      if(typeof value!=='string')return '';
+      var raw=value.trim();
+      if(!/^https:\/\//i.test(raw)||/[\\\u0000-\u0020]/.test(raw))return '';
+      var parsed=null;
+      try{parsed=new URL(raw)}catch(error){return ''}
+      if(!parsed||parsed.protocol!=='https:'||parsed.username||parsed.password)return '';
+      // This retained endpoint is a POST query interface, not a browser-readable record.
+      if(parsed.hostname==='api.usaspending.gov'&&/^\/api\/v2\/transactions\/?$/.test(parsed.pathname))return '';
+      return safeUrl(parsed.href)||'';
+    }
     function refUrl(value){
-      if(typeof value==='string')return safeUrl(value);
-      if(obj(value))return safeUrl(value.url||value.source_url||value.href);
+      if(typeof value==='string')return explicitSourceUrl(value);
+      if(obj(value))return explicitSourceUrl(value.url)||explicitSourceUrl(value.source_url)||explicitSourceUrl(value.href);
       return '';
     }
     function validRefs(value){return Array.isArray(value)&&value.length>0&&value.every(function(ref){return !!refText(ref)})}
@@ -75,7 +99,30 @@
       return value.rows;
     }
     function unavailable(reason){listing=null;loadState=reason==='locked'?'locked':'unavailable';if(typeof api.onRows==='function')api.onRows([],{status:loadState,total:0,mapping_backlog_total:0,mapping_backlog_tickers:null,mapping_backlog_states:null,content_id:null,freshness:{exact_candidate_availability:'unavailable'}});return[]}
+    function publishLoading(){loadState='loading';if(typeof api.onRows==='function')api.onRows([],{status:'loading',total:0,mapping_backlog_total:0,mapping_backlog_tickers:[],mapping_backlog_states:{},content_id:null,freshness:{exact_candidate_availability:'unavailable'}});return[]}
     function lockedFailure(error){var message=error&&error.message||'';return message==='http_401'||message==='http_403'}
+    function cookieQueue(){
+      return global.fetch('government-revenue-data/candidates.json',{credentials:'same-origin',headers:{Accept:'application/json'}}).then(function(response){
+        if(!response.ok)throw new Error('http_'+response.status);
+        return response.json();
+      }).then(queueRows);
+    }
+    function bearerQueue(){
+      return Promise.all([
+        fetchPages('/api/government-revenue/candidates?limit=100','candidate'),
+        fetchPages('/api/government-revenue/mapping-backlog?limit=100','mapping')
+      ]).then(function(result){
+        var candidatePages=result[0],mappingPages=result[1],value=Object.assign({},candidatePages.envelope),expectedBacklog=n(value.mapping_backlog_total);
+        if(candidatePages.contentId!==mappingPages.contentId||expectedBacklog==null||expectedBacklog!==mappingPages.total)throw new Error('candidate_mapping_generation_drift');
+        value.items=candidatePages.items;value.total=candidatePages.total;value.next_cursor=null;value.mapping_backlog_total=mappingPages.total;value.mapping_backlog_tickers=Array.from(new Set(mappingPages.items.map(function(row){return row.ticker}))).sort();value.mapping_backlog_states=mappingPages.items.reduce(function(states,row){states[row.ticker]=row.mapping_state;return states},{});
+        return queueRows(value);
+      });
+    }
+    function settleFailure(error){
+      if(listing&&listing.total)return listing.rows;
+      if(lockedFailure(error)&&!authSettled())return publishLoading();
+      return unavailable(lockedFailure(error)?'locked':'');
+    }
     function pageEnvelope(value,kind){
       if(!obj(value)||value.contract!=='government_revenue_candidate_queue.v1'||value.schema_version!=='1.0.0'||!/^grcq1-[a-f0-9]{24}$/.test(requiredText(value.content_id))||!validAuthority(value.authority))throw new Error(kind+'_contract');
       var items=Array.isArray(value.items)?value.items:null,total=n(value.total),cursor=value.next_cursor;
@@ -104,19 +151,29 @@
       return next(null);
     }
     function load(){
-      var ticket=++epoch;loadState='loading';
+      var ticket=++epoch;
+      if(!listing)publishLoading();
       if(typeof global.fetch!=='function')return Promise.resolve(unavailable());
-      return Promise.all([
-        fetchPages('/api/government-revenue/candidates?limit=100','candidate'),
-        fetchPages('/api/government-revenue/mapping-backlog?limit=100','mapping')
-      ]).then(function(result){
+      return bearerQueue().then(function(value){
         if(ticket!==epoch)return[];
-        var candidatePages=result[0],mappingPages=result[1],value=Object.assign({},candidatePages.envelope),expectedBacklog=n(value.mapping_backlog_total);
-        if(candidatePages.contentId!==mappingPages.contentId||expectedBacklog==null||expectedBacklog!==mappingPages.total)throw new Error('candidate_mapping_generation_drift');
-        value.items=candidatePages.items;value.total=candidatePages.total;value.next_cursor=null;value.mapping_backlog_total=mappingPages.total;value.mapping_backlog_tickers=Array.from(new Set(mappingPages.items.map(function(row){return row.ticker}))).sort();value.mapping_backlog_states=mappingPages.items.reduce(function(states,row){states[row.ticker]=row.mapping_state;return states},{});
-        return publish(queueRows(value));
-      }).catch(function(error){if(ticket!==epoch)return[];return unavailable(lockedFailure(error)?'locked':'')});
+        return publish(value);
+      }).catch(function(error){
+        if(ticket!==epoch)return[];
+        return cookieQueue().then(function(value){
+          if(ticket!==epoch)return[];
+          return publish(value);
+        }).catch(function(cookieError){
+          if(ticket!==epoch)return[];
+          return settleFailure(cookieError||error);
+        });
+      });
     }
+    function bindAuthReload(){
+      function onAuth(){markAuthSettled();load();}
+      if(global.MDXAuth&&typeof global.MDXAuth.onChange==='function')global.MDXAuth.onChange(onAuth);
+      else if(typeof global.addEventListener==='function')global.addEventListener('mdx-auth',onAuth);
+    }
+    bindAuthReload();
     function crosscheckEntry(value){
       var state=typeof value==='string'?value:obj(value)?scalar(value.state||value.status||value.label,''):'';
       var normalized=String(state||'').toLowerCase();
@@ -128,11 +185,12 @@
       var source=obj(value.crosscheck_state)?value.crosscheck_state:{},legs=obj(source.legs)?source.legs:source,names=[['technical',tr('Technical','技术面')],['earnings',tr('Earnings','业绩')],['valuation',tr('Valuation','估值')],['alternative_data',tr('Alternative data','另类数据')],['regime',tr('Regime','市场环境')],['geopolitics',tr('Geopolitics','地缘政治')]];
       return names.map(function(pair){var entry=crosscheckEntry(legs[pair[0]]);return compact?'<span class="candidate-crosscheck '+esc(entry.className)+'">'+esc(pair[1])+': '+esc(entry.copy)+'</span>':'<div class="'+esc(entry.className)+'"><b>'+esc(pair[1])+'</b><span>'+esc(entry.copy)+'</span></div>'}).join('');
     }
-    function sourceRows(value){return arr(value.source_receipt_refs).concat(arr(value.event_refs)).map(function(ref){var title=refText(ref),url=refUrl(ref);return'<article class="receipt"><div class="receipt-kind">'+esc(tr('Retained reference','保留引用'))+'</div><p>'+esc(title)+'</p>'+(url?'<a class="source-link" href="'+esc(url)+'" target="_blank" rel="noopener"><b>'+esc(tr('Open source','打开来源'))+'</b><span>↗</span></a>':'')+'</article>'}).join('')}
+    function sourceReceipts(value){return typeof api.sourceReceipts==='function'?arr(api.sourceReceipts(value)):arr(value.source_receipt_refs)}
+    function sourceRows(value){return sourceReceipts(value).concat(arr(value.event_refs)).map(function(ref){var title=refText(ref),url=refUrl(ref);return'<article class="receipt"><div class="receipt-kind">'+esc(tr('Retained reference','保留引用'))+'</div><p>'+esc(title)+'</p>'+(url?'<a class="source-link" href="'+esc(url)+'" target="_blank" rel="noopener"><b>'+esc(tr('Open source','打开来源'))+'</b><span>↗</span></a>':'')+'</article>'}).join('')}
     function proofCopy(value){var resolution=obj(value.issuer_resolution_ref)?value.issuer_resolution_ref:{};return tr('Exact issuer path retained in graph ','精确发行人路径已保留于图谱 ')+requiredText(resolution.graph_id)+'. '+tr('The linked legal entity and ownership path are available in the evidence record.','关联法人及所有权路径可在证据记录中查看。')}
     function render(row){
       var host=hostFor(),value=row&&row.candidate;if(!host||!obj(value))return;
-      var ticker=requiredText(value.ticker),source=arr(value.source_receipt_refs).map(refUrl).find(Boolean)||'',limits=arr(value.limitations).map(refText).filter(Boolean),resolution=obj(value.issuer_resolution_ref)?value.issuer_resolution_ref:{},evidenceHtml=sourceRows(value)+
+      var ticker=requiredText(value.ticker),source=sourceReceipts(value).map(refUrl).find(Boolean)||'',limits=arr(value.limitations).map(refText).filter(Boolean),resolution=obj(value.issuer_resolution_ref)?value.issuer_resolution_ref:{},evidenceHtml=sourceRows(value)+
         '<article class="receipt"><div class="receipt-kind">'+esc(tr('Issuer path','发行人路径'))+'</div><p>'+esc(proofCopy(value))+'</p><div class="receipt-code">'+esc('candidate_id: '+requiredText(value.candidate_id)+'\nissuer_company_id: '+requiredText(value.issuer_company_id)+'\nissuer_resolution_ref: '+requiredText(resolution.graph_id)+'\ngraph_evidence_refs: '+arr(resolution.evidence_refs).map(refText).join(', ')+'\nownership_path_refs: '+arr(value.ownership_path_refs).map(refText).join(', ')+'\nartifact_content_ids: '+arr(value.artifact_content_ids).map(refText).join(', ')+'\neffective_at: '+requiredText(value.effective_at)+'\nknown_at: '+requiredText(value.known_at))+'</div></article>'+
         '<article class="receipt"><div class="receipt-kind">'+esc(tr('Research boundary','研究边界'))+'</div><p>'+esc(limits.concat([tr('This is a research candidate, not a buy signal or trade instruction.','这是研究候选，并非买入信号或交易指令。')]).join(' · '))+'</p></article>';
       host.className='inspector candidate-inspector';

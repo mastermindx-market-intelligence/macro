@@ -13,8 +13,15 @@ them to `data/thetadata_eod/` in the ops worktree (`/Users/chriswong/theta-ops-w
 It is idempotent: a state file (`_backfill_state.json`) records every completed
 root+date pair, so restarting after any interruption resumes without re-pulling.
 
-A launchd keepalive (`com.macro.thetadata-backfill.plist`) ensures the job
-auto-resumes after Mac reboots and auto-exits if an instance is already running.
+A launchd keepalive (`com.macro.thetadata-backfill.plist`) used to auto-resume
+the job after Mac reboots. **That lane is RETIRED (AD-1T1, 2026-08-22)** —
+see §3a. The store's day-to-day freshness is now owned by a *separate*
+tool, `scripts/topup_thetadata_day.py --daily` (the AD-1T1 full-universe
+incremental daily maintainer), scheduled by `com.macro.thetadata-daily.plist`.
+`backfill_thetadata_eod.py` itself remains as an explicit, manually-invoked
+resumable tool for HISTORY (initial fills, ticker-reuse floors, deep
+re-backfills) — it is no longer scheduled nightly, and no longer re-pulls the
+whole current year.
 
 ---
 
@@ -92,8 +99,9 @@ merge, fast-forward the ops worktree before expecting behavior changes.
 | Lane | Label | Schedule | What it does |
 |------|-------|----------|--------------|
 | Terminal keepalive | `com.macro.theta-terminal` | `KeepAlive`, 60 s `ThrottleInterval` | Health-polls :25503 — healthy = HTTP 200 **and** a non-trivial body (> 1000 B) on `/v3/option/list/symbols`; a bare 200 can be a ZOMBIE (stale/revoked `THETA_API_KEY` → empty 200s while data endpoints time out; bit live 2026-07-20). Exits 0 when healthy, or when a ThetaTerminalv3 process exists and the port doesn't answer (never duplicates a manual launch). A confirmed zombie (two consecutive empty-200 reads) is recycled: the bootstrapper jar plus the `:25503` LISTENer (the inner lib jar, which can orphan-survive the bootstrapper) are killed and the next fire relaunches with a fresh `.env` read. Otherwise launches the terminal with stdin held open on an anonymous FIFO (stdin EOF is the v3 shutdown trigger; root cause of the 2026-07-17..07-20 outage — and never a `tail -f \|` pipe, which deadlocks the wrapper when java dies), java backgrounded under an in-run watchdog that applies the same zombie law every 60 s (launchd cannot re-invoke a running job, so the wrapper polices its own child). Backs off 240 s on insta-death (< 30 s) or a zombie recycle so the auth endpoint is never hammered; auto-heals ~5 min after the key is fixed in `theta-ops-wt/.env`. Log: `/tmp/theta_terminal_keepalive.log`. |
-| Backfill keepalive | `com.macro.thetadata-backfill` | `KeepAlive` | Auto-resumes `backfill_thetadata_eod` after reboots; guard-exits when an instance is already running (§2). |
-| Staleness sentinel | `com.macro.theta-staleness` | 06:15 + 18:30 local (`StartCalendarInterval`) | Tripwire against silent stalls: ALERTs when :25503 is unreachable, answers 200 with a trivial symbols body (zombie — stale/revoked key), OR `greeks/SPY` is ≥ 2 weekday-sessions behind (WARN at 1; today counts as due when local hour ≥ 17, or force with `--due-today`). Writes `/tmp/theta_staleness.json` (latest machine-readable verdict, atomic), appends `/tmp/theta_staleness.log`, and raises a macOS notification on WARN/ALERT. 06:15 = pre-open sanity before the ledger seal; 18:30 = post-close check that today's pull landed. |
+| **Daily incremental maintainer** (AD-1T1) | `com.macro.thetadata-daily` | `StartCalendarInterval` 13:20/14:30/16:00/18:00 PT, **no `KeepAlive`** | Runs `topup_thetadata_day.py --daily` — the full-universe incremental T1 maintainer (§3a). Gate-checked + idempotent in python; the four fire points are the bounded retry ladder (a healthy earlier run makes later fires cheap no-ops). Log: `theta-ops-wt/daily_refresh.log`. Health receipt: `daily_refresh` section of `data/thetadata_eod/_manifest.json`. |
+| ~~Backfill keepalive~~ **RETIRED** | ~~`com.macro.thetadata-backfill`~~ | — | Whole-year re-pull of 48 refresh roots nightly + unconditional `KeepAlive` restart loop. Retired 2026-08-22 (AD-1T1) in favor of the daily incremental maintainer above — see §3a for the bootout procedure. `backfill_thetadata_eod.py` remains for manual historical work only. |
+| Staleness sentinel | `com.macro.theta-staleness` | 06:15 + 18:30 local (`StartCalendarInterval`) | Tripwire against silent stalls: ALERTs when :25503 is unreachable, answers 200 with a trivial symbols body (zombie — stale/revoked key), `greeks/SPY` is ≥ 2 weekday-sessions behind (WARN at 1; today counts as due when local hour ≥ 17, or force with `--due-today`), **or (AD-1T1 F8, threshold fixed RF1 2026-08-22) `_manifest.json`'s `daily_refresh.D` is not today's NYSE session date after 20:00 ET on a session day** — the daily lane's own liveness anchor, needed because launchd calendar fires do not wake a sleeping Mac and coalesce on wake, so a sleeping/missed host is otherwise indistinguishable from a healthy one. (N2, R3 verify-pass) An anchor ALERT firing in the 20:00–21:30 ET window means the daily lane's three EARLIER fire points (13:20/14:30/16:00 PT) all failed too, since a successful earlier run would already have stamped `daily_refresh.D` — read it as an early warning that the whole day's ladder is behind, not a false alarm from catching the lane mid-attempt. (N3) The anchor also ALERTs unconditionally if the calendar evaluation itself cannot run (broken import, bad `REPO_ROOT`) — it fails CLOSED, never silently. Writes `/tmp/theta_staleness.json` (latest machine-readable verdict, atomic), appends `/tmp/theta_staleness.log`, and raises a macOS notification on WARN/ALERT. 06:15 = pre-open sanity before the ledger seal; 18:30 = post-close check that today's pull landed. |
 
 The lanes are independent — install any subset.  The terminal keepalive is the
 one that prevents a repeat of the 07-17 silent death; the sentinel is the alarm
@@ -103,7 +111,7 @@ if anything else starves the store.
 
 ```bash
 # Pick the lane:
-LANE=com.macro.theta-terminal   # or com.macro.thetadata-backfill / com.macro.theta-staleness
+LANE=com.macro.theta-terminal   # or com.macro.thetadata-daily / com.macro.theta-staleness
 
 # Step 1: copy the plist to LaunchAgents (do NOT commit ~/Library to git)
 cp "/Users/chriswong/theta-ops-wt/scripts/launchd/${LANE}.plist" ~/Library/LaunchAgents/
@@ -131,24 +139,24 @@ tail -5 /tmp/theta_terminal_keepalive.log
 # hub-ops-wt/.env). Never echo or commit the key.
 ```
 
-### Verify — backfill guard exits correctly while a backfill is running
-
-While `backfill_thetadata_eod` is live:
+### Verify — daily incremental maintainer
 
 ```bash
-bash /Users/chriswong/theta-ops-wt/scripts/launchd/theta_backfill_keepalive.sh
-# Should exit immediately (guard path)
-tail -5 /Users/chriswong/theta-ops-wt/backfill.log
-# Should show: "... backfill_thetadata_eod already running — exiting (no duplicate)"
+# Manual diagnostic run (bypasses the session/time gate; stamps forced=true):
+cd /Users/chriswong/theta-ops-wt
+python -m scripts.topup_thetadata_day --daily --force-run
+python -c "import json; d=json.load(open('data/thetadata_eod/_manifest.json')); print(json.dumps(d['daily_refresh'], indent=2))"
+# Two concurrent invocations: the second must refuse (writer_locked, exit 0,
+# zero mutations) — confirms the flock:
+python -m scripts.topup_thetadata_day --daily --force-run &
+python -m scripts.topup_thetadata_day --daily --force-run
 ```
-
-The live backfill process must remain running (check with `pgrep -fl backfill_thetadata_eod`).
 
 ### Verify — staleness sentinel
 
 ```bash
 bash /Users/chriswong/theta-ops-wt/scripts/launchd/theta_staleness_sentinel.sh --due-today
-cat /tmp/theta_staleness.json   # level OK/WARN/ALERT + latest_greeks_date + reasons
+cat /tmp/theta_staleness.json   # level OK/WARN/ALERT + latest_greeks_date + daily_refresh_d + reasons
 ```
 
 ### Uninstall (per lane)
@@ -160,13 +168,151 @@ rm "$HOME/Library/LaunchAgents/${LANE}.plist"
 
 ---
 
+## §3a AD-1T1 transition: retiring the backfill keepalive for the daily maintainer
+
+**Ruling (Sol handoff, `research/AD1T1_INCREMENTAL_CADENCE_SPEC_2026-08-22.md`
+§E):** exactly ONE scheduled daily T1 maintainer may be active on m1. This
+wave ships the new lane's plist + wrapper + this runbook section; **m1
+installation is a post-Sol-acceptance act, done by hand following the steps
+below** — the PR does not run `launchctl` itself (§I out of scope for the
+builder).
+
+**Current status:** `com.macro.thetadata-daily` — `installed_live_status: INSTALLED`
+(verified 2026-08-23: `launchctl list` on m1 shows the label loaded, last
+exit status 0, alongside `com.macro.theta-terminal` and
+`com.macro.theta-staleness`).
+
+**Step 0 — refresh the ops-tree bytes to current main FIRST.** Installing a
+label on stale bytes ships the OLD writer under the NEW schedule. As of
+2026-08-23 the ops tree IS a synced clone of canonical main and refreshing is
+a normal git operation — the topology below replaced the dead setup measured
+2026-08-22 (HEAD weeks behind on a defunct fork remote, newer bytes
+hand-copied on top, `collectors/thetadata.py` missing the #5942 NA-parse
+fixes, merged bytes streamable only file-by-file over ssh).
+
+Remote topology (repointed 2026-08-23):
+
+- `origin` = `git@github.com:mastermindx-market-intelligence/macro.git`
+  (canonical). The former origin `chriswong6031-creator/macro.git` is DEAD —
+  its SSH credential returns `Permission denied (publickey)`; never repoint
+  back to it.
+- Auth is the repo-local `core.sshCommand` =
+  `ssh -i ~/.ssh/macro_dashboard_deploy -o IdentitiesOnly=yes` (deploy key,
+  authenticates as `mastermindx-market-intelligence/macro`). It is set in
+  `theta-ops-wt/.git/config`, so plain `git fetch origin` works with no env
+  vars.
+- The clone is SHALLOW (`.git/shallow` grafts): `git merge-base` /
+  `--is-ancestor` between old and new commits can fail with no output even
+  when ancestry is real — prove ancestry in a full-history checkout, not
+  here.
+- Every tracked `data/` index entry carries `--skip-worktree`: `data/` on
+  disk is deliberately frozen (July vintage plus the live
+  `data/thetadata_eod` symlink into `flow-ops-wt`) while the index tracks
+  main. `git status` stays clean without materializing ~48k data files.
+
+Refresh procedure (replaces the old per-file checkout list — refreshes the
+WHOLE tree except `data/`):
+
+```bash
+cd /Users/chriswong/theta-ops-wt
+git fetch origin                     # first full fetch was ~1.45M objects /
+                                     # ~8.6 GiB / ~30 min; run it nohup'd.
+                                     # Incremental fetches are cheap.
+git diff -z --name-only --diff-filter=D HEAD origin/main -- ":(exclude)data" \
+    > /tmp/theta_ops_deletions.zlist # files main deleted since last refresh
+git reset --mixed origin/main        # move branch+index; worktree untouched
+git checkout -- . ":(exclude)data"   # materialize main bytes, data/ excluded
+xargs -0 rm -f < /tmp/theta_ops_deletions.zlist
+git ls-files -z -- data/ | git update-index -z --skip-worktree --stdin
+```
+
+NEVER `git reset --hard` and never `git checkout` anything under `data/` in
+this tree: main tracks files under `data/thetadata_eod/`, which is a SYMLINK
+into the canonical T1 store — a hard checkout would try to write through it.
+Do not `chmod +x scripts/launchd/theta_daily_refresh.sh` (an older revision
+of this step said to): the plist invokes it via `/bin/bash`, git tracks it
+`100644`, and the chmod just leaves a permanent mode-diff in status.
+
+**Step 1 — bootout the old label, then verify no orphan survives it.**
+`launchctl bootout` kills the wrapper shell but NOT necessarily a
+`backfill_thetadata_eod` python child it may have spawned and left running —
+the F7 orphan hazard this build's daily-mode pgrep-advisory design exists
+because of:
+
+```bash
+launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.macro.thetadata-backfill.plist
+pkill -f backfill_thetadata_eod
+sleep 2
+pgrep -fl backfill_thetadata_eod   # MUST print nothing — verify before Step 2
+rm -f ~/Library/LaunchAgents/com.macro.thetadata-backfill.plist
+```
+
+**Step 2 — TZ + no-sleep assertions.** The plist's `StartCalendarInterval`
+hours are host-local (PT) — correctness rests on the `America/New_York` gate
+inside python, but the fire *points* only land where intended if the host
+clock is where the plist assumes:
+
+```bash
+systemsetup -gettimezone   # MUST print: Time Zone: America/Los_Angeles
+pmset -g | grep -E '^\s*sleep\s'   # sleep must be 0 (Never) — a sleeping Mac
+                                    # coalesces missed calendar fires on wake
+                                    # (F8 is the tripwire if this regresses)
+```
+
+**Step 3 — bootstrap the new label.**
+
+```bash
+cp /Users/chriswong/theta-ops-wt/scripts/launchd/com.macro.thetadata-daily.plist \
+    ~/Library/LaunchAgents/
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.macro.thetadata-daily.plist
+launchctl list com.macro.thetadata-daily
+```
+
+**Step 4 — auto-login note.** Both the retired and the new lane carry
+`LimitLoadToSessionType Aqua` — the agent loads only at GUI login, so the
+account must be configured for auto-login (System Settings → Users & Groups)
+or a reboot silently drops the whole daily lane until someone logs in.
+
+### Catch-up procedure (gaps of >= 2 sessions)
+
+The daily mode NEVER sweeps history — a missed prior session self-heals only
+one day at a time (the next session's run ensures the missed S cells by
+construction). For a real gap (host down over a long weekend, terminal outage
+spanning multiple days), use the explicit catch-up tool instead of the
+historical backfill:
+
+```bash
+cd /Users/chriswong/theta-ops-wt
+python -m scripts.topup_thetadata_day --roots @universe --date 2026-08-18
+```
+
+This resolves the full T1 universe via the same resolver the daily mode uses
+and runs the same 3-tier one-day ensure as the legacy bounded mode, for the
+one named date. Run once per missed session date, oldest first.
+
+### `ONE_OFF_CLOSURES` maintenance (F12)
+
+`lib/nyse_calendar.py`'s `ONE_OFF_CLOSURES` is **hand-maintained** (a market
+closure that is not a fixed federal holiday — e.g. a national day of
+mourning). If the daily receipt's `s_suspect_non_session` flag is ever `true`
+(> 50% of attempted roots returned EOD[S] vendor-empty), that is the
+operator breadcrumb to check whether an unlisted closure needs to be added to
+`ONE_OFF_CLOSURES` — never patch around it by walking `S` backwards manually;
+the calendar module is the single source of truth for what counts as a
+session.
+
+---
+
 ## §4 State-file semantics
 
 | File | Location (ops worktree) | Semantics |
 |------|------------------------|-----------|
 | `_backfill_state.json` | `data/thetadata_eod/` | One entry per (root, date) pair, written after a successful pull. Drives idempotency: completed pairs are skipped. Never delete; edit only with `backfill_thetadata_eod.py --reset-root <root>` if a root needs re-pulling. |
-| `_manifest.json` | `data/thetadata_eod/` | Written by the backfill script at completion of each root. Gate R8 (roadmap): no gate harness reads the store until this marks the universe pass complete. |
-| `backfill.log` | `theta-ops-wt/` | Append-only; records progress, errors, and keepalive guard events. Never truncate while a backfill is running. |
+| `_manifest.json` | `data/thetadata_eod/` | Read-modify-write (AD-1T1) — the backfill script's own four keys (`store`/`n_roots`/`per_root`/`updated_at`) and the daily maintainer's `daily_refresh` health receipt (§3a) each preserve the OTHER writer's section rather than clobbering it. Gate R8 (roadmap): no gate harness reads the store until this marks the universe pass complete. |
+| `daily_refresh` (inside `_manifest.json`) | `data/thetadata_eod/_manifest.json` | Overwritten once per `--daily` run (no unbounded history — `daily_refresh.log` carries history). `status` is `healthy`/`partial`/`failed`; `D` is the staleness anchor the sentinel checks (F8). A gate no-op or a lock refusal writes NO receipt at all — absence is itself the honest record. |
+| `_writer.lock` | `data/thetadata_eod/` | Crash-safe advisory `flock` guarding every T1 store writer (§B). Never committed to git, never uploaded to R2 (`.gitignore` + `publish_r2._uploadable`). The lock FILE persisting on disk is harmless — the LOCK dies with the process. |
+| `backfill.log` | `theta-ops-wt/` | Append-only; records `backfill_thetadata_eod.py` manual-run output. Never truncate while a backfill is running. |
+| `daily_refresh.log` | `theta-ops-wt/` | Append-only launchd stdout/stderr for the `com.macro.thetadata-daily` lane. |
 
 ---
 
@@ -250,3 +396,95 @@ with Fable/human after the threshold is confirmed.
 | Keepalive fires but backfill immediately dies | `backfill.log` tail | Python path not in launchd PATH — verify the plist LaunchAgents entry; use full Python path in wrapper if needed |
 | `LastExitStatus` in `launchctl list` = 32512 | Script not executable | `chmod +x .../theta_backfill_keepalive.sh` |
 | `_manifest.json` missing after ETF pass | Backfill didn't finish cleanly | Check log; resume — the script writes the manifest at completion |
+
+### Default-off D-session observation — source preparation, October 24
+
+Do not activate or run this preparation from this runbook. Existing schedule,
+wrapper, canonical four S/D cells and health are unchanged. The reviewed source
+seam is `_daily_main(..., d_session_observation=None)`; no CLI/env/plist enables it.
+The incumbent collector has an explicit source adapter
+`bounded_spy_d_session_transport(day)` using native `_get_csv`/normalizers, but no
+CLI/environment/plist/wrapper binds it. Transport defaults None, which records
+zero pilot attempts; source availability does not activate it.
+See the October 24 AD1T1 amendment for the exact callback interface and admission
+boundary. The existing commercial-rights Chairman decision is settled; this seam
+must not request another license approval or invent a vendor contract.
+
+After a separately qualified source/install/access/capacity boundary, a distinct
+natural 17:30 ET SPY session could be admitted with two total physical attempts,
+including any probe/retry/redirect (those are forbidden rather than extra calls).
+It validates existing OI[D]/OI[S] and their eligible live-contract membership,
+retaining full local report copies/hashes and explicit S-expiry exclusions. Missing
+expiration is not an exclusion, and a missing nonexpired member is not zero. It
+exclusively claims its exact date/rung under the
+existing canonical lock, reserves before GET, retains private raw bytes before
+parse, and preserves refusal/unknown/no-replay. Missing local reports or wrong
+rung/forced/nonsession/lock refusal mean no pilot calls. There is no automatic
+later-rung retry and no timer or retired-backfill restoration.
+
+Success is observation-only. Never merge its EOD/Greek frames into canonical
+Parquet or run/advance Hub from them. DOI/Hot remain at their actual compatible
+source date. Source/model/role clocks and unknown earliest availability remain
+separate. Actual production promotion requires a later qualified per-root source
+composition and declared coverage, not a SPY-only max-date side effect. All current
+checks of this preparation are synthetic structural mock tests; no activation,
+provider GET, new allowance or runtime installation follows from their passing.
+
+The unbound pilot adapter's absolute deadline is available only on the native
+POSIX main thread with no pre-existing real-time alarm. An active process timer
+or unsupported thread/platform is a pre-GET refusal, not a reason to fall back
+to inactivity timeouts. The guard interrupts the synchronous header/body read,
+closes the native response and restores the previous signal handler. No capture
+worker is detached. After a physical attempt the journal preserves unknown
+provider outcome/no-replay even when local cancellation/disconnection succeeds.
+These controls have local loopback/mock tests only; no production host, session
+allocation, installation or activation is established by that evidence.
+
+For a later admitted one-session binding, supply both the transport's fixed date
+and `_DSessionObservation.session_day` with the same exact allocated date.
+Default None withholds; a mismatch refuses before local-source preflight/claim.
+The native receipt records `bound_session` and the computed exact operation_ref.
+This source interface does not activate a schedule or roll a two-attempt
+allocation into a recurring allowance.
+
+### Exact Oct26 observation entry binding (source only; default off)
+
+The existing `scripts/launchd/theta_daily_refresh.sh` remains a thin `exec`
+wrapper. Its inherited environment reaches the normal `--daily` CLI. With
+`THETADATA_D_SESSION_OBSERVATION` absent or empty, that CLI still supplies `None`;
+the existing four-cell maintenance, worker bounds and 65-minute default remain.
+No plist, timer or wrapper control flow is added.
+
+The only accepted nonempty value is
+`spy-2026-10-26-1730-observation-v1`. This binds SPY D=2026-10-26/S=2026-10-23,
+the natural 17:30 Eastern rung, original root
+`01a156f1-f450-7793-8951-bddadd4784c2`, assigning coordinator
+`01a15700-1ae2-7a73-9756-f1546da7ace8`, and the already provisioned private parent
+`/Users/chriswong/optionshub-ops-wt/.git/options-source-captures`. It is not an
+arbitrary date/root/budget setting or recurring allocation. Other values,
+legacy mode, `--force-run`, or a changed deadline refuse before source work.
+Wrong day/rung, weekend/pre-gate, missing local OI/baseline, unqualified native
+transport capacity, invalid journal parent or any existing operation claim
+cannot issue pilot requests. A retained unknown/refusal/completed claim is never
+reused. Capacity inspection is local timer/thread/origin/retry-adapter inspection,
+not a health query or proof of subscribed-account access.
+
+**Do not set this environment value as part of source installation.** Activation
+requires the accepted/protected source, exact preimage-guarded native installation,
+current subscribed-account/source admission, actual writer/host capacity and
+custody, compatible retained local OI[D]/OI[S], and a writable/fsync-qualified
+private journal. Existing explicit `THETADATA_DATED_GREEKS_V1_ROOTS=SPY` policy is
+also required; requested version1 is request provenance, never response model
+metadata. The Options owner's separately approved NEW two-attempt allocation is
+for this operation only, not old unused cap or a reset of earlier claims.
+
+The two actual pilot attempts are exact EOD[D], then full-order Greek EOD[D]
+requested version1: max16MiB/100000 raw rows per response (32MiB/200000 total),
+no probe/retry/redirect/page/fallback/extra OI. The existing absolute native
+main-thread timer and shared remaining 65-minute deadline remain mandatory;
+unknown consumes/holds an attempt. Raw response/actual clocks precede validation.
+Pilot data stays private and never enters canonical Parquet, `_ensure_one_cell`,
+`_merge_day`, Hub max-date promotion, or the historical catch-up helper. Ordinary
+four-cell maintenance remains independent; its existing requests are not financed
+by or counted as pilot attempts. No new model/expiry/PIT/market-completeness or
+publication claim follows from this observation.

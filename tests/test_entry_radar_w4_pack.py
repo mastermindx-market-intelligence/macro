@@ -49,6 +49,8 @@ from engine.entry_radar import challengers as ch
 from engine.entry_radar import detectors as dt
 from engine.entry_radar import indicator_core as ic
 from engine.entry_radar import live_pack as lp
+from engine.entry_radar.contracts import AdmissionReason, ProbeRecord
+from engine.entry_radar.universe import ProbeSet
 
 ROOT = Path(__file__).resolve().parents[1]
 RADAR_DIR = ROOT / "engine" / "entry_radar"
@@ -685,6 +687,20 @@ def test_PACK7_the_pointer_is_a_file_and_names_the_hash(tmp_path, pack):
     assert not lp.pointer_path(tmp_path).is_symlink()
 
 
+def test_save_pack_stale_hash_refusal_creates_no_directory(tmp_path):
+    import dataclasses
+
+    from engine.entry_radar.pack_spool import ParquetSpoolSink
+
+    spool_path = tmp_path / "substrate_spool.parquet"
+    pack = build(sink=ParquetSpoolSink(spool_path))
+    tampered = dataclasses.replace(pack, pack_hash="stale-nonempty-digest")
+    out_state = tmp_path / "pack_out"
+    with pytest.raises(lp.LivePackError, match=r"^pack_hash_mismatch_on_save:"):
+        lp.save_pack(tampered, out_state)
+    assert not out_state.exists()
+
+
 def test_PACK7_no_partial_directory_survives_a_save(tmp_path, pack):
     lp.save_pack(pack, tmp_path)
     strays = [p.name for p in lp.pack_root(tmp_path).iterdir()
@@ -694,15 +710,26 @@ def test_PACK7_no_partial_directory_survives_a_save(tmp_path, pack):
 
 def test_PACK7_retention_keeps_the_newest_three_and_never_the_pointer_target(tmp_path,
                                                                             pack):
-    for offset, session in enumerate(("2026-08-10", "2026-08-11", "2026-08-12",
-                                      "2026-08-13", "2026-08-14")):
+    sessions = ("2026-08-10", "2026-08-11", "2026-08-12",
+                "2026-08-13", "2026-08-14")
+    digests: list[str] = []
+    for session in sessions:
+        pack_hash = lp.compute_pack_hash(
+            schema=pack.schema, as_of=session, next_session=pack.next_session,
+            price_basis=pack.price_basis, spec_hashes=pack.spec_hashes,
+            probe_tickers=list(pack.probe_set.get("tickers") or ()),
+            names=pack.names, confirmed_lanes=pack.confirmed_lanes)
+        digests.append(pack_hash)
         copy = lp.LivePack(
             schema=pack.schema, as_of=session, next_session=pack.next_session,
             built_at=pack.built_at, price_basis=pack.price_basis,
             spec_hashes=pack.spec_hashes, probe_set=pack.probe_set, names=pack.names,
-            substrate=pack.substrate, pack_hash=f"{offset:016x}")
+            substrate=pack.substrate, confirmed_lanes=pack.confirmed_lanes,
+            pack_hash=pack_hash)
         lp.save_pack(copy, tmp_path)
-    kept = sorted(p.name for p in lp.pack_root(tmp_path).iterdir() if p.is_dir())
+    assert len(set(digests)) == len(sessions)
+    dirs = [p for p in lp.pack_root(tmp_path).iterdir() if p.is_dir()]
+    kept = sorted(p.name for p in dirs)
     assert kept == ["2026-08-12", "2026-08-13", "2026-08-14"]
     assert lp.load_pack(tmp_path).as_of == "2026-08-14"
 
@@ -832,6 +859,78 @@ def test_PACK8_a_bare_ticker_sequence_is_accepted_and_labelled():
     assert snapshot["source"] == "ticker_sequence"
     assert snapshot["tickers"] == ["AAA", "ZZZ"]
     assert snapshot["count"] == 2
+
+
+def _admission(layer: str, code: str) -> AdmissionReason:
+    return AdmissionReason(layer=layer, source_id="test.src",
+                           reason_code=code, reason_text=code)
+
+
+def _record(ticker: str, layers: tuple[str, ...],
+            codes: tuple[str, ...]) -> ProbeRecord:
+    return ProbeRecord(
+        ticker=ticker,
+        admission_layers=layers,
+        admission_reasons=tuple(_admission(layers[0], code) for code in codes),
+        eligibility="operating_equity",
+    )
+
+
+def _probe_set(*records: ProbeRecord) -> ProbeSet:
+    return ProbeSet(
+        records=records,
+        assembled_at=datetime(2026, 8, 18, tzinfo=timezone.utc),
+        market_session="2026-08-18",
+        budget={"state": "ok"},
+    )
+
+
+def test_PACK8_a_real_probe_set_snapshot_keeps_every_ticker():
+    """Production collapse: live ProbeSet.records → to_dict()['probes'], adapter read 'records'."""
+    probe_set = _probe_set(
+        _record("BBB", ("C", "D"), ("hot_tape.move", "index.sp500")),
+        _record("AAA", ("B",), ("index.sp500",)),
+    )
+    dumped = probe_set.to_dict()
+    snapshot = lp.probe_set_snapshot(probe_set)
+    serialized = lp.probe_set_snapshot(dumped)
+    assert dumped["probes"] and "records" not in dumped
+    assert snapshot["tickers"] == ["AAA", "BBB"]
+    assert snapshot["count"] == 2
+    assert snapshot["source"] == "probe_set"
+    assert snapshot["market_session"] == "2026-08-18"
+    assert snapshot["admission"]["layers"] == {"B": 1, "C": 1, "D": 1}
+    assert snapshot["admission"]["reason_codes"] == {"hot_tape.move": 1,
+                                                     "index.sp500": 2}
+    assert snapshot == serialized
+
+
+def test_PACK8_a_nonempty_probe_set_must_not_silently_collapse_to_zero_tickers():
+    assert lp.probe_set_snapshot(_probe_set())["tickers"] == []
+    blank = _probe_set(_record("", ("B",), ("index.sp500",)))
+    with pytest.raises(lp.LivePackError, match="collapsed"):
+        lp.probe_set_snapshot(blank)
+    with pytest.raises(lp.LivePackError, match="collapsed"):
+        lp.probe_set_snapshot({"probes": [{"ticker": "", "admission_layers": ["B"]}]})
+
+
+def test_PACK8_build_pack_requests_every_real_probe_set_ticker():
+    probe_set = _probe_set(
+        _record("WASH", ("B",), ("index.sp500",)),
+        _record("FLAT", ("C",), ("hot_tape.move",)),
+    )
+    requested: list[str] = []
+    frames = store()
+
+    def spy(ticker: str):
+        requested.append(ticker)
+        return frames.get(ticker)
+
+    lp.build_pack(
+        probe_set=probe_set, store_reader=spy, as_of=AS_OF,
+        built_at=datetime(2026, 8, 15, 2, 0, tzinfo=timezone.utc),
+    )
+    assert requested == ["FLAT", "WASH"]
 
 
 def test_PACK8_next_reference_session_is_calendar_not_arithmetic():

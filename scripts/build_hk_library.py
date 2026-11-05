@@ -1943,7 +1943,17 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
                     for e in (buys + watch + laggards + leaders + ran + vetoed)
                     if e.get("ticker")
                 }
-                _hk_sc = {"status": "accruing", "first_read_est": board_ledger._est_first_read()}
+                # board_definition MUST come along (LEDGER-ERA track_ledger fence,
+                # 2026-08-20 review, BLOCKER-1): from_board_ledger_grade only fences
+                # rows/summary to the current era when the scorecard dict it is
+                # handed actually NAMES that era. _bt (board_ledger.grade("HK"),
+                # just computed above) already carries the same board_definition
+                # board_ledger.scorecard("HK") would derive — reuse it rather than
+                # a second scorecard() call, so hk_track_ledger.json's row table
+                # gets the same era fence the HK summary cards already have via
+                # _hk_track_record_vm() -> board_ledger.scorecard("HK") directly.
+                _hk_sc = {"status": "accruing", "first_read_est": board_ledger._est_first_read(),
+                          "board_definition": _bt.get("board_definition")}
                 _hk_doc = _tl.from_board_ledger_grade(
                     "HK", _bt, _hk_sc,
                     bench={"code": "_HSI", "en": "Hang Seng", "zh": "恒生指数"},
@@ -2102,6 +2112,191 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("hk_standouts.json persist skipped (%s)", e)
 
+    # ---- ZERO-AUTHORITY SHADOW SUBSTRATE (WS:PROPHET-HK-CA-REVAMP,
+    # research/PROPHET_SHADOW_CONTRACT_V1.md §4) — placed BELOW the
+    # hk_standouts.json persist above, deliberately NOT beside the
+    # board_ledger.append_board call ~189 lines upstream: the buy/watch list
+    # objects that get serialized into hk_standouts.json are still live in
+    # scope up there, and a shadow call at that site could mutate the
+    # published board (contract §4, F1). Reuses the exact same `calls`
+    # population and `as_of` already handed to append_board. Fail-soft
+    # (write_shadow never raises) and wrapped anyway, so a defect here can
+    # never touch the standout-board persist above.
+    # hk-discovery wave (contract §4's "when a challenger registers" clause):
+    # register the FIRST real HK Lane-B discovery challenger immediately
+    # BEFORE write_shadow, in the same fail-soft try/except discipline. The
+    # market literal "HK" appears ONLY at this registration call —
+    # engine/hk_discovery_challenger.py never takes or infers a market. The
+    # evidence bundle is assembled from pre-cut structures already computed
+    # above in THIS function — deliberately never from `out` (the payload
+    # about to be serialized a few lines above) — so the challenger can
+    # never depend on the published board it exists to audit independently
+    # of (K-D9 publication-isolation).
+    try:
+        from engine import board_shadow, hk_discovery_challenger, hk_native_intelligence
+
+        # HK-DISCOVERY EVIDENCE ASSEMBLY START (build commission R3/K-D9
+        # structural pin: this token must sit strictly between the
+        # hk_standouts.json persist above and the register_challenger call
+        # below — tests/test_hk_discovery_challenger.py asserts that
+        # ordering by source offset, not merely that registration follows
+        # the persist).
+        _hk_disc_ripening_tickers: set[str] = set()
+        try:
+            _hk_disc_ripening_rows = hk_board_rank.build_ripening_rows(
+                sig_verdict, meta_by=_lane_meta, close_of=_lane_close_of,
+                exclude=(), board_asof=as_of,
+                cap=10**9, ready_cap=10**9,
+            )
+            _hk_disc_ripening_tickers = {
+                str(r.get("ticker")) for r in _hk_disc_ripening_rows if r.get("ticker")
+            }
+        except Exception as _disc_rip_ex:  # noqa: BLE001 — additive; a missing leg just drops that origin
+            print(
+                "::warning title=hk-discovery-evidence-leg::ripening evidence leg "
+                f"failed ({_disc_rip_ex}) — hk_discovery_v1 candidates lose the "
+                "'ripening' origin this pass; every other origin is unaffected",
+                flush=True,
+            )
+
+        # HK-NATIVE-INTEL Wave 6: attach H3/X1 evidence to the existing
+        # zero-authority discovery rows. These reads cannot originate a
+        # candidate, change availability, alter the published board, or reach
+        # HK Brain.
+        _hk_native_family_rows: dict = {}
+        _native_tickers = [str(e.get("ticker")) for e in enriched if e.get("ticker")]
+        try:
+            _hk_ah_pairs = hk_ah._panel_pairs() or None
+            _hk_a_twin_closes = hk_native_intelligence.load_a_twin_closes(
+                _hk_ah_pairs, store.read,
+            )
+            _hk_native_family_rows = hk_native_intelligence.build_family_evidence(
+                _native_tickers,
+                asof=as_of,
+                pair_rows=_hk_ah_pairs,
+                premium_panel=hk_ah.panel_pair_premiums(),
+                a_closes=_hk_a_twin_closes,
+            )
+        except Exception as _native_ex:
+            print(
+                "::warning title=hk-native-intel-unavailable::H3/X1 family projection "
+                f"failed ({_native_ex}) — discovery continues with explicit UNAVAILABLE "
+                "family states",
+                flush=True,
+            )
+            _hk_native_family_rows = hk_native_intelligence.unavailable_family_evidence(
+                _native_tickers
+            )
+
+        # Add the already-computed broad beta-neutral RS screen to the same
+        # zero-authority family rows. This is evidence only: it does not
+        # originate candidates or alter availability/publication.
+        _hk_native_family_rows = hk_native_intelligence.with_bnrs_evidence(
+            _hk_native_family_rows,
+            _native_tickers,
+            bnrs,
+        )
+
+        # R5/F5: ripening_tickers enters the bundle as a SORTED list, never
+        # the raw set above — set iteration order is not stable across
+        # process runs (hash randomisation), and build_candidates()
+        # (engine/hk_discovery_challenger.py) asserts against a raw set
+        # reaching it for exactly this reason.
+        _hk_disc_evidence: dict = {
+            "washout_2w": dict(washout_2w),
+            "leadership": _leadership or {},
+            "ripening_tickers": sorted(_hk_disc_ripening_tickers),
+            "sig_verdict": sig_verdict,
+            "dir_by_ticker": {e.get("ticker"): e.get("dir") for e in enriched if e.get("ticker")},
+            "southbound": southbound,
+            "ah_value": ah_value,
+            "native_families": _hk_native_family_rows,
+            "knife_risk": {e.get("ticker"): bool(e.get("knife_risk"))
+                          for e in enriched if e.get("ticker")},
+            # R4/F4: knife_available is True iff the falling-knife pass
+            # actually stamped this render — the SAME observable output
+            # (_knife_cut, the quintile cut float) _falling_knife_demote's
+            # own early-return already produces at the call site above
+            # (~L1581), never a second copy of its `len(alphas) < 5` gate.
+            "knife_available": bool(_knife_cut is not None),
+            "extended": {e.get("ticker"): bool(e.get("extended"))
+                        for e in enriched if e.get("ticker")},
+            # R4/F4: extension_signals() (engine/extension.py) returns an
+            # EMPTY map by construction whenever `closes` is absent/empty —
+            # per-name absence WITHIN a non-empty map is a genuinely
+            # resolved "no read" for that name and stays plain False; only
+            # the whole-map-absent case is threaded here, mirroring
+            # plc_available's own shape.
+            "extension_available": bool(closes is not None and not closes.empty),
+            "plc_map": dict(plc_map),
+            "plc_available": bool(_plc_ok),
+            "ran_require_above200": bool(HK_RAN_REQUIRE_ABOVE200),
+        }
+        # F3+F7 (build commission R3): deep-copy the assembled bundle ONCE
+        # before binding it into the registration closure below — nothing
+        # later in this function (today or after a future edit) can then
+        # mutate a live object the closure still holds a reference to.
+        import copy as _copy_disc
+        _hk_disc_evidence = _copy_disc.deepcopy(_hk_disc_evidence)
+
+        # Wave 7 HK-RANK-RACE: H3 and X1(b) run as TWO independent
+        # same-population Lane-A challengers.  No fusion/weights are minted here;
+        # each rank_fn can only score the exact incumbent calls handed to it by
+        # board_shadow, and non-ACCRUING family reads stay null.
+        _hk_rank_family_rows = _hk_disc_evidence["native_families"]
+
+        # Broad-coverage SCREEN race: reuse the beta-neutral RS map computed
+        # earlier for the live screen. It is captured only after publication,
+        # cannot originate names, and remains distinct from H3/X1 selection
+        # evidence and from the live fused hk_edge.
+        _hk_bnrs_rank_values = dict(bnrs or {})
+
+        def _hk_bnrs_rank_fn(_calls: list[dict]) -> dict:
+            return hk_native_intelligence.rank_bnrs_calls(
+                _calls, _hk_bnrs_rank_values,
+            )
+
+        def _hk_h3_rank_fn(_calls: list[dict]) -> dict:
+            return hk_native_intelligence.rank_family_calls(
+                _calls, _hk_rank_family_rows, "h3_ah_discount",
+            )
+
+        def _hk_x1_rank_fn(_calls: list[dict]) -> dict:
+            return hk_native_intelligence.rank_family_calls(
+                _calls, _hk_rank_family_rows, "x1_atwin_momentum",
+            )
+
+        def _hk_discovery_fn(_asof_arg: str) -> list[dict]:
+            return hk_discovery_challenger.build_candidates(_hk_disc_evidence, _asof_arg)
+
+        board_shadow.register_challenger(
+            "HK",
+            hk_native_intelligence.BNRS_DEFINITION,
+            rank_fn=_hk_bnrs_rank_fn,
+        )
+        board_shadow.register_challenger(
+            "HK",
+            hk_native_intelligence.RANK_DEFINITIONS["h3_ah_discount"],
+            rank_fn=_hk_h3_rank_fn,
+        )
+        board_shadow.register_challenger(
+            "HK",
+            hk_native_intelligence.RANK_DEFINITIONS["x1_atwin_momentum"],
+            rank_fn=_hk_x1_rank_fn,
+        )
+        board_shadow.register_challenger(
+            "HK", hk_discovery_challenger.DEFINITION, discovery_fn=_hk_discovery_fn,
+        )
+    except Exception as _disc_ex:  # noqa: BLE001 — registration must never break the build
+        log.warning("hk discovery-challenger registration failed (%s) — shadow write "
+                    "continues without it this render", _disc_ex)
+
+    try:
+        from engine import board_shadow
+        board_shadow.write_shadow(calls, market="HK", asof=str(as_of) if as_of else None)
+    except Exception as _bse:  # noqa: BLE001 — additive research telemetry; never fatal
+        log.warning("hk board_shadow write failed (%s) — render continues", _bse)
+
     # ---- HK PICK LAB PRODUCER BLOCK (spec §5, HKPL-R7) --------------------------------
     # Writes the nightly HK snapshot parquet and the 1D Velocity Desk price-only first
     # pass.  Never-fatal: a failure here must not block the standout board persist above.
@@ -2129,7 +2324,7 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
         from engine.pick_lab.profile import HK_PROFILE
         from engine.pick_lab.signals_1d import compute_grids as _compute_grids
 
-        _producer_asof = str(as_of) if as_of else str(pd.Timestamp.utcnow().date())
+        _producer_asof = str(as_of).strip() if as_of and str(as_of).strip() else None
 
         # -- 1. Close panel: the breadth cache (already loaded as `closes` above)
         # Compute 1D/2D oscillators over the full close panel; also derive the 3D
@@ -2293,7 +2488,14 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
             pass
 
         # -- 5. Assemble snapshot rows
-        _snap_rows = build_hk_core_rows(
+        if _producer_asof is None:
+            _snap_rows = []
+            log.warning(
+                "hk producer: owner session unavailable — Pick Lab snapshot and "
+                "velocity outputs skipped for this pass"
+            )
+        else:
+            _snap_rows = build_hk_core_rows(
             tickers=_tickers,
             asof=_producer_asof,
             close_by=_close_by,
@@ -2321,7 +2523,7 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
                               if isinstance(liquidity_regime, dict) else liquidity_regime,
             vhsi_pctile=vhsi_pct,
             hsi_close=_hsi_close_scalar,
-        )
+            )
         log.info("hk producer: assembled %d snapshot rows (asof=%s)", len(_snap_rows), _producer_asof)
 
         # -- 6. Write snapshot parquet (keep-first; idempotent)

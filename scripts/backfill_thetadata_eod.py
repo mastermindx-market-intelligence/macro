@@ -28,7 +28,7 @@ UNIVERSE
 --------
 engine.options_universe.gex_symbols() UNIONED with ETF_ANCHORS + INDEX_ROOTS.
 ETF anchors: SPY QQQ IWM DIA XLK XLF XLE XLI XLU XLV XLY XLP XLB XLC XLRE SMH SOXX
-             XBI KRE ARKK
+             XBI KRE ARKK GLD SLV TLT HYG
 Index roots: SPX, SPXW  (SPXW confirmed as distinct PM-settled weekly root — measured 2026-07-04)
 
 RESUMABILITY
@@ -94,6 +94,11 @@ import pandas as pd
 # Ensure repo root on path when run as a script
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from engine.thetadata_store import (_unmounted_volume,  # noqa: E402
+                                    drained_store_candidates,
+                                    resolve_thetadata_store,
+                                    unmounted_store_candidates)
+
 log = logging.getLogger("backfill_thetadata_eod")
 
 # ── ETF anchors and index roots ──────────────────────────────────────────────
@@ -101,6 +106,7 @@ ETF_ANCHORS = [
     "SPY", "QQQ", "IWM", "DIA",
     "XLK", "XLF", "XLE", "XLI", "XLU", "XLV", "XLY", "XLP", "XLB", "XLC", "XLRE",
     "SMH", "SOXX", "XBI", "KRE", "ARKK",
+    "GLD", "SLV", "TLT", "HYG",
 ]
 # SPXW confirmed as a distinct root in /v3/option/list/symbols (measured 2026-07-04).
 # Included alongside SPX for full PM-settled weekly + AM-settled coverage.
@@ -198,20 +204,44 @@ def _mark_completed(state: dict, root: str, year: int) -> None:
 
 # ── manifest ─────────────────────────────────────────────────────────────────
 def _write_manifest(state: dict) -> None:
-    """Write per-root summary suitable for audit_r2 and publish_r2 machinery."""
+    """Write per-root summary suitable for audit_r2 and publish_r2 machinery.
+
+    READ-MODIFY-WRITE (AD-1T1 §D): this used to full-REPLACE `_manifest.json`
+    from scratch every call, silently wiping any foreign top-level key. That
+    is now a hazard — `scripts/topup_thetadata_day.py`'s `--daily` mode keeps
+    its own `daily_refresh` health receipt in this SAME file — so a backfill
+    run landing after a daily run would erase that receipt. Every OTHER
+    top-level key (most notably `daily_refresh`) is now carried forward
+    unchanged; only this function's own four keys are regenerated. (F16) An
+    unreadable existing manifest logs ONE warning naming the file and the
+    JSON error, preserves nothing, and still writes the freshly regenerated
+    manifest — fail-open to the old behavior, never raise.
+    """
     completed = state.get("completed", {})
     per_root = {}
     for root, years in completed.items():
         per_root[root] = {"completed_years": sorted(years), "n_years": len(years)}
-    manifest = {
+
+    p = _manifest_path()
+    preserved: dict = {}
+    if p.exists():
+        try:
+            preserved = json.loads(p.read_text())
+        except Exception as e:  # noqa: BLE001 — F16 fail-open
+            log.warning("backfill: unreadable manifest %s (%s: %s) — "
+                       "regenerating fresh, preserving nothing", p,
+                       type(e).__name__, e)
+            preserved = {}
+
+    manifest = dict(preserved)
+    manifest.update({
         "store": "thetadata_eod",
         "n_roots": len(per_root),
         "per_root": per_root,
         "updated_at": pd.Timestamp.now("UTC").isoformat(),
-    }
-    p = _manifest_path()
+    })
     tmp = p.with_suffix(".tmp")
-    tmp.write_text(json.dumps(manifest, indent=2))
+    tmp.write_text(json.dumps(manifest, indent=2, default=str, sort_keys=True))
     os.replace(tmp, p)
 
 
@@ -254,6 +284,8 @@ def _pull_root_year(root: str, year: int, start: date, end: date, *,
     chunk-summary line per root-year per endpoint (rows, elapsed) for backfill log
     readability.
     """
+    from lib.options_source_receipts import dated_greek_request_options
+    greek_options = dated_greek_request_options(root)  # validate before any source call
     from collectors import thetadata as td
 
     log.info("pull_root_year: %s %d (%s → %s)", root, year, start, end)
@@ -316,7 +348,7 @@ def _pull_root_year(root: str, year: int, start: date, end: date, *,
     # avoids a re-backfill when T1 GEX/vanna/charm consumers come online.
     # Columns: delta/theta/vega/rho/epsilon/lambda (1st), gamma/vanna/charm/vomma/veta/vera (2nd),
     #          speed/zomma/color/ultima (3rd), implied_vol, iv_error, underlying_price.
-    greeks = td.bulk_greeks(root, 0, start, end, order=3)
+    greeks = td.bulk_greeks(root, 0, start, end, order=3, **greek_options)
     if greeks is None:
         log.warning("pull_root_year: %s %d — bulk_greeks returned None", root, year)
         return False
@@ -524,6 +556,79 @@ def main() -> int:
         _run_probe()
         return 0
 
+    # Fail before store preparation or the health probe. This does not enable
+    # the opt-in; absent configuration keeps every existing request unchanged.
+    from lib.options_source_receipts import dated_greek_request_options
+    try:
+        dated_greek_request_options("SPY")
+    except ValueError as exc:
+        ap.error(str(exc))
+
+    # AD-1T1 §D/RF3 (R3): this process must lock-and-write the SAME store the
+    # daily incremental lane resolves — the hub-ops-wt hazard is a backfill
+    # accidentally minting a SECOND store the daily lane never sees. Resolve
+    # via the canonical resolver and refuse on disagreement; a fresh install
+    # where NOTHING resolves anywhere is the one exception (permits this
+    # process's own _store_dir() to be the first content).
+    try:
+        resolved = resolve_thetadata_store(
+            required=False, purpose="backfill_thetadata_eod store agreement check")
+    except Exception as e:  # noqa: BLE001 — resolution itself must not crash the check
+        # (K3, Sol B2; repaired K6 MAJOR-1) FAIL CLOSED. The previous
+        # warn-and-proceed minted a potential second store exactly when
+        # canonical resolution was UNCERTAIN (a raise, not a clean "nothing
+        # resolves anywhere" None) — the one case this check exists to catch.
+        # Zero mutations: `own_store = _store_dir()` (which mkdirs) is not
+        # computed until AFTER this except branch returns, so a resolver
+        # raise touches no store path — not `own_store`, not any
+        # state/manifest/parquet. A clean `None` return REMAINS the explicit
+        # fresh-install exception (proceed with `_store_dir()`) — only a
+        # RAISE fails closed.
+        log.error("backfill: store-agreement resolver raised %s: %s — "
+                 "refusing to proceed while canonical resolution is uncertain "
+                 "(no mutation)", type(e).__name__, e)
+        return 1
+    if resolved is None:
+        # Unmounted volume is not a fresh install. Check before _store_dir(),
+        # which mkdirs — minting that directory would be the second store.
+        unmounted = unmounted_store_candidates()
+        if unmounted:
+            vols: list[str] = []
+            for candidate in unmounted:
+                try:
+                    vol = _unmounted_volume(candidate)
+                except OSError:
+                    vol = None
+                vols.append(str(vol if vol is not None else candidate))
+            log.error(
+                "backfill: the store's volume is unmounted and no second "
+                "store may be minted (unmounted volume path(s): %s).",
+                ", ".join(vols))
+            return 1
+    own_store = _store_dir()
+    if resolved is None:
+        # AD-1T2b: `None` stopped meaning "no store anywhere". A DRAINED canonical
+        # store (tier dirs present, zero roots) no longer resolves, so the
+        # fresh-install exception below would let this process mint a SECOND store
+        # beside it — the exact hazard this block exists to prevent, now reachable
+        # through the path that used to be safe. A drained store is a store.
+        elsewhere = [d for d in drained_store_candidates()
+                     if Path(d).resolve() != Path(own_store).resolve()]
+        if elsewhere:
+            log.error("backfill: nothing RESOLVES, but a DRAINED store exists at "
+                      "%s, which disagrees with this process's own store %s — "
+                      "refusing to mint a second T1 store. That store is drained, "
+                      "not absent: point THETADATA_STORE / lib.config.data_dir() "
+                      "at it and re-run to refill it in place.",
+                      ", ".join(str(d) for d in elsewhere), own_store)
+            return 1
+    if resolved is not None and Path(resolved).resolve() != Path(own_store).resolve():
+        log.error("backfill: resolve_thetadata_store() resolved %s, which "
+                 "DISAGREES with this process's own store %s — refusing to "
+                 "mint a second T1 store. Fix THETADATA_STORE / lib.config."
+                 "data_dir() so both agree before re-running.", resolved, own_store)
+        return 1
+
     from collectors import thetadata as td
 
     if not args.dry_run and not td.reachable():
@@ -574,23 +679,48 @@ def main() -> int:
         print(f"Pending: {len(plan)} root-year(s)")
         return 0
 
-    log.info("Backfill: %d root-year chunks pending (%d already done)",
-             len(plan), sum(len(v) for v in state.get("completed", {}).values()))
+    # AD-1T1 §B: acquire the crash-safe advisory writer lock BEFORE the first
+    # parquet mutation. A refusal mutates NOTHING (not the state file, not the
+    # manifest) — the daily incremental mode or a concurrent backfill may be
+    # holding the store right now.
+    from scripts.topup_thetadata_day import _emit_writer_locked, _writer_lock
 
-    n_ok = n_fail = 0
-    for root, yr, cs, ce in plan:
-        ok = _pull_root_year(root, yr, cs, ce)
-        if ok:
-            _mark_completed(state, root, yr)
-            _save_state(state)
-            _write_manifest(state)
-            n_ok += 1
-        else:
-            n_fail += 1
-        time.sleep(0.1)   # polite pause between root-year pulls
+    try:
+        lock_acquired = _writer_lock(own_store)
+        acquired = lock_acquired.__enter__()
+    except OSError as e:
+        # (HARDENING, R3) read-only store / ENOSPC opening the lock file —
+        # a clean logged failure, never a bare traceback.
+        log.error("backfill: cannot open writer lock at %s (%s: %s) — store "
+                 "may be read-only or full", own_store / "_writer.lock",
+                 type(e).__name__, e)
+        return 1
 
-    log.info("Backfill complete: %d succeeded, %d failed", n_ok, n_fail)
-    return 0 if n_fail == 0 else 1
+    try:
+        if not acquired:
+            _emit_writer_locked("backfill")
+            log.warning("backfill: writer lock held by another process — refusing")
+            return 1
+
+        log.info("Backfill: %d root-year chunks pending (%d already done)",
+                 len(plan), sum(len(v) for v in state.get("completed", {}).values()))
+
+        n_ok = n_fail = 0
+        for root, yr, cs, ce in plan:
+            ok = _pull_root_year(root, yr, cs, ce)
+            if ok:
+                _mark_completed(state, root, yr)
+                _save_state(state)
+                _write_manifest(state)
+                n_ok += 1
+            else:
+                n_fail += 1
+            time.sleep(0.1)   # polite pause between root-year pulls
+
+        log.info("Backfill complete: %d succeeded, %d failed", n_ok, n_fail)
+        return 0 if n_fail == 0 else 1
+    finally:
+        lock_acquired.__exit__(None, None, None)
 
 
 if __name__ == "__main__":

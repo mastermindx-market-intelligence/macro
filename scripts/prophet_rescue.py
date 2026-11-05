@@ -10,9 +10,12 @@ DIVISION OF LABOUR (read this before adding anything here).
   scripts/prophet_rescue.py (this)   RESPONDS.  It re-arms the nightly within bounds,
       opens/updates one public issue per stranded session with a receipt per wake,
       pushes to the ops channel, and additionally covers two failure shapes the
-      detector does not model: a SERVE SPLIT (main fresh, the public R2 mirror or the
-      VPS pull loop stale) and the ZERO-ORIGINATION WEDGE (source_asof fresh, plans
-      for the expected session absent while intake says candidates were eligible).
+      detector does not model: a PUBLISH LAG (main fresh, the public R2 health
+      receipt or the VPS pull loop stale — DEC:B1-PROPHET-PUBLIC-SPLIT: users are
+      served by the protected origin, never by the R2 receipt, so a lagging receipt
+      is a publish-leg defect, not a user-visible split) and the ZERO-ORIGINATION
+      WEDGE (source_asof fresh, plans for the expected session absent while intake
+      says candidates were eligible).
 
 The overlap in staleness arithmetic between the two is DELIBERATE.  A responder that
 imports its detector shares its fate; on 2026-08-11 the thing that broke was a single
@@ -40,7 +43,19 @@ socket — ``state.now`` is injected — so every behavioural gate below is pinn
 unit test in tests/test_prophet_rescue.py rather than by prose.
 
 SAFETY INVARIANTS (masterplan §0.4; each one mutation-pinned by a named test).
-  a. NEVER dispatch while a daily.yml run is queued / in_progress / waiting.
+  a. NEVER dispatch while a daily.yml run is queued / in_progress / waiting —
+     UNLESS that run is provably WEDGED (2026-08-17 amendment, ``wedged_run``):
+     old enough that no healthy bake explains it AND its jobs read shows zero
+     jobs in progress with every live job queued beyond any plausible runner
+     wait.  The 08-16/17 outage is why: collect_tail sat queued on a runs-on
+     label carried by NO live runner, GitHub holds such a run 'alive' ~24h until
+     its queued-job kill, and this invariant read the hostage as a live bake and
+     refused to dispatch for two days while every Prophet board froze.  The
+     wedge verdict is FAIL-CLOSED: an unreadable jobs list, an unparseable
+     created_at, a fresh run, or any single in-progress job keeps the full
+     refusal.  A wrong WEDGED call costs at worst a budgeted double-bake —
+     the failure mode daily.yml's own concurrency comment declares acceptable
+     ("a double-run, never a zero-run"); a wrong ALIVE call cost four days.
   b. NEVER exceed the auto-dispatch budget: 2 workflow_dispatch daily.yml runs since
      21:00Z today, counted across ALL actors (a human recovering by hand consumes it).
   c. NEVER cancel anything.  There is no cancel code path in this file and
@@ -57,8 +72,12 @@ so it spends the fleet's SHARED 5,000/hr account bucket — the one `ship_loop_g
 fails closed without — which is why the host lane wakes twice a day rather than
 hourly.  Either way: a healthy wake spends exactly THREE GitHub reads (index
 contents, run list, dispatch-budget probe) plus two non-GitHub GETs (R2, VPS).  An
-ALARM wake spends two more reads (the issue thread, for the attempt ledger and the
-duplicate-alert check) plus its writes.  No pagination, ever.
+ALARM wake spends three more reads (R5, corrected 2026-08-27 — this paragraph had
+drifted from the function docstring it is meant to summarize): the open-issue list
+and this session's own comment thread, for the attempt ledger and the
+duplicate-alert check, plus the preceding session's own comment thread for the
+[DAY N] chain (``fetch_issue_thread`` / ``ANCHOR_CHAIN_MAX_SESSIONS``) — plus its
+writes.  No pagination, ever.
 
 EXIT CODE.  0 when nothing was done and nothing is owed (HEALTHY / WAIT).  Nonzero
 when this lane ALERTED or DISPATCHED, so a red run is itself the signal.
@@ -68,6 +87,7 @@ Run:  python3 scripts/prophet_rescue.py [--lane actions|launchd] [--dry-run] [--
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -90,7 +110,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 # otherwise resolve against whatever else is on the path.
 sys.path.insert(0, str(REPO_ROOT))
 
-from lib.nyse_calendar import expected_last_session, sessions_behind  # noqa: E402
+from lib.nyse_calendar import (  # noqa: E402
+    expected_last_session,
+    session_n_back,
+    sessions_behind,
+)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # constants
@@ -109,14 +133,17 @@ DEFAULT_REPO = (
     os.environ.get("GITHUB_REPOSITORY") or "mastermindx-market-intelligence/macro"
 )
 
-#: The public R2 data plane — ``config.yml: r2_data_plane.public_base``, hardcoded
-#: because this module is stdlib-only by contract (importing lib.config would drag
-#: in PyYAML and the whole engine tree, defeating the independence this lane exists
-#: for).  Mirrors the base charting-app ``lib/flowSource.ts`` and
-#: templates/data_base.js read from, i.e. the bytes a logged-in browser actually
-#: paints Prophet from.  scripts/build_prophet_marks.py:91 reads the same URL.
-R2_INDEX_URL = (
-    "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/prophet/index.json"
+#: The public R2 health receipt — ``config.yml: r2_data_plane.public_base``,
+#: hardcoded because this module is stdlib-only by contract (importing lib.config
+#: would drag in PyYAML and the whole engine tree, defeating the independence this
+#: lane exists for).  DEC:B1-PROPHET-PUBLIC-SPLIT: this is NOT the plan book and
+#: NOT what a logged-in browser paints Prophet from — the full book is
+#: premium/private and is served only by the protected origin / authenticated
+#: server-side paths.  This receipt carries only publication metadata
+#: (source_asof, published_at, checkpoint, index_sha256): a public proof that the
+#: nightly's health-publish leg completed, nothing decision-bearing.
+R2_HEALTH_URL = (
+    "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/prophet/health.json"
 )
 
 #: The VPS's own read-only health view (app/main.py:559).  ``checks.site.commit_time``
@@ -162,6 +189,19 @@ STRAND_AFTER = timedelta(hours=3, minutes=40)
 STALE_AFTER = timedelta(hours=11, minutes=40)
 DISPATCH_FLOOR = timedelta(hours=15, minutes=40)
 
+#: Wedge classification floors (§0.4a amendment, 2026-08-17).  A run must be at
+#: least this old before a wedge verdict is even considered — the serial band
+#: from fire to collect's first commit is ~3h, and a busy macstudio pool can
+#: legitimately hold a queued job ~1h, so 6h clears every healthy shape seen in
+#: the timings ledger.  And every still-live job inside it must have been queued
+#: at least WEDGED_JOB_QUEUE_MIN — the 08-16/17 hostage's collect_tail was
+#: queued 17h+ (label with no runner), while ordinary contention (the 13F census
+#: backlog) resolved in ~1h.  Both floors are deliberately far above normal: the
+#: cost of a missed wedge is one more quiet wake, the cost of a false wedge is a
+#: budgeted double-bake.
+WEDGED_RUN_MIN_AGE = timedelta(hours=6)
+WEDGED_JOB_QUEUE_MIN = timedelta(hours=3)
+
 #: Auto-dispatch budget, counted over ALL actors since 21:00Z today.  Two, because
 #: one re-arm covers a dropped cron and a second covers a re-arm that itself died;
 #: a third means the failure is not a scheduling failure and a robot must stop
@@ -198,6 +238,36 @@ ISSUE_TITLE_PREFIX = "Prophet US staleness"
 #: budget a real bound.  `spent = max(runs, receipts)`.
 DISPATCH_RECEIPT_TOKEN = "DISPATCH-RECEIPT"
 VERDICT_TOKEN = "RESCUE-VERDICTS"
+#: The [DAY N] title-escalation ladder's anchor token. Carries an ANCHOR DATE —
+#: the first UTC date this breach class was seen — never a counter.  A counter
+#: kept only inside one issue thread would never exceed 1 on an ordinary
+#: multi-day outage: expected_fire_after() is purely calendar-driven, so a
+#: 5-day outage mints a NEW issue per stranded session date and a thread-local
+#: counter never sees its own history.  An anchor DATE, re-derived every wake
+#: from whichever receipt (this thread's own, or the IMMEDIATELY PRECEDING
+#: NYSE session's thread — see ``fetch_issue_thread``) first recorded the
+#: class, is IDEMPOTENT across any number of re-reads and survives the
+#: one-issue-per-session split; a counter
+#: is not idempotent and would drift on every wake that re-reads it.
+OUTAGE_DAY_TOKEN = "OUTAGE-DAY"
+
+#: R1+R2 CHAIN TOLERANCE (2026-08-27 review round 2). The chain used to look
+#: only at ``session_n_back(session, 1)`` — the SINGLE immediately preceding
+#: session — and reset to day 1 the moment that one link was missing. Two real
+#: inputs are NOT healed nights and must not snap the chain: (a) the watchdog
+#: lane itself misses a night (its own docstring above records daily.yml's cron
+#: silently never firing — watchdog outages correlate with the outages they
+#: watch) or the wake was ``--dry-run`` or its alarm never went loud, so no
+#: issue was ever filed for that session; (b) an operator closes yesterday's
+#: now-duplicate issue as superseded mid-outage — the most natural triage act
+#: there is, and NOT the "declared-resolved" reset this ladder intends. ``2`` is
+#: the number, not merely a round one: it absorbs exactly ONE missing link
+#: while still refusing BOTH shapes the previous round fixed — an orphan issue
+#: is many sessions back, and a Monday+Friday pair is FOUR sessions apart (from
+#: Friday: Thu=1, Wed=2, Tue=3, Mon=4), so neither is reachable at k<=2. That
+#: bound is what makes bridging one gap safe without resurrecting either killed
+#: shape.
+ANCHOR_CHAIN_MAX_SESSIONS = 2
 
 #: Newest daily.yml runs to read.  20 is ~3 days of a lane that runs 1-6 times a
 #: day; the dispatch-budget question is answered by its own server-filtered probe
@@ -212,7 +282,7 @@ WAIT = "WAIT"
 STRAND = "STRAND"
 STALE = "STALE"
 NO_COHORT = "NO_COHORT"
-SERVE_SPLIT_R2 = "SERVE_SPLIT_R2"
+R2_HEALTH_LAG = "R2_HEALTH_LAG"
 # There is deliberately no SERVE_SPLIT_VPS: see VPS_COMMIT_CONTEXT_ONLY above.
 API_DARK = "API_DARK"
 DISK_LOW = "DISK_LOW"          # launchd lane only
@@ -256,12 +326,18 @@ class WatchdogState:
     now: datetime
     main_index: dict | None = None
     main_error: str | None = None
-    r2_index: dict | None = None
-    r2_error: str | None = None
+    r2_health: dict | None = None
+    r2_health_error: str | None = None
     vps_status: dict | None = None
     vps_error: str | None = None
     runs: list[dict] | None = None
     runs_error: str | None = None
+    #: Jobs of the newest non-completed run, fetched ONLY on the alarm path when
+    #: pass one was blocked by ``run_in_flight`` (same two-pass economy as the
+    #: issue thread) — the wedge-classification input (§0.4a amendment).
+    #: None = not fetched or unreadable — fail-closed toward the full refusal.
+    in_flight_jobs: list[dict] | None = None
+    in_flight_jobs_error: str | None = None
     dispatch_runs_today: int | None = None
     dispatch_probe_error: str | None = None
     #: Read back from the session's issue thread on the ALARM path only (see
@@ -273,6 +349,15 @@ class WatchdogState:
     issue_error: str | None = None
     dispatch_receipts_today: int | None = None
     last_receipt_verdicts: tuple[str, ...] | None = None
+    #: The session issue's CURRENT title (read back on the ALARM path).  Lets
+    #: the [DAY N] escalation ladder PATCH the title only on a real change
+    #: instead of rewriting it every wake.
+    issue_title: str | None = None
+    #: Earliest anchor date per breach class (see ``outage_anchors``), merged
+    #: from this session's own thread AND the immediately PRECEDING NYSE
+    #: session's thread only (``lib.nyse_calendar.session_n_back``) — set on
+    #: the ALARM path only.
+    outage_anchors: dict[tuple[str, ...], date] | None = None
     lane: str = "actions"
     disk_free_gb: float | None = None
 
@@ -297,6 +382,28 @@ def _parse_date(value: object) -> date | None:
     try:
         return date.fromisoformat(value[:10])
     except ValueError:
+        return None
+
+
+def _reserialized_index_sha256(index: dict) -> str | None:
+    """Best-effort sha256 of ``index`` reserialized the same way
+    ``scripts/build_prophet.py::_write_json`` writes it (``indent=2,
+    allow_nan=False, default=str``, no trailing newline).
+
+    NOT a byte-exact substitute for hashing the committed file directly — this
+    lane only ever holds ``main_index`` as an already-parsed dict (fetched
+    through the GitHub contents API), never the raw bytes the nightly hashed.
+    Reserializing with the writer's own parameters reproduces those bytes
+    whenever nothing downstream re-serialized the object differently, which is
+    the common case; a mismatch is therefore a signal worth printing, never an
+    authoritative "the objects differ" claim.  Used only for the receipt's
+    informational health-hash detail (never a verdict) — see ``receipt()``.
+    """
+    try:
+        return hashlib.sha256(
+            json.dumps(index, allow_nan=False, default=str, indent=2).encode("utf-8")
+        ).hexdigest()
+    except (TypeError, ValueError):
         return None
 
 
@@ -420,6 +527,56 @@ def run_facts(runs: list[dict] | None, boundary: datetime,
                     tuple(anomalies), tuple(gate_skips))
 
 
+def wedged_run(in_flight: dict | None, jobs: list[dict] | None,
+               now: datetime) -> str | None:
+    """Evidence sentence when the in-flight run is provably WEDGED, else None.
+
+    §0.4a amendment (2026-08-17).  The 08-16/17 outage: collect_tail queued on a
+    runs-on label carried by NO live runner held run 31977372592 'alive' ~24h
+    (GitHub only kills a queued job after 24h), its per-cron concurrency group
+    pended the next night's slot behind it, and this lane's unamended §0.4a read
+    the hostage as a live bake — refusing to dispatch for two days while every
+    Prophet board froze.
+
+    FAIL-CLOSED at every input: no run, no jobs read, an unparseable run or job
+    timestamp, a run younger than WEDGED_RUN_MIN_AGE, ANY job in progress, or
+    any live job inside the WEDGED_JOB_QUEUE_MIN floor -> None (full §0.4a
+    refusal stands).  A wrong WEDGED call costs at worst a budgeted double-bake
+    — daily.yml's own declared-acceptable failure mode ("a double-run, never a
+    zero-run"); a wrong ALIVE call cost four days of frozen boards.
+    """
+    if in_flight is None or jobs is None:
+        return None
+    created = _parse_dt(in_flight.get("created_at"))
+    if created is None:
+        return None
+    age = now - created
+    if age < WEDGED_RUN_MIN_AGE:
+        return None
+    hours = age.total_seconds() / 3600
+    live = [j for j in jobs if isinstance(j, dict) and j.get("status") != "completed"]
+    if any(j.get("status") == "in_progress" for j in live):
+        return None
+    if not live:
+        # Also covers an EMPTY jobs list: total_count 0 after hours alive is the
+        # #5362 jobless-queued shape (created during a strand, will never start).
+        return (f"alive {hours:.1f}h with zero live jobs — the #5362 "
+                "jobless-queued shape, or a run stuck concluding")
+    stuck: list[str] = []
+    for job in live:
+        queued_at = _parse_dt(job.get("started_at")) or _parse_dt(job.get("created_at"))
+        if queued_at is None:
+            return None
+        wait = now - queued_at
+        if wait < WEDGED_JOB_QUEUE_MIN:
+            return None
+        stuck.append(f"{job.get('name')} queued {wait.total_seconds() / 3600:.1f}h")
+    return (f"alive {hours:.1f}h with zero jobs in progress and every live job "
+            f"past the {WEDGED_JOB_QUEUE_MIN.total_seconds() / 3600:.0f}h queue "
+            f"floor [{'; '.join(stuck)}] — the 2026-08-16/17 hostage shape "
+            "(check the job's runs-on label against the live runner pool)")
+
+
 def budget_window_start(now: datetime) -> datetime:
     """21:00Z of the night ``now`` belongs to — the auto-dispatch budget window.
 
@@ -460,8 +617,91 @@ def latest_verdicts(texts) -> tuple[str, ...] | None:
     return found
 
 
+def breach_class(actions: list[Action]) -> tuple[str, ...]:
+    """The set of LOUD verdicts this wake produced, as a stable sorted key.
+
+    Both the duplicate-suppression comparison (``should_file_receipt``) and the
+    receipt's own ``VERDICT_TOKEN`` line compute this same thing — refactored to
+    one function so the breach class can never be computed two different ways
+    and quietly drift apart.  It is also the key the [DAY N] escalation ladder
+    anchors on: a STRAND that later becomes STALE is a DIFFERENT class and
+    correctly resets to day 1 (see ``outage_anchors``).
+    """
+    return tuple(sorted({a.verdict for a in actions if a.loud}))
+
+
+_DAY_PREFIX_RE = re.compile(r"^\[DAY\s+\d+\]\s*")
+
+
+def strip_day_prefix(title: str) -> str:
+    """Remove a leading ``[DAY <int>] `` escalation marker, if present.
+
+    Anchored at the start of the string on purpose — the marker is something
+    THIS lane writes onto the front of its own titles, never something that
+    could legitimately appear mid-title, so anchoring rules out a false strip
+    on unrelated bracketed text elsewhere.
+    """
+    return _DAY_PREFIX_RE.sub("", title, count=1)
+
+
+def outage_anchors(texts) -> dict[tuple[str, ...], date]:
+    """Earliest-seen anchor date per breach class, mined from receipt bodies.
+
+    ``texts`` is one receipt per entry, oldest-first (the GitHub issue-comment
+    order).  Within a single text, the LAST ``RESCUE-VERDICTS`` blob and the
+    LAST ``OUTAGE-DAY`` date are what that receipt asserted; if both parse and
+    the class is non-empty and not ``("NONE",)`` it is recorded.  Across texts
+    the EARLIEST anchor per class wins — the class's clock started the day it
+    was FIRST seen, not the day of the newest receipt that happens to mention
+    it.  Unparseable or missing tokens are skipped, never an exception: a
+    malformed receipt must not crash the ladder, it just fails to anchor.
+    """
+    verdict_re = re.compile(rf"{VERDICT_TOKEN}\s+([A-Z0-9_,]+)")
+    day_re = re.compile(rf"{OUTAGE_DAY_TOKEN}\s+(\d{{4}}-\d{{2}}-\d{{2}})")
+    earliest: dict[tuple[str, ...], date] = {}
+    for text in texts:
+        if not isinstance(text, str):
+            continue
+        verdict_matches = verdict_re.findall(text)
+        day_matches = day_re.findall(text)
+        if not verdict_matches or not day_matches:
+            continue
+        klass = tuple(sorted(v for v in verdict_matches[-1].split(",") if v))
+        anchor = _parse_date(day_matches[-1])
+        if not klass or klass == ("NONE",) or anchor is None:
+            continue
+        prior = earliest.get(klass)
+        if prior is None or anchor < prior:
+            earliest[klass] = anchor
+    return earliest
+
+
+def outage_day(anchor: date | None, today: date) -> int:
+    """1-indexed day count since ``anchor``, floored at 1.
+
+    ``None`` (no anchor ever recorded — the class is new this wake) counts as
+    day 1.  Floored, never merely computed: a future anchor (clock skew, or a
+    bootstrap fallback reading an oddly-stamped ``created_at``) must never
+    print ``[DAY 0]`` or a negative day.
+    """
+    if anchor is None:
+        return 1
+    return max(1, (today - anchor).days + 1)
+
+
+def escalated_title(session: date, day: int) -> str:
+    """The issue title for ``session``, escalated with ``[DAY N] `` at day>=2.
+
+    Day 1 is unprefixed — identical to the title this lane has always used —
+    so an ordinary same-day outage looks exactly as it always has.
+    """
+    base = issue_title(session)
+    return base if day < 2 else f"[DAY {day}] {base}"
+
+
 def should_file_receipt(actions: list[Action],
-                        last_verdicts: tuple[str, ...] | None) -> bool:
+                        last_verdicts: tuple[str, ...] | None, *,
+                        day_advanced: bool = False) -> bool:
     """Whether this wake earns a new issue comment and an ops push.
 
     A dispatch ALWAYS earns one — it is an action taken, and an unreceipted action
@@ -470,10 +710,25 @@ def should_file_receipt(actions: list[Action],
     identical comments and fourteen pushes, which is how a channel gets muted right
     before the night it matters.  The RED RUN still fires every wake — the heartbeat
     is the exit code, not the comment.
+
+    R3 (2026-08-27 review round 2): ``day_advanced`` also earns one. On a
+    weekend/holiday ``expected_last_session`` does not move, the same issue is
+    reused, and — with the verdict set unchanged from the last wake — this
+    predicate used to suppress every wake of a multi-day outage. The [DAY N]
+    title escalation is the ONLY visible signal such an outage was still alive,
+    and it lives on an artifact (the issue title) nobody re-reads once a
+    channel has muted the thread. This is deliberately ONE extra comment+push
+    PER DAY, not per wake, and cannot reintroduce the fourteen-identical-
+    comments problem the rest of this function exists to prevent: the caller
+    computes ``day_advanced`` from the exact same condition that gates the
+    title PATCH, so it flips true only when the integer the title prints
+    actually changes, which happens once per calendar day at most.
     """
     if any(a.kind == DISPATCH for a in actions):
         return True
-    current = tuple(sorted({a.verdict for a in actions if a.loud}))
+    if day_advanced:
+        return True
+    current = breach_class(actions)
     if last_verdicts is None:
         return True
     return current != tuple(sorted(last_verdicts))
@@ -493,13 +748,13 @@ def expected_fire_after(now: datetime) -> tuple[date, datetime]:
 
 
 def cohort_size(index: dict | None, session: date) -> int | None:
-    """How many plans in ``index`` were recorded for ``session``.
+    """How many plans in ``index`` belong to the market ``session``.
 
-    Per-plan ``recorded_at`` is the honest cohort stamp.  Top-level ``asof`` /
-    ``recorded_at`` are the publication clock — ``date.today()`` at bake time — and
-    scripts/build_prophet.py:2100 says so in a comment: "a successful rerun can
-    refresh this publication stamp while its input freezes".  Reading them here is
-    how every previous sensor scored a frozen board green.
+    ``recorded_at`` is the honest publication/origination wall clock, including on
+    delayed weekend catch-ups.  The market-session identity is ``price_basis_date``
+    (or ``entry_date`` on older plans).  Legacy rows that predate both fields fall
+    back to per-plan ``recorded_at``.  Top-level ``asof`` / ``recorded_at`` remain
+    publication clocks and are never cohort evidence.
     """
     if not isinstance(index, dict):
         return None
@@ -507,9 +762,18 @@ def cohort_size(index: dict | None, session: date) -> int | None:
     if not isinstance(plans, list):
         return None
     wanted = session.isoformat()
+
+    def _session_stamp(plan: dict) -> str:
+        return str(
+            plan.get("price_basis_date")
+            or plan.get("entry_date")
+            or plan.get("recorded_at")
+            or ""
+        )[:10]
+
     return sum(
         1 for p in plans
-        if isinstance(p, dict) and str(p.get("recorded_at") or "")[:10] == wanted
+        if isinstance(p, dict) and _session_stamp(p) == wanted
     )
 
 
@@ -529,11 +793,52 @@ def intake_eligible(index: dict | None) -> int | None:
     return value if isinstance(value, int) and not isinstance(value, bool) else None
 
 
+def intake_identity_breach(intake: object) -> str | None:
+    """Breach reason(s) from ``index["intake"]``, or None when healthy/absent.
+
+    PR-1 (Prophet US permanence net, 2026-08-27). DELIBERATELY DUPLICATED in
+    scripts/freshness_sentinel.py, scripts/check_nightly_liveness.py, and
+    scripts/prophet_board_acceptance.py rather than imported from one shared
+    module — this permanence net's whole point is a SECOND, INDEPENDENT
+    failure domain per instrument, and a bug in one shared copy of this
+    ~10-line predicate would blind all four watchdogs identically. Keep the
+    four copies in semantic lockstep by hand.
+
+    An entirely absent/non-dict ``intake`` ABSTAINS (returns None): this
+    predicate is also exercised against tests/test_prophet_rescue.py fixtures
+    that predate the field and exist to test unrelated decide() behavior.
+    """
+    if not isinstance(intake, dict):
+        return None
+    reasons: list[str] = []
+    if "lossless" in intake and intake.get("lossless") is not True:
+        reasons.append(f"intake.lossless={intake.get('lossless')!r} (must be true)")
+    unaccounted = intake.get("unaccounted")
+    if (
+        isinstance(unaccounted, int)
+        and not isinstance(unaccounted, bool)
+        and unaccounted != 0
+    ):
+        reasons.append(f"intake.unaccounted={unaccounted} (must be 0)")
+    eligible = intake.get("eligible_after_skips")
+    originated = intake.get("originated")
+    if (
+        isinstance(eligible, int) and not isinstance(eligible, bool) and eligible > 0
+        and isinstance(originated, int) and not isinstance(originated, bool)
+        and originated == 0
+    ):
+        reasons.append(
+            f"intake.eligible_after_skips={eligible} but intake.originated=0"
+        )
+    return "; ".join(reasons) if reasons else None
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # the pure decision core
 # ─────────────────────────────────────────────────────────────────────────────
 def _dispatch_blockers(state: WatchdogState, in_flight: dict | None,
-                       dispatch_deadline: datetime) -> list[tuple[str, str]]:
+                       dispatch_deadline: datetime,
+                       wedge: str | None = None) -> list[tuple[str, str]]:
     """Every §0.4 reason a re-arm must not happen, as (code, human sentence) pairs.
 
     ALL FOUR INVARIANTS LIVE HERE AND NOWHERE ELSE.  That is deliberate: a guard
@@ -556,8 +861,11 @@ def _dispatch_blockers(state: WatchdogState, in_flight: dict | None,
 
     # (a) a live run owns the night.  The 2026-08-12 kill spree is the counterexample
     # this exists for: piling dispatches onto a lane that is already working is how a
-    # 3-hour bake gets restarted from zero.
-    if in_flight is not None:
+    # 3-hour bake gets restarted from zero.  ``wedge`` is the §0.4a amendment
+    # (2026-08-17): a PROVEN wedge (see ``wedged_run`` — fail-closed, jobs-API
+    # evidence required) is not a live bake, so it does not own the night; the
+    # 08-16/17 hostage held this blocker for two days while the boards froze.
+    if in_flight is not None and wedge is None:
         blockers.append((
             "run_in_flight",
             f"{WORKFLOW_FILE} run {in_flight.get('id')} is "
@@ -677,13 +985,23 @@ def decide(state: WatchdogState) -> list[Action]:
         )
 
     if wants is not None:
-        blockers = _dispatch_blockers(state, in_flight, dispatch_deadline)
+        wedge = wedged_run(in_flight, state.in_flight_jobs, now)
+        blockers = _dispatch_blockers(state, in_flight, dispatch_deadline,
+                                      wedge=wedge)
         if not blockers:
+            wedge_note = ""
+            if wedge is not None and in_flight is not None:
+                wedge_note = (
+                    f" Run {facts.in_flight_id} is classified WEDGED ({wedge}); "
+                    "dispatching THROUGH it per the §0.4a amendment — it is not "
+                    "stopped (never) and concludes on GitHub's own queued-job "
+                    "kill."
+                )
             actions.append(Action(
                 DISPATCH, wants,
                 f"{why} Re-arming {WORKFLOW_FILE} on main (auto-dispatch "
                 f"{(state.dispatch_runs_today or 0) + 1}/{AUTO_DISPATCH_BUDGET} "
-                "since 21:00Z).",
+                f"since 21:00Z).{wedge_note}",
             ))
         elif any(code == "run_in_flight" for code, _ in blockers):
             # A live run is DOMINANT over every other blocker — it answers the
@@ -740,27 +1058,55 @@ def decide(state: WatchdogState) -> list[Action]:
     # nothing: the refusal is in the selection code or in the vintage gate. This is
     # 2026-08-13's shape — publish green, asof advanced, `source_mixed_vintage: true`,
     # `gate_go: false`, zero plans originated.
-    if data_current and cohort == 0 and (eligible or 0) > 0:
+    #
+    # PR-1 (Prophet US permanence net, 2026-08-27) EXTENDS this same NO_COHORT
+    # verdict — deliberately not a new verdict name — with the intake-identity
+    # predicate: a store can be `data_current` with a non-empty cohort and STILL
+    # be lying about its own bookkeeping (lossless=false, unaccounted>0, or the
+    # eligible-but-zero-originated shape counted a different way than the raw
+    # cohort/eligible comparison above catches, e.g. when `cohort` itself is
+    # miscounted). The `data_current` precondition is unchanged.
+    intake_breach = intake_identity_breach(
+        state.main_index.get("intake") if isinstance(state.main_index, dict) else None
+    )
+    empty_cohort = cohort == 0 and (eligible or 0) > 0
+    if data_current and (empty_cohort or intake_breach):
+        reasons: list[str] = []
+        if empty_cohort:
+            reasons.append(
+                f"ZERO plans belong to market session {session.isoformat()} while intake "
+                f"reports eligible_after_skips={eligible}"
+            )
+        if intake_breach:
+            reasons.append(f"intake identity check failed: {intake_breach}")
         actions.append(Action(
             ALERT, NO_COHORT,
-            f"source_asof is current ({src.isoformat() if src else '?'}) but ZERO "
-            f"plans carry recorded_at={session.isoformat()} while intake reports "
-            f"eligible_after_skips={eligible}. The store advanced and origination "
-            "still produced nothing — a selection/vintage-gate wedge, not a missing "
-            "bake. A re-dispatch cannot fix code, so this alerts only. Read "
-            "`source_mixed_vintage` and `gate_go` in the index.",
+            f"source_asof is current ({src.isoformat() if src else '?'}) but "
+            + "; and ".join(reasons)
+            + ". The store advanced and origination still produced nothing or lied "
+            "about its own bookkeeping — a selection/vintage-gate wedge or a "
+            "bookkeeping defect, not a missing bake. A re-dispatch cannot fix "
+            "either, so this alerts only. Read `source_mixed_vintage` and "
+            "`gate_go` in the index.",
         ))
 
-    # ── serve split: main is the truth, the edges are what users read ───────
+    # ── publish lag: main is the truth, the health receipt only proves publication ──
+    # DEC:B1-PROPHET-PUBLIC-SPLIT: the public R2 object is a health receipt, never
+    # the plan book — users are served by the protected origin regardless of what
+    # this receipt reads, so a lagging receipt is a publish-leg defect (the
+    # nightly's R2 health-publish step did not complete), not a user-visible split.
     if state.main_index is not None and src is not None:
-        r2_src = _parse_date(state.r2_index.get("source_asof")) if state.r2_index else None
-        if r2_src is not None and r2_src < src:
+        health_src = (
+            _parse_date(state.r2_health.get("source_asof")) if state.r2_health else None
+        )
+        if health_src is not None and health_src < src:
             actions.append(Action(
-                ALERT, SERVE_SPLIT_R2,
-                f"SERVE SPLIT: main source_asof {src.isoformat()} but the public R2 "
-                f"mirror reads {r2_src.isoformat()} ({R2_INDEX_URL}). The browser "
-                "paints from R2, so users are on the older board. Check the publish "
-                "leg of the last render and the R2 sync.",
+                ALERT, R2_HEALTH_LAG,
+                f"PUBLISH LAG: main source_asof {src.isoformat()} but the public "
+                f"health receipt reads {health_src.isoformat()} ({R2_HEALTH_URL}). "
+                "Users are served by the protected origin, not by this receipt; a "
+                "lagging receipt means the nightly's R2 health-publish leg did not "
+                "complete — check daily.yml's Prophet health publisher step.",
             ))
 
     # The VPS's `checks.site.commit_time` is CONTEXT, never a verdict — it stamps
@@ -790,7 +1136,8 @@ def decide(state: WatchdogState) -> list[Action]:
             NOTICE, HEALTHY if data_current else WAIT,
             f"session {session.isoformat()}: source_asof "
             f"{src.isoformat() if src else '?'}, {cohort if cohort is not None else '?'} "
-            f"plans recorded for it, {len(recent)} {WORKFLOW_FILE} run(s) since "
+            f"plans assigned to that market session, {len(recent)} "
+            f"{WORKFLOW_FILE} run(s) since "
             f"{boundary.isoformat()}"
             + (f"; run {facts.in_flight_id} is {in_flight.get('status')}, "
                "still within the deadline ladder." if in_flight is not None
@@ -855,8 +1202,10 @@ def fetch_main_index(repo: str, token: str | None) -> tuple[dict | None, str | N
     return (payload, None) if isinstance(payload, dict) else (None, "not a JSON object")
 
 
-def fetch_r2_index() -> tuple[dict | None, str | None]:
-    payload, err = _get_json(R2_INDEX_URL)
+def fetch_r2_health() -> tuple[dict | None, str | None]:
+    """The public prophet.public_health/v1 receipt — publication metadata only,
+    never the plan book (DEC:B1-PROPHET-PUBLIC-SPLIT)."""
+    payload, err = _get_json(R2_HEALTH_URL)
     if err is not None:
         return None, err
     return (payload, None) if isinstance(payload, dict) else (None, "not a JSON object")
@@ -929,33 +1278,213 @@ def vps_commit_time(state: WatchdogState) -> datetime | None:
     return _parse_dt(checks["site"].get("commit_time"))
 
 
-def fetch_issue_thread(repo: str, token: str | None, session: date, now: datetime):
-    """The session's issue plus its attempt ledger and newest verdict set.
+def fetch_run_jobs(repo: str, token: str | None,
+                   run_id: object) -> tuple[list[dict] | None, str | None]:
+    """Jobs of ONE run — the wedge-classification read (§0.4a amendment).
 
-    TWO reads, spent ONLY on the alarm path — the enrichment pass in ``main`` runs
-    this after a provisional ``decide`` has already said something is wrong, so a
-    healthy wake never pays for it.  Returns
-    ``(number, receipts_since_window, last_verdicts, error)``; any failure yields
-    ``(…, None, None, error)`` so the budget falls back to the run-record count
-    rather than silently reading zero attempts.
+    Spent only on the alarm path when pass one was blocked by ``run_in_flight``,
+    so a healthy wake still costs exactly THREE GitHub reads.  per_page=100 and
+    never paginated: daily.yml has ~20 jobs.
     """
-    row, err = find_open_issue(repo, token, session)
+    url = (f"https://api.github.com/repos/{repo}/actions/runs/{run_id}"
+           f"/jobs?per_page=100")
+    payload, err = _get_json(url, _api_headers(token))
     if err is not None:
-        return None, None, None, err
+        return None, err
+    jobs = payload.get("jobs") if isinstance(payload, dict) else None
+    if not isinstance(jobs, list):
+        return None, "no jobs array"
+    return [
+        {
+            "name": j.get("name"),
+            "status": j.get("status"),
+            "conclusion": j.get("conclusion"),
+            "started_at": j.get("started_at"),
+            "created_at": j.get("created_at"),
+        }
+        for j in jobs if isinstance(j, dict)
+    ], None
+
+
+@dataclass(frozen=True)
+class IssueThread:
+    """The alarm-path enrichment read, bundled so ``main`` unpacks ONE thing
+    instead of a positional tuple that grows a fifth field into a silent
+    call-site typo.
+
+    Fail-open semantics unchanged from the 4-tuple this replaces: on any
+    failure ``receipts``/``last_verdicts`` stay ``None`` so the budget falls
+    back to run records rather than silently reading zero attempts.
+    ``anchors`` is best-effort and never blocks the ledger on its own — a wake
+    that resolved verdicts but not anchors still knows its budget spend, it
+    just escalates any un-anchored class at day 1.
+    """
+
+    number: int | None
+    title: str | None
+    receipts: int | None
+    last_verdicts: tuple[str, ...] | None
+    anchors: dict[tuple[str, ...], date]
+    error: str | None
+
+
+def fetch_issue_thread(repo: str, token: str | None, session: date,
+                       now: datetime) -> IssueThread:
+    """The session's issue plus its attempt ledger, newest verdict set, and the
+    [DAY N] anchor carried forward from the NEAREST OPEN issue among the
+    ``ANCHOR_CHAIN_MAX_SESSIONS`` sessions immediately preceding this one —
+    never from any other open issue.
+
+    WHY THE PRECEDING SESSIONS, NOT EVERY OPEN SIBLING (2026-08-27 rewrite). The
+    prior shape mined every OPEN ``prophet-outage`` issue and took the earliest
+    anchor per breach class across all of them — that measures "the oldest open
+    issue that ever mentioned this class", not "successive days", which is not
+    what this ladder means. Two concrete shapes broke because of it. THE ORPHAN:
+    a `prophet-outage` issue left open from an unrelated, already-resolved
+    outage (or one that predates this feature and was never given an
+    ``OUTAGE-DAY`` token) shares no relationship with tonight's breach at all,
+    yet the old bootstrap adopted its ``created_at`` as an anchor and inflated a
+    brand-new breach's day count — production has four such issues open right
+    now (#5920, #6145, #6366, #6495), and a fresh STALE breach would have mined
+    #5920's 2026-08-19 ``created_at`` and opened tonight's issue already reading
+    "[DAY 10]"/"unbroken since 2026-08-19", both false. THE MON+FRI GAP: a bad
+    Monday, a healthy Tue/Wed/Thu, and a bad Friday is two SEPARATE one-day
+    outages that happen to share a verdict name; sibling mining chained them
+    into a fictitious 5-day streak with no actual unbroken run of bad nights.
+    Chaining through the sessions immediately before this one fixes both at
+    once, but a STRICT one-link chain (only ``session_n_back(session, 1)``)
+    turned out to snap on inputs that are not healed nights either: a missed
+    watchdog wake (no issue ever filed for the adjacent session) or an
+    operator closing yesterday's now-duplicate issue as superseded mid-outage
+    (the most natural triage act there is). R1+R2 (2026-08-27 review round 2):
+    walk k = 1..``ANCHOR_CHAIN_MAX_SESSIONS`` and mine the FIRST predecessor
+    session that still has an open issue on this page, mining at most ONE such
+    predecessor. ``ANCHOR_CHAIN_MAX_SESSIONS`` is picked so this cannot
+    resurrect either killed shape: an orphan is many sessions back and a
+    Mon+Fri pair is FOUR sessions apart, both unreachable at k<=2, while a
+    genuine N-day outage still chains through every session because each
+    day's issue links to the day directly before it.
+
+    Up to THREE reads, spent ONLY on the alarm path — the enrichment pass in
+    ``main`` runs this after a provisional ``decide`` has already said
+    something is wrong, so a healthy wake never pays for any of them, and
+    nothing here is ever paginated. Read 1, ``fetch_open_outage_issues``,
+    answers both the session-issue match and every candidate predecessor match
+    from one payload — walking k up to ``ANCHOR_CHAIN_MAX_SESSIONS`` costs
+    nothing extra in reads, it only changes which row (if any) is picked from
+    the same list. If a preceding-session row is found, read 2 fetches ITS
+    comments — not just its body — because a night's issue BODY is only its
+    FIRST receipt: when the dispatch creates a run, a LATER wake's verdict
+    class (e.g. STALE, discovered only at the 09:40Z wake after the 01:40Z
+    STRAND-class body) shows up ONLY in a comment, and body-only mining can
+    never carry that class across days. A failure of read 2 degrades to the
+    preceding row's body alone rather than raising (R4: that degradation is now
+    ALSO reported with a bare ``::warning``, naming the issue and the error,
+    because losing a comment-only class silently means the day count may read
+    low with nothing in the run log to explain why). THIS session's own row,
+    if it exists, still gets its own comments read (read 3) exactly as before,
+    and that read is still what produces ``receipts``/``last_verdicts`` — a
+    failure of the PRECEDING session's read never touches those two fields,
+    it can only degrade ``anchors``.
+    """
+    payload, err = fetch_open_outage_issues(repo, token)
+    if err is not None:
+        return IssueThread(None, None, None, None, {}, err)
+
+    wanted = issue_title(session)
+    row: dict | None = None
+    by_title: dict[str, dict] = {}
+    for candidate in payload:
+        if not isinstance(candidate, dict):
+            continue
+        title = strip_day_prefix(candidate.get("title") or "")
+        if row is None and title == wanted:
+            row = candidate
+        if title not in by_title:
+            by_title[title] = candidate
+
+    # R1+R2 CHAIN TOLERANCE: mine the FIRST predecessor session (nearest first)
+    # that has an open issue row on this page, at most ANCHOR_CHAIN_MAX_SESSIONS
+    # sessions back and at most ONE such predecessor — see the constant's own
+    # comment for why 2 is the bound.
+    prev_row: dict | None = None
+    prev_k: int | None = None
+    for k in range(1, ANCHOR_CHAIN_MAX_SESSIONS + 1):
+        prev_session = session_n_back(session, k)
+        if prev_session is None:
+            continue
+        candidate = by_title.get(issue_title(prev_session))
+        if candidate is not None:
+            prev_row, prev_k = candidate, k
+            break
+
+    if prev_k is not None and prev_k > 1:
+        # The k=1 link was absent (missed watchdog wake, a --dry-run night, or
+        # an operator closing the prior day's issue as superseded) but a
+        # bridge further back exists — surface it so a reset-vs-bridge is
+        # explainable from the run log rather than a silent day-count jump.
+        skipped = session_n_back(session, 1)
+        bridged = session_n_back(session, prev_k)
+        print(
+            "::notice title=prophet-rescue-chain-gap::no open issue for the "
+            f"immediately preceding session "
+            f"{skipped.isoformat() if skipped is not None else '?'}"
+            f" — bridged {prev_k} sessions back to "
+            f"{bridged.isoformat() if bridged is not None else '?'} instead",
+            flush=True,
+        )
+
+    prev_anchors: dict[tuple[str, ...], date] = {}
+    if prev_row is not None:
+        number = prev_row.get("number")
+        prev_url = (f"https://api.github.com/repos/{repo}/issues/{number}"
+                   f"/comments?per_page=100")
+        prev_comments, prev_err = _get_json(prev_url, _api_headers(token))
+        if prev_err is None and isinstance(prev_comments, list):
+            prev_texts = [prev_row.get("body")] + [
+                c.get("body") for c in prev_comments if isinstance(c, dict)
+            ]
+        else:
+            # R4: degraded, never raised — the preceding thread's own body is
+            # still an anchor worth having, and a failure here must never
+            # touch THIS session's receipts/last_verdicts/error below. But
+            # silent degradation loses comment-only classes (a night's body
+            # carries only the earliest class seen; a class discovered later
+            # in the same night, e.g. STALE after a STRAND-class body, lives
+            # only in a comment) — so the loss is now named in the run log.
+            print(
+                "::warning title=prophet-rescue-prev-thread-blind::could not "
+                f"read comments for issue #{number} "
+                f"({prev_err or 'comment list is not an array'}) — degrading "
+                "to its body only; the day count may read low",
+                flush=True,
+            )
+            prev_texts = [prev_row.get("body")]
+        prev_anchors = outage_anchors(prev_texts)
+
     if row is None:
-        return None, 0, None, None
+        return IssueThread(None, None, 0, None, prev_anchors, None)
     number = row.get("number")
     url = (f"https://api.github.com/repos/{repo}/issues/{number}/comments"
            f"?per_page=100")
-    payload, err = _get_json(url, _api_headers(token))
-    if err is not None or not isinstance(payload, list):
-        return number, None, None, err or "comment list is not an array"
-    texts = [row.get("body")] + [c.get("body") for c in payload
+    comments, err = _get_json(url, _api_headers(token))
+    if err is not None or not isinstance(comments, list):
+        return IssueThread(number, row.get("title"), None, None, prev_anchors,
+                           err or "comment list is not an array")
+    texts = [row.get("body")] + [c.get("body") for c in comments
                                  if isinstance(c, dict)]
-    return (number,
-            count_dispatch_receipts(texts, budget_window_start(now)),
-            latest_verdicts(texts),
-            None)
+    merged = dict(prev_anchors)
+    for klass, anchor in outage_anchors(texts).items():
+        prior = merged.get(klass)
+        if prior is None or anchor < prior:
+            merged[klass] = anchor
+    return IssueThread(
+        number, row.get("title"),
+        count_dispatch_receipts(texts, budget_window_start(now)),
+        latest_verdicts(texts),
+        merged,
+        None,
+    )
 
 
 def _disk_free_gb(path: Path) -> float | None:
@@ -976,14 +1505,14 @@ def collect_state(repo: str, token: str | None, now: datetime, *,
     on ``/var/folders`` instead of on the volume the runners actually fill.
     """
     main_index, main_error = fetch_main_index(repo, token)
-    r2_index, r2_error = fetch_r2_index()
+    r2_health, r2_health_error = fetch_r2_health()
     vps_status, vps_error = fetch_vps_status()
     runs, runs_error = fetch_runs(repo, token)
     budget, budget_error = fetch_dispatch_budget(repo, token, now)
     return WatchdogState(
         now=now,
         main_index=main_index, main_error=main_error,
-        r2_index=r2_index, r2_error=r2_error,
+        r2_health=r2_health, r2_health_error=r2_health_error,
         vps_status=vps_status, vps_error=vps_error,
         runs=runs, runs_error=runs_error,
         dispatch_runs_today=budget, dispatch_probe_error=budget_error,
@@ -997,10 +1526,11 @@ def collect_state(repo: str, token: str | None, now: datetime, *,
 # action layer
 # ─────────────────────────────────────────────────────────────────────────────
 def _post(url: str, body: dict | None, headers: dict[str, str],
-          timeout: int = HTTP_TIMEOUT_S) -> tuple[int | None, bytes, str | None]:
+          timeout: int = HTTP_TIMEOUT_S, *,
+          method: str = "POST") -> tuple[int | None, bytes, str | None]:
     data = json.dumps(body).encode() if body is not None else b"{}"
     req = urllib.request.Request(
-        url, data=data, method="POST",
+        url, data=data, method=method,
         headers={"User-Agent": USER_AGENT, "Content-Type": "application/json", **headers},
     )
     try:
@@ -1042,6 +1572,37 @@ def issue_title(session: date) -> str:
     return f"{ISSUE_TITLE_PREFIX} — {session.isoformat()}"
 
 
+def fetch_open_outage_issues(repo: str, token: str | None
+                             ) -> tuple[list[dict] | None, str | None]:
+    """ONE page of open ``prophet-outage`` issues — the exact GET
+    ``find_open_issue`` used to make on its own.  Split out so
+    ``fetch_issue_thread`` can resolve both this session's row and the chained
+    preceding-session row (see ``ANCHOR_CHAIN_MAX_SESSIONS``) at ZERO extra
+    REST cost: every match reads this same payload rather than each paying
+    for their own GET.
+
+    R6: ``sort=created&direction=desc`` is PINNED, not assumed. This module
+    sends no ``page=`` — the whole design leans on both rows the chain needs
+    landing on this single unpaginated 50-row page — and the escalation
+    ladder itself makes the open backlog only grow over a real outage
+    (closing an issue is the reset lever, not this lane). Relying on
+    GitHub's undocumented default order to keep the newest issues on page one
+    is exactly the kind of assumption that silently stops holding; if the two
+    rows the chain needs ever fell off the page, ``upsert_issue``'s own
+    lookup would mint a duplicate issue every wake instead of appending to
+    the thread that already exists.
+    """
+    url = (f"https://api.github.com/repos/{repo}/issues"
+           f"?labels={urllib.parse.quote(ISSUE_LABEL)}&state=open&per_page=50"
+           f"&sort=created&direction=desc")
+    payload, err = _get_json(url, _api_headers(token))
+    if err is not None:
+        return None, err
+    if not isinstance(payload, list):
+        return None, "issue list is not an array"
+    return payload, None
+
+
 def find_open_issue(repo: str, token: str | None,
                     session: date) -> tuple[dict | None, str | None]:
     """The open ``prophet-outage`` issue ROW for this session, if one exists.
@@ -1050,27 +1611,35 @@ def find_open_issue(repo: str, token: str | None,
     opening a new one, so a three-day outage reads as one thread with a timeline.
     The whole row is returned rather than just the number because its ``body`` is
     the FIRST receipt, and the attempt ledger has to count that one too.
+
+    Matches by title with the [DAY N] escalation prefix STRIPPED
+    (``strip_day_prefix``).  THIS IS LOAD-BEARING (2026-08-27 escalation
+    ladder): once a title escalates to e.g. ``[DAY 4] Prophet US staleness —
+    …``, an exact-title match would stop finding the thread and this lane
+    would open a brand-new duplicate issue every subsequent wake instead of
+    appending a receipt to the one that already exists.
     """
-    url = (f"https://api.github.com/repos/{repo}/issues"
-           f"?labels={urllib.parse.quote(ISSUE_LABEL)}&state=open&per_page=50")
-    payload, err = _get_json(url, _api_headers(token))
+    payload, err = fetch_open_outage_issues(repo, token)
     if err is not None:
         return None, err
-    if not isinstance(payload, list):
-        return None, "issue list is not an array"
     wanted = issue_title(session)
     for row in payload:
-        if isinstance(row, dict) and row.get("title") == wanted:
+        if isinstance(row, dict) and strip_day_prefix(row.get("title") or "") == wanted:
             return row, None
     return None, None
 
 
 def upsert_issue(repo: str, token: str | None, session: date, body: str,
-                 number: int | None = None) -> str:
+                 number: int | None = None, *, day: int = 1) -> str:
     """Open the session's issue or comment a receipt onto the existing one.
 
     ``number`` is passed in when the enrichment pass already resolved it, so the
-    alarm path does not spend a second lookup on the same question.
+    alarm path does not spend a second lookup on the same question.  ``day`` is
+    keyword-only and used ONLY on the create path — a NEW issue is opened with
+    the escalated title directly whenever the preceding session's thread
+    carries the same breach class forward (see ``escalated_title``), so the
+    ladder is correct from the very first receipt rather than needing a later
+    PATCH to catch up.
     """
     if number is None:
         row, err = find_open_issue(repo, token, session)
@@ -1081,7 +1650,8 @@ def upsert_issue(repo: str, token: str | None, session: date, body: str,
         ensure_label(repo, token)
         status, payload, post_err = _post(
             f"https://api.github.com/repos/{repo}/issues",
-            {"title": issue_title(session), "body": body, "labels": [ISSUE_LABEL]},
+            {"title": escalated_title(session, day), "body": body,
+             "labels": [ISSUE_LABEL]},
             _api_headers(token),
         )
         if post_err is not None:
@@ -1098,6 +1668,24 @@ def upsert_issue(repo: str, token: str | None, session: date, body: str,
     if post_err is not None:
         return f"issue comment failed ({post_err})"
     return f"commented on issue #{number} (HTTP {status})"
+
+
+def update_issue_title(repo: str, token: str | None, number: int, title: str) -> str:
+    """PATCH the issue's title — the [DAY N] escalation write.
+
+    Best-effort ONLY: it must never raise (``_post`` already never raises) and
+    a failure here never changes a verdict or the exit code, it only degrades
+    the receipt's account of what happened. The one write this lane makes to
+    an issue's title, never to the daily.yml pipeline (see
+    ``test_the_only_pipeline_write_is_a_dispatch``).
+    """
+    status, _, err = _post(
+        f"https://api.github.com/repos/{repo}/issues/{number}",
+        {"title": title}, _api_headers(token), method="PATCH",
+    )
+    if err is not None:
+        return f"issue #{number} title update failed ({err})"
+    return f"updated issue #{number} title (HTTP {status})"
 
 
 def push_ops_alert(text: str) -> None:
@@ -1146,13 +1734,18 @@ def annotate(actions: list[Action]) -> None:
 
 
 def receipt(actions: list[Action], state: WatchdogState, session: date,
-            results: list[str], dispatched_at: datetime | None = None) -> str:
+            results: list[str], dispatched_at: datetime | None = None, *,
+            anchor: date | None = None, day: int = 1) -> str:
     """The issue body / comment: one wake, everything it saw and everything it did.
 
-    Carries two MACHINE TOKENS as well as prose, because this thread is the lane's
-    only durable state: ``DISPATCH-RECEIPT <instant>`` is the attempt ledger the
-    budget reads back, and ``RESCUE-VERDICTS <A,B>`` is what the next wake compares
-    against to avoid posting the same alarm fourteen times in one night.
+    Carries THREE MACHINE TOKENS as well as prose, because this thread is the
+    lane's only durable state: ``DISPATCH-RECEIPT <instant>`` is the attempt
+    ledger the budget reads back, ``RESCUE-VERDICTS <A,B>`` is what the next
+    wake compares against to avoid posting the same alarm fourteen times in
+    one night, and ``OUTAGE-DAY <date>`` is the [DAY N] ladder's anchor — the
+    first UTC date the current breach class was seen, read back by
+    ``outage_anchors`` on every later wake (via ``fetch_issue_thread``'s
+    preceding-session chain).
     """
     src = state.main_index.get("source_asof") if state.main_index else None
     _, boundary = expected_fire_after(state.now)
@@ -1162,6 +1755,15 @@ def receipt(actions: list[Action], state: WatchdogState, session: date,
         f"**Wake {state.now.isoformat(timespec='seconds')}** (`{state.lane}` lane) — "
         f"expected session `{session.isoformat()}`",
         "",
+    ]
+    if day >= 2:
+        lines += [
+            f"> **DAY {day}** — this breach class has been unbroken since "
+            f"{anchor.isoformat() if anchor is not None else '?'}. Escalated by "
+            "the title prefix.",
+            "",
+        ]
+    lines += [
         f"- main `source_asof`: `{src}` · cohort for the session: "
         f"`{cohort_size(state.main_index, session)}` · "
         f"`intake.eligible_after_skips`: `{intake_eligible(state.main_index)}`",
@@ -1178,12 +1780,59 @@ def receipt(actions: list[Action], state: WatchdogState, session: date,
     ]
     if facts.anomalies:
         lines.append("- ⚠ run-list parse anomalies: " + "; ".join(facts.anomalies))
+    # Info-only detail, never a verdict: the health receipt's source_asof already
+    # matches main (no R2_HEALTH_LAG), but its recorded index_sha256 disagrees with
+    # a reserialization of the index this lane holds — worth a human's eye, not
+    # worth alarming on (the reserialization is best-effort, see
+    # _reserialized_index_sha256).
+    main_src_date = _parse_date(src) if src else None
+    health_src_date = (
+        _parse_date(state.r2_health.get("source_asof")) if state.r2_health else None
+    )
+    if (
+        state.main_index is not None
+        and state.r2_health is not None
+        and main_src_date is not None
+        and health_src_date == main_src_date
+    ):
+        health_hash = state.r2_health.get("index_sha256")
+        main_hash = _reserialized_index_sha256(state.main_index)
+        if (
+            isinstance(health_hash, str)
+            and health_hash
+            and main_hash is not None
+            and health_hash != main_hash
+        ):
+            lines.append(
+                "- ⚠ public health receipt `source_asof` matches main but "
+                f"`index_sha256` disagrees (receipt `{health_hash}` vs a "
+                f"reserialization of main `{main_hash}`) — informational only, the "
+                "reserialization is best-effort and not a verdict; may indicate a "
+                "stale receipt from a superseded checkpoint."
+            )
     lines += ["", "**Verdicts**"]
     lines += [f"- `{a.verdict}` ({a.kind}) — {a.message}" for a in actions]
+    if any(a.verdict in (STALE, STRAND) for a in actions):
+        # PR-1 item 3e triage line. ci-recovery-bootstrap-freeze-2026-08-15 froze
+        # every Prophet board for three days on a repository ruleset that GH013'd
+        # even the nightly's own bot pushes while the engine kept building green
+        # — the exact shape a STALE/STRAND verdict here cannot distinguish from an
+        # engine defect on its own. Naming the check is cheap and saves a human
+        # from re-diagnosing the same postmortem from scratch.
+        lines.append(
+            "- ⚠ if the engine job itself reads GREEN but pushes are failing, "
+            "check `gh api repos/{owner}/{repo}/rulesets` FIRST — a repository "
+            "ruleset freeze (GH013, org-admin-only bypass, no DEC record) can 403 "
+            "every push while every job stays green "
+            "(research/PROPHET_OUTAGE_2026_08_17_POSTMORTEM.md)."
+        )
     if results:
         lines += ["", "**Actions taken**"] + [f"- {r}" for r in results]
-    verdict_set = ",".join(sorted({a.verdict for a in actions if a.loud})) or "NONE"
+    klass = breach_class(actions)
+    verdict_set = ",".join(klass) or "NONE"
     lines += ["", "```", f"{VERDICT_TOKEN} {verdict_set}"]
+    if anchor is not None and klass:
+        lines.append(f"{OUTAGE_DAY_TOKEN} {anchor.isoformat()}")
     if dispatched_at is not None:
         lines.append(f"{DISPATCH_RECEIPT_TOKEN} "
                      f"{dispatched_at.isoformat(timespec='seconds')}")
@@ -1221,11 +1870,37 @@ def execute(actions: list[Action], state: WatchdogState, session: date, repo: st
     if not any(a.loud for a in actions) or dry_run:
         return results
 
+    # THE [DAY N] ESCALATION LADDER. Computed — and best-effort ACTED ON — BEFORE
+    # the duplicate-suppression check below, and that ordering is the entire point.
+    # The wakes should_file_receipt suppresses (an unchanged verdict set, so no new
+    # comment and no new push) are PRECISELY the wakes where "still the same outage,
+    # one day later" is the only news there is. Sitting the title rewrite behind
+    # should_file_receipt would mean it never fires on exactly the wakes it exists
+    # for — a multi-day outage would look identical on day 5 as on day 1.
+    klass = breach_class(actions)
+    anchor = (state.outage_anchors or {}).get(klass) or state.now.date()
+    day = outage_day(anchor, state.now.date())
+    # R3 (2026-08-27 review round 2): exactly the condition that gates the
+    # title PATCH below, computed once and reused by should_file_receipt. On
+    # a weekend/holiday the session (and so the issue and its verdict set)
+    # does not change from one wake to the next, so an unchanged-verdict
+    # suppression used to swallow the ENTIRE escalation — the title moved but
+    # nothing ever told anyone. This is deliberately keyed to the title text
+    # actually changing, not to the day integer alone, so it cannot fire more
+    # than once per calendar day (see should_file_receipt's own docstring).
+    day_advanced = (day >= 2 and state.issue_number is not None
+                    and escalated_title(session, day) != (state.issue_title or ""))
+    if token and day_advanced:
+        results.append(update_issue_title(repo, token, state.issue_number,
+                                          escalated_title(session, day)))
+
     # DUPLICATE SUPPRESSION. The red run fires every wake regardless — that is the
     # heartbeat. What is suppressed here is the fourteenth identical comment and the
     # fourteenth identical push through one long outage, because a channel that cries
-    # the same thing hourly is a channel nobody reads on the night it matters.
-    if not should_file_receipt(actions, state.last_receipt_verdicts):
+    # the same thing hourly is a channel nobody reads on the night it matters. A day
+    # advance (R3) overrides the suppression — see should_file_receipt.
+    if not should_file_receipt(actions, state.last_receipt_verdicts,
+                               day_advanced=day_advanced):
         results.append(
             f"receipt suppressed — unchanged verdict set "
             f"{','.join(sorted(state.last_receipt_verdicts or ()))} already filed on "
@@ -1233,14 +1908,16 @@ def execute(actions: list[Action], state: WatchdogState, session: date, repo: st
         )
         return results
 
-    body = receipt(actions, state, session, results, dispatched_at)
+    body = receipt(actions, state, session, results, dispatched_at,
+                   anchor=anchor, day=day)
     if token:
         results.append(upsert_issue(repo, token, session, body,
-                                    number=state.issue_number))
+                                    number=state.issue_number, day=day))
+    day_prefix = f"[DAY {day}] " if day >= 2 else ""
     summary = "; ".join(f"{a.verdict}: {a.message}" for a in actions if a.loud)
-    push_ops_alert(f"🚨 Prophet US rescue [{state.lane}] — {summary}")
+    push_ops_alert(f"🚨 {day_prefix}Prophet US rescue [{state.lane}] — {summary}")
     if state.lane == "launchd":
-        macos_notify("Prophet US rescue", summary)
+        macos_notify("Prophet US rescue", f"{day_prefix}{summary}")
     return results
 
 
@@ -1277,26 +1954,42 @@ def main(argv: list[str] | None = None) -> int:
 
     state = collect_state(args.repo, token, now, lane=args.lane,
                           disk_path=Path(args.disk_path) if args.disk_path else None)
-    session, _ = expected_fire_after(now)
+    session, boundary = expected_fire_after(now)
 
     # TWO PASSES, and the split is the point. Pass one answers "is anything wrong?"
     # from the three cheap reads every wake pays for. Only if it says yes do we spend
     # the two issue reads that carry the ATTEMPT LEDGER (a dispatch POST that created
     # no run still counted) and the last verdict set (so an unchanged alarm does not
-    # post its fourteenth identical comment). Pass two is the authoritative one — the
-    # provisional plan is discarded, never executed, because its budget input was
-    # incomplete by construction.
-    if any(a.loud for a in decide(state)):
-        number, receipts, last_verdicts, err = fetch_issue_thread(
-            args.repo, token, session, now)
-        state.issue_number = number
-        state.dispatch_receipts_today = receipts
-        state.last_receipt_verdicts = last_verdicts
-        state.issue_error = err
-        if err is not None:
+    # post its fourteenth identical comment) — plus, when pass one was blocked by
+    # run_in_flight, ONE jobs read for the wedge classification (§0.4a amendment):
+    # without it a queued-forever hostage run mutes this lane for days. Pass two is
+    # the authoritative one — the provisional plan is discarded, never executed,
+    # because its budget and wedge inputs were incomplete by construction.
+    provisional = decide(state)
+    if any(a.loud for a in provisional):
+        thread = fetch_issue_thread(args.repo, token, session, now)
+        state.issue_number = thread.number
+        state.issue_title = thread.title
+        state.dispatch_receipts_today = thread.receipts
+        state.last_receipt_verdicts = thread.last_verdicts
+        state.outage_anchors = thread.anchors
+        state.issue_error = thread.error
+        if thread.error is not None:
             print("::warning title=prophet-rescue-ledger-blind::could not read the "
-                  f"issue thread ({err}) — the attempt ledger falls back to run "
-                  "records only", flush=True)
+                  f"issue thread ({thread.error}) — the attempt ledger falls back to "
+                  "run records only", flush=True)
+        if any(a.blocked_by and "run_in_flight" in a.blocked_by
+               for a in provisional):
+            flight = run_facts(state.runs, boundary, now=now).in_flight
+            if flight is not None and flight.get("id") is not None:
+                jobs, jerr = fetch_run_jobs(args.repo, token, flight["id"])
+                state.in_flight_jobs = jobs
+                state.in_flight_jobs_error = jerr
+                if jerr is not None:
+                    print("::warning title=prophet-rescue-jobs-blind::could not "
+                          f"read jobs for run {flight.get('id')} ({jerr}) — the "
+                          "wedge check stays fail-closed (§0.4a full refusal)",
+                          flush=True)
     actions = decide(state)
     annotate(actions)
     for line in execute(actions, state, session, args.repo, token,

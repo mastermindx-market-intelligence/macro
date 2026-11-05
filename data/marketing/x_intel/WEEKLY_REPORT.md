@@ -1,7 +1,7 @@
 # X competitive intelligence — weekly report
 
-Generated 2026-08-09T22:20:21Z by `engine/marketing/x_intel.py` (schema `marketing.x_intel_report/v1`).
-969 original posts from 17 accounts inside a 90-day window (969 in the corpus all-time).
+Generated 2026-09-13T23:47:40Z by `engine/marketing/x_intel.py` (schema `marketing.x_intel_report/v1`).
+2909 original posts from 17 accounts inside a 90-day window (2909 in the corpus all-time).
 
 Every number here is arithmetic over observed counters — no model scored anything (LLM-never-scores law). A post with no view count is EXCLUDED from rate denominators (`n_no_views`), never folded in as a zero. A row under the n-floor of 12 is marked *(seeding)* and makes no ranking claim.
 
@@ -9,98 +9,98 @@ Every number here is arithmetic over observed counters — no model scored anyth
 
 | shape | n | no-views | med views | med likes | med interaction/view | med repost/view |
 |---|---|---|---|---|---|---|
-| `one_liner` | 525 | 1 | 48,186 | 164 | 0.00368 | 0.00027 |
-| `stack` | 243 | 0 | 106,787 | 370 | 0.00533 | 0.00044 |
-| `two_part` | 131 | 0 | 46,315 | 216 | 0.00578 | 0.00034 |
-| `caption` | 51 | 0 | 62,623 | 381 | 0.00791 | 0.00057 |
-| `list` | 19 | 0 | 255,114 | 1,857 | 0.00565 | 0.00047 |
+| `one_liner` | 1684 | 1 | 55,063 | 188 | 0.00357 | 0.00028 |
+| `stack` | 705 | 0 | 131,233 | 435 | 0.00521 | 0.00042 |
+| `two_part` | 329 | 0 | 65,332 | 248 | 0.00578 | 0.00040 |
+| `caption` | 137 | 0 | 40,096 | 240 | 0.00731 | 0.00046 |
+| `list` | 54 | 0 | 163,986 | 748 | 0.00564 | 0.00042 |
 
 ## By register
 
 | register | n | no-views | med views | med likes | med interaction/view | med repost/view |
 |---|---|---|---|---|---|---|
-| wire | 422 | 1 | 99,958 | 197 | 0.00279 | 0.00023 |
-| aggregator | 282 | 0 | 89,504 | 646 | 0.00741 | 0.00068 |
-| trader | 150 | 0 | 49,517 | 194 | 0.00490 | 0.00021 |
-| commentary | 89 | 0 | 13,563 | 75 | 0.00533 | 0.00076 |
-| macro_color | 26 | 0 | 26,628 | 86.5 | 0.00439 | 0.00052 |
+| wire | 1455 | 1 | 97,814 | 190 | 0.00256 | 0.00022 |
+| aggregator | 894 | 0 | 115,017 | 866 | 0.00815 | 0.00079 |
+| trader | 315 | 0 | 47,616 | 177 | 0.00483 | 0.00021 |
+| commentary | 173 | 0 | 13,367 | 46.5 | 0.00487 | 0.00051 |
+| macro_color | 72 | 0 | 24,753 | 78 | 0.00382 | 0.00049 |
 
 ## By account
 
 | account | n | med views | med likes | med interaction/view | med repost/view |
 |---|---|---|---|---|---|
-| @FirstSquawk | 160 | 20,545 | 14 | 0.00106 | 0.00017 |
-| @unusual_whales | 146 | 139,775 | 652 | 0.00552 | 0.00030 |
-| @DeItaone | 116 | 142,920 | 381 | 0.00348 | 0.00025 |
-| @Barchart | 105 | 72,040 | 605 | 0.00893 | 0.00088 |
-| @KobeissiLetter | 99 | 292,767 | 2,590 | 0.00836 | 0.00075 |
-| @StockMKTNewz | 39 | 33,292 | 118 | 0.00452 | 0.00022 |
-| @wallstengine | 39 | 24,770 | 92 | 0.00421 | 0.00035 |
-| @Mr_Derivatives | 38 | 43,425 | 194 | 0.00621 | 0.00028 |
-| @bespokeinvest | 34 | 8,100 | 11.5 | 0.00190 | 0.00031 |
-| @PeterLBrandt | 33 | 55,166 | 327 | 0.00635 | 0.00022 |
-| @RyanDetrick | 30 | 14,588 | 160 | 0.01308 | 0.00096 |
-| @traderstewie | 29 | 41,669 | 97 | 0.00303 | 0.00012 |
-| @markminervini | 26 | 116,462 | 548 | 0.00456 | 0.00017 |
-| @charliebilello | 25 | 32,786 | 227 | 0.00890 | 0.00101 |
-| @alphatrends | 24 | 26,758 | 131 | 0.00563 | 0.00028 |
-| @LizAnnSonders | 20 | 24,754 | 78.5 | 0.00400 | 0.00057 |
-| @jam_croissant *(seeding)* | 6 | 43,768 | 262 | 0.00694 | 0.00043 |
+| @FirstSquawk | 539 | 17,061 | 13 | 0.00104 | 0.00017 |
+| @unusual_whales | 511 | 128,138 | 595 | 0.00563 | 0.00030 |
+| @DeItaone | 405 | 132,719 | 320 | 0.00297 | 0.00021 |
+| @Barchart | 384 | 65,913 | 613 | 0.01002 | 0.00105 |
+| @KobeissiLetter | 358 | 282,444 | 2,317 | 0.00834 | 0.00080 |
+| @wallstengine | 78 | 29,052 | 108 | 0.00429 | 0.00034 |
+| @Mr_Derivatives | 76 | 43,105 | 231 | 0.00636 | 0.00022 |
+| @StockMKTNewz | 74 | 35,559 | 116 | 0.00382 | 0.00021 |
+| @bespokeinvest | 71 | 8,345 | 11.5 | 0.00200 | 0.00024 |
+| @PeterLBrandt | 67 | 53,584 | 267 | 0.00554 | 0.00026 |
+| @alphatrends | 60 | 24,350 | 122 | 0.00554 | 0.00025 |
+| @traderstewie | 60 | 38,068 | 96 | 0.00296 | 0.00012 |
+| @LizAnnSonders | 59 | 23,607 | 67 | 0.00378 | 0.00055 |
+| @RyanDetrick | 58 | 15,281 | 98.5 | 0.00781 | 0.00042 |
+| @markminervini | 52 | 107,828 | 534 | 0.00441 | 0.00017 |
+| @charliebilello | 44 | 36,852 | 294 | 0.00898 | 0.00102 |
+| @jam_croissant | 13 | 43,664 | 249 | 0.00408 | 0.00032 |
 
 ## Shape distribution vs our quotas
 
 | shape | corpus share |
 |---|---|
-| `caption` | 5.3% |
-| `list` | 2.0% |
-| `one_liner` | 54.2% |
-| `stack` | 25.1% |
-| `two_part` | 13.5% |
+| `caption` | 4.7% |
+| `list` | 1.9% |
+| `one_liner` | 57.9% |
+| `stack` | 24.2% |
+| `two_part` | 11.3% |
 
-- `one_liner` — ours (min) 25.0% vs corpus 54.2%. corpus share of single-content-line posts vs our floor
-- `two_part` — ours (max) 30.0% vs corpus 13.5%. corpus share of two-content-line posts vs our ceiling
+- `one_liner` — ours (min) 25.0% vs corpus 57.9%. corpus share of single-content-line posts vs our floor
+- `two_part` — ours (max) 30.0% vs corpus 11.3%. corpus share of two-content-line posts vs our ceiling
 
 ## Precision + signature rates
 
 | metric | rate |
 |---|---|
-| decimal strict rate | 5.6% |
-| decimal any rate | 16.5% |
-| bare int rate | 62.7% |
-| has number rate | 67.0% |
-| cashtag rate | 19.7% |
-| starts cashtag rate | 3.5% |
-| all caps lead rate | 43.6% |
-| emoji rate | 15.5% |
-| url rate | 38.1% |
-| blank spacer rate | 36.8% |
-| quote rate | 10.3% |
+| decimal strict rate | 7.3% |
+| decimal any rate | 17.7% |
+| bare int rate | 63.1% |
+| has number rate | 66.8% |
+| cashtag rate | 18.3% |
+| starts cashtag rate | 2.7% |
+| all caps lead rate | 51.0% |
+| emoji rate | 15.8% |
+| url rate | 34.8% |
+| blank spacer rate | 35.1% |
+| quote rate | 7.9% |
 
 > strict decimal is the docket's \d+\.\d\d (4.75); any-decimal also catches the far more common single-decimal percent (4.7%). The gap between them IS the finding — see the docket's key finding #2.
 
 ## Week-over-week
 
-Prior snapshot 2026-07-31 (295 posts).
+Prior snapshot 2026-08-23 (2029 posts).
 
 | metric | was | now | delta |
 |---|---|---|---|
-| all caps lead rate | 38.6% | 43.6% | +0.0501 |
-| bare int rate | 70.9% | 62.7% | -0.0810 |
-| blank spacer rate | 42.7% | 36.8% | -0.0587 |
-| cashtag rate | 25.8% | 19.7% | -0.0605 |
-| decimal any rate | 15.2% | 16.5% | +0.0126 |
-| decimal strict rate | 5.8% | 5.6% | -0.0019 |
-| emoji rate | 16.3% | 15.5% | -0.0079 |
-| has number rate | 74.9% | 67.0% | -0.0794 |
-| quote rate | 13.2% | 10.3% | -0.0290 |
-| starts cashtag rate | 5.1% | 3.5% | -0.0157 |
-| url rate | 50.8% | 38.1% | -0.1277 |
+| all caps lead rate | 50.7% | 51.0% | +0.0034 |
+| bare int rate | 63.4% | 63.1% | -0.0032 |
+| blank spacer rate | 35.3% | 35.1% | -0.0016 |
+| cashtag rate | 19.2% | 18.3% | -0.0093 |
+| decimal any rate | 17.7% | 17.7% | +0.0001 |
+| decimal strict rate | 7.2% | 7.3% | +0.0008 |
+| emoji rate | 16.4% | 15.8% | -0.0051 |
+| has number rate | 67.1% | 66.8% | -0.0032 |
+| quote rate | 8.3% | 7.9% | -0.0037 |
+| starts cashtag rate | 2.9% | 2.7% | -0.0023 |
+| url rate | 35.3% | 34.8% | -0.0059 |
 
 | shape | was | now | delta |
 |---|---|---|---|
-| `caption` | 6.8% | 5.3% | -0.0152 |
-| `list` | 1.7% | 2.0% | +0.0027 |
-| `one_liner` | 43.4% | 54.2% | +0.1079 |
-| `stack` | 28.1% | 25.1% | -0.0306 |
-| `two_part` | 20.0% | 13.5% | -0.0648 |
+| `caption` | 5.0% | 4.7% | -0.0032 |
+| `list` | 1.9% | 1.9% | -0.0006 |
+| `one_liner` | 57.2% | 57.9% | +0.0067 |
+| `stack` | 24.7% | 24.2% | -0.0045 |
+| `two_part` | 11.1% | 11.3% | +0.0017 |
 

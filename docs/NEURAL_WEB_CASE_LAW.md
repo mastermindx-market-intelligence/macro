@@ -1,6 +1,6 @@
 <!-- DO NOT EDIT BY HAND — regenerate with: python3 scripts/build_ruling_graph.py -->
 <!-- Source: config/ruling_graph.yml -->
-<!-- source_sha256: 3622ea91652e6c5233b6576012ba7d5f073c8e747bdb288395088c0066de9895 -->
+<!-- source_sha256: 5efdd5ed88a1a319369d92a9b85f821088d9914038024476bf2e5357e9b2bb3a -->
 
 # Neural Web Case Law
 
@@ -9,7 +9,7 @@
 > The public site JSON at `site/neuralwebdata/ruling_graph.json` carries
 > only `public_research` rows.
 
-Total rulings: 500
+Total rulings: 501
 
 ## Precedence Order
 
@@ -562,8 +562,37 @@ Total rulings: 500
 | [CYC-U9](#cyc-u9) | Live-cohort visual authority subordinated until n_eff ≥ 40 | `active_law` | `constitution` | cycle-intelligence |
 | [CYC-IX-1](#cyc-ix-1) | Gate IX-1: index turn hazard model beats index's own… | `active_law` | `study` | cycle-intelligence |
 | [CYC-TR-1](#cyc-tr-1) | Gate TR-1: next-phase model beats empirical transition… | `active_law` | `study` | cycle-intelligence |
+| [K3E-EVAL-0-R1](#k3e-eval-0-r1) | K3E EVAL-0 v1 freezes one 64-trial BY-FDR family before… | `active_law` | `study` | alpha-intelligence-integration |
 
 ## Rulings by Owner Program
+
+### alpha-intelligence-integration
+
+### K3E-EVAL-0-R1
+
+**K3E EVAL-0 v1 freezes one 64-trial BY-FDR family before advanced tuning**
+
+- Status: `active_law` | Kind: `study` | Nondelegable: `True`
+- Authority ceiling: `A1_EXPLAIN`
+
+**Ruling:** K3E-EVAL-0-V1 preregisters the expectation-market-dynamics model competition as one dependent multiple-testing family, k3e_expectation_market_dynamics_v1, with at most 64 challenger trials and Benjamini-Yekutieli q=0.10. The fixed eras, targets, boring baselines, episode-N law, coverage gate, null/adverse publication law, and immutable amendment boundary are frozen in the exact content-addressed machine registration cited by the source document. EVAL-0 grants research procedure only and no fair-value, rank, gate, size, trade, Prophet, product, or production authority.
+
+**Scope fence:** Applies only to K3E expectation-dynamics research under existing Eval OS law. Reserved downstream targets remain ineligible until their named owner-native dependencies are accepted.
+
+**Forbidden actions:**
+  - starting an advanced challenger before the exact registration digest is accepted on origin/main
+  - excluding failed, discarded, ablation, preprocessing, threshold, or seed-policy trials from the 64-trial budget
+  - using a subgroup to rescue a failed overall result
+  - changing fixed eras, targets, baselines, thresholds, or FDR procedure after outcome access without a new version and forward boundary
+  - granting product, Prophet, fair-value, rank, gate, size, trade, or production authority from EVAL-0
+
+**Unblock condition:** Exact registration digest accepted on origin/main; later source/surface dependencies accepted; activation receipt resolves the first eligible NYSE boundary; lawful data and rights support the registered grain.
+
+**Source:** `research/alpha_intelligence/expectation_market_dynamics/EVALUATION_PREREG.md`
+> All promotion-bearing challenger/target/horizon comparisons share FDR family `k3e_expectation_market_dynamics_v1`. Benjamini-Yekutieli at `q=0.10` applies across the full family because target/horizon losses are dependent.
+
+*Owner program: alpha-intelligence-integration*
+
 
 ### cycle-intelligence
 
@@ -629,19 +658,18 @@ Total rulings: 500
 
 - Status: `active_law` | Kind: `constitution` | Nondelegable: `True`
 
-**Ruling:** Null and structural truths must list board_rank, oracle_escalation, sector_central_direction_score, position_sizing, lead_lag_interaction_layer, ladder_calibration_input, and high_authority_truth_evidence in their forbidden_consumers. These surfaces may not cite null or structural truths.
+**Ruling:** Every truth row's forbidden_consumers must carry the four universal money-path tokens (board_rank, oracle_escalation, sector_central_direction_score, position_sizing), regardless of status or effect_class (CPI-H1 ruling 5, 2026-08-21, machine-enforced by engine/cycle_pattern/consumer_authority.py). This narrows the prior blanket requirement to also list lead_lag_interaction_layer, ladder_calibration_input, and high_authority_truth_evidence on every null/structural truth: A2 (research/imce/IMCE_A2_CPI_TRUTH_VOCABULARY_AUDIT_V1.md) finding F7 named this exact ambiguity — a literal reading requiring all seven tokens, under which no row in the registry complied, versus a money-path-four reading — and CPI-H1 ruling 5 resolved it in favor of money-path-four. Those three tokens remain row/class-level narrow forbids, applied where a specific truth's statement calls for them, not universally required.
 
-**Scope fence:** Applies to all truths with effect_class=null or effect_class=structural.
+**Scope fence:** Applies to ALL truth rows regardless of status or effect_class (widened by CPI-H1 ruling 5, 2026-08-21; previously read as scoped to effect_class=null/structural only).
 
 **Forbidden actions:**
-  - allow board_rank to cite null truth
-  - allow oracle_escalation to cite null truth
-  - allow position_sizing to cite null truth
-  - allow ladder_calibration_input to cite structural truth
-  - allow high_authority_truth_evidence to cite null truth
+  - allow board_rank to cite null or structural truth
+  - allow oracle_escalation to cite null or structural truth
+  - allow sector_central_direction_score to cite null or structural truth
+  - allow position_sizing to cite null or structural truth
 
 **Source:** `config/cycle_pattern/truth_schema.md`
-> Forbidden (must appear in `forbidden_consumers` for null/structural truths): `board_rank`, `oracle_escalation`, `sector_central_direction_score`, `position_sizing`, `lead_lag_interaction_layer`, `ladder_calibration_input`, `high_authority_truth_evidence`
+> **Universal money-path floor (CPI-H1 ruling 5):** `forbidden_consumers` must carry all four of `board_rank`, `oracle_escalation`, `sector_central_direction_score`, `position_sizing` on EVERY row, regardless of `status` or `effect_class` — this resolves A2 finding F7's ambiguity in favor of the "money-path-four" reading. The other three schema-doc tokens (`lead_lag_interaction_layer`, `ladder_calibration_input`, `high_authority_truth_evidence`) remain row/class-level narrow forbids — not part of the universal floor.
 
 *Owner program: cycle-intelligence*
 
@@ -785,17 +813,18 @@ Total rulings: 500
 
 - Status: `active_law` | Kind: `constitution` | Nondelegable: `True`
 
-**Ruling:** Truths with effect_class of null or structural must have the full set of positive-consumer surfaces in forbidden_consumers. The registry design principle is that null evidence must not feed ranking, escalation, or sizing decisions even if technically valid via active_truths().
+**Ruling:** Truths must carry the four universal money-path tokens (board_rank, oracle_escalation, sector_central_direction_score, position_sizing) in forbidden_consumers regardless of effect_class (CPI-H1 ruling 5, 2026-08-21) — the registry design principle is that null/structural evidence must not feed ranking, escalation, or sizing decisions even if technically valid via active_truths(), and CPI-H1 widened the same floor to every effect_class rather than leaving null/structural as the only enforced case.
 
-**Scope fence:** Applies to all truths with effect_class=null or effect_class=structural.
+**Scope fence:** Applies to ALL truths regardless of effect_class (widened by CPI-H1 ruling 5, 2026-08-21; previously read as scoped to effect_class=null/structural only).
 
 **Forbidden actions:**
   - allow null-class truth to feed board_rank
   - allow structural-class truth to feed position_sizing
   - allow null-class truth to feed oracle_escalation
+  - allow any-class truth to feed sector_central_direction_score without an explicit grant
 
 **Source:** `config/cycle_pattern/truth_schema.md`
-> Forbidden (must appear in `forbidden_consumers` for null/structural truths): `board_rank`, `oracle_escalation`, `sector_central_direction_score`, `position_sizing`, `lead_lag_interaction_layer`, `ladder_calibration_input`, `high_authority_truth_evidence`
+> **Universal money-path floor (CPI-H1 ruling 5):** `forbidden_consumers` must carry all four of `board_rank`, `oracle_escalation`, `sector_central_direction_score`, `position_sizing` on EVERY row, regardless of `status` or `effect_class` — this resolves A2 finding F7's ambiguity in favor of the "money-path-four" reading. The other three schema-doc tokens (`lead_lag_interaction_layer`, `ladder_calibration_input`, `high_authority_truth_evidence`) remain row/class-level narrow forbids — not part of the universal floor.
 
 *Owner program: cycle-intelligence*
 
@@ -3111,7 +3140,7 @@ Total rulings: 500
   - use sonnet for final adjudication
   - use haiku for anything needing judgment
 
-**Source:** `CLAUDE.md`
+**Source:** `docs/agent_guides/CLAUDE_MODEL_ROUTING.md`
 > The main session may run a frontier model (Fable/Opus). **Never let fan-outs inherit it.** Workflow `agent()` calls and Agent-tool spawns inherit the session model unless you pass `model:` explicitly — under ultracode that silently burns frontier tokens on mechanical work. Route every spawn:
 
 *Owner program: house-law*
@@ -3122,7 +3151,7 @@ Total rulings: 500
 
 - Status: `active_law` | Kind: `constitution` | Nondelegable: `True`
 
-**Ruling:** A PreToolUse hook (model_routing_guard.py) is wired in settings.json and denies Agent/Task spawns without an explicit model, fable spawns outside the orchestrator+FABLE-WHY gate, fable-pinned agent frontmatter outside that gate, and Workflow scripts whose agent() calls carry no model:/agentType routing (or route to fable without a script-level FABLE-WHY line — operator re-enable 2026-07-18 'fable ultracode': fable workflow stages are gated on the same justification line, reserved for judge/synthesis stages, never bulk xN mechanical fan-outs). Model-pinned agent types builder (opus, build lane 2026-07-21), reviewer (opus), and designer (opus, design lane 2026-07-18) pass the guard without a model: param; orchestrator carries an opus floor with fable reachable only via the gate, always with explicit model.
+**Ruling:** A PreToolUse hook (model_routing_guard.py) is wired in settings.json and denies Agent/Task spawns without an explicit model, fable spawns outside the orchestrator+FABLE-WHY gate, fable-pinned agent frontmatter outside that gate, and Workflow scripts whose agent() calls carry no model:/agentType routing (or route to fable without a script-level FABLE-WHY line — operator re-enable 2026-07-18 'fable ultracode': fable workflow stages are gated on the same justification line, reserved for judge/synthesis stages, never bulk xN mechanical fan-outs). Model-pinned agent types builder (sonnet, build lane restored 2026-08-17 reversing the 2026-07-21 Opus-only order), reviewer (opus), and designer (opus, design lane 2026-07-18, unaffected by the build-lane reversal) pass the guard without a model: param; orchestrator carries an opus floor with fable reachable only via the gate, always with explicit model.
 
 **Scope fence:** Enforced at tool-call boundary via PreToolUse hook for all Agent/Task/Workflow invocations.
 
@@ -3130,7 +3159,7 @@ Total rulings: 500
   - bypass model_routing_guard.py
   - spawn without explicit model or pinned agent type
 
-**Source:** `CLAUDE.md`
+**Source:** `docs/agent_guides/CLAUDE_MODEL_ROUTING.md`
 > Enforcement: a PreToolUse hook (`.claude/hooks/model_routing_guard.py`, wired in `.claude/settings.json`) denies Agent/Task spawns without an explicit model, `fable` spawns outside the orchestrator+FABLE-WHY gate, fable-pinned agent frontmatter outside that gate, and Workflow scripts whose `agent()` calls carry no `model:`/`agentType` routing (or route to fable without a script-level FABLE-WHY line).
 
 *Owner program: house-law*
@@ -3151,7 +3180,7 @@ Total rulings: 500
   - touch main checkout git state
   - work outside worktrees
 
-**Source:** `CLAUDE.md`
+**Source:** `docs/agent_guides/CLAUDE_HOUSE_LAWS.md`
 > branch off **fresh `origin/main`** (never reuse a squash-merged branch); finish via commit → push → PR → same-day squash-merge. Stash stack is repo-global — never bare `git stash`/`pop`. Main checkout is often occupied by other agents; work in worktrees, never touch main checkout's git state.
 
 *Owner program: house-law*
@@ -3176,7 +3205,7 @@ Total rulings: 500
 
 **Unblock condition:** Pass gauntlet; register gate before publishing.
 
-**Source:** `CLAUDE.md`
+**Source:** `docs/agent_guides/CLAUDE_HOUSE_LAWS.md`
 > display-only until gauntleted; pre-registered gates; nulls printed, not hidden. The word "validated" in user-facing text is CI-enforced (`scripts/check_validated_claims.py`). LLMs may only de-escalate calibrated keys — never originate signals, scores, or escalations.
 
 *Owner program: house-law*
@@ -3195,7 +3224,7 @@ Total rulings: 500
   - intraday lane writes to data/
   - non-nightly advancement of forward ledgers
 
-**Source:** `CLAUDE.md`
+**Source:** `docs/agent_guides/CLAUDE_HOUSE_LAWS.md`
 > nightly is the sole advancer of forward ledgers; intraday lanes discard `data/` writes.
 
 *Owner program: house-law*

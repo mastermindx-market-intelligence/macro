@@ -22,6 +22,9 @@ blast_radius: user_facing
 ambiguity: scoped
 owns_paths:
   - engine/us_prophet_fusion.py
+  - engine/us_prophet_w3.py
+  - scripts/accrue_us_prophet_w3.py
+  - scripts/report_us_prophet_w3.py
   - scripts/us_prophet_fusion_compare.py
   - research/PROPHET_CONDITIONAL_FUSION_MASTERPLAN_BY_FABLE.md
   - research/prophet_fusion/
@@ -35,8 +38,12 @@ decisions:
   - DEC:PROPHET-SHADOW-GRAIN-IS-A-PAIRED-ROW
   - DEC:FUSION-FAMILY-NEAR-CONSTANCY-IS-A-REGISTRY-QUESTION
   - DEC:US-SHADOW-ACCRUES-UNDER-ITS-OWN-COLUMN-FAMILY
+  - DEC:W3-PROSPECTIVE-SAMPLE-IGNORES-GENERIC-BACKFILL
+  - DEC:W3-FIRST-DURABLE-COMPLETE-OBSERVATION-WINS
+  - DEC:FUSION-C2-TEST-ERA-IS-REGISTERED-VINTAGE
 discoveries:
   - DSC:CHAMPION-BASELINE-COLUMNS-CARRY-THE-CHALLENGER
+  - DSC:PROPHET-BOARD-ASOF-IS-ECONOMIC-SESSION-ID
 landmines:
   - "A NIGHTLY CAN PUBLISH TO THE SITE AND NOT TO GIT. On 2026-08-16 run 31913143619
     the `publish` job deployed a canonical us_prophet_v3 board (Pages, 06:12:24Z) while
@@ -66,6 +73,9 @@ landmines:
     survivorship-clean panel later reversed — never cite it as a live GO."
   - "The two 'memories of the board' disagree: candidates store vs snapshots.jsonl buy
     lanes differ by 5 names on 2026-08-07 — arena joins key on the snapshot."
+  - "C2 vintage-bound tests rebuild from the REGISTERED era pin (date, ticker, horizon),
+    never from the grown live ledger and never via an as-of cutoff.
+    DEC:FUSION-C2-TEST-ERA-IS-REGISTERED-VINTAGE. Do not re-stamp report.json to go green."
 do_not_redo:
   - "Do not re-litigate C1's adoption against the w7 gate — DEC:PROPHET-FUSION-IS-THE-
     CANONICAL-US-RANKER settled it on 2026-08-15. The gate still governs C2-C5."
@@ -85,8 +95,11 @@ do_not_redo:
   - "Do not copy prophet_shadow_* into canonical prophet_* columns on v3."
   - "Do not backfill the Pages-only v3 night; do not count retries of one as_of as
     independent sessions; do not stamp shadow on us_prophet_v2_fallback."
-  - "Do not read W3 forward outcomes before research/prophet_fusion/W3_RACE_PREREG.md
-    is frozen, and do not treat PIT-lawful short interest as estimable."
+  - "Do not read W3 forward outcomes before the 20 matured H=10 floor in
+      research/prophet_fusion/W3_RACE_PREREG.md. Do not treat PIT-lawful short
+      interest as estimable. Do not let #5878 generic backfill resurrect a W3
+      session_missing or degraded_or_unpaired receipt
+      (DEC:W3-PROSPECTIVE-SAMPLE-IGNORES-GENERIC-BACKFILL)."
   - "The two DNR row amendments LANDED in PR-0 (#5593):
     DNR:KILL-FUSED-COMPOSITE Amendment 3 and DNR:KILL-POSITIONING-FUSION Amendment 1,
     with compiled blocklists regenerated per masterplan §12 and §17 attack 13; do not
@@ -137,9 +150,16 @@ waves:
     depends_on: [w2b]
     title: "PR-3 — forward race instrumentation, split PR-3A..3D. Charter:
       research/prophet_fusion/W3_SHADOW_RACE_RECUT.md. Prereg (frozen before any
-      outcome read): research/prophet_fusion/W3_RACE_PREREG.md. Status stays todo
-      until PR-3D live-accepts instrumentation. PR-3A is semantics+prereg only."
-    status: todo
+      outcome read): research/prophet_fusion/W3_RACE_PREREG.md. PR-3A (#5813)
+      semantics+prereg. PR-3B (#5829) outcome-blind LOFO + member census.
+      PR-3C (#5839) durable paired ledger + wiring. PR-3D (#5890) liveness
+      fence + status surface. PR-3D-R1 (#5921) same-stamp revision + atomic
+      persist + 2026-08-17 session bootstrap
+      (DEC:W3-FIRST-DURABLE-COMPLETE-OBSERVATION-WINS). Production accepted on
+      natural us_prophet_ledgers run 32207351396 job 96015772372 / commit
+      7e4e5c134560. No comparative read."
+    status: done
+    pr: "#5921"
   - id: w4
     depends_on: [w3]
     title: "PR-4 — C3 date-grouped ranker (depth-gated)"
@@ -158,13 +178,12 @@ waves:
       the rungs ABOVE C1 (C1's adoption was taken by the 2026-08-15 override)"
     status: todo
 next_action: >
-  PR-3A (this wave) freezes W3 semantics and preregistration. After it merges, a
-  FRESH session starts PR-3B only: exact outcome-blind LOFO plus full member census.
-  Do not read forward C1-vs-shadow outcomes. w2 is done (#5700) but real C2
-  commissioning is still data-gated. w2b live-accepted. w3 stays todo until PR-3D.
-  Durable paired-race N remains 0 until the first post-#5769 candidates-store commit.
-  #5742 is external availability debt. Canonical five-leg nulls on v3 are correct
-  (#5769). STILL OPEN from w1: the §13.0 live-accrual closure.
+  Automatic W3 accrual on the natural us_prophet_ledgers lane. Do not start
+  PR-3E. Do not start C2/C3/C4/C5 or Prophet V4. Do not read C1-vs-shadow
+  outcomes. Durable paired-race N=2 unmatured (stamps 2026-08-17 and
+  2026-08-18); matured H=10 N=0. First lawful comparison remains PENDING
+  until 20 matured H=10 sessions. Leave the frozen 2026-08-17 W3 parts
+  byte-identical.
 ---
 
 ## Context

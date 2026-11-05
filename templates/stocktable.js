@@ -15,9 +15,15 @@
  *   linkPattern: 'china_lookup.html#{ticker}', // row link template
  *   columns:    [...],                // column schema array (see below)
  *   stageFilter: true,                // show stage filter row
+ *   searchTicker: false,              // opt in to symbol matching as well as name/theme
  *   searchPlaceholder: ['Search…','搜索…'], // override search input placeholder
  *   optionLabels: { filterName: { VALUE: [en, zh] } }, // display labels for filter values
+ *   sectorOptions: [...],            // optional registered raw sector names, including zero-count choices
+ *   emptyMessage: [en, zh],           // optional message when the loaded table has no matching rows
  * }
+ * Successful init returns {getSectorFilter, setSectorFilter}. The setter accepts
+ * an exact native option or 'all', returns a boolean, and never moves focus.
+ * Keep the latest handle when reinitializing a table after rows are loaded.
  *
  * Column schema entry: { key, labelEn, labelZh, default, sortable, right, fmt, tip }
  *   key:     field key on row object (dot-notation not supported)
@@ -598,7 +604,9 @@
           var themeVal = ((r.narrative && r.narrative.theme) || '').toLowerCase();
           var themeZh  = ((r.narrative && r.narrative.theme_zh) || '').toLowerCase();
           var nm = (r.name || '').toLowerCase();
-          if (themeVal.indexOf(th) === -1 && themeZh.indexOf(th) === -1 && nm.indexOf(th) === -1) return false;
+          // US opts into native ticker search; other market callers retain name/theme behavior.
+          var tk = cfg.searchTicker === true ? String(r.ticker || '').toLowerCase() : '';
+          if (themeVal.indexOf(th) === -1 && themeZh.indexOf(th) === -1 && nm.indexOf(th) === -1 && tk.indexOf(th) === -1) return false;
         }
         return true;
       });
@@ -683,12 +691,39 @@
             tr.addEventListener('click', function(e) {
               // Feature 2: let .stf-tkr anchor and modified clicks pass through
               // to the browser / theme.js Terminal intercept naturally.
-              if (e.target.closest('a')) return;
+              if (e.target.closest('a,button,input,select,textarea,summary,details,[role="button"]')) return;
               var T = window.MDXTerminal;
               if (T && T.on && T.on() && T.open) {
                 T.open(row.ticker || '', tr);
+              } else if (window.MMXSharedShell) {
+                /* Shared Shell candidate (defect B): the incumbent fallback handed the
+                   absolute app /terminal URL to the bridge, which can never admit it -
+                   and admitting it would nest native Terminal inside the shell. Route
+                   the launch through the same centralized candidate handoff as the
+                   overlay, to the admitted relative /terminal destination, and never
+                   raw-write Location once a candidate owns this document. */
+                var _ss = window.MMXSharedShell;
+                if (T && T.on && T.on()) {
+                  var _O = window.MDXTerminalOverlay;
+                  if (_O && typeof _O.terminalHandoff === 'function') {
+                    _O.terminalHandoff({ url: T.url(row.ticker || ''), symbol: row.ticker || '' });
+                  } else {
+                    // The overlay controller is not loaded in this build; the admitted
+                    // relative native route is still the only destination we may offer.
+                    var _params = new URLSearchParams();
+                    var _sym = String(row.ticker || '').slice(0, 64);
+                    if (_sym) _params.set('symbol', _sym);
+                    _params.set('from', 'macro');
+                    if (location.origin === 'https://www.mastermind-x.com' ||
+                        location.origin === 'https://mastermind-x.com') _params.set('ret', location.origin + location.pathname);
+                    _ss.navigate('/terminal?' + _params.toString(), 'push');
+                  }
+                } else {
+                  _ss.navigate(link, 'push');
+                }
               } else {
-                window.location.href = (T && T.on && T.on()) ? T.url(row.ticker || '') : link;
+                var _d = (T && T.on && T.on()) ? T.url(row.ticker || '') : link;
+                window.location.href = _d;
               }
             });
           }
@@ -696,6 +731,17 @@
         });
         frag.appendChild(tr);
       });
+
+      if (view.length === 0 && Array.isArray(cfg.emptyMessage)) {
+        var emptyRow = document.createElement('tr');
+        var emptyCell = document.createElement('td');
+        emptyCell.colSpan = Math.max(1, cols.length);
+        emptyCell.className = 'st-muted';
+        emptyCell.style.whiteSpace = 'normal';
+        emptyCell.innerHTML = bi(esc(cfg.emptyMessage[0] || ''), esc(cfg.emptyMessage[1] || cfg.emptyMessage[0] || ''));
+        emptyRow.appendChild(emptyCell);
+        frag.appendChild(emptyRow);
+      }
 
       tbody.innerHTML = '';
       tbody.appendChild(frag);
@@ -777,6 +823,14 @@
       var zones    = _uniq(rows.map(function(r){ return r.zone || ''; }).filter(Boolean));
       var tiers    = _uniq(rows.map(function(r){ return r.tier || ''; }).filter(Boolean));
       var sectors  = _uniq(rows.map(function(r){ return r.sector || ''; }).filter(Boolean)).sort();
+      // Optional registered identities let a partial board retain zero-count
+      // sector choices. Counts still come only from the rows actually loaded.
+      if (Array.isArray(cfg.sectorOptions)) {
+        cfg.sectorOptions.forEach(function(value) {
+          if (typeof value === 'string' && value && value !== 'all' && sectors.indexOf(value) === -1) sectors.push(value);
+        });
+        sectors.sort();
+      }
       var capBkts  = ['large','mid','small'].filter(function(cb){
         return rows.some(function(r){ return (r.cap_bucket||'') === cb; }); });
       var lanes    = _uniq(rows.map(function(r){ return r.lane || ''; }).filter(Boolean));
@@ -866,7 +920,13 @@
         return dd;
       }
 
-      if (stageOpts.length > 0) { var ddStage = _makeDD('stage', stageOpts); if (ddStage) bar.appendChild(ddStage); }
+      /* P-MP1-SHELL §6/§9 (banned vocab: no "stage/阶段" user-facing) — the US
+         market opts out of this ONE dropdown via `cfg.stageFilter === false`.
+         Every other caller (hk/china/canada/intl) passes no such key, so
+         `cfg.stageFilter !== false` stays true and this dropdown renders
+         exactly as it always has — the header docstring documented this
+         config key since v3 but nothing ever read it until now. */
+      if (cfg.stageFilter !== false && stageOpts.length > 0) { var ddStage = _makeDD('stage', stageOpts); if (ddStage) bar.appendChild(ddStage); }
       if (zoneOpts.length > 0)  { var ddZone  = _makeDD('zone', zoneOpts);   if (ddZone)  bar.appendChild(ddZone); }
       if (tierList.length > 0)  { var ddTier  = _makeDD('tier', tierList);   if (ddTier)  bar.appendChild(ddTier); }
       { var ddSect = _makeDD('sector', sectors); if (ddSect) bar.appendChild(ddSect); }
@@ -976,7 +1036,7 @@
     }
 
     // Select a value in a dropdown.
-    function _selectDDValue(name, value) {
+    function _selectDDValue(name, value, focus) {
       var n = _ddNodes[name];
       if (!n) return;
       filters[name] = value;
@@ -995,9 +1055,23 @@
         n.dd.classList.add('stf-active');
       }
       _closeDD(name);
-      n.btn.focus();
+      if (focus !== false) n.btn.focus();
       _syncClearBtn();
       renderRows();
+    }
+
+    // A per-instance entry point: validate the native option before changing
+    // filters, labels, counts or rows. Hydration must not move keyboard focus.
+    function setSectorFilter(value) {
+      if (typeof value !== 'string') return false;
+      var n = _ddNodes.sector;
+      if (!n) return value === 'all' && filters.sector === 'all';
+      var valid = Array.from(n.menu.querySelectorAll('.stf-opt')).some(function(opt) {
+        return opt.getAttribute('data-value') === value;
+      });
+      if (!valid) return false;
+      _selectDDValue('sector', value, false);
+      return true;
     }
 
     // Keyboard navigation inside a menu.
@@ -1142,6 +1216,17 @@
     });
 
     function _updateCountChips(allR, filteredR) {
+      /* Same opt-out as the stage dropdown above — the reference this label
+         reads from ('ENTRY'/'RAN / LATE'/'RIPENING'/'KNIFE') is the retired
+         stage/阶段 taxonomy, MP-1 §6: "and its count chips — RETIRED. No
+         replacement column." Clearing the mount point (rather than leaving
+         its last-rendered content) matches every other cfg.stageFilter===false
+         no-op below: nothing this feature ever wrote survives being turned off. */
+      if (cfg.stageFilter === false) {
+        var offEl = document.getElementById('st-count-chips');
+        if (offEl) offEl.innerHTML = '';
+        return;
+      }
       var counts = { ENTRY:0, RAN_LATE:0, RIPENING:0, KNIFE:0 };
       filteredR.forEach(function(r){
         var s = r.stage || r._stage || '';
@@ -1299,6 +1384,11 @@
       var seen = {};
       return arr.filter(function(v){ if (seen[v]) return false; seen[v] = true; return true; });
     }
+
+    return {
+      getSectorFilter: function() { return filters.sector; },
+      setSectorFilter: setSectorFilter
+    };
   }
 
   /* ── exports ─────────────────────────────────────────────────────────── */

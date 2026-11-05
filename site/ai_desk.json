@@ -1,10 +1,11 @@
 {
   "schema": "ai_desk.v1",
   "is_context_only": true,
-  "generated_at": "2026-08-13T13:46:52.049922+00:00",
-  "state_asof": "2026-08-12",
-  "model": "deepseek-v4-pro",
-  "regime_context": "Flow is display_only: every sector is flagged directional=false with low/non-cohering cohesion gates, and the flow guardrails prohibit reading forward direction. Regime snap is dormant (snap=false, VIX 14.6 at 5.6th percentile, legs_up 0), so there is no fear spike or validated stress-conditional signal to fade.",
+  "generated_at": "2026-10-17T06:43:21.373739+00:00",
+  "state_asof": "2026-10-14",
+  "model": "gpt-5.6-sol",
+  "served_by": "codex",
+  "regime_context": "The flow detector is display-only: it shows broad concentration in Energy and Health Care, but every sector remains non-directional with low confidence and the lens has no validated forward edge. VIX is elevated, yet the relief snap is dormant and fear is rebuilding, so there is no supported fade-fear call.",
   "theses": [],
   "source_verdicts": {
     "flow": "display_only",
@@ -12,17 +13,17 @@
   },
   "track_record": {
     "schema": "ai_desk_track_record.v1",
-    "as_of": "2026-08-13",
-    "scored_total": 40,
-    "open": 19,
+    "as_of": "2026-10-16",
+    "scored_total": 63,
+    "open": 5,
     "unscored_soft": 0,
     "expired": 0,
     "overall": {
-      "n": 40,
-      "hits": 37,
-      "misses": 3,
-      "hit_rate": 0.925,
-      "dir_accuracy": 0.75
+      "n": 63,
+      "hits": 58,
+      "misses": 5,
+      "hit_rate": 0.921,
+      "dir_accuracy": 0.651
     },
     "by_conviction": {
       "high": {
@@ -40,140 +41,147 @@
         "dir_accuracy": null
       },
       "low": {
-        "n": 40,
-        "hits": 37,
-        "misses": 3,
-        "hit_rate": 0.925,
-        "dir_accuracy": 0.75
+        "n": 63,
+        "hits": 58,
+        "misses": 5,
+        "hit_rate": 0.921,
+        "dir_accuracy": 0.651
       }
     },
     "by_kind": {
       "rel_return": {
-        "n": 37,
-        "hits": 37,
-        "misses": 0,
-        "hit_rate": 1.0,
-        "dir_accuracy": 0.757
+        "n": 59,
+        "hits": 58,
+        "misses": 1,
+        "hit_rate": 0.983,
+        "dir_accuracy": 0.661
       },
       "level": {
-        "n": 3,
+        "n": 4,
         "hits": 0,
-        "misses": 3,
+        "misses": 4,
         "hit_rate": 0.0,
-        "dir_accuracy": 0.667
+        "dir_accuracy": 0.5
       }
     },
     "by_regime": {
       "Goldilocks": {
-        "n": 33,
-        "hits": 32,
+        "n": 44,
+        "hits": 42,
+        "misses": 2,
+        "hit_rate": 0.955,
+        "dir_accuracy": 0.636
+      },
+      "Reflation": {
+        "n": 12,
+        "hits": 11,
         "misses": 1,
-        "hit_rate": 0.97,
-        "dir_accuracy": 0.727
+        "hit_rate": 0.917,
+        "dir_accuracy": 0.583
       }
     },
-    "calibration_note": "40 scored, hit-rate 0.925 (directional accuracy 0.75). Chance alone would land a hit-rate near 0.8752 (directional accuracy near 0.4892) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+    "calibration_note": "63 scored, hit-rate 0.921 (directional accuracy 0.651). Chance alone would land a hit-rate near 0.8857 (directional accuracy near 0.4927) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
     "recent": [
       {
-        "id": "2026-07-20-1",
-        "subject": "Consumer Discretionary",
+        "id": "2026-09-04-20260906234016-3",
+        "subject": "VIX",
+        "lean": "fade-fear",
+        "conviction": "low",
+        "outcome": "miss",
+        "realized": 0.2278,
+        "check_by": "2026-10-02"
+      },
+      {
+        "id": "2026-09-04-20260906234016-2",
+        "subject": "Energy",
         "lean": "avoid",
         "conviction": "low",
         "outcome": "hit",
-        "realized": 0.0025,
-        "check_by": "2026-08-10"
+        "realized": -0.0186,
+        "check_by": "2026-10-02"
       },
       {
-        "id": "2026-07-15-3",
-        "subject": "Consumer Discretionary",
+        "id": "2026-09-04-20260906234016-1",
+        "subject": "Health Care",
         "lean": "avoid",
         "conviction": "low",
         "outcome": "hit",
-        "realized": -0.0158,
-        "check_by": "2026-08-12"
+        "realized": -0.03,
+        "check_by": "2026-10-02"
       },
       {
-        "id": "2026-07-15-2",
-        "subject": "Consumer Discretionary",
+        "id": "2026-09-03-20260904122813-1",
+        "subject": "Health Care",
         "lean": "avoid",
         "conviction": "low",
         "outcome": "hit",
-        "realized": -0.0158,
-        "check_by": "2026-08-12"
+        "realized": -0.0289,
+        "check_by": "2026-10-01"
       },
       {
-        "id": "2026-07-15-1",
+        "id": "2026-07-31-20260806225234-3",
         "subject": "Information Technology",
         "lean": "underweight",
         "conviction": "low",
         "outcome": "hit",
-        "realized": 0.0167,
-        "check_by": "2026-08-12"
+        "realized": 0.0472,
+        "check_by": "2026-09-11"
       },
       {
-        "id": "2026-07-14-2",
-        "subject": "Communication Services",
-        "lean": "underweight",
-        "conviction": "low",
-        "outcome": "hit",
-        "realized": -0.0302,
-        "check_by": "2026-08-11"
-      },
-      {
-        "id": "2026-07-14-1",
-        "subject": "Information Technology",
-        "lean": "underweight",
-        "conviction": "low",
-        "outcome": "hit",
-        "realized": -0.002,
-        "check_by": "2026-08-11"
-      },
-      {
-        "id": "2026-07-13-2",
+        "id": "2026-07-31-20260806225234-2",
         "subject": "Financials",
         "lean": "underweight",
         "conviction": "low",
         "outcome": "hit",
-        "realized": -0.0008,
-        "check_by": "2026-08-10"
+        "realized": -0.0177,
+        "check_by": "2026-09-11"
       },
       {
-        "id": "2026-07-13-1",
-        "subject": "Information Technology",
-        "lean": "underweight",
-        "conviction": "low",
-        "outcome": "hit",
-        "realized": -0.004,
-        "check_by": "2026-08-10"
-      },
-      {
-        "id": "2026-07-10-3",
+        "id": "2026-07-31-20260806225234-1",
         "subject": "Health Care",
         "lean": "underweight",
         "conviction": "low",
         "outcome": "hit",
-        "realized": 0.0058,
-        "check_by": "2026-08-07"
+        "realized": -0.0058,
+        "check_by": "2026-09-11"
       },
       {
-        "id": "2026-07-10-2",
-        "subject": "Information Technology",
+        "id": "2026-07-29-3",
+        "subject": "Real Estate",
         "lean": "underweight",
         "conviction": "low",
         "outcome": "hit",
-        "realized": -0.0125,
-        "check_by": "2026-08-07"
+        "realized": -0.1006,
+        "check_by": "2026-09-09"
+      },
+      {
+        "id": "2026-07-29-2",
+        "subject": "Financials",
+        "lean": "underweight",
+        "conviction": "low",
+        "outcome": "hit",
+        "realized": -0.0385,
+        "check_by": "2026-09-09"
+      },
+      {
+        "id": "2026-07-29-1",
+        "subject": "Information Technology",
+        "lean": "underweight",
+        "conviction": "low",
+        "outcome": "miss",
+        "realized": 0.0827,
+        "check_by": "2026-09-09"
       }
     ],
-    "calibration_note_zh": "\u5df2\u8bc4\u5206 40 \u6761\uff0c\u547d\u4e2d\u7387 0.925\uff08\u65b9\u5411\u51c6\u786e\u7387 0.75\uff09\u3002\u540c\u6837\u6761\u4ef6\u4e0b\uff0c\u65e0\u6280\u80fd\u5224\u65ad\u51ed\u673a\u4f1a\u5373\u53ef\u8fbe\u5230\u7ea6 0.8752 \u7684\u547d\u4e2d\u7387\uff08\u65b9\u5411\u51c6\u786e\u7387\u7ea6 0.4892\uff09\u2014\u2014\u4e0a\u8ff0\u6570\u5b57\u5e94\u4e0e\u8be5\u57fa\u7ebf\u6bd4\u8f83\uff0c\u800c\u975e 0.5\u3002"
+    "calibration_note_zh": "\u5df2\u8bc4\u5206 63 \u6761\uff0c\u547d\u4e2d\u7387 0.921\uff08\u65b9\u5411\u51c6\u786e\u7387 0.651\uff09\u3002\u540c\u6837\u6761\u4ef6\u4e0b\uff0c\u65e0\u6280\u80fd\u5224\u65ad\u51ed\u673a\u4f1a\u5373\u53ef\u8fbe\u5230\u7ea6 0.8857 \u7684\u547d\u4e2d\u7387\uff08\u65b9\u5411\u51c6\u786e\u7387\u7ea6 0.4927\uff09\u2014\u2014\u4e0a\u8ff0\u6570\u5b57\u5e94\u4e0e\u8be5\u57fa\u7ebf\u6bd4\u8f83\uff0c\u800c\u975e 0.5\u3002"
   },
   "passport": {
     "state": "measured",
     "earned": true,
-    "label_en": "measured \u00b7 n=32",
-    "label_zh": "\u5df2\u9a8c\u8bc1 \u00b7 n=32",
-    "n": 32,
-    "hit_rate": 0.25,
+    "label_en": "measured \u00b7 n=63",
+    "label_zh": "\u5df2\u9a8c\u8bc1 \u00b7 n=63",
+    "n": 63,
+    "hit_rate": 0.3016,
     "detail": "",
     "last_validated": null,
     "expected_max_age_days": null,
@@ -184,136 +192,106 @@
   "disclaimer": "AI desk note \u2014 context only, never scored or sized. The detectors it reads are DISPLAY-ONLY (flow has no validated forward edge; the relief snap is coincident). Each lean is a fallible, CHECKABLE judgement with a check-by date, not a trade recommendation or a position size.",
   "panel": {
     "opportunity": {
-      "stance": "This lens supports no durable directional lean: flow is display-only with no validated forward edge, and the relief snap is dormant/coincident. The cleanest reads are current concentration only\u2014Materials is the sole emerging sector (but not cohering), Financials and Health Care are cooling, and VIX has no fear snap to fade.",
+      "stance": "This display-only lens supports attention, not a durable directional lean: Energy and Health Care show the strongest sector-relative concentration, while the relief snap is dormant and fear is rebuilding. Every sector remains non-directional with low confidence, so no overweight, underweight, or fade-fear call is warranted.",
       "candidates": [
         {
-          "subject": "Materials",
-          "lean": "overweight",
-          "rationale": "Only sector in the emerging list with a positive flow_score (0.644) and top-pair co-movement with Industrials (corr 0.8), but low cohesion (0.191) and a false cohesion_gate make this a concentration flag, not a durable signal.",
-          "strength": "weak"
-        },
-        {
-          "subject": "Financials",
-          "lean": "underweight",
-          "rationale": "Cooling stage with negative flow_score (-0.599) and falling cohesion_chg (-0.068) despite an above-median rs_pctile (0.714), a broad deceleration read only.",
+          "subject": "Energy",
+          "lean": "none",
+          "rationale": "Confirmed, broad leadership and high relative strength concentrate attention here, but weakening cohesion and a non-directional low-confidence reading preclude a directional lean.",
           "strength": "weak"
         },
         {
           "subject": "Health Care",
-          "lean": "underweight",
-          "rationale": "Cooling stage with negative flow_score (-0.608) and a very high rs_pctile (0.988) but poor cohesion (0.155) and no gate confirmation, a high-relative-strength with negative-flow configuration.",
+          "lean": "none",
+          "rationale": "Very high relative strength, broad leadership, and improving stress-conditional cohesion are notable, but the detector explicitly remains non-directional.",
           "strength": "weak"
         },
         {
           "subject": "VIX",
-          "lean": "fade-fear",
-          "rationale": "Regime snap is dormant (snap false, VIX pctile 0.056, legs_up 0) so there is no coincident fear spike to fade; this is a low-vol read, not a forecast.",
+          "lean": "none",
+          "rationale": "The relief snap is dormant while fear is rebuilding, so there is no coincident basis to fade fear.",
           "strength": "weak"
         }
       ],
-      "key_risk": "A fast stress/vol event would shift the flow lens into its only conditionally relevant regime; without elevated VIX or a true cohesion_gate, these labels have no forward edge."
+      "key_risk": "Treating coincident concentration or stress-conditional cohesion as predictive would manufacture an edge that the display-only detector has not validated."
     },
     "skeptic": {
-      "stance": "This lens is display-only (flow rank-IC ~0) and every sector is directional=false with non-cohering gates, so apparent high relative-strength is coincident, not predictive. The regime snap is dormant with VIX at 5.6%ile, so protection bids are also a trap.",
+      "stance": "This lens yields no defensible directional sector call: every sector is flagged non-directional with low confidence, and the detector has no validated forward edge. Apparent leadership and stress-linked cohesion are coincident concentration signals vulnerable to being priced-in or mean-reverting.",
       "candidates": [
         {
-          "subject": "Information Technology",
+          "subject": "Energy",
           "lean": "avoid",
-          "rationale": "rs_pctile 0.972 but cohesion is low and falling (0.163, -0.051) with cohering false\u2014looks like hot dispersion, not a durable theme.",
+          "rationale": "High relative-strength percentile is already visible while cohesion is weakening, so the confirmed label is not predictive evidence.",
           "strength": "weak"
         },
         {
           "subject": "Health Care",
           "lean": "avoid",
-          "rationale": "rs_pctile 0.988 yet cooling with cohesion only 0.155 and cohering false, so strength is stretched and non-cohering.",
+          "rationale": "Extreme relative strength plus low-tier stress-conditional cohesion makes the apparent opportunity look priced-in and regime-dependent.",
           "strength": "weak"
         },
         {
-          "subject": "Financials",
-          "lean": "avoid",
-          "rationale": "Cooling stage with cohesion falling (-0.068) and directional false despite rs_pctile 0.714, so breadth is not confirming the move.",
-          "strength": "weak"
-        },
-        {
-          "subject": "Communication Services",
-          "lean": "avoid",
-          "rationale": "rs_pctile 0.024 and quiet with no cohering gate\u2014low relative strength trap, not accumulation.",
+          "subject": "Utilities",
+          "lean": "none",
+          "rationale": "Rising cohesion occurs under elevated stress but remains a coincident dispersion-recovery observation, not a directional sector signal.",
           "strength": "weak"
         },
         {
           "subject": "VIX",
-          "lean": "fade-fear",
-          "rationale": "Regime is dormant, snap false, VIX 14.6 at 5.6%ile and vix_term 0.785, so there is no stress relief to chase.",
-          "strength": "moderate"
+          "lean": "none",
+          "rationale": "The relief snap is dormant while fear is rebuilding, leaving no basis from this lens to fade fear.",
+          "strength": "weak"
         }
       ],
-      "key_risk": "A sudden realized volatility spike that flips VIX to elevated would break the dormant-regime assumption and could turn the current non-cohering dispersion into a stress-conditional signal."
+      "key_risk": "A durable out-of-sample relationship between these stress-conditional sector readings and subsequent returns would invalidate the no-edge interpretation."
     },
     "base_rate": {
-      "stance": "The flow lens is display-only (rank-IC ~0) and the regime snap is dormant with snap=false, so this setup has no validated forward edge; sector RS/cohesion/flow extremes are descriptive only, not directional.",
+      "stance": "This setup unconditionally resolves to no directional edge: the flow lens is display-only with rank-IC near zero, and every sector is marked non-directional. The relief snap is dormant and coincident, so elevated VIX does not justify a forward fear call.",
+      "candidates": [
+        {
+          "subject": "Energy",
+          "lean": "none",
+          "rationale": "Confirmed, broad leadership and high relative strength describe current concentration only, with no validated forward implication.",
+          "strength": "weak"
+        },
+        {
+          "subject": "Health Care",
+          "lean": "none",
+          "rationale": "High relative strength and stress-conditional cohering are descriptive, while the directional flag and confidence remain low.",
+          "strength": "weak"
+        },
+        {
+          "subject": "VIX",
+          "lean": "none",
+          "rationale": "VIX is elevated and fear is rebuilding, but the coincident relief snap is false and supplies no forward edge.",
+          "strength": "weak"
+        }
+      ],
+      "key_risk": "A subsequently validated directional signal or prospective evidence of durable forward rank-IC would invalidate this no-edge reading."
+    },
+    "structural": {
+      "stance": "Health Care is the clearest sector leader, with the highest relative-strength percentile, confirmed status, broad low-HHI leadership, and improving cohesion; Energy also leads broadly but cohesion is slipping. The dominant cross-group cluster is genuine broad co-movement rather than a single-name mirage, yet its Consumer Discretionary\u2013Staples core is not market leadership and this display-only lens has no validated forward edge.",
       "candidates": [
         {
           "subject": "Health Care",
           "lean": "none",
-          "rationale": "Extreme relative-strength percentile and cooling/negative flow look notable descriptively, but no validated edge supports a forward lean.",
-          "strength": "weak"
-        },
-        {
-          "subject": "Information Technology",
-          "lean": "none",
-          "rationale": "Very high relative-strength percentile and confirmed stage are offset by failing cohesion and display-only flow, so no directional edge.",
-          "strength": "weak"
-        },
-        {
-          "subject": "Communication Services",
-          "lean": "none",
-          "rationale": "Very low relative-strength percentile is descriptive only; no forward-validated signal supports underweight or avoid.",
-          "strength": "weak"
-        },
-        {
-          "subject": "Real Estate",
-          "lean": "none",
-          "rationale": "Low relative strength and low cohesion gate could be a focus, but the lens has no forward edge to act on.",
-          "strength": "weak"
-        }
-      ],
-      "key_risk": "If VIX/regime snap flips from dormant into a stress episode, the flow lens's only marginal historical edge is stress-conditional and could turn these descriptions into an actionable dispersion/rotation signal."
-    },
-    "structural": {
-      "stance": "Cluster map shows a broad, low-HHI dominant group (Consumer Discretionary, Real Estate, Financials, Health Care) but every sector cohesion gate is low and directional flags are false, so this is loose co-movement, not a confirmed theme. The cleanest structural pair is Industrials-Materials (0.80) with broad leadership; Materials is the lone emerging sector and therefore the marginal leader of that pair, but still unconfirmed.",
-      "candidates": [
-        {
-          "subject": "Materials",
-          "lean": "none",
-          "rationale": "Emerging with broad HHI 0.020 leadership and the top pair with Industrials, but cohesion gate is low so the spread is structural not directional.",
+          "rationale": "Broad, low-HHI leadership and improving cohesion make it the strongest structural read, without supporting a directional call.",
           "strength": "moderate"
         },
         {
-          "subject": "Industrials",
+          "subject": "Energy",
           "lean": "none",
-          "rationale": "Very broad HHI 0.007 leadership and higher RS, but quiet stage and low cohesion; acts as the pair anchor rather than a confirmed leader.",
+          "rationale": "Confirmed relative strength is broadly distributed, but declining cohesion weakens the theme-spread evidence.",
           "strength": "weak"
         },
         {
-          "subject": "Financials",
+          "subject": "Utilities",
           "lean": "none",
-          "rationale": "Dominant-cluster member with broad HHI 0.008 leadership but cooling and cohesion 0.252; no coherent theme gate.",
-          "strength": "weak"
-        },
-        {
-          "subject": "Health Care",
-          "lean": "none",
-          "rationale": "Extreme RS pctile 0.988 but cooling with very low cohesion 0.155 and broad low-HHI leadership; not a high-conviction structural lead.",
-          "strength": "weak"
-        },
-        {
-          "subject": "Consumer Discretionary",
-          "lean": "none",
-          "rationale": "Dominant-cluster member but low RS pctile 0.202 and low cohesion; broad leadership only, no follow-through.",
+          "rationale": "Leadership is broad and cohesion is improving under elevated stress, but relative strength remains weak and the signal is stress-conditional.",
           "strength": "weak"
         }
       ],
-      "key_risk": "The Industrials-Materials correlation breaks down or Materials leadership narrows to a high-HHI single-name move, turning the only clean co-movement signal into a mirage."
+      "key_risk": "The read breaks if Health Care leadership narrows or its improving cohesion reverses as the elevated-volatility regime fades."
     }
   }
 }

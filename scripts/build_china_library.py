@@ -14,6 +14,7 @@ from __future__ import annotations
 import copy
 import json
 import logging
+import numbers
 import os
 import sys
 import time
@@ -90,6 +91,89 @@ def stock_tradability_ok(
     if adv_yi is not None and adv_yi < china_liquidity.ADV_FLOOR_YI:
         return "adv"
     return None
+
+
+def load_tradability_metadata() -> dict[str, dict]:
+    """Read-only mktcap / name / ST-flag maps for the tradability screen (P6).
+
+    Exactly the best-effort load ``main()`` ran inline before this extraction —
+    same files, precedence, placeholder removal, Tushare overlay and moneyflow
+    latest-row ST flags; never fatal, writes nothing. Shared with the CN live
+    pack's tradability gate so both paths answer one owner.
+    """
+    mktcap_by: dict[str, float] = {}
+    name_zh_by: dict[str, str] = {}
+    name_en_by: dict[str, str] = {}
+    _PLACEHOLDER_MCAP = 30.0     # china_universe seeds CSI/config extras with a 30.0亿 sentinel; 46% of
+    #                              members carry it exactly. It is NOT a real cap — feeding it into
+    #                              Altman-Z distress zones / P-S coloring fabricates readings from a
+    #                              constant. Thread the sentinel to UNKNOWN (masterplan §W6-CN fix 5).
+    try:
+        mp = config.data_dir() / "china_search" / "members.parquet"
+        if mp.exists():
+            mdf = pd.read_parquet(mp)
+            if mdf.index.name == "ticker" and "ticker" not in mdf.columns:
+                mdf = mdf.reset_index()
+            tcol = "ticker" if "ticker" in mdf.columns else mdf.columns[0]
+            if "mktcap_yi" in mdf.columns:
+                mktcap_by = {str(r[tcol]): float(r["mktcap_yi"])
+                             for _, r in mdf.iterrows()
+                             if pd.notna(r.get("mktcap_yi")) and float(r["mktcap_yi"]) != _PLACEHOLDER_MCAP}
+            if "name_zh" in mdf.columns:
+                name_zh_by = {str(r[tcol]): str(r["name_zh"])
+                              for _, r in mdf.iterrows() if pd.notna(r.get("name_zh"))}
+            if "name_en" in mdf.columns:
+                name_en_by = {str(r[tcol]): str(r["name_en"])
+                              for _, r in mdf.iterrows() if pd.notna(r.get("name_en"))}
+        # prefer real per-name caps from Tushare valuation total_mv_yi (asof-gated so a frozen
+        # gated plane can't reintroduce stale caps) — fills exactly the placeholder-dropped names.
+        try:
+            from engine.tushare_freshness import prefer_tushare as _prefer_tv
+            tv = pd.read_parquet(config.data_dir() / "tushare" / "valuation.parquet")
+            chosen, _src = _prefer_tv(tv if "total_mv_yi" in tv.columns else None,
+                                      pd.read_parquet(config.data_dir() / "china_a_val" / "pe.parquet")
+                                      if (config.data_dir() / "china_a_val" / "pe.parquet").exists() else None)
+            if _src == "tushare" and chosen is not None and "total_mv_yi" in chosen.columns:
+                real = {str(r["ticker"]): float(r["total_mv_yi"])
+                        for _, r in chosen.iterrows()
+                        if pd.notna(r.get("ticker")) and pd.notna(r.get("total_mv_yi")) and float(r["total_mv_yi"]) > 0}
+                mktcap_by = {**real, **mktcap_by}     # real caps fill the placeholder gaps; keep any Sina real caps
+                log.info("china mktcap: filled %d names from Tushare total_mv_yi (placeholders dropped)", len(real))
+        except Exception as _te:  # noqa: BLE001 — Tushare cap overlay is additive
+            log.debug("china tushare mktcap overlay skipped (%s)", _te)
+    except Exception as e:  # noqa: BLE001
+        log.debug("china mktcap/name load failed: %s", e)
+
+    # ST/*ST/退 delisting-risk flags from a field that ACTUALLY CARRIES the prefix.
+    # ADVERSARIAL CHECK (masterplan §W6-CN fix 5): the Sina-sourced members.parquet name_zh
+    # strips the ST prefix entirely (0/1494 matches), so the name_zh-keyed ST screen was
+    # SILENTLY BLIND — a known-ST name in the universe (600777.SS) reads as "新潮能源" here while
+    # Tushare moneyflow carries it as "*ST新潮". Source ST status from the Tushare moneyflow name
+    # field (512 ST names on its latest snapshot) which preserves the prefix. Asof-gated so a
+    # frozen gated plane cannot resurrect a name that has since been un-ST'd or delisted.
+    st_flag_by: dict[str, bool] = {}
+    try:
+        from engine.tushare_freshness import frame_asof as _tf_asof
+        mfp = config.data_dir() / "tushare" / "moneyflow.parquet"
+        if mfp.exists():
+            mf = pd.read_parquet(mfp)
+            if "name" in mf.columns and "ticker" in mf.columns:
+                # keep only the latest snapshot row per ticker (the current ST status)
+                if "trade_date" in mf.columns:
+                    mf = mf.sort_values("trade_date").drop_duplicates("ticker", keep="last")
+                for _, r in mf.iterrows():
+                    nm = str(r.get("name", ""))
+                    if nm:
+                        st_flag_by[str(r["ticker"])] = is_st(nm, None)
+                _n_st = sum(1 for v in st_flag_by.values() if v)
+                log.info("china ST screen: sourced %d ST/*ST/退 flags from Tushare moneyflow "
+                         "(through %s); Sina name_zh dropped the prefix (0 matches)",
+                         _n_st, _tf_asof(mf))
+    except Exception as _se:  # noqa: BLE001 — additive; falls back to name_zh screen
+        log.debug("china ST-flag source unavailable (%s)", _se)
+
+    return {"mktcap_by": mktcap_by, "name_zh_by": name_zh_by,
+            "name_en_by": name_en_by, "st_flag_by": st_flag_by}
 
 
 def universe_price_adjustment() -> dict[str, str]:
@@ -190,6 +274,31 @@ def _data_through() -> str | None:
     return _name_data_through(CSI300_ETF)
 
 
+def _more_actionable_append_is_safe(wide: dict | None) -> bool:
+    """R3 REPAIR (2026-09-01): whether `wide["more_actionable"]` rows may be
+    appended to the china_standout_track board store this build.
+
+    `_more_actionable`'s board_definition (`f"{wide['board_definition']}_
+    more_actionable"`) is a DISTINCT, non-watch definition — unlike the
+    reversal_watch / v2-shadow / v3-shadow / continuation_watch cohorts, it is
+    NOT in `engine.china_standout_track.WATCH_DEFINITIONS`, so it IS counted
+    by `china_standout_track._latest_definition_frame` when resolving the
+    headline (graded) board definition: that resolver picks
+    `newest_rows.iloc[-1]["board_definition"]` among every non-watch row
+    appended for the newest date. On a night where `wide["buy"]` (the
+    featured shelf) is EMPTY, the featured append below writes zero rows for
+    today's date — so if more_actionable still appended, its rows would be
+    the ONLY non-watch rows for that date, and `_latest_definition_frame`
+    would silently pick the more_actionable (near-miss/shadow) shelf as the
+    graded headline definition. Gating on a non-empty `wide["buy"]` for the
+    SAME build keeps a genuine featured row always present (and, by append
+    order — buy is appended immediately after — always positioned to keep
+    owning the headline definition), so more_actionable can never hijack
+    headline selection on a zero-featured night.
+    """
+    return bool((wide or {}).get("more_actionable")) and bool((wide or {}).get("buy"))
+
+
 def compute_board_staleness(data_through: str | None = None,
                             now: "datetime | None" = None) -> dict:
     """Board staleness for the China board — the CN analogue of
@@ -263,6 +372,256 @@ def compute_board_staleness(data_through: str | None = None,
     except Exception as _e:  # noqa: BLE001 — never crashes a build
         log.warning("compute_board_staleness: failed (%s) — suppressing disclosure", _e)
         return _sentinel
+
+
+# ── W0.7 DUAL-READ: is a thinner shelf a DATA gap, or just a RED TAPE? ────────
+# A day-over-day count drop CANNOT tell those apart on its own. On 2026-08-19 the
+# guard stamped "Probable data/collector coverage gap" while every health instrument
+# was green (sessions_behind=0, universe 1641 vs 1635, micro/signal coverage 100%,
+# reversal coverage 99.5%) — the real cause was a broad selloff: the CSI300 ETF closed
+# -2.78% on 22 advancers against 60 decliners, and the eligible drop concentrated in
+# late_or_unfillable (69→7), i.e. extended names losing buy-state on a pullback. That
+# is exactly what a red tape does to an entry shelf.
+#
+# House law (CLAUDE.md § House laws): an INSTRUMENT verdict is not a MARKET verdict.
+# So the guard now names a cause only when it can actually evidence one:
+#   data_gap        — a health instrument is RED. Unchanged wording; this is the alarm.
+#   tape            — health all green AND the tape is broadly red. The shelf really is
+#                     thinner; say so honestly instead of accusing the collectors.
+#   no_cause_found  — health all green, tape readable and NOT red. Fewer names cleared;
+#                     we found no gap and no selloff. Claim neither.
+#   unverified      — a health instrument is BLIND (unreadable). Assert nothing.
+# Only `data_gap` may say "coverage gap"; only `tape` may blame the market. The banner
+# still renders in every case — the shelf IS thinner — but it stops inventing a cause.
+
+#: CSI300 ETF day return (%) at or below this reads as a broad-market down day.
+CN_TAPE_SELLOFF_BENCH_PCT = -1.5
+#: decliners at or above this multiple of advancers reads as a broad-market down day.
+CN_TAPE_SELLOFF_DEC_ADV_RATIO = 2.0
+#: a universe this much smaller (%) than the previous artifact's is a collector symptom.
+CN_HEALTH_UNIVERSE_SHRINK_PCT = 10.0
+
+
+def classify_shelf_drop(
+    *,
+    micro_incomplete: bool,
+    signal_incomplete: bool,
+    reversal_degraded: bool,
+    sessions_behind: int | None,
+    universe_now: int | None,
+    universe_prev: int | None,
+    bench_day_return_pct: float | None,
+    advancers: int | None,
+    decliners: int | None,
+) -> dict:
+    """Decide WHY the featured shelf thinned, from the health instruments and the tape.
+
+    ``sessions_behind`` is ``staleness["inputs"]["sessions_behind"]`` — ``None`` when
+    ``compute_board_staleness`` returned its fail-soft sentinel, which is BLIND, not
+    green, and therefore forces ``unverified`` rather than a tape acquittal.
+
+    ``universe_prev`` is a SECONDARY check: it is often uncomparable (a previous
+    outage shell writes ``universe: 0``, and older artifacts omit the key). Current
+    prices plus full same-day coverage already establish that the data arrived, so an
+    uncomparable universe is recorded as unchecked and does not block a tape read — a
+    universe that IS comparable and has shrunk past the threshold still means data_gap.
+
+    ``advancers``/``decliners`` are applied as a scale-free RATIO, so the caller may
+    pass any consistent cross-section. Deciding whether the sample is big enough to be
+    a market read is the CALLER's job — the builder only passes counts when at least
+    half the universe printed on the aligned session, and passes None otherwise.
+
+    Returns::
+
+        {"cause": "data_gap"|"tape"|"no_cause_found"|"unverified",
+         "health_parts": [str, ...],      # NEW instruments only, for the banner reason
+         "health_parts_zh": [str, ...],
+         "tape_en": str | None, "tape_zh": str | None,
+         "checked": {...}}                # evidence, display-only
+    """
+    health_parts: list[str] = []
+    health_parts_zh: list[str] = []
+
+    # ── health instruments ───────────────────────────────────────────────────
+    stale_prices = sessions_behind is not None and int(sessions_behind) >= 1
+    if stale_prices:
+        _n = int(sessions_behind)
+        health_parts.append(f"board prices {_n} session(s) behind")
+        health_parts_zh.append(f"看板价格落后{_n}个交易日")
+
+    universe_shrink_pct: float | None = None
+    try:
+        if universe_prev is not None and universe_now is not None and int(universe_prev) > 0:
+            universe_shrink_pct = (
+                (int(universe_prev) - int(universe_now)) / int(universe_prev) * 100.0
+            )
+    except (TypeError, ValueError):
+        universe_shrink_pct = None
+    universe_shrank = (
+        universe_shrink_pct is not None
+        and universe_shrink_pct > CN_HEALTH_UNIVERSE_SHRINK_PCT
+    )
+    if universe_shrank:
+        health_parts.append(
+            f"tracked universe {int(universe_prev)}→{int(universe_now)} "
+            f"({universe_shrink_pct:.0f}% smaller)"
+        )
+        health_parts_zh.append(
+            f"跟踪范围 {int(universe_prev)}→{int(universe_now)}"
+            f"（缩小{universe_shrink_pct:.0f}%）"
+        )
+
+    health_red = bool(
+        micro_incomplete or signal_incomplete or reversal_degraded
+        or stale_prices or universe_shrank
+    )
+    # Blind ≠ green. Coverage rates and the reversal flag are always computed; price
+    # staleness is the one that can come back unreadable.
+    health_blind = sessions_behind is None
+
+    # ── the tape ─────────────────────────────────────────────────────────────
+    bench_red = (
+        bench_day_return_pct is not None
+        and float(bench_day_return_pct) <= CN_TAPE_SELLOFF_BENCH_PCT
+    )
+    breadth_red = False
+    try:
+        if advancers is not None and decliners is not None and int(advancers) >= 0:
+            breadth_red = int(decliners) >= CN_TAPE_SELLOFF_DEC_ADV_RATIO * max(int(advancers), 1)
+    except (TypeError, ValueError):
+        breadth_red = False
+    tape_readable = bench_day_return_pct is not None or (
+        advancers is not None and decliners is not None
+    )
+    tape_red = bool(bench_red or breadth_red)
+
+    tape_en: str | None = None
+    tape_zh: str | None = None
+    if tape_red:
+        _bits, _bits_zh = [], []
+        if bench_day_return_pct is not None:
+            _bits.append(f"CSI 300 {float(bench_day_return_pct):+.1f}%")
+            _bits_zh.append(f"沪深300 {float(bench_day_return_pct):+.1f}%")
+        if advancers is not None and decliners is not None:
+            _bits.append(f"{int(decliners)} names down against {int(advancers)} up")
+            _bits_zh.append(f"下跌{int(decliners)}家、上涨{int(advancers)}家")
+        # Lead with what actually turned red. Breadth can be red on a flat cap-weighted
+        # index (equal-weight down, mega-caps holding) — calling that a "selloff" next to
+        # a printed "CSI 300 -0.2%" would read as the banner contradicting its own receipt.
+        _lead, _lead_zh = (
+            ("Broad market selloff today", "今日大盘普跌") if bench_red
+            else ("Most names fell today", "今日多数个股下跌")
+        )
+        _detail = ", ".join(_bits)
+        tape_en = f"{_lead} ({_detail})." if _detail else f"{_lead}."
+        _detail_zh = "、".join(_bits_zh)
+        tape_zh = f"{_lead_zh}（{_detail_zh}）。" if _detail_zh else f"{_lead_zh}。"
+
+    # ── verdict ──────────────────────────────────────────────────────────────
+    if health_red:
+        cause = "data_gap"
+    elif health_blind:
+        cause = "unverified"
+    elif tape_red:
+        cause = "tape"
+    elif tape_readable:
+        cause = "no_cause_found"
+    else:
+        cause = "unverified"
+
+    return {
+        "cause": cause,
+        "health_parts": health_parts,
+        "health_parts_zh": health_parts_zh,
+        "tape_en": tape_en,
+        "tape_zh": tape_zh,
+        "checked": {
+            "sessions_behind": sessions_behind,
+            "universe_now": universe_now,
+            "universe_prev": universe_prev,
+            "universe_shrink_pct": (
+                round(universe_shrink_pct, 1) if universe_shrink_pct is not None else None
+            ),
+            "bench_day_return_pct": (
+                round(float(bench_day_return_pct), 2)
+                if bench_day_return_pct is not None else None
+            ),
+            "advancers": advancers,
+            "decliners": decliners,
+            "tape_red": tape_red,
+            "health_red": health_red,
+        },
+    }
+
+
+#: Banner copy per cause. EN + ZH are written together so a new cause can never ship
+#: half-translated. Glance tier (docs/DESIGN_DOCTRINE.md): plain words, no study names,
+#: no raw slugs, and never any refutation/falsifier language on a user-facing surface.
+_SHELF_DROP_COPY: dict[str, dict[str, str]] = {
+    "data_gap": {
+        # Unchanged from the original guard — this is still the real alarm.
+        "tail": ("Probable data/collector coverage gap. "
+                 "The featured shelf is incomplete — treat with caution."),
+        "tail_zh": "可能存在数据或采集覆盖缺口，精选区并不完整，请谨慎参考。",
+    },
+    "tape": {
+        # One headline for both tape shapes (index down, or breadth down on a flat index)
+        # so it can never contradict the receipt printed beneath it.
+        "headline": "broad market decline — the shelf is thinner, not missing data",
+        "headline_zh": "大盘普遍下跌 — 精选区变薄，并非数据缺失",
+        "tail": ("Many setups were invalidated by the pullback — the featured shelf is "
+                 "thinner, not missing data. Data health checks are green."),
+        "tail_zh": "回调令多数入场形态失效——精选区变薄，并非数据缺失。数据健康检查正常。",
+    },
+    "no_cause_found": {
+        "headline": "fewer setups cleared today — the shelf is thinner",
+        "headline_zh": "今日通过入场检查的标的减少 — 精选区变薄",
+        "tail": ("Fewer names cleared the entry checks today. Data health checks are "
+                 "green — no coverage gap found."),
+        "tail_zh": "今日通过入场检查的标的减少。数据健康检查正常——未发现覆盖缺口。",
+    },
+    "unverified": {
+        "headline": "the shelf is thinner today",
+        "headline_zh": "今日精选区变薄",
+        "tail": ("Cause not established — some data health checks could not be read. "
+                 "Treat with caution."),
+        "tail_zh": "原因未确定——部分数据健康检查无法读取，请谨慎参考。",
+    },
+}
+
+
+def build_shelf_drop_outage(verdict: dict, parts_en: list[str], parts_zh: list[str],
+                            **extra) -> dict:
+    """Assemble the ``data_outage`` payload for a W0.7 shelf-drop verdict.
+
+    ``parts_en``/``parts_zh`` are the measured metric phrases (``featured 141→61 …``);
+    the cause supplies the headline and the closing sentence. Only ``data_gap`` names a
+    coverage gap; only ``tape`` blames the market. ``headline``/``headline_zh`` are
+    omitted for ``data_gap`` so china.html.j2 keeps its long-standing default.
+    """
+    cause = verdict.get("cause") or "unverified"
+    copy = _SHELF_DROP_COPY.get(cause, _SHELF_DROP_COPY["unverified"])
+    en = "; ".join(parts_en)
+    zh = "；".join(parts_zh)
+    tape_en = verdict.get("tape_en") if cause == "tape" else None
+    tape_zh = verdict.get("tape_zh") if cause == "tape" else None
+    # Sentence chunks, not concatenation: EN joins on a single space, ZH on nothing
+    # (Chinese sentences carry their own full-width stop). Either measured-metric
+    # phrase may be empty, so joining must never leave a doubled or leading space.
+    _en_chunks = [c for c in (f"{en}." if en else "", tape_en or "", copy["tail"]) if c]
+    _zh_chunks = [c for c in (f"{zh}。" if zh else "", tape_zh or "", copy["tail_zh"]) if c]
+    out = {
+        "flag": True,
+        "cause": cause,
+        "checked": verdict.get("checked") or {},
+        "reason": " ".join(_en_chunks),
+        "reason_zh": "".join(_zh_chunks),
+        **extra,
+    }
+    if copy.get("headline"):
+        out["headline"] = copy["headline"]
+        out["headline_zh"] = copy["headline_zh"]
+    return out
 
 
 # ── per-ticker analyze() fan-out (mirrors build_stock_library's process pool) ──
@@ -479,24 +838,56 @@ def _add_cache(out: list[tuple], seen: set[str], closes_path, meta_path, label: 
     return added
 
 
+def _last_session(close) -> "object | None":
+    """Latest valid session DATE of a close series — tz/time-of-day stripped so a
+    UTC-stamped cache and an exchange-local deep store compare on the CN session,
+    never on raw timezone timestamps. None when missing/empty/unparseable."""
+    try:
+        s = close.dropna()
+        if s.empty:
+            return None
+        raw_last = s.index.max()
+        if raw_last is None or isinstance(raw_last, numbers.Number) or pd.isna(raw_last):
+            return None
+        ts = pd.Timestamp(raw_last)
+        if pd.isna(ts):
+            return None
+        if ts.tzinfo is not None:
+            ts = ts.tz_localize(None)
+        return ts.date()
+    except Exception:  # noqa: BLE001 — an unparseable index earns no authority either way
+        return None
+
+
 def _overlay_deep_ohlc(out: list[tuple], group: str, min_rows: int = 300) -> int:
     """Upgrade names to the deep per-name OHLC store (data/<group>/<ticker>.parquet —
     real high/low + decades of history from collectors/china_stock_prices.py) wherever
     the nightly collector has backfilled them, replacing the ~5y close-only search/
     breadth cache series (which carry high=None). Mirrors how build_stock_library
     sources US names from data/stocks. Names not yet in the store keep their cache
-    series, so this is a pure, NON-REGRESSING upgrade that fills in as the store grows
-    (the seed ships ~12 names; nightly backfills the rest). See
+    series, and a deep series whose latest valid session TRAILS the cache's keeps the
+    fresher cache tuple (a lagging store must never move the Prophet board clock
+    backward — 2026-08-27), so this is a NON-REGRESSING upgrade that fills in as the
+    store grows (the seed ships ~12 names; nightly backfills the rest). See
     research/signal_engine/MULTICOUNTRY_DATA.md."""
     n = 0
-    for i, (t, _close, _high, name, sector) in enumerate(out):
+    stale = 0
+    for i, (t, close, _high, name, sector) in enumerate(out):
         df = store.read(group, t)
         if df is None or "close" not in df.columns or len(df["close"].dropna()) < min_rows:
+            continue
+        cache_last = _last_session(close)
+        deep_last = _last_session(df["close"])
+        if deep_last is None or (cache_last is not None and deep_last < cache_last):
+            stale += 1
             continue
         out[i] = (t, df["close"], df.get("high"), name, sector)
         n += 1
     if n:
         log.info("china library: upgraded %d names to the deep OHLC store (%s)", n, group)
+    if stale:
+        log.info("china library: kept %d fresher cache series over a stale deep store (%s)",
+                 stale, group)
     return n
 
 
@@ -1891,77 +2282,14 @@ def main(alpha: dict | None = None) -> dict | None:
         (fdir / "china_alpha.json").write_text(
             json.dumps(alpha, separators=(",", ":"), default=str))
 
-    # market caps (亿) for the fundamentals valuation pass + Chinese names (for the ST screen) — best-effort
-    mktcap_by: dict[str, float] = {}
-    name_zh_by: dict[str, str] = {}
-    name_en_by: dict[str, str] = {}
-    _PLACEHOLDER_MCAP = 30.0     # china_universe seeds CSI/config extras with a 30.0亿 sentinel; 46% of
-    #                              members carry it exactly. It is NOT a real cap — feeding it into
-    #                              Altman-Z distress zones / P-S coloring fabricates readings from a
-    #                              constant. Thread the sentinel to UNKNOWN (masterplan §W6-CN fix 5).
-    try:
-        mp = config.data_dir() / "china_search" / "members.parquet"
-        if mp.exists():
-            mdf = pd.read_parquet(mp)
-            if mdf.index.name == "ticker" and "ticker" not in mdf.columns:
-                mdf = mdf.reset_index()
-            tcol = "ticker" if "ticker" in mdf.columns else mdf.columns[0]
-            if "mktcap_yi" in mdf.columns:
-                mktcap_by = {str(r[tcol]): float(r["mktcap_yi"])
-                             for _, r in mdf.iterrows()
-                             if pd.notna(r.get("mktcap_yi")) and float(r["mktcap_yi"]) != _PLACEHOLDER_MCAP}
-            if "name_zh" in mdf.columns:
-                name_zh_by = {str(r[tcol]): str(r["name_zh"])
-                              for _, r in mdf.iterrows() if pd.notna(r.get("name_zh"))}
-            if "name_en" in mdf.columns:
-                name_en_by = {str(r[tcol]): str(r["name_en"])
-                              for _, r in mdf.iterrows() if pd.notna(r.get("name_en"))}
-        # prefer real per-name caps from Tushare valuation total_mv_yi (asof-gated so a frozen
-        # gated plane can't reintroduce stale caps) — fills exactly the placeholder-dropped names.
-        try:
-            from engine.tushare_freshness import prefer_tushare as _prefer_tv
-            tv = pd.read_parquet(config.data_dir() / "tushare" / "valuation.parquet")
-            chosen, _src = _prefer_tv(tv if "total_mv_yi" in tv.columns else None,
-                                      pd.read_parquet(config.data_dir() / "china_a_val" / "pe.parquet")
-                                      if (config.data_dir() / "china_a_val" / "pe.parquet").exists() else None)
-            if _src == "tushare" and chosen is not None and "total_mv_yi" in chosen.columns:
-                real = {str(r["ticker"]): float(r["total_mv_yi"])
-                        for _, r in chosen.iterrows()
-                        if pd.notna(r.get("ticker")) and pd.notna(r.get("total_mv_yi")) and float(r["total_mv_yi"]) > 0}
-                mktcap_by = {**real, **mktcap_by}     # real caps fill the placeholder gaps; keep any Sina real caps
-                log.info("china mktcap: filled %d names from Tushare total_mv_yi (placeholders dropped)", len(real))
-        except Exception as _te:  # noqa: BLE001 — Tushare cap overlay is additive
-            log.debug("china tushare mktcap overlay skipped (%s)", _te)
-    except Exception as e:  # noqa: BLE001
-        log.debug("china mktcap/name load failed: %s", e)
-
-    # ST/*ST/退 delisting-risk flags from a field that ACTUALLY CARRIES the prefix.
-    # ADVERSARIAL CHECK (masterplan §W6-CN fix 5): the Sina-sourced members.parquet name_zh
-    # strips the ST prefix entirely (0/1494 matches), so the name_zh-keyed ST screen was
-    # SILENTLY BLIND — a known-ST name in the universe (600777.SS) reads as "新潮能源" here while
-    # Tushare moneyflow carries it as "*ST新潮". Source ST status from the Tushare moneyflow name
-    # field (512 ST names on its latest snapshot) which preserves the prefix. Asof-gated so a
-    # frozen gated plane cannot resurrect a name that has since been un-ST'd or delisted.
-    st_flag_by: dict[str, bool] = {}
-    try:
-        from engine.tushare_freshness import frame_asof as _tf_asof
-        mfp = config.data_dir() / "tushare" / "moneyflow.parquet"
-        if mfp.exists():
-            mf = pd.read_parquet(mfp)
-            if "name" in mf.columns and "ticker" in mf.columns:
-                # keep only the latest snapshot row per ticker (the current ST status)
-                if "trade_date" in mf.columns:
-                    mf = mf.sort_values("trade_date").drop_duplicates("ticker", keep="last")
-                for _, r in mf.iterrows():
-                    nm = str(r.get("name", ""))
-                    if nm:
-                        st_flag_by[str(r["ticker"])] = is_st(nm, None)
-                _n_st = sum(1 for v in st_flag_by.values() if v)
-                log.info("china ST screen: sourced %d ST/*ST/退 flags from Tushare moneyflow "
-                         "(through %s); Sina name_zh dropped the prefix (0 matches)",
-                         _n_st, _tf_asof(mf))
-    except Exception as _se:  # noqa: BLE001 — additive; falls back to name_zh screen
-        log.debug("china ST-flag source unavailable (%s)", _se)
+    # market caps (亿) for the fundamentals valuation pass + Chinese names (for the ST
+    # screen) — best-effort, read-only (extracted into load_tradability_metadata, shared
+    # with the CN live pack's tradability gate; nightly behaviour unchanged)
+    _trad_meta = load_tradability_metadata()
+    mktcap_by = _trad_meta["mktcap_by"]
+    name_zh_by = _trad_meta["name_zh_by"]
+    name_en_by = _trad_meta["name_en_by"]
+    st_flag_by = _trad_meta["st_flag_by"]
 
     # live China net-liquidity regime — the single macro conviction modifier on the
     # ladder (CN has no macro_risk/VIX leg, unlike the US build)
@@ -2162,8 +2490,33 @@ def main(alpha: dict | None = None) -> dict | None:
     # gauge itself is market-agnostic (reads the return cross-section + each name's vol),
     # so it propagates to the mean-reversion-flavoured A-share book unchanged.
     disp_regime, regime_gross = None, 1.0
+    # W0.7 dual-read input: the board's OWN advance/decline count for the last settled
+    # session, taken off the SAME aligned frame the dispersion panel already builds — so
+    # it costs no extra read. Aligned (not per-series iloc[-1]) on purpose: a suspended
+    # or stale name is NaN on that row and falls out of both counts instead of silently
+    # contributing a different session's move. Initialised before the try so the guard
+    # 2,000 lines below always finds it defined (blind reads as None, never as green).
+    _tape_adv: int | None = None
+    _tape_dec: int | None = None
     try:
         _uni_closes = pd.concat({t: c for (t, c, *_rest) in uni}, axis=1).sort_index()
+        try:
+            _last_ret = _uni_closes.pct_change(fill_method=None).iloc[-1].dropna()
+            # A single name carrying a bar dated past the board session would make the
+            # last aligned row almost entirely NaN, and a 2-name "advance/decline" would
+            # read as a screaming tape. Require half the universe to have printed before
+            # trusting the row; below that the breadth is BLIND (None), never green.
+            if len(_last_ret) >= 0.5 * _uni_closes.shape[1]:
+                _tape_adv = int((_last_ret > 0).sum())
+                _tape_dec = int((_last_ret < 0).sum())
+            else:
+                log.warning(
+                    "W0.7 board breadth: only %d/%d names printed on the last aligned "
+                    "session — breadth read as unavailable",
+                    len(_last_ret), _uni_closes.shape[1],
+                )
+        except Exception as _be:  # noqa: BLE001 — display-only cross-read, never fatal
+            log.warning("china board breadth for W0.7 dual-read unavailable (%s)", _be)
         disp_regime = dispersion.assess(_uni_closes.pct_change(fill_method=None).tail(280))
         if disp_regime:
             regime_gross = disp_regime["gross_mult"]
@@ -3981,6 +4334,11 @@ def main(alpha: dict | None = None) -> dict | None:
                     as_of,
                     lane=_lane,
                     board_lanes=_board_lanes,
+                    # Same map already computed once above and fed to
+                    # enrich_and_score_rows — single-compute invariant (masterplan
+                    # §13 PR-0B): persists the full intel_* anatomy without a
+                    # second interest_score() evaluation.
+                    intel_by=_intel_by_ticker,
                 )
                 log.info("china Prophet shadow ledger: %d total candidate rows", _shadow_n)
             except Exception as _shadow_e:  # noqa: BLE001 — research log never suppresses board
@@ -3997,6 +4355,47 @@ def main(alpha: dict | None = None) -> dict | None:
                 log.info("[timing] cn_regime_store.append (%s)", "OK" if _rstore_ok else "skip/fail")
             except Exception as _rs_e:  # noqa: BLE001 — SA-R16: never suppress grade()
                 log.warning("china_regime_store.append failed (%s) — board track continues", _rs_e)
+            # MEMBERSHIP repair (M1/M2, 2026-09-01): china.html.j2 pv_cards
+            # `_entry_rows UNION setups.more_actionable` (engine/prophet_board_since.py's
+            # CN adapter docstring trace) — more_actionable names are genuinely
+            # NAME-VISIBLE on the shipped page but, until now, were never persisted
+            # to board.parquet at all, so a demote-then-return through that lane
+            # incorrectly reset a candidate's tenure. Persisted here under a
+            # DISTINCT board_definition (`<live>_more_actionable`, never a value
+            # china_standout_track.WATCH_DEFINITIONS or the live headline
+            # `wide["board_definition"]` ever equal) and a distinct row-level
+            # `lane="more_actionable"` (append_board's own `lane` column, keep-first
+            # semantics preserved by construction — different board_definition
+            # means no (date, ticker, board_definition) key can collide with a buy
+            # row). MUST run BEFORE the featured `wide["buy"]` append immediately
+            # below: china_standout_track._latest_definition_frame picks the
+            # headline definition as `newest_rows.iloc[-1]["board_definition"]` —
+            # the LAST-appended non-watch row for the newest date — so appending
+            # more_actionable first keeps the featured board_definition as that
+            # last (and therefore headline-selected) row for today, exactly the
+            # same append-order discipline this module already documents for the
+            # continuation_watch cohort below ("appended LAST so no other
+            # definition's append order is disturbed"). engine/prophet_board_since.py's
+            # observations_from_cn_frame excludes only WATCH_DEFINITIONS + 'legacy',
+            # so this distinct, non-watch definition IS counted for membership —
+            # that inclusion is the entire point of this block.
+            # R3 REPAIR (2026-09-01): guarded via _more_actionable_append_is_safe
+            # (see its docstring) — never let more_actionable become the ONLY
+            # non-watch rows for a date, which would hijack
+            # china_standout_track._latest_definition_frame's headline pick.
+            if _more_actionable_append_is_safe(wide):
+                _more_board_definition = f"{wide['board_definition']}_more_actionable"
+                _more_rows_for_board = [
+                    {**r, "board_definition": _more_board_definition, "lane": "more_actionable"}
+                    for r in wide["more_actionable"] if isinstance(r, dict)
+                ]
+                _bn_ma = china_standout_track.append_board(
+                    _more_rows_for_board, asof=as_of, lane=_lane)
+                log.info("china more_actionable board-track: logged %d rows", _bn_ma)
+            elif wide.get("more_actionable"):
+                log.info(
+                    "china more_actionable board-track: skipped (zero featured "
+                    "names this build — would hijack the headline definition)")
             _bn = china_standout_track.append_board(wide["buy"], asof=as_of, lane=_lane)
             # reversal_watch cohort: same store, own board_definition (never the
             # headline grade — see WATCH_DEFINITIONS in china_standout_track).
@@ -4166,6 +4565,7 @@ def main(alpha: dict | None = None) -> dict | None:
         _prev_buy_n: int | None = None
         _prev_definition: str | None = None
         _prev_execution_coverage: dict = {}
+        _prev_universe: int | None = None
         try:
             if _standouts_path.exists():
                 _prev = json.loads(_standouts_path.read_text())
@@ -4176,10 +4576,33 @@ def main(alpha: dict | None = None) -> dict | None:
                     if isinstance(_prev.get("execution_coverage"), dict)
                     else {}
                 )
+                try:
+                    # 0 is the Prophet outage shell's own placeholder, not a real count —
+                    # treat it as uncomparable rather than a 100% universe collapse.
+                    _pu = int(_prev.get("universe") or 0)
+                    _prev_universe = _pu if _pu > 0 else None
+                except (TypeError, ValueError):
+                    _prev_universe = None
         except Exception:  # noqa: BLE001 — guard must never block the write
             pass
         _new_buy_n = len(wide["buy"])
         _collapsed: dict[str, dict] = {}
+        # ── W0.7 dual-read inputs (see classify_shelf_drop): the tape, then the health
+        # instruments. Both stamp sites below feed the SAME classifier, so the banner
+        # cannot say "coverage gap" on one path and "selloff" on the other.
+        _bench_day_return_pct: float | None = None
+        try:
+            from engine.china_standout_track import _bench_close as _w07_bench  # noqa: PLC0415,SLF001
+            _bs = _w07_bench()
+            if _bs is not None and len(_bs) >= 2:
+                _p0, _p1 = float(_bs.iloc[-2]), float(_bs.iloc[-1])
+                if _p0 > 0:
+                    _bench_day_return_pct = (_p1 / _p0 - 1.0) * 100.0
+        except Exception as _be:  # noqa: BLE001 — cross-read is additive, never fatal
+            log.warning("W0.7 benchmark day-return unavailable (%s)", _be)
+        _sessions_behind = (
+            (wide.get("staleness") or {}).get("inputs", {}) or {}
+        ).get("sessions_behind")
         if (
             _prev_buy_n is not None
             and _prev_buy_n > 0
@@ -4250,23 +4673,27 @@ def main(alpha: dict | None = None) -> dict | None:
                     _reason_parts_zh.append(
                         f"当日微观结构覆盖率{_micro_rate:.1f}%（低于80%）"
                     )
-                wide["data_outage"] = {
-                    "flag": True,
-                    "metrics": _collapsed,
-                    "micro_rate_pct": _micro_rate,
-                    "reason": (
-                        "; ".join(_reason_parts)
-                        + ". Probable data/collector coverage gap. "
-                        "The featured shelf is incomplete — treat with caution."
-                    ),
-                    "reason_zh": (
-                        "；".join(_reason_parts_zh)
-                        + "。可能存在数据或采集覆盖缺口，精选区并不完整，请谨慎参考。"
-                    ),
-                }
+                _verdict = classify_shelf_drop(
+                    micro_incomplete=_micro_incomplete,
+                    signal_incomplete=False,
+                    reversal_degraded=False,
+                    sessions_behind=_sessions_behind,
+                    universe_now=wide.get("universe"),
+                    universe_prev=_prev_universe,
+                    bench_day_return_pct=_bench_day_return_pct,
+                    advancers=_tape_adv,
+                    decliners=_tape_dec,
+                )
+                _reason_parts += _verdict["health_parts"]
+                _reason_parts_zh += _verdict["health_parts_zh"]
+                wide["data_outage"] = build_shelf_drop_outage(
+                    _verdict, _reason_parts, _reason_parts_zh,
+                    metrics=_collapsed,
+                    micro_rate_pct=_micro_rate,
+                )
                 log.warning(
-                    "W0.7 Prophet coverage guard: %s — stamping data_outage",
-                    "; ".join(_reason_parts),
+                    "W0.7 Prophet coverage guard [cause=%s]: %s — stamping data_outage",
+                    _verdict["cause"], "; ".join(_reason_parts),
                 )
         elif _prev_buy_n is not None and _prev_definition != wide["board_definition"]:
             wide["definition_change"] = {
@@ -4344,27 +4771,31 @@ def main(alpha: dict | None = None) -> dict | None:
                 _reason_parts_zh.append(
                     f"当日反转输入缺失或不完整（可操作标的覆盖率{_rev_rate:.1f}%）"
                 )
-            wide["data_outage"] = {
-                "flag": True,
-                "metrics": {
-                    **_collapsed,
-                    "reversal": _reversal_coverage,
-                },
-                "micro_rate_pct": _micro_rate,
-                "signal_rate_pct": _signal_rate,
-                "reason": (
-                    "; ".join(_reason_parts)
-                    + ". Probable data/collector coverage gap. "
-                    "The featured shelf is incomplete — treat with caution."
-                ),
-                "reason_zh": (
-                    "；".join(_reason_parts_zh)
-                    + "。可能存在数据或采集覆盖缺口，精选区并不完整，请谨慎参考。"
-                ),
-            }
+            # This block's condition is a SUPERSET of the width-guard block's above, so
+            # it always has the last word on what ships. Same classifier, same copy —
+            # a shelf that thinned on a red tape is never re-labelled a collector gap here.
+            _verdict = classify_shelf_drop(
+                micro_incomplete=_micro_incomplete,
+                signal_incomplete=_signal_incomplete,
+                reversal_degraded=_reversal_incomplete,
+                sessions_behind=_sessions_behind,
+                universe_now=wide.get("universe"),
+                universe_prev=_prev_universe,
+                bench_day_return_pct=_bench_day_return_pct,
+                advancers=_tape_adv,
+                decliners=_tape_dec,
+            )
+            _reason_parts += _verdict["health_parts"]
+            _reason_parts_zh += _verdict["health_parts_zh"]
+            wide["data_outage"] = build_shelf_drop_outage(
+                _verdict, _reason_parts, _reason_parts_zh,
+                metrics={**_collapsed, "reversal": _reversal_coverage},
+                micro_rate_pct=_micro_rate,
+                signal_rate_pct=_signal_rate,
+            )
             log.warning(
-                "W0.7 Prophet input guard: %s — stamping data_outage",
-                "; ".join(_reason_parts),
+                "W0.7 Prophet input guard [cause=%s]: %s — stamping data_outage",
+                _verdict["cause"], "; ".join(_reason_parts),
             )
         # ── W8-E: table-view enrichment ───────────────────────────────────────
         # (a) NULL-SAFE real-mcap join: overlay Tushare total_mv_yi onto rows that
@@ -4487,6 +4918,19 @@ def main(alpha: dict | None = None) -> dict | None:
                      len(_ripening_rows) + len(_ripening_falling), _rn)
         except Exception as _re:  # noqa: BLE001 — ledger is additive, never fatal
             log.warning("W1-B ripening ledger failed (%s)", _re)
+        # Library provenance only: the ONE W3C selection finalizer is later in
+        # build_china, after served reasons/fallback/board_since. This prospective
+        # generation belongs to the existing library invocation, never a render retry.
+        try:
+            import uuid as _w3c_uuid
+            from datetime import datetime as _w3c_dt, timezone as _w3c_tz
+            from engine.theme_graph.selection_cohort_publication import source_handoff
+            wide["w3c_source"] = source_handoff(
+                generation_id=_w3c_uuid.uuid4().hex,
+                availability="PARTIAL" if failed else "VALID",
+                available_at=_w3c_dt.now(_w3c_tz.utc).isoformat())
+        except Exception as _w3c_source_e:  # noqa: BLE001 — existing source publication survives
+            log.warning("W3C library provenance unavailable (%s)", _w3c_source_e)
         # Serialize BEFORE opening the file; on TypeError name the offending key path
         # (a bare "keys must be str..." from json.dumps is unlocatable in CI logs —
         # that anonymity is what let the 07-13 tuple-key crash run for 3 sessions).
@@ -4621,6 +5065,16 @@ def main(alpha: dict | None = None) -> dict | None:
             )
             wide["track_ledger"] = None
         setups = wide
+        # Honest zero-universe outage: this is NOT a valid finalized empty cohort.
+        try:
+            import uuid as _w3c_uuid
+            from datetime import datetime as _w3c_dt, timezone as _w3c_tz
+            from engine.theme_graph.selection_cohort_publication import source_handoff
+            wide["w3c_source"] = source_handoff(
+                generation_id=_w3c_uuid.uuid4().hex, availability="OUTAGE",
+                available_at=_w3c_dt.now(_w3c_tz.utc).isoformat())
+        except Exception as _w3c_source_e:  # noqa: BLE001 — preserve incumbent outage publication
+            log.warning("W3C outage provenance unavailable (%s)", _w3c_source_e)
         _standouts_path = site / "factordata" / "china_standouts.json"
         _standouts_payload = json.dumps(
             wide,

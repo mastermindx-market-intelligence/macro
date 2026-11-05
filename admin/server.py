@@ -26,6 +26,8 @@ import re
 import threading
 import time
 from collections import OrderedDict
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -35,7 +37,7 @@ from . import (actions, ai_cost, alerts as _alerts_mod, allies_store, analytics_
                codex_panel,
                config_store,
                content, context_lobe, edge_trust, email_center, entitlements, experiments,
-               flags, ga4, github_api, github_config, gitops, health, intelligence_os,
+               flags, ga4, github_api, github_config, gitops, health, intelligence_os, intelligence_execution,
                key_alerts, long_hold,
                live_runs,
                macro_thesis,
@@ -65,11 +67,58 @@ _CTYPES = {".html": "text/html; charset=utf-8",
 # The SPA bundle is public (the authenticated data is not), so give it
 # content-addressed URLs and let the browser/edge keep each immutable revision.
 # index.html itself remains no-store and always points at the current hashes.
-_STATIC_ASSET_NAMES = ("app.js", "styles.css")
+_STATIC_ASSET_NAMES = ("app.js", "styles.css", "preferences.js")
 _STATIC_ASSET_VERSIONS = {
     name: hashlib.sha256((STATIC / name).read_bytes()).hexdigest()[:12]
-    for name in _STATIC_ASSET_NAMES
+    for name in _STATIC_ASSET_NAMES if (STATIC / name).is_file()
 }
+
+# The console is one ~950 KB bundle plus a ~210 KB stylesheet, and _file() used to
+# read the whole thing off disk on every hit (and redo index.html's ?v= rewrite each
+# time). The asset hashes above are already computed once at import from these exact
+# bytes, so the version a client is told about is pinned to process start — caching
+# the bodies to match is consistent, not a staleness risk: a deploy restarts the unit
+# (admin/deploy/admin.service), which is what re-reads the files and re-stamps the
+# hashes. Guarded by a lock so two first-hit threads don't both read the file.
+_STATIC_BODY_CACHE: dict[str, bytes] = {}
+_STATIC_BODY_LOCK = threading.RLock()
+
+
+_THEME_TOKEN_BODY: bytes | None = None
+_THEME_TOKEN_VERSION: str | None = None
+
+
+def _theme_token_asset() -> tuple[bytes, str]:
+    """One governed projection pinned to this process; never serve source CSS."""
+    global _THEME_TOKEN_BODY, _THEME_TOKEN_VERSION
+    with _STATIC_BODY_LOCK:
+        if _THEME_TOKEN_BODY is None:
+            from admin.theme_tokens import project_theme_tokens
+
+            source = Path(__file__).resolve().parents[1] / "templates" / "theme.css"
+            body = project_theme_tokens(source.read_text(encoding="utf-8")).encode("utf-8")
+            _THEME_TOKEN_BODY = body
+            _THEME_TOKEN_VERSION = hashlib.sha256(body).hexdigest()[:12]
+        return _THEME_TOKEN_BODY, _THEME_TOKEN_VERSION
+
+
+def _static_body(name: str, path) -> bytes:
+    cached = _STATIC_BODY_CACHE.get(name)
+    if cached is not None:
+        return cached
+    body = path.read_bytes()
+    if name == "index.html":
+        if b"/assets/theme-tokens.css" in body:
+            _token_body, token_version = _theme_token_asset()
+            body = body.replace(b"/assets/theme-tokens.css", f"/assets/theme-tokens.css?v={token_version}".encode())
+        for asset_name, version in _STATIC_ASSET_VERSIONS.items():
+            body = body.replace(
+                asset_name.encode(),
+                f"{asset_name}?v={version}".encode(),
+            )
+    with _STATIC_BODY_LOCK:
+        _STATIC_BODY_CACHE[name] = body
+    return body
 
 # Page panels are read-only snapshots assembled from files and integrations. Several
 # take hundreds of milliseconds (or more on the VPS) to fold, while a human commonly
@@ -77,7 +126,26 @@ _STATIC_ASSET_VERSIONS = {
 # briefly in-process. Browser caching remains forbidden because these payloads contain
 # private operator data; the session guard runs before this cache is consulted.
 _API_CACHE_TTL_S = 15.0
+# The first-party analytics panels are the one family where 15s is the wrong number.
+# Each is a snapshot of an append-only event store over a window measured in hours or
+# days, so a minute of staleness cannot change what the operator is reading — but 15s
+# is shorter than the time it takes to read one of these tables, so every trip back to
+# a tab re-folded the whole panel. The one genuinely live reading on that screen
+# (/fp/realtime, the "N active" pill) is on _API_CACHE_BYPASS_PATHS below and is not
+# cached at all, so nothing being watched for freshness is affected by this.
+_API_CACHE_TTL_OVERRIDES: tuple[tuple[str, float], ...] = (
+    # Match Intelligence OS's own five-minute derived-estate cache.  Re-sending
+    # and re-serializing the same 100+ KB census every 15s buys no freshness:
+    # the underlying derivation itself is intentionally stable for five minutes.
+    ("/api/intelligence_os", 300.0),
+    # Metabolism's live run strip is a separate no-cache endpoint; the panel
+    # snapshot (repo variables + recent-run summary) does not need a full GitHub
+    # round trip every time the operator tabs away and back.
+    ("/api/metabolism", 60.0),
+    ("/api/analytics/fp/", 60.0),
+)
 _API_CACHE_MAX_ENTRIES = 256
+_EVIDENCE_CACHE_BYTES = 32 * 1024 * 1024
 _API_RESPONSE_CACHE: OrderedDict[str, tuple[float, bytes]] = OrderedDict()
 _API_RESPONSE_CACHE_LOCK = threading.Lock()
 _API_RESPONSE_CACHE_GENERATION = 0
@@ -88,6 +156,13 @@ _API_CACHE_BYPASS_PATHS = {
     "/api/runtime-state",
     "/api/analytics/fp/realtime",
 }
+
+
+def _api_cache_ttl(path: str) -> float:
+    for prefix, ttl in _API_CACHE_TTL_OVERRIDES:
+        if path.startswith(prefix):
+            return ttl
+    return _API_CACHE_TTL_S
 
 
 def _cacheable_api_get(path: str, query: dict) -> bool:
@@ -112,7 +187,8 @@ def _cached_api_body(key: str) -> bytes | None:
         return body
 
 
-def _store_api_body(key: str, body: bytes, generation: int) -> None:
+def _store_api_body(key: str, body: bytes, generation: int,
+                    ttl: float = _API_CACHE_TTL_S) -> None:
     now = time.monotonic()
     with _API_RESPONSE_CACHE_LOCK:
         if generation != _API_RESPONSE_CACHE_GENERATION:
@@ -121,8 +197,16 @@ def _store_api_body(key: str, body: bytes, generation: int) -> None:
                    if expires_at <= now]
         for old_key in expired:
             _API_RESPONSE_CACHE.pop(old_key, None)
-        _API_RESPONSE_CACHE[key] = (now + _API_CACHE_TTL_S, body)
+        _API_RESPONSE_CACHE[key] = (now + ttl, body)
         _API_RESPONSE_CACHE.move_to_end(key)
+        # Limit cumulative retained Evaluation bodies, including distinct engine
+        # details/query variants. Other panels retain their existing policy.
+        evidence_keys = [k for k in _API_RESPONSE_CACHE if ":/api/intelligence_os" in k]
+        retained = sum(len(_API_RESPONSE_CACHE[k][1]) for k in evidence_keys)
+        for old_key in evidence_keys:
+            if retained <= _EVIDENCE_CACHE_BYTES:
+                break
+            retained -= len(_API_RESPONSE_CACHE.pop(old_key)[1])
         while len(_API_RESPONSE_CACHE) > _API_CACHE_MAX_ENTRIES:
             _API_RESPONSE_CACHE.popitem(last=False)
 
@@ -163,6 +247,7 @@ _CSP = ("default-src 'none'; "
         "base-uri 'none'; "
         "form-action 'self'; "
         "object-src 'none'; "
+        "frame-src https://control.mastermind-x.com; "
         "frame-ancestors 'none'")
 
 
@@ -357,30 +442,49 @@ def _repo_summary(cfg: dict | None = None) -> dict:
 
 
 def _summary_payload() -> dict:
-    """Build the landing snapshot while parsing the large config only once."""
+    """Build the landing snapshot while parsing the large config only once.
+
+    The eleven panels are INDEPENDENT of one another and every one of them is
+    I/O-bound — `git` subprocesses, five `systemctl show` spawns, and a pile of
+    JSON/YAML file reads — so folding them serially just adds their latencies up.
+    This endpoint is on the console's boot path (app.js awaits it before it routes
+    to a tab), which made it the single biggest contributor to "the admin feels
+    laggy": measured 0.85-3.5 s cold. Running them on a small pool collapses the
+    wall time to roughly the slowest panel, because each one releases the GIL
+    while it waits on the OS.
+
+    Ordering is preserved by building the result from a fixed list, so the JSON
+    key order does not depend on which panel happens to finish first.
+    """
     def _safe(fn):
         try:
             return fn()
         except Exception as exc:  # noqa: BLE001
             return {"error": str(exc)}
 
+    # Parsed first and shared: three panels take it as an argument, so folding it
+    # concurrently with them would just re-read the same file three more times.
     shared_cfg = _safe(config_store.read_config)
     if not isinstance(shared_cfg, dict) or set(shared_cfg) == {"error"}:
         shared_cfg = None
 
-    result = {
-        "meta": _safe(lambda: _repo_summary(shared_cfg)),
-        "flags": _safe(lambda: flags.snapshot(shared_cfg)),
-        "brief": _safe(lambda: brief.panel(shared_cfg)),
-        "health": _safe(health.summary),
-        "cost": _safe(lambda: ai_cost.estimate(shared_cfg)),
-        "git": _safe(gitops.status),
-        "system": _safe(system.snapshot),
-        "services": _safe(services.status),
-        "experiments": _safe(experiments.alert_summary),
-        "key_alerts": _safe(key_alerts.panel),
-        "program_watch": _safe(program_watch.panel),
-    }
+    panels = (
+        ("meta", lambda: _repo_summary(shared_cfg)),
+        ("flags", lambda: flags.snapshot(shared_cfg)),
+        ("brief", lambda: brief.panel(shared_cfg)),
+        ("health", health.summary),
+        ("cost", lambda: ai_cost.estimate(shared_cfg)),
+        ("git", gitops.status),
+        ("system", system.snapshot),
+        ("services", services.status),
+        ("experiments", experiments.alert_summary),
+        ("key_alerts", key_alerts.panel),
+        ("program_watch", program_watch.panel),
+    )
+    with ThreadPoolExecutor(max_workers=len(panels),
+                            thread_name_prefix="admin-summary") as pool:
+        futures = [(key, pool.submit(_safe, fn)) for key, fn in panels]
+        result = {key: fut.result() for key, fut in futures}
     if isinstance(result["health"], dict) and "error" not in result["health"]:
         result["health"] = {
             k: v for k, v in result["health"].items()
@@ -397,14 +501,34 @@ def _summary_payload() -> dict:
 class Handler(BaseHTTPRequestHandler):
     server_version = "MacroAdmin/2.0"
 
+    # Keep the connection open between requests. BaseHTTPRequestHandler defaults to
+    # HTTP/1.0, which means "assume close after body" — every single API call paid a
+    # fresh TCP handshake and a fresh worker thread, and the console fires a burst of
+    # them on boot and on every tab switch. Every response this class writes carries an
+    # accurate Content-Length (_json_body / _csv / _file / the outbox-media path), which
+    # is the precondition for framing a persistent connection; the two places that could
+    # desync one — a 204 that still shipped a body, and an over-sized POST body that was
+    # never drained — are handled in _json_body and _body below.
+    protocol_version = "HTTP/1.1"
+
+    # A persistent connection holds a ThreadingHTTPServer worker for as long as it
+    # stays open, so an idle one must not be able to pin a thread forever. This is
+    # the socket timeout socketserver applies to the connection; handle_one_request
+    # turns the resulting timeout into close_connection and the thread exits.
+    timeout = 30
+
     # ---- low-level helpers --------------------------------------------------
     def _json(self, obj, code: int = 200, cookies: list[str] | None = None) -> None:
         body = json.dumps(obj, default=str).encode()
         cache_key = getattr(self, "_response_cache_key", None)
         cache_status = None
-        if code == 200 and cache_key:
-            key, generation = cache_key
-            _store_api_body(key, body, generation)
+        semantic_failure = (
+            isinstance(obj, dict)
+            and (obj.get("ok") is False or bool(obj.get("error")))
+        )
+        if code == 200 and cache_key and not semantic_failure:
+            key, generation, ttl = cache_key
+            _store_api_body(key, body, generation, ttl)
             cache_status = "MISS"
         self._response_cache_key = None
         self._json_body(body, code=code, cookies=cookies, cache_status=cache_status)
@@ -412,9 +536,16 @@ class Handler(BaseHTTPRequestHandler):
     def _json_body(self, body: bytes, code: int = 200,
                    cookies: list[str] | None = None,
                    cache_status: str | None = None) -> None:
+        # 204/304 carry no body BY DEFINITION. Sending one anyway is invisible on a
+        # close-after-body connection but desynchronises a persistent one: the client
+        # reads the stray bytes as the head of the NEXT response and fails to parse it.
+        # /favicon.ico answers 204, so this is a live path, not a hypothetical.
+        if code in (204, 304):
+            body = b""
         self.send_response(code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
+        if code not in (204, 304):
+            self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
         if cache_status:
             self.send_header("X-Admin-Cache", cache_status)
@@ -423,7 +554,8 @@ class Handler(BaseHTTPRequestHandler):
         for c in (cookies or []):
             self.send_header("Set-Cookie", c)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _csv(self, filename: str, body: bytes) -> None:
         """A real file download, not a JSON envelope the client re-wraps.
@@ -449,34 +581,70 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy", _CSP)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _file(self, name: str) -> None:
         p = (STATIC / name).resolve()
         if not str(p).startswith(str(STATIC.resolve())) or not p.is_file():
             self._json({"error": "not found"}, 404)
             return
-        body = p.read_bytes()
-        if name == "index.html":
-            for asset_name, version in _STATIC_ASSET_VERSIONS.items():
-                body = body.replace(
-                    asset_name.encode(),
-                    f"{asset_name}?v={version}".encode(),
-                )
+        try:
+            body = _static_body(name, p)
+        except Exception:  # noqa: BLE001 — governed shell dependency unavailable
+            return self._json({"error": "admin asset unavailable"}, 503)
+        etag = f'"{_STATIC_ASSET_VERSIONS[name]}"' if name in _STATIC_ASSET_VERSIONS else None
+        # The bundle is served under a content-addressed ?v= URL and marked
+        # immutable, so a conforming browser will not revalidate at all. This
+        # answers the ones that do anyway (a forced reload, an intermediary)
+        # without pushing ~950 KB back down the pipe for a byte-identical body.
+        if etag and self.headers.get("If-None-Match") == etag:
+            self.send_response(304)
+            self.send_header("ETag", etag)
+            self.send_header("Cache-Control", "public, max-age=31536000, immutable")
+            self.end_headers()
+            return
         self.send_response(200)
         self.send_header("Content-Type", _CTYPES.get(p.suffix, "application/octet-stream"))
         self.send_header("Content-Length", str(len(body)))
-        if name in _STATIC_ASSET_VERSIONS:
-            version = _STATIC_ASSET_VERSIONS[name]
+        if etag:
             self.send_header("Cache-Control", "public, max-age=31536000, immutable")
-            self.send_header("ETag", f'"{version}"')
+            self.send_header("ETag", etag)
         else:
             self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy", _CSP)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
+
+    def _theme_tokens_file(self) -> None:
+        try:
+            body, version = _theme_token_asset()
+        except Exception:  # noqa: BLE001 — invalid projection is unavailable, no source leakage
+            return self._json({"error": "theme asset unavailable"}, 503)
+        etag = '"' + version + '"'
+        versioned = (parse_qs(urlparse(self.path).query).get("v") or [""])[0] == version
+        cache_control = "public, max-age=31536000, immutable" if versioned else "no-cache"
+        if self.headers.get("If-None-Match") == etag:
+            self.send_response(304)
+            self.send_header("ETag", etag)
+            self.send_header("Cache-Control", cache_control)
+            self.end_headers()
+            return
+        self.send_response(200)
+        self.send_header("Content-Type", "text/css; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("ETag", etag)
+        # Only content-versioned URLs are immutable; an unversioned read can revalidate.
+        self.send_header("Cache-Control", cache_control)
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Content-Security-Policy", _CSP)
+        self.end_headers()
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _body(self) -> dict:
         try:
@@ -484,9 +652,24 @@ class Handler(BaseHTTPRequestHandler):
             if n <= 0:
                 return {}
             if n > 1_000_000:
+                # Refuse without reading it. On a persistent connection the unread
+                # body would still be sitting in the socket and would be parsed as
+                # the next request line, so drop the connection instead of draining
+                # (draining is what turns an over-sized body into free work for a
+                # caller who sent it deliberately).
+                self.close_connection = True
                 return {}
-            return json.loads(self.rfile.read(n) or b"{}")
+            raw = self.rfile.read(n)
         except Exception:  # noqa: BLE001
+            # The body could not be pulled off the wire, so the stream position is
+            # unknown — this connection cannot be reused.
+            self.close_connection = True
+            return {}
+        try:
+            return json.loads(raw or b"{}")
+        except Exception:  # noqa: BLE001
+            # Malformed JSON from a caller who framed the request correctly: the
+            # body WAS consumed, so the connection stays in sync and usable.
             return {}
 
     def log_message(self, fmt, *args):  # quieter console
@@ -580,9 +763,26 @@ class Handler(BaseHTTPRequestHandler):
             attrs += "; Secure"
         age = 0 if clear else settings.session_ttl_hours() * 3600
         sv, cv = ("" if clear else session), ("" if clear else csrf)
-        return [
+        cookies = [
             f"{auth.SESSION_COOKIE}={sv}; HttpOnly{attrs}; Max-Age={age}",
-            f"{auth.CSRF_COOKIE}={cv}{attrs}; Max-Age={age}",   # readable by JS (double-submit)
+        ]
+        if clear and settings.deployed():
+            cookies.append(
+                f"{auth.SESSION_COOKIE}=; HttpOnly; Domain=mastermind-x.com"
+                f"{attrs}; Max-Age=0"
+            )
+        cookies.append(
+            f"{auth.CSRF_COOKIE}={cv}{attrs}; Max-Age={age}"  # readable by JS (double-submit)
+        )
+        return cookies
+
+    def _promote_session_cookie(self, session: str) -> list[str]:
+        attrs = "; Path=/; SameSite=Strict; Secure"
+        age = settings.session_ttl_hours() * 3600
+        return [
+            f"{auth.SESSION_COOKIE}={session}; HttpOnly; Domain=mastermind-x.com"
+            f"{attrs}; Max-Age={age}",
+            f"{auth.SESSION_COOKIE}=; HttpOnly{attrs}; Max-Age=0",
         ]
 
     def _host_ok(self) -> bool:
@@ -616,8 +816,17 @@ class Handler(BaseHTTPRequestHandler):
                 return ("cross-origin request rejected", 403)
         return None
 
+    def do_HEAD(self):
+        """Mirror GET status and headers without writing a response body.
+
+        External monitors and HTTP clients routinely probe web surfaces with HEAD.
+        BaseHTTPRequestHandler otherwise answers 501, which made a healthy admin
+        console look unavailable even though GET / was 200.
+        """
+        return self.do_GET()
+
     # ---- GET ----------------------------------------------------------------
-    _PUBLIC_GET = {"/", "/index.html", "/app.js", "/styles.css", "/favicon.ico",
+    _PUBLIC_GET = {"/", "/index.html", "/app.js", "/styles.css", "/research-diagnostic-tokens.css", "/favicon.ico",
                    "/healthz", "/api/session"}
 
     def do_GET(self):
@@ -632,21 +841,49 @@ class Handler(BaseHTTPRequestHandler):
             # public, no-auth surfaces
             if path in ("/", "/index.html"):
                 return self._file("index.html")
-            if path in ("/app.js", "/styles.css"):
+            if path == "/assets/theme-tokens.css":
+                return self._theme_tokens_file()
+            if path in ("/app.js", "/styles.css", "/preferences.js"):
                 return self._file(path.lstrip("/"))
+            if path == "/research-diagnostic-tokens.css":
+                from .research_diagnostic_tokens import stylesheet
+                try:
+                    body = stylesheet()
+                except (OSError, ValueError):
+                    return self._json({"error": "diagnostic presentation unavailable"}, 503)
+                etag = '"' + hashlib.sha256(body).hexdigest() + '"'
+                unchanged = self.headers.get("If-None-Match") == etag
+                self.send_response(304 if unchanged else 200)
+                self.send_header("Content-Type", "text/css; charset=utf-8")
+                self.send_header("ETag", etag)
+                self.send_header("Cache-Control", "public, max-age=0, must-revalidate")
+                self.send_header("X-Content-Type-Options", "nosniff")
+                if not unchanged:
+                    self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                if not unchanged and self.command != "HEAD":
+                    self.wfile.write(body)
+                return
             if path == "/favicon.ico":
                 return self._json({}, 204)
             if path == "/healthz":
                 return self._json({"ok": True, "service": "macro-admin",
                                    "deployed": settings.deployed()})
             if path == "/api/session":
+                auth_enabled = settings.auth_enabled()
+                authenticated = (not auth_enabled) or self._authed()
+                cookies = None
+                if settings.deployed() and auth_enabled and authenticated:
+                    cookies = self._promote_session_cookie(
+                        self._cookie_val(auth.SESSION_COOKIE) or ""
+                    )
                 return self._json({
-                    "auth_enabled": settings.auth_enabled(),
-                    "authenticated": (not settings.auth_enabled()) or self._authed(),
+                    "auth_enabled": auth_enabled,
+                    "authenticated": authenticated,
                     "deployed": settings.deployed(),
                     "public_url": settings.public_url(),
                     "integrations": _integrations(),
-                })
+                }, cookies=cookies)
 
             # everything else under /api requires a session when auth is on
             if settings.auth_enabled() and not self._authed():
@@ -654,10 +891,13 @@ class Handler(BaseHTTPRequestHandler):
 
             if _cacheable_api_get(path, q):
                 cache_key = f"{_server_cache_namespace(self.server)}:{self.path}"
+                if path in {"/api/intelligence_os", "/api/intelligence_os/engine"}:
+                    cache_key += ":owner_snapshot:" + repr(intelligence_os.recorded_snapshot_cache_identity())
                 cached_body = _cached_api_body(cache_key)
                 if cached_body is not None:
                     return self._json_body(cached_body, cache_status="HIT")
-                self._response_cache_key = (cache_key, _response_cache_generation())
+                self._response_cache_key = (cache_key, _response_cache_generation(),
+                                            _api_cache_ttl(path))
 
             # Caddy uses this same-origin, cookie-authenticated probe before
             # serving /research-tools/* from the generated site tree.
@@ -733,7 +973,19 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/marketing/lobes":
                 return self._json(marketing.lobes())
             if path == "/api/marketing/content":
-                return self._json(marketing.content())
+                charts = (q.get("charts") or ["inline"])[0]
+                if charts not in {"inline", "metadata"}:
+                    return self._json({"ok": False, "error": "Unknown chart representation."}, 400)
+                return self._json(marketing.content(chart_mode="metadata")
+                                  if charts == "metadata" else marketing.content())
+            if path == "/api/marketing/content/chart":
+                result = marketing.content_chart(
+                    (q.get("id") or [None])[0], (q.get("revision") or [None])[0])
+                status = 200 if result.get("ok") else {
+                    "invalid_request": 400, "plan_changed": 409,
+                    "chart_ambiguous": 409, "chart_not_found": 404,
+                }.get(result.get("reason"), 503)
+                return self._json(result, status)
             if path == "/api/marketing/lab":
                 return self._json(marketing.lab())
             if path == "/api/marketing/sentinel":
@@ -795,7 +1047,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_header("Content-Security-Policy",
                                  "default-src 'none'; style-src 'unsafe-inline'; sandbox")
                 self.end_headers()
-                self.wfile.write(body)
+                if getattr(self, "command", None) != "HEAD":
+                    self.wfile.write(body)
                 return
             # Allies (ecosystem) cockpit — MKT-D11. Read-only; the page never
             # contacts anyone. Status is folded from the operator ledger.
@@ -1030,17 +1283,20 @@ class Handler(BaseHTTPRequestHandler):
                         {"error": f"achievements unavailable: {_ae}", "cycles": []}, 503
                     )
 
-            # Eval OS — the derived T1 (engine census) + T4 (output health) estate.
-            # Read-only and derived on demand: the module writes nothing, ever, and holds
-            # its own 5-minute in-process cache keyed on the registry's mtimes. That
-            # cache, not the 15s HTTP one above, is what keeps a click off a full
-            # 642-artifact walk; `?force=1` bypasses BOTH, which is the only combination
-            # that actually re-derives.
-            if path == "/api/intelligence_os":
-                return self._json(intelligence_os.panel(
-                    force=(q.get("force") or ["0"])[0].lower() in {"1", "true", "yes", "on"}))
-            if path == "/api/intelligence_os/engine":
-                return self._json(intelligence_os.engine_detail((q.get("id") or [""])[0]))
+            # Authenticated misses derive a complete snapshot inside the finite
+            # owned process envelope; the HTTP cache retains only bounded results.
+            if path in {"/api/intelligence_os", "/api/intelligence_os/engine"}:
+                try:
+                    if path == "/api/intelligence_os":
+                        force = (q.get("force") or ["0"])[0].lower() in {"1", "true", "yes", "on"}
+                        if force:
+                            # Re-derive supersedes serialized panel/detail snapshots too.
+                            _clear_response_cache()
+                        return self._json(intelligence_execution.response("panel", force=force))
+                    return self._json(intelligence_execution.response("detail", engine_id=(q.get("id") or [""])[0]))
+                except Exception:  # noqa: BLE001 — private owner failure, fixed transport error
+                    return self._json({"ok": False, "error": "Could not read the evidence estate",
+                                       "error_code": "evidence_read_failed"}, 500)
 
             return self._json({"error": f"unknown route {path}"}, 404)
         except Exception as e:  # noqa: BLE001

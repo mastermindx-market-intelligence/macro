@@ -232,15 +232,29 @@
     ui.status.classList.toggle('is-degraded', kind === 'degraded');
   }
 
+  function coverageNotice(raw) {
+    raw = raw || {};
+    var freshness = String(firstDefined(raw.freshness, 'unknown')).toLowerCase();
+    var horizon = String(firstDefined(raw.horizon_state, raw.state, raw.source_status, 'unknown')).toLowerCase();
+    if (freshness === 'fresh' && horizon === 'current') {
+      return { kind: 'fresh', en: 'Observed filing coverage is current', zh: '已观察披露覆盖范围为最新' };
+    }
+    if (freshness === 'stale' || horizon === 'lagging' || horizon.indexOf('degraded_') === 0) {
+      return { kind: 'degraded', en: 'Observed filing coverage is behind latest SEC filings', zh: '已观察披露覆盖范围落后于最新 SEC 披露' };
+    }
+    if (freshness === 'unknown' || horizon === 'unavailable') {
+      return { kind: 'degraded', en: 'Observed filing freshness is unavailable', zh: '已观察披露新鲜度暂不可用' };
+    }
+    if (horizon === 'partial') {
+      return { kind: 'partial', en: 'Observed filing coverage is partial', zh: '已观察披露覆盖范围不完整' };
+    }
+    return { kind: 'degraded', en: 'Observed filing coverage is temporarily limited', zh: '已观察披露覆盖范围暂时受限' };
+  }
+
   function renderCoverage() {
     var raw = coverageFrom(state.coverage);
-    var status = String(firstDefined(raw.freshness, raw.state, raw.source_status, 'loading')).toLowerCase();
-    var message;
-    if (status === 'fresh' || status === 'ok') message = copy('Observed filing coverage is current', '已观察披露覆盖范围为最新');
-    else if (status === 'partial') message = copy('Observed filing coverage is partial', '已观察披露覆盖范围不完整');
-    else if (status === 'degraded') message = copy('Observed filing coverage is temporarily limited', '已观察披露覆盖范围暂时受限');
-    else message = copy('Observed filing coverage is loading', '正在加载已观察披露覆盖范围');
-    setNotice(message, status === 'fresh' || status === 'ok' ? 'fresh' : status === 'degraded' ? 'degraded' : 'partial');
+    var notice = coverageNotice(raw);
+    setNotice(copy(notice.en, notice.zh), notice.kind);
     ui.asOf.textContent = formatTime(firstDefined(raw.as_of, state.coverage && state.coverage.as_of));
     ui.generatedAt.textContent = formatTime(firstDefined(raw.generated_at, state.coverage && state.coverage.generated_at));
     ui.issuerCount.textContent = firstDefined(raw.issuer_count, raw.issuers, state.overview.length, '—');
@@ -548,15 +562,66 @@
       .finally(function () { ui.moreEvents.disabled = false; });
   }
 
+  function lookupNoticeFor(status, ticker) {
+    // Resolver failures are classified, never flattened into an outage: 404
+    // means the ticker is simply outside observed coverage, 409 means the desk
+    // must not choose an issuer for the reader, and only 5xx, network and
+    // unknown failures are a temporary outage. Each notice names the ticker
+    // that failed, so it can never be read as a statement about the issuer
+    // already on screen; the prior selection is left untouched.
+    if (status === 404) {
+      return {
+        kind: 'partial',
+        en: 'No observed issuer matched ticker "' + ticker + '"',
+        zh: '没有已观察发行人匹配代码“' + ticker + '”'
+      };
+    }
+    if (status === 400 || status === 422) {
+      return {
+        kind: 'partial',
+        en: '"' + ticker + '" is not a valid ticker symbol',
+        zh: '“' + ticker + '”不是有效的股票代码'
+      };
+    }
+    if (status === 409) {
+      return {
+        kind: 'partial',
+        en: 'Ticker "' + ticker + '" matches more than one observed issuer; refine the search to choose one.',
+        zh: '代码“' + ticker + '”匹配多个已观察发行人，请细化搜索后再选择。'
+      };
+    }
+    if (status === 401 || status === 403) {
+      return {
+        kind: 'degraded',
+        en: 'Sign in with an eligible account to search tickers.',
+        zh: '请使用符合条件的账户登录后搜索代码。'
+      };
+    }
+    return {
+      kind: 'degraded',
+      en: 'Ticker lookup is temporarily unavailable',
+      zh: '代码查找暂时不可用'
+    };
+  }
+
   function resolveTicker() {
     var ticker = state.query.trim();
     if (!ticker) return;
     api('/issuers/resolve?ticker=' + encodeURIComponent(ticker)).then(function (data) {
       var issuerId = resolveIssuerId(data);
-      if (issuerId) return selectIssuer(issuerId, { focus: true });
-      setNotice(copy('No observed issuer matched that ticker', '没有已观察发行人匹配该代码'), 'partial');
+      if (issuerId) {
+        // A resolved ticker ends the previous lookup error, without inventing
+        // freshness: restore the existing coverage response before selection.
+        renderCoverage();
+        return selectIssuer(issuerId, { focus: true });
+      }
+      var notice = lookupNoticeFor(404, ticker);
+      setNotice(copy(notice.en, notice.zh), notice.kind);
       return null;
-    }).catch(function () { setNotice(copy('Ticker lookup is temporarily unavailable', '代码查找暂时不可用'), 'degraded'); });
+    }).catch(function (error) {
+      var notice = lookupNoticeFor(error && error.status, ticker);
+      setNotice(copy(notice.en, notice.zh), notice.kind);
+    });
   }
 
   function resolveIssuerId(data) {
@@ -687,6 +752,7 @@
     window.__CAPITAL_STRUCTURE_DESK_TEST__.resolveIssuerId = resolveIssuerId;
     window.__CAPITAL_STRUCTURE_DESK_TEST__.isRecentObserved = isRecentObserved;
     window.__CAPITAL_STRUCTURE_DESK_TEST__.labelPair = labelPair;
+    window.__CAPITAL_STRUCTURE_DESK_TEST__.coverageNotice = coverageNotice;
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

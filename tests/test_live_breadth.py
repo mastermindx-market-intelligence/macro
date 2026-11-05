@@ -9,7 +9,7 @@ boundaries — no wall-clock-dependent assertion that could flip after 5pm PDT
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -22,7 +22,13 @@ from scripts import live_breadth_poller as poller
 TIER_KEYS = {"key", "label", "univ", "n", "adv", "dec", "unch", "adv_pct",
              "pa50", "pa200", "nh", "nl", "net_nh"}
 COMP_KEYS = {"n", "adv", "dec", "unch", "adv_pct", "pa50", "pa200", "net_nh"}
-TOP_KEYS = {"schema", "asof", "delay_min", "session", "basis", "tiers", "comp", "meta"}
+# FROZEN CONTRACT §1/§9: the truth-boundary wave adds built_at/source_asof/
+# source_age_min/feed_status/usable/unusable_reason/coverage/producer —
+# purely additive, `asof` stays for back-compat (mirrors built_at).
+TOP_KEYS = {"schema", "asof", "built_at", "source_asof", "source_age_min",
+            "delay_min", "session", "basis", "feed_status", "usable",
+            "unusable_reason", "coverage", "producer", "tiers", "comp", "meta"}
+COVERAGE_KEYS = {"n", "expected", "pct"}
 
 
 def _th(prev, ma50, ma200, hi52, lo52):
@@ -269,3 +275,424 @@ def test_cli_once_offline_writes_file(tmp_path, monkeypatch):
     assert p["basis"] == "poll"
     # offline -> empty tiers, fail-soft
     assert p["tiers"] == []
+    assert p["usable"] is False
+
+
+# ── evaluate_usable: the ONE truth-boundary adjudicator (FROZEN CONTRACT §1) ──
+
+def _base_usable_kwargs(**over):
+    base = dict(feed_status="ok", session="rth", n_tiers=3, coverage_pct=95.0,
+                source_age_min=10.0)
+    base.update(over)
+    return base
+
+
+def test_evaluate_usable_happy_path_is_true():
+    usable, reason = lb.evaluate_usable(**_base_usable_kwargs())
+    assert usable is True and reason is None
+
+
+def test_evaluate_usable_feed_not_ok():
+    usable, reason = lb.evaluate_usable(**_base_usable_kwargs(feed_status="no_key"))
+    assert usable is False and reason == "feed_no_key"
+    usable, reason = lb.evaluate_usable(**_base_usable_kwargs(feed_status="offline"))
+    assert usable is False and reason == "feed_offline"
+
+
+def test_evaluate_usable_session_closed_or_falsy():
+    usable, reason = lb.evaluate_usable(**_base_usable_kwargs(session="closed"))
+    assert usable is False and reason == "session_closed"
+    usable, reason = lb.evaluate_usable(**_base_usable_kwargs(session=""))
+    assert usable is False and reason == "session_closed"
+
+
+def test_evaluate_usable_tiers_incomplete():
+    usable, reason = lb.evaluate_usable(**_base_usable_kwargs(n_tiers=2))
+    assert usable is False and reason == "tiers_incomplete"
+
+
+def test_evaluate_usable_no_source_clock():
+    usable, reason = lb.evaluate_usable(**_base_usable_kwargs(source_age_min=None))
+    assert usable is False and reason == "no_source_clock"
+
+
+def test_evaluate_usable_source_stale():
+    usable, reason = lb.evaluate_usable(**_base_usable_kwargs(source_age_min=30.0))
+    assert usable is False and reason == "source_stale"
+
+
+def test_evaluate_usable_negative_source_age_is_allowed_not_rejected():
+    """Clock skew (source clock ahead of the build) is NOT staleness — never
+    rejected here; only display code may clamp it."""
+    usable, reason = lb.evaluate_usable(**_base_usable_kwargs(source_age_min=-5.0))
+    assert usable is True and reason is None
+
+
+def test_evaluate_usable_no_coverage():
+    usable, reason = lb.evaluate_usable(**_base_usable_kwargs(coverage_pct=None))
+    assert usable is False and reason == "no_coverage"
+
+
+def test_evaluate_usable_coverage_low():
+    usable, reason = lb.evaluate_usable(**_base_usable_kwargs(coverage_pct=50.0))
+    assert usable is False and reason == "coverage_low"
+
+
+def test_evaluate_usable_checks_fire_in_declared_order():
+    """When multiple checks would fail at once, the FIRST one in the declared
+    order wins — a degraded feed is reported as a feed problem even though the
+    session/coverage/source-clock checks would also fail."""
+    usable, reason = lb.evaluate_usable(
+        feed_status="error", session="closed", n_tiers=0,
+        coverage_pct=None, source_age_min=None,
+    )
+    assert usable is False and reason == "feed_error"
+
+
+# ── holiday-aware session (Defect 3) ────────────────────────────────────────
+
+def test_session_closed_on_good_friday_2026():
+    # 2026-04-03 is Good Friday. EDT (UTC-4): 14:00 UTC = 10:00 ET — an ordinary
+    # Friday at this instant would be "rth" (see test below); the full-day
+    # closure must win over the clock.
+    assert poller.session_tag(_utc(2026, 4, 3, 14, 0)) == "closed"
+    assert poller.within_rth(_utc(2026, 4, 3, 14, 0)) is False
+
+
+def test_session_closed_on_thanksgiving_2026():
+    # 2026-11-26 is Thanksgiving (4th Thursday of November). EST (UTC-5):
+    # 15:00 UTC = 10:00 ET.
+    assert poller.session_tag(_utc(2026, 11, 26, 15, 0)) == "closed"
+    assert poller.within_rth(_utc(2026, 11, 26, 15, 0)) is False
+
+
+def test_session_closed_on_observed_independence_day_2026():
+    # 2026-07-04 (Independence Day) is a Saturday, observed Friday 2026-07-03.
+    # EDT (UTC-4): 14:00 UTC = 10:00 ET.
+    assert poller.session_tag(_utc(2026, 7, 3, 14, 0)) == "closed"
+    assert poller.within_rth(_utc(2026, 7, 3, 14, 0)) is False
+
+
+def test_ordinary_friday_still_rth_2026():
+    # 2026-04-10 is an ordinary (non-holiday) Friday. EDT: 14:00 UTC = 10:00 ET.
+    assert poller.session_tag(_utc(2026, 4, 10, 14, 0)) == "rth"
+    assert poller.within_rth(_utc(2026, 4, 10, 14, 0)) is True
+
+
+# The pre-existing EDT/EST DST tests (test_session_rth_summer_edt,
+# test_session_rth_winter_est, test_session_pre_and_post_edt,
+# test_session_closed_overnight_and_weekend, test_session_dst_transition_days,
+# test_within_rth_window_edges) are UNCHANGED above and must stay green — the
+# calendar check runs BEFORE the time-of-day logic, never replacing it.
+
+
+# ── source clock is first class (Defect 2) ──────────────────────────────────
+
+def test_build_breadth_emits_source_clock_and_usable_fields(monkeypatch):
+    monkeypatch.setattr(poller, "_delay_floor", lambda: 15)
+    monkeypatch.setattr(poller, "_producer_id", lambda: "host:test")
+
+    class _Store:
+        by_tier = {
+            "large": {"A": _th(100, 90, 80, 120, 70)},
+            "mid": {"B": _th(100, 90, 80, 120, 70)},
+            "small": {"C": _th(100, 90, 80, 120, 70)},
+        }
+    now = _utc(2026, 7, 24, 14, 0)
+    snap_ts = _utc(2026, 7, 24, 13, 54)          # 6 min stale
+    p = poller.build_breadth(_Store(), {"A": 110, "B": 105, "C": 95}, now=now,
+                             snapshot_ts=snap_ts, feed_status="ok")
+    assert p["source_asof"] == "2026-07-24T13:54:00Z"
+    assert p["source_age_min"] == pytest.approx(6.0)
+    assert p["feed_status"] == "ok"
+    assert p["producer"] == "host:test"
+    assert p["built_at"] == p["asof"]
+    assert isinstance(p["usable"], bool)
+    assert set(p.keys()) == TOP_KEYS
+
+
+def test_source_age_over_sla_marks_unusable(monkeypatch):
+    """built-now (fresh artifact) + a 2h-stale SOURCE clock -> unusable, and the
+    reason names the source clock, not the build clock."""
+    monkeypatch.setattr(poller, "_delay_floor", lambda: 15)
+
+    class _Store:
+        by_tier = {
+            "large": {"A": _th(100, 90, 80, 120, 70)},
+            "mid": {"B": _th(100, 90, 80, 120, 70)},
+            "small": {"C": _th(100, 90, 80, 120, 70)},
+        }
+    now = _utc(2026, 7, 24, 14, 0)
+    snap_ts = now - timedelta(hours=2)
+    p = poller.build_breadth(_Store(), {"A": 110, "B": 105, "C": 95}, now=now,
+                             snapshot_ts=snap_ts)
+    assert p["source_age_min"] == pytest.approx(120.0)
+    assert p["usable"] is False
+    assert p["unusable_reason"] == "source_stale"
+
+
+def test_empty_payload_no_key_is_never_usable():
+    p = lb.empty_payload(asof="2026-07-24T14:00:00Z", delay_min=15, session="rth",
+                         note="no_key", feed_status="no_key")
+    assert p["usable"] is False
+    assert p["unusable_reason"] == "feed_no_key"
+    assert set(p.keys()) == TOP_KEYS
+
+
+def test_build_breadth_no_key_and_offline_are_never_usable(monkeypatch):
+    monkeypatch.setattr(poller, "_delay_floor", lambda: 15)
+
+    class _Store:
+        by_tier = {"large": {"A": _th(100, 90, 80, 120, 70)}}
+    p_offline = poller.build_breadth(_Store(), {}, now=_utc(2026, 7, 24, 14, 0),
+                                     offline=True)
+    assert p_offline["usable"] is False
+    p_no_key = poller.build_breadth(_Store(), {}, now=_utc(2026, 7, 24, 14, 0),
+                                    offline=False, feed_status="no_key")
+    assert p_no_key["usable"] is False
+    assert p_no_key["feed_status"] == "no_key"
+
+
+# ── _out_path honours MACRO_LIVE_DIR (Defect 5) ─────────────────────────────
+
+def test_out_path_honours_macro_live_dir_env(monkeypatch, tmp_path):
+    live_dir = tmp_path / "public" / "live"
+    monkeypatch.setenv("MACRO_LIVE_DIR", str(live_dir))
+    out = poller._out_path()
+    assert out == live_dir / "breadth.json"
+    assert out.parent == live_dir            # no extra "live" segment appended
+
+
+def test_out_path_explicit_site_dir_wins_over_env(monkeypatch, tmp_path):
+    live_dir = tmp_path / "env-live"
+    monkeypatch.setenv("MACRO_LIVE_DIR", str(live_dir))
+    explicit = tmp_path / "explicit"
+    out = poller._out_path(explicit)
+    assert out == explicit / "live" / "breadth.json"
+
+
+def test_out_path_default_falls_back_to_site_dir(monkeypatch, tmp_path):
+    monkeypatch.delenv("MACRO_LIVE_DIR", raising=False)
+    monkeypatch.setattr(poller.config, "site_dir", lambda: tmp_path)
+    out = poller._out_path()
+    assert out == tmp_path / "live" / "breadth.json"
+
+
+# ── publication truth (Defect 4) ────────────────────────────────────────────
+
+def test_main_once_publish_returns_1_and_annotates_when_publish_fails(
+    monkeypatch, tmp_path, capsys
+):
+    monkeypatch.setattr(poller.config, "site_dir", lambda: tmp_path)
+    monkeypatch.setattr(poller, "publish", lambda out: False)
+    rc = poller.main(["--once", "--offline", "--publish"])
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "::error title=live-breadth-publish::" in out
+    # line-start, never through the logger (tests/test_gh_annotation_line_start.py)
+    assert any(line.startswith("::error") for line in out.splitlines())
+
+
+def test_main_once_publish_returns_0_when_publish_succeeds(monkeypatch, tmp_path):
+    """Covers both a real successful publish AND the deliberate no-op success for
+    a byte-identical unchanged payload — both make `publish()` return True, and
+    `main()`/`run_cycle` treat them identically (the no-op-vs-real-commit
+    distinction lives entirely inside `publish()`, which this test does not
+    re-exercise so the suite never shells out to real git)."""
+    monkeypatch.setattr(poller.config, "site_dir", lambda: tmp_path)
+    monkeypatch.setattr(poller, "publish", lambda out: True)
+    rc = poller.main(["--once", "--offline", "--publish"])
+    assert rc == 0
+
+
+def test_loop_path_does_not_raise_when_publish_fails(monkeypatch, tmp_path):
+    """Loop mode: a publish failure must never kill the daemon — only `--once`
+    treats it as fatal. Drives exactly one iteration by pre-arming the SIGTERM
+    stop flag the loop already checks after each cycle, so the test needs no
+    real sleep."""
+    monkeypatch.setattr(poller.config, "site_dir", lambda: tmp_path)
+    monkeypatch.setattr(poller, "publish", lambda out: False)
+    monkeypatch.setitem(poller._SIGTERM, "stop", True)
+    rc = poller.main(["--offline", "--publish"])
+    assert rc == 0
+
+
+# ── native parquet reads (Python-file-object abort hazard; PR #9043) ──────────
+
+def _write_one_tier_stores(tmp_path, monkeypatch):
+    """One BREADTH_TIERS tier's stores under tmp_path (30 daily rows, 3 symbols,
+    one dotted) with poller.config.data_dir pointed there. The other two tiers
+    stay absent — refresh() skips them fail-soft, so a refresh exercises exactly
+    the three parquet reads under test: constituents, full close cache, and the
+    columns=[] header check. Returns (tier_key, closes_frame)."""
+    import pandas as pd
+
+    key, ns, _univ, _label = lb.BREADTH_TIERS[0]
+    dates = pd.date_range("2026-09-01", periods=30, freq="D")
+    closes = pd.DataFrame(
+        {"AAPL": [100.0 + i for i in range(30)],
+         "MNX": [50.0 + 0.5 * i for i in range(30)],
+         "BRK.B": [400.0 + i for i in range(30)]},
+        index=dates,
+    )
+    nsdir = tmp_path / ns
+    nsdir.mkdir(parents=True)
+    closes.to_parquet(nsdir / "_closes_cache.parquet")
+    symbols = pd.Index(["AAPL", "MNX", "BRK.B"], name="symbol")
+    pd.DataFrame({"weight": [1.0, 1.0, 1.0]}, index=symbols).to_parquet(
+        nsdir / "constituents.parquet")
+    monkeypatch.setattr(poller.config, "data_dir", lambda: tmp_path)
+    return key, closes
+
+
+def test_threshold_store_reads_parquet_through_native_filesystem(monkeypatch, tmp_path):
+    """ThresholdStore's three parquet reads all reach pandas.read_parquet with
+    pyarrow's native LocalFileSystem and the threaded knobs off. pandas
+    otherwise opens plain local paths as Python file objects and hands those to
+    pyarrow; a delayed pyarrow IO-pool completion destroying such a buffer once
+    interpreter finalization has begun ends in std::terminate (SIGABRT, after
+    the output is written) — the census harness's 3/200 poller aborts (0/600 in
+    the build-lane fixture tree), PR #9043's 63/1002 -> 0/1002 on the
+    news-universe builder."""
+    import inspect
+    from pathlib import Path
+
+    import pandas
+
+    key, closes = _write_one_tier_stores(tmp_path, monkeypatch)
+    calls: list[tuple[str, dict]] = []
+    real_read_parquet = pandas.read_parquet
+    has_tpk = "to_pandas_kwargs" in inspect.signature(real_read_parquet).parameters
+    # Warm the helper's capability probe against the REAL pandas before the spy
+    # replaces pandas.read_parquet (the probe signs whatever the attribute is at
+    # first call; the spy's (path, **kwargs) signature would read as "no kwarg").
+    # Guarded so on pre-helper code the spy still sees the bare base reads.
+    try:
+        import lib.native_parquet as _npq
+        _npq._has_to_pandas_kwargs()
+    except ImportError:
+        pass
+
+    def spy(path, **kwargs):
+        calls.append((Path(path).name, dict(kwargs)))
+        return real_read_parquet(path, **kwargs)
+
+    monkeypatch.setattr(pandas, "read_parquet", spy)
+
+    store = poller.ThresholdStore()
+    store.refresh()
+
+    # all three reads happened through the spy: the columns=[] header check and
+    # the full load of the close cache, plus the constituents read
+    names = [name for name, _kwargs in calls]
+    assert names.count("_closes_cache.parquet") == 2
+    assert names.count("constituents.parquet") == 1
+    assert [kwargs.get("columns") for _name, kwargs in calls].count([]) == 1
+    for _name, kwargs in calls:
+        assert kwargs["use_threads"] is False
+        assert kwargs["pre_buffer"] is False
+        assert type(kwargs["filesystem"]).__name__ == "LocalFileSystem"
+        if has_tpk:
+            assert kwargs["to_pandas_kwargs"] == {"use_threads": False}
+        else:
+            assert "to_pandas_kwargs" not in kwargs
+    # and the stores actually loaded: last closes, last date, dot->dash keys
+    last_row = closes.iloc[-1]
+    assert store._asof[key] == closes.index.max().strftime("%Y-%m-%d")
+    for sym in closes.columns:
+        assert store.by_tier[key][lb.canonical_symbol(sym)]["prev_close"] == float(last_row[sym])
+    assert "BRK-B" in store.by_tier[key] and "BRK.B" not in store.by_tier[key]
+
+
+def test_read_parquet_native_columns_empty_keeps_index(tmp_path):
+    """columns=[] must reach pandas as [] (the refresh() header check), never be
+    dropped-to-None (a full read) or swallowed."""
+    import pandas as pd
+
+    from lib.native_parquet import read_parquet_native
+
+    frame = pd.DataFrame({"a": [1, 2, 3], "b": [4.0, 5.0, 6.0]},
+                         index=pd.date_range("2026-09-01", periods=3, freq="D"))
+    path = tmp_path / "empty_cols.parquet"
+    frame.to_parquet(path)
+    out = read_parquet_native(path, columns=[])
+    assert list(out.columns) == []
+    pd.testing.assert_index_equal(out.index, frame.index)
+
+
+def test_read_parquet_native_accepts_file_uri_and_path(tmp_path):
+    """A Path, its str, and its file: URI (as argparse's type=Path collapses
+    file:///a to file:/a) all read the same frame — the native LocalFileSystem
+    answers a URI with ArrowInvalid, so the helper must normalize file: forms
+    first (mirrors the PR #9043 URI behaviour)."""
+    import pandas as pd
+    from pathlib import Path
+
+    from lib.native_parquet import read_parquet_native
+
+    frame = pd.DataFrame({"close": [10.0, 11.0]}, index=pd.Index(["NVDA", "MMC"]))
+    path = tmp_path / "frame.parquet"
+    frame.to_parquet(path)
+    pd.testing.assert_frame_equal(read_parquet_native(path), frame)
+    pd.testing.assert_frame_equal(read_parquet_native(str(path)), frame)
+    pd.testing.assert_frame_equal(read_parquet_native(Path(path.as_uri())), frame)
+    pd.testing.assert_frame_equal(read_parquet_native(path.as_uri()), frame)
+
+
+def test_read_parquet_native_propagates_missing_file(tmp_path):
+    """No catching or mapping in the helper: a missing file surfaces as the
+    underlying OSError. Observed as FileNotFoundError on pandas 3.0.6/pyarrow
+    26 and on pandas 2.2.3/pyarrow 16.1; asserted as an OSError subclass so the
+    exact pyarrow alias stays an implementation detail."""
+    from lib.native_parquet import read_parquet_native
+
+    missing = tmp_path / "nope.parquet"
+    with pytest.raises(OSError) as exc_info:
+        read_parquet_native(missing)
+    assert issubclass(type(exc_info.value), OSError)
+    assert type(exc_info.value).__name__ == "FileNotFoundError"
+
+
+def test_read_parquet_native_probe_immune_to_read_parquet_monkeypatch(
+        monkeypatch, tmp_path, request):
+    """_has_to_pandas_kwargs signs the pandas DEFINITION SITE
+    (pandas.io.parquet.read_parquet), never the pandas.read_parquet attribute:
+    the probe is lru_cached and fires lazily, so a test that monkeypatches
+    pandas.read_parquet with a (path, **kwargs) spy before the first call would
+    otherwise cache the spy's signature as "no to_pandas_kwargs" for the rest
+    of the process and silently drop the kwarg (isolation-red at 1f231f23:
+    the arrow_pools_idle test only passed when an earlier test warmed the
+    cache first)."""
+    import inspect
+
+    import pandas
+
+    from lib import native_parquet
+
+    # Reset the lazy probe so it fires fresh INSIDE this test, under the spy;
+    # monkeypatch can undo the spy but never a cache, so clear again on the way
+    # out to leave the process exactly as this test found it.
+    native_parquet._has_to_pandas_kwargs.cache_clear()
+    request.addfinalizer(native_parquet._has_to_pandas_kwargs.cache_clear)
+
+    real = "to_pandas_kwargs" in inspect.signature(pandas.read_parquet).parameters
+    real_read_parquet = pandas.read_parquet
+    seen: list[dict] = []
+
+    def spy(path, **kwargs):
+        seen.append(dict(kwargs))
+        return real_read_parquet(path, **kwargs)
+
+    monkeypatch.setattr(pandas, "read_parquet", spy)
+
+    path = tmp_path / "frame.parquet"
+    pandas.DataFrame({"close": [10.0, 11.0]},
+                     index=pandas.Index(["NVDA", "MMC"])).to_parquet(path)
+    out = native_parquet.read_parquet_native(path)
+
+    assert len(seen) == 1
+    if real:
+        assert seen[0]["to_pandas_kwargs"] == {"use_threads": False}
+    else:
+        assert "to_pandas_kwargs" not in seen[0]
+    assert list(out["close"]) == [10.0, 11.0]

@@ -7,24 +7,24 @@ computed and then thrown away.  On 08-06 the doors emitter finished green at 04:
 the miss-audit at 04:48:11Z; the job was cancelled at 05:37:19Z with the commit step never
 started, and `data/prophet_doors`, `data/prophet_miss_audit` and `data/us_prophet_rank`
 all still carry 2026-08-05 as their last advance.  Nothing in this program gates the
-dashboard (`publish` needs ONLY `engine`), so the four post-board modules now live in
+dashboard (`publish` needs ONLY `engine`), so the six post-board modules now live in
 `us_prophet_ledgers`, a sibling of the `us_scan_tier` lane, reading the tree the engine and
 scan-tier jobs COMMIT and committing their own ledgers.
 
 What this module pins, and why each pin can actually fail:
 
-1.  **Placement.** The four modules are in `us_prophet_ledgers` and NOT in `engine`.  A
+1.  **Placement.** The six modules are in `us_prophet_ledgers` and NOT in `engine`.  A
     step re-added to `engine` rides the cancel again.
 2.  **Ordering is real, not assumed.**  The new job `needs` both producers of the tree it
     reads — `engine` (which commits the candidate stamp, the name_score ledger, the board
     and the plans) and `us_scan_tier` (which commits the scan-tier artifact and the
     scan-tier candidate rows).
-3.  **The lane gate still holds in the new job's environment.**  Three of the four modules
+3.  **The lane gate still holds in the new job's environment.**  Five of the six modules
     refuse to advance unless `COLLECT_LANE=nightly`, which the *engine* job set at job
     level.  A move that dropped it would leave every step green and every ledger frozen —
     strictly worse than the slow version it replaced.  The behavioural half below drives
-    the three append functions with the env unset and asserts they write nothing, so the
-    workflow-side assertion is pinned to a gate that demonstrably bites.
+    the four pre-existing append APIs with the env unset and asserts they write nothing;
+    B1's pre-read refusal is pinned in its reconciler suite.
 4.  **Failure isolation is armed, not claimed.**  The moved steps lost their `|| true`:
     inside the deploy lane a crash had to be swallowed, here it must be visible.  Each
     module already degrades internally to a disclosed null, so a non-zero exit is a real
@@ -45,6 +45,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from scripts.workflow_run_source import resolve_run_source  # noqa: E402
+
 DAILY = ROOT / ".github/workflows/daily.yml"
 DAG = ROOT / "config/dag.yml"
 
@@ -54,18 +56,22 @@ JOB = "us_prophet_ledgers"
 #: lane must run them in.
 MOVED = [
     ("scripts.emit_prophet_doors", "Prophet doors — accrue"),
+    ("scripts.reconcile_us_candidate_episodes", "Prophet B1 — reconcile"),
     ("scripts.grade_prophet_doors", "Prophet doors — grade"),
     ("scripts.grade_us_prophet_candidates", "Prophet US full-population grades"),
+    ("scripts.accrue_us_prophet_w3", "Prophet W3 paired-race ledger"),
     ("scripts.run_prophet_miss_audit", "Prophet miss-audit"),
 ]
 
-#: The three whose forward advance ALSO gates on engine.ledger_lane (COLLECT_LANE=nightly)
+#: The five whose forward advance ALSO gates on engine.ledger_lane (COLLECT_LANE=nightly)
 #: on top of --nightly.  run_prophet_miss_audit gates on --nightly alone (it threads
 #: `advance=` through instead), which is why it is deliberately absent here.
 LANE_GATED = [
     "scripts.emit_prophet_doors",
+    "scripts.reconcile_us_candidate_episodes",
     "scripts.grade_prophet_doors",
     "scripts.grade_us_prophet_candidates",
+    "scripts.accrue_us_prophet_w3",
 ]
 
 
@@ -82,7 +88,9 @@ def job(daily) -> dict:
 
 
 def _runs(step: dict) -> str:
-    return str(step.get("run") or "")
+    # 512KB-cap diet: some bodies live in scripts/ci/ — resolve the effective
+    # source so step-body assertions keep seeing what the step actually runs.
+    return resolve_run_source(str(step.get("run") or ""), ROOT)
 
 
 # --------------------------------------------------------------------------- #
@@ -164,7 +172,7 @@ class TestLedgerLaneGate:
 
     def test_the_job_sets_the_nightly_lane_sentinel(self, job):
         assert (job.get("env") or {}).get("COLLECT_LANE") == "nightly", (
-            "three of the four moved advancers gate on "
+            "five of the six moved advancers gate on "
             "engine.ledger_lane.nightly_advance_enabled(); without this env they run "
             "green and write NOTHING — a silently frozen ledger is worse than a slow one")
 
@@ -184,7 +192,7 @@ class TestLedgerLaneGate:
         monkeypatch.setenv("COLLECT_LANE", "nightly")
         assert ledger_lane.nightly_advance_enabled() is True
 
-    def test_off_lane_the_three_advancers_write_nothing(self, tmp_path, monkeypatch):
+    def test_off_lane_the_four_existing_appenders_write_nothing(self, tmp_path, monkeypatch):
         """The refutation half: drive each append with the sentinel unset.
 
         A workflow-side assertion about an env var is only worth what the gate behind it
@@ -193,6 +201,7 @@ class TestLedgerLaneGate:
         """
         from engine import prophet_doors
         from engine import us_prophet_grades as upg
+        from engine import us_prophet_w3 as w3
         from scripts import grade_prophet_doors as gpd
 
         monkeypatch.delenv("COLLECT_LANE", raising=False)
@@ -202,11 +211,29 @@ class TestLedgerLaneGate:
                 "ticker": "AAA"}
         grade = {"stamp_date": "2026-01-05", "ticker": "AAA",
                  "board_definition": "d", "horizon": 10, "fwd_ret": 0.1}
+        w3_row = {
+            "schema": w3.SCHEMA_PAIRED, "stamp_date": "2026-08-18", "ticker": "AAA",
+            "board_definition": w3.CANONICAL_BOARD, "selection_era": None,
+            "anchor_era": None, "stage": "live", "prophet_score": 1.0, "score_rank": 1,
+            "prophet_shadow_definition": w3.SHADOW_DEFINITION,
+            "prophet_shadow_score": 1.0, "prophet_shadow_score_rank": 1,
+            "horizon": 10, "excess_spy": 0.01, "benchmark": "SPY",
+            "fill_date": "2026-08-19", "mark_date": "2026-09-02",
+            "graded_asof": "2026-09-02", "source": "test",
+        }
 
         assert prophet_doors.append_flags([flag], root=tmp_path) == 0
         assert prophet_doors.write_status({"asof": "2026-08-06"}, root=tmp_path) is False
         assert gpd.append_grades([grade], root=tmp_path) == 0
         assert upg.append_grades([grade], "2026-08-06", root=tmp_path) == 0
+        assert w3.append_paired([w3_row], tmp_path)["written"] == 0
+        assert w3.append_sessions([{
+            "stamp_date": "2026-08-18",
+            "liveness": w3.LIVENESS_MISSING,
+            "reason": "gap",
+        }], tmp_path)["written"] == 0
+        assert w3.write_status({"schema": w3.SCHEMA_STATUS, "commissioned": False},
+                               tmp_path) is False
         assert not list((tmp_path / "data").rglob("*")), (
             "an off-lane run left bytes in data/ — the gate is not the sole writer path")
 
@@ -217,11 +244,20 @@ class TestLedgerLaneGate:
         assert prophet_doors.write_status({"asof": "2026-08-06"}, root=tmp_path) is True
         assert gpd.append_grades([grade], root=tmp_path) == 1
         assert upg.append_grades([grade], "2026-08-06", root=tmp_path) == 1
+        assert w3.append_paired([w3_row], tmp_path)["written"] == 1
+        assert w3.append_sessions([{
+            "stamp_date": "2026-08-18",
+            "liveness": w3.LIVENESS_MISSING,
+            "reason": "gap",
+        }], tmp_path)["written"] == 1
+        assert w3.write_status({"schema": w3.SCHEMA_STATUS, "commissioned": False},
+                               tmp_path) is True
 
     def test_the_stores_the_commit_stages_are_the_stores_the_modules_write(self, job):
         """The add list is derived from the modules, not copied from the workflow."""
         from engine import prophet_doors, prophet_miss_audit
         from engine import us_prophet_grades as upg
+        from engine import us_prophet_w3 as w3
         from scripts import grade_prophet_doors as gpd
 
         root = Path("/repo")
@@ -230,6 +266,7 @@ class TestLedgerLaneGate:
             prophet_doors.status_path(root),
             gpd.grades_path(root),
             upg._store_dir(root),
+            w3._store_dir(root),
             root / prophet_miss_audit.ARTIFACT_REL,
             root / prophet_miss_audit.FORWARD_LOG_REL,
         }
@@ -269,13 +306,20 @@ class TestFailureIsolation:
             "was necessary; here it turns the isolated job into a permanently green one")
 
     def test_a_crashed_module_does_not_silently_stop_an_independent_ledger(self, job):
-        """`if: always()` on the later steps is per-module accrual, not error masking."""
+        """Later steps retain ``always()``; B1 additionally excludes manual dispatch."""
         moved_steps = [s for s in job["steps"]
                        if any(f"python -m {m} --nightly" in _runs(s) for m, _ in MOVED)]
         for step in moved_steps[1:]:
-            assert (step.get("if") or "").strip() == "always()", (
+            condition = (step.get("if") or "").strip()
+            expected = (
+                "always() && github.event_name == 'schedule'"
+                if "scripts.reconcile_us_candidate_episodes" in _runs(step)
+                else "always()"
+            )
+            assert condition == expected, (
                 f"{step.get('name')!r}: without always() a crashed sibling skips this "
-                "module and its ledger silently stops advancing")
+                "module and its ledger silently stops advancing; B1 must also remain "
+                "schedule-only")
 
     def test_the_commit_runs_even_when_a_module_failed(self, job):
         commit = next(s for s in job["steps"]
@@ -292,11 +336,12 @@ class TestFailureIsolation:
 
 class TestNoCascade:
 
-    def test_publish_does_not_wait_on_this_job(self, daily):
-        needs = daily["jobs"]["publish"]["needs"]
-        needs = [needs] if isinstance(needs, str) else list(needs)
-        assert JOB not in needs, (
-            "a Prophet-module failure must never delay or red the dashboard deploy")
+    # daily.yml's `publish` GitHub Pages deploy job was RETIRED pre-private-cutover
+    # (DEC:B1-MACRO-PRIVATE-CUTOVER; see tests/test_no_pages_publish.py for the
+    # standing retirement guard) — there is no more deploy job for JOB to cascade
+    # into. test_nothing_at_all_depends_on_this_job below is the general form of
+    # this isolation claim and already covers every remaining job, `publish`
+    # included were it to ever come back.
 
     def test_nothing_at_all_depends_on_this_job(self, daily):
         dependents = []
@@ -316,7 +361,7 @@ class TestNoCascade:
 
 class TestDagDeclaration:
 
-    def test_the_new_lane_is_declared_with_the_four_modules_in_order(self):
+    def test_the_new_lane_is_declared_with_the_six_modules_in_order(self):
         dag = yaml.safe_load(DAG.read_text(encoding="utf-8"))
         lane = next((l for l in dag["lanes"]
                      if l["workflow"] == ".github/workflows/daily.yml"

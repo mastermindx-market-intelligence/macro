@@ -448,29 +448,165 @@ def append_board(
     try:
         # reindex to _SCHEMA order; extra keys in rows (from **rv_stamp) already map to _SCHEMA
         new = pd.DataFrame(rows).reindex(columns=_SCHEMA)
-        p = _store_path(m)
-        p.parent.mkdir(parents=True, exist_ok=True)
-        if p.exists():
-            prior = pd.read_parquet(p)
-            # union schema: prior frames may predate the optional stamp columns (and may
-            # carry legacy extras) — reindex both sides so concat never drops a column
-            cols = list(dict.fromkeys([*_SCHEMA, *prior.columns]))
-            combined = pd.concat(
-                [prior.reindex(columns=cols), new.reindex(columns=cols)],
-                ignore_index=True,
-            )
-            # keep-FIRST per (date, ticker) — honesty: stamp is immutable once written
-            combined = combined.drop_duplicates(subset=["date", "ticker"], keep="first")
-            combined = _coerce_object_cols(combined)
-        else:
-            combined = new
-        for col in (*_PORT_STAMPS, *_GATE_STAMPS):
-            combined[col] = combined[col].astype("boolean")
-        combined.to_parquet(p, index=False)
-        return int(len(combined))
+        n = _merge_and_write(m, new)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("board_ledger (%s): append failed: %s", m, e)
         return 0
+    # Prophet PIT Replay Harness absorb (research/PROPHET_PIT_REPLAY_HARNESS_V1.md
+    # §0.4), guarded to the HK/asia lane pass ONLY — this function is shared by HK
+    # and CA, but the harness's pending dir/registry entry is HK-only, and the
+    # asia_advance_enabled() gate above already means we only reach here for HK when
+    # CN_LANE=asia. Never raises; a failure here must not break a live append.
+    if m == "HK":
+        try:
+            absorb_pending_replay()
+        except Exception as e:  # noqa: BLE001 — absorb is additive, never fatal
+            log.warning("board_ledger (HK): pending-replay absorb failed: %s", e)
+    return n
+
+
+def _merge_and_write(market: str, new: pd.DataFrame) -> int:
+    """Keep-first merge ``new`` (already reindexed to ``_SCHEMA``) into
+    ``<market>_board.parquet`` on ``(date, ticker)`` and write it back. Extracted
+    from ``append_board``'s tail so ``absorb_pending_replay`` (harness
+    stage-and-absorb) reuses the EXACT same dedupe/schema-union/write path a live
+    append uses, rather than re-implementing it.
+    """
+    m = market.upper()
+    p = _store_path(m)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    if p.exists():
+        prior = pd.read_parquet(p)
+        # union schema: prior frames may predate the optional stamp columns (and may
+        # carry legacy extras) — reindex both sides so concat never drops a column
+        cols = list(dict.fromkeys([*_SCHEMA, *prior.columns]))
+        combined = pd.concat(
+            [prior.reindex(columns=cols), new.reindex(columns=cols)],
+            ignore_index=True,
+        )
+        # keep-FIRST per (date, ticker) — honesty: stamp is immutable once written
+        combined = combined.drop_duplicates(subset=["date", "ticker"], keep="first")
+        combined = _coerce_object_cols(combined)
+    else:
+        combined = new
+    for col in (*_PORT_STAMPS, *_GATE_STAMPS):
+        combined[col] = combined[col].astype("boolean")
+    # Build commission F8: STABLE-sort by date AFTER the keep-first dedupe above (the
+    # dedupe semantics are untouched). A live append is always newest-date-last
+    # already, so this is a byte-level no-op for ordinary nightly history; a REPLAY
+    # absorb's rows land in chronological position instead of at the physical tail,
+    # restoring every positional ``iloc[-1]``/``tail`` consumer of this store.
+    if "date" in combined.columns:
+        combined = combined.sort_values("date", kind="stable").reset_index(drop=True)
+    combined.to_parquet(p, index=False)
+    return int(len(combined))
+
+
+def _pending_replay_dir() -> Path:
+    return config.data_dir() / "board_ledger" / "pending_replay"
+
+
+def _store_max_date(market: str) -> str | None:
+    """The newest ``date`` value already in ``<market>_board.parquet``, or ``None``
+    when the store is absent/empty (masterplan build commission F8)."""
+    p = _store_path(market)
+    if not p.exists():
+        return None
+    try:
+        frame = pd.read_parquet(p, columns=["date"])
+    except Exception:  # noqa: BLE001 — an unreadable store is disclosed elsewhere
+        return None
+    dates = frame["date"].dropna().astype(str)
+    return str(dates.max()) if len(dates) else None
+
+
+def absorb_pending_replay() -> dict:
+    """Absorb every ``<pending_replay>/<session>.json`` file staged by
+    ``scripts/prophet_pit_replay.py`` (schema ``pit_replay.pending/v1``) into
+    ``hk_board.parquet``, through the SAME ``_merge_and_write`` dedupe path a live
+    HK append uses — never a re-implementation of it (masterplan §0.4). HK-only:
+    the harness's registry entry declares this pending dir for HK, not CA.
+
+    Absent/empty pending dir is a provably-zero-cost no-op: one ``Path.exists()``
+    check. Idempotent: each file's rows are merged via keep-first dedupe on
+    ``(date, ticker)`` (so a re-run of an already-absorbed file is a no-op on the
+    store) and the file is deleted in the same run, so a crash before deletion
+    simply re-absorbs (harmlessly) next time this runs. Rows enter UNMARKED — the
+    pending file's own metadata (schema/market/session/vintage_sha) is the only
+    replay provenance, per ``DEC:FORCE-MAJEURE-SESSIONS-ARE-BACKFILLED-BY-DEFAULT``.
+
+    Build commission F9 (US absorb parity): a pending file whose ``schema`` is not
+    ``pit_replay.pending/v1`` or whose ``market`` is not ``"hk"`` is left in place
+    with a GHA ``::warning`` — mirrors
+    ``scripts/grade_us_board.absorb_pending_replays``'s own check exactly.
+
+    Build commission F8 (ordering sanity): a replay is BY DEFINITION a backfill for a
+    date that already passed, so a pending file whose rows are not strictly OLDER
+    than the store's own current tape is refused rather than absorbed. Every warning
+    here is a bare ``print(..., flush=True)`` (never a logger — GitHub only parses
+    ``::`` at column 0; ``tests/test_gh_annotation_line_start.py`` guards this).
+    """
+    import json  # noqa: PLC0415
+
+    pending_dir = _pending_replay_dir()
+    if not pending_dir.exists():
+        return {"absorbed_files": 0, "absorbed_rows": 0, "files": []}
+    # Read ONCE, before this call absorbs anything — see the parity comment in
+    # engine/china_standout_track.absorb_pending_replay: a run absorbing SEVERAL
+    # pending files must judge every one against what the store held coming INTO
+    # this run, never against a sibling file this same run just wrote.
+    store_max = _store_max_date("HK")
+    results = []
+    for path in sorted(pending_dir.glob("*.json")):
+        try:
+            doc = json.loads(path.read_text(encoding="utf-8"))
+        except Exception as e:  # noqa: BLE001 — a torn/corrupt pending file must not wedge the nightly
+            log.warning("board_ledger (HK): pending-replay file %s unreadable (%s) — "
+                       "left in place for the next run", path.name, e)
+            continue
+        if doc.get("schema") != "pit_replay.pending/v1" or \
+                str(doc.get("market") or "").lower() != "hk":
+            print(f"::warning title=pit-replay-absorb-schema::{path.name} does not "
+                 "carry schema=pit_replay.pending/v1 market=hk; leaving it in place",
+                 flush=True)
+            continue
+        rows = doc.get("rows") or []
+        if not rows:
+            path.unlink()
+            results.append({"file": path.name, "rows": 0, "total_after": None})
+            continue
+        pending_dates = {str(r.get("date")) for r in rows if r.get("date")}
+        pending_max = max(pending_dates) if pending_dates else None
+        # STRICT > (not >=) — corrected after this landed on
+        # test_dedupe_key_respects_date_ticker: a pending row on the SAME date as the
+        # store's current max is a same-day dedupe collision, and keep-first dedupe
+        # already resolves it safely (the live row always wins). A >= boundary
+        # refused that harmless case and silently defeated the test (its assertions
+        # still passed because nothing had changed either way). The genuine danger
+        # this check exists for is a pending session STRICTLY AHEAD of what the live
+        # tape has reached, where dedupe has no existing row to protect a
+        # wrong-position insert against.
+        if pending_max is not None and store_max is not None and pending_max > store_max:
+            print(f"::warning title=pit-replay-absorb-not-older::{path.name} carries "
+                 f"row(s) dated up to {pending_max}, which is AFTER the store's "
+                 f"current max ({store_max}) — a replay must not be pointed at a "
+                 "session the live tape has not reached yet; leaving it in place",
+                 flush=True)
+            continue
+        try:
+            new = pd.DataFrame(rows).reindex(columns=_SCHEMA)
+            total = _merge_and_write("HK", new)
+        except Exception as e:  # noqa: BLE001
+            print(f"::warning title=pit-replay-absorb-failed::{path.name} pending-"
+                 f"replay absorb failed ({e}); leaving it in place for the next run",
+                 flush=True)
+            continue
+        path.unlink()
+        results.append({"file": path.name, "rows": len(rows), "total_after": total})
+        log.info("board_ledger (HK): absorbed %d pending-replay row(s) from %s "
+                 "(session=%s)", len(rows), path.name, doc.get("session"))
+    return {"absorbed_files": len(results), "absorbed_rows": sum(r["rows"] for r in results),
+            "files": results}
 
 
 # ---------------------------------------------------------------------------
@@ -511,7 +647,18 @@ def _latest_definition(df: pd.DataFrame) -> str | None:
     newest_rows = dated[dated["_d"] == newest]
     if newest_rows.empty:            # malformed legacy dates: append order is the fallback
         newest_rows = dated
-    return str(newest_rows.iloc[-1]["board_definition"])
+    # MAJOR-1 (review, 2026-08-20, executed proof of an A1 whitespace attack):
+    # strip AND re-apply the nullish check, aligned with _definition_or_none's
+    # per-row normalisation.  Before this fix, a trailing-space stamp
+    # ('ca_prophet_branch_b_v1 ') returned UNSTRIPPED here while every graded
+    # by_horizon row's board_definition is stripped by _definition_or_none —
+    # scorecard()'s exact-equality era comparison then matched ZERO graded
+    # rows at every horizon: n/n_scoped=0, hit_rate=None, the live board's
+    # own rows filed under historical_context as "previous board definition",
+    # silently and with no error.  A stamp that is all-whitespace must also
+    # collapse to None here, exactly as _definition_or_none already does.
+    stripped = str(newest_rows.iloc[-1]["board_definition"]).strip()
+    return stripped if stripped and stripped not in _NULLISH_STR else None
 
 
 # ---------------------------------------------------------------------------
@@ -832,6 +979,12 @@ def grade(market: str) -> dict:
 
     # Count residual unstamped rows (rows where US vector had no coverage)
     # A row is "still unstamped" if us_rate_pressure is still null after backfill
+    # NAMING NOTE (LEDGER-ERA, 2026-08-20): this counts REGIME-stamp coverage
+    # (the us_* context columns), NOT board_definition coverage — an entirely
+    # different "unstamped".  scorecard() prints this value under the note token
+    # regime_unstamped= (not n_unstamped=, which would misread as the definition
+    # fence next to board_definition=/metrics_scope= on the same line); the KEY
+    # here and on the returned dict stays n_unstamped, a consumed interface.
     n_unstamped = int(df["us_rate_pressure"].isna().sum()) if "us_rate_pressure" in df.columns else 0
 
     # Write back with all updates — lane-gated like append_board (PR-R10): grade()
@@ -870,6 +1023,76 @@ def grade(market: str) -> dict:
 # ---------------------------------------------------------------------------
 # scorecard
 # ---------------------------------------------------------------------------
+def _selection_metrics(frame: pd.DataFrame, horizon: int) -> dict:
+    """Group-level selection metrics (n, n_buy, hit_rate_21d, by_group) for ONE
+    already-filtered (non-suspended) row frame, at ONE horizon.
+
+    Shared by scorecard()'s era-scoped frame and its legacy-pool frame so the two
+    can never silently diverge in METHOD (buy-lane groups, the n_buy>=5 hit-rate
+    floor, the MIN_NAMES_PER_DATE by-group floor) — only in which rows they see.
+    """
+    buy_mask = frame["group"].isin(["entry_open", "setting_up"])
+    buy_graded = frame[buy_mask & frame["excess_ret"].notna()]
+    n_buy = int(len(buy_graded))
+    hit_rate = (
+        round(float((buy_graded["excess_ret"] > 0).mean()), 3)
+        if n_buy >= 5 else None
+    )
+    by_group: dict = {}
+    for grp_name, sub in frame[frame["excess_ret"].notna()].groupby("group"):
+        if len(sub) >= MIN_NAMES_PER_DATE:
+            by_group[grp_name] = {
+                "n": int(len(sub)),
+                "mean_excess": round(float(sub["excess_ret"].mean()), 4),
+                "pos_rate": round(float((sub["excess_ret"] > 0).mean()), 3),
+            }
+    return {
+        "n": int(len(frame)),
+        "n_buy": n_buy,
+        "hit_rate_21d": hit_rate if horizon == 21 else None,
+        "by_group": by_group,
+    }
+
+
+def _raw_legacy_counts(m: str, current_definition: str) -> dict | None:
+    """Ledger-level legacy-pool counts, read straight from the RAW ledger parquet —
+    never from grade()'s matured-row set (LEDGER-ERA MAJOR-2, 2026-08-20 review).
+
+    grade() silently drops two classes of row before they ever reach by_horizon:
+    a name with no live close at all (delisted — board_ledger.py's ``close is None
+    or close.empty: continue``) and a call whose next-bar fill has not yet occurred
+    (``fill_iloc is None: continue``).  historical_context's legacy_rows/
+    unstamped_rows claim to describe the LEDGER, so counting them off the graded
+    subset silently undercounts by exactly the delisted/unfilled names — measured
+    as a 1-row undercount with a single delisted legacy name in review.  This reads
+    the STORED parquet directly (read-only, no grade() call, no write) so the count
+    is exact regardless of what could be priced.
+
+    Returns None (never raises) on any read failure so the caller can degrade to
+    its own graded-frame estimate rather than lose the field or crash the render.
+    """
+    try:
+        p = _store_path(m)
+        if not p.exists():
+            return None
+        df = pd.read_parquet(p)
+    except Exception:  # noqa: BLE001 — read-only probe; a failure must degrade, not raise
+        return None
+    if df.empty:
+        return {"legacy_rows": 0, "definitions": [], "unstamped_rows": 0}
+    if "board_definition" in df.columns:
+        defs = df["board_definition"].map(_definition_or_none)
+    else:
+        defs = pd.Series([None] * len(df), dtype=object)
+    legacy_mask = defs != current_definition
+    legacy_defs = defs[legacy_mask]
+    return {
+        "legacy_rows": int(legacy_mask.sum()),
+        "definitions": sorted(legacy_defs.dropna().unique().tolist()),
+        "unstamped_rows": int(legacy_defs.isna().sum()),
+    }
+
+
 def scorecard(market: str) -> dict:
     """Per-group hit-rate + Spearman rank-IC of board_pos vs forward excess at each
     horizon. Returns an 'accruing' status dict until the min-IC-dates gate is met.
@@ -888,24 +1111,54 @@ def scorecard(market: str) -> dict:
         'setting_up' groups with positive 21d excess.
       * Both computed ONLY on non-suspended rows.
 
-    ERA FENCE (CN G5 pattern, ported 2026-08-03).  ``rank_ic`` and the IC-eligible
-    date count are computed ONLY over rows carrying the ledger's newest
-    ``board_definition``.  ``board_pos`` is a rank inside one selection instrument;
-    HK's hk_prophet_v1 buy-lane re-sort changed the instrument mid-ledger, so an IC
-    pooled across the two eras would be measuring two different boards at once.
-    A ledger where nothing is stamped (CA today, and every HK row written before
-    the stamp existed) has definition None and pools exactly as it always did.
-    The group-level statistics — ``n``, ``n_buy``, ``hit_rate_21d``, ``by_group`` —
-    are NOT scoped: they key on ``group``, not on ``board_pos``, so the definition
-    change does not make them incommensurable, and the historical pool stays
-    readable.  ``n_scoped`` prints how many rows the fence kept.
+    ERA FENCE (CN G5 pattern, ported 2026-08-03; WIDENED 2026-08-20, LEDGER-ERA,
+    packet PROPHET_HK_CANADA_REVAMP_EXECUTION_PACKET_2026_08_18.md §7).  When the
+    ledger carries a stamped ``board_definition``, EVERY current-scope selection
+    metric — ``rank_ic`` (fenced since 2026-08-03) AND, as of this change, ``n``,
+    ``n_buy``, ``hit_rate_21d``, ``by_group`` — is computed ONLY over rows
+    carrying that newest definition (the scoped/``ic_frame`` rows).  ``board_pos``
+    AND ``group`` both live inside one selection instrument; HK's hk_prophet_v1
+    buy-lane re-sort and Canada's ca_prophet_branch_b_v1 stamp each changed the
+    instrument mid-ledger, so a hit rate or by-group breakdown pooled across the
+    old and new instrument would misrepresent the CURRENT model's track record
+    with the OLD model's calls — the same contamination the rank_ic fence was
+    built to prevent, now closed for the group metrics too.  A ledger where
+    nothing is stamped (every HK row written before the stamp existed, and any
+    ledger that never adopts one) has ``definition`` None and pools exactly as
+    it always did — see ``metrics_scope``.  Excluded legacy rows are NEVER
+    dropped or restamped: they stay fully queryable, graded under the identical
+    rules, inside the top-level ``historical_context`` block.  ``n`` and
+    ``n_scoped`` now always agree (``n`` used to report the all-era row count
+    even when scoped; keeping both is a consumed-interface guarantee, not a
+    live distinction — see FROZEN SPEC on the LEDGER-ERA wave).
 
     Returns dict with:
         market, status ('accruing'|'scored'), board_definition
+        metrics_scope       — 'current_definition' when the ledger carries a
+                               stamped board_definition, else 'all_history_pooled'
         first_read_est     — estimated date for stable read (first_write + 21td from today)
         by_horizon: {h: {n, n_scoped, n_ic_dates, rank_ic, n_buy, hit_rate_21d,
-                         by_group: {...}}}
-        note               — human-readable status summary
+                         by_group: {...}}}  — era-scoped when metrics_scope is
+                         'current_definition', pooled when 'all_history_pooled'
+        historical_context  — present only when metrics_scope is
+                               'current_definition' AND at least one ledger row
+                               does not carry the current definition:
+                               {legacy_rows, definitions, unstamped_rows, note,
+                               survivorship, counts_source, by_horizon: {h: {n,
+                               n_buy, hit_rate_21d (21d only), by_group}}}.
+                               legacy_rows/definitions/unstamped_rows are read
+                               from the RAW ledger parquet (not grade()'s
+                               matured-row set, which drops delisted/unfilled
+                               rows — MAJOR-2 review fix, 2026-08-20);
+                               counts_source names which ('raw_ledger' normally,
+                               'graded_estimate' only if that raw read failed —
+                               NIT-6 review fix, 2026-08-20). The by_horizon
+                               block is still graded and follows the SAME rules
+                               as the scoped metrics.
+        note               — human-readable status summary (n_unstamped prints
+                               under the token regime_unstamped= — MINOR-3
+                               review fix, 2026-08-20 — see grade()'s comment at
+                               the n_unstamped computation site)
     """
     m = market.upper()
     g = grade(m)
@@ -913,24 +1166,52 @@ def scorecard(market: str) -> dict:
         return {"market": m, "status": "accruing",
                 "note": g.get("note", "no data yet"),
                 "board_definition": None,
+                "metrics_scope": "all_history_pooled",
                 "first_read_est": _est_first_read()}
 
     definition = g.get("board_definition")
+    # Legacy-pool COUNTS (legacy_rows/definitions/unstamped_rows) come from the RAW
+    # parquet, not from grade()'s matured-row set — see _raw_legacy_counts docstring
+    # (MAJOR-2 review fix, 2026-08-20).  Read once, before the horizon loop: it is a
+    # ledger-level fact, not a per-horizon one.
+    _raw_legacy = _raw_legacy_counts(m, definition) if definition is not None else None
     by_h: dict = {}
+    # Fallback legacy-pool facts (used only if the raw-parquet read above failed):
+    # 'legacy_rows'/'definitions'/'unstamped_rows' derived from grade()'s graded rows
+    # instead — every matured call is appended to ALL FOUR horizon lists in grade()
+    # with identical board_definition/suspended metadata (only fwd_ret/excess_ret
+    # differ by maturity), so these counts are invariant across horizons; capture
+    # once, from the first horizon with legacy rows, instead of recomputing.
+    _gf_legacy_top: dict | None = None
+    historical_by_h: dict = {}
     for h in _HORIZONS_D:
         key = f"{h}d"
         rows = [r for r in g["by_horizon"].get(key, []) if not r.get("suspended", True)]
         if not rows:
             by_h[key] = {"n": 0, "n_scoped": 0, "n_ic_dates": 0, "rank_ic": None,
                          "n_buy": 0, "hit_rate_21d": None, "by_group": {}}
+            if definition is not None:
+                historical_by_h[key] = {"n": 0, "n_buy": 0, "hit_rate_21d": None, "by_group": {}}
             continue
 
         gf = pd.DataFrame(rows)
-        # ERA FENCE: the rank statistics see one definition only (see docstring).
+        # ERA FENCE (see docstring): scoped statistics see one definition only.
         if definition is not None:
             ic_frame = gf[gf["board_definition"] == definition]
+            legacy_frame = gf.drop(ic_frame.index)
         else:
             ic_frame = gf
+            legacy_frame = gf.iloc[0:0]
+
+        if _gf_legacy_top is None and definition is not None and not legacy_frame.empty:
+            _gf_legacy_top = {
+                "legacy_rows": int(len(legacy_frame)),
+                "definitions": sorted(
+                    legacy_frame["board_definition"].dropna().unique().tolist()
+                ),
+                "unstamped_rows": int(legacy_frame["board_definition"].isna().sum()),
+            }
+
         # count matured dates with enough names for IC
         date_counts = ic_frame[ic_frame["excess_ret"].notna()].groupby("date")["ticker"].count()
         ic_eligible_dates = date_counts[date_counts >= MIN_NAMES_PER_DATE].index.tolist()
@@ -957,56 +1238,70 @@ def scorecard(market: str) -> dict:
             if ics:
                 rank_ic = round(float(np.mean(ics)), 4)
 
-        # hit rate: entry_open + setting_up groups, excess > 0
-        buy_mask = gf["group"].isin(["entry_open", "setting_up"])
-        buy_graded = gf[buy_mask & gf["excess_ret"].notna()]
-        n_buy = int(len(buy_graded))
-        hit_rate = (
-            round(float((buy_graded["excess_ret"] > 0).mean()), 3)
-            if n_buy >= 5 else None
-        )
-
-        # by-group breakdown
-        by_group: dict = {}
-        for grp_name, sub in gf[gf["excess_ret"].notna()].groupby("group"):
-            if len(sub) >= MIN_NAMES_PER_DATE:
-                by_group[grp_name] = {
-                    "n": int(len(sub)),
-                    "mean_excess": round(float(sub["excess_ret"].mean()), 4),
-                    "pos_rate": round(float((sub["excess_ret"] > 0).mean()), 3),
-                }
+        # Selection metrics (n, n_buy, hit_rate_21d, by_group): era-scoped as of
+        # LEDGER-ERA — computed from ic_frame (== gf when unscoped), never gf
+        # directly, so a current-definition read never sees a prior instrument's
+        # calls.  n and n_scoped therefore always agree now (see docstring).
+        scoped = _selection_metrics(ic_frame, h)
 
         by_h[key] = {
-            "n": int(len(rows)),
+            "n": scoped["n"],
             "n_scoped": int(len(ic_frame)),
             "n_ic_dates": n_ic_dates,
             "rank_ic": rank_ic,
-            "n_buy": n_buy,
-            "hit_rate_21d": hit_rate if h == 21 else None,
-            "by_group": by_group,
+            "n_buy": scoped["n_buy"],
+            "hit_rate_21d": scoped["hit_rate_21d"],
+            "by_group": scoped["by_group"],
         }
+
+        # NIT (review, 2026-08-20): only spend the computation when the legacy pool
+        # for THIS horizon is actually non-empty — an empty frame returns the same
+        # zero-value shape _selection_metrics always would, so skip the call.
+        if definition is not None and not legacy_frame.empty:
+            historical_by_h[key] = _selection_metrics(legacy_frame, h)
+        elif definition is not None:
+            historical_by_h[key] = {"n": 0, "n_buy": 0, "hit_rate_21d": None, "by_group": {}}
 
     # overall gate: scored only when 21d horizon meets MIN_IC_DATES
     gate_met = by_h.get("21d", {}).get("n_ic_dates", 0) >= MIN_IC_DATES
     status = "scored" if gate_met else "accruing"
 
+    # MAJOR-1 part 2 (review, 2026-08-20): a named definition that matches ZERO
+    # graded rows at EVERY horizon is exactly the symptom the whitespace bug
+    # above produced (silently — n/hit_rate all read empty, no exception, no
+    # log). This is a defensive backstop for that class of failure generally,
+    # not only the one root cause just fixed. Bare print, never the logger —
+    # `::` must start the line (tests/test_gh_annotation_line_start.py); flush
+    # is load-bearing (stdout is block-buffered when piped in CI).
+    if (definition is not None and g.get("n_calls", 0) > 0
+            and all(h.get("n_scoped", 0) == 0 for h in by_h.values())):
+        print(f"::warning title=board-ledger-era-empty::{m} board_definition "
+              f"names an era with zero graded rows", flush=True)
+
     n_unstamped = g.get("n_unstamped", 0)
+    metrics_scope = "current_definition" if definition is not None else "all_history_pooled"
     note_parts = [
         f"n_calls={g['n_calls']}",
         f"n_graded={g['n_graded']}",
         f"n_suspended={g['n_suspended']}",
-        f"n_unstamped={n_unstamped}",
+        # token relabelled regime_unstamped= (MINOR-3, review 2026-08-20): n_unstamped
+        # counts null REGIME stamps (see grade()'s computation-site comment), and the
+        # old token read as a definition-unstamped count sitting beside
+        # board_definition=/metrics_scope= on the same line.  KEY stays n_unstamped.
+        f"regime_unstamped={n_unstamped}",
         f"21d_ic_dates={by_h.get('21d', {}).get('n_ic_dates', 0)}/{MIN_IC_DATES}",
     ]
     if definition:
         note_parts.append(f"board_definition={definition}")
+        note_parts.append("metrics_scope=current_definition")
     if status == "accruing":
         note_parts.append(f"first_stable_read≈{_est_first_read()}")
 
-    return {
+    out = {
         "market": m,
         "status": status,
         "board_definition": definition,
+        "metrics_scope": metrics_scope,
         "n_calls": g["n_calls"],
         "n_graded": g["n_graded"],
         "n_suspended": g["n_suspended"],
@@ -1016,6 +1311,28 @@ def scorecard(market: str) -> dict:
         "by_horizon": by_h,
         "note": "; ".join(note_parts),
     }
+    # historical_context: only when scoped AND at least one row falls outside the
+    # current era — see docstring / FROZEN SPEC.  Prefer the raw-parquet counts
+    # (MAJOR-2); degrade to the graded-frame estimate only if that read failed.
+    legacy_top = _raw_legacy if _raw_legacy is not None else _gf_legacy_top
+    if legacy_top is not None and legacy_top["legacy_rows"] > 0:
+        out["historical_context"] = {
+            **legacy_top,
+            "note": "historical context only; not current-model track record",
+            # Mirrors the top-level `survivorship` value: a reader inside
+            # historical_context sees the same caveat inline (MAJOR-2 review,
+            # 2026-08-20) rather than needing to cross-reference the outer dict.
+            "survivorship": g.get("survivorship"),
+            # NIT-6 (review, 2026-08-20): the fallback to the graded-frame
+            # estimate (when the raw-parquet read fails) is otherwise
+            # UNDETECTABLE from the output alone — this names which source
+            # actually produced legacy_rows/definitions/unstamped_rows above,
+            # so a consumer can tell ledger-truth from the known-undercounting
+            # estimate rather than silently trusting a degraded number.
+            "counts_source": "raw_ledger" if _raw_legacy is not None else "graded_estimate",
+            "by_horizon": historical_by_h,
+        }
+    return out
 
 
 # ---------------------------------------------------------------------------

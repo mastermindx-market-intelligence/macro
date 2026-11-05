@@ -129,11 +129,34 @@ def test_biocatalyst_shell_has_one_accessible_three_pane_trial_intelligence_work
     assert re.search(r"<option[^>]*>\s*<span", html) is None
 
 
+def _assert_operational_clock_boundary(js: str) -> None:
+    # This observed client clock is not a source, registry date or milestone calculator.
+    clock = "  function clientCheckTimestamp() {\n    return new Date().toISOString();\n  }"
+    assert js.count(clock) == 1
+    clinical_source = js.replace(clock, "")
+    assert "new Date" not in clinical_source
+    assert clinical_source.count("clientCheckTimestamp()") == 2
+    assert "state.failedCheckAt = clientCheckTimestamp();" in clinical_source
+    assert "state.lastSuccessAt = clientCheckTimestamp();" in clinical_source
+
+
+def test_operational_clock_boundary_rejects_clinical_clock_inference():
+    js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
+    _assert_operational_clock_boundary(js)
+    for inferred in ("\nvar clinicalDate = new Date();", "\nvar sourceDate = clientCheckTimestamp();"):
+        try:
+            _assert_operational_clock_boundary(js + inferred)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("a client clock cannot originate clinical/source dates")
+
+
 def test_biocatalyst_client_uses_authenticated_source_fact_pages_and_current_dossiers_only():
     js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
     for token in (
             "/api/biocatalyst/v1/trials",
-            "/api/biocatalyst/v1/trials/milestones",
+            "/api/biocatalyst/v1/catalyst-radar",
             "/api/biocatalyst/v1/trials/change-tape",
             "/api/biocatalyst/v1/trials:screen",
             "/api/biocatalyst/v1/trials:screen/facets",
@@ -165,7 +188,7 @@ def test_biocatalyst_client_uses_authenticated_source_fact_pages_and_current_dos
             "incomplete_chain",
             "next_cursor",
             "milestone_kind",
-            "next_30d",
+            "next_365d",
             "last_30d",
             "change_kind",
             "before_display_version",
@@ -198,7 +221,7 @@ def test_biocatalyst_client_uses_authenticated_source_fact_pages_and_current_dos
         ):
             assert token in js
     assert "innerHTML" not in js
-    assert "new Date" not in js
+    _assert_operational_clock_boundary(js)
     assert "fetchTrialPages" not in js
     assert "limit=250" not in js
     assert "localStorage" not in js
@@ -251,6 +274,16 @@ def test_biocatalyst_assets_have_responsive_motion_and_focus_guards():
     assert "animation-duration: 2s" not in css
 
 
+def test_catalyst_radar_cards_do_not_shrink_inside_desktop_scroll_queue():
+    """Radar rows must expand to their content instead of clipping at 96px."""
+
+    css = (TEMPLATES / "biocatalyst.css").read_text(encoding="utf-8")
+    rule = re.search(r"\.bci-radar-card\s*\{(?P<body>[^}]*)\}", css)
+
+    assert rule is not None
+    assert re.search(r"(?:^|;)\s*flex-shrink:\s*0\s*(?:;|$)", rule.group("body"))
+
+
 def test_biocatalyst_modes_default_to_milestones_and_preserve_verified_pages():
     """Audit the UI contract around the non-inferential milestone endpoint.
 
@@ -267,10 +300,18 @@ def test_biocatalyst_modes_default_to_milestones_and_preserve_verified_pages():
     assert re.search(r'class="bci-window is-active"[^>]*aria-checked="true"[^>]*data-window="90"', html)
     assert re.search(r'class="bci-window"[^>]*aria-checked="false"[^>]*data-window="30"', html)
     assert "mode: 'milestones'" in js
-    assert "filters: { field: 'primary_completion', change_kind: '', prospective_change_kind: '', window: '90'" in js
+    # The literal pins the FULL live state initializer, including the radar
+    # mode's real horizon default (horizon: DEFAULT_RADAR_HORIZON = '365') --
+    # window: '90' here is First-seen Tape's own default, still live and
+    # unrelated to the radar's own horizon default appended at the end.
+    assert (
+        "filters: { field: 'primary_completion', change_kind: '', prospective_change_kind: '', window: '90', "
+        "q: '', phase: '', status: '', condition: '', sponsor: '', intervention: '', study_type: '', "
+        "pc_from: '', pc_to: '', review_state: 'all', horizon: DEFAULT_RADAR_HORIZON }"
+    ) in js
     assert "WINDOW_VALUES[windowName] ? windowName : '90'" in js
     assert "change_kind: '', prospective_change_kind: '', window: '90', q: '', phase: '', status: '', condition: ''" in js
-    assert "MILESTONE_WINDOWS = { '30': 'next_30d', '90': 'next_90d'" in js
+    assert "RADAR_WINDOWS = { '180': 'next_180d', '365': 'next_365d'" in js
     assert "PROSPECTIVE_WINDOWS = { '30': 'last_30d', '90': 'last_90d'" in js
 
     for token in (
@@ -321,8 +362,8 @@ def test_biocatalyst_modes_default_to_milestones_and_preserve_verified_pages():
     assert "state.rows = []; state.nextCursor = ''; state.payload = null" in js
     assert "if (options.append && state.rows.length && kind !== 'integrity_block' && kind !== 'client_fault') { preserveAppendFailure(); return; }" in js
     load_body = js[js.index("function loadMilestones(") : js.index("function applyFilters()")]
-    assert "handleHydrationFailure(error, { append: append });" in load_body
-    assert "handleUnavailable(error, { append: append });" not in load_body
+    assert "handleHydrationFailure(error, { append: append," in load_body
+    assert "handleUnavailable(error," not in load_body
     assert "paintUnavailableWorkspace()" not in load_body
     assert "throw markHydration(contractError, 'integrity_block', 200);" in load_body
     assert "throw markHydration(displayError, 'client_fault', 200);" in load_body
@@ -476,7 +517,7 @@ def test_biocatalyst_change_tape_client_contract_is_mode_bound_and_fail_closed()
     # silently recast as absent facts.
     for token in (
         "Array.from(value).length <= 12000",
-        "value.length <= 200",
+            "value.length <= 512",
         "Object.keys(value).length > 100",
         "Array.from(key).length <= 256",
         "depth > 12",

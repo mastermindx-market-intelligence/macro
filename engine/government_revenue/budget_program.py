@@ -418,7 +418,9 @@ def build_budget_program_graph(
         "programs": programs,
         "edges": sorted(edges, key=lambda row: row["edge_id"]),
         "limitations": [
-            "Wave 8 supplies a fixture-only parser contract; no live PDF acquisition or real-layout extraction is activated for publication.",
+            "Live official acquisition (fetch, sha256, immutable object-store write, strict readback verification) and deterministic pdfplumber text-layer extraction are ACTIVE for the FY2027 P-1/R-1 President's Budget exhibits; this remains a display/evidence-tier feed only.",
+            "Extraction is text-layer only (no OCR), so an image-only or scanned page refuses rather than producing a plausible partial row.",
+            "Named grain gaps: zero-numbered-line totals partitions (e.g. 1612N BA01) are not represented at line grain; FY2026 sub-cell columns (Discretionary Enacted, PL 119-21 Spend Plan) are read but not published as their own semantic; the single FY2027 P-1 E-7-shape line (own value netting exactly to zero against value-bearing Less:-children with no printed net-memo row) publishes ALL-NULL amounts rather than a computed figure; and there is no retraction path yet for a line published under a since-superseded parser generation.",
             "P-1/R-1 President's Budget request evidence is not authorization, enacted appropriation, execution, obligation, award value, backlog, or revenue.",
             "Program-to-award paths require exact reviewed documentary evidence; program names and semantic similarity do not create edges.",
             "Economic weight is null in Wave 8, so this graph does not allocate a budget line to an issuer.",
@@ -576,10 +578,55 @@ def is_valid_budget_program_graph(value: Any, *, root: Path | None = None) -> bo
         from jsonschema import Draft202012Validator, FormatChecker
 
         contracts = _root(root) / "contracts" / "government_revenue"
-        schema = json.loads((contracts / "government_budget_program_graph.v1.schema.json").read_text(encoding="utf-8"))
+        schema_name = "government_budget_program_graph.v1_1.schema.json" if isinstance(value, Mapping) and value.get("schema_version") == "1.1.0" else "government_budget_program_graph.v1.schema.json"
+        schema = json.loads((contracts / schema_name).read_text(encoding="utf-8"))
         validator = Draft202012Validator(schema, registry=_schema_registry(root), format_checker=FormatChecker())
         validator.validate(value)
-        _validate_graph_semantics(value)
+        semantic_value = value
+        if value.get("schema_version") == "1.1.0":
+            from .budget_allocation_context import context_id, KIND, STAGE, REVIEWED_EDITION_SHA256, REVIEWED_SOURCE_URL, SECTIONS
+            contexts = [doc for doc in value["documents"] if doc.get("document_kind") == KIND]
+            if not contexts or len({doc["context_id"] for doc in contexts}) != len(contexts):
+                raise ValueError("allocation contexts absent or duplicated")
+            for doc in contexts:
+                if doc["context_id"] != context_id(doc) or doc["document_stage"] != STAGE:
+                    raise ValueError("allocation document identity/stage mismatch")
+                if doc["exhibit"] is not None or _utc_iso(doc["observed_at"]) > _utc_iso(doc["known_at"]):
+                    raise ValueError("allocation document clock/exhibit mismatch")
+                if doc["source_url"] != REVIEWED_SOURCE_URL or doc["content_sha256"] != REVIEWED_EDITION_SHA256 or doc["fiscal_year"] != 2026 or doc["source_document_date"] != "2026-05-04":
+                    raise ValueError("allocation unreviewed edition/source")
+                if _utc_iso(doc["known_at"]) > _utc_iso(value["generated_at"]):
+                    raise ValueError("allocation future known clock")
+                if doc["source_published_at"] is not None and _utc_iso(doc["source_published_at"]) > _utc_iso(doc["observed_at"]):
+                    raise ValueError("allocation publication after observation")
+                hashes = doc["page_text_sha256s"]
+                if len(hashes) != doc["page_count"] or doc["extraction_semantic_sha256"] != _extraction_semantic_sha256(hashes):
+                    raise ValueError("allocation extraction binding mismatch")
+                if len({row["section"] for row in doc["allocations"]}) != len(doc["allocations"]):
+                    raise ValueError("allocation section duplicated")
+                for row in doc["allocations"]:
+                    section = row["section"].removeprefix("SEC. ")
+                    if row["native_title"] != SECTIONS.get(section):
+                        raise ValueError("allocation source section title mismatch")
+                    span = row["source_span"]
+                    page = span["pdf_page_1based"]
+                    if not 1 <= page <= doc["page_count"] or span["page_text_sha256"] != hashes[page-1] or not 0 <= span["span_start_byte"] < span["span_end_byte"]:
+                        raise ValueError("allocation span binding mismatch")
+                    if [a["fiscal_year"] for a in row["amounts"]] != [2025,2026,2027,2028,2029,None]:
+                        raise ValueError("allocation fiscal columns mismatch")
+                    for amount in row["amounts"]:
+                        from decimal import Decimal
+                        expected_kind = "printed_section_total" if amount["fiscal_year"] is None else "allocation_plan_fiscal_year"
+                        if amount["amount_kind"] != expected_kind or (amount["source_literal"] == "-") != (amount["value"] is None):
+                            raise ValueError("allocation column classification mismatch")
+                        if amount["value"] is not None and Decimal(amount["value"]) != Decimal(amount["source_literal"].replace(",", "")):
+                            raise ValueError("allocation source literal mismatch")
+            from copy import deepcopy
+            semantic_value = deepcopy(value)
+            semantic_value["schema_version"] = "1.0.0"
+            semantic_value["documents"] = [doc for doc in value["documents"] if doc.get("document_kind") != KIND]
+            del semantic_value["source_coverage"]["legislative_allocations"]
+        _validate_graph_semantics(semantic_value)
         return (
             isinstance(value, Mapping)
             and budget_program_graph_content_id(value) == value.get("content_id")
@@ -599,3 +646,9 @@ __all__ = [
     "is_valid_budget_program_graph",
     "load_reviewed_edges",
 ]
+
+
+def compose_budget_allocation_context(*args, **kwargs):
+    """Existing-owner seam; old program/line/edge truth remains unchanged."""
+    from .budget_allocation_context import compose_allocation_context_graph
+    return compose_allocation_context_graph(*args, **kwargs)

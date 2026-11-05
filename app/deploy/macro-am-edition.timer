@@ -1,0 +1,31 @@
+# Morning Orientation premarket edition overlay — cadence.
+#
+# OnCalendar window: 08..14 UTC covers the ET premarket in BOTH DST regimes:
+#   * 08:0xZ..14:0xZ = 04:0x..10:0x ET under EDT (UTC-4),
+#   * 08:0xZ..14:0xZ = 03:0x..09:0x ET under EST (UTC-5).
+# The :07 and :37 minute offsets are fixed regardless of DST — the producer's
+# own phase check (`build_am_edition._session_phase`) decides whether the
+# wall clock maps to an NYSE `preopen` window. Outside preopen (and on NYSE
+# holidays / weekends) the producer SKIPs, so out-of-window ticks are a
+# Python start that exits immediately and writes a `decision=skip` receipt.
+#
+# RandomizedDelaySec=60 spreads the start a minute either side of the second
+# boundary so a fleet of VPSes running this timer do not stamp their reads
+# in lockstep.
+#
+# Persistent=false — a missed pass is a missed 30-minute interval, and
+# replaying it later would render a stale tape against a live clock. The
+# next tick is the recovery; the receipt's decision+generated_at is how the
+# gap is reported.
+[Unit]
+Description=Build or expire the Morning Orientation edition overlay every 30 minutes in the ET premarket
+
+[Timer]
+OnCalendar=*-*-* 08..14:07,37:00 UTC
+AccuracySec=1s
+RandomizedDelaySec=60
+Persistent=false
+Unit=macro-am-edition.service
+
+[Install]
+WantedBy=timers.target

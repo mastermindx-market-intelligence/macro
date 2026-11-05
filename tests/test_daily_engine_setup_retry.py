@@ -55,6 +55,65 @@ def _engine_job(**overrides: object) -> dict:
     return row
 
 
+def _checkout_loss_engine(**overrides: object) -> dict:
+    row = {
+        "id": JOB_ID,
+        "name": "engine",
+        "status": "completed",
+        "conclusion": "failure",
+        "labels": ["self-hosted", "macstudio"],
+        "runner_name": "mac-builder-light",
+        "started_at": "2026-09-15T04:38:10Z",
+        "completed_at": "2026-09-15T04:38:55Z",
+        "steps": [
+            {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1,
+            },
+            {
+                "name": "timings — job start mark (W2)",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2,
+            },
+            {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "number": 3,
+            },
+            {
+                "name": "Run git pull origin main",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 4,
+            },
+            {
+                "name": "regional + desk builders",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 45,
+            },
+            {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 304,
+            },
+            {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 305,
+            },
+        ],
+    }
+    row.update(overrides)
+    return row
+
+
 def _success_job(name: str, *, started_at: str, completed_at: str) -> dict:
     return {
         "id": abs(hash(name)) % 10_000 + 1,
@@ -110,7 +169,7 @@ def test_exact_setup_only_engine_cancel_is_eligible() -> None:
         ({"steps": _engine_job()["steps"] + [{"name": "Run actions/checkout@v4"}]}, "progressed"),
         ({"completed_at": "2026-08-09T06:40:00Z"}, "progressed"),
         ({"labels": ["ubuntu-latest"]}, "progressed"),
-        ({"conclusion": "failure"}, "no cancelled"),
+        ({"conclusion": "failure"}, "no bounded pre-code"),
     ],
 )
 def test_non_setup_engine_failures_are_not_retried(mutation: dict, reason: str) -> None:
@@ -205,6 +264,104 @@ def test_known_dependent_failure_does_not_block_setup_race_recovery() -> None:
         },
     ]
     assert _decide(_run(), jobs).eligible is True
+
+
+def test_checkout_runner_loss_before_repo_code_is_eligible() -> None:
+    jobs = [
+        _checkout_loss_engine(),
+        _success_job(
+            "collect",
+            started_at="2026-09-15T00:50:12Z",
+            completed_at="2026-09-15T03:58:42Z",
+        ),
+        {
+            **_success_job(
+                "government_revenue_projection / refresh",
+                started_at="2026-09-15T03:58:44Z",
+                completed_at="2026-09-15T04:02:04Z",
+            ),
+            "conclusion": "failure",
+        },
+        {
+            "id": 777,
+            "name": "collect_tail",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "started_at": "2026-09-15T04:33:18Z",
+            "completed_at": "2026-09-15T07:54:09Z",
+            "steps": [],
+        },
+        _success_job(
+            "factor_panel",
+            started_at="2026-09-15T04:38:59Z",
+            completed_at="2026-09-15T04:47:07Z",
+        ),
+    ]
+    decision = _decide(_run(conclusion="failure"), jobs)
+    assert decision.eligible is True
+    assert decision.job_id == JOB_ID
+    assert "checkout" in decision.reason
+
+
+def test_checkout_loss_rejects_operator_cancelled_run() -> None:
+    jobs = [
+        _checkout_loss_engine(),
+        _success_job(
+            "collect",
+            started_at="2026-09-15T00:50:12Z",
+            completed_at="2026-09-15T03:58:42Z",
+        ),
+        _success_job(
+            "factor_panel",
+            started_at="2026-09-15T04:38:59Z",
+            completed_at="2026-09-15T04:47:07Z",
+        ),
+    ]
+    decision = _decide(_run(conclusion="cancelled"), jobs)
+    assert decision.eligible is False
+    assert "runner-loss failure shape" in decision.reason
+
+
+def test_checkout_loss_rejects_any_repository_step_that_ran_after_checkout() -> None:
+    engine = _checkout_loss_engine()
+    engine["steps"][3] = {
+        "name": "Run git pull origin main",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+    }
+    jobs = [
+        engine,
+        _success_job(
+            "collect",
+            started_at="2026-09-15T00:50:12Z",
+            completed_at="2026-09-15T03:58:42Z",
+        ),
+        _success_job(
+            "factor_panel",
+            started_at="2026-09-15T04:38:59Z",
+            completed_at="2026-09-15T04:47:07Z",
+        ),
+    ]
+    decision = _decide(_run(conclusion="failure"), jobs)
+    assert decision.eligible is False
+    assert "bounded pre-code" in decision.reason
+
+
+def test_checkout_failure_is_not_mistaken_for_runner_loss() -> None:
+    engine = _checkout_loss_engine()
+    engine["steps"][2]["conclusion"] = "failure"
+    jobs = [
+        engine,
+        _success_job(
+            "collect",
+            started_at="2026-09-15T00:50:12Z",
+            completed_at="2026-09-15T03:58:42Z",
+        ),
+    ]
+    decision = _decide(_run(conclusion="failure"), jobs)
+    assert decision.eligible is False
+    assert "bounded pre-code" in decision.reason or "no bounded" in decision.reason
 
 
 def test_workflow_run_envelope_is_bound_to_repository_and_default_branch() -> None:
@@ -373,3 +530,97 @@ def test_recovery_workflow_is_narrow_and_least_privilege() -> None:
     assert "/actions/runs/{run_id}/rerun" not in controller
     assert "rerun-failed-jobs" not in controller
     assert "gh workflow run" not in source + controller
+
+
+DAILY_WORKFLOW = ROOT / ".github" / "workflows" / "daily.yml"
+
+# Production run names observed on the workflow_run envelopes this controller
+# consumes.  ``run-name`` landed in daily.yml on 2026-08-15 (#5723) and the
+# ``/actions/runs/{id}`` API reports the RENDERED run name in ``name``, which is
+# why an identity assertion on that field failed 28 consecutive nightlies.
+PRODUCTION_RUN_NAMES = (
+    "daily 30 22 * * *",
+    "daily 30 23 * * *",
+    "daily workflow_dispatch",
+)
+
+
+@pytest.mark.parametrize("run_name", PRODUCTION_RUN_NAMES)
+def test_templated_run_name_is_not_an_identity_signal(run_name: str) -> None:
+    """``run.name`` is author-controlled display text, never workflow identity.
+
+    Regression for the 2026-08-15 outage: daily.yml gained
+    ``run-name: daily ${{ github.event.schedule || github.event_name }}``, the
+    runs API began reporting that rendered string in ``name``, and the
+    controller rejected every real nightly as "run is not the daily workflow".
+    """
+    decision = _decide(_run(name=run_name), _incident_jobs())
+    assert decision.eligible is True
+    assert decision.job_id == JOB_ID
+
+
+def test_workflow_path_remains_the_authoritative_identity() -> None:
+    """Dropping the display-name assertion must not weaken identity."""
+    with pytest.raises(retry.RetryContractError, match="authoritative daily workflow"):
+        _decide(
+            _run(name="daily", path=".github/workflows/impostor.yml"),
+            _incident_jobs(),
+        )
+
+
+def test_controller_does_not_bind_to_daily_run_name() -> None:
+    """Contract test across the two files the 2026-08-15 break spanned.
+
+    daily.yml may template ``run-name`` freely; the controller must key identity
+    off ``path`` alone so a future run-name edit cannot re-break this lane.
+    """
+    daily = yaml.safe_load(DAILY_WORKFLOW.read_text(encoding="utf-8"))
+    assert daily["name"] == "daily"
+
+    run_name = daily.get("run-name")
+    if run_name is not None:
+        # A templated run-name renders to something other than the workflow
+        # name, so it can never be compared against one.
+        assert "${{" in run_name
+
+    controller = (
+        ROOT / "scripts" / "ci" / "retry_daily_engine_setup_cancel.py"
+    ).read_text(encoding="utf-8")
+    assert 'run.get("name")' not in controller
+    assert 'EXPECTED_WORKFLOW_PATH' in controller
+
+
+def test_upstream_cancellation_before_engine_exists_is_a_disclosed_noop() -> None:
+    """A daily cancelled during collect never creates the engine job.
+
+    Observed in production on daily run 32194718597 (2026-08-18): two job rows,
+    ``collect`` cancelled and no ``engine`` row at all.  Nothing is ambiguous
+    and nothing can be retried, so this is a no-op -- not a contract violation
+    that reds the recovery lane.  Masked until 2026-08-26 because the run-name
+    identity assertion refused every envelope first.
+    """
+    jobs = [
+        {
+            "id": 1,
+            "name": "collect",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "steps": [],
+        }
+    ]
+    decision = _decide(_run(name="daily 30 22 * * *"), jobs)
+    assert decision.eligible is False
+    assert "never created an engine job" in decision.reason
+
+
+def test_duplicate_engine_jobs_still_fail_closed() -> None:
+    """Two engine rows are genuinely ambiguous and must not be retried."""
+    with pytest.raises(retry.RetryContractError, match="exactly one engine job"):
+        _decide(
+            _run(),
+            [
+                _engine_job(),
+                _engine_job(id=JOB_ID + 1, conclusion="success"),
+                *_required_jobs(),
+            ],
+        )

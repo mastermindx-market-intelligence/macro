@@ -1,5 +1,30 @@
 """scripts/build_flow_leaders.py — Flow Leaders Desk nightly builder (FL W2).
 
+╔══════════════════════════════════════════════════════════════════════════╗
+║ THIS BOARD IS PERMANENTLY stale:true — AND THAT IS NOT A BUG.            ║
+║                                                                          ║
+║ Its options spine (data/options_flow/summary_*.parquet, via              ║
+║ data/polygon_gex/chains/) comes from the LEGACY Massive/Polygon estate,  ║
+║ whose options entitlement 403'd on 2026-08-13/14 and was RETIRED by the  ║
+║ Chairman source ruling of 2026-08-22                                     ║
+║ (DEC:AD-OPTIONS-CANONICAL-SOURCE-THETADATA). THETADATA is the canonical  ║
+║ options source; Massive/Polygon is a STOCK-data source. There is no      ║
+║ options key to rotate.                                                   ║
+║                                                                          ║
+║ So the spine is frozen at session 2026-08-12, `_check_stale` correctly   ║
+║ returns True, the stale branch in build() correctly skips the recurrence ║
+║ block, every A1_flow_recur/recurrence_count is null, K_a collapses to 0, ║
+║ and fire_a/fire_b are False on EVERY row. That whole chain is one        ║
+║ fail-closed refusal working as designed — NOT a Board A/B scoring bug.   ║
+║ Do not "fix" the gates. Downstream, plab_flow_leader and                 ║
+║ plab_flow_washout can never fire while this holds.                       ║
+║                                                                          ║
+║ The OPEN question — repoint this lane at the ThetaData EOD/T1 spine      ║
+║ (engine/thetadata_store.py), or retire the boards — belongs to Sol /     ║
+║ WS:ADVANCED-DATA-OPTIONS. Nothing in this file may silently swap the     ║
+║ source; the superseded DNR row existed to reserve exactly that call.     ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
 Inputs (all absent-safe — honest nulls on miss):
   data/options_flow/summary_*.parquet      soft-spine: gross premium, net_premium_mn,
                                             zerodte_share, fresh_contracts
@@ -247,7 +272,17 @@ def _load_options_entry(data_root: Path) -> dict[str, str | None]:
         df = pd.read_parquet(p)
         if "ticker" not in df.columns or "gamma_regime" not in df.columns:
             return {}
-        return dict(zip(df["ticker"].astype(str), df["gamma_regime"].astype(object)))
+        regimes: dict[str, str | None] = {}
+        for ticker, raw in zip(df["ticker"].astype(str), df["gamma_regime"].astype(object)):
+            # Parquet missing string values arrive as plain float NaN.  Python's
+            # json encoder serialises those as the non-standard bare token NaN,
+            # which browser Response.json()/JSON.parse rejects.  Normalise at
+            # the typed source boundary: gamma_regime is string-or-null only.
+            if raw is None or pd.isna(raw):
+                regimes[ticker] = None
+            else:
+                regimes[ticker] = str(raw)
+        return regimes
     except Exception as e:  # noqa: BLE001
         log.debug("build_flow_leaders: options_entry/state.parquet unreadable: %s", e)
         return {}
@@ -264,6 +299,25 @@ def _load_stockdata(ticker: str, site_root: Path) -> dict:
     except Exception as e:  # noqa: BLE001
         log.debug("build_flow_leaders: stockdata/%s unreadable: %s", ticker, e)
         return {}
+
+
+def _finite_float_cell(value: Any) -> float | None:
+    """Read a finite numeric from a scalar or canonical stockdata metric cell.
+
+    Valuation fields now use cells such as {"v": 28.0, "med": 25.0, "cheap": 40.0},
+    while older snapshots and several technical fields remain plain numeric scalars.
+    Flow Leaders consumes only the point value; peer-median/cheapness metadata remains
+    owned by the valuation surface.
+    """
+    if isinstance(value, dict):
+        value = value.get("v")
+    if value is None or isinstance(value, (bool, np.bool_)):
+        return None
+    try:
+        f = float(value)
+    except (TypeError, ValueError):
+        return None
+    return f if np.isfinite(f) else None
 
 
 def _extract_stock_context(sd: dict, ticker: str) -> dict:
@@ -284,8 +338,7 @@ def _extract_stock_context(sd: dict, ticker: str) -> dict:
 
     # rs_1m
     rs = tech.get("rs") or {}
-    rs_1m = rs.get("rs_1m")
-    ctx["rs_1m"] = float(rs_1m) if rs_1m is not None and not pd.isna(rs_1m) else None
+    ctx["rs_1m"] = _finite_float_cell(rs.get("rs_1m"))
 
     # high52w_prox
     ctx["high52w_prox"] = _safe_float(tech, "high52w_prox")
@@ -304,8 +357,10 @@ def _extract_stock_context(sd: dict, ticker: str) -> dict:
 
     # mktcap_bn + sector (display context)
     profile = sd.get("profile") or {}
-    mktcap = profile.get("mktcap_bn") or profile.get("market_cap_bn")
-    ctx["mktcap_bn"] = float(mktcap) if mktcap is not None and not pd.isna(mktcap) else None
+    mktcap = profile.get("mktcap_bn")
+    if mktcap is None:
+        mktcap = profile.get("market_cap_bn")
+    ctx["mktcap_bn"] = _finite_float_cell(mktcap)
     sec = profile.get("sector")
     ctx["sector"] = str(sec) if sec else None
 
@@ -323,21 +378,16 @@ def _extract_stock_context(sd: dict, ticker: str) -> dict:
 
     # trailing_pe from valuation
     val = sd.get("valuation") or {}
-    pe = val.get("trailing_pe") or val.get("pe_ttm")
-    ctx["trailing_pe"] = float(pe) if pe is not None and not pd.isna(pe) else None
+    pe = val.get("trailing_pe")
+    if pe is None:
+        pe = val.get("pe_ttm")
+    ctx["trailing_pe"] = _finite_float_cell(pe)
 
     return ctx
 
 
 def _safe_float(d: dict, key: str) -> float | None:
-    v = d.get(key)
-    if v is None:
-        return None
-    try:
-        f = float(v)
-        return f if np.isfinite(f) else None
-    except (TypeError, ValueError):
-        return None
+    return _finite_float_cell(d.get(key))
 
 
 # ── Stock personality loader ──────────────────────────────────────────────────
@@ -941,12 +991,12 @@ def build(
     for name in board_names:
         sd = _load_stockdata(name, site_root)
         profile = sd.get("profile") or {}
-        cap = profile.get("mktcap_bn") or profile.get("market_cap_bn")
-        if cap is not None:
-            try:
-                mktcap_map[name] = float(cap)
-            except (TypeError, ValueError):
-                pass
+        cap = profile.get("mktcap_bn")
+        if cap is None:
+            cap = profile.get("market_cap_bn")
+        cap_float = _finite_float_cell(cap)
+        if cap_float is not None:
+            mktcap_map[name] = cap_float
 
     # ── Build membership history (for recurrence counting) ────────────────────
     board_summaries = {t: summaries[t] for t in board_names if t in summaries}
@@ -1117,7 +1167,12 @@ def build(
 
     # ── Write leaders.json ────────────────────────────────────────────────────
     out_path = out_dir / "leaders.json"
-    out_path.write_text(json.dumps(payload, separators=(",", ":"), default=_json_default))
+    # RFC-8259 JSON only.  `allow_nan=False` is the publication tripwire:
+    # source loaders must normalise missing/non-finite values to null before this
+    # boundary rather than shipping JavaScript-unparseable NaN/Infinity tokens.
+    out_path.write_text(
+        json.dumps(payload, separators=(",", ":"), default=_json_default, allow_nan=False)
+    )
     log.info(
         "build_flow_leaders: wrote %s (%d board candidates, %d bytes)",
         out_path, len(board_names), out_path.stat().st_size,

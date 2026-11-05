@@ -9,6 +9,11 @@ load-bearing fail-safe (offline = a valid, empty snapshot).
 """
 from __future__ import annotations
 
+import json
+import pathlib
+import re
+import pytest
+
 from engine import live_quotes as lq
 from scripts import build_live_quotes as blq
 
@@ -87,6 +92,7 @@ def test_scrape_site_symbols_extracts_only_valid(tmp_path):
 
 def test_to_worker_quotes_maps_engine_dict_to_contract():
     raw = {"AAPL": {"price": 212.5, "quote_ts": "2026-06-23T14:00:00+00:00",
+                    "quote_ts_synthetic": False,
                     "source": "polygon", "price_basis": "trade",
                     "prev_close": 210.0, "currency": "USD", "delay_min": 1.0}}
     out = blq.to_worker_quotes(raw)["AAPL"]
@@ -97,6 +103,156 @@ def test_to_worker_quotes_maps_engine_dict_to_contract():
     assert isinstance(out["ts"], int) and out["ts"] > 0     # epoch MILLIseconds
     from datetime import datetime
     assert out["ts"] == int(datetime.fromisoformat("2026-06-23T14:00:00+00:00").timestamp() * 1000)
+    # The long-standing Worker/browser contract remains unchanged by default.
+    assert "quote_ts" not in out
+    assert "quote_ts_synthetic" not in out
+
+
+def test_to_worker_quotes_private_provenance_preserves_source_clock_truth():
+    raw = {
+        "REAL": {
+            "price": 212.5,
+            "quote_ts": "2026-06-23T14:00:00.123456+00:00",
+            "quote_ts_synthetic": False,
+            "source": "polygon",
+            "price_basis": "trade",
+            "prev_close": 210.0,
+            "currency": "USD",
+            "delay_min": 1.0,
+        },
+        "SYNTH": {
+            "price": 7400.0,
+            "quote_ts": "2026-06-23T14:00:01+00:00",
+            "quote_ts_synthetic": True,
+            "source": "polygon",
+            "price_basis": "day",
+            "prev_close": 7390.0,
+            "currency": "USD",
+            "delay_min": 0.0,
+        },
+        "UNKNOWN": {
+            "price": 100.0,
+            "quote_ts": "2026-06-23T14:00:02+00:00",
+            "source": "fixture",
+            "price_basis": "trade",
+            "prev_close": 99.0,
+            "currency": "USD",
+            "delay_min": 0.0,
+        },
+    }
+
+    out = blq.to_worker_quotes(raw, include_private_provenance=True)
+
+    assert out["REAL"]["quote_ts"] == raw["REAL"]["quote_ts"]
+    assert out["REAL"]["quote_ts_synthetic"] is False
+    assert out["SYNTH"]["quote_ts"] == raw["SYNTH"]["quote_ts"]
+    assert out["SYNTH"]["quote_ts_synthetic"] is True
+    # Missing provenance is never guessed from a non-null timestamp.
+    assert out["UNKNOWN"]["quote_ts_synthetic"] is None
+
+
+def test_synthetic_quote_keeps_public_clock_refusal_with_private_opt_in():
+    clock = "2026-10-08T14:30:00.123456+00:00"
+    raw = {"UNIT": {"price": 10.0, "quote_ts": clock,
+                    "quote_ts_synthetic": True, "price_basis": "day"}}
+
+    public = blq.to_worker_quotes(raw)["UNIT"]
+    private = blq.to_worker_quotes(raw, include_private_provenance=True)["UNIT"]
+
+    assert public["ts"] is None
+    assert public["tsSynthetic"] is True
+    assert "quote_ts" not in public and "quote_ts_synthetic" not in public
+    assert private["ts"] is None
+    assert private["tsSynthetic"] is True
+    assert private["quote_ts"] == clock
+    assert private["quote_ts_synthetic"] is True
+    assert {k: v for k, v in private.items()
+            if k not in {"quote_ts", "quote_ts_synthetic", "day_open",
+                         "bid_price", "ask_price", "nbbo_ts", "nbbo_source"}} == public
+
+
+@pytest.mark.parametrize("provenance", [None, 0, 1, "false", "true", [], {}])
+def test_private_quote_provenance_does_not_coerce_nonboolean_values(provenance):
+    clock = "2026-10-08T14:30:00+00:00"
+    raw = {"UNIT": {"price": 10.0, "quote_ts": clock,
+                    "quote_ts_synthetic": provenance}}
+
+    private = blq.to_worker_quotes(raw, include_private_provenance=True)["UNIT"]
+
+    assert private["quote_ts"] == clock
+    assert private["quote_ts_synthetic"] is None
+
+
+def test_build_private_opt_in_preserves_all_session_receipts(monkeypatch, tmp_path):
+    from datetime import datetime, timezone
+    from lib.market_session import session_status
+
+    clock = datetime(2026, 10, 8, 14, 30, tzinfo=timezone.utc)
+
+    class FrozenDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return clock.astimezone(tz) if tz is not None else clock.replace(tzinfo=None)
+
+    raw = {"UNIT": {"price": 10.0, "quote_ts": clock.isoformat(),
+                    "quote_ts_synthetic": False}}
+    calls = []
+
+    def fake_fetch_quotes(universe, *, offline=False, diag=None):
+        calls.append((universe, offline))
+        assert universe == ["UNIT"] and offline is False
+        return raw
+
+    monkeypatch.setattr(blq, "datetime", FrozenDatetime)
+    monkeypatch.setattr(blq.live_quotes, "fetch_quotes", fake_fetch_quotes)
+    public = blq.build(tmp_path, symbols=["UNIT"])
+    private = blq.build(tmp_path, symbols=["UNIT"], include_private_provenance=True)
+
+    expected = {market: session_status(market, clock)
+                for market in ("us", "cn", "hk", "ca", "connect")}
+    assert set(expected) == {"us", "cn", "hk", "ca", "connect"}
+    assert public["sessions"] == private["sessions"] == expected
+    assert public["asof"] == private["asof"] == clock.isoformat()
+    assert public["ts"] == private["ts"] == int(clock.timestamp() * 1000)
+    assert private["quotes"]["UNIT"]["quote_ts"] == clock.isoformat()
+    assert "quote_ts" not in public["quotes"]["UNIT"]
+    assert len(calls) == 2
+
+
+def test_build_private_provenance_is_opt_in(monkeypatch, tmp_path):
+    raw = {
+        "AAPL": {
+            "price": 212.5,
+            "quote_ts": "2026-06-23T14:00:00+00:00",
+            "quote_ts_synthetic": False,
+            "source": "polygon",
+            "price_basis": "trade",
+            "prev_close": 210.0,
+            "currency": "USD",
+            "delay_min": 1.0,
+        }
+    }
+
+    def fake_fetch_quotes(universe, *, offline=False, diag=None):
+        assert universe == ["AAPL"]
+        assert offline is False
+        if diag is not None:
+            diag["polygon_status"] = "fixture"
+        return raw
+
+    monkeypatch.setattr(blq.live_quotes, "fetch_quotes", fake_fetch_quotes)
+
+    public = blq.build(tmp_path, symbols=["AAPL"])
+    private = blq.build(
+        tmp_path,
+        symbols=["AAPL"],
+        include_private_provenance=True,
+    )
+
+    assert "quote_ts" not in public["quotes"]["AAPL"]
+    assert "quote_ts_synthetic" not in public["quotes"]["AAPL"]
+    assert private["quotes"]["AAPL"]["quote_ts"] == raw["AAPL"]["quote_ts"]
+    assert private["quotes"]["AAPL"]["quote_ts_synthetic"] is False
 
 
 def test_to_worker_quotes_handles_missing_prevclose_and_price():
@@ -267,7 +423,8 @@ def test_display_board_leg_is_capped_and_tiles_survive_the_cap(tmp_path):
     """The board's names are re-picked nightly, so the leg is unbounded by
     construction — cap it, and order the cap so the truncation can only ever eat
     board names, never a macro tile."""
-    page = "".join(f'<span data-sym="{i:06d}.SZ"></span>' for i in range(400))
+    page = "".join(f'<span data-sym="{i:06d}.SZ"></span>'
+                   for i in range(blq.DISPLAY_BOARD_CAP + 80))
     (tmp_path / "china_stocks.html").write_text(page)
     board = blq.board_display_symbols(tmp_path)
     assert len(board) == blq.DISPLAY_BOARD_CAP
@@ -293,6 +450,294 @@ def test_display_board_pages_are_pages_this_repo_actually_builds():
     assert "china_stocks.html" in blq.DISPLAY_BOARD_PAGES
     src = (blq._ROOT / "scripts" / "build_china.py").read_text(encoding="utf-8")
     assert '"china_stocks.html"' in src
+
+
+# ── Board coverage expansion (2026-08-19, wave 2) ────────────────────────────
+# Root cause: DISPLAY_BOARD_PAGES was china_stocks.html only, so us_stocks.html,
+# hk_stocks.html and canada_stocks.html rendered a `.nb-chg` live-change pill
+# live.js could never patch — the number stayed whatever the nightly render
+# baked while looking intraday. Measured in production 2026-08-19 against
+# https://www.mastermind-x.com/live/quotes.json (89 symbols): china_stocks.html
+# 54/54 covered, us_stocks.html 0/3, hk_stocks.html 0/4, canada_stocks.html
+# 0/10. These tests pin the expanded coverage and add the standing invariant
+# that makes a future dead pill fail CI instead of shipping silently.
+import logging
+
+
+@pytest.mark.parametrize("page,valid_syms,malformed", [
+    ("us_stocks.html", ["AAPL", "MSFT"], "bad sym!"),
+    ("china_stocks.html", ["600519.SS", "000001.SZ"], "bad sym!"),
+    ("hk_stocks.html", ["0700.HK", "9988.HK"], "bad sym!"),
+    ("canada_stocks.html", ["RY.TO", "SHOP.TO"], "bad sym!"),
+])
+def test_board_coverage_per_market_format(tmp_path, page, valid_syms, malformed):
+    """Every board named in DISPLAY_BOARD_PAGES must contribute its valid
+    data-sym values to board_display_symbols(), in that market's own symbol
+    format (bare US ticker, .SS/.SZ China, .HK Hong Kong, .TO Canada) — and
+    a malformed value on the same page must never survive the charset gate."""
+    assert page in blq.DISPLAY_BOARD_PAGES, f"{page} missing from DISPLAY_BOARD_PAGES"
+    tags = "".join(
+        f'<span class="nb-chg" data-sym="{s}">—</span>' for s in valid_syms
+    )
+    tags += f'<span class="nb-chg" data-sym="{malformed}">—</span>'
+    (tmp_path / page).write_text(tags)
+    board = blq.board_display_symbols(tmp_path)
+    for sym in valid_syms:
+        assert sym.upper() in board, sym
+    assert malformed.upper() not in board
+
+
+def test_board_duplicate_symbol_across_pages_collapses_to_one(tmp_path):
+    """The same symbol rendered on two different board pages must appear
+    exactly once in the fetched board leg — no double-counting toward the cap."""
+    (tmp_path / "china_stocks.html").write_text(
+        '<span class="nb-chg" data-sym="0700.HK">—</span>'
+    )
+    (tmp_path / "hk_stocks.html").write_text(
+        '<span class="nb-chg" data-sym="0700.HK">—</span>'
+    )
+    board = blq.board_display_symbols(tmp_path)
+    assert board.count("0700.HK") == 1
+
+
+def test_board_rejects_the_real_world_js_template_artifact(tmp_path):
+    """The built us_stocks.html carries a literal unrendered JS-template
+    artifact `data-sym="'+sym+'"` (a client-side string-concat placeholder
+    that never got substituted server-side) — it must never reach the fetched
+    universe, where it would poison a batch feed request."""
+    (tmp_path / "us_stocks.html").write_text(
+        '<span class="nb-chg" data-sym="AAPL">—</span>'
+        "<span class=\"nb-chg\" data-sym=\"'+sym+'\">—</span>"
+    )
+    board = blq.board_display_symbols(tmp_path)
+    assert "AAPL" in board
+    assert not any("SYM" in s or "+" in s or "'" in s for s in board)
+
+
+def test_macro_tiles_keep_priority_over_an_oversized_board(tmp_path):
+    """display_universe() must return every DISPLAY_SYMBOLS entry before any
+    board-only symbol, and a board leg at or over DISPLAY_BOARD_CAP must never
+    evict or reorder a macro tile."""
+    page = "".join(
+        f'<span class="nb-chg" data-sym="{i:06d}.SZ">—</span>'
+        for i in range(blq.DISPLAY_BOARD_CAP + 50)
+    )
+    (tmp_path / "china_stocks.html").write_text(page)
+    uni = blq.display_universe(tmp_path)
+    n_tiles = len(blq.DISPLAY_SYMBOLS)
+    assert uni[:n_tiles] == list(blq.DISPLAY_SYMBOLS)
+    assert len(uni) == n_tiles + blq.DISPLAY_BOARD_CAP
+    for sym in blq.DISPLAY_SYMBOLS:
+        assert sym in uni, sym
+
+
+def test_missing_board_page_degrades_visibly_with_a_named_warning(tmp_path, caplog):
+    """A missing board file must not fail the build — the universe still
+    assembles — but must log a warning NAMING the missing page, so a silently
+    empty board leg (which looks exactly like the bug this PR fixes) is
+    diagnosable. log.warning is correct here (this path never runs inside a
+    GitHub Actions step), not the bare ::warning print the CI-annotation rule
+    requires for Actions-step code."""
+    with caplog.at_level(logging.WARNING, logger="live_quotes_build"):
+        board = blq.board_display_symbols(tmp_path, pages=("us_stocks.html",))
+    assert board == []
+    assert any("us_stocks.html" in rec.message for rec in caplog.records), (
+        "missing board page must be named in a warning log line"
+    )
+
+
+def test_visible_nb_chg_board_pages_are_covered_or_explicitly_exempt():
+    """THE INVARIANT: scan the built site/*.html for every page emitting a
+    `data-sym` inside a tag whose class contains `nb-chg` (a visible live-
+    change claim) and assert each such page is either in DISPLAY_BOARD_PAGES
+    or in DISPLAY_BOARD_EXEMPT_PAGES with a written reason. This is what makes
+    a future board that renders the live-change pill without producer
+    coverage fail CI instead of shipping a dead pill silently. Skips cleanly
+    when site/ is not checked out (sparse worktree)."""
+    site_dir = blq._ROOT / "site"
+    if not site_dir.is_dir():
+        pytest.skip("site/ not checked out (sparse worktree) — nothing to scan")
+
+    tag_re = re.compile(r"<[a-zA-Z][^>]*>")
+    class_re = re.compile(r'class="([^"]*)"')
+    sym_re = re.compile(r'data-sym="([^"]*)"')
+
+    offenders = []
+    for html in sorted(site_dir.glob("*.html")):
+        text = html.read_text(errors="ignore")
+        emits_visible_live_change = False
+        for tag in tag_re.findall(text):
+            cm = class_re.search(tag)
+            if not cm or "nb-chg" not in cm.group(1).split():
+                continue
+            if sym_re.search(tag):
+                emits_visible_live_change = True
+                break
+        if not emits_visible_live_change:
+            continue
+        if html.name in blq.DISPLAY_BOARD_PAGES:
+            continue
+        if html.name in blq.DISPLAY_BOARD_EXEMPT_PAGES:
+            continue
+        offenders.append(html.name)
+
+    assert not offenders, (
+        f"page(s) render a visible .nb-chg live-change pill with no producer "
+        f"coverage and no exemption reason: {offenders} — add to "
+        f"DISPLAY_BOARD_PAGES (if the pill should go live) or to "
+        f"DISPLAY_BOARD_EXEMPT_PAGES with a written reason (if it genuinely "
+        f"should not)"
+    )
+
+
+# ── The GATED half of a board (2026-08-20) ───────────────────────────────────
+# Reported live: most US Prophet cards showed a price beside a dead "—" percent.
+# Root cause: the scrape stopped at `site/<page>.html`, but a tier-gated board
+# server-renders only `preview_rows` cards there and writes the withheld
+# remainder — same partial, same visible `.nb-chg` pill — into
+# `site/premiumdata/<page>.json`, which the page splices into the SAME grid
+# post-auth. Measured in production 2026-08-20: us_stocks.html carried 3 board
+# symbols (all covered, all moving) while premiumdata/us_stocks.json carried 60
+# more, 0 of which were in /live/quotes.json's 146.
+#
+# Note what the invariant above could NOT see: a gated page's VISIBLE pills are
+# genuinely covered, so the page passes while 60 dead pills sit in the JSON
+# beside it. That blind spot is the point of the payload invariant below.
+
+def _payload_syms(blob: str) -> set:
+    return {s.strip().upper() for s in blq._DATA_SYM_RE.findall(blob)
+            if blq._SYMBOL_RE.match(s.strip().upper())}
+
+
+def test_a_gated_boards_withheld_cards_reach_the_display_universe(tmp_path):
+    """THE BUG. A board page whose shell holds 1 card and whose tier payload
+    holds 3 must contribute all four — the wall decides who may READ a name, not
+    which names the quote producer fetches."""
+    (tmp_path / "us_stocks.html").write_text(
+        '<span class="nb-chg" data-sym="BIIB">—</span>'
+    )
+    (tmp_path / "premiumdata").mkdir()
+    (tmp_path / "premiumdata" / "us_stocks.json").write_text(json.dumps({
+        "schema": "tier_payload.v1", "page": "us_stocks", "gated": True,
+        "cards_html": '<span class="nb-chg" data-sym="HWM">—</span>'
+                      '<span class="nb-chg" data-sym="GNW">—</span>',
+        "actnow_html": '<span class="nb-chg" data-sym="SPOT">—</span>',
+        # rows[] carries tickers too but no markup — the pills are what matter,
+        # and scraping data-sym (not "any ticker-shaped string") is what keeps
+        # this leg the same contract the page half has always had.
+        "rows": [{"ticker": "NEVERMIND"}],
+    }))
+    board = blq.board_display_symbols(tmp_path)
+    assert board == ["BIIB", "GNW", "HWM", "SPOT"], board
+    assert "NEVERMIND" not in board
+    assert set(board) <= set(blq.display_universe(tmp_path))
+
+
+def test_payload_markup_is_json_escaped_so_a_raw_text_scrape_would_miss_it(tmp_path):
+    """Why payload_html() parses JSON instead of regexing the raw bytes: inside
+    the file the markup reads `data-sym=\\"HWM\\"`, which _DATA_SYM_RE cannot
+    match — and a scrape that silently finds nothing is indistinguishable from a
+    board that renders nothing."""
+    p = tmp_path / "us_stocks.json"
+    p.write_text(json.dumps({"cards_html": '<span class="nb-chg" data-sym="HWM">—</span>'}))
+    assert 'data-sym=\\"HWM\\"' in p.read_text()
+    assert not _payload_syms(p.read_text()), "raw-text scrape must be the broken path"
+    assert _payload_syms(blq.payload_html(p)) == {"HWM"}
+
+
+def test_a_symbol_on_both_sides_of_the_wall_costs_one_slot(tmp_path):
+    (tmp_path / "us_stocks.html").write_text(
+        '<span class="nb-chg" data-sym="BIIB">—</span>'
+    )
+    (tmp_path / "premiumdata").mkdir()
+    (tmp_path / "premiumdata" / "us_stocks.json").write_text(json.dumps({
+        "cards_html": '<span class="nb-chg" data-sym="BIIB">—</span>'
+    }))
+    assert blq.board_display_symbols(tmp_path).count("BIIB") == 1
+
+
+def test_the_payload_leg_keeps_the_charset_gate(tmp_path):
+    """A junk data-sym behind the wall must be rejected exactly as one on the
+    page is — the payload is not a trusted shortcut into a feed request."""
+    (tmp_path / "us_stocks.html").write_text('<span data-sym="BIIB"></span>')
+    (tmp_path / "premiumdata").mkdir()
+    (tmp_path / "premiumdata" / "us_stocks.json").write_text(json.dumps({
+        "cards_html": '<span data-sym="HWM"></span><span data-sym="bad sym!"></span>'
+                      "<span data-sym=\"'+sym+'\"></span>",
+    }))
+    board = blq.board_display_symbols(tmp_path)
+    assert "HWM" in board
+    assert not any("+" in s or "'" in s or " " in s for s in board)
+
+
+@pytest.mark.parametrize("body", ["not json at all", "[1, 2, 3]", '"a string"', ""])
+def test_an_unusable_payload_degrades_to_the_shell_and_never_raises(tmp_path, body):
+    """This feeds the once-a-minute snapshot lane. A corrupt payload must cost
+    the withheld cards their live percentage — the pre-fix behaviour — not cost
+    every macro tile its feed."""
+    (tmp_path / "us_stocks.html").write_text('<span data-sym="BIIB"></span>')
+    (tmp_path / "premiumdata").mkdir()
+    (tmp_path / "premiumdata" / "us_stocks.json").write_text(body)
+    assert blq.board_display_symbols(tmp_path) == ["BIIB"]
+
+
+def test_an_ungated_board_with_no_payload_is_unchanged(tmp_path):
+    """Most board pages ship no payload at all; that is the normal case, not a
+    fault, and must stay silent."""
+    (tmp_path / "canada_stocks.html").write_text('<span data-sym="RY.TO"></span>')
+    assert blq.board_display_symbols(tmp_path) == ["RY.TO"]
+
+
+def test_tier_payload_pills_are_covered_by_the_producer():
+    """THE INVARIANT the page-only scan could not express: for every shipped
+    tier payload that carries a visible `.nb-chg` + data-sym, those symbols must
+    actually land in the fetched board leg. This is what makes a future gated
+    board fail CI instead of shipping 60 dead pills to the paying tier.
+    Skips cleanly when site/ is not checked out (sparse worktree)."""
+    site_dir = blq._ROOT / "site"
+    payload_dir = site_dir / blq.DISPLAY_BOARD_PAYLOAD_DIR
+    if not payload_dir.is_dir():
+        pytest.skip("site/ not checked out (sparse worktree) — nothing to scan")
+
+    board = set(blq.board_display_symbols(site_dir))
+    uncovered = {}
+    for path in sorted(payload_dir.glob("*.json")):
+        blob = blq.payload_html(path)
+        if 'class="nb-chg' not in blob:
+            continue
+        syms = _payload_syms(blob)
+        missing = syms - board
+        if missing:
+            uncovered[path.name] = sorted(missing)[:8]
+
+    assert not uncovered, (
+        f"tier payload(s) render a visible .nb-chg pill for symbols the producer "
+        f"never fetches: {uncovered} — every one of those cards shows a live "
+        f"price beside a dead '—'. The owning page must be in "
+        f"DISPLAY_BOARD_PAGES (its payload is scraped with it), and the board "
+        f"leg must not be truncating at DISPLAY_BOARD_CAP "
+        f"({blq.DISPLAY_BOARD_CAP})"
+    )
+
+
+def test_the_board_leg_has_headroom_over_the_cap():
+    """`out[:cap]` truncates ALPHABETICALLY, which on the page reads as exactly
+    the dead-pill bug — silently, on whichever names sort last. Fail while there
+    is still room to think, not on the night the board grows."""
+    site_dir = blq._ROOT / "site"
+    if not site_dir.is_dir():
+        pytest.skip("site/ not checked out (sparse worktree) — nothing to scan")
+    n = len(blq.board_display_symbols(site_dir))
+    assert n < blq.DISPLAY_BOARD_CAP, (
+        f"board leg is AT the cap ({n}/{blq.DISPLAY_BOARD_CAP}) — names are "
+        f"already being dropped"
+    )
+    assert n <= blq.DISPLAY_BOARD_CAP * 0.85, (
+        f"board leg {n} is within 15% of DISPLAY_BOARD_CAP "
+        f"({blq.DISPLAY_BOARD_CAP}); the US board is re-picked nightly, so raise "
+        f"the cap with a fresh size/latency measurement before a heavy board "
+        f"night truncates it"
+    )
 
 
 def test_yahoo_spark_yield_indexes_are_percent_direct_scale():
@@ -322,3 +767,245 @@ def test_yahoo_spark_yield_indexes_are_percent_direct_scale():
     # the level difference (a ÷10 mis-scale would render the ten-year as 0.46%
     # and understate the move 10×; live.js:105 has the reference formula)
     assert round((out["^TNX"]["price"] - out["^TNX"]["prev_close"]) * 100, 1) == 1.8
+
+
+# ---------------------------------------------------------------------------
+# live.js currency-glyph contract: a patched price must keep the "$" the board
+# BAKED, or a card visibly loses its currency symbol the moment it goes live.
+#
+# This only became reachable when the Canada/HK boards joined the live universe
+# (the DISPLAY_BOARD_PAGES expansion above): before that live.js never patched
+# those cards at all, so the mismatch could not show. Measured on the served
+# pages 2026-08-19 — us "$212.55", ca "$15.20", hk "6.22", cn "37.70".
+# ---------------------------------------------------------------------------
+_LIVE_JS = pathlib.Path(__file__).resolve().parents[1] / "templates" / "live.js"
+
+# market -> does its board bake a "$" on the nightly price
+_BAKES_DOLLAR = {"us": True, "ca": True, "hk": False, "cn": False}
+
+
+def _dollar_markets_from_live_js() -> set[str]:
+    """The DOLLAR_MKT table as live.js actually declares it."""
+    src = _LIVE_JS.read_text()
+    m = re.search(r"var\s+DOLLAR_MKT\s*=\s*\{([^}]*)\}", src)
+    assert m, "live.js no longer declares DOLLAR_MKT — update this contract test"
+    return set(re.findall(r"([A-Za-z_]+)\s*:\s*1", m.group(1)))
+
+
+def test_live_js_dollar_markets_match_the_boards_that_bake_a_dollar():
+    """`ca` was missing, so every .TO card dropped its "$" on the first patch."""
+    assert _dollar_markets_from_live_js() == {m for m, b in _BAKES_DOLLAR.items() if b}
+
+
+def test_live_js_never_prefixes_a_dollar_onto_hkd_or_cny():
+    """HK is HKD and China is CNY — a "$" there would be wrong, not merely ugly."""
+    dollar = _dollar_markets_from_live_js()
+    assert "hk" not in dollar and "cn" not in dollar
+
+
+def test_fmt_price_uses_the_table_rather_than_a_hardcoded_us_test():
+    """Regression guard: the old body was `(mkt === "us" ? "$" : "")`, which no
+    amount of table-editing could fix. The table must be what fmtPrice reads."""
+    src = _LIVE_JS.read_text()
+    body = re.search(r"function fmtPrice\(price, mkt\)\s*\{(.*?)\n  \}", src, re.S)
+    assert body, "fmtPrice not found in templates/live.js"
+    assert "DOLLAR_MKT[mkt]" in body.group(1)
+    assert 'mkt === "us" ? "$"' not in body.group(1)
+
+
+def test_built_board_pages_bake_the_prefix_live_js_will_restore():
+    """End-to-end: for every built board page, the glyph the page bakes is the
+    glyph live.js puts back. Skips on a sparse checkout (no site/)."""
+    site = pathlib.Path(__file__).resolve().parents[1] / "site"
+    if not site.is_dir():
+        pytest.skip("sparse worktree — site/ not checked out")
+    dollar = _dollar_markets_from_live_js()
+    checked = 0
+    for page, mkt in (("us_stocks.html", "us"), ("canada_stocks.html", "ca"),
+                      ("hk_stocks.html", "hk"), ("china_stocks.html", "cn")):
+        p = site / page
+        if not p.is_file():
+            continue
+        baked = re.findall(
+            r'<span class="nb-px[^"]*"[^>]*data-mkt="' + mkt + r'"[^>]*>([^<]+)</span>',
+            p.read_text(errors="ignore"))
+        baked = [b.strip() for b in baked if b.strip() and b.strip() != "—"]
+        if not baked:
+            continue
+        checked += 1
+        has_dollar = all(b.startswith("$") for b in baked)
+        assert has_dollar == (mkt in dollar), (
+            f"{page} bakes {baked[:3]} for data-mkt={mkt!r} but live.js "
+            f"{'adds' if mkt in dollar else 'omits'} the $ — a patch would change the glyph")
+    assert checked, "no board page contributed a baked price — contract unverified"
+
+def test_private_snapshot_preserves_measured_b4_evidence_without_clock_substitution():
+    evidence = {
+        "day_open": 210.1256,
+        "bid_price": 212.1234,
+        "ask_price": 212.2345,
+        "nbbo_ts": "2026-10-08T14:29:58.987654+00:00",
+        "nbbo_source": "polygon_lastQuote",
+    }
+    raw = {"UNIT": {
+        "price": 212.2,
+        "quote_ts": "2026-10-08T14:30:00.123456+00:00",
+        "quote_ts_synthetic": False,
+        "source": "polygon",
+        "price_basis": "trade",
+        **evidence,
+    }}
+
+    private = blq.to_worker_quotes(raw, include_private_provenance=True)["UNIT"]
+
+    assert {field: private[field] for field in evidence} == evidence
+    assert private["nbbo_ts"] != private["quote_ts"]
+    assert private["quote_ts"] == raw["UNIT"]["quote_ts"]
+    assert raw["UNIT"]["nbbo_ts"] == evidence["nbbo_ts"]
+    assert not {"liquidity_fillability", "ENTRY_OPEN", "availability"} & private.keys()
+
+
+def test_b4_evidence_does_not_change_the_public_projection():
+    plain = {"UNIT": {
+        "price": 212.2,
+        "quote_ts": "2026-10-08T14:30:00+00:00",
+        "quote_ts_synthetic": False,
+        "source": "polygon",
+        "price_basis": "trade",
+    }}
+    enriched = {"UNIT": {**plain["UNIT"],
+        "day_open": 210.0, "bid_price": 212.1, "ask_price": 212.3,
+        "nbbo_ts": "2026-10-08T14:29:59+00:00",
+        "nbbo_source": "polygon_lastQuote",
+    }}
+
+    assert json.dumps(blq.to_worker_quotes(enriched), sort_keys=True) == json.dumps(
+        blq.to_worker_quotes(plain), sort_keys=True,
+    )
+    assert not {"day_open", "bid_price", "ask_price", "nbbo_ts", "nbbo_source"} & (
+        blq.to_worker_quotes(enriched)["UNIT"].keys()
+    )
+
+
+@pytest.mark.parametrize("evidence", [
+    {},
+    {"day_open": None, "bid_price": None, "ask_price": None,
+     "nbbo_ts": None, "nbbo_source": None},
+])
+def test_private_b4_evidence_missingness_is_not_repaired_from_price_or_clock(evidence):
+    raw = {"UNIT": {
+        "price": 212.2, "prev_close": 210.0, "day_high": 213.0, "day_low": 209.0,
+        "quote_ts": "2026-10-08T14:30:00+00:00",
+        "quote_ts_synthetic": False, **evidence,
+    }}
+
+    private = blq.to_worker_quotes(raw, include_private_provenance=True)["UNIT"]
+
+    for field in ("day_open", "bid_price", "ask_price", "nbbo_ts", "nbbo_source"):
+        assert field in private and private[field] is None
+    assert private["price"] == 212.2
+    assert private["quote_ts"] == raw["UNIT"]["quote_ts"]
+
+
+def test_build_private_b4_evidence_uses_the_existing_single_fetch(monkeypatch, tmp_path):
+    evidence = {
+        "day_open": 210.0, "bid_price": 212.1, "ask_price": 212.3,
+        "nbbo_ts": "2026-10-08T14:29:59+00:00",
+        "nbbo_source": "polygon_lastQuote",
+    }
+    raw = {"UNIT": {"price": 212.2, "quote_ts": "2026-10-08T14:30:00+00:00",
+                    "quote_ts_synthetic": False, **evidence}}
+    calls = []
+
+    def fake_fetch_quotes(universe, *, offline=False, diag=None):
+        calls.append((list(universe), offline))
+        return raw
+
+    monkeypatch.setattr(blq.live_quotes, "fetch_quotes", fake_fetch_quotes)
+
+    result = blq.build(tmp_path, symbols=["UNIT"], include_private_provenance=True)
+
+    assert calls == [(["UNIT"], False)]
+    assert {field: result["quotes"]["UNIT"][field] for field in evidence} == evidence
+
+
+def test_current_polygon_parser_missing_evidence_remains_null_in_private_snapshot():
+    from datetime import datetime, timezone
+
+    clock = datetime(2026, 10, 8, 14, 30, tzinfo=timezone.utc)
+    raw = lq.parse_polygon_snapshot({"tickers": [{
+        "ticker": "UNIT",
+        "lastTrade": {"p": 212.2, "t": 1791469800000000000},
+    }]}, now=clock)
+
+    private = blq.to_worker_quotes(raw, include_private_provenance=True)["UNIT"]
+
+    # Current main omits these keys; a later admitted producer may emit nulls.
+    # Neither representation can manufacture measured evidence.
+    for field in ("day_open", "bid_price", "ask_price", "nbbo_ts", "nbbo_source"):
+        assert raw["UNIT"].get(field) is None
+        assert field in private and private[field] is None
+    assert private["quote_ts"] == raw["UNIT"]["quote_ts"]
+    assert private["quote_ts_synthetic"] is False
+
+
+def test_private_snapshot_cli_to_public_intraday_cli_keeps_b4_evidence_private(
+    monkeypatch, tmp_path,
+):
+    import sys
+    from scripts import build_intraday_flow_quotes as public_quotes
+
+    evidence = {
+        "day_open": 210.0, "bid_price": 212.1, "ask_price": 212.3,
+        "nbbo_ts": "2026-10-08T14:29:59+00:00",
+        "nbbo_source": "polygon_lastQuote",
+    }
+    raw = {"UNIT": {
+        "price": 212.2, "prev_close": 210.0, "currency": "USD",
+        "quote_ts": "2026-10-08T14:30:00+00:00",
+        "quote_ts_synthetic": False, "source": "polygon",
+        "price_basis": "trade", **evidence,
+    }}
+    calls = []
+
+    def fake_fetch_quotes(universe, *, offline=False, diag=None):
+        calls.append((list(universe), offline))
+        return raw
+
+    monkeypatch.setattr(blq.live_quotes, "fetch_quotes", fake_fetch_quotes)
+    monkeypatch.setattr(blq.config, "load", lambda: {"live": {}})
+    private_path = tmp_path / "private" / "quotes_full.json"
+    default_path = tmp_path / "default" / "quotes.json"
+    base_path = tmp_path / "base.json"
+    public_path = tmp_path / "public" / "intraday_quotes.json"
+    base_path.write_text(json.dumps({"leaders": [{"ticker": "UNIT"}]}))
+
+    monkeypatch.setattr(sys, "argv", [
+        "build_live_quotes", "--site", str(tmp_path), "--symbols", "UNIT",
+        "--private-provenance", "--out", str(private_path),
+    ])
+    assert blq.main() is None
+    private_bytes = private_path.read_bytes()
+    private = json.loads(private_bytes)
+    assert {field: private["quotes"]["UNIT"][field] for field in evidence} == evidence
+
+    monkeypatch.setattr(sys, "argv", [
+        "build_live_quotes", "--site", str(tmp_path), "--symbols", "UNIT",
+        "--out", str(default_path),
+    ])
+    assert blq.main() is None
+    default = json.loads(default_path.read_text())
+
+    monkeypatch.setattr(sys, "argv", [
+        "build_intraday_flow_quotes", "--base", str(base_path),
+        "--quotes", str(private_path), "--out", str(public_path),
+    ])
+    assert public_quotes.main() == 0
+    published = json.loads(public_path.read_text())
+
+    assert published["quotes"]["UNIT"] == default["quotes"]["UNIT"]
+    assert not set(evidence) & published["quotes"]["UNIT"].keys()
+    assert published["ts"] == private["ts"]
+    assert published["asof"] == private["asof"]
+    assert private_path.read_bytes() == private_bytes
+    assert calls == [(["UNIT"], False), (["UNIT"], False)]

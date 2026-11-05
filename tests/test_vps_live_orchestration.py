@@ -3,14 +3,18 @@ from __future__ import annotations
 import json
 import sys
 from datetime import datetime, timedelta, timezone
+from importlib import import_module, util as importlib_util
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+import pandas as pd
 
 from engine.release_actuals import receipts_from_payload
+from scripts import build_intraday_flow as bif
 from scripts import vps_live_orchestrator as vlo
 from scripts import watch_release_publications as wrp
+from scripts.build_intraday_flow_quotes import build_payload as build_flow_quotes
 from scripts.check_vps_live_health import evaluate as evaluate_live_health
 
 FOMC_STATEMENT = """
@@ -319,7 +323,7 @@ def _july_30_fetcher(spec, prior, timeout):
             last_modified="Thu, 30 Jul 2026 12:30:03 GMT",
         )
     if spec.source_id == "dol_claims":
-        assert spec.url == "https://www.dol.gov/newsroom/releases/eta"
+        assert spec.url == "https://www.dol.gov/index.php/newsroom/releases/eta"
         return _http_result(
             DOL_JULY_30_LISTING,
             last_modified="Thu, 30 Jul 2026 12:30:04 GMT",
@@ -813,7 +817,7 @@ def test_schedule_coverage_is_explicit_and_fails_visible_at_exhaustion():
     assert current["next_by_type"]["NFP"] == "2026-08-07"
     assert current["next_by_type"]["FOMC"] == "2026-09-16"
 
-    exhausted = wrp.schedule_coverage(datetime(2026, 12, 31).date())
+    exhausted = wrp.schedule_coverage(datetime(2027, 12, 31).date())
     assert exhausted["status"] == "incomplete"
     assert {"FOMC", "CPI", "NFP", "GDP", "PCE"}.issubset(
         exhausted["missing_or_too_distant"]
@@ -840,7 +844,7 @@ def test_fomc_watcher_publishes_verified_decision_facts():
     assert publication["data_ready"] is True
     assert publication["scheduled_at"] == "2026-07-29T14:00:00-04:00"
     assert publication["source_released_at"] == "2026-07-29T18:00:15+00:00"
-    assert publication["parser"] == {"name": "fomc", "version": 1}
+    assert publication["parser"] == {"name": "fomc", "version": 2}
     assert publication["source_url"].endswith("/monetary20260729a.htm")
     assert publication["actual"] == {
         "kind": "policy_rate",
@@ -1122,6 +1126,114 @@ def test_quote_snapshot_quality_rejects_empty_or_low_coverage(tmp_path: Path):
     ) is None
 
 
+def test_board_quote_filter_keeps_only_leaders_with_real_prices():
+    payload = build_flow_quotes(
+        {"leaders": [{"ticker": "AMD"}, {"ticker": "AAPL"}, {"ticker": "MISS"}]},
+        {
+            "ts": 123,
+            "asof": "2026-08-20T16:00:00+00:00",
+            "source": "snapshot",
+            "quotes": {
+                "AAPL": {"price": 200.0},
+                "AMD": {"price": "150.25"},
+                "MISS": {"price": None},
+                "SPY": {"price": 700.0},
+            },
+            "meta": {"requested": 2000, "resolved": 1900},
+        },
+    )
+    assert set(payload["quotes"]) == {"AAPL", "AMD"}
+    assert payload["meta"]["requested"] == 3
+    assert payload["meta"]["resolved"] == 2
+    assert payload["meta"]["upstream_resolved"] == 1900
+
+
+def test_datetime_index_named_ts_is_normalized_for_today_bars(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+):
+    now_et = pd.Timestamp.now(tz="America/New_York").normalize()
+    index = pd.DatetimeIndex(
+        [now_et + pd.Timedelta(hours=10), now_et + pd.Timedelta(hours=11)],
+        name="ts",
+    ).tz_convert("UTC")
+    frame = pd.DataFrame(
+        {
+            "open": [100.0, 101.0],
+            "high": [102.0, 103.0],
+            "low": [99.0, 100.0],
+            "close": [101.0, 102.0],
+            "volume": [1000.0, 2000.0],
+        },
+        index=index,
+    )
+    intraday = tmp_path / "intraday"
+    intraday.mkdir()
+    (intraday / "AAPL.parquet").touch()
+    monkeypatch.setattr(bif.pd, "read_parquet", lambda _: frame.copy())
+
+    rows = bif._today_bars("AAPL", tmp_path)
+
+    assert len(rows) == 2
+    assert rows[-1]["close"] == 102.0
+
+
+def test_flow_pulse_quality_rejects_age_fresh_no_data(tmp_path: Path):
+    path = tmp_path / "flow_pulse.json"
+    path.write_text(json.dumps({
+        "mode": "no_data", "n_tickers": 2,
+        "tickers": [
+            {"ticker": "AAPL", "bars_today": 0},
+            {"ticker": "AMD", "bars_today": 0},
+        ],
+    }))
+    assert "mode=no_data" in (vlo.flow_pulse_error(path, min_coverage=0.8) or "")
+    path.write_text(json.dumps({
+        "mode": "fastpath", "n_tickers": 2, "n_universe": 2,
+        "source_asof": "2026-10-13T14:10:00+00:00",
+        "tickers": [
+            {"ticker": "AAPL", "bars_today": 4},
+            {"ticker": "AMD", "bars_today": 4},
+        ],
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.8) is None
+
+
+def test_intraday_flow_symbols_resolves_exact_disclosed_board(tmp_path: Path):
+    path = tmp_path / "base.json"
+    path.write_text(json.dumps({
+        "leaders": [
+            {"ticker": "SNOW"},
+            {"symbol": "aapl"},
+            {"ticker": "SNOW"},
+            {"ticker": ""},
+        ],
+    }))
+    assert vlo.intraday_flow_symbols(path) == ["AAPL", "SNOW"]
+
+
+def test_bars_lane_requests_exact_intraday_flow_symbols(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    monkeypatch.setattr(vlo, "intraday_flow_symbols", lambda path: ["AAPL", "SNOW"])
+    calls = []
+    orch = vlo.Orchestrator(
+        live_dir=tmp_path / "public" / "live",
+        state_dir=tmp_path / "state",
+        data_dir=tmp_path / "data",
+    )
+
+    def module(name, module, args, **kwargs):
+        calls.append((name, module, args))
+        return vlo.TaskResult(name, "ok", 0.01)
+
+    monkeypatch.setattr(orch, "module", module)
+    orch.bars()
+
+    assert calls[0][0:2] == ("intraday_bars", "scripts.build_polygon_intraday")
+    assert calls[0][2][calls[0][2].index("--symbols") + 1] == "AAPL,SNOW"
+    assert calls[1][0:2] == ("intraday_flow", "scripts.build_intraday_flow")
+
+
 def test_command_can_publish_private_state_outside_public_root(tmp_path: Path):
     source = tmp_path / "stage" / "quotes_full.json"
     source.parent.mkdir()
@@ -1146,6 +1258,102 @@ def test_command_can_publish_private_state_outside_public_root(tmp_path: Path):
     assert result.status == "ok"
     assert result.published == ("quotes_full.json",)
     assert target.stat().st_mode & 0o777 == 0o600
+
+
+def test_snapshot_lane_requests_private_quote_provenance(tmp_path: Path):
+    orch = vlo.Orchestrator(
+        live_dir=tmp_path / "public" / "live",
+        state_dir=tmp_path / "state",
+        data_dir=tmp_path / "data",
+    )
+    calls: list[tuple[str, str, list[str]]] = []
+
+    def module(name, module, args, **kwargs):
+        calls.append((name, module, list(args)))
+        if name == "full_quotes":
+            target = orch.state_dir / "quotes_full.json"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(
+                json.dumps(
+                    {
+                        "quotes": {"AAPL": {"price": 100.0}},
+                        "meta": {"requested": 100, "resolved": 100},
+                    }
+                )
+            )
+        return vlo.TaskResult(name, "ok", 0.0)
+
+    orch.module = module  # type: ignore[method-assign]
+    orch.snapshot()
+
+    full = next(call for call in calls if call[0] == "full_quotes")
+    assert full[0:2] == ("full_quotes", "scripts.build_live_quotes")
+    assert "--private-provenance" in full[2]
+    assert [name for name, _module, args in calls
+            if "--private-provenance" in args] == ["full_quotes"]
+
+
+def test_private_full_snapshot_does_not_disclose_provenance_in_public_intraday_output(
+    tmp_path: Path, monkeypatch,
+):
+    from scripts import build_intraday_flow_quotes as public_quotes
+    from scripts import build_live_quotes as full_quotes
+
+    raw = {
+        "REAL": {"price": 100.0, "quote_ts": "2026-10-08T14:30:00+00:00",
+                 "quote_ts_synthetic": False, "source": "fixture",
+                 "price_basis": "trade", "prev_close": 99.0, "currency": "USD",
+                 "delay_min": 1.0, "day_volume": 1000, "day_high": 101.0,
+                 "day_low": 98.0},
+        "SYNTH": {"price": 50.0, "quote_ts": "2026-10-08T14:30:01+00:00",
+                  "quote_ts_synthetic": True, "source": "fixture",
+                  "price_basis": "day", "prev_close": 50.0, "currency": "USD",
+                  "delay_min": 0.0},
+        "UNDISCLOSED": {"price": 25.0, "quote_ts": "2026-10-08T14:30:00+00:00",
+                        "quote_ts_synthetic": False},
+    }
+    snapshot = {
+        "ts": 1791469800000, "asof": "2026-10-08T14:30:00+00:00",
+        "source": "snapshot",
+        "quotes": full_quotes.to_worker_quotes(raw, include_private_provenance=True),
+        "meta": {"requested": 3, "resolved": 3},
+    }
+    snapshot["quotes"]["REAL"]["internal_owner_receipt"] = "private-sentinel"
+    original_snapshot = json.loads(json.dumps(snapshot))
+    base_path = tmp_path / "base.json"
+    private_path = tmp_path / "quotes_full.json"
+    public_path = tmp_path / "public" / "intraday_quotes.json"
+    base_path.write_text(json.dumps({"leaders": [{"ticker": "REAL"},
+                                               {"ticker": "SYNTH"}]}))
+    private_path.write_text(json.dumps(snapshot))
+    private_bytes = private_path.read_bytes()
+    monkeypatch.setattr(sys, "argv", ["build_intraday_flow_quotes", "--base",
+                       str(base_path), "--quotes", str(private_path), "--out",
+                       str(public_path)])
+
+    assert public_quotes.main() == 0
+    published = json.loads(public_path.read_text())
+
+    assert set(published["quotes"]) == {"REAL", "SYNTH"}
+    for row in published["quotes"].values():
+        assert "quote_ts" not in row
+        assert "quote_ts_synthetic" not in row
+        assert "internal_owner_receipt" not in row
+    assert published["quotes"]["REAL"] == {
+        "price": 100.0, "ts": 1791469800000, "source": "fixture", "basis": "trade",
+        "prevClose": 99.0, "changePct": 1.01, "currency": "USD", "delayMin": 1.0,
+        "vol": 1000, "hi": 101.0, "lo": 98.0,
+    }
+    assert published["quotes"]["SYNTH"] == {
+        "price": 50.0, "ts": None, "source": "fixture", "basis": "day",
+        "prevClose": 50.0, "changePct": 0.0, "currency": "USD", "delayMin": 0.0,
+        "tsSynthetic": True,
+    }
+    assert published["ts"] == snapshot["ts"]
+    assert published["asof"] == snapshot["asof"]
+    assert published["meta"]["requested"] == published["meta"]["resolved"] == 2
+    assert json.loads(private_path.read_text()) == original_snapshot
+    assert private_path.read_bytes() == private_bytes
 
 
 def test_command_does_not_publish_stale_required_output(tmp_path: Path):
@@ -1341,10 +1549,37 @@ def test_live_rollback_is_non_destructive_and_restores_legacy_writer():
     assert "rm -rf" not in text
 
 
+#: The instant every caller of :func:`_healthy_vps_status` grades against. Named so
+#: the prophet_live clocks below are stamped RELATIVE to it: that grader reads absolute
+#: `pass_ts`/`quote_asof` (deliberately — a frozen "age" scalar stops ageing the moment
+#: the producer dies, which is the shape of the 2026-08 silent freeze), so a hardcoded
+#: literal here would rot into a scheduled red the way this file's header warns about.
+_HEALTHY_STATUS_NOW = datetime(2026, 7, 20, 15, 0, tzinfo=timezone.utc)
+
+
 def _healthy_vps_status() -> dict:
+    # prophet_live was added to the dead-man by #6464 but this fixture was not given a
+    # healthy entry, so the four tests below asserted "no failures" against a payload the
+    # new grader correctly failed — red on main from that merge. Healed here rather than
+    # by loosening the grader: the grader is right, the fixture was simply incomplete.
+    _fresh = (_HEALTHY_STATUS_NOW - timedelta(minutes=2)).isoformat().replace("+00:00", "Z")
     return {
         "status": "ok",
         "checks": {
+            "prophet_live": {
+                "schema": "prophet_live.states/v1",
+                "expected_now": True,
+                "status": "live",
+                "reason": None,
+                "pass_ts": _fresh,
+                "quote_asof": _fresh,
+                "session_et": "2026-07-20",
+                "pack_ok": True,
+                "pack_as_of": "2026-07-17",
+                "pack_expected": "2026-07-17",
+                "producer": "vps:macro-live-prophet",
+                "state_counts": {"dormant": 1203, "near": 340, "forming": 12},
+            },
             "quotes": {"age_min": 1, "requested": 25, "resolved": 20},
             "release_publications": {
                 "schema": "release_publications.v2",
@@ -1364,7 +1599,25 @@ def _healthy_vps_status() -> dict:
             "overlay": {"age_min": 2},
             "risk_state": {"age_min": 2},
             "china_risk_state": {"age_min": 2},
-            "flow_pulse": {"age_min": 30},
+            "flow_pulse": {
+                "age_min": 30,
+                "mode": "fastpath",
+                "n_tickers": 116,
+                "with_bars": 116,
+                "n_universe": 116,
+                "source_asof": (
+                    _HEALTHY_STATUS_NOW - timedelta(minutes=40)
+                ).isoformat().replace("+00:00", "Z"),
+            },
+            "intraday_quotes": {
+                "requested": 116,
+                "resolved": 116,
+                "coverage": 1.0,
+                "source_asof": (
+                    _HEALTHY_STATUS_NOW - timedelta(minutes=20)
+                ).isoformat().replace("+00:00", "Z"),
+                "built_at": _fresh,
+            },
         },
     }
 
@@ -1386,6 +1639,16 @@ def test_vps_health_contract_reports_failed_or_stale_lane():
     )
     assert "lane snapshot: last run was not healthy" in failures
     assert any("lane snapshot: stale" in failure for failure in failures)
+
+
+def test_vps_health_contract_rejects_age_fresh_no_data_pulse():
+    payload = _healthy_vps_status()
+    payload["checks"]["flow_pulse"].update({"mode": "no_data", "with_bars": 0})
+    failures = evaluate_live_health(
+        payload,
+        now=datetime(2026, 7, 20, 15, 0, tzinfo=timezone.utc),
+    )
+    assert "flow_pulse: semantically unavailable (mode=no_data)" in failures
 
 
 def test_vps_health_contract_reports_semantically_late_release():
@@ -1436,12 +1699,238 @@ def test_vps_health_contract_does_not_require_equity_lanes_on_weekend():
     ) == []
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Live-breadth truth boundary — /api/status semantic health (FROZEN CONTRACT §6)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _healthy_breadth_check() -> dict:
+    return {
+        "usable": True,
+        "unusable_reason": None,
+        "feed_status": "ok",
+        "session": "rth",
+        "source_asof": "2026-07-20T14:44:00Z",
+        "source_age_min": 4.0,
+        "delay_min": 19,
+        "producer": "vps:macro-live-breadth",
+        "coverage_n": 1503,
+        "coverage_pct": 100.2,
+        "adv": 900,
+        "dec": 580,
+    }
+
+
+def test_breadth_health_is_absent_ok():
+    """A box that has not deployed the macro-live-breadth lane yet must not red
+    the whole dead-man — same ABSENT-OK precedent as cn_prophet_live."""
+    payload = _healthy_vps_status()
+    assert "breadth" not in payload["checks"]
+    assert evaluate_live_health(
+        payload, now=datetime(2026, 7, 20, 15, 0, tzinfo=timezone.utc)
+    ) == []
+
+
+def test_breadth_health_passes_during_the_live_window_when_healthy():
+    payload = _healthy_vps_status()
+    payload["checks"]["breadth"] = _healthy_breadth_check()
+    assert evaluate_live_health(
+        payload, now=datetime(2026, 7, 20, 15, 0, tzinfo=timezone.utc)  # weekday, in window
+    ) == []
+
+
+def test_breadth_health_fails_when_unusable_during_the_live_window():
+    payload = _healthy_vps_status()
+    payload["checks"]["breadth"] = _healthy_breadth_check()
+    payload["checks"]["breadth"]["usable"] = False
+    payload["checks"]["breadth"]["unusable_reason"] = "source_stale"
+    failures = evaluate_live_health(
+        payload, now=datetime(2026, 7, 20, 15, 0, tzinfo=timezone.utc)
+    )
+    assert any("breadth: not usable" in f and "source_stale" in f for f in failures)
+
+
+def test_breadth_health_fails_on_stale_source_clock():
+    payload = _healthy_vps_status()
+    payload["checks"]["breadth"] = _healthy_breadth_check()
+    # Source snapshot 40 min before `now` — the ABSOLUTE stamp is what is graded.
+    payload["checks"]["breadth"]["source_asof"] = "2026-07-20T14:20:00Z"
+    payload["checks"]["breadth"]["source_age_min"] = 40.0
+    failures = evaluate_live_health(
+        payload, now=datetime(2026, 7, 20, 15, 0, tzinfo=timezone.utc)
+    )
+    assert any("breadth: source stale" in f for f in failures)
+
+
+def test_breadth_health_catches_a_producer_that_stopped_writing():
+    """A dead producer must red the dead-man, not read healthy.
+
+    `source_age_min` is frozen at BUILD time. A lane that died three hours ago
+    keeps serving an artifact that still says `source_age_min: 4.0` and
+    `usable: true` forever, so grading that field would declare a stopped
+    producer perfectly healthy — the exact blindness a dead-man exists to
+    prevent. Only the absolute `source_asof` keeps ageing after the writer
+    stops, so it is what gets graded.
+    """
+    payload = _healthy_vps_status()
+    breadth = _healthy_breadth_check()
+    # Everything the payload says about itself still looks fresh...
+    assert breadth["source_age_min"] == 4.0 and breadth["usable"] is True
+    # ...but nothing has been written for three hours.
+    breadth["source_asof"] = "2026-07-20T11:44:00Z"
+    breadth["age_min"] = 180.0
+    payload["checks"]["breadth"] = breadth
+    failures = evaluate_live_health(
+        payload, now=datetime(2026, 7, 20, 15, 0, tzinfo=timezone.utc)
+    )
+    assert any("breadth: source stale" in f for f in failures), failures
+    assert any("producer that stopped writing" in f for f in failures), failures
+
+
+def test_breadth_health_fails_closed_without_an_absolute_source_stamp():
+    payload = _healthy_vps_status()
+    breadth = _healthy_breadth_check()
+    breadth.pop("source_asof")
+    breadth.pop("source_age_min")
+    payload["checks"]["breadth"] = breadth
+    failures = evaluate_live_health(
+        payload, now=datetime(2026, 7, 20, 15, 0, tzinfo=timezone.utc)
+    )
+    assert any("breadth: missing or invalid source_asof" in f for f in failures)
+
+
+def test_breadth_health_fails_on_low_coverage():
+    payload = _healthy_vps_status()
+    payload["checks"]["breadth"] = _healthy_breadth_check()
+    payload["checks"]["breadth"]["coverage_pct"] = 40.0
+    failures = evaluate_live_health(
+        payload, now=datetime(2026, 7, 20, 15, 0, tzinfo=timezone.utc)
+    )
+    assert any("breadth: coverage low" in f for f in failures)
+
+
+def test_breadth_health_fails_on_missing_producer():
+    payload = _healthy_vps_status()
+    payload["checks"]["breadth"] = _healthy_breadth_check()
+    payload["checks"]["breadth"]["producer"] = ""
+    failures = evaluate_live_health(
+        payload, now=datetime(2026, 7, 20, 15, 0, tzinfo=timezone.utc)
+    )
+    assert any("breadth: missing producer" in f for f in failures)
+
+
+def test_breadth_health_requires_nothing_when_session_closed():
+    """Stale last-session data outside a session is legitimate evidence of
+    nothing being wrong — never a fault, even inside what would otherwise be
+    the live window's hour (explicit spec requirement)."""
+    payload = _healthy_vps_status()
+    payload["checks"]["breadth"] = _healthy_breadth_check()
+    payload["checks"]["breadth"]["session"] = "closed"
+    payload["checks"]["breadth"]["usable"] = False
+    payload["checks"]["breadth"]["source_age_min"] = 999.0
+    assert evaluate_live_health(
+        payload, now=datetime(2026, 7, 20, 15, 0, tzinfo=timezone.utc)
+    ) == []
+
+
+def test_breadth_health_requires_nothing_on_the_weekend():
+    payload = _healthy_vps_status()
+    payload["checks"]["breadth"] = _healthy_breadth_check()
+    payload["checks"]["breadth"]["usable"] = False
+    payload["checks"]["breadth"]["source_age_min"] = 999.0
+    assert evaluate_live_health(
+        payload, now=datetime(2026, 7, 19, 15, 0, tzinfo=timezone.utc)  # Sunday
+    ) == []
+
+
+def test_breadth_health_requires_only_parsing_outside_the_live_window():
+    """Weekday, session open, but outside UTC hour 14..20 — require only that
+    the key parses; report nothing about freshness/coverage/usable."""
+    payload = _healthy_vps_status()
+    payload["checks"]["breadth"] = _healthy_breadth_check()
+    payload["checks"]["breadth"]["usable"] = False
+    payload["checks"]["breadth"]["source_age_min"] = 999.0
+    assert evaluate_live_health(
+        payload, now=datetime(2026, 7, 20, 10, 0, tzinfo=timezone.utc)  # weekday, before window
+    ) == []
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Live-breadth canonical production ownership (FROZEN CONTRACT §7)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_live_setup_installs_and_arms_the_breadth_lane():
+    root = Path(__file__).resolve().parents[1]
+    live_setup = (root / "app" / "deploy" / "live-setup.sh").read_text()
+    assert "macro-live-breadth.service macro-live-breadth.timer" in live_setup
+    enable_block = live_setup.split("systemctl enable --now")[1].split("\n\n")[0]
+    assert "macro-live-breadth.timer" in enable_block
+
+
+def test_breadth_unit_pair_exists_and_uses_the_shared_env_file():
+    root = Path(__file__).resolve().parents[1]
+    service = (root / "app" / "deploy" / "macro-live-breadth.service").read_text()
+    timer = (root / "app" / "deploy" / "macro-live-breadth.timer").read_text()
+    assert "EnvironmentFile=-/etc/macro-live.env" in service
+    assert "ExecStart=/opt/macro/.venv/bin/python -m scripts.live_breadth_poller --once" in service
+    assert "Environment=MACRO_LIVE_PRODUCER=vps:macro-live-breadth" in service
+    assert "Unit=macro-live-breadth.service" in timer
+
+
+def test_breadth_vps_lane_never_publishes_via_git():
+    """The VPS lane publishes by atomic rename into $MACRO_LIVE_DIR — the path
+    Caddy serves first, no-store — so it must NOT carry --publish.
+
+    Two independent reasons, both load-bearing:
+
+    1. Ownership. --publish is the GitHub BACKSTOP's mechanism (it commits
+       site/live/breadth.json to main so the STATIC fallback advances). If the
+       VPS lane also published, two writers would claim primary ownership of the
+       same artifact, which is exactly the state this wave exists to end.
+    2. It would hard-fail every two minutes. With MACRO_LIVE_DIR set, the output
+       path is OUTSIDE the git work tree, so `git add -f` returns "is outside
+       repository", publish() returns False, and --once --publish now (correctly)
+       exits non-zero. Verified by direct run against a temp MACRO_LIVE_DIR.
+    """
+    root = Path(__file__).resolve().parents[1]
+    service = (root / "app" / "deploy" / "macro-live-breadth.service").read_text()
+    exec_line = next(
+        line for line in service.splitlines() if line.startswith("ExecStart=")
+    )
+    assert "--publish" not in exec_line, (
+        "the VPS breadth lane must not git-publish: it would contend with the GH "
+        "backstop for primary ownership AND fail on every tick, because "
+        "$MACRO_LIVE_DIR is outside the git work tree"
+    )
+
+    # The backstop is the one that DOES publish — the other half of the split.
+    workflow = (root / ".github" / "workflows" / "live-breadth.yml").read_text()
+    assert "--once --publish" in workflow
+
+
+def test_update_sh_self_arms_the_breadth_lane_on_a_running_box():
+    """live-setup.sh alone is not ownership: it is a manual operator act, and the
+    unit did not exist when it last ran on the box. update.sh is what actually
+    installs a NEW live lane on an already-provisioned VPS, via the same
+    absent-file self-arming clause macro-live-prophet uses.
+    """
+    root = Path(__file__).resolve().parents[1]
+    update = (root / "app" / "deploy" / "update.sh").read_text()
+    assert "app/deploy/macro-live-breadth" in update
+    assert "[ ! -f /etc/systemd/system/macro-live-breadth.timer ]" in update
+    assert "systemctl enable --now macro-live-breadth.timer" in update
+    # A oneshot must never be restarted out of band — that would burn a Polygon
+    # snapshot off-schedule. Only the timer is re-armed.
+    assert "systemctl restart macro-live-breadth.service" not in update
+
+
 def test_caddy_serves_live_store_without_cache():
     root = Path(__file__).resolve().parents[1]
     text = (root / "app" / "deploy" / "Caddyfile").read_text()
     assert "@vps_public_live" in text
     assert "@vps_external" in text
     assert "handle /live/quotes.json" in text
+    assert "/live/intraday_quotes.json" in text
+    assert "/live/flow_pulse.json" in text
     assert "handle /live/release_publications.json" in text
     assert "root * /var/lib/macro-live/public" in text
     assert 'Cache-Control "no-store"' in text
@@ -1517,3 +2006,667 @@ def test_live_data_orphan_push_clears_the_index_sparse_safely(tmp_path):
     commands = [l for l in body.splitlines() if not l.lstrip().startswith("#")]
     assert not [l for l in commands if "git rm -rf --cached" in l], (
         "the sparse-unsafe index clear is back in live-quotes.yml")
+
+
+# Regression coverage for the 2026-09-16 production FOMC parser miss. Kept in this
+# existing CI-owned suite so publication recovery does not mutate CI authority merely
+# to make its regression executable.
+FOMC_SEPTEMBER_16_RECOVERY_STATEMENT = b"""
+<html><body>
+<p>September 16, 2026</p>
+<p>The Federal Open Market Committee approved the following statement for release
+by a 12 - 0 vote:</p>
+<p>The Committee decided to raise the target range for the federal funds rate by
+1/4 percentage point to 3-3/4 to 4 percent, in support of the Federal Reserve's
+dual mandate.</p>
+</body></html>
+"""
+
+CLAIMS_SEPTEMBER_10_RECOVERY_LISTING = b"""
+<div class="view-content"><div class="dol-feed-block">
+  <div data-history-node-id="fixture"
+       about="/newsroom/releases/eta/eta20260910">
+    <p class="dol-date-text">September 10, 2026</p>
+    <a href="/newsroom/releases/eta/eta20260910">
+      <h3><span>Unemployment Insurance Weekly Claims Report</span></h3>
+    </a>
+    <div class="field--name-field-press-body">
+      <p>In the week ending September 5, the advance figure for seasonally adjusted
+      initial claims was 206,000, a decrease of 1,000 from the previous week's
+      revised level. The 4-week moving average was 206,000.</p>
+    </div>
+  </div>
+</div></div>
+"""
+
+
+def _recovery_claims_event() -> dict[str, object]:
+    return {
+        "event_id": "claims:2026-09-10",
+        "type": "CLAIMS",
+        "date": "2026-09-10",
+        "time_et": "08:30",
+        "scheduled_at": "2026-09-10T08:30:00-04:00",
+        "label": "Initial jobless claims",
+        "label_zh": "初请失业金人数",
+        "schedule_source": "computed",
+        "is_context_only": True,
+    }
+
+
+def _recovery_fomc_event() -> dict[str, object]:
+    return {
+        "event_id": "fomc:2026-09-16",
+        "type": "FOMC",
+        "date": "2026-09-16",
+        "time_et": "14:00",
+        "scheduled_at": "2026-09-16T14:00:00-04:00",
+        "label": "FOMC rate decision",
+        "label_zh": "美联储议息会议",
+        "schedule_source": "federal_reserve",
+        "is_context_only": True,
+    }
+
+
+def _recovery_claims_state() -> dict[str, object]:
+    return {
+        "schema": "release_publication_state.v2",
+        "coverage_started_at_by_type": {
+            "CLAIMS": "2026-09-10T12:00:00+00:00",
+        },
+        "sources": {},
+        "publications": {},
+    }
+
+
+def test_fomc_parser_accepts_explicit_change_size_before_target_range() -> None:
+    actual = wrp.parse_fomc_actual(FOMC_SEPTEMBER_16_RECOVERY_STATEMENT)
+
+    assert actual is not None
+    assert actual["action"] == "hike"
+    assert actual["target_low"] == 3.75
+    assert actual["target_high"] == 4.0
+    assert actual["vote_for"] == 12
+    assert actual["vote_against"] == 0
+
+
+def test_fomc_change_size_statement_publishes_with_parser_v2(monkeypatch) -> None:
+    event = _recovery_fomc_event()
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *args, **kwargs: [event])
+
+    def fetcher(spec, prior, timeout):
+        assert spec.source_id == "fed_fomc"
+        return _http_result(FOMC_SEPTEMBER_16_RECOVERY_STATEMENT)
+
+    _, payload = wrp.detect(
+        now=datetime(2026, 9, 16, 18, 3, tzinfo=timezone.utc),
+        state={},
+        fetcher=fetcher,
+    )
+
+    publication = payload["publications"][0]
+    assert publication["status"] == "published"
+    assert publication["actual"]["action"] == "hike"
+    assert publication["parser"] == {"name": "fomc", "version": 2}
+
+
+def test_dol_overdue_release_retries_through_retention_and_self_heals(monkeypatch) -> None:
+    event = _recovery_claims_event()
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *args, **kwargs: [event])
+    calls = []
+
+    def fetcher(spec, prior, timeout):
+        calls.append(spec.url)
+        assert spec.source_id == "dol_claims"
+        assert spec.url == "https://www.dol.gov/index.php/newsroom/releases/eta"
+        return _http_result(CLAIMS_SEPTEMBER_10_RECOVERY_LISTING)
+
+    new_state, payload = wrp.detect(
+        now=datetime(2026, 9, 16, 18, 15, tzinfo=timezone.utc),
+        state=_recovery_claims_state(),
+        fetcher=fetcher,
+    )
+
+    assert calls == ["https://www.dol.gov/index.php/newsroom/releases/eta"]
+    publication = next(
+        row for row in payload["publications"]
+        if row["event_id"] == "claims:2026-09-10"
+    )
+    assert publication["status"] == "published"
+    assert publication["data_ready"] is True
+    assert publication["actual"]["initial_claims"] == 206_000
+    assert publication["actual"]["change"] == -1_000
+    assert publication["source_url"] == (
+        "https://www.dol.gov/index.php/newsroom/releases/eta/eta20260910"
+    )
+
+    source = new_state["sources"]["dol_claims:claims:2026-09-10"]
+    assert source["attempt_count"] == 1
+    assert source["first_attempt_at"] == "2026-09-16T18:15:00+00:00"
+    assert source["last_attempt_at"] == "2026-09-16T18:15:00+00:00"
+    assert source["last_attempt_status"] == "ok"
+    assert source["last_success_at"] == "2026-09-16T18:15:00+00:00"
+
+
+def test_overdue_source_failure_lineage_survives_then_recovers(monkeypatch) -> None:
+    event = _recovery_claims_event()
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *args, **kwargs: [event])
+    first_tick = datetime(2026, 9, 16, 18, 15, tzinfo=timezone.utc)
+
+    def failing_fetcher(spec, prior, timeout):
+        raise TimeoutError("official source timed out")
+
+    failed_state, failed_payload = wrp.detect(
+        now=first_tick,
+        state=_recovery_claims_state(),
+        fetcher=failing_fetcher,
+    )
+
+    key = "dol_claims:claims:2026-09-10"
+    failed = failed_state["sources"][key]
+    assert failed["attempt_count"] == 1
+    assert failed["first_attempt_at"] == first_tick.isoformat()
+    assert failed["last_attempt_at"] == first_tick.isoformat()
+    assert failed["last_attempt_status"] == "error"
+    assert failed["last_error"] == "TimeoutError"
+    assert failed["last_error_at"] == first_tick.isoformat()
+    assert failed_payload["source_health"] == [
+        {
+            "source_id": "dol_claims",
+            "event_id": "claims:2026-09-10",
+            "status": "error",
+            "error": "TimeoutError",
+        }
+    ]
+
+    def unexpected_fetcher(spec, prior, timeout):
+        raise AssertionError("non-periodic ticks must not hot-loop an overdue source")
+
+    retained_state, retained_payload = wrp.detect(
+        now=datetime(2026, 9, 16, 18, 16, tzinfo=timezone.utc),
+        state=failed_state,
+        fetcher=unexpected_fetcher,
+    )
+    assert retained_state["sources"][key] == failed
+    assert retained_payload["source_health"] == []
+
+    def recovering_fetcher(spec, prior, timeout):
+        return _http_result(CLAIMS_SEPTEMBER_10_RECOVERY_LISTING)
+
+    recovered_state, recovered_payload = wrp.detect(
+        now=datetime(2026, 9, 16, 18, 30, tzinfo=timezone.utc),
+        state=retained_state,
+        fetcher=recovering_fetcher,
+    )
+    recovered = recovered_state["sources"][key]
+    assert recovered["attempt_count"] == 2
+    assert recovered["last_attempt_status"] == "ok"
+    assert recovered["last_success_at"] == "2026-09-16T18:30:00+00:00"
+    assert recovered["last_error"] == "TimeoutError"
+    assert recovered["last_error_at"] == first_tick.isoformat()
+    publication = next(
+        row for row in recovered_payload["publications"]
+        if row["event_id"] == "claims:2026-09-10"
+    )
+    assert publication["status"] == "published"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# D04-A — quote/pulse source clocks, universe-true pulse coverage, ABSENT-OK dead-man
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _epoch_ms(iso: str) -> int:
+    return int(datetime.fromisoformat(iso).timestamp() * 1000)
+
+
+def test_quotes_payload_never_stamps_build_time_as_source_clock():
+    ms = _epoch_ms("2026-10-13T14:00:00+00:00")
+    payload = build_flow_quotes(
+        {"leaders": [{"ticker": "AAA"}, {"ticker": "BBB"}]},
+        {
+            "quotes": {
+                "AAA": {"price": 10.0, "ts": ms},
+                "BBB": {"price": 20.0, "ts": ms + 60_000},
+            },
+            "meta": {},
+        },
+    )
+    assert payload["asof"] is None
+    assert payload["ts"] is None
+    assert payload["meta"]["upstream_asof"] is None
+
+
+def test_quotes_meta_source_asof_is_median_of_real_quote_clocks():
+    leaders = [{"ticker": name} for name in ("AAA", "BBB", "CCC", "DDD", "EEE")]
+    priced = {
+        "AAA": {"price": 10.0, "ts": _epoch_ms("2026-10-13T14:00:00+00:00")},
+        "BBB": {"price": 11.0, "ts": _epoch_ms("2026-10-13T14:10:00+00:00")},
+        "CCC": {"price": 12.0, "ts": _epoch_ms("2026-10-13T14:20:00+00:00")},
+        "DDD": {
+            "price": 13.0,
+            "ts": _epoch_ms("2026-10-13T15:59:00+00:00"),
+            "tsSynthetic": True,
+        },
+        "EEE": {"price": 14.0},
+    }
+    payload = build_flow_quotes(
+        {"leaders": leaders},
+        {"quotes": priced, "meta": {}},
+    )
+    assert payload["meta"]["source_asof"] == "2026-10-13T14:10:00+00:00"
+    assert isinstance(payload["meta"]["built_at"], str) and payload["meta"]["built_at"]
+    datetime.fromisoformat(payload["meta"]["built_at"])
+    assert payload["meta"]["requested"] == 5
+    assert payload["meta"]["resolved"] == 5
+    assert payload["meta"]["coverage"] == 1.0
+
+    synthetic_only = build_flow_quotes(
+        {"leaders": [{"ticker": "DDD"}, {"ticker": "EEE"}]},
+        {
+            "quotes": {
+                "DDD": {
+                    "price": 13.0,
+                    "ts": _epoch_ms("2026-10-13T15:59:00+00:00"),
+                    "tsSynthetic": True,
+                },
+                "EEE": {"price": 14.0},
+            },
+            "meta": {},
+        },
+    )
+    assert synthetic_only["meta"]["source_asof"] is None
+
+
+def test_quote_validator_rejects_board_payload_without_source_clock(tmp_path: Path):
+    import inspect
+
+    path = tmp_path / "intraday_quotes.json"
+    path.write_text(json.dumps({
+        "quotes": {f"S{i}": {"price": float(i + 1)} for i in range(5)},
+        "meta": {"requested": 5, "resolved": 5, "source_asof": None},
+    }))
+    assert vlo.quote_snapshot_error(path, min_resolved=5, min_coverage=0.9) is None
+
+    missing = vlo.quote_snapshot_error(
+        path, min_resolved=5, min_coverage=0.9, require_source_clock=True,
+    )
+    assert isinstance(missing, str) and missing and "source clock" in missing
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["meta"]["source_asof"] = "2026-10-13T14:10:00+00:00"
+    path.write_text(json.dumps(payload))
+    assert vlo.quote_snapshot_error(
+        path, min_resolved=5, min_coverage=0.9, require_source_clock=True,
+    ) is None
+
+    payload["meta"]["source_asof"] = "garbage"
+    path.write_text(json.dumps(payload))
+    garbage = vlo.quote_snapshot_error(
+        path, min_resolved=5, min_coverage=0.9, require_source_clock=True,
+    )
+    assert isinstance(garbage, str) and garbage
+
+    module_src = inspect.getsource(vlo)
+    snapshot_src = inspect.getsource(vlo.Orchestrator.snapshot)
+    assert module_src.count("require_source_clock=True") == 1
+    assert snapshot_src.count("require_source_clock=True") == 1
+
+
+def test_fastpath_stamps_source_clock_from_bars_not_build_time(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    now_et = pd.Timestamp.now(tz="America/New_York").normalize()
+    start_9 = (now_et + pd.Timedelta(hours=9)).tz_convert("UTC")
+    start_10 = (now_et + pd.Timedelta(hours=10)).tz_convert("UTC")
+    index = pd.DatetimeIndex([start_9, start_10], name="ts")
+    frame = pd.DataFrame(
+        {
+            "open": [100.0, 101.0],
+            "high": [102.0, 103.0],
+            "low": [99.0, 100.0],
+            "close": [101.0, 102.0],
+            "volume": [1000.0, 2000.0],
+        },
+        index=index,
+    )
+    intraday = tmp_path / "intraday"
+    intraday.mkdir()
+    (intraday / "AAA.parquet").touch()
+    monkeypatch.setattr(bif.pd, "read_parquet", lambda _: frame.copy())
+    monkeypatch.delenv("MACRO_INTRADAY_DIR", raising=False)
+    monkeypatch.setattr(bif, "_resolve_universe", lambda cfg, data_root: ["AAA"])
+
+    today = datetime.now(timezone.utc).date()
+    as_of = datetime(today.year, today.month, today.day, 16, 0, tzinfo=timezone.utc)
+    site = tmp_path / "site"
+    bif._run_fastpath({}, tmp_path, site, as_of_arg=as_of.isoformat())
+    pulse = json.loads((site / "live" / "flow_pulse.json").read_text(encoding="utf-8"))
+
+    assert datetime.fromisoformat(pulse["source_asof"]) == start_10.to_pydatetime()
+    assert datetime.fromisoformat(pulse["as_of"]) == as_of
+    assert pulse["stale"] is False
+    assert bif._today_bars("AAA", tmp_path)[-1]["ts"]
+
+
+def test_fastpath_failed_ticker_stays_in_denominator_as_unknown(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    def today_bars(ticker: str, data_root: Path) -> list[dict]:
+        if ticker == "BBB":
+            raise RuntimeError("boom")
+        return [
+            {
+                "ts": "2026-10-13T13:00:00+00:00",
+                "open": 1.0, "high": 2.0, "low": 0.5, "close": 1.5, "volume": 100.0,
+            },
+            {
+                "ts": "2026-10-13T14:00:00+00:00",
+                "open": 1.5, "high": 2.5, "low": 1.0, "close": 2.0, "volume": 200.0,
+            },
+        ]
+
+    monkeypatch.setattr(bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB", "CCC"])
+    monkeypatch.setattr(bif, "_today_bars", today_bars)
+    site = tmp_path / "site"
+    bif._run_fastpath({}, tmp_path, site)
+    pulse = json.loads((site / "live" / "flow_pulse.json").read_text(encoding="utf-8"))
+
+    assert pulse["n_tickers"] == 3
+    assert pulse["n_universe"] == 3
+    bbb = next(row for row in pulse["tickers"] if row["ticker"] == "BBB")
+    assert bbb["bars_today"] is None
+    assert bbb["error"] == "RuntimeError"
+    for key in (
+        "vwap", "cum_vol", "vol_durability", "higher_lows", "rvol_tod",
+        "session_high", "session_low", "bars_above_vwap",
+        "last_close", "last_high", "last_low",
+    ):
+        assert bbb.get(key) is None
+    assert pulse["mode"] == "fastpath"
+
+
+def test_flow_pulse_validator_measures_coverage_against_universe(tmp_path: Path):
+    path = tmp_path / "flow_pulse.json"
+    clock = "2026-10-13T14:10:00+00:00"
+
+    def rows(with_bars: int, total: int) -> list[dict]:
+        out = [{"ticker": f"T{i}", "bars_today": 2} for i in range(with_bars)]
+        out.extend(
+            {"ticker": f"E{i}", "bars_today": None, "error": "RuntimeError"}
+            for i in range(total - with_bars)
+        )
+        return out
+
+    path.write_text(json.dumps({
+        "mode": "fastpath",
+        "source_asof": clock,
+        "n_universe": 10,
+        "n_tickers": 8,
+        "tickers": rows(8, 8),
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.80) is not None
+
+    path.write_text(json.dumps({
+        "mode": "fastpath",
+        "source_asof": clock,
+        "n_universe": 10,
+        "n_tickers": 10,
+        "tickers": rows(8, 10),
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.80) is None
+
+    path.write_text(json.dumps({
+        "mode": "fastpath",
+        "source_asof": clock,
+        "n_universe": 10,
+        "n_tickers": 10,
+        "tickers": rows(7, 10),
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.80) is not None
+
+    path.write_text(json.dumps({
+        "mode": "fastpath",
+        "n_universe": 10,
+        "n_tickers": 10,
+        "tickers": rows(8, 10),
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.80) is not None
+
+
+def _no_source_clock_failure(failures: list[str]) -> bool:
+    return not any(
+        failure.startswith("flow_pulse: source")
+        or failure.startswith("flow_pulse: missing source_asof")
+        or failure.startswith("flow_pulse: invalid source_asof")
+        or failure.startswith("intraday_quotes:")
+        for failure in failures
+    )
+
+
+def test_deadman_ages_pulse_and_board_quotes_from_source_clocks():
+    now = _HEALTHY_STATUS_NOW
+    stale = _healthy_vps_status()
+    stale["checks"]["flow_pulse"]["source_asof"] = (
+        now - timedelta(minutes=180)
+    ).isoformat().replace("+00:00", "Z")
+    stale["checks"]["intraday_quotes"] = {
+        "source_asof": (now - timedelta(minutes=120)).isoformat().replace("+00:00", "Z"),
+    }
+    failures = evaluate_live_health(stale, now=now)
+    assert any(failure.startswith("flow_pulse: source stale") for failure in failures), failures
+    assert any(failure.startswith("intraday_quotes: source stale") for failure in failures), failures
+
+    removed = _healthy_vps_status()
+    removed["checks"]["flow_pulse"].pop("source_asof", None)
+    removed["checks"].pop("intraday_quotes", None)
+    failures = evaluate_live_health(removed, now=now)
+    assert "flow_pulse: missing source_asof" in failures, failures
+    assert "intraday_quotes: missing source_asof" in failures, failures
+
+    missing = _healthy_vps_status()
+    missing["checks"]["flow_pulse"].pop("source_asof", None)
+    missing["checks"]["intraday_quotes"] = {"status": "missing"}
+    failures = evaluate_live_health(missing, now=now)
+    assert "flow_pulse: missing source_asof" in failures, failures
+    assert "intraday_quotes: missing source_asof" in failures, failures
+
+    absent = _healthy_vps_status()
+    absent["checks"]["flow_pulse"]["source_asof"] = None
+    absent["checks"]["intraday_quotes"] = {"source_asof": None}
+    failures = evaluate_live_health(absent, now=now)
+    assert "flow_pulse: missing source_asof" in failures, failures
+    assert "intraday_quotes: missing source_asof" in failures, failures
+
+    errored = _healthy_vps_status()
+    errored["checks"]["flow_pulse"].pop("source_asof", None)
+    errored["checks"]["intraday_quotes"] = {"error": "unavailable", "age_min": 3}
+    failures = evaluate_live_health(errored, now=now)
+    assert "flow_pulse: missing source_asof" in failures, failures
+    assert "intraday_quotes: missing source_asof" in failures, failures
+
+    fresh = _healthy_vps_status()
+    fresh["checks"]["flow_pulse"]["source_asof"] = (
+        now - timedelta(minutes=100)
+    ).isoformat().replace("+00:00", "Z")
+    fresh["checks"]["intraday_quotes"] = {
+        "source_asof": (now - timedelta(minutes=20)).isoformat().replace("+00:00", "Z"),
+    }
+    assert _no_source_clock_failure(evaluate_live_health(fresh, now=now))
+
+    unparseable = _healthy_vps_status()
+    unparseable["checks"]["flow_pulse"]["source_asof"] = "not-a-time"
+    unparseable["checks"]["intraday_quotes"] = {"source_asof": "not-a-time"}
+    failures = evaluate_live_health(unparseable, now=now)
+    assert "flow_pulse: invalid source_asof" in failures
+    assert "intraday_quotes: invalid source_asof" in failures
+
+    for when in (
+        datetime(2026, 7, 20, 14, 30, tzinfo=timezone.utc),
+        datetime(2026, 7, 20, 20, 30, tzinfo=timezone.utc),
+        datetime(2026, 7, 19, 15, 0, tzinfo=timezone.utc),
+    ):
+        for variant in (stale, removed):
+            failures = evaluate_live_health(variant, now=when)
+            assert _no_source_clock_failure(failures), (when.isoformat(), variant.get("checks", {}).get("flow_pulse"), failures)
+
+
+def _load_projection() -> "object":
+    """Pull app.live_status_projection in a way that pins the absent-module defect
+    instead of failing collection at PR time (the washout-turn-organ job imports
+    this test file without the serving stack)."""
+    spec = importlib_util.find_spec("app.live_status_projection")
+    assert spec is not None, "projection module absent"
+    return import_module("app.live_status_projection")
+
+
+def test_status_projection_carries_pulse_source_clock_and_universe(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    projection = _load_projection()
+
+    now_et = pd.Timestamp.now(tz="America/New_York").normalize()
+    start_9 = (now_et + pd.Timedelta(hours=9)).tz_convert("UTC")
+    start_10 = (now_et + pd.Timedelta(hours=10)).tz_convert("UTC")
+    index = pd.DatetimeIndex([start_9, start_10], name="ts")
+    frame = pd.DataFrame(
+        {
+            "open": [100.0, 101.0],
+            "high": [102.0, 103.0],
+            "low": [99.0, 100.0],
+            "close": [101.0, 102.0],
+            "volume": [1000.0, 2000.0],
+        },
+        index=index,
+    )
+
+    intraday = tmp_path / "intraday"
+    intraday.mkdir()
+    (intraday / "AAA.parquet").touch()
+    (intraday / "BBB.parquet").touch()
+
+    bars_by_ticker = {"AAA": frame.copy(), "BBB": frame.iloc[0:0].copy()}
+    monkeypatch.setattr(bif.pd, "read_parquet", lambda p: bars_by_ticker[p.name.replace(".parquet", "")].copy())
+    monkeypatch.delenv("MACRO_INTRADAY_DIR", raising=False)
+    monkeypatch.setattr(bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB"])
+
+    today = datetime.now(timezone.utc).date()
+    as_of = datetime(today.year, today.month, today.day, 16, 0, tzinfo=timezone.utc)
+    site = tmp_path / "site"
+    bif._run_fastpath({}, tmp_path, site, as_of_arg=as_of.isoformat())
+    pulse = json.loads((site / "live" / "flow_pulse.json").read_text(encoding="utf-8"))
+
+    expected = {
+        "mode": pulse["mode"],
+        "n_tickers": pulse["n_tickers"],
+        "with_bars": 1,
+        "n_universe": pulse["n_universe"],
+        "source_asof": pulse["source_asof"],
+    }
+    result = projection.flow_pulse_fields(pulse)
+    assert result == expected
+    assert list(result) == [
+        "mode", "n_tickers", "with_bars", "n_universe", "source_asof",
+    ]
+
+    empty = projection.flow_pulse_fields({})
+    assert empty == {"mode": None, "n_tickers": None, "with_bars": 0, "n_universe": None, "source_asof": None}
+
+
+def test_status_projection_carries_board_quote_meta():
+    projection = _load_projection()
+
+    base_iso = "2026-10-13T14:00:00+00:00"
+    leaders = [{"ticker": name} for name in ("AAA", "BBB", "CCC")]
+    priced = {
+        "AAA": {"price": 10.0, "ts": _epoch_ms("2026-10-13T14:00:00+00:00")},
+        "BBB": {"price": 11.0, "ts": _epoch_ms("2026-10-13T14:10:00+00:00")},
+        "CCC": {"price": 12.0, "ts": _epoch_ms("2026-10-13T14:20:00+00:00")},
+    }
+    payload = build_flow_quotes(
+        {"leaders": leaders},
+        {"quotes": priced, "meta": {}},
+    )
+
+    expected = {
+        "requested": payload["meta"]["requested"],
+        "resolved": payload["meta"]["resolved"],
+        "coverage": payload["meta"]["coverage"],
+        "source_asof": payload["meta"]["source_asof"],
+        "built_at": payload["meta"]["built_at"],
+    }
+    result = projection.intraday_quotes_fields(payload)
+    assert result == expected
+    assert list(result) == ["requested", "resolved", "coverage", "source_asof", "built_at"]
+    assert result["source_asof"] == "2026-10-13T14:10:00+00:00"
+
+    assert projection.intraday_quotes_fields({}) == {
+        "requested": None, "resolved": None, "coverage": None, "source_asof": None, "built_at": None,
+    }
+    assert projection.intraday_quotes_fields({"meta": "x"}) == {
+        "requested": None, "resolved": None, "coverage": None, "source_asof": None, "built_at": None,
+    }
+
+
+def test_deadman_composes_real_board_through_status_projection():
+    projection = _load_projection()
+
+    now = _HEALTHY_STATUS_NOW
+    base_iso = (now - timedelta(minutes=20)).isoformat()
+    leaders = [{"ticker": name} for name in ("AAA", "BBB", "CCC")]
+    priced = {
+        "AAA": {"price": 10.0, "ts": _epoch_ms(base_iso)},
+        "BBB": {"price": 11.0, "ts": _epoch_ms(base_iso)},
+        "CCC": {"price": 12.0, "ts": _epoch_ms(base_iso)},
+    }
+    board = build_flow_quotes({"leaders": leaders}, {"quotes": priced, "meta": {}})
+
+    pulse = {
+        "mode": "fastpath",
+        "n_tickers": 116,
+        "n_universe": 116,
+        "source_asof": (now - timedelta(minutes=40)).isoformat().replace("+00:00", "Z"),
+        "tickers": [{"ticker": f"T{i}", "bars_today": 2} for i in range(116)],
+    }
+
+    status = _healthy_vps_status()
+    status["checks"]["intraday_quotes"] = projection.intraday_quotes_fields(board)
+    status["checks"]["flow_pulse"].update(projection.flow_pulse_fields(pulse))
+
+    failures = evaluate_live_health(status, now=now)
+    assert _no_source_clock_failure(failures), failures
+
+    aged_board = build_flow_quotes(
+        {"leaders": leaders},
+        {"quotes": {k: {"price": v["price"], "ts": _epoch_ms((now - timedelta(minutes=120)).isoformat())} for k, v in priced.items()}, "meta": {}},
+    )
+    aged_pulse = dict(pulse, source_asof=(now - timedelta(minutes=180)).isoformat().replace("+00:00", "Z"))
+    status_stale = _healthy_vps_status()
+    status_stale["checks"]["intraday_quotes"] = projection.intraday_quotes_fields(aged_board)
+    status_stale["checks"]["flow_pulse"].update(projection.flow_pulse_fields(aged_pulse))
+    stale_failures = evaluate_live_health(status_stale, now=now)
+    assert any(failure.startswith("flow_pulse: source stale") for failure in stale_failures), stale_failures
+    assert any(failure.startswith("intraday_quotes: source stale") for failure in stale_failures), stale_failures
+
+    clockless_board = build_flow_quotes(
+        {"leaders": [{"ticker": "AAA"}, {"ticker": "BBB"}]},
+        {"quotes": {"AAA": {"price": 10.0}, "BBB": {"price": 11.0}}, "meta": {}},
+    )
+    status_clockless = _healthy_vps_status()
+    status_clockless["checks"]["intraday_quotes"] = projection.intraday_quotes_fields(clockless_board)
+    clockless_failures = evaluate_live_health(status_clockless, now=now)
+    assert "intraday_quotes: missing source_asof" in clockless_failures, clockless_failures
+
+
+def test_projection_module_imports_without_the_serving_stack():
+    """Subprocess import of app.live_status_projection must not pull in fastapi,
+    starlette, or pydantic — the washout-turn-organ job installs none of them."""
+    import subprocess
+
+    completed = subprocess.run(
+        [sys.executable, "-c",
+         "import sys, app.live_status_projection;"
+         "print(sorted(m for m in sys.modules if m.split('.')[0] in ('fastapi','starlette','pydantic')))"],
+        capture_output=True, text=True, cwd=Path(__file__).resolve().parents[1],
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert completed.stdout.strip() == "[]", completed.stdout

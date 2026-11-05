@@ -656,7 +656,7 @@ PUBLIC_EXACT = frozenset({
     # reader it exists for.
     "/about.html",
     "/", "/index.html", "/plans.html", "/macro.html", "/start.html",
-    "/us_stocks.html", "/confluence_screener.html", "/research_vault.html",
+    "/us_stocks.html", "/confluence_screener.html", "/research_screener.html", "/research_screener.css", "/research_vault.html",
     "/research_vault_app.js",
     # The two Special Situations tier-preview SHELLS (docs/TIER_PREVIEW_PATTERN.md),
     # promoted from free_registered to anonymous-public by SEO_SUPERCHARGE_MASTERPLAN
@@ -727,7 +727,7 @@ PUBLIC_EXACT = frozenset({
     "/theme.css", "/navigation-refresh.css", "/product-nav-icons.css",
     "/logo_config.js", "/stock-logos.js", "/theme.js", "/dashboard-icons.css",
     "/dashboard-icons.js", "/chart_i18n.js", "/timemachine.js", "/tablesort.js",
-    "/charts.js", "/risk_state_live.js", "/release_publications_live.js",
+    "/charts.js", "/risk_state_live.js", "/china_risk_state_live.js", "/release_publications_live.js",
     "/heatmap.js", "/stocktable.js", "/globe-deck.js", "/sky.js",
     "/hub-welcome.js", "/vendor/d3-array.min.js", "/vendor/d3-geo.min.js",
     "/vendor/topojson-client.min.js", "/world-110m.json", "/account.js",
@@ -736,6 +736,36 @@ PUBLIC_EXACT = frozenset({
     "/adtest.js",
     "/nav_market.js", "/supabase.js", "/data_base.js", "/live.js", "/live_config.js",
     "/live/quotes.json", "/live/breadth.json",
+    # The two Intraday Flow board inputs (#6105, 2026-08-20). Public BY DECISION
+    # — ratified here on this set's own standard, not synced in because
+    # site_access.yml already said so.
+    #
+    # The membership question is the one that matters, because it is the exact
+    # objection the /live/prophet_live.json paragraph in site_access.yml raises
+    # against that file: intraday_quotes.json is keyed by the board's leader
+    # symbols, so its KEY SET is board membership. Checked rather than assumed:
+    # templates/intraday_flow.html.j2 inlines the whole base object
+    # (`var BASE_DATA = {{ intraday_flow | tojson }}`) into the page shell, and
+    # *.html is anonymous-public since 2026-08-04 — so every leader ticker AND
+    # its plain-word call already ship to signed-out visitors in the HTML. These
+    # two files disclose no membership the shell has not already disclosed,
+    # which is what separates them from prophet_live.json, whose board is NOT
+    # published anywhere.
+    #
+    # Payloads, field by field: intraday_quotes.json is a price map over those
+    # already-named symbols plus coverage meta — display-tier market context,
+    # the same class as /live/quotes.json above. flow_pulse.json carries
+    # deterministic per-ticker intraday statistics (vwap, cum_vol, rvol_tod,
+    # session high/low, bars_above_vwap, volume durability, higher-lows) over
+    # today's bars. Note what that is and is not: those are rule INPUTS, and
+    # they are strictly less disclosing than the rule's OUTPUT, which the shell
+    # already prints. The calibrated thresholds that turn them into a call stay
+    # in engine/intraday_flow.py and are not published — the watchlist_risk.js /
+    # risk_core.js refusal recorded below is about publishing the RULE, and this
+    # is measured data, so that refusal is not in tension with this entry. No
+    # score, no rank, no cross-symbol ordering, no customer data.
+    "/live/intraday_quotes.json",
+    "/live/flow_pulse.json",
     # Official agency event lifecycle/facts; no signal, portfolio or user data.
     "/live/release_publications.json",
     # Freshness-sentinel staleness state (masterplan W1 dead-man switch) — public
@@ -791,6 +821,25 @@ PUBLIC_EXACT = frozenset({
     "/sector_cycles.css",
     "/macro-desk.css",
     "/markets.css",
+
+    # The Macro & Monetary suite shell. Reviewed public as ONE unit: the suite's
+    # pages are already public HTML, and serving them without their stylesheet and
+    # boot script renders an unstyled, themeless skeleton to every anonymous
+    # reader. Presentation only -- the readings themselves live under /macrodata/,
+    # which stays free_registered and is asserted separately in
+    # tests/test_site_access_boundary.py.
+    "/macro_suite.css",
+    "/macro_suite_boot.js",
+    "/macro_suite.js",
+
+    # /help.html -- NOT this branch's widening. It is already public in BOTH
+    # planes on origin/main (config/site_access.yml public.exact, and five Caddy
+    # path lists) from a merged promotion whose author did not update this frozen
+    # set, so this test is red on main. Verified by running it in a clean worktree
+    # at pristine origin/main, where it fails with exactly ['/help.html'].
+    # Declared here rather than left red: this PR edits this very set, and leaving
+    # a known red in the list it is editing would hide the next real widening.
+    "/help.html",
     "/odds.css",
     "/capital_structure.css",
     "/government-revenue-parity.css",
@@ -842,8 +891,30 @@ PUBLIC_EXACT = frozenset({
     "/watchstore.js",
     "/market_books.js",
     "/portfolio.js",
+    "/portfolio_import.css",
+    "/portfolio_import.js",
+    "/portfolio_import_ui.js",
     "/mtf.js",
     "/mm_brain.js",
+    # The seventh funnel-shell script, promoted deliberately (#6141, 2026-08-20)
+    # and qualifying on the same standard as the six above: portfolio_state.js is
+    # the DOM-free pure computation of the canonical Portfolio read. It makes no
+    # network call of its own, and the portfolio_snapshot.v1 object it derives
+    # stays in the client and never leaves it — the visitor's own book, exactly
+    # like the localStorage store the other funnel scripts read.
+    #
+    # Worth recording HOW it arrived, because this set exists to catch that
+    # shape: #6109 (A1A) added it to the Caddyfile's public matchers and to
+    # @watchlist_shell_versioned but to no policy file, so for a day the edge
+    # served it anonymously while app/paywall.py still classified it `premium` —
+    # the two enforcement halves disagreed, and the cross-check that exists to
+    # catch precisely that went red and merged anyway because its only CI home
+    # was a `gate: data` job. #6141 reconciled the policy to what the edge was
+    # already doing and put that guard on the merge gate. This frozen set is the
+    # third place the promotion had to be argued, and it is argued here on the
+    # merits above, not merely reconciled: a widening is not ratified by having
+    # already happened.
+    "/portfolio_state.js",
     "/factordata/tech_lab.json",
 })
 

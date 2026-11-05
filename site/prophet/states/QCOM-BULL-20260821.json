@@ -1,0 +1,52 @@
+{
+  "schema": "prophet.management_state/v1",
+  "id": "QCOM-BULL-20260821",
+  "asof": "2026-11-04",
+  "phase": "between_t1_t2",
+  "detection_phase": "post_t1_failed_hold",
+  "management_confidence": 50.8,
+  "raw_confidence": 51.3,
+  "delta_vs_base": -9.2,
+  "recommended_action": null,
+  "human_state": "Closed",
+  "components": {
+    "validity": 100.0,
+    "progress": 60.0,
+    "pace": 26.6,
+    "retention": 13.4,
+    "overlay": 59.0
+  },
+  "geometry": {
+    "dist_to_stop_r": 1.57,
+    "dist_to_t1_r": 0.93,
+    "dist_to_t2_r": 2.43,
+    "horizon_pct_used": 166.7,
+    "p1": 0.38,
+    "p2": 0.19,
+    "p3": null,
+    "move_r": 0.57,
+    "mfe_r": 6.83,
+    "mae_r": -0.356
+  },
+  "rr_ratio": 1.5,
+  "rr_grade": "ACCEPTABLE",
+  "change_reason": "Giving Back Gains",
+  "confidence_ceiling": 92,
+  "authority": "trade-management-only-NOT-pick-rank",
+  "authority_tier": "display",
+  "reliability": {
+    "management_confidence": "display \u2014 no forward ledger has passed yet",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
+    "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
+  },
+  "_mfe": 43.49400634765624,
+  "_mae": -2.2700012207031364,
+  "_max_p1": 4.553630984416725,
+  "_first_trigger_ts": "2026-08-27",
+  "_first_t1_ts": "2026-08-31",
+  "_first_t2_ts": "2026-09-12",
+  "days_elapsed": 75,
+  "tau": 1.6667,
+  "closed": true,
+  "outcome": "T1_HIT"
+}

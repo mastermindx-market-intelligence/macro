@@ -646,6 +646,36 @@ class TestJsonLd:
 # ─────────────────────────────────────────────────────────────────────────────
 
 class TestBreadcrumbs:
+    @pytest.mark.parametrize("family", [None, "article"])
+    def test_shared_base_accepts_minimal_nonlesson_page(self, family):
+        """The incumbent earnings-wire page contract omits estate family."""
+        from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+        page = {
+            "title": "Earnings call records",
+            "description": "Receipt-bound excerpts.",
+            "canonical": "https://www.mastermind-x.com/stocks/earnings/index.html",
+            "url_path": "/stocks/earnings/index.html",
+            "breadcrumbs": [
+                {"label": "Home", "href": "/index.html"},
+                {"label": "Earnings call records", "href": None},
+            ],
+        }
+        if family is not None:
+            page["family"] = family
+        env = Environment(
+            loader=FileSystemLoader(str(_TEMPLATES_DIR)),
+            autoescape=True,
+            undefined=StrictUndefined,
+        )
+        html = env.get_template("seo_base.html.j2").render(
+            page=page, rel="../../", site={"base": "https://www.mastermind-x.com/"},
+            jsonld_extra="",
+        )
+        crumb = html.split('<nav class="est-crumb"', 1)[1].split("</nav>", 1)[0]
+        assert '<a href="../../index.html">Home</a>' in crumb
+        assert 'class="l-zh"' not in crumb
+
     def test_article_breadcrumbs(self):
         import scripts.build_free_content as bfc
         fm = _make_valid_fm(description="A" * 120, family="article")
@@ -756,8 +786,10 @@ class TestDeterminism:
         result = bfc._check_mode.__wrapped__ if hasattr(bfc._check_mode, '__wrapped__') else None
         # Run check mode: render to tmp inside the function and compare
         # We directly test that rendered output matches itself by calling render_all twice
-        out2 = tmp_path / "verify"
-        out2.mkdir()
+        # Both roots must be named site: write_page derives depth-aware
+        # shared-shell/data-base asset paths from that documented boundary.
+        out2 = tmp_path / "verify" / "site"
+        out2.mkdir(parents=True)
         bfc.render_all(out2)
         for f in out.rglob("*"):
             if f.is_file():
@@ -862,6 +894,167 @@ class TestHandAuthoredPages:
         )
         for rel in sorted(bfc.HAND_AUTHORED):
             assert f"ORPHAN (not produced by builder): {rel}" not in captured.err
+
+
+# Some content hrefs are accepted only when a file exists under site/.
+# This sparse tree has no site/, so the stand-ins below let render_all run.
+_HREF_STUBS = (
+    "crypto.html",
+    "vector.html",
+    "chat.html",
+    "congress_trades.html",
+    "options.html",
+    "us_stocks.html",
+    "markets.html",
+    "stocks/index.html",
+    "research/index.html",
+)
+
+
+def _published_stamp(val: object) -> str:
+    """YYYY-MM-DD form a hub card prints for a frontmatter date."""
+    stamp = getattr(val, "strftime", None)
+    if stamp is not None:
+        return stamp("%Y-%m-%d")
+    return str(val)
+
+
+def _render_free_estate(tmp_path, monkeypatch):
+    """render_all into tmp. Does not read or write the repo site/ or data/."""
+    import scripts.build_free_content as bfc
+
+    stand_in = tmp_path / "href-stubs"
+    stand_in.mkdir()
+    for rel in _HREF_STUBS:
+        dest = stand_in / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text("", encoding="utf-8")
+    monkeypatch.setattr(bfc, "_LIVE_SITE_DIR", stand_in)
+    out = tmp_path / "site"
+    out.mkdir()
+    bfc.render_all(out)
+    return bfc, out
+
+
+class TestHubRecordCountDatesAndBoundary:
+    """Heading count, card dates, and the access paragraph on the two hubs."""
+
+    @pytest.mark.skipif(
+        not _required_templates_present() or not _any_content_exists(),
+        reason="Designer templates or content .md files not yet present",
+    )
+    def test_products_hub_heading_counts_records(self, tmp_path, monkeypatch):
+        bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        pages, _ = bfc.load_content()
+        count = sum(1 for p in pages if p["fm"]["family"] == "product")
+        html = (out / "products" / "index.html").read_text(encoding="utf-8")
+        match = re.search(
+            r'<h2 id="product-surfaces">(.*?)</h2>', html, re.DOTALL,
+        )
+        assert match, "product-surfaces heading missing"
+        heading = " ".join(re.sub(r"<[^>]+>", "", match.group(1)).split())
+        assert count >= 1
+        assert heading.startswith(f"{count} ")
+        assert "Three connected" not in html
+        assert "三个互联" not in html
+
+    @pytest.mark.skipif(
+        not _required_templates_present() or not _any_content_exists(),
+        reason="Designer templates or content .md files not yet present",
+    )
+    def test_products_hub_heading_follows_the_records(self, tmp_path, monkeypatch):
+        """One record fewer prints one fewer: the number is counted, not typed."""
+        import scripts.build_free_content as bfc
+
+        real = bfc.load_content
+
+        def one_fewer():
+            pages, rest = real()
+            dropped = next(p for p in pages if p["fm"]["family"] == "product")
+            return [p for p in pages if p is not dropped], rest
+
+        monkeypatch.setattr(bfc, "load_content", one_fewer)
+        _bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        pages, _ = real()
+        count = sum(1 for p in pages if p["fm"]["family"] == "product")
+        html = (out / "products" / "index.html").read_text(encoding="utf-8")
+        match = re.search(
+            r'<h2 id="product-surfaces">(.*?)</h2>', html, re.DOTALL,
+        )
+        assert match, "product-surfaces heading missing"
+        heading = " ".join(re.sub(r"<[^>]+>", "", match.group(1)).split())
+        assert count >= 2
+        assert heading.startswith(f"{count - 1} ")
+
+    @pytest.mark.skipif(
+        not _required_templates_present() or not _any_content_exists(),
+        reason="Designer templates or content .md files not yet present",
+    )
+    def test_products_hub_cards_print_published(self, tmp_path, monkeypatch):
+        bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        pages, _ = bfc.load_content()
+        html = (out / "products" / "index.html").read_text(encoding="utf-8")
+        stamps = [
+            _published_stamp(p["fm"]["published"])
+            for p in pages
+            if p["fm"]["family"] == "product"
+        ]
+        assert stamps, "no product records"
+        for stamp in stamps:
+            assert stamp in html
+        assert "2026-07-29" in html
+
+    @pytest.mark.skipif(
+        not _required_templates_present() or not _any_content_exists(),
+        reason="Designer templates or content .md files not yet present",
+    )
+    def test_products_hub_boundary_has_no_real_time_claim(
+        self, tmp_path, monkeypatch,
+    ):
+        _bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        html = (out / "products" / "index.html").read_text(encoding="utf-8")
+        match = re.search(
+            r'<p class="ph-boundary">(.*?)</p>', html, re.DOTALL,
+        )
+        assert match, "ph-boundary paragraph missing"
+        text = match.group(1)
+        assert "实时" not in text
+        assert "Some live" not in text
+        assert "Some intraday" in text
+        assert "部分盘中" in text
+
+    @pytest.mark.skipif(
+        not _required_templates_present() or not _any_content_exists(),
+        reason="Designer templates or content .md files not yet present",
+    )
+    def test_learn_flagship_title_has_zh_twin(self, tmp_path, monkeypatch):
+        _bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        html = (out / "learn" / "index.html").read_text(encoding="utf-8")
+        en = "Gamma Weather — dealer positioning field manual"
+        zh = "Gamma 天气 — 做市商持仓实战手册"
+        assert en in html
+        assert f'<span class="l-zh">{zh}</span>' in html
+
+    @pytest.mark.skipif(
+        not _required_templates_present() or not _any_content_exists(),
+        reason="Designer templates or content .md files not yet present",
+    )
+    def test_learn_hub_cards_print_lesson_published(
+        self, tmp_path, monkeypatch,
+    ):
+        bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        pages, _ = bfc.load_content()
+        html = (out / "learn" / "index.html").read_text(encoding="utf-8")
+        stamps = [
+            _published_stamp(p["fm"]["published"])
+            for p in pages
+            if p["fm"]["family"] == "lesson"
+        ]
+        assert stamps, "no lesson records"
+        for stamp in stamps:
+            assert stamp in html
+        assert "2026-07-20" in html
+        assert "2026-07-25" in html
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1263,13 +1456,19 @@ class TestRenderedOutput:
             pytest.skip("No rendered free-estate HTML files found in site/")
 
         # Two legitimate script tails, ONE resolution rule.
-        # Generator-rendered estate pages carry the estate tail.
-        _ESTATE_TAIL = ("supabase.js", "account.js", "mm_brain.js", "theme.js")
+        # Generator-rendered estate pages carry the estate tail. mm_brain.js left
+        # this tail in #5983: theme.js mounts its own launcher stub and requests
+        # the 227 KB bundle on first activation, so an eager tag here is pure
+        # first-load cost. It is still in _LANDING_TAIL below — see there.
+        _ESTATE_TAIL = ("supabase.js", "account.js", "theme.js")
         # The hand-authored flagships (bfc.HAND_AUTHORED) ship the LANDING tail
         # instead — masterplan §1, chrome-verified in-browser: onboard.js owns
         # the gear/auth chrome on landing-family pages, so supabase.js,
         # account.js and theme.js are deliberately absent there. They are not
-        # missing; they are not that page's contract.
+        # missing; they are not that page's contract. That absent theme.js is
+        # also why these three KEEP their eager mm_brain.js tag: with no theme.js
+        # there is no launcher stub and no on-demand loader, so the tag is the
+        # only assistant they have.
         # These pages are re-checked against their own tail rather than skipped.
         # The depth-resolution assertion below is what this test exists for — a
         # nested page linking "mm_brain.js" without the "../" 404s — and that
@@ -1308,6 +1507,62 @@ class TestRenderedOutput:
                         f"{page.relative_to(_REPO)}: {asset} resolves to {target}"
                     )
         assert not errors, "Broken nested runtime assets:\n" + "\n".join(errors)
+
+    def test_no_page_eagerly_loads_the_assistant_bundle_beside_theme_js(self):
+        """mm_brain.js is 227 KB — the largest script in the estate. A page that
+        already loads theme.js gets its launcher from theme.js's stub and fetches
+        the bundle on first activation (#5976), so an eager tag beside theme.js
+        buys nothing and costs every visitor the full download, parse, and mount.
+
+        The three hand-authored flagships are the deliberate exception and are
+        asserted POSITIVELY: they carry no theme.js, so their own tag is the only
+        loader they have, and silently losing it would take the assistant off
+        those pages entirely.
+        """
+        import scripts.build_free_content as bfc
+
+        if not _SITE_DIR.is_dir():
+            pytest.skip("site/ not rendered")
+
+        eager = re.compile(r'<script[^>]+src=["\'][^"\']*mm_brain\.js')
+        theme = re.compile(r'<script[^>]+src=["\'][^"\']*theme\.js')
+
+        offenders, exempt_seen = [], set()
+        for page in _SITE_DIR.rglob("*.html"):
+            html = page.read_text(encoding="utf-8", errors="replace")
+            if not eager.search(html):
+                continue
+            rel = page.relative_to(_SITE_DIR)
+            if bfc._is_hand_authored(rel):
+                exempt_seen.add(str(rel).replace("\\", "/"))
+                # The exemption is earned by NOT having theme.js. If one of these
+                # ever gains the shared chrome, it must drop the eager tag too.
+                if theme.search(html):
+                    offenders.append(
+                        f"{rel}: hand-authored page now loads theme.js — the "
+                        "eager mm_brain.js tag is no longer earned"
+                    )
+                continue
+            offenders.append(f"{rel}: eager mm_brain.js tag beside theme.js")
+
+        assert not offenders, (
+            f"{len(offenders)} page(s) still pay the eager assistant cost:\n"
+            + "\n".join(offenders[:20])
+        )
+        assert exempt_seen == set(bfc.HAND_AUTHORED), (
+            "the hand-authored exemption drifted — expected "
+            f"{sorted(bfc.HAND_AUTHORED)}, found {sorted(exempt_seen)}"
+        )
+
+    def test_seo_base_template_does_not_emit_the_assistant_bundle(self):
+        """The source-side twin of the check above, so the fix cannot be undone at
+        the template and only caught after a full estate re-render."""
+        tpl = (_REPO / "templates" / "seo_base.html.j2").read_text(encoding="utf-8")
+        emitted = re.findall(r'<script[^>]+src=["\'][^"\']*mm_brain\.js[^>]*>', tpl)
+        assert not emitted, (
+            "templates/seo_base.html.j2 emits an eager mm_brain.js tag again: "
+            f"{emitted} — theme.js already loads it on first activation (#5976)"
+        )
 
     def test_calculator_pages_have_related_rail(self):
         """F2: Calculator pages must contain the related rail markup (.est-related)."""
@@ -1723,3 +1978,45 @@ class TestGracefulEmpty:
         ET.fromstring(result)  # valid XML
         assert "<loc>https://www.mastermind-x.com/</loc>" in result
         assert "https://www.mastermind-x.com/macro.html" in result
+
+class TestLearningReaderJourney:
+    """Real authored lesson paths must return to a materialized hub section."""
+
+    @pytest.mark.parametrize("track", ["technical", "risk", "ownership", "options"])
+    def test_track_breadcrumb_resolves_to_existing_hub_section(self, tmp_path, monkeypatch, track):
+        from urllib.parse import urlsplit
+        bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        fm = _make_valid_fm(family="lesson", track=track)
+        crumb = bfc._breadcrumbs(fm, f"/learn/{track}/lesson.html")[-2]
+        target = urlsplit(crumb["href"])
+        assert target.path == "/learn/index.html"
+        assert target.fragment == f"track-{track}"
+        hub = (out / "learn/index.html").read_text()
+        assert f'id="{target.fragment}"' in hub
+
+    def test_authored_lesson_keeps_one_native_outline_and_reading_identity(self, tmp_path, monkeypatch):
+        _, out = _render_free_estate(tmp_path, monkeypatch)
+        html = (out / "learn/options/dealer-hedging-mechanics.html").read_text()
+        assert len(re.findall(r'<h1\b', html)) == 1
+        assert "Dealer Hedging: How Delta Rebalancing Becomes Order Flow" in html
+        assert "2026-07-25" in html
+        assert '<article class="est-prose" lang="en">' in html
+        assert len(re.findall(r'<details\b[^>]*class="art-outline"', html)) == 1
+        assert '<summary' in html and 'aria-label="On this page"' in html
+        assert len(re.findall(r'<nav\b[^>]*id="toc"', html)) == 1
+        assert 'href="../../learn/options/gamma-regimes.html"' in html
+        assert 'href="../../learn/options/"' not in html
+
+    def test_lesson_navigation_crumbs_reuse_known_chinese_labels_without_translating_schema(self, tmp_path, monkeypatch):
+        _, out = _render_free_estate(tmp_path, monkeypatch)
+        html = (out / "learn/options/dealer-hedging-mechanics.html").read_text()
+        nav = re.search(r'<nav class="est-crumb"[^>]*>(.*?)</nav>', html, re.S)
+        assert nav is not None
+        crumbs = re.findall(r'<a href="([^"]+)">(.*?)</a>', nav.group(1), re.S)
+        assert len(crumbs) == 3
+        assert [re.search(r'<span class="l-zh">(.*?)</span>', label).group(1) for _, label in crumbs] == ["首页", "学习", "期权与做市商持仓"]
+        assert crumbs[-1][0] == "../../learn/index.html#track-options"
+        documents = [json.loads(raw) for raw in re.findall(r'<script type="application/ld\+json">(.*?)</script>', html, re.S)]
+        schema = next(doc for doc in documents if doc.get("@type") == "BreadcrumbList")
+        assert [i["name"] for i in schema["itemListElement"]][:3] == ["Home", "Learn", "Options & Dealer Positioning"]
+        assert schema["itemListElement"][2]["item"].endswith("/learn/index.html#track-options")

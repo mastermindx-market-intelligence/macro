@@ -175,7 +175,12 @@ def _render(staleness: dict | None, mode: str = "macro") -> str:
                       autoescape=False, undefined=ChainableUndefined)
     from engine import i18n
 
-    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
+    from engine.china_tier1 import hero_clause, posture_lane, posture_tone, reason_faces
+    env.globals.update(
+        td=i18n.td, tr=i18n.tr, t=i18n.t,
+        posture_lane=posture_lane, posture_tone=posture_tone,
+        reason_faces=reason_faces, hero_clause=hero_clause,
+    )
     return env.get_template("china.html.j2").render(
         mode=mode,
         board_staleness=staleness,
@@ -236,13 +241,31 @@ class TestRender:
         assert "title=" not in block
 
     def test_freshness_pill_agrees_with_the_banner(self):
-        """One page, one verdict: the stocks header pill must not read "Fresh" directly
-        above a BOARD DELAYED banner."""
+        """One page, one verdict: the stocks header pill must not read healthy directly
+        above a BOARD DELAYED banner.
+
+        The strings moved on 2026-08-27 and the verdict did not.  The pill used to print a
+        bare state word plus an UNLABELLED date ("Fresh 2026-08-06"); it now labels the
+        date it was always showing ("Data through 2026-08-06" / "Delayed · data through
+        2026-08-06"), so the assertions below track the new copy.  The healthy word
+        "Fresh" is deliberately gone — the green dot already carries that state
+        non-verbally — which is why the healthy half now asserts the LABEL is present and
+        the alarm word is absent rather than looking for a word that no longer ships.  The
+        alarm word itself is still mandatory: colour must never be the only carrier of a
+        warning.  See tests/test_cn_board_freshness_truth.py for the full pin.
+        """
         html = _render(DELAYED, "stocks")
         assert "BOARD DELAYED" in html
-        assert ">Delayed<" in html
+        assert ">Delayed · data through</span>" in html
+        assert ">数据延迟 · 数据截至</span>" in html, (
+            "the ZH pill must use the same word as the ZH banner (数据延迟) — one page, "
+            "one name for one state"
+        )
         healthy = _render(HEALTHY, "stocks")
-        assert ">Fresh<" in healthy
+        assert ">Data through</span>" in healthy and ">数据截至</span>" in healthy
+        assert "Delayed" not in healthy.split('id="stocks-header"', 1)[1][:2000], (
+            "a healthy board must not carry the alarm word in its header pill"
+        )
 
 
 # --------------------------------------------------------------------------- #

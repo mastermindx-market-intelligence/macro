@@ -116,7 +116,7 @@ def state(**kw):
     session = kw.pop("session", THU)          # what the calendar owes at `now`
     defaults = dict(
         main_index=index(source_asof=session.isoformat()),
-        r2_index=index(source_asof=session.isoformat()),
+        r2_health=index(source_asof=session.isoformat()),
         vps_status={"checks": {"site": {
             "commit_time": (now - timedelta(minutes=4)).isoformat()}}},
         runs=[run_row(created=at(session, 22, 31))],
@@ -214,7 +214,7 @@ def test_saturday_and_sunday_are_quiet_after_a_friday_bake():
         snapshot = state(
             now=at(day, hour), session=FRI,
             main_index=index(source_asof=FRI.isoformat()),
-            r2_index=index(source_asof=FRI.isoformat()),
+            r2_health=index(source_asof=FRI.isoformat()),
             runs=[run_row(created=at(FRI, 22, 33))],
         )
         actions = RESCUE.decide(snapshot)
@@ -234,7 +234,7 @@ def test_the_tuesday_after_a_monday_holiday_expects_friday():
     actions = RESCUE.decide(state(
         now=at(tuesday, 8, 40), session=friday,
         main_index=index(source_asof=friday.isoformat()),
-        r2_index=index(source_asof=friday.isoformat()),
+        r2_health=index(source_asof=friday.isoformat()),
         runs=[run_row(created=at(friday, 22, 31))],
     ))
     assert verdicts(actions) == [RESCUE.HEALTHY]
@@ -252,7 +252,7 @@ def test_a_fresh_asof_over_a_three_session_stale_source_asof_alarms():
     snapshot = state(
         now=at(THU, 9, 40), session=THU,
         main_index=index(source_asof="2026-08-10", asof=THU.isoformat()),
-        r2_index=index(source_asof="2026-08-10"),
+        r2_health=index(source_asof="2026-08-10"),
         runs=[run_row(status="completed", conclusion="failure",
                       created=at(WED, 23, 11))],
         dispatch_runs_today=0,
@@ -268,18 +268,99 @@ def test_the_top_level_asof_is_never_read():
     stale = index(source_asof="2026-08-10", asof="2026-08-10")
     restamped = index(source_asof="2026-08-10", asof="2026-08-13")
     base = dict(now=at(THU, 9, 40), session=THU,
-                r2_index=index(source_asof="2026-08-10"),
+                r2_health=index(source_asof="2026-08-10"),
                 runs=[run_row(conclusion="failure", created=at(WED, 23, 11))])
     assert (verdicts(RESCUE.decide(state(main_index=stale, **base)))
             == verdicts(RESCUE.decide(state(main_index=restamped, **base))))
 
 
-def test_the_cohort_counts_per_plan_recorded_at_not_the_index_stamp():
+def test_the_cohort_uses_legacy_recorded_at_only_when_session_fields_are_absent():
     payload = index(source_asof=THU.isoformat(), cohort_date="2026-08-10",
                     cohort_n=25)
     assert RESCUE.cohort_size(payload, THU) == 0
     assert RESCUE.cohort_size(payload, date(2026, 8, 10)) == 25
     assert RESCUE.intake_eligible(payload) == 40
+
+
+def test_cohort_date_precedence_is_price_basis_then_entry_then_legacy_recorded_at():
+    payload = {
+        "plans": [
+            {
+                "id": "PRICE-BASIS-WINS",
+                "price_basis_date": THU.isoformat(),
+                "entry_date": WED.isoformat(),
+                "recorded_at": WED.isoformat(),
+            },
+            {
+                "id": "ENTRY-FALLBACK",
+                "entry_date": THU.isoformat(),
+                "recorded_at": WED.isoformat(),
+            },
+            {
+                "id": "LEGACY-RECORDED-AT",
+                "recorded_at": THU.isoformat(),
+            },
+        ],
+    }
+    assert RESCUE.cohort_size(payload, THU) == 3
+    assert RESCUE.cohort_size(payload, WED) == 0
+
+
+def _delayed_publication_payload() -> tuple[date, dict]:
+    friday = date(2026, 9, 11)
+    sunday = "2026-09-13"
+    return friday, {
+        "schema": "prophet.index/v1",
+        "asof": sunday,
+        "recorded_at": sunday,
+        "source_asof": friday.isoformat(),
+        "gate_go": False,
+        "plans": [
+            {
+                "id": f"P{i}",
+                "asset": "AAPL",
+                "recorded_at": sunday,
+                "entry_date": friday.isoformat(),
+                "price_basis_date": friday.isoformat(),
+            }
+            for i in range(20)
+        ],
+        "intake": {
+            "eligible_after_skips": 21,
+            "originated": 20,
+            "validation_failed": 1,
+            "unaccounted": 0,
+            "lossless": True,
+        },
+    }
+
+
+def test_delayed_publication_counts_the_source_session_cohort():
+    """A weekend catch-up keeps publication and market-session clocks separate."""
+    friday, payload = _delayed_publication_payload()
+    assert RESCUE.cohort_size(payload, friday) == 20
+
+
+def test_delayed_publication_does_not_emit_a_false_no_cohort_alert():
+    """Friday plans published Sunday remain Friday's cohort on Monday morning."""
+    friday, payload = _delayed_publication_payload()
+    monday_morning = datetime(2026, 9, 14, 13, 40, tzinfo=UTC)
+    snapshot = state(
+        now=monday_morning,
+        session=friday,
+        main_index=payload,
+        r2_health=index(source_asof=friday.isoformat()),
+        runs=[run_row(
+            created=datetime(2026, 9, 13, 13, 59, tzinfo=UTC),
+            conclusion="success",
+        )],
+    )
+
+    actions = RESCUE.decide(snapshot)
+    assert RESCUE.NO_COHORT not in verdicts(actions), actions
+    assert RESCUE.HEALTHY in verdicts(actions), actions
+    assert all("recorded_at=" not in action.message for action in actions)
+    assert any("assigned to that market session" in action.message for action in actions)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -292,7 +373,7 @@ def test_no_fire_is_not_a_strand_before_the_0140z_deadline():
     snapshot = state(
         now=at(FRI, 0, 10), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[],
     )
     actions = RESCUE.decide(snapshot)
@@ -306,7 +387,7 @@ def test_no_fire_becomes_a_strand_dispatch_at_0140z():
     snapshot = state(
         now=at(FRI, 1, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[],
     )
     actions = RESCUE.decide(snapshot)
@@ -322,7 +403,7 @@ def test_stale_data_is_not_an_alarm_before_the_0940z_completion_deadline():
     snapshot = state(
         now=at(FRI, 5, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[run_row(status="in_progress", conclusion=None,
                       created=at(THU, 22, 31))],
     )
@@ -338,7 +419,7 @@ def test_past_the_1340z_floor_a_stale_night_alarms_without_dispatching():
     snapshot = state(
         now=at(FRI, 13, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[],
     )
     actions = RESCUE.decide(snapshot)
@@ -355,7 +436,7 @@ def test_a_newest_cancelled_run_with_stale_data_is_re_armed():
     snapshot = state(
         now=at(FRI, 9, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[run_row(status="completed", conclusion="cancelled",
                       created=at(THU, 23, 11))],
     )
@@ -390,7 +471,7 @@ def test_cancelled_real_plus_surviving_gate_skip_is_not_a_bake():
     snapshot = state(
         now=at(FRI, 2, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[cancelled, skip],
     )
     facts = RESCUE.run_facts(snapshot.runs, at(THU, 22, 0), now=snapshot.now)
@@ -456,7 +537,7 @@ def test_a_live_run_blocks_the_dispatch(status):
     snapshot = state(
         now=at(FRI, 9, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[run_row(status=status, conclusion=None, created=at(THU, 22, 31))],
         dispatch_runs_today=0,
     )
@@ -471,7 +552,7 @@ def test_a_live_run_before_the_completion_deadline_is_quiet():
     snapshot = state(
         now=at(FRI, 5, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[run_row(status="in_progress", conclusion=None, created=at(THU, 22, 31))],
     )
     actions = RESCUE.decide(snapshot)
@@ -496,7 +577,7 @@ def test_a_hung_bake_past_the_completion_deadline_goes_LOUD(status):
     snapshot = state(
         now=at(FRI, 11, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[run_row(status=status, conclusion=None, created=at(THU, 22, 31),
                       event="workflow_dispatch", run_id=31583415065)],
     )
@@ -521,7 +602,7 @@ def test_a_live_run_still_blocks_when_other_blockers_also_apply():
     snapshot = state(
         now=at(FRI, 13, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[run_row(status="in_progress", conclusion=None, created=at(THU, 22, 31))],
         dispatch_runs_today=9,
     )
@@ -530,6 +611,151 @@ def test_a_live_run_still_blocks_when_other_blockers_also_apply():
     assert [a.kind for a in actions] == [RESCUE.ALERT]
     assert actions[0].blocked_by == "run_in_flight"
     assert RESCUE.exit_code(actions) != 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# §0.4a AMENDMENT (2026-08-17) — a PROVEN wedge is not a live bake
+#
+# The 08-16/17 outage: collect_tail queued on a runs-on label carried by NO live
+# runner held run 31977372592 'alive' ~24h, its per-cron concurrency group pended
+# the next night's slot, and the unamended §0.4a read the hostage as a live bake
+# — this lane refused to dispatch for two days while every Prophet board froze.
+# Every fixture below reproduces that night's shape.
+# ─────────────────────────────────────────────────────────────────────────────
+def job_row(name: str, status: str = "completed",
+            conclusion: str | None = "success", *,
+            started: datetime | None = None,
+            created: datetime | None = None) -> dict:
+    return {
+        "name": name,
+        "status": status,
+        "conclusion": conclusion,
+        "started_at": started.strftime("%Y-%m-%dT%H:%M:%SZ") if started else None,
+        "created_at": created.strftime("%Y-%m-%dT%H:%M:%SZ") if created else None,
+    }
+
+
+def hostage_state(**kw):
+    """FRI 11:40Z, store two sessions back, budget untouched — the only question
+    is whether the THU 22:52Z run that is still 'queued' owns the night."""
+    defaults = dict(
+        now=at(FRI, 11, 40), session=THU,
+        main_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
+        runs=[run_row(status="queued", conclusion=None, created=at(THU, 22, 52),
+                      run_id=31977372592)],
+        dispatch_runs_today=0,
+    )
+    defaults.update(kw)
+    return state(**defaults)
+
+
+HOSTAGE_JOBS = [
+    job_row("et_gate"),
+    job_row("collect"),
+    job_row("engine", conclusion="failure"),
+    # The wedge itself: queued since FRI 01:00Z -> 10.7h, on a label with no runner.
+    job_row("collect_tail", status="queued", conclusion=None,
+            started=at(FRI, 1, 0)),
+]
+
+
+def test_a_proven_wedge_dispatches_through_the_hostage():
+    """THE AMENDMENT. With jobs-API proof (zero in progress, the one live job
+    queued 10.7h — the 08-16/17 signature), the run no longer owns the night:
+    the lane dispatches THROUGH it, never stops it, and says so."""
+    actions = RESCUE.decide(hostage_state(in_flight_jobs=HOSTAGE_JOBS))
+    assert dispatched(actions), "a proven wedge must not mute the rescue"
+    message = next(a.message for a in actions if a.kind == RESCUE.DISPATCH)
+    assert "WEDGED" in message
+    assert "31977372592" in message, "the receipt must name the hostage run"
+    assert "collect_tail" in message, "the receipt must name the stuck job"
+    assert RESCUE.exit_code(actions) != 0
+
+
+def test_an_unreadable_jobs_list_keeps_the_full_refusal():
+    """FAIL-CLOSED half of the amendment. No jobs read (the default) -> the
+    unamended §0.4a stands whole: blocked, loud, nothing dispatched."""
+    actions = RESCUE.decide(hostage_state())          # in_flight_jobs=None
+    assert not dispatched(actions)
+    assert actions[0].blocked_by == "run_in_flight"
+
+
+def test_any_in_progress_job_defeats_the_wedge():
+    """One job actually running = a live bake, whatever the queue looks like."""
+    jobs = HOSTAGE_JOBS + [job_row("stock_briefs", status="in_progress",
+                                   conclusion=None, started=at(FRI, 11, 0))]
+    actions = RESCUE.decide(hostage_state(in_flight_jobs=jobs))
+    assert not dispatched(actions)
+    assert actions[0].blocked_by == "run_in_flight"
+
+
+def test_a_job_inside_the_queue_floor_defeats_the_wedge():
+    """A job queued 1h is ordinary macstudio contention (the 13F census backlog
+    resolved in ~1h on 08-17), not proof of an unschedulable label."""
+    jobs = [
+        job_row("et_gate"), job_row("collect"),
+        job_row("collect_tail", status="queued", conclusion=None,
+                started=at(FRI, 10, 40)),
+    ]
+    actions = RESCUE.decide(hostage_state(in_flight_jobs=jobs))
+    assert not dispatched(actions)
+    assert actions[0].blocked_by == "run_in_flight"
+
+
+def test_a_young_run_is_never_wedged():
+    """Age floor: a run under WEDGED_RUN_MIN_AGE keeps the refusal even with a
+    wedge-shaped jobs list — collect legitimately queues behind a busy pool."""
+    actions = RESCUE.decide(hostage_state(
+        runs=[run_row(status="queued", conclusion=None, created=at(FRI, 8, 0),
+                      run_id=31977372592)],
+        in_flight_jobs=[job_row("collect", status="queued", conclusion=None,
+                                started=at(FRI, 8, 0))],
+    ))
+    assert not dispatched(actions)
+    assert actions[0].blocked_by == "run_in_flight"
+
+
+def test_a_jobless_alive_run_past_the_floor_is_wedged():
+    """The #5362 shape (and 32077948964 on 08-17): alive for hours with a
+    readable, EMPTY jobs list — created during a strand, will never start."""
+    actions = RESCUE.decide(hostage_state(in_flight_jobs=[]))
+    assert dispatched(actions)
+    message = next(a.message for a in actions if a.kind == RESCUE.DISPATCH)
+    assert "WEDGED" in message
+
+
+def test_the_budget_still_binds_through_a_wedge():
+    """The amendment bypasses exactly ONE blocker. Budget spent -> alert only."""
+    actions = RESCUE.decide(hostage_state(in_flight_jobs=HOSTAGE_JOBS,
+                                          dispatch_runs_today=2))
+    assert not dispatched(actions)
+    assert actions[0].blocked_by is not None
+    assert "budget_spent" in actions[0].blocked_by
+
+
+def test_the_floor_still_binds_through_a_wedge():
+    """Past DISPATCH_FLOOR a bake cannot help regardless of why the night died."""
+    actions = RESCUE.decide(hostage_state(now=at(FRI, 13, 40),
+                                          in_flight_jobs=HOSTAGE_JOBS))
+    assert not dispatched(actions)
+    assert actions[0].blocked_by is not None
+    assert "past_floor" in actions[0].blocked_by
+
+
+def test_wedged_run_is_fail_closed_on_unparseable_stamps():
+    """Unit rows for the classifier itself: every unprovable input -> None."""
+    now = at(FRI, 11, 40)
+    good_job = job_row("collect_tail", status="queued", conclusion=None,
+                       started=at(FRI, 1, 0))
+    flight = run_row(status="queued", conclusion=None, created=at(THU, 22, 52))
+    assert RESCUE.wedged_run(None, [good_job], now) is None
+    assert RESCUE.wedged_run(flight, None, now) is None
+    bad_created = dict(flight, created_at="not-a-stamp")
+    assert RESCUE.wedged_run(bad_created, [good_job], now) is None
+    undated_job = job_row("collect_tail", status="queued", conclusion=None)
+    assert RESCUE.wedged_run(flight, [undated_job], now) is None
+    assert RESCUE.wedged_run(flight, [good_job], now) is not None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -546,7 +772,7 @@ def test_budget_spent_downgrades_to_alert_only():
     snapshot = state(
         now=at(FRI, 9, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[run_row(conclusion="failure", created=at(THU, 23, 11))],
         dispatch_runs_today=RESCUE.AUTO_DISPATCH_BUDGET,
     )
@@ -563,7 +789,7 @@ def test_one_dispatch_short_of_the_budget_still_re_arms():
     snapshot = state(
         now=at(FRI, 9, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[run_row(conclusion="failure", created=at(THU, 23, 11))],
         dispatch_runs_today=RESCUE.AUTO_DISPATCH_BUDGET - 1,
     )
@@ -575,7 +801,7 @@ def test_two_wakes_spend_one_budget_each_and_then_stop():
     when wake 2 looks, so wake 2 waits; by wake 3 the budget is gone."""
     base = dict(session=THU,
                 main_index=index(source_asof=WED.isoformat()),
-                r2_index=index(source_asof=WED.isoformat()))
+                r2_health=index(source_asof=WED.isoformat()))
     wake1 = RESCUE.decide(state(
         now=at(FRI, 9, 40), runs=[run_row(conclusion="failure",
                                           created=at(THU, 23, 11))],
@@ -672,11 +898,19 @@ def test_the_only_pipeline_write_is_a_dispatch():
         "/actions/workflows/{WORKFLOW_FILE}/runs"
         "?event=workflow_dispatch&per_page={RUNS_PER_PAGE}&created={created}",
         "/actions/workflows/{WORKFLOW_FILE}/dispatches",
+        # The wedge-classification read (§0.4a amendment, 2026-08-17): one
+        # unpaginated GET of the in-flight run's jobs, spent only on the alarm
+        # path when pass one was blocked by run_in_flight.
+        "/actions/runs/{run_id}/jobs?per_page=100",
         "/labels",
-        "/issues?labels={urllib.parse.quote(ISSUE_LABEL)}&state=open&per_page=50",
+        "/issues?labels={urllib.parse.quote(ISSUE_LABEL)}&state=open&per_page=50"
+        "&sort=created&direction=desc",
         "/issues",
         "/issues/{number}/comments",
         "/issues/{number}/comments?per_page=100",
+        # The [DAY N] escalation write (2026-08-27): PATCH the issue's title,
+        # never the daily.yml pipeline (see the `writes` assertion below).
+        "/issues/{number}",
     }, f"the GitHub surface changed: {sorted(paths)}"
 
     writes = {p for p in paths if p.startswith("/actions/") and "?" not in p}
@@ -689,7 +923,7 @@ def test_the_only_pipeline_write_is_a_dispatch():
             f"pagination in {url} — one page per wake, always"
         )
     assert {u for u in surface if "api.github.com" not in u} == {
-        RESCUE.R2_INDEX_URL,
+        RESCUE.R2_HEALTH_URL,
         RESCUE.VPS_STATUS_URL,
         "https://api.telegram.org/bot{tg_token}/sendMessage",
     }, "an unexpected external host appeared"
@@ -709,7 +943,7 @@ def test_an_unreadable_run_list_never_dispatches():
     snapshot = state(
         now=at(FRI, 9, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=None, runs_error="HTTP 403",
         dispatch_runs_today=0,
     )
@@ -728,7 +962,7 @@ def test_an_unreadable_budget_probe_never_dispatches():
     snapshot = state(
         now=at(FRI, 1, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[],
         dispatch_runs_today=None, dispatch_probe_error="Timeout",
     )
@@ -743,7 +977,7 @@ def test_an_unreadable_main_index_alarms_rather_than_scoring_green():
     snapshot = state(
         now=at(FRI, 8, 40), session=THU,
         main_index=None, main_error="HTTP 404",
-        r2_index=None,
+        r2_health=None,
     )
     actions = RESCUE.decide(snapshot)
     assert verdicts(actions) == [RESCUE.API_DARK]
@@ -761,7 +995,7 @@ def test_a_fresh_store_with_no_cohort_and_eligible_candidates_is_no_cohort():
         now=at(FRI, 9, 40), session=THU,
         main_index=index(source_asof=THU.isoformat(), cohort_date=WED.isoformat(),
                          cohort_n=25, eligible=40),
-        r2_index=index(source_asof=THU.isoformat()),
+        r2_health=index(source_asof=THU.isoformat()),
         runs=[run_row(created=at(THU, 22, 31))],
     )
     actions = RESCUE.decide(snapshot)
@@ -777,43 +1011,46 @@ def test_an_empty_cohort_with_zero_eligible_candidates_is_not_a_wedge():
         now=at(FRI, 9, 40), session=THU,
         main_index=index(source_asof=THU.isoformat(), cohort_date=WED.isoformat(),
                          cohort_n=25, eligible=0),
-        r2_index=index(source_asof=THU.isoformat()),
+        r2_health=index(source_asof=THU.isoformat()),
         runs=[run_row(created=at(THU, 22, 31))],
     )
     assert verdicts(RESCUE.decide(snapshot)) == [RESCUE.HEALTHY]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# serve splits — main is the truth, the edges are what users read
+# publish lag — main is the truth, the health receipt only proves publication
+# (DEC:B1-PROPHET-PUBLIC-SPLIT: users are served by the protected origin, never
+# by the R2 health receipt, so a lagging receipt is a publish-leg defect)
 # ─────────────────────────────────────────────────────────────────────────────
-def test_a_stale_public_r2_mirror_is_a_serve_split():
-    """The browser paints Prophet from the R2 public base, so main being right is
-    not the same as the product being right."""
+def test_a_stale_public_health_receipt_is_a_publish_lag():
+    """The public R2 object is a health receipt, never the plan book — but a
+    lagging receipt still means the nightly's publish leg did not complete."""
     snapshot = state(
         now=at(FRI, 8, 40), session=THU,
         main_index=index(source_asof=THU.isoformat()),
-        r2_index=index(source_asof="2026-08-10"),
+        r2_health=index(source_asof="2026-08-10"),
     )
     actions = RESCUE.decide(snapshot)
-    assert verdicts(actions) == [RESCUE.SERVE_SPLIT_R2]
+    assert verdicts(actions) == [RESCUE.R2_HEALTH_LAG]
     assert not dispatched(actions)
     assert RESCUE.exit_code(actions) != 0
 
 
-def test_an_r2_mirror_ahead_of_main_is_not_a_split():
-    """R2 can lead main mid-publish. Only R2 BEHIND main is a user-visible split."""
+def test_a_health_receipt_ahead_of_main_is_not_a_lag():
+    """The receipt can lead main mid-publish. Only a receipt BEHIND main is a lag."""
     snapshot = state(
         now=at(FRI, 8, 40), session=THU,
         main_index=index(source_asof="2026-08-12"),
-        r2_index=index(source_asof=THU.isoformat()),
+        r2_health=index(source_asof=THU.isoformat()),
     )
-    assert RESCUE.SERVE_SPLIT_R2 not in verdicts(RESCUE.decide(snapshot))
+    assert RESCUE.R2_HEALTH_LAG not in verdicts(RESCUE.decide(snapshot))
 
 
-def test_an_unreachable_r2_is_not_reported_as_a_split():
-    """Blind is not a breach — the R2 fetch failing must not manufacture a verdict."""
+def test_an_unreachable_r2_health_receipt_is_not_reported_as_a_lag():
+    """Blind is not a breach — the health-receipt fetch failing must not
+    manufacture a verdict."""
     snapshot = state(now=at(FRI, 8, 40), session=THU,
-                     r2_index=None, r2_error="HTTP 522")
+                     r2_health=None, r2_health_error="HTTP 522")
     assert verdicts(RESCUE.decide(snapshot)) == [RESCUE.HEALTHY]
 
 
@@ -970,7 +1207,7 @@ def test_a_healthy_wake_spends_exactly_three_github_reads():
     called = sorted(n.func.id for n in ast.walk(fn)
                     if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
                     and n.func.id.startswith("fetch_"))
-    assert called == ["fetch_dispatch_budget", "fetch_main_index", "fetch_r2_index",
+    assert called == ["fetch_dispatch_budget", "fetch_main_index", "fetch_r2_health",
                       "fetch_runs", "fetch_vps_status"], called
     github = {"fetch_main_index", "fetch_runs", "fetch_dispatch_budget"}
     assert len(github & set(called)) == 3
@@ -988,8 +1225,8 @@ def test_the_public_r2_base_matches_the_configured_data_plane():
     config_text = (ROOT / "config.yml").read_text(encoding="utf-8")
     assert 'public_base: "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev"' \
         in config_text
-    assert RESCUE.R2_INDEX_URL == (
-        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/prophet/index.json"
+    assert RESCUE.R2_HEALTH_URL == (
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/prophet/health.json"
     )
 
 
@@ -1004,9 +1241,42 @@ def test_the_repo_slug_matches_the_git_remote():
                             capture_output=True, text=True, timeout=60)
     if remote.returncode != 0 or not remote.stdout.strip():
         pytest.skip("no origin remote in this checkout")
-    slug = re.sub(r"^.*github\.com[:/]", "", remote.stdout.strip())
-    slug = re.sub(r"\.git$", "", slug)
-    assert fallback.group(1) == slug, (
+    origin = remote.stdout.strip()
+    # Exact-base CI replay intentionally uses a pinned local bare origin and
+    # strips external repository metadata from the child environment. That
+    # transport has no GitHub repository identity to compare. Keep this one
+    # checkout-identity assertion explicitly not applicable; the watchdog's
+    # dispatch/cancellation/budget tests and the transport matrix still execute.
+    if Path(origin).is_absolute() or origin.startswith("file://"):
+        pytest.skip("local origin has no GitHub repository identity")
+    from urllib.parse import urlsplit
+
+    # GitHub Actions workflows may deliberately use authenticated HTTPS origins.
+    # Userinfo does not change the repository identity and must never be echoed
+    # in a failed assertion. Keep all malformed-origin diagnostics constant.
+    if re.match(r"^git@github\.com:", origin, flags=re.IGNORECASE):
+        repository_path = "/" + origin.split(":", 1)[1]
+    else:
+        try:
+            parsed = urlsplit(origin)
+            supported = (
+                parsed.scheme in {"https", "ssh"}
+                and parsed.hostname is not None
+                and parsed.hostname.casefold() == "github.com"
+                and not parsed.query
+                and not parsed.fragment
+            )
+        except ValueError:
+            supported = False
+        assert supported, "unsupported or ambiguous repository origin (raw URL redacted)"
+        repository_path = parsed.path
+    match = re.fullmatch(
+        r"/([A-Za-z0-9][A-Za-z0-9_.-]*/[A-Za-z0-9][A-Za-z0-9_.-]*?)(?:\.git)?/?",
+        repository_path,
+    )
+    assert match, "unsupported repository path (raw URL redacted)"
+    slug = match.group(1)
+    assert fallback.group(1).casefold() == slug.casefold(), (
         f"DEFAULT_REPO fallback {fallback.group(1)!r} != origin {slug!r}"
     )
 
@@ -1022,7 +1292,7 @@ def test_receipts_alone_can_exhaust_the_budget():
     snapshot = state(
         now=at(FRI, 9, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[run_row(conclusion="failure", created=at(THU, 23, 11))],
         dispatch_runs_today=0,                 # GitHub recorded nothing...
         dispatch_receipts_today=2,             # ...but we tried twice
@@ -1036,7 +1306,7 @@ def test_receipts_alone_can_exhaust_the_budget():
 def test_the_budget_takes_the_larger_of_runs_and_receipts():
     base = dict(now=at(FRI, 9, 40), session=THU,
                 main_index=index(source_asof=WED.isoformat()),
-                r2_index=index(source_asof=WED.isoformat()),
+                r2_health=index(source_asof=WED.isoformat()),
                 runs=[run_row(conclusion="failure", created=at(THU, 23, 11))])
     assert dispatched(RESCUE.decide(state(dispatch_runs_today=1,
                                           dispatch_receipts_today=1, **base)))
@@ -1078,7 +1348,7 @@ def test_a_dispatch_receipt_round_trips_through_the_ledger():
     snapshot = state(
         now=at(FRI, 9, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[run_row(conclusion="failure", created=at(THU, 23, 11))],
     )
     actions = RESCUE.decide(snapshot)
@@ -1131,6 +1401,19 @@ def test_a_dispatch_always_files_even_when_the_verdict_is_unchanged():
     assert RESCUE.should_file_receipt(plan, ("STALE",)) is True
 
 
+def test_should_file_receipt_returns_true_on_a_day_advance_alone():
+    """R3 unit pin (2026-08-27 review round 2): ``day_advanced`` overrides an
+    otherwise-unchanged verdict set — exactly the weekend/holiday wake where
+    the session (and so the verdict set) does not move but the [DAY N] title
+    is about to. Without this, the escalation reached only the title, which
+    is the unread artifact in the first place."""
+    alarm = [RESCUE.Action(RESCUE.ALERT, RESCUE.STALE, "same as last time")]
+    assert RESCUE.should_file_receipt(alarm, ("STALE",), day_advanced=True) is True
+    assert RESCUE.should_file_receipt(alarm, ("STALE",), day_advanced=False) is False, (
+        "the default must not change the existing suppression contract"
+    )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # malformed run rows fail SAFE for dispatch
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1141,7 +1424,7 @@ def test_an_unparseable_created_at_on_a_live_run_still_blocks_the_dispatch():
     snapshot = state(
         now=at(FRI, 9, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[{"id": 77, "status": "in_progress", "conclusion": None,
                "created_at": "not-a-timestamp", "event": "schedule"}],
     )
@@ -1158,7 +1441,7 @@ def test_a_run_row_with_no_status_counts_as_alive():
     snapshot = state(
         now=at(FRI, 9, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[{"id": 88, "conclusion": None,
                "created_at": at(THU, 22, 31).strftime("%Y-%m-%dT%H:%M:%SZ")}],
     )
@@ -1200,7 +1483,10 @@ def test_the_hosted_lane_is_github_hosted_and_cannot_be_queue_killed():
     assert spec["concurrency"]["cancel-in-progress"] is False, (
         "a responder a sibling wake can kill mid-dispatch is not a responder"
     )
-    assert {c["cron"] for c in triggers["schedule"]} == {"40 23 * * *", "40 0-13 * * *"}
+    # PR-1 (Prophet US permanence net, 2026-08-27): FULL 24h hourly coverage at
+    # :40, closing the 13:40Z->23:40Z hole the prior two-line schedule
+    # ("40 23 * * *" + "40 0-13 * * *") left open every day.
+    assert {c["cron"] for c in triggers["schedule"]} == {"40 * * * *"}
     assert "workflow_dispatch" in triggers
     run_steps = [s["run"] for s in job["steps"] if "run" in s]
     assert len(run_steps) == 1 and "scripts/prophet_rescue.py" in run_steps[0]
@@ -1248,7 +1534,7 @@ def test_a_store_that_has_not_advanced_is_never_called_HEALTHY():
     snapshot = state(
         now=at(THU, 23, 40), session=THU,
         main_index=index(source_asof=WED.isoformat()),
-        r2_index=index(source_asof=WED.isoformat()),
+        r2_health=index(source_asof=WED.isoformat()),
         runs=[],                       # the bake has not even fired yet
     )
     actions = RESCUE.decide(snapshot)
@@ -1327,3 +1613,791 @@ def test_a_dry_run_mutates_nothing(_no_network):
     results = RESCUE.execute(plan, state(), THU, "o/r", "tok", dry_run=True)
     assert _no_network.comments == [] and _no_network.pushes == []
     assert any("DRY RUN" in r for r in results)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# the [DAY N] escalation ladder (2026-08-27, rewritten same day to chain
+# through the immediately preceding NYSE session only). During Aug 2026 these
+# issues sat unread for 5 days. expected_fire_after() is purely
+# calendar-driven, so a multi-day outage mints a NEW issue per stranded
+# session date — a day-count that lived only inside one issue thread would
+# never exceed 1 on weekdays and would ship dead. The anchor must therefore
+# carry forward from the immediately PRECEDING session's thread, never from
+# an arbitrary open sibling and never from a bootstrap over EVERY open issue
+# (that shape adopted orphaned issues' anchors and chained unrelated
+# Mon+Fri-style gaps into fictitious streaks — see the fetch_issue_thread
+# docstring).
+# ─────────────────────────────────────────────────────────────────────────────
+def test_an_outage_day_anchor_round_trips_through_the_receipt():
+    """The OUTAGE-DAY token receipt() writes is exactly the token
+    outage_anchors() reads back — for the class that wrote it, not some other
+    one."""
+    alarm = [RESCUE.Action(RESCUE.ALERT, RESCUE.STALE, "stale")]
+    snapshot = state(now=at(FRI, 9, 40), session=THU)
+    body = RESCUE.receipt(alarm, snapshot, THU, [], anchor=WED, day=2)
+    assert f"{RESCUE.OUTAGE_DAY_TOKEN} {WED.isoformat()}" in body
+    assert RESCUE.outage_anchors([body]) == {(RESCUE.STALE,): WED}
+
+
+def test_outage_anchors_keeps_the_earliest_across_several_receipts():
+    """A class seen on day 1 and again on day 3 anchors to day 1 — the
+    class's clock started when it was FIRST seen, not on the newest receipt
+    that happens to mention it. A receipt naming a DIFFERENT class must not
+    contaminate this class's anchor."""
+    older = (f"```\n{RESCUE.VERDICT_TOKEN} STALE\n"
+             f"{RESCUE.OUTAGE_DAY_TOKEN} {WED.isoformat()}\n```")
+    newer = (f"```\n{RESCUE.VERDICT_TOKEN} STALE\n"
+             f"{RESCUE.OUTAGE_DAY_TOKEN} {FRI.isoformat()}\n```")
+    other_class = (f"```\n{RESCUE.VERDICT_TOKEN} NO_COHORT\n"
+                   f"{RESCUE.OUTAGE_DAY_TOKEN} {THU.isoformat()}\n```")
+    anchors = RESCUE.outage_anchors([older, newer, other_class])
+    assert anchors[(RESCUE.STALE,)] == WED
+    assert anchors[(RESCUE.NO_COHORT,)] == THU
+
+
+def test_outage_anchors_skips_unparseable_or_missing_tokens_without_raising():
+    assert RESCUE.outage_anchors(["no tokens here", None, 42]) == {}
+    assert RESCUE.outage_anchors([f"{RESCUE.VERDICT_TOKEN} STALE"]) == {}, (
+        "a verdict with no OUTAGE-DAY token at all anchors nothing"
+    )
+    assert RESCUE.outage_anchors(
+        [f"{RESCUE.VERDICT_TOKEN} NONE\n{RESCUE.OUTAGE_DAY_TOKEN} {WED.isoformat()}"]
+    ) == {}, "NONE is not a breach class and must never anchor"
+
+
+def test_outage_day_floors_at_one_and_counts_forward_from_the_anchor():
+    today = FRI
+    assert RESCUE.outage_day(None, today) == 1, "no anchor ever recorded == day 1"
+    future = today + timedelta(days=3)
+    assert RESCUE.outage_day(future, today) == 1, (
+        "a future anchor (clock skew) must never print DAY 0 or negative"
+    )
+    yesterday = today - timedelta(days=1)
+    assert RESCUE.outage_day(yesterday, today) == 2
+    four_days_ago = today - timedelta(days=4)
+    assert RESCUE.outage_day(four_days_ago, today) == 5
+
+
+def test_escalated_title_is_unprefixed_at_day_one_and_prefixed_after():
+    assert RESCUE.escalated_title(THU, 1) == RESCUE.issue_title(THU)
+    assert RESCUE.escalated_title(THU, 2) == f"[DAY 2] {RESCUE.issue_title(THU)}"
+
+
+@pytest.mark.parametrize("day", [2, 3, 4, 10, 100])
+def test_strip_day_prefix_round_trips_escalated_title(day):
+    escalated = RESCUE.escalated_title(THU, day)
+    assert RESCUE.strip_day_prefix(escalated) == RESCUE.issue_title(THU)
+
+
+def test_an_escalated_title_must_not_mint_a_duplicate_issue(monkeypatch):
+    """Pin: once a title escalates to e.g. [DAY 4], an exact-title match would
+    stop finding the thread and this lane would open a brand-new duplicate
+    issue every wake instead of appending a receipt to the one that already
+    exists."""
+    escalated = f"[DAY 4] {RESCUE.issue_title(THU)}"
+    monkeypatch.setattr(
+        RESCUE, "_get_json",
+        lambda url, headers=None: ([{"number": 42, "title": escalated}], None),
+    )
+    row, err = RESCUE.find_open_issue("o/r", "tok", THU)
+    assert err is None
+    assert row is not None and row["number"] == 42
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# fetch_issue_thread's adjacent-session chain (2026-08-27 rewrite). Replaces
+# the earlier "mine every open sibling issue" shape, which measured "the
+# oldest open issue that ever mentioned this class", not "successive days".
+# ─────────────────────────────────────────────────────────────────────────────
+def test_a_forgotten_orphan_issue_does_not_poison_a_fresh_breachs_day_count(monkeypatch):
+    """Mirrors the real production shape (#5920: created 2026-08-19,
+    RESCUE-VERDICTS STALE, no OUTAGE-DAY token, still open). The OLD
+    sibling-mining bootstrap adopted such a row's created_at as an anchor for
+    ANY later STALE breach anywhere, which would have opened a brand-new
+    breach's issue already reading "[DAY 10]" months later. The orphan is not
+    the immediately preceding session's issue, so the adjacent-session chain
+    must not see it at all."""
+    session = date(2026, 9, 8)  # Tue after Labor Day; a real NYSE session
+    orphan = {
+        "number": 1,
+        "title": RESCUE.issue_title(WED),           # a long-stale, unrelated session
+        "created_at": WED.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": f"```\n{RESCUE.VERDICT_TOKEN} STALE\n```",   # no OUTAGE-DAY token
+    }
+    monkeypatch.setattr(RESCUE, "_get_json", lambda url, headers=None: ([orphan], None))
+    thread = RESCUE.fetch_issue_thread("o/r", "tok", session, at(session, 9, 40))
+    assert thread.anchors == {}, "the orphan must not anchor an unrelated breach"
+    day = RESCUE.outage_day(thread.anchors.get((RESCUE.STALE,)), session)
+    assert day == 1
+    title = RESCUE.escalated_title(session, day)
+    assert not title.startswith("[DAY"), title
+
+
+def test_a_monday_friday_gap_does_not_chain_across_the_healthy_middle_of_the_week(
+        monkeypatch):
+    """A bad Monday, a healthy Tue/Wed/Thu, and a bad Friday are TWO SEPARATE
+    one-day outages that happen to share a verdict name — not a five-day
+    streak. An open issue for a session TWO OR MORE sessions back, even one
+    carrying a real OUTAGE-DAY token, must not carry into a non-adjacent
+    session's thread."""
+    monday = date(2026, 8, 10)
+    assert RESCUE.session_n_back(FRI, 1) == THU, "sanity: THU, not MON, is adjacent to FRI"
+    mon_issue = {
+        "number": 5,
+        "title": RESCUE.issue_title(monday),
+        "created_at": monday.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": (f"```\n{RESCUE.VERDICT_TOKEN} STRAND\n"
+                 f"{RESCUE.OUTAGE_DAY_TOKEN} {monday.isoformat()}\n```"),
+    }
+    monkeypatch.setattr(RESCUE, "_get_json", lambda url, headers=None: ([mon_issue], None))
+    thread = RESCUE.fetch_issue_thread("o/r", "tok", FRI, at(FRI, 9, 40))
+    assert thread.anchors == {}, "a non-adjacent session's issue must not carry forward"
+
+
+def test_the_immediately_preceding_sessions_anchor_does_chain(monkeypatch):
+    """The one case the whole rewrite exists to preserve: a genuine two-day
+    (or longer) outage, where the issue for the session directly before this
+    one carries a real anchor, DOES carry forward."""
+    assert RESCUE.session_n_back(FRI, 1) == THU
+    prev_issue = {
+        "number": 9,
+        "title": RESCUE.issue_title(THU),
+        "created_at": THU.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": (f"```\n{RESCUE.VERDICT_TOKEN} STALE\n"
+                 f"{RESCUE.OUTAGE_DAY_TOKEN} {THU.isoformat()}\n```"),
+    }
+
+    def fake_get_json(url, headers=None):
+        if "/issues?" in url:
+            return ([prev_issue], None)
+        if "/issues/9/comments" in url:
+            return ([], None)
+        raise AssertionError(f"unexpected URL: {url}")
+
+    monkeypatch.setattr(RESCUE, "_get_json", fake_get_json)
+    thread = RESCUE.fetch_issue_thread("o/r", "tok", FRI, at(FRI, 9, 40))
+    assert thread.anchors == {(RESCUE.STALE,): THU}
+    day = RESCUE.outage_day(thread.anchors[(RESCUE.STALE,)], FRI)
+    assert day >= 2
+
+
+def test_an_anchor_only_in_a_comment_on_the_preceding_issue_still_carries(monkeypatch):
+    """F3 regression. A night's issue BODY is only its FIRST receipt (e.g. the
+    01:40Z wake's STRAND class); a LATER wake's different verdict class (e.g.
+    the 09:40Z wake discovering STALE, once the dispatch has created a run)
+    can therefore appear ONLY in a comment, never in the body. Body-only
+    mining can never carry that class across days; reading the preceding
+    thread's comments as well as its body is what fixes that."""
+    prev_issue = {
+        "number": 11,
+        "title": RESCUE.issue_title(THU),
+        "created_at": THU.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": f"```\n{RESCUE.VERDICT_TOKEN} STRAND\n{RESCUE.OUTAGE_DAY_TOKEN} "
+                f"{THU.isoformat()}\n```",
+    }
+    comment = {"body": f"```\n{RESCUE.VERDICT_TOKEN} STALE\n{RESCUE.OUTAGE_DAY_TOKEN} "
+                        f"{THU.isoformat()}\n```"}
+
+    def fake_get_json(url, headers=None):
+        if "/issues?" in url:
+            return ([prev_issue], None)
+        if "/issues/11/comments" in url:
+            return ([comment], None)
+        raise AssertionError(f"unexpected URL: {url}")
+
+    monkeypatch.setattr(RESCUE, "_get_json", fake_get_json)
+    thread = RESCUE.fetch_issue_thread("o/r", "tok", FRI, at(FRI, 9, 40))
+    assert thread.anchors.get((RESCUE.STALE,)) == THU, (
+        "a comment-only class on the preceding thread must still carry"
+    )
+
+
+def test_a_failed_read_of_the_preceding_threads_comments_degrades_without_raising(
+        monkeypatch):
+    """A GET failure reading the PRECEDING session's comments must degrade to
+    that thread's body-only anchor — never raise, and never touch THIS
+    session's own receipts/last_verdicts/error, which are read from a
+    SEPARATE, successful GET."""
+    this_row = {
+        "number": 20,
+        "title": RESCUE.issue_title(FRI),
+        "created_at": FRI.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": f"```\n{RESCUE.VERDICT_TOKEN} STALE\n```",
+    }
+    prev_row = {
+        "number": 11,
+        "title": RESCUE.issue_title(THU),
+        "created_at": THU.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": f"```\n{RESCUE.VERDICT_TOKEN} STALE\n{RESCUE.OUTAGE_DAY_TOKEN} "
+                f"{THU.isoformat()}\n```",
+    }
+
+    def fake_get_json(url, headers=None):
+        if "/issues?" in url:
+            return ([this_row, prev_row], None)
+        if "/issues/11/comments" in url:
+            return None, "HTTP 500"
+        if "/issues/20/comments" in url:
+            return ([{"body": f"{RESCUE.DISPATCH_RECEIPT_TOKEN} "
+                              f"{at(FRI, 9, 40).isoformat()}"}], None)
+        raise AssertionError(f"unexpected URL: {url}")
+
+    monkeypatch.setattr(RESCUE, "_get_json", fake_get_json)
+    thread = RESCUE.fetch_issue_thread("o/r", "tok", FRI, at(FRI, 9, 40))
+    assert thread.anchors.get((RESCUE.STALE,)) == THU, "degrades to the body-only anchor"
+    assert thread.error is None, (
+        "a failure reading the PRECEDING thread must never surface as this "
+        "session's own error"
+    )
+    assert thread.receipts == 1
+    assert thread.last_verdicts == (RESCUE.STALE,)
+
+
+def test_fetch_issue_thread_rest_budget_and_never_paginates(monkeypatch):
+    """§REST BUDGET pin. The alarm path spends exactly THREE _get_json calls
+    when both this session's and the preceding session's issues are open,
+    exactly TWO when there is no preceding row, and none of those URLs ever
+    carries a page number beyond the single per_page parameter."""
+    this_row = {"number": 20, "title": RESCUE.issue_title(FRI),
+                "created_at": FRI.strftime("%Y-%m-%dT%H:%M:%SZ"), "body": "x"}
+    prev_row = {"number": 11, "title": RESCUE.issue_title(THU),
+                "created_at": THU.strftime("%Y-%m-%dT%H:%M:%SZ"), "body": "x"}
+
+    calls_both: list[str] = []
+
+    def fake_both(url, headers=None):
+        calls_both.append(url)
+        if "/issues?" in url:
+            return ([this_row, prev_row], None)
+        return ([], None)
+
+    monkeypatch.setattr(RESCUE, "_get_json", fake_both)
+    RESCUE.fetch_issue_thread("o/r", "tok", FRI, at(FRI, 9, 40))
+    assert len(calls_both) == 3, calls_both
+
+    calls_none: list[str] = []
+
+    def fake_none(url, headers=None):
+        calls_none.append(url)
+        if "/issues?" in url:
+            return ([this_row], None)
+        return ([], None)
+
+    monkeypatch.setattr(RESCUE, "_get_json", fake_none)
+    RESCUE.fetch_issue_thread("o/r", "tok", FRI, at(FRI, 9, 40))
+    assert len(calls_none) == 2, calls_none
+
+    for url in calls_both + calls_none:
+        assert not re.search(r"[?&]page=\d", url), url
+        assert "per_page=" in url
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# R1+R2 CHAIN TOLERANCE (2026-08-27 review round 2). The strict one-link chain
+# above snapped on two inputs that are not healed nights: the watchdog itself
+# missing a night (no issue ever filed for the immediately preceding session)
+# and an operator closing yesterday's now-duplicate issue as superseded. Both
+# look identical on the wire — fetch_open_outage_issues only ever returns OPEN
+# issues, so "never filed" and "closed" are the same absent row — and the
+# chain must bridge past ONE such gap (k=2) while still refusing everything
+# ANCHOR_CHAIN_MAX_SESSIONS was tuned to keep refusing.
+# ─────────────────────────────────────────────────────────────────────────────
+def test_a_chain_bridges_past_a_missing_link_when_the_watchdog_itself_missed_a_night(
+        monkeypatch, capsys):
+    """R1: this module's own docstring records that daily.yml's cron can
+    silently never fire, and watchdog outages correlate with the outages they
+    watch — so a night this LANE itself never woke for (or woke --dry-run, or
+    whose alarm never went loud) files no issue for the session immediately
+    before this one. That is not a healed night and must not reset the day
+    count to 1; the bridge must also be named in the run log."""
+    assert RESCUE.session_n_back(FRI, 1) == THU
+    assert RESCUE.session_n_back(FRI, 2) == WED
+    bridge_issue = {
+        "number": 3,
+        "title": RESCUE.issue_title(WED),
+        "created_at": WED.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": (f"```\n{RESCUE.VERDICT_TOKEN} STALE\n"
+                 f"{RESCUE.OUTAGE_DAY_TOKEN} {WED.isoformat()}\n```"),
+    }
+
+    def fake_get_json(url, headers=None):
+        if "/issues?" in url:
+            return ([bridge_issue], None)      # no row at all for THU (k=1)
+        if "/issues/3/comments" in url:
+            return ([], None)
+        raise AssertionError(f"unexpected URL: {url}")
+
+    monkeypatch.setattr(RESCUE, "_get_json", fake_get_json)
+    thread = RESCUE.fetch_issue_thread("o/r", "tok", FRI, at(FRI, 9, 40))
+    assert thread.anchors == {(RESCUE.STALE,): WED}
+    day = RESCUE.outage_day(thread.anchors[(RESCUE.STALE,)], FRI)
+    assert day >= 2
+
+    out = capsys.readouterr().out
+    lines = [line for line in out.splitlines() if line]
+    assert lines, "a k=2 bridge must be named in the run log"
+    assert lines[0].startswith("::notice"), lines[0]
+    assert "prophet-rescue-chain-gap" in lines[0]
+
+
+def test_a_chain_bridges_past_a_link_the_operator_closed_as_superseded(monkeypatch):
+    """R2: closing yesterday's now-duplicate issue as superseded mid-outage is
+    the most natural triage act there is, and it is NOT the "declared-
+    resolved" reset this ladder means to detect. fetch_open_outage_issues only
+    ever sees OPEN issues, so a closed k=1 issue is indistinguishable on the
+    wire from one that was never filed — the chain must still bridge to k=2."""
+    assert RESCUE.session_n_back(FRI, 1) == THU
+    assert RESCUE.session_n_back(FRI, 2) == WED
+    bridge_issue = {
+        "number": 4,
+        "title": RESCUE.issue_title(WED),
+        "created_at": WED.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": (f"```\n{RESCUE.VERDICT_TOKEN} STRAND\n"
+                 f"{RESCUE.OUTAGE_DAY_TOKEN} {WED.isoformat()}\n```"),
+    }
+
+    def fake_get_json(url, headers=None):
+        # THU's issue was closed by an operator mid-outage -> absent from
+        # this open-issues page, exactly like a never-filed one.
+        if "/issues?" in url:
+            return ([bridge_issue], None)
+        if "/issues/4/comments" in url:
+            return ([], None)
+        raise AssertionError(f"unexpected URL: {url}")
+
+    monkeypatch.setattr(RESCUE, "_get_json", fake_get_json)
+    thread = RESCUE.fetch_issue_thread("o/r", "tok", FRI, at(FRI, 9, 40))
+    assert thread.anchors == {(RESCUE.STRAND,): WED}
+    day = RESCUE.outage_day(thread.anchors[(RESCUE.STRAND,)], FRI)
+    assert day >= 2
+
+
+def test_a_gap_of_three_or_more_sessions_does_not_chain(monkeypatch):
+    """Pins the ANCHOR_CHAIN_MAX_SESSIONS=2 boundary precisely: a session
+    exactly THREE sessions back — one further than the bound reaches — must
+    NOT chain. This is the same refusal the orphan and Mon+Fri-gap tests pin
+    (both of those sit even further back), verified here at the exact edge of
+    what k<=2 can reach."""
+    three_back = RESCUE.session_n_back(FRI, 3)
+    assert three_back is not None
+    far_issue = {
+        "number": 8,
+        "title": RESCUE.issue_title(three_back),
+        "created_at": three_back.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": (f"```\n{RESCUE.VERDICT_TOKEN} STALE\n"
+                 f"{RESCUE.OUTAGE_DAY_TOKEN} {three_back.isoformat()}\n```"),
+    }
+    monkeypatch.setattr(RESCUE, "_get_json",
+                        lambda url, headers=None: ([far_issue], None))
+    thread = RESCUE.fetch_issue_thread("o/r", "tok", FRI, at(FRI, 9, 40))
+    assert thread.anchors == {}, "three sessions back is beyond ANCHOR_CHAIN_MAX_SESSIONS"
+    day = RESCUE.outage_day(thread.anchors.get((RESCUE.STALE,)), FRI)
+    assert day == 1
+    title = RESCUE.escalated_title(FRI, day)
+    assert not title.startswith("[DAY"), title
+
+
+def test_the_alarm_path_still_spends_at_most_three_reads_when_the_chain_bridges_to_k2(
+        monkeypatch):
+    """§REST BUDGET pin, extended for R1+R2: bridging past a missing k=1 link
+    to a real k=2 row must not grow the read budget — one list read, one
+    comments read for the bridged predecessor, one comments read for this
+    session's own row, same as an ordinary k=1 chain."""
+    bridge_issue = {
+        "number": 3,
+        "title": RESCUE.issue_title(WED),
+        "created_at": WED.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": f"```\n{RESCUE.VERDICT_TOKEN} STALE\n{RESCUE.OUTAGE_DAY_TOKEN} "
+                f"{WED.isoformat()}\n```",
+    }
+    this_row = {
+        "number": 20,
+        "title": RESCUE.issue_title(FRI),
+        "created_at": FRI.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": "x",
+    }
+    calls: list[str] = []
+
+    def fake_get_json(url, headers=None):
+        calls.append(url)
+        if "/issues?" in url:
+            return ([bridge_issue, this_row], None)
+        return ([], None)
+
+    monkeypatch.setattr(RESCUE, "_get_json", fake_get_json)
+    RESCUE.fetch_issue_thread("o/r", "tok", FRI, at(FRI, 9, 40))
+    assert len(calls) == 3, calls
+
+
+def test_a_failed_preceding_comments_read_emits_a_warning_and_preserves_this_sessions_ledger(
+        monkeypatch, capsys):
+    """R4: the degrade-without-raising contract pinned above
+    (test_a_failed_read_of_the_preceding_threads_comments_degrades_without_raising)
+    used to be SILENT — a lost comment-only class (a night's issue BODY is
+    only its FIRST receipt) had nothing in the run log to explain why the day
+    count might read low. This pins that the degradation is now named, and
+    that naming it changes nothing about THIS session's own receipts/
+    last_verdicts/error, which come from an entirely separate, successful
+    GET on this session's own issue."""
+    this_row = {
+        "number": 20,
+        "title": RESCUE.issue_title(FRI),
+        "created_at": FRI.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": f"```\n{RESCUE.VERDICT_TOKEN} STALE\n```",
+    }
+    prev_row = {
+        "number": 11,
+        "title": RESCUE.issue_title(THU),
+        "created_at": THU.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": f"```\n{RESCUE.VERDICT_TOKEN} STALE\n{RESCUE.OUTAGE_DAY_TOKEN} "
+                f"{THU.isoformat()}\n```",
+    }
+
+    def fake_get_json(url, headers=None):
+        if "/issues?" in url:
+            return ([this_row, prev_row], None)
+        if "/issues/11/comments" in url:
+            return None, "HTTP 500"
+        if "/issues/20/comments" in url:
+            return ([{"body": f"{RESCUE.DISPATCH_RECEIPT_TOKEN} "
+                              f"{at(FRI, 9, 40).isoformat()}"}], None)
+        raise AssertionError(f"unexpected URL: {url}")
+
+    monkeypatch.setattr(RESCUE, "_get_json", fake_get_json)
+    thread = RESCUE.fetch_issue_thread("o/r", "tok", FRI, at(FRI, 9, 40))
+
+    out = capsys.readouterr().out
+    lines = [line for line in out.splitlines() if line]
+    assert lines, "a failed preceding-comments read must be named in the run log"
+    assert lines[0].startswith("::warning"), lines[0]
+    assert "11" in lines[0]
+
+    assert thread.receipts == 1, "this session's own ledger must stay intact"
+    assert thread.last_verdicts == (RESCUE.STALE,)
+    assert thread.error is None, (
+        "a failure reading the PRECEDING thread must never surface as this "
+        "session's own error"
+    )
+
+
+def test_the_issue_list_url_pins_newest_first_ordering_and_never_paginates(monkeypatch):
+    """R6: the ladder makes the open backlog only grow over a real outage
+    (closing an issue is the reset lever, not this lane), so the two rows the
+    chain needs must be guaranteed newest-first on the single unpaginated
+    page rather than assumed from GitHub's undocumented default order."""
+    captured: dict[str, str] = {}
+
+    def fake_get_json(url, headers=None):
+        captured["url"] = url
+        return [], None
+
+    monkeypatch.setattr(RESCUE, "_get_json", fake_get_json)
+    RESCUE.fetch_open_outage_issues("o/r", "tok")
+    url = captured["url"]
+    assert "sort=created" in url
+    assert "direction=desc" in url
+    assert not re.search(r"[?&]page=\d", url), url
+
+
+def test_fetch_issue_thread_actually_mines_anchors_not_a_vacuous_stub(monkeypatch):
+    """SEAM PIN. test_main_wires_the_mined_anchors_into_the_state_it_hands_to_execute
+    monkeypatches fetch_issue_thread WHOLESALE, so it cannot catch a
+    regression that guts fetch_issue_thread's own anchor computation (e.g.
+    replacing the merge with a bare ``{}``) — every other test in this file
+    drives execute()/decide() with a hand-built state and never calls the
+    real function. This drives the REAL fetch_issue_thread against a stubbed
+    _get_json instead, so that mutation is caught here. (Verified against a
+    scratch copy: replacing the anchor computation with ``{}`` turns this
+    assertion false while leaving every other test in this file green.)
+    """
+    prev_row = {
+        "number": 11,
+        "title": RESCUE.issue_title(THU),
+        "created_at": THU.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "body": f"```\n{RESCUE.VERDICT_TOKEN} STALE\n{RESCUE.OUTAGE_DAY_TOKEN} "
+                f"{THU.isoformat()}\n```",
+    }
+
+    def fake_get_json(url, headers=None):
+        if "/issues?" in url:
+            return ([prev_row], None)
+        return ([], None)
+
+    monkeypatch.setattr(RESCUE, "_get_json", fake_get_json)
+    thread = RESCUE.fetch_issue_thread("o/r", "tok", FRI, at(FRI, 9, 40))
+    assert thread.anchors == {(RESCUE.STALE,): THU}, (
+        "the real fetch_issue_thread must actually mine the preceding "
+        "session's anchor, not return an empty/stubbed map"
+    )
+
+
+def test_execute_patches_the_title_and_files_a_receipt_on_a_day_advance(
+        monkeypatch, _no_network):
+    """R3 (2026-08-27 review round 2), superseding the earlier pin of the
+    opposite behaviour. A weekend/holiday wake reuses the same session, so the
+    verdict set is unchanged from the last receipt — but the [DAY N] title IS
+    about to change, which is exactly the "day advanced" case should_file_receipt
+    now treats as news. Before R3 this wake patched ONLY the title and stayed
+    silent everywhere else, so the escalation reached an artifact nobody
+    re-reads (the issue title) and never the comment thread or the ops push —
+    the precise defect R3 closes."""
+    patched: list[tuple] = []
+    monkeypatch.setattr(
+        RESCUE, "update_issue_title",
+        lambda repo, token, number, title: (
+            patched.append((number, title)) or f"updated issue #{number} title"
+        ),
+    )
+    alarm = [RESCUE.Action(RESCUE.ALERT, RESCUE.STALE, "still stale")]
+    anchor = at(FRI, 9, 40).date() - timedelta(days=1)          # -> day 2
+    snapshot = state(
+        now=at(FRI, 9, 40),
+        outage_anchors={(RESCUE.STALE,): anchor},
+        issue_number=7,
+        issue_title=RESCUE.issue_title(THU),      # not yet escalated
+        last_receipt_verdicts=("STALE",),         # unchanged verdict set
+    )
+    results = RESCUE.execute(alarm, snapshot, THU, "o/r", "tok", dry_run=False)
+    assert patched == [(7, RESCUE.escalated_title(THU, 2))]
+    assert len(_no_network.comments) == 1, "a day advance must file exactly one receipt"
+    assert len(_no_network.pushes) == 1, "a day advance must push exactly once"
+    assert "[DAY 2]" in _no_network.pushes[-1]
+    assert any("title" in r for r in results)
+
+
+def test_execute_still_suppresses_a_same_day_repeat_wake_with_no_day_advance(
+        monkeypatch, _no_network):
+    """The anti-spam contract R3 must NOT regress: a second wake at the SAME
+    day (the title already reads the escalated form, so escalated_title(...)
+    no longer differs from state.issue_title) with an unchanged verdict set
+    must still suppress — day_advanced is keyed to the title TEXT changing,
+    not to day>=2 alone, so an hourly wake through the rest of that day does
+    not re-file."""
+    patched: list[tuple] = []
+    monkeypatch.setattr(RESCUE, "update_issue_title",
+                        lambda *a, **k: patched.append(a) or "updated")
+    alarm = [RESCUE.Action(RESCUE.ALERT, RESCUE.STALE, "still stale")]
+    anchor = at(FRI, 9, 40).date() - timedelta(days=1)          # -> day 2
+    snapshot = state(
+        now=at(FRI, 9, 40),
+        outage_anchors={(RESCUE.STALE,): anchor},
+        issue_number=7,
+        issue_title=RESCUE.escalated_title(THU, 2),   # already escalated
+        last_receipt_verdicts=("STALE",),
+    )
+    results = RESCUE.execute(alarm, snapshot, THU, "o/r", "tok", dry_run=False)
+    assert patched == [], "an already-correct title must not be rewritten"
+    assert _no_network.comments == [], "no day advance and no verdict change -> suppressed"
+    assert _no_network.pushes == [], "no day advance and no verdict change -> suppressed"
+    assert any("suppressed" in r for r in results)
+
+
+def test_execute_does_not_patch_the_title_on_day_one(monkeypatch, _no_network):
+    patched: list[tuple] = []
+    monkeypatch.setattr(RESCUE, "update_issue_title",
+                        lambda *a, **k: patched.append(a) or "updated")
+    alarm = [RESCUE.Action(RESCUE.ALERT, RESCUE.STALE, "stale")]
+    snapshot = state(now=at(FRI, 9, 40), outage_anchors=None, issue_number=7,
+                     issue_title=RESCUE.issue_title(THU),
+                     last_receipt_verdicts=None)
+    RESCUE.execute(alarm, snapshot, THU, "o/r", "tok", dry_run=False)
+    assert patched == [], "day 1 must never rewrite the title"
+
+
+def test_execute_does_not_repatch_an_already_escalated_title(monkeypatch, _no_network):
+    """No hourly rewrite: once the title already reads the wanted escalation,
+    a later wake with the same anchor must not PATCH it again."""
+    patched: list[tuple] = []
+    monkeypatch.setattr(RESCUE, "update_issue_title",
+                        lambda *a, **k: patched.append(a) or "updated")
+    alarm = [RESCUE.Action(RESCUE.ALERT, RESCUE.STALE, "still stale")]
+    anchor = at(FRI, 9, 40).date() - timedelta(days=1)          # -> day 2
+    snapshot = state(
+        now=at(FRI, 9, 40),
+        outage_anchors={(RESCUE.STALE,): anchor},
+        issue_number=7,
+        issue_title=RESCUE.escalated_title(THU, 2),   # already escalated
+        last_receipt_verdicts=("STALE",),
+    )
+    RESCUE.execute(alarm, snapshot, THU, "o/r", "tok", dry_run=False)
+    assert patched == [], "an already-correct title must not be rewritten"
+
+
+def test_a_new_issue_is_created_with_an_escalated_title_when_a_carried_anchor_reaches_upsert(
+        monkeypatch):
+    """An anchor carried forward from the preceding session's thread (see
+    ``fetch_issue_thread``) can reach a BRAND NEW session's issue (a fresh
+    session, same still-open breach class) — the very first receipt on that
+    new thread must already carry the escalated title, verified through
+    upsert_issue's own day= reaching escalated_title, not waiting for a later
+    PATCH to catch up."""
+    monkeypatch.setattr(RESCUE, "find_open_issue", lambda *a, **k: (None, None))
+    monkeypatch.setattr(RESCUE, "ensure_label", lambda *a, **k: None)
+    captured = {}
+
+    def fake_post(url, body, headers, timeout=RESCUE.HTTP_TIMEOUT_S, *, method="POST"):
+        captured["url"], captured["body"] = url, body
+        return 201, b'{"number": 99}', None
+
+    monkeypatch.setattr(RESCUE, "_post", fake_post)
+    result = RESCUE.upsert_issue("o/r", "tok", FRI, "receipt body", day=3)
+    assert captured["body"]["title"] == RESCUE.escalated_title(FRI, 3)
+    assert "opened issue #99" in result
+
+
+def test_ops_push_carries_the_day_prefix_only_at_day_two_and_beyond(_no_network):
+    alarm = [RESCUE.Action(RESCUE.ALERT, RESCUE.STALE, "stale")]
+    day_one = state(now=at(FRI, 9, 40), outage_anchors=None, issue_number=7,
+                    last_receipt_verdicts=None)
+    RESCUE.execute(alarm, day_one, THU, "o/r", "tok", dry_run=False)
+    assert "[DAY" not in _no_network.pushes[-1]
+
+    anchor = at(FRI, 9, 40).date() - timedelta(days=1)
+    day_two = state(now=at(FRI, 9, 40), outage_anchors={(RESCUE.STALE,): anchor},
+                    issue_number=7, last_receipt_verdicts=None)
+    RESCUE.execute(alarm, day_two, THU, "o/r", "tok", dry_run=False)
+    assert "[DAY 2]" in _no_network.pushes[-1]
+
+
+def test_a_changed_breach_class_resets_to_day_one(_no_network):
+    """A STRAND that later becomes STALE is a DIFFERENT breach class from the
+    ladder's point of view — the anchor recorded for STRAND must not leak
+    onto STALE, so the class change escalates from day 1 again rather than
+    inheriting STRAND's multi-day-old anchor."""
+    old_strand_anchor = {(RESCUE.STRAND,): date(2026, 8, 1)}
+    stale_only = [RESCUE.Action(RESCUE.ALERT, RESCUE.STALE, "now stale, not strand")]
+    snapshot = state(now=at(FRI, 9, 40), outage_anchors=old_strand_anchor,
+                     issue_number=7, last_receipt_verdicts=None)
+    RESCUE.execute(stale_only, snapshot, THU, "o/r", "tok", dry_run=False)
+    assert _no_network.pushes and "[DAY" not in _no_network.pushes[-1], (
+        "STALE has never been anchored before (only STRAND has) so it must "
+        "escalate from day 1, not inherit STRAND's old anchor"
+    )
+
+
+def test_the_escalation_feature_adds_no_cancel_path_and_stays_stdlib_only():
+    """Direct pin scoped to this PR: the [DAY N] ladder's new PATCH write must
+    not have grown a DELETE/cancel capability alongside it, and the module
+    must still run from a bare python3 with no venv.
+
+    Scanned the same way ``test_no_stop_run_code_path_exists`` scans — RUNTIME
+    string constants only, docstrings exempted — because the module's own
+    postmortem prose legitimately narrates the 2026-08-12
+    ``force-cancel`` incident this file exists to prevent a repeat of; a raw
+    substring search over the whole file would false-positive on that prose.
+    """
+    tree = ast.parse(SCRIPT.read_text(encoding="utf-8"))
+    docstrings = _docstrings(tree)
+    offenders = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str) \
+                and node.value not in docstrings:
+            low = node.value.lower()
+            if "/cancel" in low or "force-cancel" in low:
+                offenders.append(node.value)
+        if isinstance(node, ast.keyword) and node.arg == "method" \
+                and isinstance(node.value, ast.Constant) \
+                and isinstance(node.value.value, str) \
+                and node.value.value.upper() == "DELETE":
+            offenders.append("method=\"DELETE\" keyword argument")
+    assert not offenders, f"a cancel/DELETE code path appeared: {offenders}"
+
+    roots: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            roots.update(a.name.split(".")[0] for a in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module and node.level == 0:
+            roots.add(node.module.split(".")[0])
+    first_party = roots & {"lib", "engine", "scripts", "app", "collectors", "admin"}
+    assert first_party == {"lib"}
+
+
+def test_main_wires_the_mined_anchors_into_the_state_it_hands_to_execute(monkeypatch):
+    """WIRED AT THE main() SEAM — the one seam every other test in this file
+    misses, because they all drive ``execute`` with a hand-built state.
+
+    MEASURED 2026-08-27: deleting ``state.outage_anchors = thread.anchors`` and
+    ``state.issue_title = thread.title`` from ``main`` left all 104 other tests
+    GREEN.  That is the ships-green-and-dead shape this whole lane exists to
+    prevent: the ladder would be silently unwired by a refactor and no test
+    would say a word, while production quietly escalated nothing forever.
+    """
+    anchors = {(RESCUE.STALE,): THU}
+    escalated = RESCUE.escalated_title(THU, 2)
+    monkeypatch.setenv("GH_TOKEN", "tok")
+    monkeypatch.setattr(RESCUE, "collect_state", lambda *a, **k: state())
+    monkeypatch.setattr(
+        RESCUE, "decide",
+        lambda s: [RESCUE.Action(RESCUE.ALERT, RESCUE.STALE, "still stale")])
+    monkeypatch.setattr(
+        RESCUE, "fetch_issue_thread",
+        lambda repo, token, session, now: RESCUE.IssueThread(
+            number=7, title=escalated, receipts=0,
+            last_verdicts=("STALE",), anchors=anchors, error=None))
+    seen: dict = {}
+    monkeypatch.setattr(
+        RESCUE, "execute",
+        lambda actions, s, session, repo, token, **k: seen.update(
+            anchors=s.outage_anchors, title=s.issue_title,
+            number=s.issue_number) or [])
+
+    RESCUE.main(["--now", at(FRI, 8, 40).isoformat(), "--repo", "o/r"])
+
+    assert seen["anchors"] == anchors, (
+        "main() must carry the mined anchors into the state execute() reads — "
+        "without this the [DAY N] ladder is dead on arrival in production")
+    assert seen["title"] == escalated, (
+        "main() must carry the CURRENT title through, or execute() re-PATCHes "
+        "an already-escalated title on every hourly wake")
+    assert seen["number"] == 7
+
+
+@pytest.mark.parametrize("remote_url", [
+    "/home/runner/work/_temp/ci-base-replay-example/origin.git",
+    "file:///home/runner/work/_temp/ci-base-replay-example/origin.git",
+])
+def test_local_replay_origin_is_not_compared_with_a_github_slug(monkeypatch, remote_url):
+    from types import SimpleNamespace
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=remote_url))
+    with pytest.raises(pytest.skip.Exception, match="no GitHub repository identity"):
+        test_the_repo_slug_matches_the_git_remote()
+
+
+@pytest.mark.parametrize("remote_url", [
+    "https://github.com/mastermindx-market-intelligence/macro.git",
+    "git@github.com:mastermindx-market-intelligence/macro.git",
+    "ssh://git@github.com/mastermindx-market-intelligence/macro.git",
+])
+def test_remote_identity_pin_accepts_supported_github_transports(monkeypatch, remote_url):
+    from types import SimpleNamespace
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=remote_url))
+    test_the_repo_slug_matches_the_git_remote()
+
+
+@pytest.mark.parametrize("remote_url", [
+    "https://github.com/other/project.git",
+    "git@github.com:other/project.git",
+    "https://github.com.example.invalid/mastermindx-market-intelligence/macro.git",
+])
+def test_remote_identity_pin_does_not_excuse_a_different_or_lookalike_repository(monkeypatch, remote_url):
+    from types import SimpleNamespace
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=remote_url))
+    with pytest.raises(AssertionError):
+        test_the_repo_slug_matches_the_git_remote()
+
+
+def test_authenticated_https_origin_remains_a_valid_github_identity(monkeypatch):
+    from types import SimpleNamespace
+    origin = "https://x-access-token:SYNTHETIC_TEST_TOKEN@github.com/mastermindx-market-intelligence/macro.git"
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=origin))
+    test_the_repo_slug_matches_the_git_remote()
+
+
+def test_unsupported_origin_failure_does_not_include_userinfo(monkeypatch):
+    from types import SimpleNamespace
+    origin = "https://x-access-token:SYNTHETIC_TEST_TOKEN@github.com.example.invalid/other/project.git"
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=origin))
+    with pytest.raises(AssertionError) as failure:
+        test_the_repo_slug_matches_the_git_remote()
+    assert "SYNTHETIC_TEST_TOKEN" not in str(failure.value)
+    assert "x-access-token" not in str(failure.value)

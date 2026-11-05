@@ -11,9 +11,13 @@ which the Python `check()` above never exercised.
 """
 from __future__ import annotations
 
+import errno
+import json
 import os
+import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -27,6 +31,8 @@ from scripts.check_self_mod_fence import (
     parse_ci_changed_files_json,
     print_planner_files,
     read_ci_changed_files_file,
+    read_trailers_file,
+    write_ci_changed_files_file_from_nul,
 )
 from scripts.run_ci_pack import render_command
 
@@ -306,6 +312,7 @@ def test_loop_branch_prefixes_are_defined():
 
 LIVE_CHECK_STEP = "self-mod-fence live check (loop PR + immutable → BLOCKED)"
 REPO_ROOT = Path(__file__).resolve().parents[1]
+FENCE_SCRIPT = REPO_ROOT / "scripts" / "check_self_mod_fence.py"
 
 
 def _fence_step_run(workflow_relpath: str, step_name: str) -> dict:
@@ -378,13 +385,20 @@ def _run_live_check(
     head_ref: str,
     base_ref: str = "main",
     extra_env: dict[str, str] | None = None,
+    command: str | None = None,
 ) -> subprocess.CompletedProcess:
-    """Render the manifest step exactly as ci-pack does, then run it."""
-    command = render_command(
-        str(_fence_step_run(".github/ci/legacy-jobs.yml", LIVE_CHECK_STEP)["run"]),
-        base_ref=base_ref,
-        head_ref=head_ref,
-    )
+    """Render the manifest step exactly as ci-pack does, then run it.
+
+    ``command`` replaces the manifest step with another shell body under the
+    same environment and interpreter flags — used only to replay a RETIRED
+    step shape as a positive control.
+    """
+    if command is None:
+        command = render_command(
+            str(_fence_step_run(".github/ci/legacy-jobs.yml", LIVE_CHECK_STEP)["run"]),
+            base_ref=base_ref,
+            head_ref=head_ref,
+        )
     env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
     # Pack jobs export the planner's list — as a FILE handle since 2026-08-14,
     # inline before that. These tests seed their own git history; inheriting the
@@ -393,7 +407,9 @@ def _run_live_check(
     # different variable.
     env.pop("CI_CHANGED_FILES_FILE", None)
     env.pop("CI_CHANGED_FILES_JSON", None)
+    env.pop("GITHUB_HEAD_REF", None)
     env["GITHUB_EVENT_NAME"] = event
+    env["CI_HEAD_REF"] = head_ref
     if extra_env:
         env.update(extra_env)
     # ci-pack runs every legacy step through this exact interpreter invocation.
@@ -504,6 +520,35 @@ def test_live_check_still_blocks_loop_pr_touching_immutable(tmp_path):
         f"fence failed without its fail-closed diagnostic (rc={result.returncode}).\n"
         f"stdout: {result.stdout}\nstderr: {result.stderr}"
     )
+
+
+def test_live_check_uses_event_head_ref_when_renderer_head_ref_is_empty(tmp_path):
+    """A main-owned pre-upgrade executor must retain the PR's branch identity.
+
+    Reusable workflow control is deliberately loaded from ``main``, so the PR that
+    introduces ``CI_HEAD_REF`` cannot use that new wiring to prove itself. GitHub's
+    pull-request environment still carries ``GITHUB_HEAD_REF`` into the sealed pack
+    child. A human branch touching an immutable path must therefore classify as human,
+    not fail closed as an empty/unclassifiable branch during that one-head bootstrap.
+    """
+    work = _seed_repo(tmp_path)
+    _git("checkout", "-b", "human/fence-repair", cwd=work)
+    (work / ".github/workflows").mkdir(parents=True, exist_ok=True)
+    (work / ".github/workflows/ci.yml").write_text("jobs: {}\n")
+    _git("add", "-A", cwd=work)
+    _git("commit", "-m", "human repairs an immutable path", cwd=work)
+
+    result = _run_live_check(
+        work,
+        event="pull_request",
+        head_ref="",
+        extra_env={"GITHUB_HEAD_REF": "human/fence-repair"},
+    )
+    assert result.returncode == 0, (
+        "the pull-request event branch must bridge a pre-upgrade main executor.\n"
+        f"stdout: {result.stdout}\nstderr: {result.stderr}"
+    )
+    assert "PASS: branch 'human/fence-repair'" in result.stdout
 
 
 def test_fences_workflow_live_check_is_pull_request_only():
@@ -625,6 +670,37 @@ def test_read_ci_changed_files_file_statuses(tmp_path):
     assert read_ci_changed_files_file(str(path)) == ("malformed", []), (
         "an empty handle is a transport that lost its payload, not an absent one"
     )
+
+
+def test_nul_git_paths_write_the_canonical_json_transport(tmp_path):
+    """The workflow producer preserves path boundaries without shell splitting."""
+    destination = tmp_path / "nested" / "changed-files.json"
+    paths = [
+        "docs/name with spaces.md",
+        "docs/研究/季度报告 — α.md",
+        "docs/name-with-a-newline\ncontinued.md",
+    ]
+    raw = b"\0".join(os.fsencode(path) for path in paths) + b"\0"
+    assert write_ci_changed_files_file_from_nul(str(destination), raw) == 0
+    assert read_ci_changed_files_file(str(destination)) == ("ok", paths)
+
+
+def test_nul_git_path_writer_fails_closed_on_a_truncated_stream(tmp_path, capsys):
+    destination = tmp_path / "changed-files.json"
+    assert write_ci_changed_files_file_from_nul(
+        str(destination), b"docs/not-terminated.md"
+    ) == 1
+    assert "fail-closed" in capsys.readouterr().err
+    assert not destination.exists()
+
+
+def test_trailer_file_distinguishes_valid_empty_from_broken_transport(tmp_path):
+    trailers = tmp_path / "commit-messages.txt"
+    trailers.write_text("", encoding="utf-8")
+    assert read_trailers_file(str(trailers)) == ("ok", "")
+    assert read_trailers_file(str(tmp_path / "absent.txt")) == ("malformed", "")
+    trailers.write_bytes(b"\xff")
+    assert read_trailers_file(str(trailers)) == ("malformed", "")
 
 
 def test_live_check_uses_the_planner_file_without_origin_main(tmp_path):
@@ -768,3 +844,546 @@ def test_live_check_planner_json_still_blocks_loop_plus_immutable(tmp_path):
     )
     assert result.returncode != 0
     assert "BLOCKED" in result.stderr
+
+
+# ── 8. Required-fence E2BIG transport closure (PR #5898 / run 32546500471) ──
+
+_E2BIG_MIN_PAYLOAD_BYTES = 2_000_000
+
+
+@pytest.fixture(scope="module")
+def oversized_fence_inputs(tmp_path_factory):
+    """Two independently unbounded populations, each larger than exec limits.
+
+    The changed paths include the hostile pathname shapes from the canonical
+    #5608 regression. The commit text simulates thousands of complete commit
+    messages and places the discriminating trailer at the very end, so a
+    truncating or prefix-only implementation cannot pass.
+    """
+    root = tmp_path_factory.mktemp("self-mod-e2big")
+    paths = [
+        f"docs/研究/{index:05d}/sector-rotation-quarterly-snapshot/"
+        f"季度报告 {index} α — final draft.md"
+        for index in range(18_000)
+    ]
+    immutable_paths = [".github/workflows/fences.yml", *paths[1:]]
+    human_trailers = "\n\n".join(
+        f"Synthetic commit {index}\n\nNoise-{index}: {'x' * 180}"
+        for index in range(12_000)
+    ) + "\n"
+    loop_trailers = human_trailers + "Loop-Authored: e2big-regression\n"
+
+    def write_paths(name: str, population: list[str]) -> tuple[Path, Path]:
+        json_path = root / f"{name}.json"
+        nul_path = root / f"{name}.nul"
+        json_path.write_text(
+            json.dumps(population, separators=(",", ":")), encoding="utf-8"
+        )
+        nul_path.write_bytes(
+            b"\0".join(os.fsencode(path) for path in population) + b"\0"
+        )
+        return json_path, nul_path
+
+    files_json, files_nul = write_paths("non-immutable-files", paths)
+    immutable_json, immutable_nul = write_paths(
+        "immutable-files", immutable_paths
+    )
+    human_trailers_file = root / "human-commit-messages.txt"
+    loop_trailers_file = root / "loop-commit-messages.txt"
+    human_trailers_file.write_text(human_trailers, encoding="utf-8")
+    loop_trailers_file.write_text(loop_trailers, encoding="utf-8")
+
+    assert files_json.stat().st_size > _E2BIG_MIN_PAYLOAD_BYTES
+    assert len(human_trailers.encode("utf-8")) > _E2BIG_MIN_PAYLOAD_BYTES
+    return {
+        "root": root,
+        "paths": paths,
+        "immutable_paths": immutable_paths,
+        "files_json": files_json,
+        "files_nul": files_nul,
+        "immutable_json": immutable_json,
+        "immutable_nul": immutable_nul,
+        "human_trailers": human_trailers,
+        "loop_trailers": loop_trailers,
+        "human_trailers_file": human_trailers_file,
+        "loop_trailers_file": loop_trailers_file,
+    }
+
+
+def _run_file_backed_fence(
+    *, branch: str, files_file: Path, trailers_file: Path
+) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [
+            sys.executable,
+            str(FENCE_SCRIPT),
+            "--branch",
+            branch,
+            "--files-file",
+            str(files_file),
+            "--trailers-file",
+            str(trailers_file),
+        ],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+    )
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="execve caps are POSIX")
+def test_retired_argv_shape_reproduces_e2big(oversized_fence_inputs):
+    """A real process launch reproduces the transport class Python never sees."""
+    old_argv = [
+        sys.executable,
+        str(FENCE_SCRIPT),
+        "--branch",
+        "claude/human-looking",
+        "--files",
+        *oversized_fence_inputs["immutable_paths"],
+        "--trailers",
+        oversized_fence_inputs["loop_trailers"],
+    ]
+    with pytest.raises(OSError) as caught:
+        subprocess.run(old_argv, cwd=REPO_ROOT, check=False)
+    assert caught.value.errno == errno.E2BIG, (
+        f"expected E2BIG from the retired argv transport, got {caught.value}"
+    )
+
+
+@pytest.mark.parametrize(
+    "branch,immutable,loop_trailer",
+    [
+        ("claude/human-immutable", True, False),
+        ("metabolism/loop-immutable", True, False),
+        ("claude/trailer-loop-immutable", True, True),
+        ("metabolism/loop-non-immutable", False, False),
+    ],
+)
+def test_large_file_transport_launches_with_identical_classification(
+    oversized_fence_inputs,
+    branch,
+    immutable,
+    loop_trailer,
+):
+    """The repaired child starts and preserves every discriminating verdict."""
+    paths = oversized_fence_inputs[
+        "immutable_paths" if immutable else "paths"
+    ]
+    trailers = oversized_fence_inputs[
+        "loop_trailers" if loop_trailer else "human_trailers"
+    ]
+    expected_rc, expected_message = check(
+        branch=branch,
+        changed_files=paths,
+        trailers_text=trailers,
+    )
+    result = _run_file_backed_fence(
+        branch=branch,
+        files_file=oversized_fence_inputs[
+            "immutable_json" if immutable else "files_json"
+        ],
+        trailers_file=oversized_fence_inputs[
+            "loop_trailers_file" if loop_trailer else "human_trailers_file"
+        ],
+    )
+    assert result.returncode == expected_rc, (
+        f"file-backed fence changed classification or did not launch\n"
+        f"stdout: {result.stdout}\nstderr: {result.stderr}"
+    )
+    assert expected_message in result.stdout + result.stderr
+
+
+def test_file_backed_cli_fails_closed_on_empty_or_malformed_files(tmp_path):
+    trailers = tmp_path / "trailers.txt"
+    trailers.write_text("", encoding="utf-8")
+    for index, raw in enumerate(("", "[]", "null", "{nope", '["",1]')):
+        changed = tmp_path / f"changed-{index}.json"
+        changed.write_text(raw, encoding="utf-8")
+        result = _run_file_backed_fence(
+            branch="claude/unclassifiable",
+            files_file=changed,
+            trailers_file=trailers,
+        )
+        assert result.returncode == 1, raw
+        assert "fail-closed" in result.stderr
+
+    valid_changed = tmp_path / "valid-changed.json"
+    valid_changed.write_text('[".github/workflows/fences.yml"]', encoding="utf-8")
+    for broken in (tmp_path / "absent.txt", tmp_path / "invalid.txt"):
+        if broken.name == "invalid.txt":
+            broken.write_bytes(b"\xff")
+        result = _run_file_backed_fence(
+            branch="claude/unclassifiable",
+            files_file=valid_changed,
+            trailers_file=broken,
+        )
+        assert result.returncode == 1
+        assert "fail-closed" in result.stderr
+
+
+def test_file_backed_cli_accepts_a_valid_empty_trailer_file(tmp_path):
+    changed = tmp_path / "changed.json"
+    changed.write_text('[".github/workflows/fences.yml"]', encoding="utf-8")
+    trailers = tmp_path / "trailers.txt"
+    trailers.write_text("", encoding="utf-8")
+    result = _run_file_backed_fence(
+        branch="claude/human-immutable",
+        files_file=changed,
+        trailers_file=trailers,
+    )
+    assert result.returncode == 0
+    assert "human/operator PR" in result.stdout
+
+
+def test_file_backed_cli_rejects_ambiguous_inline_and_file_inputs(tmp_path):
+    changed = tmp_path / "changed.json"
+    changed.write_text('["docs/a.md"]', encoding="utf-8")
+    trailers = tmp_path / "trailers.txt"
+    trailers.write_text("", encoding="utf-8")
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(FENCE_SCRIPT),
+            "--branch",
+            "claude/ambiguous",
+            "--files-file",
+            str(changed),
+            "--files",
+            "docs/b.md",
+            "--trailers-file",
+            str(trailers),
+            "--trailers",
+            "Loop-Authored: decoy",
+        ],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 1
+    assert "ambiguous input" in result.stderr
+
+
+def _fences_live_step(job_id: str) -> dict:
+    payload = yaml.safe_load(
+        (REPO_ROOT / ".github/workflows/fences.yml").read_text(encoding="utf-8")
+    )
+    steps = payload["jobs"][job_id]["steps"]
+    matches = [step for step in steps if step.get("name") == LIVE_CHECK_STEP]
+    assert len(matches) == 1
+    return matches[0]
+
+
+def _fake_git_for_fences(tmp_path: Path) -> Path:
+    fake_bin = tmp_path / "fake-bin"
+    fake_bin.mkdir()
+    fake_git = fake_bin / "git"
+    fake_git.write_text(
+        """#!/usr/bin/env bash
+set -euo pipefail
+case "${1:-}" in
+  rev-list)
+    printf '%s %s %s\\n' "$FAKE_GIT_MERGE_SHA" "$FAKE_GIT_BASE_SHA" "$FAKE_GIT_HEAD_SHA"
+    ;;
+  merge-base)
+    if [ "${FAKE_GIT_FAIL_MERGE_BASE:-0}" = "1" ]; then exit 1; fi
+    printf '%s\\n' "$FAKE_GIT_BASE_SHA"
+    ;;
+  log)
+    cat "$FAKE_GIT_TRAILERS_FILE"
+    ;;
+  diff)
+    cat "$FAKE_GIT_FILES_NUL_FILE"
+    ;;
+  fetch)
+    exit 0
+    ;;
+  *)
+    printf 'unexpected fake git invocation: %s\\n' "$*" >&2
+    exit 93
+    ;;
+esac
+""",
+        encoding="utf-8",
+    )
+    fake_git.chmod(0o755)
+    return fake_bin
+
+
+def _run_fences_workflow_live_step(
+    tmp_path: Path,
+    *,
+    job_id: str,
+    branch: str,
+    files_nul: Path,
+    trailers_file: Path,
+    fail_merge_base: bool = False,
+) -> subprocess.CompletedProcess:
+    command = render_command(
+        str(_fences_live_step(job_id)["run"]),
+        base_ref="main",
+        head_ref=branch,
+    )
+    fake_bin = _fake_git_for_fences(tmp_path)
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(
+        {
+            "PATH": f"{fake_bin}{os.pathsep}{env['PATH']}",
+            "RUNNER_TEMP": str(tmp_path / "runner-temp"),
+            "GITHUB_SHA": "synthetic-merge",
+            "FAKE_GIT_MERGE_SHA": "synthetic-merge",
+            "FAKE_GIT_BASE_SHA": "tested-base",
+            "FAKE_GIT_HEAD_SHA": "subject-head",
+            "FAKE_GIT_FILES_NUL_FILE": str(files_nul),
+            "FAKE_GIT_TRAILERS_FILE": str(trailers_file),
+            "FAKE_GIT_FAIL_MERGE_BASE": "1" if fail_merge_base else "0",
+        }
+    )
+    return subprocess.run(
+        ["bash", "-eo", "pipefail", "-c", command],
+        cwd=REPO_ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+
+
+@pytest.mark.parametrize("job_id", ["fence-pack", "fork-self-mod-fence"])
+def test_real_workflow_paths_launch_with_both_large_populations(
+    tmp_path,
+    oversized_fence_inputs,
+    job_id,
+):
+    """Both production copies reach policy evaluation with oversized inputs."""
+    result = _run_fences_workflow_live_step(
+        tmp_path,
+        job_id=job_id,
+        branch="claude/human-looking",
+        files_nul=oversized_fence_inputs["immutable_nul"],
+        trailers_file=oversized_fence_inputs["loop_trailers_file"],
+    )
+    assert result.returncode == 1
+    assert "Loop-Authored: commit trailer" in result.stderr, (
+        "the real workflow must launch the checker and classify the complete "
+        f"large payload\nstdout: {result.stdout}\nstderr: {result.stderr}"
+    )
+
+
+def test_bounded_checkout_ancestry_failure_remains_fail_closed(
+    tmp_path,
+    oversized_fence_inputs,
+):
+    result = _run_fences_workflow_live_step(
+        tmp_path,
+        job_id="fence-pack",
+        branch="claude/human-looking",
+        files_nul=oversized_fence_inputs["immutable_nul"],
+        trailers_file=oversized_fence_inputs["human_trailers_file"],
+        fail_merge_base=True,
+    )
+    assert result.returncode == 1
+    assert (
+        "could not establish exact PR ancestry inside the bounded checkout"
+        in result.stderr
+    )
+
+
+# ── 9. The PACKED copy's commit-message population (run 36360866211, PR #8006) ──
+#
+# #6223 moved both fences.yml copies of this live check onto file handles and
+# left the third copy on argv: the legacy-jobs.yml step every ci-pack runs. On
+# 2026-09-28 run 36360866211 (job 108742915933) died there with exit 126,
+# "Argument list too long", before Python started. run_ci_pack had deepened the
+# tested merge to depth 32 to reach a merge base, and origin/main..HEAD then
+# walked ~117 commits (~372 KB of squash-merge PR bodies) into ONE argv string.
+# Run by hand on the PR's real ~12 KB of messages the fence printed PASS: the red
+# was a transport failure, never a fence verdict.
+#
+# These tests drive the REAL packed step (rendered by the production renderer,
+# run under the pack's bash flags) over a REAL git range whose messages exceed
+# this host's single-argument exec ceiling, and require the fence's own verdict.
+
+_LINUX_MAX_ARG_STRLEN_4K_PAGES = 131_072
+_RANGE_COMMITS = 24
+_RANGE_IMMUTABLE_EDIT = ".github/ci/legacy-jobs.yml"
+
+# The tail this change retired, in its exact shape: one unquoted expansion
+# carries the changed-file population, one quoted expansion carries every
+# commit message in the range as a single argv string.
+_RETIRED_PACKED_TAIL = """\
+BRANCH="${CI_HEAD_REF:-${GITHUB_HEAD_REF:-}}"
+FILES=$(git diff --name-only origin/main...HEAD 2>/dev/null || echo "")
+TRAILERS=$(git log --format="%B" origin/main..HEAD 2>/dev/null || echo "")
+python3 scripts/check_self_mod_fence.py \\
+  --branch "$BRANCH" \\
+  --files $FILES \\
+  --trailers "$TRAILERS"
+"""
+
+
+def _single_argument_exec_ceiling() -> int:
+    """Bytes past which ONE argv string cannot reach execve on this host.
+
+    Linux caps each string at MAX_ARG_STRLEN = 32 pages (131,072 bytes on
+    4 KiB pages) independently of ARG_MAX: the production argument was ~372 KB,
+    far under Linux's usual 2 MiB ARG_MAX, and still died. Darwin has no
+    per-string cap, only ARG_MAX over argv and envp together.
+    """
+    if sys.platform.startswith("linux"):
+        return 32 * os.sysconf("SC_PAGE_SIZE")
+    return os.sysconf("SC_ARG_MAX")
+
+
+def _build_oversized_range(root: Path, *, loop_line: bool) -> Path:
+    """A branch whose origin/main..HEAD messages exceed the exec ceiling 3x.
+
+    Many PR-body-sized commits, like the production range. The discriminating
+    line ends the OLDEST commit, which is the last text `git log` prints, so a
+    transport that truncates, keeps a prefix, or reads only the newest commit
+    cannot reproduce the verdict.
+    """
+    work = _seed_repo(root)
+    _git("checkout", "-b", "oversized-range", cwd=work)
+    target = work / _RANGE_IMMUTABLE_EDIT
+    target.parent.mkdir(parents=True, exist_ok=True)
+    per_commit_lines = 3 * _single_argument_exec_ceiling() // _RANGE_COMMITS // 110 + 1
+    message = root / "message.txt"
+    for index in range(_RANGE_COMMITS):
+        body = f"range commit {index}\n\n" + "".join(
+            f"- receipt {index}.{line}: {'x' * 90}\n" for line in range(per_commit_lines)
+        )
+        if index == 0 and loop_line:
+            body += "\nLoop-Authored: packed-range-regression\n"
+        message.write_text(body, encoding="utf-8")
+        if index == 0:
+            target.write_text("jobs: {}\n")
+            _git("add", "-A", cwd=work)
+            _git("commit", "-q", "--cleanup=verbatim", "-F", str(message), cwd=work)
+        else:
+            _git(
+                "commit", "-q", "--allow-empty", "--cleanup=verbatim",
+                "-F", str(message), cwd=work,
+            )
+    return work
+
+
+@pytest.fixture(scope="module")
+def oversized_commit_ranges(tmp_path_factory):
+    ceiling = _single_argument_exec_ceiling()
+    ranges: dict[str, object] = {}
+    for name, loop_line in (("human", False), ("loop", True)):
+        work = _build_oversized_range(
+            tmp_path_factory.mktemp(f"packed-range-{name}"), loop_line=loop_line
+        )
+        messages = subprocess.run(
+            ["git", "log", "--format=%B", "origin/main..HEAD"],
+            cwd=work, check=True, capture_output=True,
+        ).stdout.decode("utf-8")
+        size = len(messages.encode("utf-8"))
+        # The commission's floor AND this host's real ceiling: under either, the
+        # retired transport would launch and these tests would prove nothing.
+        assert size > _LINUX_MAX_ARG_STRLEN_4K_PAGES, (name, size)
+        assert size > ceiling, (name, size, ceiling)
+        ranges[name] = {"work": work, "messages": messages}
+    planner = tmp_path_factory.mktemp("packed-range-planner") / "changed-files.json"
+    planner.write_text(json.dumps([_RANGE_IMMUTABLE_EDIT]), encoding="utf-8")
+    ranges["planner_file"] = planner
+    return ranges
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="execve caps are POSIX")
+def test_retired_packed_tail_dies_before_python_on_the_oversized_range(
+    oversized_commit_ranges,
+):
+    """Positive control: the fixture really kills the shape this change retired.
+
+    Without it, a fixture that shrank under the host ceiling would let the
+    repaired-step tests below pass vacuously. The retired tail must fail the way
+    run 36360866211 did — bash exit 126 before the fence prints any verdict.
+    """
+    result = _run_live_check(
+        oversized_commit_ranges["loop"]["work"],
+        event="pull_request",
+        head_ref="claude/human-looking",
+        command=_RETIRED_PACKED_TAIL,
+    )
+    assert result.returncode == 126, (result.returncode, result.stderr[-2000:])
+    assert "Argument list too long" in result.stderr
+    assert "PASS" not in result.stdout
+    assert "BLOCKED" not in result.stderr
+
+
+@pytest.mark.parametrize("transport", ["planner-file", "git-fallback"])
+@pytest.mark.parametrize(
+    "history,head_ref",
+    [
+        # Human-looking branch; the ONLY loop evidence is the last line of the range.
+        ("loop", "claude/human-looking"),
+        # Human PR touching an immutable path: the fence's normal PASS.
+        ("human", "claude/human-looking"),
+        # Loop namespace: the immutable path must survive the file handle.
+        ("human", "metabolism/loop-branch"),
+    ],
+)
+def test_packed_live_check_classifies_an_oversized_commit_range(
+    tmp_path,
+    oversized_commit_ranges,
+    transport,
+    history,
+    head_ref,
+):
+    """The repaired packed step launches and returns the fence's own verdict.
+
+    ``planner-file`` is the production shape (ci-pack exports the planner's
+    handle, which is where run 36360866211 died); ``git-fallback`` is the
+    unset-planner arm. Both share the commit-message tail.
+    """
+    entry = oversized_commit_ranges[history]
+    expected_rc, expected_message = check(
+        branch=head_ref,
+        changed_files=[_RANGE_IMMUTABLE_EDIT],
+        trailers_text=entry["messages"],
+    )
+    runner_temp = tmp_path / "runner-temp"
+    runner_temp.mkdir()
+    extra_env = {"RUNNER_TEMP": str(runner_temp)}
+    if transport == "planner-file":
+        extra_env["CI_CHANGED_FILES_FILE"] = str(oversized_commit_ranges["planner_file"])
+
+    result = _run_live_check(
+        entry["work"],
+        event="pull_request",
+        head_ref=head_ref,
+        extra_env=extra_env,
+    )
+
+    assert "Argument list too long" not in result.stderr
+    assert result.returncode == expected_rc, (
+        "the packed step must launch the fence and return its verdict on a range "
+        f"past the exec ceiling\nstdout: {result.stdout}\nstderr: {result.stderr[-4000:]}"
+    )
+    assert expected_message in result.stdout + result.stderr
+    assert list(runner_temp.iterdir()) == [], "the step must remove its input handles"
+
+
+def test_packed_live_check_passes_both_populations_only_by_handle():
+    """Pin the absence that closes run 36360866211 in the packed copy.
+
+    A launch test only catches a restored argv while its fixture outgrows the
+    host ceiling, so pin the source itself — the same discipline
+    tests/test_fence_checkout_contract.py applies to both fences.yml copies.
+    Shell variables may still hold a list (bash never execs an assignment);
+    what may not happen is a population expanding into a process argv.
+    """
+    body = str(_fence_step_run(".github/ci/legacy-jobs.yml", LIVE_CHECK_STEP)["run"])
+    assert '--files-file "$FILES_FILE"' in body
+    assert '--trailers-file "$TRAILERS_FILE"' in body
+    # Both arms (planner list and git fallback) write the canonical JSON handle.
+    assert body.count('--write-files-file-from-nul "$FILES_FILE"') == 2
+    assert "git diff --name-only -z" in body
+    assert '> "$TRAILERS_FILE"' in body
+    assert "TRAILERS=$(" not in body
+    inline = re.findall(r"--(?:files|trailers)(?=[\s=])", body)
+    assert not inline, (
+        f"legacy-jobs.yml restored an inline population flag {inline}: every "
+        "changed path and commit message must reach the fence through a file handle"
+    )

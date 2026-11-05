@@ -1,32 +1,32 @@
 {
-  "24fd5d1fb886": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Cyclical + Industrials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Cyclical + Industrials",
-    "score": 68.0
-  },
-  "8d877fc8160e": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Cyclical + Basic Materials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Cyclical + Basic Materials",
-    "score": 59.4
-  },
-  "8fc0dcf3b9d7": {
-    "name_en": "Cross-sector cluster (5 names)",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4\uff085\u53ea\uff09",
-    "score": 78.3
-  },
-  "9a5b79fbd5d2": {
+  "0d96ced662d7": {
     "name_en": "Cross-sector cluster \u00b7 Industrials + Consumer Cyclical",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Consumer Cyclical",
-    "score": 64.2
+    "score": 42.6
   },
-  "eaa9c5d549e3": {
-    "name_en": "Cross-sector cluster \u00b7 Utilities + Industrials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Utilities + Industrials",
-    "score": 68.1
+  "2bc52f195aa4": {
+    "name_en": "Emerging Consumer Defensive cluster",
+    "name_zh": "\u65b0\u5174 Consumer Defensive \u96c6\u7fa4",
+    "score": 47.9
   },
-  "f47f78799d31": {
-    "name_en": "Emerging Industrials cluster",
-    "name_zh": "\u65b0\u5174 Industrials \u96c6\u7fa4",
-    "score": 50.0
+  "382c381207b1": {
+    "name_en": "Emerging Basic Materials cluster",
+    "name_zh": "\u65b0\u5174 Basic Materials \u96c6\u7fa4",
+    "score": 49.5
+  },
+  "4b578667fa71": {
+    "name_en": "Cross-sector cluster \u00b7 Industrials + Consumer Cyclical",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Consumer Cyclical",
+    "score": 45.0
+  },
+  "57deb7a720c8": {
+    "name_en": "Cross-sector cluster \u00b7 Technology + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Technology + Industrials",
+    "score": 46.2
+  },
+  "bbb7d32e69fd": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Basic Materials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
+    "score": 57.2
   }
 }
