@@ -608,7 +608,13 @@
     }
     bindAuthReload();
     if(typeof api.onSubjects==='function')ensure();
-    return{loadCompany:loadCompany,invalidate:function(){epoch++;ticker=''},state:function(){return loadState}};
+    return{loadCompany:loadCompany,invalidate:function(){epoch++;ticker=''},state:function(){return loadState},
+      getResearchContext:function(value){
+        var key=text(value,'').toUpperCase(),record=index&&index[key];
+        if(loadState!=='ok'||!header||header.graph_status!=='ready'||!record)return null;
+        return JSON.parse(JSON.stringify({atlas:{contract:header.contract,content_id:header.content_id,
+          generated_at:header.generated_at,authority:header.authority},record:record}));
+      }};
   };
 
   /* D4 — Company Financial Truth Bridge (IRDM only, frozen golden constant).
