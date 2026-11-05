@@ -3954,14 +3954,30 @@ def _manifest_window(pull_files=("engine/signal_quality.py",), extra_files=()): 
     )
 
 
-def _seed_manifests(freshness, base, tip, *, eligible, base_blob="b" * 40, tip_blob="t" * 40):
-    """Seed both ends of the window and the proof's selection: no reads remain."""
+def _seed_manifests(
+    freshness,
+    base,
+    tip,
+    *,
+    eligible,
+    base_blob="b" * 40,
+    tip_blob="t" * 40,
+    sealed_base=PROOF_BASE_SHA,
+):
+    """Seed the sealed base, the tip and the proof's plan: no reads remain.
+
+    By default the sealed base IS the reported base (main did not move between
+    PR creation and the run); the lag tests pass a newer ``sealed_base``.
+    """
     tip_sha = freshness.commits[0]["sha"]
-    freshness._manifest_blob_shas[PROOF_BASE_SHA] = base_blob
+    freshness._manifest_blob_shas[sealed_base] = base_blob
     freshness._manifest_blob_shas[tip_sha] = tip_blob
-    freshness._manifest_jobs[PROOF_BASE_SHA] = base
+    freshness._manifest_jobs[sealed_base] = base
     freshness._manifest_jobs[tip_sha] = tip
-    freshness._eligible_jobs[4242] = eligible
+    freshness._proof_plans[(4242, EXACT_HEAD_SHA)] = (
+        eligible,
+        sealed_base if eligible is not None else None,
+    )
     return freshness
 
 
@@ -3995,18 +4011,167 @@ def test_a_manifest_edit_to_a_job_the_head_never_ran_keeps_its_proof_current(
     assert "none of them a job this pull request's proof ran (1 selected)" in reason
 
 
-def test_a_byte_identical_manifest_at_both_ends_needs_no_plan_read(monkeypatch):
-    """A revert (or a comment-only edit that round-trips to the same blob) leaves the
-    same object id at both ends: current, and the proof's plan is never fetched."""
+def test_a_byte_identical_manifest_at_the_sealed_base_and_the_tip_is_current(
+    monkeypatch,
+):
+    """A comment-only edit that round-trips to the same blob leaves the same object
+    id at the SEALED base and the tip: current, with no manifest parsed."""
     monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
     freshness = _manifest_window()
     tip_sha = freshness.commits[0]["sha"]
     freshness._manifest_blob_shas[PROOF_BASE_SHA] = "s" * 40
     freshness._manifest_blob_shas[tip_sha] = "s" * 40
+    freshness._proof_plans[(4242, EXACT_HEAD_SHA)] = (frozenset({"a"}), PROOF_BASE_SHA)
     stale, reason = _manifest_verdict(freshness)
     assert stale is False, reason
-    assert "byte-identical" in reason
-    assert 4242 not in freshness._eligible_jobs
+    assert "byte-identical to the sealed proof base's" in reason
+    assert not freshness._manifest_jobs
+
+
+def _lagging_window():
+    """Main moved between PR creation and the run: the check run reports the older
+    base (PROOF_BASE_SHA) while the proof's pack runner read the manifest at the
+    newer sealed base, one commit later. Two manifest commits sit in the window."""
+    freshness = _freshness(
+        commits=[
+            (MAIN_MOVED_AT_1026, [_MANIFEST]),  # tip: restores the edit
+            (MAIN_MOVED_AT_1026, [_MANIFEST]),  # sealed base: the proof ran here
+        ],
+        gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
+    )
+    return freshness, freshness.commits[1]["sha"]
+
+
+def test_a_revert_inside_the_reported_base_lag_cannot_hide_a_job_that_now_selects_the_head(
+    monkeypatch,
+):
+    """Independent review of #10764 (2026-11-05), finding 1. At the reported base
+    `b` selects engine/**; the sealed-base commit narrowed it to docs/** (so the
+    proof never ran `b`); the tip restores engine/**. Reported base and tip are
+    byte-identical, so comparing those two ends would call the head current while
+    `b` selects it now and never ran. The sealed base is the comparison end."""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness, sealed = _lagging_window()
+    tip_sha = freshness.commits[0]["sha"]
+    freshness._manifest_blob_shas[PROOF_BASE_SHA] = "s" * 40
+    freshness._manifest_blob_shas[tip_sha] = "s" * 40
+    _seed_manifests(
+        freshness,
+        base={"a": _exclusive_job(), "b": _exclusive_job(("docs/**",))},
+        tip={"a": _exclusive_job(), "b": _exclusive_job()},
+        eligible=frozenset({"a"}),
+        base_blob="n" * 40,
+        tip_blob="s" * 40,
+        sealed_base=sealed,
+    )
+    stale, reason = _manifest_verdict(freshness)
+    assert stale and "check definitions" in reason, reason
+    assert "legacy job 'b' changed its declared scope" in reason
+    assert "byte-identical" not in reason
+
+
+def test_a_job_removed_before_the_sealed_base_and_restored_after_it_is_an_addition(
+    monkeypatch,
+):
+    """Same lag, second shape: `b` exists at the reported base and the tip but not at
+    the sealed base. Against the sealed base it is an ADDED job: re-prove."""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness, sealed = _lagging_window()
+    _seed_manifests(
+        freshness,
+        base={"a": _exclusive_job()},
+        tip={"a": _exclusive_job(), "b": _exclusive_job(("docs/**",))},
+        eligible=frozenset({"a"}),
+        sealed_base=sealed,
+    )
+    stale, reason = _manifest_verdict(freshness)
+    assert stale and "legacy job 'b' was added" in reason, reason
+
+
+def test_a_sealed_base_newer_than_the_reported_base_scopes_the_edit_exactly(
+    monkeypatch,
+):
+    """The ordinary lag: the proof ran at the sealed base, after which main edited
+    only a job this head never ran. Current, measured from the sealed base."""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness, sealed = _lagging_window()
+    _seed_manifests(
+        freshness,
+        base={"a": _exclusive_job(), "b": _exclusive_job(("docs/**",))},
+        tip={
+            "a": _exclusive_job(),
+            "b": _exclusive_job(("docs/**",), run="python -m pytest tests/test_b2.py -q"),
+        },
+        eligible=frozenset({"a"}),
+        sealed_base=sealed,
+    )
+    stale, reason = _manifest_verdict(freshness)
+    assert stale is False, reason
+    assert f"between the sealed proof base {sealed[:12]}" in reason
+
+
+def test_a_sealed_base_the_window_cannot_place_is_conservative(monkeypatch):
+    """The reported base is in the frozen window but the sealed base is not: the
+    evidence names a main commit this sweep cannot see. Never current."""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _manifest_window()
+    freshness._proof_plans[(4242, EXACT_HEAD_SHA)] = (frozenset({"a"}), "e" * 40)
+    stale, reason = _manifest_verdict(freshness)
+    assert stale and "check definitions" in reason, reason
+    assert "cannot be placed" in reason and "outside the frozen main window" in reason
+
+
+def test_a_sealed_base_older_than_the_reported_base_is_conservative(monkeypatch):
+    """Ancestry runs the other way only when the evidence is not this proof's."""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness, newer = _lagging_window()
+    runs = [
+        _run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742, base_sha=newer)
+    ]
+    freshness._proof_plans[(4242, EXACT_HEAD_SHA)] = (frozenset({"a"}), PROOF_BASE_SHA)
+    stale, reason = freshness.stale_for(_pull(), runs)
+    assert stale and "check definitions" in reason, reason
+    assert "predates its reported base" in reason
+
+
+def test_a_plan_without_a_sealed_base_keeps_the_manifest_edit_conservative(monkeypatch):
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _manifest_window()
+    freshness._proof_plans[(4242, EXACT_HEAD_SHA)] = (frozenset({"a"}), None)
+    stale, reason = _manifest_verdict(freshness)
+    assert stale and "check definitions" in reason, reason
+    assert "sealed base could not be read" in reason
+
+
+def test_a_reordered_manifest_re_proves_every_head(monkeypatch):
+    """Incumbent relative order is a pack partition the runner fails closed on."""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _seed_manifests(
+        _manifest_window(),
+        base={"a": _exclusive_job(), "b": _exclusive_job(("docs/**",))},
+        tip={"b": _exclusive_job(("docs/**",)), "a": _exclusive_job()},
+        eligible=frozenset({"a"}),
+    )
+    stale, reason = _manifest_verdict(freshness)
+    assert stale and "job order changed" in reason, reason
+
+
+def test_a_rate_limited_manifest_read_defers_the_head_instead_of_re_proving_it(
+    monkeypatch,
+):
+    """A quota refusal propagates to the sweep's deferral path; it is never read as
+    stale, which would spend update-branch plus twelve packs on a 403."""
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
+    freshness = _manifest_window()
+    freshness._proof_plans[(4242, EXACT_HEAD_SHA)] = (frozenset({"a"}), PROOF_BASE_SHA)
+
+    def _refuse(_sha):
+        raise MOG.RateLimited("secondary rate limit")
+
+    monkeypatch.setattr(freshness, "manifest_blob_sha", _refuse)
+    with pytest.raises(MOG.RateLimited):
+        _manifest_verdict(freshness)
 
 
 def test_an_added_legacy_job_re_proves_every_head(monkeypatch):
@@ -4140,23 +4305,44 @@ def test_the_proofs_selected_jobs_come_from_its_v1_plan(monkeypatch):
 
     freshness = _manifest_window()
     monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
-    loaded = Loaded({"plan": {"eligible_jobs": ["a", "b"]}})
-    assert freshness.eligible_jobs_of(_pull(), [], loaded) == frozenset({"a", "b"})
-    # Cached per head: a later call never re-reads.
-    assert freshness.eligible_jobs_of(_pull(), [], Loaded(None)) == frozenset({"a", "b"})
-    assert freshness.eligible_jobs_of(_pull(number=7), [], Loaded(None)) is None
-    assert freshness.eligible_jobs_of(_pull(number=8), [], Loaded({"plan": {"eligible_jobs": ["a", 3]}})) is None
+    sealed = "c" * 40
+    loaded = MOG.semantic_proof.LoadedSemanticEvidence(
+        mode="v1", evidence={"plan": {"eligible_jobs": ["a", "b"]}, "base_sha": sealed.upper()}
+    )
+    assert freshness.proof_plan_of(_pull(), [], loaded) == (frozenset({"a", "b"}), sealed)
+    # Cached per (number, head): a later call never re-reads, and another head of
+    # the same number is its own read.
+    assert freshness.proof_plan_of(_pull(), [], Loaded(None)) == (frozenset({"a", "b"}), sealed)
+    other_head = dict(_pull(), head=dict(_pull()["head"], sha="b" * 40))
+    assert freshness.proof_plan_of(other_head, [], Loaded(None)) == (None, None)
+    assert freshness.proof_plan_of(_pull(number=7), [], Loaded(None)) == (None, None)
+    assert freshness.proof_plan_of(
+        _pull(number=8), [], Loaded({"plan": {"eligible_jobs": ["a", 3]}, "base_sha": sealed})
+    ) == (None, None)
+    # A plan without a well-formed sealed base keeps its jobs but no base.
+    assert freshness.proof_plan_of(
+        _pull(number=11), [], Loaded({"plan": {"eligible_jobs": ["a"]}, "base_sha": "short"})
+    ) == (frozenset({"a"}), None)
     # Without evidence in hand the head's own v1 artifact is the source.
     monkeypatch.setattr(
-        MOG, "semantic_evidence_for_head", lambda *_a, **_k: Loaded({"plan": {"eligible_jobs": ["z"]}})
+        MOG,
+        "semantic_evidence_for_head",
+        lambda *_a, **_k: Loaded({"plan": {"eligible_jobs": ["z"]}, "base_sha": sealed}),
     )
-    assert freshness.eligible_jobs_of(_pull(number=9), []) == frozenset({"z"})
+    assert freshness.proof_plan_of(_pull(number=9), []) == (frozenset({"z"}), sealed)
 
     def _refuse(*_a, **_k):
         raise MOG.semantic_proof.SemanticProofError("no artifact")
 
     monkeypatch.setattr(MOG, "semantic_evidence_for_head", _refuse)
-    assert freshness.eligible_jobs_of(_pull(number=10), []) is None
+    assert freshness.proof_plan_of(_pull(number=10), []) == (None, None)
+
+    def _quota(*_a, **_k):
+        raise MOG.RateLimited("secondary rate limit")
+
+    monkeypatch.setattr(MOG, "semantic_evidence_for_head", _quota)
+    with pytest.raises(MOG.RateLimited):
+        freshness.proof_plan_of(_pull(number=12), [])
 
 
 def test_an_exact_proof_base_does_not_reprove_its_own_definition_commit(

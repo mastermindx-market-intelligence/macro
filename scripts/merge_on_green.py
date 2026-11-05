@@ -2110,12 +2110,15 @@ class ProofFreshness:
         self._proof_bound_sha: str | None = None
         # X1 manifest scoping. Commit sha -> manifest blob sha ('' when absent),
         # commit sha -> parsed `jobs`, blob sha -> parsed `jobs` (the frozen tip
-        # is parsed once per sweep), PR number -> the exact proof's selected
-        # legacy jobs (None when no v1 plan can be read).
+        # is parsed once per sweep), (PR number, head sha) -> the exact proof's
+        # v1 plan: its selected legacy jobs and the SEALED base its pack runner
+        # read the manifest at (each None when the plan cannot be read).
         self._manifest_blob_shas: dict[str, str] = {}
         self._manifest_jobs: dict[str, dict[str, dict[str, Any]] | None] = {}
         self._parsed_manifests: dict[str, dict[str, dict[str, Any]] | None] = {}
-        self._eligible_jobs: dict[Any, frozenset[str] | None] = {}
+        self._proof_plans: dict[
+            tuple[Any, str], tuple[frozenset[str] | None, str | None]
+        ] = {}
         self.commit_file_reads = 0
         self._commit_file_page_reads = 0
 
@@ -2866,23 +2869,35 @@ class ProofFreshness:
         self._manifest_jobs[commit_sha] = jobs
         return jobs
 
-    def eligible_jobs_of(
+    def proof_plan_of(
         self,
         pull: dict[str, Any],
         runs: list[dict[str, Any]],
         semantic_evidence: Any | None = None,
-    ) -> frozenset[str] | None:
-        """The legacy jobs this head's exact proof selected, from its v1 plan.
+    ) -> tuple[frozenset[str] | None, str | None]:
+        """This head's exact proof as its v1 plan: ``(selected jobs, sealed base)``.
+
+        The sealed base is ``base_sha`` of the same evidence that carries the
+        plan: ``ci.yml`` seals the tested merge commit's first parent (main at
+        run time), and the loader binds it to the parents GitHub confirms.  It is
+        the commit whose manifest the pack runner read when it selected those
+        jobs.  The check run's ``pull_requests[].base`` is NOT that commit: it is
+        GitHub's lazily refreshed PR snapshot and lags main whenever main moved
+        between PR creation and the run (PR #8844, 28 minutes).  Comparing the
+        manifest from that older base to the tip misses a revert-shaped edit
+        inside the lag (independent review of #10764, 2026-11-05).
 
         A green head keeps its zero-artifact fast path everywhere else in the
         sweep; this read happens only once a manifest edit is in the window,
-        where the alternative is update-branch plus twelve packs.
+        where the alternative is update-branch plus twelve packs.  Keyed by
+        head: a transient read failure on one head never answers for another.
         """
         number = pull.get("number")
-        if number in self._eligible_jobs:
-            return self._eligible_jobs[number]
-        head_sha = str((pull.get("head") or {}).get("sha") or "")
-        answer: frozenset[str] | None = None
+        head_sha = str((pull.get("head") or {}).get("sha") or "").lower()
+        key = (number, head_sha)
+        if key in self._proof_plans:
+            return self._proof_plans[key]
+        answer: tuple[frozenset[str] | None, str | None] = (None, None)
         try:
             loaded = semantic_evidence
             if loaded is None:
@@ -2896,15 +2911,19 @@ class ProofFreshness:
             evidence = getattr(loaded, "evidence", None)
             plan = evidence.get("plan") if isinstance(evidence, dict) else None
             jobs = plan.get("eligible_jobs") if isinstance(plan, dict) else None
+            sealed = str(evidence.get("base_sha") or "").lower() if isinstance(evidence, dict) else ""
             if isinstance(jobs, list) and all(
                 isinstance(job, str) and job for job in jobs
             ):
-                answer = frozenset(jobs)
+                answer = (
+                    frozenset(jobs),
+                    sealed if re.fullmatch(r"[0-9a-f]{40}", sealed) else None,
+                )
         except RateLimited:
             raise
         except (semantic_proof.SemanticProofError, RuntimeError, ValueError, OSError):
-            answer = None
-        self._eligible_jobs[number] = answer
+            answer = (None, None)
+        self._proof_plans[key] = answer
         return answer
 
     def manifest_delta_stales(
@@ -2920,12 +2939,17 @@ class ProofFreshness:
         Before X1 (2026-11-05) one ``legacy-jobs.yml`` edit on main, for any
         job, returned stale for EVERY armed head: each went through
         update-branch and twelve packs on the single render-heavy runner for
-        a definition it never ran. The manifest at the proof base and at the
-        frozen tip are compared job by job; the edit is current for this head
-        only when every changed job is one its proof did not run AND cannot
-        newly select it (exclusive scope on both sides with its selection keys
-        untouched). Every unknown — unreadable manifest, no v1 plan, a head
-        that edits the manifest itself, an added job — stays stale.
+        a definition it never ran. The manifest at the proof's SEALED base
+        (the commit its pack runner read, from the same v1 plan that names the
+        selected jobs) and at the frozen tip are compared job by job; the edit
+        is current for this head only when every changed job is one its proof
+        did not run AND cannot newly select it (exclusive scope on both sides
+        with its selection keys untouched, incumbent order kept). Every
+        unknown — unreadable manifest, no v1 plan or sealed base, a sealed base
+        the window cannot place, a head that edits the manifest itself, an
+        added job — stays stale. ``base_sha`` is the window's reported base;
+        the sealed base must sit at or after it and never outside a window
+        that contains it.
         """
         number = pull.get("number")
         tip_sha = str((self.commits[0].get("sha") if self.commits else "") or "")
@@ -2945,9 +2969,43 @@ class ProofFreshness:
                 "this pull request edits the manifest itself, so its tested "
                 "manifest is not main's"
             )
+        eligible, sealed_base = self.proof_plan_of(pull, runs, semantic_evidence)
+        if eligible is None:
+            return True, (
+                "the proof's selected legacy jobs could not be read from v1 "
+                "semantic evidence, so the edit cannot be scoped"
+            )
+        if not sealed_base:
+            return True, (
+                "the proof's sealed base could not be read from v1 semantic "
+                "evidence, so the manifest it ran against is unknown"
+            )
+        positions = {
+            str(commit.get("sha") or "").lower(): index
+            for index, commit in enumerate(self.commits)
+        }
+        reported_index = positions.get(str(base_sha).lower())
+        sealed_index = positions.get(sealed_base)
+        if reported_index is not None and sealed_index is None:
+            return True, (
+                f"the proof's sealed base {sealed_base[:12]} is outside the frozen "
+                f"main window that holds its reported base {base_sha[:12]}, so the "
+                "manifest it ran against cannot be placed"
+            )
+        if (
+            reported_index is not None
+            and sealed_index is not None
+            and sealed_index > reported_index
+        ):
+            return True, (
+                f"the proof's sealed base {sealed_base[:12]} predates its reported "
+                f"base {base_sha[:12]}, so the manifest it ran against cannot be placed"
+            )
         try:
-            base_blob = self.manifest_blob_sha(base_sha)
+            base_blob = self.manifest_blob_sha(sealed_base)
             tip_blob = self.manifest_blob_sha(tip_sha)
+        except RateLimited:
+            raise  # a quota refusal defers the head; it never mutates it
         except (RuntimeError, OSError, ValueError) as exc:
             return True, f"the manifest could not be read at both ends of the window ({exc})"
         if not base_blob or not tip_blob:
@@ -2955,18 +3013,14 @@ class ProofFreshness:
         if base_blob == tip_blob:
             return False, (
                 f"the legacy manifest at the frozen tip {tip_sha[:12]} is "
-                f"byte-identical to the proof base's {base_sha[:12]}, so the "
-                "checks it ran are the checks that run now"
-            )
-        eligible = self.eligible_jobs_of(pull, runs, semantic_evidence)
-        if eligible is None:
-            return True, (
-                "the proof's selected legacy jobs could not be read from v1 "
-                "semantic evidence, so the edit cannot be scoped"
+                f"byte-identical to the sealed proof base's {sealed_base[:12]}, so "
+                "the checks it ran are the checks that run now"
             )
         try:
-            base_jobs = self.manifest_jobs_at(base_sha)
+            base_jobs = self.manifest_jobs_at(sealed_base)
             tip_jobs = self.manifest_jobs_at(tip_sha)
+        except RateLimited:
+            raise
         except (RuntimeError, OSError, ValueError) as exc:
             return True, f"the manifest could not be parsed at both ends of the window ({exc})"
         if base_jobs is None or tip_jobs is None:
@@ -3003,11 +3057,20 @@ class ProofFreshness:
                     f"legacy job {job_id!r} changed its declared scope, so it may "
                     "now select this pull request"
                 )
+        # The pack runner freezes incumbent relative order (a reorder is a
+        # repartition it fails closed on); the sweeper is no looser.
+        common_before = [job_id for job_id in base_jobs if job_id in tip_jobs]
+        common_after = [job_id for job_id in tip_jobs if job_id in base_jobs]
+        if common_before != common_after:
+            return True, (
+                "the legacy manifest's job order changed, which repartitions the "
+                "packs this pull request's proof ran"
+            )
         return False, (
-            f"{len(changed)} legacy job definition(s) changed between the proof "
-            f"base {base_sha[:12]} and the frozen tip {tip_sha[:12]}, none of them "
-            f"a job this pull request's proof ran ({len(eligible)} selected) and "
-            "none able to select it now"
+            f"{len(changed)} legacy job definition(s) changed between the sealed "
+            f"proof base {sealed_base[:12]} and the frozen tip {tip_sha[:12]}, none "
+            f"of them a job this pull request's proof ran ({len(eligible)} selected) "
+            "and none able to select it now"
         )
 
     def stale_for(
