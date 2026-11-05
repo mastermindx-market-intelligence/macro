@@ -1,0 +1,23 @@
+{
+  "operation": "prophet-current-main-integration-20261105-v1",
+  "before": "07dfce74bb28b0391c7ac4d8705d58ce64b6997a",
+  "incoming": "008d4015fef2655a98d33dfd5c30d3cb600e2271",
+  "head": "9a8a28c557717441d2c5ef5529dad9fc7445e7b4",
+  "resolved_paths": [
+    "site/premiumdata/us_stocks.json",
+    "site/us_stocks.html"
+  ],
+  "resolution": "preserve incoming generated pair temporarily; native frozen-source regeneration owed before publication",
+  "protected_source_sha256": {
+    "templates/prophet_save.js": "63364e5bf444b4ebcd3ca7689362b7f393a64ea0b5d9539445c14ba4631fa193",
+    "site/prophet_save.js": "63364e5bf444b4ebcd3ca7689362b7f393a64ea0b5d9539445c14ba4631fa193",
+    "tests/test_prophet_save_composition.py": "20a03bb1339af2d06753beaa0f18d957f60f71bb027097e8c5e596e65ccf980d",
+    ".github/ci/legacy-jobs.yml": "852ae0e785f518614161a2a92d4b41803910f94fa6e97ab79c1ecca99c910429",
+    "tests/test_ci_pack.py": "12613af7d6157ee61e2b8756332d419f80edf3342180bf5375c7ea38e24c6413"
+  },
+  "merge_stdout": "Auto-merging site/premiumdata/us_stocks.json\nCONFLICT (content): Merge conflict in site/premiumdata/us_stocks.json\nwarning: Cannot merge binary files: site/us_stocks.html (HEAD vs. 008d4015fef2655a98d33dfd5c30d3cb600e2271)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\nAutomatic merge failed; fix conflicts and then commit the result.\n",
+  "merge_stderr": "",
+  "elapsed_seconds": 38.559,
+  "worktree_clean": true,
+  "recorded_at": "2026-11-05T05:27:12.890675+00:00"
+}
