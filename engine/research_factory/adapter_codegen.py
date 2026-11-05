@@ -8,7 +8,7 @@ in the existing prefix driver; returned engineering observations grant nothing.
 from dataclasses import dataclass, field, replace
 import hashlib
 
-from engine.research_codegen import bridge, prefix_driver, staging_accounting, transport
+from engine.research_codegen import bridge, prefix_driver, staging_accounting, plan_engine_provider
 from engine.research_factory.review_queue import diagnostic_review_packet
 
 
@@ -78,7 +78,7 @@ def _preflight(variants, configurations, expected_generation, commission, engine
         _require(variant.expected in ("diagnostic", "scripted_malformed_output"),
                  "UNKNOWN_ENGINEERING_EXPECTATION")
         if providers:
-            _require(type(engine) is transport.PlanBoundEngineProvider, "EXACT_TEST_PROVIDER_REQUIRED")
+            _require(type(engine) is plan_engine_provider.PlanBoundEngineProvider, "EXACT_TEST_PROVIDER_REQUIRED")
         else:
             _require(engine is not None and not callable(engine)
                      and callable(getattr(engine, "run", None)), "TEST_ENGINE_REQUIRED")

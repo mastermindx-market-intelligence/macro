@@ -26,6 +26,7 @@ import time
 
 from . import bridge as bridge_module
 from . import transport as transport_module
+from .plan_engine_provider import PlanBoundEngineProvider
 from .bridge import BoundBytes
 from .output_contract import validate_output_envelope
 
@@ -467,7 +468,7 @@ def run_prefix_driver(prepared, *, source, spec, engine=None, engine_provider=No
     _require(engine is not None or engine_provider is not None, "TRANSPORT_ENGINE_REQUIRED")
     _require((engine is None) != (engine_provider is None), "ONE_TRANSPORT_SOURCE_REQUIRED")
     if engine_provider is not None:
-        _require(type(engine_provider) is transport_module.PlanBoundEngineProvider,
+        _require(type(engine_provider) is PlanBoundEngineProvider,
                  "EXACT_PLAN_PROVIDER_REQUIRED")
     else:
         _require(not callable(engine) and callable(getattr(engine, "run", None)),

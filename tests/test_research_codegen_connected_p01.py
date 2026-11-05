@@ -14,7 +14,7 @@ import os
 import pytest
 
 from engine import trial_ledger
-from engine.research_codegen import accounting_contract, contracts
+from engine.research_codegen import accounting_contract, contracts, plan_engine_provider
 from engine.research_codegen import bridge as b, prefix_driver as pd
 from engine.research_codegen import staging_accounting as sa
 from tests import test_research_codegen_prefix_driver as pf
@@ -348,7 +348,7 @@ def test_application_cycle_plan_providers_join_real_consumers_without_activation
         def receipt(plan, cid):
             retained.add((plan.operation_id, cid))
             return True
-        return pf.tp.PlanBoundEngineProvider(executor_for_plan=factory, retain_container=receipt)
+        return plan_engine_provider.PlanBoundEngineProvider(executor_for_plan=factory, retain_container=receipt)
     providers = tuple(provider(i) for i in range(2))
     result = cycle.run_staged_cycle(**case[3], variants=_cycle_variants(case),
                                      synthetic_test_providers=providers)
@@ -374,7 +374,7 @@ def test_application_cycle_provider_unknown_stops_selection_and_preserves_accoun
     def factory(plan):
         selected.append(plan)
         return Unknown(case)
-    provider = pf.tp.PlanBoundEngineProvider(executor_for_plan=factory,
+    provider = plan_engine_provider.PlanBoundEngineProvider(executor_for_plan=factory,
                                             retain_container=lambda p, c: True)
     result = cycle.run_staged_cycle(**case[3], variants=_cycle_variants(case),
                                      synthetic_test_providers=(provider, provider))
@@ -388,7 +388,7 @@ def test_application_cycle_provider_unknown_stops_selection_and_preserves_accoun
 def test_application_cycle_provider_map_is_explicit_and_default_remains_dormant(connected_case):
     case = connected_case
     variants = _cycle_variants(case)
-    provider = pf.tp.PlanBoundEngineProvider()
+    provider = plan_engine_provider.PlanBoundEngineProvider()
     for sources in ({"synthetic_test_engines": _cycle_engines(case),
                      "synthetic_test_providers": (provider, provider)},
                     {"synthetic_test_providers": (provider, object())}):

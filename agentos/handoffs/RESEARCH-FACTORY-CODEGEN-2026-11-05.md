@@ -9,7 +9,7 @@ mission: Deliver isolated original research features through causal inputs, exis
 state_before: Original31-package programme recovered against Macro2498181e; component acceptance preserved,
   real P01 incomplete; original V4 and worktree effects remain UNKNOWN.
 changed:
-- path: engine/research_codegen/transport.py
+- path: engine/research_codegen/plan_engine_provider.py
   what: P2.T6.S2 adds canonical single-use per-plan engine selection to the existing prefix and staged
     synthetic caller; explicit injected executor and CID receipt required, no issuer or activation.
 - path: engine/research_factory/adapter_codegen.py
@@ -27,6 +27,12 @@ changed:
     consumers; pure declaration helper does not fabricate pre-stage accounting. All observations remain
     UNKNOWN/unattested and authority false.
 verified:
+- claim: Original qualification transport preimage and source contract preserved
+  command: python3 -m pytest -q tests/test_research_codegen_transport.py tests/test_research_codegen_prefix_driver.py
+    tests/test_research_codegen_connected_p01.py scripts/research_codegen_qualification/runtime/tests
+  result: 930 passed, 4 platform skips, 67 subtests. Transport restored byte-for-byte to pinned b6d36717;
+    provider classes extracted unchanged into a canonical importing module. Qualification pins/manifests
+    and fixed-workload sources unchanged; no runtime effects or new qualification claim.
 - claim: Per-plan transport selection reaches the existing staged review consumer
   command: python3 -m pytest -q tests/test_research_codegen_transport.py tests/test_research_codegen_prefix_driver.py
     tests/test_research_codegen_connected_p01.py
@@ -55,6 +61,9 @@ unverified:
 - Hosted source CI/merge and postmerge source consumer for this new adapter increment
 - Actual P01, containment, authenticated candidate workflow and scientific acceptance
 unresolved:
+- CI42037040984 on69a88a failed pack5 because the provider addition changed byte-pinned transport.py.
+  Observer58313 consumed/closed. Repair isolates the provider and restores the original transport preimage;
+  the changed head requires new review and natural CI, without any hash-pin waiver.
 - PR10758 original CI42019121485 completed failure; observer87871 consumed. Eleven packs passed;
   pack2 failed the shared board-cap assertion on candidate and base. Repair10755 then merged at
   d7843f7f37b45072a17aa341c6789bcf51b295f8 after independent approval5785274257. Its protected
