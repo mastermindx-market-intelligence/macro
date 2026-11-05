@@ -1,0 +1,39 @@
+diff --git a/tests/test_ci_pack.py b/tests/test_ci_pack.py
+index a20ef9316235..474c141da00a 100644
+--- a/tests/test_ci_pack.py
++++ b/tests/test_ci_pack.py
+@@ -5466,9 +5466,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
+ # all ten packs. Protected ceilings already cover this tree: no extra funding.
+ # Keep every job/pack/runtime limit and selection rule unchanged.
+ PACKING_PROBES = (
+-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+-    ("engine/prophet/plan_book.py", 131, 5_668),
++    ("templates/index.html", 137, 5_918),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
++    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
++    ("engine/prophet/plan_book.py", 131, 5_674),
+ )
+ # Twelve packs per shape was the pre-curation measurement.
+ PACKING_PROBE_MAX_PACKS = 10
+@@ -5477,6 +5477,21 @@ PACKING_PROBE_MAX_PACKS = 10
+ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
+     """The measured before/after this wave exists to produce.
+ 
++    Prophet #9495 CI registration (2026-11-05): canonical paired manifests
++    at f3c79cfed262 and parent39f792bb3d09 on their identical product/source
++    graph, using the unchanged run_ci_pack owner. Measurement SHA256
++    bafd5037a9560b933634237a10e6555abd2bcdecc9e7b1bb7c2582ba987d4266:
++    index137jobs/5912->5918, free137jobs/5927->5933, Prophet131jobs/5668->5674;
++    all ten packs, identical selected IDs, no entrants or exits. Registering
++    the required suites changes selected prophet-lab64->66 and
++    unrun-grading-board40->44; washout-turn-organ137->139 is unselected by
++    all three probes. Command counts and length buckets do not change.
++    Re-base only the three estimated-weight ceilings to these exact values.
++    These are planner estimates, not measured execution seconds. Existing
++    job-count, pack, timeout and admission bounds are unchanged. Raw paired
++    proof: mockups/evidence/prophet-opportunity-workspace/
++    ci-weight-calibration-20261105/paired-measurement.json.
++
+     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
+     candidate 5f0f047b160b against real base b4df44260aef, using the same
+     run_ci_pack blob 3cbed589. Comparison SHA256

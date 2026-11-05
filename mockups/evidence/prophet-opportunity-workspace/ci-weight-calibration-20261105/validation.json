@@ -1,0 +1,17 @@
+{
+  "schema": "prophet.ci_packing_calibration_validation.v1",
+  "parent_head": "f3c79cfed26286c25592e487939a59fa2dbfc7ec",
+  "measurement_sha256": "bafd5037a9560b933634237a10e6555abd2bcdecc9e7b1bb7c2582ba987d4266",
+  "source_sha256": "12613af7d6157ee61e2b8756332d419f80edf3342180bf5375c7ea38e24c6413",
+  "argv": [
+    "/home/ubuntu0/lanes/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+    "-q"
+  ],
+  "started_at": "2026-11-05T05:05:18.340952+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 85.973,
+  "completed_at": "2026-11-05T05:06:44.314411+00:00"
+}
