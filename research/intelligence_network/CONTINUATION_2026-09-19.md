@@ -1,5 +1,17 @@
 # Intelligence Network: measured continuation and delivery contract
 
+## Integration qualification — 2026-11-05
+
+This is the dated September 19 research and preparation record. Its Chairman commission, role attribution, procedure pin, linked-carrier observations, rights/mailbox findings, browser limitations and verification commands describe that original observation. Current Chairman intent and protected source law govern any new action; this packet grants no current runtime admission, writer custody, rights expansion or release of a linked hold.
+
+The original source/census hashes and two frozen aggregate receipts are retained. The census was not rerun. Historical standalone test commands below refer to the original candidate. For current integration, all 24 audit cases now live in `tests/test_altdata_reboot_families.py` under `test_demand_audit_` names; select them with `python -m pytest tests/test_altdata_reboot_families.py -q -k demand_audit`. All original assertions and parametrizations are preserved.
+
+The unchanged registered command is `python -m pytest tests/test_altdata_reboot_families.py tests/test_altdata_ledger_lane_gate.py -q`. Against main `17b30cd4d9411d60663062691cfb3a005d2ae924`, it passed 101 tests with one existing infinite-counter RuntimeWarning and zero skips. The exclusive `qledger-cluster-honest-ci` owner gains the exact `research/intelligence_network/demand_audit.py` path; its commands, dependencies and gate remain unchanged. Fresh exact-head CI and merge-controller acceptance remain separate from this local proof.
+
+The September linked-carrier table is historical. [#7361](https://github.com/mastermindx-market-intelligence/macro/pull/7361) subsequently merged. [#7305's consumed source blocker](https://github.com/mastermindx-market-intelligence/macro/pull/7305#issuecomment-5746443447) and its original preparation effect remain with that carrier; this disjoint diagnostic clears neither. [#7175](https://github.com/mastermindx-market-intelligence/macro/pull/7175) retains its separate records-qualified controller admission. No new instruction or second writer is assigned to either carrier.
+
+Recovery source: [Mastermind#2028](https://github.com/mastermindx-market-intelligence/Mastermind/issues/2028), operation `github-pr-sweep-2028-c4`. No new provider acquisition, ranking vote, trade authority, commercial permission or authenticated production acceptance is asserted.
+
 ## Mission and acceptance boundary
 
 The Chairman commissioned Sol as meta-CEO of the Intelligence Hub modernization on 2026-09-19 and then instructed continuation. The mission is better root-level data, economic understanding, synthesis, graph use, validated predictions and user workflow, not a dashboard facelift. This record preserves that scope without replacing incumbent owners.
