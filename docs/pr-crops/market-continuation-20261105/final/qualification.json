@@ -1,0 +1,41 @@
+{
+  "parent_head": "c62a79fad9272afcffafb13e8fd0d17eb45b8dcb",
+  "incoming_main": "80136935b4d28caeda6c6a50eb385797190fdc32",
+  "input_before": "6c4e3c5cc3bd86265b7c34b964829f495f63147e59e005ff0ee8baecba55ceb7",
+  "steps": [
+    {
+      "name": "render",
+      "returncode": 0,
+      "log": "docs/pr-crops/market-continuation-20261105/final/render.log"
+    },
+    {
+      "name": "market-tests",
+      "returncode": 0,
+      "log": "docs/pr-crops/market-continuation-20261105/final/market-tests.log"
+    },
+    {
+      "name": "design-ratchet",
+      "returncode": 0,
+      "log": "docs/pr-crops/market-continuation-20261105/final/design-ratchet.log"
+    },
+    {
+      "name": "visual-evidence",
+      "returncode": 0,
+      "log": "docs/pr-crops/market-continuation-20261105/final/visual-evidence.log"
+    },
+    {
+      "name": "browser",
+      "returncode": 0,
+      "log": "docs/pr-crops/market-continuation-20261105/final/browser.log"
+    }
+  ],
+  "input_after": "6c4e3c5cc3bd86265b7c34b964829f495f63147e59e005ff0ee8baecba55ceb7",
+  "input_unchanged": true,
+  "source_sha256": {
+    "scripts/build_market_structure_page.py": "96ed6d48f7e45f474f83ed863fe0198c24dda1eb697350944db751ac5c0aaac1",
+    "templates/market_structure.html.j2": "4bf09180efab5115ad5bb40690820eecf71fbbb6807260db123bed871cebd9a1",
+    "scripts/verify_d06_macro.py": "6da49771be84d7a69cf4e31ea443e1d38ad183710cdc8aaf820f5041f2184ace",
+    "tests/test_d06_market_structure.py": "deaf99810718e97aa596a0618753ab2c47eb5b39094b01d2b5d6814550f304b1",
+    "site/market_structure.html": "f201727f5bc9384f06d5f896423df9be0a9307247de41511095871d5dbec9f28"
+  }
+}

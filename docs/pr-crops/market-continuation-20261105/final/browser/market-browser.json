@@ -1,0 +1,219 @@
+{
+  "status": "passed",
+  "surface": "market",
+  "matrix": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 1440,
+        "scroll": 1440,
+        "wrap": 1180
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-1440-light-en.png",
+        "sha256": "620edc1d1547ba4e5254db9bdd2f0ab7fe3ab8b3185cee1869a0c0575821b1ca"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "metrics": {
+        "width": 1440,
+        "scroll": 1440,
+        "wrap": 1180
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-1440-dark-zh.png",
+        "sha256": "47a9355124f7566d78673dbd441da195cd2e0f862ff8a6d66bc24fb4846d0c2c"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "metrics": {
+        "width": 1440,
+        "scroll": 1440,
+        "wrap": 1180
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-1440-dark-en.png",
+        "sha256": "156bc805c71ad7fe391a14678d5f4fc93d1587184429276e0da062edd8ca60c8"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "metrics": {
+        "width": 1440,
+        "scroll": 1440,
+        "wrap": 1180
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-1440-light-zh.png",
+        "sha256": "a63b647eddaf51d42cfe9a7b015aedba08be4f77d334f61f1c5df36483dd8374"
+      }
+    },
+    {
+      "width": 720,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 720,
+        "scroll": 720,
+        "wrap": 720
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-720-light-en.png",
+        "sha256": "7b2bd8048b589f870db87db13d7d16cbcb100238133ca2ff4f85b42f43e2d5ef"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "metrics": {
+        "width": 390,
+        "scroll": 390,
+        "wrap": 390
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-390-dark-en.png",
+        "sha256": "bffea091038fe20921635955414883a454abff46f9c4065713f8ebfc093a4506"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "metrics": {
+        "width": 390,
+        "scroll": 390,
+        "wrap": 390
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-390-light-zh.png",
+        "sha256": "ec48dcc18ced8de319c647c5a75dbc5251c398c8550defcf6c11c4368de594e0"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 390,
+        "scroll": 390,
+        "wrap": 390
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-390-light-en.png",
+        "sha256": "3558897e05a7f35c8d847af32f317900cce1ce18501b47fd5d2cb3098ec7c569"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "metrics": {
+        "width": 390,
+        "scroll": 390,
+        "wrap": 390
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-390-dark-zh.png",
+        "sha256": "dbb01d1e93397f8d609ab4997306de31ac5b17991c45657bc0fcfd2a75eca507"
+      }
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 320,
+        "scroll": 320,
+        "wrap": 320
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-320-light-en.png",
+        "sha256": "8294c930072c4b096210afae5eea7def6fba69a581ca7951e79a23f1a29d1be9"
+      }
+    }
+  ],
+  "edge_cases": [
+    {
+      "case": "gaps-zero-singleton-outer-only",
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-partial-outer-only.png",
+        "sha256": "6aaa383521213dbaab99a7397257d9244ef50bf9ea3bf1d62a279688d7342b7d"
+      }
+    },
+    {
+      "case": "all-missing-and-language-change",
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-missing-zh.png",
+        "sha256": "58d4a777f5bc568d82430b9953e7f0704c1db02d879a4724b428e53cf00818d2"
+      }
+    }
+  ],
+  "scope": "Actual owned generated page plus explicit missing-data fixtures.",
+  "actual_session_gaps": {
+    "observations": 75,
+    "missing_sessions": [
+      "2026-07-02",
+      "2026-07-06",
+      "2026-07-10",
+      "2026-07-14",
+      "2026-07-15",
+      "2026-07-16",
+      "2026-07-27",
+      "2026-07-30",
+      "2026-08-03",
+      "2026-08-04",
+      "2026-08-05",
+      "2026-08-11",
+      "2026-08-14",
+      "2026-09-01",
+      "2026-09-02",
+      "2026-09-24",
+      "2026-10-12",
+      "2026-10-13",
+      "2026-10-15",
+      "2026-10-16",
+      "2026-10-19",
+      "2026-10-27",
+      "2026-10-28",
+      "2026-10-29"
+    ],
+    "source_values_unchanged": true
+  },
+  "source_hashes": {
+    "scripts/verify_d06_macro.py": "6da49771be84d7a69cf4e31ea443e1d38ad183710cdc8aaf820f5041f2184ace",
+    "templates/market_structure.html.j2": "4bf09180efab5115ad5bb40690820eecf71fbbb6807260db123bed871cebd9a1",
+    "templates/stage_analysis.html.j2": "fe8307c9ceb5b6f562ec3d51541f516c1f0a92ce00dba5611b9d98ef8fa2f72b",
+    "templates/spvector.html.j2": "8c6ea6ddfcd23fd4444230db9cecf65b60613338dbfac344a7641e1755d8c15f"
+  }
+}

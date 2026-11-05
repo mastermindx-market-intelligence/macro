@@ -270,9 +270,9 @@ def test_exact_csv_preserves_zero_and_missing_and_rejects_formula_strings():
         exact:exactObservationRows(rows,9999,observationColumns.gex),unchanged:JSON.stringify(rows)===before}));
     """)
     parsed = list(csv.reader(io.StringIO(got["csv"])))
-    assert parsed[1] == ["2026-11-02", "-44.185835", "0", ""]
-    assert parsed[2] == ["", "", "", ""]
-    assert parsed[3] == ["", "0", "7568.9199", "7654.546915"]
+    assert parsed[1] == ["2026-11-02", "-44.185835", "0", "", "Supplied"]
+    assert parsed[2] == ["", "", "", "", "Supplied"]
+    assert parsed[3] == ["", "0", "7568.9199", "7654.546915", "Supplied"]
     assert parsed[1:] == got["exact"] and got["unchanged"]
 
 
@@ -284,3 +284,72 @@ def test_exact_observations_follow_each_selected_window_and_source_units():
     """)
     assert len(got["short"]) == 21 and len(got["all"]) == 30
     assert got["short"][0][1] == "9" and got["short"][-1][1] == "16.39"
+
+
+def test_omitted_nyse_sessions_become_unavailable_slots_and_break_price_paths():
+    from scripts.build_market_structure_page import _chart_history
+    source = [
+        {"date": "2026-10-30", "net_gex_bn": -2, "spot": 112, "flip": 102, "regime": "short"},
+        {"date": "2026-10-26", "net_gex_bn": 0, "spot": 100, "flip": 99, "regime": "long"},
+    ]
+    before = json.dumps(source)
+    rows = _chart_history(source, ("net_gex_bn", "spot", "flip"))
+    assert [row["date"] for row in rows] == [f"2026-10-{day}" for day in range(26, 31)]
+    assert rows[0]["net_gex_bn"] == 0 and rows[0]["regime"] == "long"
+    assert rows[-1]["regime"] == "short"
+    assert all(row["_missing_session"] and row["net_gex_bn"] is None
+               and row["spot"] is None and row["flip"] is None for row in rows[1:4])
+    assert json.dumps(source) == before
+    got = _chart_js("global.MSP_GAMMA_HIST=" + json.dumps(rows) + """;
+      drawGex(126); console.log(JSON.stringify({gex:nodes['#gex-chart'].children,price:nodes['#spx-flip-chart'].children}));
+    """)
+    assert len([n for n in got["gex"] if n["tag"] == "rect"]) == 2
+    assert len([n for n in got["price"] if n["tag"] == "circle"]) == 4
+    assert not any(n["tag"] == "path" for n in got["price"])
+
+
+def test_holidays_and_weekends_are_not_fabricated_missing_sessions():
+    from scripts.build_market_structure_page import _chart_history
+    source = [{"date": day, "spot": 100} for day in
+              ["2026-07-06", "2026-07-02", "2026-07-03", "2026-07-04"]]
+    rows = _chart_history(source, ("spot",))
+    assert [r["date"] for r in rows] == ["2026-07-02", "2026-07-06"]
+    assert not any(r["_missing_session"] for r in rows)
+
+
+def test_session_expansion_is_bounded_after_expansion_and_deduplicates_without_zero_fill():
+    from scripts.build_market_structure_page import _chart_history
+    source = [{"date": "2006-01-03", "spot": 1}, {"date": "2026-10-30", "spot": 5},
+              {"date": "2026-10-30", "spot": False}, {"date": "bad", "spot": 4}, None]
+    rows = _chart_history(source, ("spot",))
+    assert len(rows) == 500
+    assert rows[-1]["date"] == "2026-10-30"
+    assert rows[-1]["spot"] is None and rows[-1]["_missing_session"] is False
+    assert all(r["spot"] is None for r in rows)
+    assert all(r["_missing_session"] for r in rows[:-1])
+    assert _chart_history("bad shape", ("spot",)) == []
+
+
+def test_gap_counts_and_csv_distinguish_reported_records_from_missing_sessions():
+    source = (ROOT / "templates/market_structure.html.j2").read_text()
+    summary = source[source.index("function rangeSummary("):source.index("function paintRangeSummary(")]
+    got = _observation_js(summary + """
+      const rows=[{date:'2026-10-26',net_gex_bn:0,spot:100,flip:99},
+        {date:'2026-10-27',_missing_session:true,net_gex_bn:null,spot:null,flip:null},
+        {date:'2026-10-28',net_gex_bn:2,spot:110,flip:100}];
+      console.log(JSON.stringify({summary:rangeSummary(rows,126),csv:observationsCsv(rows,126,observationColumns.gex)}));
+    """)
+    assert got["summary"]["en"] == "2 observations · 2026-10-26 — 2026-10-28 · 1 missing session"
+    assert got["summary"]["zh"] == "2个观测 · 2026-10-26 — 2026-10-28 · 1个交易日暂缺"
+    assert '"2026-10-27","","","","Missing session"' in got["csv"]
+
+
+def test_missing_sessions_are_disclosed_once_and_partial_supplied_values_stay_explicit():
+    got = _chart_js("""
+      const rows=[{spot:100,flip:99},{spot:null,flip:null,_missing_session:true},{spot:101,flip:100}];
+      const complete=seriesAvailability(rows,[['spot','SPX','标普'],['flip','Flip','翻转点']]);
+      rows[2].spot=null;
+      console.log(JSON.stringify({complete,partial:seriesAvailability(rows,[['spot','SPX','标普'],['flip','Flip','翻转点']])}));
+    """)
+    assert got["complete"] == {"en": "", "zh": ""}
+    assert got["partial"]["en"] == "SPX: 1/2 values; gaps are unavailable"

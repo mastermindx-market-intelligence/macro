@@ -351,7 +351,7 @@ html[data-theme="light"] :is(
 {% macro exact_values(key) -%}
 <details class="msp-observations" id="{{ key }}-observations">
   <summary id="{{ key }}-values-title">{{ t('Exact values and download', '精确数值与下载') }}</summary>
-  <p class="sec-foot">{{ t('Values match the selected chart window. Unavailable values stay blank in the CSV; zero remains zero.', '数值与所选图表窗口一致。CSV中的暂缺值保留为空，零值仍为零。') }}</p>
+  <p class="sec-foot">{{ t('Values match the selected chart window, including missing trading-session rows. Unavailable values stay blank in the CSV; zero remains zero.', '数值与所选图表窗口一致，并包含缺失交易日的记录。CSV中的暂缺值保留为空，零值仍为零。') }}</p>
   <button type="button" data-export-series="{{ key }}">{{ t('Download CSV', '下载CSV') }}</button>
   <div class="msp-table-scroll" tabindex="0" role="region" aria-labelledby="{{ key }}-values-title">
     <table><caption id="{{ key }}-values-caption"></caption><thead></thead><tbody></tbody></table>
@@ -939,13 +939,13 @@ html[data-theme="light"] :is(
 
 {# ── Chart data embedded at render time ── #}
 {% if gamma is not none and gamma.history is not none and gamma.history | length > 0 %}
-<script>var MSP_GAMMA_HIST={{ gamma.history | tojson }};</script>
+<script>var MSP_GAMMA_HIST={{ chart_history.gamma | tojson }};</script>
 {% endif %}
 {% if sys is not none and sys.history is not none and sys.history | length > 0 %}
-<script>var MSP_SYS_HIST={{ sys.history | tojson }};</script>
+<script>var MSP_SYS_HIST={{ chart_history.systematic | tojson }};</script>
 {% endif %}
 {% if disp is not none and disp.history is not none and disp.history | length > 0 %}
-<script>var MSP_COR_HIST={{ disp.history | tojson }};</script>
+<script>var MSP_COR_HIST={{ chart_history.dispersion | tojson }};</script>
 {% endif %}
 
 <script>
@@ -1020,11 +1020,11 @@ function drawSeries(svg,data,key,domain,width,height,pad,color,options){
   });
 }
 function seriesAvailability(data,definitions){
-  var en=[],zh=[];
+  var en=[],zh=[],reported=data.filter(function(row){return !row||row._missing_session!==true});
   definitions.forEach(function(d){
-    var count=seriesValues(data,d[0]).filter(finiteNumber).length;
+    var count=seriesValues(reported,d[0]).filter(finiteNumber).length;
     if(!count){en.push(d[1]+' unavailable');zh.push(d[2]+'暂无数据')}
-    else if(count<data.length){en.push(d[1]+': '+count+'/'+data.length+' values; gaps are unavailable');zh.push(d[2]+'：'+count+'/'+data.length+'个有效值；缺口为数据暂缺')}
+    else if(count<reported.length){en.push(d[1]+': '+count+'/'+reported.length+' values; gaps are unavailable');zh.push(d[2]+'：'+count+'/'+reported.length+'个有效值；缺口为数据暂缺')}
   });
   return {en:en.join(' · '),zh:zh.join(' · ')};
 }
@@ -1040,7 +1040,7 @@ function drawGex(n){
     data.forEach(function(row,i){
       var gx=row&&row.net_gex_bn;if(!finiteNumber(gx))return;
       var h=Math.abs(gx)/ma*(H/2-8),x=P+i*bw,y=gx>=0?H/2-h:H/2;
-      var r=rect(x,y,Math.max(0.3,bw-0.4),Math.max(0.5,h),gx===0?MUT:row.regime==='long'?UP:DN,0);
+      var r=rect(x,y,Math.max(0.3,bw-0.4),Math.max(0.5,h),gx===0?MUT:row.regime==='long'?UP:row.regime==='short'?DN:MUT,0);
       r.setAttribute('data-series','net_gex_bn');r.setAttribute('data-value',gx);r.setAttribute('opacity','0.75');g.appendChild(r);
     });
     g.appendChild(line(P,H/2,W-P,H/2,LINE,1));
@@ -1068,18 +1068,18 @@ function drawCor(n){
 
 // Describe only the observations actually embedded, never the nominal window.
 function rangeSummary(history,n){
-  var rows=sliceTail(Array.isArray(history)?history:[],n),count=rows.length;
-  if(!count)return {en:'No chart history',zh:'暂无图表历史'};
+  var rows=sliceTail(Array.isArray(history)?history:[],n),count=rows.filter(function(row){return !row||row._missing_session!==true}).length,missing=rows.length-count;
+  if(!rows.length)return {en:'No chart history',zh:'暂无图表历史'};
   function day(row){
     var value=row&&row.date;
     if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return null;
     var parsed=new Date(value+'T00:00:00Z');
     return !isNaN(parsed.getTime())&&parsed.toISOString().slice(0,10)===value?value:null;
   }
-  var first=day(rows[0]),last=day(rows[count-1]);
+  var first=day(rows[0]),last=day(rows[rows.length-1]);
   var dates=first&&last&&first<=last?(first===last?first:first+' — '+last):null;
-  return {en:count+(count===1?' observation':' observations')+' · '+(dates||'dates unavailable'),
-          zh:count+'个观测 · '+(dates||'日期暂缺')};
+  return {en:count+(count===1?' observation':' observations')+' · '+(dates||'dates unavailable')+(missing?' · '+missing+(missing===1?' missing session':' missing sessions'):''),
+          zh:count+'个观测 · '+(dates||'日期暂缺')+(missing?' · '+missing+'个交易日暂缺':'')};
 }
 function paintRangeSummary(id,history,n,availability){
   var status=document.getElementById(id);if(!status)return;
@@ -1087,21 +1087,23 @@ function paintRangeSummary(id,history,n,availability){
   ['en','zh'].forEach(function(lang){
     var span=document.createElement('span');span.className='l-'+lang;
     var parts=summary[lang].split(' · ');span.textContent=parts.shift()+(parts.length?' · ':'');
-    if(parts.length){var dates=document.createElement('span');dates.className='msp-range-dates';dates.textContent=parts.join(' · ');span.appendChild(dates);}
+    if(parts.length){var dates=document.createElement('span');dates.className='msp-range-dates';dates.textContent=parts.shift();span.appendChild(dates);}
+    if(parts.length)span.appendChild(document.createTextNode(' · '+parts.join(' · ')));
     if(availability&&availability[lang])span.appendChild(document.createTextNode(' · '+availability[lang]));
     status.appendChild(span);
   });
 }
 
 var observationColumns={
-  gex:[['date','Date','日期'],['net_gex_bn','Dealer exposure ($bn)','做市商敞口（十亿美元）'],['spot','SPX (points)','标普500（点）'],['flip','Switch level (points)','切换点位（点）']],
-  sys:[['date','Date','日期'],['vc_alloc_bn','Modeled fund exposure ($bn)','基金模型敞口（十亿美元）'],['spx_close','SPX (points)','标普500（点）']],
-  cor:[['date','Date','日期'],['cor1m','Implied correlation (source units)','隐含相关性（来源单位）']]
+  gex:[['date','Date','日期'],['net_gex_bn','Dealer exposure ($bn)','做市商敞口（十亿美元）'],['spot','SPX (points)','标普500（点）'],['flip','Switch level (points)','切换点位（点）'],['_row_state','Record','记录']],
+  sys:[['date','Date','日期'],['vc_alloc_bn','Modeled fund exposure ($bn)','基金模型敞口（十亿美元）'],['spx_close','SPX (points)','标普500（点）'],['_row_state','Record','记录']],
+  cor:[['date','Date','日期'],['cor1m','Implied correlation (source units)','隐含相关性（来源单位）'],['_row_state','Record','记录']]
 };
 function exactObservationRows(history,n,columns){
   return sliceTail(Array.isArray(history)?history:[],n).map(function(row){
     return columns.map(function(column){
       var value=row&&row[column[0]];
+      if(column[0]==='_row_state')return row&&row._missing_session===true?'Missing session':'Supplied';
       if(column[0]==='date'){
         if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return '';
         var parsed=new Date(value+'T00:00:00Z');
@@ -1131,7 +1133,7 @@ function paintObservations(key,history,n){
   var header=document.createElement('tr');columns.forEach(function(c){var cell=document.createElement('th');cell.scope='col';cell.appendChild(bilingualNode(c[1],c[2]));header.appendChild(cell)});head.appendChild(header);
   exactObservationRows(history,n,columns).forEach(function(values){
     var row=document.createElement('tr');
-    values.forEach(function(value,i){var cell=document.createElement(i===0?'th':'td');if(i===0)cell.scope='row';if(value==='')cell.appendChild(bilingualNode('Unavailable','暂无数据'));else cell.textContent=value;row.appendChild(cell)});body.appendChild(row);
+    values.forEach(function(value,i){var cell=document.createElement(i===0?'th':'td');if(i===0)cell.scope='row';if(value==='')cell.appendChild(bilingualNode('Unavailable','暂无数据'));else if(columns[i][0]==='_row_state')cell.appendChild(bilingualNode(value,value==='Missing session'?'缺失交易日':'已提供'));else cell.textContent=value;row.appendChild(cell)});body.appendChild(row);
   });
 }
 function wireObservationDownloads(){

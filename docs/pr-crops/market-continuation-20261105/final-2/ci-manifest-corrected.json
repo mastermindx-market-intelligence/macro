@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/run_ci_pack.py",
+    "--workflow",
+    ".github/ci/legacy-jobs.yml",
+    "--validate-only"
+  ],
+  "exit_code": 0,
+  "log": "docs/pr-crops/market-continuation-20261105/final-2/ci-manifest-corrected.log"
+}

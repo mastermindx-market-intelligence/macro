@@ -70,6 +70,21 @@ def market(browser, base):
         assert page.locator("html").get_attribute("data-theme") == theme
         assert page.locator("html").get_attribute("data-lang") == locale
         metrics = assert_reflow(page)
+        if not receipt["matrix"]:
+            from datetime import date
+            from lib import nyse_calendar
+            actual = json.loads((ROOT / "data/market_structure/latest.json").read_text())
+            source_rows = {r["date"]:r for r in actual["gamma"]["history"]}
+            embedded = page.evaluate("MSP_GAMMA_HIST")
+            expected_days = nyse_calendar.sessions_between(date.fromisoformat(embedded[0]["date"]), date.fromisoformat(embedded[-1]["date"]))
+            missing = [str(d) for d in expected_days if str(d) not in source_rows]
+            assert [r["date"] for r in embedded if r.get("_missing_session")] == missing
+            for row in embedded:
+                if row.get("_missing_session"):
+                    assert all(row[key] is None for key in ("net_gex_bn","spot","flip"))
+                else:
+                    assert all(row[key] == source_rows[row["date"]][key] for key in ("net_gex_bn","spot","flip","regime"))
+            receipt["actual_session_gaps"] = {"observations":len(embedded)-len(missing),"missing_sessions":missing,"source_values_unchanged":True}
         order = page.locator(".msp-driver").evaluate_all("(xs)=>xs.map(x=>({name:x.dataset.driver,y:x.getBoundingClientRect().top})).sort((a,b)=>a.y-b.y).map(x=>x.name)")
         assert order == ["gex", "week", "flows", "dispersion", "vol"], order
         sizes = page.locator(".rbtn").evaluate_all("(xs)=>xs.map(x=>x.getBoundingClientRect().height)")
@@ -96,7 +111,7 @@ def market(browser, base):
         import csv, io
         downloaded = list(csv.reader(io.StringIO(Path(pending.value.path()).read_text(encoding="utf-8-sig"))))
         assert len(downloaded) == 22
-        expected_rows = page.evaluate("MSP_GAMMA_HIST.slice(-21).map(r=>[r.date,String(r.net_gex_bn),String(r.spot),String(r.flip)])")
+        expected_rows = page.evaluate("MSP_GAMMA_HIST.slice(-21).map(r=>[r.date,...['net_gex_bn','spot','flip'].map(k=>typeof r[k]==='number'&&Number.isFinite(r[k])?String(r[k]):''),r._missing_session?'Missing session':'Supplied'])")
         assert downloaded[1:] == expected_rows
         page.locator("#gex-observations > summary").click()
         help_button = page.locator('.msp-driver[data-driver="week"] .help')

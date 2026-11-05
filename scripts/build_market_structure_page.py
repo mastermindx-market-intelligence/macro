@@ -199,6 +199,38 @@ def _weekly_display(msp: dict | None, now: datetime | None = None) -> dict:
             "spot_x": spot_x, "flip_x": flip_x, **_weekly_clock(wm, now)}
 
 
+def _chart_history(history: object, keys: tuple[str, ...]) -> list[dict]:
+    """Use the original NYSE-slot projection, bounded after gap expansion.
+
+    This is display geometry only. No source record, classification or model is
+    recalculated; absent sessions are explicit unavailable slots.
+    """
+    from lib import nyse_calendar
+
+    by_day = {}
+    for row in (history if isinstance(history, list) else [])[-2000:]:
+        if not isinstance(row, dict):
+            continue
+        day = _day(row.get("date"))
+        if day is None or not nyse_calendar.is_session(day):
+            continue
+        by_day[day] = {
+            "date": day.isoformat(), "_missing_session": False,
+            "regime": row.get("regime") if row.get("regime") in ("long", "short") else None,
+            **{key: row.get(key) if _finite_number(row.get(key)) else None for key in keys},
+        }
+    if not by_day:
+        return []
+    end = max(by_day)
+    # Enough calendar span for 500 NYSE sessions; malformed remote dates cannot
+    # expand a multi-century interval. Apply the final bound AFTER expansion.
+    start = max(min(by_day), end - timedelta(days=1100))
+    sessions = nyse_calendar.sessions_between(start, end)[-500:]
+    return [by_day.get(day, {"date": day.isoformat(), "_missing_session": True,
+                            "regime": None, **dict.fromkeys(keys)})
+            for day in sessions]
+
+
 def render(root: Path, fixture: Path | None = None) -> str:
     """Render market_structure.html.j2 and return the HTML string."""
     msp = _load_msp(root, fixture)
@@ -221,7 +253,14 @@ def render(root: Path, fixture: Path | None = None) -> str:
     env.globals["finite_number"] = _finite_number
     tpl = env.get_template("market_structure.html.j2")
     now = datetime.now(timezone.utc)
-    return tpl.render(msp=msp, wm_view=_weekly_display(msp, now), snapshot_view=_snapshot_display(msp, now))
+    histories = {}
+    for block, keys in (("gamma", ("net_gex_bn", "spot", "flip")),
+                        ("systematic", ("vc_alloc_bn", "spx_close")),
+                        ("dispersion", ("cor1m",))):
+        source = (msp or {}).get(block)
+        histories[block] = _chart_history(source.get("history") if isinstance(source, dict) else None, keys)
+    return tpl.render(msp=msp, wm_view=_weekly_display(msp, now),
+                      snapshot_view=_snapshot_display(msp, now), chart_history=histories)
 
 
 def main(argv: list[str] | None = None) -> int:
