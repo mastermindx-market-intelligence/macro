@@ -1,0 +1,214 @@
+{
+  "artifact_type": "energy_r6_planning_integrity_receipt",
+  "operation_key": "gmi-energy-sector-research-20260923-sol-001",
+  "spec_file": "docs/superpowers/specs/2026-09-23-energy-economic-change-dossier-design.md",
+  "plan_file": "docs/superpowers/plans/2026-09-23-energy-economic-change-first-vertical-implementation.md",
+  "spec_sha256": "37abe5c64fb13b7e70a792d7b54202839f91d776a0facd602ffcd7ed6b3af273",
+  "plan_sha256": "27181e6afb426d1b29a6baf7e91f82cc2fd3afa7d0854b09d5cff0a3042a1de6",
+  "spec_git_blob": "d6dac80bead5a028da8d757b419c896b1b8437ed",
+  "plan_git_blob": "f7dc93621532b06e2478f90ef3876d6c31236242",
+  "expected_spec_commit": "33774cd8fb89ddcf156469dec60e90bfb0b2ef82",
+  "expected_plan_commit": "0166518d5b4a7ac4d9278b689225c5d193dbda0f",
+  "requirements": 78,
+  "tasks": 11,
+  "passed": 33,
+  "failed": 0,
+  "application_tests_run": 0,
+  "implementation_started": false,
+  "fable_handoff_issued": false,
+  "claim_limit": "Planning/spec integrity only. Does not prove shared-interface acceptance, source rights/admission, product implementation, tests, deployment, browser behavior, predictive validity or Fable receipt.",
+  "check_corrections": [
+    "Initial privacy check expected private/no-store but the plan correctly specifies Cache-Control: private, no-store; check grammar corrected only.",
+    "Initial R5 check used a case-sensitive Forecast-year match; corrected to case-insensitive without changing the requirement.",
+    "Initial authority check expected all-false authority while the spec says all decision authority false; corrected to the exact equivalent semantics."
+  ],
+  "checks": [
+    {
+      "name": "spec_blob_identity",
+      "pass": true,
+      "detail": "d6dac80bead5a028da8d757b419c896b1b8437ed"
+    },
+    {
+      "name": "plan_blob_identity",
+      "pass": true,
+      "detail": "f7dc93621532b06e2478f90ef3876d6c31236242"
+    },
+    {
+      "name": "requirements_exact_01_78",
+      "pass": true,
+      "detail": {
+        "count": 78,
+        "first": [
+          "ENE-01",
+          "ENE-02"
+        ],
+        "last": [
+          "ENE-77",
+          "ENE-78"
+        ]
+      }
+    },
+    {
+      "name": "eleven_ordered_tasks",
+      "pass": true,
+      "detail": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11"
+      ]
+    },
+    {
+      "name": "all_requirement_bands_mapped",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "collision_7462",
+      "pass": true,
+      "detail": "#7462"
+    },
+    {
+      "name": "collision_7669",
+      "pass": true,
+      "detail": "#7669"
+    },
+    {
+      "name": "collision_7664",
+      "pass": true,
+      "detail": "#7664"
+    },
+    {
+      "name": "collision_7777",
+      "pass": true,
+      "detail": "#7777"
+    },
+    {
+      "name": "design_identity_in_plan",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "nuclear_first_vertical",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "existing_nuclear_theme_identity",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "primary_supplemental_distinction",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "shared_dossier_not_energy_clone",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_energy_database",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "fresh_implementation_carrier",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "research_pr_not_product_carrier",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "why_fable_present",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "real_path_acceptance",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "privacy_negative_proof",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "decision_non_regression",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "r5_grammar_preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "power_second_vertical_foundation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_placeholders",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_completion_claim",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "public_builder_not_private_plane",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "unknown_expectations_allowed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "shared_assertion_dependency",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "shared_private_owner_dependency",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "bounded_first_unit",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "source_instruction_inert_requirement",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "all_authority_false_semantics",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "research_do_not_redo",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

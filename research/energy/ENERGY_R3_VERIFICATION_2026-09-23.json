@@ -1,0 +1,676 @@
+{
+  "artifact_type": "local_research_integrity_arithmetic_receipt",
+  "status": "PASS",
+  "inputs": [
+    {
+      "path": "ENERGY_R3_RESEARCH_MODEL_2026-09-23.json",
+      "bytes": 71561,
+      "sha256": "522a4e1664c4f8b820f919158a91b375b5ac587a72d6921e7361a90b5e9fa766",
+      "git_blob_sha1": "038cffe32a23c71df4467931d0f41c78e5048769"
+    },
+    {
+      "path": "ENERGY_R3_POWER_DEMAND_EQUITY_DOSSIERS_2026-09-23.md",
+      "bytes": 60589,
+      "sha256": "e1e6b3a01529008ad196b71ce8b8e95d8bec572716496ca98c9944dd8f6c2fb7",
+      "git_blob_sha1": "f51c60c506a131343286d4622cd4b5413f7bef0e"
+    }
+  ],
+  "verifier": {
+    "path": "verify_energy_r3.py",
+    "bytes": 15457,
+    "sha256": "aa594efcba5728ad716bdea25af5bce80ef1749da90c2f7d2657ec1caf97be3b",
+    "git_blob_sha1": "f2254488bb631417fd5f26c0d575e8307259b832"
+  },
+  "passed": 75,
+  "failed": 0,
+  "counts": {
+    "integrity": 20,
+    "source_arithmetic": 28,
+    "hypothetical_scenarios": 17,
+    "notebook_negative_controls": 10
+  },
+  "application_tests_run": 0,
+  "predictive_backtests_run": 0,
+  "full_source_link_test_run": false,
+  "check_corrections": [
+    "Corrected the mistyped expected Quanta percentage using an independent exact integer fraction; source inputs and tolerance unchanged."
+  ],
+  "claim_limit": "Checks notebook structure, known scope guards and stated arithmetic only. Does not validate source truth, full contracts, issuer forecasts, product behavior, investment merit, deployment or publication.",
+  "checks": [
+    {
+      "name": "research_model_invariants",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "unique_source_urls",
+      "passed": true,
+      "detail": 25
+    },
+    {
+      "name": "https_source_locators",
+      "passed": true,
+      "detail": "Syntax only, not a network-link test"
+    },
+    {
+      "name": "no_future_publication",
+      "passed": true,
+      "detail": "2026-09-23"
+    },
+    {
+      "name": "unknown_publication_precision",
+      "passed": true,
+      "detail": "No invented midnight publication timestamps"
+    },
+    {
+      "name": "source_ingestion_unadmitted",
+      "passed": true,
+      "detail": "Public locator is not ingestion permission"
+    },
+    {
+      "name": "observations_unique_ids",
+      "passed": true,
+      "detail": 24
+    },
+    {
+      "name": "drivers_unique_ids",
+      "passed": true,
+      "detail": 34
+    },
+    {
+      "name": "acceptance_cases_unique_ids",
+      "passed": true,
+      "detail": 55
+    },
+    {
+      "name": "research_conflicts_unique_ids",
+      "passed": true,
+      "detail": 7
+    },
+    {
+      "name": "evidence_scope_cases_unique_ids",
+      "passed": true,
+      "detail": 10
+    },
+    {
+      "name": "finite_observation_values",
+      "passed": true,
+      "detail": "Decimal-valued strings"
+    },
+    {
+      "name": "all_acceptance_cases_proposed",
+      "passed": true,
+      "detail": 55
+    },
+    {
+      "name": "all_source_ids_in_document_resolve",
+      "passed": true,
+      "detail": "Includes locator register"
+    },
+    {
+      "name": "complete_locator_register",
+      "passed": true,
+      "detail": 25
+    },
+    {
+      "name": "no_unfinished_markers",
+      "passed": true,
+      "detail": "No placeholder markers; declared gaps remain"
+    },
+    {
+      "name": "five_core_dossiers",
+      "passed": true,
+      "detail": "Five required business models"
+    },
+    {
+      "name": "no_full_duke_read_claim",
+      "passed": true,
+      "detail": "Full-file limitation explicit"
+    },
+    {
+      "name": "pdf_review_scope_recorded",
+      "passed": true,
+      "detail": "Evidence of review method, not image validation by this script"
+    },
+    {
+      "name": "research_not_product_scope",
+      "passed": true,
+      "detail": "Proposed requirements do not equal tested product behavior"
+    },
+    {
+      "name": "capacity_old_delivery_days",
+      "passed": true,
+      "detail": {
+        "actual": "366",
+        "expected": "366",
+        "quantum": "0.000001",
+        "scope": "Delivery dates, not calendar-year assumption"
+      }
+    },
+    {
+      "name": "capacity_new_delivery_days",
+      "passed": true,
+      "detail": {
+        "actual": "365",
+        "expected": "365",
+        "quantum": "0.000001",
+        "scope": "Delivery dates"
+      }
+    },
+    {
+      "name": "Talen_old_gross_capacity_revenue_USD",
+      "passed": true,
+      "detail": {
+        "actual": "1067231404.80",
+        "expected": "1067231404.80",
+        "quantum": "0.000001",
+        "scope": "Disclosed inputs; gross future capacity revenue, not net income"
+      }
+    },
+    {
+      "name": "Talen_new_gross_capacity_revenue_USD",
+      "passed": true,
+      "detail": {
+        "actual": "1207602500",
+        "expected": "1207602500",
+        "quantum": "0.000001",
+        "scope": "Disclosed inputs; changed portfolio"
+      }
+    },
+    {
+      "name": "Talen_capacity_revenue_change_pct",
+      "passed": true,
+      "detail": {
+        "actual": "13.15282651622359754606801470",
+        "expected": "13.1528265162",
+        "quantum": "0.000001",
+        "scope": "Not stock performance or organic profit growth"
+      }
+    },
+    {
+      "name": "Talen_cleared_MW_change_pct",
+      "passed": true,
+      "detail": {
+        "actual": "16.40937678673527730131503720",
+        "expected": "16.4093767867",
+        "quantum": "0.000001",
+        "scope": "Portfolio/performance attribution unresolved"
+      }
+    },
+    {
+      "name": "Talen_capacity_price_change_pct",
+      "passed": true,
+      "detail": {
+        "actual": "-2.531190019193857965451055660",
+        "expected": "-2.53119001919",
+        "quantum": "0.000001",
+        "scope": "Lower observed auction rate"
+      }
+    },
+    {
+      "name": "capacity_direction_counterexample",
+      "passed": true,
+      "detail": "Revenue up with rate down"
+    },
+    {
+      "name": "Vistra_existing_plus_uprate",
+      "passed": true,
+      "detail": {
+        "actual": "2609",
+        "expected": "2609",
+        "quantum": "0.000001",
+        "scope": "Contract MW, not all new supply"
+      }
+    },
+    {
+      "name": "Duke_proposed_interest_sum",
+      "passed": true,
+      "detail": {
+        "actual": "1365",
+        "expected": "1365",
+        "quantum": "0.000001",
+        "scope": "Proposed capacity allocations, not final cash rights"
+      }
+    },
+    {
+      "name": "GEV_RPO_sum",
+      "passed": true,
+      "detail": {
+        "actual": "176284",
+        "expected": "176284",
+        "quantum": "0.000001",
+        "scope": "USD million, contractual revenue measure"
+      }
+    },
+    {
+      "name": "GEV_rounded_liability_difference",
+      "passed": true,
+      "detail": {
+        "actual": "14087",
+        "expected": "14087",
+        "quantum": "0.000001",
+        "scope": "USD million, stock difference from rounded values"
+      }
+    },
+    {
+      "name": "GEV_reported_rounding_preserved",
+      "passed": true,
+      "detail": "Known precision difference is preserved, not an equality claimed PASS"
+    },
+    {
+      "name": "GEV_H1_issuer_FCF",
+      "passed": true,
+      "detail": {
+        "actual": "9897",
+        "expected": "9897",
+        "quantum": "0.000001",
+        "scope": "USD million; six-month period; not discretionary cash after every obligation"
+      }
+    },
+    {
+      "name": "GEV_cash_flow_contribution_not_balance_delta",
+      "passed": true,
+      "detail": "Flow and stock are different measures"
+    },
+    {
+      "name": "Quanta_backlog_outside_RPO",
+      "passed": true,
+      "detail": {
+        "actual": "19886.341",
+        "expected": "19886.341",
+        "quantum": "0.000001",
+        "scope": "USD million; does not estimate probability of conversion"
+      }
+    },
+    {
+      "name": "Quanta_contract_revenue_sum",
+      "passed": true,
+      "detail": {
+        "actual": "9556.997",
+        "expected": "9556.997",
+        "quantum": "0.000001",
+        "scope": "Revenue categories, USD million"
+      }
+    },
+    {
+      "name": "Quanta_fixed_price_revenue_pct",
+      "passed": true,
+      "detail": {
+        "actual": "63.65454546025283883629972888",
+        "expected": "63.6545454602528",
+        "quantum": "0.000001",
+        "scope": "Revenue mix, not profit margin"
+      }
+    },
+    {
+      "name": "Clearway_old_CAFD_midpoint",
+      "passed": true,
+      "detail": {
+        "actual": "490",
+        "expected": "490",
+        "quantum": "0.000001",
+        "scope": "USD million; historical guidance"
+      }
+    },
+    {
+      "name": "Clearway_new_CAFD_midpoint",
+      "passed": true,
+      "detail": {
+        "actual": "450",
+        "expected": "450",
+        "quantum": "0.000001",
+        "scope": "USD million; revised management guidance"
+      }
+    },
+    {
+      "name": "Clearway_guidance_midpoint_change_pct",
+      "passed": true,
+      "detail": {
+        "actual": "-8.163265306122448979591836730",
+        "expected": "-8.1632653061",
+        "quantum": "0.000001",
+        "scope": "Not a realized loss or market-surprise measure"
+      }
+    },
+    {
+      "name": "Clearway_Q2_CAFD_bridge",
+      "passed": true,
+      "detail": {
+        "actual": "167",
+        "expected": "167",
+        "quantum": "0.000001",
+        "scope": "USD million; issuer-defined CAFD"
+      }
+    },
+    {
+      "name": "Clearway_guidance_CAFD_bridge",
+      "passed": true,
+      "detail": {
+        "actual": "450",
+        "expected": "450",
+        "quantum": "0.000001",
+        "scope": "USD million; forecast reconciliation"
+      }
+    },
+    {
+      "name": "Clearway_ownership_weighted_MW",
+      "passed": true,
+      "detail": {
+        "actual": "170",
+        "expected": "170",
+        "quantum": "0.000001",
+        "scope": "Capacity only, not distribution waterfall"
+      }
+    },
+    {
+      "name": "Clearway_public_disclosure_interval_days",
+      "passed": true,
+      "detail": {
+        "actual": "20",
+        "expected": "20",
+        "quantum": "0.000001",
+        "scope": "Not 20 days of exclusive information or proven alpha"
+      }
+    },
+    {
+      "name": "Eaton_reported_sales_growth_components",
+      "passed": true,
+      "detail": {
+        "actual": "21",
+        "expected": "21",
+        "quantum": "0.000001",
+        "scope": "Reported percentage-point decomposition"
+      }
+    },
+    {
+      "name": "Eaton_Global_sales_growth_components",
+      "passed": true,
+      "detail": {
+        "actual": "44",
+        "expected": "44",
+        "quantum": "0.000001",
+        "scope": "Quarterly sales, not rolling orders"
+      }
+    },
+    {
+      "name": "PJM_prior_vintage_peak",
+      "passed": true,
+      "detail": {
+        "actual": "164186",
+        "expected": "164186",
+        "quantum": "0.000001",
+        "scope": "Derived previous forecast, not metered peak"
+      }
+    },
+    {
+      "name": "facility_1GW_90pct_TWh",
+      "passed": true,
+      "detail": {
+        "actual": "7.884",
+        "expected": "7.884",
+        "quantum": "0.000001",
+        "scope": "Facility-load scenario, non-leap year"
+      }
+    },
+    {
+      "name": "IT_1GW_PUE1_2_TWh",
+      "passed": true,
+      "detail": {
+        "actual": "9.4608",
+        "expected": "9.4608",
+        "quantum": "0.000001",
+        "scope": "Different IT-load scenario, not additional demand"
+      }
+    },
+    {
+      "name": "leap_year_facility_TWh",
+      "passed": true,
+      "detail": {
+        "actual": "7.9056",
+        "expected": "7.9056",
+        "quantum": "0.000001",
+        "scope": "2028 calendar"
+      }
+    },
+    {
+      "name": "hypothetical_spark_margin_delta",
+      "passed": true,
+      "detail": {
+        "actual": "13",
+        "expected": "13",
+        "quantum": "0.000001",
+        "scope": "USD/MWh before all other costs"
+      }
+    },
+    {
+      "name": "hypothetical_unhedged_revenue_delta_USDm",
+      "passed": true,
+      "detail": {
+        "actual": "40",
+        "expected": "40",
+        "quantum": "0.000001",
+        "scope": "TWh times USD/MWh -> USD million; simplified same-index hedge"
+      }
+    },
+    {
+      "name": "hypothetical_outage_replacement_cost_USDm",
+      "passed": true,
+      "detail": {
+        "actual": "3.8",
+        "expected": "3.8",
+        "quantum": "0.000001",
+        "scope": "Incremental replacement price only"
+      }
+    },
+    {
+      "name": "hypothetical_allowed_equity_earnings_USDm",
+      "passed": true,
+      "detail": {
+        "actual": "42.4000",
+        "expected": "42.4",
+        "quantum": "0.000001",
+        "scope": "Assumed eligible investment/equity/return; not company permission"
+      }
+    },
+    {
+      "name": "hypothetical_half_year_allowed_earnings_USDm",
+      "passed": true,
+      "detail": {
+        "actual": "21.2",
+        "expected": "21.2",
+        "quantum": "0.000001",
+        "scope": "Simplified half-year exposure"
+      }
+    },
+    {
+      "name": "hypothetical_100bp_allowed_return_delta_USDm",
+      "passed": true,
+      "detail": {
+        "actual": "4.2400",
+        "expected": "4.24",
+        "quantum": "0.000001",
+        "scope": "Not observed jurisdictional ROE change"
+      }
+    },
+    {
+      "name": "AEP_size_branch_100MW_MW",
+      "passed": true,
+      "detail": {
+        "actual": "82.5",
+        "expected": "82.5",
+        "quantum": "0.000001",
+        "scope": "Tariff-summary size branch only; excludes ratchet, ramp, actual demand"
+      }
+    },
+    {
+      "name": "AEP_size_branch_150MW_MW",
+      "passed": true,
+      "detail": {
+        "actual": "127.50",
+        "expected": "127.5",
+        "quantum": "0.000001",
+        "scope": "Applies stated cap to size branch, not entire bill"
+      }
+    },
+    {
+      "name": "hypothetical_solar_revenue_USDm",
+      "passed": true,
+      "detail": {
+        "actual": "10.95",
+        "expected": "10.95",
+        "quantum": "0.000001",
+        "scope": "100 MW, 25% capacity factor, USD50/MWh; no taxes/curtailment"
+      }
+    },
+    {
+      "name": "hypothetical_solar_low_output_revenue_USDm",
+      "passed": true,
+      "detail": {
+        "actual": "10.4025",
+        "expected": "10.4025",
+        "quantum": "0.000001",
+        "scope": "5% less output, unchanged unit price"
+      }
+    },
+    {
+      "name": "hypothetical_residual_cash_change_pct",
+      "passed": true,
+      "detail": {
+        "actual": "-13.86075949367088607594936709",
+        "expected": "-13.8607594937",
+        "quantum": "0.000001",
+        "scope": "Assumed fixed cash costs/debt of USD7m; not Clearway forecast"
+      }
+    },
+    {
+      "name": "hypothetical_deposit_period_net_cash",
+      "passed": true,
+      "detail": {
+        "actual": "10",
+        "expected": "10",
+        "quantum": "0.000001",
+        "scope": "Advance 30, early cost 20; not recognition of profit"
+      }
+    },
+    {
+      "name": "hypothetical_equipment_whole_contract_cash",
+      "passed": true,
+      "detail": {
+        "actual": "20",
+        "expected": "20",
+        "quantum": "0.000001",
+        "scope": "Contract price100, cost80; no discount/tax effects"
+      }
+    },
+    {
+      "name": "hypothetical_fixed_price_profit_change_pct",
+      "passed": true,
+      "detail": {
+        "actual": "-45.00",
+        "expected": "-45",
+        "quantum": "0.000001",
+        "scope": "5% cost increase; no customer recovery assumed"
+      }
+    },
+    {
+      "name": "reject_trade_authority",
+      "passed": true,
+      "detail": {
+        "expected_rejection": "authority_escalation",
+        "observed": [
+          "authority_escalation"
+        ]
+      }
+    },
+    {
+      "name": "reject_invented_theme_weight",
+      "passed": true,
+      "detail": {
+        "expected_rejection": "invented_canonical_exposure",
+        "observed": [
+          "invented_canonical_exposure"
+        ]
+      }
+    },
+    {
+      "name": "reject_missing_unit",
+      "passed": true,
+      "detail": {
+        "expected_rejection": "incomplete_units",
+        "observed": [
+          "incomplete_units"
+        ]
+      }
+    },
+    {
+      "name": "reject_opportunity_as_consensus",
+      "passed": true,
+      "detail": {
+        "expected_rejection": "opportunity_promoted",
+        "observed": [
+          "opportunity_promoted"
+        ]
+      }
+    },
+    {
+      "name": "reject_deadline_as_restart",
+      "passed": true,
+      "detail": {
+        "expected_rejection": "deadline_as_reopening",
+        "observed": [
+          "deadline_as_reopening"
+        ]
+      }
+    },
+    {
+      "name": "reject_Duke_cross_heading_rule",
+      "passed": true,
+      "detail": {
+        "expected_rejection": "cross_project_scope",
+        "observed": [
+          "cross_project_scope"
+        ]
+      }
+    },
+    {
+      "name": "reject_tariff_as_consumption",
+      "passed": true,
+      "detail": {
+        "expected_rejection": "demand_energy_confusion",
+        "observed": [
+          "demand_energy_confusion"
+        ]
+      }
+    },
+    {
+      "name": "reject_RPO_backlog_sum",
+      "passed": true,
+      "detail": {
+        "expected_rejection": "backlog_double_count",
+        "observed": [
+          "backlog_double_count"
+        ]
+      }
+    },
+    {
+      "name": "reject_rolling_as_quarterly",
+      "passed": true,
+      "detail": {
+        "expected_rejection": "rolling_period_confusion",
+        "observed": [
+          "rolling_period_confusion"
+        ]
+      }
+    },
+    {
+      "name": "reject_all_PPA_as_new_MW",
+      "passed": true,
+      "detail": {
+        "expected_rejection": "existing_capacity_as_new",
+        "observed": [
+          "existing_capacity_as_new"
+        ]
+      }
+    }
+  ]
+}

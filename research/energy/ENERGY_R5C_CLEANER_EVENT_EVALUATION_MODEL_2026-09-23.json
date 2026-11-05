@@ -1,0 +1,207 @@
+{
+  "artifact_type": "authored_research_notebook_not_production_schema",
+  "title": "Energy R5C cleaner historical event case and evaluation grammar",
+  "research_cutoff": "2026-09-23",
+  "operation_key": "gmi-energy-sector-research-20260923-sol-001",
+  "carrier": "macro PR #7791",
+  "authority": {
+    "native_ingestion": false,
+    "change_theme_state": false,
+    "change_baskets": false,
+    "rank": false,
+    "entry": false,
+    "size": false,
+    "trade": false,
+    "fable_handoff": false
+  },
+  "case": {
+    "issuer": "Equinor ASA",
+    "reporting_period": "2025-Q1",
+    "result_date": "2025-04-30",
+    "event_release_timing": "before Oslo market open",
+    "historical_vintage_state": "ISSUER_PROCESS_PLUS_CURRENT_ARCHIVE_PRE_EVENT_PUBLICATION_SUPPORTED_EXACT_VALUE_BYTE_NOT_INDEPENDENTLY_TIMESTAMPED",
+    "cleanliness": "CLEANER_NOT_CLEAN",
+    "why": "Issuer April 9 invitation states consensus is published one week before April 30 results; current historical archive labels Q1 2025 as collected April 2025 with 20 analyst inputs. No independent pre-event byte/timestamp for the exact panel was recovered. Same-day results were not paired with a Capital Markets Update, but the release contained a new buyback tranche and additional Empire Wind exposure/context; Empire Wind halt itself was already public from April 17."
+  },
+  "sources": [
+    {
+      "id": "S01",
+      "kind": "issuer_invitation",
+      "date": "2025-04-09",
+      "url": "https://www.equinor.com/news/20250409-invitation-estimates-first-quarter-financial-results",
+      "used_for": "result date and issuer statement that consensus is published one week before actual release"
+    },
+    {
+      "id": "S02",
+      "kind": "issuer_historical_consensus_archive",
+      "date": null,
+      "url": "https://www.equinor.com/investors/consensus",
+      "used_for": "Q1 2025 collected-April values, 20 analyst count and aggregation method",
+      "limitation": "current archive compilation; exact historical byte and exact publication timestamp not independently archived"
+    },
+    {
+      "id": "S03",
+      "kind": "issuer_result",
+      "date": "2025-04-30",
+      "url": "https://www.equinor.com/news/equinor-first-quarter-2025-results",
+      "used_for": "actual adjusted operating income, adjusted operating income after tax, adjusted EPS, production and release context"
+    },
+    {
+      "id": "S04",
+      "kind": "issuer_financial_statement",
+      "date": "2025-04-30",
+      "url": "https://www.sec.gov/Archives/edgar/data/1140625/000114062525000084/a01equinorquarterlyreport-.htm",
+      "used_for": "reported financial statement, capital distribution, subsequent-event and corporate-action context"
+    },
+    {
+      "id": "S05",
+      "kind": "independent_result_news",
+      "date": "2025-04-30",
+      "time_local": "06:55",
+      "url": "https://www.finansavisen.no/tdn/2025/04/30/06458190/equinor-justert-driftsresultat-usd-8.646m-i-1.kv-2025-ventet-8.508",
+      "used_for": "same-day external confirmation of 8.508 pre-tax consensus and metric-label conflict example",
+      "limitation": "published after result release; cannot establish exact panel values were independently timestamped before the event"
+    },
+    {
+      "id": "S06",
+      "kind": "market_close_report",
+      "date": "2025-04-30",
+      "url": "https://www.finansavisen.no/finans/2025/04/30/8261103/industriaksje-til-bunns-kurshopp-for-sveaas-og-fredriksen",
+      "used_for": "externally reported same-day EQNR, OSEBX, Brent and TTF changes",
+      "limitation": "contextual close report, not a Mastermind-reproduced security/benchmark/commodity time series"
+    },
+    {
+      "id": "S07",
+      "kind": "issuer_pre_event_material_event",
+      "date": "2025-04-17",
+      "url": "https://www.equinor.com/news/20250417-suspends-offshore-construction-activities-empire-wind",
+      "used_for": "proves Empire Wind halt order was public before earnings; identifies book value/project finance exposure known before event"
+    },
+    {
+      "id": "S08",
+      "kind": "issuer_pre_event_project_event",
+      "date": "2025-03-27",
+      "url": "https://www.equinor.com/news/20250327-northern-lights-phase-2",
+      "used_for": "proves Northern Lights Phase 2 FID preceded Q1 result date"
+    },
+    {
+      "id": "S09",
+      "kind": "issuer_same_day_capital_action",
+      "date": "2025-04-30",
+      "url": "https://www.equinor.com/news/20250430-second-tranche-2025-share-buy-back-programme",
+      "used_for": "same-day second buyback tranche; event-information confound, not mechanical ex-date adjustment"
+    }
+  ],
+  "consensus": {
+    "collected_period": "2025-04",
+    "analyst_count": 20,
+    "pre_tax_adjusted_operating_income_usd_m": 8508,
+    "after_tax_adjusted_operating_income_usd_m": 2377,
+    "adjusted_eps_usd_per_share": 0.85,
+    "equity_production_mboe_per_day": 2104,
+    "pre_event_independent_timestamp_support": {
+      "pre_tax": false,
+      "after_tax": false,
+      "eps": false,
+      "production": false
+    },
+    "issuer_process_support": true
+  },
+  "actual": {
+    "pre_tax_adjusted_operating_income_usd_m": 8650,
+    "after_tax_adjusted_operating_income_usd_m": 2250,
+    "adjusted_net_income_usd_m": 1790,
+    "adjusted_eps_usd_per_share": 0.66,
+    "equity_production_mboe_per_day": 2123
+  },
+  "derived_surprises_pct": {
+    "pre_tax_adjusted_operating_income": 1.6690173953925718,
+    "after_tax_adjusted_operating_income": -5.342869162810265,
+    "adjusted_eps": -22.352941176470587,
+    "equity_production": 0.903041825095057
+  },
+  "market_context": {
+    "external_reported_eqnr_day_pct": -0.4,
+    "external_reported_osebx_day_pct": 1.0,
+    "external_reported_brent_day_pct": -1.4,
+    "external_reported_ttf_day_pct": 1.6,
+    "equity_minus_osebx_pp": -1.4,
+    "return_classification": "EXTERNAL_REPORTED_SAME_DAY_CONTEXT_NOT_REPRODUCED_RETURN",
+    "causal_attribution_allowed": false
+  },
+  "confounds": [
+    {
+      "item": "Empire Wind halt order",
+      "first_public_date": "2025-04-17",
+      "same_day_new": false,
+      "event_relevance": "Q1 report added exposure/detail and analyst attention despite halt being pre-known"
+    },
+    {
+      "item": "Northern Lights Phase 2 FID",
+      "first_public_date": "2025-03-27",
+      "same_day_new": false,
+      "event_relevance": "repeated in results; not a newly originated same-day milestone"
+    },
+    {
+      "item": "Second 2025 buyback tranche",
+      "first_public_date": "2025-04-30",
+      "same_day_new": true,
+      "event_relevance": "same-day capital-distribution detail; expected total 2025 distribution remained USD9bn per issuer/result commentary"
+    },
+    {
+      "item": "Broad market and commodities",
+      "first_public_date": "2025-04-30",
+      "same_day_new": true,
+      "event_relevance": "OSEBX rose while Brent fell and TTF rose; multi-factor market context prevents single-driver attribution"
+    }
+  ],
+  "evaluation_spec": {
+    "estimate_evidence_grades": [
+      "PRE_EVENT_TIMESTAMPED_VALUE",
+      "ISSUER_PROCESS_PLUS_ARCHIVE",
+      "ARCHIVAL_CONTEXT_ONLY",
+      "POST_EVENT_ONLY",
+      "UNAVAILABLE"
+    ],
+    "default_return_window": "For before-open results, prior official close to event-day official close; for after-close results, event-day close to next trading-day close. Always record local exchange timezone and source.",
+    "return_classes": [
+      "REPRODUCED_RAW_PRICE_RETURN",
+      "REPRODUCED_TOTAL_RETURN",
+      "BENCHMARK_RESIDUAL_DESCRIPTIVE",
+      "EXTERNAL_REPORTED_EVENT_MOVE",
+      "MODEL_ADJUSTED_RESIDUAL"
+    ],
+    "benchmark_rule": "Use a declared investable/local broad benchmark for descriptive residuals; do not call stock-minus-index alpha.",
+    "commodity_rule": "Preserve relevant commodity changes as separate context unless a predeclared calibrated exposure model exists; do not subtract Brent or TTF one-for-one from the stock return.",
+    "metric_rule": "Consensus and actual must share metric definition, unit, period and ownership scope before surprise is computed.",
+    "panel_rule": "Contributor count, aggregation method and panel turnover travel with each estimate; aggregate changes do not prove matched-analyst revisions.",
+    "horizon_rule": "Estimate revisions require the same fixed fiscal horizon; rollover into a new forecast year is not revision evidence.",
+    "corporate_action_rule": "Adjust mechanical ex-dividend/split/rights effects in return construction; announcements of buybacks/financing are event information and belong in the confound ledger.",
+    "confound_rule": "Inventory earnings, guidance, strategy/CMD, M&A, financing/capital return, policy/regulation, commodity/macro shocks and corporate actions. Confounded events may inform descriptive grammar but cannot train a clean causal earnings-surprise rule without explicit treatment.",
+    "lookahead_rule": "Every input must have first-known time <= decision cutoff; later archive corrections/restatements remain later vintages.",
+    "rights_rule": "Public access is not commercial ingestion/redistribution permission; rights/admission remain with existing evidence owners.",
+    "predictive_rule": "No predictive/alpha claim until event definitions, sample construction, controls and holdout are frozen before evaluation and pass accepted out-of-sample testing."
+  },
+  "acceptance_cases": [
+    "Do not label an exact panel value PRE_EVENT_TIMESTAMPED when only issuer process plus a current archive supports it.",
+    "Do not use result-morning third-party reporting to backdate exact consensus bytes to a week earlier.",
+    "Require metric-definition matching; adjusted net income cannot substitute for adjusted operating income after tax.",
+    "Preserve mixed surprise vectors rather than one generic beat/miss bit.",
+    "Before-open and after-close releases use different declared return windows.",
+    "A reported same-day stock change is not a reproduced return series.",
+    "Stock-minus-index is descriptive residual, not alpha.",
+    "Do not subtract commodity percentage moves one-for-one from equity returns.",
+    "Empire Wind halt remains pre-known from April 17; later result detail is separate event information.",
+    "Northern Lights Phase 2 FID remains pre-known from March 27.",
+    "Same-day buyback tranche belongs to event confounds but is not a mechanical ex-date adjustment.",
+    "No ex-dividend adjustment is applied on April 30 when the stated Q1 dividend ex-date is in August.",
+    "Panel sample changes must not be labelled within-analyst estimate revision.",
+    "Forecast-year rollover is not estimate revision.",
+    "Historical archive retrieval time and historical estimate first-known time remain distinct.",
+    "Later restatements do not overwrite the original event information set.",
+    "Confounded events cannot be treated as clean causal labels without an explicit treatment.",
+    "A cleaner event relative to Q4 is not automatically a clean event.",
+    "One historical case cannot establish predictive edge.",
+    "Research never changes ranking, entry, sizing or trading authority."
+  ]
+}

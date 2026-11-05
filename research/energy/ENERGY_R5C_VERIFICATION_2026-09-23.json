@@ -1,0 +1,148 @@
+{
+  "artifact_type": "r5c_research_integrity_receipt",
+  "model_sha256": "17eee40f59fc70aa94c55d23aa9a537552108ad6d3ea5d94510c607409af1cbf",
+  "dossier_sha256": "9083e4f504042f1dbf67cdfa66d67e1a89c34f8095d4c48dc1164f44a93782e0",
+  "passed": 23,
+  "failed": 0,
+  "application_tests_run": 0,
+  "predictive_backtests_run": 0,
+  "checks": [
+    {
+      "name": "authority_false",
+      "pass": true,
+      "detail": {
+        "native_ingestion": false,
+        "change_theme_state": false,
+        "change_baskets": false,
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "fable_handoff": false
+      }
+    },
+    {
+      "name": "unique_sources",
+      "pass": true,
+      "detail": 9
+    },
+    {
+      "name": "https_sources",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "cleaner_not_clean",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "vintage_not_overclaimed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "issuer_process_support",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_false_independent_pre_event_value_support",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "causal_attribution_false",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "return_external_not_reproduced",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "confound_depth",
+      "pass": true,
+      "detail": 4
+    },
+    {
+      "name": "acceptance_depth",
+      "pass": true,
+      "detail": 20
+    },
+    {
+      "name": "eval_grammar_depth",
+      "pass": true,
+      "detail": 13
+    },
+    {
+      "name": "arith_pre_tax_adjusted_operating_income",
+      "pass": true,
+      "detail": {
+        "got": "1.6690173953925718",
+        "expected": "1.669017395392571697226140100"
+      }
+    },
+    {
+      "name": "arith_after_tax_adjusted_operating_income",
+      "pass": true,
+      "detail": {
+        "got": "-5.342869162810265",
+        "expected": "-5.342869162810265039966344130"
+      }
+    },
+    {
+      "name": "arith_adjusted_eps",
+      "pass": true,
+      "detail": {
+        "got": "-22.352941176470587",
+        "expected": "-22.35294117647058823529411765"
+      }
+    },
+    {
+      "name": "arith_equity_production",
+      "pass": true,
+      "detail": {
+        "got": "0.903041825095057",
+        "expected": "0.903041825095057034220532300"
+      }
+    },
+    {
+      "name": "mixed_vector",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "issuer_net_income_separate",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "benchmark_residual_arith",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "empire_preknown",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "buyback_same_day",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_trade_authority",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "predictive_gate_frozen",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "claim_limit": "Research evidence-state, arithmetic and evaluation-grammar checks only; not historical-byte attestation, market-data reproduction, causal event-study validation, product behavior, source-rights admission or investment merit."
+}

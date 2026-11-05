@@ -1,0 +1,117 @@
+{
+  "artifact_type": "r5b_research_integrity_receipt",
+  "model_sha256": "a78534a524edca7aedf871fe2bdaf99aaa1ee54cbc29a13b82ece791a61a7945",
+  "passed": 17,
+  "failed": 0,
+  "application_tests_run": 0,
+  "predictive_backtests_run": 0,
+  "checks": [
+    {
+      "name": "authority_false",
+      "pass": true,
+      "detail": {
+        "native_ingestion": false,
+        "change_theme_state": false,
+        "change_baskets": false,
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "fable_handoff": false
+      }
+    },
+    {
+      "name": "unique_sources",
+      "pass": true,
+      "detail": 7
+    },
+    {
+      "name": "https_sources",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "event_date",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pre_event_grade_not_exact_archive",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pre_event_support_scoped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "confound_present",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "market_not_causal",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "market_not_reproduced",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "acceptance_depth",
+      "pass": true,
+      "detail": 16
+    },
+    {
+      "name": "arith_pre_tax_adjusted_operating_income",
+      "pass": true,
+      "detail": {
+        "got": "2.4257361525489687",
+        "expected": "2.425736152548968737838889600"
+      }
+    },
+    {
+      "name": "arith_after_tax_adjusted_operating_income",
+      "pass": true,
+      "detail": {
+        "got": "11.208151382823871",
+        "expected": "11.20815138282387190684133920"
+      }
+    },
+    {
+      "name": "arith_adjusted_eps",
+      "pass": true,
+      "detail": {
+        "got": "-7.352941176470588",
+        "expected": "-7.352941176470588235294117650"
+      }
+    },
+    {
+      "name": "arith_equity_production",
+      "pass": true,
+      "detail": {
+        "got": "-1.0033444816053512",
+        "expected": "-1.003344481605351170568561870"
+      }
+    },
+    {
+      "name": "net_income_separate",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "mixed_sign_vector",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_trade_authority",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "claim_limit": "Research evidence-state and arithmetic checks only; not historical-byte attestation, source-rights admission, causal event-study validation, production behavior or investment merit."
+}
