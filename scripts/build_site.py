@@ -5,6 +5,12 @@ parquet store — never refetches and never recomputes the classifier, so the
 site builds even when every scraper is down.
 
 Usage: python -m scripts.build_site
+
+An explicit --no-refresh-stock-library render requires --frozen-us-board-sha256
+and --frozen-us-gate-sha256. It consumes the existing native pair through the
+normal public/protected split and refuses changed inputs; it does not originate
+Plans or advance their ledger. Normal builds retain their existing refresh.
+
 """
 from __future__ import annotations
 
@@ -6296,14 +6302,82 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
     return out
 
 
-def main() -> int:
+def _capture_frozen_us_render_source(
+    site: Path, board_sha256: str | None, gate_sha256: str | None,
+) -> dict[Path, bytes]:
+    """Bind an explicit render to the existing native pair before any writes."""
+    from hashlib import sha256
+    import re
+
+    from scripts.check_signal_gate_coherence import incoherent_tickers
+
+    paths = (
+        (site / "factordata" / "us_standouts.json", board_sha256),
+        (site / "factordata" / "signal_gate.json", gate_sha256),
+    )
+    frozen: dict[Path, bytes] = {}
+    documents = []
+    for path, expected in paths:
+        if not isinstance(expected, str) or not re.fullmatch(r"[0-9a-f]{64}", expected):
+            raise ValueError("REFUSED_FROZEN_US_SOURCE: both exact SHA256 pins are required")
+        if path.is_symlink() or not path.is_file():
+            raise ValueError(f"REFUSED_FROZEN_US_SOURCE: missing or indirect {path.name}")
+        raw = path.read_bytes()
+        if sha256(raw).hexdigest() != expected:
+            raise ValueError(f"REFUSED_FROZEN_US_SOURCE: digest mismatch for {path.name}")
+        try:
+            document = json.loads(raw)
+        except (ValueError, UnicodeError) as exc:
+            raise ValueError(f"REFUSED_FROZEN_US_SOURCE: invalid {path.name}") from exc
+        if not isinstance(document, dict):
+            raise ValueError(f"REFUSED_FROZEN_US_SOURCE: invalid object in {path.name}")
+        frozen[path] = raw
+        documents.append(document)
+
+    board, gate = documents
+    board_emit, gate_emit = board.get("emit"), gate.get("emit")
+    if not isinstance(board_emit, dict) or not isinstance(gate_emit, dict):
+        raise ValueError("REFUSED_FROZEN_US_SOURCE: native pair identity is missing")
+    for key in ("pair_id", "at_utc", "writer"):
+        value = board_emit.get(key)
+        if not isinstance(value, str) or not value or value != gate_emit.get(key):
+            raise ValueError(f"REFUSED_FROZEN_US_SOURCE: pair {key} mismatch")
+    if board_emit["writer"] != "build_stock_library":
+        raise ValueError("REFUSED_FROZEN_US_SOURCE: unknown pair writer")
+    if not isinstance(board.get("as_of"), str) or not board["as_of"] or board["as_of"] != gate.get("as_of"):
+        raise ValueError("REFUSED_FROZEN_US_SOURCE: market-session mismatch")
+    if incoherent_tickers(board, gate):
+        raise ValueError("REFUSED_FROZEN_US_SOURCE: board/gate content mismatch")
+    if _us_today_native_binding(frozen[paths[0][0]]) is None:
+        raise ValueError("REFUSED_FROZEN_US_SOURCE: native source binding unavailable")
+    return frozen
+
+
+def _verify_frozen_us_render_source(frozen: dict[Path, bytes]) -> None:
+    """Reject partial render output if either bound source changed in this run."""
+    for path, original in frozen.items():
+        if path.is_symlink() or not path.is_file() or path.read_bytes() != original:
+            raise RuntimeError(f"REFUSED_FROZEN_US_SOURCE_DRIFT: {path.name}")
+
+
+def main(
+    *, refresh_stock_library: bool = True,
+    frozen_us_board_sha256: str | None = None,
+    frozen_us_gate_sha256: str | None = None,
+) -> int:
     from lib import nyse_calendar as _us_nyse_calendar  # noqa: PLC0415
 
+    site = config.ROOT / config.load()["storage"]["site_dir"]
+    if refresh_stock_library and (frozen_us_board_sha256 is not None or frozen_us_gate_sha256 is not None):
+        raise ValueError("REFUSED_FROZEN_US_SOURCE: pins require no-refresh mode")
+    frozen_us_source = (
+        _capture_frozen_us_render_source(site, frozen_us_board_sha256, frozen_us_gate_sha256)
+        if not refresh_stock_library else None
+    )
     _us_board_observed_at = datetime.now(timezone.utc)
     _us_completed_session = _us_nyse_calendar.expected_last_session(
         _us_board_observed_at
     ).isoformat()
-    site = config.ROOT / config.load()["storage"]["site_dir"]
     site.mkdir(parents=True, exist_ok=True)
 
     with open(config.data_dir() / "regime" / "latest.json") as fh:
@@ -8167,19 +8241,23 @@ def main() -> int:
                 state_display_json=sd_json,
                 ticker_alert_meta_json=_json.dumps(_ta.edge_meta())))
         _tmark("stock_page")
-        # refresh the cached 中文 translations of the (English-sourced) company blurbs
-        # BEFORE building the library, so the per-stock JSON carries description_zh.
-        # Gated + cached + degrade-never-raise: a no-op without the configured key, and
-        # only new/changed blurbs hit the API (see scripts/translate_profiles.py).
-        try:
-            from scripts.translate_profiles import main as translate_profiles
-            translate_profiles()
-        except Exception as e:  # noqa: BLE001 — translation is optional, never break the build
-            log.warning("profile translation step failed (%s); blurbs stay English", e)
-        _tmark("profile_translation")
-        from scripts.build_stock_library import main as build_library
-        build_library(now=_us_board_observed_at)
-        _tmark("stock_library")
+        if refresh_stock_library:
+            # refresh the cached 中文 translations of the (English-sourced) company blurbs
+            # BEFORE building the library, so the per-stock JSON carries description_zh.
+            # Gated + cached + degrade-never-raise: a no-op without the configured key, and
+            # only new/changed blurbs hit the API (see scripts/translate_profiles.py).
+            try:
+                from scripts.translate_profiles import main as translate_profiles
+                translate_profiles()
+            except Exception as e:  # noqa: BLE001 — translation is optional, never break the build
+                log.warning("profile translation step failed (%s); blurbs stay English", e)
+            _tmark("profile_translation")
+            from scripts.build_stock_library import main as build_library
+            build_library(now=_us_board_observed_at)
+            _tmark("stock_library")
+
+        else:
+            log.info("retained pinned US board/gate; stock-library refresh disabled")
 
         # One-build-lag fix (us_stocks staleness banner): build_library() just wrote
         # THIS build's fresh factordata/us_standouts.json + setups.json, but macro.html
@@ -8756,9 +8834,27 @@ def main() -> int:
         # record (e.g. "WARNING ::warning ..."), which silently drops the annotation.
         print(f"::warning title=sitemap::core sitemap regeneration failed: {_sm_e}", flush=True)
 
+    if frozen_us_source is not None:
+        _verify_frozen_us_render_source(frozen_us_source)
     _write_timing_ledger()
     return 0
 
 
+def _cli(argv: list[str] | None = None) -> int:
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--no-refresh-stock-library", action="store_true",
+                        help="Render the existing pinned US board without republishing its library.")
+    parser.add_argument("--frozen-us-board-sha256")
+    parser.add_argument("--frozen-us-gate-sha256")
+    args = parser.parse_args(argv)
+    return main(
+        refresh_stock_library=not args.no_refresh_stock_library,
+        frozen_us_board_sha256=args.frozen_us_board_sha256,
+        frozen_us_gate_sha256=args.frozen_us_gate_sha256,
+    )
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(_cli())
