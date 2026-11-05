@@ -1913,6 +1913,18 @@
       "at": "2026-11-04T01:20:19.132740+00:00",
       "activated": false,
       "importance": 10
+    },
+    "https://www.whitehouse.gov/?p=54042": {
+      "id": "wh-2026-11-04-president-trump-will-again-defy-the-odds-the-fake-news-and-the-radical-left",
+      "at": "2026-11-04T23:39:30.454947+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54039": {
+      "id": "wh-2026-11-04-first-lady-melania-trump-and-lsu-establish-5-million-fostering-the-future-endowm",
+      "at": "2026-11-04T23:39:31.678666+00:00",
+      "activated": false,
+      "importance": 5
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

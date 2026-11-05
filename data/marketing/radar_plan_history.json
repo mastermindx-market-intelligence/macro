@@ -2,6 +2,35 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-11-04",
+      "tickers": [
+        "AMGN",
+        "AMSF",
+        "ASPE",
+        "BBTX",
+        "BC",
+        "BNL",
+        "CCOI",
+        "CENX",
+        "CMI",
+        "CVNA",
+        "DG",
+        "DLB",
+        "EIX",
+        "ENPH",
+        "FMC",
+        "MEDP",
+        "MGM",
+        "MTX",
+        "OI",
+        "PEGA",
+        "REYN",
+        "SLB",
+        "WELL",
+        "WLK"
+      ]
+    },
+    {
       "as_of": "2026-11-03",
       "tickers": [
         "AA",
@@ -197,41 +226,6 @@
         "SOXL",
         "VMI",
         "WGS"
-      ]
-    },
-    {
-      "as_of": "2026-10-23",
-      "tickers": [
-        "ALRM",
-        "BAC",
-        "BC",
-        "BCC",
-        "CBRS",
-        "CI",
-        "CRF",
-        "DLB",
-        "DLX",
-        "DOLE",
-        "EXK",
-        "GFI",
-        "GIII",
-        "GOLF",
-        "GOOG",
-        "GXVIX",
-        "JLL",
-        "KEY",
-        "LFUS",
-        "LIVN",
-        "LQD",
-        "MEDP",
-        "NBIX",
-        "NOKBF",
-        "OMC",
-        "PRI",
-        "SON",
-        "ULS",
-        "VSAT",
-        "VYX"
       ]
     }
   ]

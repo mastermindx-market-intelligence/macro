@@ -8,14 +8,14 @@
     "model": null,
     "probabilities": false
   },
-  "asof": "2026-11-03",
+  "asof": "2026-11-04",
   "data_last_day": "2026-10-30",
-  "tape_lag_sessions": 2,
+  "tape_lag_sessions": 3,
   "universe_n": 2626,
   "null_state": false,
   "macro_backdrop": {
     "froth_quadrant": "narrowing_top",
-    "stage3_count": 221
+    "stage3_count": 222
   },
   "tiers": [
     {
@@ -51802,13 +51802,13 @@
     }
   ],
   "_vintage": {
-    "generated_utc": "2026-11-03T19:58:39Z",
+    "generated_utc": "2026-11-04T14:53:03Z",
     "source": "scripts/build_top_maturation.py",
     "store_vintage": {
       "store": "massive_stock_day",
-      "n_tickers": 13939,
+      "n_tickers": 20882,
       "latest_date": "2026-11-02",
-      "updated_at": "2026-11-03T13:10:17.055097+00:00"
+      "updated_at": "2026-11-04T04:07:50.525103+00:00"
     },
     "library_vintage": "2026-08-11T01:08:16Z",
     "library_window": [
@@ -51854,7 +51854,7 @@
     "n_segments": 8320,
     "n_sessions": 1338,
     "trailing_sessions": 760,
-    "scan_seconds": 47.14,
+    "scan_seconds": 60.99,
     "readable": true,
     "n_extended": 157,
     "per_state": {
@@ -52008,7 +52008,7 @@
     "library_rows": 33598,
     "thresholds_present": true,
     "ext_variant_stamp": null,
-    "tier_seconds": 12.08,
+    "tier_seconds": 14.55,
     "n_themes": 11,
     "n_us_stock_metadata": 2857,
     "n_screened_post_intersection": 2626,
@@ -52168,7 +52168,7 @@
         "library_rows": 33598,
         "thresholds_present": true,
         "ext_variant_stamp": null,
-        "tier_seconds": 12.08,
+        "tier_seconds": 14.55,
         "n_themes": 11
       },
       "r63": {
@@ -52301,7 +52301,7 @@
         "library_rows": 29801,
         "thresholds_present": true,
         "ext_variant_stamp": "r63",
-        "tier_seconds": 11.29
+        "tier_seconds": 14.15
       },
       "atrz": {
         "readable": true,
@@ -52862,9 +52862,9 @@
         "library_rows": 123988,
         "thresholds_present": true,
         "ext_variant_stamp": "atrz",
-        "tier_seconds": 23.38
+        "tier_seconds": 24.39
       }
     },
-    "total_seconds": 112.3
+    "total_seconds": 134.49
   }
 }
