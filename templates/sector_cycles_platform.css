@@ -25,9 +25,10 @@
   .sc-plat .sc-sheet-x:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
   /* An open sheet owns the bottom of the screen. The shared assistant launcher (stub #mmb-boot,
      loaded #mmb-launch) sits over its lower right at z 2147483000, so it takes the launcher's own
-     hidden state while the sheet is up and returns when the sheet closes (D34). */
-  body:has(.sc-plat .cyc-detail.sc-sheet-half) #mmb-boot, body:has(.sc-plat .cyc-detail.sc-sheet-full) #mmb-boot,
-  body:has(.sc-plat .cyc-detail.sc-sheet-half) #mmb-launch, body:has(.sc-plat .cyc-detail.sc-sheet-full) #mmb-launch {
+     hidden state while the sheet is up and returns when the sheet closes (D34). The scope is the
+     html.sc-plat that initMobile always sets: on the standalone page the carrier is not inside body. */
+  .sc-plat body:has(.cyc-detail.sc-sheet-half) #mmb-boot, .sc-plat body:has(.cyc-detail.sc-sheet-full) #mmb-boot,
+  .sc-plat body:has(.cyc-detail.sc-sheet-half) #mmb-launch, .sc-plat body:has(.cyc-detail.sc-sheet-full) #mmb-launch {
     opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(8px); }
   .sc-plat .sc-scrim { background: var(--pv-dialog-backdrop); }
 

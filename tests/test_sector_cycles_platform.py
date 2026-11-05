@@ -278,16 +278,20 @@ def test_open_sheet_retires_the_assistant_launcher_on_mobile_only():
     mob = _mobile_block(css)
     for detent in ("sc-sheet-half", "sc-sheet-full"):
         for fab in ("#mmb-boot", "#mmb-launch"):
-            sel = "body:has(.sc-plat .cyc-detail.%s) %s" % (detent, fab)
+            sel = ".sc-plat body:has(.cyc-detail.%s) %s" % (detent, fab)
             pat = re.escape(sel) + r"(?![\w-])"
             assert re.search(pat, mob), sel
             assert len(re.findall(pat, css)) == 1, "launcher hide must live in the mobile block only: " + sel
-    rule = mob[mob.index("body:has(.sc-plat .cyc-detail.sc-sheet-half) #mmb-boot"):]
+    rule = mob[mob.index(".sc-plat body:has(.cyc-detail.sc-sheet-half) #mmb-boot"):]
     rule = rule[rule.index("{") + 1:rule.index("}")]
     for decl in ("opacity: 0", "visibility: hidden", "pointer-events: none"):
         assert decl in rule, decl
     # the resting sheet (no detent class) never hides the launcher
-    assert not re.search(r":has\(\.sc-plat \.cyc-detail\)", css)
+    assert not re.search(r":has\(\.cyc-detail\)", css)
+    # initMobile always sets html.sc-plat; on the standalone page the carrier is not inside body, so a
+    # body:has(.sc-plat ...) form never matched there
+    assert "body:has(.sc-plat " not in css
+    assert "root.document.documentElement.classList.add('sc-plat')" in _text("sector_cycles_platform.js")
 
 
 def test_sheet_close_is_a_one_line_labelled_pill():
