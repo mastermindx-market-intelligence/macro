@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk06.v1.schema.json",
   "title": "Specialist pack PK06 v1 catalogue",
-  "description": "Leases and off-balance commitments. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
+  "description": "Leases and off-balance commitments. Result instances validate against specialist_pack_result.v1. The field, check and reason-code catalogue is frozen by the FIF K1/K2 seat spec; pack results remain display-only context (attested: false) until a Q1 held-out evaluation under Q0.",
   "pack_schema_id": "pack.pk06/v1",
   "pack_id": "PK06",
   "name": "Leases and off-balance commitments",
@@ -15,10 +15,316 @@
     "typed absences",
     "production source trace"
   ],
-  "catalogue_state": "unspecified",
-  "fields": [],
-  "checks": [],
-  "reason_codes": [],
+  "catalogue_state": "specified",
+  "fields": [
+    {
+      "field_id": "rou_assets_operating",
+      "name": "Operating lease right-of-use assets",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "rou_assets_finance",
+      "name": "Finance lease right-of-use assets",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "operating_lease_liability_current",
+      "name": "Operating lease liability, current",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "operating_lease_liability_noncurrent",
+      "name": "Operating lease liability, noncurrent",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "finance_lease_liability_current",
+      "name": "Finance lease liability, current",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "finance_lease_liability_noncurrent",
+      "name": "Finance lease liability, noncurrent",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "lease_cost_operating",
+      "name": "Operating lease cost",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "lease_cost_finance_amortization",
+      "name": "Finance lease cost, amortization of right-of-use assets",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "lease_cost_finance_interest",
+      "name": "Finance lease cost, interest on lease liabilities",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "lease_cost_variable",
+      "name": "Variable lease cost",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "lease_cost_short_term",
+      "name": "Short-term lease cost",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "lease_cost_total",
+      "name": "Total lease cost",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "lease_cash_payments",
+      "name": "Cash paid for amounts included in the measurement of lease liabilities",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "weighted_average_remaining_term",
+      "name": "Weighted-average remaining lease term",
+      "type": "duration_iso8601",
+      "unit": null,
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "weighted_average_discount_rate",
+      "name": "Weighted-average lease discount rate",
+      "type": "ratio",
+      "unit": "ratio",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "undiscounted_payments_total",
+      "name": "Undiscounted lease payments, total",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact",
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "undiscounted_payments_by_year",
+      "name": "Undiscounted lease payments by year (maturity table)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact",
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "offbalance_purchase_commitments",
+      "name": "Off-balance-sheet purchase commitments",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "operating_lease_liability_total",
+      "name": "Operating lease liability, total (check operand)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "finance_lease_liability_total",
+      "name": "Finance lease liability, total (check operand)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "lease_imputed_interest",
+      "name": "Lease payments, imputed interest (check operand)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "lease_liability_split_vs_total",
+      "kind": "sum_identity",
+      "operands": [
+        "operating_lease_liability_current",
+        "operating_lease_liability_noncurrent",
+        "operating_lease_liability_total",
+        "finance_lease_liability_current",
+        "finance_lease_liability_noncurrent",
+        "finance_lease_liability_total"
+      ]
+    },
+    {
+      "check_id": "undiscounted_minus_imputed_equals_liability",
+      "kind": "sum_identity",
+      "operands": [
+        "undiscounted_payments_total",
+        "lease_imputed_interest",
+        "operating_lease_liability_total",
+        "finance_lease_liability_total"
+      ]
+    },
+    {
+      "check_id": "commitments_not_in_contingencies",
+      "kind": "cross_statement",
+      "operands": [
+        "offbalance_purchase_commitments",
+        "pk08:loss_contingency_accrual"
+      ]
+    }
+  ],
+  "reason_codes": [
+    {
+      "code": "applicability_rule_satisfied",
+      "parameter": null,
+      "meaning": "the pack's versioned applicability rule (`applicability.rule_id`) evaluated true"
+    },
+    {
+      "code": "form_outside_pack_forms",
+      "parameter": null,
+      "meaning": "the admitted form is outside the pack's Q0-frozen forms"
+    },
+    {
+      "code": "missing_standard_fact",
+      "parameter": "concept",
+      "meaning": "the standard concept named by the parameter has no admitted fact for the period"
+    },
+    {
+      "code": "extension_concept_unaliased",
+      "parameter": "prefix",
+      "meaning": "the value exists only under an extension prefix with no frozen alias"
+    },
+    {
+      "code": "disallowed_dimension",
+      "parameter": null,
+      "meaning": "the only facts carry a dimension the field does not admit"
+    },
+    {
+      "code": "missing_dependency",
+      "parameter": null,
+      "meaning": "a formula/check operand is not valued (R-K3: never an implied zero)"
+    },
+    {
+      "code": "unit_mismatch",
+      "parameter": null,
+      "meaning": "operands differ in unit/currency/period basis"
+    },
+    {
+      "code": "numeric_value_in_narrative_only",
+      "parameter": null,
+      "meaning": "the number appears only inside narrative text; R-K4' forbids extracting it"
+    }
+  ],
   "type": "object",
   "additionalProperties": false
 }

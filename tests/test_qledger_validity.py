@@ -211,6 +211,61 @@ def test_absent_store_reports_null_findings_not_an_empty_list():
     assert clean["findings"] == []
 
 
+@pytest.mark.parametrize(
+    "claims,grades,expected_code,strict_exit",
+    [
+        ([_claim("mixed", "a", 1), _claim("mixed", "b", -1)],
+         [_grade("a", 5), _grade("b", 5)],
+         "SIGNED_EXCESS_POOLED_ACROSS_DIRECTIONS", 1),
+        ([_claim("salience", "a", 0)], [_grade("a", 5)],
+         "HIT_RATE_ON_A_SALIENCE_FAMILY", 1),
+        ([_claim("long", "a", 1, horizon=63)], [_grade("a", 21)],
+         "OFF_HORIZON_VERDICT", 0),
+        ([_claim("legal", "a", -1)], [_grade("a", 5)], None, 0),
+        ([], [], None, 0),
+    ],
+    ids=["mixed-direction", "salience-hit-rate", "immature-note", "legal-short", "empty"],
+)
+def test_metric_gate_strict_scope_preserves_owner_severity_and_warn_default(
+    tmp_path, monkeypatch, capsys, claims, grades, expected_code, strict_exit
+):
+    """Exercise the real CLI on synthetic stores, without activating fleet strictness.
+
+    An illegal metric is a strict failure; immature evidence retains the owner's
+    NOTE severity. Neither a clean store nor a lawful negative direction fails.
+    Both modes must audit identical inputs and leave the owner stores untouched.
+    """
+    import sys
+
+    cli = _load_cli()
+    store = tmp_path / "data" / "qledger"
+    store.mkdir(parents=True)
+    for name, rows in (("claims", claims), ("grades", grades)):
+        (store / f"{name}.jsonl").write_text(
+            "".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8"
+        )
+    before = {p.name: p.read_bytes() for p in store.iterdir()}
+    outputs = []
+    for strict in (False, True):
+        argv = ["check_qledger_metric_validity", "--root", str(tmp_path), "--json"]
+        monkeypatch.setattr(sys, "argv", argv + (["--strict"] if strict else []))
+        assert cli.main() == (strict_exit if strict else 0)
+        outputs.append(json.loads(capsys.readouterr().out))
+    assert outputs[0] == outputs[1]
+    assert outputs[0]["store_absent"] is False
+    assert outputs[0]["claims"] == len(claims)
+    assert outputs[0]["grades"] == len(grades)
+    codes = {finding["code"] for finding in outputs[0]["findings"]}
+    assert codes == ({expected_code} if expected_code else set())
+    assert {p.name: p.read_bytes() for p in store.iterdir()} == before
+
+
+def test_descriptive_no_metric_scope_does_not_invent_a_hit_rate():
+    """The existing auditor supports an explicit no-metric owner projection."""
+    claims = [_claim("description", "a", 0)]
+    assert audit(claims, [], reported_metrics={"description": set()}) == []
+
+
 # --------------------------------------------------------------------------- #
 # K3E EVAL-1 — accepted-main source admission fence
 # --------------------------------------------------------------------------- #
@@ -1042,3 +1097,531 @@ def test_k3e_eval1_forward_t2b_one_try_per_check():
         "max_challenger_abstention",
         "scored_fraction_floor",
     ]
+
+
+# T12 exposes the existing metric owner to the existing Agent OS boundary.
+def _research_registry(*families):
+    return {"schema": "intelligence_registry.v1", "engines": [
+        {"engine_id": f"engine/{f}.py::owner-{f}", "producer": f"engine/{f}.py",
+         "owner_program": f"owner-{f}", "ledger": f"qledger:{f}",
+         "ledger_evidence": {"rule": 2, "desk": f}}
+        for f in families], "excluded": []}
+
+
+def test_research_findings_project_two_explicit_metric_owner_findings():
+    from engine.qledger_validity import project_research_findings
+    claims = [_claim("mixed", "a", 1), _claim("mixed", "b", -1), _claim("salience", "c", 0)]
+    metrics = {"mixed": {"excess_mean"}, "salience": {"hit_rate"}}
+    registry = _research_registry("mixed", "salience")
+    before = json.dumps([claims, registry], sort_keys=True)
+    result = project_research_findings(claims, [], reported_metrics=metrics, registry=registry, evidence_link="research/evidence/synthetic-audit.json")
+    assert result["evaluation_status"] == "not_assessed"
+    assert not result["unresolved"]
+    assert [(x["segment"], x["metric"], x["suggested_tier"]) for x in result["issues"]] == [("mixed", "excess_mean", "T0"), ("salience", "hit_rate", "T0")]
+    for issue, owner in zip(result["issues"], audit(claims, [], reported_metrics=metrics)):
+        assert set(issue) == {"engine", "metric", "observed_change", "segment", "evidence_link", "suggested_tier"}
+        assert issue["observed_change"] == "Snapshot of intended-report metric validity: " + owner.detail
+        assert issue["engine"] == f"engine/{owner.family}.py::owner-{owner.family}"
+    assert json.dumps([claims, registry], sort_keys=True) == before
+
+
+@pytest.mark.parametrize("metrics", [None, {}, {"m": None}, {"m": ["excess_mean"]}])
+def test_research_findings_require_explicit_per_family_metric_scope(metrics):
+    from engine.qledger_validity import project_research_findings
+    with pytest.raises(ValueError):
+        project_research_findings([_claim("m", "a", 1), _claim("m", "b", -1)], [], reported_metrics=metrics, registry=_research_registry("m"), evidence_link="research/evidence/x.json")
+
+
+def test_research_findings_empty_descriptive_scope_emits_no_issue():
+    from engine.qledger_validity import project_research_findings
+    result = project_research_findings([_claim("m", "a", 1), _claim("m", "b", -1)], [], reported_metrics={"m": set()}, registry=_research_registry("m"), evidence_link="research/evidence/x.json")
+    assert result["issues"] == [] and result["unresolved"] == []
+
+
+@pytest.mark.parametrize("damage", ["missing", "ambiguous", "excluded", "wrong_id", "weak_binding"])
+def test_research_findings_do_not_guess_engine_binding(damage):
+    from copy import deepcopy
+    from engine.qledger_validity import project_research_findings
+    registry = _research_registry("m")
+    row = registry["engines"][0]
+    if damage == "missing": registry["engines"] = []
+    if damage == "ambiguous": registry["engines"].append(deepcopy(row))
+    if damage == "excluded":
+        registry["excluded"] = [{"engine_id": row["engine_id"], "would_be_ledger": "qledger:m"}]
+        registry["engines"] = []
+    if damage == "wrong_id": row["engine_id"] = "invented"
+    if damage == "weak_binding": row["ledger_evidence"]["rule"] = 1
+    result = project_research_findings([_claim("m", "a", 1), _claim("m", "b", -1)], [], reported_metrics={"m": {"excess_mean"}}, registry=registry, evidence_link="research/evidence/x.json")
+    assert result["issues"] == [] and result["unresolved"]
+
+
+def test_research_findings_preserve_off_horizon_as_unsupported_note():
+    from engine.qledger_validity import project_research_findings
+    result = project_research_findings([_claim("m", "a", 1, horizon=63)], [_grade("a", 5)], reported_metrics={"m": {"hit_rate"}}, registry=_research_registry("m"), evidence_link="research/evidence/x.json")
+    assert result["issues"] == []
+    assert result["unresolved"][0]["code"] == "OFF_HORIZON_VERDICT"
+    assert result["unresolved"][0]["reason"] == "unsupported_owner_finding"
+
+
+@pytest.mark.parametrize("link", [None, "", "x" * 2049, "\ud800"])
+def test_research_findings_require_bounded_evidence_locator(link):
+    from engine.qledger_validity import project_research_findings
+    with pytest.raises(ValueError):
+        project_research_findings([], [], reported_metrics={}, registry=_research_registry(), evidence_link=link)
+
+
+
+def test_research_findings_real_registry_to_existing_discovery_consumer(monkeypatch):
+    import socket
+    from scripts import agentos
+    from engine.intelligence_registry import build_registry, DeskScan
+    from engine.qledger_validity import project_research_findings
+    producer = "engine/synthetic_owner.py"
+    registry = build_registry(synapse={"meta": {"schema_version": 1}, "artifacts": {"example": {
+        "path": "data/synthetic-output.json", "format": "json", "producer": producer,
+        "owner_program": "synthetic-owner", "cadence": "daily-engine", "storage": "git",
+        "asof_field": "asof", "freshness_sla_hours": 24, "schema": "example",
+        "tier": "display", "horizon_role": "context", "consumers": []}}},
+        desk_scans={producer: DeskScan(imports_qledger=True, desks=("mixed",), unresolved=False)})
+    def refuse_io(*args, **kwargs):
+        raise AssertionError("pure finding projection must not do I/O")
+    with monkeypatch.context() as patch:
+        patch.setattr("builtins.open", refuse_io)
+        patch.setattr(socket, "socket", refuse_io)
+        result = project_research_findings([_claim("mixed", "a", 1), _claim("mixed", "b", -1)], [], reported_metrics={"mixed": {"excess_mean"}}, registry=registry, evidence_link="research/evidence/synthetic-owner.json")
+        assert len(result["issues"]) == 1 and not result["unresolved"]
+        finding = result["issues"][0]
+        payload = {"key": "SYNTHETIC-METRIC-FINDING", "claim": "The synthetic mixed-direction family cannot report pooled signed excess.", "falsifier": "pytest tests/test_qledger_validity.py -k research_findings", "so_what": "Use a legal metric for this synthetic report.", "kind": "data", "verified_at": "2026-10-14", "verified_by": "tests/test_qledger_validity.py:1", "scope": ["synthetic-owner"], "confidence": "verified", "evaluation_finding": finding}
+        text = agentos.draft_discovery(payload)
+        record = agentos.yaml.safe_load(text.split("---", 2)[1])
+        assert record["evaluation_finding"] == finding
+        assert not [p for p in agentos.check_discovery(record, Path("DSC-SYNTHETIC-METRIC-FINDING.md")) if p.hard]
+        payload.pop("falsifier")
+        with pytest.raises(SystemExit):
+            agentos.draft_discovery(payload)
+
+
+def test_research_findings_unassessed_scope_cannot_look_clear():
+    from engine.qledger_validity import project_research_findings
+    result = project_research_findings([_claim("m", "a", 1)], [], reported_metrics={"m": {"accuracy"}, "absent": {"hit_rate"}}, registry=_research_registry("m"), evidence_link="research/evidence/x.json")
+    assert result["issues"] == []
+    assert {x["reason"] for x in result["unresolved"]} == {"unsupported_metric", "family_has_no_claims"}
+
+
+def test_research_findings_metric_integrity_does_not_depend_on_engine_authority():
+    from engine.qledger_validity import project_research_findings
+    registry = _research_registry("m")
+    registry["engines"][0]["authority"] = "gate_size"
+    result = project_research_findings([_claim("m", "a", 1), _claim("m", "b", -1)], [], reported_metrics={"m": {"excess_mean"}}, registry=registry, evidence_link="research/evidence/x.json")
+    assert result["issues"][0]["suggested_tier"] == "T0"
+
+
+# --------------------------------------------------------------------------- #
+# T12 CLI consumer — `check_qledger_metric_validity.py --project-findings`.
+#
+# The pure producer above had no bounded caller route. The mode reads ONE
+# caller-supplied regular JSON file, delegates every semantic to the pure
+# owner, and prints a snapshot. It must never touch the live claim/grade
+# stores, fetch registry inputs or dereference evidence_link — the tests wire
+# I/O refusals in to prove the absence rather than trusting the output. A
+# refused input exits 2 with a null result: "could not look" must never render
+# as "looked and clean" (§9.2), and never as a traceback or echoed input.
+# --------------------------------------------------------------------------- #
+_PROJECT_FINDINGS_MAX_BYTES = 16 * 1024 * 1024
+
+
+def _research_input(
+    *,
+    claims=None,
+    grades=None,
+    metrics=None,
+    registry="default",
+    evidence_link="research/evidence/synthetic-cli.json",
+    schema="qledger.research_findings_input.v1",
+    extra=None,
+    drop=(),
+):
+    document = {
+        "schema": schema,
+        "claims": [_claim("mixed", "a", 1), _claim("mixed", "b", -1)] if claims is None else claims,
+        "grades": [] if grades is None else grades,
+        "reported_metrics": {"mixed": ["excess_mean"]} if metrics is None else metrics,
+        "registry": _research_registry("mixed") if registry == "default" else registry,
+        "evidence_link": evidence_link,
+    }
+    document.update(extra or {})
+    for key in drop:
+        del document[key]
+    return document
+
+
+def _run_project_findings(monkeypatch, capsys, extra_argv):
+    import sys
+
+    cli = _load_cli()
+    monkeypatch.setattr(sys, "argv", ["check_qledger_metric_validity", *extra_argv])
+    code = cli.main()
+    out = capsys.readouterr().out
+    return code, (json.loads(out) if out.strip() else None), out
+
+
+def _malformed_cases():
+    def raw(document):
+        return json.dumps(document).encode("utf-8")
+
+    return {
+        # JSON layer refusals — a document that cannot be parsed as bounded
+        # strict JSON is unknown, never an empty projection.
+        "not_json": (b"TELLTALE-NOT-JSON {{{", "input_not_json"),
+        "bad_utf8": (b"{\xff not utf-8 \xfe}", "input_not_utf8"),
+        "duplicate_key": (b'{"evidence_link": "a", "evidence_link": "b"}', "duplicate_json_key"),
+        "non_finite_constant": (
+            json.dumps(_research_input(claims=[], grades=[])).replace('"claims": []', '"claims": [NaN]').encode("utf-8"),
+            "non_finite_json_constant",
+        ),
+        # Schema/shape refusals — decided before the pure owner is called.
+        "document_not_object": (b"[1, 2]", "input_schema_invalid"),
+        "wrong_schema": (raw(_research_input(schema="not.the.schema.v1")), "input_schema_invalid"),
+        "extra_key": (raw(_research_input(extra={"surprise": 1})), "input_schema_invalid"),
+        "missing_key": (raw(_research_input(drop=("grades",))), "input_schema_invalid"),
+        "claims_not_list": (raw(_research_input(claims={"mixed": _claim("mixed", "a", 1)})), "input_schema_invalid"),
+        "claim_not_object": (raw(_research_input(claims=[42])), "input_schema_invalid"),
+        "grades_not_list": (raw(_research_input(grades={"a": 5})), "input_schema_invalid"),
+        "grade_not_object": (raw(_research_input(grades=["a"])), "input_schema_invalid"),
+        "metrics_not_object": (raw(_research_input(metrics=["mixed"])), "input_schema_invalid"),
+        "metrics_value_not_list": (raw(_research_input(metrics={"mixed": "excess_mean"})), "input_schema_invalid"),
+        "metric_not_string": (raw(_research_input(metrics={"mixed": [7]})), "input_schema_invalid"),
+        "registry_not_object": (raw(_research_input(registry=[])), "input_schema_invalid"),
+        "evidence_link_not_string": (raw(_research_input(evidence_link=17)), "input_schema_invalid"),
+    }
+
+
+def test_project_findings_valid_input_returns_the_unchanged_pure_result(tmp_path, monkeypatch, capsys):
+    """Arrays become sets at the boundary; the result is the owner's, byte for byte."""
+    from engine.qledger_validity import project_research_findings as pure
+
+    raw = json.dumps(_research_input()).encode("utf-8")
+    source = tmp_path / "findings-input.json"
+    source.write_bytes(raw)
+    code, out, _ = _run_project_findings(monkeypatch, capsys, ["--project-findings", str(source)])
+    assert code == 0
+    assert set(out) == {"schema", "input", "result", "error"}
+    assert out["schema"] == "qledger.research_findings_cli.v1"
+    assert out["input"]["bytes"] == len(raw)
+    assert out["input"]["sha256"] == hashlib.sha256(raw).hexdigest()
+    assert out["error"] is None
+    expected = pure(
+        _research_input()["claims"],
+        [],
+        reported_metrics={"mixed": {"excess_mean"}},
+        registry=_research_input()["registry"],
+        evidence_link="research/evidence/synthetic-cli.json",
+    )
+    assert out["result"] == expected
+    assert [(i["segment"], i["metric"], i["suggested_tier"]) for i in out["result"]["issues"]] == [
+        ("mixed", "excess_mean", "T0")
+    ]
+
+
+def test_project_findings_issue_reaches_the_existing_discovery_draft_and_validator(
+    tmp_path, monkeypatch, capsys
+):
+    """The CLI issue is the same typed payload the existing draft/validator consume."""
+    import socket
+    import sys
+
+    from scripts import agentos
+
+    source = tmp_path / "findings-input.json"
+    source.write_bytes(json.dumps(_research_input()).encode("utf-8"))
+    # --json is redundant in this mode, not a conflict: the mode only speaks JSON.
+    code, out, _ = _run_project_findings(
+        monkeypatch, capsys, ["--project-findings", str(source), "--json"]
+    )
+    assert code == 0
+    finding = out["result"]["issues"][0]
+    payload = {
+        "key": "SYNTHETIC-CLI-FINDING",
+        "claim": "The synthetic mixed-direction family cannot report pooled signed excess.",
+        "falsifier": "pytest tests/test_qledger_validity.py -k project_findings",
+        "so_what": "Use a legal metric for this synthetic report.",
+        "kind": "data",
+        "verified_at": "2026-10-14",
+        "verified_by": "tests/test_qledger_validity.py:1",
+        "scope": ["synthetic-cli"],
+        "confidence": "verified",
+        "evaluation_finding": finding,
+    }
+
+    def refuse_io(*args, **kwargs):
+        raise AssertionError("snapshot emission must not do I/O")
+
+    with monkeypatch.context() as patch:
+        patch.setattr("builtins.open", refuse_io)
+        patch.setattr(socket, "socket", refuse_io)
+        text = agentos.draft_discovery(payload)
+        record = agentos.yaml.safe_load(text.split("---", 2)[1])
+        assert record["evaluation_finding"] == finding
+        assert not [p for p in agentos.check_discovery(record, Path("DSC-SYNTHETIC-CLI-FINDING.md")) if p.hard]
+
+
+@pytest.mark.parametrize("case", sorted(_malformed_cases()))
+def test_project_findings_refuses_malformed_input_as_unknown(tmp_path, monkeypatch, capsys, case):
+    import sys
+
+    raw, expected_code = _malformed_cases()[case]
+    source = tmp_path / "bad.json"
+    source.write_bytes(raw)
+    code, out, _ = _run_project_findings(monkeypatch, capsys, ["--project-findings", str(source)])
+    assert code == 2
+    assert out["schema"] == "qledger.research_findings_cli.v1"
+    assert out["result"] is None  # unknown — never an empty clean finding set
+    assert out["error"]["code"] == expected_code
+    assert out["error"]["message"]
+
+
+def test_project_findings_failure_never_echoes_the_input(tmp_path, monkeypatch, capsys):
+    import sys
+
+    source = tmp_path / "tell.json"
+    source.write_bytes(b"TELLTALE-INPUT-CONTENT { not json")
+    code, out, text = _run_project_findings(monkeypatch, capsys, ["--project-findings", str(source)])
+    assert code == 2 and out["result"] is None
+    assert "TELLTALE-INPUT-CONTENT" not in text
+
+
+def test_project_findings_surrogate_locator_is_owner_refused_not_crashed(tmp_path, monkeypatch, capsys):
+    """A JSON-escaped lone surrogate is valid JSON and a str; the owner refuses it.
+
+    The mode must surface the pure owner's refusal as the same bounded exit-2
+    shape rather than letting it become a traceback.
+    """
+    source = tmp_path / "surrogate.json"
+    source.write_bytes(json.dumps(_research_input(evidence_link="\ud800")).encode("utf-8"))
+    code, out, _ = _run_project_findings(monkeypatch, capsys, ["--project-findings", str(source)])
+    assert code == 2
+    assert out["result"] is None
+    assert out["error"]["code"] == "engine_refused_input"
+
+
+def test_project_findings_absent_input_is_unknown_not_clean(tmp_path, monkeypatch, capsys):
+    code, out, _ = _run_project_findings(
+        monkeypatch, capsys, ["--project-findings", str(tmp_path / "absent.json")]
+    )
+    assert code == 2
+    assert out["result"] is None
+    assert out["error"]["code"] == "input_missing"
+
+
+def test_project_findings_refuses_oversized_and_non_regular_input(tmp_path, monkeypatch, capsys):
+    over = tmp_path / "over.json"
+    over.write_bytes(b" " * (_PROJECT_FINDINGS_MAX_BYTES + 1))
+    code, out, _ = _run_project_findings(monkeypatch, capsys, ["--project-findings", str(over)])
+    assert code == 2 and out["result"] is None
+    assert out["error"]["code"] == "input_too_large"
+
+    # The bound is inclusive: a valid document padded to exactly 16 MiB projects.
+    raw = json.dumps(_research_input()).encode("utf-8")
+    at_bound = tmp_path / "at-bound.json"
+    at_bound.write_bytes(raw + b" " * (_PROJECT_FINDINGS_MAX_BYTES - len(raw)))
+    code, out, _ = _run_project_findings(monkeypatch, capsys, ["--project-findings", str(at_bound)])
+    assert code == 0
+    assert out["input"]["bytes"] == _PROJECT_FINDINGS_MAX_BYTES
+
+    code, out, _ = _run_project_findings(monkeypatch, capsys, ["--project-findings", str(tmp_path)])
+    assert code == 2 and out["result"] is None
+    assert out["error"]["code"] == "input_not_regular_file"
+
+    code, out, _ = _run_project_findings(monkeypatch, capsys, ["--project-findings", "/dev/null"])
+    assert code == 2 and out["result"] is None
+    assert out["error"]["code"] == "input_not_regular_file"
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="mode-000 does not block root")
+def test_project_findings_refuses_unreadable_input(tmp_path, monkeypatch, capsys):
+    source = tmp_path / "locked.json"
+    source.write_bytes(json.dumps(_research_input()).encode("utf-8"))
+    source.chmod(0o000)
+    code, out, _ = _run_project_findings(monkeypatch, capsys, ["--project-findings", str(source)])
+    assert code == 2 and out["result"] is None
+    assert out["error"]["code"] == "input_unreadable"
+
+
+@pytest.mark.parametrize("extra", [["--strict"], ["--selftest"], ["--root", "/tmp"], ["--strict", "--json"]])
+def test_project_findings_mode_conflicts_fail_before_any_read(tmp_path, monkeypatch, capsys, extra):
+    """The path is deliberately absent: a conflict is diagnosed BEFORE the read.
+
+    If the mode opened the file first, this would surface as input_missing;
+    mode_conflict proves the refusal happened first.
+    """
+    absent = tmp_path / "never-read.json"
+    code, out, _ = _run_project_findings(
+        monkeypatch, capsys, ["--project-findings", str(absent), *extra]
+    )
+    assert code == 2
+    assert out["result"] is None
+    assert out["error"]["code"] == "mode_conflict"
+
+
+def test_project_findings_refuses_input_that_moves_while_reading(tmp_path, monkeypatch, capsys):
+    """The post-read fstat must refuse a moved input — and claim no atomicity."""
+    from types import SimpleNamespace
+
+    source = tmp_path / "moving.json"
+    source.write_bytes(json.dumps(_research_input()).encode("utf-8"))
+    cli = _load_cli()
+    real_fstat = os.fstat
+    seen = []
+
+    def fstat(fd):
+        st = real_fstat(fd)
+        seen.append(1)
+        if len(seen) == 2:  # the post-read re-check sees a different size
+            return SimpleNamespace(
+                st_mode=st.st_mode,
+                st_ino=st.st_ino,
+                st_dev=st.st_dev,
+                st_size=st.st_size + 1,
+                st_mtime_ns=st.st_mtime_ns,
+                st_ctime_ns=st.st_ctime_ns,
+            )
+        return st
+
+    with monkeypatch.context() as patch:
+        patch.setattr(cli.os, "fstat", fstat)
+        code, out, _ = _run_project_findings(monkeypatch, capsys, ["--project-findings", str(source)])
+    assert code == 2
+    assert out["result"] is None
+    assert out["error"]["code"] == "input_changed_during_read"
+
+
+def test_project_findings_reads_only_the_supplied_file(tmp_path, monkeypatch, capsys):
+    """Wire refusals into every live-store/provider path the default mode uses.
+
+    The patches, not the disk, decide the outcome here — so a pass proves the
+    mode never reached a claim store, grade store, registry builder or socket.
+    """
+    import socket
+    import urllib.request
+
+    import engine.intelligence_registry
+    import engine.qledger_store
+
+    source = tmp_path / "findings-input.json"
+    source.write_bytes(json.dumps(_research_input()).encode("utf-8"))
+
+    def refuse(what):
+        def _refuse(*args, **kwargs):
+            raise AssertionError(f"--project-findings must not {what}")
+
+        return _refuse
+
+    with monkeypatch.context() as patch:
+        patch.setattr(engine.qledger_store, "uses_native_claims", refuse("read the live claim store"))
+        patch.setattr(engine.qledger_store, "open_raw_lines", refuse("read the live claim store"))
+        patch.setattr(engine.intelligence_registry, "build_registry", refuse("derive registry inputs"))
+        patch.setattr(socket, "socket", refuse("open a network socket"))
+        patch.setattr(urllib.request, "urlopen", refuse("fetch registry inputs"))
+        code, out, _ = _run_project_findings(monkeypatch, capsys, ["--project-findings", str(source)])
+    assert code == 0
+    assert out["result"]["schema"] == "qledger.research_findings.v1"
+    assert [(i["segment"], i["metric"]) for i in out["result"]["issues"]] == [("mixed", "excess_mean")]
+
+
+def test_existing_selftest_and_default_modes_are_untouched(tmp_path, monkeypatch, capsys):
+    """--selftest alone and the default/--root/--strict/--json store audit keep
+    their existing contracts; the new flag changes nothing about them."""
+    import sys
+
+    cli = _load_cli()
+    monkeypatch.setattr(sys, "argv", ["check_qledger_metric_validity", "--selftest"])
+    assert cli.main() == 0
+    capsys.readouterr()
+
+    store = tmp_path / "data" / "qledger"
+    store.mkdir(parents=True)
+    claims = [_claim("mixed", "a", 1), _claim("mixed", "b", -1)]
+    grades = [_grade("a", 5), _grade("b", 5)]
+    (store / "claims.jsonl").write_text(
+        "".join(json.dumps(row) + "\n" for row in claims), encoding="utf-8"
+    )
+    (store / "grades.jsonl").write_text(
+        "".join(json.dumps(row) + "\n" for row in grades), encoding="utf-8"
+    )
+    monkeypatch.setattr(sys, "argv", ["check_qledger_metric_validity", "--root", str(tmp_path), "--json"])
+    assert cli.main() == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["store_absent"] is False
+    assert [f["code"] for f in payload["findings"]] == ["SIGNED_EXCESS_POOLED_ACROSS_DIRECTIONS"]
+    monkeypatch.setattr(
+        sys, "argv", ["check_qledger_metric_validity", "--root", str(tmp_path), "--json", "--strict"]
+    )
+    assert cli.main() == 1
+    capsys.readouterr()
+
+
+@pytest.mark.parametrize('field,value', [('claim_family', []), ('claim_id', []), ('direction', 1e300)])
+def test_project_findings_malformed_row_is_structured_unknown(tmp_path, monkeypatch, capsys, field, value):
+    document = _research_input()
+    document['claims'][0][field] = value
+    if field == 'direction':
+        # Literal numeric overflow is not handled by json.parse_constant.
+        raw = json.dumps(document).replace('1e+300', '1e999').encode()
+    else:
+        raw = json.dumps(document).encode()
+    source = tmp_path / 'malformed-row.json'
+    source.write_bytes(raw)
+    code, out, _ = _run_project_findings(monkeypatch, capsys, ['--project-findings', str(source)])
+    assert code == 2 and out['result'] is None
+
+
+def test_project_findings_duplicate_key_does_not_echo_input(tmp_path, monkeypatch, capsys):
+    source = tmp_path / 'duplicate.json'
+    source.write_bytes(b'{"PRIVATE-INPUT-MARKER":1,"PRIVATE-INPUT-MARKER":2}')
+    code, out, text = _run_project_findings(monkeypatch, capsys, ['--project-findings', str(source)])
+    assert code == 2 and out['result'] is None
+    assert 'PRIVATE-INPUT-MARKER' not in text
+
+
+def test_project_findings_refusal_closes_open_descriptor(tmp_path, monkeypatch, capsys):
+    cli = _load_cli()
+    original = cli.os.open
+    descriptors = []
+    def capture(*args, **kwargs):
+        fd = original(*args, **kwargs)
+        descriptors.append(fd)
+        return fd
+    with monkeypatch.context() as patch:
+        patch.setattr(cli.os, 'open', capture)
+        code, out, _ = _run_project_findings(monkeypatch, capsys, ['--project-findings', str(tmp_path)])
+    assert code == 2 and out['result'] is None
+    assert len(descriptors) == 1
+    try:
+        with pytest.raises(OSError):
+            os.fstat(descriptors[0])
+    finally:
+        try:
+            os.close(descriptors[0])
+        except OSError:
+            pass
+
+
+def test_project_findings_replaced_path_is_unknown(tmp_path, monkeypatch, capsys):
+    source = tmp_path / 'moving-path.json'
+    source.write_bytes(json.dumps(_research_input()).encode())
+    replacement = tmp_path / 'replacement.json'
+    replacement.write_bytes(json.dumps(_research_input(claims=[])).encode())
+    cli = _load_cli()
+    original = cli.os.fstat
+    calls = []
+    def replace_path(fd):
+        result = original(fd)
+        calls.append(fd)
+        if len(calls) == 2:
+            replacement.replace(source)
+        return result
+    with monkeypatch.context() as patch:
+        patch.setattr(cli.os, 'fstat', replace_path)
+        code, out, _ = _run_project_findings(monkeypatch, capsys, ['--project-findings', str(source)])
+    assert code == 2 and out['result'] is None
+    assert out['error']['code'] == 'input_changed_during_read'
