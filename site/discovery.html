@@ -67,8 +67,9 @@
 <link rel="stylesheet" href="assets/css/e01c8803.css?v=e01c8803">
 <link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
 <link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
+<link rel="stylesheet" href="discovery-controls.css?v=e549ec2d">
 </head>
-<body>
+<body data-discovery-history="v1" data-discovery-asof="2026-11-03">
 
 
 
@@ -467,24 +468,28 @@
   
 </div>
 
-<div class="tabs">
-  <button class="tabbtn on" data-tab="global"><span class="l-en">Top Picks</span><span class="l-zh">精选</span></button>
-  <button class="tabbtn" data-tab="sectors"><span class="l-en">Sectors</span><span class="l-zh">板块</span></button>
-  <button class="tabbtn" data-tab="sector"><span class="l-en">Sector index</span><span class="l-zh">板块明细</span></button>
+<p id="discovery-return-status" class="panel muted sm" role="status" aria-live="polite" hidden></p>
+<div class="tabs" role="tablist" aria-label="Discovery views">
+  <button class="tabbtn on" type="button" role="tab" id="discovery-tab-global" aria-controls="tab-global" aria-selected="true" tabindex="0" data-tab="global"><span class="l-en">Top Picks</span><span class="l-zh">精选</span></button>
+  <button class="tabbtn" type="button" role="tab" id="discovery-tab-sectors" aria-controls="tab-sectors" aria-selected="false" tabindex="-1" data-tab="sectors"><span class="l-en">Sectors</span><span class="l-zh">板块</span></button>
+  <button class="tabbtn" type="button" role="tab" id="discovery-tab-sector" aria-controls="tab-sector" aria-selected="false" tabindex="-1" data-tab="sector"><span class="l-en">Sector index</span><span class="l-zh">板块明细</span></button>
 </div>
 
+<p id="discovery-table-help" class="muted sm discovery-table-hint"><span class="l-en">Scroll tables sideways to see every column.</span><span class="l-zh">横向滚动表格可查看全部列。</span></p>
+
 <!-- TOP PICKS (global, ranked by conviction) -->
-<div id="tab-global" data-grp="tab">
+<div id="tab-global" data-grp="tab" role="tabpanel" aria-labelledby="discovery-tab-global">
   <div class="panel">
-    <div class="seg">
-      <button class="segbtn on" id="seg-strong"><span class="l-en">Top conviction</span><span class="l-zh">高信念</span></button>
-      <button class="segbtn" id="seg-weak"><span class="l-en">Avoid</span><span class="l-zh">回避</span></button>
+    <div class="seg" role="group" aria-label="Conviction ranking">
+      <button class="segbtn on" id="seg-strong" type="button" aria-pressed="true" aria-controls="g-strong"><span class="l-en">Top conviction</span><span class="l-zh">高信念</span></button>
+      <button class="segbtn" id="seg-weak" type="button" aria-pressed="false" aria-controls="g-weak"><span class="l-en">Avoid</span><span class="l-zh">回避</span></button>
     </div>
     <label class="filt"><input type="checkbox" id="hideStretch"><span class="l-en">Hide stretched / parabolic</span><span class="l-zh">隐藏拉伸/抛物</span>
       <span class="help">?<span class="tip"><span class="l-en">Hides leaders that are ≥1σ extended vs their own history (stretched or parabolic) — leaving the high-conviction names that are still in-trend or steady. A risk-placement filter for finding leaders earlier in their move; NOT a higher-return or lower-drawdown claim (we tested — see reports/top-picks-freshness-phase0.md).</span><span class="l-zh">隐藏相对自身历史拉伸 ≥1σ 的领先股（拉伸或抛物），仅保留仍处趋势内/平稳的高信念个股。这是风险定位筛选，并非更高收益或更低回撤的承诺。</span></span></span></label>
+    <p id="discovery-filter-status" class="muted sm note" role="status"></p>
     
     <div id="g-strong" data-grp="glist">
-      <table>
+      <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
       <tr><th>#</th><th><span class="l-en">stock</span><span class="l-zh">个股</span></th>
         <th><span class="l-en">Top-Pick score</span><span class="l-zh">精选评分</span><span class="help">?<span class="tip"><span class="l-en">The conviction rank = 0.6·alpha + 0.4·confirmation. alpha is the sector-neutral residual-momentum z; confirmation is the sector-neutral z-mean of value / quality / profitability / low-vol / insider. Validated point-in-time to beat alpha alone on IC at every horizon (reports/top-picks-phase0.md). A modest, decayed edge — context, not a guaranteed buy.</span><span class="l-zh">信念排名 = 0.6·阿尔法 + 0.4·确认。阿尔法为板块中性残差动量 z；确认为价值/质量/盈利/低波/内部人的板块中性 z 均值。经点对点验证在每个跨度上优于单独阿尔法（reports/top-picks-phase0.md）。温和、已衰减的边际信号——背景而非保证买入。</span></span></span></th>
         <th><span class="l-en">buy</span><span class="l-zh">买入</span><span class="help">?<span class="tip"><span class="l-en">The entry signal you can actually act on. &#34;Buy zone&#34; = it fired in the last few days and momentum is still building; &#34;About to cross&#34; = it should fire within a day or two. A muted dash means nothing has fired — the name is a hold or is rolling over today, whatever its conviction. This is the only column that says &#34;buy&#34;.</span><span class="l-zh">真正能照着动手的入场信号。“买入区”＝最近几天刚触发，动量还在往上走；“即将交叉”＝预计一两天内触发。灰色破折号表示什么都没触发——不管信念多高，这只股票今天就是持有或者在回落。这是唯一说“买入”的一列。</span></span></span></th>
@@ -936,10 +941,10 @@
   <td class="convcell"><span class="cchips"><span class="cchip up" title="low_vol z +1.2"><span class="l-en">LowVol</span><span class="l-zh">低波</span> +1.2</span><span class="vchip val-richest" data-tip-en="Earnings yield at the 2th percentile of this name's OWN ~3-year history — near the richest multiple it has carried in 3 years (stretched-valuation caution — the kind price extension alone can miss). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 2 百分位；仅作展示，不计入评分。"><span class="l-en">Richest in 3y</span><span class="l-zh">近3年最贵</span></span></span></td>
   <td class="r muted sm" title="sector-neutral residual-momentum z (selection leg)">+1.67 <span class="xs">#4/175</span></td>
   <td class="r muted sm">$40.15</td>
-</tr></table>
+</tr></table></div>
     </div>
     <div id="g-weak" data-grp="glist" style="display:none">
-      <table>
+      <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
       <tr><th>#</th><th><span class="l-en">stock</span><span class="l-zh">个股</span></th>
         <th><span class="l-en">Top-Pick score</span><span class="l-zh">精选评分</span><span class="help">?<span class="tip"><span class="l-en">The conviction rank = 0.6·alpha + 0.4·confirmation. alpha is the sector-neutral residual-momentum z; confirmation is the sector-neutral z-mean of value / quality / profitability / low-vol / insider. Validated point-in-time to beat alpha alone on IC at every horizon (reports/top-picks-phase0.md). A modest, decayed edge — context, not a guaranteed buy.</span><span class="l-zh">信念排名 = 0.6·阿尔法 + 0.4·确认。阿尔法为板块中性残差动量 z；确认为价值/质量/盈利/低波/内部人的板块中性 z 均值。经点对点验证在每个跨度上优于单独阿尔法（reports/top-picks-phase0.md）。温和、已衰减的边际信号——背景而非保证买入。</span></span></span></th>
         <th><span class="l-en">buy</span><span class="l-zh">买入</span><span class="help">?<span class="tip"><span class="l-en">The entry signal you can actually act on. &#34;Buy zone&#34; = it fired in the last few days and momentum is still building; &#34;About to cross&#34; = it should fire within a day or two. A muted dash means nothing has fired — the name is a hold or is rolling over today, whatever its conviction. This is the only column that says &#34;buy&#34;.</span><span class="l-zh">真正能照着动手的入场信号。“买入区”＝最近几天刚触发，动量还在往上走；“即将交叉”＝预计一两天内触发。灰色破折号表示什么都没触发——不管信念多高，这只股票今天就是持有或者在回落。这是唯一说“买入”的一列。</span></span></span></th>
@@ -1401,17 +1406,17 @@
   <td class="convcell"><span class="cchips"><span class="cchip up" title="value z +0.9"><span class="l-en">Value</span><span class="l-zh">价值</span> +0.9</span><span class="cchip down" title="profitability z -0.8"><span class="l-en">Profit</span><span class="l-zh">盈利</span> -0.8</span></span></td>
   <td class="r muted sm" title="sector-neutral residual-momentum z (selection leg)">-2.12 <span class="xs">#94/100</span></td>
   <td class="r muted sm">$9.85</td>
-</tr></table>
+</tr></table></div>
     </div>
   </div>
 </div>
 
 <!-- SECTORS OVERVIEW -->
-<div id="tab-sectors" data-grp="tab" style="display:none">
+<div id="tab-sectors" data-grp="tab" role="tabpanel" aria-labelledby="discovery-tab-sectors" style="display:none">
   <div class="panel">
     <h2><span class="l-en">Sectors by conviction</span><span class="l-zh">按信念排序的板块</span>
       <span class="help">?<span class="tip"><span class="l-en">GICS sectors ranked by the mean Top-Pick score of their names, with the share of each sector sitting in the universe-wide top quintile. Because the score is sector-neutral, this measures how broadly a sector is leading, not the sector ETF return.</span><span class="l-zh">按其成分股的平均精选评分对 GICS 板块排序，并显示各板块处于全域顶部五分位的占比。由于评分为板块中性，这衡量的是板块领先的广度，而非板块 ETF 回报。</span></span></span></h2>
-    <table>
+    <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
       <tr><th>#</th><th><span class="l-en">sector</span><span class="l-zh">板块</span></th><th><span class="l-en">mean score</span><span class="l-zh">平均评分</span></th><th class="r"><span class="l-en">in top 20%</span><span class="l-zh">位于前20%</span></th><th class="r"><span class="l-en">names</span><span class="l-zh">只</span></th></tr>
       
       <tr>
@@ -1513,22 +1518,24 @@
         <td class="r muted sm">73</td>
       </tr>
       
-    </table>
+    </table></div>
   </div>
 </div>
 
 <!-- SECTOR INDEX (drill) -->
-<div id="tab-sector" data-grp="tab" style="display:none">
+<div id="tab-sector" data-grp="tab" role="tabpanel" aria-labelledby="discovery-tab-sector" style="display:none">
   <div class="panel">
+    <label for="secsel" class="discovery-label"><span class="l-en">Sector</span><span class="l-zh">板块</span></label>
     <select id="secsel" class="secsel">
-      <option value="0">Communication Services (39)</option><option value="1">Energy (68)</option><option value="2">Consumer Discretionary (188)</option><option value="3">Information Technology (185)</option><option value="4">Utilities (59)</option><option value="5">Industrials (251)</option><option value="6">Financials (250)</option><option value="7">Real Estate (99)</option><option value="8">Consumer Staples (71)</option><option value="9">Health Care (163)</option><option value="10">Materials (73)</option>
+      <option value="" data-label-en="Choose a sector" data-label-zh="选择板块">Choose a sector</option>
+      <option value="Communication Services" data-label-en="Communication Services" data-label-zh="通信服务" data-count="39" selected>Communication Services (39)</option><option value="Energy" data-label-en="Energy" data-label-zh="能源" data-count="68">Energy (68)</option><option value="Consumer Discretionary" data-label-en="Consumer Discretionary" data-label-zh="可选消费" data-count="188">Consumer Discretionary (188)</option><option value="Information Technology" data-label-en="Information Technology" data-label-zh="信息技术" data-count="185">Information Technology (185)</option><option value="Utilities" data-label-en="Utilities" data-label-zh="公用事业" data-count="59">Utilities (59)</option><option value="Industrials" data-label-en="Industrials" data-label-zh="工业" data-count="251">Industrials (251)</option><option value="Financials" data-label-en="Financials" data-label-zh="金融" data-count="250">Financials (250)</option><option value="Real Estate" data-label-en="Real Estate" data-label-zh="房地产" data-count="99">Real Estate (99)</option><option value="Consumer Staples" data-label-en="Consumer Staples" data-label-zh="必需消费" data-count="71">Consumer Staples (71)</option><option value="Health Care" data-label-en="Health Care" data-label-zh="医疗保健" data-count="163">Health Care (163)</option><option value="Materials" data-label-en="Materials" data-label-zh="原材料" data-count="73">Materials (73)</option>
     </select>
     
-    <div id="sec-0" data-grp="seclist">
+    <div id="sec-0" data-grp="seclist" data-sector="Communication Services">
       <div class="twocol">
         <div>
           <h3 class="pos"><span class="l-en">Top picks</span><span class="l-zh">精选</span> — <span class="l-en">Communication Services</span><span class="l-zh">通信服务</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="intrend">
   <td><a href="stock.html#MSGS"><b>MSGS</b></a> <span class="muted sm">Madison Square Gar</span></td>
@@ -1697,11 +1704,11 @@
   <td class="convcell"><span class="cchips"><span class="vchip val-rich" data-tip-en="Earnings yield at the 26th percentile of this name's OWN ~3-year history — near the richest multiple it has carried in 3 years (stretched-valuation caution — the kind price extension alone can miss). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 26 百分位；仅作展示，不计入评分。"><span class="l-en">Rich vs own</span><span class="l-zh">相对自身偏高</span></span></span></td>
   <td class="r muted sm">+0.49</td>
 </tr>
-          </table>
+          </table></div>
         </div>
         <div>
           <h3 class="neg"><span class="l-en">Avoid</span><span class="l-zh">回避</span> — <span class="l-en">Communication Services</span><span class="l-zh">通信服务</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="steady">
   <td><a href="stock.html#CCOI"><b>CCOI</b></a> <span class="muted sm">Cogent Communicati</span></td>
@@ -1758,17 +1765,17 @@
   <td class="convcell"><span class="cchips"><span class="cchip up" title="value z +1.0"><span class="l-en">Value</span><span class="l-zh">价值</span> +1.0</span><span class="cchip down" title="low_vol z -0.9"><span class="l-en">LowVol</span><span class="l-zh">低波</span> -0.9</span><span class="cchip down" data-tip-en="Form-4 open-market sales by 2 insiders over the trailing 6-month window, net -$0.3M. Counts and dollars only; the filings record no reason for the sales." data-tip-zh="近6个月内 2 名内部人在公开市场卖出（Form-4），净卖出 $0.3M。仅统计人数与金额，文件未记录卖出原因。"><span class="l-en">2 sellers</span><span class="l-zh">2 名卖出</span> -$0.3M</span><span class="vchip val-cheap" data-tip-en="Earnings yield at the 95th percentile of this name's OWN ~3-year history — cheaper than its own norm (re-rating headroom). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 95 百分位；仅作展示，不计入评分。"><span class="l-en">Cheap vs own</span><span class="l-zh">相对自身偏低</span></span></span></td>
   <td class="r muted sm">-0.91</td>
 </tr>
-          </table>
+          </table></div>
         </div>
       </div>
       <p class="muted sm note"><span class="l-en">Re-ranked within each sector by the Top-Pick score. α is how far the name is outrunning its own sector; the score adds the other factors on top. The &#34;buy&#34; column is the entry signal you can act on; &#34;trend&#34; is where the name sits in its own move — a separate question.</span><span class="l-zh">按精选评分在各自板块内重新排序。α 是它跑赢自己所在行业的幅度；评分在此基础上再加上其他因子。“买入”一列是可以照着动手的入场信号；“趋势”说的是它在自己这波走势里的位置——那是另一个问题。</span></p>
     </div>
     
-    <div id="sec-1" data-grp="seclist" style="display:none">
+    <div id="sec-1" data-grp="seclist" data-sector="Energy" style="display:none">
       <div class="twocol">
         <div>
           <h3 class="pos"><span class="l-en">Top picks</span><span class="l-zh">精选</span> — <span class="l-en">Energy</span><span class="l-zh">能源</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="steady">
   <td><a href="stock.html#VLO"><b>VLO</b></a> <span class="muted sm">Valero Energy</span></td>
@@ -1933,11 +1940,11 @@
   <td class="convcell"><span class="cchips"><span class="cchip up" title="low_vol z +1.2"><span class="l-en">LowVol</span><span class="l-zh">低波</span> +1.2</span><span class="cchip down" data-tip-en="Form-4 open-market sales by 5 insiders over the trailing 6-month window, net -$346.6M. Counts and dollars only; the filings record no reason for the sales." data-tip-zh="近6个月内 5 名内部人在公开市场卖出（Form-4），净卖出 $346.6M。仅统计人数与金额，文件未记录卖出原因。"><span class="l-en">5 sellers</span><span class="l-zh">5 名卖出</span> -$346.6M</span><span class="vchip val-richest" data-tip-en="Earnings yield at the 3th percentile of this name's OWN ~3-year history — near the richest multiple it has carried in 3 years (stretched-valuation caution — the kind price extension alone can miss). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 3 百分位；仅作展示，不计入评分。"><span class="l-en">Richest in 3y</span><span class="l-zh">近3年最贵</span></span></span></td>
   <td class="r muted sm">+0.44</td>
 </tr>
-          </table>
+          </table></div>
         </div>
         <div>
           <h3 class="neg"><span class="l-en">Avoid</span><span class="l-zh">回避</span> — <span class="l-en">Energy</span><span class="l-zh">能源</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="steady">
   <td><a href="stock.html#CRK"><b>CRK</b></a> <span class="muted sm">Comstock Resources</span></td>
@@ -1994,17 +2001,17 @@
   <td class="convcell"><span class="cchips"><span class="cchip down" title="value z -1.3"><span class="l-en">Value</span><span class="l-zh">价值</span> -1.3</span><span class="cchip down" title="low_vol z -0.7"><span class="l-en">LowVol</span><span class="l-zh">低波</span> -0.7</span><span class="vchip val-cheap" data-tip-en="Earnings yield at the 67th percentile of this name's OWN ~3-year history — cheaper than its own norm (re-rating headroom). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 67 百分位；仅作展示，不计入评分。"><span class="l-en">Cheap vs own</span><span class="l-zh">相对自身偏低</span></span></span></td>
   <td class="r muted sm">-0.56</td>
 </tr>
-          </table>
+          </table></div>
         </div>
       </div>
       <p class="muted sm note"><span class="l-en">Re-ranked within each sector by the Top-Pick score. α is how far the name is outrunning its own sector; the score adds the other factors on top. The &#34;buy&#34; column is the entry signal you can act on; &#34;trend&#34; is where the name sits in its own move — a separate question.</span><span class="l-zh">按精选评分在各自板块内重新排序。α 是它跑赢自己所在行业的幅度；评分在此基础上再加上其他因子。“买入”一列是可以照着动手的入场信号；“趋势”说的是它在自己这波走势里的位置——那是另一个问题。</span></p>
     </div>
     
-    <div id="sec-2" data-grp="seclist" style="display:none">
+    <div id="sec-2" data-grp="seclist" data-sector="Consumer Discretionary" style="display:none">
       <div class="twocol">
         <div>
           <h3 class="pos"><span class="l-en">Top picks</span><span class="l-zh">精选</span> — <span class="l-en">Consumer Discretionary</span><span class="l-zh">可选消费</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="steady">
   <td><a href="stock.html#CAKE"><b>CAKE</b></a> <span class="muted sm">The Cheesecake Fac</span></td>
@@ -2169,11 +2176,11 @@
   <td class="convcell"><span class="cchips"><span class="cchip up" title="value z +2.8"><span class="l-en">Value</span><span class="l-zh">价值</span> +2.8</span><span class="cchip down" title="profitability z -1.9"><span class="l-en">Profit</span><span class="l-zh">盈利</span> -1.9</span><span class="cchip down" data-tip-en="Form-4 open-market sales by 5 insiders over the trailing 6-month window, net -$9.4M. Counts and dollars only; the filings record no reason for the sales." data-tip-zh="近6个月内 5 名内部人在公开市场卖出（Form-4），净卖出 $9.4M。仅统计人数与金额，文件未记录卖出原因。"><span class="l-en">5 sellers</span><span class="l-zh">5 名卖出</span> -$9.4M</span></span></td>
   <td class="r muted sm">+1.21</td>
 </tr>
-          </table>
+          </table></div>
         </div>
         <div>
           <h3 class="neg"><span class="l-en">Avoid</span><span class="l-zh">回避</span> — <span class="l-en">Consumer Discretionary</span><span class="l-zh">可选消费</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="steady">
   <td><a href="stock.html#DFH"><b>DFH</b></a> <span class="muted sm">Dream Finders Home</span></td>
@@ -2230,17 +2237,17 @@
   <td class="convcell"><span class="cchips"><span class="cchip up" title="value z +0.8"><span class="l-en">Value</span><span class="l-zh">价值</span> +0.8</span><span class="cchip down" title="quality z -2.8"><span class="l-en">Quality</span><span class="l-zh">质量</span> -2.8</span><span class="cchip down" title="low_vol z -0.6"><span class="l-en">LowVol</span><span class="l-zh">低波</span> -0.6</span></span></td>
   <td class="r muted sm">-1.40</td>
 </tr>
-          </table>
+          </table></div>
         </div>
       </div>
       <p class="muted sm note"><span class="l-en">Re-ranked within each sector by the Top-Pick score. α is how far the name is outrunning its own sector; the score adds the other factors on top. The &#34;buy&#34; column is the entry signal you can act on; &#34;trend&#34; is where the name sits in its own move — a separate question.</span><span class="l-zh">按精选评分在各自板块内重新排序。α 是它跑赢自己所在行业的幅度；评分在此基础上再加上其他因子。“买入”一列是可以照着动手的入场信号；“趋势”说的是它在自己这波走势里的位置——那是另一个问题。</span></p>
     </div>
     
-    <div id="sec-3" data-grp="seclist" style="display:none">
+    <div id="sec-3" data-grp="seclist" data-sector="Information Technology" style="display:none">
       <div class="twocol">
         <div>
           <h3 class="pos"><span class="l-en">Top picks</span><span class="l-zh">精选</span> — <span class="l-en">Information Technology</span><span class="l-zh">信息技术</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="steady">
   <td><a href="stock.html#SNDK"><b>SNDK</b></a> <span class="muted sm">Sandisk</span></td>
@@ -2405,11 +2412,11 @@
   <td class="convcell"><span class="cchips"><span class="cchip up" title="quality z +0.7"><span class="l-en">Quality</span><span class="l-zh">质量</span> +0.7</span><span class="cchip down" title="low_vol z -2.2"><span class="l-en">LowVol</span><span class="l-zh">低波</span> -2.2</span><span class="cchip down" data-tip-en="Form-4 open-market sales by 7 insiders over the trailing 6-month window, net -$12.2M. Counts and dollars only; the filings record no reason for the sales." data-tip-zh="近6个月内 7 名内部人在公开市场卖出（Form-4），净卖出 $12.2M。仅统计人数与金额，文件未记录卖出原因。"><span class="l-en">7 sellers</span><span class="l-zh">7 名卖出</span> -$12.2M</span><span class="vchip val-rich" data-tip-en="Earnings yield at the 17th percentile of this name's OWN ~3-year history — near the richest multiple it has carried in 3 years (stretched-valuation caution — the kind price extension alone can miss). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 17 百分位；仅作展示，不计入评分。"><span class="l-en">Rich vs own</span><span class="l-zh">相对自身偏高</span></span></span></td>
   <td class="r muted sm">+1.72</td>
 </tr>
-          </table>
+          </table></div>
         </div>
         <div>
           <h3 class="neg"><span class="l-en">Avoid</span><span class="l-zh">回避</span> — <span class="l-en">Information Technology</span><span class="l-zh">信息技术</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="parabolic">
   <td><a href="stock.html#OLED"><b>OLED</b></a> <span class="muted sm">Universal Display</span></td>
@@ -2466,17 +2473,17 @@
   <td class="convcell"><span class="cchips"><span class="cchip up" title="low_vol z +2.0"><span class="l-en">LowVol</span><span class="l-zh">低波</span> +2.0</span><span class="cchip down" data-tip-en="Form-4 open-market sales by 3 insiders over the trailing 6-month window, net -$1.7M. Counts and dollars only; the filings record no reason for the sales." data-tip-zh="近6个月内 3 名内部人在公开市场卖出（Form-4），净卖出 $1.7M。仅统计人数与金额，文件未记录卖出原因。"><span class="l-en">3 sellers</span><span class="l-zh">3 名卖出</span> -$1.7M</span><span class="vchip val-richest" data-tip-en="Earnings yield at the 9th percentile of this name's OWN ~3-year history — near the richest multiple it has carried in 3 years (stretched-valuation caution — the kind price extension alone can miss). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 9 百分位；仅作展示，不计入评分。"><span class="l-en">Richest in 3y</span><span class="l-zh">近3年最贵</span></span></span></td>
   <td class="r muted sm">-2.14</td>
 </tr>
-          </table>
+          </table></div>
         </div>
       </div>
       <p class="muted sm note"><span class="l-en">Re-ranked within each sector by the Top-Pick score. α is how far the name is outrunning its own sector; the score adds the other factors on top. The &#34;buy&#34; column is the entry signal you can act on; &#34;trend&#34; is where the name sits in its own move — a separate question.</span><span class="l-zh">按精选评分在各自板块内重新排序。α 是它跑赢自己所在行业的幅度；评分在此基础上再加上其他因子。“买入”一列是可以照着动手的入场信号；“趋势”说的是它在自己这波走势里的位置——那是另一个问题。</span></p>
     </div>
     
-    <div id="sec-4" data-grp="seclist" style="display:none">
+    <div id="sec-4" data-grp="seclist" data-sector="Utilities" style="display:none">
       <div class="twocol">
         <div>
           <h3 class="pos"><span class="l-en">Top picks</span><span class="l-zh">精选</span> — <span class="l-en">Utilities</span><span class="l-zh">公用事业</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="intrend">
   <td><a href="stock.html#HTO"><b>HTO</b></a> <span class="muted sm">H2O America</span></td>
@@ -2641,11 +2648,11 @@
   <td class="convcell"><span class="cchips"><span class="vchip val-rich" data-tip-en="Earnings yield at the 20th percentile of this name's OWN ~3-year history — near the richest multiple it has carried in 3 years (stretched-valuation caution — the kind price extension alone can miss). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 20 百分位；仅作展示，不计入评分。"><span class="l-en">Rich vs own</span><span class="l-zh">相对自身偏高</span></span></span></td>
   <td class="r muted sm">+0.46</td>
 </tr>
-          </table>
+          </table></div>
         </div>
         <div>
           <h3 class="neg"><span class="l-en">Avoid</span><span class="l-zh">回避</span> — <span class="l-en">Utilities</span><span class="l-zh">公用事业</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="steady">
   <td><a href="stock.html#NRG"><b>NRG</b></a> <span class="muted sm">NRG Energy</span></td>
@@ -2702,17 +2709,17 @@
   <td class="convcell"><span class="cchips"><span class="cchip down" data-tip-en="Form-4 open-market sales by 4 insiders over the trailing 6-month window, net -$1.4M. Counts and dollars only; the filings record no reason for the sales." data-tip-zh="近6个月内 4 名内部人在公开市场卖出（Form-4），净卖出 $1.4M。仅统计人数与金额，文件未记录卖出原因。"><span class="l-en">4 sellers</span><span class="l-zh">4 名卖出</span> -$1.4M</span><span class="vchip val-rich" data-tip-en="Earnings yield at the 19th percentile of this name's OWN ~3-year history — near the richest multiple it has carried in 3 years (stretched-valuation caution — the kind price extension alone can miss). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 19 百分位；仅作展示，不计入评分。"><span class="l-en">Rich vs own</span><span class="l-zh">相对自身偏高</span></span></span></td>
   <td class="r muted sm">-0.90</td>
 </tr>
-          </table>
+          </table></div>
         </div>
       </div>
       <p class="muted sm note"><span class="l-en">Re-ranked within each sector by the Top-Pick score. α is how far the name is outrunning its own sector; the score adds the other factors on top. The &#34;buy&#34; column is the entry signal you can act on; &#34;trend&#34; is where the name sits in its own move — a separate question.</span><span class="l-zh">按精选评分在各自板块内重新排序。α 是它跑赢自己所在行业的幅度；评分在此基础上再加上其他因子。“买入”一列是可以照着动手的入场信号；“趋势”说的是它在自己这波走势里的位置——那是另一个问题。</span></p>
     </div>
     
-    <div id="sec-5" data-grp="seclist" style="display:none">
+    <div id="sec-5" data-grp="seclist" data-sector="Industrials" style="display:none">
       <div class="twocol">
         <div>
           <h3 class="pos"><span class="l-en">Top picks</span><span class="l-zh">精选</span> — <span class="l-en">Industrials</span><span class="l-zh">工业</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="intrend">
   <td><a href="stock.html#MATX"><b>MATX</b></a> <span class="muted sm">Matson, Inc.</span></td>
@@ -2877,11 +2884,11 @@
   <td class="convcell"><span class="cchips"><span class="cchip up" title="quality z +1.7"><span class="l-en">Quality</span><span class="l-zh">质量</span> +1.7</span><span class="cchip up" title="low_vol z +0.7"><span class="l-en">LowVol</span><span class="l-zh">低波</span> +0.7</span></span></td>
   <td class="r muted sm">+1.07</td>
 </tr>
-          </table>
+          </table></div>
         </div>
         <div>
           <h3 class="neg"><span class="l-en">Avoid</span><span class="l-zh">回避</span> — <span class="l-en">Industrials</span><span class="l-zh">工业</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="steady">
   <td><a href="stock.html#PNR"><b>PNR</b></a> <span class="muted sm">Pentair</span></td>
@@ -2938,17 +2945,17 @@
   <td class="convcell"><span class="cchips"><span class="cchip up" title="low_vol z +0.8"><span class="l-en">LowVol</span><span class="l-zh">低波</span> +0.8</span><span class="vchip val-cheap" data-tip-en="Earnings yield at the 99th percentile of this name's OWN ~3-year history — cheaper than its own norm (re-rating headroom). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 99 百分位；仅作展示，不计入评分。"><span class="l-en">Cheap vs own</span><span class="l-zh">相对自身偏低</span></span></span></td>
   <td class="r muted sm">-2.27</td>
 </tr>
-          </table>
+          </table></div>
         </div>
       </div>
       <p class="muted sm note"><span class="l-en">Re-ranked within each sector by the Top-Pick score. α is how far the name is outrunning its own sector; the score adds the other factors on top. The &#34;buy&#34; column is the entry signal you can act on; &#34;trend&#34; is where the name sits in its own move — a separate question.</span><span class="l-zh">按精选评分在各自板块内重新排序。α 是它跑赢自己所在行业的幅度；评分在此基础上再加上其他因子。“买入”一列是可以照着动手的入场信号；“趋势”说的是它在自己这波走势里的位置——那是另一个问题。</span></p>
     </div>
     
-    <div id="sec-6" data-grp="seclist" style="display:none">
+    <div id="sec-6" data-grp="seclist" data-sector="Financials" style="display:none">
       <div class="twocol">
         <div>
           <h3 class="pos"><span class="l-en">Top picks</span><span class="l-zh">精选</span> — <span class="l-en">Financials</span><span class="l-zh">金融</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="intrend">
   <td><a href="stock.html#TRST"><b>TRST</b></a> <span class="muted sm">TrustCo Bank Corp </span></td>
@@ -3113,11 +3120,11 @@
   <td class="convcell"><span class="cchips"><span class="cchip down" data-tip-en="Form-4 open-market sales by 6 insiders over the trailing 6-month window, net -$2.2M. Counts and dollars only; the filings record no reason for the sales." data-tip-zh="近6个月内 6 名内部人在公开市场卖出（Form-4），净卖出 $2.2M。仅统计人数与金额，文件未记录卖出原因。"><span class="l-en">6 sellers</span><span class="l-zh">6 名卖出</span> -$2.2M</span><span class="vchip val-richest" data-tip-en="Earnings yield at the 7th percentile of this name's OWN ~3-year history — near the richest multiple it has carried in 3 years (stretched-valuation caution — the kind price extension alone can miss). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 7 百分位；仅作展示，不计入评分。"><span class="l-en">Richest in 3y</span><span class="l-zh">近3年最贵</span></span></span></td>
   <td class="r muted sm">+1.29</td>
 </tr>
-          </table>
+          </table></div>
         </div>
         <div>
           <h3 class="neg"><span class="l-en">Avoid</span><span class="l-zh">回避</span> — <span class="l-en">Financials</span><span class="l-zh">金融</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="steady">
   <td><a href="stock.html#WD"><b>WD</b></a> <span class="muted sm">Walker &amp; Dunlop, I</span></td>
@@ -3174,17 +3181,17 @@
   <td class="convcell"><span class="cchips"><span class="cchip down" title="quality z -0.8"><span class="l-en">Quality</span><span class="l-zh">质量</span> -0.8</span><span class="vchip val-cheap" data-tip-en="Earnings yield at the 100th percentile of this name's OWN ~3-year history — cheaper than its own norm (re-rating headroom). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 100 百分位；仅作展示，不计入评分。"><span class="l-en">Cheap vs own</span><span class="l-zh">相对自身偏低</span></span></span></td>
   <td class="r muted sm">-2.19</td>
 </tr>
-          </table>
+          </table></div>
         </div>
       </div>
       <p class="muted sm note"><span class="l-en">Re-ranked within each sector by the Top-Pick score. α is how far the name is outrunning its own sector; the score adds the other factors on top. The &#34;buy&#34; column is the entry signal you can act on; &#34;trend&#34; is where the name sits in its own move — a separate question.</span><span class="l-zh">按精选评分在各自板块内重新排序。α 是它跑赢自己所在行业的幅度；评分在此基础上再加上其他因子。“买入”一列是可以照着动手的入场信号；“趋势”说的是它在自己这波走势里的位置——那是另一个问题。</span></p>
     </div>
     
-    <div id="sec-7" data-grp="seclist" style="display:none">
+    <div id="sec-7" data-grp="seclist" data-sector="Real Estate" style="display:none">
       <div class="twocol">
         <div>
           <h3 class="pos"><span class="l-en">Top picks</span><span class="l-zh">精选</span> — <span class="l-en">Real Estate</span><span class="l-zh">房地产</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="stretched">
   <td><a href="stock.html#DRH"><b>DRH</b></a> <span class="muted sm">DiamondRock Hospit</span></td>
@@ -3349,11 +3356,11 @@
   <td class="convcell"><span class="cchips"><span class="cchip down" title="value z -0.8"><span class="l-en">Value</span><span class="l-zh">价值</span> -0.8</span><span class="cchip down" data-tip-en="Form-4 open-market sales by 8 insiders over the trailing 6-month window, net -$20.7M. Counts and dollars only; the filings record no reason for the sales." data-tip-zh="近6个月内 8 名内部人在公开市场卖出（Form-4），净卖出 $20.7M。仅统计人数与金额，文件未记录卖出原因。"><span class="l-en">8 sellers</span><span class="l-zh">8 名卖出</span> -$20.7M</span><span class="vchip val-cheap" data-tip-en="Earnings yield at the 92th percentile of this name's OWN ~3-year history — cheaper than its own norm (re-rating headroom). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 92 百分位；仅作展示，不计入评分。"><span class="l-en">Cheap vs own</span><span class="l-zh">相对自身偏低</span></span></span></td>
   <td class="r muted sm">+1.09</td>
 </tr>
-          </table>
+          </table></div>
         </div>
         <div>
           <h3 class="neg"><span class="l-en">Avoid</span><span class="l-zh">回避</span> — <span class="l-en">Real Estate</span><span class="l-zh">房地产</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="stretched">
   <td><a href="stock.html#CSGP"><b>CSGP</b></a> <span class="muted sm">CoStar Group</span></td>
@@ -3410,17 +3417,17 @@
   <td class="convcell"><span class="cchips"><span class="cchip up" title="value z +0.9"><span class="l-en">Value</span><span class="l-zh">价值</span> +0.9</span><span class="cchip down" title="profitability z -0.8"><span class="l-en">Profit</span><span class="l-zh">盈利</span> -0.8</span></span></td>
   <td class="r muted sm">-2.12</td>
 </tr>
-          </table>
+          </table></div>
         </div>
       </div>
       <p class="muted sm note"><span class="l-en">Re-ranked within each sector by the Top-Pick score. α is how far the name is outrunning its own sector; the score adds the other factors on top. The &#34;buy&#34; column is the entry signal you can act on; &#34;trend&#34; is where the name sits in its own move — a separate question.</span><span class="l-zh">按精选评分在各自板块内重新排序。α 是它跑赢自己所在行业的幅度；评分在此基础上再加上其他因子。“买入”一列是可以照着动手的入场信号；“趋势”说的是它在自己这波走势里的位置——那是另一个问题。</span></p>
     </div>
     
-    <div id="sec-8" data-grp="seclist" style="display:none">
+    <div id="sec-8" data-grp="seclist" data-sector="Consumer Staples" style="display:none">
       <div class="twocol">
         <div>
           <h3 class="pos"><span class="l-en">Top picks</span><span class="l-zh">精选</span> — <span class="l-en">Consumer Staples</span><span class="l-zh">必需消费</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="intrend">
   <td><a href="stock.html#TGT"><b>TGT</b></a> <span class="muted sm">Target Corporation</span></td>
@@ -3587,11 +3594,11 @@
   <td class="convcell"><span class="cchips"><span class="cchip down" title="value z -1.1"><span class="l-en">Value</span><span class="l-zh">价值</span> -1.1</span><span class="cchip up" title="quality z +1.2"><span class="l-en">Quality</span><span class="l-zh">质量</span> +1.2</span><span class="cchip up" title="profitability z +2.4"><span class="l-en">Profit</span><span class="l-zh">盈利</span> +2.4</span><span class="cchip down" title="low_vol z -0.8"><span class="l-en">LowVol</span><span class="l-zh">低波</span> -0.8</span><span class="cchip down" data-tip-en="Form-4 open-market sales by 6 insiders over the trailing 6-month window, net -$21.7M. Counts and dollars only; the filings record no reason for the sales." data-tip-zh="近6个月内 6 名内部人在公开市场卖出（Form-4），净卖出 $21.7M。仅统计人数与金额，文件未记录卖出原因。"><span class="l-en">6 sellers</span><span class="l-zh">6 名卖出</span> -$21.7M</span></span></td>
   <td class="r muted sm">+0.53</td>
 </tr>
-          </table>
+          </table></div>
         </div>
         <div>
           <h3 class="neg"><span class="l-en">Avoid</span><span class="l-zh">回避</span> — <span class="l-en">Consumer Staples</span><span class="l-zh">必需消费</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="stretched">
   <td><a href="stock.html#FLO"><b>FLO</b></a> <span class="muted sm">Flowers Foods</span></td>
@@ -3648,17 +3655,17 @@
   <td class="convcell"><span class="cchips"><span class="cchip down" title="value z -1.1"><span class="l-en">Value</span><span class="l-zh">价值</span> -1.1</span><span class="cchip up" title="quality z +0.7"><span class="l-en">Quality</span><span class="l-zh">质量</span> +0.7</span><span class="cchip down" title="profitability z -0.7"><span class="l-en">Profit</span><span class="l-zh">盈利</span> -0.7</span><span class="cchip down" title="low_vol z -2.2"><span class="l-en">LowVol</span><span class="l-zh">低波</span> -2.2</span><span class="cchip ins">👤4</span></span></td>
   <td class="r muted sm">-1.22</td>
 </tr>
-          </table>
+          </table></div>
         </div>
       </div>
       <p class="muted sm note"><span class="l-en">Re-ranked within each sector by the Top-Pick score. α is how far the name is outrunning its own sector; the score adds the other factors on top. The &#34;buy&#34; column is the entry signal you can act on; &#34;trend&#34; is where the name sits in its own move — a separate question.</span><span class="l-zh">按精选评分在各自板块内重新排序。α 是它跑赢自己所在行业的幅度；评分在此基础上再加上其他因子。“买入”一列是可以照着动手的入场信号；“趋势”说的是它在自己这波走势里的位置——那是另一个问题。</span></p>
     </div>
     
-    <div id="sec-9" data-grp="seclist" style="display:none">
+    <div id="sec-9" data-grp="seclist" data-sector="Health Care" style="display:none">
       <div class="twocol">
         <div>
           <h3 class="pos"><span class="l-en">Top picks</span><span class="l-zh">精选</span> — <span class="l-en">Health Care</span><span class="l-zh">医疗保健</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="steady">
   <td><a href="stock.html#ILMN"><b>ILMN</b></a> <span class="muted sm">Illumina, Inc.</span></td>
@@ -3823,11 +3830,11 @@
   <td class="convcell"><span class="cchips"><span class="cchip down" title="value z -0.9"><span class="l-en">Value</span><span class="l-zh">价值</span> -0.9</span><span class="cchip up" title="quality z +1.6"><span class="l-en">Quality</span><span class="l-zh">质量</span> +1.6</span><span class="cchip down" title="low_vol z -1.3"><span class="l-en">LowVol</span><span class="l-zh">低波</span> -1.3</span><span class="cchip down" data-tip-en="Form-4 open-market sales by 5 insiders over the trailing 6-month window, net -$28.9M. Counts and dollars only; the filings record no reason for the sales." data-tip-zh="近6个月内 5 名内部人在公开市场卖出（Form-4），净卖出 $28.9M。仅统计人数与金额，文件未记录卖出原因。"><span class="l-en">5 sellers</span><span class="l-zh">5 名卖出</span> -$28.9M</span><span class="vchip val-cheap" data-tip-en="Earnings yield at the 100th percentile of this name's OWN ~3-year history — cheaper than its own norm (re-rating headroom). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 100 百分位；仅作展示，不计入评分。"><span class="l-en">Cheap vs own</span><span class="l-zh">相对自身偏低</span></span></span></td>
   <td class="r muted sm">+1.16</td>
 </tr>
-          </table>
+          </table></div>
         </div>
         <div>
           <h3 class="neg"><span class="l-en">Avoid</span><span class="l-zh">回避</span> — <span class="l-en">Health Care</span><span class="l-zh">医疗保健</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="stretched">
   <td><a href="stock.html#ZTS"><b>ZTS</b></a> <span class="muted sm">Zoetis</span></td>
@@ -3884,17 +3891,17 @@
   <td class="convcell"><span class="cchips"><span class="cchip up" title="low_vol z +0.9"><span class="l-en">LowVol</span><span class="l-zh">低波</span> +0.9</span><span class="cchip down" data-tip-en="Form-4 open-market sales by 5 insiders over the trailing 6-month window, net -$218.8M. Counts and dollars only; the filings record no reason for the sales." data-tip-zh="近6个月内 5 名内部人在公开市场卖出（Form-4），净卖出 $218.8M。仅统计人数与金额，文件未记录卖出原因。"><span class="l-en">5 sellers</span><span class="l-zh">5 名卖出</span> -$218.8M</span><span class="vchip val-cheap" data-tip-en="Earnings yield at the 83th percentile of this name's OWN ~3-year history — cheaper than its own norm (re-rating headroom). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 83 百分位；仅作展示，不计入评分。"><span class="l-en">Cheap vs own</span><span class="l-zh">相对自身偏低</span></span></span></td>
   <td class="r muted sm">-1.64</td>
 </tr>
-          </table>
+          </table></div>
         </div>
       </div>
       <p class="muted sm note"><span class="l-en">Re-ranked within each sector by the Top-Pick score. α is how far the name is outrunning its own sector; the score adds the other factors on top. The &#34;buy&#34; column is the entry signal you can act on; &#34;trend&#34; is where the name sits in its own move — a separate question.</span><span class="l-zh">按精选评分在各自板块内重新排序。α 是它跑赢自己所在行业的幅度；评分在此基础上再加上其他因子。“买入”一列是可以照着动手的入场信号；“趋势”说的是它在自己这波走势里的位置——那是另一个问题。</span></p>
     </div>
     
-    <div id="sec-10" data-grp="seclist" style="display:none">
+    <div id="sec-10" data-grp="seclist" data-sector="Materials" style="display:none">
       <div class="twocol">
         <div>
           <h3 class="pos"><span class="l-en">Top picks</span><span class="l-zh">精选</span> — <span class="l-en">Materials</span><span class="l-zh">原材料</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="intrend">
   <td><a href="stock.html#NUE"><b>NUE</b></a> <span class="muted sm">Nucor</span></td>
@@ -4059,11 +4066,11 @@
   <td class="convcell"><span class="cchips"><span class="cchip down" title="low_vol z -2.5"><span class="l-en">LowVol</span><span class="l-zh">低波</span> -2.5</span><span class="vchip val-cheap" data-tip-en="Earnings yield at the 100th percentile of this name's OWN ~3-year history — cheaper than its own norm (re-rating headroom). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 100 百分位；仅作展示，不计入评分。"><span class="l-en">Cheap vs own</span><span class="l-zh">相对自身偏低</span></span></span></td>
   <td class="r muted sm">+0.78</td>
 </tr>
-          </table>
+          </table></div>
         </div>
         <div>
           <h3 class="neg"><span class="l-en">Avoid</span><span class="l-zh">回避</span> — <span class="l-en">Materials</span><span class="l-zh">原材料</span></h3>
-          <table>
+          <div class="discovery-scroll tbl-scroll" role="region" aria-label="Ranked data / 排名数据" tabindex="0"><table>
             <tr><th><span class="l-en">stock</span><span class="l-zh">个股</span></th><th><span class="l-en">score</span><span class="l-zh">评分</span></th><th><span class="l-en">buy</span><span class="l-zh">买入</span></th><th><span class="l-en">stretch</span><span class="l-zh">拉伸</span></th><th><span class="l-en">trend</span><span class="l-zh">趋势</span></th><th><span class="l-en">drivers</span><span class="l-zh">驱动</span></th><th class="r"><span class="l-en">α</span><span class="l-zh">阿尔法</span></th></tr>
             <tr data-grade="steady">
   <td><a href="stock.html#FMC"><b>FMC</b></a> <span class="muted sm">FMC Corporation</span></td>
@@ -4120,7 +4127,7 @@
   <td class="convcell"><span class="cchips"><span class="cchip down" data-tip-en="Form-4 open-market sales by 2 insiders over the trailing 6-month window, net -$1.7M. Counts and dollars only; the filings record no reason for the sales." data-tip-zh="近6个月内 2 名内部人在公开市场卖出（Form-4），净卖出 $1.7M。仅统计人数与金额，文件未记录卖出原因。"><span class="l-en">2 sellers</span><span class="l-zh">2 名卖出</span> -$1.7M</span><span class="vchip val-cheap" data-tip-en="Earnings yield at the 85th percentile of this name's OWN ~3-year history — cheaper than its own norm (re-rating headroom). Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 85 百分位；仅作展示，不计入评分。"><span class="l-en">Cheap vs own</span><span class="l-zh">相对自身偏低</span></span></span></td>
   <td class="r muted sm">-1.61</td>
 </tr>
-          </table>
+          </table></div>
         </div>
       </div>
       <p class="muted sm note"><span class="l-en">Re-ranked within each sector by the Top-Pick score. α is how far the name is outrunning its own sector; the score adds the other factors on top. The &#34;buy&#34; column is the entry signal you can act on; &#34;trend&#34; is where the name sits in its own move — a separate question.</span><span class="l-zh">按精选评分在各自板块内重新排序。α 是它跑赢自己所在行业的幅度；评分在此基础上再加上其他因子。“买入”一列是可以照着动手的入场信号；“趋势”说的是它在自己这波走势里的位置——那是另一个问题。</span></p>
@@ -4134,26 +4141,7 @@
     <span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-11-05 03:50 UTC</p>
 </div>
 
-<script>
-(function(){
- function show(id, grp){ document.querySelectorAll('[data-grp="'+grp+'"]').forEach(function(el){ el.style.display='none'; }); var el=document.getElementById(id); if(el) el.style.display=''; }
- document.querySelectorAll('.tabbtn').forEach(function(b){ b.addEventListener('click', function(){
-   document.querySelectorAll('.tabbtn').forEach(function(x){ x.classList.remove('on'); }); this.classList.add('on');
-   show('tab-'+this.dataset.tab, 'tab'); }); });
- var su=document.getElementById('seg-strong'), sw=document.getElementById('seg-weak');
- if(su&&sw){ su.addEventListener('click', function(){ su.classList.add('on'); sw.classList.remove('on'); show('g-strong','glist'); });
-             sw.addEventListener('click', function(){ sw.classList.add('on'); su.classList.remove('on'); show('g-weak','glist'); }); }
- var sel=document.getElementById('secsel');
- if(sel) sel.addEventListener('change', function(){ show('sec-'+this.value, 'seclist'); });
- var hs=document.getElementById('hideStretch');
- if(hs) hs.addEventListener('change', function(){
-   var hide=this.checked;
-   document.querySelectorAll('tr[data-grade]').forEach(function(tr){
-     var g=tr.getAttribute('data-grade');
-     if(g==='stretched'||g==='parabolic') tr.style.display = hide ? 'none' : '';
-   }); });
-})();
-</script>
+<script src="discovery.js?v=1db70842" defer></script>
 <script src="theme.js?v=3c193891" defer></script>
 </body>
 </html>
