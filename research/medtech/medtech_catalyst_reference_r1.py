@@ -124,6 +124,8 @@ def _commercial_binding_reasons(
     event: Mapping[str, Any] | None,
     exposure: Mapping[str, Any],
     commercial: Mapping[str, Any],
+    *,
+    rights_visible: bool,
 ) -> list[str]:
     bound_case = commercial.get("bound_case")
     if not isinstance(bound_case, Mapping):
@@ -151,6 +153,10 @@ def _commercial_binding_reasons(
         ("relationship_id", "relationship_id", "COMMERCIAL_RELATIONSHIP_MISMATCH"),
     )
     for bound_field, exposure_field, reason in exposure_comparisons:
+        if bound_field == "relationship_id" and not rights_visible:
+            # Withheld relationship identity cannot be equality-checked
+            # without leaking it; its required-field check above still applies.
+            continue
         value = bound_case.get(bound_field)
         if value not in (None, "") and value != exposure.get(exposure_field):
             reasons.append(reason)
@@ -417,9 +423,17 @@ def qualify_case(
         field="exposure.materiality_public_at",
     )
 
+    # Rights visibility is fixed before binding so a withheld relationship
+    # identity cannot leak through commercial mismatch reasons.
+    rights_future = rights_public_at > cutoff
     readiness_state, readiness_gaps = _commercial_state(commercial)
     commercial_public_at = _utc(str(commercial["public_at"]), field="commercial.public_at")
-    commercial_binding_reasons = _commercial_binding_reasons(public_event, exposure, commercial)
+    commercial_binding_reasons = _commercial_binding_reasons(
+        public_event,
+        exposure,
+        commercial,
+        rights_visible=not rights_future,
+    )
     if commercial_binding_reasons:
         commercial_state = "COMMERCIAL_UNQUALIFIED"
         commercial_gaps = ["COMMERCIAL_CASE_BINDING_UNRESOLVED", *commercial_binding_reasons]
@@ -433,7 +447,6 @@ def qualify_case(
         security_id=str(exposure["security_id"]),
     )
 
-    rights_future = rights_public_at > cutoff
     materiality_future = materiality_public_at > cutoff
     commercial_future = commercial_public_at > cutoff
 

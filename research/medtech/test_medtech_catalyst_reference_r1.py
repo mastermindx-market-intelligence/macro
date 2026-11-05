@@ -739,3 +739,86 @@ def test_future_event_preserves_independent_public_evidence_and_diagnostics():
     inputs["commercial"]["bound_case"]["issuer_id"] = "SYNTHETIC:OTHER-ISSUER"
     mismatch = qualify_case(**inputs)
     assert "COMMERCIAL_ISSUER_MISMATCH" in mismatch["commercial"]["gaps"]
+
+
+# Future-rights relationship identity must not act as a commercial oracle.
+def test_future_rights_relationship_id_is_not_a_commercial_oracle():
+    inputs = _invented_event_clock_inputs()
+    inputs["exposure"]["rights_public_at"] = SYNTHETIC_AFTER
+    frozen = deepcopy(inputs)
+    baseline = qualify_case(**inputs)
+    assert inputs == frozen
+    variant_inputs = deepcopy(inputs)
+    variant_inputs["exposure"]["relationship_id"] = "SYNTHETIC:RELATIONSHIP:OTHER"
+    variant_frozen = deepcopy(variant_inputs)
+    variant = qualify_case(**variant_inputs)
+    assert variant_inputs == variant_frozen
+    assert variant == baseline
+    assert baseline["disposition"] == "WITHHELD_TEMPORAL"
+    assert baseline["commercial"]["state"] == "COMMERCIAL_UNQUALIFIED"
+    assert "COMMERCIAL_RELATIONSHIP_UNRESOLVED" in baseline["commercial"]["gaps"]
+    assert "COMMERCIAL_RELATIONSHIP_MISMATCH" not in baseline["commercial"]["gaps"]
+
+
+def test_public_relationship_mismatch_still_detected():
+    for rights_public_at in (SYNTHETIC_BEFORE, SYNTHETIC_CUTOFF):
+        inputs = _invented_event_clock_inputs()
+        inputs["exposure"]["rights_public_at"] = rights_public_at
+        baseline = qualify_case(**inputs)
+        assert "COMMERCIAL_RELATIONSHIP_MISMATCH" not in baseline["commercial"]["gaps"]
+        mismatched = deepcopy(inputs)
+        mismatched["exposure"]["relationship_id"] = "SYNTHETIC:RELATIONSHIP:OTHER"
+        result = qualify_case(**mismatched)
+        assert "COMMERCIAL_RELATIONSHIP_MISMATCH" in result["commercial"]["gaps"]
+        assert result["commercial"]["state"] == "COMMERCIAL_UNQUALIFIED"
+
+
+def test_future_rights_keep_commercial_required_relationship_check():
+    inputs = _invented_event_clock_inputs()
+    inputs["exposure"]["rights_public_at"] = SYNTHETIC_AFTER
+    del inputs["commercial"]["bound_case"]["relationship_id"]
+    result = qualify_case(**inputs)
+    assert "COMMERCIAL_RELATIONSHIP_MISSING" in result["commercial"]["gaps"]
+    assert "COMMERCIAL_RELATIONSHIP_MISMATCH" not in result["commercial"]["gaps"]
+
+
+def test_future_rights_keep_readiness_diagnostics():
+    inputs = _invented_event_clock_inputs()
+    inputs["exposure"]["rights_public_at"] = SYNTHETIC_AFTER
+    inputs["commercial"]["manufacturing_readiness"] = "not_ready"
+    public_twin = deepcopy(inputs)
+    public_twin["exposure"]["rights_public_at"] = SYNTHETIC_BEFORE
+    future = qualify_case(**inputs)
+    public = qualify_case(**public_twin)
+    assert future["commercial"]["gaps"][:2] == [
+        "COMMERCIAL_CASE_BINDING_UNRESOLVED",
+        "COMMERCIAL_RELATIONSHIP_UNRESOLVED",
+    ]
+    assert future["commercial"]["gaps"][2:] == public["commercial"]["gaps"]
+    assert public["commercial"]["gaps"]
+    assert "COMMERCIAL_RELATIONSHIP_MISMATCH" not in future["commercial"]["gaps"]
+
+
+def test_future_rights_keep_public_issuer_and_security_mismatches():
+    inputs = _invented_event_clock_inputs()
+    inputs["exposure"]["rights_public_at"] = SYNTHETIC_AFTER
+    issuer_inputs = deepcopy(inputs)
+    issuer_inputs["commercial"]["bound_case"]["issuer_id"] = "SYNTHETIC:ISSUER:OTHER"
+    issuer_result = qualify_case(**issuer_inputs)
+    assert "COMMERCIAL_ISSUER_MISMATCH" in issuer_result["commercial"]["gaps"]
+    security_inputs = deepcopy(inputs)
+    security_inputs["commercial"]["bound_case"]["security_id"] = "SYNTHETIC:SECURITY:OTHER"
+    security_result = qualify_case(**security_inputs)
+    assert "COMMERCIAL_SECURITY_MISMATCH" in security_result["commercial"]["gaps"]
+    for result in (issuer_result, security_result):
+        assert "COMMERCIAL_RELATIONSHIP_MISMATCH" not in result["commercial"]["gaps"]
+
+
+def test_future_rights_keep_public_event_mismatch():
+    inputs = _invented_event_clock_inputs()
+    inputs["exposure"]["rights_public_at"] = SYNTHETIC_AFTER
+    mismatched = deepcopy(inputs)
+    mismatched["commercial"]["bound_case"]["device_id"] = "SYNTHETIC:DEVICE:OTHER"
+    result = qualify_case(**mismatched)
+    assert "COMMERCIAL_DEVICE_MISMATCH" in result["commercial"]["gaps"]
+    assert "COMMERCIAL_RELATIONSHIP_MISMATCH" not in result["commercial"]["gaps"]
