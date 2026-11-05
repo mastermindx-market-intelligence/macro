@@ -1,0 +1,308 @@
+{
+  "artifact_kind": "research_plan_traceability",
+  "research_only": true,
+  "not_a_native_schema": true,
+  "not_a_queue": true,
+  "plan_status": "PROPOSED_FOR_REVIEW",
+  "implementation_started": false,
+  "origin_main_evidence": {
+    "command": "git grep -l -E 'IND-(D|R|SF)[0-9]+' origin/main -- tests",
+    "anchor_map": "tests/industrials_result_cash_helpers.py PLAN_REQUIREMENT_ANCHORS",
+    "tests_on_origin_main": [
+      "IND-SF07",
+      "IND-D02",
+      "IND-D06",
+      "IND-SF01",
+      "IND-D07",
+      "IND-D08",
+      "IND-D09",
+      "IND-D10",
+      "IND-D11",
+      "IND-D12",
+      "IND-D13",
+      "IND-D14",
+      "IND-D15",
+      "IND-D16",
+      "IND-R208",
+      "IND-D23",
+      "IND-R201",
+      "IND-R214",
+      "IND-R215",
+      "IND-R218",
+      "IND-SF04"
+    ],
+    "pending_8250": [
+      "IND-D04",
+      "IND-D05",
+      "IND-R210"
+    ],
+    "meaning": "TESTS_ON_ORIGIN_MAIN means the named anchor exists on origin/main. This research packet did not execute it and does not claim PASS. implementation_started stays false because this carrier still has no product code."
+  },
+  "fable_dispatched": false,
+  "operation": "gmi-industrials-sector-research-20260923-sol-001",
+  "carrier": 7789,
+  "entry_head": "c3e572023c0e4a0db6d44ed8b7c29972310c8e85",
+  "procedure_pin": "4fe4d25e3ee268e24162f33c35d176ebf9ab02e6",
+  "main_read_pin": "4597dd8e72a64aa86d1e07ae1a76924ce9a7b5ae",
+  "foundation_candidate": "d5b0c00d772e5034ed8c109b5990b1f3b91e0be5",
+  "accepted_foundation_release": null,
+  "plan_file": "2026-09-24-industrials-shared-foundation-increment-implementation.md",
+  "original_blobs": {
+    "2026-09-23-industrials-result-cash-dossier-design.md": "40fd1e3783102c28fe748fe35b927484d4f3dddb",
+    "2026-09-23-industrials-result-cash-dossier-design-r2.md": "9c98e106b954d0a48610afad418de2a9eeb1e58b",
+    "INDUSTRIALS_WAVE12_SEMICONDUCTOR_FOUNDATION_ALIGNMENT_2026-09-24.md": "b343cbd7bc1f52cfc6fbb5e18ab8d9e9f9392f6c"
+  },
+  "tasks": [
+    {
+      "id": "T01",
+      "title": "Bind accepted dependencies without reimplementing them",
+      "depends_on": [],
+      "test_file": "tests/test_industrials_dependency_binding.py",
+      "requirements": [
+        "IND-D02",
+        "IND-D06",
+        "IND-SF07"
+      ],
+      "test_status": "TESTS_ON_ORIGIN_MAIN",
+      "requirement_status": {
+        "IND-D02": "TESTS_ON_ORIGIN_MAIN",
+        "IND-D06": "TESTS_ON_ORIGIN_MAIN",
+        "IND-SF07": "TESTS_ON_ORIGIN_MAIN"
+      }
+    },
+    {
+      "id": "T02",
+      "title": "Enroll real case identities and retain them on ordinary refresh",
+      "depends_on": [
+        "T01"
+      ],
+      "test_file": "tests/test_industrials_issuer_enrollment.py",
+      "requirements": [
+        "IND-D04",
+        "IND-D05",
+        "IND-R210"
+      ],
+      "test_status": "PENDING_8250",
+      "requirement_status": {
+        "IND-D04": "PENDING_8250",
+        "IND-D05": "PENDING_8250",
+        "IND-R210": "PENDING_8250"
+      }
+    },
+    {
+      "id": "T03",
+      "title": "Extract source-qualified facts and distinct document editions",
+      "depends_on": [
+        "T02"
+      ],
+      "test_file": "tests/test_industrials_source_facts.py",
+      "requirements": [
+        "IND-D01",
+        "IND-R203",
+        "IND-R204",
+        "IND-R205",
+        "IND-R206",
+        "IND-R207"
+      ],
+      "test_status": "NOT_EXECUTED",
+      "requirement_status": {
+        "IND-D01": "NOT_EXECUTED",
+        "IND-R203": "NOT_EXECUTED",
+        "IND-R204": "NOT_EXECUTED",
+        "IND-R205": "NOT_EXECUTED",
+        "IND-R206": "NOT_EXECUTED",
+        "IND-R207": "NOT_EXECUTED"
+      }
+    },
+    {
+      "id": "T04",
+      "title": "Derive the signed result-to-cash calculations",
+      "depends_on": [
+        "T03"
+      ],
+      "test_file": "tests/test_industrials_result_cash.py",
+      "requirements": [
+        "IND-D07",
+        "IND-D08",
+        "IND-D09",
+        "IND-D10",
+        "IND-D11",
+        "IND-D12",
+        "IND-D13",
+        "IND-D14",
+        "IND-D15",
+        "IND-D16",
+        "IND-R208",
+        "IND-SF01"
+      ],
+      "test_status": "TESTS_ON_ORIGIN_MAIN",
+      "requirement_status": {
+        "IND-D07": "TESTS_ON_ORIGIN_MAIN",
+        "IND-D08": "TESTS_ON_ORIGIN_MAIN",
+        "IND-D09": "TESTS_ON_ORIGIN_MAIN",
+        "IND-D10": "TESTS_ON_ORIGIN_MAIN",
+        "IND-D11": "TESTS_ON_ORIGIN_MAIN",
+        "IND-D12": "TESTS_ON_ORIGIN_MAIN",
+        "IND-D13": "TESTS_ON_ORIGIN_MAIN",
+        "IND-D14": "TESTS_ON_ORIGIN_MAIN",
+        "IND-D15": "TESTS_ON_ORIGIN_MAIN",
+        "IND-D16": "TESTS_ON_ORIGIN_MAIN",
+        "IND-R208": "TESTS_ON_ORIGIN_MAIN",
+        "IND-SF01": "TESTS_ON_ORIGIN_MAIN"
+      }
+    },
+    {
+      "id": "T05",
+      "title": "Qualify information-time and expectations comparisons",
+      "depends_on": [
+        "T03",
+        "T04"
+      ],
+      "test_file": "tests/test_industrials_source_history.py",
+      "requirements": [
+        "IND-D17",
+        "IND-D18",
+        "IND-D19",
+        "IND-D20",
+        "IND-D21",
+        "IND-D24",
+        "IND-R209",
+        "IND-SF02",
+        "IND-SF03"
+      ],
+      "test_status": "NOT_EXECUTED",
+      "requirement_status": {
+        "IND-D17": "NOT_EXECUTED",
+        "IND-D18": "NOT_EXECUTED",
+        "IND-D19": "NOT_EXECUTED",
+        "IND-D20": "NOT_EXECUTED",
+        "IND-D21": "NOT_EXECUTED",
+        "IND-D24": "NOT_EXECUTED",
+        "IND-R209": "NOT_EXECUTED",
+        "IND-SF02": "NOT_EXECUTED",
+        "IND-SF03": "NOT_EXECUTED"
+      }
+    },
+    {
+      "id": "T06",
+      "title": "Compose a dependency-bound financial dossier",
+      "depends_on": [
+        "T04",
+        "T05"
+      ],
+      "test_file": "tests/test_industrials_financial_dossier.py",
+      "requirements": [
+        "IND-D03",
+        "IND-D22",
+        "IND-D23",
+        "IND-R201",
+        "IND-R213",
+        "IND-R214",
+        "IND-R215",
+        "IND-R218",
+        "IND-SF04"
+      ],
+      "test_status": "MIXED",
+      "requirement_status": {
+        "IND-D03": "NOT_EXECUTED",
+        "IND-D22": "NOT_EXECUTED",
+        "IND-D23": "TESTS_ON_ORIGIN_MAIN",
+        "IND-R201": "TESTS_ON_ORIGIN_MAIN",
+        "IND-R213": "NOT_EXECUTED",
+        "IND-R214": "TESTS_ON_ORIGIN_MAIN",
+        "IND-R215": "TESTS_ON_ORIGIN_MAIN",
+        "IND-R218": "TESTS_ON_ORIGIN_MAIN",
+        "IND-SF04": "TESTS_ON_ORIGIN_MAIN"
+      }
+    },
+    {
+      "id": "T07",
+      "title": "Extend the existing private role and publish complete generations",
+      "depends_on": [
+        "T01",
+        "T06"
+      ],
+      "test_file": "tests/test_industrials_private_publication.py",
+      "requirements": [
+        "IND-D25",
+        "IND-D26",
+        "IND-D27",
+        "IND-D28",
+        "IND-R211",
+        "IND-R212",
+        "IND-R216",
+        "IND-R217",
+        "IND-SF06"
+      ],
+      "test_status": "NOT_EXECUTED",
+      "requirement_status": {
+        "IND-D25": "NOT_EXECUTED",
+        "IND-D26": "NOT_EXECUTED",
+        "IND-D27": "NOT_EXECUTED",
+        "IND-D28": "NOT_EXECUTED",
+        "IND-R211": "NOT_EXECUTED",
+        "IND-R212": "NOT_EXECUTED",
+        "IND-R216": "NOT_EXECUTED",
+        "IND-R217": "NOT_EXECUTED",
+        "IND-SF06": "NOT_EXECUTED"
+      }
+    },
+    {
+      "id": "T08",
+      "title": "Mount the domain view in the shared theme client",
+      "depends_on": [
+        "T06",
+        "T07"
+      ],
+      "test_file": "tests/test_industrials_theme_research_view.py",
+      "requirements": [
+        "IND-R202",
+        "IND-SF05"
+      ],
+      "test_status": "NOT_EXECUTED",
+      "requirement_status": {
+        "IND-R202": "NOT_EXECUTED",
+        "IND-SF05": "NOT_EXECUTED"
+      }
+    },
+    {
+      "id": "T09",
+      "title": "Prove both real user journeys, correction and ordinary refresh",
+      "depends_on": [
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08"
+      ],
+      "test_file": "tests/test_industrials_result_cash_journeys.py",
+      "requirements": [
+        "IND-D29",
+        "IND-D30",
+        "IND-SF08"
+      ],
+      "test_status": "NOT_EXECUTED",
+      "requirement_status": {
+        "IND-D29": "NOT_EXECUTED",
+        "IND-D30": "NOT_EXECUTED",
+        "IND-SF08": "NOT_EXECUTED"
+      }
+    }
+  ],
+  "release_gates": {
+    "G1_shared_consumption": "UNPROVEN",
+    "G2_real_sources_identity": "UNPROVEN",
+    "G3_private_role_rights": "UNPROVEN",
+    "G4_page_custody": "UNPROVEN",
+    "G5_real_path_acceptance": "NOT_EXECUTED"
+  },
+  "authority": {
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_originate": false,
+    "can_open_entry": false
+  }
+}

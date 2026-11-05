@@ -1,0 +1,71 @@
+{
+  "research_only": true,
+  "operation": "gmi-industrials-sector-research-20260923-sol-001",
+  "namespace": "W2X",
+  "disclaimer": "Research arithmetic and hypothetical valuation only; no current company fair values, forecasts, rankings or trade signals.",
+  "rockwell": {
+    "source": "W2X-S01",
+    "software_control_sales": 751.0,
+    "enterprise_sales": 2313.0,
+    "software_control_segment_operating_earnings": 261.0,
+    "aggregate_segment_operating_earnings": 550.0,
+    "software_control_profit_change": 62.0,
+    "enterprise_operating_profit_change": 98.0,
+    "software_control_sales_share_pct": 32.46865542585387,
+    "software_control_segment_profit_share_pct": 47.45454545454545,
+    "software_control_share_of_enterprise_profit_increase_pct": 63.265306122448976
+  },
+  "fanuc": {
+    "sources": ["W2X-S03", "W2X-S04"],
+    "fa_order_to_sales_ratio_rounded": 1.5714285714285716,
+    "robot_order_to_sales_ratio_rounded": 1.0187304890738815,
+    "group_order_to_sales_ratio_rounded": 1.2203463203463203,
+    "note": "Monetary period ratios; not lead time, capacity utilization, unit growth or shortage severity."
+  },
+  "legrand": {
+    "source": "W2X-S05",
+    "pre_wc_cash_2026_eur_m": 980.6,
+    "pre_wc_cash_2025_eur_m": 862.8,
+    "net_operating_cash_2026_eur_m": 568.6,
+    "net_operating_cash_2025_eur_m": 578.0,
+    "free_cash_flow_2026_eur_m": 488.3,
+    "free_cash_flow_2025_eur_m": 501.6,
+    "pre_wc_cash_growth_pct": 13.65322206768662,
+    "net_cfo_growth_pct": -1.626297577854663,
+    "fcf_growth_pct": -2.651515151515149,
+    "incremental_wc_cash_use_eur_m": 127.2,
+    "increase_pre_wc_cash_eur_m": 117.8,
+    "datacenter_share_group_revenue_h1_2026_pct": 32.0
+  },
+  "yaskawa": {
+    "source": "W2X-S06",
+    "motion_profit_change_jpy_m": 2525,
+    "robotics_profit_change_jpy_m": -4118,
+    "engineering_profit_change_jpy_m": 893,
+    "other_profit_change_jpy_m": -189,
+    "corporate_elimination_change_jpy_m": -1130,
+    "total_operating_profit_change_jpy_m": -2017,
+    "rounded_component_sum_jpy_m": -2019,
+    "rounding_residual_to_group_jpy_m": 2,
+    "motion_external_revenue_growth_pct": 21.51673583786988,
+    "robotics_external_revenue_growth_pct": 1.9682562507864043,
+    "net_cfo_growth_pct": 38.91273247496423,
+    "period": "2026-03-01/2026-05-31"
+  },
+  "hypothetical_valuation": {
+    "common_initial_revenue": 100.0,
+    "common_annual_revenue_growth": 0.08,
+    "scenarios": {
+      "A_baseline": {"enterprise_value": 254.55049627552114, "terminal_value_share": 0.7728221482888119},
+      "B_more_capital_for_same_growth": {"enterprise_value": 211.76503689127634, "terminal_value_share": 0.8128441844512458},
+      "C_higher_margin_and_capital_return": {"enterprise_value": 339.19822982921113, "terminal_value_share": 0.7974484699793054},
+      "D_higher_discount_rate": {"enterprise_value": 189.51491995185677, "terminal_value_share": 0.7108679937031595}
+    },
+    "nonunique_inverse_example": {
+      "target_enterprise_value": 254.55049627552114,
+      "baseline_growth": 0.08,
+      "alternate_growth_under_case_B_other_assumptions": 0.12891910907060622,
+      "other_assumptions_differ": true
+    }
+  }
+}
