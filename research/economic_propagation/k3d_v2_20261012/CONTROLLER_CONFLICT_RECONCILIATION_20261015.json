@@ -1,0 +1,28 @@
+{
+  "previous_head": "0c6770481feb42cc2e5554e20c470d841d599281",
+  "main": "05ea40d5557939bf557d7ce3b74f7f5c2a74aa50",
+  "controller_return": 6183306840,
+  "main_jobs": 318,
+  "total_jobs": 319,
+  "source_semantic_files_preserved": 38,
+  "all_main_test_definitions_preserved": true,
+  "existing_k3_wave_preserved": true,
+  "only_inherited_job_changes": [
+    "contracts/economic_propagation/propagation_hypothesis.v2.schema.json",
+    "lib/economic_propagation.py",
+    "lib/economic_propagation_v2.py",
+    "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json"
+  ],
+  "diagnostic_correction": "The first verifier assumed milestones; actual workstream uses waves. Verified existing waves[k3] without rewriting the workstream. No commit/push occurred before correction.",
+  "no_release_override": true,
+  "tests": {
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "xml_sha256": "f90e401a57f4809521df9d93104ad30cdde5badfa9b29a27d2aedc3477dae184",
+  "source_review_retained": 6161924420,
+  "source_hold_release": 6183257850,
+  "original_controller_retains_release": true
+}

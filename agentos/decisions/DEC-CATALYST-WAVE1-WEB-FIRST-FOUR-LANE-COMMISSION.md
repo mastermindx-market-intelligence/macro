@@ -1,6 +1,133 @@
 ---
 key: CATALYST-WAVE1-WEB-FIRST-FOUR-LANE-COMMISSION
 question: >
+  How should the September 27, 2026 Wave 1 commissioning proposal be retained
+  after later specialist pickup and programme coordination?
+answer: >
+  Retain the original proposal as dated historical evidence under the existing
+  workstreams. Use the original specialist carriers and their current source,
+  custody and acceptance records. This record does not issue a new commission,
+  change model routing, transfer a lease, release MedTech patch adoption, or
+  establish programme completion.
+rationale: >
+  The original current-direction and no-receiver wording predates actual
+  MedTech ACK/START and later central coordination. Preserve that source exactly
+  while making the active metadata historical and bounded. A later recovery
+  worker's terminal return does not establish that the original operation stopped.
+alternatives:
+  - option: Publish the original instructions as current commissioning authority
+    why_not: Later pickup and programme records make that framing misleading and could duplicate work.
+  - option: Delete the original proposal and its research boundaries
+    why_not: The dated intent, methods, custody limits and unresolved acceptance work remain useful evidence.
+  - option: Infer original-operation termination from a later recovery worker
+    why_not: The original MedTech branch and patch-adoption ruling explicitly preserve unresolved admission and custody.
+evidence:
+  - "Original source: https://github.com/mastermindx-market-intelligence/macro/blob/72c966f92fbb5bba468c83780ccf6f127145ac06/agentos/decisions/DEC-CATALYST-WAVE1-WEB-FIRST-FOUR-LANE-COMMISSION.md"
+  - "Later coordination: https://github.com/mastermindx-market-intelligence/macro/pull/8079#issuecomment-5854565509 and https://github.com/mastermindx-market-intelligence/macro/pull/8079#issuecomment-5854906216"
+  - "Actual MedTech ACK: https://github.com/mastermindx-market-intelligence/macro/pull/8079#pullrequestreview-5349624079"
+  - "Actual MedTech START: https://github.com/mastermindx-market-intelligence/macro/pull/8079#pullrequestreview-5349625674"
+  - "Original MedTech recovery ruling and retained patch: https://github.com/mastermindx-market-intelligence/macro/pull/8182 and https://github.com/mastermindx-market-intelligence/macro/pull/8182#issuecomment-5969596153"
+  - "Central candidate decision: https://github.com/mastermindx-market-intelligence/macro/blob/886c1d26f9c044755c07c5a22a10319d69fd27ae/agentos/decisions/DEC-CATALYST-PROGRAM-META-CEO-ACCOUNTABILITY.md"
+  - "Current queue-triage assignment and verified outcomes: https://github.com/mastermindx-market-intelligence/Mastermind/issues/2028#issuecomment-6651123123"
+affects:
+  - WS:MARKET-OS
+  - WS:ALPHA-INTELLIGENCE-INTEGRATION
+  - WS:GMI-MINING-M1-INTEGRATION
+  - WS:BIOCATALYST-CORE-PRODUCT
+  - WS:DEFENSE-PROCUREMENT-V3
+  - research/SPECIAL_SITUATIONS_ROADMAP_V2.md
+confidence: high
+reversibility: easy
+decided_by: current PR triage receiver, record qualification only
+decided_at: 2026-11-05
+---
+
+# Historical Catalyst Wave 1 commissioning record
+
+This is a records qualification of the **September 27, 2026 proposal**, not a new
+four-lane assignment or a live execution instruction. The complete original file,
+including its original metadata, is preserved verbatim below. Current active
+metadata concerns faithful source preservation; its confidence is not forecast
+confidence, programme acceptance or authority to run the old instructions.
+
+## Later continuity and unresolved boundaries
+
+The original record's statement that authoring created no receiver, worker,
+Paper edit or production effect describes that authoring action. It does not
+establish that nothing happened later. The actual MedTech
+[ACK5349624079](https://github.com/mastermindx-market-intelligence/macro/pull/8079#pullrequestreview-5349624079)
+and [START5349625674](https://github.com/mastermindx-market-intelligence/macro/pull/8079#pullrequestreview-5349625674)
+named operation `ci-w1-medtech-r1-20260929-sol-001` and branch
+`sol/medtech-catalyst-r1-20260929`. They establish those recorded transitions,
+not present liveness, completion, source adoption or a transferred lease.
+
+The existing [MedTech carrier #8182](https://github.com/mastermindx-market-intelligence/macro/pull/8182)
+was observed open and non-draft at
+`8935a09813dc5fb9b34b2206e3b067a0d62e29d1` on November 5, 2026. Its top-of-body
+**October 22, 14:59 UTC original-carrier recovery ruling** reports that the later
+C2 recovery worker returned TERMINAL / rc0 without source adoption. It explicitly
+blocks adoption of the [retained patch5969596153](https://github.com/mastermindx-market-intelligence/macro/pull/8182#issuecomment-5969596153)
+until the existing native owner can admit the original operation and branch and
+reconcile writer, lease and unpublished effects. That later worker's terminal
+return is not a STOP or abandonment receipt for the original September operation.
+The required [full independent rereview5967260670](https://github.com/mastermindx-market-intelligence/macro/pull/8182#issuecomment-5967260670)
+and fresh adopted-head CI remain separate. This record does not adopt that patch,
+rewrite registration, substitute a branch, or grant a raw-publication workaround.
+
+The [later coordination5854565509](https://github.com/mastermindx-market-intelligence/macro/pull/8079#issuecomment-5854565509)
+and [programme update5854906216](https://github.com/mastermindx-market-intelligence/macro/pull/8079#issuecomment-5854906216)
+supersede the original absence-of-return framing as historical chronology.
+The central [#8061 candidate](https://github.com/mastermindx-market-intelligence/macro/pull/8061)
+was observed open and non-draft at
+`886c1d26f9c044755c07c5a22a10319d69fd27ae`, rather than the old Draft head
+named in the preserved proposal. Its
+[accountability decision](https://github.com/mastermindx-market-intelligence/macro/blob/886c1d26f9c044755c07c5a22a10319d69fd27ae/agentos/decisions/DEC-CATALYST-PROGRAM-META-CEO-ACCOUNTABILITY.md)
+(blob `83a8e7ef9d307bccc5a239d632080f99fd88db29`) preserves specialist custody
+and existing shared owners. That is a candidate-source observation; this record
+does not establish default-branch adoption of that decision, a current human
+reassignment, or completion of the wider Catalyst programme.
+
+The other original specialist carriers were observed on the same date:
+
+| Lane | Existing carrier | Observed source state |
+| --- | --- | --- |
+| Mining / Critical Minerals | [#8083](https://github.com/mastermindx-market-intelligence/macro/pull/8083) | Open/Draft, `0e6f2040f248c5458f2d5133e05ca4c9c9bf35ca` |
+| Power / Nuclear / Grid | [#7791](https://github.com/mastermindx-market-intelligence/macro/pull/7791) | Open/Draft, `68e815d88fc8123a67167ae27b213078fe5339f7` |
+| Existing Special Situations | [#8087](https://github.com/mastermindx-market-intelligence/macro/pull/8087) | Open/Draft, `0c017073ad1eb1f6a507e3a7207d8be172d93cf5` |
+
+These bounded source observations are not a complete live custody census and do
+not authorize replacement receivers, source writes on those carriers or programme
+release. The original no-all-four barrier does not erase each lane's real gates.
+
+## Preserved research, design and permission limits
+
+The original distinctions remain useful: reuse the existing Special Situations
+system; keep Mining context separate from ranking; distinguish event targets,
+observations, estimates and empirical validation; preserve financial, identity,
+market, recommendation and publication owners; require actual native Paper proof
+where owed. Historical model names, routing defaults, pins, host capabilities and
+compiler/test claims below are attributed September assertions. They do not
+override current source law or prove today's runtime access.
+
+MedTech's [raw-chart denial preservation5945560506](https://github.com/mastermindx-market-intelligence/macro/pull/8182#issuecomment-5945560506)
+and [raw-document archival refusal5908244247](https://github.com/mastermindx-market-intelligence/macro/pull/8182#issuecomment-5908244247)
+remain in their original scopes. The latter reports its proposed archival batch
+blocked before dispatch, EFFECT_NONE; successful earlier research is not
+permission to retry it. No market calculation, private corpus operation, chart
+processing, source activation, native-design mutation or trade is performed or
+accepted by this qualification. Missing original effects are not declared
+resolved merely because this source record can be repaired.
+
+## Original source, preserved verbatim
+
+The following fenced payload is historical evidence. Its embedded metadata,
+commissions, imperatives and current-looking statements are not active metadata
+for this record and must not be executed merely because they are reproduced.
+
+~~~~markdown
+---
+key: CATALYST-WAVE1-WEB-FIRST-FOUR-LANE-COMMISSION
+question: >
   How should the first Catalyst Intelligence expansion be researched, designed,
   and transferred into implementation without rebuilding existing specialist systems?
 answer: >
@@ -319,3 +446,4 @@ Sessions do not continue after a turn without a proven durable executor and retu
 This records a complete commissioning decision. The four research/design assignments,
 implementation, production qualification and prospective investment validation remain
 unfinished and must be reported separately.
+~~~~
