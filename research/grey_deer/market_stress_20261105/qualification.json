@@ -1,0 +1,31 @@
+{
+  "environment": "existing managed C3 workspace",
+  "source_base": "20959c5e8183f44678df4dbfc26ac246665ba2bf",
+  "prior_committed_head": "3fce398ed4fb6f4dae48c11b2daabbc5cecd46b8",
+  "command": "python3 -m pytest tests/test_official_release_parsers.py tests/test_vps_live_orchestration.py tests/test_release_actuals.py tests/test_release_publications_live_client.py tests/test_status_error_leak.py tests/test_risk_state_live_session_floor.py tests/test_risk_state_live_copy_sync.py tests/test_risk_state_live_participation_copy.py tests/test_live_risk_envelope.py -q --tb=short",
+  "tool_process_pid": 57223,
+  "exit_code": 0,
+  "passed": 314,
+  "failed": 0,
+  "skipped": 0,
+  "warnings": 5,
+  "elapsed_seconds": 13.65,
+  "source_sha256": {
+    "scripts/build_risk_state.py": "d3f622095ff4574f7188e4ff5031dc761ff13cb1fcf89cac8e76f241ea307a46",
+    "scripts/official_release_parsers.py": "fa38b1b89e5dbb1bef6c3c87e1bcea006b8813bf69a350ab70b6b49e8419cdc3",
+    "scripts/watch_release_publications.py": "b40d08bf196df3773f16d61716ccdb80f4da218e283727efd85267be7d41347b",
+    "templates/risk_state_live.js": "875658fe80319c227a2ef9d3f3022e18138515ec6c567f35176493a3532adbf0",
+    "site/risk_state_live.js": "875658fe80319c227a2ef9d3f3022e18138515ec6c567f35176493a3532adbf0",
+    "tests/test_risk_state_live_session_floor.py": "b225ecee56db5f016cb1f669bb7419dba9ceeddc33e7340ac0b95747b69b973d",
+    "tests/test_vps_live_orchestration.py": "0943d5276493cf1350befb1fc5808a13ab61b1a77b5c5e8eac8df152423bfc02"
+  },
+  "production_acceptance": false,
+  "observed_at": "2026-11-05T23:31:22Z",
+  "agentos_validation": {
+    "exit_code": 0,
+    "records": 2073,
+    "errors": 0,
+    "warnings": 174,
+    "warnings_scope": "existing organizational records; no new schema errors"
+  }
+}

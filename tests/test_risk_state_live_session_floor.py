@@ -107,6 +107,7 @@ El.prototype.hasClass = function (c) { return !!this._cls[c]; };
 var REG = {};      // selector / id -> El
 function reg(key, el) { REG[key] = el; return el; }
 
+var EVENT_HANDLERS = {};
 var document = {
   readyState: "complete",
   documentElement: { getAttribute: function () { return "en"; }, lang: "en" },
@@ -115,7 +116,7 @@ var document = {
   querySelector: function (s) { return REG[s] || null; },
   querySelectorAll: function (s) { return REG[s] ? [REG[s]] : []; },
   createElement: function () { return new El(); },
-  addEventListener: function () {},
+  addEventListener: function (name, handler) { EVENT_HANDLERS[name] = handler; },
   dispatchEvent: function () {}
 };
 function CustomEvent() {}
@@ -730,7 +731,7 @@ def test_us_long_open_failure_expires_and_fresh_recovery_restores_copy(js):
                     built="2026-11-05 15:05:00 UTC")
     after = """
     browserNow += 6 * 60000;
-    feedFailed();
+    EVENT_HANDLERS.visibilitychange();
     out.expired_action = action.children[0].textContent;
     out.expired_thesis = thesis.children[0].textContent;
     FEED.built = new Date(browserNow - 1000).toISOString();

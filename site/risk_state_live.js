@@ -532,5 +532,7 @@
 
   if (document.readyState !== "loading") tick();
   else document.addEventListener("DOMContentLoaded", tick);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) tick(); });
+  if (typeof window.addEventListener === "function") window.addEventListener("pageshow", tick);
   setInterval(tick, Math.max(15, POLL) * 1000);
 })();
