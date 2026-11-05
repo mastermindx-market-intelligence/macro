@@ -1,0 +1,113 @@
+{
+  "record_type": "non_authoritative_source_projection_of_incumbent_trial_registration",
+  "study_id": "DPV3-WORKFLOW-1-AI-DEV-20261013-R2",
+  "as_of": "2026-10-13T06:39:34.922376+00:00",
+  "scope": "AI_ANALYST_EXPOSED_DEV_ONLY",
+  "configuration_state": "DURABLY_REGISTERED_BEFORE_PARTICIPANT_ACCESS",
+  "trial_owner": "engine.trial_ledger.TrialLedger.log_trial",
+  "canonical_carrier": "data/trial_ledger.jsonl",
+  "owner_module_sha256": "3df853fd7210d9dcd4c4efbd2e1a3ca15f1a4f451a06127836fcc879d71378a7",
+  "owner_explicit_schema_version": null,
+  "owner_row_schema": "incumbent unversioned JSONL row: ts,family,config_hash,config,source,info_cutoff,note; module SHA is exact API version",
+  "configuration_accounting_namespace": "DPV3-WORKFLOW-1",
+  "configuration_hash": "e5f0816b48ab662d",
+  "canonical_row": {
+    "ts": "2026-10-13T06:34:37.874683+00:00",
+    "family": "DPV3-WORKFLOW-1",
+    "config_hash": "e5f0816b48ab662d",
+    "config": {
+      "study_id": "DPV3-WORKFLOW-1-AI-DEV-20261013-R2",
+      "scope": "AI_ANALYST_EXPOSED_DEV_ONLY",
+      "packet_manifest_sha256": "f2c676193b6298297c5d099d8d797c770862ce2a7b7003e9f264ae993712c659",
+      "registration_sha256": "456052315254581dbac770415963264377d3f40bcd85b7a85db77152df0bb687",
+      "gold_rubric_sha256": "6d0c7c9812a31ea5964fee4c99e72d05382ad7abba9a5cce20a0c89d6d7719fa",
+      "assignment_key_sha256": "ffac26e93b5625716a8654e89b5d005af18d09c4eb1b88a1c8ec02375b471033",
+      "primary_configurations": 1,
+      "diagnostic_variants": 0,
+      "participant_answers_cap": 12,
+      "independent_time_blocks": 1,
+      "holdout_peeks": 0,
+      "unseen": false,
+      "human_efficacy": false,
+      "predictive_alpha": false,
+      "grv_family_activation": false
+    },
+    "source": "defense_exposed_dev_preoutcome",
+    "info_cutoff": "2026-10-13T04:40:00Z",
+    "note": "One AI analyst DEV configuration; R1 rejected before execution; no unseen/human/predictive/GRV claim. Review SHA256 8ae563ac7aa4b414e398a3f12d9f15a39bef767ddaa8fa1877062a2e87b653ed"
+  },
+  "original_root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "trial_registration_receipt_sha256": "26c9ea47058463197d13b3bf01f8aa3cc02e9ce776198f928627d71fb18d0d15",
+  "root_runtime_admission_sha256": "fdcb642eba58b9b971b7a20b2d0ace97a698607897fa0350072dff0899617ff2",
+  "ledger_before": {
+    "bytes": 679781,
+    "sha256": "58b7feba20efafca5125faaf21330343a07141496379b4b9aea0fa8cc112380d"
+  },
+  "ledger_after_append": {
+    "bytes": 680870,
+    "sha256": "40529b171392596bb09688cb5ec1bcb4a881757c9e8a23819527998ddc910847",
+    "append_bytes": 1089,
+    "original_prefix_verified": true,
+    "registered_namespace_rows": 1
+  },
+  "independent_source_rubric_review": {
+    "disposition": "ADMIT_DEV_SOURCE_RUBRIC",
+    "receipt_sha256": "8ae563ac7aa4b414e398a3f12d9f15a39bef767ddaa8fa1877062a2e87b653ed",
+    "packet_manifest_sha256": "f2c676193b6298297c5d099d8d797c770862ce2a7b7003e9f264ae993712c659"
+  },
+  "observed_first_task_release": [
+    {
+      "participant": "P01",
+      "first_task_released_at": "2026-10-13T06:36:57.002830+00:00",
+      "first_task_source_sha256": "1f8415bed84e39177b0205716a8eed30e16c94a9d49849e6162d6210ef3f76f4",
+      "start_receipt_sha256": "da3f22a13dac3e158e59bf66a943d5fb9a795c94df2c66858427264d3082821b",
+      "actual_model": "gpt-5.6-terra",
+      "actual_effort": "medium",
+      "fresh_context": true,
+      "root_verified_ancestry": true,
+      "root_verified_no_input_before_admission": true
+    },
+    {
+      "participant": "P02",
+      "first_task_released_at": "2026-10-13T06:36:54.207329+00:00",
+      "first_task_source_sha256": "ecc3667f58eb4fa7f3ed3555060146e4535dae1017dedb014ef2bfc699b013ab",
+      "start_receipt_sha256": "386e951b147b066c56f3799017e0c4535242ca9a156862f06dfe77e630cac451",
+      "actual_model": "gpt-5.6-terra",
+      "actual_effort": "medium",
+      "fresh_context": true,
+      "root_verified_ancestry": true,
+      "root_verified_no_input_before_admission": true
+    }
+  ],
+  "design": {
+    "tasks": 6,
+    "participants": 2,
+    "scheduled_answers": 12,
+    "issuer_document_components": 5,
+    "conservative_independent_time_blocks": 1,
+    "conditions": "same native evidence versus same evidence plus selected existing owner facts/authority states",
+    "source_cutoff": "2026-10-13T04:40:00Z",
+    "source_and_coordinator_previously_exposed": true,
+    "unseen_holdout": false,
+    "assessor_blinded": false,
+    "required_accuracy_items_per_condition": 29,
+    "required_risks_per_condition": 12,
+    "primary_full_configurations": 1,
+    "diagnostic_variants": 0
+  },
+  "projection_claim_limits": {
+    "is_an_issuance_record": false,
+    "is_an_evaluation_registry": false,
+    "is_a_new_trial_ledger": false,
+    "projection_is_authority": false,
+    "holdout_peeks": 0,
+    "grv_fa1_activation": false,
+    "grv_fa1_evaluation": false,
+    "scientific_efficacy": null,
+    "human_user_efficacy": null,
+    "predictive_alpha": null,
+    "production_acceptance": false
+  },
+  "empirical_results": "NOT_ASSESSED_IN_THIS_PRE_OUTCOME_SOURCE_PROJECTION",
+  "next_owned_gate": "All twelve tasks terminal, independent frozen-rubric DEV scores and all-pair descriptive assessment; root accepts. No retrospective issuance or unseen promotion."
+}

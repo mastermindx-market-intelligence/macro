@@ -78,7 +78,7 @@
    Replaces the old cramped "Pullback odds · 5d.. 10d.. 21d.." text run with an
    escalating odds ramp drawn against the normal base rate, a state-coloured header,
    compact threat meters + plain-English evidence, and the action line. #}
-{% macro risk_radar_card(rd, scares=none, show_threats=true) -%}
+{% macro risk_radar_card(rd, scares=none, show_threats=true, plain_gross=false) -%}
 {%- set rc = 'var(--act)' if rd.state=='risk-off' else ('var(--orange)' if rd.state=='elevated' else ('var(--warn)' if rd.state=='caution' else ('var(--info)' if rd.state=='watch' else 'var(--ok)'))) -%}
 {#- icon ladder (RRX2 WA-1): 👀 retired; watch shows 🌤️ when recovery panel is receding else 📡.
    Truthiness-only on rd.recovery.receding — never `is not none` (crashes on missing keys, Jinja codebase law). -#}
@@ -111,7 +111,23 @@
       {% endif %}
       {% if rd.amp and rd.amp > 0 %}<div class="rrx-amp">▲ {{ t('Amplified','放大') }} — <span class="l-en">{{ rd.amp_flags_en|join(' · ') }}</span><span class="l-zh">{{ rd.amp_flags_zh|join(' · ') }}</span></div>{% endif %}
     </div>
-    {% if rd.gross is defined and rd.gross is not none and rd.gross < 1 %}<div class="rrx-gross"><span class="gv">×{{ '%.2f'|format(rd.gross) }}</span><span class="gn">{{ t('gross','建议仓位') }}</span></div>{% endif %}
+    {% if rd.gross is defined and rd.gross is not none and rd.gross < 1 %}
+    {% if plain_gross %}
+    {%- set _g = rd.gross -%}
+    {%- set _gv = namespace(en='', zh='') -%}
+    {%- if _g >= 0.70 and _g <= 0.85 -%}
+      {%- set _gv.en = '¾ of normal' -%}{%- set _gv.zh = '约常规四分之三' -%}
+    {%- elif _g >= 0.45 and _g < 0.70 -%}
+      {%- set _gv.en = 'half of normal' -%}{%- set _gv.zh = '约常规一半' -%}
+    {%- else -%}
+      {%- set _gv.en = '×' ~ ('%.2f'|format(_g)) ~ ' of normal' -%}
+      {%- set _gv.zh = '常规的 ' ~ ('%.2f'|format(_g)) ~ ' 倍' -%}
+    {%- endif -%}
+    <div class="rrx-gross" data-tip-en="Suggested gross exposure multiplier, ×{{ '%.2f'|format(rd.gross) }} of your normal size." data-tip-zh="建议总仓位系数，为常规规模的 {{ '%.2f'|format(rd.gross) }} 倍。"><span class="gv"><span class="l-en">{{ _gv.en }}</span><span class="l-zh">{{ _gv.zh }}</span></span><span class="gn"><span class="l-en">suggested size</span><span class="l-zh">建议仓位</span></span></div>
+    {% else %}
+    <div class="rrx-gross"><span class="gv">×{{ '%.2f'|format(rd.gross) }}</span><span class="gn">{{ t('gross','建议仓位') }}</span></div>
+    {% endif %}
+    {% endif %}
   </div>
 
   {% if rd.dd21 is defined and rd.dd21 is not none %}

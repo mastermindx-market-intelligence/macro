@@ -72,10 +72,10 @@ def _flat(rows_seen):
 # ── registry as the ONLY source of accepted wires (§15.1-3) ──────────────────────
 
 def test_whitelist_is_the_registry_derivation():
-    assert m._MM_EVENT_TYPES == growth_registry.accepted_wires()
+    assert m._MM_EVENT_TYPES == growth_registry.accepted_wires(source="client")
     assert V1_WIRES <= set(m._MM_EVENT_TYPES)
     assert LEGACY_WIRES <= set(m._MM_EVENT_TYPES)
-    assert m._MM_V1_WIRES == growth_registry.envelope_v1_wires()
+    assert m._MM_V1_WIRES == growth_registry.envelope_v1_wires(source="client")
     assert set(m._MM_V1_WIRES) == V1_WIRES
 
 
@@ -105,11 +105,15 @@ def test_new_wire_without_exact_schema_is_refused(captured):
     assert _flat(captured) == []
 
 
-def test_valid_eid_becomes_the_row_id(captured):
+def test_valid_eid_seats_in_the_eid_column(captured):
+    """§16-canary correction: the live analytics_events.id is a bigint identity, so a
+    client UUID seated there 400s the whole batch. The validated eid rides its own
+    unique column and the row NEVER carries a client `id` — the DB mints that."""
     eid = str(uuid.uuid4())
     _post([_v1_event(eid=eid)])
     rows = _flat(captured)
-    assert len(rows) == 1 and rows[0]["id"] == eid
+    assert len(rows) == 1 and rows[0]["eid"] == eid
+    assert "id" not in rows[0]
     assert rows[0]["type"] == "intelligence.viewed"
     assert rows[0]["meta"] == _iv_meta()
 
@@ -117,25 +121,28 @@ def test_valid_eid_becomes_the_row_id(captured):
 # ── idempotent replay (§15.7-8) ──────────────────────────────────────────────────
 
 def test_exact_replay_reuses_the_same_row_identity_and_never_blocks(captured):
-    """The collector's half of one-row replay: the SAME eid maps to the SAME row id
-    on every delivery, the response stays 204 (non-blocking success), and the insert
-    is conflict-safe (on_conflict=id + ignore-duplicates) so the DB's primary key
-    ignores the duplicate instead of failing the batch."""
+    """The collector's half of one-row replay: the SAME eid seats in the SAME eid
+    column value on every delivery, the response stays 204 (non-blocking success),
+    and the insert is conflict-safe (on_conflict=eid + ignore-duplicates) so the
+    unique index ignores the duplicate instead of failing the batch."""
     eid = str(uuid.uuid4())
     assert _post([_v1_event(eid=eid)]).status_code == 204
     assert _post([_v1_event(eid=eid)]).status_code == 204
     rows = _flat(captured)
-    assert [r["id"] for r in rows] == [eid, eid]
+    assert [r["eid"] for r in rows] == [eid, eid]
 
 
 def test_insert_request_is_conflict_safe():
     """§15.8's mutation guard (handoff test 29): removing the conflict-safe insert or
-    the eid→id mapping must turn something red. The request construction is the
-    controllable layer: it must target on_conflict=id and prefer ignore-duplicates."""
+    the eid seat must turn something red. The request construction is the controllable
+    layer: it must target on_conflict=eid (the unique column — NEVER the bigint id,
+    which is DB-minted; a client UUID there 400s the whole batch, the §16-canary
+    finding) and prefer ignore-duplicates."""
     import inspect
 
     src = inspect.getsource(m._mm_analytics_insert)
-    assert "on_conflict=id" in src, "insert lost its on_conflict=id target"
+    assert "on_conflict=eid" in src, "insert lost its on_conflict=eid target"
+    assert "on_conflict=id" not in src, "insert regressed to the bigint id PK seat"
     assert "resolution=ignore-duplicates" in src, "insert lost ignore-duplicates"
 
 
@@ -195,12 +202,16 @@ def test_drop_diagnostics_are_bounded_and_counted(captured, monkeypatch):
 
 # ── legacy wires stay exactly as they were (§15.2, §15.26 surface) ───────────────
 
-def test_legacy_wire_needs_no_envelope_and_gets_a_server_uuid(captured):
+def test_legacy_wire_needs_no_envelope_and_carries_no_identity(captured):
+    """Legacy wires have no envelope and mint NOTHING client- or collector-side: the
+    row carries eid NULL (unique index ignores NULLs) and no `id` at all — the DB's
+    bigint identity mints row identity, exactly as it did before CA1A."""
     _post([{"type": "pageview", "sid": "tab-1", "path": "/", "t": 1788480000000}])
     rows = _flat(captured)
     assert len(rows) == 1
     assert rows[0]["type"] == "pageview"
-    uuid.UUID(rows[0]["id"])          # server-minted, well-formed
+    assert rows[0]["eid"] is None
+    assert "id" not in rows[0]
     assert rows[0]["meta"] is None
 
 
@@ -224,7 +235,7 @@ def test_batch_mixes_legacy_and_v1_and_drops_only_the_invalid(captured):
     rows = _flat(captured)
     assert len(rows) == 2
     assert {r["type"] for r in rows} == {"pageview", "intelligence.viewed"}
-    assert any(r["id"] == good_eid for r in rows)
+    assert any(r["eid"] == good_eid for r in rows)
 
 
 # ── product acts never block on analytics (§15.21) ───────────────────────────────
@@ -247,7 +258,7 @@ def test_insert_helper_never_raises(monkeypatch):
         raise OSError("sink down")
 
     monkeypatch.setattr(m.urllib.request, "urlopen", _boom)
-    m._mm_analytics_insert([{"id": str(uuid.uuid4()), "type": "pageview"}])  # must not raise
+    m._mm_analytics_insert([{"eid": None, "type": "pageview"}])  # must not raise
 
 
 # ── all four wires accept a canonical happy-path payload (§15.13/17/19 shapes) ───
@@ -264,3 +275,31 @@ def test_all_four_v1_wires_accept_their_canonical_payloads(captured):
     _post(events)
     rows = _flat(captured)
     assert [r["type"] for r in rows] == [e["type"] for e in events]
+
+
+@pytest.mark.parametrize("authenticated", [False, True])
+@pytest.mark.parametrize("wire,meta", [
+    ("checkout.completed", {"tier": "pro", "interval": "month", "offer_key": "",
+                            "amount_cents": 0, "is_trial": True}),
+    ("trial.started", {"tier": "pro", "trial_days": 7}),
+])
+def test_live_server_conversion_cannot_be_forged_at_collect(
+    captured, monkeypatch, tmp_path, authenticated, wire, meta,
+):
+    import copy
+    import yaml
+
+    reg = copy.deepcopy(growth_registry.registry())
+    for event in reg["events"]:
+        if event["wire"] in {"checkout.completed", "trial.started"}:
+            event.update(status="live", envelope="v1")
+    fixture = tmp_path / "growth.yml"
+    fixture.write_text(yaml.safe_dump(reg))
+    monkeypatch.setattr(m, "_MM_EVENT_TYPES", growth_registry.accepted_wires(fixture, source="client"))
+    monkeypatch.setattr(m, "_MM_V1_WIRES", growth_registry.envelope_v1_wires(fixture, source="client"))
+    monkeypatch.setattr(m, "_mm_verify_uid_cached", lambda token: pytest.fail("server forgery reached auth/insert"))
+    event = _v1_event(wire=wire, meta=meta, source="server")
+    assert growth_registry.validate_v1_event(wire, event["eid"], event["schema"], meta)[1] is None
+    headers = {"authorization": "Bearer forged-revenue"} if authenticated else {}
+    assert client.post("/api/collect", json={"events": [event]}, headers=headers).status_code == 204
+    assert _flat(captured) == []

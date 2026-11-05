@@ -1,0 +1,27 @@
+{
+  "disposition": {
+    "logical_decode_budget": "CONFIRMED_AND_FIXED: ordinary dictionary-encoded source exceeded footer estimate; two tests failed before/pass after. Shared decoder uses2048rowbatches and actual Arrow nbytes before Python object materialization.",
+    "offset_constant": "FAILS_CLOSED: transport and source enforce the declared cap independently; no dynamic setting or source-value inflation admitted.",
+    "offset_status": "INTENTIONAL: OBSERVED describes the selected date, total_events remains explicit on an exhausted page; missing acceptance scope now explicitly all selected-date matches."
+  },
+  "final_review_attempt": {
+    "accepted": false,
+    "provider_thread": "01a140b4-3bce-7521-a0c9-340edefeec20",
+    "quality_verdict": "NOT_ESTABLISHED",
+    "rc": 1,
+    "reason": "QWEN_FINAL_RESPONSE_UNCONFIRMED; provider403",
+    "response_sha256": "057274559c20228a6a5e0008b07e30e89e184cbb463073a3a44811778d4fa198",
+    "result_bytes": 694,
+    "retry_or_account_failover_by_parent": false,
+    "run_id": "market-time-machine-context-20261015-review-02"
+  },
+  "final_scope_changes_since_review": "shared CLI/dossier and offline browser consumers; these changes are covered by parent tests and actual browser/data oracles, not this earlier review.",
+  "parent_review": "Five frozen final files reviewed against supplied source owner contracts and negative tests; no final external PASS fabricated. The failed provider lane remains closed; ordinary authorized local qualification continues.",
+  "parent_run_id": "market-time-machine-20261015",
+  "retained_response_bytes": 2213,
+  "retained_response_sha256": "186eab78ef1951c4dfdaa96f748c7db22ba8a0f6f09e2a8d921a451371015d0c",
+  "review_verdict": "PASS_WITH_FINDINGS",
+  "root_id": "market-time-machine-20261015",
+  "run_id": "market-time-machine-context-20261015-review-01",
+  "schema": "market_memory.filing_review_adjudication.v1"
+}

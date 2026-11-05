@@ -1,0 +1,34 @@
+{
+  "actual_runtime_publication_admitted": false,
+  "all_other_top_level_ast_identical": true,
+  "changed_class_methods": [
+    "__init__",
+    "consume"
+  ],
+  "changed_top_level_nodes": [
+    "BoatsLastTrade"
+  ],
+  "classification": "PUBLIC_FACT unchanged for existing complete BOATS projection only",
+  "classification_semantics_expanded": false,
+  "default_display_coverage_ast_identical": true,
+  "original_line_count": 760,
+  "original_source_sha256": "9d477b0128b744ed1423dd0135b697eb489f11aff156e3eee4f5e2af3febfc66",
+  "public_boats_payload_allowlist_ast_identical": true,
+  "qualified_line_count": 763,
+  "qualified_source_sha256": "25e2866a24562e50fe5ba3bf996e83c1c021b9bc9599e7cce98be6cd29877476",
+  "r2_client_and_publish_boundary_ast_identical": true,
+  "raw_research_identity_unchanged": true,
+  "schema": "tiingo_boats_display_case_qualification.v1",
+  "unchanged_actual_anchors": [
+    {
+      "line": 57,
+      "text": "R2_KEY = \"live_flow/ext_quotes.json\"",
+      "unchanged": true
+    },
+    {
+      "line": 373,
+      "text": "def public_boats_payload(payload: dict, now: datetime | None = None) -> dict:",
+      "unchanged": true
+    }
+  ]
+}

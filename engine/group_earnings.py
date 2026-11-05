@@ -397,8 +397,11 @@ def build_report_events(tickers: list[str], sessions: pd.DatetimeIndex,
         return {t: [] for t in want}
 
     if eightk is not None and not eightk.empty:
+        from engine.earnings_release.announcement_days import announcement_days
+
         e = eightk[eightk["ticker"].astype(str).isin(want)].copy()
         if not e.empty:
+            e = announcement_days(e)
             fd = pd.to_datetime(e["filing_date"], errors="coerce", utc=False)
             acc = (pd.to_datetime(e["acceptance_datetime"], errors="coerce", utc=True)
                    if "acceptance_datetime" in e.columns else pd.Series(pd.NaT, index=e.index))

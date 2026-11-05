@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-14T14:27:32.710979+00:00",
+  "qualified_containment": "7c610b6d8a771cc66d8c2a43548a0328c817b79c",
+  "measurement_sha256": "af8f2b976c5b8f53e3ddabdb2de1571818c2738bfab92b13530ec3a9c0b90e68",
+  "only_executable_test_delta": "build_free_content jobs134->135; docstring records evidence",
+  "all_other_branch_count_weight_pack_limits_preserved": true,
+  "all_measurements_reused_unchanged": true,
+  "canonical_packing_breaches": [],
+  "rows": [
+    {
+      "probe": "templates/index.html",
+      "jobs": 135,
+      "weight": 5684,
+      "packs": 10,
+      "max_jobs": 135,
+      "max_weight": 5803,
+      "max_packs": 10
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs": 135,
+      "weight": 5502,
+      "packs": 10,
+      "max_jobs": 135,
+      "max_weight": 5600,
+      "max_packs": 10
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs": 129,
+      "weight": 5445,
+      "packs": 10,
+      "max_jobs": 129,
+      "max_weight": 5600,
+      "max_packs": 10
+    }
+  ],
+  "scope": "Canonical verdict over retained exact-tested-merge measurements; not final-head CI. Old-base inherited closure miss remains reported and is repaired on current main.",
+  "test_source_sha256": "c35740492106e4866ffe0ac0195310fd9b6ea8d3e301ae70f7b537044e8dda1b"
+}
