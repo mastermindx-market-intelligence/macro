@@ -2909,9 +2909,18 @@ class ProofFreshness:
                     expected_base_sha=_semantic_pr_base_sha(runs, head_sha, number),
                 )
             evidence = getattr(loaded, "evidence", None)
-            plan = evidence.get("plan") if isinstance(evidence, dict) else None
+            if not isinstance(evidence, dict):
+                evidence = {}
+            # Evidence handed in by the caller is bound to THIS head here too:
+            # the cache key names the head, so must the content.
+            if (
+                str(evidence.get("role") or "") != "pr_head"
+                or str(evidence.get("subject_head_sha") or "").lower() != head_sha
+            ):
+                evidence = {}
+            plan = evidence.get("plan")
             jobs = plan.get("eligible_jobs") if isinstance(plan, dict) else None
-            sealed = str(evidence.get("base_sha") or "").lower() if isinstance(evidence, dict) else ""
+            sealed = str(evidence.get("base_sha") or "").lower()
             if isinstance(jobs, list) and all(
                 isinstance(job, str) and job for job in jobs
             ):
@@ -3005,7 +3014,7 @@ class ProofFreshness:
             base_blob = self.manifest_blob_sha(sealed_base)
             tip_blob = self.manifest_blob_sha(tip_sha)
         except RateLimited:
-            raise  # a quota refusal defers the head; it never mutates it
+            raise  # a quota refusal on a manifest read defers the head, never re-proves it
         except (RuntimeError, OSError, ValueError) as exc:
             return True, f"the manifest could not be read at both ends of the window ({exc})"
         if not base_blob or not tip_blob:

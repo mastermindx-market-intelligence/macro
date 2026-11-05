@@ -4306,10 +4306,25 @@ def test_the_proofs_selected_jobs_come_from_its_v1_plan(monkeypatch):
     freshness = _manifest_window()
     monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
     sealed = "c" * 40
+
+    def _evidence(**fields):
+        return {"role": "pr_head", "subject_head_sha": EXACT_HEAD_SHA, **fields}
+
     loaded = MOG.semantic_proof.LoadedSemanticEvidence(
-        mode="v1", evidence={"plan": {"eligible_jobs": ["a", "b"]}, "base_sha": sealed.upper()}
+        mode="v1", evidence=_evidence(plan={"eligible_jobs": ["a", "b"]}, base_sha=sealed.upper())
     )
     assert freshness.proof_plan_of(_pull(), [], loaded) == (frozenset({"a", "b"}), sealed)
+    # Evidence for another head, or main-role evidence, never answers for this head.
+    assert freshness.proof_plan_of(
+        _pull(number=13),
+        [],
+        Loaded(_evidence(subject_head_sha="b" * 40, plan={"eligible_jobs": ["a"]}, base_sha=sealed)),
+    ) == (None, None)
+    assert freshness.proof_plan_of(
+        _pull(number=14),
+        [],
+        Loaded(_evidence(role="main", plan={"eligible_jobs": ["a"]}, base_sha=sealed)),
+    ) == (None, None)
     # Cached per (number, head): a later call never re-reads, and another head of
     # the same number is its own read.
     assert freshness.proof_plan_of(_pull(), [], Loaded(None)) == (frozenset({"a", "b"}), sealed)
@@ -4317,17 +4332,17 @@ def test_the_proofs_selected_jobs_come_from_its_v1_plan(monkeypatch):
     assert freshness.proof_plan_of(other_head, [], Loaded(None)) == (None, None)
     assert freshness.proof_plan_of(_pull(number=7), [], Loaded(None)) == (None, None)
     assert freshness.proof_plan_of(
-        _pull(number=8), [], Loaded({"plan": {"eligible_jobs": ["a", 3]}, "base_sha": sealed})
+        _pull(number=8), [], Loaded(_evidence(plan={"eligible_jobs": ["a", 3]}, base_sha=sealed))
     ) == (None, None)
     # A plan without a well-formed sealed base keeps its jobs but no base.
     assert freshness.proof_plan_of(
-        _pull(number=11), [], Loaded({"plan": {"eligible_jobs": ["a"]}, "base_sha": "short"})
+        _pull(number=11), [], Loaded(_evidence(plan={"eligible_jobs": ["a"]}, base_sha="short"))
     ) == (frozenset({"a"}), None)
     # Without evidence in hand the head's own v1 artifact is the source.
     monkeypatch.setattr(
         MOG,
         "semantic_evidence_for_head",
-        lambda *_a, **_k: Loaded({"plan": {"eligible_jobs": ["z"]}, "base_sha": sealed}),
+        lambda *_a, **_k: Loaded(_evidence(plan={"eligible_jobs": ["z"]}, base_sha=sealed)),
     )
     assert freshness.proof_plan_of(_pull(number=9), []) == (frozenset({"z"}), sealed)
 
