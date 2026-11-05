@@ -1,5 +1,54 @@
 # D04 — resumed design and implementation, 2026-11-04 UTC
 
+## Active continuation — Top Picks recovered, verified and published, 2026-11-05 UTC
+
+**Disposition: MORE_WORK_EXISTS — attended execution continues; no background root or watcher is claimed.** This section supersedes older current-head, CI, next-lane and pending-publication statements below. Protected Mastermind/master pin is **`d753bd6e9ef3e5a5435ba5649e448b1610185f6e`**, INDEX 1.0.1 / bootstrap-major 1 compatible. Applicable bootstrap, execution, continuity, custody and Web review law were consumed at that pin. No new Paper action occurred.
+
+### Published Top Picks phase
+
+The timed-out “Resume Discovery Package” session was recovered on its original operation **`d04-top-picks-return-20261104`**, repository alias `macro`, branch **`sol/web-d04-top-picks-return-20261104`**, workspace **`/Volumes/Mastermind 2/agent-workspaces/macro/web/d04-top-picks-return-20261104`**, acquired base **`d18d83019f3972c9bd915c736210176c7bd0b6b5`**. Root retained the sole source-writer role. Existing uncommitted source and failed diagnostic evidence were continued, not restarted.
+
+Held Draft **[#10753](https://github.com/mastermindx-market-intelligence/macro/pull/10753)** publishes exact head **`583c039ad0506c9dbff0dd829a3fb51730e9ebe7`**, tree `4df9ab1e9ec304f3c87dbc5b204de270bea9d4d0`. The original managed publisher returned commit APPLIED, clean/index synced, then push APPLIED with clean local=remote and ready_to_push=false. Independent GitHub source/validation readback matched. No unresolved new source-publication effect remains. Actual managed commit author/committer is Sol CEO / actions; PR author is MastermindX1. No formal non-author approval is claimed.
+
+The page now scopes stretch filtering to Top Picks, preserves stable source-sector selection and qualified standalone view/company/focus/table context, exposes accessible bilingual control and failure states, and yields to existing Terminal/shared-shell owners. The recovered nested scroll container was repaired through the existing `.tbl-scroll` contract. Modified tab chords are not consumed. Same-document fragment traversal retains native scroll ownership instead of replaying an older company position.
+
+| Final local evidence | Result |
+| --- | --- |
+| Chromium functional journeys | **51 passed**, zero failures/page errors; **22 screenshots** |
+| Existing scoring/signal-gate tests | **92 passed**, 12 unrelated temporary-directory cleanup warnings; exit 0 |
+| Canonical visual matrix | **16/16** rest/focus captures: desktop/mobile × EN/ZH × dark/light |
+| Source gates | Syntax, design added-line, runtime-style, visual evidence, diff and served/source equality passed |
+| Data retention | **11 sectors / 25 tables**; every ranked row and Buy zone block byte-identical to the pinned committed snapshot |
+| Visual/source disposition | **SELF_REVIEWED**; six final images directly inspected, diff and focused tests checked |
+
+[Evidence and reproduction](https://github.com/mastermindx-market-intelligence/macro/blob/583c039ad0506c9dbff0dd829a3fb51730e9ebe7/mockups/evidence/d04-top-picks-return-20261104/README.md) · [source-bound validation](https://github.com/mastermindx-market-intelligence/macro/blob/583c039ad0506c9dbff0dd829a3fb51730e9ebe7/mockups/evidence/d04-top-picks-return-20261104/final-validation.json) · [browser report](https://github.com/mastermindx-market-intelligence/macro/blob/583c039ad0506c9dbff0dd829a3fb51730e9ebe7/ux-evidence/d04-top-picks-return-20261104/final/browser-report.json) · [canonical capture manifest](https://github.com/mastermindx-market-intelligence/macro/blob/583c039ad0506c9dbff0dd829a3fb51730e9ebe7/mockups/evidence/d04-top-picks-return-20261104/manifest.json).
+
+Source JS SHA256 `1db708426877a937a085bffedc78fca2f74f54fe2669a9cfc6fb1c5ac81941f7`; served HTML `c01fc11dab353df25aaa824d38e11653a1c9fe8facc13d73fa04d6a5135c3f15`. Canonical capture metadata accurately names the pre-commit base; these exact source hashes qualify the tested working bytes.
+
+**Qualification:** sparse workspace enrichment is incomplete. A normal builder invocation exposed zero sectors; that incomplete output was discarded. The deterministic evidence helper restores the exact committed 2026-11-03 ranking snapshot and projects the current control markup, preserving all ranked-row and Buy-zone bytes. No refreshed data or successful complete-input production rebuild is claimed. Ordinary company activation uses the incumbent overlay at all tested widths; the native document-return fixture explicitly follows the existing company URL. Fresh-document tests disable BFCache; fixtures do not prove live D07 content/authentication, cross-origin full-state transport, account persistence, Safari parity or production.
+
+### Exact-head hosted checks
+
+At the first post-publication observation, #10753 was open/Draft/unmerged, native GitHub mergeable=true with mergeable_state=unstable, and auto_merge=null. Exact-head [ci 42004061273](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42004061273), [fences 42004060987](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42004060987) and [ci-authority 42004060319](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42004060319) were **queued**. Pending is not success. Root owns any actual introduced failure; no duplicate runner or polling daemon was started.
+
+US Heatmap #10719 remains **`3b3d65c8b5484a6735dd1c8cf3e296a6b8ae0c7e`**. Exact-head [ci 41961298405](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41961298405) and [fences 41961298420](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41961298420) are now directly verified **completed/success**. The Theme query reuse increment and its measured limits remain accepted; older pending-CI wording below is historical.
+
+### Preserved work, dependencies and current next action
+
+**DO_NOT_REDO:** Confluence #10705 at `126bb13421d7052527ce034a900c89cd1a7fb9e6`; US Heatmap #10719 at `3b3d65c8b5484a6735dd1c8cf3e296a6b8ae0c7e`; completed Top Picks source/evidence at `583c039ad0506c9dbff0dd829a3fb51730e9ebe7` absent a concrete failure/material change; the 70-file/30-check package reconstruction, ten families, 113 capabilities, 24 aliases and 49 baskets. **All 75 programme acceptance cases remain unpromoted; all 25 inherited conditions retain their dispositions.**
+
+The Top Picks local-source phase's DONE_WHEN is met through original-owner held-draft publication and source-bound proof. Hosted checks remain separate. Final F01/F02 composition, D23 saved-object mutation, shared-shell/cross-origin return, final editable Paper and full ten-route production acceptance retain their owner gates.
+
+**Next exact actions:** consume the three #10753 exact-head runs and repair only an actual owned failure through this same operation; concurrently finish bounded read-only refresh of current F01/F02/D23 contracts and the retained D04 route/acceptance plan, select the next independent product journey, and continue in this healthy attended session if its custody and source contract qualify. Do not repeat completed evidence merely because CI is pending.
+
+The optional source-reasoning child returned two useful findings which were repaired and tested, then was accepted/STOP. The recovery child corroborated accepted Heatmap publication/CI and was accepted/STOP. Both have now received new bounded read-only dependency/next-phase assignments; neither has source-write, Paper, release or external-message authority. This is product/source reasoning, not mandatory independent review.
+
+Original optional Fabric commission `d04-us-heatmap-return-20261104-state-tests` retains **EFFECT_UNKNOWN / CONTROLLER_NOT_BOUND**, no proven START/root/result. It was not replayed, replaced or re-homed. The failed fleet-selection probe was not repeated; the original installed source publisher/configuration proved the existing m2studio carrier and served the unchanged operation.
+
+**HOLD:** #7727, #10705, #10719 and #10753 remain drafts. No merge, Ready/un-draft, enqueue, auto-merge, held relabel, deployment or purchase is authorized or performed. No Paper mutation, new admission/grant, auth plane, persistence plane or production acceptance is inferred.
+
+---
+
 ## Active continuation — Theme rendering published; Top Picks implementation started
 
 **Disposition: MORE_WORK_EXISTS — attended Pro execution continues in this session.** Protected law pin remains `70187bb1660e8a7c3038271bb9f8924b5e525cb0`. The following supersedes older active-status/CI/next-lane statements below; historical receipts retain their own source.
