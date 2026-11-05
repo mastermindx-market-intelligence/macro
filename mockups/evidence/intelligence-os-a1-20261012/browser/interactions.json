@@ -1,0 +1,219 @@
+{
+  "source_scope": "Actual candidate client, synthetic owner fixture; refresh failure injected by browser route, not production outage",
+  "results": [
+    {
+      "theme": "dark",
+      "base_url": "http://127.0.0.1:61519",
+      "captured_at": "2026-10-13T07:43:34.541Z",
+      "assets": {
+        "/app.js": {
+          "status": 200,
+          "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+        },
+        "/styles.css": {
+          "status": 200,
+          "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+        }
+      },
+      "capture_tool_module_sha256": "68086d0f2119525998b2fc5ff382a4b5e1bc9ec3a862e9061563e0082636224b",
+      "empty_filter": "PASS",
+      "synthetic_reconnect": "PASS",
+      "chineseEvidenceBands": [
+        "1\n已有验证支持\n0\n该组为空，仍保留显示",
+        "2\n证据积累中\n2\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture · engine/synthetic-unclassified.py::synthetic-fixture",
+        "3\n按设计不评分\n1\nengine/synthetic-descriptive.py::synthetic-fixture",
+        "4\n证据受限\n3\nengine/synthetic-immature.py::synthetic-fixture · engine/synthetic-partial.py::synthetic-fixture · engine/synthetic-retired.py::synthetic-fixture",
+        "5\n已有否定证据\n1\nengine/synthetic-falsified.py::synthetic-fixture"
+      ],
+      "locale_filter_search": "PASS",
+      "keyboard_detail_back": "PASS",
+      "focus_after_back": {
+        "tag": "A",
+        "id": "",
+        "href": "#/engine/engine%2Fsynthetic-retired.py%3A%3Asynthetic-fixture"
+      },
+      "observer_settlement": "Two actual animation frames after table render and focus restoration",
+      "failed_refresh_preserves_rows": "PASS",
+      "refresh_error_file": "a715aebc57c2d4cd--refresh-error.png",
+      "refresh_error_sha256": "a715aebc57c2d4cd906c426a08bb9a4852c8f6cfe6f9f97ce7fa0cf7e8b3532d",
+      "refresh_text": "Intelligence OS\n7 canonical engines · 7 artifacts · 7 assessed\nObservatory →\nRe-derive\n0 Validated\n2 Accruing\n1 Ungraded by design\n3 Degraded\n1 Disproven\nDerived on demand from T1 identity/semantics, T4 output health and existing owner-native evidence — nothing on this page is stored. Observed 2026-10-12 20:00:00 UTC · Computed 0s · Presence source SYNTHETIC fixture · Write-time evidence refused.\nRefresh failed. Showing the previous assessment · 2026-10-12T20:00:00+00:00.\nNo promotion or trading authority\nCEO evidence view\nstrongest evidence first · never performance\n1\nValidated\n0\nEmpty band — valid evidence\n2\nAccruing\n2\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture · engine/synthetic-unclassified.py::synthetic-fixture\n3\nUngraded by design\n1\nengine/synthetic-descriptive.py::synthetic-fixture\n4\nDegraded\n3\nengine/synthetic-immature.py::synthetic-fixture · engine/synthetic-partial.py::synthetic-fixture · engine/synthetic-retired.py::synthetic-fixture\n5\nDisproven\n1\nengine/synthetic-falsified.py::synthetic-fixture\nEngines\n7\nEVIDENCE\nValidated (0)\nAccruing (2)\nUngraded by design (1)\nDegraded (3)\nDisproven (1)\nSTATE\nhealthy (6)\nNot determined (1)\nOUTPUT CLASS\npredictive (2)\nclassification_state (1)\ndescriptive (1)\ndetection_event (1)\nNot determined (1)\nranking (1)\nAUTHORITY\ndisplay (7)\nPROGRAM\nall programs\nSYNTHETIC — no market outcomes\nclear all\nENGINE\tEVIDENCE\tPROGRAM\tOUTPUT CLASS\tAUTHORITY\tOUTPUTS\tWORST STATE\nEngine\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture\nEvidence\nAccruing\nt1_owner_native\nNo compatible task, version and cohort qualification is projected.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\nranking\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-unclassified.py::synthetic-fixture\nEvidence\nAccruing\nt1_owner_native\nThe output class has not been adjudicated.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\n—\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-descriptive.py::synthetic-fixture\nEvidence\nUngraded by design\nt1_owner_native\nThis descriptive output is intentionally ungraded.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\ndescriptive\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-immature.py::synthetic-fixture\nEvidence\nDegraded\ndirect:qledger:synthetic\nRecorded owner support is available; its current source and task qualification are not established.\nDeclared window 126 · Unit not declared\nGraded window 63\nPartial horizon evidence\nProgram\nSYNTHETIC — no market outcomes\nOutput class\npredictive\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-partial.py::synthetic-fixture\nEvidence\nDegraded\nt1_owner_native\nCurrent operational health cannot be qualified.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\nclassification_state\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nno read\nEngine\nengine/synthetic-retired.py::synthetic-fixture\nEvidence\nDegraded\nt1_owner_native\nThe owner retired this method; retirement does not prove a failed hypothesis.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\npredictive\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-falsified.py::synthetic-fixture\nEvidence\nDisproven\nt1_owner_native\nThe owner records falsification for this method.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\ndetection_event\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nRECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nRecorded findings · 2\nRecorded source gaps · 1\nRecorded source",
+      "contrast_samples": [
+        {
+          "selector": ".ios-band-sample",
+          "text": "rgb(147, 160, 180)",
+          "bg": "rgb(18, 21, 28)",
+          "textRGBA": [
+            147,
+            160,
+            180,
+            255
+          ],
+          "bgRGBA": [
+            18,
+            21,
+            28,
+            255
+          ]
+        },
+        {
+          "selector": ".ios-band-order",
+          "text": "rgb(147, 160, 180)",
+          "bg": "rgb(18, 21, 28)",
+          "textRGBA": [
+            147,
+            160,
+            180,
+            255
+          ],
+          "bgRGBA": [
+            18,
+            21,
+            28,
+            255
+          ]
+        },
+        {
+          "selector": ".ios-evidence-provider",
+          "text": "rgb(147, 160, 180)",
+          "bg": "rgb(10, 12, 16)",
+          "textRGBA": [
+            147,
+            160,
+            180,
+            255
+          ],
+          "bgRGBA": [
+            10,
+            12,
+            16,
+            255
+          ]
+        },
+        {
+          "selector": ".ios-filter-label",
+          "text": "rgb(147, 160, 180)",
+          "bg": "rgb(10, 12, 16)",
+          "textRGBA": [
+            147,
+            160,
+            180,
+            255
+          ],
+          "bgRGBA": [
+            10,
+            12,
+            16,
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "theme": "light",
+      "base_url": "http://127.0.0.1:61519",
+      "captured_at": "2026-10-13T07:43:36.487Z",
+      "assets": {
+        "/app.js": {
+          "status": 200,
+          "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+        },
+        "/styles.css": {
+          "status": 200,
+          "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+        }
+      },
+      "capture_tool_module_sha256": "68086d0f2119525998b2fc5ff382a4b5e1bc9ec3a862e9061563e0082636224b",
+      "empty_filter": "PASS",
+      "synthetic_reconnect": "PASS",
+      "chineseEvidenceBands": [
+        "1\n已有验证支持\n0\n该组为空，仍保留显示",
+        "2\n证据积累中\n2\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture · engine/synthetic-unclassified.py::synthetic-fixture",
+        "3\n按设计不评分\n1\nengine/synthetic-descriptive.py::synthetic-fixture",
+        "4\n证据受限\n3\nengine/synthetic-immature.py::synthetic-fixture · engine/synthetic-partial.py::synthetic-fixture · engine/synthetic-retired.py::synthetic-fixture",
+        "5\n已有否定证据\n1\nengine/synthetic-falsified.py::synthetic-fixture"
+      ],
+      "locale_filter_search": "PASS",
+      "keyboard_detail_back": "PASS",
+      "focus_after_back": {
+        "tag": "A",
+        "id": "",
+        "href": "#/engine/engine%2Fsynthetic-retired.py%3A%3Asynthetic-fixture"
+      },
+      "observer_settlement": "Two actual animation frames after table render and focus restoration",
+      "failed_refresh_preserves_rows": "PASS",
+      "refresh_error_file": "c58d8c18c073827c--refresh-error.png",
+      "refresh_error_sha256": "c58d8c18c073827ced230f6a0ff55e16276466e9dd9095425b4c611f1e76fdf2",
+      "refresh_text": "Intelligence OS\n7 canonical engines · 7 artifacts · 7 assessed\nObservatory →\nRe-derive\n0 Validated\n2 Accruing\n1 Ungraded by design\n3 Degraded\n1 Disproven\nDerived on demand from T1 identity/semantics, T4 output health and existing owner-native evidence — nothing on this page is stored. Observed 2026-10-12 20:00:00 UTC · Computed 0s · Presence source SYNTHETIC fixture · Write-time evidence refused.\nRefresh failed. Showing the previous assessment · 2026-10-12T20:00:00+00:00.\nNo promotion or trading authority\nCEO evidence view\nstrongest evidence first · never performance\n1\nValidated\n0\nEmpty band — valid evidence\n2\nAccruing\n2\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture · engine/synthetic-unclassified.py::synthetic-fixture\n3\nUngraded by design\n1\nengine/synthetic-descriptive.py::synthetic-fixture\n4\nDegraded\n3\nengine/synthetic-immature.py::synthetic-fixture · engine/synthetic-partial.py::synthetic-fixture · engine/synthetic-retired.py::synthetic-fixture\n5\nDisproven\n1\nengine/synthetic-falsified.py::synthetic-fixture\nEngines\n7\nEVIDENCE\nValidated (0)\nAccruing (2)\nUngraded by design (1)\nDegraded (3)\nDisproven (1)\nSTATE\nhealthy (6)\nNot determined (1)\nOUTPUT CLASS\npredictive (2)\nclassification_state (1)\ndescriptive (1)\ndetection_event (1)\nNot determined (1)\nranking (1)\nAUTHORITY\ndisplay (7)\nPROGRAM\nall programs\nSYNTHETIC — no market outcomes\nclear all\nENGINE\tEVIDENCE\tPROGRAM\tOUTPUT CLASS\tAUTHORITY\tOUTPUTS\tWORST STATE\nEngine\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture\nEvidence\nAccruing\nt1_owner_native\nNo compatible task, version and cohort qualification is projected.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\nranking\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-unclassified.py::synthetic-fixture\nEvidence\nAccruing\nt1_owner_native\nThe output class has not been adjudicated.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\n—\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-descriptive.py::synthetic-fixture\nEvidence\nUngraded by design\nt1_owner_native\nThis descriptive output is intentionally ungraded.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\ndescriptive\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-immature.py::synthetic-fixture\nEvidence\nDegraded\ndirect:qledger:synthetic\nRecorded owner support is available; its current source and task qualification are not established.\nDeclared window 126 · Unit not declared\nGraded window 63\nPartial horizon evidence\nProgram\nSYNTHETIC — no market outcomes\nOutput class\npredictive\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-partial.py::synthetic-fixture\nEvidence\nDegraded\nt1_owner_native\nCurrent operational health cannot be qualified.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\nclassification_state\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nno read\nEngine\nengine/synthetic-retired.py::synthetic-fixture\nEvidence\nDegraded\nt1_owner_native\nThe owner retired this method; retirement does not prove a failed hypothesis.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\npredictive\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-falsified.py::synthetic-fixture\nEvidence\nDisproven\nt1_owner_native\nThe owner records falsification for this method.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\ndetection_event\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nRECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nRecorded findings · 2\nRecorded source gaps · 1\nRecorded source",
+      "contrast_samples": [
+        {
+          "selector": ".ios-band-sample",
+          "text": "rgb(93, 107, 126)",
+          "bg": "rgb(255, 255, 255)",
+          "textRGBA": [
+            93,
+            107,
+            126,
+            255
+          ],
+          "bgRGBA": [
+            255,
+            255,
+            255,
+            255
+          ]
+        },
+        {
+          "selector": ".ios-band-order",
+          "text": "rgb(93, 107, 126)",
+          "bg": "rgb(255, 255, 255)",
+          "textRGBA": [
+            93,
+            107,
+            126,
+            255
+          ],
+          "bgRGBA": [
+            255,
+            255,
+            255,
+            255
+          ]
+        },
+        {
+          "selector": ".ios-evidence-provider",
+          "text": "rgb(93, 107, 126)",
+          "bg": "rgb(247, 248, 250)",
+          "textRGBA": [
+            93,
+            107,
+            126,
+            255
+          ],
+          "bgRGBA": [
+            247,
+            248,
+            250,
+            255
+          ]
+        },
+        {
+          "selector": ".ios-filter-label",
+          "text": "rgb(93, 107, 126)",
+          "bg": "rgb(247, 248, 250)",
+          "textRGBA": [
+            93,
+            107,
+            126,
+            255
+          ],
+          "bgRGBA": [
+            247,
+            248,
+            250,
+            255
+          ]
+        }
+      ]
+    }
+  ]
+}

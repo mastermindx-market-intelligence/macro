@@ -1,248 +1,273 @@
 {
   "schema": "subsector_rotation.track_record.v1",
-  "as_of": "2026-08-31",
-  "generated_at": "2026-09-01T04:40:00.559248+00:00",
+  "as_of": "2026-11-04",
+  "generated_at": "2026-11-04T12:14:22.464620+00:00",
   "is_context_only": true,
-  "n_snapshots": 8599,
-  "n_days": 32,
+  "n_snapshots": 15324,
+  "n_days": 57,
   "horizons": {
     "5": {
-      "n_matured": 7623,
-      "score_ic": 0.0084,
-      "score_ic_t_hac": 0.116,
-      "score_ic_t_gate": 0.116,
-      "score_ic_t_iid": 0.126,
+      "n_matured": 14517,
+      "score_ic": -0.0061,
+      "score_ic_t_hac": -0.108,
+      "score_ic_t_gate": -0.108,
+      "score_ic_t_iid": -0.136,
       "hac_anticonservative": false,
-      "ic_span_days": 60,
-      "indep_windows": 8.57,
+      "ic_span_days": 116,
+      "indep_windows": 16.57,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": 0.0084,
-        "ic_vol": 0.3591,
-        "ic_ir": 0.023,
-        "ic_ir_ann": 0.074,
-        "t_hac": 0.116,
-        "p_hac": 0.9073,
-        "hit": 0.448,
-        "n": 29,
+        "mean_ic": -0.0061,
+        "ic_vol": 0.3302,
+        "ic_ir": -0.019,
+        "ic_ir_ann": -0.059,
+        "t_hac": -0.108,
+        "p_hac": 0.9138,
+        "hit": 0.481,
+        "n": 54,
         "hac_lags": 5,
         "hac_lags_requested": 5,
         "ic_first_date": "2026-06-26",
-        "ic_last_date": "2026-08-25",
-        "ic_span_days": 60,
-        "indep_windows": 8.57
+        "ic_last_date": "2026-10-20",
+        "ic_span_days": 116,
+        "indep_windows": 16.57
       },
       "by_stage": {
         "emerging": {
-          "n": 338,
-          "mean_fwd_rel": -0.0041,
-          "hit_rate": 0.459
+          "n": 648,
+          "mean_fwd_rel": -0.0072,
+          "hit_rate": 0.426
         },
         "neutral": {
-          "n": 6937,
-          "mean_fwd_rel": 0.0015,
+          "n": 13221,
+          "mean_fwd_rel": -0.001,
           "hit_rate": null
         },
         "fading": {
-          "n": 348,
-          "mean_fwd_rel": 0.0025,
-          "hit_rate": 0.534
+          "n": 648,
+          "mean_fwd_rel": 0.0043,
+          "hit_rate": 0.514
         }
       },
       "v2": {
-        "n_matured": 2292,
-        "score_ic": -0.0071,
-        "score_ic_t_hac": -0.134,
+        "n_matured": 9146,
+        "score_ic": 0.0244,
+        "score_ic_t_hac": 0.39,
         "by_stage": {
           "emerging": {
-            "n": 251,
-            "mean_fwd_rel": -0.0023,
-            "hit_rate": 0.442
+            "n": 903,
+            "mean_fwd_rel": -0.0033,
+            "hit_rate": 0.444
           },
           "neutral": {
-            "n": 1764,
-            "mean_fwd_rel": 0.0022,
+            "n": 7235,
+            "mean_fwd_rel": -0.002,
             "hit_rate": null
           },
           "fading": {
-            "n": 277,
-            "mean_fwd_rel": 0.0051,
-            "hit_rate": 0.538
+            "n": 1008,
+            "mean_fwd_rel": -0.0036,
+            "hit_rate": 0.609
           }
         }
       }
     },
     "10": {
-      "n_matured": 7066,
-      "score_ic": 0.0263,
-      "score_ic_t_hac": 0.264,
-      "score_ic_t_gate": 0.264,
-      "score_ic_t_iid": 0.449,
+      "n_matured": 14517,
+      "score_ic": -0.0005,
+      "score_ic_t_hac": -0.009,
+      "score_ic_t_gate": -0.009,
+      "score_ic_t_iid": -0.014,
       "hac_anticonservative": false,
-      "ic_span_days": 56,
-      "indep_windows": 4.0,
+      "ic_span_days": 116,
+      "indep_windows": 8.29,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": 0.0263,
-        "ic_vol": 0.3043,
-        "ic_ir": 0.086,
-        "ic_ir_ann": 0.386,
-        "t_hac": 0.264,
-        "p_hac": 0.7917,
-        "hit": 0.481,
-        "n": 27,
+        "mean_ic": -0.0005,
+        "ic_vol": 0.2667,
+        "ic_ir": -0.002,
+        "ic_ir_ann": -0.009,
+        "t_hac": -0.009,
+        "p_hac": 0.9928,
+        "hit": 0.426,
+        "n": 54,
         "hac_lags": 10,
         "hac_lags_requested": 10,
         "ic_first_date": "2026-06-26",
-        "ic_last_date": "2026-08-21",
-        "ic_span_days": 56,
-        "indep_windows": 4.0
+        "ic_last_date": "2026-10-20",
+        "ic_span_days": 116,
+        "indep_windows": 8.29
       },
       "by_stage": {
         "emerging": {
-          "n": 312,
-          "mean_fwd_rel": -0.0013,
-          "hit_rate": 0.487
+          "n": 648,
+          "mean_fwd_rel": -0.0072,
+          "hit_rate": 0.454
         },
         "neutral": {
-          "n": 6430,
-          "mean_fwd_rel": 0.0032,
+          "n": 13221,
+          "mean_fwd_rel": -0.0022,
           "hit_rate": null
         },
         "fading": {
-          "n": 324,
-          "mean_fwd_rel": -0.0013,
-          "hit_rate": 0.488
+          "n": 648,
+          "mean_fwd_rel": 0.0026,
+          "hit_rate": 0.458
         }
       },
       "v2": {
-        "n_matured": 1735,
-        "score_ic": -0.0774,
-        "score_ic_t_hac": null,
+        "n_matured": 9146,
+        "score_ic": 0.0257,
+        "score_ic_t_hac": 0.442,
         "by_stage": {
           "emerging": {
-            "n": 168,
-            "mean_fwd_rel": 0.0033,
-            "hit_rate": 0.452
+            "n": 903,
+            "mean_fwd_rel": 0.0008,
+            "hit_rate": 0.453
           },
           "neutral": {
-            "n": 1373,
-            "mean_fwd_rel": 0.0034,
+            "n": 7235,
+            "mean_fwd_rel": -0.0051,
             "hit_rate": null
           },
           "fading": {
-            "n": 194,
-            "mean_fwd_rel": 0.0187,
-            "hit_rate": 0.289
+            "n": 1008,
+            "mean_fwd_rel": -0.0073,
+            "hit_rate": 0.558
           }
         }
       }
     },
     "21": {
-      "n_matured": 5834,
-      "score_ic": 0.0681,
-      "score_ic_t_hac": 0.68,
-      "score_ic_t_gate": 0.68,
-      "score_ic_t_iid": 0.936,
+      "n_matured": 13979,
+      "score_ic": -0.0489,
+      "score_ic_t_hac": -0.665,
+      "score_ic_t_gate": -0.665,
+      "score_ic_t_iid": -1.193,
       "hac_anticonservative": false,
-      "ic_span_days": 42,
-      "indep_windows": 1.43,
+      "ic_span_days": 105,
+      "indep_windows": 3.57,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": 0.0681,
-        "ic_vol": 0.3411,
-        "ic_ir": 0.2,
-        "ic_ir_ann": 1.294,
-        "t_hac": 0.68,
-        "p_hac": 0.4964,
-        "hit": 0.5,
-        "n": 22,
+        "mean_ic": -0.0489,
+        "ic_vol": 0.2955,
+        "ic_ir": -0.165,
+        "ic_ir_ann": -1.072,
+        "t_hac": -0.665,
+        "p_hac": 0.5058,
+        "hit": 0.404,
+        "n": 52,
         "hac_lags": 21,
         "hac_lags_requested": 21,
         "ic_first_date": "2026-06-26",
-        "ic_last_date": "2026-08-07",
-        "ic_span_days": 42,
-        "indep_windows": 1.43
+        "ic_last_date": "2026-10-09",
+        "ic_span_days": 105,
+        "indep_windows": 3.57
       },
       "by_stage": {
         "emerging": {
-          "n": 261,
-          "mean_fwd_rel": 0.0115,
-          "hit_rate": 0.533
+          "n": 624,
+          "mean_fwd_rel": -0.0259,
+          "hit_rate": 0.397
         },
         "neutral": {
-          "n": 5309,
-          "mean_fwd_rel": 0.0112,
+          "n": 12731,
+          "mean_fwd_rel": -0.0024,
           "hit_rate": null
         },
         "fading": {
-          "n": 264,
-          "mean_fwd_rel": -0.016,
-          "hit_rate": 0.538
+          "n": 624,
+          "mean_fwd_rel": 0.0076,
+          "hit_rate": 0.431
         }
       },
       "v2": {
-        "n_matured": 509,
-        "score_ic": null,
-        "score_ic_t_hac": null,
+        "n_matured": 8608,
+        "score_ic": -0.0467,
+        "score_ic_t_hac": -1.788,
         "by_stage": {
           "emerging": {
-            "n": 49,
-            "mean_fwd_rel": 0.0446,
-            "hit_rate": 0.714
+            "n": 825,
+            "mean_fwd_rel": -0.0184,
+            "hit_rate": 0.371
           },
           "neutral": {
-            "n": 389,
-            "mean_fwd_rel": 0.0128,
+            "n": 6854,
+            "mean_fwd_rel": -0.0101,
             "hit_rate": null
           },
           "fading": {
-            "n": 71,
-            "mean_fwd_rel": 0.0212,
-            "hit_rate": 0.31
+            "n": 929,
+            "mean_fwd_rel": -0.0051,
+            "hit_rate": 0.535
           }
         }
       }
     },
     "63": {
-      "n_matured": 478,
-      "score_ic": null,
-      "score_ic_t_hac": null,
-      "score_ic_t_gate": null,
-      "score_ic_t_iid": null,
+      "n_matured": 8599,
+      "score_ic": -0.112,
+      "score_ic_t_hac": -1.09,
+      "score_ic_t_gate": -1.09,
+      "score_ic_t_iid": -2.182,
       "hac_anticonservative": false,
-      "ic_span_days": 3,
-      "indep_windows": 0.03,
+      "ic_span_days": 66,
+      "indep_windows": 0.75,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "n_days": 2,
+        "mean_ic": -0.112,
+        "ic_vol": 0.2903,
+        "ic_ir": -0.386,
+        "ic_ir_ann": -4.329,
+        "t_hac": -1.09,
+        "p_hac": 0.2758,
+        "hit": 0.312,
+        "n": 32,
+        "hac_lags": 31,
+        "hac_lags_requested": 63,
         "ic_first_date": "2026-06-26",
-        "ic_last_date": "2026-06-29",
-        "ic_span_days": 3,
-        "indep_windows": 0.03
+        "ic_last_date": "2026-08-31",
+        "ic_span_days": 66,
+        "indep_windows": 0.75
       },
       "by_stage": {
         "emerging": {
-          "n": 16,
-          "mean_fwd_rel": 0.1312,
-          "hit_rate": 0.688
+          "n": 384,
+          "mean_fwd_rel": -0.0493,
+          "hit_rate": 0.352
         },
         "neutral": {
-          "n": 438,
-          "mean_fwd_rel": 0.0264,
+          "n": 7831,
+          "mean_fwd_rel": -0.0065,
           "hit_rate": null
         },
         "fading": {
-          "n": 24,
-          "mean_fwd_rel": -0.1622,
-          "hit_rate": 0.917
+          "n": 384,
+          "mean_fwd_rel": 0.0448,
+          "hit_rate": 0.333
         }
       },
       "v2": {
-        "n_matured": 0,
-        "score_ic": null,
-        "score_ic_t_hac": null,
-        "by_stage": {}
+        "n_matured": 3228,
+        "score_ic": -0.1263,
+        "score_ic_t_hac": -7.409,
+        "by_stage": {
+          "emerging": {
+            "n": 366,
+            "mean_fwd_rel": -0.0886,
+            "hit_rate": 0.167
+          },
+          "neutral": {
+            "n": 2495,
+            "mean_fwd_rel": -0.0281,
+            "hit_rate": null
+          },
+          "fading": {
+            "n": 367,
+            "mean_fwd_rel": 0.0088,
+            "hit_rate": 0.501
+          }
+        }
       }
     }
   },
@@ -260,115 +285,115 @@
   "note_zh": "\u6b63\u5728\u7d2f\u79ef\u524d\u77bb\u89c2\u6d4b\uff1b\u5c1a\u65e0\u5468\u671f\u901a\u8fc7 Newey-West \u663e\u8457\u6027\u68c0\u9a8c\u3002\u65e9\u671f\u6570\u636e\u4e3a\u6682\u5b9a\uff0c\u4ec5\u4f9b\u53c2\u8003\u3002",
   "recent_misses": [
     {
-      "date": "2026-08-07",
-      "key": "spacedataanalytics",
-      "name": "Data Analytics",
-      "theme": "Space Tech",
-      "stage": "emerging",
-      "fwd_rel": -0.1257,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-07",
-      "key": "spaceinfrastructure",
-      "name": "Infrastructure",
-      "theme": "Space Tech",
-      "stage": "emerging",
-      "fwd_rel": -0.1195,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-07",
-      "key": "spacelaunch",
-      "name": "Launch",
-      "theme": "Space Tech",
-      "stage": "emerging",
-      "fwd_rel": -0.1014,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-07",
-      "key": "cybersecuritynetwork",
-      "name": "Network",
-      "theme": "Cybersecurity",
+      "date": "2026-10-09",
+      "key": "nanotechmedicine",
+      "name": "Medicine",
+      "theme": "Nanotechnology",
       "stage": "fading",
-      "fwd_rel": 0.0528,
+      "fwd_rel": 0.1513,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-07",
-      "key": "cybersecurityzerotrust",
-      "name": "ZeroTrust",
-      "theme": "Cybersecurity",
-      "stage": "fading",
-      "fwd_rel": 0.0508,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-07",
-      "key": "autonomousdefense",
-      "name": "Defense",
-      "theme": "Autonomous Systems",
+      "date": "2026-10-09",
+      "key": "educationplatforms",
+      "name": "Platforms",
+      "theme": "Education Technology",
       "stage": "emerging",
-      "fwd_rel": -0.0502,
+      "fwd_rel": -0.1328,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-07",
-      "key": "hardwarestorage",
-      "name": "Storage",
+      "date": "2026-10-09",
+      "key": "educationworkforce",
+      "name": "Workforce",
+      "theme": "Education Technology",
+      "stage": "emerging",
+      "fwd_rel": -0.0601,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-09",
+      "key": "healthcaregenomics",
+      "name": "Genomics",
+      "theme": "Healthcare & Biotech",
+      "stage": "fading",
+      "fwd_rel": 0.037,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-07",
+      "key": "energybasenuclear",
+      "name": "Nuclear",
+      "theme": "Energy Traditional",
+      "stage": "emerging",
+      "fwd_rel": -0.1275,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-07",
+      "key": "semisdesigntools",
+      "name": "Design Tools",
+      "theme": "Semiconductors",
+      "stage": "emerging",
+      "fwd_rel": -0.1148,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-07",
+      "key": "softwareenterprise",
+      "name": "Enterprise",
+      "theme": "Software",
+      "stage": "fading",
+      "fwd_rel": 0.1014,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-07",
+      "key": "hardwaretelecom",
+      "name": "Telecom",
       "theme": "Hardware",
-      "stage": "fading",
-      "fwd_rel": 0.0459,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-07",
-      "key": "iotsecurity",
-      "name": "Security",
-      "theme": "Internet of Things",
-      "stage": "fading",
-      "fwd_rel": 0.0427,
+      "stage": "emerging",
+      "fwd_rel": -0.0882,
       "horizon_d": 21
     }
   ],
   "head_to_head": {
     "by_horizon": {
       "5": {
-        "n": 7623,
-        "n_v2": 2292,
-        "ic": 0.0084,
-        "ic_v2": -0.0071,
-        "gap": -0.0155,
-        "t_hac": 0.116,
-        "t_hac_v2": -0.134
+        "n": 14517,
+        "n_v2": 9146,
+        "ic": -0.0061,
+        "ic_v2": 0.0244,
+        "gap": 0.0305,
+        "t_hac": -0.108,
+        "t_hac_v2": 0.39
       },
       "10": {
-        "n": 7066,
-        "n_v2": 1735,
-        "ic": 0.0263,
-        "ic_v2": -0.0774,
-        "gap": -0.1037,
-        "t_hac": 0.264,
-        "t_hac_v2": null
+        "n": 14517,
+        "n_v2": 9146,
+        "ic": -0.0005,
+        "ic_v2": 0.0257,
+        "gap": 0.0262,
+        "t_hac": -0.009,
+        "t_hac_v2": 0.442
       },
       "21": {
-        "n": 5834,
-        "n_v2": 509,
-        "ic": 0.0681,
-        "ic_v2": null,
-        "gap": null,
-        "t_hac": 0.68,
-        "t_hac_v2": null
+        "n": 13979,
+        "n_v2": 8608,
+        "ic": -0.0489,
+        "ic_v2": -0.0467,
+        "gap": 0.0022,
+        "t_hac": -0.665,
+        "t_hac_v2": -1.788
       },
       "63": {
-        "n": 478,
-        "n_v2": 0,
-        "ic": null,
-        "ic_v2": null,
-        "gap": null,
-        "t_hac": null,
-        "t_hac_v2": null
+        "n": 8599,
+        "n_v2": 3228,
+        "ic": -0.112,
+        "ic_v2": -0.1263,
+        "gap": -0.0143,
+        "t_hac": -1.09,
+        "t_hac_v2": -7.409
       }
     },
     "leader": "incumbent",

@@ -115,11 +115,18 @@ global.window.setTimeout = setTimeout;
 var __events = [];
 var __fetchCalls = [];
 var __fetchImpl = null;
+var __routeCatalogPayload = null;
 
 global.fetch = function (url, opts) {
-  /* Never count route-catalog.json; it is optional infrastructure */
+  /* Never count route-catalog.json; it is optional infrastructure. */
   if (String(url).indexOf('route-catalog.json') >= 0) {
-    return Promise.resolve({ok: false, status: 404, json: function () { return Promise.reject(new Error('404')); }});
+    if (__routeCatalogPayload === null) {
+      return Promise.resolve({ok: false, status: 404, json: function () { return Promise.reject(new Error('404')); }});
+    }
+    return Promise.resolve({
+      ok: true, status: 200,
+      json: function () { return Promise.resolve(__routeCatalogPayload); }
+    });
   }
   __fetchCalls.push(String(url));
   return __fetchImpl ? __fetchImpl(url, opts) : Promise.reject(new Error('no fetch impl'));
@@ -289,6 +296,8 @@ def _run_ci(setup_js: str, wait_ms: int = 80) -> dict:
         f"    bodyText: allBodyText(),\n"
         f"    terminalUpgradeHref: tu.href || null,\n"
         f"    terminalUpgradeEmptyHref: tue.href || null,\n"
+        f"    earningsRecordHref: (__elements['ci-earnings-record'] || {{}}).href || null,\n"
+        f"    earningsRecordState: (__elements['ci-earnings-record'] || {{}})._attrs['data-wire-state'] || null,\n"
         f"    historyHidden: hist.hidden,\n"
         f"    contentHidden: ctn.hidden,\n"
         f"    emptyHidden: emp.hidden,\n"
@@ -674,6 +683,123 @@ __fetchImpl = function (url) {{
         "#ci-history is not hidden after v2 render — spec requires it hidden in v2 mode",
         out,
     )
+
+
+
+# ============================================================================
+# 9. Earnings Wire route catalog v1 and v2 remain consumable by the dossier
+# ============================================================================
+@needs_node
+@pytest.mark.parametrize(
+    ("schema", "extra"),
+    [
+        ("earnings.public_wire_routes/v1", {}),
+        ("earnings.public_wire_routes/v2", {"forward_selection_floor_date": "2026-07-29"}),
+    ],
+)
+def test_route_catalog_v1_and_v2_resolve_exact_earnings_record(
+    schema: str, extra: dict[str, str],
+) -> None:
+    """Deployment and rollback must preserve the exact-record handoff."""
+    catalog = {
+        "schema": schema,
+        **extra,
+        "routes": {
+            "AAPL": {
+                "events": {
+                    "2026Q2": {
+                        "href": "aapl-2026q2-call-record.html",
+                        "period": "Q2 FY2026",
+                        "date": "2026-04-30",
+                        "transcript_id": "2026Q2",
+                        "dossier_available": True,
+                    }
+                },
+                "latest": {
+                    "href": "aapl-2026q2-call-record.html",
+                    "period": "Q2 FY2026",
+                    "date": "2026-04-30",
+                    "transcript_id": "2026Q2",
+                    "dossier_available": True,
+                },
+            }
+        },
+    }
+    out = _run_ci(
+        f"""
+__routeCatalogPayload = {json.dumps(catalog)};
+__fetchImpl = function (url) {{
+  if (url.indexOf('/api/event-workspace/') >= 0) {{
+    return Promise.resolve({{
+      ok: false, status: 404,
+      json: function () {{
+        return Promise.resolve({{code: 'event_workspace_not_covered', ticker: 'AAPL'}});
+      }}
+    }});
+  }}
+  return Promise.resolve({{
+    ok: true, status: 200,
+    json: function () {{ return Promise.resolve({json.dumps(V1_POISON_PAYLOAD)}); }}
+  }});
+}};
+"""
+    )
+    assert out["mode"] == "v1", out
+    assert out["earningsRecordState"] == "exact", out
+    assert out["earningsRecordHref"] == (
+        "earnings/aapl-2026q2-call-record.html?from=company-intelligence&tx=2026Q2"
+    ), out
+
+
+@needs_node
+def test_route_catalog_unknown_schema_is_ignored() -> None:
+    """An unrecognized producer contract must never create an exact handoff."""
+    catalog = {
+        "schema": "earnings.public_wire_routes/v999",
+        "routes": {
+            "AAPL": {
+                "events": {
+                    "2026Q2": {
+                        "href": "must-not-be-used.html",
+                        "period": "Q2 FY2026",
+                        "date": "2026-04-30",
+                        "transcript_id": "2026Q2",
+                        "dossier_available": True,
+                    }
+                },
+                "latest": {
+                    "href": "must-not-be-used.html",
+                    "period": "Q2 FY2026",
+                    "date": "2026-04-30",
+                    "transcript_id": "2026Q2",
+                    "dossier_available": True,
+                },
+            }
+        },
+    }
+    out = _run_ci(
+        f"""
+__routeCatalogPayload = {json.dumps(catalog)};
+__fetchImpl = function (url) {{
+  if (url.indexOf('/api/event-workspace/') >= 0) {{
+    return Promise.resolve({{
+      ok: false, status: 404,
+      json: function () {{
+        return Promise.resolve({{code: 'event_workspace_not_covered', ticker: 'AAPL'}});
+      }}
+    }});
+  }}
+  return Promise.resolve({{
+    ok: true, status: 200,
+    json: function () {{ return Promise.resolve({json.dumps(V1_POISON_PAYLOAD)}); }}
+  }});
+}};
+"""
+    )
+    assert out["mode"] == "v1", out
+    assert out["earningsRecordState"] == "archive", out
+    assert out["earningsRecordHref"] == "earnings/", out
+    assert "must-not-be-used" not in json.dumps(out), out
 
 
 # ============================================================================

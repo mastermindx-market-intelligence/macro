@@ -1,0 +1,18 @@
+{
+  "checks": {
+    "design-system-check.txt": 0,
+    "runtime-style-check.txt": 0,
+    "whitespace-check.txt": 0
+  },
+  "router_asset_byte_equal": true,
+  "stocktable_asset_byte_equal": true,
+  "added_partials_checked": [
+    "templates/_sector_central_paper.css.j2",
+    "templates/_sector_central_brief.html.j2",
+    "templates/_sector_central_brief.js.j2",
+    "templates/_sector_central_coverage.js.j2",
+    "templates/_sector_prophet_context.html.j2",
+    "templates/_sector_prophet_context.css.j2",
+    "templates/_sector_prophet_context.js.j2"
+  ]
+}

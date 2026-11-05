@@ -104,6 +104,7 @@ def _write_gate(
         "status":           "building_history",
         "ledger": {
             "n_rows":        ledger_stats.get("n_rows", 0),
+            "source_clock_coverage": ledger_stats.get("source_clock_coverage"),
             "n_sessions":    ledger_stats.get("n_sessions", 0),
             "last_ts":       ledger_stats.get("last_ts"),
             "events_per_day_mean": epd_mean,
