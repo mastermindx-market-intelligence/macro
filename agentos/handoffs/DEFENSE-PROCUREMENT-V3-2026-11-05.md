@@ -22,6 +22,9 @@ verified:
   - claim: Native coordination and actual worker execution are distinguished.
     command: Native session_meta/turn_context and exact retained Fabric request/status/result inspection.
     result: Two Sol6.1/high children returned adjudications. C0 extraction yielded429/no verdict. C1 telemetry request was rejected before launch for incompatible new-worktree/artifact-output flags; no worker started and no retry occurred.
+  - claim: International saved research now retains the selected source identity and its evidence across offline remount and changed or unavailable current data.
+    command: PR10757 saved-research candidate da00fb0af0d297e238a584169697dbbc15b9c749; affected briefcase, subject journey, page UI and asset checks.
+    result: 172 affected cases passed before a presentation-only follow-up; 90 briefcase and subject-journey cases passed after it. English and Chinese saved receipts use readable field labels; JSON/CSV preserve original source values and clocks. This is source/offline qualification, not live browser or two-tenant acceptance.
 unverified:
   - claim: This serving-attribution candidate is merged, installed and observed in production.
     what_would_verify: Exact candidate's binding CI, eligible normal release, installed commit/bytes and lawfully admitted actual route evidence.
@@ -37,7 +40,8 @@ next_actions:
   - Consume exact serving-attribution candidate qualification and finish normal eligible release and installed adoption. Do not call instrumentation performance acceptance.
   - Consume actionable incumbent Fabric reconciliation capability for original P2/publisher effects without replay or alternate readers; current root owns the decision.
   - Complete the original quartet customer journey when the exact publication/browser dependencies are cleared; reuse accepted evidence where unchanged.
-  - Implement international saved-cut/reopen/export independently in current source; original artifact-only P2 disposition remains separately held. Then complete supplier/services economic breadth from admitted contracts.
+  - Consume PR10757's exact-head native review and CI return, then qualified release and installed adoption; original artifact-only P2 disposition remains separately held.
+  - Supplier/services breadth needs a registered issuer/profile and canonical security, exact lawful source bodies and actual clocks, public-display qualification and an admitted normal publisher operation. No executable new-issuer intake was established by the current producer return; source function availability alone is not admission.
 do_not_redo:
   - D6-C0, FMS schedule, successful financial generation df085ec3392c1f8d1c33b6e2 and accepted Q0.
   - PR10140 validation sequence, PR10605 clocks/pinned-link tests and closed CI observers without material invalidation.
@@ -47,7 +51,7 @@ danger_areas:
   - Source, CI, merge, installation, authenticated behavior and scientific acceptance are distinct layers.
   - The server change must not adopt c287 or change auth, cache keys/admission/locking, payload bodies or cursor behavior.
   - Missing source-native economics cannot be inferred from narrative association or consolidated financial facts.
-prs: [7175, 9490, 9723, 9742, 9744, 9747, 10140, 10236, 10605]
+prs: [7175, 9490, 9723, 9742, 9744, 9747, 10140, 10236, 10605, 10754, 10757]
 decisions: [DEC:DEFENSE-JOURNEY-FIRST-COMPLETION-20261105]
 ---
 
@@ -110,6 +114,34 @@ claiming its grant or duplicating an actual source writer. That source candidate
 requires its own checks and qualified release. Original P2 remains unresolved and
 unused. This is an effect-boundary correction, not permission to recover denied
 output through a replacement proposal, reader, provider or host.
+
+PR10757 now carries that separate saved-research implementation. The current
+candidate is `da00fb0af0d297e238a584169697dbbc15b9c749`. It uses the existing atlas,
+selected subject, owner-scoped briefcase and download controls, with no new fetch
+or change to the held dossier auth-sharing factory. Independent implementation
+scrutiny found alert-view conversion, encoded sensitive URL keys and inconsistent
+saved knowledge clocks; all three were repaired before publication. Storage,
+original-source exports, owner-change clearing and bilingual reopen behavior have
+offline evidence. Live browser/privacy acceptance remains open. The assigning
+native coordinator owns one foreground CI observer and the eligible non-author
+release decision; the root owns installed and product acceptance.
+
+PR10754's first hosted contract-delta run `42015618004` reported ten missing exact
+import-closure selectors in `defense-rail-laws`. This is a release defect in the
+test manifest, not an A42 measurement or a serving-behavior failure. The incumbent full-head census found nine further paths. The repair
+adds only those nineteen observed paths and uses the incumbent closure checker; it does not
+remove test coverage. Its original observer remains with its assigning child
+until terminal consumption. Prior source checks are reused where unchanged.
+
+The new supplier/services producer inquiry is distinct from the closed retained
+manifest lookup. Portfolio Operations consumed the current producer's return:
+no new issuer case, acquisition or publisher was started. The existing
+`build_event_workspace` interface can bind supplied evidence, but a new issuer
+must have a non-null `profile_for_ticker` result rather than inherit Apple's
+default. An executable admitted intake and its source qualifications remain a
+specific dependency. Neither a missing historical owner ACK nor the mere presence
+of a builder function determines this gate. No FIF implementation, alternate
+publisher or financial replay is authorized by this finding.
 
 Continuity is the current workstream/handoff plus the existing local charter
 `/Users/chriswong/gwcap/project-charters/defense-fable`. Detailed retained evidence
