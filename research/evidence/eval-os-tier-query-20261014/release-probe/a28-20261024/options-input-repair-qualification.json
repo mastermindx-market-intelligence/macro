@@ -1,0 +1,18 @@
+{
+  "source": "c564d418531a6a6f2559e06b6b52400c33006b23",
+  "remote_parent": "0c41b459928d67fcee5315bdcdebe4572bb194b4",
+  "run": 40088123750,
+  "tested": "e2fd5aea3351cdc8f321ca171168163134e9d61c",
+  "added_exact_paths": 13,
+  "all355_definitions_prior_paths_commands_limits_retained": true,
+  "final_fragment_curation_controls_passed": 43,
+  "initial_controls_passed": 44,
+  "test_counts_overlap": true,
+  "exact_hosted_composite_curated_closure_findings": {},
+  "closure_proof": "Original full exact-hosted scan plus first10 paths found only three residual options-matrix-code paths. After adding them, canonical affected-scope check is zero. All other jobs/source unchanged.",
+  "packing_reused": "Only13 exact research paths added; none matches the three existing packing probes. Existing definitions, weights, prior paths, command order and limits are identical, so those probe selections and partitions remain unchanged.",
+  "runtime_changed": false,
+  "hosted_terminal_gate": false,
+  "production_claim": false,
+  "at": "2026-10-24T11:23:35.537051+00:00"
+}

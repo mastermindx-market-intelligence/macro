@@ -1,0 +1,19 @@
+{
+  "calling_carrier_sha": "6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde",
+  "capture_source": "original immutable Tiingo archive, settled third 1000-request continuation",
+  "complete_backfill": false,
+  "eod_producer_logic_sha": "bddd8da1f5c5225b258ff4d6d35ce72fca5a09fb",
+  "files": {
+    "audit-exact-wave.py": "4f127293df14a4b705d79c03944ba492613db19dcf9876d13bd6401626baf705",
+    "eod-1000-wave3-candidates.json": "2c555005ec7285cf22ca475b6e995db2c2dde259ec1446307323a87990f9ea0b",
+    "eod-1000-wave3-corpus-audit.json": "2e686190603852050cd724ddb3cd3902e28015cfebb0228eb073b668a68099e5",
+    "eod-1000-wave3-corpus-audit.log": "174c53317d311d653a3b0cd785983cd0135e7903b1d7b71e572a670cefca0953",
+    "eod-1000-wave3-live-batch.log": "823ff67d1202062a3dff20870495288acf1b87487e6ec66b70c73f220143d7d4",
+    "live-archive-wave3-proof.json": "f5a59a2bec328a0a9bcddaa34aeed6f9f442c869df608a3c9108d60e2fe3a8ae",
+    "live-archive-wave3-proof.log": "fc1fd364d55833cb977c829e25bf73f9a7ca95dfef78f0a1a01aba1efd08ae03",
+    "live-materialization-wave3.log": "e370dd08891a86ea9e2cab77b5d9c43d39082e1144a9e71fe71570a6eae7fb75",
+    "verify-archive.py": "a313df9467427397971d317a856f970c2759941ff1b72616b4bc245f8ca52928"
+  },
+  "licensed_rows_published": false,
+  "schema": "mastermind.tiingo_safe_evidence_manifest/v1"
+}

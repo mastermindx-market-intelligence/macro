@@ -1,0 +1,320 @@
+{
+  "status": "merged with exact-head hosted proof; natural post-merge comparison pending",
+  "base": "d52827f26b062f67d594350a65becf406710d4d1",
+  "original_profile_tree": "ff3996daeb00dd92c50f93865d685c4cd5044f5d",
+  "changes": [
+    "Use bytes.isascii for the unchanged ASCII declaration refusal",
+    "Use existing source-order event index before unchanged owner-identity direct-text filter"
+  ],
+  "invariants": [
+    "No result-schema or parser-version change",
+    "No parser limit or refusal-policy change",
+    "No caching of parsed results or writer state",
+    "No CI command, selected-job, proof or shard change"
+  ],
+  "local_before": {
+    "targeted_count": 72,
+    "passed": 72,
+    "seconds": 403.73,
+    "slowest_case_seconds": 42.37
+  },
+  "parser_tests": {
+    "passed": 214,
+    "seconds": 13.75,
+    "new_regression_before": "fails on original full-stream scan"
+  },
+  "publisher_slowest_after": {
+    "passed": 1,
+    "call_seconds": 29.41,
+    "session_seconds": 34.09
+  },
+  "publisher_output_parity": {
+    "returncode": 0,
+    "calls": 52,
+    "unique_documents": 2,
+    "equal_complete_outputs": [
+      {
+        "content_sha256": "548ae59778cf08ee0f2ee088e7ece20d947076c3c01f74d2d65db4c2777e436a",
+        "document_name": "aapl-20250927.htm",
+        "bytes": 1520208,
+        "result_sha256": "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4"
+      },
+      {
+        "content_sha256": "4ad5bea67cedfa7542d623900355cc8d143ef95c1acc135a597f2eedabdb9177",
+        "document_name": "aapl-20260627.htm",
+        "bytes": 1018210,
+        "result_sha256": "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+      }
+    ],
+    "wall_seconds": 36.744137416011654
+  },
+  "alternating_two_document_benchmark": {
+    "note": "Alternating local Mac Python3.12 parse plus canonical output serialization, two exact fixture documents, three samples each; not fleet proof",
+    "summary": {
+      "before": {
+        "cpu_seconds": 0.896013,
+        "wall_seconds": 0.9044267089338973
+      },
+      "after": {
+        "cpu_seconds": 0.6836469999999999,
+        "wall_seconds": 0.6890169999096543
+      }
+    },
+    "samples": [
+      {
+        "iteration": 0,
+        "version": "before",
+        "cpu_seconds": 0.8693449999999999,
+        "wall_seconds": 0.8769527910044417,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 0,
+        "version": "after",
+        "cpu_seconds": 0.6836469999999999,
+        "wall_seconds": 0.6890169999096543,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 1,
+        "version": "after",
+        "cpu_seconds": 0.707951,
+        "wall_seconds": 0.7230103340698406,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 1,
+        "version": "before",
+        "cpu_seconds": 0.896013,
+        "wall_seconds": 0.9044267089338973,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 2,
+        "version": "before",
+        "cpu_seconds": 0.9033100000000003,
+        "wall_seconds": 0.9105772080365568,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 2,
+        "version": "after",
+        "cpu_seconds": 0.6665179999999999,
+        "wall_seconds": 0.6706747499993071,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      }
+    ]
+  },
+  "profile_note": "cProfile overhead is material; cumulative function times overlap and must not be summed",
+  "profile_top_parser_functions": [
+    {
+      "line": 1852,
+      "function": "parse_sec_filing_document",
+      "primitive_calls": 52,
+      "calls": 52,
+      "self_seconds": 0.528322301,
+      "cumulative_seconds": 60.23756362700001
+    },
+    {
+      "line": 475,
+      "function": "build",
+      "primitive_calls": 52,
+      "calls": 52,
+      "self_seconds": 0.000291863,
+      "cumulative_seconds": 22.062364669
+    },
+    {
+      "line": 376,
+      "function": "start",
+      "primitive_calls": 666906,
+      "calls": 666906,
+      "self_seconds": 3.892475,
+      "cumulative_seconds": 16.180579872000003
+    },
+    {
+      "line": 201,
+      "function": "namespace",
+      "primitive_calls": 15293238,
+      "calls": 15293238,
+      "self_seconds": 2.3702297530000003,
+      "cumulative_seconds": 10.938019413000001
+    },
+    {
+      "line": 151,
+      "function": "_split_qname",
+      "primitive_calls": 18236029,
+      "calls": 18236029,
+      "self_seconds": 5.695055238,
+      "cumulative_seconds": 9.959895953
+    },
+    {
+      "line": 2205,
+      "function": "validate_sec_filing_parse_result",
+      "primitive_calls": 56,
+      "calls": 56,
+      "self_seconds": 0.687362601,
+      "cumulative_seconds": 9.485531663
+    },
+    {
+      "line": 210,
+      "function": "_tag_end",
+      "primitive_calls": 1137670,
+      "calls": 1137670,
+      "self_seconds": 5.54796857,
+      "cumulative_seconds": 8.004149345
+    },
+    {
+      "line": 1735,
+      "function": "_validate_document_structure",
+      "primitive_calls": 52,
+      "calls": 52,
+      "self_seconds": 0.398443535,
+      "cumulative_seconds": 7.898835587000001
+    },
+    {
+      "line": 937,
+      "function": "_context_record",
+      "primitive_calls": 8981,
+      "calls": 8981,
+      "self_seconds": 0.11467157400000001,
+      "cumulative_seconds": 5.785448571000001
+    },
+    {
+      "line": 1288,
+      "function": "_fact_record",
+      "primitive_calls": 52579,
+      "calls": 52579,
+      "self_seconds": 0.400912303,
+      "cumulative_seconds": 5.433089928
+    },
+    {
+      "line": 832,
+      "function": "_direct_text",
+      "primitive_calls": 36618,
+      "calls": 36618,
+      "self_seconds": 0.013937330000000001,
+      "cumulative_seconds": 5.1210157590000005
+    },
+    {
+      "line": 833,
+      "function": "<genexpr>",
+      "primitive_calls": 36618,
+      "calls": 36618,
+      "self_seconds": 5.08534577,
+      "cumulative_seconds": 5.08534577
+    }
+  ],
+  "scope_limit": "Local macOS Python3.12 timing; neither causal fleet p95 gain nor cost neutrality or 30 percent mission target is proven",
+  "raw_evidence": "/Volumes/Mastermind/ci-pack-throughput-20261019",
+  "working_source_sha256": {
+    "collectors/sec_filing_parser.py": "ee1f5f6cece259971f5f9d107c4b5cd3538ba725940d21fe65bdb3047157c746",
+    "tests/test_sec_filing_parser.py": "fd6800c34768dda9d080be8d0fcfc7a4e4225b7cc21966d6e85c3c765f6a9981"
+  },
+  "local_after": {
+    "targeted_count": 72,
+    "passed": 72,
+    "seconds": 335.45,
+    "slowest_case_seconds": 31.17,
+    "warnings": 42,
+    "warnings_scope": "inherited pytest cleanup warnings",
+    "runner_receipt": {
+      "head": "d52827f26b062f67d594350a65becf406710d4d1",
+      "source_status": "working parser optimization",
+      "count": 72,
+      "returncode": 0,
+      "wall_seconds": 337.02842337510083
+    }
+  },
+  "release": {
+    "headRefOid": "db89558c56865f0961f0f50bfbb0c04ef3320690",
+    "mergeCommit": {
+      "oid": "9c7df3786fc3856fbb692da301584b4b443ab66d"
+    },
+    "mergedAt": "2026-10-20T04:57:13Z",
+    "state": "MERGED"
+  },
+  "landing_verified_blobs": 7,
+  "hosted_trials": [
+    {
+      "run_id": 39357355984,
+      "head": "f22f133c9d877c060890a36b04e2027e389c010c",
+      "conclusion": "success",
+      "fif_command_seconds": 1581.753219,
+      "role": "superseded head",
+      "stage_summary": {
+        "run_id": 39357355984,
+        "head": "f22f133c9d877c060890a36b04e2027e389c010c",
+        "created_at": "2026-10-20T02:09:11Z",
+        "status": "completed",
+        "conclusion": "success",
+        "run_to_gate_seconds": 2067.0,
+        "summed_job_wall_minutes": 225.78333333333333,
+        "last_pack_to_gate_start_seconds": 2.0
+      }
+    },
+    {
+      "run_id": 39360739679,
+      "head": "546fefb118f6bba91a0112f2ecef1f946b16f537",
+      "conclusion": "success",
+      "fif_command_seconds": 2093.137111,
+      "role": "superseded head",
+      "stage_summary": {
+        "run_id": 39360739679,
+        "head": "546fefb118f6bba91a0112f2ecef1f946b16f537",
+        "conclusion": "success",
+        "created_at": "2026-10-20T02:46:35Z",
+        "run_to_gate_seconds": 2561.0,
+        "summed_job_wall_minutes": 225.9,
+        "last_pack_to_gate_start_seconds": 2.0
+      }
+    },
+    {
+      "run_id": 39364786931,
+      "head": "db89558c56865f0961f0f50bfbb0c04ef3320690",
+      "conclusion": "success",
+      "fif_command_seconds": 1573.073102,
+      "role": "release proof",
+      "selected_jobs": 96,
+      "manifest_jobs": 258,
+      "passed_proof_units": 299,
+      "infrastructure_findings": 0,
+      "tested_tree_sha": "d794aaad6d2d6974fa6b6ee7bdc43ebb1ab3d167",
+      "base_sha": "6629c26843e83e2221f118e82e69411496105175",
+      "plan_sha256": "1e4334c952bdc7113114d0cc75fdcd20fdf8bff2ade6dc738f91575e2c3ebf6f",
+      "evidence_sha256": "559c007c2392513f8d90ba1ae1a372269f60514a01d0939750776f8fc199abfe",
+      "stage_summary": {
+        "run_id": 39364786931,
+        "head": "db89558c56865f0961f0f50bfbb0c04ef3320690",
+        "conclusion": "success",
+        "created_at": "2026-10-20T03:32:00Z",
+        "run_to_gate_seconds": 2073.0,
+        "summed_job_wall_minutes": 222.45,
+        "last_pack_to_gate_start_seconds": 2.0
+      }
+    }
+  ],
+  "hosted_limitations": [
+    "Three naturally triggered trial runs; two GitHub main refreshes, no manual CI rerun.",
+    "59 paths changed between original and final head; command and test-count equality alone do not establish equal transitive inputs.",
+    "Earlier ancestry trial has 560 fewer primary tests and lacks the later G-pack step.",
+    "No causal fleet p95 or cost-neutrality estimate."
+  ]
+}

@@ -1,0 +1,30 @@
+Independent implementation acceptance — feature-local BOATS copy — 2026-10-11
+
+Verdict: PASS for the narrow current source repair on the original Terminal #955 carrier. No actionable defect was found. Current-head hosted CI remains a separate later gate.
+
+Carrier: /Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/tiingo-boats-quotehub-b2b25c10fd296613
+Reviewed dirty patch over accepted merge head c0bf8a744a0d963360de45dab8c655a575776280.
+
+The complete source patch adds the pure, typed boatsLatestTradeLabel helper in terminal/lib/extQuoteCopy.ts, imports it into TerminalShell, replaces exactly the two BOATS label lookups with boatsLatestTradeLabel(lang), and removes only the task-owned boatsLatestTrade global LEX row. The helper contains the exact previously accepted English and Chinese strings and routes them through the existing pick(lang,en,zh) pattern. Its *Copy.ts filename keeps it within the unchanged plain-language guard's scanned copy scope. It neither mutates global translations nor changes language state. Age formatting, prices, clocks, source admission, response ordering and expiry logic are unchanged.
+
+Freshly verified SHA-256:
+terminal/components/TerminalShell.tsx
+58840d35751af8cc0e47bf9259193e5dd9652375dfb53be778c7678cf5c6580d
+
+terminal/lib/extQuoteCopy.ts
+dd9af6864d0c521b33f66658c79daf7581d77d7c70a2eca48e2cacbf007cad6e
+
+terminal/lib/i18n.tsx
+cfad0a8290b9b872fe919b7b9855bbd3a4cee095eb26ebd902c399942196a65d
+
+The global i18n file is byte-identical to protected base 85ad93866dcd9daf203c89a7d5e23280b5d6ed50. check_plain_language.mjs and plainLabels.ts remain unchanged. The working-tree status contains only these two modifications and the new helper. A base comparison finds no modified/deleted/renamed historical evidence under docs, terminal/docs, terminal/evidence or terminal/verify_shots; the task's dated BOATS evidence is additive. No historical screenshot receipt was restamped for this repair.
+
+I rehashed all fifteen other previously accepted consumer source/test files; every hash remains identical to the preceding accepted inventory. Thus the current seventeen-file consumer delta consists of those fifteen, the current TerminalShell and extQuoteCopy.ts; global i18n is restored and no longer part of the delta against protected base.
+
+Inspected owner-produced execution evidence:
+- terminal-boats-feature-copy-full-vitest.log: 554 test files passed; 9141 tests passed and four todo.
+- terminal-boats-feature-copy-browser.log: six exact EN/ZH label/age/expiry cases passed across desktop/tablet/mobile.
+- terminal-boats-feature-copy-plain-language.log: retained findings explicitly labeled legacy/pre-existing/nonblocking. The owner reports rc=0 using a full base diff including the new untracked copy file.
+- terminal-boats-feature-copy-typecheck.log: empty; rc=0 is supplied by the execution owner, not inferred from an empty log.
+
+I did not execute tests or mutate source. This PASS accepts the inspected implementation and retains the prior BOATS producer/consumer boundaries. It does not assert successful hosted CI for the forthcoming committed source. Commit/evidence binding and current-head hosted checks remain with the root owner. No runtime scheduling, installation, publication, deployment or genuine live BOATS acceptance follows; the original combined-action refusal remains controlling for that effect. Earlier reports and red evidence remain retained.

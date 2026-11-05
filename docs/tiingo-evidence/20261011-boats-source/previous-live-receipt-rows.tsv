@@ -1,0 +1,3 @@
+config/synapse.yml	19084	fb0d5805e5adefcf42a1e696d5ecd4d0112f849354c6f460b15ad005b70931c5
+scripts/build_ext_quotes.py	510	6dc557617b901b15a008e7ba78e07ee47b0c044ca94f58521ad2f64dd5b73d33
+scripts/publish_r2.py	715	6acbdcbeaa05a88a1725f6518cc1127e3eabec3ef4e96c00f9e65e99c83245e0

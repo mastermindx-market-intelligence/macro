@@ -1,0 +1,78 @@
+{
+  "state_before": "Original branch push bd89047e is confirmed. Its hosted CI exposed two concrete failures: a missing canonical About footer receipt and a press replay comparison mismatch. Both now have actual local repairs and passing scoped checks; MOG remains unarmed.",
+  "unresolved": [
+    "Exact new-head hosted admission, incumbent MOG landing, covering existing render and stable macro-update served-byte proof remain.",
+    "Terminal #859/R93 and separately verified same-A recovery remain complete. The earlier strict stop proof remains false; no repeated installer or service operation is indicated.",
+    "Canonical beta DNS/TLS/auth/public browser and applicable acceptance remain open. Authenticated DNSPod domain-owner access is required for actual beta DNS repair, not independent Macro delivery.",
+    "Preserve Sector six views and basket behavior, Paper REVISE, and C4 SPEC_ONLY/UNAPPLIED/UNRUN. previous_runtime=null does not establish A-to-B-to-A rollback."
+  ],
+  "next_actions": [
+    "Commit and normal-push the two qualified CI repairs with this same-pack proof extension; attend exact-head hosted checks and fix actual failures through existing owners.",
+    "Use incumbent MOG after its concluded predicates and hold checks, then bind landed source to covering render input, pushed output and stable served bytes.",
+    "Complete canonical beta DNS/TLS/auth/public browser and applicable remaining acceptance when authenticated domain-owner access is available."
+  ],
+  "changed": [
+    {
+      "path": "scripts/run_press.py; tests/test_press_run.py",
+      "what": "Supply a missing shared capability block in the press comparison only, using the existing owner in memory; preserve already-marked text and the blog-only write boundary. Add nine regression cases."
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer",
+      "what": "Adopt exact canonical eight-state About capture and four distinct PNGs with a three-key owning receipt. Preserve LIGHT_ONLY, static billing 404, anonymous-only and public/auth gaps."
+    },
+    {
+      "path": "Existing Shared Shell proof pack, handoff and workstream",
+      "what": "Append actual hosted failure, scratch replay, regression, canonical capture/adoption, review and previous publication receipts while preserving all 1,219 prior indexed entries and prose history."
+    }
+  ],
+  "verified": [
+    {
+      "claim": "The press failure is repaired within its owner boundary.",
+      "command": "macro-bd890-press-replay-red.json; macro-bd890-press-ownership-repair.json and raw logs.",
+      "result": "Nine actual page differences isolate the common shell block. New regression: 2 failed/7 passed before, then 9 passed; complete press suite: 151 passed. Common owners and CI declaration unchanged."
+    },
+    {
+      "claim": "Actual canonical About evidence satisfies the existing visual guard locally.",
+      "command": "macro-bd890-about-canonical.json; macro-bd890-about-adoption.json.",
+      "result": "Eight actual REST captures, four unique PNGs, 53 inputs unchanged; exact-byte adoption and full staged PR diff guard exit 0. LIGHT_ONLY and local billing 404 retained; no public/auth/Terminal claim."
+    },
+    {
+      "claim": "Named new imports already have CI path coverage.",
+      "command": "Existing ticker-news-qbus declaration and bounded adviser review.",
+      "result": "lib/pages.py, lib/shared_shell.py and lib/site_assets.py are explicit paths. No selector, manifest or packing-bound modification."
+    }
+  ],
+  "do_not_redo_add": "Terminal #859/R93 recovery and separate same-A availability recovery remain complete. Do not repeat bootstrap, cleanup, qualification or stop/start. Preserve the failed strict stop proof. No duplicate delivery owners.",
+  "continuation": "## Attended continuation — 2026-10-20: two hosted CI failures repaired\n\nThe previous original-branch publication is confirmed at **bd89047e4e403a93183c6a4763274e09acfdd044**. Its hosted CI run **39486571065** concluded with ten of twelve packs passing. Pack 3 failed the existing visual-evidence guard because the About footer change in `templates/landing.css` had no owning canonical receipt. Pack 9 failed the committed-estate press replay test. The actual hosted checkout was merge **08fcd6ffa61d9503d3e779a326545af7c0b08644**, parents actual base **9f7f61e2f82e967abb38d98a05b15c797811484e** and the branch head; the PR API's base field alone did not describe that tested merge. Complete raw plan and failing job logs are retained.\n\n### Narrow press comparison repair\n\nAn actual scratch replay through the existing free-content owner isolated all nine affected blog pages: each difference was the common Shared Shell capability block, present in fresh renderer output and missing from the committed predecessor. The owned projection equated every pair without altering tracked output.\n\nThe press-only comparator now supplies the canonical capability block in memory only when both marker strings are absent. It uses the real depth prefix and explicit digests. Text containing either marker remains untouched before the established comparison, so substantive content inside an existing block cannot be erased. Non-HTML comparison remains bytewise. The common injector, global estate comparator, page writer, optimizer, CI manifest, and blog-only write scope remain unchanged.\n\nThe new nine-case regression first produced **2 failed, 7 passed** on the old comparison, then **9 passed** with the repair. The complete press suite produced **151 passed**, including committed-estate replay. The focused nine are part of that total, not additional tests. Actual local Python was 3.14.7; retained pytest cleanup warnings did not fail the suite. The repair receipt binds `scripts/run_press.py` SHA-256 **c435e0d33b7672a9f5b792ace3d05c2bc3eaa8a5d6dc134cd6879be1f1c03968** and `tests/test_press_run.py` SHA-256 **5fdf6e0bedb6add7bf31309b79ead1c1504004fd46a18f58d55dd4e5cab7ddee**. Existing `ticker-news-qbus` path declarations explicitly cover `lib/pages.py` and `lib/shared_shell.py`; no selector or packing change was made.\n\n### Canonical About evidence and actual guard\n\nThe existing `scripts/capture_page_evidence.py` owner completed eight anonymous About REST captures at 23:26 UTC: desktop/mobile × EN/ZH × requested light/dark. All 53 fixture inputs and the capture owner remained byte-identical before and after capture, and again at adoption. The exact six output files were copied under `mockups/evidence/shared-shell-css-20261019/about-footer/`; a standard three-key receipt owns `templates/landing.css`. The old Shared Shell receipt remains unchanged.\n\nThe eight captures have four distinct PNGs: each light/dark pair is byte-identical. **LIGHT_ONLY** remains the observed palette. The recorded local static-fixture billing HTTP 404 and console error are preserved. Authenticated and loading/empty/stale/error states remain gaps. Aggregate geometry summaries are not relabeled as eight independent geometry checks. Principal inspection covered all four distinct PNGs; earlier four-width and 18-Tab diagnostics remain separately scoped.\n\nThe actual existing visual guard exited **0** against the complete staged PR diff from integrated base **7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1**. The adoption receipt binds unchanged source inputs, unchanged old receipt, guard hash, full diff hash and staged tree **35dd131db4019ff0330f98eae0a6f2b1d98dbd56**. This is local guard acceptance; new-head hosted admission is still required.\n\n### Preserved history and remaining gates\n\nThe same proof pack preserves all 1,219 prior indexed entries except the append-only README extension, with the original file identities retained and checked. It adds actual hosted failures, replay and regression evidence, canonical capture/adoption, bounded adviser findings, the previous exact checkpoint, and preceding commit/push receipts. The current final importer and ensuing commit/push receipts remain externally bound by the original PR checkpoint to avoid self-inclusion.\n\nTerminal #859 and R93 installer recovery remain COMPLETE / DO_NOT_REDO. The earlier strict beta stop proof remains false; its separately verified same-A normal-start recovery remains true. No new installer, service, production or DNS mutation occurred in this repair. The 19:52 DNS read still observed the beta EdgeOne CNAME, and the read-only publication preflight was preparatory, not delivery evidence.\n\nNext: normal-push this repair and proof on the original branch, attend the exact new-head hosted checks and incumbent MOG, then bind protected landing to a covering existing render and stable served bytes. Canonical beta DNS/TLS/auth/public-browser acceptance remains separate and needs authenticated DNSPod domain-owner access when that operation is reached. Preserve Sector's six views and basket behavior, Paper REVISE, and C4 SPEC_ONLY/UNAPPLIED/UNRUN. No duplicate PR, renderer, source carrier or watcher.\n",
+  "manifest_update": {
+    "current_ci_repair": {
+      "previous_head": "bd89047e4e403a93183c6a4763274e09acfdd044",
+      "failed_run": 39486571065,
+      "tested_merge": "08fcd6ffa61d9503d3e779a326545af7c0b08644",
+      "tested_base": "9f7f61e2f82e967abb38d98a05b15c797811484e",
+      "press_receipt": "macro-bd890-press-ownership-repair.json",
+      "press_suite_passed": 151,
+      "focused_regression_passed": 9,
+      "focused_subset_of_suite": true,
+      "local_python": "3.14.7",
+      "hosted_admission": false,
+      "common_owners_and_ci_unchanged": true
+    },
+    "current_about_canonical": {
+      "capture_receipt": "macro-bd890-about-canonical.json",
+      "adoption_receipt": "macro-bd890-about-adoption.json",
+      "receipt_path": "mockups/evidence/shared-shell-css-20261019/about-footer/EVIDENCE.yml",
+      "manifest_path": "mockups/evidence/shared-shell-css-20261019/about-footer/manifest.json",
+      "source_head": "bd89047e4e403a93183c6a4763274e09acfdd044",
+      "actual_rest_states": 8,
+      "unique_pngs": 4,
+      "fixture_files": 53,
+      "palette": "LIGHT_ONLY",
+      "static_billing_http_status": 404,
+      "auth": "anonymous",
+      "public": false,
+      "local_visual_guard_exit": 0,
+      "retained_previous_diagnostic_not_relabeled": true
+    }
+  }
+}

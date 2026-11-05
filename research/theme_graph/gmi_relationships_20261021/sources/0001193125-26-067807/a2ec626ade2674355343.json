@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-24T23:47:52Z",
+ "accession": "0001193125-26-067807",
+ "cik": "0001724965",
+ "doc_byte_length": 5678099,
+ "doc_sha256": "65287718fc8ac81de8d0dbeb0c9aa8c7813b5e8d812161d6f12aa8d2e2727329",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "talo-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3302302,
+  "byte_start": 3301347,
+  "normalized": "Exxon Mobil Corporation 23",
+  "normalized_sha256": "605504f4a0932d87bd7cb4df0e31d60ba8c3c390e5031b1414da35051796e0ff",
+  "raw": "Exxon Mobil Corporation</span></p></td>\n           <td style=\"padding-top:0.01in;white-space:nowrap;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;text-align:left;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:left;\"><span style=\"font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n           <td style=\"padding-top:0.01in;white-space:pre-wrap;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;text-align:center;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:right;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_9b0ad3e5-c7ea-468a-b1df-2f8e7fb0c0f4\" contextRef=\"C_8510dee7-f09a-4818-bae1-e78470e98cbd\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">23",
+  "raw_sha256": "a2ec626ade26743553432f918f3e02ba69f5c8121163ac153d043a2a4aa376bd"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1724965/000119312526067807/talo-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 15257,
+   "byte_start": 14551,
+   "context_ref": "C_8510dee7-f09a-4818-bae1-e78470e98cbd",
+   "raw": "<xbrli:context id=\"C_8510dee7-f09a-4818-bae1-e78470e98cbd\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001724965</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">talo:ExxonMobilCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "3d3c51a39fe3c4ed4e7ef8b5bfc9505335e21ed3a0266a196b7c6539dc96b455"
+  }
+ ]
+}

@@ -1,0 +1,85 @@
+{
+  "schema": "eval_os_independent_science_source_review.v1",
+  "review_started_at": "2026-10-13T05:18:13.594942+00:00",
+  "source_owner_manifest": "../science/measurement-owner-source.json",
+  "initial_named_source_sha256": {
+    "engine/neuralweb/response_eval.py": "b5cde0c4c7203403125028520164354623d24f5eb7fc3c4df918008eee8c269b",
+    "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json": "a9d2f0a41447b0ef414ce6cc4fbe402993b6aacd30c1b7648b7c1f9ec01e74d9",
+    "tests/test_eval_os_adversarial_acceptance.py": "515f0c8c4906c5ee9cb3b8c384a4d774209a694b79c7e1eff741e435b6fb6bbd",
+    "research/EVAL_OS_MEASUREMENT_ACCEPTANCE_PROTOCOL_2026-10-12.md": "79eabe2343410a2ad00ce92808193f75b68fdc33f6399f1b76601ba162ea13be"
+  },
+  "old_owner_function_class_AST_count": 24,
+  "old_owner_function_class_AST_changes": [],
+  "initial_tests_consumed": {
+    "path": "../science/measurement-owner-acceptance.xml",
+    "tests": 125,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "scope": "Initialfrozenhashonly;notpostrepairacceptance"
+  },
+  "no_source_writes": true,
+  "inference_scope": "Finite literal synthetic INTERNALQA meanings/arithmetic. No empirical performance/admission/validation/financial authority or user-facing QA export.",
+  "findings": [
+    {
+      "id": "SCI-READING-SCOPE",
+      "witness": "generativevalidsingle reading value1,target_idsynthetic_return,unitpercent butnoentity/window/asof yieldsacceptedtrue/source_supportedtrue",
+      "closure_needed": "Validateeveryreadingcomplete scope/clock independentofpaircount; empty/incomplete negatives.",
+      "state": "CLOSED_AT_FINAL_HASH"
+    },
+    {
+      "id": "SCI-OCCURRENCE-FREEZE",
+      "witness": "Droporiginalo2/o3 anddeclare1block accepted; rewriteoriginalo2interval16..20/blockb3 anddeclare3 accepted",
+      "closure_needed": "Preserveallfrozenobservationidsandtheirinterval/block contents; boundednew/duplicate rowsallowedwithoutrewriting/erasinghistory; bothmutants.",
+      "state": "CLOSED_AT_FINAL_HASH"
+    },
+    {
+      "id": "SCI-CLASS-FREEZE",
+      "witness": "descriptiveadversarial\u2192generative output_class only; runneroktrue, contract_matches_freezetrue, oracleagreementtrue",
+      "closure_needed": "Bindoutput_class to frozenreference; class-tampermutant.",
+      "state": "CLOSED_AT_FINAL_HASH"
+    }
+  ],
+  "science_self_review_repairs": [
+    "Validateunmatchedalarm/eventtimes",
+    "Strictsaliencegenerator/populationidentity",
+    "Rankingeligibleknown-at/decisioncutoff"
+  ],
+  "positive_review": [
+    "Actualclasspayload consumed by newreportedcontractfunction; valuescompareindependentliteraloracles",
+    "Probabilityuses exactK3E21NYSEUP/DOWN/FLAT coreproperloss/Brier; intensitynotnormalized",
+    "Quantileusesexistingpinball/coverageandmonotonequantilecontract",
+    "Rankingpreserveseligible/ranked/missing partition and denominator",
+    "Sourcefactsemanticfingerprintcorrectlyrefuseswrongvalue/null/unit/source",
+    "One-to-onedetector matching counts distinctevents/alarms plusmiss/falseburden",
+    "Protocol separatesuniqueoccurrences/overlapblocks fromtrial/lookhistory andmarksinspectedholdoutcontaminated",
+    "Oldrubric/fixedtags/score_response/defaultbenchmark/userfacingbannotchanged; no model/store/trial/producer/routeeffects"
+  ],
+  "adjudication": "ACCEPTED_INTERNAL_QA",
+  "next": "Reviewfinal4pathhashesandfocusedclosurecontrols;reuseold73ownerregressionswhenunchanged;no broadnewcensus",
+  "review_closed_at": "2026-10-13T05:32:46.076350+00:00",
+  "final_named_source_sha256": {
+    "engine/neuralweb/response_eval.py": "b4caa23259a91e78ef4ddbbbce2ec38c6339fa12090f9135018d125d1b320e1d",
+    "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json": "f86677c419e97eb3932024db56e5e147de7b5a88536bb9701af5ea367e8140db",
+    "tests/test_eval_os_adversarial_acceptance.py": "0d1aaf8542a217511d5b5ec64828cfcd6ccccb69f0022b34fcc88a12504fa08f",
+    "research/EVAL_OS_MEASUREMENT_ACCEPTANCE_PROTOCOL_2026-10-12.md": "5b90aaef31e6879c3ad5f1add59972549b8bf755540d8e9de12429340b67db07"
+  },
+  "final_receipt_sha256": "600527b8c7591baf3d14aa7c5cb5d95c93aecf16113848a3c5b0498e3741e9ae",
+  "final_tests_consumed": {
+    "path": "../science/measurement-owner-acceptance.xml",
+    "tests": 136,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "4071dfc4cca883bf0361531c6768066431a7be403cc1c4b159ea5fa9bf7c5fae"
+  },
+  "acceptance_limit": "Finite synthetic reported-contract checking only. Not empirical performance, producer capability, outcome access, admission, UI export or production proof.",
+  "final_controls": [
+    "Every reading requires complete scope even singleton",
+    "Frozen occurrence IDs and bodies preserved; overlap independent blocks counted separately from trials and looks",
+    "Output class bound to frozen reference",
+    "Boolean margin rejected against frozen numeric margin",
+    "Unmatched event/alarm timestamps validated",
+    "Salience population/generator identity and ranking known-at cutoffs validated"
+  ]
+}

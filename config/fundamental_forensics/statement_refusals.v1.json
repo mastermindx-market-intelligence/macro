@@ -1,0 +1,21 @@
+{
+  "schema": "fundamental_forensics.statement_refusals/v1",
+  "golden_accessions": [
+    "0000320193-25-000079",
+    "0000320193-26-000020"
+  ],
+  "refusals": [
+    {"accession": "0000070858-24-000122", "statement_type": "income_statement", "code": "statement_role_not_consolidated"},
+    {"accession": "0000070858-25-000139", "statement_type": "income_statement", "code": "statement_role_not_consolidated"},
+    {"accession": "0000070858-26-000157", "statement_type": "income_statement", "code": "statement_role_not_consolidated"},
+    {"accession": "0000018230-24-000009", "statement_type": "income_statement", "code": "displayed_table_absent"},
+    {"accession": "0000070858-24-000122", "statement_type": "balance_sheet", "code": "displayed_columns_absent"},
+    {"accession": "0000070858-26-000157", "statement_type": "balance_sheet", "code": "displayed_columns_absent"},
+    {"accession": "0000070858-24-000122", "statement_type": "cash_flow", "code": "displayed_columns_absent"},
+    {"accession": "0000070858-25-000139", "statement_type": "cash_flow", "code": "displayed_columns_absent"},
+    {"accession": "0000070858-26-000157", "statement_type": "cash_flow", "code": "displayed_columns_absent"},
+    {"accession": "0000070858-24-000156", "statement_type": "income_statement", "code": "displayed_layout_unsupported"},
+    {"accession": "0000070858-25-000200", "statement_type": "income_statement", "code": "displayed_layout_unsupported"},
+    {"accession": "0000070858-26-000249", "statement_type": "income_statement", "code": "displayed_layout_unsupported"}
+  ]
+}

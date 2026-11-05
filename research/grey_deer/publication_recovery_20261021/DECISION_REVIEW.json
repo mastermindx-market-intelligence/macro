@@ -1,0 +1,67 @@
+{
+  "schema": "grey_deer.release_decision_review.v1",
+  "programme": "MAS-258",
+  "reviewer": "release_contract_review",
+  "ruling": "ACCEPTED / HOLD",
+  "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+  "tree": "b329a913d55030e19b038e99a14c9e5ee5bfd998",
+  "archive_sha256": "ed2c3b671cbe5604cc4c6feb7e9dd387032f870d980021b759d8f481b9dc07cf",
+  "files_read": [
+    "RELEASE_DECISION.md",
+    "COMPOSED_REHEARSAL_SUMMARY.json",
+    "COMPOSED_HEALTH_PREFLIGHT.json"
+  ],
+  "conclusion": "Accurate isolated candidate qualification and continued production HOLD; no material overclaim requiring correction to that present disposition.",
+  "condition_before_lifting_hold": "Health closure must address the installed baseline recovery destination as well as the target. Code restoration to the failed-health fe7 baseline is not proven healthy recovery. Consume demonstrated recovery health under the applicable contract or explicitly account for its remaining limitation in the reserved decision; new target health repair does not silently qualify old baseline.",
+  "root_adoption": "The decision packet explicitly adds the review's baseline recovery-health condition. Production HOLD remains unchanged.",
+  "limits": [
+    "Reported execution evidence accepted as reported; not independently reproduced.",
+    "Full1MB report not read.",
+    "No edits, imports, tests, dispatch, production operation or668 takeover by reviewer.",
+    "Internal principal judgment, not formal GitHub approval or production authorization."
+  ],
+  "protected_source_delta": {
+    "reviewer": "release_contract_review",
+    "ruling": "ACCEPTED; protected-source binding only",
+    "files_read": [
+      "PROTECTED_SOURCE_BINDING.json",
+      "RELEASE_DECISION.md"
+    ],
+    "protected_commit": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "tree": "b329a913d55030e19b038e99a14c9e5ee5bfd998",
+    "observed_at": "2026-10-21 11:24:02 UTC",
+    "conclusion": "Exact committed source and complete tree equal the already executed composed rehearsal. Existing rehearsal carries without identical-archive reexecution. Health, security, baseline recovery health and reserved production decision remain HOLD.",
+    "limits": [
+      "Recorded observations accepted as reported; this reviewer did not independently repeat remote readback or execution.",
+      "Internal C3 source/evidence judgment, not GitHub approval or production authorization.",
+      "Later material protected-source changes require scoped qualification."
+    ]
+  },
+  "paired_health_route_review": {
+    "design_reviewer": "/root/release_contract_review",
+    "implementation_ruling": "ACCEPTED after full source read and finite snapshot/presence clarifications",
+    "interpretation_reviewer": "/root/risk_contract_review",
+    "interpretation_ruling": "ACCEPTED for isolated response-contract evidence; no authentication or production claim",
+    "actual_result_reviewer": "/root/release_contract_review",
+    "actual_result_ruling": "ACCEPTED — paired lane complete; retain candidate negative; no unchanged rerun warranted",
+    "specific_limits": [
+      "Candidate timeout supplies neither HTTP status/body nor a precise failure-location attribution.",
+      "The single cold-process pair does not establish a source regression or its cause.",
+      "Read counts belong only to the phase that retained them.",
+      "Baseline 5.988967098-second isolated pass does not clear the observed live timeout, authentication, TCP/uvicorn, active-job contention or recovery health.",
+      "Actual paused state is retained even when literal scheduler.running and scheduled_runtime_ok are true.",
+      "No full-release qualification of later protected 7ab47f0 is inferred."
+    ]
+  },
+  "paired_health_route_result": {
+    "file": "ISOLATED_HEALTH_ROUTE_SUMMARY.json",
+    "full_report_sha256": "20fcbded4f383dbe33f1cfcf0351f1f1bbc9862bdfa7e61a08c472485417d166",
+    "disposition": "HOLD",
+    "independent_lane_complete": true
+  },
+  "later_protected_source": {
+    "file": "LATER_PROTECTED_SOURCE_DELTA.json",
+    "head": "7ab47f0b62d9a22ff16a13f6b99b96b681874a93",
+    "scope": "six session-bridge/docs/test files; no application/provider/helper paths changed; exact archive qualification remains 87d4af0"
+  }
+}

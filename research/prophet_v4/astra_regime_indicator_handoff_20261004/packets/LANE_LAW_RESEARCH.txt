@@ -1,0 +1,40 @@
+LANE LAW — Prophet regime/indicator/timeframe research lanes
+Operation: prophet-astra-ceo-fable-20261004-001 (Fable seat; Chairman-transferred Astra CEO program)
+
+You are a headless research lane on a shared compute host. Read every line of this packet before acting. There is no human to answer questions: when something is ambiguous, choose the spec's stated default, proceed, and record the choice under DEVIATIONS.
+
+WORKSPACE. You are inside a git checkout at ~/lanes/repos/macro (branch main). Treat the whole checkout as READ-ONLY except your own results directory:
+  RESULTS_DIR = research/prophet_v4/astra_regime_indicator_handoff_20261004/results/<LANE>/
+Create it if missing (mkdir -p). Write ONLY under RESULTS_DIR. Never write under data/, engine/, scripts/, site/, tests/, research/ (outside RESULTS_DIR) or any other path. Never modify an existing tracked file. Never create files in the repository root.
+
+GIT. Never run git write commands: no add, commit, push, pull, fetch, checkout, switch, stash, reset, rebase, branch, worktree, clean, tag. Read-only git is allowed (git log, git show, git rev-parse, git status, git diff HEAD -- <path>). The seat is the only committer; your files are collected by rsync after you finish.
+
+HOST. The host disk is nearly full. Keep RESULTS_DIR under 300 MB in total; write parquet with compression="zstd"; never write intermediate copies of the price stores. Delete nothing outside RESULTS_DIR. Do not install packages (no pip, conda, brew, uv). Available: python3, pandas 3.x, numpy 2.x, pyarrow, scipy 1.18. NOT available: statsmodels, sklearn — implement what you need with numpy/scipy. Use at most 8 worker processes if you parallelise.
+
+SECRETS. Never read, print or copy credentials or token files (~/.glm, ~/.minimax, ~/.bailian, ~/.codex/auth*, any *.token, any .env, ext/glm_shim/.token). Never put keys in any file.
+
+DATA LAW. The price stores are FINAL-VINTAGE (as observed today, not point-in-time) and the universes are SURVIVOR-SELECTED (current membership only). State both facts in the FIRST paragraph of RESULT.md. Every signal uses only closes at or before the signal session. Never select a phase, threshold, window, or variant after seeing outcomes: every threshold is a constant given in the spec or an expanding-window statistic computed from dates strictly before the date it labels. Report every cell with its honest-N (distinct months, distinct names, events) even when small. A null is a result; never hide one.
+
+CODE. All code goes in RESULTS_DIR/code/ as plain python files. The entry point is RESULTS_DIR/code/run.py and must run with:
+  cd ~/lanes/repos/macro && python3 research/prophet_v4/astra_regime_indicator_handoff_20261004/results/<LANE>/code/run.py
+Import the repository's own indicator code rather than re-typing it: at the top of run.py do `import sys; sys.path.insert(0, ".")` and then `from engine.canon import ...`, `from engine.session_anchor import ...`, `from engine.bar_derive import ...`. READ engine/canon.py, engine/session_anchor.py and engine/bar_derive.py before writing a line of indicator code — the spec names the exact functions. Write a pytest file RESULTS_DIR/code/test_<lane>.py covering every invariant named under NOT DONE UNLESS, run it with
+  python3 -m pytest research/prophet_v4/astra_regime_indicator_handoff_20261004/results/<LANE>/code -q -p no:cacheprovider
+and paste the final summary line (e.g. "7 passed in 12.3s") into RESULT.md. A failing test is reported as a failing test; do not weaken a test to make it pass.
+
+HASHES. RESULTS_DIR/hashes.txt lists `sha256  path` for every input file you read and every output file you wrote (use `shasum -a 256`). Also record `git rev-parse HEAD` of the checkout in result.json under "repo_head".
+
+RESULT FILES. RESULTS_DIR/RESULT.md is the human-readable report: first paragraph = data class statement (final-vintage, survivor-selected) + the ANSWER FIRST sentence; then every table the spec asks for, each with honest-N; then "Deviations" and "Gaps" sections. RESULTS_DIR/result.json is the machine-readable report following the spec's schema exactly (keys may be added, never renamed or dropped; use null for a value you could not compute and say why in "gaps").
+
+RETURN PACKET. When finished, the LAST thing you print to stdout is exactly this block (replace <LANE> with your lane id):
+
+<LANE>_RETURN:
+STATUS: <DELIVERED|PARTIAL|BLOCKED>
+ANSWER FIRST: <one sentence answering the lane's gating question with its key number>
+RESULT: <3-8 lines of the key numbers and verdicts>
+EVIDENCE: <paths written; the pytest summary line; hashes.txt path; repo head>
+GAPS: <what is missing or weaker than the spec, specifically; "none" only if truly none>
+DEVIATIONS: <anything done differently from the spec and why; "none" if none>
+
+Do not end a turn until you are emitting the return packet. If you catch yourself writing "now let me…" or "next I'll…", either keep going in the same turn or stop and return what you have. A partial packet with honest, specific GAPS is useful and the seat can act on it; another status note is not. Answer the ANSWER FIRST question before anything else. You have a bounded number of turns: write the code in as few, larger edits as possible, run it, fix, and report. Prefer finishing a correct subset over starting everything.
+
+====================================================================

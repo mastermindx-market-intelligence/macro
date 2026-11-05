@@ -4,7 +4,11 @@
 ``pull_request_target`` runs this controller from the default branch.  It never
 checks out or executes pull-request code.  The event identifies the proposed
 head and base, then read-only API calls re-prove the current PR identity and
-enumerate its exact changed files.  Complementary base-specific checks are
+enumerate its exact changed files within the endpoint ceiling. Oversized
+inventories remain explicitly unclassified and require the same strongest
+same-repository, dual-admin authority as a known CI-control change; they never
+take the ordinary-change route. No candidate code or alternate file reader is
+used. Complementary base-specific checks are
 written to that exact head: the current-base verdict and a terminal failure for
 the other supported base.  They must never be the sole required authority; the
 organization required-workflow rule and its stable ``ci-authority`` job remain
@@ -222,6 +226,9 @@ def _base_decision(target: Mapping[str, object]) -> dict[str, object]:
         "current_base_sha": None,
         "post_files_base_sha": None,
         "inventory_base_sha": None,
+        "inventory_mode": "unavailable",
+        "inventory_complete": False,
+        "post_authorization_base_sha": None,
         "changed_files_snapshot_attempts": 0,
         "changed_file_count": None,
         "authority_hit_count": 0,
@@ -267,7 +274,6 @@ def _current_pull_identity(
         or user is None
         or _safe_login(user.get("login")) is None
         or changed_count is None
-        or changed_count > MAX_CHANGED_FILES
     ):
         return None
     return pull, changed_count
@@ -399,6 +405,79 @@ def _log_api_failure(stage: str, exc: BaseException) -> None:
     print(traceback_text, file=sys.stderr)
 
 
+def _authorize_same_repo_admin_change(
+    decision: dict[str, object],
+    target: Mapping[str, object],
+    api: AuthorityApi,
+    *,
+    oversized_count: int | None = None,
+) -> dict[str, object]:
+    """Apply the one existing maximum-authority predicate to this candidate."""
+    repository = str(target["repository"])
+    if target["head_repository"] != repository:
+        return _reject(decision, "fork_cannot_change_ci_authority")
+
+    try:
+        author_permission = api.get_collaborator_permission(
+            repository, str(target["author"])
+        )
+    except Exception as exc:
+        _log_api_failure("author_admin_permission", exc)
+        return _reject(decision, _api_failure_reason("author_admin_permission", exc))
+    if not _permission_proves_admin(author_permission, str(target["author"])):
+        return _reject(decision, "same_repo_author_is_not_admin")
+    decision["author_admin_verified"] = True
+
+    # PR authorship is stable across synchronize events and therefore cannot
+    # identify who pushed the exact head being evaluated. Bind the signed event
+    # sender and re-check that actor's live repository permission too. Reuse the
+    # author result only when GitHub identifies the same login in both fields.
+    if target["actor"] == target["author"]:
+        actor_permission = author_permission
+    else:
+        try:
+            actor_permission = api.get_collaborator_permission(
+                repository, str(target["actor"])
+            )
+        except Exception as exc:
+            _log_api_failure("actor_admin_permission", exc)
+            return _reject(decision, _api_failure_reason("actor_admin_permission", exc))
+    if not _permission_proves_admin(actor_permission, str(target["actor"])):
+        return _reject(decision, "current_head_actor_is_not_admin")
+
+    decision["actor_admin_verified"] = True
+    decision["admin_verified"] = True
+
+    if oversized_count is not None:
+        # Size can select stricter authorization, never a fictitious path proof.
+        # Recheck the exact candidate after the live permission reads. Same-ref
+        # base movement remains integration composition, not candidate identity.
+        try:
+            final_response = api.get_pull(repository, int(target["pull_request_number"]))
+        except Exception as exc:
+            _log_api_failure("post_authorization_pull", exc)
+            return _reject(decision, _api_failure_reason("post_authorization_pull", exc))
+        final_identity = _current_pull_identity(final_response, target)
+        if (
+            final_identity is None
+            or final_identity[1] != oversized_count
+            or not _candidate_identity_still_matches(final_identity[0], target)
+        ):
+            return _reject(decision, "post_authorization_identity_drift")
+        final_base = _mapping(final_identity[0].get("base"))
+        decision["post_authorization_base_sha"] = (
+            None if final_base is None else _sha(final_base.get("sha"))
+        )
+
+    decision["allowed"] = True
+    decision["reason"] = (
+        "same_repo_admin_unclassified_change"
+        if oversized_count is not None
+        else "same_repo_admin_authority_change"
+    )
+    return decision
+
+
 def evaluate_pull_request_target(
     payload: object,
     expected_repository: str,
@@ -425,6 +504,22 @@ def evaluate_pull_request_target(
     )
     if not _candidate_identity_still_matches(current, target):
         return _reject(decision, "event_head_base_or_author_drift")
+
+    if changed_count > MAX_CHANGED_FILES:
+        # GitHub cannot enumerate this inventory through the bounded endpoint.
+        # Conservatively classify the whole candidate at the strongest existing
+        # authority tier. Unknown paths are neither an empty inventory nor zero
+        # observed authority hits; other proof/review owners still need their
+        # own complete source evidence.
+        decision.update(
+            changed_file_count=changed_count,
+            inventory_mode="conservative_authority",
+            authority_hit_count=None,
+            authority_hits=None,
+        )
+        return _authorize_same_repo_admin_change(
+            decision, target, api, oversized_count=changed_count
+        )
 
     try:
         entries = api.list_pull_files(repository, number, changed_count)
@@ -498,6 +593,8 @@ def evaluate_pull_request_target(
         paths = recheck_paths
 
     decision["inventory_base_sha"] = decision["post_files_base_sha"]
+    decision["inventory_mode"] = "exact_changed_paths"
+    decision["inventory_complete"] = True
 
     authority_hits = sorted(path for path in paths if is_ci_authority_path(path))
     decision["changed_file_count"] = changed_count
@@ -511,42 +608,7 @@ def evaluate_pull_request_target(
         decision["reason"] = "ordinary_change"
         return decision
 
-    if target["head_repository"] != repository:
-        return _reject(decision, "fork_cannot_change_ci_authority")
-
-    try:
-        author_permission = api.get_collaborator_permission(
-            repository, str(target["author"])
-        )
-    except Exception as exc:
-        _log_api_failure("author_admin_permission", exc)
-        return _reject(decision, _api_failure_reason("author_admin_permission", exc))
-    if not _permission_proves_admin(author_permission, str(target["author"])):
-        return _reject(decision, "same_repo_author_is_not_admin")
-    decision["author_admin_verified"] = True
-
-    # PR authorship is stable across synchronize events and therefore cannot
-    # identify who pushed the exact head being evaluated. Bind the signed event
-    # sender and re-check that actor's live repository permission too. Reuse the
-    # author result only when GitHub identifies the same login in both fields.
-    if target["actor"] == target["author"]:
-        actor_permission = author_permission
-    else:
-        try:
-            actor_permission = api.get_collaborator_permission(
-                repository, str(target["actor"])
-            )
-        except Exception as exc:
-            _log_api_failure("actor_admin_permission", exc)
-            return _reject(decision, _api_failure_reason("actor_admin_permission", exc))
-    if not _permission_proves_admin(actor_permission, str(target["actor"])):
-        return _reject(decision, "current_head_actor_is_not_admin")
-
-    decision["actor_admin_verified"] = True
-    decision["admin_verified"] = True
-    decision["allowed"] = True
-    decision["reason"] = "same_repo_admin_authority_change"
-    return decision
+    return _authorize_same_repo_admin_change(decision, target, api)
 
 
 def _completed_check_payload(

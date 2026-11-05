@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-10-15T03:15:21.152292+00:00",
+  "subject_head": "4d7bf67efeee17c2661a2ad0fa00f53e2f5e1448",
+  "incoming_main": "f4da7548b6ddfcc3e41794f1a040c184e9ddcdc0",
+  "tree": "9dc962f00bf7cfd1dc000f9e3e6610a60b970d4f",
+  "test_counts": {
+    "tests": 678,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "xml_sha256": "148c3360d6015719f5befdb45f8937b891e8060cc79e5d0cbc3777ebede2cf20",
+  "initial_discovery_failure": {
+    "zero_tests": true,
+    "exit": 4,
+    "reason": "Two newly required test files were tracked but sparse-excluded; materialized only those exact paths"
+  },
+  "source_semantics_modified": false,
+  "source_candidate_committed": false,
+  "ordinary_pytest_cases_passed": 565,
+  "subtests_passed": 113,
+  "junit_cases_including_subtests": 678,
+  "warnings": 1,
+  "warning_scope": "Pytest cleanup of an unrelated earlier protected temp directory; no cleanup performed on that directory"
+}

@@ -184,3 +184,38 @@ def build_root(tmp_path: Path, *, yaml_doc: dict[str, Any] | None = None,
     (data / "chain_state.json").write_text(
         json.dumps(state_doc, ensure_ascii=False, indent=1), encoding="utf-8")
     return tmp_path
+
+
+def dollar_root(tmp_path: Path) -> Path:
+    """Public native definition with invented observations, never current data.
+
+    The three-node forex/string/list shape differs from the four-node oil path.
+    Owner state deliberately stays arming with no confirmed transmission hops.
+    """
+    slug = 'dollar_spike_em_multinational'
+    definition = yaml.safe_load((_REPO / 'knowledge/transmission' / f'{slug}.yaml').read_text())
+    state = chain_state(slug, rev=definition['rev'], state='arming')
+    owner = state['chains'][0]
+    owner.update(title=definition['title'], tier='hypothesis', n_hops=2,
+                 episode_id=f'{slug}@r3:2026-01-02')
+    owner['nodes'] = [
+        {'id': 'dollar_spike', 'resolved': True, 'confirmed': True, 'receipts': [
+            {'path':'dollar_desk.trend','value':'up','op':'eq','threshold':'up','passed':True},
+            {'path':'dollar_desk.usd_pos_pctile','value':70,'op':'gte','threshold':60,'passed':True}]},
+        {'id': 'usd_transmission_on', 'resolved': True, 'confirmed': True, 'receipts': [
+            {'path':'transmission.usd_dir','value':'strengthening','op':'eq','threshold':'strengthening','passed':True},
+            {'path':'transmission.headwind_for','op':'in_contains','threshold':'EM equities','passed':True}]},
+        {'id': 'em_derate', 'resolved': True, 'confirmed': True, 'receipts': [
+            {'series':'FXI','vs':'SPY','metric':'rs','window':63,'value':-2,'op':'lt','threshold':0,'passed':True}]},
+    ]
+    owner['hops'] = [
+        {'id': f"{h['from']}->{h['to']}", 'from':h['from'], 'to':h['to'],
+         'lag_d':h['lag_d'], 'confirmed':False, 'asof':None, 'value_receipt':[], 'base_rate':None}
+        for h in definition['hops']
+    ]
+    owner['blast'] = {
+        name: {'resolved':True, 'n':0, 'unevaluable':2, 'names':[], 'cuts':{},
+               'label':screen['label'], 'note':screen['note']}
+        for name, screen in definition['exposure_screens'].items()
+    }
+    return build_root(tmp_path, slug=slug, yaml_doc=definition, state_doc=state)

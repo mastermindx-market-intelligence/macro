@@ -21,3 +21,23 @@ optional:
   cited_by:      {type: list, note: auto-maintained by the generator; drives GC}
   superseded_by: {type: string}
   expires:       {type: date, note: default verified_at + 90d if never cited; FLAGGED, never auto-deleted}
+  evaluation_finding:
+    type: object
+    note: Optional Evaluation OS evidence; no verified-discovery admission is inferred.
+    additional_keys: false
+    required:
+      engine: {type: string, max_utf8_bytes: 2048}
+      metric: {type: string, max_utf8_bytes: 2048}
+      observed_change:
+        nullable: true
+        type: object_or_qualitative_text
+        text_max_utf8_bytes: 2048
+        note: Authored snapshot or comparison; no numeric or temporal delta is inferred.
+        additional_keys: false
+        required:
+          baseline: {type: finite_number, nullable: true}
+          current: {type: finite_number, nullable: true}
+          unit: {type: string, max_utf8_bytes: 2048}
+      segment: {type: string, max_utf8_bytes: 2048}
+      evidence_link: {type: string, max_utf8_bytes: 2048, note: Locator shape only; contents not verified.}
+      suggested_tier: {enum: [T0, T1, T2, T3, T4], nullable: true, note: Requirement only; never a tier pass.}

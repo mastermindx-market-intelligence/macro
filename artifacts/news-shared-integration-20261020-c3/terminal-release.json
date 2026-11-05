@@ -1,0 +1,30 @@
+{
+  "schema": "terminal.news-contract.production-proof.v1",
+  "observed_at": "2026-10-20T10:39:58.593049+00:00",
+  "target_sha": "8b8b217fdf799713f8b4a906bc0d4564d8aa20a2",
+  "pr": 1088,
+  "deployment_id": "8b8b217fdf799713f8b4a906bc0d4564d8aa20a2",
+  "checkout_head": "8b8b217fdf799713f8b4a906bc0d4564d8aa20a2",
+  "service": "active",
+  "http": {
+    "origin": {
+      "status": 200,
+      "deployment_ids": [
+        "8b8b217fdf799713f8b4a906bc0d4564d8aa20a2"
+      ],
+      "bytes": 103031
+    },
+    "public": {
+      "status": 200,
+      "deployment_ids": [
+        "8b8b217fdf799713f8b4a906bc0d4564d8aa20a2"
+      ],
+      "bytes": 103078
+    }
+  },
+  "generation_matches": true,
+  "proof_scope": "Exact-target normal release, source identity and origin/public HTTP readback. Contract behavior is qualified by source-bound tests; additional publishers are not activated by this receipt.",
+  "release_exit_code": 0,
+  "preflight_prior_sha": "abfedf79eb2f2bad59fa75b4684ee83075d9ffa5",
+  "preflight_result": "CLEAN"
+}

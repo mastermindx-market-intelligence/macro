@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-02-20T22:26:05Z",
+ "accession": "0001736297-26-000010",
+ "cik": "0001736297",
+ "doc_byte_length": 2244526,
+ "doc_sha256": "df72dc9ec1ea2954a7236c64d661a1635e2133904cea45f58abe678960520f2d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "alab-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1440074,
+  "byte_start": 1438540,
+  "normalized": "Customer D 27 %13 %",
+  "normalized_sha256": "a17954d55a7e952083a7c97a01f1b6981a5bfd9b20268f0a72b6a631fc9c240b",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:left;vertical-align:bottom\"><div><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">Customer D </span></div></td><td colspan=\"2\" style=\"background-color:#cceeff;padding:2px 0 2px 1pt;text-align:right;vertical-align:top\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-66\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-406\">27</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;padding:2px 1pt 2px 0;text-align:right;vertical-align:top\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;padding:2px 0 2px 1pt;text-align:right;vertical-align:top\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-67\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-407\">13</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;padding:2px 1pt 2px 0;text-align:right;vertical-align:top\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td></tr>",
+  "raw_sha256": "622fd6dbabefe5e0e2d15934872fa230205981c889160016fd2354d887a5093b"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1736297/000173629726000010/alab-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 34100,
+   "byte_start": 33437,
+   "context_ref": "c-66",
+   "raw": "<xbrli:context id=\"c-66\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001736297</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">alab:CustomerDMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "6e61c6c46bb2833faf1e15d81386c5940cd6a84595d352ceaf3525b1ad413e37"
+  },
+  {
+   "byte_end": 34763,
+   "byte_start": 34100,
+   "context_ref": "c-67",
+   "raw": "<xbrli:context id=\"c-67\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001736297</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">alab:CustomerDMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "3dfb2291a26c202a0e2d66032fcfa38925e9a94f9a4b723282a5c90b6701d3f9"
+  }
+ ]
+}

@@ -645,12 +645,19 @@ def test_latest_snapshot_shape():
         snap = latest_snapshot(tape)
 
     required_keys = ["date", "regime", "who_controls", "risk",
-                     "evidence", "contradictions", "data_gaps", "authority", "backfill"]
+                     "evidence", "contradictions", "data_gaps", "authority",
+                     "source_contract", "backfill"]
     for k in required_keys:
         check(f"latest_snapshot has key '{k}'", k in snap, f"keys: {list(snap.keys())}")
 
     check("authority.tier == context_only",
           snap.get("authority", {}).get("tier") == "context_only")
+    check("authority cannot rank",
+          snap.get("authority", {}).get("may_rank") is False)
+    check("authority cannot trade",
+          snap.get("authority", {}).get("may_trade") is False)
+    check("authority cannot identify actors",
+          snap.get("authority", {}).get("may_identify_actor") is False)
     check("evidence is a list", isinstance(snap["evidence"], list))
     check("contradictions is a list (not Python repr str)", isinstance(snap["contradictions"], list),
           f"type={type(snap.get('contradictions'))}, value={str(snap.get('contradictions'))[:80]}")
@@ -659,6 +666,57 @@ def test_latest_snapshot_shape():
     check("contradictions_raw key absent (superseded by contradictions list)",
           "contradictions_raw" not in snap,
           f"keys: {list(snap.keys())}")
+
+
+
+def test_cie13_source_contract_preserves_units_negative_knowledge_and_actor_uncertainty():
+    with _FakeDataDir(include_microstructure=True):
+        import engine.china_participation as cp
+        snap = cp.latest_snapshot(cp.build_tape(backfill=True))
+
+    contract = snap["source_contract"]
+    assert contract["schema"] == "china_participation.source_contract.v1"
+    legs = contract["legs"]
+
+    assert legs["turnover"]["unit"] == "亿 CNY"
+    assert "margin_trade_amt / (trade_amt_ratio / 100)" == legs["turnover"]["derivation"]
+    assert legs["margin"]["fields"]["margin_to_mcap"] == "percent of float market cap"
+
+    assert legs["limit_breadth"]["unit"] == "percent of A-share universe at limit-up"
+    assert legs["limit_breadth"]["rule_ref"] == "CN-SYS-R4"
+    assert any("incompatible" in x for x in legs["limit_breadth"]["refusals"])
+
+    assert legs["southbound"]["unit"] == "万 CNY"
+    assert legs["southbound"]["northbound_live_state"] == "forbidden_post_2024-08-16"
+    assert legs["southbound"]["rule_ref"] == "SLF-050"
+    assert "not mainland northbound ownership" in legs["southbound"]["scope"]
+
+    assert legs["etf_flows"]["unit"] == "cross-fund median 5d share-change z-score"
+    assert any("unit-incommensurable" in x for x in legs["etf_flows"]["refusals"])
+
+    assert "not named institutional actor evidence" in legs["broker_rs"]["scope"]
+    assert "not beneficial-owner" in contract["actor_semantics"]
+    assert contract["clock_semantics"]["collection_clock"].startswith(
+        "not exposed by this owner"
+    )
+
+
+def test_source_contract_does_not_change_participation_classification():
+    import engine.china_participation as cp
+    row = pd.Series({
+        "turnover_z20": 2.5,
+        "margin_chg_5d": 1.0,
+        "margin_to_mcap": 4.2,
+        "zt_breadth": 6.0,
+        "southbound_z": 0.0,
+        "etf_share_chg": 0.0,
+        "broker_rs": 0.0,
+        "qvix_z": 0.0,
+    })
+    before = cp._classify_regime(row)
+    _ = cp.SOURCE_CONTRACTS
+    after = cp._classify_regime(row)
+    assert before == after == "broad_mania"
 
 
 def test_tape_not_empty_with_full_fixtures():

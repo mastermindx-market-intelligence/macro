@@ -1,0 +1,174 @@
+{
+  "schema": "shared-shell.public-nav-repair.evidence.v1",
+  "recorded_at": "2026-10-19T03:50:00.292547+00:00",
+  "source_base": "da2104b788b9fd75475b149f40ede07845e1f80d",
+  "candidate_css_sha256": "8c102aa390969828d0d82c9b2f58d88cf9078c227259c1eae5fcd4ac10cc6c86",
+  "bridge_sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+  "source_files": [
+    {
+      "file": "templates/shared_shell.css",
+      "original_sha256": "6a3f8fe83206789d7b4f8fe69842f7976d4e1d45d0be3582ab7b82cc3295cdbf",
+      "candidate_sha256": "8c102aa390969828d0d82c9b2f58d88cf9078c227259c1eae5fcd4ac10cc6c86",
+      "candidate_bytes": 509
+    },
+    {
+      "file": "site/shared_shell.css",
+      "original_sha256": "6a3f8fe83206789d7b4f8fe69842f7976d4e1d45d0be3582ab7b82cc3295cdbf",
+      "candidate_sha256": "8c102aa390969828d0d82c9b2f58d88cf9078c227259c1eae5fcd4ac10cc6c86",
+      "candidate_bytes": 509
+    },
+    {
+      "file": "tests/js/shared_shell_bridge.test.cjs",
+      "original_sha256": "e09099654d11ac27dce39b4665e807b17ba71471a9e2c2c691cceee446cd16a0",
+      "candidate_sha256": "a8695b85cece9b6a8bea448927892f81a44900a62c80f97e9476fdff888558bb",
+      "candidate_bytes": 86113
+    },
+    {
+      "file": "tests/test_shared_shell_injection.py",
+      "original_sha256": "083fb33da8082d5c00a61bcd29bf3cfb56db5ac737150f5e0da1c50a251c90d8",
+      "candidate_sha256": "67b5ad2ac6362deba4d179c092d93e6ef430310ae14b3cd341cc324645e094c9",
+      "candidate_bytes": 10852
+    }
+  ],
+  "evidence": [
+    {
+      "path": "shared-shell-public-nav-meaningful-red-20261019.json",
+      "bytes": 1540,
+      "sha256": "ef0d39a3478a1d811606fa9e292a00e9eea71d85c5b6a5143b6606afe05c8abd",
+      "source_path": "/tmp/shared-shell-public-nav-meaningful-red-20261019.json"
+    },
+    {
+      "path": "shared-shell-public-nav-red-python-about-publication-20261019.log.gz",
+      "bytes": 1143,
+      "sha256": "07f9d36b406f4f427c876b58e49f0df1bd8db3c712b7bac5a1f56303a54ff13e",
+      "source_path": "/tmp/shared-shell-public-nav-red-python-about-publication-20261019.log",
+      "decompressed_bytes": 2920,
+      "decompressed_sha256": "2684bfe3db29eb0373011a0d4b034c7e827078edec6d3046ae139c14f8ed1a83"
+    },
+    {
+      "path": "shared-shell-public-nav-red-node-bridge-20261019.log.gz",
+      "bytes": 3712,
+      "sha256": "5e8ee3e267743eadb591397492eff863c18443d7237999de51f0edcb953086e2",
+      "source_path": "/tmp/shared-shell-public-nav-red-node-bridge-20261019.log",
+      "decompressed_bytes": 15380,
+      "decompressed_sha256": "3cf6cbc8df499896ae18183d66653a8894ad66198761c6c9ab43790d7735f87a"
+    },
+    {
+      "path": "shared-shell-public-nav-canonical-injector-20261019.log",
+      "bytes": 309,
+      "sha256": "3c22e491c09a760124482a7d49e6546582da66365abc02575fa765ac33b6a7c3",
+      "source_path": "/tmp/shared-shell-public-nav-canonical-injector-20261019.log"
+    },
+    {
+      "path": "shared-shell-public-nav-canonical-publication-20261019.json",
+      "bytes": 705578,
+      "sha256": "962257fe6d1054cc8d3c758667c9fd2c9f9a7023aebd213860ef917ce707c26c",
+      "source_path": "/tmp/shared-shell-public-nav-canonical-publication-20261019.json"
+    },
+    {
+      "path": "shared-shell-public-nav-generated-only-reconciliation-20261019.json",
+      "bytes": 2215,
+      "sha256": "b18bcb2d639a086d9f3dfaf6cb5dd114cd1eace27a8d92475142935110a2ea91",
+      "source_path": "/tmp/shared-shell-public-nav-generated-only-reconciliation-20261019.json"
+    },
+    {
+      "path": "shared-shell-public-nav-green-python-injection-20261019.log",
+      "bytes": 1061,
+      "sha256": "90474cf2b0091c4ed1943802ca9e096914d4ec00d8069744d0578cff16e2e3d2",
+      "source_path": "/tmp/shared-shell-public-nav-green-python-injection-20261019.log"
+    },
+    {
+      "path": "shared-shell-public-nav-green-node-bridge-20261019.log",
+      "bytes": 14414,
+      "sha256": "162bb7d33c9d803929644816dd1fde1e5614f99b74fb770d65d583df910d8882",
+      "source_path": "/tmp/shared-shell-public-nav-green-node-bridge-20261019.log"
+    },
+    {
+      "path": "shared-shell-public-nav-injector-idempotence-20261019.log",
+      "bytes": 94,
+      "sha256": "c4de00acb871f56b7fb3f2509868915386c3e33b3640986e29a73ef46f3ef109",
+      "source_path": "/tmp/shared-shell-public-nav-injector-idempotence-20261019.log"
+    },
+    {
+      "path": "shared-shell-public-nav-template-site-sync-20261019.log",
+      "bytes": 504,
+      "sha256": "a963f122880d4ddbe051d13441e8970e02957018ac535dfb2961f9ad74d87fd7",
+      "source_path": "/tmp/shared-shell-public-nav-template-site-sync-20261019.log"
+    },
+    {
+      "path": "shared-shell-public-nav-template-site-sync-project-env-20261019.log",
+      "bytes": 44,
+      "sha256": "66f2c3439a152ba48501fb7430a52091923a07c1213bcf4baa683326db3c8695",
+      "source_path": "/tmp/shared-shell-public-nav-template-site-sync-project-env-20261019.log"
+    },
+    {
+      "path": "shared-shell-public-nav-git-diff-check-20261019.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/tmp/shared-shell-public-nav-git-diff-check-20261019.log"
+    },
+    {
+      "path": "shared-shell-public-nav-green-gates-20261019.json",
+      "bytes": 3116,
+      "sha256": "fd047e97d58f5e4e1295254598e33dbe5650ff6e3c4dfc470d2d45585771f03a",
+      "source_path": "/tmp/shared-shell-public-nav-green-gates-20261019.json"
+    },
+    {
+      "path": "shared-shell-public-nav-publication-before-20261019.json.gz",
+      "bytes": 755057,
+      "sha256": "3a1e8f590df7bd5b47eba7d84114114f21c4d5352eaa663d3c27c40fedf6dd95",
+      "decompressed_bytes": 3277489,
+      "decompressed_sha256": "86b8ca99c91997261eadeda433ade059aad3538f32a61f5385232c3e366a65d3",
+      "source_path": "/tmp/shared-shell-public-nav-publication-before-20261019.json"
+    },
+    {
+      "path": "shared-shell-public-nav-publication-audit-20261019.json.gz",
+      "bytes": 1419351,
+      "sha256": "20f1dde1846637f73decc954e35f2dd081e4657f7a9959e48c2319395c735ca3",
+      "decompressed_bytes": 5893751,
+      "decompressed_sha256": "8b6415c57e3cb90ca5c55c7cb0de4abe75380585aacdd0f6c8822e917d0f6464",
+      "source_path": "/tmp/shared-shell-public-nav-publication-audit-20261019.json"
+    },
+    {
+      "path": "independent-public-nav-r7-source-review.md",
+      "bytes": 9021,
+      "sha256": "d1049d5771aac1002bb8e37dcfeccb6d5699f20fd37456f6800fe48a290b8371",
+      "source_path": "/tmp/shared-shell-local-browser-r7-20261019/independent-public-nav-r7-source-review.md"
+    },
+    {
+      "path": "root-reviewed-source-delta.patch.gz",
+      "bytes": 1302,
+      "sha256": "3386b7ecc57a997e3fa0b0db38a47b8c148bec4f0e9d551f22a9a89b4fda390f",
+      "source_path": "root-reviewed canonical four-path diff",
+      "decompressed_bytes": 3683,
+      "decompressed_sha256": "3803a2109784c8dedc83b527424a08f769df42da4693b7cd2469a1018e53bd19"
+    }
+  ],
+  "actual_r6_result": "FAILED: duplicate About marketing navigation present; observer omitted it. Genuine current-generation content READY was not sufficient.",
+  "actual_r7_result": "NOT_YET_RUN",
+  "publication_boundary": "Actual canonical full-site run and zero-change recheck are retained. The12991 newly generated-only outputs were then restored to exact original source-head bytes under the established publication contract; ordinary render owns their eventual generated-main and VPS publication.",
+  "raw_evidence_storage": {
+    "reason": "Raw failure logs and unified-patch context contain significant trailing spaces. Deterministic gzip preserves their exact bytes while avoiding treating raw evidence as patchable source lines. No log/source byte was stripped or edited.",
+    "files": [
+      {
+        "original_path": "shared-shell-public-nav-red-python-about-publication-20261019.log",
+        "original_bytes": 2920,
+        "original_sha256": "2684bfe3db29eb0373011a0d4b034c7e827078edec6d3046ae139c14f8ed1a83",
+        "stored_path": "shared-shell-public-nav-red-python-about-publication-20261019.log.gz"
+      },
+      {
+        "original_path": "shared-shell-public-nav-red-node-bridge-20261019.log",
+        "original_bytes": 15380,
+        "original_sha256": "3cf6cbc8df499896ae18183d66653a8894ad66198761c6c9ab43790d7735f87a",
+        "stored_path": "shared-shell-public-nav-red-node-bridge-20261019.log.gz"
+      },
+      {
+        "original_path": "root-reviewed-source-delta.patch",
+        "original_bytes": 3683,
+        "original_sha256": "3803a2109784c8dedc83b527424a08f769df42da4693b7cd2469a1018e53bd19",
+        "stored_path": "root-reviewed-source-delta.patch.gz"
+      }
+    ],
+    "staged_diff_check_refusal_sha256": "95dd33bb63bbf5bbcdcb595305a30ed1a8e8a2c055e13d0f3d2a61ad2d941062"
+  }
+}

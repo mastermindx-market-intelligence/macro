@@ -304,3 +304,178 @@ __all__ = [
     "unescape",
     "visible_text",
 ]
+
+
+# Acquisition provenance is separate from span replay and from permission to use
+# a source. Only the HTTP producer emits this optional record; offline binding
+# validates it without creating an acquisition event or reading a clock.
+SEC_ACQUISITION_SCHEMA = "earnings_release.sec_acquisition.v1"
+SEC_REDIRECT_POLICY = "sec_https_same_filing_max5.v1"
+_SEC_ACQUISITION_KEYS = frozenset({
+    "schema", "filing_key", "requested_url", "final_url", "redirect_policy",
+    "redirects", "http_status", "body_representation", "content_type",
+    "content_encoding", "declared_charset", "entity_sha256", "entity_length",
+    "decoder", "decode_errors", "decode_policy", "source_sha256",
+    "source_utf8_length", "acquired_at",
+})
+_SEC_SHA = re.compile(r"[0-9a-f]{64}\Z")
+_SEC_ACCESSION = re.compile(r"[0-9]{10}-[0-9]{2}-[0-9]{6}\Z")
+_SEC_ACQUIRED_AT = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,6})?Z\Z")
+
+
+def _sec_filing_key(cik: object, accession: object) -> dict[str, str]:
+    if isinstance(cik, bool) or not re.fullmatch(r"[0-9]{1,10}", str(cik)) or int(str(cik)) == 0:
+        raise ReceiptError("SEC acquisition requires an exact CIK")
+    if not isinstance(accession, str) or not _SEC_ACCESSION.fullmatch(accession):
+        raise ReceiptError("SEC acquisition requires an exact accession")
+    return {"cik": str(cik).zfill(10), "accession": accession}
+
+
+def validate_sec_acquisition_url(url: object, *, cik: object, accession: object) -> str:
+    """Validate a canonical public SEC filing URL before requesting/following it."""
+    from urllib.parse import urlsplit
+
+    key = _sec_filing_key(cik, accession)
+    if (not isinstance(url, str) or not 0 < len(url) <= 8192
+            or not url.startswith("https://") or any(ord(c) <= 32 or ord(c) > 126 for c in url)
+            or "%" in url or "\\" in url or "?" in url or "#" in url):
+        raise ReceiptError("SEC acquisition URL is not canonical")
+    try:
+        parsed = urlsplit(url)
+    except ValueError as exc:
+        raise ReceiptError("SEC acquisition URL is invalid") from exc
+    if parsed.netloc not in {"www.sec.gov", "sec.gov"} or parsed.query or parsed.fragment:
+        raise ReceiptError("SEC acquisition URL origin or suffix is not eligible")
+    prefix = f"/Archives/edgar/data/{int(key['cik'])}/{key['accession'].replace('-', '')}/"
+    if not parsed.path.startswith(prefix):
+        raise ReceiptError("SEC acquisition URL does not match its filing")
+    filename = parsed.path[len(prefix):]
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*\.(?:htm|html|txt)", filename):
+        raise ReceiptError("SEC acquisition filename is not canonical")
+    if re.search(r"(?:^index(?:-headers)?\.|-index(?:-headers)?\.(?:htm|html|txt)$)", filename, re.IGNORECASE):
+        raise ReceiptError("SEC acquisition index documents are not eligible exhibits")
+    return url
+
+
+def resolve_sec_acquisition_location(current: str, location: object, *, cik: object, accession: object) -> str:
+    """Reject unsafe raw Location syntax BEFORE URL normalization or follow."""
+    from urllib.parse import urljoin
+
+    if (not isinstance(location, str) or not 0 < len(location) <= 8192
+            or any(ord(c) <= 32 or ord(c) > 126 for c in location)
+            or any(c in location for c in "%\\?#")
+            or any(segment in {".", ".."} for segment in location.split("/"))):
+        raise ReceiptError("SEC acquisition redirect Location is not canonical")
+    validate_sec_acquisition_url(current, cik=cik, accession=accession)
+    if location.startswith("//"):
+        validate_sec_acquisition_url("https:" + location, cik=cik, accession=accession)
+    elif re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", location):
+        validate_sec_acquisition_url(location, cik=cik, accession=accession)
+    return validate_sec_acquisition_url(urljoin(current, location), cik=cik, accession=accession)
+
+
+def sec_declared_charset(content_type: str | None) -> str | None:
+    """Declared header metadata, not a claim about the decoder actually used."""
+    from email.message import Message
+
+    if content_type is None:
+        return None
+    message = Message()
+    message["content-type"] = content_type
+    return message.get_content_charset()
+
+
+def validate_sec_acquisition_receipt(
+    receipt: object, *, cik: object, accession: object, source_url: object,
+    source_text: str, entity_body: bytes | None = None,
+) -> dict[str, Any]:
+    """Replay optional acquisition metadata; this does not authorize source use.
+
+    Entity bytes mean requests.Response.content AFTER HTTP Content-Encoding
+    processing, never raw wire bytes. UTF-8/Latin-1 are reversible here, so a
+    retained decoded body can replay that exact transformation without minting
+    missing transport history. No current-time, network or rights decision exists
+    in this validator.
+    """
+    from copy import deepcopy
+    from datetime import datetime
+
+    def fail(message: str) -> None:
+        raise ReceiptError(f"invalid SEC acquisition receipt: {message}")
+
+    if type(receipt) is not dict or set(receipt) != _SEC_ACQUISITION_KEYS:
+        fail("closed schema keys")
+    if (receipt["schema"] != SEC_ACQUISITION_SCHEMA
+            or receipt["redirect_policy"] != SEC_REDIRECT_POLICY
+            or type(receipt["http_status"]) is not int or receipt["http_status"] != 200
+            or receipt["body_representation"] != "requests.content_after_content_decoding"):
+        fail("schema, redirect policy or response representation")
+    key = _sec_filing_key(cik, accession)
+    if type(receipt["filing_key"]) is not dict or receipt["filing_key"] != key:
+        fail("filing identity")
+    current = validate_sec_acquisition_url(receipt["requested_url"], **key)
+    if current != source_url:
+        fail("requested URL differs from retained source URL")
+    hops = receipt["redirects"]
+    if type(hops) is not list or len(hops) > 5:
+        fail("redirect count")
+    visited = {current}
+    for hop in hops:
+        if type(hop) is not dict or set(hop) != {"url", "status", "location", "next_url"}:
+            fail("closed redirect keys")
+        if hop["url"] != current or type(hop["status"]) is not int or hop["status"] not in {301, 302, 303, 307, 308}:
+            fail("redirect chain or status")
+        location = hop["location"]
+        next_url = resolve_sec_acquisition_location(current, location, **key)
+        if next_url != hop["next_url"] or next_url in visited:
+            fail("redirect target or cycle")
+        visited.add(next_url)
+        current = next_url
+    if validate_sec_acquisition_url(receipt["final_url"], **key) != current:
+        fail("final URL differs from observed chain")
+    for field, limit in (("content_type", 1024), ("content_encoding", 256), ("declared_charset", 128)):
+        value = receipt[field]
+        if value is not None and (not isinstance(value, str) or len(value) > limit or "\r" in value or "\n" in value):
+            fail(f"{field} metadata")
+    if receipt["declared_charset"] != sec_declared_charset(receipt["content_type"]):
+        fail("declared charset differs from Content-Type")
+    acquired_at = receipt["acquired_at"]
+    if not isinstance(acquired_at, str) or not _SEC_ACQUIRED_AT.fullmatch(acquired_at):
+        fail("acquisition clock")
+    try:
+        datetime.fromisoformat(acquired_at[:-1] + "+00:00")
+    except ValueError:
+        fail("acquisition clock")
+    if (not isinstance(receipt["decoder"], str) or not isinstance(receipt["decode_policy"], str)
+            or receipt["decoder"] not in {"utf-8", "latin-1"} or receipt["decode_errors"] != "strict"
+            or receipt["decode_policy"] not in {"utf8_strict", "utf8_strict_then_latin1_strict"}
+            or (receipt["decode_policy"] == "utf8_strict" and receipt["decoder"] != "utf-8")):
+        fail("decoder or error policy")
+    for field in ("entity_sha256", "source_sha256"):
+        if not isinstance(receipt[field], str) or not _SEC_SHA.fullmatch(receipt[field]):
+            fail(f"{field} digest")
+    for field in ("entity_length", "source_utf8_length"):
+        if type(receipt[field]) is not int or receipt[field] < 1:
+            fail(f"{field} length")
+    if not isinstance(source_text, str) or not source_text:
+        fail("source text")
+    try:
+        source_bytes = source_text.encode("utf-8", errors="strict")
+        replay_entity = source_text.encode(receipt["decoder"], errors="strict")
+    except UnicodeError:
+        fail("source text cannot replay the recorded encoding")
+    if (sha256_bytes(source_bytes) != receipt["source_sha256"]
+            or len(source_bytes) != receipt["source_utf8_length"]
+            or sha256_bytes(replay_entity) != receipt["entity_sha256"]
+            or len(replay_entity) != receipt["entity_length"]):
+        fail("entity or source digest/length")
+    if entity_body is not None and (not isinstance(entity_body, bytes) or entity_body != replay_entity):
+        fail("actual response entity differs from decoded source")
+    if receipt["decoder"] == "latin-1":
+        try:
+            replay_entity.decode("utf-8", errors="strict")
+        except UnicodeDecodeError:
+            pass
+        else:
+            fail("Latin-1 fallback was not required by the recorded policy")
+    return deepcopy(receipt)

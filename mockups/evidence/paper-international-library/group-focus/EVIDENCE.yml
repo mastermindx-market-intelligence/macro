@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/intl_workspace.css
+manifest: mockups/evidence/paper-international-library/group-focus/manifest.json

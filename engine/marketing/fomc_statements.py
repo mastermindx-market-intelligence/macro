@@ -60,12 +60,17 @@ log = logging.getLogger(__name__)
 #
 # Source: Federal Reserve, "Meeting calendars and information" —
 # https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm
-# Each 2026 meeting is two days; the DECISION day is the second, and the
+# Each meeting is two days; the DECISION day is the second, and the
 # statement is released at 14:00 ET. Remaining as of 2026-08-08: Sep 15-16,
-# Oct 27-28, Dec 8-9 (i.e. the 09-16 / 10-28 / 12-09 rows below).
+# Oct 27-28, Dec 8-9 (i.e. the 09-16 / 10-28 / 12-09 rows below). The 2027
+# rows were read from the same page on 2026-10-14; the Fed marks every date
+# tentative until confirmed at the meeting immediately preceding it. The name
+# keeps its 2026 suffix because the pin test imports it by that name.
 _FOMC_2026_FALLBACK: tuple[str, ...] = (
     "2026-01-28", "2026-03-18", "2026-04-29", "2026-06-17",
     "2026-07-29", "2026-09-16", "2026-10-28", "2026-12-09",
+    "2027-01-27", "2027-03-17", "2027-04-28", "2027-06-09",
+    "2027-07-28", "2027-09-15", "2027-10-27", "2027-12-08",
 )
 
 #: The statement is released at 14:00 ET on the decision day (Fed practice since

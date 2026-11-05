@@ -1,0 +1,122 @@
+{
+  "schema": "eval_os.retained_evidence_manifest.v1",
+  "records": [
+    {
+      "file": "hosted-missing-inputs.json",
+      "bytes": 721,
+      "sha256": "fd0745ecb55f30299cd06a68b3ed8d241974025faa88d0cd4581272ab7418c94"
+    },
+    {
+      "file": "contract-delta-annotations-0714.json",
+      "bytes": 6762,
+      "sha256": "81885405857dbcc5fc3e58f641b3d8430c89db0209824f0f294395f596acf88e"
+    },
+    {
+      "file": "tested-closure-red.json",
+      "bytes": 999,
+      "sha256": "72ded09ff992b5fc8a7150d10c9479677832aa1da5aef46a401c8dcddcb81178"
+    },
+    {
+      "file": "tested-closure-source-repair.json",
+      "bytes": 1128,
+      "sha256": "75939d73434224f29ed8bec5bd42763ef93e971015e51d2d50e00fecc77ac383"
+    },
+    {
+      "file": "tested-closure-source-repair.patch",
+      "bytes": 1002,
+      "sha256": "d635bed6d7a3ea62aab2e3316c3f8456563b4668192b61a02914ddcd7aa541c2"
+    },
+    {
+      "file": "source-closure-green.xml",
+      "bytes": 577,
+      "sha256": "276cafcd06ac60b31907f6a2ae154b06006405ba51d16598b38304d380e904fb"
+    },
+    {
+      "file": "hosted-closure-green.xml",
+      "bytes": 575,
+      "sha256": "ee79afabfe196c2637711591d59e6c834287e14a5b4f719458592089c95651b9"
+    },
+    {
+      "file": "source-closure-qualification.json",
+      "bytes": 14004,
+      "sha256": "e7ad4a594b75b4fc1c89f2bb86e0d675d709d412ed3ad8a72b678184a9d02efd"
+    },
+    {
+      "file": "hosted-closure-qualification.json",
+      "bytes": 14008,
+      "sha256": "65f7b239ff27170292cb0e43a25206c7cfa1c7be2ce8996c1850ed36231d3254"
+    },
+    {
+      "file": "qualification-verifier-adjudication.json",
+      "bytes": 854,
+      "sha256": "4a52133d199c8a902c111429b808c2349b6767b791b439b90ac39e1d44a0d482"
+    },
+    {
+      "file": "qualify_tested_closure_repair-v1.py",
+      "bytes": 2761,
+      "sha256": "be5111d12ba729ab67f38106e6ffcbc14be558642cbf2412e02735327685b5a5"
+    },
+    {
+      "file": "qualify_tested_closure_repair-v2.py",
+      "bytes": 3091,
+      "sha256": "a7a7f9b5c09f0b35d5a839559c5850632c0103c82d3dce249c54dbd3570e0c2f"
+    },
+    {
+      "file": "qualify_tested_closure_repair.py",
+      "bytes": 3101,
+      "sha256": "0ce5431a89213c928cdb0126cf53c252b97df036e369c3161638cb4a77309098"
+    },
+    {
+      "file": "hosted-closure-preflight-v1.log",
+      "bytes": 413,
+      "sha256": "9b59799766fa2fff617e244b5cffbc21e6e909a85961561957fd0f336ed862d7"
+    },
+    {
+      "file": "tested-closure-review-packet.txt",
+      "bytes": 5267,
+      "sha256": "a3fd8f823a375b5dd26a15ecc5f04929f74e3575efdabe33fff9b02ec553e8cc"
+    },
+    {
+      "file": "tested-closure-review-result.txt",
+      "bytes": 4737,
+      "sha256": "3898c1790b2257b8ac0e847131892fa6207f6c90c912e8de423c5211317e8148"
+    },
+    {
+      "file": "tested-closure-review-adjudication.json",
+      "bytes": 1213,
+      "sha256": "663bf068f6a98231ce4c03b5ff62dc314d7ccf39f787e7888a71e743990e511c"
+    },
+    {
+      "file": "tested-closure-review-acceptance.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "closure-current-main-preview.json",
+      "bytes": 317,
+      "sha256": "5e1ad45e4d4ddf7b9c9211d873f2fa4ed4b16a9795e671b774f624a9830c4281"
+    },
+    {
+      "file": "current-base-compatibility.json",
+      "bytes": 2809,
+      "sha256": "71089c3870ea1ea2e66465ac7acae631abb376dd3e21a3bdcf69460344059a2a"
+    },
+    {
+      "file": "hosted-observation-0713.json.gz",
+      "bytes": 13467,
+      "sha256": "dfb83a88f37f412fa3368ab9f6f09d4baf7580bd1176a9a4e9fc8acff522421b",
+      "encoding": "gzip",
+      "decoded_bytes": 271844,
+      "decoded_sha256": "6c0b6528ea676c7e18fcaa6d2b036d1f6ff2306e1f47459e733196a5f410c98b"
+    },
+    {
+      "file": "closure-admission-072448.json.gz",
+      "bytes": 16330,
+      "sha256": "45159c9f6f565bb4ce87fa4d606527a39cf370a8eedcd81fbbcf2ecae683ce05",
+      "encoding": "gzip",
+      "decoded_bytes": 224156,
+      "decoded_sha256": "f0c355aa498a026293425e069108f5478f6b5fafecdde9af6915dd37bb005304"
+    }
+  ],
+  "scope": "Exact source634750 and observed hosted-tree plus nine-input patch qualification; report corrections and invalid elapsed-time field explicitly adjudicated. No release/production acceptance."
+}

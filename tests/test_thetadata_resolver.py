@@ -586,3 +586,247 @@ class TestFailingOpenIsNeverSilent:
         monkeypatch.setattr(libconfig, "data_dir", lambda: tmp_path / "nowhere")
         assert tds.resolve_thetadata_store(purpose="t") is None
         assert "thetadata-store-unverified" not in capsys.readouterr().out
+
+
+# --------------------------------------------------------------------------- #
+# unmounted volume — the chain STOPS (no second store on another disk)        #
+# --------------------------------------------------------------------------- #
+
+def _patch_volumes(monkeypatch, vroot: Path, mounted_names=()):
+    """Point the resolver's volume root at `vroot` and stub `_is_mount`.
+
+    `mounted_names` are the volume directory names (the first path component
+    under `vroot`) for which `_is_mount` returns True. Everything else is
+    unmounted. Never touches the real `/Volumes`.
+    """
+    import os
+    vroot.mkdir(parents=True, exist_ok=True)
+    # raising=False so the negative tests can run against the unmodified
+    # resolver, which does not yet define these injectables.
+    monkeypatch.setattr(tds, "_VOLUMES_ROOT", vroot, raising=False)
+    mounted = {str(Path(os.path.realpath(vroot)) / name) for name in mounted_names}
+    monkeypatch.setattr(
+        tds, "_is_mount", lambda p, _m=mounted: str(p) in _m, raising=False)
+    return vroot
+
+
+def _volume_path(vroot: Path, name: str = "STORAGE") -> Path:
+    import os
+    return Path(os.path.realpath(vroot)) / name
+
+
+class TestUnmountedVolumeStopsTheChain:
+    """A store whose path or tier entries land on a volume that is not mounted
+    is refused, and the candidate chain does not fall through.
+    """
+
+    def test_t1_mounted_volume_symlink_store_resolves(
+            self, tmp_path, monkeypatch, isolated_chain):
+        """Tier dirs are symlinks into a mounted volume that holds real roots."""
+        vroot = _patch_volumes(monkeypatch, tmp_path / "Volumes", ("STORAGE",))
+        real = _mk_store(
+            vroot / "STORAGE" / "payload", tiers=("eod", "oi", "greeks"))
+        env_store = tmp_path / "env_store"
+        env_store.mkdir()
+        for t in tds._STORE_TIERS:
+            (env_store / t).symlink_to(real / t)
+        monkeypatch.setenv("THETADATA_STORE", str(env_store))
+        assert tds.resolve_thetadata_store(purpose="t1") == env_store
+
+    def test_t2_dangling_volume_symlink_does_not_fall_through(
+            self, tmp_path, monkeypatch, isolated_chain):
+        """Dangling tier symlinks onto an unmounted volume stop the chain.
+
+        data_dir holds a real store. Falling through to it would mint the
+        split-brain this refusal exists to prevent.
+        """
+        vroot = _patch_volumes(monkeypatch, tmp_path / "Volumes")
+        env_store = tmp_path / "env_store"
+        env_store.mkdir()
+        missing = vroot / "STORAGE" / "thetadata_eod"
+        for t in tds._STORE_TIERS:
+            (env_store / t).symlink_to(missing / t)
+        data_store = _mk_store(isolated_chain, roots=("SPY",))
+        monkeypatch.setenv("THETADATA_STORE", str(env_store))
+
+        got = tds.resolve_thetadata_store(purpose="t2")
+        assert got is None, (
+            f"fell through to {got}; data_dir store {data_store} must not win "
+            f"while the env store's volume is unmounted")
+        vol = _volume_path(vroot)
+        with pytest.raises(RuntimeError) as ei:
+            tds.resolve_thetadata_store(required=True, purpose="t2-required")
+        assert str(vol) in str(ei.value), ei.value
+
+    def test_t3_leftover_unmounted_dir_is_refused_and_has_no_content(
+            self, tmp_path, monkeypatch, isolated_chain):
+        """A plain directory with roots sitting at the unmounted mount point
+        is a leftover on the root disk, not a store."""
+        vroot = _patch_volumes(monkeypatch, tmp_path / "Volumes")
+        store = _mk_store(vroot / "STORAGE" / "thetadata_eod", roots=("AAPL",))
+        monkeypatch.setenv("THETADATA_STORE", str(store))
+        got = tds.resolve_thetadata_store(purpose="t3")
+        assert got is None, f"leftover unmounted dir resolved to {got}"
+        assert tds._has_store_content(store) is False
+
+    def test_t4_unmounted_store_candidates_reports_t2_not_t1(
+            self, tmp_path, monkeypatch, isolated_chain):
+        v1 = _patch_volumes(monkeypatch, tmp_path / "t1" / "Volumes", ("STORAGE",))
+        real = _mk_store(
+            v1 / "STORAGE" / "payload", tiers=("eod", "oi", "greeks"))
+        env1 = tmp_path / "t1_env"
+        env1.mkdir()
+        for t in tds._STORE_TIERS:
+            (env1 / t).symlink_to(real / t)
+        monkeypatch.setenv("THETADATA_STORE", str(env1))
+        assert tds.unmounted_store_candidates() == []
+
+        v2 = _patch_volumes(monkeypatch, tmp_path / "t2" / "Volumes")
+        env2 = tmp_path / "t2_env"
+        env2.mkdir()
+        missing = v2 / "STORAGE" / "thetadata_eod"
+        for t in tds._STORE_TIERS:
+            (env2 / t).symlink_to(missing / t)
+        _mk_store(isolated_chain, roots=("SPY",))
+        monkeypatch.setenv("THETADATA_STORE", str(env2))
+        assert tds.unmounted_store_candidates() == [env2]
+
+    def test_t5_none_log_line_contains_unmounted(
+            self, tmp_path, monkeypatch, isolated_chain, caplog):
+        vroot = _patch_volumes(monkeypatch, tmp_path / "Volumes")
+        env_store = tmp_path / "env_store"
+        env_store.mkdir()
+        missing = vroot / "STORAGE" / "thetadata_eod"
+        for t in tds._STORE_TIERS:
+            (env_store / t).symlink_to(missing / t)
+        _mk_store(isolated_chain, roots=("SPY",))
+        monkeypatch.setenv("THETADATA_STORE", str(env_store))
+        vol = _volume_path(vroot)
+        with caplog.at_level(logging.ERROR, logger=tds.log.name):
+            assert tds.resolve_thetadata_store(purpose="t5") is None
+        none_lines = [r.getMessage() for r in caplog.records
+                      if "resolved store=NONE" in r.getMessage()]
+        assert none_lines, [r.getMessage() for r in caplog.records]
+        assert "UNMOUNTED:" in none_lines[-1], none_lines[-1]
+        assert str(vol) in none_lines[-1], none_lines[-1]
+
+    def test_t6_off_volume_store_resolves_when_ismount_is_false(
+            self, tmp_path, monkeypatch, isolated_chain):
+        """A store that does not land under the volumes root is unchanged,
+        even when nothing is a mount."""
+        _patch_volumes(monkeypatch, tmp_path / "Volumes")
+        store = _mk_store(tmp_path / "local_store", roots=("SPY",))
+        monkeypatch.setenv("THETADATA_STORE", str(store))
+        assert tds.resolve_thetadata_store(purpose="t6") == store
+
+    def test_t7_backfill_source_mentions_unmounted_store_candidates(self):
+        """The guard is only real if the writer wires the helper in."""
+        src = (Path(__file__).resolve().parent.parent
+               / "scripts" / "backfill_thetadata_eod.py").read_text()
+        assert "unmounted_store_candidates" in src, (
+            "backfill no longer consults unmounted_store_candidates() — its "
+            "store-agreement guard can mint a second store while the canonical "
+            "volume is absent")
+
+    def test_t6b_sibling_prefix_dir_is_not_under_the_volumes_root(
+            self, tmp_path, monkeypatch, isolated_chain):
+        """`VolumesX/STORAGE` shares a string prefix with `Volumes/`; it is not
+        on a volume, so nothing being mounted must not refuse it."""
+        _patch_volumes(monkeypatch, tmp_path / "Volumes")
+        store = _mk_store(tmp_path / "VolumesX" / "STORAGE", roots=("SPY",))
+        monkeypatch.setenv("THETADATA_STORE", str(store))
+        assert tds.resolve_thetadata_store(purpose="t6b") == store
+
+    def test_t8_denied_volume_root_fails_open_not_unmounted(
+            self, tmp_path, monkeypatch, isolated_chain):
+        """EACCES/EPERM on a volume root is "cannot read", not "unmounted".
+
+        Uses the REAL `_is_mount`. os.path.ismount swallows the lstat error and
+        returns False, which refused a mounted store and told the operator to
+        remount a disk that was already mounted.
+        """
+        import os
+        vroot = tmp_path / "Volumes"
+        vroot.mkdir()
+        monkeypatch.setattr(tds, "_VOLUMES_ROOT", vroot)
+        store = _mk_store(vroot / "STORAGE" / "thetadata_eod", roots=("SPY",))
+        denied = str(_volume_path(vroot))
+        real_lstat = os.lstat
+
+        def lstat(p, *a, **k):
+            if os.fspath(p) == denied:
+                raise PermissionError(1, "Operation not permitted", denied)
+            return real_lstat(p, *a, **k)
+
+        monkeypatch.setattr(os, "lstat", lstat)
+        monkeypatch.setenv("THETADATA_STORE", str(store))
+        assert tds._classify_store(store) == tds._UNKNOWN
+        assert tds.unmounted_store_candidates() == []
+        assert tds.resolve_thetadata_store(purpose="t8") == store
+
+    def test_t9_backfill_refuses_before_minting_a_store(
+            self, tmp_path, monkeypatch, isolated_chain):
+        """The backfill guard returns 1 before `_store_dir()`, whose mkdir would
+        be the second store. The control proves the sentinel can fire."""
+        import sys
+        from scripts import backfill_thetadata_eod as bk
+        vol = tmp_path / "Volumes" / "STORAGE"
+        monkeypatch.setattr(sys, "argv", [
+            "backfill_thetadata_eod", "--dry-run", "--roots", "SPY"])
+        monkeypatch.setattr(bk, "resolve_thetadata_store", lambda **k: None)
+        monkeypatch.setattr(bk, "drained_store_candidates", lambda: [])
+        monkeypatch.setattr(bk, "_unmounted_volume", lambda p: vol)
+
+        def minted():
+            raise AssertionError("_store_dir() called: that mkdir is the second store")
+
+        monkeypatch.setattr(bk, "_store_dir", minted)
+        monkeypatch.setattr(
+            bk, "unmounted_store_candidates", lambda: [vol / "thetadata_eod"])
+        assert bk.main() == 1
+
+        monkeypatch.setattr(bk, "unmounted_store_candidates", lambda: [])
+        with pytest.raises(AssertionError, match="second store"):
+            bk.main()
+
+
+class TestRealMountPredicate:
+    """`_is_mount` itself, unstubbed. Every chain test above stubs it."""
+
+    def test_missing_volume_is_not_a_mount(self, tmp_path):
+        assert tds._is_mount(tmp_path / "Volumes" / "STORAGE") is False
+
+    def test_leftover_plain_dir_is_not_a_mount(self, tmp_path):
+        d = tmp_path / "Volumes" / "STORAGE"
+        d.mkdir(parents=True)
+        assert tds._is_mount(d) is False
+
+    def test_symlink_is_not_a_mount(self, tmp_path):
+        link = tmp_path / "link"
+        link.symlink_to("/")
+        assert tds._is_mount(link) is False
+
+    @pytest.mark.parametrize("p", ["/", "/dev"])
+    def test_agrees_with_os_path_ismount_on_readable_paths(self, p):
+        import os
+        assert tds._is_mount(Path(p)) == os.path.ismount(p)
+
+    def test_root_is_a_mount(self):
+        """A positive, so the predicate is shown able to return True."""
+        assert tds._is_mount(Path("/")) is True
+
+    def test_denied_lstat_raises_instead_of_reading_unmounted(
+            self, tmp_path, monkeypatch):
+        import os
+        d = tmp_path / "Volumes" / "STORAGE"
+        d.mkdir(parents=True)
+        real_lstat = os.lstat
+
+        def lstat(p, *a, **k):
+            if os.fspath(p) == str(d):
+                raise PermissionError(1, "Operation not permitted", str(d))
+            return real_lstat(p, *a, **k)
+
+        monkeypatch.setattr(os, "lstat", lstat)
+        with pytest.raises(PermissionError):
+            tds._is_mount(d)

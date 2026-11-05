@@ -1,0 +1,21 @@
+{
+  "schema": "defense.candidate_proof_adjudication.v1",
+  "source_checkout": "c40d17ec444dd955244cd3131387cdd54b946c4d",
+  "receipt_sha256": "81b542a9689b4cfd3f363428a131c19a585038722a70dd318b7c97798191c107",
+  "summary": "104 passed, 1 skipped, 15 warnings in 575.73s (0:09:35)",
+  "identity": "8799add43e3359d0180df868670231355455ec8433596db625a44239a8c73090",
+  "generation": {
+    "ledger_line_count": 642,
+    "projection_generated_at": "2026-10-14T03:12:45.197758+00:00",
+    "queue_content_id": "grcq1-8f1cc489fdf1e14384e038c9",
+    "state_sha256": "2c889096175c738bb09c791f414b5acd08594735848ea0b822a7a7c01e58c9de"
+  },
+  "source_dependency_count": 7562,
+  "output_count": 109,
+  "proof_artifacts": "original sealed bytes copied without rewriting receipt",
+  "skip": "no unaccounted rows to exercise",
+  "browser_evidence": "V10 timing/composition retained under V11 byte-delta adjudication; V11 Chinese ADR disclosures verified in v10_ci_recovery",
+  "independent_product_acceptance": false,
+  "production_publication": false,
+  "next": "verify committed bytes, push original PR9066 and require exact-head protected CI before ordered release"
+}

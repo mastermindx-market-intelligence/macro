@@ -1,0 +1,85 @@
+{
+  "first_attempt": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"schema\":\"mastermind.fabric_mcp.v1\",\"action\":\"fabric_accept\",\"run_id\":\"rr-startup-preflight-review-20261020-r1\",\"root_id\":\"risk-radar-release-qualification-20261018-0304\",\"error\":\"RESULT_TOO_LARGE\",\"result_bytes\":16654,\"max_bytes\":6000,\"execution_absence_proven\":false,\"retry_allowed\":false}"
+      }
+    ],
+    "structuredContent": {
+      "schema": "mastermind.fabric_mcp.v1",
+      "action": "fabric_accept",
+      "run_id": "rr-startup-preflight-review-20261020-r1",
+      "root_id": "risk-radar-release-qualification-20261018-0304",
+      "error": "RESULT_TOO_LARGE",
+      "result_bytes": 16654,
+      "max_bytes": 6000,
+      "execution_absence_proven": false,
+      "retry_allowed": false,
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "isError": true
+  },
+  "effect_readback": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"schema\":\"mastermind.fabric_mcp.v1\",\"action\":\"fabric_status\",\"run_id\":\"rr-startup-preflight-review-20261020-r1\",\"effective_run_id\":\"rr-startup-preflight-review-20261020-r1\",\"expected_root_id\":\"risk-radar-release-qualification-20261018-0304\",\"status\":{\"acceptance_reason\":\"NO_OUTCOME\",\"acceptance_state\":\"NOT_ACCEPTED\",\"accepted\":false,\"accepted_by\":null,\"parent_run_id\":\"risk-radar-release-qualification-20261018-0304\",\"rc\":0,\"result_available\":true,\"result_bytes\":16654,\"root_id\":\"risk-radar-release-qualification-20261018-0304\",\"run_id\":\"rr-startup-preflight-review-20261020-r1\",\"schema\":\"mastermind.fabric_task_status.v1\",\"signal\":\"ok\",\"state\":\"TERMINAL\",\"continuation\":{\"requested_run_id\":\"rr-startup-preflight-review-20261020-r1\",\"effective_run_id\":\"rr-startup-preflight-review-20261020-r1\",\"prior_attempts\":[],\"controller_return\":\"RECORDED\",\"controller_reason\":\"terminal_return\"}},\"root_verified\":true,\"execution_absence_proven\":false,\"retry_allowed\":false}"
+      }
+    ],
+    "structuredContent": {
+      "schema": "mastermind.fabric_mcp.v1",
+      "action": "fabric_status",
+      "run_id": "rr-startup-preflight-review-20261020-r1",
+      "effective_run_id": "rr-startup-preflight-review-20261020-r1",
+      "expected_root_id": "risk-radar-release-qualification-20261018-0304",
+      "status": {
+        "acceptance_reason": "NO_OUTCOME",
+        "acceptance_state": "NOT_ACCEPTED",
+        "accepted": false,
+        "accepted_by": null,
+        "parent_run_id": "risk-radar-release-qualification-20261018-0304",
+        "rc": 0,
+        "result_available": true,
+        "result_bytes": 16654,
+        "root_id": "risk-radar-release-qualification-20261018-0304",
+        "run_id": "rr-startup-preflight-review-20261020-r1",
+        "schema": "mastermind.fabric_task_status.v1",
+        "signal": "ok",
+        "state": "TERMINAL",
+        "continuation": {
+          "requested_run_id": "rr-startup-preflight-review-20261020-r1",
+          "effective_run_id": "rr-startup-preflight-review-20261020-r1",
+          "prior_attempts": [],
+          "controller_return": "RECORDED",
+          "controller_reason": "terminal_return"
+        }
+      },
+      "root_verified": true,
+      "execution_absence_proven": false,
+      "retry_allowed": false
+    },
+    "isError": false
+  },
+  "completed_acceptance": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"schema\":\"mastermind.fabric_mcp.v1\",\"action\":\"fabric_accept\",\"run_id\":\"rr-startup-preflight-review-20261020-r1\",\"root_id\":\"risk-radar-release-qualification-20261018-0304\",\"accepted\":true,\"accepted_by\":\"reviewer\",\"reviewed_response_sha256\":\"14383076e5311925f6a2aff524e5e22fff05606b089bb663422269ff09e65d8b\",\"verification_summary\":\"Status read after RESULT_TOO_LARGE proved this exact completed return remains NOT_ACCEPTED / NO_OUTCOME. Recording bounded review acceptance with adequate result envelope, without rerunning the worker. Root adjudication is persisted in release_integrity_20261018/recovery_oct20/STARTUP_PREFLIGHT_ROOT_ADJUDICATION_2026-10-20.json. Clean absent-WAL/queue lock/preflight findings corroborate actual isolated a755 Linux startup, 18 jobs, preserved cohort and complete eligible baseline restoration. Corrections retained: run_events writes durable JSONL; allowlisted book IDs are required; no observed ext4 flock failure; successful quarantine differs from blocking startup failure; no blanket no-migration claim. Eight suggested cases were not executed. This accepts completed bounded source review only, with explicit corrections; production authorization and deployed-runtime acceptance remain absent.\",\"legacy_acceptance_not_atomic_attestation\":true,\"retry_allowed\":false}"
+      }
+    ],
+    "structuredContent": {
+      "schema": "mastermind.fabric_mcp.v1",
+      "action": "fabric_accept",
+      "run_id": "rr-startup-preflight-review-20261020-r1",
+      "root_id": "risk-radar-release-qualification-20261018-0304",
+      "accepted": true,
+      "accepted_by": "reviewer",
+      "reviewed_response_sha256": "14383076e5311925f6a2aff524e5e22fff05606b089bb663422269ff09e65d8b",
+      "verification_summary": "Status read after RESULT_TOO_LARGE proved this exact completed return remains NOT_ACCEPTED / NO_OUTCOME. Recording bounded review acceptance with adequate result envelope, without rerunning the worker. Root adjudication is persisted in release_integrity_20261018/recovery_oct20/STARTUP_PREFLIGHT_ROOT_ADJUDICATION_2026-10-20.json. Clean absent-WAL/queue lock/preflight findings corroborate actual isolated a755 Linux startup, 18 jobs, preserved cohort and complete eligible baseline restoration. Corrections retained: run_events writes durable JSONL; allowlisted book IDs are required; no observed ext4 flock failure; successful quarantine differs from blocking startup failure; no blanket no-migration claim. Eight suggested cases were not executed. This accepts completed bounded source review only, with explicit corrections; production authorization and deployed-runtime acceptance remain absent.",
+      "legacy_acceptance_not_atomic_attestation": true,
+      "retry_allowed": false
+    },
+    "isError": false
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "when": "2026-10-14T13:44:31.812183+00:00",
+  "old": "323a69f640d1e9682d591449c8bc9f2c3f4359cd3c2e2f70fb13c1aa04982e01",
+  "new": "f954bf7347bcdc955666eec52539c390e043452e01d8847b818227f3c6508f3b",
+  "scope": "Two current-source closure hashes qualified after explicit semantic/byte comparison; all 33 legacy dispositions, evidence, whitelist and scan clocks unchanged",
+  "current_actions_preflight": "still required, not executed with fabricated Actions identity",
+  "interrupted_proof": "exit130, no receipt, no published output",
+  "production_or_cas_effect": false
+}

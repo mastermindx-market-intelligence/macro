@@ -1,0 +1,85 @@
+{
+  "schema": "eval_os.t6_fourth_qualification.v1",
+  "qualified_source": "8453d2a9051956a9dca49babe5db75201fa00666",
+  "prior_publication": "30117a758d915dcfeec562c823f764151ef5db08",
+  "qualified_at": "2026-10-14T11:36:47.994813+00:00",
+  "new_cases": 6,
+  "total_supplied_text_cases": 12,
+  "legacy_bear_unchanged": true,
+  "original_six_fixtures_unchanged": true,
+  "source_review": "assigning-root source adjudication, not independent review",
+  "red_before_registration": {
+    "tests": 12,
+    "failures": 12
+  },
+  "affected_runner_adversarial_tests": {
+    "passed": 179,
+    "failed": 0,
+    "skipped": 0
+  },
+  "post_chronology_tightening_tests": {
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0
+  },
+  "canonical_ci_controls": {
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0
+  },
+  "full_curated_dependency_misses": {},
+  "strict_probes": [
+    {
+      "probe": "templates/index.html",
+      "jobs": 134,
+      "weight": 5621,
+      "packs": 10,
+      "max_jobs": 135,
+      "max_weight": 5803,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs": 134,
+      "weight": 5441,
+      "packs": 10,
+      "max_jobs": 134,
+      "max_weight": 5600,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs": 128,
+      "weight": 5384,
+      "packs": 9,
+      "max_jobs": 129,
+      "max_weight": 5600,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 128/314 jobs (1 unscoped always-on, 127 scoped matches)"
+    }
+  ],
+  "job_execution_definitions_preserved": 314,
+  "qledger_job_entirely_unchanged": true,
+  "all_response_eval_executable_function_bodies_unchanged": true,
+  "source_manifest_additions": 28,
+  "new_inputs_select_a1": 8,
+  "verification_correction": "_job_diff_match expects Iterable[str], not a string; exact-head3PASS and completed full closure reused, selection and packing continued with [path]. No product source repair required.",
+  "blind_model_request": "eval-t6-blind-six-01a1333d-c2:rc75/no_pool_available, no launch, subsequent statusNOT_FOUND; no acceptance/replay/replacement",
+  "preserved_unknowns": [
+    "original experience effect",
+    "original CLI semantic-review effect"
+  ],
+  "limits": {
+    "twenty_case_target_met": false,
+    "fifteen_adjudicated_seed_target_met": false,
+    "historical_pit_proven": false,
+    "semantic_model_acceptance": false,
+    "independence_proven": false,
+    "hosted_ci": false,
+    "followon_pr_created": false,
+    "production_proven": false,
+    "actual_consumer_adoption": false
+  }
+}

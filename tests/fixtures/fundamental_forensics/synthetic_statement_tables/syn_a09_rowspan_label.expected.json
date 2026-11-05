@@ -1,0 +1,19 @@
+{
+  "columns_iso": ["2025-09-27", "2024-09-28"],
+  "rows": [
+    {
+      "label": "Cash",
+      "order": 0,
+      "abstract": false,
+      "rowspan_carry": false,
+      "value_fact_ids": ["syn-cash-begin-2025", "syn-cash-begin-2024"]
+    },
+    {
+      "label": "Cash",
+      "order": 1,
+      "abstract": false,
+      "rowspan_carry": true,
+      "value_fact_ids": ["syn-cash-end-2025", "syn-cash-end-2024"]
+    }
+  ]
+}

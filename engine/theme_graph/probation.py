@@ -18,10 +18,13 @@ auto-promotion path the queue exists to prevent.
 """
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import logging
-from datetime import datetime, timezone
+import posixpath
+import re
+from datetime import date, datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 
@@ -32,7 +35,27 @@ log = logging.getLogger(__name__)
 #: from the coverage-gap and overlap diagnostics.
 PROPOSAL_KINDS: frozenset[str] = frozenset({
     "new_theme", "merge", "split", "mapping", "key_rename", "identity_continuity",
+    "hierarchy",
 })
+
+HIERARCHY_EPOCH = date(2026, 10, 7)
+_THEME_ID_RE = re.compile(r"^theme:[a-z0-9][a-z0-9_]{1,62}$")
+_NOMINATED_FROM_RE = re.compile(
+    r"^(basket:\S+|vertical:[a-z0-9_]+:[a-z0-9_]+|research:\S+)$"
+)
+_HOUSE_PATH_CHARS_RE = re.compile(r"[A-Za-z0-9._/#-]+")
+_HOUSE_FRAGMENT_RE = re.compile(r"[A-Za-z0-9._-]+")
+_VENDOR_SUBSTRINGS = ("finviz_themes", "ths_concepts")
+_VENDOR_TOKENS = frozenset({"finviz", "ths"})
+_HIERARCHY_CHILD_TIERS = frozenset({"theme", "sub_theme", "micro_theme"})
+_HIERARCHY_SUBJECT_REQUIRED: tuple[str, ...] = (
+    "parent_id",
+    "child_id",
+    "child_tier",
+    "proposed_asserted_on",
+    "nominated_from",
+)
+_ASSERTED_ON_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 PROPOSED_BY: frozenset[str] = frozenset({
     "coverage_gap", "overlap_stats", "refresh_identity", "llm_proposed",
@@ -62,6 +85,138 @@ def _parse_stamp(value: object, field: str) -> datetime:
     if stamp.tzinfo is None:
         stamp = stamp.replace(tzinfo=timezone.utc)
     return stamp.astimezone(timezone.utc)
+
+
+def nominated_from_errors(nominated_from: str) -> list[str]:
+    """The single nominator rule; materialize must import it — never re-implement it."""
+    value = str(nominated_from or "").strip()
+    if not _NOMINATED_FROM_RE.fullmatch(value):
+        return [f"NOMINATED_FROM_GRAMMAR: nominated_from {value!r} is malformed"]
+    for needle in _VENDOR_SUBSTRINGS:
+        if needle in value:
+            return [
+                f"VENDOR_NOMINATOR: nominated_from {value!r} names a vendor family"
+            ]
+    for token in re.split(r"[:/_.\-]", value.lower()):
+        if token in _VENDOR_TOKENS:
+            return [
+                f"VENDOR_NOMINATOR: nominated_from {value!r} names a vendor family"
+            ]
+    if value.startswith("basket:"):
+        from engine.theme_graph import rights
+
+        family = rights.family_for_node_id(value)
+        if family in {"finviz_themes", "ths_concepts"}:
+            return [
+                f"VENDOR_NOMINATOR: nominated_from {value!r} names a vendor family"
+            ]
+        if family != "mastermind_curated":
+            return [
+                f"NOMINATOR_FAMILY_UNRESOLVED: nominated_from {value!r} "
+                f"does not resolve to a house basket family"
+            ]
+    if value.startswith("research:"):
+        suffix = str(nominated_from or "").removeprefix("research:")
+        if not _HOUSE_PATH_CHARS_RE.fullmatch(suffix) or suffix.startswith(("/", "#")):
+            return [
+                "NOMINATOR_PATH_UNSAFE: nominated_from "
+                f"{value!r} is not a relative house path"
+            ]
+        raw, sep, fragment = suffix.partition("#")
+        if any(segment == ".." for segment in re.split(r"[/#]", suffix)) or (
+            sep and not _HOUSE_FRAGMENT_RE.fullmatch(fragment)
+        ):
+            return [
+                "NOMINATOR_PATH_UNSAFE: nominated_from "
+                f"{value!r} is not a relative house path"
+            ]
+        norm = posixpath.normpath(raw)
+        if norm in ("", "."):
+            return [
+                "NOMINATOR_PATH_UNSAFE: nominated_from "
+                f"{value!r} is not a relative house path"
+            ]
+        from engine.theme_graph import rights
+
+        family = rights.family_for_source_ref(norm) or rights.family_for_source_ref(
+            norm + "/"
+        )
+        if family is not None and family != "mastermind_curated":
+            return [
+                "VENDOR_NOMINATOR: nominated_from "
+                f"{value!r} resolves to source family {family!r}"
+            ]
+        if family is None and not (
+            norm.startswith("config/") or norm.startswith("research/")
+        ):
+            return [
+                "NOMINATOR_UNREGISTERED_SOURCE: nominated_from "
+                f"{value!r} maps to no registered source family and is outside "
+                "the house roots config/ and research/"
+            ]
+    return []
+
+
+def _validate_hierarchy_row(row: dict) -> list[str]:
+    out: list[str] = []
+    subject = row.get("subject")
+    if not isinstance(subject, dict):
+        out.append("HIERARCHY_SUBJECT_SHAPE: hierarchy subject must be an object")
+        return out
+    allowed = set(_HIERARCHY_SUBJECT_REQUIRED)
+    for key in sorted(_HIERARCHY_SUBJECT_REQUIRED):
+        if key not in subject:
+            out.append(f"HIERARCHY_SUBJECT_SHAPE: missing required key {key!r}")
+    for key in sorted(set(subject.keys()) - allowed):
+        out.append(f"HIERARCHY_SUBJECT_SHAPE: unexpected key {key!r}")
+    parent_id = str(subject.get("parent_id") or "")
+    child_id = str(subject.get("child_id") or "")
+    child_tier = str(subject.get("child_tier") or "")
+    asserted_on = str(subject.get("proposed_asserted_on") or "")
+    nominated_from = str(subject.get("nominated_from") or "")
+    if not _THEME_ID_RE.fullmatch(parent_id):
+        out.append(
+            f"HIERARCHY_ID_GRAMMAR: hierarchy parent_id {parent_id!r} is malformed"
+        )
+    if not _THEME_ID_RE.fullmatch(child_id):
+        out.append(
+            f"HIERARCHY_ID_GRAMMAR: hierarchy child_id {child_id!r} is malformed"
+        )
+    if child_tier not in _HIERARCHY_CHILD_TIERS:
+        out.append(
+            "HIERARCHY_CHILD_TIER: hierarchy child_tier "
+            f"{child_tier!r} is outside ['micro_theme', 'sub_theme', 'theme']"
+        )
+    if parent_id and child_id and parent_id == child_id:
+        out.append("HIERARCHY_SELF_EDGE: parent_id must differ from child_id")
+    if not _ASSERTED_ON_RE.fullmatch(asserted_on):
+        out.append(
+            "HIERARCHY_ASSERTED_ON_GRAMMAR: hierarchy proposed_asserted_on "
+            f"{asserted_on!r} is not a YYYY-MM-DD date"
+        )
+    else:
+        try:
+            parsed = date.fromisoformat(asserted_on)
+        except ValueError:
+            out.append(
+                "HIERARCHY_ASSERTED_ON_GRAMMAR: hierarchy proposed_asserted_on "
+                f"{asserted_on!r} is not a YYYY-MM-DD date"
+            )
+        else:
+            if parsed < HIERARCHY_EPOCH:
+                out.append(
+                    f"HIERARCHY_EPOCH: proposed_asserted_on {asserted_on!r} "
+                    f"predates {HIERARCHY_EPOCH.isoformat()}"
+                )
+    out.extend(nominated_from_errors(nominated_from))
+    if (
+        row.get("proposed_by") == "llm_proposed"
+        and str(row.get("status") or "") == "ratified"
+    ):
+        out.append(
+            "LLM_HIERARCHY_NOT_RATIFIABLE: llm_proposed hierarchy rows may not be ratified"
+        )
+    return out
 
 
 def proposal_id(kind: str, subject: dict) -> str:
@@ -148,6 +303,14 @@ def validate(row: dict) -> list[str]:
         and adjudicated_clock < created_clock
     ):
         out.append("adjudicated_at predates created")
+    if row.get("kind") == "hierarchy":
+        out.extend(_validate_hierarchy_row(row))
+    evidence = row.get("evidence")
+    if isinstance(evidence, dict) and "observation_profile" in evidence:
+        try:
+            require_valid_observation_profile(evidence["observation_profile"])
+        except ValueError as exc:
+            out.append(str(exc))
     return out
 
 
@@ -157,6 +320,143 @@ def _contract_validator():
     import jsonschema
     path = Path(__file__).resolve().parents[2] / "contracts/theme_graph/probation_proposal.v1.schema.json"
     return jsonschema.Draft202012Validator(json.loads(path.read_text(encoding="utf-8")))
+
+
+def require_valid_observation_profile(profile: dict) -> None:
+    """Validate the optional diagnostic profile without changing proposal identity.
+
+    COMPLETE witnesses are local observations, never identity or licensing receipts.
+    Legacy free-form evidence has no obligation to carry this optional version.
+    """
+    import jsonschema
+    validator = _contract_validator()
+    try:
+        validator.evolve(schema=validator.schema["$defs"]["coverage_observation"]).validate(profile)
+        encoded = json.dumps(profile, allow_nan=False)
+        inputs = profile["input_list"]
+        population = profile["population"]
+        if profile["input_state"] == "READ":
+            if inputs is None or profile["input_digest_reason"] is not None:
+                raise ValueError("read input requires its actual list witness")
+            digest = hashlib.sha256(json.dumps(inputs, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
+            if digest != profile["input_list_sha256"]:
+                raise ValueError("input list digest mismatch")
+            if population["supplied"] != len(inputs) or population["distinct_supplied"] != len(set(inputs)):
+                raise ValueError("input population witness mismatch")
+        elif (inputs is not None or profile["input_list_sha256"] is not None
+                or population["supplied"] is not None or population["distinct_supplied"] is not None
+                or not profile["input_digest_reason"] or profile["completeness"]["analysis"] != "INDETERMINATE"):
+            raise ValueError("unavailable input cannot claim a population/digest witness")
+        source = profile["source_artifact"]
+        if (source["reference"] is None) != (source["verification"] == "NOT_SUPPLIED"):
+            raise ValueError("source declaration witness mismatch")
+        observed = datetime.fromisoformat(profile["clocks"]["observed_at"].replace("Z", "+00:00"))
+        if observed.tzinfo is None:
+            raise ValueError("observed_at must be zoned")
+        analysis = profile["completeness"]["analysis"]
+        if analysis != profile["evaluated_dimensions"]["source_local_concept_cooccurrence"]:
+            raise ValueError("analysis dimension mismatch")
+        pairs = profile["pair_display"]
+        members = profile["source_local_memberships"]
+        snapshot = profile["graph_snapshot"]
+        if analysis == "INDETERMINATE":
+            if (not profile["clocks"]["issues"] or population["eligible"] is not None
+                    or members is not None or any(pairs[k] is not None for k in ("total", "displayed", "truncated"))
+                    or profile["completeness"]["display"] != "INDETERMINATE"):
+                raise ValueError("indeterminate observation cannot claim numeric coverage")
+            if any(snapshot[key] is not None for key in ("node_rows", "edge_rows", "lifecycle_rows", "sha256")):
+                raise ValueError("indeterminate observation cannot claim a complete reader snapshot")
+        else:
+            if (not snapshot["node_rows"] or not snapshot["edge_rows"] or snapshot["lifecycle_rows"] is None
+                    or snapshot["sha256"] is None):
+                raise ValueError("complete analysis requires a nonempty selected-reader snapshot witness")
+            resolved, excluded = population["resolved_graph_nodes"], population["excluded"]
+            if (profile["clocks"]["issues"] or not inputs
+                    or members is None or population["eligible"] != len(resolved)
+                    or set(members) != set(resolved) or set(resolved) & set(excluded)
+                    or set(resolved) | set(excluded) != set(inputs)
+                    or len(set(resolved.values())) != len(resolved)
+                    or any(not re.fullmatch(r"co:[a-z]+:[^\s:]+", v) for v in resolved.values())
+                    or (analysis == "PARTIAL") != bool(excluded)):
+                raise ValueError("analysis population witness mismatch")
+            direct, company_baskets, basket_themes, edge_ids, endpoint_states = {}, {}, {}, {}, {}
+            for observation in profile["clocks"]["edge_observations"]:
+                encoded_edge = json.dumps(observation, sort_keys=True, allow_nan=False, separators=(",", ":"))
+                edge_id = observation["edge_id"]
+                if edge_id in edge_ids and edge_ids[edge_id] != encoded_edge:
+                    raise ValueError("conflicting duplicate edge observation identity")
+                edge_ids[edge_id] = encoded_edge
+                values = observation["values"]
+                parsed = {}
+                for key, value in values.items():
+                    if value is None:
+                        if key in {"valid_from", "belief_time", "computed_at"}:
+                            raise ValueError("complete observation missing required edge clock")
+                        continue
+                    stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+                    if stamp.tzinfo is None:
+                        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+                            raise ValueError("unsupported unzoned edge clock")
+                        stamp = stamp.replace(tzinfo=timezone.utc)
+                    parsed[key] = stamp
+                    if stamp > observed:
+                        raise ValueError("future edge clock cannot witness current completeness")
+                if parsed.get("valid_to") is not None and parsed["valid_to"] < parsed["valid_from"]:
+                    raise ValueError("edge interval witness is inconsistent")
+                if parsed["valid_from"] > observed or (parsed.get("valid_to") is not None and not observed < parsed["valid_to"]):
+                    raise ValueError("edge observation is not live at observation time")
+                src, dst, kind = observation["src"], observation["dst"], observation["type"]
+                endpoints = observation["endpoint_eligibility"]
+                for role, node_id in (("src", src), ("dst", dst)):
+                    state = (endpoints[role + "_kind"], endpoints[role + "_status"])
+                    if node_id in endpoint_states and endpoint_states[node_id] != state:
+                        raise ValueError("conflicting current endpoint eligibility observations")
+                    endpoint_states[node_id] = state
+                if endpoints["src_status"] not in {"candidate", "canonical"} or endpoints["dst_status"] not in {"candidate", "canonical"}:
+                    raise ValueError("retired or merged endpoint cannot witness a current membership")
+                if kind == "MEMBER_OF":
+                    if src not in resolved.values() or not re.fullmatch(r"co:[a-z]+:[^\s:]+", src) or endpoints["src_kind"] != "company":
+                        raise ValueError("membership witness must start at an exact eligible supplied company")
+                    if re.fullmatch(r"ltheme:[^\s:]+:[^\s:]+", dst) and endpoints["dst_kind"] == "local_theme":
+                        direct.setdefault(src, set()).add(dst)
+                    elif re.fullmatch(r"basket:[^\s:]+:[^\s:]+", dst) and endpoints["dst_kind"] == "basket":
+                        company_baskets.setdefault(src, set()).add(dst)
+                    else:
+                        raise ValueError("membership witness must end at an eligible local theme or basket")
+                elif (kind == "EXPRESSES" and re.fullmatch(r"basket:[^\s:]+:[^\s:]+", src)
+                        and re.fullmatch(r"ltheme:[^\s:]+:[^\s:]+", dst)
+                        and endpoints["src_kind"] == "basket" and endpoints["dst_kind"] == "local_theme"):
+                    basket_themes.setdefault(src, set()).add(dst)
+                else:
+                    raise ValueError("unsupported source-local membership witness direction or kind")
+            if snapshot["edge_rows"] < len(edge_ids):
+                raise ValueError("graph snapshot edge count cannot contain its unique observed edges")
+            if snapshot["node_rows"] < len(set(endpoint_states) | set(resolved.values())):
+                raise ValueError("graph snapshot node count cannot contain its observed endpoints and resolved companies")
+            linked_baskets = {basket for baskets in company_baskets.values() for basket in baskets}
+            if not set(basket_themes).issubset(linked_baskets):
+                raise ValueError("basket expression witness is unrelated to eligible supplied companies")
+            for supplied, claimed_themes in members.items():
+                if any(not re.fullmatch(r"ltheme:[^\s:]+:[^\s:]+", theme) for theme in claimed_themes):
+                    raise ValueError("source-local membership must use the local-theme namespace")
+                company = resolved[supplied]
+                witnessed = set(direct.get(company, ()))
+                for basket in company_baskets.get(company, ()):
+                    witnessed.update(basket_themes.get(basket, ()))
+                if set(claimed_themes) != witnessed:
+                    raise ValueError("positive source-local membership requires its exact eligible live edge path")
+            names = sorted(members)
+            total = sum(bool(set(members[a]) & set(members[b])) for i, a in enumerate(names) for b in names[i + 1:])
+            if (pairs["total"] != total or pairs["displayed"] != min(total, pairs["limit"])
+                    or pairs["truncated"] != (total > pairs["limit"])):
+                raise ValueError("pair display witness mismatch")
+            expected_display = "TRUNCATED" if pairs["truncated"] else analysis
+            if profile["completeness"]["display"] != expected_display:
+                raise ValueError("display completeness witness mismatch")
+        # Force JSON serializability even when a caller supplies custom objects.
+        del encoded
+    except (jsonschema.ValidationError, KeyError, TypeError, ValueError) as exc:
+        raise ValueError("invalid coverage observation profile: " + str(exc)) from exc
 
 
 def require_valid_rows(rows: list[dict]) -> None:
@@ -249,3 +549,647 @@ def append_proposals(rows: list[dict], path: Path) -> tuple[int, int]:
             fh.write(json.dumps({k: row.get(k) for k in ROW_FIELDS},
                                 ensure_ascii=False, sort_keys=True) + "\n")
     return len(fresh), skipped
+
+
+# Explicit lifecycle events use a SEPARATE version-selected input. Legacy v1
+# proposals, ids, schema and default readers above remain unchanged.
+_RELATION_EVENT_SEAL = object()
+
+
+class AcceptedRelationEvent:
+    """Immutable validated receipt; authentication belongs to the trusted owner reader."""
+    __slots__ = ("_json", "_seal", "_authority_json", "_owner_reader")
+
+    def __init__(self, receipt: dict, *, authority_receipt=None, owner_reader=None, _seal=None):
+        if _seal is not _RELATION_EVENT_SEAL:
+            raise ValueError("relation event requires probation owner admission")
+        object.__setattr__(self, "_json", json.dumps(receipt, sort_keys=True, allow_nan=False))
+        object.__setattr__(self, "_seal", _seal)
+        object.__setattr__(self, "_authority_json", json.dumps(authority_receipt, sort_keys=True, allow_nan=False))
+        object.__setattr__(self, "_owner_reader", owner_reader)
+
+    @property
+    def authority_receipt(self) -> dict:
+        return json.loads(self._authority_json)
+
+    def __setattr__(self, name, value):
+        raise AttributeError("accepted relation receipt is immutable")
+
+    @property
+    def receipt(self) -> dict:
+        return json.loads(self._json)
+
+
+class RelationEventRefusal(ValueError):
+    """Version/action/source/clock/rights input cannot authorize a lifecycle act."""
+
+
+def relation_event_digest(row: dict) -> str:
+    payload = {key: value for key, value in row.items()
+               if key not in {"event_id", "event_sha256"}}
+    encoded = json.dumps(payload, sort_keys=True, ensure_ascii=False,
+                         separators=(",", ":"), allow_nan=False).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def relation_source_receipt(source_path: Path) -> dict:
+    """Read the actual incumbent curated source; strings labelled accepted do not bind."""
+    import yaml
+
+    raw = source_path.read_bytes()
+    doc = yaml.safe_load(raw)
+    if not isinstance(doc, dict) or not isinstance(doc.get("themes"), list):
+        raise RelationEventRefusal("curated source is unavailable/malformed")
+    version = doc.get("date") or doc.get("updated")
+    if not isinstance(version, str) or len(version) != 10:
+        raise RelationEventRefusal("curated source version unavailable")
+    try:
+        datetime.strptime(version, "%Y-%m-%d")
+    except ValueError as exc:
+        raise RelationEventRefusal("invalid curated source version") from exc
+    sha = hashlib.sha256(raw).hexdigest()
+    return {"source_ref": "config/theme_crosswalk.yml", "version": version,
+            "sha256": sha, "revision": f"crosswalk:{version}:{sha}"}
+
+
+def _relation_clock(value: str) -> datetime:
+    # This contract requires actual zoned instants; never use the v1 permissive
+    # date/unzoned parser to fabricate midnight knowledge for an event.
+    stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if stamp.tzinfo is None:
+        raise RelationEventRefusal("relation clock must be zoned")
+    return stamp.astimezone(timezone.utc)
+
+
+def _require_relation_rights(row: dict) -> None:
+    from engine.theme_graph import rights
+
+    prior = row["prior_relation"]
+    for node in [prior["src"], prior["dst"], row["new_destination"]]:
+        if node is None:
+            continue
+        family = (rights.family_for_source_ref(row["source_receipt"]["source_ref"])
+                  if node.startswith("theme:") else rights.family_for_node_id(node))
+        if family is None:
+            raise RelationEventRefusal("relation endpoint rights family unavailable")
+        rights.rights_class(family)
+        if rights.licensing_for_family(family)[0] is not True:
+            raise RelationEventRefusal("relation internal use refused")
+    rights.rights_class("mastermind_curated")
+    if rights.licensing_for_family("mastermind_curated")[0] is not True:
+        raise RelationEventRefusal("curation internal use refused")
+
+
+_HEX64 = re.compile(r"^[a-f0-9]{64}$")
+
+
+class RelationActionOwnerReader:
+    """Narrow read-only resolver over the probation owner's own append-only relation-event ledger. Resolves an explicit ratified row by event_sha256; never writes; never infers."""
+
+    OWNER = "theme_graph.probation"
+    SCHEMA = "gmi.probation_owner_action_read/v1"
+
+    def __init__(self, ledger_path):
+        self._ledger_path = Path(ledger_path)
+
+    def _refusal(self, status: str, reason: str) -> dict:
+        return {"schema": self.SCHEMA, "owner": self.OWNER, "status": status,
+                "receipt_ref": None, "reason": reason}
+
+    def _parse_cutoff(self, knowledge_cutoff):
+        if knowledge_cutoff is None:
+            return None
+        try:
+            if isinstance(knowledge_cutoff, str):
+                return _relation_clock(knowledge_cutoff)
+            if isinstance(knowledge_cutoff, datetime):
+                if knowledge_cutoff.tzinfo is None:
+                    return None
+                return knowledge_cutoff.astimezone(timezone.utc)
+        except (RelationEventRefusal, ValueError, TypeError):
+            return None
+        return None
+
+    def _not_ratified(self, field: str) -> dict:
+        return self._refusal("UNAVAILABLE",
+                             f"relation action not ratified by the curator path: {field}")
+
+    def read_relation_action(self, *, event_sha256, knowledge_cutoff) -> dict:
+        if not isinstance(event_sha256, str) or not _HEX64.match(event_sha256):
+            return self._refusal("UNAVAILABLE", "malformed resolver request")
+        cutoff = self._parse_cutoff(knowledge_cutoff)
+        if cutoff is None:
+            return self._refusal("UNAVAILABLE", "malformed resolver request")
+
+        if not self._ledger_path.exists():
+            return self._refusal("UNAVAILABLE", "owner ledger absent")
+
+        matches: list[dict] = []
+        try:
+            lines = self._ledger_path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return self._refusal("UNAVAILABLE", "owner ledger absent")
+
+        for line in lines:
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                return self._refusal("STALE", "owner ledger line unreadable")
+            if not isinstance(row, dict):
+                return self._refusal("STALE", "owner ledger line unreadable")
+            if row.get("event_sha256") == event_sha256:
+                matches.append(row)
+
+        if not matches:
+            return self._refusal("UNAVAILABLE", "no accepted relation action for event")
+        if len(matches) > 1:
+            return self._refusal("STALE", "duplicate ledger rows for event")
+
+        row = matches[0]
+        if relation_event_digest(row) != event_sha256:
+            return self._refusal("STALE", "receipt digest mismatch")
+        if row.get("event_id") != "relation-event:" + event_sha256:
+            return self._refusal("STALE", "receipt identity mismatch")
+
+        if row.get("schema") != "gmi.probation_relation_event/v2":
+            return self._not_ratified("schema")
+        if row.get("status") != "ratified":
+            return self._not_ratified("status")
+        ratified_by = row.get("ratified_by")
+        if not isinstance(ratified_by, str) or not ratified_by.strip():
+            return self._not_ratified("ratified_by")
+        for clock_field in ("adjudicated_at", "known_at", "created_at"):
+            try:
+                _relation_clock(row[clock_field])
+            except (KeyError, RelationEventRefusal, TypeError):
+                return self._not_ratified(clock_field)
+        if row.get("action") not in {"RELATION_WITHDRAW", "DESTINATION_CHANGE"}:
+            return self._not_ratified("action")
+        caps = row.get("authority_caps")
+        if not isinstance(caps, dict):
+            return self._not_ratified("authority_caps")
+        for cap_key in ("may_rank", "may_size", "may_gate", "may_escalate"):
+            if caps.get(cap_key) is not False:
+                return self._not_ratified("authority_caps")
+        evidence_refs = row.get("evidence_refs")
+        if (not isinstance(evidence_refs, list) or not evidence_refs
+                or not all(isinstance(ref, str) and ref for ref in evidence_refs)):
+            return self._not_ratified("evidence_refs")
+        if not isinstance(row.get("prior_relation"), dict):
+            return self._not_ratified("prior_relation")
+        if not isinstance(row.get("source_receipt"), dict):
+            return self._not_ratified("source_receipt")
+
+        try:
+            created = _relation_clock(row["created_at"])
+            adjudicated = _relation_clock(row["adjudicated_at"])
+            known = _relation_clock(row["known_at"])
+        except (RelationEventRefusal, TypeError):
+            return self._not_ratified("clock")
+
+        if created > adjudicated or adjudicated > known:
+            return self._refusal("STALE", "receipt chronology violated")
+        if known > cutoff:
+            return self._refusal("UNAVAILABLE", "relation action not yet knowable at cutoff")
+
+        accepted = {
+            "schema": self.SCHEMA,
+            "owner": self.OWNER,
+            "status": "ACCEPTED",
+            "receipt_ref": "data/theme_graph/probation/relation_events.v2.jsonl#"
+            + row["event_id"],
+            "reason": None,
+            "event_sha256": event_sha256,
+            "action": row["action"],
+            "prior_relation": row["prior_relation"],
+            "new_destination": row.get("new_destination"),
+            "source_receipt": row["source_receipt"],
+            "ratified_by": row["ratified_by"],
+            "evidence_refs": list(row["evidence_refs"]),
+            "accepted_at": row["adjudicated_at"],
+            "known_at": row["known_at"],
+            "valid_from": row["adjudicated_at"],
+            "valid_to": None,
+        }
+        return copy.deepcopy(accepted)
+
+
+def _read_owner_action(reader, row: dict, *, emitted_at: str) -> dict:
+    """Consume an authenticated incumbent reader capability, never source assertions.
+
+    The normal builder wires the probation owner's own ``RelationActionOwnerReader``
+    (Chairman gate #5, 2026-10-06); a ``None`` reader still refuses. Injection is a
+    trusted owner interface, not data granting itself authority; controlled test
+    implementations stand in for that capability and prove no natural acceptance.
+    """
+    import jsonschema
+
+    if reader is None:
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_UNAVAILABLE: incumbent resolver unwired")
+    try:
+        receipt = reader.read_relation_action(
+            event_sha256=row["event_sha256"], knowledge_cutoff=emitted_at)
+    except Exception as exc:
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_UNAVAILABLE: owner read failed") from exc
+    contract = Path(__file__).resolve().parents[2] / (
+        "contracts/theme_graph/probation_relation_event.v2.schema.json")
+    schema = json.loads(contract.read_text())["$defs"]["owner_action_read"]
+    try:
+        jsonschema.Draft202012Validator(schema).validate(receipt)
+    except jsonschema.ValidationError as exc:
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_INVALID: malformed owner receipt") from exc
+    status = receipt["status"]
+    if status != "ACCEPTED":
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_" + status + ": " + receipt["reason"])
+    if not receipt["receipt_ref"].strip():
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_INVALID: empty owner receipt reference")
+    for field in ("event_sha256", "action", "prior_relation", "new_destination",
+                  "source_receipt", "ratified_by", "evidence_refs"):
+        if receipt[field] != row[field]:
+            raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_MISMATCH: " + field)
+    accepted = _relation_clock(receipt["accepted_at"])
+    known = _relation_clock(receipt["known_at"])
+    valid_from = _relation_clock(receipt["valid_from"])
+    valid_to = _relation_clock(receipt["valid_to"]) if receipt["valid_to"] is not None else None
+    emitted = _relation_clock(emitted_at)
+    if (accepted != _relation_clock(row["adjudicated_at"]) or accepted > known
+            or known > _relation_clock(row["known_at"]) or known > emitted
+            or valid_from > accepted or valid_from > emitted
+            or (valid_to is not None and valid_to <= emitted)):
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_CLOCK_REFUSAL")
+    return receipt
+
+
+def read_relation_events(path: Path, *, source_path: Path,
+                         emitted_at: str, owner_action_reader=None) -> list[AcceptedRelationEvent]:
+    """Strict accepted-event owner read; no writer, ratifier, mixed queue or ledger.
+
+    An absent optional event input means no lifecycle act was supplied; it is not
+    a complete relation-population observation and authorizes no withdrawals.
+    """
+    import jsonschema
+    from engine.theme_graph import rights
+
+    if not path.exists():
+        return []
+    source = relation_source_receipt(source_path)
+    emitted = _relation_clock(emitted_at)
+    contract = Path(__file__).resolve().parents[2] / (
+        "contracts/theme_graph/probation_relation_event.v2.schema.json")
+    validator = jsonschema.Draft202012Validator(json.loads(contract.read_text()))
+    result = []
+    seen = set()
+    for row in read_proposals(path, strict=True):
+        try:
+            validator.validate(row)
+            digest = relation_event_digest(row)
+            if row["event_sha256"] != digest or row["event_id"] != "relation-event:" + digest:
+                raise RelationEventRefusal("relation event digest/identity mismatch")
+            if row["event_id"] in seen:
+                raise RelationEventRefusal("duplicate relation event")
+            seen.add(row["event_id"])
+            if row["source_receipt"] != source:
+                raise RelationEventRefusal("relation event curation revision mismatch")
+            prior = row["prior_relation"]
+            if prior["type"] == "PARENT_OF" and row["action"] == "DESTINATION_CHANGE":
+                raise RelationEventRefusal(
+                    "PARENT_OF_DESTINATION_CHANGE_REFUSED: curated hierarchy edges are "
+                    "withdrawn, never re-pointed")
+            expected = f"{prior['type'].lower()}:{prior['src']}->{prior['dst']}@{prior['valid_from']}"
+            if prior["edge_id"] != expected:
+                raise RelationEventRefusal("relation identity mismatch")
+            datetime.strptime(prior["valid_from"], "%Y-%m-%d")
+            created = _relation_clock(row["created_at"])
+            known = _relation_clock(row["known_at"])
+            adjudicated = _relation_clock(row["adjudicated_at"])
+            effective = _relation_clock(row["effective_at"])
+            if created > adjudicated or known != adjudicated or known > emitted or effective > emitted:
+                raise RelationEventRefusal("relation event chronology/future refusal")
+            if source["version"] > known.date().isoformat():
+                raise RelationEventRefusal("curation source version not yet known")
+            if effective.date().isoformat() <= prior["valid_from"]:
+                raise RelationEventRefusal("relation event must advance the prior valid window")
+            if row["new_destination"] == prior["dst"]:
+                raise RelationEventRefusal("destination change must change destination")
+            # Current per-use licensing comes only from the incumbent registry.
+            if not row["ratified_by"].strip():
+                raise RelationEventRefusal("relation ratifier unavailable")
+            _require_relation_rights(row)
+        except (jsonschema.ValidationError, ValueError, rights.RightsRefusal) as exc:
+            raise RelationEventRefusal(str(exc)) from exc
+        authority_receipt = _read_owner_action(owner_action_reader, row, emitted_at=emitted_at)
+        result.append(AcceptedRelationEvent(row, authority_receipt=authority_receipt,
+                                           owner_reader=owner_action_reader, _seal=_RELATION_EVENT_SEAL))
+    return result
+
+
+def require_daily_relation_event(event: AcceptedRelationEvent, *, belief_time: str,
+                                 emitted_at: str) -> dict:
+    """Refuse precision the daily graph cannot represent; do not ceil an effect."""
+    if not isinstance(event, AcceptedRelationEvent) or event._seal is not _RELATION_EVENT_SEAL:
+        raise RelationEventRefusal("unadmitted relation event")
+    row = event.receipt
+    current_authority = _read_owner_action(event._owner_reader, row, emitted_at=emitted_at)
+    if current_authority != event.authority_receipt:
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_CHANGED: re-read differs from accepted receipt")
+    _require_relation_rights(row)  # revocation is checked at this actual use too
+    effective = _relation_clock(row["effective_at"])
+    known = _relation_clock(row["known_at"])
+    emitted = _relation_clock(emitted_at)
+    if effective.time().isoformat() != "00:00:00":
+        raise RelationEventRefusal("DAILY_GRAPH_UNREPRESENTABLE: intraday effective clock")
+    day = datetime.strptime(belief_time, "%Y-%m-%d").date()
+    if known.date() > day or (known.date() == day and known.time().isoformat() != "00:00:00"):
+        raise RelationEventRefusal("DAILY_GRAPH_UNREPRESENTABLE: intraday known clock")
+    if known > emitted or effective > emitted or effective.date() > day:
+        raise RelationEventRefusal("relation event future relative to graph clocks")
+    return row
+
+
+# ---------------------------------------------------------------------------
+# Native activity membership proposals (GMI recovery 2026-10-16, section 9 step 3)
+# ---------------------------------------------------------------------------
+#
+# A SEPARATE, versioned proposal species for one owner-read company activity bound to
+# one micro-theme definition (contracts/theme_graph/activity_membership_proposal.v1).
+# The legacy v1 queue above, its ids, kinds, proposers and ``ratified()`` are unchanged.
+# As above, nothing here ratifies: a row is PROPOSED until a NAMED curator decision is
+# written into it by a curated act, and a prepared coverage profile, a status field or
+# a curation smuggled into the evidence is refused at construction.
+
+ACTIVITY_PROPOSAL_SCHEMA = "gmi.activity_membership_proposal/v1"
+_ACTIVITY_PROPOSAL_CONTRACT = "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+_PROPOSER_CURATION_KEYS = frozenset({
+    "status", "curation", "ratified", "ratified_by", "adjudicated_at", "observation_profile",
+})
+
+
+class ActivityProposalRefusal(ValueError):
+    """A typed refusal; ``code`` is stable and is what callers and tests branch on."""
+
+    def __init__(self, code: str, detail: str = ""):
+        super().__init__(f"{code}: {detail}" if detail else code)
+        self.code = code
+
+
+@lru_cache(maxsize=1)
+def _activity_contract_validator():
+    import jsonschema
+    path = Path(__file__).resolve().parents[2] / _ACTIVITY_PROPOSAL_CONTRACT
+    return jsonschema.Draft202012Validator(json.loads(path.read_text(encoding="utf-8")))
+
+
+def _activity_canonical(value) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=False, allow_nan=False)
+
+
+def activity_proposal_id(evidence: dict) -> str:
+    """Deterministic id of the SUBJECT: issuer, micro-theme, fact and definition revision."""
+    subject = {
+        "issuer_id": evidence["issuer"]["issuer_id"],
+        "theme_id": evidence["target_definition"]["theme_id"],
+        "fact_id": evidence["source_evidence"]["fact_id"],
+        "definition_sha256": evidence["target_definition"]["definition_sha256"],
+    }
+    return "actprop:" + hashlib.sha256(_activity_canonical(subject).encode()).hexdigest()[:24]
+
+
+def make_activity_membership_proposal(evidence: dict, *, created: str) -> dict:
+    """Wrap owner-read activity evidence as a PROPOSED row; never a ratified one."""
+    if not isinstance(evidence, dict):
+        raise ActivityProposalRefusal("PROPOSAL_INVALID", "evidence must be an object")
+    smuggled = sorted(_PROPOSER_CURATION_KEYS & set(evidence))
+    if smuggled:
+        raise ActivityProposalRefusal(
+            "PROPOSER_CANNOT_CURATE",
+            f"evidence carries {smuggled}; a proposer never supplies curation or status")
+    try:
+        pid = activity_proposal_id(evidence)
+    except (KeyError, TypeError) as exc:
+        raise ActivityProposalRefusal("PROPOSAL_INVALID", f"missing {exc}") from None
+    row = {
+        "schema": ACTIVITY_PROPOSAL_SCHEMA,
+        "proposal_id": pid,
+        "status": "PROPOSED",
+        "evidence": copy.deepcopy(evidence),
+        "curation": None,
+        "created": created,
+        "authority_caps": {"may_ratify": False, "may_materialize": False, "may_publish": False},
+    }
+    errors = validate_activity_membership_proposal(row)
+    if errors:
+        raise ActivityProposalRefusal("PROPOSAL_INVALID", "; ".join(errors[:3]))
+    return row
+
+
+def _activity_zoned(value) -> datetime | None:
+    if not isinstance(value, str) or "T" not in value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed if parsed.utcoffset() is not None else None
+
+
+def validate_activity_membership_proposal(row: dict) -> list[str]:
+    """Problems with one activity proposal row; an empty list means well-formed."""
+    if not isinstance(row, dict):
+        return ["activity proposal must be an object"]
+    out = [f"{'/'.join(str(p) for p in err.absolute_path) or '<root>'}: {err.message}"
+           for err in _activity_contract_validator().iter_errors(row)]
+    if out:
+        return out
+    evidence = row["evidence"]
+    if row["proposal_id"] != activity_proposal_id(evidence):
+        out.append("proposal_id does not match its subject")
+    endpoints = evidence["endpoints"]
+    if endpoints["source_node_id"] != evidence["issuer"]["node_id"]:
+        out.append("source endpoint is not the resolved issuer node")
+    if endpoints["target_node_id"] != evidence["target_definition"]["theme_id"]:
+        out.append("target endpoint is not the bound micro-theme definition")
+    status, curation = row["status"], row["curation"]
+    if status == "PROPOSED" and curation is not None:
+        out.append("a PROPOSED row carries no curation")
+    if status in {"RATIFIED", "REJECTED"}:
+        expected = "ACCEPT" if status == "RATIFIED" else "REJECT"
+        if curation is None or curation.get("decision") != expected:
+            out.append(f"status {status} requires a named curator decision {expected}")
+        else:
+            decided = _activity_zoned(curation.get("decided_at"))
+            known = _activity_zoned(evidence["clocks"]["knowledge"]["value"])
+            if decided is None:
+                out.append("curation decided_at is not a zoned instant")
+            elif known is not None and decided < known:
+                out.append("curation predates the knowledge of the activity it decides")
+    return out
+
+
+def ratified_activity_memberships(rows: list[dict]) -> list[dict]:
+    """Rows a curator RATIFIED by name. A prepared profile or proposer status is not one.
+
+    Ratification still grants no graph-membership use: v1 evidence can only carry
+    ``graph_membership_use: NOT_GRANTED`` and every authority cap is false.
+    """
+    return [copy.deepcopy(r) for r in rows
+            if isinstance(r, dict) and r.get("status") == "RATIFIED"
+            and isinstance(r.get("curation"), dict)
+            and r["curation"].get("decision") == "ACCEPT"
+            and not validate_activity_membership_proposal(r)]
+
+
+# ---------------------------------------------------------------------------
+# The activity proposal ledger (GMI PIPE-PROPOSE 2026-10-21)
+# ---------------------------------------------------------------------------
+#
+# A SEPARATE, append-only JSONL for the v1 activity species above. The legacy
+# ``proposals.jsonl`` queue keeps its mapping-row shape and its many consumers:
+# ``append_proposals`` validates only ROW_FIELDS mapping rows there, so it can
+# never carry an activity row, and this writer refuses that path outright.
+# Nothing here grants membership use or ratifies anything: the ledger records
+# PROPOSED rows and the terminal curation rows a named curator later supplied
+# as input.
+
+ACTIVITY_PROPOSALS_PATH = Path(__file__).resolve().parents[2] / "data/theme_graph/probation/activity_proposals.jsonl"
+
+
+def _activity_repropose_is_same(existing: dict, incoming: dict) -> bool:
+    """The same proposal re-proposed by a later run: identical except ``created``.
+
+    ``created`` stamps the run that first proposed the subject (the legacy queue's
+    ROW_FIELDS never carried it), so a re-run of the same subject under the same
+    ledger key is a no-op — never a conflict and never a second row. Any other
+    difference is drift and stays a key conflict.
+    """
+    def without_created(row: dict) -> dict:
+        return {key: value for key, value in row.items() if key != "created"}
+
+    return (_activity_canonical(without_created(existing))
+            == _activity_canonical(without_created(incoming)))
+
+
+def read_activity_proposals(path: str | Path | None = None) -> list[dict]:
+    """Read the activity ledger oldest first; a missing file is an empty queue."""
+    path = Path(path) if path is not None else ACTIVITY_PROPOSALS_PATH
+    if not path.exists():
+        return []
+    out: list[dict] = []
+    for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            row = json.loads(line)
+        except Exception as exc:  # noqa: BLE001 — a torn line is a ledger refusal
+            raise ActivityProposalRefusal(
+                "LEDGER_ROW_INVALID", f"line {lineno}: {exc}") from None
+        if not isinstance(row, dict) or row.get("schema") != ACTIVITY_PROPOSAL_SCHEMA:
+            raise ActivityProposalRefusal(
+                "LEDGER_ROW_INVALID",
+                f"line {lineno}: schema is not {ACTIVITY_PROPOSAL_SCHEMA}")
+        errors = validate_activity_membership_proposal(row)
+        if errors:
+            raise ActivityProposalRefusal("LEDGER_ROW_INVALID", f"line {lineno}: {errors[0]}")
+        out.append(row)
+    return out
+
+
+def append_activity_proposals(rows: list[dict], path: str | Path | None = None) -> dict:
+    """Validate then append activity rows keyed on ``(proposal_id, status)``.
+
+    Every refusal below happens before any byte is written, so a refused batch
+    leaves the ledger byte-identical. The legacy mapping ledger is never a
+    target, a different row under an existing key is a conflict (a re-proposal
+    that differs only in its ``created`` stamp is the same row, not a conflict),
+    and curation must follow its own PROPOSED row with unchanged evidence, once.
+    """
+    path = Path(path) if path is not None else ACTIVITY_PROPOSALS_PATH
+    if path.name == "proposals.jsonl":
+        raise ActivityProposalRefusal(
+            "LEGACY_LEDGER_REFUSED",
+            f"{path.name} is the legacy mapping ledger; activity rows go to "
+            f"{ACTIVITY_PROPOSALS_PATH.name}")
+    incoming = list(rows)
+    for row in incoming:
+        errors = validate_activity_membership_proposal(row)
+        if errors:
+            raise ActivityProposalRefusal("PROPOSAL_INVALID", errors[0])
+    by_key: dict[tuple[str, str], dict] = {}
+    terminal: dict[str, dict] = {}
+    for row in read_activity_proposals(path):
+        key = (str(row["proposal_id"]), str(row["status"]))
+        by_key[key] = row
+        if row["status"] in {"RATIFIED", "REJECTED"}:
+            terminal[str(row["proposal_id"])] = row
+    pending: list[dict] = []
+    appended = unchanged = 0
+    for row in incoming:
+        key = (str(row["proposal_id"]), str(row["status"]))
+        seen = by_key.get(key)
+        if seen is not None:
+            if (_activity_canonical(seen) == _activity_canonical(row)
+                    or _activity_repropose_is_same(seen, row)):
+                unchanged += 1
+                continue
+            raise ActivityProposalRefusal(
+                "LEDGER_KEY_CONFLICT",
+                f"{key[0]} already carries a different {key[1]} row")
+        if row["status"] in {"RATIFIED", "REJECTED"}:
+            pid = str(row["proposal_id"])
+            if pid in terminal:
+                raise ActivityProposalRefusal(
+                    "TERMINAL_CONFLICT",
+                    f"{pid} already has a terminal {terminal[pid]['status']} row")
+            proposed = by_key.get((pid, "PROPOSED"))
+            if proposed is None:
+                raise ActivityProposalRefusal(
+                    "CURATION_WITHOUT_PROPOSAL",
+                    f"{pid}: no PROPOSED row precedes this {row['status']} row")
+            if (_activity_canonical(proposed.get("evidence"))
+                    != _activity_canonical(row.get("evidence"))):
+                raise ActivityProposalRefusal(
+                    "CURATION_EVIDENCE_DRIFT",
+                    f"{pid}: curation evidence differs from its PROPOSED row")
+            terminal[pid] = row
+        by_key[key] = row
+        pending.append(row)
+        appended += 1
+    if pending:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8") as fh:
+            for row in pending:
+                fh.write(_activity_canonical(row) + "\n")
+    return {"appended": appended, "unchanged": unchanged, "path": str(path)}
+
+
+def curate_activity_proposal(proposed_row: dict, *, curator: str, decision: str,
+                             decided_at: str, receipt_bytes: bytes) -> dict:
+    """Carry one PROPOSED row to its terminal status under a named curator act.
+
+    The receipt bytes are hashed, never stored; evidence, created and authority
+    caps are carried unchanged, and the curator name is always caller-supplied.
+    A decision before the evidence's knowledge clock is refused by the row
+    validator, never silently accepted.
+    """
+    status = proposed_row.get("status") if isinstance(proposed_row, dict) else None
+    if status != "PROPOSED":
+        raise ActivityProposalRefusal(
+            "CURATION_REQUIRES_PROPOSED", f"cannot curate a {status!r} row")
+    if not receipt_bytes:
+        raise ActivityProposalRefusal(
+            "CURATION_RECEIPT_MISSING", "receipt bytes are required")
+    out = copy.deepcopy(proposed_row)
+    out["status"] = "RATIFIED" if decision == "ACCEPT" else "REJECTED"
+    out["curation"] = {
+        "curator": curator,
+        "decision": decision,
+        "decided_at": decided_at,
+        "receipt_sha256": hashlib.sha256(receipt_bytes).hexdigest(),
+    }
+    errors = validate_activity_membership_proposal(out)
+    if errors:
+        raise ActivityProposalRefusal("PROPOSAL_INVALID", errors[0])
+    return out

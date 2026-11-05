@@ -1,0 +1,13 @@
+{
+  "gaps": [],
+  "run_by": [
+    ".github/ci/legacy-jobs.yml::grey-deer-pullback-stage1"
+  ],
+  "scope": "new census suite only; full repository CI remains authoritative",
+  "self_reachable": true,
+  "status": "OK",
+  "subjects": [
+    "scripts/research/grey_deer_exposure_census.py"
+  ],
+  "test": "tests/test_grey_deer_exposure_census.py"
+}

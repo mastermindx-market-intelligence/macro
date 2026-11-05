@@ -1,0 +1,117 @@
+{
+  "scope": "IM00-T1b raw selected-period level and observation projection",
+  "implementation": {
+    "engine/intl_performance_charts.py": "63a11c89b7133586de09001b82d5f420f061e1e1131e44dfeac3f9d86f3ea5ce",
+    "tests/test_intl_performance_charts.py": "4153ad2659f2a6c8fccff439097a4118f693c5137be3961e033c9ee139dd5db5"
+  },
+  "review": {
+    "verdict": "APPROVE_SCOPED",
+    "reviewer_session": "01a11057-3134-76d2-bcd1-784d69cc17d3",
+    "artifact_sha256": "c42e444333951917547645d4685e31b50e6d3ed72efebcbe518b345b52fa75e7",
+    "additional_assertions": 20,
+    "post_review_whitespace_normalization": {
+      "change": "Remove whitespace from four blank lines only",
+      "before_sha256": "bd44aacecae88395c8f6a1601437a08733da1947d19bea0d21c2d3a3c3e59733",
+      "after_sha256": "4153ad2659f2a6c8fccff439097a4118f693c5137be3961e033c9ee139dd5db5",
+      "changed_blank_lines": 4,
+      "ast_identical": true,
+      "review": "Original exact test approved by Sol; deterministic nonsemantic whitespace normalization by integrator"
+    }
+  },
+  "source_binding": {
+    "review_source_head": "b4a95f24878d39e6f2d3d4d077f63530057d5c41",
+    "integration_head": "daa57446653ee7da12c18769c5d5f4c7e5bde37b",
+    "integration_base": "b76506fac0d956092003f092a356b0abf4d21e62",
+    "immutable_source_config_inputs_unchanged": 13
+  },
+  "tests": {
+    "focused_pytest_local": 31,
+    "focused_pytest_remote_python312": 31,
+    "integrated_foundation_and_pack_pytest": 79,
+    "frozen_parent_assertions": 26,
+    "countercase_counting_note": "The 26 corrected parent assertions are embedded in the first focused pytest case; do not add them to test count. Original inadequate-history fixture v1 and correction retained."
+  },
+  "implementation_behavior": [
+    "Use exact accepted return windows and actual performance owner levels",
+    "Keep every supplied timestamp within selected window, including missing-price/FX/both gaps and masked endpoints",
+    "Keep original contributing observation dates, timezone and nanoseconds",
+    "Local points independent from FX gaps; unavailable selected return remains unavailable",
+    "No additional forward fill, numerical formula, normalization or current eligibility authority"
+  ],
+  "routing": {
+    "original_root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "max_fabric_leaves": 1,
+    "native_grandchildren": 0,
+    "worker_source_run": "rs_20261006T112303Z_31361",
+    "worker_return": "rc124;8931byte source,no tests;cleanupresidual0,lease75fa1ad5c764released",
+    "test_only_run": "rs_20261006T113801Z_69038",
+    "test_only_return": "rc75 preproviderSTART;Mini2 active lane ceiling;14inputs unchanged,no tests;rootheld0",
+    "parent_exception": "Astra one-line type guard and bounded test completion; actual prepared Ubuntu2 test-only selector NONE, refreshed global selector still occupied Mini2; no provider/cap/account changes",
+    "original_worker_first_pass_accepted": false
+  },
+  "limits": [
+    "Raw unnormalized numerical data only; qualification not_evaluated",
+    "No common-period endpoint qualification or benchmark substitution",
+    "No DOM/UI/page mount, authenticated rights, Saved or production acceptance",
+    "Full Wave1-3 programme remains incomplete"
+  ],
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f",
+  "ci": {
+    "scope_acceptance": {
+      "status": "PASS_SCOPED",
+      "job": "international-workspace-foundation",
+      "gate": "code",
+      "exclusive": true,
+      "declared_paths": [
+        "engine/__init__.py",
+        "engine/canon.py",
+        "engine/conditions.py",
+        "engine/indicators.py",
+        "engine/intl_inputs.py",
+        "engine/intl_market_state.py",
+        "engine/intl_performance.py",
+        "engine/intl_performance_records.py",
+        "engine/intl_performance_charts.py",
+        "engine/technicals.py",
+        "lib/__init__.py",
+        "lib/config.py",
+        "lib/store.py",
+        "config.yml",
+        "tests/conftest.py",
+        "tests/test_intl_performance_records.py",
+        "tests/test_intl_performance_charts.py"
+      ],
+      "inferred_named_closure": [
+        "config.yml",
+        "engine/__init__.py",
+        "engine/canon.py",
+        "engine/conditions.py",
+        "engine/indicators.py",
+        "engine/intl_inputs.py",
+        "engine/intl_market_state.py",
+        "engine/intl_performance.py",
+        "engine/intl_performance_charts.py",
+        "engine/intl_performance_records.py",
+        "engine/technicals.py",
+        "lib/__init__.py",
+        "lib/config.py",
+        "lib/store.py",
+        "tests/conftest.py",
+        "tests/test_intl_performance_charts.py",
+        "tests/test_intl_performance_records.py"
+      ],
+      "missing": [],
+      "positive_paths": 17,
+      "negative_controls": 4,
+      "inference_note": "derived scopes for 1/1 jobs",
+      "manifest_jobs": 246
+    },
+    "trigger_closure": {
+      "rows": 2159,
+      "gap_rows": 0,
+      "unreachable": 0
+    },
+    "manifest_validation": "PASS_SCOPED",
+    "integration": "Existing foundation job extended only by chart source/test paths and one additional suite argument; gate/runner/install/exclusive policy unchanged"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "defense.ci_completion_adjudication.v1",
+  "recorded_at": "2026-10-14T08:16:31.127411+00:00",
+  "base_head": "04849071d0897c1b922ce49706c2d70ba5dc33b7",
+  "scope": [
+    "tests/test_fms_ui.py",
+    "tests/test_government_revenue_asset_publication.py",
+    "tests/test_government_revenue_identity_subject_journey.py",
+    "tests/test_government_revenue_sbir_consumer.py"
+  ],
+  "downstream": {
+    "suites": 57,
+    "original_run": "incomplete; terminal process lost; no pass claim",
+    "recovery_passed": 1053,
+    "recovery_failed": 1,
+    "subtests_passed": 39,
+    "failure": "identity source guard still read former inline template",
+    "changed_suite_after_repair": {
+      "passed": 10,
+      "failed": 0
+    },
+    "unchanged_suites_not_repeated": true
+  },
+  "fixture_checks": {
+    "passed": 25,
+    "real_assets": true,
+    "builder_failure_semantics_unchanged": true
+  },
+  "fms": {
+    "run": "defense-fms-extracted-shell-tests-01a13300-a",
+    "original_delivery_verified": true,
+    "worker_terminal_proof": true,
+    "delivery_path": "installed original-run collector; exact original packet/log/support bindings; no launch or source change in Fabric",
+    "worker_patch_sha256": "78b02cf504de3d55ada54ea6476ef5090a2d5c62bf138a20651f17384f9a80af",
+    "parent_correction": "Count the remaining identity-inspector fmsUI.invalidate() call and refuse unmeasured FMS wiring.",
+    "parent_suite_passed": 15,
+    "parent_negative_controls": 3,
+    "marginal_bytes": 2791,
+    "unchanged_budget_bytes": 8192,
+    "parent_verdict": "ACCEPTED_AFTER_PARENT_REPAIR",
+    "fabric_accept_attempt": "ACCEPT_REFUSED: no successful delivered terminal result",
+    "fabric_ledger_acceptance": false,
+    "controller_and_lease_settlement": "UNKNOWN; original controller local log is stale; collection does not rewrite it"
+  },
+  "capacity": {
+    "run": "defense-t0-capacity-core-01a13300-a",
+    "original_read_state": "NONZERO",
+    "observed_terminal_rc": 1,
+    "artifact_delivery": "REFUSED original_delivery_unconfirmed; retry_authorized=false",
+    "no_retry_or_new_worker": true,
+    "controller_and_lease_settlement": "UNKNOWN"
+  },
+  "product_asset_changes": false,
+  "publication_or_production_effects": false,
+  "remaining": [
+    "new complete sealed candidate proof",
+    "same PR9066 exact-head CI",
+    "protected merge and ordered financial CAS/publication",
+    "installed authenticated product and independent acceptance",
+    "capacity original delivery and other programme obligations"
+  ]
+}

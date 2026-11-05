@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4604488,
+  "byte_start": 4604431,
+  "normalized": "Korean Withholding Tax Assessment – Samsung License",
+  "normalized_sha256": "7a786be88fa187495daf9c39d507ca81ed6561a7f771a94a175852d222011f4e",
+  "raw": "Korean Withholding Tax Assessment &#8211; Samsung License",
+  "raw_sha256": "e8814cf1244c93850bea27ad189695f8096c129890f97c92ee8aa1eb5799c384"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

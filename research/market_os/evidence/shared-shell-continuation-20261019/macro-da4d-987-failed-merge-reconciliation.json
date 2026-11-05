@@ -1,0 +1,142 @@
+{
+  "started_at": "2026-10-20T18:16:29.808991+00:00",
+  "operation": "Read-only census after original merge wrapper60909 completed exit1; no retry/abort/index/source mutation",
+  "wrapper_exit": 1,
+  "wrapper_runtime_seconds": 2565.13,
+  "actual_git_exit": "Not separately persisted: wrapper failed while resolving absent MERGE_HEAD before updating journal.",
+  "reads": [
+    {
+      "name": "head",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "bytes": 41,
+      "sha256": "a97d481487bd1945f5731a43665443031ca96f9afffb479ea81f1cd7d4b949a2",
+      "stdout": "da4df7d1e1ac709055c6fa1d482304a875e81824\n",
+      "stderr": ""
+    },
+    {
+      "name": "branch",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "branch",
+        "--show-current"
+      ],
+      "exit": 0,
+      "bytes": 43,
+      "sha256": "7cab2f19ef5be227eab647620a1eb1f4673e2f4ab2eed691c6d7ac694c457e6b",
+      "stdout": "sol/market-os-shared-shell-design-20260924\n",
+      "stderr": ""
+    },
+    {
+      "name": "merge_head",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "rev-parse",
+        "-q",
+        "--verify",
+        "MERGE_HEAD"
+      ],
+      "exit": 1,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "orig_head",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "rev-parse",
+        "-q",
+        "--verify",
+        "ORIG_HEAD"
+      ],
+      "exit": 0,
+      "bytes": 41,
+      "sha256": "a97d481487bd1945f5731a43665443031ca96f9afffb479ea81f1cd7d4b949a2",
+      "stdout": "da4df7d1e1ac709055c6fa1d482304a875e81824\n",
+      "stderr": ""
+    },
+    {
+      "name": "unmerged",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "ls-files",
+        "-u"
+      ],
+      "exit": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "status",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "status",
+        "--porcelain=v1"
+      ],
+      "exit": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "staged_delta",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "diff",
+        "--cached",
+        "--name-status",
+        "HEAD"
+      ],
+      "exit": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "diagnostic_object_paths": {
+    "H": [],
+    "M": [
+      "100644 blob 4034805ee69b3c416899a2cf412b4b796b27146f\tdocs/ACTIVE_BUILD_MAP.md"
+    ],
+    "T": [
+      "100644 blob 4034805ee69b3c416899a2cf412b4b796b27146f\tdocs/ACTIVE_BUILD_MAP.md"
+    ]
+  },
+  "merge_log": {
+    "bytes": 172,
+    "sha256": "52a6e498bda9eab4f03fb5cbab5085686632d537fe13ace5400c1f9091065970",
+    "text": "fatal: remote error: upload-pack: not our ref 30d1e9578fdd46cc944321c84b1075e75088be7b\nfatal: could not fetch 4034805ee69b3c416899a2cf412b4b796b27146f from promisor remote\n"
+  },
+  "finished_at": "2026-10-20T18:16:34.325959+00:00"
+}

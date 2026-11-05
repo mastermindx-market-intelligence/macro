@@ -43,13 +43,16 @@ The episode STATE MACHINE (TXI-R2):
                       elapsed=0 vs hop 0's minimum lag) ⇒ the episode never opens: the chain
                       stays dormant and carries ``arm_veto`` (the falsifier receipt) so the
                       dormancy is explained, never silent.
-Same-``asof`` re-evaluation is IDEMPOTENT: no duplicate ledger line, identical state.
+Same-``asof`` re-evaluation is IDEMPOTENT: no duplicate ledger line, identical detector
+state. The prospective process-observation receipt identifies each new invocation.
 
 An optional ``stall:`` block adds a DISPLAY-ONLY turn-watch annotation (``turn_watch``) on
 an open (arming|propagating) episode — never a hop, never a confirm, never a state.
 """
 from __future__ import annotations
 
+import hashlib
+import io
 import json
 import logging
 from datetime import date, datetime, timezone
@@ -254,7 +257,7 @@ def validate_chain(chain: dict, filename: str) -> None:
 
 
 def load_chains(root: Path | None = None, *, include_killed: bool = False,
-                strict: bool = False) -> list[dict]:
+                strict: bool = False, _capture: _InputReadCapture | None = None) -> list[dict]:
     """Load + validate every chain YAML in knowledge/transmission/.
 
     RUNTIME (default, strict=False): a malformed or schema-violating file is LOGGED and
@@ -278,9 +281,12 @@ def load_chains(root: Path | None = None, *, include_killed: bool = False,
         log.warning("transmission knowledge dir absent: %s", base)
         return []
     out: list[dict] = []
+    if _capture is not None:
+        _capture.directory(base)
+        _capture.directory(base / "proposed")
     for path in sorted(base.glob("*.yaml")):
         try:
-            data = yaml.safe_load(path.read_text())
+            data = yaml.safe_load(_capture.text(path) if _capture is not None else path.read_text())
             if not isinstance(data, dict):
                 raise ChainSchemaError(f"{path.name}: top-level YAML must be a mapping")
             validate_chain(data, path.name)
@@ -295,7 +301,7 @@ def load_chains(root: Path | None = None, *, include_killed: bool = False,
     if pdir.exists():
         for path in sorted(pdir.glob("*.yaml")):
             try:
-                data = yaml.safe_load(path.read_text())
+                data = yaml.safe_load(_capture.text(path) if _capture is not None else path.read_text())
                 if not isinstance(data, dict):
                     raise ChainSchemaError(f"proposed/{path.name}: top-level YAML must be a mapping")
                 validate_chain(data, path.name)
@@ -312,7 +318,7 @@ def load_chains(root: Path | None = None, *, include_killed: bool = False,
         if kdir.exists():
             for path in sorted(kdir.glob("*.yaml")):
                 try:
-                    data = yaml.safe_load(path.read_text())
+                    data = yaml.safe_load(_capture.text(path) if _capture is not None else path.read_text())
                 except yaml.YAMLError as e:  # noqa: BLE001
                     log.error("skipping malformed killed chain %s: %s", path.name, e)
                     continue
@@ -320,6 +326,226 @@ def load_chains(root: Path | None = None, *, include_killed: bool = False,
                 data["_killed"] = True
                 out.append(data)
     return out
+
+
+# Prospective CURRENT input receipt, carried by the existing chain_state artifact.
+# Observation date / provider release / first ingestion / historical knowledge remain
+# separate. No raw upstream bytes are republished and no ledger semantics change.
+_CAPTURE_MAX_BYTES = 16 * 1024 * 1024
+_CAPTURE_MAX_FILES = 512
+
+
+def _causal_projection(state: dict) -> list[dict]:
+    rows = []
+    for chain in state["chains"]:
+        row = {k: v for k, v in chain.items() if k not in ("blast", "base_rates", "tier")}
+        row["hops"] = [{k: v for k, v in hop.items() if k != "base_rate"}
+                       for hop in row.get("hops", [])]
+        rows.append(row)
+    return rows
+
+
+def _capture_json(value: Any) -> bytes:
+    return json.dumps(value, sort_keys=True, ensure_ascii=False, default=str,
+                      separators=(",", ":")).encode("utf-8")
+
+
+class _InputReadCapture:
+    def __init__(self, root: Path):
+        self.root = root.resolve()
+        self.started = datetime.now(timezone.utc).isoformat()
+        self.reads: dict[str, dict] = {}
+        self.directories: dict[str, list[str]] = {}
+        self.reason: str | None = None
+        self.producer_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+
+    def _relative(self, path: Path) -> str:
+        path.resolve().relative_to(self.root)  # reject a target outside this root
+        return path.absolute().relative_to(self.root).as_posix()
+
+    def directory(self, path: Path) -> None:
+        try:
+            rel = self._relative(path)
+            names = sorted(p.name for p in path.glob("*.yaml"))
+            if len(names) > _CAPTURE_MAX_FILES:
+                self.reason = "input_count_exceeds_bound"
+                return
+            if rel in self.directories and self.directories[rel] != names:
+                self.reason = "input_directory_changed"
+            self.directories[rel] = names
+        except (OSError, ValueError):
+            self.reason = "input_directory_unavailable"
+
+    def read(self, path: Path) -> bytes | None:
+        """Decode these exact bytes, or use incumbent read behavior without a receipt.
+
+        The read cap applies before allocation/decode. A cap or capture error must not
+        change the native detector's missing/corrupt/oversized-file behavior.
+        """
+        try:
+            rel = self._relative(path)
+            if len(self.reads) >= _CAPTURE_MAX_FILES and rel not in self.reads:
+                self.reason = "input_count_exceeds_bound"
+                return None
+            try:
+                with path.open("rb") as stream:
+                    raw = stream.read(_CAPTURE_MAX_BYTES + 1)
+            except FileNotFoundError:
+                raw = None
+            if raw is not None and len(raw) > _CAPTURE_MAX_BYTES:
+                self.reason = "input_bytes_exceed_bound"
+                return None
+            if raw is not None and raw.startswith(b"version https://git-lfs.github.com/spec/v1"):
+                self.reason = "unresolved_lfs_pointer"
+                return None
+            row = {"path": rel, "bytes": len(raw) if raw is not None else None,
+                   "sha256": hashlib.sha256(raw).hexdigest() if raw is not None else None,
+                   "status": "present" if raw is not None else "absent"}
+            old = self.reads.get(rel)
+            if old is not None and old != row:
+                self.reason = "input_changed_during_evaluation"
+            self.reads[rel] = row
+            return raw
+        except (OSError, ValueError):
+            self.reason = "input_capture_unavailable"
+            return None
+
+    def text(self, path: Path) -> str:
+        raw = self.read(path)
+        return raw.decode("utf-8") if raw is not None else path.read_text()
+
+    def finish(self, state: dict, transitions: list[dict]) -> dict:
+        for rel, expected in list(self.reads.items()):
+            self.read(self.root / rel)
+            if self.reads.get(rel) != expected:
+                self.reason = "input_changed_before_generation"
+        for rel, expected in list(self.directories.items()):
+            self.directory(self.root / rel)
+            if self.directories[rel] != expected:
+                self.reason = "input_directory_changed"
+        if self.reason is None and any(row["status"] != "present" for row in self.reads.values()):
+            self.reason = "missing_input_bytes"
+        if self.reason is None and not state["chains"]:
+            self.reason = "no_evaluated_chains"
+        if hashlib.sha256(Path(__file__).read_bytes()).hexdigest() != self.producer_sha256:
+            self.reason = "producer_source_changed"
+        completed = datetime.now(timezone.utc).isoformat()
+        if completed < self.started:
+            self.reason = "process_clock_reversed"
+        if self.reason:
+            return {"schema": "txi.prospective_input_read.v1", "status": "unavailable",
+                    "reason": self.reason}
+        receipt = {"schema": "txi.prospective_input_read.v1",
+                   "status": "observed_input_bytes", "capture_started_at": self.started,
+                   "capture_completed_at": completed, "observation_asof": state["asof"],
+                   "knowledge_basis": "native_process_observation_only",
+                   "source_available_at": None, "first_ingested_at": None,
+                   "historical_knowledge": "unavailable",
+                   "scope": "causal_detectors_definitions_and_predecessor_ledger",
+                   "excluded": ["company_substrate", "weekly_calibration", "provider_release_history"],
+                   "producer_source_sha256": self.producer_sha256,
+                   "loaded_code_authentication": "unavailable",
+                   "producer_execution_authenticity": "unqualified",
+                   "causal_read_completeness": "unqualified",
+                   "causal_lineage_acceptance": False,
+                   "reads": sorted(self.reads.values(), key=lambda row: row["path"]),
+                   "definition_directories": self.directories,
+                   "causal_state_sha256": hashlib.sha256(_capture_json(_causal_projection(state))).hexdigest(),
+                   "proposed_transitions_sha256": hashlib.sha256(_capture_json(transitions)).hexdigest(),
+                   "retention": "resolve_exact_bytes_in_same_normal_git_publication",
+                   "publication_receipt": None, "scientific_acceptance": False}
+        if len(_capture_json(receipt)) > 128_000:
+            return {"schema": "txi.prospective_input_read.v1", "status": "unavailable",
+                    "reason": "receipt_exceeds_bound"}
+        receipt["generation_id"] = "sha256:" + hashlib.sha256(_capture_json(receipt)).hexdigest()
+        return receipt
+
+
+def verify_prospective_input_capture(root: Path, state: dict) -> dict:
+    """Check LISTED bytes, declared definitions and output structure, not lineage.
+
+    The generation id is a self-hash, not an execution signature. This reader cannot
+    detect every causal read omitted from a recomputed receipt, authenticate which
+    code executed, or establish the list's completeness. Its result always leaves
+    those facts unqualified and causal-lineage acceptance false. Call on one normal
+    Git publication to resolve the listed bytes; that still supplies no publication
+    receipt. Ledger checking covers only the recorded BEFORE prefix, without writes.
+    """
+    limits = {"verification_scope": "listed_bytes_and_declared_definition_population",
+              "producer_execution_authenticity": "unqualified",
+              "causal_read_completeness": "unqualified",
+              "loaded_code_authentication": "unavailable",
+              "causal_lineage_acceptance": False}
+    try:
+        receipt = state["input_capture"]
+        if receipt["schema"] != "txi.prospective_input_read.v1" or receipt["status"] != "observed_input_bytes":
+            raise ValueError("capture_unavailable")
+        payload = {k: v for k, v in receipt.items() if k != "generation_id"}
+        if receipt["generation_id"] != "sha256:" + hashlib.sha256(_capture_json(payload)).hexdigest():
+            raise ValueError("capture_digest_mismatch")
+        started = datetime.fromisoformat(receipt["capture_started_at"])
+        completed = datetime.fromisoformat(receipt["capture_completed_at"])
+        if (started.tzinfo is None or completed.tzinfo is None or completed < started
+                or completed > datetime.now(timezone.utc)):
+            raise ValueError("capture_clock_unavailable")
+        if (receipt["source_available_at"] is not None or receipt["first_ingested_at"] is not None
+                or receipt["scientific_acceptance"] is not False
+                or receipt["observation_asof"] != state["asof"]
+                or receipt["producer_execution_authenticity"] != "unqualified"
+                or receipt["causal_read_completeness"] != "unqualified"
+                or receipt["loaded_code_authentication"] != "unavailable"
+                or receipt["causal_lineage_acceptance"] is not False):
+            raise ValueError("capture_claim_mismatch")
+        if receipt["causal_state_sha256"] != hashlib.sha256(_capture_json(_causal_projection(state))).hexdigest():
+            raise ValueError("causal_state_mismatch")
+        reads = receipt["reads"]
+        if not isinstance(reads, list) or not 0 < len(reads) <= _CAPTURE_MAX_FILES:
+            raise ValueError("input_count_exceeds_bound")
+        base = Path(root).resolve()
+        producer = base / "engine/transmission_chains.py"
+        producer.resolve().relative_to(base)
+        with producer.open("rb") as stream:
+            producer_raw = stream.read(_CAPTURE_MAX_BYTES + 1)
+        if len(producer_raw) > _CAPTURE_MAX_BYTES or hashlib.sha256(producer_raw).hexdigest() != receipt["producer_source_sha256"]:
+            raise ValueError("retained_producer_source_mismatch")
+        seen = set()
+        for row in reads:
+            if not isinstance(row, dict) or set(row) != {"path", "bytes", "sha256", "status"}:
+                raise ValueError("input_shape_unavailable")
+            rel = row["path"]
+            if (not isinstance(rel, str) or Path(rel).is_absolute() or ".." in Path(rel).parts
+                    or rel in seen or not rel.startswith(("data/", "knowledge/"))):
+                raise ValueError("input_path_unavailable")
+            seen.add(rel)
+            path = base / rel
+            path.resolve().relative_to(base)
+            if row["status"] != "present":
+                raise ValueError("input_shape_unavailable")
+            size = row["bytes"]
+            if type(size) is not int or not 0 <= size <= _CAPTURE_MAX_BYTES:
+                raise ValueError("input_bytes_exceed_bound")
+            with path.open("rb") as stream:
+                raw = stream.read(size + (0 if rel == "data/transmission/chain_episodes.jsonl" else 1))
+            if (len(raw) != size or raw.startswith(b"version https://git-lfs.github.com/spec/v1")
+                    or hashlib.sha256(raw).hexdigest() != row["sha256"]):
+                raise ValueError("retained_input_mismatch")
+        if "data/transmission/chain_episodes.jsonl" not in seen:
+            raise ValueError("predecessor_receipt_missing")
+        if not isinstance(receipt["definition_directories"], dict):
+            raise ValueError("definition_shape_unavailable")
+        if set(receipt["definition_directories"]) != {"knowledge/transmission", "knowledge/transmission/proposed"}:
+            raise ValueError("definition_receipt_incomplete")
+        for rel, expected in receipt["definition_directories"].items():
+            if rel not in ("knowledge/transmission", "knowledge/transmission/proposed"):
+                raise ValueError("input_path_unavailable")
+            if (not isinstance(expected, list) or any(f"{rel}/{name}" not in seen for name in expected)
+                    or sorted(p.name for p in (base / rel).glob("*.yaml")) != expected):
+                raise ValueError("retained_definition_set_mismatch")
+        return {**limits, "status": "listed_input_bytes_match", "generation_id": receipt["generation_id"],
+                "historical_knowledge": "unavailable", "scientific_acceptance": False,
+                "publication_receipt": None}
+    except (KeyError, TypeError, ValueError, OSError, OverflowError, AttributeError):
+        return {**limits, "status": "unavailable", "reason": "prospective_capture_unqualified"}
 
 
 # --------------------------------------------------------------------------- #
@@ -336,9 +562,10 @@ class _SeriesAdapter:
     same on-disk layout as lib.store, but ROOT-AWARE so ``run(root=X)`` is fully hermetic
     (no hidden dependency on config.data_dir()). Missing/empty series → _Unresolvable."""
 
-    def __init__(self, data_dir: Path, group: str):
+    def __init__(self, data_dir: Path, group: str, _capture: _InputReadCapture | None = None):
         self.data_dir = data_dir
         self.group = group
+        self._capture = _capture
 
     def _path(self, name: str) -> Path:
         safe = name.replace("^", "_").replace("=", "_").replace("/", "_").replace(" ", "_")
@@ -346,9 +573,10 @@ class _SeriesAdapter:
 
     def series(self, name: str) -> pd.Series:
         p = self._path(name)
+        raw = self._capture.read(p) if self._capture is not None else None
         if not p.exists():
             raise _Unresolvable(f"{self.group}/{name} series absent")
-        df = pd.read_parquet(p)
+        df = pd.read_parquet(io.BytesIO(raw) if raw is not None else p)
         if df is None or df.empty:
             raise _Unresolvable(f"{self.group}/{name} series empty")
         df.index = pd.to_datetime(df.index)
@@ -363,8 +591,9 @@ class _SeriesAdapter:
 class _StateAdapter:
     """Reads a dotted field path out of a latest.json snapshot on disk."""
 
-    def __init__(self, data_dir: Path, rel: str):
+    def __init__(self, data_dir: Path, rel: str, _capture: _InputReadCapture | None = None):
         self.path = data_dir / rel
+        self._capture = _capture
         self._cache: dict | None = None
         self._loaded = False
 
@@ -372,7 +601,12 @@ class _StateAdapter:
         if not self._loaded:
             self._loaded = True
             try:
-                self._cache = json.loads(self.path.read_text()) if self.path.exists() else None
+                if self._capture is not None:
+                    raw = self._capture.read(self.path)
+                    self._cache = json.loads(raw.decode("utf-8")) if raw is not None else (
+                        json.loads(self.path.read_text()) if self.path.exists() else None)
+                else:
+                    self._cache = json.loads(self.path.read_text()) if self.path.exists() else None
             except Exception as e:  # noqa: BLE001 — corrupt artifact = unresolvable, not fatal
                 log.warning("state artifact unreadable %s: %s", self.path, e)
                 self._cache = None
@@ -396,15 +630,15 @@ class _StateAdapter:
         return doc.get("asof") or doc.get("date")
 
 
-def build_adapters(data_dir: Path) -> dict[str, Any]:
+def build_adapters(data_dir: Path, *, _capture: _InputReadCapture | None = None) -> dict[str, Any]:
     """The source-adapter registry the four seeds use. Keyed by the YAML node.src value."""
     return {
-        "yahoo": _SeriesAdapter(data_dir, "yahoo"),
-        "commodity": _SeriesAdapter(data_dir, "commodity"),
-        "fred": _SeriesAdapter(data_dir, "fred"),   # FRED series cache (e.g. T10YIE breakeven)
-        "transmission_state": _StateAdapter(data_dir, "transmission/latest.json"),
-        "regime_state": _StateAdapter(data_dir, "regime/latest.json"),
-        "forex_state": _StateAdapter(data_dir, "forex/latest.json"),
+        "yahoo": _SeriesAdapter(data_dir, "yahoo", _capture),
+        "commodity": _SeriesAdapter(data_dir, "commodity", _capture),
+        "fred": _SeriesAdapter(data_dir, "fred", _capture),   # FRED series cache (e.g. T10YIE breakeven)
+        "transmission_state": _StateAdapter(data_dir, "transmission/latest.json", _capture),
+        "regime_state": _StateAdapter(data_dir, "regime/latest.json", _capture),
+        "forex_state": _StateAdapter(data_dir, "forex/latest.json", _capture),
     }
 
 
@@ -915,11 +1149,13 @@ def _episode_id(chain_slug: str, rev: int, asof: str) -> str:
 # --------------------------------------------------------------------------- #
 # LEDGER (forward, append-only, idempotent per (chain, rev, asof, transition))
 # --------------------------------------------------------------------------- #
-def _read_ledger(path: Path) -> list[dict]:
+def _read_ledger(path: Path, *, _capture: _InputReadCapture | None = None) -> list[dict]:
+    raw = _capture.read(path) if _capture is not None else None
     if not path.exists():
         return []
     rows: list[dict] = []
-    for line in path.read_text().splitlines():
+    text = raw.decode("utf-8") if raw is not None else path.read_text()
+    for line in text.splitlines():
         line = line.strip()
         if not line:
             continue
@@ -1442,11 +1678,15 @@ def run(root: Path | None = None, *, write: bool = True,
     entirely (W1-compatible: `blast` stays `[]`)."""
     base = Path(root) if root else ROOT
     data_dir = base / "data"
-    chains = load_chains(base)  # FAIL-LOUD: a malformed file raises here
-    adapters = build_adapters(data_dir)
+    try:
+        capture = _InputReadCapture(base)
+    except (OSError, ValueError):
+        capture = None
+    chains = load_chains(base, _capture=capture)  # native schema behavior unchanged
+    adapters = build_adapters(data_dir, _capture=capture)
     asof = _resolve_asof(adapters)
     ledger_path = data_dir / "transmission" / "chain_episodes.jsonl"
-    ledger_rows = _read_ledger(ledger_path)   # advance episodes from their history
+    ledger_rows = _read_ledger(ledger_path, _capture=capture)   # advance from history
     substrate: SubstrateStore | None = None
     if resolve_blast_radius:
         sdir = Path(substrate_dir) if substrate_dir else base.joinpath(*SUBSTRATE_RELDIR)
@@ -1455,6 +1695,18 @@ def run(root: Path | None = None, *, write: bool = True,
     calibration = load_calibration(data_dir)
     state, transitions = build_chain_state(chains, adapters, asof, ledger_rows,
                                            substrate=substrate, calibration=calibration)
+    try:
+        if capture is None:
+            raise ValueError("capture initialization unavailable")
+        state["input_capture"] = capture.finish(state, transitions)
+    except Exception as e:  # receipt failure never changes detector/ledger behavior
+        log.warning("prospective input capture unavailable: %s", e)
+        state["input_capture"] = {"schema": "txi.prospective_input_read.v1",
+                                  "status": "unavailable", "reason": "capture_failed"}
+    # Preserve the incumbent explorer's 2MB source cap; a receipt must not make an
+    # otherwise readable state exceed it. Absence remains explicitly unqualified.
+    if len(json.dumps(state, indent=2, ensure_ascii=False, default=str).encode()) > 2_000_000:
+        state.pop("input_capture", None)
     if write:
         outdir = data_dir / "transmission"
         outdir.mkdir(parents=True, exist_ok=True)

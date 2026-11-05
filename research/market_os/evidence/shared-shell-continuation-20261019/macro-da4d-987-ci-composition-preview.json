@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-20T16:11:56.371157+00:00",
+  "base": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "head": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+  "incoming": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+  "read_only_merge_tree": "11ad3c513bc73c9f03a06363ea9b810e0308b574",
+  "actual_worktree_or_index_accepted": false,
+  "jobs": 337,
+  "new_jobs": [
+    "options-pilot-chronology-code"
+  ],
+  "all_ids_order_new_jobs_and_nonpath_intents_preserved": true,
+  "all_parent_path_counter_union_and_sequences_preserved": true,
+  "test_AST_equals_incoming_plus_only_prior_two_measured_constants_and_preserved_H_history": true,
+  "manifest_sha256": "be6bdd8bb0aa2ed0b640556b74f243a60b5552bac2b7e1787d6cbf1af9b3102c",
+  "test_sha256": "6da1b24ba6906ca4eb7f75ba2f81de77a77de195f418d1afb840edad788f53d7",
+  "scope": "Immutable read-only merge-tree composition preview. Match actual staged files after the in-progress ordinary merge completes; not producing tests or hosted admission."
+}
