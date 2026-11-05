@@ -10,6 +10,82 @@ Attended parent: shared-shell-production-20261018-c1
 
 Existing carriers: Macro #7949, sol/market-os-shared-shell-design-20260924; Terminal #859, claude/investor-shell-native-20261008-c1.
 
+## Current joined source delivery — 2026-11-05
+
+Programme remains **NOT_ACCEPTED**. Original W0–W10, six workspaces, 24 groups,
+19 renderer shapes and 61 cases remain the acceptance boundary. This checkpoint
+updates the existing task tree; source readiness does not establish runtime,
+scientific/PIT, authenticated-consumer, Paper or whole-product acceptance.
+
+The same Macro #10674 carrier is preparing a genuinely changed successor. Its
+remote `8c07b51a` remains unarmed/merge-blocked. Historical exact-run41990261350
+687PASS and formal review5782911631 apply only to that original head/tested/base;
+current-base whole-store freshness invalidated its release, so neither is promoted
+to the successor. Proposed P9 native-main adoption is not installed and is not a
+blanket prerequisite: use the currently installed lawful legacy mechanism and
+actual current-head/base proof, genuine formal review and independent arming.
+
+Current local runtime boundary is `b829b8f4d253127af035fc2eec0d50c860834758` on protected
+`d3ab2890c210be72d0a8dd21cdf14af87d10b10f`. It preserves reviewed Company/T55,
+Bonds/Forensics/Business/China/Radar/Calendar/History/HK/T52 scope and accepted B2
+outline projection. Accepted Projection `f456c844` adds the bounded History/source
+and complete official-field/policy → evidence/Investigate → source-return/feed
+chain. All seven raw History payloads and 62,495 points remain unchanged; bounded
+HTML size is 3.10MB, not a measured browser-latency or visual-acceptance claim.
+JP annual/yield remain withheld. Official inputs are the original retained clocks,
+not a current-data/PIT grant or new acquisition.
+
+The policy-preview API uses the existing authenticated family, fixed origin,
+closed request/response and source-generation/digest checks. Current Macro Command,
+Business nullable-clock/artifact qualification, Research/B2, Market Memory and
+Options contracts remain. Two newly found lazy ECB imports now participate in the
+incumbent updater restart selector (2RED/negativePASS → 3PASS). This is source-only:
+actual updater inclusion, enabled API/unit/dependency/PID reconciliation and real
+pinned-revision response remain separate. No restart or activation occurred.
+
+The current protected quote-board cap640 is preserved; earlier512 peer evidence is
+not transferred. The current retained Business raw object and manifest remain
+immutable. The existing single-page renderer and native asset stages produce the
+matching page while preserving all31 values, reference periods and source refs;
+its observed/calculation clocks remain unknown where unsupported. Source clocks
+are **NOT_YET_LIVE** until normal covering publication and served readback.
+
+The current-base join also preserves the retained Forensics summary clock: the native public-shell renderer restores Counted/统计日2026-11-04 for the unchanged1493/1058 counts, with canonical asset fingerprint/defer/preload output. The newly protected admin job receives only its six missing readpaths; no command, gate or budget changes.
+
+Original #10696/head/unknown effects remain held on their original carrier. This
+successor carries only the accepted three-path PLNT/registry source preparation;
+no canonical registry/overlay generation/export or SS05 release is inferred.
+T55 original UNKNOWN tuples, foreign9533, JP/source/runtime/SQL/private/default-OFF,
+Gold/admin and browser refusals remain intact. No new browser, provider, financial
+producer, host or publication effect was used for this preparation.
+
+The latest validated `mmtask export` is15:59:53Z, 143 verified entries,0 errors/1
+warning, PREPARED ONLY. Its task facts are reflected below; counts do not establish
+product completion. Full retained export SHA256: `49ddd863bfd43162fd8f5f8e32feb3dd3fcb3e54a2913ab3fe9e40f2d4beb086`.
+Root's existing canonical comment6589273748 was saved15:20:11Z/body44c25da8;
+this source checkpoint carries the subsequent scoped integration facts.
+
+| Existing task | Buffered source state | Bounded outcome |
+| --- | --- | --- |
+| P12.T2.S14.S8 | in_progress | Compose qualified CI-closure repair and accepted W9 inputs after settled Company proof |
+| P12.T2.S14.S8.S1 | reviewed | Qualify prospective current merge and selected-job readset drift for CI-owner admission |
+| P12.T2.S14.S8.S2 | reviewed | Prepare read-only Company T55 and native History Risk release composition |
+| P12.T2.S14.S8.S3 | implementation_complete | Compose Company current-base source and six preservation seams locally |
+| P12.T2.S14.S8.S3.S1 | implementation_complete | Restore accepted B2 outline producer in current Company composition |
+| P12.T2.S14.S8.S4 | in_progress | Join final native History Risk source and five existing CI jobs on Company carrier |
+| P12.T2.S14.S8.S4.S1 | implementation_complete | Close actual History Risk transitive CI read edges |
+| P12.T2.S14.S8.S5 | implementation_complete | Prepare scoped PLNT withdrawal and registry source split |
+| P12.T2.S14.S8.S6 | implementation_complete | Compose original B5 policy preview API and updater contracts |
+| P12.T2.S14.S8.S6.S1 | implementation_complete | Close policy-preview lazy ECB helper restart selector gap |
+
+Next action: freeze the coherent source/readset/actual eligible plan, retain the
+same independent review actor, then one normal same-branch nonforce publication
+and one natural exact-head CI observer. Keep merge-blocked/unarmed until actual
+current proof, formal non-author review, source holds and independent release
+requirements qualify. Normal native/static publication, API adoption, exact beta
+serving and the original real investor journeys remain owed. No old green or
+fixture exception is inherited by changed inputs.
+
 ## 1. Product intent and scope
 
 Build the shared shell as a persistent web application using the existing Terminal application infrastructure. Put the current Macro HTML/Jinja pages into the shell's content area. Preserve useful page content, intelligence semantics, and existing behavior while individual pages are progressively converted to native application views. Install the reviewed beta at https://beta.mastermind-x.com.
