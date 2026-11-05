@@ -292,8 +292,9 @@ def test_ci_yml_carries_a_contract_delta_job_gated_to_authenticated_pr_proof() -
     assert job.get("needs") == ["ci-plan"]
     assert job.get("if") == (
         "!cancelled() && needs.ci-plan.result == 'success' && "
-        "needs.ci-plan.outputs.semantic_role == 'pr_head'"
-    ), "contract-delta may execute only after a successful exact-tree PR-proof plan"
+        "(needs.ci-plan.outputs.semantic_role == 'pr_head' || "
+        "needs.ci-plan.outputs.semantic_role == 'merge_group')"
+    ), "contract-delta requires a successful authenticated PR or native-group plan"
 
     assert job.get("runs-on") == "ubuntu-latest"
     # 25 -> 45 (2026-08-19, PR #6013 cancellation): the job is off the
@@ -324,6 +325,14 @@ def test_contract_delta_binds_to_the_exact_tested_merge_parent() -> None:
     assert resolver.get("env", {}).get("EXPECTED_TESTED_BASE") == (
         "${{ needs.ci-plan.outputs.tested_base_sha }}"
     )
+    assert {key: resolver["env"][key] for key in (
+        "SEMANTIC_ROLE", "EVENT_NAME", "ADMISSION_GENERATION", "CI_NATIVE_GROUP_JSON"
+    )} == {
+        "SEMANTIC_ROLE": "${{ needs.ci-plan.outputs.semantic_role }}",
+        "EVENT_NAME": "${{ github.event_name }}",
+        "ADMISSION_GENERATION": "${{ needs.ci-plan.outputs.admission_generation }}",
+        "CI_NATIVE_GROUP_JSON": "${{ needs.ci-plan.outputs.native_group_json }}",
+    }
     assert "inputs." not in str(resolver.get("env", {}))
 
     resolver_run = resolver.get("run", "")
@@ -403,6 +412,10 @@ def test_contract_delta_merge_resolver_selects_current_tested_base(
     env = {
         **os.environ,
         "GITHUB_SHA": tested_merge,
+        "SEMANTIC_ROLE": "pr_head",
+        "EVENT_NAME": "pull_request",
+        "ADMISSION_GENERATION": "",
+        "CI_NATIVE_GROUP_JSON": "",
         "EXPECTED_PR_HEAD": pr_head,
         "EXPECTED_TESTED_MERGE": tested_merge,
         "EXPECTED_TESTED_BASE": tested_base,
@@ -466,7 +479,7 @@ def test_ci_gate_enforcement_requires_success_for_pr_proof() -> None:
     # An admitted PR proof must not green when the contract job is skipped.
     # Main baseline has no PR contract and must not be blocked by that skip.
     assert step.get("env", {}).get("PR_PROOF") == (
-        "${{ github.event_name == 'pull_request' || needs.ci-plan.outputs.semantic_role == 'pr_head' }}"
+        "${{ github.event_name == 'pull_request' || (needs.ci-plan.outputs.semantic_role == 'pr_head' || needs.ci-plan.outputs.semantic_role == 'merge_group') }}"
     )
     assert 'if [ "$PR_PROOF" = "true" ] && [ "$CONTRACT_DELTA_RESULT" != "success" ]; then' in run
     assert 'if [ "$CONTRACT_DELTA_RESULT" = "failure" ]' not in run
@@ -1577,3 +1590,24 @@ def test_selected_base_worker_cannot_fall_back_to_candidate_pythonpath(tmp_path,
     stdout, stderr = proc.communicate(timeout=20)
     assert proc.returncode != 0 and 'candidate_only' in stderr
     assert not marker.exists()
+
+
+@pytest.mark.parametrize("regression", ["group_job_omitted", "group_final_omitted", "raw_role_input"])
+def test_contract_native_workflow_consumers_reject_identity_regressions(monkeypatch, regression):
+    jobs = _ci_jobs()
+    if regression == "group_job_omitted":
+        jobs["contract-delta"]["if"] = jobs["contract-delta"]["if"].replace(
+            " || needs.ci-plan.outputs.semantic_role == 'merge_group'", "")
+        check = test_ci_yml_carries_a_contract_delta_job_gated_to_authenticated_pr_proof
+    elif regression == "group_final_omitted":
+        step = _step_named(jobs["ci-gate"], "enforce contract-delta verdict")
+        step["env"]["PR_PROOF"] = step["env"]["PR_PROOF"].replace(
+            " || needs.ci-plan.outputs.semantic_role == 'merge_group'", "")
+        check = test_ci_gate_enforcement_requires_success_for_pr_proof
+    else:
+        resolver = _step_named(jobs["contract-delta"], "resolve the exact tested PR merge base")
+        resolver["env"]["SEMANTIC_ROLE"] = "${{ inputs.proof_role }}"
+        check = test_contract_delta_binds_to_the_exact_tested_merge_parent
+    monkeypatch.setattr(sys.modules[__name__], "_ci_jobs", lambda: jobs)
+    with pytest.raises(AssertionError):
+        check()
