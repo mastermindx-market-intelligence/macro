@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-10-14T02:28:55.008424+00:00",
+  "slot": "press-research_desk-2026-10-14-57611ef358f9",
+  "candidate_only": true,
+  "source_sha256": "d172e693d203d7536cf94b04684aadfabd5386aa3fa6ce18208a397abaa21412",
+  "editorial_preflight": "REFUSE_PROVIDER",
+  "reasons": [
+    "September 23 report sits at the 21-day cutoff and is not a current October 14 issuer event.",
+    "Summary says EPS down 16% from 3.55 to 3.40; those literal figures imply about 4.23%, so underlying source reconciliation is required. Do not silently edit the percentage or infer which number is wrong.",
+    "Price Target vs. is a truncated fragment.",
+    "July 10 price and November 2025 P/E are historical, not current valuation evidence.",
+    "Bundled October 8 gamma/breadth and October 12 broad scores do not substantiate KBH operating/valuation claims."
+  ],
+  "provider_calls": 0,
+  "stage_writes": 0,
+  "new_source_candidate": {
+    "url": "https://nvidianews.nvidia.com/news/latest",
+    "observed_date": "2026-10-14",
+    "assessment": "Oct13 app-ecosystem announcement is a separate public primary-source lead, not an admitted source or investment signal. Need exact dated source, lawful factual-reporting scope and relevant original analysis before any candidate/writer admission."
+  }
+}

@@ -12,7 +12,7 @@ Methodology (graddhy.com, thefinancialtap.com — see DECISIONS):
   Right-translated = bullish structure; left-translated usually means the
   larger cycle has topped.
 - Failed cycle: price breaks below the low that BIRTHED the current cycle —
-  the single most reliable bearish tell in the framework (~80% per source).
+  a bearish tell in the framework.
 
 Multi-timeframe indicators: daily, 3-day and weekly MACD(12,26,9), RSI(14),
 RSI(5) and StochRSI(14) with cross detection plus *approaching-cross*
@@ -619,6 +619,30 @@ def early_signals(close: pd.Series, cyc: dict, mtf: dict) -> dict:
     return {}
 
 
+# Chinese twins of early_signals()' signal names and tiers, for ladder_state()'s
+# early_note_zh. That note used to join the English names into its Chinese sentence,
+# so the zh half of a sector page read "（heads-up）：StochRSI popped out of oversold".
+# tests/test_cycles.py holds every name and tier early_signals() can return to a twin
+# here; an unknown name would still print in English rather than vanish.
+EARLY_SIGNAL_ZH = {
+    "RSI bullish divergence (price made a lower low, momentum didn't)":
+        "RSI 看涨背离（价格创新低，动量未创新低）",
+    "MACD histogram turned up off a trough (pre-cross)": "MACD 柱状图自谷底回升（尚未交叉）",
+    "StochRSI popped out of oversold": "StochRSI 脱离超卖区",
+    "RSI bearish divergence (price made a higher high, momentum didn't)":
+        "RSI 看跌背离（价格创新高，动量未创新高）",
+    "MACD histogram rolled over off a peak (pre-cross)": "MACD 柱状图自峰值回落（尚未交叉）",
+    "StochRSI dropped out of overbought": "StochRSI 跌出超买区",
+}
+EARLY_TIER_ZH = {"anticipated": "预判", "heads-up": "预警"}
+
+
+def _early_zh(early: dict) -> tuple[str, str]:
+    """(tier, joined signal names) for the zh early note, in Chinese."""
+    tier = EARLY_TIER_ZH.get(early["tier"], early["tier"])
+    return tier, "；".join(EARLY_SIGNAL_ZH.get(name, name) for name in early["signals"])
+
+
 # ----------------------------------------------------------- signal ladder ----
 
 LADDER = ["DECLINE", "BOTTOM WATCH", "TURN SIGNALED", "FRESH BUY",
@@ -1025,11 +1049,11 @@ def ladder_state(cyc: dict, mtf: dict, early: dict | None = None,
 
     if cyc["failed_cycle"] and not cyc["above_ma10"]:
         state = "DECLINE"
-        why = ("Failed cycle — price broke below the low that started this cycle, "
-               "which historically means the larger trend is rolling over (~80% of cases).")
+        why = ("Failed cycle — price broke below the low that started this cycle. "
+               "How often the larger trend then rolls over has not been measured here.")
         nxt = "Stand aside until a new daily cycle low forms and confirms."
-        why_zh = ("失败周期——价格跌破了启动本周期的低点，"
-                  "历史上这通常意味着更大的趋势正在掉头向下（约 80% 的情形）。")
+        why_zh = ("失败周期——价格跌破了启动本周期的低点。"
+                  "此后更大趋势掉头向下的频率，本站尚未测算。")
         nxt_zh = "观望，直至新的日线周期低点形成并确认。"
     elif cand_confirmed and (d.get("macd_cross_up") or d.get("macd_pos")
                              or d.get("macd_approaching_up")):
@@ -1334,8 +1358,9 @@ def ladder_state(cyc: dict, mtf: dict, early: dict | None = None,
                       + "; ".join(early["signals"]) + ". These anticipate a low BEFORE "
                       "full confirmation — earlier entry, but a higher false-alarm rate, so "
                       "treat as a heads-up to watch closely, not a trigger yet.")
-        early_note_zh = ("⚡ 反转正在提前酝酿（" + early["tier"] + "）："
-                         + "; ".join(early["signals"]) + "。这些信号会在完全确认之前"
+        tier_zh, signals_zh = _early_zh(early)
+        early_note_zh = ("⚡ 反转正在提前酝酿（" + tier_zh + "）："
+                         + signals_zh + "。这些信号会在完全确认之前"
                          "预判低点——入场更早，但误报率更高，因此应视为密切关注的"
                          "提示，而非触发信号。")
     elif early.get("dir") == "down" and state in ("TOP WATCH", "RALLY ON"):
@@ -1343,8 +1368,9 @@ def ladder_state(cyc: dict, mtf: dict, early: dict | None = None,
         early_note = ("⚡ Early topping signs (" + early["tier"] + "): "
                       + "; ".join(early["signals"]) + ". These anticipate a high BEFORE "
                       "confirmation — a heads-up to protect gains, not a sell trigger yet.")
-        early_note_zh = ("⚡ 提前出现的做顶迹象（" + early["tier"] + "）："
-                         + "; ".join(early["signals"]) + "。这些信号会在确认之前预判"
+        tier_zh, signals_zh = _early_zh(early)
+        early_note_zh = ("⚡ 提前出现的做顶迹象（" + tier_zh + "）："
+                         + signals_zh + "。这些信号会在确认之前预判"
                          "高点——属于保护利润的提示，而非卖出触发信号。")
 
     # ── Liquidity regime (macro conviction modifier) ─────────────────────────
@@ -1765,6 +1791,40 @@ def _strength_word(score: int) -> tuple[str, str]:
     return ("faint", "微弱")
 
 
+def _fresh_cross_when(when) -> tuple[str, str, str, str]:
+    """Line and chip wording for the session a same-day cross printed.
+
+    Returns (line EN, line ZH, chip EN, chip ZH). A calendar date becomes
+    ``on D Mon YYYY`` / ``于YYYY年M月D日`` in the line and ``D Mon`` / ``M月D日``
+    on the chip (no zero padding, English month fixed so the text does not
+    follow the process locale). Missing or unparsable becomes
+    ``at the latest session`` / ``于最新交易日`` and ``latest session`` /
+    ``最新交易日``.
+    """
+    fallback = ("at the latest session", "于最新交易日", "latest session", "最新交易日")
+    months = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+    from datetime import date, datetime
+
+    day: date | None = None
+    if isinstance(when, datetime):
+        day = when.date()
+    elif isinstance(when, date):
+        day = when
+    elif isinstance(when, str) and when.strip():
+        head = when.strip().split()[0][:10]
+        try:
+            day = date.fromisoformat(head)
+        except ValueError:
+            day = None
+    if day is None:
+        return fallback
+    return (f"on {day.day} {months[day.month - 1]} {day.year}",
+            f"于{day.year}年{day.month}月{day.day}日",
+            f"{day.day} {months[day.month - 1]}",
+            f"{day.month}月{day.day}日")
+
+
 def signal_age_fields(state: str, score: int, age: dict) -> dict:
     """Plain-language 'when did this signal cross / how strong is it' lines
     (EN + ZH) plus a compact badge, built from signal_age() + the ladder score."""
@@ -1787,14 +1847,15 @@ def signal_age_fields(state: str, score: int, age: dict) -> dict:
               f"（约 {wk} 周以上）——属于既定趋势，并非新出现的信号。")
         short, short_zh = f"{days}d+", f"{days}天+"
     elif days == 0:
-        en = f"⏱ {label} signal just triggered today (fresh cross"
-        zh = f"⏱ {label_zh}信号于今日刚刚触发（全新交叉"
+        en_when, zh_when, chip_en, chip_zh = _fresh_cross_when(when)
+        en = f"⏱ {label} signal triggered {en_when} (fresh cross"
+        zh = f"⏱ {label_zh}信号{zh_when}刚刚触发（全新交叉"
         if prev_label:
             en += f" from {prev_label}"
             zh += f"，自{prev_label_zh}翻转"
         en += ")."
         zh += "）。"
-        short, short_zh = "today", "今日"
+        short, short_zh = chip_en, chip_zh
     else:
         unit = "trading day" if days == 1 else "trading days"
         en = f"⏱ {label} signal triggered {days} {unit} ago"

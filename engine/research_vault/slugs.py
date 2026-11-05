@@ -46,15 +46,11 @@ def _slug(title: str, idv: str, seen: set[str]) -> str:
 
 
 def _title(item: dict) -> str:
-    """The report title as it may become PUBLIC — repaired, never raw.
+    """Slug-stable title repair (paren/dedupe only). Never a display polish.
 
-    These pages put the title in ``<title>``, ``og:title``, ``twitter:title``, the
-    ``<h1>``, the JSON-LD headline and the crawl-hub link text, so an upstream
-    defect here is a defect on the single most SEO-weighted element we ship. The
-    catalog is repaired at ingest AND on load (engine/research_vault), but this
-    builder also runs straight off a committed snapshot a human could edit — so
-    it repairs at the render boundary too, fail-soft, by house rule for public
-    pages. ``clean_title`` is slug-stable, so this never moves an indexed URL.
+    ``clean_title`` is slug-stable, so this never moves an indexed URL.
+    Repeat-collapse and trailing-date trim live in ``display_title`` and are
+    applied at card/SSR/report emit sites, not here.
     """
     return clean_title(item.get("title")) or (item.get("title") or "").strip()
 

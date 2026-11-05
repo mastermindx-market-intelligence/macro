@@ -1,0 +1,2974 @@
+{
+  "document_kind": "research_snapshot_not_operational_registry",
+  "program": "WS:EXECUTIVE-CAPACITY-FABRIC",
+  "operation": "agent-fabric-end-to-end-fable-integration-20260913-sol-001",
+  "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+  "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+  "interpretation": "States describe the named capability supported by recovered evidence, not an assertion that an unread service is down. Missing live proof yields BUILT_NOT_PROVEN/PARTIAL as appropriate, never NOT_BUILT by itself. UNKNOWN remains in runtime/evidence fields, never becomes zero. Native client fixtures and engineering-kit runs are not Executive production proof.",
+  "capability_states": [
+    "PROVEN_LIVE",
+    "BUILT_NOT_PROVEN",
+    "PARTIAL",
+    "DARK_OR_DISCONNECTED",
+    "BROKEN",
+    "SPEC_ONLY",
+    "NOT_BUILT",
+    "REJECTED_BY_DESIGN"
+  ],
+  "rows": [
+    {
+      "id": "C001",
+      "category": "Admission / lifecycle",
+      "capability": "Web Executive app discovery/authentication",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S09",
+          "S26"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S07",
+        "S08",
+        "S09",
+        "S26"
+      ],
+      "why_not_stronger": "Prior call401; present session did not discover callable Executive read; Runtime absence is not inferred.",
+      "blocking_dependency": "Approved client reauthentication and actual five-tool discovery",
+      "next_vertical": "Restore original authenticated read lane without retargeting resource",
+      "production_proof_required": "Actual registered client authenticates; harmless authorized read succeeds; wrong audience/scope refuses"
+    },
+    {
+      "id": "C002",
+      "category": "Admission / lifecycle",
+      "capability": "Executive five-tool contract",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S09",
+          "S26"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S07",
+        "S08",
+        "S09",
+        "S26"
+      ],
+      "why_not_stronger": "Protected composition599; actual current client discovery not proved.",
+      "blocking_dependency": "#653 installation/read proof + client auth",
+      "next_vertical": "One registered client discovers exactly the accepted five tools",
+      "production_proof_required": "Compare live tools/list and schema digests; four reads + distinct queue-only write test"
+    },
+    {
+      "id": "C003",
+      "category": "Admission / lifecycle",
+      "capability": "Strict-v2 CEO intent admission",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S09",
+          "S26"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S07",
+        "S08",
+        "S09",
+        "S26"
+      ],
+      "why_not_stronger": "Source exists; no current production queued-root receipt recovered.",
+      "blocking_dependency": "S30 repaired677 + S33 settled653 + S31 W1-H4 guard at BOTH entrances + accepted aligned install + original client auth",
+      "next_vertical": "One authenticated no-dispatch strict-v2 root",
+      "production_proof_required": "One Job; exact duplicate same identity; changed payload conflict; zero new Attempts/Workers; dispatched=false"
+    },
+    {
+      "id": "C004",
+      "category": "Admission / lifecycle",
+      "capability": "Dedicated least-privilege App/CeoIngress principal",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S09",
+          "S26"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S07",
+        "S08",
+        "S09",
+        "S26"
+      ],
+      "why_not_stronger": "Latest separate owner S32 reports actual dedicated App/control processes and sockets on different releases; coherent current mutation-authority install unproven.",
+      "blocking_dependency": "#653 owner migration and exact principal/socket readback",
+      "next_vertical": "Retain App/C1 separation on accepted install",
+      "production_proof_required": "Unauthorized peer rejected before reading body; right peer reaches only authorized command"
+    },
+    {
+      "id": "C005",
+      "category": "Admission / lifecycle",
+      "capability": "CEO-submit arm/disarm transaction",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S30",
+          "S31",
+          "S32"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S07",
+        "S08",
+        "S30",
+        "S31",
+        "S32"
+      ],
+      "why_not_stronger": "R18-B4 is accepted, but six-field live App-binding drift still returns verified armed status at8bd1935c; current S30 requires same-writer repair.",
+      "blocking_dependency": "S30 exact same-child binding repair, non-author rereview and source protection; then S31 W1-H4, S33 settled653 and aligned accepted install",
+      "next_vertical": "Continue existing677 writer: one pure six-field matcher; direct-status and actual-CLI drift negatives; preserve R17/R18-B4",
+      "production_proof_required": "Arm/status/disarm on accepted install; control-only lifecycle; live rollback proof; occupied owner refuses"
+    },
+    {
+      "id": "C006",
+      "category": "Admission / lifecycle",
+      "capability": "Canonical root creation",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S09",
+          "S26"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S07",
+        "S08",
+        "S09",
+        "S26"
+      ],
+      "why_not_stronger": "Source does not certify installed admission.",
+      "blocking_dependency": "Strict-v2 live admission",
+      "next_vertical": "Create one queue-only root through existing sink",
+      "production_proof_required": "Root/event identity survives restart and duplicate request"
+    },
+    {
+      "id": "C007",
+      "category": "Admission / lifecycle",
+      "capability": "Job lifecycle",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S09",
+          "S26"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S07",
+        "S08",
+        "S09",
+        "S26"
+      ],
+      "why_not_stronger": "Runtime/source exists; live rows not read in this research.",
+      "blocking_dependency": "Lawful Runtime read and admitted real workflow",
+      "next_vertical": "Consume real Job transitions through existing store",
+      "production_proof_required": "No extra Job on replay; terminal obligation cannot be orphaned"
+    },
+    {
+      "id": "C008",
+      "category": "Admission / lifecycle",
+      "capability": "Attempt lifecycle",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S09",
+          "S26"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S07",
+        "S08",
+        "S09",
+        "S26"
+      ],
+      "why_not_stronger": "No fresh real claimed/executed Attempt evidence recovered.",
+      "blocking_dependency": "H0/P0 + claim/worker admission",
+      "next_vertical": "One existing Job gets one lawful Attempt",
+      "production_proof_required": "Claim/start/terminal or uncertainty records exact Attempt; no duplicate effect"
+    },
+    {
+      "id": "C009",
+      "category": "Admission / lifecycle",
+      "capability": "Worker lifecycle",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S09",
+          "S26"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S07",
+        "S08",
+        "S09",
+        "S26"
+      ],
+      "why_not_stronger": "Descriptor/process existence is not runtime enrollment.",
+      "blocking_dependency": "Qualified exact realm/adapter/host",
+      "next_vertical": "Enroll and claim one existing worker contract",
+      "production_proof_required": "Worker identity, generation and result bound to actual executor"
+    },
+    {
+      "id": "C010",
+      "category": "Admission / lifecycle",
+      "capability": "Event lifecycle",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S09",
+          "S26"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S07",
+        "S08",
+        "S09",
+        "S26"
+      ],
+      "why_not_stronger": "Protected event substrate, no current live replay census.",
+      "blocking_dependency": "Actual admitted workflow",
+      "next_vertical": "Observe canonical event sequence from production input",
+      "production_proof_required": "Events reconstruct same lifecycle after process restart; no fabricated side ledger"
+    },
+    {
+      "id": "C011",
+      "category": "Admission / lifecycle",
+      "capability": "Duplicate request reconciliation",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S09",
+          "S26"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S07",
+        "S08",
+        "S09",
+        "S26"
+      ],
+      "why_not_stronger": "Hermetic behavior not production admission proof.",
+      "blocking_dependency": "Original client/sink live",
+      "next_vertical": "Replay identical request_ref/payload once under test authority",
+      "production_proof_required": "Same Job/result receipt; no new Attempt/Worker/effect"
+    },
+    {
+      "id": "C012",
+      "category": "Admission / lifecycle",
+      "capability": "Changed-payload conflict",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S09",
+          "S26"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S07",
+        "S08",
+        "S09",
+        "S26"
+      ],
+      "why_not_stronger": "Source conflict guard needs real front-door test.",
+      "blocking_dependency": "Original client/sink live",
+      "next_vertical": "Reuse request_ref with changed bounded payload",
+      "production_proof_required": "Typed conflict before lifecycle mutation"
+    },
+    {
+      "id": "C013",
+      "category": "Admission / lifecycle",
+      "capability": "EFFECT_UNKNOWN reconciliation",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S07",
+          "S08",
+          "S09",
+          "S26"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S07",
+        "S08",
+        "S09",
+        "S26"
+      ],
+      "why_not_stronger": "Rule/source exists;633 actual auth ambiguity remains unresolved.",
+      "blocking_dependency": "Exact operation-specific authoritative evidence",
+      "next_vertical": "Reconcile original effect through its owner only",
+      "production_proof_required": "Lost response never triggers alternate client/host/provider or second modifying call"
+    },
+    {
+      "id": "C014",
+      "category": "Admission / lifecycle",
+      "capability": "Receipt-bound production submit guard at both existing entrances",
+      "canonical_owner": "Executive OS; existing Executive App/CeoIngress",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S08",
+          "S30",
+          "S31",
+          "S33",
+          "S34"
+        ]
+      },
+      "current_runtime_install_identity": "Latest separate owner host receipt S32: control4c148709f52ff036d71dd212abd2688212d91ed0; App46bea20832a8f0d01559eb8bfb0e9b1406774956; CEO receipt absent. Current Job/Attempt/Worker rows and authenticated client state UNKNOWN to this research.",
+      "state": "NOT_BUILT",
+      "evidence": [
+        "S08",
+        "S30",
+        "S31",
+        "S33",
+        "S34"
+      ],
+      "why_not_stronger": "Primary App v2 trusts transport arm and generic command trusts raw Boolean; neither consumes the current receipt/live-binding guard. S31 already freezes W1-H4; not started.",
+      "blocking_dependency": "Repaired/protected677 plus terminal writer release; accepted/reconciled653 Phase1C custody; then W1-H4",
+      "next_vertical": "Consume existing S31 W1-H4 contract: one pure verifier/current host-evidence guard, injected at Phase1C and enforced at both entrances",
+      "production_proof_required": "Hand-edited flag, absent/stale receipt, wrong binding or occupied owner refuses before root creation"
+    },
+    {
+      "id": "C015",
+      "category": "Planning / orchestration",
+      "capability": "Deterministic COO cycle",
+      "canonical_owner": "Executive OS / existing COO policy and cycle",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S15",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S15",
+        "S18"
+      ],
+      "why_not_stronger": "Protected bounded cycle; not a real current provider workflow.",
+      "blocking_dependency": "Accepted root + current COO host binding",
+      "next_vertical": "Run one bounded existing cycle",
+      "production_proof_required": "WORK/review/repair/aggregate events preserve existing root"
+    },
+    {
+      "id": "C016",
+      "category": "Planning / orchestration",
+      "capability": "Bounded decomposition",
+      "canonical_owner": "Executive OS / existing COO policy and cycle",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S15",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S15",
+        "S18"
+      ],
+      "why_not_stronger": "Plan v2 is protected, not permission to exceed policy.",
+      "blocking_dependency": "Task-specific scope/risk and current policy admission",
+      "next_vertical": "Compile one risk-classified small plan",
+      "production_proof_required": "Unknown keys/extra scopes/overbudget refuse before claim"
+    },
+    {
+      "id": "C017",
+      "category": "Planning / orchestration",
+      "capability": "Independent review",
+      "canonical_owner": "Executive OS / existing COO policy and cycle",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S15",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S15",
+        "S18"
+      ],
+      "why_not_stronger": "Hermetic review machinery and native engineering reviews exist; not end-to-end Executive proof.",
+      "blocking_dependency": "Reviewer independently eligible and not author",
+      "next_vertical": "Review real candidate from real WORK",
+      "production_proof_required": "Exact head, reviewer identity, acceptance/rejection and provenance join"
+    },
+    {
+      "id": "C018",
+      "category": "Planning / orchestration",
+      "capability": "Repair and re-review",
+      "canonical_owner": "Executive OS / existing COO policy and cycle",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S15",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S15",
+        "S18"
+      ],
+      "why_not_stronger": "Kernel exists; actual live rejected-result repair chain not proven.",
+      "blocking_dependency": "Review verdict + remaining policy budget",
+      "next_vertical": "One bounded same-responsibility repair",
+      "production_proof_required": "New candidate re-reviewed; exhausted budget becomes decision, not recursion"
+    },
+    {
+      "id": "C019",
+      "category": "Planning / orchestration",
+      "capability": "Aggregation",
+      "canonical_owner": "Executive OS / existing COO policy and cycle",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S15",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S15",
+        "S18"
+      ],
+      "why_not_stronger": "Protected pair tests; live inputs not independently proved.",
+      "blocking_dependency": "Accepted child results and canonical joins",
+      "next_vertical": "Aggregate two lawful WORK results",
+      "production_proof_required": "Reject wrong child/head/status; exact parent consumes single aggregate"
+    },
+    {
+      "id": "C020",
+      "category": "Planning / orchestration",
+      "capability": "Durable parent obligation",
+      "canonical_owner": "Executive OS / existing COO policy and cycle",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S15",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S15",
+        "S18"
+      ],
+      "why_not_stronger": "Offline source629 protected; actual exact Web consumption open.",
+      "blocking_dependency": "Live completion\u2192obligation publisher",
+      "next_vertical": "Persist result availability while parent unavailable",
+      "production_proof_required": "Result stays retrievable and pending until authorized consumption"
+    },
+    {
+      "id": "C021",
+      "category": "Planning / orchestration",
+      "capability": "Restart-safe replay",
+      "canonical_owner": "Executive OS / existing COO policy and cycle",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S15",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S15",
+        "S18"
+      ],
+      "why_not_stronger": "Source tests do not attest current installed process recovery.",
+      "blocking_dependency": "Accepted install and exact identity/fence",
+      "next_vertical": "Restart during bounded lifecycle",
+      "production_proof_required": "No new root/child/claim merely due restart"
+    },
+    {
+      "id": "C022",
+      "category": "Planning / orchestration",
+      "capability": "Root fanout/depth/review budget",
+      "canonical_owner": "Executive OS / existing COO policy and cycle",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S15",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S15",
+        "S18"
+      ],
+      "why_not_stronger": "Source limits are closed; two reviewed WORK items need19>16.",
+      "blocking_dependency": "Plan fits full worst-case budget or separate reviewed owner amendment",
+      "next_vertical": "Admit plan with correct review/repair reservation",
+      "production_proof_required": "Two review-required items refuse at16; no review omission to force fit"
+    },
+    {
+      "id": "C023",
+      "category": "Routing / capacity",
+      "capability": "Model Router provider-neutral suitability",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "Protected RF1/630; no real capacity-ranked heterogeneous claim demonstrated.",
+      "blocking_dependency": "Current eligible route/realm facts",
+      "next_vertical": "Select first lawful suitability tier before economics",
+      "production_proof_required": "Cheaper weaker candidate cannot outrank required quality"
+    },
+    {
+      "id": "C024",
+      "category": "Routing / capacity",
+      "capability": "Provider Control inventory",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "CF1 protected; current account inventory not lawfully observed here.",
+      "blocking_dependency": "Owner observations and enrollment",
+      "next_vertical": "Refresh existing secret-free inventory",
+      "production_proof_required": "Separate present/enabled/authenticated/cooling/unknown; no key exposure"
+    },
+    {
+      "id": "C025",
+      "category": "Routing / capacity",
+      "capability": "Provider realm enrollment",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "Current native FamilyB owner evolution is not accepted.",
+      "blocking_dependency": "Current per-realm authoritative generation",
+      "next_vertical": "One exact realm enrolls through original owner",
+      "production_proof_required": "Revoked/stale/changed generation refuses new execution; historical evidence not current permission"
+    },
+    {
+      "id": "C026",
+      "category": "Routing / capacity",
+      "capability": "Capacity observation freshness",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "Current numeric capacity is UNKNOWN; stale status displays are not source truth.",
+      "blocking_dependency": "H0/P0 and native observation producer",
+      "next_vertical": "Consume timestamped owner facts at claim",
+      "production_proof_required": "Missing/expired/future-dated observation cannot become zero/free/unlimited"
+    },
+    {
+      "id": "C027",
+      "category": "Routing / capacity",
+      "capability": "Shared versus model-scoped resource identity",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "SPEC_ONLY",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "Correct Go source semantics recovered; full runtime adoption held.",
+      "blocking_dependency": "7103/7143/7116 owner release and live data",
+      "next_vertical": "Bind models to same real Go resource windows",
+      "production_proof_required": "Switching model preserves shared depletion; host replicas do not add entitlement"
+    },
+    {
+      "id": "C028",
+      "category": "Routing / capacity",
+      "capability": "Cooling/reset truth",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "Plan/catalog knowledge is not live reset/headroom.",
+      "blocking_dependency": "Provider Control current observations",
+      "next_vertical": "Exercise exhausted then observed-reset route",
+      "production_proof_required": "No inferred reset or fresh quota from account label; null remains unknown"
+    },
+    {
+      "id": "C029",
+      "category": "Routing / capacity",
+      "capability": "Economic ranking",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "594 source preview;7116 write withheld;671 spec acceptance only.",
+      "blocking_dependency": "Hard gates + accepted economics owner + real observation",
+      "next_vertical": "Rank lawful equivalent candidates deterministically",
+      "production_proof_required": "No universal mixed-unit score; strict dominance preserved; reserve/budget enforced"
+    },
+    {
+      "id": "C030",
+      "category": "Routing / capacity",
+      "capability": "Atomic capacity claim/reservation",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "Canonical claim substrate exists; CF2-I native acquisition gate remains unaccepted.",
+      "blocking_dependency": "H0 PASS\u2192independent P0\u2192CF2-I",
+      "next_vertical": "One real claim persists evidence and reservation atomically",
+      "production_proof_required": "Concurrent claim cannot double spend provider/host resource; claim rollback reconciles"
+    },
+    {
+      "id": "C031",
+      "category": "Routing / capacity",
+      "capability": "Concurrent oversubscription prevention",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "No current production contention proof.",
+      "blocking_dependency": "Existing provider claim + physical reservation owners",
+      "next_vertical": "Race two admitted claims against one real resource",
+      "production_proof_required": "Exactly allowed claims succeed; refused claim has zero worker effect"
+    },
+    {
+      "id": "C032",
+      "category": "Routing / capacity",
+      "capability": "Claim release/reconciliation",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "Live settlement/reconciliation not proved.",
+      "blocking_dependency": "Exact terminal/uncertain Attempt observations",
+      "next_vertical": "Release once on proved terminal state",
+      "production_proof_required": "No release on mere disconnect; no reservation leak or premature reuse"
+    },
+    {
+      "id": "C033",
+      "category": "Routing / capacity",
+      "capability": "CF2-H0 installed source repair",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "Inert transport GO, not current repaired installed-host PASS.",
+      "blocking_dependency": "Existing Chairman-physical ceremony",
+      "next_vertical": "Reuse large transport; refresh only small current carrier bundle",
+      "production_proof_required": "Accepted runbook PASS + verify-only receipts; brokers remain inert; no P0 inflation"
+    },
+    {
+      "id": "C034",
+      "category": "Routing / capacity",
+      "capability": "CF2-P0 native acquisition census",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "Accepted census source exists; fresh post-repair installed H0/P0 acceptance was not recovered.",
+      "blocking_dependency": "H0 exact installed PASS",
+      "next_vertical": "Run existing independent read-only census",
+      "production_proof_required": "Grounded source+host+capacity acquisition passes without user-checkout bypass"
+    },
+    {
+      "id": "C035",
+      "category": "Routing / capacity",
+      "capability": "CF2-I production placement adoption",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "Record holds implementation/adoption behind P0; source fragments do not qualify live claim.",
+      "blocking_dependency": "Accepted P0 and existing claim consumer",
+      "next_vertical": "Real eligible multi-account claim",
+      "production_proof_required": "Evidence atomic with claim; no new allocator/ledger"
+    },
+    {
+      "id": "C036",
+      "category": "Routing / capacity",
+      "capability": "Host-owned heterogeneous union production binding",
+      "canonical_owner": "Model Router \u2192 Shared AI Provider Control / Capacity \u2192 Executive claim",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S10",
+          "S11",
+          "S13",
+          "S14",
+          "S15",
+          "S23",
+          "S08"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "NOT_BUILT",
+      "evidence": [
+        "S10",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S23",
+        "S08"
+      ],
+      "why_not_stronger": "655 Runtime supports union; inspected service producer is single sealed Codex binding.",
+      "blocking_dependency": "Explicit service/config source scope and real eligible pair",
+      "next_vertical": "Existing host producer carries reviewed bounded union",
+      "production_proof_required": "Caller cannot widen union; root projections bind exact two approved realms"
+    },
+    {
+      "id": "C037",
+      "category": "Worker substrates",
+      "capability": "Canonical Codex worker",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "DARK_OR_DISCONNECTED",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "Latest root/kit records workers disabled/dark; no fresh runtime census overrides it.",
+      "blocking_dependency": "Installed/broker/realm/Capacity/provider policy gates",
+      "next_vertical": "First substantive claim\u2192broker\u2192Codex\u2192result",
+      "production_proof_required": "Real source task/tool steps/tests, normalized result and parent consumption"
+    },
+    {
+      "id": "C038",
+      "category": "Worker substrates",
+      "capability": "Alibaba OpenAI-compatible Responses lane",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "Protected realm/adapter substrate; profile still not unattended-authorized.",
+      "blocking_dependency": "Actual supported harness + policy + enrollment + capacity",
+      "next_vertical": "One lawful provider-specific proof on existing adapter",
+      "production_proof_required": "No endpoint alias or model string substitutes for correct real provider/usage mode"
+    },
+    {
+      "id": "C039",
+      "category": "Worker substrates",
+      "capability": "Claude-compatible external subscription lane",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "581 exists for GLM/Alibaba/MiniMax; not native Anthropic.",
+      "blocking_dependency": "Provider-specific admission; current profile restrictions",
+      "next_vertical": "One allowed external-provider workload through common broker",
+      "production_proof_required": "Exact provider, harness, realm and usage policy in receipt"
+    },
+    {
+      "id": "C040",
+      "category": "Worker substrates",
+      "capability": "Native Anthropic Claude worker",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "NOT_BUILT",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "No native descriptor/ClaudeCodeWorkerAdapter recovered; PF1 F0 remains held.",
+      "blocking_dependency": "PF1 original custody + FamilyB B0/current native identity",
+      "next_vertical": "Existing PF1 native worker vertical",
+      "production_proof_required": "Native-auth exact realm does useful WORK under Executive, without credentials crossing model boundary"
+    },
+    {
+      "id": "C041",
+      "category": "Worker substrates",
+      "capability": "MiniMax attended Token Plan route",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "Source and engineering canaries do not establish governed attended admission.",
+      "blocking_dependency": "Reviewed attended workload/policy/harness + exact realm",
+      "next_vertical": "One useful attended bounded task",
+      "production_proof_required": "Current policy mode preserved; result plus measured usage, not PONG"
+    },
+    {
+      "id": "C042",
+      "category": "Worker substrates",
+      "capability": "MiniMax unattended production route",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "NOT_BUILT",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "Protected profile disallows unattended/production; no separately approved production route proof.",
+      "blocking_dependency": "Explicit approved production/API policy and existing owner admission",
+      "next_vertical": "Qualify distinct production usage mode without flipping attended flags",
+      "production_proof_required": "Real unattended workload uses approved economic/credential mode with hard spend bound"
+    },
+    {
+      "id": "C043",
+      "category": "Worker substrates",
+      "capability": "OpenCode Go governed worker lane",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "622 kernel protected;652 spec realm; live engineering kit is not Executive.",
+      "blocking_dependency": "Current provider realm, shared quota, qualified harness",
+      "next_vertical": "One actual eligible Go WORK and exact-parent consumption",
+      "production_proof_required": "Shared debit measured; paid fallback off unless approved; same-session resumption contract verified"
+    },
+    {
+      "id": "C044",
+      "category": "Worker substrates",
+      "capability": "GLM governed worker lane",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "Profile present; current governance says unattended=false; kit percentage stale.",
+      "blocking_dependency": "Current lawful mode, quota, realm and harness",
+      "next_vertical": "Qualify one allowed GLM route via common owner",
+      "production_proof_required": "No benchmark/kit label promoted to worker eligibility"
+    },
+    {
+      "id": "C045",
+      "category": "Worker substrates",
+      "capability": "Qwen governed worker lane",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "Alibaba profile source; actual route/tool/version admission not proved.",
+      "blocking_dependency": "Same provider/realm/policy/harness gates",
+      "next_vertical": "Qualify one appropriate Alibaba/Qwen route",
+      "production_proof_required": "Expected structured tools/results and null/failure semantics"
+    },
+    {
+      "id": "C046",
+      "category": "Worker substrates",
+      "capability": "ACP provider-specific worker lane",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "575/579 source protected; descriptor still unimplemented/unarmed for general route.",
+      "blocking_dependency": "Exact SDK/native provider qualification + enrollment",
+      "next_vertical": "Qualify one real provider against original conformance seam",
+      "production_proof_required": "Advertised session/cancel/resume/permissions tested; normalized result on canonical lifecycle"
+    },
+    {
+      "id": "C047",
+      "category": "Worker substrates",
+      "capability": "Generic WorkerExecutionAdapter/broker",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "Common code protected; real heterogeneous runtime composition unproven.",
+      "blocking_dependency": "Real admitted worker behind fixed broker",
+      "next_vertical": "Use existing adapter factory and exact class binding",
+      "production_proof_required": "No caller-supplied fake adapter, private credential field or second broker"
+    },
+    {
+      "id": "C048",
+      "category": "Worker substrates",
+      "capability": "Harness binding catalog",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "583 protected; installed qualified binding/realm epoch unknown.",
+      "blocking_dependency": "Source policy + current owner enrollment",
+      "next_vertical": "One exact plan\u2192harness\u2192capability match",
+      "production_proof_required": "Wrong harness/model/version/schema/realm refuses before effect"
+    },
+    {
+      "id": "C049",
+      "category": "Worker substrates",
+      "capability": "Skills/MCP/plugin capability profile",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "Craft587-590 and native7114 held;684 fixture not production; sealed COO explicitly extension-free.",
+      "blocking_dependency": "Existing package/profile owners + appropriate executor",
+      "next_vertical": "One admitted worker receives bounded approved skill/tools",
+      "production_proof_required": "Exact package closure and effective tool grants, zero ambient extra tools"
+    },
+    {
+      "id": "C050",
+      "category": "Worker substrates",
+      "capability": "Browser catalog-bound Claude client projection",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "684 candidate tests real clients/browser with fake provider, no account/Executive proof.",
+      "blocking_dependency": "Independent review/current integration then admitted PF1/browser resource",
+      "next_vertical": "Use exact denied complement and server guard together",
+      "production_proof_required": "Real provider surface: one fill/paste, zero body keystrokes/Tab discovery, denied tool cannot execute"
+    },
+    {
+      "id": "C051",
+      "category": "Worker substrates",
+      "capability": "Four native Claude accounts / principal continuity",
+      "canonical_owner": "Existing worker broker/adapter; PF1 or named provider owner",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S12",
+          "S13",
+          "S22",
+          "S23",
+          "S27",
+          "S29"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "SPEC_ONLY",
+      "evidence": [
+        "S12",
+        "S13",
+        "S22",
+        "S23",
+        "S27",
+        "S29"
+      ],
+      "why_not_stronger": "Chairman intent current; portable native implementation and enrollment not ready.",
+      "blocking_dependency": "PF1 + FamilyB + ProviderControl + existing RuntimeBinding",
+      "next_vertical": "Admit one realm first, then legitimate distinct resource domains",
+      "production_proof_required": "Same responsibility survives qualified transition, no token/home copying or limit evasion"
+    },
+    {
+      "id": "C052",
+      "category": "Result / continuity",
+      "capability": "Normalized worker result",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "Common receipts protected; no actual current workflow consumption proof.",
+      "blocking_dependency": "Real claimed worker",
+      "next_vertical": "Publish bounded real result through existing owner",
+      "production_proof_required": "Exact Job/Attempt/Worker/head/output identity and schema"
+    },
+    {
+      "id": "C053",
+      "category": "Result / continuity",
+      "capability": "Exact independent reviewer binding",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "Native reviews exist; canonical runtime reviewer independence unproved.",
+      "blocking_dependency": "Real reviewer claim and source-author exclusion",
+      "next_vertical": "Bind review Job to exact candidate",
+      "production_proof_required": "Author cannot satisfy own required review; stale review cannot accept changed head"
+    },
+    {
+      "id": "C054",
+      "category": "Result / continuity",
+      "capability": "Bounded repair continuation",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "Source cycle exists; not real integrated rejection/repair proof.",
+      "blocking_dependency": "Review decision + reserved slots",
+      "next_vertical": "Continue exact responsibility within scope",
+      "production_proof_required": "Budget exhaustion typed and durable; no hidden child tree"
+    },
+    {
+      "id": "C055",
+      "category": "Result / continuity",
+      "capability": "Terminal RESULT projection",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "AD-RET1/406 source and later projections do not prove full live path.",
+      "blocking_dependency": "Actual worker return\u2192Dialogue\u2192parent",
+      "next_vertical": "Publish terminal result once",
+      "production_proof_required": "Duplicate delivery doesn\u2019t create duplicate acceptance or obligation"
+    },
+    {
+      "id": "C056",
+      "category": "Result / continuity",
+      "capability": "PROGRESS semantic projection",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "Transport reports exist; provider-neutral sustained producer not proven.",
+      "blocking_dependency": "AD-RET2 existing semantic-yield owner",
+      "next_vertical": "Coalesce meaningful progress",
+      "production_proof_required": "Progress is observable without waking principal on every token"
+    },
+    {
+      "id": "C057",
+      "category": "Result / continuity",
+      "capability": "BLOCKED semantic projection",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "SPEC_ONLY",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "No accepted governed sustained BLOCKED-to-decision-to-resume canary recovered.",
+      "blocking_dependency": "AD-RET2 producer/consumer integration",
+      "next_vertical": "Worker emits durable typed blocker",
+      "production_proof_required": "Exact authorized principal gets actionable obligation, not voluntary Slack prose only"
+    },
+    {
+      "id": "C058",
+      "category": "Result / continuity",
+      "capability": "DECISION_REQUEST semantic projection",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "SPEC_ONLY",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "Same no-orphan vertical unproved.",
+      "blocking_dependency": "AD-RET2 + exact action target",
+      "next_vertical": "Durable constrained decision request",
+      "production_proof_required": "Principal answer linked to same pending obligation and responsibility"
+    },
+    {
+      "id": "C059",
+      "category": "Result / continuity",
+      "capability": "Exact Sol/Fable attention",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "Existing binding/Wake substrate; latest root still has no concrete Claude8 pickup; incumbent responsibility remains bound.",
+      "blocking_dependency": "Accepted target binding/generation",
+      "next_vertical": "Deliver one real blocker to current target",
+      "production_proof_required": "Stale target cannot act; duplicate/wrong target ignored with evidence"
+    },
+    {
+      "id": "C060",
+      "category": "Result / continuity",
+      "capability": "Same-responsibility continuation",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "Existing binding/Wake substrate; latest root still has no concrete Claude8 pickup; incumbent responsibility remains bound.",
+      "blocking_dependency": "Current transfer/fence and effect reconciliation",
+      "next_vertical": "Resume by durable identity not latest tab",
+      "production_proof_required": "No duplicate Job or adoption of another session's unresolved effect"
+    },
+    {
+      "id": "C061",
+      "category": "Result / continuity",
+      "capability": "No-orphan invariant",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "Live closed-loop proof absent despite terminal source.",
+      "blocking_dependency": "AD-RET2 + durable obligation + exact target",
+      "next_vertical": "One real uncertainty answered and work resumed",
+      "production_proof_required": "Unreachable parent leaves durable visible pending obligation until consumed"
+    },
+    {
+      "id": "C062",
+      "category": "Result / continuity",
+      "capability": "Provider-native compaction",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "NOT_BUILT",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "CCTX0 exists; CCTX1 governed adapter not implemented in recovered source.",
+      "blocking_dependency": "Same-writer operation gate and exact notification ownership",
+      "next_vertical": "Native Codex compact once under existing checkpoint authority",
+      "production_proof_required": "Empty RPC ack insufficient; matching item+terminal turn; local refusal vs post-write unknown"
+    },
+    {
+      "id": "C063",
+      "category": "Result / continuity",
+      "capability": "Context/session succession",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "Existing checkpoint/binding substrates, no all-surface proof.",
+      "blocking_dependency": "CCTX1 + profile/native persistence + Web succession",
+      "next_vertical": "Recover after context/process loss",
+      "production_proof_required": "Exact state/version/fence; no raw transcript copy or global latest-session resume"
+    },
+    {
+      "id": "C064",
+      "category": "Result / continuity",
+      "capability": "Parent result consumption",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "Hermetic once-only consumption630; native child fixture684 is different boundary.",
+      "blocking_dependency": "Real parent identity + result availability",
+      "next_vertical": "Parent consumes actual final result",
+      "production_proof_required": "RESULT_DELIVERED != CONSUMED; receipt names authorized consuming parent"
+    },
+    {
+      "id": "C065",
+      "category": "Result / continuity",
+      "capability": "Exact ChatGPT Web-parent continuation",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "609/629/651 are precursors, not closed-tab unattended entry proof.",
+      "blocking_dependency": "Supported exact-target platform path + current source owner",
+      "next_vertical": "Prove active/closed/replaced-Web cases separately",
+      "production_proof_required": "No tab-title election, synthetic robot workaround or hidden metered substitution"
+    },
+    {
+      "id": "C066",
+      "category": "Result / continuity",
+      "capability": "Durable pending result with Web parent absent",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "629 source exists; installed actual pending path not proved.",
+      "blocking_dependency": "Completion publisher + persistent obligation + read projection",
+      "next_vertical": "Complete bounded work while Web unavailable",
+      "production_proof_required": "Result remains pending/retrievable; later exact parent consumption clears only once"
+    },
+    {
+      "id": "C067",
+      "category": "Result / continuity",
+      "capability": "Stable native session/output preservation",
+      "canonical_owner": "Executive result lifecycle; Company Dialogue / Relay / Wake; RuntimeBinding",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S14",
+          "S16",
+          "S17",
+          "S18",
+          "S29",
+          "S05"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S14",
+        "S16",
+        "S17",
+        "S18",
+        "S29",
+        "S05"
+      ],
+      "why_not_stronger": "Kit Go home cleaned; exact result/parent association missing in dated observation.",
+      "blocking_dependency": "Existing harness/artifact/RuntimeBinding owners",
+      "next_vertical": "Persist qualified bounded result/session reference before cleanup",
+      "production_proof_required": "No whole auth-home retention; exact resume or honest non-resumable classification"
+    },
+    {
+      "id": "C068",
+      "category": "Multi-host",
+      "capability": "Authenticated remote broker transport core",
+      "canonical_owner": "MH1 / existing Capacity and physical-resource owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S19",
+          "S20",
+          "S25"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S19",
+        "S20",
+        "S25"
+      ],
+      "why_not_stronger": "650 current candidate not protected/installed; loopback proof is not remote host.",
+      "blocking_dependency": "Current exact-head review/CI and custody release",
+      "next_vertical": "Finish same650 carrier; install later through existing owner",
+      "production_proof_required": "Real claimed Attempt traverses installed mTLS gateway and fixed local broker"
+    },
+    {
+      "id": "C069",
+      "category": "Multi-host",
+      "capability": "Remote transport authentication",
+      "canonical_owner": "MH1 / existing Capacity and physical-resource owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S19",
+          "S20",
+          "S25"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S19",
+        "S20",
+        "S25"
+      ],
+      "why_not_stronger": "TLS tests/dummy certificates do not enroll production peer identities.",
+      "blocking_dependency": "Accepted host-local cert/config ceremony",
+      "next_vertical": "Bind reviewed control\u2194worker host peer identities",
+      "production_proof_required": "Wrong peer/CA/fingerprint/host/worker refused without broker effect"
+    },
+    {
+      "id": "C070",
+      "category": "Multi-host",
+      "capability": "Control-host remote routing",
+      "canonical_owner": "MH1 / existing Capacity and physical-resource owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S19",
+          "S20",
+          "S25"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "SPEC_ONLY",
+      "evidence": [
+        "S19",
+        "S20",
+        "S25"
+      ],
+      "why_not_stronger": "Claim-selected transport path not live.",
+      "blocking_dependency": "Existing Capacity claim + MH1 integration",
+      "next_vertical": "Resolve only claim-authorized transport binding",
+      "production_proof_required": "Caller cannot choose host endpoint or substitute worker"
+    },
+    {
+      "id": "C071",
+      "category": "Multi-host",
+      "capability": "Remote claim binding",
+      "canonical_owner": "MH1 / existing Capacity and physical-resource owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S19",
+          "S20",
+          "S25"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S19",
+        "S20",
+        "S25"
+      ],
+      "why_not_stronger": "Closed envelope source; no live claim/host join.",
+      "blocking_dependency": "Accepted remote client + exact claim",
+      "next_vertical": "Bind Job/Attempt/Worker/operation/payload hash",
+      "production_proof_required": "Identity/hash drift refuses; no host-side lifecycle store"
+    },
+    {
+      "id": "C072",
+      "category": "Multi-host",
+      "capability": "Remote worker execution",
+      "canonical_owner": "MH1 / existing Capacity and physical-resource owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S19",
+          "S20",
+          "S25"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S19",
+        "S20",
+        "S25"
+      ],
+      "why_not_stronger": "Remote transport source and local worker substrate exist; their real production claim/execution composition was not established.",
+      "blocking_dependency": "Local worker proof + MH1 installed/qualified",
+      "next_vertical": "One substantive remote WORK",
+      "production_proof_required": "Tool steps/output/tests return to original root"
+    },
+    {
+      "id": "C073",
+      "category": "Multi-host",
+      "capability": "Remote lost-response reconciliation",
+      "canonical_owner": "MH1 / existing Capacity and physical-resource owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S19",
+          "S20",
+          "S25"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S19",
+        "S20",
+        "S25"
+      ],
+      "why_not_stronger": "Zero-retry semantics tested in source, not real disconnected production operation.",
+      "blocking_dependency": "Same remote Attempt/status read path",
+      "next_vertical": "Controlled post-write disconnect",
+      "production_proof_required": "One effect only; uncertainty retained until same-host evidence settles"
+    },
+    {
+      "id": "C074",
+      "category": "Multi-host",
+      "capability": "Host-specific credential custody",
+      "canonical_owner": "MH1 / existing Capacity and physical-resource owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S19",
+          "S20",
+          "S25"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S19",
+        "S20",
+        "S25"
+      ],
+      "why_not_stronger": "Architecture specified; per-host live realm credentials deliberately not inspected.",
+      "blocking_dependency": "Existing credential/realm owners",
+      "next_vertical": "Native host principal supplies credential-backed capability",
+      "production_proof_required": "No secret transported in broker envelope, result or model context"
+    },
+    {
+      "id": "C075",
+      "category": "Multi-host",
+      "capability": "Remote host failure recovery",
+      "canonical_owner": "MH1 / existing Capacity and physical-resource owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S19",
+          "S20",
+          "S25"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "SPEC_ONLY",
+      "evidence": [
+        "S19",
+        "S20",
+        "S25"
+      ],
+      "why_not_stronger": "No full failure rehearsal.",
+      "blocking_dependency": "MH1 + lifecycle supervisor + physical recovery",
+      "next_vertical": "Host loss then owner-authorized recovery",
+      "production_proof_required": "No alternate-host retry while original effect unresolved"
+    },
+    {
+      "id": "C076",
+      "category": "Multi-host",
+      "capability": "Second physical host production proof",
+      "canonical_owner": "MH1 / existing Capacity and physical-resource owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S19",
+          "S20",
+          "S25"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S19",
+        "S20",
+        "S25"
+      ],
+      "why_not_stronger": "Online tool endpoints are not claimed workers.",
+      "blocking_dependency": "One remote vertical and actual host qualification",
+      "next_vertical": "Qualify second physical host without new Runtime",
+      "production_proof_required": "End-to-end result + restart + wrong-host negative"
+    },
+    {
+      "id": "C077",
+      "category": "Multi-host",
+      "capability": "Three-host/fleet production proof",
+      "canonical_owner": "MH1 / existing Capacity and physical-resource owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S19",
+          "S20",
+          "S25"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S19",
+        "S20",
+        "S25"
+      ],
+      "why_not_stronger": "No real multi-host soak receipt.",
+      "blocking_dependency": "Two-host proof + per-host eligibility + capacity reservation",
+      "next_vertical": "Run bounded diverse host cohort",
+      "production_proof_required": "No oversubscription, duplicate effect or Chairman routing"
+    },
+    {
+      "id": "C078",
+      "category": "Multi-host",
+      "capability": "Studio bounded native read access",
+      "canonical_owner": "MH1 / existing Capacity and physical-resource owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S19",
+          "S20",
+          "S25"
+        ]
+      },
+      "current_runtime_install_identity": "Studio current Remote Desktop Commander read succeeded as uid501; no worker/runtime/credential mutation.",
+      "state": "PROVEN_LIVE",
+      "evidence": [
+        "S19",
+        "S20",
+        "S25"
+      ],
+      "why_not_stronger": "This narrow capability was actually used, not a worker admission.",
+      "blocking_dependency": "None for the observed bounded read; future permissions remain scoped",
+      "next_vertical": "Use read-only source/evidence access where authorized",
+      "production_proof_required": "Already observed Darwin/host identity/uid501 and successful GitHub/native evidence reads"
+    },
+    {
+      "id": "C079",
+      "category": "Operator experience",
+      "capability": "Control Room projection",
+      "canonical_owner": "Control Room / Workbench / existing projection and capability owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S21",
+          "S27",
+          "S29",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S21",
+        "S27",
+        "S29",
+        "S18"
+      ],
+      "why_not_stronger": "Protected UI/read substrates; installed current full lifecycle visibility not verified.",
+      "blocking_dependency": "Real canonical lifecycle + accepted UI deployment",
+      "next_vertical": "Expose one real root and its owed decision",
+      "production_proof_required": "Browser proof of true queued/claimed/result/consumed/accepted distinctions"
+    },
+    {
+      "id": "C080",
+      "category": "Operator experience",
+      "capability": "Workbench projection",
+      "canonical_owner": "Control Room / Workbench / existing projection and capability owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S21",
+          "S27",
+          "S29",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S21",
+        "S27",
+        "S29",
+        "S18"
+      ],
+      "why_not_stronger": "602/641 source protected; present client access/adoption not re-proved.",
+      "blocking_dependency": "Original registered Workbench auth and selected workspace",
+      "next_vertical": "Read real authorized work/result without mutation",
+      "production_proof_required": "Wrong workspace/principal denies; no observer-induced effect"
+    },
+    {
+      "id": "C081",
+      "category": "Operator experience",
+      "capability": "Visible turn/result projection",
+      "canonical_owner": "Control Room / Workbench / existing projection and capability owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S21",
+          "S27",
+          "S29",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S21",
+        "S27",
+        "S29",
+        "S18"
+      ],
+      "why_not_stronger": "675/678 protected; no installed real-provider proof; append-byte drift remains separate.",
+      "blocking_dependency": "Accepted install + real broker consumer",
+      "next_vertical": "Read current generation result after late old cleanup",
+      "production_proof_required": "Old grant cannot delete new result; paging loses none; memory bounded"
+    },
+    {
+      "id": "C082",
+      "category": "Operator experience",
+      "capability": "Objective/program/task frame",
+      "canonical_owner": "Control Room / Workbench / existing projection and capability owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S21",
+          "S27",
+          "S29",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S21",
+        "S27",
+        "S29",
+        "S18"
+      ],
+      "why_not_stronger": "646 producer-independent projection protected; real publisher not proved.",
+      "blocking_dependency": "Authoritative criteria/context producer + authenticated projection",
+      "next_vertical": "Render actual objective, criteria, child graph",
+      "production_proof_required": "No fixture-as-supplied or spec-as-shipped claim"
+    },
+    {
+      "id": "C083",
+      "category": "Operator experience",
+      "capability": "Live/degraded/unknown states",
+      "canonical_owner": "Control Room / Workbench / existing projection and capability owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S21",
+          "S27",
+          "S29",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S21",
+        "S27",
+        "S29",
+        "S18"
+      ],
+      "why_not_stronger": "Named degradation source exists; actual failure states not browser-tested here.",
+      "blocking_dependency": "Live consumer with current source coverage",
+      "next_vertical": "Show unavailable auth/host/capacity explicitly",
+      "production_proof_required": "Unknown not empty/healthy/done; no hidden missing jobs"
+    },
+    {
+      "id": "C084",
+      "category": "Operator experience",
+      "capability": "Parent/child/review graph",
+      "canonical_owner": "Control Room / Workbench / existing projection and capability owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S21",
+          "S27",
+          "S29",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S21",
+        "S27",
+        "S29",
+        "S18"
+      ],
+      "why_not_stronger": "664 source protected; actual joined hierarchy not product-proven.",
+      "blocking_dependency": "Existing read model actual events/joins",
+      "next_vertical": "Render one real reviewed root",
+      "production_proof_required": "Unjoined records visible; no PID/title/model-based joins"
+    },
+    {
+      "id": "C085",
+      "category": "Operator experience",
+      "capability": "Truthful quota/capacity visibility",
+      "canonical_owner": "Control Room / Workbench / existing projection and capability owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S21",
+          "S27",
+          "S29",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S21",
+        "S27",
+        "S29",
+        "S18"
+      ],
+      "why_not_stronger": "Display caches can lie; observer native snapshot can mutate GC.",
+      "blocking_dependency": "Provider Control facts + pure projection",
+      "next_vertical": "Read fresh shared-resource usage without launch",
+      "production_proof_required": "No new provider process/lease GC or fictional balance on refresh"
+    },
+    {
+      "id": "C086",
+      "category": "Operator experience",
+      "capability": "Web user result retrieval",
+      "canonical_owner": "Control Room / Workbench / existing projection and capability owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S21",
+          "S27",
+          "S29",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S21",
+        "S27",
+        "S29",
+        "S18"
+      ],
+      "why_not_stronger": "Result obligations/reads exist as source; exact current authenticated path not proved.",
+      "blocking_dependency": "Restored client + canonical result/artifact read",
+      "next_vertical": "User retrieves completed real output",
+      "production_proof_required": "Access scope and consumed-vs-available honest"
+    },
+    {
+      "id": "C087",
+      "category": "Operator experience",
+      "capability": "Browser/computer resource leasing",
+      "canonical_owner": "Control Room / Workbench / existing projection and capability owners",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S21",
+          "S27",
+          "S29",
+          "S18"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S21",
+        "S27",
+        "S29",
+        "S18"
+      ],
+      "why_not_stronger": "Existing browser/SCF/Fleet owners; current resources not qualified by684 fixture.",
+      "blocking_dependency": "Existing resource admission + native PF1 + host permissions",
+      "next_vertical": "One bounded admitted browser/computer job",
+      "production_proof_required": "Single-fill/paste policy, host-global clipboard isolation, release/reconcile, no secret-bearing observations"
+    },
+    {
+      "id": "C088",
+      "category": "Service consumers",
+      "capability": "Low-latency site AI",
+      "canonical_owner": "Existing site gateway / producer; Executive authority for durable work",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S24",
+          "S28",
+          "S13"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "PARTIAL",
+      "evidence": [
+        "S24",
+        "S28",
+        "S13"
+      ],
+      "why_not_stronger": "Existing site inference is not Fabric adoption; W0 policy candidate held.",
+      "blocking_dependency": "7179 workload gate + approved API mode",
+      "next_vertical": "Use existing site gateway with production-authorized inference",
+      "production_proof_required": "Real request, bounded latency, approved credential mode, no subscription fallback"
+    },
+    {
+      "id": "C089",
+      "category": "Service consumers",
+      "capability": "Durable research/maintenance service work",
+      "canonical_owner": "Existing site gateway / producer; Executive authority for durable work",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S24",
+          "S28",
+          "S13"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "SPEC_ONLY",
+      "evidence": [
+        "S24",
+        "S28",
+        "S13"
+      ],
+      "why_not_stronger": "Automated CEO identity does not itself authorize website service principal.",
+      "blocking_dependency": "Existing Executive authority policy must admit exact service workload",
+      "next_vertical": "One service-origin task under existing lifecycle",
+      "production_proof_required": "Non-CEO caller has explicit bounded grant; no impersonation/new queue"
+    },
+    {
+      "id": "C090",
+      "category": "Service consumers",
+      "capability": "AI Brief Fabric adoption",
+      "canonical_owner": "Existing site gateway / producer; Executive authority for durable work",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S24",
+          "S28",
+          "S13"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BROKEN",
+      "evidence": [
+        "S24",
+        "S28",
+        "S13"
+      ],
+      "why_not_stronger": "Profiled current7185 SDK happy path has unsupported seed; permissive fake hid failure.",
+      "blocking_dependency": "Original writer authorization/repair +7179 +bindingCI",
+      "next_vertical": "Correct original SDK invocation boundary and strict fake",
+      "production_proof_required": "Actual supported SDK accepts call; no replay after ambiguous TypeError; real published brief"
+    },
+    {
+      "id": "C091",
+      "category": "Service consumers",
+      "capability": "Paper portfolio Fabric consumer",
+      "canonical_owner": "Existing site gateway / producer; Executive authority for durable work",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S24",
+          "S28",
+          "S13"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "SPEC_ONLY",
+      "evidence": [
+        "S24",
+        "S28",
+        "S13"
+      ],
+      "why_not_stronger": "Broader portfolio redesign is separate; no governed Fabric consumer proof.",
+      "blocking_dependency": "Existing portfolio owner + approved model workload + validation",
+      "next_vertical": "One paper-only research/risk task through same Fabric",
+      "production_proof_required": "No live-capital effect; preserve point-in-time inputs and separate decision authority"
+    },
+    {
+      "id": "C092",
+      "category": "Service consumers",
+      "capability": "Future lobe maintenance consumer",
+      "canonical_owner": "Existing site gateway / producer; Executive authority for durable work",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S24",
+          "S28",
+          "S13"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "SPEC_ONLY",
+      "evidence": [
+        "S24",
+        "S28",
+        "S13"
+      ],
+      "why_not_stronger": "Intent defined; no accepted service-principal journey.",
+      "blocking_dependency": "Workload contract/rights + same Executive service admission",
+      "next_vertical": "One source refresh/maintenance job with real consumer",
+      "production_proof_required": "Correction/freshness/right-to-use and no second scheduler"
+    },
+    {
+      "id": "C093",
+      "category": "Service consumers",
+      "capability": "VPS installed-versus-loaded config observation",
+      "canonical_owner": "Existing site gateway / producer; Executive authority for durable work",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S24",
+          "S28",
+          "S13"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S24",
+        "S28",
+        "S13"
+      ],
+      "why_not_stronger": "7192 candidate exists; actual target process adoption not measured.",
+      "blocking_dependency": "Independent review + current integration + release + authorized adoption",
+      "next_vertical": "Read existing /api/cost in actual target before/after approved adoption",
+      "production_proof_required": "One cache; no read-induced reload; mismatches/unknowns private and honest"
+    },
+    {
+      "id": "C094",
+      "category": "Service consumers",
+      "capability": "Production policy/catalog generation synchronization",
+      "canonical_owner": "Existing site gateway / producer; Executive authority for durable work",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S24",
+          "S28",
+          "S13"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "SPEC_ONLY",
+      "evidence": [
+        "S24",
+        "S28",
+        "S13"
+      ],
+      "why_not_stronger": "Source publication alone does not update runtime or authorize credentials.",
+      "blocking_dependency": "Existing config release/Provider Control owners",
+      "next_vertical": "Publish one reviewed generation to actual consumer",
+      "production_proof_required": "Installed, loaded, effective and admitted remain separate; no OAuth cache sync"
+    },
+    {
+      "id": "C095",
+      "category": "Explicit non-goals",
+      "capability": "Second Executive/scheduler/quota/session/result/identity plane",
+      "canonical_owner": "Current Chairman direction and existing owner laws",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S01",
+          "S04",
+          "S08",
+          "S22"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "REJECTED_BY_DESIGN",
+      "evidence": [
+        "S01",
+        "S04",
+        "S08",
+        "S22"
+      ],
+      "why_not_stronger": "Would duplicate canonical authority and create unreconcilable effects.",
+      "blocking_dependency": "No authority to introduce it",
+      "next_vertical": "Use existing owners and approved scoped route",
+      "production_proof_required": "Negative architecture/custody tests; no such production component is created"
+    },
+    {
+      "id": "C096",
+      "category": "Explicit non-goals",
+      "capability": "Unreviewed cross-account/provider/host effect failover",
+      "canonical_owner": "Current Chairman direction and existing owner laws",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S01",
+          "S04",
+          "S08",
+          "S22"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "REJECTED_BY_DESIGN",
+      "evidence": [
+        "S01",
+        "S04",
+        "S08",
+        "S22"
+      ],
+      "why_not_stronger": "A missing response is not proof of no modification; authority remains on original carrier.",
+      "blocking_dependency": "No authority to introduce it",
+      "next_vertical": "Use existing owners and approved scoped route",
+      "production_proof_required": "Negative architecture/custody tests; no such production component is created"
+    },
+    {
+      "id": "C097",
+      "category": "Explicit non-goals",
+      "capability": "Routine local Fable/Opus implementation swarm",
+      "canonical_owner": "Current Chairman direction and existing owner laws",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S01",
+          "S04",
+          "S08",
+          "S22"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "REJECTED_BY_DESIGN",
+      "evidence": [
+        "S01",
+        "S04",
+        "S08",
+        "S22"
+      ],
+      "why_not_stronger": "Current Chairman commission reserves local Opus for bounded judgment, not default workforce.",
+      "blocking_dependency": "No authority to introduce it",
+      "next_vertical": "Use existing owners and approved scoped route",
+      "production_proof_required": "Negative architecture/custody tests; no such production component is created"
+    },
+    {
+      "id": "C098",
+      "category": "Explicit non-goals",
+      "capability": "Manual config edit as CEO activation",
+      "canonical_owner": "Current Chairman direction and existing owner laws",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S01",
+          "S04",
+          "S08",
+          "S22"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "REJECTED_BY_DESIGN",
+      "evidence": [
+        "S01",
+        "S04",
+        "S08",
+        "S22"
+      ],
+      "why_not_stronger": "Boolean editing does not establish the required transaction receipt or lifecycle readiness.",
+      "blocking_dependency": "No authority to introduce it",
+      "next_vertical": "Use existing owners and approved scoped route",
+      "production_proof_required": "Negative architecture/custody tests; no such production component is created"
+    },
+    {
+      "id": "C099",
+      "category": "Explicit non-goals",
+      "capability": "Workspace-Agent/API replacement executive as default",
+      "canonical_owner": "Current Chairman direction and existing owner laws",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S01",
+          "S04",
+          "S08",
+          "S22"
+        ]
+      },
+      "current_runtime_install_identity": "UNKNOWN: no lawful current Executive runtime/installed-adoption read for this capability; source is not runtime proof.",
+      "state": "REJECTED_BY_DESIGN",
+      "evidence": [
+        "S01",
+        "S04",
+        "S08",
+        "S22"
+      ],
+      "why_not_stronger": "Current economic/authority law rejects a second metered executive layer; optional supported surfaces require separate exception.",
+      "blocking_dependency": "No authority to introduce it",
+      "next_vertical": "Use existing owners and approved scoped route",
+      "production_proof_required": "Negative architecture/custody tests; no such production component is created"
+    },
+    {
+      "id": "C100",
+      "category": "Operator experience",
+      "capability": "Workspace storage admission against existing host policy",
+      "canonical_owner": "Existing mmx-workspace / worktree-storage policy / Source Continuity",
+      "source_identity": {
+        "mastermind_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+        "macro_pin": "459eafb838d9944e58e6a65413e282f2a13826ef",
+        "evidence_refs": [
+          "S35"
+        ]
+      },
+      "current_runtime_install_identity": "Production launcher unchanged; candidate-only disposable install probe reported; current Source Continuity auth unavailable",
+      "state": "BUILT_NOT_PROVEN",
+      "evidence": [
+        "S35"
+      ],
+      "why_not_stronger": "685 snapshot preflight is not atomic disk reservation or fleet adoption; defensive nested-input concern remains disclosed",
+      "blocking_dependency": "Independent review, source-continuity auth, exact-head CI/current-base proof, accepted installation",
+      "next_vertical": "Review existing685 three-path source without reproducing a platform-denied supplementary write; then independently authorized installed acquire/refuse/release proof",
+      "production_proof_required": "Accepted installed CLI uses unchanged owner policy, observes exact volume, refuses below floor before Git, and leaves status/release usable; no branch/workspace on refusal"
+    }
+  ]
+}

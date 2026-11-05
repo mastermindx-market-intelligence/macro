@@ -1,0 +1,4 @@
+.                                                                        [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/test_deploy_provenance.py::test_python_fixture_launcher_preserves_spaced_interpreter_and_arguments

@@ -21,6 +21,16 @@ and unknown future extensions pass:
 Protected responses are `private, no-store` and cannot be placed in the shared
 CDN cache. Internal mockup/QA pages return 404 to every user.
 
+### Shared Shell moved-page admission
+
+The Baskets China SEO redirect remains a fixed 301 to
+`/sector_central_china.html` for ordinary requests. Only the existing
+`mmx_shell=1` plus exact HTTPS beta-parent Referer admission bypasses that hop.
+It serves the existing moved-page stub through the unchanged framing, cache,
+region and payload boundaries; the stub requests a parent route replacement
+through the bridge. An HTTP redirect, even with the opt-in query retained, would
+report a different child URL against the parent's requested route generation.
+
 ### Keeping the two lists aligned
 
 `config/site_access.yml` is the policy of record; `app/deploy/Caddyfile`'s

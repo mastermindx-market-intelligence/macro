@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -29,6 +30,30 @@ DEFAULT_REQUIREMENTS = {
     "H9": ["opex_calendar", "event_identity"],
     "H10": ["opex_calendar", "session_calendar", "options", "treasury", "replacement", "sign_passport", "relative_performance", "volume_breadth", "broad_flow", "rebalance_pulse", "duration_calendar", "duration_study", "quarterly_calendar", "migration", "vx_calendar", "vx_curve", "event_identity"],
 }
+
+COUNT_FIELDS = ("row_count", "entity_count", "root_count")
+_CYCLE_PATTERN = re.compile(r"[0-9]{4}-[0-9]{2}")
+
+def _is_canonical_month(value):
+    """True only for a genuine canonical YYYY-MM calendar month.
+
+    ``fullmatch`` (not ``match``/``$``) is required so a trailing newline or any
+    other lookalike cannot slip past.  The digit class is ASCII-only so
+    non-ASCII numeric lookalikes are rejected rather than coerced by ``int()``.
+    """
+    if not isinstance(value, str) or _CYCLE_PATTERN.fullmatch(value) is None:
+        return False
+    year = int(value[:4])
+    month = int(value[5:])
+    return 1 <= month <= 12 and year >= 1
+
+def _is_nonnegative_count(value):
+    """True only for a nonnegative integer count.
+
+    ``bool`` is a subclass of ``int`` in Python, so booleans are rejected
+    explicitly; floats, strings and negative values are rejected as well.
+    """
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
 
 def _parse_explicit_time(value, field):
     if not isinstance(value, str):
@@ -72,8 +97,11 @@ def validate_record(record):
         _parse_explicit_time(record["available_at"], "available_at")
     if record["correction_at"] is not None:
         _parse_explicit_time(record["correction_at"], "correction_at")
-    if not isinstance(record["cycle_ids"], list) or not all(isinstance(cycle, str) and len(cycle) == 7 and cycle[4] == "-" for cycle in record["cycle_ids"]):
-        raise ValueError("cycle_ids must contain YYYY-MM monthly identifiers")
+    for field in COUNT_FIELDS:
+        if not _is_nonnegative_count(record[field]):
+            raise ValueError(f"{field} must be a nonnegative integer count")
+    if not isinstance(record["cycle_ids"], list) or not all(_is_canonical_month(cycle) for cycle in record["cycle_ids"]):
+        raise ValueError("cycle_ids must contain canonical YYYY-MM calendar month identifiers")
     return dict(record)
 
 def _era(cycle):

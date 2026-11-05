@@ -1,0 +1,148 @@
+{
+  "state": "RECONCILED_STAGE_VERIFIED_READONLY_DRYRUN",
+  "local_input_sha256": "5f9e5ca3fb624935ca65ec3c4c9677517769a713b765148ae82f9ee291e0faf8",
+  "current_remote_generation": "6ab0665a0783750f665b1b25",
+  "current_remote_manifest_sha256": "0c776ad3a061ff58e6c9695834eed229f769dfd74d9f005fc1d51ccc674bb4dc",
+  "current_etag": "\"9251609785a0fc97814d7c11e1a11920\"",
+  "new_generation": "8a27d8b450ab547be676fadc",
+  "new_manifest_sha256": "d3fd29d01e55e9ef8484b0722ec56aef2eec96b256bd4ba6db8ca4429b3d62d4",
+  "new_generation_path": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/financial-reconciliation-20261014/reconciled-stage/data/company_intelligence/event_workspaces/generations/8a27d8b450ab547be676fadc",
+  "incumbent_events_preserved": 5,
+  "defense_events_preserved": 5,
+  "event_count": 10,
+  "aliases_preserved": true,
+  "sources_facts_lifecycle_exact_except_generation_metadata": true,
+  "financial_counts": {
+    "GD": {
+      "literal": 0,
+      "typed_missing": 0,
+      "all_workspace_facts": 10
+    },
+    "LMT": {
+      "literal": 18,
+      "typed_missing": 10,
+      "all_workspace_facts": 33
+    },
+    "LHX": {
+      "literal": 21,
+      "typed_missing": 0,
+      "all_workspace_facts": 33
+    },
+    "RTX": {
+      "literal": 13,
+      "typed_missing": 0,
+      "all_workspace_facts": 18
+    },
+    "NOC": {
+      "literal": 14,
+      "typed_missing": 0,
+      "all_workspace_facts": 22
+    }
+  },
+  "observed_at": "2026-10-14T03:01:17.663171+00:00",
+  "upstream_writes": 0,
+  "source_owner_mutated": false,
+  "read_calls": [
+    {
+      "method": "GET",
+      "key": "company_intelligence/event_workspaces/manifest.json",
+      "conditional": false
+    },
+    {
+      "method": "GET",
+      "key": "company_intelligence/event_workspaces/generations/6ab0665a0783750f665b1b25/manifest.json",
+      "conditional": false
+    },
+    {
+      "method": "GET",
+      "key": "company_intelligence/event_workspaces/generations/6ab0665a0783750f665b1b25/workspaces/evt_cik0000320193_2026q3_results.json",
+      "conditional": false
+    },
+    {
+      "method": "GET",
+      "key": "company_intelligence/event_workspaces/generations/6ab0665a0783750f665b1b25/workspaces/evt_cik0000794170_2026q3_results.json",
+      "conditional": false
+    },
+    {
+      "method": "GET",
+      "key": "company_intelligence/event_workspaces/generations/6ab0665a0783750f665b1b25/workspaces/evt_cik0000795266_2026q3_results.json",
+      "conditional": false
+    },
+    {
+      "method": "GET",
+      "key": "company_intelligence/event_workspaces/generations/6ab0665a0783750f665b1b25/workspaces/evt_cik0000822416_2026q2_results.json",
+      "conditional": false
+    },
+    {
+      "method": "GET",
+      "key": "company_intelligence/event_workspaces/generations/6ab0665a0783750f665b1b25/workspaces/evt_cik0000882184_2026q3_results.json",
+      "conditional": false
+    },
+    {
+      "method": "GET",
+      "key": "company_intelligence/event_workspaces/manifest.json",
+      "conditional": true
+    },
+    {
+      "method": "GET",
+      "key": "company_intelligence/event_workspaces/manifest.json",
+      "conditional": true
+    },
+    {
+      "method": "GET",
+      "key": "company_intelligence/event_workspaces/manifest.json",
+      "conditional": false
+    },
+    {
+      "method": "HEAD",
+      "key": "company_intelligence/event_workspaces/generations/8a27d8b450ab547be676fadc/workspaces/evt_cik0000040533_2026q2_results.json"
+    },
+    {
+      "method": "HEAD",
+      "key": "company_intelligence/event_workspaces/generations/8a27d8b450ab547be676fadc/workspaces/evt_cik0000101829_2026q2_results.json"
+    },
+    {
+      "method": "HEAD",
+      "key": "company_intelligence/event_workspaces/generations/8a27d8b450ab547be676fadc/workspaces/evt_cik0000202058_2026q2_results.json"
+    },
+    {
+      "method": "HEAD",
+      "key": "company_intelligence/event_workspaces/generations/8a27d8b450ab547be676fadc/workspaces/evt_cik0000794170_2026q3_results.json"
+    },
+    {
+      "method": "HEAD",
+      "key": "company_intelligence/event_workspaces/generations/8a27d8b450ab547be676fadc/workspaces/evt_cik0000795266_2026q3_results.json"
+    },
+    {
+      "method": "HEAD",
+      "key": "company_intelligence/event_workspaces/generations/8a27d8b450ab547be676fadc/workspaces/evt_cik0000822416_2026q2_results.json"
+    },
+    {
+      "method": "HEAD",
+      "key": "company_intelligence/event_workspaces/generations/8a27d8b450ab547be676fadc/workspaces/evt_cik0000320193_2026q3_results.json"
+    },
+    {
+      "method": "HEAD",
+      "key": "company_intelligence/event_workspaces/generations/8a27d8b450ab547be676fadc/workspaces/evt_cik0000882184_2026q3_results.json"
+    },
+    {
+      "method": "HEAD",
+      "key": "company_intelligence/event_workspaces/generations/8a27d8b450ab547be676fadc/workspaces/evt_cik0000936468_2026q2_results.json"
+    },
+    {
+      "method": "HEAD",
+      "key": "company_intelligence/event_workspaces/generations/8a27d8b450ab547be676fadc/workspaces/evt_cik0001133421_2026q2_results.json"
+    },
+    {
+      "method": "HEAD",
+      "key": "company_intelligence/event_workspaces/generations/8a27d8b450ab547be676fadc/manifest.json"
+    },
+    {
+      "method": "GET",
+      "key": "company_intelligence/event_workspaces/manifest.json",
+      "conditional": true
+    }
+  ],
+  "dry_run_rc": 0,
+  "skillpack_sha": "1ffe6b566b9addb58d13893bfb78e8505dce1752"
+}
