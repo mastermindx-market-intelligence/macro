@@ -457,8 +457,11 @@
        blobs that used to wrap them are gone with the hero markup — the page-level
        .rvx-aurora backdrop and the hero's own radial wash do that work now. ── */
   .tc-chips { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 4px; }
+  /* A What-changed chip can carry a whole sentence ("… is the one losing the lead now —
+     that changed this session."); a nowrap chip 469px wide pushed a 390px phone sideways.
+     The chips wrap inside their own pill, the same rule as the US page. */
   .tc-chip { display:inline-flex; align-items:center; gap:5px; font-size:11.5px; padding:3px 9px;
-    border-radius:20px; border:1px solid; white-space:nowrap; text-decoration:none; color:inherit; }
+    border-radius:var(--r-pill,999px); border:1px solid; white-space:normal;max-width:100%; text-decoration:none; color:inherit; }
   .tc-chip:hover { opacity:.85; }
   .tc-chip.up  { background:rgba(74,222,128,.12); border-color:rgba(74,222,128,.35); color:var(--ink-up, var(--up)); }
   .tc-chip.dn  { background:rgba(248,113,113,.10); border-color:rgba(248,113,113,.30); color:var(--ink-down, var(--down)); }
