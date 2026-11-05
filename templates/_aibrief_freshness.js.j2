@@ -107,7 +107,7 @@
         var currentDate = dateOf(current);
         // Equal-date wrappers can contain surface-specific caller/footer markup.
         // Only a strictly newer state date is safe to move.
-        if (currentDate && candidate.date <= currentDate) return;
+        if (!currentDate || candidate.date <= currentDate) return;
 
         var replacement = cloneInto(localDocument, candidate.node);
         if (replaceNode(current, replacement)) changed += 1;

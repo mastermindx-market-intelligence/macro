@@ -244,3 +244,40 @@ Promise.resolve().then(() => {
 """
     )
     assert out == {"calls": 1}
+
+
+def test_invalid_local_dates_preserve_mounted_nodes() -> None:
+    out = _node(
+        _FAKE_DOM
+        + r"""
+const remoteDoc = makeDocument([new BriefNode('macro', '2026-09-11')]);
+function absentHeader() {
+  const node = new BriefNode('macro', '2026-09-10');
+  node.querySelector = function () { return null; };
+  return node;
+}
+const cases = [
+  ['absentHeader', absentHeader],
+  ['empty', function () { return new BriefNode('macro', ''); }],
+  ['malformed', function () { return new BriefNode('macro', '2026-9-11'); }],
+  ['invalidCalendar', function () { return new BriefNode('macro', '2026-02-30'); }],
+];
+const observed = {};
+cases.forEach(function (entry) {
+  const local = entry[1]();
+  local.mounted = 'original';
+  observed[entry[0]] = {
+    changed: api.applyNewerBriefs(makeDocument([local]), remoteDoc),
+    replacedWith: local.replacedWith,
+    identity: local.mounted,
+  };
+});
+process.stdout.write(JSON.stringify(observed));
+"""
+    )
+    assert out == {
+        "absentHeader": {"changed": 0, "replacedWith": None, "identity": "original"},
+        "empty": {"changed": 0, "replacedWith": None, "identity": "original"},
+        "malformed": {"changed": 0, "replacedWith": None, "identity": "original"},
+        "invalidCalendar": {"changed": 0, "replacedWith": None, "identity": "original"},
+    }

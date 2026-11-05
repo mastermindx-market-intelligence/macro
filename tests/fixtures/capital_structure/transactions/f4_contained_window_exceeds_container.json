@@ -1,0 +1,71 @@
+{
+  "fixture": "F4",
+  "origin": "adjudicated_gold",
+  "provenance_note": "Hand-built adjudicated gold record for SPEC_X0 \u00a74 fixture F4. Every observation and binding carries origin 'adjudicated_gold' with a decided_at: an owner decision over retained bytes, NOT extracted filing text and NOT a fabricated filing.",
+  "issuer_id": "cik:0001234567",
+  "security_class_id": "class:common:0001234567",
+  "paths": [
+    {
+      "path_id": "path:shelf:2025",
+      "file_number": "333-000001",
+      "sec_accepted_at": "2025-01-02T00:00:00Z"
+    }
+  ],
+  "observations": {
+    "itd0630": {
+      "transaction_id": "tx:f4-inception-to-0630",
+      "kind": "registered_takedown",
+      "reporting_basis": "cumulative",
+      "period_start": null,
+      "period_end": "2026-06-30",
+      "gross_proceeds_usd": "5000000",
+      "form": "424B5",
+      "accepted": "2026-06-30",
+      "target_kind": "registration_path",
+      "target_id": "path:shelf:2025",
+      "usage_class": "shelf_takedown",
+      "programme_key": null,
+      "programme_inception_date": null
+    },
+    "itd0930": {
+      "transaction_id": "tx:f4-inception-to-0930",
+      "kind": "registered_takedown",
+      "reporting_basis": "cumulative",
+      "period_start": null,
+      "period_end": "2026-09-30",
+      "gross_proceeds_usd": "4000000",
+      "form": "424B5",
+      "accepted": "2026-09-30",
+      "target_kind": "registration_path",
+      "target_id": "path:shelf:2025",
+      "usage_class": "shelf_takedown",
+      "programme_key": null,
+      "programme_inception_date": null
+    }
+  },
+  "coverage": {},
+  "cases": [
+    {
+      "label": "as_of_2026_09_30",
+      "as_of": "2026-09-30",
+      "observations": [
+        "itd0630",
+        "itd0930"
+      ],
+      "coverage": [],
+      "expected_support": "partial",
+      "expected": {
+        "usage_key": "shelf_usage:path:shelf:2025",
+        "status": "contradicted",
+        "usage": null,
+        "evidenced_floor": null,
+        "complete_through": "2026-09-30",
+        "note_contains": "contained_window_exceeds_container:tx:f4-inception-to-0630",
+        "roles": {
+          "tx:f4-inception-to-0630": "dominated",
+          "tx:f4-inception-to-0930": "window"
+        }
+      }
+    }
+  ]
+}

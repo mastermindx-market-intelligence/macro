@@ -16,8 +16,10 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from datetime import date, timedelta
+from hashlib import sha256
 from pathlib import Path
 
 import pytest
@@ -103,6 +105,7 @@ def _make_rich_blob(
         "limited": limited,
         "tech": {
             "price": 180.0,
+            "price_asof": asof,
             "above50": True,
             "above200": True,
             "pct_vs_50dma": 2.5,
@@ -1203,6 +1206,9 @@ def _rich_ctx() -> dict:
         "meta_desc": "Apple research dossier.",
         "jsonld_str": "{}",
         "freshness": today,
+        "price_as_of": today,
+        "daily_as_of": today,
+        "price_stale": False,
         "stale": False,
         "generated_utc": today + "T00:00:00Z",
         "stance_en": "Uptrend",
@@ -1509,6 +1515,7 @@ class TestTemplateRender:
         js = (_REPO / "site" / "assets" / "js" / "company-intelligence-dossier.js").read_text(encoding="utf-8")
 
         assert "earnings.public_wire_routes/v1" in js
+        assert "earnings.public_wire_routes/v2" in js
         assert "routes.events" in js
         assert "event_id" in js and "transcript_id" in js
         assert "history.hidden = events.length <= 1" in js
@@ -1525,6 +1532,25 @@ class TestTemplateRender:
         assert "?limit=8" not in js
         assert "source.kind === 'transcript' && source.status === 'present'" in js
         assert "typeof source.url" not in js
+
+    def test_company_intelligence_asset_stamp_matches_body_everywhere(self):
+        """Immutable browser URLs must change whenever the dossier asset changes."""
+        asset = _REPO / "site" / "assets" / "js" / "company-intelligence-dossier.js"
+        expected = f"company-intelligence-dossier.js?v={sha256(asset.read_bytes()).hexdigest()[:8]}"
+        template = (_REPO / "templates" / "ticker.html.j2").read_text(encoding="utf-8")
+        assert expected in template, "ticker template does not carry the dossier asset body hash"
+
+        result = subprocess.run(
+            ["git", "grep", "-n", "company-intelligence-dossier.js?v=", "--", "site/stocks"],
+            cwd=_REPO,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        references = [line for line in result.stdout.splitlines() if line]
+        assert references, "no committed ticker page references the dossier asset"
+        stale = [line for line in references if expected not in line]
+        assert not stale, f"stale immutable dossier asset URLs remain: {stale[:5]}"
 
     def test_ticker_template_no_validated_word(self):
         """The word 'validated' must not appear in rendered output."""
@@ -2803,3 +2829,109 @@ def test_build_peers_every_rendered_peer_satisfies_the_declared_rule() -> None:
         assert "nan" not in row["mktcap"].lower()
         assert "inf" not in row["mktcap"].lower()
     assert {p["ticker"] for p in peers} == {"OK1", "OK2"}
+
+
+# P12.T27: keep measured market, issuer-source and publication clocks distinct.
+def _clock_context(ticker="HTFL", price=59.05, observed="2026-10-30", news=None, missing=False):
+    blob = None if missing else _make_rich_blob(ticker, asof=observed)
+    if blob:
+        blob["tech"].update(price=price, price_asof=observed)
+    per = {"blob": blob, "blob_asof": observed if blob else None, "ohlc_bars": []}
+    agg = {"intel_map": {}, "news_map": {ticker: news} if news else {},
+           "member_ctx_map": {}, "factor_betas": {}, "tech_screener": {},
+           "baskets_map": {}, "factors_map": {}, "spy_bars": [],
+           "intel_as_of": "2026-11-02", "news_as_of": "2026-11-03"}
+    return build_page_context(ticker, ticker, "Financials", per, agg, "2026-11-03 01:00 UTC")
+
+
+@pytest.mark.parametrize("ticker,price", [("HTFL", 59.05), ("MIAX", 33.63), ("AAPL", 344.63)])
+def test_retained_price_clock_is_not_advanced_by_unrelated_global_receipts(ticker, price):
+    # Current retained owner stockdata + OHLC agree on these exact Oct30 closes.
+    ctx = _clock_context(ticker, price)
+    assert ctx["freshness"] == "2026-10-30"
+    assert ctx["price_as_of"] == ctx["daily_as_of"] == "2026-10-30"
+    assert float(ctx["hero"]["price"]) == price
+
+
+def test_missing_issuer_dates_remain_unknown_through_all_template_consumers():
+    ctx = _clock_context(missing=True)
+    assert ctx["freshness"] is None and ctx["price_as_of"] is None and ctx["daily_as_of"] is None
+    assert ctx["stale"] is True
+    ctx["seasonality"] = {"monthly": [{"month": "Jan", "win_rate": 50}],
+                          "this_label": "", "next_label": ""}
+    html = _jinja_env().get_template("ticker.html.j2").render(**ctx)
+    assert "Price observation date unavailable" in html and "价格观测日期未知" in html
+    assert "Source date unavailable" in html and "来源日期未知" in html
+    assert "As of None" not in html and "Data through None" not in html
+    assert "2026-11-03 01:00 UTC" in html   # actual generation remains labeled
+    meta = json.loads(ctx["jsonld_str"])
+    assert "datePublished" not in meta
+    assert meta["dateModified"] == "2026-11-03"
+
+
+def test_genuinely_newer_issuer_news_does_not_redate_daily_price_or_staleness():
+    news = {"top": [{"title": "Issuer report", "url": "https://example.org/report",
+                      "published": "2026-11-03T00:00:00Z"}]}
+    ctx = _clock_context(observed="2020-10-30", news=news)
+    assert ctx["freshness"] == "2026-11-03"
+    assert ctx["price_as_of"] == ctx["daily_as_of"] == "2020-10-30"
+    assert ctx["price_stale"] is True
+    html = _jinja_env().get_template("ticker.html.j2").render(**ctx)
+    assert "Price may be stale" in html
+    plain = " ".join(re.sub(r"<[^>]+>", " ", html).split())
+    assert "daily bars 日线数据 · 2020-10-30" in plain
+
+
+@pytest.mark.parametrize("clock", [None, "", "not-a-date"])
+def test_invalid_or_absent_observation_clock_is_not_filled_from_generation(clock):
+    blob = _make_rich_blob("HTFL", asof="2026-10-30")
+    blob["asof"] = clock
+    blob["tech"]["price_asof"] = clock
+    per = {"blob": blob, "blob_asof": clock, "ohlc_bars": []}
+    agg = {"intel_map": {}, "news_map": {}, "member_ctx_map": {}, "factor_betas": {},
+           "tech_screener": {}, "baskets_map": {}, "intel_as_of": "2026-11-03",
+           "news_as_of": "2026-11-03"}
+    actual = build_page_context("HTFL", "HTFL", "Financials", per, agg, "2026-11-03 01:00 UTC")
+    assert actual["freshness"] is None and actual["price_as_of"] is None
+
+
+def test_empty_issuer_news_and_date_only_intelligence_cannot_refresh_a_source():
+    from scripts.build_ticker_pages import _issuer_clocks
+    per = {"blob": {"asof": "2026-10-30", "tech": {"price": 59.05,
+                    "price_asof": "2026-10-30"}}, "blob_asof": "2026-10-30"}
+    for empty in [None, []]:
+        clocks = _issuer_clocks(per, {"ticker": "HTFL", "asof": "2026-11-03"},
+                                {"asof": "2026-11-03", "top": empty})
+        assert clocks["freshness"] == "2026-10-30"
+
+
+def test_unknown_generation_does_not_reuse_an_observation_as_publication_date():
+    meta = _build_meta("HTFL", "HTFL", None, "Watch", "2026-10-30", False, "")
+    schema = json.loads(meta["jsonld_str"])
+    assert "datePublished" not in schema and "dateModified" not in schema
+
+
+@pytest.mark.parametrize('intel', [
+    {'ticker': 'HTFL', 'asof': '2026-11-03', 'schema': 'intel.v1', 'version': 1, 'has_news': True},
+    {'asof': '2026-11-03', 'read': {'generated_at': '2026-11-03'}},
+    {'asof': '2026-11-03', 'brain': {'confidence': True}},
+])
+def test_metadata_only_intelligence_cannot_advance_an_issuer_clock(intel):
+    from scripts.build_ticker_pages import _issuer_clocks
+    per = {'blob': {'asof': '2026-10-30', 'tech': {'price': 59.05, 'price_asof': '2026-10-30'}},
+           'blob_asof': '2026-10-30'}
+    assert _issuer_clocks(per, intel, None)['freshness'] == '2026-10-30'
+    assert _issuer_clocks(per, {'asof': '2026-11-03', 'alt': {'signal_score': 0}}, None)['freshness'] == '2026-11-03'
+
+
+@pytest.mark.parametrize('top', [None, {}, {'title': 'metadata'}, [True],
+    [{'title': True, 'url': True, 'published': '2026-11-03'}],
+    [{'title': 'Headline', 'url': 'javascript:void(0)', 'published': '2026-11-03'}],
+    [{'title': 'Headline', 'url': 'https://example.org', 'published': None}],
+    [{'title': 'Headline', 'url': 'https://example.org', 'published': 'not-a-date'}],
+])
+def test_malformed_or_undated_news_cannot_borrow_the_row_receipt(top):
+    from scripts.build_ticker_pages import _issuer_clocks
+    per = {'blob': {'asof': '2026-10-30', 'tech': {'price': 59.05, 'price_asof': '2026-10-30'}},
+           'blob_asof': '2026-10-30'}
+    assert _issuer_clocks(per, None, {'asof': '2026-11-03', 'top': top})['freshness'] == '2026-10-30'

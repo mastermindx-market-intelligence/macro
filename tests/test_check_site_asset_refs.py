@@ -18,6 +18,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from scripts import check_site_asset_refs as mod  # noqa: E402
@@ -200,3 +202,22 @@ def test_soft_and_hard_together_fail_on_the_hard_one(tmp_path):
         '<a href="/stocks/DELISTED.html">soft</a>'
         '<link rel="stylesheet" href="assets/css/deadbe.css">', encoding="utf-8")
     assert main([str(site)]) == 1
+
+
+@pytest.mark.parametrize(("page", "nav_prefix"), [("stock.html", ""), ("stocks/NVDA.html", "../")])
+def test_ticker_news_signin_resolves_to_existing_landing_flow(tmp_path, page, nav_prefix):
+    """The shared panel must not make every rendered stock page link a 404."""
+    from jinja2 import Environment, FileSystemLoader
+
+    templates = Path(__file__).resolve().parent.parent / "templates"
+    assert (templates / "index.html").is_file()
+    assert (templates / "news.html.j2").is_file()
+    panel = Environment(loader=FileSystemLoader(templates)).get_template("ticker_news_panel.html.j2")
+    rendered = panel.render(ticker="NVDA", nav_prefix=nav_prefix, t=lambda en, zh: en)
+    site = _site(tmp_path)
+    _page(site, "index.html", "Existing landing sign-in flow")
+    _page(site, "news.html", "News Intelligence")
+    _page(site, page, rendered)
+
+    assert find_dangling(site) == {}
+    assert f'data-tn-signin href="{nav_prefix}index.html?signin=1"' in rendered
