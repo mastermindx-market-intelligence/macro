@@ -1,0 +1,37 @@
+{
+  "started_at": "2026-10-20T14:38:39.082106+00:00",
+  "head": "140bd1ee79a44859915595fdf12c958c07a60e2b",
+  "base": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "incoming": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "manifest_jobs": 336,
+  "manifest_three_way_all_fields_and_ids_pass": true,
+  "incoming_and_head_path_sequences_and_exact_counter_union_preserved": true,
+  "all_new_jobs_preserved": [
+    "china-altdata-catalysts",
+    "china-mechanics-display",
+    "china-sector-desk-gate",
+    "cn-reversal-sleeve-display",
+    "narrative-radar-display",
+    "pick-lab-cn-render"
+  ],
+  "test_ast_equals_incoming_except_two_previously_measured_constants_and_preserved_history": true,
+  "manifest_sha256": "4480d625db57e1192e69d088e16b63eea8d11f368a442739fbe3d29951391a2e",
+  "test_sha256": "a94e09b28fa32fc34f532f7eaaa175873128397b844fb99863323c2000328831",
+  "canonical_merge_receipt_sha256": "d0a4a4cc297b705118c762b10d923251ba72adf735f7d3dcfa51ce2fdca19bf5",
+  "source_writes_started": true,
+  "index": "1d9a8aa520a2f72551cd49580558f23a73b36492",
+  "resolved_files": {
+    "site/etfs.html": {
+      "bytes": 97337,
+      "sha256": "10157cd76547ebb1ee0b3f4ce430617a8b8e0c21f0c98682ad50387fd404d1ec"
+    },
+    "site/us_stocks.html": {
+      "bytes": 742422,
+      "sha256": "95837a723a8a5977f7dbbe5929d9f2ea64c337bd246c26b5d74beef609b6a345"
+    }
+  },
+  "p0b82_stage_and_raw_bindings_unchanged": true,
+  "deployment_paths_unchanged_vs_accepted_N2": [],
+  "candidate_paths_vs_incoming": 748,
+  "finished_at": "2026-10-20T14:38:55.378909+00:00"
+}

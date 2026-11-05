@@ -1,5 +1,129 @@
 ---
 workstream: WS:CHAIRMAN-CONTROL-ROOM
+session: macro-backlog-oldest-first-20261105-c3/pr7000-records-qualification
+model: sol
+ended_because: blocked
+mission: >
+  Qualify the September 8 decision-organism incident dossier and handoff for
+  historical records publication under Mastermind issue2028. Preserve original
+  observations and authority limits without reviving its unplaced R0, admitting
+  implementation or claiming investment-product acceptance.
+state_before: >
+  The two-record PR preserved September 8 evidence, but the handoff's parsed
+  next_actions still instructed placement of the old R0. The September 9 ruling
+  superseded that proposal through a separate bounded active-consumer admission.
+  A November 5 PR-body qualification alone left the committed handoff misleading.
+changed:
+  - path: agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-08-decision-organism-incident-delta.md
+    what: >
+      Add this current records-publication qualification and preserve the complete
+      original September 8 handoff verbatim in the historical block below. Replace
+      active R0 placement instructions with current source/effect reconciliation.
+      No implementation, dispatch, production or trading effect is admitted here.
+  - path: research/prophet_v4/DECISION_ORGANISM_INCIDENT_DELTA_2026-09-08.md
+    what: >
+      Preserve the complete dated research record unchanged at original Git blob
+      5073b0a9a197807bc1d24ed8c84f0c34748643ff. Its incident, source-clock, runtime,
+      causal and acceptance limits remain historical; publication does not refresh them.
+verified:
+  - claim: The exact original two-record source and later superseding ruling were read.
+    command: >
+      GitHub read Macro PR7000 at 177fb09f9039c8f4de578da031c02f4c0ddb2250,
+      compare its two added paths, and read issuecomment5601033167 on PR7000.
+    result: >
+      The original handoff blob is 573c7e4a0aece9f4ccd534af5e4c28cc142fa470.
+      The complete original text is retained below; the research blob is unchanged.
+      The later ruling is not pickup or START of the proposed September 8 R0.
+  - claim: The September 9 ruling replaces the dated unplaced-R0 next action.
+    command: >
+      Read https://github.com/mastermindx-market-intelligence/Macro/pull/7000#issuecomment-5601033167.
+    result: >
+      The ruling records seven selected-real-function cases and admits the separate
+      source operation prophet-rotation-consumer-read-20260909-sol-001 in the
+      existing Mastermind consumer. It is not whole-program acceptance, live PM
+      proof, historical incident replay, source ownership transfer or trading authority.
+unverified:
+  - claim: The later consumer implementation is integrated, deployed and accepted.
+    what_would_verify: >
+      Reconcile that operation's actual current source, review, CI, release and
+      served-consumer receipts through its canonical carriers. This archive and
+      the September 9 admission do not establish those subsequent effects.
+  - claim: The September incident's exact production consumption and financial causation are proved.
+    what_would_verify: >
+      Existing entitled production receipts, actual PM decisions, source clocks and
+      frozen PIT/prospective evidence. No such missing proof is manufactured here.
+  - claim: The historical China weekly-member test has a resolved execution outcome.
+    what_would_verify: >
+      Reconcile its original carrier and exact uncertain effect. The September 9
+      ruling retained uncertainty after ENOENT and a blocked composite read.
+      Neither this publication nor a fresh carrier establishes absence.
+unresolved:
+  - This records-publication candidate still requires current checks, eligible non-author approval and individual release.
+  - The current implementation and product-proof obligations remain on their existing source and runtime carriers.
+  - Historical missing production, PIT and incident-causation receipts remain missing in this record.
+next_actions:
+  - >
+    The currently assigned receiver should finish exact-head records review and
+    current CI, then record a records-only hold disposition and individual
+    merge-on-green admission under the existing delivery workflow when qualified.
+  - >
+    For any subsequent consumer recovery, reconcile current canonical evidence for
+    prophet-rotation-consumer-read-20260909-sol-001 and the existing P0-C/Prophet
+    owners before acting; protect actual live writers and unresolved effects.
+    Do not commission or place the superseded September 8 R0.
+  - >
+    Continue source-clock or incident reconciliation only within current authority,
+    preserving unknown values, no-hindsight boundaries and the original denied
+    action fences. Historical session identities are not indefinite approval gates.
+do_not_redo:
+  - Do not revive decision-organism-active-consumer-contract-r0-20260908-astra-001 or invent its delivery, pickup or START.
+  - Do not create a new sector-rotation program, workstream, hypothesis store, Signal Bus, scheduler, queue or portfolio ledger.
+  - Do not retry explicitly denied host probes, composite reads or unqualified tests through another carrier.
+  - Do not replace live writers or duplicate an unresolved source, runtime, publication or test effect.
+  - Do not turn descriptive research, synthetic selected-function results, summaries or sentiment into trade origination or sizing authority.
+  - Do not change the stock-only paper mandate, arm rotation starters or retune weights to reproduce the incident narrative.
+  - Do not equate records publication, green CI, merge, service health or admission with delivered investment capability.
+danger_areas:
+  - The complete original handoff below is dated history; its R0 placement, preferred receiver and proposed R1 sequencing are superseded, not current instructions.
+  - Selected-real-function probes do not prove full-suite, historical replay, live MCP/PM behavior or loss attribution.
+  - Artifact timestamps and committed output are not immutable historical inputs or proof of actual production consumption.
+  - Shared proxy symbols do not replace distinct native basket identities; freshness and malformed or future timestamps must retain their actual meaning.
+  - Existing no-money-authority boundaries, denied actions and unresolved effects remain binding until canonically resolved.
+---
+
+# November 5 records-publication qualification
+
+This qualification addresses the non-author review of PR7000. It changes the
+committed handoff's current instructions while preserving both original records.
+The September 8 dossier remains evidence from its stated generation. Its source
+observations, legacy-versus-active consumer distinction, missing runtime receipts,
+qualified incident causation and no-money-authority limits remain intact.
+
+[The September 9 ruling](https://github.com/mastermindx-market-intelligence/Macro/pull/7000#issuecomment-5601033167)
+superseded the old unplaced R0 proposal. It recorded seven selected-real-function
+cases and admitted a separate bounded source repair in the existing consumer:
+`prophet-rotation-consumer-read-20260909-sol-001`. That ruling explicitly did not
+start R0, accept this entire records PR, take over an existing writer or prove
+later implementation and production outcomes. Current continuation must follow
+that operation's canonical source/effect state and current Chairman authority.
+
+The existing recovery, Entry Truth, replay and cockpit responsibilities remain
+with their actual canonical carriers. Protect actual live writers and unresolved
+effects; a September author or chat name is not itself a present-day approval
+requirement. No denied host probe, historical test or old placement is repeated by
+this records publication.
+
+## Complete September 8 handoff — historical evidence
+
+The following block reproduces the original 13,469-character handoff verbatim
+from head `177fb09f9039c8f4de578da031c02f4c0ddb2250`, Git blob
+`573c7e4a0aece9f4ccd534af5e4c28cc142fa470`. Its frontmatter is quoted text, not
+the active parsed record. In particular, the unplaced R0 and proposed receiver
+are dated history superseded by the ruling linked above.
+
+``````markdown
+---
+workstream: WS:CHAIRMAN-CONTROL-ROOM
 session: sol/decision-organism-incident-delta-20260908-astra-001
 model: sol
 ended_because: blocked
@@ -185,3 +309,4 @@ R0 must return the exact active call chain, evidence/clock and cap/omission cont
 Company coordination remains the existing P0-C under `WS:CHAIRMAN-CONTROL-ROOM`, with hot-state carrier `C0BSBM78V1N/1788873598.257939`. Existing Prophet recovery remains PR6990 and its own `C0BSBM78V1N/1788585650.083679` carrier. Linking this record there is visibility, not a new source assignment or proof that another session consumed it.
 
 No implementation child, reciprocal watcher, Executive Job or automatic continuation was started by this record. A fresh session resumes from current protected law, current parent/PR evidence, this immutable dossier and actual placement state; it must not assume this Chat continued running after its turn ended.
+``````
