@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BKR-BULL-20260727",
-  "asof": "2026-10-02",
+  "asof": "2026-11-04",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 53.7,
-  "raw_confidence": 51.6,
-  "delta_vs_base": -6.3,
+  "management_confidence": 26.8,
+  "raw_confidence": 24.0,
+  "delta_vs_base": -33.2,
   "recommended_action": "hold",
-  "human_state": "Needs Follow-Through",
+  "human_state": "Stalling",
   "components": {
-    "validity": 65.6,
+    "validity": 16.3,
     "progress": 0.0,
-    "pace": 90.0,
+    "pace": 0.0,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.732,
+    "dist_to_stop_r": 0.261,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 15.6,
-    "p1": -0.1789,
-    "p2": -0.0894,
+    "horizon_pct_used": 88.9,
+    "p1": -0.4927,
+    "p2": -0.2463,
     "p3": null,
-    "move_r": -0.268,
+    "move_r": -0.739,
     "mfe_r": 0.0,
-    "mae_r": -0.43
+    "mae_r": -0.739
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Ahead of Schedule",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.8310546892053026e-06,
-  "_mae": -2.929998474121092,
+  "_mae": -5.0399990844726545,
   "_max_p1": 1.7898872817256127e-07,
   "_first_trigger_ts": "2026-09-26",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 7,
-  "tau": 0.1556
+  "days_elapsed": 40,
+  "tau": 0.8889
 }

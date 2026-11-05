@@ -1,0 +1,44 @@
+{
+  "bar_seconds": 1800,
+  "expected": {
+    "prepared_derive_calls": 1600,
+    "prepared_normalize_calls": 20,
+    "raw_derive_calls": 1600,
+    "raw_normalize_calls": 1600
+  },
+  "passes": [
+    {
+      "derive_calls": 1600,
+      "episodes_per_ticker": 16,
+      "horizons": [
+        "eod",
+        "1d",
+        "3d",
+        "5d",
+        "10d"
+      ],
+      "label": "raw-baseline",
+      "normalize_calls": 1600,
+      "tickers": 20,
+      "use_prepared": false
+    },
+    {
+      "derive_calls": 1600,
+      "episodes_per_ticker": 16,
+      "horizons": [
+        "eod",
+        "1d",
+        "3d",
+        "5d",
+        "10d"
+      ],
+      "label": "prepared-seam",
+      "normalize_calls": 20,
+      "tickers": 20,
+      "use_prepared": true
+    }
+  ],
+  "schema": "options.session_derivation_seam_profile/v1",
+  "scope": "derive_only_microprofile",
+  "session_date": "2026-07-02"
+}

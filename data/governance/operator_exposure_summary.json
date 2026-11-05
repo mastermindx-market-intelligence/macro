@@ -1,27 +1,33 @@
 {
   "schema": "operator_exposure_summary.v1",
-  "generated_at": "2026-10-03T04:13:32.224544+00:00",
+  "generated_at": "2026-11-05T06:36:35.535179+00:00",
   "window_days": 90,
-  "n_rows_in_window": 394,
+  "n_rows_in_window": 401,
   "by_day": [
     {
-      "as_of": "2026-09-30",
+      "as_of": "2026-10-29",
+      "counts": {
+        "alert_wh": 2
+      }
+    },
+    {
+      "as_of": "2026-10-30",
       "counts": {
         "alert_wh": 1
       }
     },
     {
-      "as_of": "2026-10-01",
+      "as_of": "2026-11-03",
       "counts": {
-        "board_buy": 47,
-        "board_watch": 63,
-        "alert_wh": 1
+        "board_buy": 54,
+        "board_watch": 45,
+        "alert_wh": 2
       }
     },
     {
-      "as_of": "2026-10-02",
+      "as_of": "2026-11-05",
       "counts": {
-        "experiment": 282
+        "experiment": 297
       }
     }
   ]
