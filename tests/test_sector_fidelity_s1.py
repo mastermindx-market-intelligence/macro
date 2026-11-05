@@ -136,7 +136,7 @@ def test_d8_reliability_cell_names_member_coverage():
 CITED_LINES = {
     (ACT_BOARD, 31): "more here — <a href=\"plans.html\">sign in",
     (ACT_BOARD, 64): "_ab_gate",
-    (DASHBOARD, 14510): "_atier == 'act'",
+    (DASHBOARD, 14690): "_atier == 'act'",
     (SUBSECTOR, 59): "min-height:420px",
     (SUBSECTOR, 124): "const sgn",
     (SUBSECTOR, 156): "const coverage",
