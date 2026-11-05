@@ -21,7 +21,7 @@ from scripts.verify_us_heatmap_return_browser import Handler, Server, SITE, KEY
 
 INSTRUMENT = r"""
 (() => {
-  const p = window.__d04Perf = {actions:[], arm:null, adds:0, removes:0, writes:0, boxes:0, longtasks:[]};
+  const p = window.__d04Perf = {actions:[], arm:null, adds:0, removes:0, writes:0, boxes:0, htmlWrites:0, htmlMs:0, longtasks:[]};
   const add = document.addEventListener.bind(document), remove = document.removeEventListener.bind(document);
   document.addEventListener = function(n,...a){if(n==='hm-refresh')p.adds++;return add(n,...a)};
   document.removeEventListener = function(n,...a){if(n==='hm-refresh')p.removes++;return remove(n,...a)};
@@ -32,6 +32,11 @@ INSTRUMENT = r"""
     if(this.hasAttribute('data-hm-key'))p.boxes++;
     return box.apply(this,a);
   };
+  const html=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');
+  Object.defineProperty(Element.prototype,'innerHTML',{...html,set(value){
+    const owned=this.classList.contains('hm-tm'),start=performance.now();
+    try{html.set.call(this,value)}finally{if(owned){p.htmlWrites++;p.htmlMs+=performance.now()-start}}
+  }});
   const intervals=new Set(), interval=window.setInterval.bind(window), clear=window.clearInterval.bind(window);
   window.setInterval=function(...a){const id=interval(...a);intervals.add(id);return id};
   window.clearInterval=function(id){intervals.delete(id);return clear(id)};
@@ -45,10 +50,11 @@ INSTRUMENT = r"""
     const arm=p.arm;
     if(!arm||arm.type!==type||!event.target.closest(arm.selector))return;
     p.arm=null;
-    const t=performance.now(),writes=p.writes,boxes=p.boxes;
+    const t=performance.now(),writes=p.writes,boxes=p.boxes,htmlWrites=p.htmlWrites,htmlMs=p.htmlMs;
     queueMicrotask(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
       p.actions.push({label:arm.label,event:type,next_frame_ms:performance.now()-t,
-        history_writes:p.writes-writes,keyed_box_reads:p.boxes-boxes});
+        history_writes:p.writes-writes,keyed_box_reads:p.boxes-boxes,
+        list_html_writes:p.htmlWrites-htmlWrites,list_html_ms:p.htmlMs-htmlMs});
     })));
   },true);
   try{new PerformanceObserver(list=>p.longtasks.push(...list.getEntries().map(e=>({start_ms:e.startTime,duration_ms:e.duration})))).observe({type:'longtask',buffered:true})}catch(e){}
@@ -65,7 +71,8 @@ INSTRUMENT = r"""
 def settle(page):
     page.evaluate("() => new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))")
 
-def action(page, selector, label, value=None):
+def action(page, selector, label, value=None, cdp=None):
+    metrics_before={x['name']:x['value'] for x in cdp.send("Performance.getMetrics")['metrics']} if cdp else {}
     before=page.evaluate("window.__d04Perf.actions.length")
     page.evaluate("a=>{window.__d04Perf.arm=a}", {
         "selector":selector,"label":label,"type":"input" if value is not None else "click"})
@@ -74,7 +81,12 @@ def action(page, selector, label, value=None):
     else:
         page.locator(selector).fill(value)
     page.wait_for_function("n=>window.__d04Perf.actions.length>n",arg=before)
-    return page.evaluate("window.__d04Perf.actions.at(-1)")
+    result=page.evaluate("window.__d04Perf.actions.at(-1)")
+    if cdp:
+        metrics_after={x['name']:x['value'] for x in cdp.send("Performance.getMetrics")['metrics']}
+        result["browser_duration_delta_ms"]={key:1000*(metrics_after.get(key,0)-metrics_before.get(key,0))
+            for key in ("ScriptDuration","LayoutDuration","RecalcStyleDuration","TaskDuration")}
+    return result
 
 def list_ready(page, key, expected):
     expect(page.locator(f'[data-hm-map="{key}"]')).to_have_attribute("aria-selected","true")
@@ -192,7 +204,7 @@ def main():
             "cpu":subprocess.check_output(["sysctl","-n","machdep.cpu.brand_string"],text=True).strip(),
             "cpu_throttle_rate":args.cpu_rate,"overlay_round_trips":not args.skip_overlay,"network":"loopback, no network throttling; external requests blocked",
             "terminal_fixture":"Existing MM_TERMINAL_BASE configured to match committed app-origin links; that origin is fulfilled by a labelled fixture without network/account/data access."},
-        "method":"Input/click capture to second animation frame; real generated assets and committed snapshots. CDP counters at identical warmed S&P List state after discarding debugger console handles and forced GC. Diagnostic wrappers count history writes, keyed geometry reads, refresh listeners and intervals.",
+        "method":"Input/click capture to second animation frame; real generated assets and committed snapshots. CDP counters at identical warmed S&P List state after discarding debugger console handles and forced GC. Diagnostic wrappers count history writes, keyed geometry reads, refresh listeners, intervals and list innerHTML assignment duration. Per-action CDP script/layout/style/task deltas include driver input preparation and must not be summed with overlapping event/assignment measurements.",
         "limitations":["Local instrumented lab proxy, not field INP/LCP/CLS, physical devices, production Terminal, sustained polling cadence or whole A063 acceptance.",
             "CPU throttling is a controlled stress condition, not an equivalence to named hardware.","Bounded-cycle counters cannot prove absence of every memory leak."],
         "data":{k:{"tiles":len(v['tiles']),"member_contexts":sum(len(t.get('members',[])) for t in v['tiles']),"asof":v.get("asof"),"source":v.get("source")} for k,v in server.payloads.items()},
@@ -238,7 +250,7 @@ def main():
                     page.locator(f'[data-hm-map="{key}"]').click()
                     list_ready(page,key,len(server.payloads[key]["tiles"]))
                     for query in ("a","ap","aapl","","technology","no-such-company",""):
-                        result["actions"].append(action(page,'.hm-search input',f"{key}:query:{query or 'clear'}",query))
+                        result["actions"].append(action(page,'.hm-search input',f"{key}:query:{query or 'clear'}",query,cdp))
                     list_ready(page,key,len(server.payloads[key]["tiles"]))
                     if key=="themes":
                         assert page.locator('.hm-member-row').count()==report["data"]["themes"]["member_contexts"]
@@ -246,20 +258,20 @@ def main():
                         page.wait_for_function("k=>(history.state[k]?.views.themes?.expanded.length||0)===document.querySelectorAll('details.hm-members').length",arg=KEY)
                         settle(page)
                         for query in ("a",""):
-                            result["actions"].append(action(page,'.hm-search input',f"themes-expanded:query:{query or 'clear'}",query))
+                            result["actions"].append(action(page,'.hm-search input',f"themes-expanded:query:{query or 'clear'}",query,cdp))
                         page.evaluate("document.querySelectorAll('details.hm-members').forEach(e=>{e.open=false})")
                         page.wait_for_function("k=>(history.state[k]?.views.themes?.expanded.length||0)===0",arg=KEY)
                     if width>560:
-                        result["actions"].append(action(page,'[data-hm-presentation="map"]',f"{key}:show-map"))
-                        result["actions"].append(action(page,'[data-hm-presentation="list"]',f"{key}:show-list"))
+                        result["actions"].append(action(page,'[data-hm-presentation="map"]',f"{key}:show-map",cdp=cdp))
+                        result["actions"].append(action(page,'[data-hm-presentation="list"]',f"{key}:show-list",cdp=cdp))
                 page.locator('[data-hm-map="sp500"]').click();list_ready(page,"sp500",503)
                 if not args.skip_overlay:overlay(page)
                 result["lifecycle"].append(snapshot(page,cdp,"warmed",server.requests_seen))
                 page.evaluate("window.__d04OldTm=new WeakRef(document.querySelector('.hm-tm'))")
                 for cycle in range(1,args.cycles+1):
-                    result["actions"].append(action(page,'[data-hm-map="themes"]',"cycle:themes"))
+                    result["actions"].append(action(page,'[data-hm-map="themes"]',"cycle:themes",cdp=cdp))
                     list_ready(page,"themes",268)
-                    result["actions"].append(action(page,'[data-hm-map="sp500"]',"cycle:sp500"))
+                    result["actions"].append(action(page,'[data-hm-map="sp500"]',"cycle:sp500",cdp=cdp))
                     list_ready(page,"sp500",503)
                     if not args.skip_overlay:overlay(page)
                     if cycle in {1,args.cycles//2,args.cycles}:

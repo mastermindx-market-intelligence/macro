@@ -1,0 +1,259 @@
+{
+  "schema": "d04.us_heatmap_lifecycle.v1",
+  "mode": "clean-retention",
+  "observed_at_utc": "2026-11-05T03:14:05.524532+00:00",
+  "source_head": "3acd4fb0efe00793fc9987f1a6e45a512b26e5dd",
+  "source_sha256": {
+    "templates/heatmap.js": "46dacb96574564d619cee764a23bdbef9c1748fcfe117ca88b2967f395b0f3e0",
+    "site/heatmap.js": "46dacb96574564d619cee764a23bdbef9c1748fcfe117ca88b2967f395b0f3e0",
+    "templates/sector_heatmap.html.j2": "610099544295a3b512aa889a52422ce8a1dc3429d249e6b502456e17670c9775",
+    "site/sector_heatmap.html": "9dbdfa0dcbd6bfdcb442595cae4ed82fdd7d1cf9b86e7ce1717723117f29ed93",
+    "scripts/verify_us_heatmap_lifecycle_browser.py": "d846a1e959b7cfb62cb32fa376b81355081b8c6ec0286ac6d86f68bbf8605f4b"
+  },
+  "environment": {
+    "os": "26.5",
+    "machine": "arm64",
+    "cpu": "Apple M2 Ultra",
+    "cpu_throttle_rate": 4,
+    "overlay_round_trips": true,
+    "network": "loopback, no network throttling; external requests blocked",
+    "terminal_fixture": "Existing MM_TERMINAL_BASE configured to match committed app-origin links; that origin is fulfilled by a labelled fixture without network/account/data access.",
+    "browser": "151.0.7922.34"
+  },
+  "method": "Input/click capture to second animation frame; real generated assets and committed snapshots. CDP counters at identical warmed S&P List state after discarding debugger console handles and forced GC. Diagnostic wrappers count history writes, keyed geometry reads, refresh listeners, intervals and list innerHTML assignment duration. Per-action CDP script/layout/style/task deltas include driver input preparation and must not be summed with overlapping event/assignment measurements.",
+  "limitations": [
+    "Local instrumented lab proxy, not field INP/LCP/CLS, physical devices, production Terminal, sustained polling cadence or whole A063 acceptance.",
+    "CPU throttling is a controlled stress condition, not an equivalence to named hardware.",
+    "Bounded-cycle counters cannot prove absence of every memory leak."
+  ],
+  "data": {
+    "sp500": {
+      "tiles": 503,
+      "member_contexts": 0,
+      "asof": "2026-11-02",
+      "source": "daily-close"
+    },
+    "themes": {
+      "tiles": 268,
+      "member_contexts": 2339,
+      "asof": "2026-11-03",
+      "source": "finviz-themes"
+    }
+  },
+  "viewports": [
+    {
+      "width": 1440,
+      "method": "CDP by-value document actions; no Playwright locator/expect target handles or event/timing wrappers. Controlled Terminal fixture when enabled; programmatic actions are lifecycle proof, not new trusted-input acceptance.",
+      "lifecycle": [
+        {
+          "documents": 10,
+          "nodes": 8506,
+          "jsEventListeners": 198,
+          "live": 5302,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 1,
+          "retired_tm_collected": null,
+          "label": "warmed",
+          "js_heap_used_bytes": 3613136,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        },
+        {
+          "documents": 10,
+          "nodes": 8506,
+          "jsEventListeners": 198,
+          "live": 5302,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 1,
+          "retired_tm_collected": true,
+          "label": "cycle-1",
+          "js_heap_used_bytes": 3667840,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        },
+        {
+          "documents": 10,
+          "nodes": 8506,
+          "jsEventListeners": 198,
+          "live": 5302,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 1,
+          "retired_tm_collected": true,
+          "label": "cycle-3",
+          "js_heap_used_bytes": 3748820,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        }
+      ],
+      "lifecycle_deltas": {
+        "live": 0,
+        "heatmap_nodes": 0,
+        "documents": 0,
+        "nodes": 0,
+        "jsEventListeners": 0,
+        "js_heap_used_bytes": 135684
+      },
+      "invariants": {
+        "stable_live_heatmap_nodes": true,
+        "retired_view_collected": true,
+        "no_retained_dom_growth": true,
+        "no_event_listener_growth": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      },
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "method": "CDP by-value document actions; no Playwright locator/expect target handles or event/timing wrappers. Controlled Terminal fixture when enabled; programmatic actions are lifecycle proof, not new trusted-input acceptance.",
+      "lifecycle": [
+        {
+          "documents": 2,
+          "nodes": 8427,
+          "jsEventListeners": 194,
+          "live": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "retired_tm_collected": null,
+          "label": "warmed",
+          "js_heap_used_bytes": 3221172,
+          "heatmap_requests": {
+            "sp500": 2,
+            "themes": 2
+          }
+        },
+        {
+          "documents": 2,
+          "nodes": 8427,
+          "jsEventListeners": 194,
+          "live": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "retired_tm_collected": true,
+          "label": "cycle-1",
+          "js_heap_used_bytes": 3242584,
+          "heatmap_requests": {
+            "sp500": 2,
+            "themes": 2
+          }
+        },
+        {
+          "documents": 2,
+          "nodes": 8427,
+          "jsEventListeners": 194,
+          "live": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "retired_tm_collected": true,
+          "label": "cycle-3",
+          "js_heap_used_bytes": 3353280,
+          "heatmap_requests": {
+            "sp500": 2,
+            "themes": 2
+          }
+        }
+      ],
+      "lifecycle_deltas": {
+        "live": 0,
+        "heatmap_nodes": 0,
+        "documents": 0,
+        "nodes": 0,
+        "jsEventListeners": 0,
+        "js_heap_used_bytes": 132108
+      },
+      "invariants": {
+        "stable_live_heatmap_nodes": true,
+        "retired_view_collected": true,
+        "no_retained_dom_growth": true,
+        "no_event_listener_growth": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      },
+      "page_errors": []
+    },
+    {
+      "width": 320,
+      "method": "CDP by-value document actions; no Playwright locator/expect target handles or event/timing wrappers. Controlled Terminal fixture when enabled; programmatic actions are lifecycle proof, not new trusted-input acceptance.",
+      "lifecycle": [
+        {
+          "documents": 2,
+          "nodes": 8427,
+          "jsEventListeners": 194,
+          "live": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "retired_tm_collected": null,
+          "label": "warmed",
+          "js_heap_used_bytes": 3221204,
+          "heatmap_requests": {
+            "sp500": 3,
+            "themes": 3
+          }
+        },
+        {
+          "documents": 2,
+          "nodes": 8427,
+          "jsEventListeners": 194,
+          "live": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "retired_tm_collected": true,
+          "label": "cycle-1",
+          "js_heap_used_bytes": 3242616,
+          "heatmap_requests": {
+            "sp500": 3,
+            "themes": 3
+          }
+        },
+        {
+          "documents": 2,
+          "nodes": 8427,
+          "jsEventListeners": 194,
+          "live": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "retired_tm_collected": true,
+          "label": "cycle-3",
+          "js_heap_used_bytes": 3353312,
+          "heatmap_requests": {
+            "sp500": 3,
+            "themes": 3
+          }
+        }
+      ],
+      "lifecycle_deltas": {
+        "live": 0,
+        "heatmap_nodes": 0,
+        "documents": 0,
+        "nodes": 0,
+        "jsEventListeners": 0,
+        "js_heap_used_bytes": 132108
+      },
+      "invariants": {
+        "stable_live_heatmap_nodes": true,
+        "retired_view_collected": true,
+        "no_retained_dom_growth": true,
+        "no_event_listener_growth": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      },
+      "page_errors": []
+    }
+  ],
+  "all_invariants_passed": true
+}

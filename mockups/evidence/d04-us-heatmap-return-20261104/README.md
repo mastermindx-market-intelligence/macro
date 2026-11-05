@@ -1,6 +1,16 @@
 # D04 — standalone US heatmap return, complete lists and bounded lifecycle work
 
-## Current lifecycle and performance continuation
+## Current Theme List query-render continuation
+
+The successor to `3acd4fb0efe00793fc9987f1a6e45a512b26e5dd` now reuses the complete current Theme List for query-only changes. In the comparable controlled 4× CPU probe, expanded-list clear fell from **678.2 to 175.6 ms**, and expanded query from **512.4 to 121.0 ms**. Query-only List HTML replacement fell from one to zero. The overall 26-action median did not improve; full renders and some clear actions remain slower than 200 ms.
+
+**90 semantic comparisons, 45 affected return cases, 89 Node tests and 84 focused Python tests pass.** Clean retention checks at desktop, 390 and 320 px found zero growth in retained nodes or event listeners. Root inspected the actual screenshots. Source, design, runtime-style and visual-evidence gates pass.
+
+The generated page requests **`heatmap.js?v=46dacb96`** and browser comparison fetched the exact candidate bytes. [Method and limits](THEME_QUERY_REUSE.md) · [Current validation](theme-query-reuse-validation.json).
+
+This section supersedes the earlier expanded-query gap and fingerprint below for this candidate. Historical measurements retain their original source and instrumentation. All 75 whole-programme cases remain unpromoted and release holds remain.
+
+## Historical lifecycle and performance continuation
 
 The published complete-List baseline is `61844ffd1b6e53d8e63122141b1125b3d6219bd3`. Its successor removes redundant US List/history work while preserving the delivered journeys below. History capture stops at the first visible row, skips the offscreen List when no row can be a visible anchor, and retains the original fallback. Filtering no longer repeats positioning, and restored disclosure notifications do not repeat an already-recorded history write.
 
