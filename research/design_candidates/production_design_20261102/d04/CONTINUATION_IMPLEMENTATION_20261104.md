@@ -27,6 +27,21 @@ Source JS SHA256 `1db708426877a937a085bffedc78fca2f74f54fe2669a9cfc6fb1c5ac81941
 
 **Qualification:** sparse workspace enrichment is incomplete. A normal builder invocation exposed zero sectors; that incomplete output was discarded. The deterministic evidence helper restores the exact committed 2026-11-03 ranking snapshot and projects the current control markup, preserving all ranked-row and Buy-zone bytes. No refreshed data or successful complete-input production rebuild is claimed. Ordinary company activation uses the incumbent overlay at all tested widths; the native document-return fixture explicitly follows the existing company URL. Fresh-document tests disable BFCache; fixtures do not prove live D07 content/authentication, cross-origin full-state transport, account persistence, Safari parity or production.
 
+### Top Picks coverage of existing programme subrequirements
+
+The current bundled acceptance artifact was read directly at blob `0dcbf7adea11e7b051936b004dbfdb546f7f81fb`. The following maps existing cases to the exact #10753 browser/source receipts; it creates no replacement acceptance plan and changes none of the 75 whole-case statuses.
+
+| Existing case | Newly evidenced Top Picks portion | Still outside this proof |
+| --- | --- | --- |
+| A015 — Top Picks dimensions | Scoped filter and all three views/both ranking sides; existing rank/entry/stretch/trend bytes retained; selected sector survives source reordering | Full served-product and all-module acceptance |
+| A016 — Snapshot/filter coherence | `reordered`, `missing-row`, `missing-sector` explain changed source/membership while preserving usable controls | Live refresh and account-saved definitions |
+| A042 — Exact return | Eight matrix `native-document-back-*` and `incumbent-overlay-return-*` cases; same-document Back/Forward; table offsets/focus; later user action preserved | Real D07 content/auth, cross-origin full state and universal BFCache parity |
+| A043 — Exceptional return | Invalid owned version/path/tab/side/sector/filter/source/position; foreign state shapes; replace failure; removed row/sector fallback | Different-account, protected-data and qualified external-origin journeys |
+| A050 — Phone completeness | 390px matrix, 320px ZH/light return; measured 44px controls/phone company links; contained horizontal tables | Compare/save/reopen, physical devices and all family workflows |
+| A052 — Locale parity | EN/ZH matrix and bilingual selection/filter/return disclosures without altering raw sector identity or supplied data | All programme exceptional states and cross-domain locale transport |
+| A053 — Keyboard/focus/touch | Tab semantics/navigation, ordinary link activation through incumbent overlay, table focus/scroll return, deliberate later focus/scroll; modifier-event ownership | OS/browser-chrome shortcut execution, every nested surface and placement transition |
+| A054 — Reflow/motion | Narrow viewport geometry and contained table scrolling; scoped reduced-motion CSS retained | Actual 400% browser zoom and a comprehensive runtime reduced-motion audit |
+
 ### Exact-head hosted checks
 
 At the first post-publication observation, #10753 was open/Draft/unmerged, native GitHub mergeable=true with mergeable_state=unstable, and auto_merge=null. Exact-head [ci 42004061273](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42004061273), [fences 42004060987](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42004060987) and [ci-authority 42004060319](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42004060319) were **queued**. Pending is not success. Root owns any actual introduced failure; no duplicate runner or polling daemon was started.
@@ -39,13 +54,44 @@ US Heatmap #10719 remains **`3b3d65c8b5484a6735dd1c8cf3e296a6b8ae0c7e`**. Exact-
 
 The Top Picks local-source phase's DONE_WHEN is met through original-owner held-draft publication and source-bound proof. Hosted checks remain separate. Final F01/F02 composition, D23 saved-object mutation, shared-shell/cross-origin return, final editable Paper and full ten-route production acceptance retain their owner gates.
 
-**Next exact actions:** consume the three #10753 exact-head runs and repair only an actual owned failure through this same operation; concurrently finish bounded read-only refresh of current F01/F02/D23 contracts and the retained D04 route/acceptance plan, select the next independent product journey, and continue in this healthy attended session if its custody and source contract qualify. Do not repeat completed evidence merely because CI is pending.
+**Next exact actions:** consume #10753's original runs when there is a meaningful status change and repair only an actual owned failure through its original operation. Dependency and next-phase reads are now complete; the source-owner refusal and concrete Quant Lab successor below govern the next source action. Do not repeat successful evidence, re-dispatch queued CI, or repeat the refused acquisition unchanged.
 
-The optional source-reasoning child returned two useful findings which were repaired and tested, then was accepted/STOP. The recovery child corroborated accepted Heatmap publication/CI and was accepted/STOP. Both have now received new bounded read-only dependency/next-phase assignments; neither has source-write, Paper, release or external-message authority. This is product/source reasoning, not mandatory independent review.
+The optional source-reasoning child returned two useful findings which were repaired and tested, then was accepted/STOP. The recovery child corroborated accepted Heatmap publication/CI and was accepted/STOP. Both subsequently completed bounded read-only dependency/next-phase assignments and were again accepted/STOP. Neither has source-write, Paper, release or external-message authority. No child or watcher is running. This was product/source reasoning, not mandatory independent review.
 
 Original optional Fabric commission `d04-us-heatmap-return-20261104-state-tests` retains **EFFECT_UNKNOWN / CONTROLLER_NOT_BOUND**, no proven START/root/result. It was not replayed, replaced or re-homed. The failed fleet-selection probe was not repeated; the original installed source publisher/configuration proved the existing m2studio carrier and served the unchanged operation.
 
 **HOLD:** #7727, #10705, #10719 and #10753 remain drafts. No merge, Ready/un-draft, enqueue, auto-merge, held relabel, deployment or purchase is authorized or performed. No Paper mutation, new admission/grant, auth plane, persistence plane or production acceptance is inferred.
+
+### Qualified dependency refresh and proposed next source phase
+
+The [updated foundation delta](FOUNDATION_DELTA_20261104.md) consumes F01 `dce261d07ebc993e8a9579cca2200e445b6636d4`, F02 design `3b27c7b9c8382ac8f21161a37b833dd6cb4f4933`, F02 source `aeecadd565322d5c26d44e7c0edd6ee4e5c4a856` and the bounded D23 owner evidence. F02 now has 32/32 native capture/export pairs, but strict final freeze still refuses original G15 terminal/retention uncertainty and the missing final receipt. Candidate.4 remains operative; no final joint v1 or qualified D04 account-save binding was found. Those dependencies do not prohibit an independently admitted standalone source phase.
+
+**Selected successor: Quant Lab availability and source provenance**, portions of **A017/A069**. Persona: a researcher opening a bookmarked analytical section, inspecting concentration/risk/stress context and needing a truthful explanation when inputs are unavailable.
+
+Fresh canonical Macro main was bound at **`3e4821132540270d52f6e83c29638ec2eeb16e3f`**. GitHub reported `protected=false` for that branch; no branch-rule change or release authority is inferred. Protected Mastermind law remains separately pinned above. Macro AGENTS blob `303d6c192bc7de52ec42605c351a88ea36d9c45c` is identical to the already consumed Top Picks base, so unchanged instructions were reused.
+
+Inspected exact source:
+- [advanced.html.j2](https://github.com/mastermindx-market-intelligence/macro/blob/3e4821132540270d52f6e83c29638ec2eeb16e3f/templates/advanced.html.j2), blob `05f28eac184d3348cea2c194f946a63438b2e521`: `#cross-asset` is omitted when verdict is unknown; `#risk-budget` and `#stress-replay` are omitted when risk budget is unavailable. The matrix heading hardcodes 63 days.
+- [build_site.py::build_advanced_page](https://github.com/mastermindx-market-intelligence/macro/blob/3e4821132540270d52f6e83c29638ec2eeb16e3f/scripts/build_site.py), blob `9887008093816001f04b8c623267a316bacd9c82`: snapshot exceptions leave render inputs None; producer-reported unknown dictionaries otherwise reach the template.
+- [cross_asset.py](https://github.com/mastermindx-market-intelligence/macro/blob/3e4821132540270d52f6e83c29638ec2eeb16e3f/engine/cross_asset.py), blob `92eba65e3054853fe49beeba17d2087c73d69aea`, and [portfolio.py](https://github.com/mastermindx-market-intelligence/macro/blob/3e4821132540270d52f6e83c29638ec2eeb16e3f/engine/portfolio.py), blob `11c34d1608312802b2aa5be84fb8780e7f277eab`: distinguish too few markets and insufficient overlapping history, and supply source observation dates; successful cross-asset supplies `window_d`.
+
+Bounded open-PR and registry reads found no identified incumbent for the three Advanced template sections. #7105 owns the distinct `quant_lab.html.j2` surface. This is not a universal live-writer census. Prefer a template-only change because existing render context already distinguishes a producer unknown record from an unavailable snapshot; `build_site.py` is shared and may be read/tested without changing unrelated builders. Any necessary shared-function hunk needs a fresh precise overlap check.
+
+**Implementation contract after source admission:**
+1. Retain all three exact anchor destinations for normal data, known insufficient-input/history states and unavailable snapshots. Explain each state in EN/ZH; missing analysis is not zero or a reassuring risk result.
+2. Show supplied source observation dates; never substitute page build time. Use supplied correlation `window_d`; absent metadata remains explicitly unavailable.
+3. Preserve normal matrix/PC1, weighting/risk-contribution and crisis values/order/units/qualifications, producer mathematics, other seven analytical modules and existing routes.
+4. Keep necessary wide table movement contained and keyboard reachable, with visible focus and narrow layouts using existing components/tokens. Avoid a new controller, router, save/auth plane or producer.
+5. Prove cold fragments and native Back/Forward against the actual rendered page in EN/ZH, dark/light, desktop/phone; include a non-63-day horizon, missing metadata, each producer unknown reason and snapshot exception. Preserve exact source hashes and screenshots, run focused existing regressions and applicable gates, then use the same admitted operation for held-draft publication.
+6. Record only three-module A017/A069 subcoverage; no whole-case, new model-validation, predictive-performance, final Paper or production acceptance.
+
+**Workspace action and exact refusal:** one acquisition was requested through the installed Studio owner for operation **`d04-quant-lab-availability-20261105`**, repository alias `macro`, exact base `3e4821132540270d52f6e83c29638ec2eeb16e3f`. It returned **REFUSED / NOT_APPLIED / REPOSITORY_SOURCE_UNAVAILABLE / INVALID_ARGUMENT**. No source edit, workspace path or branch is claimed.
+
+Same-owner repository inventory reports macro READY with admission_evaluated=false; this is not allocation permission. Same-operation publisher status returned TYPED_GIT_PRECHECK_REFUSED / NOT_APPLIED. Installed `mmx-workspace status --operation-id d04-quant-lab-availability-20261105 --lane web --repository macro` returned exit 2, NOT_APPLIED, **“workspace is not registered to the source repository.”** This qualifies the absence of an admitted carrier, not an unknown mutation effect or a whole-fleet outage. No acquisition retry, older-base fallback, raw worktree creation, source-owner configuration change, alternate host or alternate publication carrier was used.
+
+The next source action is blocked until the **existing workspace owner** resolves/qualifies this exact repository-source condition. Preserve the same operation and canonical intent; do not turn READY inventory into a grant or repeat the refusal unchanged. Root retains recovery ownership; no background repair worker, transport ACK or delegated START is claimed.
+
+The basket-date finding is retained with incumbents #7669, #8639 and D05 #10703: builder fallback from missing analytical as-of to basket creation date can be described as market close in the detail template. No overlapping basket hunk or D05 takeover was attempted.
 
 ---
 
