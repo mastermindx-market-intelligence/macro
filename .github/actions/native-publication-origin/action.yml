@@ -1,0 +1,21 @@
+name: Retain native publisher origin
+description: Upload the original producer envelope; upload does not mean publication
+inputs:
+  artifact-name:
+    description: Exact origin artifact name from the original publication operation
+    required: true
+  record-path:
+    description: Original producer ci-proof-admission.json file
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Retain original producer origin
+      if: inputs.artifact-name != '' && inputs.record-path != ''
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ inputs.record-path }}
+        if-no-files-found: error
+        retention-days: 7
+        overwrite: false
