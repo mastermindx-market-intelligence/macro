@@ -25,7 +25,10 @@ function boot(lang = 'en') {
       dispatch:k=>{for(const fn of listeners[k] || []) fn();}
     };
   }
-  for(const id of [...FIELDS,...OUTPUTS,'out-plain','copy-result','copied']) nodes[id]=element();
+  // Only materialize description nodes that exist in the real template/page markup.
+  const errorIds = [...source.matchAll(/\bid="([^"]+-error)"/g)].map(m=>m[1]);
+  assert.equal(new Set(errorIds).size, errorIds.length, 'error-description ids must be unique');
+  for(const id of [...FIELDS,...OUTPUTS,'out-plain','copy-result','copied',...errorIds]) nodes[id]=element();
   const attrs={'data-lang':lang};
   const document = {getElementById:id=>nodes[id],
     documentElement:{getAttribute:k=>attrs[k] ?? null},
@@ -49,7 +52,7 @@ for(const id of FIELDS) for(const token of ['n/a','?','Infinity','1e999']) {
     assert.equal(b.nodes['out-main'].textContent,'−$10,000');
     b.input(id,token); withheld(b);
     assert.equal(b.nodes[id].getAttribute('aria-invalid'),'true');
-    assert.equal(b.nodes[id].getAttribute('aria-describedby'),'out-plain');
+    assert.match(errorDescription(b,id), /valid amount/i);
     assert.match(b.nodes['out-plain'].textContent,/correct|valid amount/i);
     const before=b.writes.length; b.copy(); assert.equal(b.writes.length,before,'invalid result cannot be copied');
     b.input(id,'0');
@@ -123,4 +126,53 @@ for (const changedAmount of ['n/a','50']) test('a pending valid copy cannot rest
 test('editing a copied result invalidates its visible receipt immediately',()=>{
   const b=boot(); b.input('cash','100'); b.nodes.copied.classList.add('show');
   b.input('mortgage','n/a'); assert.equal(b.nodes.copied.classList.contains('show'),false);
+});
+
+// A shared summary can prioritize an error, but each invalid input must describe itself.
+const ERROR_NAMES = {
+  cash:['Cash & savings','现金与存款'], invest:['Investments','投资'],
+  retire:['Retirement accounts','退休账户'], realestate:['Real estate','房地产'],
+  vehicles:['Vehicles','车辆'], otherassets:['Other assets','其他资产'],
+  mortgage:['Mortgage','房贷'], loans:['Student & other loans','学生贷款及其他'],
+  creditcard:['Credit card debt','信用卡欠款'], otherdebts:['Other debts','其他债务']
+};
+function errorDescription(b,id) {
+  const refs=(b.nodes[id].getAttribute('aria-describedby')||'').split(/\s+/).filter(Boolean);
+  return refs.map(ref=>{
+    assert.ok(b.nodes[ref], id+' references a missing description: '+ref);
+    return b.nodes[ref].textContent;
+  }).join(' ');
+}
+for(const [li,lang] of ['en','zh'].entries()) for(const id of FIELDS) {
+  test(lang+' simultaneous error description identifies '+id,()=>{
+    const b=boot(lang); FIELDS.forEach(field=>b.input(field,'n/a')); withheld(b);
+    assert.equal(b.nodes[id].getAttribute('aria-invalid'),'true');
+    const description=errorDescription(b,id);
+    assert.ok(description.includes(ERROR_NAMES[id][li]),id+' incorrectly described as: '+description);
+  });
+}
+test('language changes relocalize every active field error without changing input values',()=>{
+  const b=boot(); FIELDS.forEach(id=>b.input(id,'n/a'));
+  b.language('zh'); withheld(b);
+  FIELDS.forEach(id=>{
+    assert.ok(errorDescription(b,id).includes(ERROR_NAMES[id][1]),id+' has no own Chinese description');
+    assert.equal(b.nodes[id].value,'n/a');
+  });
+  b.language('en');
+  FIELDS.forEach(id=>assert.ok(errorDescription(b,id).includes(ERROR_NAMES[id][0]),id+' has no own English description'));
+});
+test('partial correction clears its obsolete description and preserves other errors',()=>{
+  const b=boot(); FIELDS.forEach(id=>b.input(id,'n/a'));
+  const priorRefs=b.nodes.cash.getAttribute('aria-describedby').split(/\s+/);
+  b.input('cash','0'); withheld(b);
+  assert.equal(b.nodes.cash.getAttribute('aria-invalid'),null);
+  assert.equal(b.nodes.cash.getAttribute('aria-describedby'),null);
+  priorRefs.forEach(ref=>assert.equal(b.nodes[ref].textContent,'','corrected input retains stale description'));
+  assert.ok(errorDescription(b,'mortgage').includes('Mortgage'));
+  FIELDS.slice(1).forEach(id=>b.input(id,'0'));
+  assert.equal(b.nodes['out-main'].textContent,'$0');
+  FIELDS.forEach(id=>{
+    assert.equal(b.nodes[id].getAttribute('aria-describedby'),null);
+    assert.equal(b.nodes[id].getAttribute('aria-invalid'),null);
+  });
 });
