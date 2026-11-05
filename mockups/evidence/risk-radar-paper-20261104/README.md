@@ -97,3 +97,10 @@ the existing merge-on-green controller after checking CI and holds. Then verify
 the actual merge, covering render/generated publication, served assets and
 browser behavior on both www.mastermind-x.com/macro.html and
 beta.mastermind-x.com/macro.html. No new watcher or release mechanism is added.
+
+
+## CI repair qualification — 2026-11-05 UTC
+
+Repair source `530a11df95e2ed619b0a98e233bcd971c47ffd78` changes only the bilingual sentiment disclaimer and its obsolete sizing-copy regression, plus the implementation record. The changed regression was observed red before repair and green after; the unchanged source claims guard passes. The two-file local suite returned 42 passed, 4 skipped and 2 setup errors because this sparse checkout lacks the market-data store for unrelated real-feature fixtures; those are not reported as passes and no collectors were run.
+
+The existing EW-P4 probe actually regenerated 68 static cases and its 16 keyboard cases at that repair source; all 31 bound render/fixture Git blobs match and the source-equivalence regression passes. Its refreshed receipt is under `research/evidence/ew_p4_descriptive_ui_20261031/receipt.json`. The original 175 workspace checks and 32 canonical captures remain historical qualification at their stated source. They were not rerun or relabelled for this copy-only delta. CSS, JavaScript, calculations, feeds, access controls and the original review request remain unchanged. Hosted candidate CI, formal approval, independent release and both live-site acceptances remain separate unproven gates.
