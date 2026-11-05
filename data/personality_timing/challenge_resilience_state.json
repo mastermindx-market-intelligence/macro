@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-04",
+  "as_of": "2026-11-05",
   "authority": {
     "may_alert": false,
     "may_auto_promote": false,
@@ -38,7 +38,7 @@
   },
   "family": "pss_cr1_challenge_resilience_prospective",
   "gate_open": true,
-  "generated_utc": "2026-11-04T11:53:50.310034+00:00",
+  "generated_utc": "2026-11-05T07:23:31.640814+00:00",
   "ledger": {
     "advanced_today": 0,
     "appended_today": 0,
@@ -61,10 +61,10 @@
   "registration_ok": true,
   "scan_census": {
     "derived_events": 0,
-    "eligible_future_rh1_sources": 74,
+    "eligible_future_rh1_sources": 78,
     "reasons": {
-      "awaiting_challenge_window": 27,
-      "awaiting_or_no_challenge_yet": 46,
+      "awaiting_challenge_window": 29,
+      "awaiting_or_no_challenge_yet": 48,
       "no_challenge_in_complete_window": 1
     }
   },
