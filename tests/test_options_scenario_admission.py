@@ -585,6 +585,7 @@ def test_quote_capsule_survives_actual_scenario_output_and_json_roundtrip():
     assert capsule["underlying_quote"]["receipt"]["received_at"] == QUOTE_RECEIVED
     assert capsule["valuation_at"] == QUOTE_TARGET
     assert capsule["evaluated_at"] == QUOTE_EVALUATED
+    assert capsule["derived_input_sha256"] == wire_context["input_sha256"]
     assert capsule["pit_qualified"] is False
     assert capsule["historical_first_availability_established"] is False
     identity = capsule["implementation"]
@@ -652,4 +653,33 @@ def test_resealing_cannot_turn_a_caller_fabricated_model_identity_into_local_ide
     iv = context["greek_provenance"]["iv"]
     iv.update(source_ref=context["source_snapshot_ref"], implementation_sha256=forged,
         model_ref="black_scholes_merton|engine.intraday_greeks.implied_vol_vec|local-implementation-sha256:" + forged)
+    assert quoted_surface(g, oi, context)["unavailable_reasons"] == ["quote_valuation_provenance_unqualified"]
+
+
+@pytest.mark.parametrize("frame,field,value", [
+    ("greeks", "implied_vol", 1.5),
+    ("greeks", "underlying_price", 150.),
+    ("oi", "open_interest", 25),
+])
+def test_quote_numerical_frame_mutation_cannot_refresh_only_outer_digest(frame, field, value):
+    from copy import deepcopy
+    from engine.options_exposure_projection import exposure_input_digest
+    g, oi, context = compose_quote_valuation_inputs(**quote_valuation_case())
+    sealed_capsule = deepcopy(context["quote_valuation"])
+    sealed_ref = context["source_snapshot_ref"]
+    (g if frame == "greeks" else oi).loc[0, field] = value
+    context["input_sha256"] = exposure_input_digest(g, oi, QUOTE_DAY, "SPY")
+    out = quoted_surface(g, oi, context)
+    assert out["status"] == "unavailable"
+    assert out["unavailable_reasons"] == ["quote_valuation_provenance_unqualified"]
+    assert context["quote_valuation"] == sealed_capsule
+    assert context["source_snapshot_ref"] == sealed_ref
+
+
+def test_quote_derived_digest_is_required_even_with_a_resealed_capsule():
+    from engine.options_scenario_admission import _quote_capsule_ref
+    g, oi, context = compose_quote_valuation_inputs(**quote_valuation_case())
+    del context["quote_valuation"]["derived_input_sha256"]
+    context["source_snapshot_ref"] = _quote_capsule_ref(context["quote_valuation"])
+    context["greek_provenance"]["iv"]["source_ref"] = context["source_snapshot_ref"]
     assert quoted_surface(g, oi, context)["unavailable_reasons"] == ["quote_valuation_provenance_unqualified"]

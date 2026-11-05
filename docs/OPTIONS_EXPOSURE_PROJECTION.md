@@ -191,6 +191,12 @@ It is included in the sealed source reference and IV model reference. It identif
 the local implementation; it is not provider authentication, data admission, or PIT
 proof. A changed kernel/runtime identity withholds this source pending qualification.
 
+Before sealing, the composer also binds `derived_input_sha256` over the exact
+derived Greek and OI frames using the incumbent semantic input digest. Admission
+recomputes that digest from its actual frames and compares it with the sealed
+inner value. Refreshing only the separate outer `input_sha256` after changing IV,
+underlying price or OI cannot preserve the original derivation capsule.
+
 The existing scenario output retains the complete bounded capsule as
 `source.quote_valuation`, including raw events, transport/availability clocks,
 valuation/evaluation times, implementation identity and false PIT flags. Quote

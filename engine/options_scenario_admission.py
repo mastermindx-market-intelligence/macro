@@ -118,7 +118,7 @@ def _quote_capsule_ref(capsule):
     return "quote-valuation:sha256:" + hashlib.sha256(encoded).hexdigest()
 
 
-def _validated_quote_capsule(context):
+def _validated_quote_capsule(context, greeks_df, oi_df, asof, root):
     """Bounded integrity/semantics check; never a provider/PIT/rights grant."""
     capsule = context.get("quote_valuation")
     if not isinstance(capsule, dict):
@@ -142,6 +142,7 @@ def _validated_quote_capsule(context):
             or capsule.get("historical_first_availability_established") is not False
             or capsule.get("pit_qualified") is not False
             or capsule.get("implementation") != identity
+            or capsule.get("derived_input_sha256") != exposure_input_digest(greeks_df, oi_df, asof, root)
             or supplied != original
             or _quote_capsule_ref(capsule) != context.get("source_snapshot_ref")
             or not isinstance(iv, dict) or iv.get("implementation_sha256") != identity["sha256"]
@@ -275,7 +276,7 @@ def build_admitted_scenario_surface(greeks_df, oi_df, asof, root, *, request, so
         "clocks": deepcopy(clocks), "rights_decision_ref": context.get("rights_decision_ref")}
     if context["source_snapshot_ref"].startswith("quote-valuation:") or "quote_valuation" in context:
         try:
-            out["source"]["quote_valuation"] = _validated_quote_capsule(context)
+            out["source"]["quote_valuation"] = _validated_quote_capsule(context, greeks_df, oi_df, asof, root)
         except (ValueError, TypeError, AttributeError, KeyError, OverflowError):
             return refuse("quote_valuation_provenance_unqualified")
     expected_rows, term_rows = context.get("expected_contracts"), context.get("contract_terms")
@@ -480,6 +481,8 @@ def compose_quote_valuation_inputs(option_captures, underlying_capture, oi_df, a
             underlying_timestamp=underlying["raw_event_at"], _theta_acquisition=option["receipt_text"]))
     if seen != set(expected):
         raise ValueError("Missing supplied quote member")
+    greeks = pd.DataFrame(rows)
+    input_digest = exposure_input_digest(greeks, oi_df, asof, root)
     implementation = _quote_kernel_identity()
     evidence = {"schema": "options.quote_valuation/v1", "kind": "conditional_asof_reconstruction",
         "valuation_at": valuation_at, "evaluated_at": evaluated_at,
@@ -487,6 +490,7 @@ def compose_quote_valuation_inputs(option_captures, underlying_capture, oi_df, a
         "max_quote_age_seconds": max_quote_age_seconds, "policy": deepcopy(quote_policy),
         "r": r, "q": q, "derivation": "engine.intraday_greeks.implied_vol_vec",
         "implementation": implementation,
+        "derived_input_sha256": input_digest,
         "option_quotes": options, "underlying_quote": underlying,
         "oi_receipts": oi_receipts, "supplied_context": deepcopy(context)}
     source_ref = _quote_capsule_ref(evidence)
@@ -497,6 +501,5 @@ def compose_quote_valuation_inputs(option_captures, underlying_capture, oi_df, a
         "implementation_sha256": implementation["sha256"],
         "method": "engine.intraday_greeks", "unit": "decimal_annualized",
         "tenor_policy": "economic_expiry_no_floor"}}
-    greeks = pd.DataFrame(rows)
-    context["input_sha256"] = exposure_input_digest(greeks, oi_df, asof, root)
+    context["input_sha256"] = input_digest
     return greeks, oi_df.copy(deep=True), context
