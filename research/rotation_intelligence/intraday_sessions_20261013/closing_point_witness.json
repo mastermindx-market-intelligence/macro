@@ -1,0 +1,360 @@
+{
+  "beyond_90s_not_qualified": true,
+  "code_sha256": "971f3b7f4a83c781357771bb8266490898efac6b30b0fc6449aae957c698d71e",
+  "group_counts": [
+    {
+      "coverage_pct": 100.0,
+      "id": "mag7",
+      "n_benchmark_aligned": 7,
+      "n_members": 7,
+      "n_settled_points": 7
+    },
+    {
+      "coverage_pct": 91.667,
+      "id": "ai_infra",
+      "n_benchmark_aligned": 22,
+      "n_members": 24,
+      "n_settled_points": 22
+    },
+    {
+      "coverage_pct": 88.235,
+      "id": "ai_software",
+      "n_benchmark_aligned": 15,
+      "n_members": 17,
+      "n_settled_points": 15
+    },
+    {
+      "coverage_pct": 95.238,
+      "id": "defense",
+      "n_benchmark_aligned": 20,
+      "n_members": 21,
+      "n_settled_points": 20
+    },
+    {
+      "coverage_pct": 91.667,
+      "id": "power_grid",
+      "n_benchmark_aligned": 22,
+      "n_members": 24,
+      "n_settled_points": 22
+    },
+    {
+      "coverage_pct": 81.25,
+      "id": "reshoring",
+      "n_benchmark_aligned": 13,
+      "n_members": 16,
+      "n_settled_points": 13
+    },
+    {
+      "coverage_pct": 90.0,
+      "id": "regional_banks",
+      "n_benchmark_aligned": 18,
+      "n_members": 20,
+      "n_settled_points": 18
+    },
+    {
+      "coverage_pct": 77.778,
+      "id": "managed_care",
+      "n_benchmark_aligned": 7,
+      "n_members": 9,
+      "n_settled_points": 7
+    },
+    {
+      "coverage_pct": 94.444,
+      "id": "housing",
+      "n_benchmark_aligned": 17,
+      "n_members": 18,
+      "n_settled_points": 17
+    },
+    {
+      "coverage_pct": 80.952,
+      "id": "payments_fintech",
+      "n_benchmark_aligned": 17,
+      "n_members": 21,
+      "n_settled_points": 18
+    },
+    {
+      "coverage_pct": 90.909,
+      "id": "energy_complex",
+      "n_benchmark_aligned": 20,
+      "n_members": 22,
+      "n_settled_points": 20
+    },
+    {
+      "coverage_pct": 88.889,
+      "id": "defensives",
+      "n_benchmark_aligned": 16,
+      "n_members": 18,
+      "n_settled_points": 16
+    },
+    {
+      "coverage_pct": 91.667,
+      "id": "travel",
+      "n_benchmark_aligned": 22,
+      "n_members": 24,
+      "n_settled_points": 22
+    },
+    {
+      "coverage_pct": 85.714,
+      "id": "retail",
+      "n_benchmark_aligned": 18,
+      "n_members": 21,
+      "n_settled_points": 18
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "crypto",
+      "n_benchmark_aligned": 7,
+      "n_members": 7,
+      "n_settled_points": 7
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "crypto_rails",
+      "n_benchmark_aligned": 7,
+      "n_members": 7,
+      "n_settled_points": 7
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "ai_neoclouds",
+      "n_benchmark_aligned": 10,
+      "n_members": 10,
+      "n_settled_points": 10
+    },
+    {
+      "coverage_pct": 92.857,
+      "id": "non_ai_software",
+      "n_benchmark_aligned": 13,
+      "n_members": 14,
+      "n_settled_points": 13
+    },
+    {
+      "coverage_pct": 69.231,
+      "id": "non_ai_tech",
+      "n_benchmark_aligned": 9,
+      "n_members": 13,
+      "n_settled_points": 9
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "ai_semiconductors",
+      "n_benchmark_aligned": 12,
+      "n_members": 12,
+      "n_settled_points": 12
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "semicap_equipment",
+      "n_benchmark_aligned": 16,
+      "n_members": 16,
+      "n_settled_points": 16
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "memory_storage",
+      "n_benchmark_aligned": 4,
+      "n_members": 4,
+      "n_settled_points": 4
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "data_center_power",
+      "n_benchmark_aligned": 8,
+      "n_members": 8,
+      "n_settled_points": 8
+    },
+    {
+      "coverage_pct": 90.0,
+      "id": "cybersecurity",
+      "n_benchmark_aligned": 9,
+      "n_members": 10,
+      "n_settled_points": 9
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "nuclear_power",
+      "n_benchmark_aligned": 9,
+      "n_members": 9,
+      "n_settled_points": 9
+    },
+    {
+      "coverage_pct": 83.333,
+      "id": "robotics_automation",
+      "n_benchmark_aligned": 10,
+      "n_members": 12,
+      "n_settled_points": 10
+    },
+    {
+      "coverage_pct": 78.571,
+      "id": "obesity_glp1",
+      "n_benchmark_aligned": 11,
+      "n_members": 14,
+      "n_settled_points": 12
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "quantum_computing",
+      "n_benchmark_aligned": 11,
+      "n_members": 11,
+      "n_settled_points": 11
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "gold_miners",
+      "n_benchmark_aligned": 12,
+      "n_members": 12,
+      "n_settled_points": 12
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "silver_miners",
+      "n_benchmark_aligned": 8,
+      "n_members": 8,
+      "n_settled_points": 8
+    },
+    {
+      "coverage_pct": 50.0,
+      "id": "pgm_miners",
+      "n_benchmark_aligned": 2,
+      "n_members": 4,
+      "n_settled_points": 2
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "uranium_miners",
+      "n_benchmark_aligned": 10,
+      "n_members": 10,
+      "n_settled_points": 10
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "critical_minerals",
+      "n_benchmark_aligned": 11,
+      "n_members": 11,
+      "n_settled_points": 11
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "space_economy",
+      "n_benchmark_aligned": 15,
+      "n_members": 15,
+      "n_settled_points": 15
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "ai_agents",
+      "n_benchmark_aligned": 8,
+      "n_members": 8,
+      "n_settled_points": 8
+    },
+    {
+      "coverage_pct": 94.737,
+      "id": "insurance",
+      "n_benchmark_aligned": 18,
+      "n_members": 19,
+      "n_settled_points": 18
+    },
+    {
+      "coverage_pct": 66.667,
+      "id": "big_pharma",
+      "n_benchmark_aligned": 6,
+      "n_members": 9,
+      "n_settled_points": 7
+    },
+    {
+      "coverage_pct": 100.0,
+      "id": "industrial_distribution",
+      "n_benchmark_aligned": 12,
+      "n_members": 12,
+      "n_settled_points": 12
+    },
+    {
+      "coverage_pct": 87.838,
+      "id": "us_sector_tech",
+      "n_benchmark_aligned": 65,
+      "n_members": 74,
+      "n_settled_points": 65
+    },
+    {
+      "coverage_pct": 82.895,
+      "id": "us_sector_financials",
+      "n_benchmark_aligned": 63,
+      "n_members": 76,
+      "n_settled_points": 64
+    },
+    {
+      "coverage_pct": 75.0,
+      "id": "us_sector_health",
+      "n_benchmark_aligned": 45,
+      "n_members": 60,
+      "n_settled_points": 46
+    },
+    {
+      "coverage_pct": 82.979,
+      "id": "us_sector_discretionary",
+      "n_benchmark_aligned": 39,
+      "n_members": 47,
+      "n_settled_points": 39
+    },
+    {
+      "coverage_pct": 82.609,
+      "id": "us_sector_comm",
+      "n_benchmark_aligned": 19,
+      "n_members": 23,
+      "n_settled_points": 19
+    },
+    {
+      "coverage_pct": 89.157,
+      "id": "us_sector_industrials",
+      "n_benchmark_aligned": 74,
+      "n_members": 83,
+      "n_settled_points": 75
+    },
+    {
+      "coverage_pct": 87.879,
+      "id": "us_sector_staples",
+      "n_benchmark_aligned": 29,
+      "n_members": 33,
+      "n_settled_points": 29
+    },
+    {
+      "coverage_pct": 90.476,
+      "id": "us_sector_energy",
+      "n_benchmark_aligned": 19,
+      "n_members": 21,
+      "n_settled_points": 19
+    },
+    {
+      "coverage_pct": 83.871,
+      "id": "us_sector_utilities",
+      "n_benchmark_aligned": 26,
+      "n_members": 31,
+      "n_settled_points": 26
+    },
+    {
+      "coverage_pct": 83.333,
+      "id": "us_sector_realestate",
+      "n_benchmark_aligned": 25,
+      "n_members": 30,
+      "n_settled_points": 25
+    },
+    {
+      "coverage_pct": 76.0,
+      "id": "us_sector_materials",
+      "n_benchmark_aligned": 19,
+      "n_members": 25,
+      "n_settled_points": 19
+    }
+  ],
+  "groups": 49,
+  "groups_below_30pct_one_point_alignment": 0,
+  "members": 702,
+  "minimum_group_one_point_alignment_pct": 50.0,
+  "one_point_aligned_with_spy_count": 614,
+  "proof_kind": "single_retained_snapshot_eligibility_witness_not_paired_rotation_or_live_freshness",
+  "settled_point_count": 617,
+  "snapshot_commit": "99f656615250e527aec8bcc2389a08b2e658ea90",
+  "snapshot_sha256": "ef51fdd92bccd72e721af7452f2379e107cb1131e677b9626319d6d3550b772b",
+  "source_clock_retained_verbatim": true,
+  "strict_point_count": 88
+}

@@ -16,6 +16,8 @@ import argparse
 import json
 import logging
 import sys
+import os
+import stat
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -29,6 +31,55 @@ log = logging.getLogger("build_themes_heatmap")
 
 def _data(*parts: str) -> Path:
     return config.data_dir().joinpath(*parts)
+
+
+def _unambiguous_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate_receipt_key")
+        result[key] = value
+    return result
+
+
+def select_membership_receipt(directory: Path, tree: list, generated_utc: str) -> dict | None:
+    """Read bounded regular receipts; filenames and mtimes confer no vintage."""
+    candidates = []
+    try:
+        paths = list(directory.glob("*.json"))
+        if len(paths) > 4096:
+            return None
+        for path in paths:
+            fd = None
+            try:
+                fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+                info = os.fstat(fd)
+                if not stat.S_ISREG(info.st_mode) or info.st_size > 2_097_152:
+                    continue
+                with os.fdopen(fd, "rb") as stream:
+                    fd = None
+                    raw = stream.read(2_097_153)
+                if len(raw) > 2_097_152:
+                    continue
+                receipt = json.loads(raw, object_pairs_hook=_unambiguous_object)
+                bound = th.qualify_membership_receipt(tree, receipt, generated_utc)
+                if bound["status"] == "bound":
+                    instant = datetime.fromisoformat(bound["refreshed_at_utc"].replace("Z", "+00:00"))
+                    candidates.append((instant, path.name, receipt))
+            except (OSError, ValueError, TypeError):
+                continue
+            finally:
+                if fd is not None:
+                    os.close(fd)
+    except OSError:
+        return None
+    if not candidates:
+        return None
+    newest = max(item[0] for item in candidates)
+    latest = [item for item in candidates if item[0] == newest]
+    if len({item[2]["asof"] for item in latest}) != 1:
+        return None
+    return max(latest, key=lambda item: item[1])[2]
 
 
 def build(site: Path | None = None, *, generated_utc: str | None = None) -> dict:
@@ -55,6 +106,8 @@ def build(site: Path | None = None, *, generated_utc: str | None = None) -> dict
         generated_utc=generated_utc,
         asof=asof,
         source=snap.get("source") or "finviz-themes",
+        membership_receipt=select_membership_receipt(
+            _data("themes_heatmap", "tree_refresh_receipts"), tree, generated_utc),
     )
 
     outdir = site / "marketdata"

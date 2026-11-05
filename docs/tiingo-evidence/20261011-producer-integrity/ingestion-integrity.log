@@ -1,0 +1,69 @@
+FF.FFFFFFFFF                                                             [100%]
+=================================== FAILURES ===================================
+___________ test_identical_prices_for_different_tickers_never_alias ____________
+tests/test_tiingo_ingestion_integrity.py:37: in test_identical_prices_for_different_tickers_never_alias
+    assert first["path"] != second["path"]
+E   AssertionError: assert 'normalized/eod-bars/2026-10-09/a390510491453717461640f3cea98271e04a9bc208f01d63041afda1c0b60cb2.parquet' != 'normalized/eod-bars/2026-10-09/a390510491453717461640f3cea98271e04a9bc208f01d63041afda1c0b60cb2.parquet'
+_______ test_same_statement_bytes_different_query_dimension_never_alias ________
+tests/test_tiingo_ingestion_integrity.py:47: in test_same_statement_bytes_different_query_dimension_never_alias
+    assert first["path"] != second["path"]
+E   AssertionError: assert 'normalized/fund-statements/2026-10-09/49cc10a5dc32f7ea89ac0abeac1238d6987effcb6fd81261bd8e704dcf127f8e.parquet' != 'normalized/fund-statements/2026-10-09/49cc10a5dc32f7ea89ac0abeac1238d6987effcb6fd81261bd8e704dcf127f8e.parquet'
+____________ test_existing_corrupt_output_is_not_reported_as_exists ____________
+tests/test_tiingo_ingestion_integrity.py:67: in test_existing_corrupt_output_is_not_reported_as_exists
+    with pytest.raises(a.TiingoArchiveError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE TiingoArchiveError
+_____________ test_corrupt_existing_raw_is_not_idempotent_success ______________
+tests/test_tiingo_ingestion_integrity.py:74: in test_corrupt_existing_raw_is_not_idempotent_success
+    with pytest.raises(a.TiingoArchiveError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE TiingoArchiveError
+____________ test_capture_clock_must_be_aware_and_valid[../outside] ____________
+tests/test_tiingo_ingestion_integrity.py:80: in test_capture_clock_must_be_aware_and_valid
+    with pytest.raises((ValueError, a.TiingoArchiveError)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE any of (ValueError, TiingoArchiveError)
+____________ test_capture_clock_must_be_aware_and_valid[2026-10-09] ____________
+tests/test_tiingo_ingestion_integrity.py:80: in test_capture_clock_must_be_aware_and_valid
+    with pytest.raises((ValueError, a.TiingoArchiveError)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE any of (ValueError, TiingoArchiveError)
+_______ test_capture_clock_must_be_aware_and_valid[2026-10-09T12:00:00] ________
+tests/test_tiingo_ingestion_integrity.py:80: in test_capture_clock_must_be_aware_and_valid
+    with pytest.raises((ValueError, a.TiingoArchiveError)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE any of (ValueError, TiingoArchiveError)
+___________ test_capture_clock_must_be_aware_and_valid[not-a-clock] ____________
+tests/test_tiingo_ingestion_integrity.py:80: in test_capture_clock_must_be_aware_and_valid
+    with pytest.raises((ValueError, a.TiingoArchiveError)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE any of (ValueError, TiingoArchiveError)
+________________ test_exact_endpoint_not_just_prefix_must_match ________________
+tests/test_tiingo_ingestion_integrity.py:85: in test_exact_endpoint_not_just_prefix_must_match
+    with pytest.raises((ValueError, a.TiingoArchiveError)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE any of (ValueError, TiingoArchiveError)
+_____________ test_repeated_raw_uses_original_receipt_observation ______________
+tests/test_tiingo_ingestion_integrity.py:92: in test_repeated_raw_uses_original_receipt_observation
+    assert "receipt_id" in first
+E   AssertionError: assert 'receipt_id' in {'new_raw': True, 'raw_sha256': 'a390510491453717461640f3cea98271e04a9bc208f01d63041afda1c0b60cb2', 'path': 'raw/eod-bars/2026-10-09/AMD/d87ceebd3598979c-a390510491453717461640f3.raw.gz', 'rows_hint': 1, ...}
+_________________ test_receipt_context_must_match_output_rows __________________
+tests/test_tiingo_ingestion_integrity.py:104: in test_receipt_context_must_match_output_rows
+    with pytest.raises(TiingoViewRefusal):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE TiingoViewRefusal
+
+NOTE: sparse worktree — data, mockups, orch, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_tiingo_ingestion_integrity.py::test_identical_prices_for_different_tickers_never_alias
+FAILED tests/test_tiingo_ingestion_integrity.py::test_same_statement_bytes_different_query_dimension_never_alias
+FAILED tests/test_tiingo_ingestion_integrity.py::test_existing_corrupt_output_is_not_reported_as_exists
+FAILED tests/test_tiingo_ingestion_integrity.py::test_corrupt_existing_raw_is_not_idempotent_success
+FAILED tests/test_tiingo_ingestion_integrity.py::test_capture_clock_must_be_aware_and_valid[../outside]
+FAILED tests/test_tiingo_ingestion_integrity.py::test_capture_clock_must_be_aware_and_valid[2026-10-09]
+FAILED tests/test_tiingo_ingestion_integrity.py::test_capture_clock_must_be_aware_and_valid[2026-10-09T12:00:00]
+FAILED tests/test_tiingo_ingestion_integrity.py::test_capture_clock_must_be_aware_and_valid[not-a-clock]
+FAILED tests/test_tiingo_ingestion_integrity.py::test_exact_endpoint_not_just_prefix_must_match
+FAILED tests/test_tiingo_ingestion_integrity.py::test_repeated_raw_uses_original_receipt_observation
+FAILED tests/test_tiingo_ingestion_integrity.py::test_receipt_context_must_match_output_rows
+11 failed, 1 passed in 2.35s

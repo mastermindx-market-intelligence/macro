@@ -1,0 +1,31 @@
+{
+  "kind": "LOCAL_RETAINED_REAL_FILING_TEMPLATE_FIXTURE",
+  "source_head": "cfdc34588dd590cd400cf39f01df04c642ba19e0",
+  "source_is_uncommitted_candidate": true,
+  "manager": "Berkshire Hathaway (Buffett)",
+  "period_end": "2026-06-30",
+  "filing_date": "2026-08-14",
+  "filing": {
+    "status": "available",
+    "manager": "Berkshire Hathaway (Buffett)",
+    "cik": "1067983",
+    "accession": "0001193125-26-352200",
+    "form": "13F-HR",
+    "index_url": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/0001193125-26-352200-index.html",
+    "receipt_index_url": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/index.json",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/56757.xml",
+    "source_sha256": "6a2798aa0fa9731c33b0f0b748229eaf7cdf118f9c46fd5a4a9a3de6979d4d95"
+  },
+  "raw_snapshot_sha256": "efc9abc0ba9c6a60aa18f1cffd89062ef92e24cbfa62ea5a02f8372917b33e0e",
+  "receipt_store_sha256": "d3638f4f24385060290c63224862ab4d2179c75bb29f30a63b4efe782e6090d8",
+  "matching_receipt_rows": 1,
+  "owner_chain": "actual _read_all/receipt/normalization -> _resolved_history -> filing attrs; original published book values retained",
+  "holdings_count": 29,
+  "holding_values_unchanged": true,
+  "directory_rows": 50,
+  "limits": [
+    "Uses original published owner payload and new retained-provenance projection; no financial recomputation or acquisition",
+    "No account, entitlement, full native shell, normal publication or production claim",
+    "External requests blocked; original source link identity verified without SEC request"
+  ]
+}

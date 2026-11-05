@@ -661,12 +661,17 @@ def _mark_attempt(state: dict, ticker: str, error: str, max_attempts: int,
 def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
         budget_s: float = 480.0, period: str = "max", max_attempts: int = 3,
         recent_days: int = 90, refresh_cap: int = 0, dry_run: bool = False,
-        today: date | None = None) -> dict:
+        today: date | None = None, refresh_all: bool = False) -> dict:
     """One bounded slice of the lane: the backfill phase, then the refresh phase.
 
-    The refresh phase only starts when the backfill queue UNDER-FILLED the cap, so
-    during the ~16 drain nights it never competes for the budget; once the queue is
-    empty it inherits the whole allowance. Both phases share one wall clock."""
+    By default refresh starts only when backfill under-fills the cap, retaining
+    the historical six-day cadence. Explicit refresh_all plans every eligible
+    unmaintained archive name even during backlog drain. It does not add time,
+    retry budgets or another writer: both phases still share the same clock.
+    Planning all names is not a claim that every response is current or succeeds.
+    """
+    if refresh_all and refresh_cap > 0:
+        raise ValueError("refresh_all cannot be combined with an explicit refresh_cap")
     t0 = time.monotonic()
     state = load_state()
     queue, census = needed_queue(state, today=today, recent_days=recent_days)
@@ -687,15 +692,27 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
     # The refresh plan is resolved BEFORE any fetch so --dry-run can print it and
     # so the cadence number in the notice describes tonight's actual intent.
     refresh_plan: list[str] = []
-    if len(plan) < cap:
+    refresh_session = None
+    if refresh_all:
+        from lib.nyse_calendar import expected_last_session  # noqa: PLC0415
+
+        refresh_session = expected_last_session()
+        report.update(refresh_scope="all_unmaintained",
+                      refresh_expected_session=refresh_session.isoformat(),
+                      refresh_attempted=0, refresh_current_returned=0,
+                      refresh_noncurrent_returned=0, refresh_unattempted=0)
+    if len(plan) < cap or refresh_all:
         candidates, n_refreshable = refresh_candidates(state)
-        chosen = refresh_cap if refresh_cap > 0 else refresh_cap_for(n_refreshable)
+        chosen = (n_refreshable if refresh_all else
+                  refresh_cap if refresh_cap > 0 else refresh_cap_for(n_refreshable))
         refresh_plan = candidates[:max(0, chosen)]
         report["refreshable"] = n_refreshable
         report["refresh_cap"] = chosen
         report["refresh_planned"] = len(refresh_plan)
         report["refresh_cadence_d"] = cadence_days(n_refreshable, chosen)
         report["refresh_ran"] = bool(refresh_plan)
+    if refresh_all:
+        report["refresh_unattempted"] = len(refresh_plan)
 
     if dry_run:
         report["plan_sample"] = [t for t, _ in plan[:20]]
@@ -724,6 +741,9 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
                 return
             batch = tickers[i:i + max(1, batch_size)]
             symbols = {t: vendor_symbol(t) for t in batch}
+            if refresh_all and phase == "refresh":
+                report["refresh_attempted"] += len(batch)
+                report["refresh_unattempted"] -= len(batch)
             try:
                 df = download_batch(sorted(set(symbols.values())), period)
             except Exception as e:  # noqa: BLE001 — transport failure is not symbol evidence
@@ -782,6 +802,17 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
                 if phase == "refresh":
                     entry["refreshed"] = today_iso
                     report["refreshed"] += 1
+                    if refresh_all:
+                        # Judge the accepted RESPONSE, never a same-date price
+                        # retained by the canonical history-preserving upsert.
+                        current = False
+                        key = pd.Timestamp(refresh_session)
+                        if key in frame.index:
+                            prices = frame.loc[key, ["close", "close_price"]]
+                            current = bool(prices.gt(0).all() and prices.lt(float("inf")).all())
+                        field = ("refresh_current_returned" if current
+                                 else "refresh_noncurrent_returned")
+                        report[field] += 1
                 else:
                     report["written"] += 1
                 state["done"][ticker] = entry
@@ -881,13 +912,16 @@ def main(argv: list[str] | None = None) -> int:
                          "0 (default) computes it from the cadence target — "
                          f"ceil(n/{REFRESH_TARGET_CADENCE_D}) clamped to "
                          f"[{REFRESH_CAP_MIN}, {REFRESH_CAP_MAX}]")
+    ap.add_argument("--refresh-all", action="store_true",
+                    help="plan every eligible unmaintained archive name within the same "
+                         "budget; preserves collector/parked exclusions; excludes --refresh-cap")
     ap.add_argument("--dry-run", action="store_true",
                     help="compute and print both plans; no network, no writes")
     a = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
     run(cap=a.cap, batch_size=a.batch_size, sleep_s=a.sleep, budget_s=a.budget_s,
         period=a.period, max_attempts=a.max_attempts, recent_days=a.recent_days,
-        refresh_cap=a.refresh_cap, dry_run=a.dry_run)
+        refresh_cap=a.refresh_cap, dry_run=a.dry_run, refresh_all=a.refresh_all)
     # Always 0: this is an additive, non-fatal lane. A backfill that got nothing
     # tonight must never red the night's collect job — the ::notice/::warning
     # lines above carry the outcome.

@@ -1,0 +1,610 @@
+{
+  "schema": "temporary.research-source-census/v1",
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "protected_pin": "a049d46fa2415d3949aae5efc0ee515b6667c7a0",
+  "date": "2026-10-03",
+  "mode": "read_only_source_census",
+  "claim_limits": [
+    "No source repository/runtime/private data/test execution/browser/production writes or actions.",
+    "Live evidence is attributed GitHub owner receipt, not independently executed.",
+    "Files retrieved and selected regions inspected; no blanket audit approval."
+  ],
+  "source_files": [
+    {
+      "path": "terminal/app/api/flow/route.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/app/api/flow/route.ts",
+      "blob": "ae00f044e05f54ba8a48974bc157bd6847f1ebf1",
+      "lines": 105
+    },
+    {
+      "path": "terminal/lib/flowSource.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/flowSource.ts",
+      "blob": "b95d94fb505b214cb28f385a8ba03a477d368fdc",
+      "lines": 1038
+    },
+    {
+      "path": "terminal/lib/flowScore.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/flowScore.ts",
+      "blob": "1f29d5626ebcd4bb2a9dc00a2941b51d5b70b23d",
+      "lines": 306
+    },
+    {
+      "path": "terminal/lib/flowFreshness.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/flowFreshness.ts",
+      "blob": "c657c02130c999ff50afc71c675d0be6df9ec127",
+      "lines": 189
+    },
+    {
+      "path": "terminal/lib/feedFreshness.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/feedFreshness.ts",
+      "blob": "68f75e4cc295d4edb720676f73cfdde4878c9918",
+      "lines": 109
+    },
+    {
+      "path": "terminal/lib/optionsIa.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/optionsIa.ts",
+      "blob": "385821bff793ca49c62a7308e564b2a990c4d60a",
+      "lines": 140
+    },
+    {
+      "path": "terminal/components/prophet/optionsAlphaMeasuredEvidence.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/prophet/optionsAlphaMeasuredEvidence.ts",
+      "blob": "efa4c81006e4f41aac45e2bd7508a45fcafbbc96",
+      "lines": 319
+    },
+    {
+      "path": "terminal/components/prophet/optionsAlphaTypes.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/prophet/optionsAlphaTypes.ts",
+      "blob": "ba6a2822234f99149227ca5ad2e8372db3cb68f5",
+      "lines": 913
+    },
+    {
+      "path": "terminal/components/prophet/OptionsAlphaView.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/prophet/OptionsAlphaView.tsx",
+      "blob": "cec2235df2151e78dc71a07eda17557aa6f5258e",
+      "lines": 788
+    },
+    {
+      "path": "terminal/components/prophet/OptionsAlphaInvestigation.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/prophet/OptionsAlphaInvestigation.tsx",
+      "blob": "c0b41acadde19a7a273613f56b51c29c8c7ac498",
+      "lines": 258
+    },
+    {
+      "path": "terminal/components/surface/replayBus.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/surface/replayBus.ts",
+      "blob": "b084b2b3ae398674700cc3cc13b3d5c5206029c9",
+      "lines": 114
+    },
+    {
+      "path": "terminal/components/surface/replayContext.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/surface/replayContext.tsx",
+      "blob": "98b16365c2884ac1889b2a547720c3916c75a26b",
+      "lines": 194
+    },
+    {
+      "path": "terminal/lib/surfaceContract.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/surfaceContract.ts",
+      "blob": "4aa4288fc7041bf4619676b379c684f3067a0c43",
+      "lines": 716
+    },
+    {
+      "path": "terminal/components/OptionsHubView.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/OptionsHubView.tsx",
+      "blob": "a16f592beb32fe8c6e65d28a04d8c5c454124b10",
+      "lines": 4744
+    },
+    {
+      "path": "terminal/components/gexdesk/GexDeskView.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/gexdesk/GexDeskView.tsx",
+      "blob": "4a45ed5f140590c79507cc5858d158a82b0fcf16",
+      "lines": 1158
+    },
+    {
+      "path": "terminal/components/gexdesk/MarketStateCard.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/gexdesk/MarketStateCard.tsx",
+      "blob": "ce4aa281fffba8778311e258918848aaaf14ce32",
+      "lines": 985
+    },
+    {
+      "path": "terminal/components/gexdesk/matrixDoc.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/gexdesk/matrixDoc.ts",
+      "blob": "91ced4b4ecc2a94a1c1ec5104c3e7323fa9f50d8",
+      "lines": 133
+    },
+    {
+      "path": "terminal/components/vol/VolView.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/vol/VolView.tsx",
+      "blob": "46644dfc0b6aac5bd595764963c80a76855d0712",
+      "lines": 430
+    },
+    {
+      "path": "terminal/components/vol/VolSkewPanel.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/vol/VolSkewPanel.tsx",
+      "blob": "5687a04e98bb6d2bf60536b15b883c82b668854a",
+      "lines": 295
+    },
+    {
+      "path": "terminal/components/vol/VolTermPanel.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/vol/VolTermPanel.tsx",
+      "blob": "203679b22ef5a259fe702822372e608447e81c49",
+      "lines": 174
+    },
+    {
+      "path": "terminal/components/vol/volTypes.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/vol/volTypes.ts",
+      "blob": "bf25665f1bc8a68b9be13e795451b801cdb0d7ca",
+      "lines": 60
+    },
+    {
+      "path": "terminal/components/structure/StructureView.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/structure/StructureView.tsx",
+      "blob": "699f3dbc6cd2941c6cf07b965c80b4213b09d62c",
+      "lines": 402
+    },
+    {
+      "path": "terminal/components/structure/structureTypes.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/structure/structureTypes.ts",
+      "blob": "51a27ed5fda25b62f766898ae6a53f0cf6c38a28",
+      "lines": 103
+    },
+    {
+      "path": "terminal/lib/heatSeries.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/heatSeries.ts",
+      "blob": "c337d41b635eed20dcbdf16eba13ca46f6399aeb",
+      "lines": 499
+    },
+    {
+      "path": "terminal/components/surface/SurfaceView.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/surface/SurfaceView.tsx",
+      "blob": "8fd400ae82d0b31a07a1f2ee45b215a39e2ad7d9",
+      "lines": 457
+    },
+    {
+      "path": "terminal/components/surface/SurfacePane.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/surface/SurfacePane.tsx",
+      "blob": "4d51254eb5d235afb61b2d0d0890787af2f284e8",
+      "lines": 1802
+    },
+    {
+      "path": "terminal/components/msc/HedgingCards.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/msc/HedgingCards.tsx",
+      "blob": "b3562a6b227673a94e8f2cc55bb55b64fe87dce3",
+      "lines": 510
+    },
+    {
+      "path": "terminal/components/msc/PositioningView.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/msc/PositioningView.tsx",
+      "blob": "28dfb9d23114916682db1b2d4bf1fb87f87964df",
+      "lines": 342
+    },
+    {
+      "path": "terminal/components/msc/ProfileCard.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/msc/ProfileCard.tsx",
+      "blob": "8cfbd909e9727448343a83d13ebd03d645498266",
+      "lines": 257
+    },
+    {
+      "path": "terminal/lib/marketStructure.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/marketStructure.ts",
+      "blob": "b57bb1b794522c80af5a8288a82bcb06d64ed939",
+      "lines": 838
+    },
+    {
+      "path": "terminal/lib/gexLadder.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/gexLadder.ts",
+      "blob": "41d599fa9ef6ea1c58acb622eb855fdfb18f1780",
+      "lines": 354
+    },
+    {
+      "path": "terminal/lib/flowStream.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/flowStream.ts",
+      "blob": "67f866f1d09e56cb1c6819799b8a3f4956125e47",
+      "lines": 182
+    },
+    {
+      "path": "terminal/lib/flowBroadcast.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/flowBroadcast.ts",
+      "blob": "a5baef713af8b831d8fa89d2992aabcf6af7ea45",
+      "lines": 145
+    },
+    {
+      "path": "terminal/components/vol/VolHistoryPanel.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/vol/VolHistoryPanel.tsx",
+      "blob": "d5531a7d25f0dadb5542ad5d0137a7cd8a19b1a3",
+      "lines": 176
+    },
+    {
+      "path": "terminal/components/vol/VolVrpPanel.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/vol/VolVrpPanel.tsx",
+      "blob": "00468d3cbc097ed160ff9bf6dd40f1d9e8a8b634",
+      "lines": 257
+    },
+    {
+      "path": "terminal/components/structure/OiChangePanel.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/structure/OiChangePanel.tsx",
+      "blob": "91454cc8dcbecac9e37ffb05d99550fb32157b4f",
+      "lines": 230
+    },
+    {
+      "path": "terminal/components/structure/MaxPainPanel.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/structure/MaxPainPanel.tsx",
+      "blob": "d2f35fc8c2ca170762871bfec70dd196f1ae04b5",
+      "lines": 236
+    },
+    {
+      "path": "terminal/app/api/options/issue-desk/route.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/app/api/options/issue-desk/route.ts",
+      "blob": "ad9082f6f8a6513081bbf8ef9939aeeebcf03c60",
+      "lines": 51
+    },
+    {
+      "path": "terminal/app/api/options/issue-desk/reviews/route.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/app/api/options/issue-desk/reviews/route.ts",
+      "blob": "539daddc7e2624425c2d487a01888a36f2dade88",
+      "lines": 78
+    },
+    {
+      "path": "terminal/components/prophet/OptionsIssueDeskView.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/prophet/OptionsIssueDeskView.tsx",
+      "blob": "e4b5bfe5563dcc8e453da930e64f179053f964ac",
+      "lines": 85
+    },
+    {
+      "path": "terminal/components/prophet/optionsIssueDeskTypes.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/prophet/optionsIssueDeskTypes.ts",
+      "blob": "3158f11f3f4b7a999c954d4d258ec0498e3f6c17",
+      "lines": 121
+    },
+    {
+      "path": "terminal/components/workspaces/OptionsWorkspace.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/workspaces/OptionsWorkspace.tsx",
+      "blob": "90beabba0102a2cb05ccab813a56310c9c72ffaf",
+      "lines": 203
+    },
+    {
+      "path": "terminal/lib/flowClientCache.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/flowClientCache.ts",
+      "blob": "7e05be0b28908f051726cb5c6817a2114f263084",
+      "lines": 135
+    },
+    {
+      "path": "terminal/components/flowdesk/FlowDeskView.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/flowdesk/FlowDeskView.tsx",
+      "blob": "020f26bc33360f9cf4d4e4636f4d87f32910d643",
+      "lines": 627
+    },
+    {
+      "path": "terminal/components/flowdesk/FlowCard.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/flowdesk/FlowCard.tsx",
+      "blob": "89a8aff5364c67292df978e8f4fbfe5d9aac802d",
+      "lines": 400
+    },
+    {
+      "path": "terminal/components/flowdesk/InspectorPane.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/flowdesk/InspectorPane.tsx",
+      "blob": "4fddc9f79cd0cef8fb29824a7113c42fcfafc69e",
+      "lines": 410
+    },
+    {
+      "path": "terminal/lib/optionsFlowBoards.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/optionsFlowBoards.ts",
+      "blob": "b2b9e5ced061973d6105675e87fcae2b00113ef3",
+      "lines": 108
+    },
+    {
+      "path": "terminal/lib/optionsScreener.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/optionsScreener.ts",
+      "blob": "fadb3747d940af6dfd21e67b5cba280fd573d133",
+      "lines": 268
+    },
+    {
+      "path": "terminal/lib/optionsAlerts.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/optionsAlerts.ts",
+      "blob": "2708516444ab578c8a285b2a74385c0684a4553b",
+      "lines": 786
+    },
+    {
+      "path": "terminal/lib/optionsRoots.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/optionsRoots.ts",
+      "blob": "df78a6cfeac86bb7f365416330d906fecc21c25a",
+      "lines": 26
+    },
+    {
+      "path": "terminal/components/prophet/ProphetLanesView.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/prophet/ProphetLanesView.tsx",
+      "blob": "fbdfc9c76987c35362c6561b6d4ee645ad2ab55c",
+      "lines": 99
+    }
+  ],
+  "prs": [
+    {
+      "number": 667,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/667",
+      "title": "feat(options): surface measured NBBO evidence in Options Alpha",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-03T07:46:26Z",
+      "head": "ea2a1811ad3515c3202a7ab6a4cbc2446e15601c",
+      "merge_commit": "a049d46fa2415d3949aae5efc0ee515b6667c7a0",
+      "user": "mastermidx4",
+      "updated_at": "2026-10-03T08:10:22Z",
+      "labels": []
+    },
+    {
+      "number": 608,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/608",
+      "title": "fix(options): align surfaces and restore coherent shared replay",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-09-29T17:48:44Z",
+      "head": "aa9333502ecad41054b5d392a4fae9138b163e04",
+      "merge_commit": "4cd9cd022b9df397bde902bdddf364cbf93e6464",
+      "user": "mastermindx-3",
+      "updated_at": "2026-09-29T17:48:46Z",
+      "labels": [
+        "merge-on-green"
+      ]
+    },
+    {
+      "number": 686,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/686",
+      "title": "feat(options): expose the full intraday root universe",
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "merged_at": null,
+      "head": "450850ec2933290d6a8e86db35e8c59cfc8843c1",
+      "merge_commit": null,
+      "user": "MastermindX1",
+      "updated_at": "2026-09-29T16:52:16Z",
+      "labels": [
+        "merge-on-green",
+        "hold"
+      ]
+    },
+    {
+      "number": 645,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/645",
+      "title": "feat(exposure): render vanna and charm by expiry",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "head": "2a3f12bb4650c02fe095feb66a0c33c4d4728102",
+      "merge_commit": "b3e1f218df1f93a078a39aad6fa05e3c0110cbdb",
+      "user": "chriswong6031-creator",
+      "updated_at": "2026-10-02T06:24:19Z",
+      "labels": []
+    },
+    {
+      "number": 780,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/780",
+      "title": "fix(options): make volatility expiry investigation source-truthful",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "head": "e21f9d02afefb861ac7589cb181e647dbe77f0f5",
+      "merge_commit": "f37b83360bd5f6ffadfe34ff862285d6373f46ef",
+      "user": "mastermidx4",
+      "updated_at": "2026-10-03T06:49:35Z",
+      "labels": []
+    },
+    {
+      "number": 781,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/781",
+      "title": "feat(options): add deterministic payoff planning",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "head": "fd3504e04157b23f7665708eb46482fe7f8e1654",
+      "merge_commit": "f173ba2fc4d81069d190fc529ba666bfd9baab3b",
+      "user": "mastermidx4",
+      "updated_at": "2026-10-03T08:19:49Z",
+      "labels": []
+    },
+    {
+      "number": 783,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/783",
+      "title": "Options Alpha: route candidate evidence through the existing entitled feed API",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "head": "7287830fd28df59c671a05fb1c4b4b3229386cdf",
+      "merge_commit": "d34959bb31f56694d51f326dd162dd573f67a57a",
+      "user": "chriswong6031-creator",
+      "updated_at": "2026-10-03T08:15:49Z",
+      "labels": []
+    },
+    {
+      "number": 768,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/768",
+      "title": "fix(options): preserve unknown cells in source-session exposure lenses",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "head": "bd8c258f89f625a90be687a7df000eeb8e3f67a6",
+      "merge_commit": "bc8ea5717502f9620914fbf189c77325db7918a7",
+      "user": "chriswong6031-creator",
+      "updated_at": "2026-09-28T10:45:51Z",
+      "labels": []
+    },
+    {
+      "number": 769,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/769",
+      "title": "feat(options): add exact expiry reference and interaction prototype",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "head": "5ea5811d0f6279cf8e0d9138df0c7fdda91d62e6",
+      "merge_commit": "efc7d0bd47b240709f2d40f873a3aaf66b6039bf",
+      "user": "chriswong6031-creator",
+      "updated_at": "2026-09-29T04:41:12Z",
+      "labels": []
+    },
+    {
+      "number": 723,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723",
+      "title": "feat(terminal): chart-linked options heatmap companion",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "head": "c8705d6eacb6fcc706881dbf92e079e1c8ca01c4",
+      "merge_commit": null,
+      "user": "chriswong6031-creator",
+      "updated_at": "2026-10-03T07:45:30Z",
+      "labels": []
+    },
+    {
+      "number": 592,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/592",
+      "title": "fix(exposure): keep state and levels bound to selected ticker",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "head": "87969fb4aff5836410ffd166cc39289b562a41bc",
+      "merge_commit": "9817d0136cdbb89bffcc9d53d12f20d0256ad68c",
+      "user": "mastermindx-3",
+      "updated_at": "2026-10-03T05:18:52Z",
+      "labels": []
+    }
+  ],
+  "issues": [
+    {
+      "number": 599,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599",
+      "title": "[Options Alpha recovery] Shared options evidence, distinct tactical and campaign workflows",
+      "state": "open",
+      "updated_at": "2026-10-03T07:53:18Z",
+      "comments": 96,
+      "user": "mastermindx-3"
+    },
+    {
+      "number": 603,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/603",
+      "title": "[Options workbench recovery] Quanted parity: correct surfaces, unified replay, coherent workspace",
+      "state": "open",
+      "updated_at": "2026-10-03T07:22:47Z",
+      "comments": 28,
+      "user": "mastermindx-3"
+    },
+    {
+      "number": 681,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/681",
+      "title": "Expand intraday options coverage and make the full covered universe discoverable",
+      "state": "open",
+      "updated_at": "2026-09-22T17:28:24Z",
+      "comments": 35,
+      "user": "MastermindX1"
+    }
+  ],
+  "selected_receipts": [
+    {
+      "id": 5959151943,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599#issuecomment-5959151943",
+      "user": "mastermidx4",
+      "updated_at": "2026-10-02T18:49:33Z",
+      "body": "COMPLETE — bounded historical research operation `options-historical-signal-science-20261002` / OA-2R.\n\nThe direct Studio access path worked without changing access controls. The frozen historical archive study completed on M1, with implementation and publication through the existing M2 native fabric. Root reused Mastermind's gauntlet and canonical source owners. The earlier episode receipt, scientific-contract repairs and research-only revival decision are already merged in Macro #7395, #7401, #8266 and #8268.\n\nFinal delivery [Macro #8286](https://github.com/mastermindx-market-intelligence/macro/pull/8286) is now merged at `79e365faf358a7645e7d6aad0758dde6d8508ee7`. All 60 registered cells are evaluable; the independent statistical reproduction and preselected raw-data witnesses pass. The full 90-test local set, all twelve scheduled hosted CI packs, contract gate, aggregate gate and required authority/fence checks passed. Root's post-merge fetch and SHA-256 readback verified all 33 owned files with zero mismatches. Final review and hold release are recorded on the PR.\n\nThe [controlled report and linked artifacts](https://github.com/mastermindx-market-intelligence/macro/blob/79e365faf358a7645e7d6aad0758dde6d8508ee7/reports/artifacts/options_theta_retrospective_20261002.md) contain every registered cell, unsupported scope, input/source/runtime provenance, failed-attempt disclosure and executable independent checks. Protocol SHA-256 `67011db3d3aed08827f027cafc5b5a2bf890289a1017b227cad15fc240826e68`; result SHA-256 `7af1b1ae1c871892384388695d17977cea1a6b6aa4fd21fc1625b5dad55073f3`. The scoped WS, discovery and handoff records are on Macro main.\n\nResearch conclusion: the few within-run associations do not repeat across all three eras. Historical alpha remains unvalidated; known-at/PIT provenance, fresh OOS and executable option economics remain unproven. This finite research package is complete, with no model fit, runtime score, sizing or trading promotion. This broader product issue remains OPEN and sibling waves retain their existing states. All assigned fabric children are terminal; root release and final verification are complete."
+    },
+    {
+      "id": 5966937542,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599#issuecomment-5966937542",
+      "user": "mastermidx4",
+      "updated_at": "2026-10-03T07:53:18Z",
+      "body": "Progress receipt — parent remains ACTIVE, not complete.\n\nReviewed source merged after exact-head required CI: Terminal #667 at a049d46fa2415d3949aae5efc0ee515b6667c7a0; Macro nightly phase diagnostics #7265 at0c8bbf32e62ca19f9624206c1c97f247316f33a3; correction preregistration #7398 at60d7551e52c8c7345e1b70edd2a57b9544f88286; exact-option outcome ruler specification #7405 at92856b75808a4935bf23163e922bd304ac93e4dd. These are source/specification receipts, not evidence of profitable alpha or corrected production outcomes.\n\nThe Chairman supplied the existing M2-local deployment credential route. Readback confirmed the suggested Mastermind wrapper targets the portfolio service; Terminal's existing /opt/terminal/terminal-build.sh is the correct owner. Its exact-target deployment of a049d46f is now in progress, after CLEAN W2A source preflight. No key copied, helper installed, guard bypass, arbitrary working-tree deploy, or production-success claim.\n\nActive existing-fabric children: candidate #8310 integrity repair on M1 GLM5.3; FS-5 #8313 geometry repair on M1 GLM5.3; source-only AD-1T2 #7889 admission repair on mini2 MiniMax; pure fixture-only OA-3 evaluator on mini2 MiniMax. Independent Sol review found and held substantive candidate/FS-5 integrity defects; they are not released. Candidate transport Terminal #783 passed independent semantic review and independently observed unit/typecheck CI, then received a normal expected-head base update; responsive checks remain owed. Its worker's LANE_GUARD_OFF PR-creation deviation is explicitly recorded in review5399611613 and is not accepted as clean provenance.\n\nM1 Theta binding now points to the existing archive (381 roots each for eod/greeks/oi), and runner-label delivery was proven by protected canary37104249595. AD1_M1_LANE remains OFF. Same-host reversible storage relocation is still verifying before reclaim; full200GiB work guard is unchanged. Broad Asia writer exclusion still requires a narrow protected integration and natural non-sweep evidence. Campaign effective correction, candidate publisher/consumer, exact-option fixture evaluator, natural durability/publication evidence and final live product verification remain open. Existing source owners and ledgers are being reused; no duplicate scheduler or candidate database."
+    },
+    {
+      "id": 5886767536,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/603#issuecomment-5886767536",
+      "user": "mastermidx4",
+      "updated_at": "2026-10-03T06:46:20Z",
+      "body": "## Options capture → verify → reopen → inspect — cumulative checkpoint\n\nOperation `options-native-case-20260929-sol-001`; parent Terminal #603. Current Chairman directive: continue. **CHECKPOINTED_CONTINUATION / MISSION_COMPLETE:false / production_acceptance:false.** This cumulative artifact record covers all effects through the 2026-10-03 continuation. It is evidence/navigation, not Executive admission, Agent OS lifecycle, source custody, feed-rights approval, merge authority or production acceptance.\n\n### Accepted native Paper work — preserve, do not recreate\n\nPaper file **Terminal** `01M3NSZGE8JWN2EZCSF0DT05RM`.\n\np-4-1:\n- N12 whole-case desktop `KWI-1`; phone `LCO-1`\n- N13 save/readback states `L6U-1`\n- N95 save/build contracts `LIJ-1`\n\np-5-1:\n- N14 reopen desktop `L94-1`; phone `LFF-1`\n- N15 evidence-to-decision desktop `LLG-1`; phone `MU2-1`\n- N96 measurement/source/research atlas `M89-1`\n- N16 included prints desktop `NUB-1`; phone `O8M-1`\n- N17 linked package desktop `NZE-1`; phone `ODN-1`\n- N97 negative states/source contract `OND-1`\n\nAll 14 were previously screenshot/JSX reviewed; first nine finished by suffix090, final five by `options-native-case-20260929-finish-inspectors-139` APPLIED/OK. Shared token hash `55dd37b7`. Preserve accepted N01–N10/exposure/B01–B05, held N11 `KOW-0`, partial N94 `KOX-0` and unrelated pages unless a material defect/dependency changes. Native click-through remains unproven; phone boards are scrolling details, not every responsive/theme/locale variant.\n\nA new proposed N18 aggregate-fallback board was **not created**. Exact direct Paper operation `options-native-case-20261003-n18-create-140` was blocked by OpenAI safety checks before dispatch. No Paper effect is claimed. Per protected recovery law this exact effect was not retried/rephrased or routed to another carrier.\n\n### User live-browser evidence and candidate repair\n\nChairman supplied two screenshots from a live browser of the standalone D3.1 review. They visually show the expected desktop dark state: selected calls $1.24m, eligible $580k, at-ask $440k, the seven P01–P07 rows reconciling to $440k, correction banner and chart-return action, with no obvious horizontal overflow in the supplied frames.\n\nThe screenshots also exposed a real UX mismatch with the accepted Paper flow: the right detail pane initially showed “Open a print” instead of previewing the first contributing print. Candidate v0.1.1 repairs that:\n- desktop previews the first contributing print in the active bucket;\n- mobile remains list-first;\n- `All selected` now shows both count and premium (`22 · $1.24m`);\n- selecting the preview opens the same full evidence state and preserves list context.\n\nThe screenshots cover the **pre-fix standalone state only**. They do not prove the revised v0.1.1 bytes, pointer/keyboard/focus/a11y behavior, authenticated Terminal routing or production acceptance.\n\n### Revised executable inspector candidate\n\nCurrent conversation source root: `/mnt/data/options_inspector_ui_v2/`.\n\nThe reference remains dependency-free TypeScript/DOM with injected detail reads and an exact-origin return callback. It creates no fetch/auth/store/router/chart/alert/order plane. It keeps original scope separate from child selection, refuses stale/mixed/partial/contradictory detail, treats missing as unavailable rather than zero, and preserves corrections as a separate generation.\n\nFinal offline verification:\n- **84/84 tests pass**\n  - 44 model/response\n  - 32 compiled renderer/action-handler tests with a minimal DOM double\n  - 8 exact existing `flowClientCache.ts` tests with fake time/fetch\n- 16 emitted markup static states\n- 32 declared text-color pairs, minimum computed ratio 4.793\n- real assistant-controlled browser tests: **0**; managed Chromium remains held by `URLBlocklist:[\"*\"]`\n- React mount: NOT_PERFORMED\n- production acceptance: false\n\nThe DOM double has no layout/hit-testing/native key defaults/accessibility tree/browser focus. Structural/static checks are not browser or WCAG certification. Previous 64/25/272/198 suites were not rerun or added to 84.\n\nDiscriminating red→green repairs retained in evidence include contradictory package manifest, in-scope context smuggling, focus loss during language render, unknown package coverage hidden by loaded-leg count, quote-marker endpoint, quote/bucket inconsistency, manifest/context fingerprint inconsistency, plus the live-screenshot empty-detail UX repair.\n\n### Frozen v2 conversation artifacts\n\n- `Mastermind_Options_Inspector_Implementation_Candidate_v2.zip`\n  - 486,608 bytes / 76 members\n  - CRC PASS and every member byte-readback PASS\n  - SHA-256 **f366cae87ccaa1bf3bba1ff935e2421b231682e037b8545a34c0c002d1601bd3**\n- `Mastermind_Options_Inspector_Review_v2.html`\n  - 92,853 bytes\n  - SHA-256 **deb818ec7f6be12f8d9ba37fe450e995ac3e2d9ed93df5b28294e401d1808a67**\n- `Mastermind_Options_Measured_Evidence_First_Slice.html`\n  - 8,616 bytes\n  - SHA-256 **7376367e332a8baf57864f079469fd7af762c928c7792281411240e7193d410a**\n  - synthetic aggregate-first production-slice visual guidance; **NOT_APPLIED_TO_PAPER**\n- `Mastermind_Options_Inspector_Package_Receipt_v2.json`\n  - SHA-256 **faa70daa20456de2c5a544341f493e63fd1da13ae4c13f58dcbfc6b14562e27c**\n\nThe package adds `LIVE_INTEGRATION_PLAN.md`, refreshed `INTEGRATION_CONTRACT.md` / `SOURCE_MAP.md`, source reconciliation, user-screenshot receipt and the aggregate-first review. It includes no font files, credentials, production data or Git checkout.\n\nInput fixture remains byte-identical:\n- D3.1 fixture SHA **0b0b29b164c73bedbeaf0f762fc9f785f42bc4e8d5562d82414c8f888f33ed13**\n- original verification ZIP SHA **94351958506bc0718f71836c50c76c44ca70b87d7c9d01cd93f1e29709f7a1f9**\n\n### Current source reconciliation — exact live seam\n\nProtected Mastermind procedure pin:\n- Mastermind `bdf2a972e68a70270c24d4b5d61a4d60edc4f288`\n- INDEX blob `4b0189a75d559d963365097485e8509a49c70e23`\n- skillpack1.0.1 / bootstrap1 compatible\n- same-pin COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, CLOSEOUT, DELIVERY_WORKFLOW and Paper workflow loaded\n- SESSION_RELIABILITY is **not enrolled** in this INDEX\n- current mode is user-reported Extra High, not independently attested\n\nTerminal current protected master after merge #759: **`f4626ecc9661833b723d6c77b04a309f5aec13ba`**.\n\nKey current blobs at this exact head:\n- OptionsWorkspace `90beabba0102a2cb05ccab813a56310c9c72ffaf`\n- OptionsHubView `a16f592beb32fe8c6e65d28a04d8c5c454124b10`\n- flowClientCache `7e05be0b28908f051726cb5c6817a2114f263084`\n- ThesisWorkspace `b18b02ff8d4d78d401a9331d174a8e12128e1ca1`\n- theses.ts `eb539804e0a7db91b60ef0b61e3905137d8628ff`\n- thesisDelta `ceffd0d6d3621becc5c0cc5df4faaa52117accbb`\n- /api/theses route `421f9ea972fd7956d30190f15dbd9fe23e642694`\n\nThesis content remains v1 and request ceiling 64KiB; the isolated whole-case v2 candidate is not shipped.\n\nCurrent open carriers observed:\n- #677 open/non-draft head `6018d61c9c3383e7bd4425a9fc198979c49b77c2`\n- #755 draft head `a5943e9dce88babee27defc3e9a6095e22b660f8`\n- #763 draft head `b5fdd6ccd171120c7a30baaed06430d7f78dd113`, actively touching shared Thesis editor/locks\n- #769 draft head `5ea5811d0f6279cf8e0d9138df0c7fdda91d62e6`\n- #667 open/non-draft head `6cb393642d21b3849eff28ad9a20c1b34ef7f950`\n\nNo carrier was taken over.\n\n### Key integration ruling: aggregate evidence first\n\nCurrent Terminal Tape rows are **coalesced `FlowEvent` objects**, not raw individual prints. The existing row click currently toggles ticker drill state. A browser cannot honestly decompose `n_prints`, total size, weighted average price and premium into N16’s constituent rows.\n\nMacro current `main=dfc880e68ed77ab7deb6b7d13bbf6259b7a4e682`; `engine/live_flow.py` blob `323be029c88ef8ee03d97c2ae3a878fce95ba191` already computes and publishes additive aggregate **`options.trade_nbbo_microstructure/v1`** per coalesced event before quote-unusable rows are discarded:\n- source / valid-NBBO print counts\n- source / covered premium\n- print / premium coverage\n- at-ask / at-bid / inside / outside shares\n- descriptive aggression arithmetic\n- median spread / quote age / quote sizes\n\nThe producer explicitly treats these as measured execution-location facts, not buyer identity, opening intent, probability, rank or signal.\n\nOpen PR #667 already contains the strict Terminal parser for this exact block:\n- `terminal/components/prophet/optionsAlphaMeasuredEvidence.ts`\n- head `6cb393642d21b3849eff28ad9a20c1b34ef7f950`\n- blob `07f23cf653d8fcfd9864a2b3d5ec6c313cc1e418`\n\n**Do not duplicate this parser.** The first production slice should reconcile/reuse it and open a measured aggregate drawer from the existing Tape event while preserving the existing flow transport/cache and category/view/`?tab=` owners.\n\n### Exact print and package capabilities stay gated\n\nCurrent `live_flow.feed/v1` does not publish the constituent source rows behind a coalesced event. Exact N16 print lists require an additive detail representation in the **existing Macro live-flow producer/publication plane**, keyed to the canonical event/source generation/cutoff. Client-side reconstruction is forbidden. A same-total reply does not prove contributor identity.\n\nCurrent ThetaData rights record blob `0a4fd7aa3946e1b1f73b92def671c0a15c98bd32` records operator-confirmed display/redistribution entitlement but explicitly says the signed written terms still need filing/confirmation for full-universe intraday-derived Terminal panels. Fused public surfaces retain the pre-publish rights check; if unresolved, exact raw-print detail remains internal/research-only.\n\nThe inspected ThetaData trade_quote schema contains trade/quote clocks, sequence, conditions, exchange, price/size and NBBO fields but does **not establish a package/complex ID**. Therefore N17 package linkage cannot be inferred from synchronized time, equal quantity or strike relationships. Package inspection stays gated until an admitted source supplies a real linkage/expected-leg receipt and correction/completeness semantics.\n\n### Current source-custody blocker — exact\n\nProtected DELIVERY_WORKFLOW requires the attended `mmx-workspace` custody launcher before Terminal source edits.\n\nOn the inspected Studio:\n- Terminal checkout and GitHub now agree on `master=f4626ecc...`; stale local objects/commit graph were repaired without touching product working-tree content.\n- installed `/Users/chriswong/.local/bin/mmx-workspace` is hard-bound to `/Users/chriswong/Documents/GitHub/Mastermind`, **not Terminal**\n- no Terminal-bound launcher was found\n- no Terminal workspace lease/branch was acquired\n- manual worktree, raw workspace payload, env override and direct GitHub source-write bypasses were deliberately **not** used\n\nThis is the exact publication/custody gate. The earlier Studio_Direct host diagnostic refusal also remains held and was not rerouted.\n\n### Finalization / continuation\n\nCapability state:\n- Paper UX/contract: **BUILT_NOT_PROVEN** (native designs exist; live app routing incomplete)\n- standalone exact-detail inspector: **BUILT_NOT_PROVEN** (84 offline tests; user visual proof only for pre-fix state; no controlled browser acceptance)\n- current aggregate measured source: **BUILT in existing producer**, parser candidate in #667, but Tape drawer **NOT BUILT**\n- exact constituent-detail publication: **NOT BUILT / RIGHTS-GATED**\n- package linkage: **NOT BUILT / SOURCE-LINKAGE-GATED**\n- whole-case Thesis v2: **isolated candidate only / not shipped**\n- production integration: incomplete\n\n**CURRENT_CRITICAL_DEPENDENCY:** lawful Terminal source custody plus reuse/reconciliation of #667 so the existing Tape row can open an aggregate measured-evidence drawer without creating another parser, cache, router or store.\n\n**EXACT NEXT ACTION:** once a Terminal-bound attended custody launcher/current source workspace is available, acquire it on current protected master, reconcile #667 plus current Tape paths, implement the bounded aggregate drawer, run responsive EN/ZH browser proof with exact row/focus return, and publish through normal PR/CI/release gates. Only after that slice is accepted should exact-constituent producer/rights work begin.\n\nIndependent future work: compatible-reader-first whole-case Thesis rollout and authenticated save→refresh→reopen remain separate; do not collide with #763/#677.\n\nNo active workers/watchers/child returns. No production modification is unresolved. **EFFECT_UNKNOWN:none.**"
+    },
+    {
+      "id": 5966506993,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/603#issuecomment-5966506993",
+      "user": "mastermindx-3",
+      "updated_at": "2026-10-03T06:50:58Z",
+      "body": "## Plan integration increment — the assumption-label repair is now an executable, mutation-tested reference patch\n\nContinuation of `terminal-options-review-integration-20261002-sol-001`; follow-up to comment5966340273. Current scope remains Terminal Options; existing F03 kernel and all source-custody/release owners are preserved.\n\nI prepared the smallest two-path reference repair: conditional source labels in `engine/options_payoff.py::assumption_block`, plus20 regressions appended to its existing test file. Default assumptions retain their exact existing labels. Non-default r/q are explicitly caller-supplied/non-live. No price, Greek, model version, source, schema, contract/expiry logic or trading authority is changed.\n\n**Executed proof:** original kernel+Lab suites with new regressions38pass/15fail; reference candidate53/53pass. Reverting either label independently causes10 discriminating failures. Complete sampled default outputs and default recipe identity are unchanged; custom numeric outputs/states/inputs_hash are unchanged, while corrected custom provenance appropriately changes recipe_id. The initial missing-config fixture diagnostic was fixed using the pinned config resource, not a production edit, and retained separately.\n\nFull exact diff, claim boundaries and evidence are published/read back at the original engine owner:\nhttps://github.com/mastermindx-market-intelligence/macro/pull/6935#issuecomment-5966468019\n\nPatch SHA256 `027ba3191a5725024dca09dbd2c12f2bcef0c9af1cc23bb60d6f82c3adf9b3dd`; manifest `7fa4443e6308f4e76ed1f7d3445e8eea53bd2c68a4bd5eae9b81bc3b69f0c76e`. This is **REFERENCE_PATCH_QUALIFIED / SOURCE_NOT_APPLIED**. It neither reopens merged#6935 nor creates a new worker. Whole-repository/current-base CI, source application and independent release review remain owed. Custom IV-origin and multi-expiry valuation-horizon gates from the prior finding are unchanged and not silently folded into this narrow fix.\n\nSeparately, the original writer's pending #780 repair now passes its **actual two repository Vitest suites39/39**, not just the earlier independent harness. Same new tests on the old selector fail the exact three added regressions. See #780/comment5966498038. The source branch remains unpublished at the repaired-file level; native tests do not transfer its writer or authorize a duplicate implementation.\n\nNext delivery action is source adoption/publication through an admitted existing Terminal/Macro workspace or the current original writer, followed by exact-head review and the owed native application/data path. No source branch/index/worktree, installed service, market artifact, account, alert, merge or deployment was modified by this reference/test increment."
+    },
+    {
+      "id": 5966729084,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/603#issuecomment-5966729084",
+      "user": "mastermindx-3",
+      "updated_at": "2026-10-03T07:22:47Z",
+      "body": "## Applied native Paper improvement — mobile Plan puts risk before chain browsing\n\nOperation `terminal-options-review-integration-20261002-sol-001`, current Chairman Options continuation. This is an in-place improvement to four EXISTING N04 boards, not four new mockups or a new design programme. File `01M3NSZGE8JWN2EZCSF0DT05RM`, Plan page `p-3-1`.\n\n**Observed problem:** after the initial risk/selected-leg cards, the mobile designs required traversing five large contract cards before seeing the payoff graph and pre-entry warnings. The visible expiry control offered only three chips, without the desktop All expiries affordance. Two early/late Continue-to-watch actions became redundant after promoting payoff.\n\n**Actually applied and visually verified:**\n- Dark EN `HEB-0`, dark ZH `IWH-0`, light EN `J20-0`, light ZH `J7J-0` now read risk summary → exact selected legs → existing payoff/warnings/primary continuation → chain controls → all five original contract cards.\n- Existing payoff panels `HJ9-0/J1F-0/J6Y-0/JCH-0` were moved, not recreated. All existing quote values, leg quantities, dates, pricing basis, payoff arithmetic and five contract cards remain.\n- Added a 44px All expiries / 全部到期日 affordance to each existing chain-control group: `YXN-0/YXS-0/YXW-0/YY0-0`. Theme-specific existing tokens retained.\n- Repurposed the redundant early primary action as secondary Edit contracts / 修改合约 (`HFU-0/IY0-0/J3J-0/J92-0`). The single primary Continue remains after the payoff/warnings.\n\n**Required implementation semantics:** Edit contracts scrolls/focuses the existing chain section without changing legs. All expiries opens the current root's supplied chain-expiry inventory at the accepted source identity; choosing a browsed chain expiry must NOT silently roll existing selected legs, replace their exact contracts, reset pricing basis or reprice a saved case. Dismissal preserves prior browsing selection and restores the opener. Existing strategy/Thesis and Save/Watch owners remain; Continue creates no order or active alert merely by navigation. Native keyboard/touch/scroll/return tests remain required.\n\nAll four final native screenshots were inspected after the final text/theme changes: no clipped controls, risk/payoff precedes chain, all five contract cards remain. The original 12-board Plan family remains; no desktop, tablet, scenario guard, held N11/N94, token or unrelated company board was replaced. Tall screenshots were resized by Paper, so this is visual reading-order/control-fit verification, not a full pixel/accessibility audit or implemented responsive route.\n\nEffects through `...-plan-mobile-edit-contracts-secondary` are APPLIED_RESPONSE_OBSERVED and reconciled with native screenshots. `...-plan-mobile-finish` returned OK for only these four boards. The snapshot guard is not a document revision. No Paper prototype wiring, production code, deployment, live quotes, user position, order or active alert was created. No unknown effect remains.\n\nThis is a saved design milestone, not mission completion. Continuing with the now-published #667 repair's matching CI result, the next #780 publication boundary and the existing #685 repo-aware workspace recovery. Do not recreate this in-place change on new boards."
+    },
+    {
+      "id": 5778766757,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/681#issuecomment-5778766757",
+      "user": "MastermindX1",
+      "updated_at": "2026-09-22T14:56:45Z",
+      "body": "## Public R2 follow-up — newer lawful post-deploy cycle re-proven; consumer still not production-live\n\nOperation: `intraday-options-root-coverage-20260920-sol-001`\n\n`FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION`  \n`MISSION_COMPLETE: false`\n\nFresh protected Skillpack pin for this watcher action: `mastermindx-market-intelligence/Mastermind@6df3257a161d34d4251e4697567ecc222be9be85` (`mastermind.sol_skillpack.v1`, v1.0.1 / bootstrap 1 compatible). `INDEX`, `COLD_START`, `ACTIVE_EXECUTION`, `WATCHER_ACTION_LOOP`, `RECONCILE_STATE`, and `CLOSEOUT` were loaded from that exact protected revision.\n\n### Public R2 — newer normal-session publication is present\n\nThis continuation performed **read-only public R2 fetches only**. It did not invoke the producer, reload launchd, run `--once`, pass a historical `--date`, or create any alternate publication path. The previous durable checkpoint `5778297676` already bound the live canonical `com.mastermind.liveflow` normal-session carrier to deployed M1 tree `bffd9931b2e37b5011fe50e0633f62c356879dd8` with `once=False`; the object below is a later same-session publication than that checkpoint's `14:12:21Z` receipt.\n\nFresh `live_flow/meta.json` public read:\n- SHA-256 `9e80b9d9dc9cf77e358227f755aea8f12ed5d623e5a56c127e212ad97637422c`\n- `schema = live_flow.meta/v2`\n- `asof = 2026-09-22T14:43:21.981125Z`\n- `built_at = 2026-09-22T14:45:15.963009Z`\n- `roots_configured = 30`\n- `roots_requested = 27`\n- `roots_with_source_payload = 27`\n- `root_catalog` rows = **30**\n\nProducer receipt contract was rechecked against the public data plane: for every catalog row with `has_session_data=true` and a `last_source_success`, the corresponding real `live_flow/tickers/{ROOT}.json` was fetched and its `asof` compared to the catalog receipt: **30 checked / 30 exact matches / 0 mismatches / 0 missing**.\n\nConcrete quiet-root artifact proof remains strong on `XLC`:\n- catalog row: `tier=rotating`, `activity_rank=29`, `scheduled_this_cycle=false`, `source_ok_this_cycle=false`, `has_session_data=true`\n- catalog `last_source_success = 2026-09-22T14:21:56.637420Z`\n- real public `live_flow/tickers/XLC.json` SHA-256 `daac60bd6defac0e23b53244a4ba366f0b44e2c66b61fa70fccf00f8aeec8830`\n- ticker `schema = live_flow.ticker/v1`, `root = XLC`, `asof = 2026-09-22T14:21:56.637420Z` — exact receipt match\n- artifact carries 21 minute rows and 23 strike rows.\n\nSo the natural post-deploy producer/R2 root-coverage condition is now independently re-proven on a later cycle; it is not a one-object or pre-deploy coincidence.\n\n### Terminal consumer — production browser gate remains legitimately pending\n\nFresh GitHub/served readback:\n- PR #686 is still **OPEN**, exact head `a134ee1407bda473e6e92a165df6d088c7d0d194`, still carrying `merge-on-green + hold`;\n- protected Terminal `master` remains `3b488ce96f2633613e1bd9d873e96693aef20314`;\n- production `https://app.mastermind-x.com/options` still serves `data-dpl-id=ea1b9a939b180fd594da0c51e2e4138ba7d14399`.\n\nTherefore #686 is **not production-deployed**, and no production-browser quiet-root proof is claimed or attempted in this checkpoint. Preview remains non-acceptance. Continue only on the existing #686 carrier/release path; once the accepted consumer is actually merged and that exact protected release is served, run the canonical authenticated production journey for a quiet root such as `XLC`.\n\n### Custody / non-goals preserved\n\nThe ignored `terminal/public/data/coverage.json` discrepancy remains explicit: the earlier `45d5f651f2fdca6127b15f2d978bed19c7300a8434563ba384e9e008ee2b1c2a` bytes remain unrecovered, while the incumbent writer-worktree copy remains frozen at SHA-256 `9e1e1605f3d961ac70957b293b38a514fc29072d2938fa8e8e14e5c41819a353`. No recreation, overwrite, cleanup, replacement state plane, alternate R2 path, replacement consumer carrier, or manual producer cycle was introduced.\n\n**Exact next gate:** preserve the same #686 carrier and its current release blocker/reconciliation law. After lawful merge + exact production deployment of the accepted consumer, prove the authenticated production `XLC` discovery/recovery path against these real catalog/ticker receipts. Producer natural-session/R2 proof itself is closed."
+    },
+    {
+      "id": 5780979264,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/681#issuecomment-5780979264",
+      "user": "MastermindX1",
+      "updated_at": "2026-09-22T17:28:24Z",
+      "body": "## Consumer merge gate — exact-head CI green; release remains fenced\n\nOperation: `intraday-options-root-coverage-20260920-sol-001`\n\nFresh protected procedure pin: `mastermindx-market-intelligence/Mastermind@75a7026438d62385819b13d0d2df4358b7abcb70` (`mastermind.sol_skillpack.v1`, skillpack `1.0.1`, bootstrap major `1` compatible). `ACTIVE_EXECUTION`, `RECONCILE_STATE`, and `WATCHER_ACTION_LOOP` were loaded atomically from that exact revision.\n\nMaterial transition:\n- authoritative current-base CI `35753536721` is now `SUCCESS` on exact #686 head/base `450850ec2933290d6a8e86db35e8c59cfc8843c1 / 3b488ce96f2633613e1bd9d873e96693aef20314`;\n- protected Terminal `master` is still exactly `3b488ce96f2633613e1bd9d873e96693aef20314`;\n- PR #686 head is still exactly `450850ec2933290d6a8e86db35e8c59cfc8843c1`, open/unmerged, labels `merge-on-green + hold`, native `auto_merge=null`;\n- immutable semantic review basis remains `90e147ee44e87e2914744d04b6cb93df1b613658` / independent review `5271899800`; no review threads are open and prior `REVIEW_REUSE_ALLOWED` evidence is unreversed;\n- native PR state still reports `mergeable_state=blocked`, with reviewer `mastermindx-3` still requested.\n\nThe release fence therefore stays closed. In addition, the required fresh exact-head Source Continuity read could not be established through the bounded attended-workspace preflight: `studio_git_publish_status(operation_id=intraday-options-root-coverage-20260920-sol-001)` returned `TYPED_GIT_PRECHECK_REFUSED`, `effect_state=NOT_APPLIED`. Per source law and Chairman instruction, no alternate carrier/tool was used to route around that refusal.\n\nNo `hold` removal, controller re-arm, auto-merge, merge, deployment, source edit, retry, legacy rsync, or manual/historical producer cycle was performed. Preserve ignored `terminal/public/data/coverage.json` custody SHA-256 `9e1e1605f3d961ac70957b293b38a514fc29072d2938fa8e8e14e5c41819a353`.\n\nExact next lawful edge: keep #686 fenced until the existing independent review/protection path clears native `mergeable_state=blocked` and a fresh exact-head Source Continuity receipt for `450850ec…` is lawfully readable. Then re-read protected master/head/reviews/threads before any hold removal."
+    },
+    {
+      "id": 5967054593,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/667#issuecomment-5967054593",
+      "user": "mastermidx4",
+      "updated_at": "2026-10-03T08:10:22Z",
+      "body": "Release and live verification receipt: merged a049d46fa2415d3949aae5efc0ee515b6667c7a0 after exact-head run37104319924 passed all three required checks, all responsive shards, unit/typecheck and serial e2e. Desktop recorded one passing-on-retry pane-sync test; no Options regression remained.\n\nDeployed through the existing M2 credential and canonical /opt/terminal/terminal-build.sh --target-sha a049d46fa2415d3949aae5efc0ee515b6667c7a0. W2A preflight CLEAN at accepted predecessor f4626ecc9661833b723d6c77b04a309f5aec13ba; staged build, atomic swap, health and intended/marker/BUILD_ID identity checks passed. Live marker=a049d46fa2415d3949aae5efc0ee515b6667c7a0; BUILD_ID=build-TfctsWXpff2fKS; terminal.service active; /options HTTP200.\n\nAuthenticated live Chrome confirmed Options Alpha measured evidence loads 2,000 source events, explicitly labels the Sept25 measured snapshot stale, and opens a TSLA event investigation with retained-source warning, 4/4 valid prints, 100% NBBO coverage, exact contract, measured quote metrics and loaded underlying-only watchlist control. No watchlist data was written for this verification. This confirms the released UI path; it does not claim refreshed NBBO evidence or accepted candidate/outcome publication.\n\nThe stale producer has been traced separately to the canonical M1 live-flow owner refusing a stranded Sept28 learning WAL. Parent599 remains active for reviewed evidence-preserving producer recovery, candidate composition, campaign correction, FS-5/OA-3, and natural production proofs."
+    },
+    {
+      "id": 5894994553,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/608#issuecomment-5894994553",
+      "user": "mastermindxryan",
+      "updated_at": "2026-09-29T17:10:04Z",
+      "body": "## Independent review returned REQUEST_CHANGES — repaired on this carrier · head `aa9333502ecad41054b5d392a4fae9138b163e04`\n\nAn independent read-only review of the integrated head found a **blocker**, and it is the same defect class this PR exists to remove — one level up the read chain.\n\n### The finding\n\n#608 closed false-accrual at the **frame** read. The **index** read above it was left open, and on that path the surface states three things that are all false at the same time:\n\n| surface | copy shown on a cold `surface_idx:<ROOT>` 503 | why it is false |\n| --- | --- | --- |\n| chart | \"No surface data yet — accruing. … **Nothing is hidden**.\" | nothing was read, so nothing is known to be absent |\n| replay bar | \"this root has none for the selected day\" | same claim, restated as fact |\n| replay bar | \"Refresh unavailable · **retaining stored frames**\" | nothing was ever admitted, so nothing is retained |\n\nMechanism: a failed index admits no stamp, so `asOfStamp` is null, so `SurfacePane`'s no-stamp branch runs and explicitly clears `frameError`. The empty-state ternary then falls through `loading` → `frameError` → `cellAccruing` to `surfaceEmpty`. The repair's own `surfaceUnavailable` string could never be reached on this path.\n\nI reproduced it before accepting it. Discriminating RED on this tree:\n\n```\n× reports a cold index transport failure as unavailable, not absence or retention\n    Expected: \"Surface unavailable\"\n    Received: \"…No surface data yet — accruing.Stamps are written as the session runs —\n               until the materializer has painted one there is nothing to shade. Nothing is hidden.\"\n    1 failed | 26 passed\n```\n\n### The repair — 68 lines, same carrier, no redesign\n\n- `SurfacePane.tsx` consumes `indexError`. It was **already exposed on the context and simply never read**; `readFailed = frameError || (indexError && indexDate == null)` routes a never-landed index into the existing read-failure state.\n- `ReplayBar.tsx` guards the retention wording on frames actually existing, and gives a failed index its own copy rather than borrowing copy that asserts absence.\n- `surfaceStrings.ts` adds `replayIndexFailed` / `replayIndexFailedWhy` in EN + ZH.\n\nUnchanged: replay ownership, cursor semantics, cache plane, identity fencing, geometry, metric semantics, and every existing non-goal. Nothing broadened into #768 or Options Alpha.\n\n### Second gap closed — the render-boundary validator was unproven\n\nThe review also found that the render-boundary `isSurfaceFrameForContext` call was load-bearing but covered by nothing: every existing case was already satisfied by the cheaper `root === root && stamp === asOfStamp` label pair, so **deleting the contract call reddened no test**. Packet Task 1 asks for exactly this (\"verify the tuple validator at the render boundary as well as fetch completion\"), so it is now proven rather than assumed:\n\n```\n× re-runs the admission contract at the render boundary, not just the label pair\n    (contract call removed)   1 failed | 27 passed\n    (contract call restored)  28 passed\n```\n\nThe window it closes: the session rolls over while the replacement frame request is still in flight. Root and stamp both still match, so a label-only check paints the **previous session's** frame under the new session's date.\n\n### Gates on the repaired head\n\n| gate | result |\n| --- | --- |\n| surface/replay/contract/geometry vitest | **276 passed**, exit 0 |\n| `tsc --noEmit` | exit 0, zero diagnostics |\n| real-route browser matrix | **36 passed**, cold server, `--workers=1 --retries=0` |\n\nThe matrix grew 30 → 36: six new cold-index cases across EN/ZH × desktop/tablet/mobile. Retries are pinned to zero rather than inherited from the CI config, so a race cannot be hidden by a second attempt.\n\n### Residue recorded, deliberately not fixed here\n\n- `SessionFlowPane.tsx` has the same empty-vs-unavailable shape but is outside this PR's changed file set.\n- `live` in `replayContext` is derived without frame health, so at the head with a healthy index and a failed same-stamp frame refresh the bar still reads `LATEST STORED` beside the pane's own refresh-unavailable banner.\n- `heatSeries` per-band `drawImage` at fractional destination coordinates may leave sub-pixel seams at some zooms (cosmetic; the single-stretch predecessor could not).\n\nNon-claims unchanged: production freshness, observed dealer inventory, predictive edge, and #603 / Quanted parity are **not** claimed.\n"
+    },
+    {
+      "id": 5965887983,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/592#issuecomment-5965887983",
+      "user": "MastermindX1",
+      "updated_at": "2026-10-03T05:18:52Z",
+      "body": "## Bounded source-review return: #592 current integration\n\n**No new blocking source defect found. Disposition: RELEASE_BLOCKED.** This source inspection consumes the existing [semantic review](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/592#pullrequestreview-5242156602) and [current-cache qualification](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/592#issuecomment-5965442983); it does not replace them or repeat their test execution.\n\n### Exact identity and fresh findings\n\nAt 2026-10-03 05:17 UTC, the PR remains DRAFT at `87969fb4aff5836410ffd166cc39289b562a41bc`. GitHub integration `93c9b047fe6a8cd30f1aaea254a52b3aa7288333` has parents `c35b9a1d50ca4960c361645f0300fa9f95158a4e` and that semantic head. The complete 14-path candidate census was checked against Git trees: every owned blob is unchanged in the integration, and protected movement from merge base `702d81bb35f2c900a5aa1215437bf968aa9e6d93` changes none of those owned paths.\n\nThe selected-root request fence, cleanup invalidation and render-time state filter remain coherent across state, OI, context and matrix-level consumers. Envelope/root normalization and finite-positive level fallback preserve the bounded contract. The current shared cache retains URL-key isolation and in-flight deduplication; the reported two-request A→B→A qualification is consistent with that source. No new pricing, polling, source-time or permission change is inferred.\n\n### Source-inspected, not rerun\n\nInspected the production diff, current cache/dependency source, and committed mounted/browser regression source. **No test, browser journey or production capture was rerun, and the M2-only qualification artifacts were not independently hash-verified in this review.** The 20/20 integrated cases and 6-pass/14-failure baseline remain the execution evidence reported in comment5965442983. The earlier 12 mounted/six browser/full-unit results remain their original evidence epoch.\n\nThe current-cache harness substitutes HTTP/SSE/presentation boundaries. It does not establish full current route/rendered-chart behavior, authenticated entitlement, published-market-data correctness or production proof.\n\n### Release gates and composition\n\n- Current integration still has **zero check runs, zero check suites and zero commit statuses**. The successful [head CI run35075853691](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/35075853691) and head CodeQL are September 16 evidence, not current-integration qualification.\n- MastermindX1 remains requested. GitHub records no pickup or submitted review from that reviewer; the only submitted review remains author-account COMMENTED review5242156602, with no unresolved inline threads. This comment is also **not a formal GitHub approval**, does not satisfy the distinct-reviewer gate and changes no reviewer assignment.\n- Open #686 changes GexDeskView's rootChoices prop/datalist and flowStream; #723 changes the shared cache. Recheck their effects if they land before release.\n- #768 intentionally incorporates #592 as a draft contribution into the existing #723 branch. GitHub comparison confirms `87969fb4` is its ancestor. This is an intentional integration relationship, not an accidental duplicate identity repair or a second release owner; preserve incumbent acceptance and custody.\n\nRetain the supported semantic review and unchanged source branch. Full `REVIEW_REUSE_ALLOWED` release disposition is not established while current hosted/security qualification and the requested distinct review remain absent. Keep DRAFT and ordinary custody/check/merge/deploy gates; real selected-symbol production verification follows authorized release. No code, host, source branch, deployment, lifecycle or Paper action was performed.\n\nProtected procedure was freshly rechecked at Mastermind `bdf2a972e68a70270c24d4b5d61a4d60edc4f288`; Skillpack1.0.1/bootstrap1 remains compatible. Parent Options mission remains incomplete."
+    },
+    {
+      "id": 5965392290,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723#issuecomment-5965392290",
+      "user": "mastermindx-3",
+      "updated_at": "2026-10-03T07:45:30Z",
+      "body": "## Terminal Options — cumulative verified continuation\n\nOperation `terminal-options-review-integration-20261002-sol-001`; current Chairman end-to-end Options assignment under existing Terminal#603/#723 and Macro#6604. **MISSION_COMPLETE:false.** This is the existing integration checkpoint, not a new lifecycle, source lease, pricing owner or release authority.\n\n### 1. Published #667 repair reviewed; preserve it\n\nCurrent reviewed integrated head **ea2a1811ad3515c3202a7ab6a4cbc2446e15601c** = semantic28f06a50e8d8e2462bbc42cc7e3539d927c399d9 plus basef4626ecc9661833b723d6c77b04a309f5aec13ba. Exact semantic/integrated trees reproduced:2c10315c8c5d94ab9b5b113c2e45a416915f592c/c82c9f3798086ce0b986326a97255aed7769afbb.\n\n**#667 review5399482471**, published/read back: SOL RULING/CONTINUE; rounded-premium source finding repaired. Actual current repository tests30/30; same tests oldparser28pass2fail. Full-parser producer bridge25/25 including6 saved actual-producer synthetic shapes. validPrintCount now governs empty/nonempty semantics; valid rounded-zero premium retains complete shares, positive-count/null-share malformed input refuses. Earlier hasLocationShares reference is SUPERSEDED. Accepted View/Investigation/CSS remain byte-identical; no new rank/customer-intent/candidate/transport authority.\n\nParser blobefa4c81006e4f41aac45e2bd7508a45fcafbbc96; SHA256111e596f2823b57c3cf4c34840ff02e42a226d9aec8080a0dfbd58f4a9fc942c. Evidence folder review667-published-20261003;14-member manifest1aef0fde79e3e71ae8c95cea46138f84caa2c03fb3005bd28f0d882a6b73d6a8. Source-tree, missing-object, exact-tsconfig and corrected old fixture-expectation diagnostics are recorded, not passing production evidence.\n\n**CI37104319924 latest observation:** QuoteHub, ingest, unit/typecheck/plain-language, serial, mobile and tablet SUCCESS. Desktop111149898072 still RUNNING its browser step. No whole-CI/approval/merge/live-event claim. An attempted generic jobs-URL fetch was INVALID_ARGUMENT/unsupported URL; the already-supported workflow-jobs action supplied the real state. No action/permission bypass or modifying effect occurred. Do not poll unchanged status, restart checks or push empty commits.\n\n### 2. Native Paper Plan improvements applied in place\n\n**#603/comment5966729084** published/read back. Terminal file01M3NSZGE8JWN2EZCSF0DT05RM, Plan pagep-3-1: existing HEB-0 darkEN, IWH-0 darkZH, J20-0 lightEN, J7J-0 lightZH.\n\nRisk → selected legs → payoff/warnings/primary Continue now precedes chain browsing. All five existing contract cards/values/legs/dates/payoff arithmetic and the12-board family remain. Added44px All expiries controlsYXN/YXS/YXW/YY0. Early duplicate Continue becomes secondary Edit contracts(HFU/IY0/J3J/J92). Edit contracts must scroll/focus without changing legs; browsing another chain expiry must not roll selected contracts/reset pricing basis/reprice saved cases. Dismissal restores focus/context.\n\nAll four final screenshots inspected. Static design, not wired prototype/application/accessibility proof. All effects reconciled; finish_working_on_nodes returnedOK for only four owned boards. No heldN11/N94/cleanup action retried. Earlier VolatilityV05(XFO/XHI),V06(XJA/XKM),V07(XLX/XMP),V04(V0K+XNH) remain verified in#780/comment5966169340; do not recreate.\n\n### 3. Existing Plan and 0DTE work recovered — do not rebuild\n\n**Terminal#781** is already a built manual single-expiry Payoff Lab, currentfd3504e04157b23f7665708eb46482fe7f8e1654, OPEN/DRAFT. It is NOT the complete source-linked N04/Thesis/quote workflow. Another current review5966598571 has accepted numeric-v2/format adoption at bounded scope; its15 Node checks and older large corpus were NOT rerun here. Preserve them.\n\nRecorded current-head CI37101455392 fails old options-workflow-guide.spec.ts92/93/113 (Prophet expected, intended Payoff route actual). Existing writer should fix that stale journey without losing viewed counts, alert prefill/noPOST or Back. P3 extreme-admitted-input SVG overflow is separately recorded, not a reason to repeat numeric proofs. Historical payoff-lab-browser/results.json binds engine7188f51b…, NOT adopted5e1a5259…; those old images cannot prove currentfd3504 visual behavior. Owner's9 current route tests remain attributed, not independently rerun.\n\n**#781/comment5966847607** published/read back: preserve manual expiry-only capability, do not block it on Macro custom-r/q or live-IV requirements that it does not use. Real contract/model integration must still reconcile existing owner/parity/source/clock/contract and saved-case rules; no replacement live pricer or generic full-Plan completion claim.\n\n**Macro#7279 is MERGED**, mergefc4efb9fd9ec97cc3e65f9ff9ee157626be5683f on2026-09-20. Old bodyDRAFT/4-hour-floor task state is not current. Preserve real per-root observation/expiry clocks, same-minute atomicity and replay provenance. Merge is NOT natural-market deployment proof.\n\n### 4. New #7306 point-in-time blocker reproduced and bounded repair qualified\n\nExisting conditional Greek scenario producer **Macro#7306**, exact8cbb2581699c23bb2a2fd7a640a68f4bf2890150 OPEN/DRAFT. Engine/CLI/test fully read; no duplicate consumer/pricer built. **Formal REQUEST_CHANGES review5399568840** published/read back.\n\n_source_clock_bounds returns on the first unknown/malformed/naive member and never checks later known clocks. SAME contracts `[unknown,future]` are admitted with null envelope/numeric output; reversed order rejects. A missing clock must not hide future-origin input. Actual supplied-IV and mid-solved-IV paths both reproduce this for trade and quote clocks.\n\nOriginal18 scenario tests plus52 new cases: **54pass16fail**. Confined helper-only reference: **70/70pass**. Actual unchanged CLI12 order/control probes confirm original unknown→future exit0 versus repaired bothfutureorders exit1; mixed-unknown/past retains exit0/null bounds. Greek/IV/pricing/scope/expiry math unchanged; AST outside existing helper identical. Candidate/source hashes checked; evidence processes complete.\n\nEvidence folder review7306-clocks-20261003: patch8340e74c2024b543ec3f757a654dc75e80554bc09d071ef36010fd17db04a1bf; candidatee2b692f1966abe9f0385102892fc8869c362ffe5874475cff33703249d307c40; newtestscd2eb6fa5424a6613a8291be13a5f919502ed84ec82f5eeb690180084da9e0c4;13-member manifest38ff320aee460268f87f54abdc3d832b4ceacfbfcff131dd4937787fc233b601. **REFERENCE_ONLY / NOT_APPLIED_TO_SOURCE.** Initial missing CLI object/temp-dir/package-path setup errors retained separately, not counted as failing source tests. Actual CLI bytes verified against GitHub blob764cf122; no dependency install or source-repo effect.\n\nNext existing writer: scan all contributing clocks for future instants, then return unknown envelope only after scan. Return repaired head/current checks. Do not solve in consumer, rebuild #7279, conflate scenarios/history, or treat active_snapshot_fraction as complete per-cell Greek coverage. Existing separate field-completeness requirement remains unresolved.\n\n### 5. Concrete source-custody recovery and other remaining lanes\n\n**Mastermind#685 current recovery5966606194** is an assigned repo-aware launcher task. Consumer packet5966643113 was published/read back: closed host-owned mastermind/macro/terminal selector, exact acquire/status/release receipts, cross-repo collision safety, legacy compatibility, protect foreign/pending writers. Do NOT duplicate the active recovery implementation.\n\nAt **2026-10-03T07:41:28Z**, installed launcher still SHA256f6ea9929d3547c71a24f50b4ee2c34df7ffed15cdc532273fdbd6695dc7ea368, binds Mastermind; acquire-help has no repo selector. No newer #685 installed-return observed. Filesystem works; missing capability is accepted installed repo-aware source custody, NOT another ACL grant. Earlier Workbench404/tunnel_client_not_seen and Executive readonly remain action-specific; no dummy dispatch or direct-provider fallback. Actual Terminal common repo is charting-app; partial /Volumes/Mastermind/repos/mastermind-terminal mirror is not custody.\n\n- **#780 e21f9d02afefb861ac7589cb181e647dbe77f0f5**: original-writer3pendingfiles unpublished; native39/39 vs old36/39 and ENZH10/10 qualified in5966498038/5966292712. Pending hashes and manifest20c3c65… are in those records. Do not stage/publish/overwrite without custody; review5389565222 needs repaired published head.\n- **Macro payoff assumptions**:53/53 tested2path reference, not applied. Macro#6935/comment5966468019, Terminal#603/5966506993. Patch027ba319…; manifest7fa4443e…. New admitted nonconflicting Macro workspace needed. Preserve shared kernel; custom-IV attribution/multi-expiry horizon remain separate.\n- **#59287969fb4…**: priorrealcache20/20 in5965442983; independent approval/current integration/release still owed. MastermindX1request notpickup. Preserve2untrackedappearanceartifacts.\n- **#686450850ec2933290d6a8e86db35e8c59cfc8843c1**: prior25/25+browser7pass2skips; successful workflow_dispatch35753536721 retained. PR-triggeraction_required is not allCI failing. Prior typed-publication precheck refusal remains held; no alternate-tool/account retry. Current integration/quiet-root native data proof owed.\n- **#723c8705d6e… + merged#608** preserved; no new chart/cache, preserve6untrackedheatmapscreens.\n- **Macro#7861c63e9e289d269372ef951ded7a8eb3dbe06e2cbb** OPEN/notdraft, Readyhold superseded. Prior2evidence-file reference integration notapplied. Original clean writer, source-host preimage/idle/resource/dependencies(including sessions_apart)/rollback and natural publication→entitledTerminal proof remain. Do not use olddirtyM2ad114ece path.\n\n### Continuation / effect state\n\n**FINALIZATION_CLASSIFICATION: ALL_SCOPED_LANES_BLOCKED** for the next defined source-integration/release actions after completing published#667 review, in-place Plan design, #781/7279 recovery, #7306 qualification and workspace-consumer routing. This is not a claim every possible Options research topic is exhausted or the programme complete.\n\nNext: consume exact#667 desktop CI/required review; consume#685 accepted installed repo-binding receipt or#780 original-writer published repair. Then execute the matching authorized source/review/native-data action. #781 workflow repair and#7306 helper repair stay with existing writers; do not manufacture replacement implementations or merely repeat passed proofs. No new design approval/Pro switch required; any actual reserved custody/admin/auth ceremony remains a gate.\n\nAll new GitHub records read back; both current manifests rechecked with zero mismatches. Native evidence root `/Volumes/Mastermind/evidence/terminal-options-review-integration-20261002-sol-001/` is M2, not a sandbox download. No unresolved modifying effect, active owned child/watcher/test process, source/index/branch/worktree mutation, provider data/account/order/alert/merge/deployment. CI runs under GitHub; no ChatGPT background wake claimed. Only our finished Paper node indicators released. Original interrupted-turn effects already reconciled; never replay due old Thinking failed.\n\nProtected procedurebdf2a972e68a70270c24d4b5d61a4d60edc4f288, Skillpack1.0.1/bootstrap1. Same-pin Paper companions read. User-selected mode is not served-model/context-limit proof. Current checkpoint update requires readback."
+    },
+    {
+      "id": 5966498038,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/780#issuecomment-5966498038",
+      "user": "mastermindx-3",
+      "updated_at": "2026-10-03T06:49:35Z",
+      "body": "## Actual pending repository tests now executed — 39/39; old selector fails three new regressions\n\nContinuing `terminal-options-review-integration-20261002-sol-001`. This closes the specific proof gap in comment5966292712: the two pending repository test files are now **executed with native Vitest**, not merely inspected or represented by my separate10-case harness.\n\nFrozen source remains e21f9d02afefb861ac7589cb181e647dbe77f0f5 plus the exact original-writer pending VolTermPanel and two test files previously recorded. I did not edit/stage/commit the original workspace. At2026-10-03T06:49:03Z, all three pending hashes and all18 fixture-source hashes were verified unchanged.\n\nResults:\n- Pending actual code/tests: **39/39 PASS**, both files passed: volatilityMissingness33 and volatilityExpiryInvestigation6. Native Vitest2.1.9; process29641 completed exit0.\n- Same test files with only VolTermPanel reverted in the disposable evidence fixture to immutable e21f: **36 PASS /3 FAIL**, process30186 completed exit1. The failures are exactly the new smile-only select-value mismatch, ambiguous-DTE select-value mismatch, and absent selector for empty term inventory. Thus the regressions discriminate the actual old defect. The fixture was restored to the frozen pending bytes afterward.\n\nOriginal vi.mock seams remain as the repository tests declare them. Complete VolView/term/smile/history/VRP/shared helpers and chart helper are real source, not reimplemented substitutes. The isolated fixture uses an existing dependency tree read-only; cache/temp/report destinations stay in the evidence fixture, accidental HTTP/fetch is refused, and no dependency installation or source-workspace write was used. Dependency versions are retained, not asserted to be a new lockfile-qualified build.\n\nEvidence directory: `/Volumes/Mastermind/evidence/terminal-options-review-integration-20261002-sol-001/vol-native-tests-20261003/`.\n-9-member manifest20c3c65ecb22bd260f59a60a9fba492b46eac7cd7146b21f6385c509fe891f27.\n-qualification-summary.json ee803d338a8f6c3313b1eb2689b04045482b70761f7c8c0d29708e29a165e14c.\n-Vitest pending JSON54c5fdf615f15cd032b331ce3a059d87731ec259e27fada537fd14cc744c99c6.\n-old-selector JSON950dcaa1d6424b8ddb6725c153c63c85f2f195390ae0cf2b1f1b5013fe2f7fa2.\n\nThis proves the **two selected native suites**, not the full Terminal suite, browser/entitlement/source-host/live-data path, published commit, release or production acceptance. Formal review5389565222 still needs the repaired published head; the pending source has not been promoted to whole-PR approval. Next same-writer action remains publishing these already-present three files with current source checks. No replacement patch, new worker, custody transfer or wake is created here."
+    },
+    {
+      "id": 5966847607,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/781#issuecomment-5966847607",
+      "user": "mastermindx-3",
+      "updated_at": "2026-10-03T07:39:32Z",
+      "body": "## Options programme integration — preserve the manual Payoff Lab; connect the existing design deliberately\n\nCurrent Chairman Options continuation, operation `terminal-options-review-integration-20261002-sol-001`. Fresh source head is fd3504e04157b23f7665708eb46482fe7f8e1654. This is a product integration clarification, not another numeric review, branch assignment, approval or release override.\n\n**Census correction:** this PR already implements a manual, single-expiration payoff-planning route. The broader programme must not describe every Terminal planning capability as unbuilt or create a replacement manual calculator. Preserve the numeric-v2 adoption and precision contract already independently checked in5966598571; that corpus has not been rerun here. The stale Workflow assertions and current-source/native acceptance listed there remain the actual release work.\n\nThe useful first capability is explicit manual expiration arithmetic. It does not depend on qualifying custom interest/dividend assumptions, live option quotes, IV surfaces or calendars/diagonals. The separate Macro payoff-provenance reference patch at Macro#6935/comment5966468019 must NOT become an artificial release prerequisite for this expiry-only input/output class. Conversely this manual calculator must not be promoted into a second live pricer, source registry or strategy-recommendation owner. Before linking real contracts or modeled pre-expiry values, reconcile shared owner/parity/clock/contract semantics through the existing Options/F03 programme.\n\n**Existing N04 design now improved in place:** #603/comment5966729084. Four phone variants (dark/light × EN/ZH) show risk → selected legs → payoff/warnings → contract browsing; all five original contract cards and values remain. All expiries is now visible, and Edit contracts is a secondary focus/scroll action rather than a duplicate Continue. This is the source-linked professional Plan direction, not a claim that #781 already has a supplied chain or saved-case integration.\n\nKeep the two layers explicit:\n- This PR: user-entered premium, standard multiplier restriction, one shared expiry, deterministic expiry payoff, no quote freshness or executable-price claim.\n- Subsequent existing Plan/Thesis integration: exact contract identity/deliverable, independently timed quotes and pricing basis, fees, source snapshot, immutable saved-case readback, and explicit modeled-versus-expiry output admission. Changing a browsed expiry must not silently replace existing legs or mutate a saved case.\n\nThe immediate owner step remains the already-specified Workflow test repair at92/93/113, preserving viewed-count progression, Alerts prefill/no POST and Back behavior, then exact-head responsive CI and ordinary release proof. The low-practical-impact extreme SVG-range finding remains recorded separately; do not rerun the numeric-v2 sweep merely because this product crosswalk was added. No source, Paper board, account, alert, order, merge or deployment was changed by this comment."
+    },
+    {
+      "id": 5967120244,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/781#issuecomment-5967120244",
+      "user": "mastermindx-2",
+      "updated_at": "2026-10-03T08:19:49Z",
+      "body": "Ryan-Dot — read-only preview-failure diagnosis on exact fd3504e04157b23f7665708eb46482fe7f8e1654. Source owner mastermidx4 and existing authorized Vercel maintainer retain custody. No settings/deployment/workflow/source changes.\n\nBoth PR-head deployments report framework fastapi, state ERROR, errorStep buildStep/errorCode ENOENT, with the explicit error:\n“Total bundle size (249.50 MB) exceeds the maximum function size (225 MB) even after optimizing dependencies.”\n\nExact deployments:\n- mastermind-terminal dpl_EaEgV8TQ2gun2A7dsZdYQkNhe3qW: https://vercel.com/chriswong6031-creator/mastermind-terminal/EaEgV8TQ2gun2A7dsZdYQkNhe3qW\n- macro-eiz4 dpl_CP9F395t8sJZGKkvcVaUo9pRE2D4: https://vercel.com/chriswong6031-creator/macro-eiz4/CP9F395t8sJZGKkvcVaUo9pRE2D4\n\nThis is not unique to Payoff changes. Earlier master f4626ecc deployment dpl_MwfaAVNXT8NJgwLSWNmfxZLMHeFo fails at249.63MB; newer master a049d46f deployment dpl_G5xfPmxCQ92YmhyBqxqBD6nb7pVJ fails at250.13MB. All14PR changed paths are under terminal/.\n\nPinned DEPLOY.md describes canonical production as git-gated VPS build of terminal/, excluding api/ and root requirements.txt. api/main.py is a legacy Phase0 FastAPI stub; root requirements include pandas/numpy/pyarrow/FastAPI. No checked-in vercel.json or .vercelignore found. This establishes a target/bundle investigation, not the actual effective Root Directory or which files/dependencies inflated the function. A successful FastAPI build would not by itself prove the Next.js Payoff UI.\nhttps://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/fd3504e04157b23f7665708eb46482fe7f8e1654/DEPLOY.md\nhttps://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/fd3504e04157b23f7665708eb46482fe7f8e1654/api/main.py\nhttps://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/fd3504e04157b23f7665708eb46482fe7f8e1654/requirements.txt\n\nRead-only followthrough blockers:\n- Build logs: McpServerError: MCP tool get_deployment_build_logs was not returned by tools/list\n- Project settings: Input validation error: Invalid arguments for tool get_project: idOrName: Invalid input: expected string, received undefined\n\nNext permitted owner step: existing authorized Vercel maintainer, coordinated with incumbent source owner, inspect both projects' effective root/framework/build settings and exact deployment bundle manifests/logs; establish intended preview target before choosing exclusions or config correction. Deployment creator/team metadata does not establish current maintenance custody. No exclusion patch is justified from available evidence; blindly omitting runtime assets/dependencies is unsafe. No credentials/redeploy/setup changes attempted. Existing Workflow assertion repair and independent UI qualification are separate and can proceed.\n\nValidated evidence receipt SHA256267b309f94de6a6207546d25d3e849e1ce6bd8f49db77637685fae80569d81d3. No inferred credentials problem or provider outage."
+    }
+  ]
+}

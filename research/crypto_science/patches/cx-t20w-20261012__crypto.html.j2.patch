@@ -1,0 +1,67 @@
+--- a/templates/crypto.html.j2
++++ b/templates/crypto.html.j2
+@@ -476,6 +476,39 @@
+   if(!entry)return;
+   var timer=null,observer=null,openedHere=false;
+   var note=document.querySelector('.desk-brain-status');
++  var pageArmed=false;
++  // Attach after theme.js initChatLauncher; do not replace MM_BRAIN_CFG.
++  function armCryptoPage(){
++    if(pageArmed)return;
++    var cfg=window.MM_BRAIN_CFG;
++    if(!cfg)return;
++    pageArmed=true;
++    var prior=cfg.getAiContext;
++    cfg.getAiContext=function(){
++      var block=null;
++      if(typeof prior==='function'){try{block=prior()}catch(e){block=null}}
++      if(!block||typeof block!=='object'){
++        var symbol='';
++        try{symbol=(typeof cfg.symbol==='function'?cfg.symbol():'')||''}catch(e){}
++        symbol=String(symbol||'').toUpperCase().slice(0,24);
++        return {
++          schema:'ai_context_client.v1',
++          origin_id:'crypto-page',
++          context_revision:0,
++          captured_at:new Date().toISOString(),
++          pinned:[],
++          active:symbol?{type:'security',id:symbol}:null,
++          ambient:{page:'crypto',panel:'crypto-overview'}
++        };
++      }
++      var ambient=block.ambient&&typeof block.ambient==='object'?block.ambient:{};
++      ambient.page='crypto';
++      if(!ambient.panel)ambient.panel='crypto-overview';
++      block.ambient=ambient;
++      return block;
++    };
++  }
++  document.addEventListener('DOMContentLoaded',armCryptoPage);
+   function ready(){entry.disabled=false;entry.removeAttribute('aria-busy');if(timer){clearInterval(timer);timer=null}}
+   function bindPanel(){
+     var panel=document.getElementById('mmb-panel');if(!panel||observer)return;
+@@ -493,18 +526,22 @@
+   }
+   function openExisting(){
+     if(!window.MMBrain||typeof window.MMBrain.open!=='function')return false;
++    armCryptoPage();
+     var panel=document.getElementById('mmb-panel');openedHere=true;
+     if(!panel||!panel.classList.contains('open'))window.MMBrain.open();
+     bindPanel();ready();return true;
+   }
+   entry.addEventListener('click',function(){
+-    if(timer)return;note.hidden=true;entry.disabled=true;entry.setAttribute('aria-busy','true');
++    if(timer)return;
++    if(!window.MM_BRAIN_CFG){document.addEventListener('DOMContentLoaded',function(){entry.click()},{once:true});return}
++    armCryptoPage();
++    note.hidden=true;entry.disabled=true;entry.setAttribute('aria-busy','true');
+     if(openExisting())return;
+     var boot=document.getElementById('mmb-boot');if(boot)boot.click();
+     var tries=0;
+     timer=setInterval(function(){
+       if(openExisting())return;
+-      if(++tries>=60){ready();note.hidden=false;}
++      if(++tries>=60){ready();note.hidden=false;entry.focus()}
+     },50);
+   });
+   document.body.classList.add('crypto-desk-ready');

@@ -623,8 +623,6 @@ def backtest(
     ics: list[float] = []   # per-date rank IC proxy (using position as signal)
     fwd_horizon = signal.horizon
 
-    bench_close = bench(bench_name)
-
     for name, df in universe.items():
         try:
             _sig, pos = signal.evaluate(df)

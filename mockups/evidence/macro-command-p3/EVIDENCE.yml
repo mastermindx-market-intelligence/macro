@@ -1,0 +1,11 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/macro_command.css
+  - templates/macro_command.js
+  - templates/macro_monetary.html.j2
+  - templates/_macro_command_figures.html.j2
+  - templates/_macro_command_fragment.html.j2
+  - site/macro_command.css
+  - site/macro_command.js
+  - site/macro_monetary.html
+manifest: mockups/evidence/macro-command-p3/manifest.json

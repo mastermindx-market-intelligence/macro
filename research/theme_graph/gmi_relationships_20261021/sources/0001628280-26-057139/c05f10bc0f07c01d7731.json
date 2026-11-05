@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-14T20:20:57Z",
+ "accession": "0001628280-26-057139",
+ "cik": "0000106040",
+ "doc_byte_length": 2500314,
+ "doc_sha256": "d73a455b291ff9f4b9dc5e4035c859230394d0df4d1ee9b894b33ef7b9bdca28",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-14",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "wdc-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2434434,
+  "byte_start": 2434174,
+  "normalized": "Transitional Trademark License Agreement, dated as of February 21, 2025, by and between Western Digital Corporation and Sandisk Corporation (incorporated by reference to Exhibit 10.5 to the Current Report on Form 8-K filed by the Company on February 24, 2025)#",
+  "normalized_sha256": "c05f10bc0f07c01d77314701c3d76be84fe8a40bd97371e546e6ac39307c2e98",
+  "raw": "Transitional Trademark License Agreement, dated as of February 21, 2025, by and between Western Digital Corporation and Sandisk Corporation (incorporated by reference to Exhibit 10.5 to the Current Report on Form 8-K filed by the Company on February 24, 2025)#",
+  "raw_sha256": "c05f10bc0f07c01d77314701c3d76be84fe8a40bd97371e546e6ac39307c2e98"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/106040/000162828026057139/wdc-20260703.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-10-22T07:57:29.243665+00:00",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_commodity_supply_context.py",
+        "tests/test_commodity_decision_workspace.py",
+        "tests/test_commodity_publication.py",
+        "tests/test_commodity_presentation_render.py",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp",
+        "/tmp/commodities-ci-wiring-tests-20261022"
+      ],
+      "exit_code": 0,
+      "output_tail": "...................................................................................                           [100%]\n83 passed, 35 subtests passed in 10.96s\n"
+    },
+    {
+      "command": [
+        "node",
+        "tests/test_commodity_workspace_contracts.js"
+      ],
+      "exit_code": 0,
+      "output_tail": "\u2714 unknown and inherited asset names are rejected before semantic lookup (3.355125ms)\n\u2714 deep semantic input under the file limit rejects without recursion failure (0.398042ms)\n\u2714 degraded evidence round trip preserves nulls, clocks and inactive monitoring (0.51325ms)\n\u2714 research expiry is checked against its snapshot without enabling monitoring (0.184708ms)\n\u2714 fragment normalization bounds comparisons and rejects unsupported state (0.364125ms)\n\u2714 company continuation keeps owner identity and encodes an exact bounded return (1.12ms)\n\u2139 tests 6\n\u2139 suites 0\n\u2139 pass 6\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 11.006541\n"
+    },
+    {
+      "command": [
+        "node",
+        "tests/test_commodity_workspace_ui.js"
+      ],
+      "exit_code": 0,
+      "output_tail": "PASS default overview and dated evidence\nPASS commodity selection hides overview hero and keeps URL context\nPASS company continuation preserves owner fields and the current investigation\nPASS relationships carries a selected explanation without treating it as evidence\nPASS changing explanation changes the mechanism and its evidence questions together\nPASS company return transport is bounded, single-encoded and idempotent\nPASS research exposes explanation and requires a session window\nPASS per-commodity draft preserves its explanation and exact numeric condition\nPASS export includes a recoverable evidence appendix and stays inactive\nPASS Gold export retains its regional proxy and excludes petroleum context\nPASS incompatible or incomplete imports do not silently change their semantics\nPASS import restores the same explanation into relationships and research\nPASS a stale import preserves the active investigation\nPASS malformed assets and deeply nested imports reject without changing the investigation\nPASS a delayed earlier import cannot overwrite the most recent file selection\nPASS a rejected outdated file read cannot clear the newer import status\nPASS comparison selection is bounded to four without losing the chosen assets\nPASS comparison uses the selected exact publisher window\nPASS gold physical handoff opens its real owner panel\nPASS return restores the selected commodity and closes advanced analytics\nPASS company return follows Gold and the selected comparison window\nPASS partial coverage has a real selected-commodity fallback\nPASS Chinese native controls show Chinese labels\nPASS keyboard tabs move selection and focus together\nPASS browser history restores the previous view\nPASS direct hash and repeated language renders keep the exact company return\nPASS rendered DOM has no duplicate IDs or event errors\nRESULT 27 rendered-DOM journeys passed; this is not a visual-layout proof.\n"
+    },
+    {
+      "command": [
+        "node",
+        "tests/test_commodity_workspace_presentation.js"
+      ],
+      "exit_code": 0,
+      "output_tail": "PASS signed shared scale, null/zero distinction, empty selection, draft context and language\n"
+    }
+  ]
+}

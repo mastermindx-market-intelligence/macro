@@ -1,0 +1,336 @@
+{
+  "artifact_sha256": {
+    "episodes.json": "f0997825852b05d0467a03a88e57d6d82f085de75adc36d4f6e8aa4e254982d5",
+    "origins.csv.gz": "061fe9cdd46dd4f64f5d2dbf5e3536d9e28c5673ec60621bdff22c402da4831d",
+    "rotation.csv.gz": "a62a26c4c797327525cc1573870651804460ded96294a0e9b05e1c1b90ee1538",
+    "september_october_origins.csv": "4cdc833649396a96bf2070f7945dc370944d28e8ecf69347bbfe7e6ed51af6a7",
+    "september_october_rotation.csv": "7a7c5b1cfa03c4d2467417911f8d126fc0e5ae7f514498031cd4847a3be60574",
+    "summary.json": "8da9ce362210a1e929d14e5957d922641447745037bf30dcedb47303a641df8b"
+  },
+  "authority": {
+    "execute": false,
+    "gate": false,
+    "rank": false,
+    "size": false
+  },
+  "code_commit": "4a06cd4a6b323312d2a59d6130efdb60997fe149",
+  "executed_at": "2026-10-17T05:26:04.338706+00:00",
+  "historical_availability": "UNKNOWN",
+  "method_dependencies": [
+    {
+      "git_blob_sha": "0a0eecb98e743b780db1ee3b0382e268d592fa67",
+      "path": "scripts/research/grey_deer_episode_samples.py",
+      "sha256": "b03462ae9e058939774cb10d4cd6b1782b826ac2cde5f79c5d33d5ef6259307e",
+      "source_commit": "3ab3382af89242c7b7fe8c65360bd883a7dd3504"
+    },
+    {
+      "git_blob_sha": "76d231d6d12c8693cd07a2540b360c24f6c50b42",
+      "path": "scripts/research/grey_deer_pullback_stage1.py",
+      "sha256": "47ec425821c7a075dc4667171d9e75e8af213e0f088154c5fdb1cad419413714",
+      "source_commit": "3ab3382af89242c7b7fe8c65360bd883a7dd3504"
+    },
+    {
+      "git_blob_sha": "db1b71a3053d3fa294492321b3cfb28b5a209451",
+      "path": "lib/observed_moves.py",
+      "sha256": "1bc3447e6c57cc4eaf8aafb51a549b86f901d1e1e36056eeff9b332496d7dd5a",
+      "source_commit": "3ab3382af89242c7b7fe8c65360bd883a7dd3504"
+    }
+  ],
+  "new_model_fits": 0,
+  "predictive_claims_promoted": 0,
+  "protocol_id": "GD-T12-CENSUS-20261017-v1",
+  "protocol_sha256": "317cd3b906438aa30995fb6a7bd24854af4c0cc83d094eb0726be35c045d3153",
+  "schema": "grey_deer.all_date_census.v1",
+  "script_sha256": "d6240027cd15fadfec4511a3be42203dba6df87095bd65b50a049394abf6abce",
+  "source_commit": "3ab3382af89242c7b7fe8c65360bd883a7dd3504",
+  "source_receipts": [
+    {
+      "first": "1993-01-29",
+      "last": "2026-10-15",
+      "rows": 8486,
+      "sha256": "410f3f872b2e00c85a08e22c6460e3f848d84c419d8437b6e6b6745308fa7e7d",
+      "source_path": "data/yahoo/SPY.parquet",
+      "ticker": "SPY"
+    },
+    {
+      "first": "2003-05-01",
+      "last": "2026-10-15",
+      "rows": 5903,
+      "sha256": "7aaa040be716040fd99f6a02ac640d88341fdc55e9ab9897a774b6479834ec65",
+      "source_path": "data/yahoo/RSP.parquet",
+      "ticker": "RSP"
+    },
+    {
+      "first": "1998-01-20",
+      "last": "2026-10-14",
+      "rows": 7229,
+      "sha256": "702f4534589dfa4a2d3b036c83ea6276257d5c5c82bbd638be36460eb8ae1a40",
+      "source_path": "data/yahoo/DIA.parquet",
+      "ticker": "DIA"
+    },
+    {
+      "first": "2000-05-26",
+      "last": "2026-10-15",
+      "rows": 6636,
+      "sha256": "ca881cd8b4d8b23bdd419086a10f889e59ff6aeee26ba84ed8e628458fb33dc1",
+      "source_path": "data/yahoo/IWM.parquet",
+      "ticker": "IWM"
+    },
+    {
+      "first": "1999-03-10",
+      "last": "2026-10-15",
+      "rows": 6944,
+      "sha256": "e3b749f5347112b506e69869194d2b009b3da7bde1a00f7a05104a7bd06d1f48",
+      "source_path": "data/yahoo/QQQ.parquet",
+      "ticker": "QQQ"
+    },
+    {
+      "first": "1998-12-22",
+      "last": "2026-10-15",
+      "rows": 6996,
+      "sha256": "f50b3dc0f60aa7696923a4f8da5c81a1d0f024946b113942d116ca5a51969bed",
+      "source_path": "data/yahoo/XLK.parquet",
+      "ticker": "XLK"
+    },
+    {
+      "first": "1998-12-22",
+      "last": "2026-10-15",
+      "rows": 6996,
+      "sha256": "a8badfbeddf13e46e5b88534f90cd7d7a79915eeb414e05d295b9333c29b52de",
+      "source_path": "data/yahoo/XLP.parquet",
+      "ticker": "XLP"
+    },
+    {
+      "first": "1998-12-22",
+      "last": "2026-10-15",
+      "rows": 6996,
+      "sha256": "4165cf38ed9481b570a5ed4d339e81e44b0e1d22c5729ef1bacf1c6e09833272",
+      "source_path": "data/yahoo/XLV.parquet",
+      "ticker": "XLV"
+    },
+    {
+      "first": "1998-12-22",
+      "last": "2026-10-15",
+      "rows": 6996,
+      "sha256": "5f4062788861667e4af89acfc5c79856fab390cd9d9e95b614bc862c25de892d",
+      "source_path": "data/yahoo/XLU.parquet",
+      "ticker": "XLU"
+    },
+    {
+      "first": "1998-12-22",
+      "last": "2026-10-15",
+      "rows": 6996,
+      "sha256": "49442a13736629d97cd904a54d9eca0da6df6d36b2c00884758696168bebae99",
+      "source_path": "data/yahoo/XLF.parquet",
+      "ticker": "XLF"
+    },
+    {
+      "first": "1998-12-22",
+      "last": "2026-10-15",
+      "rows": 6996,
+      "sha256": "6f9062cbdc1d22227a1c1ba26fb7edaa52406e17ad4aa855a3df83737b4a09bc",
+      "source_path": "data/yahoo/XLB.parquet",
+      "ticker": "XLB"
+    },
+    {
+      "first": "2018-06-19",
+      "last": "2026-10-15",
+      "rows": 2093,
+      "sha256": "e9cf6fd8783ab808b2bdedcd5217488194b175bcb1d6ece1abb3d9c51307bdb4",
+      "source_path": "data/yahoo/XLC.parquet",
+      "ticker": "XLC"
+    },
+    {
+      "first": "1998-12-22",
+      "last": "2026-10-15",
+      "rows": 6996,
+      "sha256": "6fd2b13fa430a0a0b53c41461760f4a7b309069205871dab775230873b5fcaca",
+      "source_path": "data/yahoo/XLE.parquet",
+      "ticker": "XLE"
+    },
+    {
+      "first": "1998-12-22",
+      "last": "2026-10-15",
+      "rows": 6996,
+      "sha256": "b7137ff4a0ea322ae45fdca8973a6e233c1f3839ab614fc51550048bc0403db8",
+      "source_path": "data/yahoo/XLI.parquet",
+      "ticker": "XLI"
+    },
+    {
+      "first": "2015-10-08",
+      "last": "2026-10-15",
+      "rows": 2771,
+      "sha256": "bc8112ecb80b64c57b0eb0d1aaf61deacb4d3dd22cbace544577a929185d5833",
+      "source_path": "data/yahoo/XLRE.parquet",
+      "ticker": "XLRE"
+    },
+    {
+      "first": "1998-12-22",
+      "last": "2026-10-15",
+      "rows": 6996,
+      "sha256": "42130f3cddf965df922d3c1ffebc7f86fa437e64a25423d0d5aa284b6b561446",
+      "source_path": "data/yahoo/XLY.parquet",
+      "ticker": "XLY"
+    },
+    {
+      "first": "2000-06-05",
+      "last": "2026-10-15",
+      "rows": 6631,
+      "sha256": "e9c9123fe122320709fa2e866456d17dd13fe8f8a3d00b8e5ac0273fcca8b82d",
+      "source_path": "data/yahoo/SMH.parquet",
+      "ticker": "SMH"
+    },
+    {
+      "first": "2001-07-13",
+      "last": "2026-10-15",
+      "rows": 6352,
+      "sha256": "903acf889f832645a52f86ff302c4c01bbb4bc7b9bb52dfb02325abf8711a697",
+      "source_path": "data/yahoo/SOXX.parquet",
+      "ticker": "SOXX"
+    },
+    {
+      "first": "2006-02-06",
+      "last": "2026-10-15",
+      "rows": 5206,
+      "sha256": "639acd1669d3d181cd3c40317d4902bfa4c82ff95470cac7435345ff35a27dca",
+      "source_path": "data/yahoo/XBI.parquet",
+      "ticker": "XBI"
+    },
+    {
+      "first": "2001-07-17",
+      "last": "2026-10-15",
+      "rows": 6350,
+      "sha256": "57ed0df6d1724157d541b0e189a2c8941b3dc48021a55d89d4697f865d460875",
+      "source_path": "data/yahoo/IGV.parquet",
+      "ticker": "IGV"
+    },
+    {
+      "first": "2006-06-22",
+      "last": "2026-10-15",
+      "rows": 5111,
+      "sha256": "71cd99d27537c5e402952f877022cd561932726bcd441ee91f84ea48148728e6",
+      "source_path": "data/yahoo/KRE.parquet",
+      "ticker": "KRE"
+    },
+    {
+      "first": "2014-10-31",
+      "last": "2026-10-14",
+      "rows": 3005,
+      "sha256": "b14b78997fa7cf87dda5646d034530220b1c3fccbd711e942e6f91a4c2439061",
+      "source_path": "data/yahoo/ARKK.parquet",
+      "ticker": "ARKK"
+    },
+    {
+      "first": "2007-04-11",
+      "last": "2026-10-15",
+      "rows": 4911,
+      "sha256": "681f3c62d434db7f2092360ae00bc5c1456daaa3816d153b0a036b5a298406b0",
+      "source_path": "data/yahoo/HYG.parquet",
+      "ticker": "HYG"
+    },
+    {
+      "first": "2002-07-30",
+      "last": "2026-10-15",
+      "rows": 6093,
+      "sha256": "feb23cbc44c327691dbbf1bd071b6b44b89674d568ec4546762e8fc0fcb2b393",
+      "source_path": "data/yahoo/LQD.parquet",
+      "ticker": "LQD"
+    },
+    {
+      "first": "2002-07-30",
+      "last": "2026-10-15",
+      "rows": 6093,
+      "sha256": "3dd5b301959ffa00520a1da2440fbc8871cc18c3a8a94fcb9614d7a795837907",
+      "source_path": "data/yahoo/TLT.parquet",
+      "ticker": "TLT"
+    },
+    {
+      "first": "2002-07-30",
+      "last": "2026-10-15",
+      "rows": 6093,
+      "sha256": "ac47c26059cf982358d4e7d3eb0d2784cc040373440d424125bbce343287eab5",
+      "source_path": "data/yahoo/IEF.parquet",
+      "ticker": "IEF"
+    },
+    {
+      "first": "2007-05-30",
+      "last": "2026-10-14",
+      "rows": 4876,
+      "sha256": "c57f5142f02a8101a61c4445732be4f9f20d4c5ee04b962e47fb4267b33041d3",
+      "source_path": "data/yahoo/BIL.parquet",
+      "ticker": "BIL"
+    },
+    {
+      "first": "2020-06-01",
+      "last": "2026-10-14",
+      "rows": 1602,
+      "sha256": "83a7abd5976ac738a5ad6510354d426fe8342606b4876b63027f4cd9479e1902",
+      "source_path": "data/yahoo/SGOV.parquet",
+      "ticker": "SGOV"
+    },
+    {
+      "first": "2004-11-18",
+      "last": "2026-10-15",
+      "rows": 5511,
+      "sha256": "19c7555e1f51c51b8489c220ec0f1e096a2dd1cbeb9edc8794d17e7bd14ef9d4",
+      "source_path": "data/yahoo/GLD.parquet",
+      "ticker": "GLD"
+    },
+    {
+      "first": "2004-10-08",
+      "last": "2026-10-15",
+      "rows": 5540,
+      "sha256": "721dcde5122a40c7a7c249b833624b135daefccb41381a48577cb00fa9869902",
+      "source_path": "data/yahoo/FXI.parquet",
+      "ticker": "FXI"
+    },
+    {
+      "first": "2011-03-31",
+      "last": "2026-10-15",
+      "rows": 3909,
+      "sha256": "fbed7904f8b589011e3602e7ac802d696b0230117da4c670cbf51add23a4adb1",
+      "source_path": "data/yahoo/MCHI.parquet",
+      "ticker": "MCHI"
+    },
+    {
+      "first": "1996-03-18",
+      "last": "2026-10-15",
+      "rows": 7695,
+      "sha256": "088eae010203110f5b36c4d93b03d371408a01922f32744c9c9a5be4e97bbec8",
+      "source_path": "data/yahoo/EWH.parquet",
+      "ticker": "EWH"
+    },
+    {
+      "first": "1996-03-18",
+      "last": "2026-10-15",
+      "rows": 7695,
+      "sha256": "858dfe0f19bd90a80fd8670efc64f4c84b7d980557327c55aa3cfc2e1ee4ac36",
+      "source_path": "data/yahoo/EWC.parquet",
+      "ticker": "EWC"
+    },
+    {
+      "first": "1996-03-18",
+      "last": "2026-10-15",
+      "rows": 7695,
+      "sha256": "3668de153a69d5d573676a4b47abc103b87214ebf852d9170664301199378618",
+      "source_path": "data/yahoo/EWJ.parquet",
+      "ticker": "EWJ"
+    },
+    {
+      "first": "2012-02-03",
+      "last": "2026-10-15",
+      "rows": 3696,
+      "sha256": "dacbdd7420f4fa6e804c72dac57aae0344dbdc80a0f3a6fbac407514f6eaf7fa",
+      "source_path": "data/yahoo/INDA.parquet",
+      "ticker": "INDA"
+    },
+    {
+      "first": "2003-04-14",
+      "last": "2026-10-15",
+      "rows": 5915,
+      "sha256": "d53b91582429a339e44a893490f866b7ae239244f4d1498b824e32e53ccc7c81",
+      "source_path": "data/yahoo/EEM.parquet",
+      "ticker": "EEM"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "attempted": 3,
+  "ok": 2,
+  "new": 2,
+  "failed": 1,
+  "row_hints": 20437,
+  "bytes": 14591695,
+  "errors": [
+    {
+      "source": "fund-statements",
+      "symbol": "AMD",
+      "reason": "Tiingo HTTP 400; source not admitted"
+    }
+  ]
+}

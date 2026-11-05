@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-17T20:50:29Z",
+ "accession": "0001628280-26-057406",
+ "cik": "0002023554",
+ "doc_byte_length": 2223398,
+ "doc_sha256": "67db98cde04724db6c97f165d660b795179294112814bbf0a5411ad916651848",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "sndk-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1657282,
+  "byte_start": 1655942,
+  "normalized": "In March 2024, SanDisk China Limited (“SanDisk China”), an indirect wholly-owned subsidiary of WDC, entered into an equity purchase agreement to sell 80% of its equity interest in SanDisk Semiconductor (Shanghai) Co. Ltd. (“SDSS”) an indirect wholly-owned subsidiary of WDC which holds one of the Company’s manufacturing facilities, to JCET Management Co., Ltd. (“JCET”), a wholly-owned subsidiary of JCET Group Co., Ltd., a Chinese publicly listed company, thereby forming a venture between SanDisk China and JCET (the “Transaction”). The venture aims to provide independent semiconductor assembly, testing, and other related services in the People’s Republic of China for customers including, but not limited to, the Company and its affiliates.",
+  "normalized_sha256": "774e7b7ca00b726b9e6d7ba0296583bc9002338de558cbf706dc83de99342753",
+  "raw": "In March 2024, SanDisk China Limited (&#8220;SanDisk China&#8221;), an indirect wholly-owned subsidiary of WDC, entered into an equity purchase agreement to sell </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-216\" decimals=\"2\" name=\"sndk:DisposalGroupPercentOfOwnershipSold\" scale=\"-2\" id=\"f-948\">80</ix:nonFraction>%</span><span style=\"background-color:#ffffff;color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"> of its equity interest in SanDisk Semiconductor (Shanghai) Co. Ltd. (&#8220;SDSS&#8221;) an indirect wholly-owned subsidiary of WDC which holds one of the Company&#8217;s manufacturing facilities, to JCET Management Co., Ltd. (&#8220;JCET&#8221;), a wholly-owned subsidiary of JCET Group Co., Ltd., a Chinese publicly listed company, thereby forming a venture between SanDisk China and JCET (the &#8220;Transaction&#8221;). The venture aims to provide independent semico</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">nductor assembly, testing, and other related services in the People&#8217;s Republic of China for customers including, but not limited to, the Company and its affiliates.",
+  "raw_sha256": "b65484e817642ea3d67ff949af019c2d6f53da587cd4d3f6e0195848c1635375"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2023554/000162828026057406/sndk-20260703.htm",
+ "xbrl_contexts": []
+}

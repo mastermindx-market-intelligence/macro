@@ -30,12 +30,29 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
+      - name: guard China-gold proof to protected main
+        run: |
+          case ",${{ github.event.inputs.only }}," in
+            *,gold_china_basis,*)
+              if [ "$GITHUB_REF_NAME" != "main" ]; then
+                echo "::error title=China gold backfill wrong ref::gold_china_basis may only run from main; got $GITHUB_REF_NAME"
+                exit 1
+              fi
+              ;;
+          esac
       - name: fetch archived OAS history (idempotent)
+        if: github.event.inputs.only != 'gold_china_basis'
         run: python -m scripts.fetch_archive
       - name: full-history collection
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+          # Reuse the same governed bindings as daily.yml so an explicit
+          # workflow_dispatch only=gold_china_basis can prove/backfill the
+          # China-gold source plane immediately after merge without a new lane.
+          TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
         run: |
           if [ -n "${{ github.event.inputs.only }}" ]; then
             python -m scripts.collect --full-history --only "${{ github.event.inputs.only }}"
@@ -61,6 +78,9 @@ jobs:
           # which no lane publishes (the nightly stages neither, deliberately), and any
           # future grader writing outside data/+site/qledger/ would re-open the hole.
           git add data/ site/qledger/
+          # GH001 carve (scripts/ci/qledger_carve.sh): a staged ledger at GitHub's blob limit
+          # rejects the whole backfill commit. A carved ledger is not published here.
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 1
           if git diff --cached --quiet; then echo "no backfill changes to commit"; exit 0; fi
           git commit -m "data: backfill $(date -u +%F)"
           # best-effort push: daily now runs in its own lane and may push concurrently,

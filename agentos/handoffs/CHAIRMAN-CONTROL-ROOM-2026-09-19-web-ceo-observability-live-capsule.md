@@ -1,27 +1,34 @@
 ---
 workstream: "WS:CHAIRMAN-CONTROL-ROOM"
 session: "prepared/observability-live-capsule-20260919"
-model: "GPT-5.6 Sol"
-ended_because: "prepared_not_assigned"
+model: "sol"
+# Publication is handed to CI; the historical child preparation state is unchanged.
+ended_because: "ci_handoff"
 mission: >
   Provide a compact live-delivery capsule for the existing Observability child after the first
   oversized manual handoff produced no START/effect evidence. This is not a new child or retry on a
   different logical operation; it reuses the same operation key under PRESTART_REBIND rules.
 state_before: >
+  Historical snapshot prepared on 2026-09-19. The PR states, procedure pin and receiver
+  observations below are reported preparation evidence, not current runtime or assignment truth.
   The full Observability commission remains
   agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-19-web-ceo-observability.md on Macro PR #7375.
   Mastermind PR #843 has no post-fanout source/comment movement and remains the incumbent observability
   carrier. No START, modifying effect or EFFECT_UNKNOWN evidence was found for the first delivered
   Observability Web CEO chat.
-changed: []
+changed:
+  - path: "agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-19-web-ceo-observability-live-capsule.md"
+    what: "Publish this prepared source packet as dated continuity evidence; no child assignment or execution."
 verified:
-  - claim: "No post-fanout #843 movement was observed."
+  - claim: "The original capsule reports no post-fanout #843 movement at preparation time."
+    command: "GitHub source read of agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-19-web-ceo-observability-live-capsule.md at Macro 122d9ee9ce885e5677e8b52786c98b71632f1fb1."
     result: "PR #843 head remains f3ebf9b38f8c3d33fa94f0bf44864a2429ba30e0; latest human source comment predates the fanout."
-  - claim: "Long interactive handoff envelopes have produced a generic ChatGPT network error before useful execution."
+  - claim: "The cited historical field report records a generic ChatGPT network error for a long interactive handoff."
+    command: "GitHub read of Mastermind issue comment 5740536155, created 2026-09-19T08:38:38Z."
     result: "Mastermind #811 comment 5740536155 records the real Web CEO field failure and requires compact live capsules plus immutable commission_ref."
 unverified:
   - claim: "The exact prior Observability chat UI displayed that same generic network error."
-    what_would_verify: "Direct UI/session transcript evidence; GitHub only proves no effect."
+    what_would_verify: "Direct UI/session transcript and original-carrier execution evidence; GitHub silence does not prove execution absence."
 unresolved:
   - "A fresh concrete Web CEO receiver is still required."
 next_actions:
@@ -34,6 +41,12 @@ danger_areas:
   - "If later evidence shows the original Observability receiver STARTed or caused an effect, stop and reconcile that original carrier before any rebind."
 prs: [843]
 ---
+
+> Historical preparation record (2026-09-19), qualified for records publication on 2026-11-05.
+> The packet and its next actions are retained as source history. This publication does not
+> assign a receiver, authorize a retry/rebind, prove execution absence, or refresh product acceptance.
+> Current Chairman intent, protected law and original-carrier effect reconciliation govern any pickup.
+
 
 # Compact live-delivery capsule — Observability
 

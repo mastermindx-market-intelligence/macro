@@ -1,0 +1,91 @@
+cd '/Volumes/Mastermind 2/agent-workspaces/macro/web/forex-r26-source-qualification-20261022-sol-001' && /opt/homebrew/Caskroom/miniconda/base/bin/python3 - <<'PY'
+from pathlib import Path
+import datetime,gzip,hashlib,json
+from collections import defaultdict
+from collectors.tiingo_archive import receipt_identity
+from lib.dataos.tiingo_reader import read_research_view
+from lib.dataos.tiingo_forex import reconcile_forex_intervals
+evidence=Path('research/forex_r26_2026-10-20/source_evidence')
+archive=Path('/Volumes/Mastermind/market-data/tiingo')
+code_paths=['lib/dataos/tiingo_forex.py','lib/dataos/tiingo_reader.py','lib/dataos/tiingo_views.py']
+before={name:hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in code_paths}
+assert before['lib/dataos/tiingo_forex.py']=='0752ce9cb0ee9e24ebb993561881cceb162fb4a1290454371eb3155115de013f'
+paired=json.loads((evidence/'tiingo-eurusd-20261021-paired-receipts.json').read_text())['source_records']
+remaining=json.loads((evidence/'tiingo-remaining-20261021-paired-receipts.json').read_text())['records']
+opened=json.loads((evidence/'tiingo-eurusd-open-20261022-receipts.json').read_text())['source_records']
+files={}
+def exact_view(record):
+ path=archive/record['receipt_path']; receipt=json.loads(path.read_text())
+ ident=receipt_identity(receipt);assert ident==record['receipt']['receipt_id']
+ day=path.parent.name
+ for p in [path,archive/receipt['raw_path'],archive/'normalized'/'forex-bars'/day/(receipt['raw_sha256']+'.parquet'),archive/'manifests'/'forex-bars'/day/(receipt['raw_sha256']+'.json')]:
+  files[str(p)]=hashlib.sha256(p.read_bytes()).hexdigest()
+ return read_research_view('forex-bars',day,ident,root=archive,purpose='INSPECTION',max_rows=20000,receipt_path=path),ident
+def compare(pair,minute,native):
+ mv,mi=exact_view(minute);nv,ni=exact_view(native)
+ result=reconcile_forex_intervals(mv,nv,expected_pair=pair,minute_receipt_id=mi,four_hour_receipt_id=ni)
+ assert result['eligible_observations']==[] and result['monitoring_admitted'] is False
+ return {
+  'pair':pair,'schema':result['schema'],'authority':result['authority'],
+  'inputs':{name:{'source':item['source'],'diagnostics':item['diagnostics'],'product_use_approval':item['product_use_approval']} for name,item in result['inputs'].items()},
+  'receipt_observation_clocks':result['receipt_observation_clocks'],
+  'comparison_semantics':result['comparison_semantics'],
+  'hypotheses':[{
+   'name':hyp['name'],'summary':hyp['summary'],
+   'windows':[{
+    'native_source_row_ordinal':w['native_source_row_ordinal'],
+    'interval_start_utc':w['interval_start_utc'],'interval_end_utc':w['interval_end_utc'],
+    'coverage':{k:v for k,v in (w['coverage'] or {}).items() if k!='observed_source_row_ordinals'},
+    'edge_rows':w['edge_rows'],'equal_fields':w['equal_fields'],
+    'all_ohlc_equal':w['all_ohlc_equal'],'close_equal':w['close_equal'],
+    'blocked_reasons':w['blocked_reasons'],'native_issues':w['native_issues'],
+    'invalid_minute_source_row_ordinals':w.get('invalid_minute_source_row_ordinals',[])
+   } for w in hyp['windows']]
+  } for hyp in result['hypotheses']],
+  'row_issues':result['row_issues'],'eligible_observations':0,'monitoring_admitted':False
+ }
+cohorts={'EURUSD':{'1min':paired['minute'],'4hour':paired['native']}}
+empty=[]
+for record in remaining:
+ if record['raw_rows']==0:
+  p=archive/record['receipt_path'];rec=json.loads(p.read_text());rawpath=archive/rec['raw_path']
+  raw=gzip.decompress(rawpath.read_bytes())
+  assert hashlib.sha256(raw).hexdigest()==rec['raw_sha256'] and json.loads(raw)==[]
+  assert record['materialization']['status']=='EMPTY_NORMALIZED'
+  files[str(p)]=hashlib.sha256(p.read_bytes()).hexdigest()
+  files[str(rawpath)]=hashlib.sha256(rawpath.read_bytes()).hexdigest()
+  empty.append({'pair':record['pair'],'frequency':record['frequency'],'receipt_id':record['receipt']['receipt_id'],'raw_sha256':rec['raw_sha256'],'state':'VERIFIED_RAW_EMPTY_NO_READER_VIEW','reader_called':False})
+ else:
+  cohorts.setdefault(record['pair'],{})[record['frequency']]=record
+closed=[compare(pair,cohort['1min'],cohort['4hour']) for pair,cohort in sorted(cohorts.items())]
+oldpath='receipts/forex-bars/2026-10-21/d79ea7c037b404f8-143f4ae027787150539667ba.json'
+old={'receipt_path':oldpath,'receipt':{'receipt_id':'ab3276b37deb0e5fc9d70717dedc80aaa8fdcf2dae4f9862d7507436bbd5e9bd'}}
+retained=compare('EURUSD',old,paired['retained_native'])
+open_result=compare('EURUSD',opened['1min'],opened['4hour'])
+total={k:sum(row['hypotheses'][0]['summary'][k] for row in closed) for k in ['native_rows','all_ohlc_equal_windows','dense_equal_windows','sparse_equal_windows']}
+assert total=={'native_rows':48,'all_ohlc_equal_windows':48,'dense_equal_windows':38,'sparse_equal_windows':10},total
+assert all(h['summary']['all_ohlc_equal_windows']==0 for row in closed for h in row['hypotheses'][1:])
+assert retained['hypotheses'][0]['summary']['all_ohlc_equal_windows']==6
+assert retained['hypotheses'][0]['summary']['dense_equal_windows']==5
+assert open_result['hypotheses'][0]['summary']['all_ohlc_equal_windows']==1
+ow=open_result['hypotheses'][0]['windows'][0]
+assert ow['coverage']['observed_minute_rows']==170 and ow['coverage']['interval_end_after_four_hour_receipt_observed'] is True
+after={name:hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in code_paths}
+assert before==after
+assert all(hashlib.sha256(Path(name).read_bytes()).hexdigest()==digest for name,digest in files.items())
+result={'schema':'forex_r26.interval_reconciliation_integration.v1',
+'verified_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+'method':'Existing exact inspection reader views; normalized equality independently agrees with retained raw-JSON Decimal crosschecks',
+'code_sha256':before,'archive_files_sha256_unchanged':files,'new_api_requests':0,'materializer_calls':0,
+'closed_day_total':total,'closed_day_pairs':closed,'empty_pair_receipts':empty,'retained_eurusd':retained,'open_interval_eurusd':open_result,
+'eligible_observations':0,'monitoring_admitted':False,'raw_prices_in_report':False,
+'qualification':'Diagnostic evidence only; no source hypothesis, finality, availability, feed or watch activation admitted'}
+previous=json.loads((evidence/'interval-reconciliation-integration.json').read_text())
+for key in ['closed_day_total','closed_day_pairs','empty_pair_receipts','retained_eurusd','open_interval_eurusd','archive_files_sha256_unchanged']:
+ assert result[key]==previous[key],key
+result['previous_report_sha256']=hashlib.sha256((evidence/'interval-reconciliation-integration.json').read_bytes()).hexdigest()
+result['outcomes_equal_to_pre_budget_repair_report']=True
+output=evidence/'interval-reconciliation-integration-final.json'
+with output.open('x') as f:json.dump(result,f,indent=2,sort_keys=True,allow_nan=False);f.write('\n')
+print(json.dumps({'file':str(output),'bytes':output.stat().st_size,'sha256':hashlib.sha256(output.read_bytes()).hexdigest(),'verified_at_utc':result['verified_at_utc'],'closed_day_total':total,'empty_responses':len(empty),'retained':retained['hypotheses'][0]['summary'],'open_interval':open_result['hypotheses'][0]['summary'],'archive_files_verified_unchanged':len(files),'new_api_requests':0,'eligible_observations':0}))
+PY

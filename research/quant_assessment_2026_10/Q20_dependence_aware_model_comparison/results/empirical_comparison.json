@@ -1,0 +1,255 @@
+{
+  "annualised_mean_differential": {
+    "aggressive": 0.01722,
+    "conservative": 0.04881,
+    "moderate": 0.07899,
+    "optimal": 0.0771
+  },
+  "attrition": {
+    "budget_trials_without_retained_loss_panel": 67,
+    "compared_candidates": 4,
+    "status_of_those": "UNAVAILABLE_LOSS_PANEL (counted in the budget, not dropped)"
+  },
+  "best_annualised_mean_differential": 0.07899,
+  "best_candidate": "moderate",
+  "block_sensitivity": {
+    "blocks": [
+      7.0,
+      14.0,
+      21.0,
+      42.0,
+      63.0
+    ],
+    "max_p_c": 0.2832,
+    "min_p_c": 0.2448,
+    "rows": {
+      "14": {
+        "p_c": 0.2832,
+        "p_l": 0.2832,
+        "p_u": 0.2832,
+        "stat": 0.8503963053169175
+      },
+      "21": {
+        "p_c": 0.2832,
+        "p_l": 0.2832,
+        "p_u": 0.2832,
+        "stat": 0.8605392315695555
+      },
+      "42": {
+        "p_c": 0.2524,
+        "p_l": 0.2524,
+        "p_u": 0.2524,
+        "stat": 0.9217185137382329
+      },
+      "63": {
+        "p_c": 0.2448,
+        "p_l": 0.2448,
+        "p_u": 0.2448,
+        "stat": 0.9598620351140873
+      },
+      "7": {
+        "p_c": 0.2818,
+        "p_l": 0.2818,
+        "p_u": 0.2818,
+        "stat": 0.8469392632516386
+      }
+    }
+  },
+  "family": "vector",
+  "generation_ts_utc": "2026-07-02 03:43:12.815329",
+  "mapped_trials": [
+    {
+      "candidate": "conservative",
+      "config_hash": "0692c70992c525bb",
+      "ledger_ts": "2026-07-02T03:43:12.815019+00:00",
+      "source": "alloc_variant"
+    },
+    {
+      "candidate": "moderate",
+      "config_hash": "8018a48758dddb05",
+      "ledger_ts": "2026-07-02T03:43:12.815204+00:00",
+      "source": "alloc_variant"
+    },
+    {
+      "candidate": "aggressive",
+      "config_hash": "3fe71a26c76dfed9",
+      "ledger_ts": "2026-07-02T03:43:12.815276+00:00",
+      "source": "alloc_variant"
+    },
+    {
+      "candidate": "optimal",
+      "config_hash": "911496757c3b4247",
+      "ledger_ts": "2026-07-02T03:43:12.815329+00:00",
+      "source": "alloc_variant"
+    }
+  ],
+  "report": {
+    "decision": {
+      "checks": {
+        "all_sensitivity_p_c_le_0.10": false,
+        "effect_bar_met": true,
+        "primary_p_c_le_alpha": false
+      },
+      "claim": "VANISHES",
+      "on_vanish": "keep the incumbent algorithm and file the negative comparison"
+    },
+    "fresh_confirmation": false,
+    "promotion_authority": false,
+    "research_only": true,
+    "supplementary": {
+      "naive_best": {
+        "best_index": 1,
+        "p_naive": 0.20370883058439476,
+        "selection_ignored": true,
+        "t": 0.8284465360271303
+      },
+      "pbo": {
+        "S": 16,
+        "can_set_verdict": false,
+        "n_splits": 12870,
+        "pbo": 0.5986013986013986,
+        "replaces_chronological_holdout": false,
+        "role": "supplementary"
+      }
+    },
+    "window": {
+      "fresh_confirmation_allowed": false,
+      "label": "REUSED",
+      "min_blocks": 10,
+      "n_blocks": 100,
+      "overlapping_prior_windows": 1,
+      "starts_after_generation": false,
+      "statement": "reused outcome window \u2014 not fresh confirmation"
+    }
+  },
+  "risk_match_beta_train": {
+    "aggressive": 0.6637,
+    "conservative": 0.5028,
+    "moderate": 0.5833,
+    "optimal": 0.5857
+  },
+  "secondary_non_decisional": {
+    "annualised_log_growth_vs_unscaled_hodl": {
+      "aggressive": -0.00071,
+      "conservative": -0.00141,
+      "moderate": 0.0417,
+      "optimal": 0.04052
+    },
+    "budget_bonferroni_bound": 1.0,
+    "cscv_pbo": {
+      "S": 16,
+      "can_set_verdict": false,
+      "n_splits": 12870,
+      "pbo": 0.5986013986013986,
+      "replaces_chronological_holdout": false,
+      "role": "supplementary"
+    },
+    "naive_best": {
+      "best_index": 1,
+      "candidate": "moderate",
+      "p_naive": 0.20370883058439476,
+      "selection_ignored": true,
+      "t": 0.8284465360271303
+    },
+    "spa_vs_cash": {
+      "p_c": 0.0512,
+      "p_l": 0.0512,
+      "p_u": 0.0512,
+      "stat": 1.8887812505008625
+    }
+  },
+  "source": "alloc_variant",
+  "spa_primary": {
+    "B": 5000,
+    "best_index": 1,
+    "candidates": [
+      "conservative",
+      "moderate",
+      "aggressive",
+      "optimal"
+    ],
+    "common_indices": true,
+    "dbar": [
+      0.00013373386662752043,
+      0.0002164083354170923,
+      4.718672897926657e-05,
+      0.00021124144693265647
+    ],
+    "k": 4,
+    "mean_block": 21.0,
+    "n": 2106,
+    "omega": [
+      0.011862267153868353,
+      0.011540709083825491,
+      0.011751114084276636,
+      0.011545279087002687
+    ],
+    "p_c": 0.2832,
+    "p_l": 0.2832,
+    "p_u": 0.2832,
+    "stat": 0.8605392315695555,
+    "tstat": [
+      0.5173719560055682,
+      0.8605392315695555,
+      0.18427652485550255,
+      0.8396608056721682
+    ]
+  },
+  "split_date": "2021-01-01",
+  "study_verdict": {
+    "failed_gates": [],
+    "verdict": "KEEP"
+  },
+  "support": {
+    "eval_end": "2026-10-07",
+    "eval_n": 2106,
+    "eval_start": "2021-01-01",
+    "excluded_columns": {
+      "alloc_aggressive_raw": "not itemized in the trial ledger (no generation-time trial identity) \u2014 not a candidate",
+      "alloc_conservative_raw": "not itemized in the trial ledger (no generation-time trial identity) \u2014 not a candidate",
+      "alloc_moderate_raw": "not itemized in the trial ledger (no generation-time trial identity) \u2014 not a candidate",
+      "alloc_optimal_raw": "not itemized in the trial ledger (no generation-time trial identity) \u2014 not a candidate"
+    },
+    "honest_n_blocks_21": 100,
+    "nan_rows_from_start": 0,
+    "rows_export": 4404,
+    "rows_from_start": 4298,
+    "rows_lost_to_lags": 2,
+    "t_eff_best_newey_west": 2239.4,
+    "train_n": 2190
+  },
+  "trial_budget": {
+    "budget": 71,
+    "declared_max": 71,
+    "literal_n": 4
+  },
+  "windows": {
+    "evaluation": {
+      "fresh_confirmation_allowed": false,
+      "label": "REUSED",
+      "min_blocks": 10,
+      "n_blocks": 100,
+      "overlapping_prior_windows": 1,
+      "starts_after_generation": false,
+      "statement": "reused outcome window \u2014 not fresh confirmation"
+    },
+    "post_generation": {
+      "fresh_confirmation_allowed": false,
+      "label": "REUSED",
+      "label_if_nightly_display_reruns_ignored": "FRESH_UNDERPOWERED",
+      "mean_differential_ann": {
+        "aggressive": -0.63193,
+        "conservative": -0.46243,
+        "moderate": -0.57159,
+        "optimal": -0.5746
+      },
+      "min_blocks": 10,
+      "n": 97,
+      "n_blocks": 4,
+      "overlapping_prior_windows": 1,
+      "starts_after_generation": true,
+      "statement": "reused outcome window \u2014 not fresh confirmation",
+      "tested": false
+    }
+  }
+}

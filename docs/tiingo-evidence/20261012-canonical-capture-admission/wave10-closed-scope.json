@@ -1,0 +1,30 @@
+{
+  "schema": "tiingo.original_finite_eod_capture_qualified_closure/v1",
+  "run_id": "eod-wave10-new-unreserved-20261012-01a12ab6",
+  "settled_at_utc": "2026-10-12T16:02:33.065232+00:00",
+  "method_sha256": "bca6754b8028bda6e06ab09b11749e5fbdb78eebd92f736b97a6a773a4ca93c2",
+  "original_plan_sha256": "49e1ec5d0b3508706009998b257a408b7794d878a3e7dfa0986c6535b4bcd83e",
+  "original_scope_sha256": "d83d8c805715e7dba7b29e9c81cfdd7d7f889fa467ed2c3cd2fd71bdf7a0b702",
+  "original_settlement_sha256": "7f77ce554939c69880dad837e3055e1a2f5aa2ff7d5be37ca83f014321612581",
+  "reused_accepted_qualification_sha256": {
+    "eod-wave10-prefix01-qualified.json": "b6f96f7691f9c5bca2c7087992c4b5a9feaf6e0d498a45e4ae3aa6df49d3f3bd",
+    "eod-wave10-prefix02-qualified.json": "25be431b4e8ac87064781224619ce450bcc25cd0d431a476cadfd52e87197633",
+    "eod-wave10-prefix03-qualified.json": "7047cb909902ef5c89e430da426068087d2fd7c9039b4db055d2c7f4130dc759",
+    "eod-wave10-prefix04-qualified.json": "35150bf9a49ec21368f946d9e45fd4be8d633cfa81f221a0ed47cbb8f5279130",
+    "eod-wave10-prefix05-qualified.json": "4177ad6f292b5a66beba24e9c4bb3166325e3de73fe811cf6b40529c6e5b2196",
+    "eod-wave10-prefix06-qualified.json": "09dc4979c8d28cdab1c1b288b6c66e9cd0b99b09e722e8944b73dd03d7e2c1fa"
+  },
+  "original_scope_requests": 5000,
+  "successful_requests": 5000,
+  "nonempty_histories": 4970,
+  "empty_responses": 30,
+  "distinct_bars": 12699484,
+  "all_successful_request_receipts_and_reader_lineage_verified": true,
+  "capture_and_qualification_complete_for_original_finite_scope": true,
+  "failed_prior_symbols_retried": false,
+  "raw_or_projection_rebuilt_for_closure": false,
+  "provider_requests": 0,
+  "canonical_identity_admitted": false,
+  "pit_backtest_eligible": false,
+  "complete_vendor_history_proven": false
+}

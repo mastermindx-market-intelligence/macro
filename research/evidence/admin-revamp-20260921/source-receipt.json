@@ -1,0 +1,13 @@
+{
+  "scope": "local actual-data shell plus unavailable-backend fixtures; not authenticated production operation proof",
+  "source_sha256": {
+    "admin/static/app.js": "ef7548fcded9917d96e6bdabbb9f4fc843c835b61cc2b4517704029ff2c6f7ca",
+    "admin/static/styles.css": "6570fe27fd43f9966c84d78d913eb5af7e1768966a3f50e5b509416f478c9ed4",
+    "scripts/qa/admin_workspace_smoke.py": "9877a51acd5789324982e897b184f0db3545ef6bf0b45ef79c645098ad774a76"
+  },
+  "visual_scope": "existing dark English admin, desktop 1440x960 and mobile 390x844",
+  "browser_checks_passed": 17,
+  "route_failure_paths_checked": 54,
+  "unhandled_browser_errors": 0,
+  "writes_attempted": 0
+}

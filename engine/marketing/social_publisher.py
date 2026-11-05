@@ -55,6 +55,7 @@ from pathlib import Path
 from typing import Any, Protocol
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+from urllib.parse import urlparse
 
 log = logging.getLogger(__name__)
 
@@ -257,7 +258,24 @@ _POST_METRICS_QUERY = """
 query PostMetrics($input: PostInput!) {
   post(input: $input) {
     id
+    channelId
+    status
+    schedulingType
+    dueAt
+    sentAt
     externalLink
+    notificationStatus
+    error {
+      message
+      supportUrl
+    }
+    channel {
+      id
+      isDisconnected
+      isLocked
+      isQueuePaused
+      hasActiveMemberDevice
+    }
     metricsUpdatedAt
     metrics {
       type
@@ -378,6 +396,9 @@ class MetricsResult:
     error: str | None
     backend: str
     at: str
+    # Additive provider lifecycle/readiness observation. None only for legacy
+    # constructors or an empty-id call; it never changes the metrics contract.
+    delivery: dict[str, Any] | None = None
 
 
 # Buffer's normalized metric `type`/`name` tokens → our stable console keys.
@@ -434,6 +455,251 @@ def _normalize_metrics(raw: list[dict]) -> dict[str, Any]:
             continue
         out[key] = val
     return out
+
+
+# Buffer's documented lifecycle enums. Unknown values are deliberately not
+# guessed forward into a sent state; they project as unknown/degraded until this
+# adapter is reviewed against the provider schema.
+_KNOWN_POST_STATUSES = frozenset({
+    "draft", "error", "needs_approval", "scheduled", "sending", "sent",
+})
+_KNOWN_SCHEDULING_TYPES = frozenset({"automatic", "notification"})
+_KNOWN_NOTIFICATION_STATUSES = frozenset({"notified", "markedAsPublished"})
+_X_PERMALINK_HOSTS = frozenset({
+    "x.com", "www.x.com", "twitter.com", "www.twitter.com",
+    "mobile.twitter.com",
+})
+
+
+def _clean_provider_text(value: object, *, limit: int = 500) -> str | None:
+    """Plain, bounded provider text safe for operator surfaces."""
+    text = " ".join(str(value or "").split()).strip()
+    return text[:limit] or None
+
+
+def _valid_provider_time(value: object) -> str | None:
+    """Return a timezone-bearing ISO timestamp verbatim, else None."""
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return text
+
+
+def _safe_https_url(value: object) -> str | None:
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        parsed = urlparse(text)
+    except Exception:  # noqa: BLE001
+        return None
+    if parsed.scheme.lower() != "https" or not parsed.hostname:
+        return None
+    if parsed.username or parsed.password:
+        return None
+    return text
+
+
+def _safe_x_permalink(value: object) -> str | None:
+    """Return a safe X/Twitter status permalink, never an arbitrary URL."""
+    text = _safe_https_url(value)
+    if text is None:
+        return None
+    parsed = urlparse(text)
+    host = (parsed.hostname or "").lower()
+    if host not in _X_PERMALINK_HOSTS or "/status/" not in parsed.path:
+        return None
+    return text
+
+
+def _delivery_failure(
+    *,
+    provider_id: str | None,
+    expected_channel_id: str | None,
+    observed_at: str,
+    error: str,
+) -> dict[str, Any]:
+    """Explicit fail-closed provider observation for transport/read failures."""
+    return {
+        "schema": "marketing.provider_delivery/v1",
+        "read_ok": False,
+        "state": "unknown_degraded",
+        "provider_id": provider_id,
+        "channel_id": expected_channel_id,
+        "provider_status": None,
+        "scheduling_type": None,
+        "notification_status": None,
+        "due_at": None,
+        "provider_sent": None,
+        "provider_sent_at": None,
+        "external_url": None,
+        "x_visible": None,
+        "x_visible_at": None,
+        "channel_ready": None,
+        "channel": None,
+        "publishing_error": None,
+        "observed_at": observed_at,
+        "error": _clean_provider_text(error, limit=700) or "provider_read_failed",
+    }
+
+
+def _normalize_delivery_observation(
+    post: dict[str, Any],
+    *,
+    requested_post_id: str,
+    expected_channel_id: str | None,
+    observed_at: str,
+) -> dict[str, Any]:
+    """Normalize one Buffer Post into a fail-closed delivery observation.
+
+    This is intentionally stricter than the analytics reader. Metrics may still
+    be useful when an older/mock response lacks lifecycle fields, but missing,
+    malformed, mismatched or contradictory delivery evidence can never become a
+    sent verdict. Public-link presence is likewise not X-visibility proof.
+    """
+    reasons: list[str] = []
+
+    provider_id = str(post.get("id") or "").strip() or None
+    if provider_id != requested_post_id:
+        reasons.append("provider_id_mismatch")
+
+    channel_id = str(post.get("channelId") or "").strip() or None
+    raw_channel = post.get("channel")
+    channel_obj = raw_channel if isinstance(raw_channel, dict) else {}
+    nested_channel_id = str(channel_obj.get("id") or "").strip() or None
+    if not channel_id or not nested_channel_id:
+        reasons.append("missing_channel_identity")
+    elif channel_id != nested_channel_id:
+        reasons.append("channel_identity_contradiction")
+    if expected_channel_id and channel_id != expected_channel_id:
+        reasons.append("expected_channel_mismatch")
+
+    status = str(post.get("status") or "").strip() or None
+    if status not in _KNOWN_POST_STATUSES:
+        reasons.append("unknown_provider_status")
+
+    scheduling = str(post.get("schedulingType") or "").strip() or None
+    if scheduling is None:
+        if status not in {"draft", "needs_approval"}:
+            reasons.append("missing_scheduling_type")
+    elif scheduling not in _KNOWN_SCHEDULING_TYPES:
+        reasons.append("unknown_scheduling_type")
+
+    notification = str(post.get("notificationStatus") or "").strip() or None
+    if notification is not None and notification not in _KNOWN_NOTIFICATION_STATUSES:
+        reasons.append("unknown_notification_status")
+    if scheduling == "automatic" and notification is not None:
+        reasons.append("automatic_with_notification_status")
+
+    due_raw = post.get("dueAt")
+    due_at = _valid_provider_time(due_raw)
+    if due_raw not in (None, "") and due_at is None:
+        reasons.append("malformed_due_at")
+
+    sent_raw = post.get("sentAt")
+    sent_at = _valid_provider_time(sent_raw)
+    if sent_raw not in (None, "") and sent_at is None:
+        reasons.append("malformed_sent_at")
+    if status == "sent" and sent_at is None:
+        reasons.append("sent_without_sent_at")
+    if status not in (None, "sent") and sent_at is not None:
+        reasons.append("non_sent_status_with_sent_at")
+
+    external_raw = post.get("externalLink")
+    external_url = _safe_x_permalink(external_raw)
+    if external_raw not in (None, "") and external_url is None:
+        reasons.append("unsafe_external_link")
+
+    publishing_error = None
+    raw_error = post.get("error")
+    if raw_error is not None:
+        if not isinstance(raw_error, dict):
+            reasons.append("malformed_publishing_error")
+        else:
+            message = _clean_provider_text(raw_error.get("message"))
+            support_raw = raw_error.get("supportUrl")
+            support_url = _safe_https_url(support_raw)
+            if support_raw not in (None, "") and support_url is None:
+                reasons.append("unsafe_support_url")
+            publishing_error = {
+                "message": message,
+                "support_url": support_url,
+            }
+    if status == "sent" and publishing_error is not None:
+        reasons.append("sent_with_publishing_error")
+
+    flag_names = (
+        "isDisconnected", "isLocked", "isQueuePaused",
+        "hasActiveMemberDevice",
+    )
+    flags: dict[str, bool] = {}
+    for name in flag_names:
+        value = channel_obj.get(name)
+        if not isinstance(value, bool):
+            reasons.append(f"missing_or_invalid_{name}")
+        else:
+            flags[name] = value
+    channel = {
+        "id": nested_channel_id,
+        "is_disconnected": flags.get("isDisconnected"),
+        "is_locked": flags.get("isLocked"),
+        "is_queue_paused": flags.get("isQueuePaused"),
+        "has_active_member_device": flags.get("hasActiveMemberDevice"),
+    }
+
+    channel_ready: bool | None = None
+    if len(flags) == len(flag_names):
+        channel_ready = not (flags["isDisconnected"] or flags["isLocked"])
+        if status not in {"sent", "error"}:
+            if scheduling == "automatic" and flags["isQueuePaused"]:
+                channel_ready = False
+            if scheduling == "notification" and not flags["hasActiveMemberDevice"]:
+                channel_ready = False
+
+    read_ok = not reasons
+    if not read_ok:
+        state = "unknown_degraded"
+        provider_sent: bool | None = None
+    elif status == "sent":
+        state = "provider_sent"
+        provider_sent = True
+    elif status == "error":
+        state = "provider_failed"
+        provider_sent = False
+    else:
+        state = "accepted_unconfirmed"
+        provider_sent = False
+
+    return {
+        "schema": "marketing.provider_delivery/v1",
+        "read_ok": read_ok,
+        "state": state,
+        "provider_id": provider_id,
+        "channel_id": channel_id,
+        "provider_status": status,
+        "scheduling_type": scheduling,
+        "notification_status": notification,
+        "due_at": due_at,
+        "provider_sent": provider_sent,
+        "provider_sent_at": sent_at if provider_sent is True else None,
+        "external_url": external_url,
+        # A provider link is useful destination evidence, but never a browser
+        # visibility attestation. That rung is populated by a separate verifier.
+        "x_visible": None,
+        "x_visible_at": None,
+        "channel_ready": channel_ready,
+        "channel": channel,
+        "publishing_error": publishing_error,
+        "observed_at": observed_at,
+        "error": ";".join(reasons) if reasons else None,
+    }
+
 
 
 def _iso_now(now: datetime | None = None) -> str:
@@ -825,23 +1091,32 @@ class BufferPublisher:
             log.warning("BufferPublisher.delete_post(%s) failed: %s", pid, exc)
             return DeleteResult(False, None, f"error: {exc}", self.backend, at)
 
-    def fetch_post_metrics(self, post_id: str, *, now: datetime | None = None) -> MetricsResult:
-        """Read one post's analytics + public permalink by Buffer post id.
+    def fetch_post_metrics(
+        self,
+        post_id: str,
+        *,
+        expected_channel_id: str | None = None,
+        now: datetime | None = None,
+    ) -> MetricsResult:
+        """Read analytics plus a normalized provider-delivery observation.
 
-        Uses the SAME transport/auth/timeout plumbing as publish() — the
-        `post(input:{id})` query returns the x.com permalink (externalLink,
-        absent from createPost) and a normalized metrics list Buffer refreshes
-        ~daily. An empty metrics list is HONEST, not an error: a freshly-posted
-        item has no analytics until Buffer's first pull.
-
-        Fail-soft: returns MetricsResult(ok=False, error=...) on any
-        transport/GraphQL/parse failure (never raises). An empty/missing
-        post object (deleted or not-yet-indexed) is ok=False with a clear error.
+        The single ``post(input:{id})`` query asks only for the documented
+        lifecycle, scheduling, safe error, channel-readiness, permalink and
+        metric fields. ``expected_channel_id`` is optional for legacy callers;
+        when supplied, an identity mismatch is an explicit degraded read and can
+        never project sent. Metrics remain independently useful if lifecycle
+        fields are missing, so ``MetricsResult.ok`` retains its historical
+        meaning while ``delivery.read_ok`` carries the stricter send-evidence
+        verdict. No mutation or retry-create exists on this path.
         """
         at = _iso_now(now)
         pid = str(post_id or "").strip()
+        expected_channel = str(expected_channel_id or "").strip() or None
         if not pid:
-            return MetricsResult(False, None, {}, [], None, "empty_post_id", self.backend, at)
+            return MetricsResult(
+                False, None, {}, [], None, "empty_post_id", self.backend, at,
+                delivery=None,
+            )
         try:
             resp = self._transport({
                 "query": _POST_METRICS_QUERY,
@@ -849,35 +1124,67 @@ class BufferPublisher:
             })
             err = self._graphql_errors(resp)
             if err:
-                return MetricsResult(False, None, {}, [], None,
-                                     f"graphql_error: {err}", self.backend, at)
+                message = f"graphql_error: {err}"
+                return MetricsResult(
+                    False, None, {}, [], None, message, self.backend, at,
+                    delivery=_delivery_failure(
+                        provider_id=pid, expected_channel_id=expected_channel,
+                        observed_at=at, error=message),
+                )
             post = ((resp.get("data") or {}).get("post")) or {}
             if not isinstance(post, dict) or not post:
-                return MetricsResult(False, None, {}, [], None,
-                                     "no_post_returned", self.backend, at)
+                message = "no_post_returned"
+                return MetricsResult(
+                    False, None, {}, [], None, message, self.backend, at,
+                    delivery=_delivery_failure(
+                        provider_id=pid, expected_channel_id=expected_channel,
+                        observed_at=at, error=message),
+                )
+
+            delivery = _normalize_delivery_observation(
+                post, requested_post_id=pid,
+                expected_channel_id=expected_channel, observed_at=at)
             raw = post.get("metrics")
-            raw_list = [m for m in raw if isinstance(m, dict)] if isinstance(raw, list) else []
-            ext = post.get("externalLink")
-            ext_url = str(ext).strip() if ext else None
+            raw_list = (
+                [m for m in raw if isinstance(m, dict)]
+                if isinstance(raw, list) else []
+            )
             updated = post.get("metricsUpdatedAt")
             updated_s = str(updated).strip() if updated else None
             return MetricsResult(
-                True, ext_url or None, _normalize_metrics(raw_list), raw_list,
-                updated_s or None, None, self.backend, at)
+                True, delivery.get("external_url"),
+                _normalize_metrics(raw_list), raw_list, updated_s or None, None,
+                self.backend, at, delivery=delivery)
         except HTTPError as exc:
             detail = ""
             try:
-                detail = exc.read(_MAX_RESPONSE_BYTES).decode("utf-8", "replace")[:300]
+                detail = exc.read(_MAX_RESPONSE_BYTES).decode(
+                    "utf-8", "replace")[:300]
             except Exception:  # noqa: BLE001
                 pass
-            return MetricsResult(False, None, {}, [], None,
-                                 f"http_error {exc.code}: {detail}", self.backend, at)
+            message = f"http_error {exc.code}: {detail}"
+            return MetricsResult(
+                False, None, {}, [], None, message, self.backend, at,
+                delivery=_delivery_failure(
+                    provider_id=pid, expected_channel_id=expected_channel,
+                    observed_at=at, error=message),
+            )
         except URLError as exc:
-            return MetricsResult(False, None, {}, [], None,
-                                 f"network_error: {exc.reason}", self.backend, at)
+            message = f"network_error: {exc.reason}"
+            return MetricsResult(
+                False, None, {}, [], None, message, self.backend, at,
+                delivery=_delivery_failure(
+                    provider_id=pid, expected_channel_id=expected_channel,
+                    observed_at=at, error=message),
+            )
         except Exception as exc:  # noqa: BLE001
-            return MetricsResult(False, None, {}, [], None,
-                                 f"error: {exc}", self.backend, at)
+            message = f"error: {exc}"
+            return MetricsResult(
+                False, None, {}, [], None, message, self.backend, at,
+                delivery=_delivery_failure(
+                    provider_id=pid, expected_channel_id=expected_channel,
+                    observed_at=at, error=message),
+            )
 
     def publish(
         self,

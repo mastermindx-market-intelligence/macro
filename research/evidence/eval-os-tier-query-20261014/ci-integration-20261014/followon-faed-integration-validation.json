@@ -1,0 +1,137 @@
+{
+  "schema": "eval_os.followon_integrated_validation.v1",
+  "observed_at": "2026-10-14T10:14:59.754299+00:00",
+  "head": "faed2a591b7a2210cb0c806861fc5afce3a86841",
+  "inventory_sha256": "438ce8c2a4418b21d0edc3f7fccbffcd4b880a770284ab3617ed075439ba47c0",
+  "manifest_sha256": "dabc5103b55976d08ba2cd87070ff7d51fde1dd720ec2c7a61395813a9214cc1",
+  "pytest_exit": 1,
+  "closure_misses": {
+    "biocatalyst-history": [
+      "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+      "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+      "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+      "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md"
+    ],
+    "biocatalyst-serving": [
+      "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+      "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+      "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+      "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md"
+    ],
+    "crypto-assistant-context": [
+      "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+      "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+      "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+      "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md"
+    ],
+    "defense-rail-laws": [
+      "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+      "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+      "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+      "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md"
+    ],
+    "eval-os-a1": [
+      "engine/neuralweb/market_memory_retained_catalog.py",
+      "engine/neuralweb/market_memory_retained_legacy_guard.py",
+      "engine/neuralweb/market_memory_retained_saved.py"
+    ],
+    "fif-kernel-guards": [
+      "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+      "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+      "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+      "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md"
+    ],
+    "flow-surface": [
+      "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+      "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+      "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+      "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md"
+    ],
+    "research-price-panel": [
+      "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+      "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+      "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+      "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md"
+    ],
+    "ticker-news-qbus": [
+      "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+      "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+      "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+      "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md"
+    ],
+    "unrun-government-revenue-candidate-projection": [
+      "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+      "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+      "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+      "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md"
+    ],
+    "unrun-government-revenue-grader": [
+      "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+      "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+      "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+      "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+      "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md"
+    ]
+  },
+  "strict_pre9228_probe_rows": [
+    {
+      "probe": "templates/index.html",
+      "jobs": 135,
+      "weight": 5674,
+      "packs": 10,
+      "max_jobs": 135,
+      "max_weight": 5803,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 135/314 jobs (1 unscoped always-on, 134 scoped matches)"
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs": 135,
+      "weight": 5494,
+      "packs": 10,
+      "max_jobs": 134,
+      "max_weight": 5600,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 135/314 jobs (1 unscoped always-on, 134 scoped matches)"
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs": 129,
+      "weight": 5437,
+      "packs": 10,
+      "max_jobs": 129,
+      "max_weight": 5600,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 129/314 jobs (1 unscoped always-on, 128 scoped matches)"
+    }
+  ],
+  "strict_pre9228_breaches": [
+    [
+      "scripts/build_free_content.py",
+      "jobs",
+      135,
+      134
+    ]
+  ],
+  "elapsed_seconds": 718.17,
+  "scope": "Actual local containing head with tracked inventory; no hosted CI, PR, protected merge, installation or production acceptance."
+}

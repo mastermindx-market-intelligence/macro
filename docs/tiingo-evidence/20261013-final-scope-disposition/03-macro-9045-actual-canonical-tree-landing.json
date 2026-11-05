@@ -1,0 +1,156 @@
+{
+  "schema": "tiingo.reviewed_source_canonical_tree_landing/v1",
+  "recorded_at_utc": "2026-10-13T01:43:42.863300+00:00",
+  "pr": 9045,
+  "reviewed_head": "ce0ca042c68b649219198bd4ff0f498f2a27a52c",
+  "fresh_origin_main": "317f2c06090d15347fe8117290a0e13ad2e2ad5b",
+  "reviewed_changed_files": 27,
+  "all_reviewed_changed_blobs_match_current_canonical_main": true,
+  "records": [
+    {
+      "path": "agentos/workstreams/WS-TIINGO-DATA-OS.md",
+      "reviewed_blob": "c6ec0edf77e677ff951f2df70943e7012b4a2a1f",
+      "canonical_current_blob": "c6ec0edf77e677ff951f2df70943e7012b4a2a1f"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/README.md",
+      "reviewed_blob": "0fd22d5d2fee098b11864b5cf8d6fc13a47c1c91",
+      "canonical_current_blob": "0fd22d5d2fee098b11864b5cf8d6fc13a47c1c91"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/boats-actual-raw-reader-acceptance.json",
+      "reviewed_blob": "872728a9c960bc0357896a2b696071bc7173b3ee",
+      "canonical_current_blob": "872728a9c960bc0357896a2b696071bc7173b3ee"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/boats-literal-vendor-audit-acceptance.json",
+      "reviewed_blob": "cc1689df6dd30069369d1135fb8c71141dcdd5ab",
+      "canonical_current_blob": "cc1689df6dd30069369d1135fb8c71141dcdd5ab"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/boats-original-parent-settlement.json",
+      "reviewed_blob": "7fb5fddb66d48794c730d8d0bb9ed1a9cdd8dd2c",
+      "canonical_current_blob": "7fb5fddb66d48794c730d8d0bb9ed1a9cdd8dd2c"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/boats-original-raw-result.json",
+      "reviewed_blob": "64bede3b3aa4271b758fc6125e947b461c21f41e",
+      "canonical_current_blob": "64bede3b3aa4271b758fc6125e947b461c21f41e"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/methods/tiingo-boats-20261013-literal-vendor-final32-audit-01a12ab6.py",
+      "reviewed_blob": "69f5bb377de7311454d74f0411164e2eef5dad98",
+      "canonical_current_blob": "69f5bb377de7311454d74f0411164e2eef5dad98"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/methods/tiingo-wave14-original-two-phase-quality-accounting-candidate-01a12ab6.py",
+      "reviewed_blob": "c760bd651d33cde67c6bbc745fd1c5400f51a76d",
+      "canonical_current_blob": "c760bd651d33cde67c6bbc745fd1c5400f51a76d"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/methods/tiingo-wave14-settled-quality-coverage-candidate-01a12ab6.py",
+      "reviewed_blob": "7837dc7300e1af54c80bafec225d1f67692b3df1",
+      "canonical_current_blob": "7837dc7300e1af54c80bafec225d1f67692b3df1"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/methods/tiingo-wave14-settled-quality-reconciliation-candidate-01a12ab6.py",
+      "reviewed_blob": "c2fb8e0186287aafa2b43347396f4a273742ab10",
+      "canonical_current_blob": "c2fb8e0186287aafa2b43347396f4a273742ab10"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/methods/tiingo-wave15-two-phase-quality-and-transport-held-candidate-01a12ab6.py",
+      "reviewed_blob": "d26dd763949dd9b87880f0d86a7c39a193774be5",
+      "canonical_current_blob": "d26dd763949dd9b87880f0d86a7c39a193774be5"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/source-bytes.json",
+      "reviewed_blob": "c1bd799fd56118f6e19d82daf82970ccd8d1862f",
+      "canonical_current_blob": "c1bd799fd56118f6e19d82daf82970ccd8d1862f"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/source9039-canonical-landing.json",
+      "reviewed_blob": "08f3422a76886717e4b58e412b9a6af8399ebd6c",
+      "canonical_current_blob": "08f3422a76886717e4b58e412b9a6af8399ebd6c"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/source9039-merge-after-ci.json",
+      "reviewed_blob": "bbd4085a35cca031ff4721f8d65b7015963ff491",
+      "canonical_current_blob": "bbd4085a35cca031ff4721f8d65b7015963ff491"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/source9039-terminal-ci.json",
+      "reviewed_blob": "cb762f5f0cf6cabdd0aa4781e2083e5a2c1589bb",
+      "canonical_current_blob": "cb762f5f0cf6cabdd0aa4781e2083e5a2c1589bb"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/terminal955-current-dispatched-ci.json",
+      "reviewed_blob": "9530d190bafadf48fdfdb1924b789437cfaccc01",
+      "canonical_current_blob": "9530d190bafadf48fdfdb1924b789437cfaccc01"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/terminal955-current-protected-hold.json",
+      "reviewed_blob": "9fa01acb90d9c21acbe795bbc45b299ccb2af661",
+      "canonical_current_blob": "9fa01acb90d9c21acbe795bbc45b299ccb2af661"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/wave14-actual-quality-diagnosis.json",
+      "reviewed_blob": "56d2f5d5e95ed3be0084e290f68d52c49ccc5aaf",
+      "canonical_current_blob": "56d2f5d5e95ed3be0084e290f68d52c49ccc5aaf"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/wave14-actual-quality-reconciliation.json",
+      "reviewed_blob": "5ba8828b81ccca1e402bd671cf1bc2ac4c64dbbe",
+      "canonical_current_blob": "5ba8828b81ccca1e402bd671cf1bc2ac4c64dbbe"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/wave14-actual-settlement-and-quality-failure.json",
+      "reviewed_blob": "b7e3f1d341472e297d9f541a9ca27de4311c797a",
+      "canonical_current_blob": "b7e3f1d341472e297d9f541a9ca27de4311c797a"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/wave14-actual-whole-quality-accounting.json",
+      "reviewed_blob": "86be13c55ac9afcc03ab6a11214a21d077afc59c",
+      "canonical_current_blob": "86be13c55ac9afcc03ab6a11214a21d077afc59c"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/wave14-independent-quality-source-review.json",
+      "reviewed_blob": "5a1f22066c4636d1a501c99194976c4113b970cb",
+      "canonical_current_blob": "5a1f22066c4636d1a501c99194976c4113b970cb"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/wave14-window03-parent-acceptance.json",
+      "reviewed_blob": "54482e5f3504958363c0b0214faae93ad48594a6",
+      "canonical_current_blob": "54482e5f3504958363c0b0214faae93ad48594a6"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/wave14-window04-parent-acceptance.json",
+      "reviewed_blob": "f65668ba97e0864debfbd5fc2549a3767ae29940",
+      "canonical_current_blob": "f65668ba97e0864debfbd5fc2549a3767ae29940"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/wave15-actual-original-launch.json",
+      "reviewed_blob": "add3329825fe834b6851b0334117909b5b23d80c",
+      "canonical_current_blob": "add3329825fe834b6851b0334117909b5b23d80c"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/wave15-actual-prefix01-failure-and-diagnosis.json",
+      "reviewed_blob": "bc86be0e65a742e5009f55f45a97c51c7973d3a3",
+      "canonical_current_blob": "bc86be0e65a742e5009f55f45a97c51c7973d3a3"
+    },
+    {
+      "path": "docs/tiingo-evidence/20261013-open-session-history-frontier/wave15-independent-admission-source-review.json",
+      "reviewed_blob": "d46fd897ca4b2049cdb3972b2d8fa4374221903a",
+      "canonical_current_blob": "d46fd897ca4b2049cdb3972b2d8fa4374221903a"
+    }
+  ],
+  "original_fetch_tool": 29361,
+  "original_fetch_exit_code": 0,
+  "original_fetch_terminal_return_consumed": true,
+  "original_merge_tool": 75305,
+  "original_merge_exit_code": 0,
+  "original_merge_terminal_return_consumed": true,
+  "immediate_pr_confirmation_read_blocked_by_redundant_poll_guard": true,
+  "github_merged_state_claimed_by_this_tree_audit": false,
+  "runtime_change": false,
+  "programme_acceptance_claimed": false
+}

@@ -1,0 +1,6 @@
+{
+  "returncode": 1,
+  "stderr": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4/research/agentic_media/public_intelligence_20261011/radar_receipt_phase/installed_radar_receipt_probe.py\", line 16, in <module>\n    assert {p: sha(root / p) for p in expected} == expected, 'reviewed source manifest drift'\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: reviewed source manifest drift\n",
+  "passed": true,
+  "before_import_refusal": true
+}

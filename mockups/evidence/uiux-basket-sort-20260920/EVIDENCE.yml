@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/basket_detail.html.j2
+manifest: mockups/evidence/uiux-basket-sort-20260920/manifest.json

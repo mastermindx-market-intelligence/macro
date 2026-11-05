@@ -201,6 +201,18 @@ def _bil(en: str | None, zh: str | None) -> dict:
     return {"en": en, "zh": zh}
 
 
+
+def _plain_axis_num(v, *, zh: bool = False) -> str:
+    """C-n3: format an axis score; None/non-numeric → plain-word null."""
+    if v is None:
+        return "暂无" if zh else "unavailable"
+    try:
+        return f"{float(v):.1f}"
+    except (TypeError, ValueError):
+        return "暂无" if zh else "unavailable"
+
+
+
 def _band(v, lo, hi):
     if v is None:
         return None
@@ -697,6 +709,8 @@ def _headline(x_value, x_status, x_null, y_value, y_status, y_null, asof, prior_
             vec_null = "INSUFFICIENT_HISTORY"
         vec = {"dx": None, "dy": None, "status": "ABSENT", "null_reason": vec_null}
         transition_distance = None
+    vec["x_axis_id"] = "growth_momentum"
+    vec["y_axis_id"] = "growth_level_breadth"
 
     if not applied:
         note = "no comparable prior print; raw threshold classification, hysteresis not applied"
@@ -980,10 +994,10 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness,
         items.append({
             "implication_id": "state_descriptive",
             "text": _bil(
-                f"US growth regime reads {state_id} - {label_en} (growth momentum x={x_value}, "
-                f"growth level/breadth y={y_value}, boundary 50).",
-                f"美国增长体制读数为 {state_id} - {label_zh}（增长动能 x={x_value}，"
-                f"增长水平/广度 y={y_value}，分界 50）。"),
+                f"US growth regime reads {state_id} - {label_en} (growth momentum {_plain_axis_num(x_value)}, "
+                f"growth level/breadth {_plain_axis_num(y_value)}, boundary 50).",
+                f"美国增长体制读数为 {state_id} - {label_zh}（增长动能 {_plain_axis_num(x_value, zh=True)}，"
+                f"增长水平/广度 {_plain_axis_num(y_value, zh=True)}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

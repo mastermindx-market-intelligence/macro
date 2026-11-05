@@ -18,7 +18,7 @@
 {%- if key == 'gamma_regime' -%}Dealer gamma regime
 {%- elif key == 'vc_state' -%}Vol-control funds
 {%- elif key == 'cta_state' -%}Trend-following funds
-{%- elif key == 'agreement' -%}Machine-money agreement
+{%- elif key == 'agreement' -%}Systematic-flow agreement
 {%- elif key == 'rv_cross_state' -%}Vol weather
 {%- elif key == 'cor1m_regime' -%}Stock-picker conditions
 {%- else -%}A structure field
@@ -28,7 +28,7 @@
 {%- if key == 'gamma_regime' -%}庄家伽马机制
 {%- elif key == 'vc_state' -%}波动率控制基金
 {%- elif key == 'cta_state' -%}趋势跟踪基金
-{%- elif key == 'agreement' -%}机器资金共识
+{%- elif key == 'agreement' -%}系统化资金共识
 {%- elif key == 'rv_cross_state' -%}波动率天气
 {%- elif key == 'cor1m_regime' -%}选股行情
 {%- else -%}一项结构字段
@@ -44,8 +44,8 @@
 <link rel="stylesheet" href="theme.css">
 <script defer src="theme.js"></script>
 <title>Market Structure</title>
-{% set seo_title = 'Market Structure — Dealer Positioning, Machine Flows & Dispersion | Mastermind' %}
-{% set seo_desc = 'Shock absorber state, machine money flows, stock-picker conditions, and weekly expected range — all in plain words.' %}
+{% set seo_title = 'Market Structure — Dealer Positioning, Systematic Fund Flows & Dispersion | Mastermind' %}
+{% set seo_desc = 'Dealer hedging, systematic fund flows, stock-picking conditions, volatility backdrop, and the options-implied weekly range.' %}
 {% set seo_path = 'market_structure.html' %}
 {% include "_seo_head.html.j2" %}
 <style>
@@ -255,6 +255,12 @@ html[data-theme="light"] :is(
 ) { text-shadow:none; }
 </style>
 {% include "_state_inks.html.j2" %}
+<style data-market-range-controls>
+.msp-range-dates{display:inline-block}
+.range-btns .rbtn{min-width:44px;min-height:32px;padding:5px 10px;line-height:1.2}
+.range-btns .rbtn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+@media(max-width:720px){ .range-btns .rbtn{min-height:40px} }
+</style>
 </head>
 <body class="page-msp">
 
@@ -290,7 +296,7 @@ html[data-theme="light"] :is(
     {{ t('How the market is built right now', '当前市场的底层结构') }}
   </h1>
   <p style="margin:4px 0 0;font-size:13px;color:var(--mut)">
-    {{ t('Shock absorbers · machine money · stock-picker conditions · the range options paid for', '缓冲机制 · 机器资金 · 选股行情 · 期权定价区间') }}
+    {{ t('Dealer hedging · systematic fund flows · stock-picking conditions · options-implied weekly range', '做市商对冲 · 系统化资金流 · 选股环境 · 期权隐含周度区间') }}
   </p>
 </div>
 
@@ -476,8 +482,8 @@ html[data-theme="light"] :is(
 <div class="warmup">
   <b><span class="l-en">Shock-absorber reading isn't on this page yet.</span><span class="l-zh">缓冲机制读数尚未出现在本页。</span></b>
   <span class="empty-why">
-    <span class="l-en">The dealer-gamma dataset (SPX options chain) hasn't arrived. Machine-money, stock-picker, vol-weather, and weekly-range panels still render when their own datasets are present.</span>
-    <span class="l-zh">做市商伽马数据集（标普500期权链）尚未到达。机器资金、选股行情、波动率天气与本周区间在各自数据到位时仍会显示。</span>
+    <span class="l-en">The dealer-gamma dataset (SPX options chain) hasn't arrived. Systematic-fund, stock-picker, vol-weather, and weekly-range panels still render when their own datasets are present.</span>
+    <span class="l-zh">做市商伽马数据集（标普500期权链）尚未到达。系统化资金、选股行情、波动率天气与本周区间在各自数据到位时仍会显示。</span>
   </span>
 </div>
 {% endif %}
@@ -488,22 +494,23 @@ html[data-theme="light"] :is(
 {% if gamma is not none and gamma.history is not none and gamma.history | length > 0 %}
 <div class="sec-head">
   <span class="eyebrow">2</span>
-  <h2>{{ t('Dealer exposure history', '做市商敞口历史') }}</h2>
+  <h2 id="gex-history-title">{{ t('Dealer exposure history', '做市商敞口历史') }}</h2>
   <span class="help">?<span class="tip">
     <span class="l-en">Net GEX (dealer options exposure) bars (green = absorbing, red = amplifying). Grey/blue line: SPX against the daily flip level. Toggle the time window. Series from {{ gamma.series_start if gamma.series_start is not none else 'inception' }}.</span>
     <span class="l-zh">净GEX（做市商期权敞口）柱状图（绿=吸收，红=放大）。灰/蓝线：标普500对照每日翻转点。可切换时间窗口。数据自{{ gamma.series_start if gamma.series_start is not none else '首日' }}起。</span>
   </span></span>
-  <div class="range-btns" id="gex-range-btns" style="margin-left:auto">
-    <button class="rbtn" data-range="21">1M</button>
-    <button class="rbtn" data-range="63">3M</button>
-    <button class="rbtn on" data-range="126">6M</button>
-    <button class="rbtn" data-range="252">1Y</button>
-    <button class="rbtn" data-range="9999">{{ t('All', '全部') }}</button>
+  <div class="range-btns" id="gex-range-btns" style="margin-left:auto" role="group" aria-labelledby="gex-history-title">
+    <button class="rbtn" data-range="21" type="button" aria-pressed="false" aria-controls="gex-chart spx-flip-chart">{{ t('1M', '1月') }}</button>
+    <button class="rbtn" data-range="63" type="button" aria-pressed="false" aria-controls="gex-chart spx-flip-chart">{{ t('3M', '3月') }}</button>
+    <button class="rbtn on" data-range="126" type="button" aria-pressed="true" aria-controls="gex-chart spx-flip-chart">{{ t('6M', '6月') }}</button>
+    <button class="rbtn" data-range="252" type="button" aria-pressed="false" aria-controls="gex-chart spx-flip-chart">{{ t('1Y', '1年') }}</button>
+    <button class="rbtn" data-range="9999" type="button" aria-pressed="false" aria-controls="gex-chart spx-flip-chart">{{ t('All', '全部') }}</button>
   </div>
 </div>
 <div class="panel">
-  <div class="chart-wrap" style="height:160px"><svg id="gex-chart" viewBox="0 0 800 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
-  <div class="chart-wrap" style="height:110px;margin-top:6px"><svg id="spx-flip-chart" viewBox="0 0 800 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="chart-wrap" style="height:160px"><svg id="gex-chart" role="img" aria-label="Dealer options exposure history" data-chart-label-en="Dealer options exposure history" data-chart-label-zh="做市商期权敞口历史" aria-describedby="gex-range-status" viewBox="0 0 800 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="chart-wrap" style="height:110px;margin-top:6px"><svg id="spx-flip-chart" role="img" aria-label="S&amp;P 500 and dealer flip level" data-chart-label-en="S&amp;P 500 and dealer flip level" data-chart-label-zh="标普500与做市商翻转点" aria-describedby="gex-range-status" viewBox="0 0 800 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="sec-foot" id="gex-range-status" role="status" aria-live="polite" aria-atomic="true"></div>
   <div class="sec-foot">{{ t('GEX (dealer options exposure) bars coloured by dealer regime · SPX line against the flip level (amber dashed)', 'GEX（做市商期权敞口）柱图按做市商制度着色 · 标普500线对照翻转点（琥珀色虚线）') }}{% if gamma.series_start is not none %} · {{ t('series from', '数据自') }} {{ gamma.series_start }}{% endif %}</div>
 </div>
 {% else %}
@@ -521,20 +528,20 @@ html[data-theme="light"] :is(
 <section class="msp-driver" data-driver="flows">
 <div class="sec-head">
   <span class="eyebrow">3</span>
-  <h2>{{ t('Machine money flows', '机器资金动向') }}</h2>
+  <h2 id="sys-history-title">{{ t('Systematic fund flows', '系统化资金流') }}</h2>
   {# The dollar figures below are arithmetic on a STYLIZED pool ($300B AUM at a 10%
      vol target), not observed fund flow — say so where the numbers are, not only
      in a hover. #}
   <span class="badge est">{{ t('model estimate', '模型估算') }}</span>
   <span class="help">?<span class="tip">
-    <span class="l-en"><b>What these are</b><br>Volatility-control funds (VC): target ~{{ vc.aum_bn if vc is not none and vc.aum_bn is not none else '300' }}B AUM; hold SPX at fraction min(1, 10% / max(RV21,RV63)). Pure price arithmetic — full backcast.<br><br>Trend-following funds (CTA): 20/50/100/200d trend z-score; flow estimated from positioning change.<br><br><em>Representative model estimates of mechanical fund behavior — NOT audited positions or actual AUM data.</em></span>
-    <span class="l-zh"><b>说明</b><br>波动率控制基金（VC）：目标规模约{{ ((vc.aum_bn|float * 10)|round|int) if vc is not none and vc.aum_bn is not none else 3000 }}亿美元；持仓比例 min(1, 10%/max(RV21,RV63))，纯价格计算，可全程回测。<br><br>趋势跟踪基金（CTA）：20/50/100/200日趋势Z分数；持仓变化估算资金流。<br><br><em>代表性机械基金行为的模型估算，非实际基金审计持仓。</em></span>
+    <span class="l-en"><b>What these are</b><br>Volatility-control funds adjust exposure as realized volatility rises or falls. Trend-following funds adjust exposure with medium- and long-term price trends.<br><br><em>These are model estimates of systematic fund behavior, not observed fund positions. Dollar figures show approximate direction and scale.</em></span>
+    <span class="l-zh"><b>说明</b><br>波动率控制基金会随已实现波动率上升或下降调整敞口。趋势跟踪基金会根据中长期价格趋势调整敞口。<br><br><em>这些是系统化基金行为的模型估算，并非观测到的实际持仓；金额用于表示大致方向和量级。</em></span>
   </span></span>
   {% if sys is not none and sys.history is not none and sys.history | length > 0 %}
-  <div class="range-btns" id="sys-range-btns" style="margin-left:auto">
-    <button class="rbtn" data-range="63">3M</button>
-    <button class="rbtn on" data-range="252">1Y</button>
-    <button class="rbtn" data-range="9999">{{ t('All', '全部') }}</button>
+  <div class="range-btns" id="sys-range-btns" style="margin-left:auto" role="group" aria-labelledby="sys-history-title">
+    <button class="rbtn" data-range="63" type="button" aria-pressed="false" aria-controls="sys-chart">{{ t('3M', '3月') }}</button>
+    <button class="rbtn on" data-range="252" type="button" aria-pressed="true" aria-controls="sys-chart">{{ t('1Y', '1年') }}</button>
+    <button class="rbtn" data-range="9999" type="button" aria-pressed="false" aria-controls="sys-chart">{{ t('All', '全部') }}</button>
   </div>
   {% endif %}
 </div>
@@ -542,22 +549,22 @@ html[data-theme="light"] :is(
 {% if sys is not none %}
 <div class="agree {{ agree if agree is not none else '' }}">
   {% if _wn > 0 %}
-  {% if agree == 'aligned_adding' %}<span class="l-en">Machine money: aligned · both adding over {{ _wn }} days</span><span class="l-zh">机器资金：一致 · 两路{{ _wn }}日同步加仓</span>
-  {% elif agree == 'aligned_cutting' %}<span class="l-en">Machine money: aligned · both cutting over {{ _wn }} days</span><span class="l-zh">机器资金：一致 · 两路{{ _wn }}日同步减仓</span>
-  {% elif agree == 'split' %}<span class="l-en">Machine money: split — signals disagree over {{ _wn }} days</span><span class="l-zh">机器资金：分歧 — {{ _wn }}日信号不一致</span>
-  {% elif agree == 'paused' %}<span class="l-en">Machine money: both paused over the last {{ _wn }} days</span><span class="l-zh">机器资金：两路近{{ _wn }}日均暂停</span>
+  {% if agree == 'aligned_adding' %}<span class="l-en">Systematic funds: aligned · both adding over {{ _wn }} days</span><span class="l-zh">系统化资金：一致 · 两路{{ _wn }}日同步加仓</span>
+  {% elif agree == 'aligned_cutting' %}<span class="l-en">Systematic funds: aligned · both cutting over {{ _wn }} days</span><span class="l-zh">系统化资金：一致 · 两路{{ _wn }}日同步减仓</span>
+  {% elif agree == 'split' %}<span class="l-en">Systematic funds: split — signals disagree over {{ _wn }} days</span><span class="l-zh">系统化资金：分歧 — {{ _wn }}日信号不一致</span>
+  {% elif agree == 'paused' %}<span class="l-en">Systematic funds: both paused over the last {{ _wn }} days</span><span class="l-zh">系统化资金：两路近{{ _wn }}日均暂停</span>
   {% else %}<span class="l-en">Agreement: {{ agree if agree is not none else 'unknown' }}</span><span class="l-zh">共识：{{ agree if agree is not none else '未知' }}</span>
   {% endif %}
   {% else %}
-  <span class="l-en">Machine money: window is being updated.</span><span class="l-zh">机器资金：窗口更新中。</span>
+  <span class="l-en">Systematic funds: window is being updated.</span><span class="l-zh">系统化资金：窗口更新中。</span>
   {% endif %}
 </div>
 {% if agree == 'aligned_adding' %}
-<span class="stance-chip watch"><span class="l-en">Watch — don't chase: machine buying is already in the price.</span><span class="l-zh">观望——勿追涨：机器买盘已在价格中。</span></span>
+<span class="stance-chip watch"><span class="l-en">Watch — don't chase: systematic buying is already in the price.</span><span class="l-zh">观望——勿追涨：系统化买盘已反映在价格中。</span></span>
 {% elif agree == 'aligned_cutting' %}
-<span class="stance-chip watch"><span class="l-en">Watch — machine money is stepping back; don't lean against it.</span><span class="l-zh">观望——机器资金正在撤减，勿逆势加仓。</span></span>
+<span class="stance-chip watch"><span class="l-en">Watch — systematic funds are stepping back; don't lean against it.</span><span class="l-zh">观望——系统化资金正在撤减，勿逆势加仓。</span></span>
 {% elif agree == 'paused' or agree == 'split' %}
-<span class="stance-chip neutral"><span class="l-en">Stand aside — machine flows aren't pushing either way.</span><span class="l-zh">暂不行动——机器资金没有明确方向。</span></span>
+<span class="stance-chip neutral"><span class="l-en">Stand aside — systematic flows aren't pushing either way.</span><span class="l-zh">暂不行动——系统化资金没有明确方向。</span></span>
 {% else %}
 <span class="stance-chip watch"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></span>
 {% endif %}
@@ -601,14 +608,15 @@ html[data-theme="light"] :is(
 {% if sys.history is not none and sys.history | length > 0 %}
 <div class="panel">
   <div style="font-size:12px;color:var(--mut);margin-bottom:8px">{{ t('Vol-target fund exposure ($B) against the S&P 500 — toggle above to change window', '波动率目标基金敞口（十亿美元）对照标普500 — 切换上方按钮调整窗口') }}</div>
-  <div class="chart-wrap" style="height:160px"><svg id="sys-chart" viewBox="0 0 800 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="chart-wrap" style="height:160px"><svg id="sys-chart" role="img" aria-label="Estimated volatility-control exposure and S&amp;P 500" data-chart-label-en="Estimated volatility-control exposure and S&amp;P 500" data-chart-label-zh="波动率控制基金估算敞口与标普500" aria-describedby="sys-range-status" viewBox="0 0 800 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="sec-foot" id="sys-range-status" role="status" aria-live="polite" aria-atomic="true"></div>
   <div class="sec-foot">{{ t('Blue line = vol-target fund exposure · grey line = S&P 500 · model estimates, not audited fund data', '蓝线=波动率目标基金敞口 · 灰线=标普500 · 模型估算，非审计基金数据') }}</div>
 </div>
 {% endif %}
 
 {% else %}
 <div class="warmup">
-  <b><span class="l-en">Machine-money flows aren't on this page yet.</span><span class="l-zh">机器资金动向尚未出现在本页。</span></b>
+  <b><span class="l-en">Systematic fund flows aren't on this page yet.</span><span class="l-zh">系统化资金流尚未出现在本页。</span></b>
   <span class="empty-why">
     <span class="l-en">The vol-control and trend-following model series haven't arrived. Shock-absorber, stock-picker, vol-weather, and weekly-range panels still render from their own datasets.</span>
     <span class="l-zh">波动率控制与趋势跟踪模型序列尚未到达。缓冲机制、选股行情、波动率天气与本周区间在各自数据到位时仍会显示。</span>
@@ -621,16 +629,16 @@ html[data-theme="light"] :is(
 <section class="msp-driver" data-driver="dispersion">
 <div class="sec-head">
   <span class="eyebrow">4</span>
-  <h2>{{ t('Stock-picker conditions', '选股行情') }}</h2>
+  <h2 id="cor-history-title">{{ t('Stock-picker conditions', '选股行情') }}</h2>
   <span class="help">?<span class="tip">
     <span class="l-en"><b>What this measures</b><br>1-month implied correlation (COR1M): average pairwise correlation implied by SPX options against single-stock options. Low = stocks moving on their own stories (stock-picker's market). High = one-market tape (macro dominates). Series from 2006.{% if disp is not none %}<br><br>{% if disp.cor1m_pctile_2y is not none %}2-year percentile: {{ ord_n(disp.cor1m_pctile_2y) }}. {% endif %}{% if disp.cor3m is not none %}3-month implied correlation: {{ '%.2f'|format(disp.cor3m|float) }}. {% endif %}{% if disp.dspx is not none %}CBOE dispersion index: {{ '%.1f'|format(disp.dspx|float) }}.{% endif %}{% endif %}</span>
     <span class="l-zh"><b>指标说明</b><br>1个月隐含相关性（COR1M）：标普指数期权与个股期权隐含的平均两两相关系数。低值=个股独立走势（选股行情）；高值=一体化走势（宏观主导）。数据自2006年。{% if disp is not none %}<br><br>{% if disp.cor1m_pctile_2y is not none %}2年百分位：{{ ord_n(disp.cor1m_pctile_2y) }}。{% endif %}{% if disp.cor3m is not none %}3个月隐含相关性：{{ '%.2f'|format(disp.cor3m|float) }}。{% endif %}{% if disp.dspx is not none %}CBOE离散度指数：{{ '%.1f'|format(disp.dspx|float) }}。{% endif %}{% endif %}</span>
   </span></span>
   {% if disp is not none and disp.history is not none and disp.history | length > 0 %}
-  <div class="range-btns" id="cor-range-btns" style="margin-left:auto">
-    <button class="rbtn" data-range="63">3M</button>
-    <button class="rbtn on" data-range="252">1Y</button>
-    <button class="rbtn" data-range="9999">{{ t('All', '全部') }}</button>
+  <div class="range-btns" id="cor-range-btns" style="margin-left:auto" role="group" aria-labelledby="cor-history-title">
+    <button class="rbtn" data-range="63" type="button" aria-pressed="false" aria-controls="cor-chart">{{ t('3M', '3月') }}</button>
+    <button class="rbtn on" data-range="252" type="button" aria-pressed="true" aria-controls="cor-chart">{{ t('1Y', '1年') }}</button>
+    <button class="rbtn" data-range="9999" type="button" aria-pressed="false" aria-controls="cor-chart">{{ t('All', '全部') }}</button>
   </div>
   {% endif %}
 </div>
@@ -677,7 +685,8 @@ html[data-theme="light"] :is(
     </div>{% endif %}
   </div>
   {% if disp.history is not none and disp.history | length > 0 %}
-  <div class="chart-wrap" style="height:130px;margin-top:12px"><svg id="cor-chart" viewBox="0 0 800 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="chart-wrap" style="height:130px;margin-top:12px"><svg id="cor-chart" role="img" aria-label="Implied stock correlation history" data-chart-label-en="Implied stock correlation history" data-chart-label-zh="股票隐含相关性历史" aria-describedby="cor-range-status" viewBox="0 0 800 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="sec-foot" id="cor-range-status" role="status" aria-live="polite" aria-atomic="true"></div>
   {% endif %}
   <div class="sec-foot">{{ t('1-month implied correlation (COR1M) area chart — dashed line = the dispersion threshold, the 20th percentile of the last two years · source: CBOE, series from 2006', '1个月隐含相关性（COR1M）面积图 — 虚线=离散阈值，即近两年第20百分位 · 来源：CBOE，数据自2006年起') }}</div>
 </div>
@@ -685,8 +694,8 @@ html[data-theme="light"] :is(
 <div class="warmup">
   <b><span class="l-en">Stock-picker conditions aren't on this page yet.</span><span class="l-zh">选股行情尚未出现在本页。</span></b>
   <span class="empty-why">
-    <span class="l-en">The 1-month implied-correlation dataset (COR1M) hasn't arrived. Shock-absorber, machine-money, vol-weather, and weekly-range panels still render from their own datasets.</span>
-    <span class="l-zh">1个月隐含相关性数据集（COR1M）尚未到达。缓冲机制、机器资金、波动率天气与本周区间在各自数据到位时仍会显示。</span>
+    <span class="l-en">The 1-month implied-correlation dataset (COR1M) hasn't arrived. Shock-absorber, systematic-fund, vol-weather, and weekly-range panels still render from their own datasets.</span>
+    <span class="l-zh">1个月隐含相关性数据集（COR1M）尚未到达。缓冲机制、系统化资金、波动率天气与本周区间在各自数据到位时仍会显示。</span>
   </span>
 </div>
 {% endif %}
@@ -758,8 +767,8 @@ html[data-theme="light"] :is(
 <div class="warmup">
   <b><span class="l-en">Vol weather isn't on this page yet.</span><span class="l-zh">波动率天气尚未出现在本页。</span></b>
   <span class="empty-why">
-    <span class="l-en">The realized-vol and VIX-curve datasets haven't arrived. Shock-absorber, machine-money, stock-picker, and weekly-range panels still render from their own datasets.</span>
-    <span class="l-zh">已实现波动率与VIX曲线数据集尚未到达。缓冲机制、机器资金、选股行情与本周区间在各自数据到位时仍会显示。</span>
+    <span class="l-en">The realized-vol and VIX-curve datasets haven't arrived. Shock-absorber, systematic-fund, stock-picker, and weekly-range panels still render from their own datasets.</span>
+    <span class="l-zh">已实现波动率与VIX曲线数据集尚未到达。缓冲机制、系统化资金、选股行情与本周区间在各自数据到位时仍会显示。</span>
   </span>
 </div>
 {% endif %}
@@ -832,8 +841,8 @@ html[data-theme="light"] :is(
     </div>
   </div>
   <div class="kpi-row" style="margin-top:8px">
-    <div class="kpi"><b>{{ '%.0f'|format(lo1) }} – {{ '%.0f'|format(hi1) }}</b>{{ t('typical range (±1σ, about 68% of weeks)', '典型区间（±1σ，约68%的周）') }}</div>
-    <div class="kpi"><b>{{ '%.0f'|format(pr_lo) }} – {{ '%.0f'|format(pr_hi) }}</b>{{ t('wide range (±2σ, about 95% of weeks)', '宽区间（±2σ，约95%的周）') }}</div>
+    <div class="kpi"><b>{{ '%.0f'|format(lo1) }} – {{ '%.0f'|format(hi1) }}</b>{{ t('typical range (about 68% of weeks)', '典型区间（约68%的周）') }}</div>
+    <div class="kpi"><b>{{ '%.0f'|format(pr_lo) }} – {{ '%.0f'|format(pr_hi) }}</b>{{ t('wide range (about 95% of weeks)', '宽区间（约95%的周）') }}</div>
     {% if wm_flip is not none %}<div class="kpi"><b class="amb">{{ '%.0f'|format(wm_flip|float) }}</b>{{ t('flip level (dealer hedging switch)', '翻转点（做市商对冲切换）') }}</div>{% endif %}
   </div>
   {% endif %}
@@ -846,8 +855,8 @@ html[data-theme="light"] :is(
 <div class="warmup">
   <b><span class="l-en">This week's expected range isn't on this page yet.</span><span class="l-zh">本周预期区间尚未出现在本页。</span></b>
   <span class="empty-why">
-    <span class="l-en">The Friday-locked implied-move band hasn't been computed. Shock-absorber, machine-money, stock-picker, and vol-weather panels still render from their own datasets.</span>
-    <span class="l-zh">周五锁定的隐含波动区间尚未计算。缓冲机制、机器资金、选股行情与波动率天气在各自数据到位时仍会显示。</span>
+    <span class="l-en">The Friday-locked implied-move band hasn't been computed. Shock-absorber, systematic-fund, stock-picker, and vol-weather panels still render from their own datasets.</span>
+    <span class="l-zh">周五锁定的隐含波动区间尚未计算。缓冲机制、系统化资金流、选股行情与波动率天气在各自数据到位时仍会显示。</span>
   </span>
 </div>
 {% endif %}
@@ -856,8 +865,8 @@ html[data-theme="light"] :is(
 
 {# ── Footer ── #}
 <div style="margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)">
-  <span class="l-en">Context for expectations and sizing — not buy or sell signals. Machine-flow figures are model estimates, not audited fund positions: the dollar amounts are arithmetic on one stylised $300B pool run at a 10% volatility target, so read them as scale and direction, not as money that actually moved. Shock-absorber series from {{ gamma.series_start if gamma is not none and gamma.series_start is not none else 'inception' }}; correlation series from 2006.</span>
-  <span class="l-zh">仅供把握市场环境与仓位预期 — 并非买卖信号。机器资金数据为模型估算，非审计持仓：其中的美元金额是按单一模型化的3000亿美元资金池、10%波动率目标推算而来，应视为量级与方向的参考，而非真实成交的资金。缓冲机制数据自{{ gamma.series_start if gamma is not none and gamma.series_start is not none else '首日' }}起，相关性数据自2006年起。</span>
+  <span class="l-en">Market context, not buy or sell signals. Systematic-fund figures are model estimates, not observed positions. Read them as direction and scale, not as cash that actually moved. Dealer-exposure estimates are reconstructed from options data. Shock-absorber series from {{ gamma.series_start if gamma is not none and gamma.series_start is not none else 'inception' }}; correlation series from 2006.</span>
+  <span class="l-zh">仅供市场环境参考，并非买卖信号。系统化资金数据为模型估算，并非观测到的实际持仓；请将其视为方向和量级参考，而非真实成交资金。做市商敞口根据期权数据重建。缓冲机制数据自{{ gamma.series_start if gamma is not none and gamma.series_start is not none else '首日' }}起，相关性数据自2006年起。</span>
   {% if msp is defined and msp is not none and msp.built_at is not none %} · {{ t('Built', '构建于') }} {{ msp.built_at[:10] }}{% endif %}
 </div>
 
@@ -877,7 +886,13 @@ html[data-theme="light"] :is(
 <script>
 (function(){'use strict';
 function qs(s){return document.querySelector(s)}
-function getRange(k,d){try{return parseInt(localStorage.getItem(k)||d,10)}catch(e){return d}}
+function getRange(k,d,allowed){
+  try{
+    var raw=localStorage.getItem(k);
+    var n=typeof raw==='string'&&/^\d+$/.test(raw)?Number(raw):NaN;
+    return allowed.indexOf(n)!==-1?n:d;
+  }catch(e){return d}
+}
 function setRange(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function vr(n){return'var('+n+')'}
 var UP=vr('--up'),DN=vr('--dn'),MUT=vr('--mut'),BLUE=vr('--blue'),AMB=vr('--amb'),LINE=vr('--line');
@@ -999,25 +1014,67 @@ function drawCor(n){
   }
 }
 
-function wireRange(sel,key,def,fn){
-  var c=qs(sel);if(!c)return;
-  var n=getRange(key,def);
-  c.querySelectorAll('.rbtn').forEach(function(b){
-    b.classList.toggle('on',parseInt(b.dataset.range,10)===n);
-    b.addEventListener('click',function(){
-      c.querySelectorAll('.rbtn').forEach(function(x){x.classList.remove('on')});
-      b.classList.add('on');setRange(key,parseInt(b.dataset.range,10));
-      fn(parseInt(b.dataset.range,10));
-    });
+// Describe only the observations actually embedded, never the nominal window.
+function rangeSummary(history,n){
+  var rows=sliceTail(Array.isArray(history)?history:[],n),count=rows.length;
+  if(!count)return {en:'No chart history',zh:'暂无图表历史'};
+  function day(row){
+    var value=row&&row.date;
+    if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return null;
+    var parsed=new Date(value+'T00:00:00Z');
+    return !isNaN(parsed.getTime())&&parsed.toISOString().slice(0,10)===value?value:null;
+  }
+  var first=day(rows[0]),last=day(rows[count-1]);
+  var dates=first&&last&&first<=last?(first===last?first:first+' — '+last):null;
+  return {en:count+(count===1?' observation':' observations')+' · '+(dates||'dates unavailable'),
+          zh:count+'个观测 · '+(dates||'日期暂缺')};
+}
+function paintRangeSummary(id,history,n){
+  var status=document.getElementById(id);if(!status)return;
+  var summary=rangeSummary(history,n);status.textContent='';
+  ['en','zh'].forEach(function(lang){
+    var span=document.createElement('span');span.className='l-'+lang;
+    var parts=summary[lang].split(' · ');span.textContent=parts.shift()+(parts.length?' · ':'');
+    if(parts.length){var dates=document.createElement('span');dates.className='msp-range-dates';dates.textContent=parts.join(' · ');span.appendChild(dates);}
+    status.appendChild(span);
   });
-  fn(n);
+}
+function syncChartLanguage(){
+  var zh=document.documentElement.getAttribute('data-lang')==='zh';
+  var names={21:['1 month','1个月'],63:['3 months','3个月'],126:['6 months','6个月'],252:['1 year','1年'],9999:['All available history','全部可用历史']};
+  document.querySelectorAll('.range-btns .rbtn').forEach(function(button){
+    var label=names[Number(button.dataset.range)];if(label)button.setAttribute('aria-label',label[zh?1:0]);
+  });
+  document.querySelectorAll('svg[data-chart-label-en]').forEach(function(svg){
+    svg.setAttribute('aria-label',svg.getAttribute(zh?'data-chart-label-zh':'data-chart-label-en'));
+  });
+}
+function wireRange(sel,key,def,fn,history,statusId){
+  var c=qs(sel);if(!c)return;
+  var buttons=Array.from(c.querySelectorAll('.rbtn'));
+  var allowed=buttons.map(function(b){return Number(b.dataset.range)});
+  if(!allowed.length)return;
+  if(allowed.indexOf(def)===-1)def=allowed[0];
+  var n=getRange(key,def,allowed);
+  function select(value,persist){
+    buttons.forEach(function(b){var active=Number(b.dataset.range)===value;b.classList.toggle('on',active);b.setAttribute('aria-pressed',String(active));});
+    if(persist)setRange(key,value);
+    fn(value);paintRangeSummary(statusId,history,value);
+  }
+  buttons.forEach(function(b){
+    // Native buttons own Enter, Space and taps; no second keyboard activation.
+    b.addEventListener('click',function(){select(Number(b.dataset.range),true);});
+  });
+  select(n,false);
 }
 
 function init(){
-  wireRange('#gex-range-btns','msp-gex-range',126,drawGex);
-  wireRange('#sys-range-btns','msp-sys-range',252,drawSys);
-  wireRange('#cor-range-btns','msp-cor-range',252,drawCor);
+  wireRange('#gex-range-btns','msp-gex-range',126,drawGex,typeof MSP_GAMMA_HIST==='undefined'?[]:MSP_GAMMA_HIST,'gex-range-status');
+  wireRange('#sys-range-btns','msp-sys-range',252,drawSys,typeof MSP_SYS_HIST==='undefined'?[]:MSP_SYS_HIST,'sys-range-status');
+  wireRange('#cor-range-btns','msp-cor-range',252,drawCor,typeof MSP_COR_HIST==='undefined'?[]:MSP_COR_HIST,'cor-range-status');
+  syncChartLanguage();
 }
+document.addEventListener('langchange',syncChartLanguage);
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init)}else{init()}
 })();
 </script>

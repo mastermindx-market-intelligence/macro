@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-14T14:47:39.445337+00:00",
+  "source_parent": "dc9f1e309a1c0701afd1de93fd075c9200b9a286",
+  "a1_local_source_reference": "26bfb6a0b9928e0463efef9e5904e6cdaeb6e581",
+  "added": [
+    "engine/neuralweb/market_memory_brain_citations.py",
+    "engine/rates_command_basis.py"
+  ],
+  "preserved_jobs": 314,
+  "all_execution_definitions_order_prior_paths_and_limits_unchanged": true,
+  "manifest_sha256": "86c05bce6c8ef384be4ba97cb55208e4762442a6aed26e7876f6f5e0b3fb52a0",
+  "scope": "Positive path widening on same follow-on. No current-main integration, hosted test, PR, release or adoption claim."
+}

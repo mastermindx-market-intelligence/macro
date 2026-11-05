@@ -1,0 +1,298 @@
+{
+  "schema": "tiingo.retained_actual_effect_and_reviewed_method_source_bytes/v1",
+  "snapshot_at_utc": "2026-10-13T05:09:03.000332+00:00",
+  "entries": [
+    {
+      "file": "01-macro-9075-actual-source-push-and-pr-parent-consumption.json",
+      "sha256": "37be49905b99c802b01f049481fee4a07bbf94860c647fa6474163c07f695cdb",
+      "bytes": 1155,
+      "retained_source_file": "macro-9075-actual-source-push-and-pr-parent-consumption.json",
+      "retained_source_sha256": "37be49905b99c802b01f049481fee4a07bbf94860c647fa6474163c07f695cdb",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "02-macro-9075-original-ci-watch-transport-terminal-parent.json",
+      "sha256": "b7bdbf45ca3d168bfeedec55d4d6e2935c128383b0f04173c5e6ff8a7b6bf424",
+      "bytes": 693,
+      "retained_source_file": "macro-9075-original-ci-watch-transport-terminal-parent.json",
+      "retained_source_sha256": "b7bdbf45ca3d168bfeedec55d4d6e2935c128383b0f04173c5e6ff8a7b6bf424",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "03-macro-9075-original-CI-terminal-acceptance.json",
+      "sha256": "33f800732873d915ab6ec9652569c52c3b842afff2a5e86fb104a8cccbafb225",
+      "bytes": 1442,
+      "retained_source_file": "macro-9075-original-CI-terminal-acceptance.json",
+      "retained_source_sha256": "33f800732873d915ab6ec9652569c52c3b842afff2a5e86fb104a8cccbafb225",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "04-macro-9075-original-CI-protected-read-actual-parent-consumption.json",
+      "sha256": "7e81a1725073432a9b9cf79d5985220c39f93b6485b7c3ac0dfd1296182086ee",
+      "bytes": 635,
+      "retained_source_file": "macro-9075-original-CI-protected-read-actual-parent-consumption.json",
+      "retained_source_sha256": "7e81a1725073432a9b9cf79d5985220c39f93b6485b7c3ac0dfd1296182086ee",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "05-macro-9075-native-integrated-candidate-compatibility.json",
+      "sha256": "f06abd2d0cf79dc918981a3c16b748d82f94cb191cf2914f8092e37d3063c91d",
+      "bytes": 7961,
+      "retained_source_file": "macro-9075-native-integrated-candidate-compatibility.json",
+      "retained_source_sha256": "f06abd2d0cf79dc918981a3c16b748d82f94cb191cf2914f8092e37d3063c91d",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "06-macro-9075-actual-merge-terminal-parent.json",
+      "sha256": "6fab7f22f543113f13ba98558dad174153e34cb9416939b53d65ae603f7653f7",
+      "bytes": 710,
+      "retained_source_file": "macro-9075-actual-merge-terminal-parent.json",
+      "retained_source_sha256": "6fab7f22f543113f13ba98558dad174153e34cb9416939b53d65ae603f7653f7",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "07-macro-9075-actual-merged-and-canonical-source-join.json",
+      "sha256": "b663fa46a925278be230788492d8df894ecc730a0601da186148eea332e162d2",
+      "bytes": 7817,
+      "retained_source_file": "macro-9075-actual-merged-and-canonical-source-join.json",
+      "retained_source_sha256": "b663fa46a925278be230788492d8df894ecc730a0601da186148eea332e162d2",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "08-macro-9075-canonical-join-actual-parent-consumption.json",
+      "sha256": "6a2b4c404b495f950d61e15ff7230a2f34de44e458d5438443b7e15d18498c9e",
+      "bytes": 587,
+      "retained_source_file": "macro-9075-canonical-join-actual-parent-consumption.json",
+      "retained_source_sha256": "6a2b4c404b495f950d61e15ff7230a2f34de44e458d5438443b7e15d18498c9e",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "09-tiingo-wave15-continuation03-capture-actual-terminal-parent-consumption.json",
+      "sha256": "7c65c2d6c2ce33076eba89fcf473b7f88d5114f70e2c244770d21cc483fa9681",
+      "bytes": 1093,
+      "retained_source_file": "tiingo-wave15-continuation03-capture-actual-terminal-parent-consumption.json",
+      "retained_source_sha256": "7c65c2d6c2ce33076eba89fcf473b7f88d5114f70e2c244770d21cc483fa9681",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "10-tiingo-wave15-continuation03-disposition-window01-actual-parent-consumption.json",
+      "sha256": "4a558304a14efb780eb5670bcf80269864e0f2f8fb4ff9d564ca33fcf8ffa1e6",
+      "bytes": 1264,
+      "retained_source_file": "tiingo-wave15-continuation03-disposition-window01-actual-parent-consumption.json",
+      "retained_source_sha256": "4a558304a14efb780eb5670bcf80269864e0f2f8fb4ff9d564ca33fcf8ffa1e6",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "11-tiingo-wave15-continuation03-final-disposition-accounting-actual-parent-consumption.json",
+      "sha256": "9f36d0e9cc18f89b30b980754b4c7cf56f9bb244d0b1215dbd563637bf46cde9",
+      "bytes": 798,
+      "retained_source_file": "tiingo-wave15-continuation03-final-disposition-accounting-actual-parent-consumption.json",
+      "retained_source_sha256": "9f36d0e9cc18f89b30b980754b4c7cf56f9bb244d0b1215dbd563637bf46cde9",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "12-tiingo-wave15-original-four-phase-final-disposition-accounting-actual-parent-consumption.json",
+      "sha256": "e26817746bc017c7bb4190624ba92b6f04662804b9ff6d6cef412d51fd3a1bab",
+      "bytes": 766,
+      "retained_source_file": "tiingo-wave15-original-four-phase-final-disposition-accounting-actual-parent-consumption.json",
+      "retained_source_sha256": "e26817746bc017c7bb4190624ba92b6f04662804b9ff6d6cef412d51fd3a1bab",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "13-tiingo-phase04-original-capture76884-restart-pre-provider-reconciliation.json",
+      "sha256": "4c61408c41ce28b4583e606827ef2f3c452130f3b6a635478287a66e3ffc65cd",
+      "bytes": 1445,
+      "retained_source_file": "tiingo-phase04-original-capture76884-restart-pre-provider-reconciliation.json",
+      "retained_source_sha256": "4c61408c41ce28b4583e606827ef2f3c452130f3b6a635478287a66e3ffc65cd",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "14-tiingo-original-source-merge77134-restart-same-carrier-reconciliation.json",
+      "sha256": "24946c71df31f099105109198648cb8837c9ccf099f1800dd89a63b3a8bc0f6f",
+      "bytes": 1205,
+      "retained_source_file": "tiingo-original-source-merge77134-restart-same-carrier-reconciliation.json",
+      "retained_source_sha256": "24946c71df31f099105109198648cb8837c9ccf099f1800dd89a63b3a8bc0f6f",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "15-tiingo-phase04-restart-recovered-historical-method-bytes.json",
+      "sha256": "e8ed0fb54a18a545d5cca136be1014f52d39aeed1cc489b24ef5354bcca4fb0d",
+      "bytes": 1292,
+      "retained_source_file": "tiingo-phase04-restart-recovered-historical-method-bytes.json",
+      "retained_source_sha256": "e8ed0fb54a18a545d5cca136be1014f52d39aeed1cc489b24ef5354bcca4fb0d",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "16-tiingo-phase04-restart-attended-quota-gate-architecture-ruling.json",
+      "sha256": "992fb4b4827a1002ff6bf147c62ad11853e4355d78a591a25cb69e4ad27efcd6",
+      "bytes": 12215,
+      "retained_source_file": "tiingo-phase04-restart-attended-quota-gate-architecture-ruling.json",
+      "retained_source_sha256": "992fb4b4827a1002ff6bf147c62ad11853e4355d78a591a25cb69e4ad27efcd6",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "17-tiingo-phase04-attended-quota-recovery01-exact-source-review.json",
+      "sha256": "18280a3056f78cd537b6b5999d6a9444165be1267ac4180d8eb5e46f4565bcf4",
+      "bytes": 6573,
+      "retained_source_file": "tiingo-phase04-attended-quota-recovery01-exact-source-review.json",
+      "retained_source_sha256": "18280a3056f78cd537b6b5999d6a9444165be1267ac4180d8eb5e46f4565bcf4",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "18-tiingo-phase04-attended-quota-recovery03-exact-source-review.json",
+      "sha256": "54606d2fce15019b5f07118567b0721925de13a2e00b1b67b5f95c9bca1ca0ed",
+      "bytes": 7548,
+      "retained_source_file": "tiingo-phase04-attended-quota-recovery03-exact-source-review.json",
+      "retained_source_sha256": "54606d2fce15019b5f07118567b0721925de13a2e00b1b67b5f95c9bca1ca0ed",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "19-tiingo-phase04-attended-quota-recovery03-inert-review-checks.json",
+      "sha256": "818c9801e77210f0a8cb8f527f812f58ee495e855293e5c84ff710c55f4e6f68",
+      "bytes": 1540,
+      "retained_source_file": "tiingo-phase04-attended-quota-recovery03-inert-review-checks.json",
+      "retained_source_sha256": "818c9801e77210f0a8cb8f527f812f58ee495e855293e5c84ff710c55f4e6f68",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "20-tiingo-phase04-attended-recovery03-original-root-proof-contract-acceptance.json",
+      "sha256": "d6c515d852463dd5c0a60dcf0bcff732e2b09833c8aa29350fd1c6f33f7e167f",
+      "bytes": 1160,
+      "retained_source_file": "tiingo-phase04-attended-recovery03-original-root-proof-contract-acceptance.json",
+      "retained_source_sha256": "d6c515d852463dd5c0a60dcf0bcff732e2b09833c8aa29350fd1c6f33f7e167f",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "21-tiingo-phase04-attended-recovery03-ready-actual-parent-consumption.json",
+      "sha256": "19b0edc26a80852450c811bb299a2775d601d802a2f894ef24625f5ab30605d5",
+      "bytes": 1139,
+      "retained_source_file": "tiingo-phase04-attended-recovery03-ready-actual-parent-consumption.json",
+      "retained_source_sha256": "19b0edc26a80852450c811bb299a2775d601d802a2f894ef24625f5ab30605d5",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "22-tiingo-phase04-attended-recovery03-actual-single-stdin-parent-observation.json",
+      "sha256": "72c859963b8ae7aed179a9e71fb7c34780c821a922f5ec04c872187747aeb0a6",
+      "bytes": 1024,
+      "retained_source_file": "tiingo-phase04-attended-recovery03-actual-single-stdin-parent-observation.json",
+      "retained_source_sha256": "72c859963b8ae7aed179a9e71fb7c34780c821a922f5ec04c872187747aeb0a6",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "23-tiingo-next-source-branch32897-actual-partial-reconciliation.json",
+      "sha256": "e802a5711d146329562e33e63408926e90135ca72985ad68b6260121dc789fc4",
+      "bytes": 969,
+      "retained_source_file": "tiingo-next-source-branch32897-actual-partial-reconciliation.json",
+      "retained_source_sha256": "e802a5711d146329562e33e63408926e90135ca72985ad68b6260121dc789fc4",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "24-tiingo-wave15-continuation04-actual-admission-observation.json",
+      "sha256": "682590e42e5b5e3e09be0a7b564a4575a05566d75e7215886f7b0b21fc1bfe8a",
+      "bytes": 1150,
+      "retained_source_file": "tiingo-wave15-continuation04-actual-admission-observation.json",
+      "retained_source_sha256": "682590e42e5b5e3e09be0a7b564a4575a05566d75e7215886f7b0b21fc1bfe8a",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "25-tiingo-wave15-continuation04-actual-scope-qualification-binding-review.json",
+      "sha256": "c0bfb6e1f3ef5ee4acc6c01f6483d426711530e19a6f30352492815e141fb7f5",
+      "bytes": 4944,
+      "retained_source_file": "tiingo-wave15-continuation04-actual-scope-qualification-binding-review.json",
+      "retained_source_sha256": "c0bfb6e1f3ef5ee4acc6c01f6483d426711530e19a6f30352492815e141fb7f5",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "26-actual-eod-wave15-continuation03-final-disposition-partition-accounting.json",
+      "sha256": "7c8e9af5d7587a296cd0108566a092a2b8f43319b0c71e7c4b8cc5ed5d0965d8",
+      "bytes": 4322,
+      "retained_source_file": "eod-wave15-continuation03-final-disposition-partition-accounting.json",
+      "retained_source_sha256": "452f3e2d948987e20a19bc5a02f0ca0727d39051faf619c88b735fb4a1c38d67",
+      "byte_identical_to_retained_source": false,
+      "compact_derivation_omits_only": [
+        "never_admitted_requests",
+        "quarantined_receipts"
+      ]
+    },
+    {
+      "file": "27-actual-eod-wave15-original-four-phase-final-disposition-partition-accounting.json",
+      "sha256": "c7fb1f01336f2baff8276b7125a85240999b4d405729e37ce1a877115347d9c6",
+      "bytes": 9137,
+      "retained_source_file": "eod-wave15-original-four-phase-final-disposition-partition-accounting.json",
+      "retained_source_sha256": "8385307f7518d7d82ad8b1bdb3f0b6ef2280207906ef90dcd856f08bb5c44ea8",
+      "byte_identical_to_retained_source": false,
+      "compact_derivation_omits_only": [
+        "never_admitted_requests",
+        "quarantined_receipts"
+      ]
+    },
+    {
+      "file": "methods/recovered-exact-phase03-disposition-1a8518d9.py",
+      "sha256": "1a8518d92ffac20d2ff3dbae76d0e4b8af10b3ddbc470f12d44324829a698755",
+      "bytes": 25789,
+      "retained_source_file": "recovered-exact-phase03-disposition-1a8518d9.py",
+      "retained_source_sha256": "1a8518d92ffac20d2ff3dbae76d0e4b8af10b3ddbc470f12d44324829a698755",
+      "byte_identical_to_retained_source": true,
+      "historical_or_current_reviewed_method_source": true
+    },
+    {
+      "file": "methods/recovered-exact-phase03-controller-834105b1.py",
+      "sha256": "834105b1134839935adffe823883fa6cd0d94a468e935481178e15a255e4fa60",
+      "bytes": 5503,
+      "retained_source_file": "recovered-exact-phase03-controller-834105b1.py",
+      "retained_source_sha256": "834105b1134839935adffe823883fa6cd0d94a468e935481178e15a255e4fa60",
+      "byte_identical_to_retained_source": true,
+      "historical_or_current_reviewed_method_source": true
+    },
+    {
+      "file": "methods/recovered-exact-phase04-preflight-cbe6c5d3.py",
+      "sha256": "cbe6c5d3fbe5377179886a2f77b32c420fc0a08dd0b62ad89f05a26bec328928",
+      "bytes": 15164,
+      "retained_source_file": "recovered-exact-phase04-preflight-cbe6c5d3.py",
+      "retained_source_sha256": "cbe6c5d3fbe5377179886a2f77b32c420fc0a08dd0b62ad89f05a26bec328928",
+      "byte_identical_to_retained_source": true,
+      "historical_or_current_reviewed_method_source": true
+    },
+    {
+      "file": "methods/recovered-exact-phase04-capture-e7ddeb38.py",
+      "sha256": "e7ddeb3874fed231df4013f08d875f87d849483629275f1d8af9d837cb964c7e",
+      "bytes": 15174,
+      "retained_source_file": "recovered-exact-phase04-capture-e7ddeb38.py",
+      "retained_source_sha256": "e7ddeb3874fed231df4013f08d875f87d849483629275f1d8af9d837cb964c7e",
+      "byte_identical_to_retained_source": true,
+      "historical_or_current_reviewed_method_source": true
+    },
+    {
+      "file": "methods/tiingo-phase04-attended-quota-recovery03.py",
+      "sha256": "a48d23bb49f16205a57ad46ce22c04a07068dc67eed52fc56e5ebdbe0330296f",
+      "bytes": 22473,
+      "retained_source_file": "tiingo-phase04-attended-quota-recovery03.py",
+      "retained_source_sha256": "a48d23bb49f16205a57ad46ce22c04a07068dc67eed52fc56e5ebdbe0330296f",
+      "byte_identical_to_retained_source": true,
+      "historical_or_current_reviewed_method_source": true
+    },
+    {
+      "file": "methods/tiingo-wave15-continuation04-disposition-pipeline-bound01.py",
+      "sha256": "f4a3c65db22325f9755b7ebaa6d425819f41aefdc916f0733341f35f06727ccc",
+      "bytes": 26615,
+      "retained_source_file": "tiingo-wave15-continuation04-disposition-pipeline-bound01.py",
+      "retained_source_sha256": "f4a3c65db22325f9755b7ebaa6d425819f41aefdc916f0733341f35f06727ccc",
+      "byte_identical_to_retained_source": true,
+      "historical_or_current_reviewed_method_source": true
+    },
+    {
+      "file": "methods/tiingo-wave15-continuation04-attended-disposition-window-bound01.py",
+      "sha256": "f68d236d182bc545cf6334e1efdff3c1ec5395b83680f309327792b789a9b886",
+      "bytes": 5590,
+      "retained_source_file": "tiingo-wave15-continuation04-attended-disposition-window-bound01.py",
+      "retained_source_sha256": "f68d236d182bc545cf6334e1efdff3c1ec5395b83680f309327792b789a9b886",
+      "byte_identical_to_retained_source": true,
+      "historical_or_current_reviewed_method_source": true
+    }
+  ],
+  "licensed_raw_rows_credentials_and_subscription_values_copied": false,
+  "current_raw_capture_terminal_return_pending": true,
+  "current_qualification_writer_original_tool_session": 29227,
+  "qualification_window_terminal_pending": true,
+  "source_runtime_or_production_claimed": false
+}

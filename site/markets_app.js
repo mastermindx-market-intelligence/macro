@@ -665,14 +665,37 @@
   function lastTurn(c, k) { for (var i = c.turns.length - 1; i >= 0; i--) if (c.turns[i].k === k) return c.turns[i].t; return ""; }
 
   /* ---- default panel content --------------------------------------------- */
-  function regField(f) { var RZ = (LANG() === "zh" && I18N.regime) ? I18N.regime : null; return RZ && RZ[f] != null ? RZ[f] : META.regime[f]; }
+  /* Curated regime narrative under zh. The zh regime block in markets_i18n.js is
+     hand-curated and is the ONLY lawful zh source for this card: when it is absent
+     (or a prose field is), the card says so in Chinese — it never shows the English
+     META.regime prose under data-lang="zh" and never machine-translates. Numeric stat
+     values and their ticker-style keys are data labels shared by both languages and
+     stay; every prose slot goes to the null copy. */
+  var REG_NULL_ZH = {
+    label: "中文精选叙事待更新",
+    sub: "全球股市格局的中文版尚未同步",
+    headline: "这段全球股市格局的精选叙事目前只有英文版。我们不用机器翻译代替人工编写——切换到英文可阅读原文；中文版更新后会显示在这里。",
+    tilt: "倾向与仓位提示同样待中文更新，请切换到英文阅读。",
+    asOfNote: "",
+    statNote: "中文注释待更新"
+  };
+  function zhRegime() { return LANG() === "zh" && I18N.regime ? I18N.regime : null; }
+  function regIsNullZh() { var RZ = zhRegime(); return LANG() === "zh" && !(RZ && RZ.label != null && RZ.headline != null); }
+  function regField(f) {
+    if (LANG() !== "zh") return META.regime[f];
+    var RZ = zhRegime();
+    if (RZ && RZ[f] != null) return RZ[f];
+    return REG_NULL_ZH[f] != null ? REG_NULL_ZH[f] : "";
+  }
   function buildDefaultPanel() {
     var def = document.getElementById("cyc-panel-default");
     if (!def) return;
-    var R = META.regime, RZ = (LANG() === "zh" && I18N.regime) ? I18N.regime : null;
+    var R = META.regime, RZ = zhRegime(), zh = LANG() === "zh";
     var stats = R.stats.map(function (s, i) {
       var zs = RZ && RZ.stats && RZ.stats[i] ? RZ.stats[i] : null;
-      return '<div class="rg-stat"><div class="rg-k">' + (zs ? zs.k : s.k) + '</div><div class="rg-v">' + s.v + '</div><div class="rg-n">' + (zs ? zs.note : s.note) + '</div></div>';
+      var k = zs && zs.k != null ? zs.k : s.k;
+      var note = zs && zs.note != null ? zs.note : (zh ? REG_NULL_ZH.statNote : s.note);
+      return '<div class="rg-stat"><div class="rg-k">' + k + '</div><div class="rg-v">' + s.v + '</div><div class="rg-n">' + note + '</div></div>';
     }).join("");
     var buckets = { Peak: [], Expansion: [], Downturn: [], Recovery: [], Trough: [] };
     CYCLES.forEach(function (c) { (buckets[c.now.phase] || (buckets[c.now.phase] = [])).push(c); });
@@ -683,8 +706,8 @@
     }
     def.innerHTML = '' +
       '<div class="cyc-grp cyc-grp-full">' +
-        '<div class="cyc-lbl">' + t("Global-equity regime · ", "全球股市格局 · ") + META.asOf + (regField("asOfNote") ? ' · <span style="text-transform:none;letter-spacing:0;font-weight:500">' + regField("asOfNote") + '</span>' : '') + '</div>' +
-        '<div class="rg-head"><div class="rg-label">' + regField("label") + '</div><div class="rg-sub">' + regField("sub") + '</div></div>' +
+        '<div class="cyc-lbl">' + t("Global-equity regime · ", "全球股市格局 · ") + META.asOf + (regField("asOfNote") ? ' · <span style="text-transform:none;letter-spacing:0;font-weight:500">' + regField("asOfNote") + '</span>' : '') + (regIsNullZh() ? '<span class="rg-null-chip">中文版待更新</span>' : '') + '</div>' +
+        '<div class="rg-head' + (regIsNullZh() ? ' is-null' : '') + '"><div class="rg-label">' + regField("label") + '</div><div class="rg-sub">' + regField("sub") + '</div></div>' +
         '<p class="rg-headline">' + regField("headline") + '</p>' +
       '</div>' +
       '<div class="cyc-grp cyc-grp-3">' +
@@ -712,11 +735,28 @@
         '</ul>' +
       '</div>';
     def.querySelectorAll(".mini-chip").forEach(function (b) { b.addEventListener("click", function () { setFocus(b.getAttribute("data-id")); }); });
+    def.classList.toggle("rg-null", regIsNullZh());
     def.classList.add("show");
   }
 
-  /* ---- mobile bottom sheet ----------------------------------------------- */
-  function expandSheet(on) { var sheet = document.getElementById("cyc-detail"); if (sheet) sheet.classList.toggle("expanded", on !== false); }
+  /* ---- mobile detail reveal ---------------------------------------------
+     markets.css keeps .cyc-detail IN FLOW under the chart at ≤880px (no fixed sheet:
+     measured 2026-09-23 at 390×844 the 126px peek sat on the chip row and the expanded
+     sheet covered the whole chart). Focusing a market glides the page so the chart and
+     the card's head share the screen — nothing is covered and the reader scrolls
+     freely. Should some stylesheet ever make the detail fixed again, the legacy
+     .expanded toggle still applies, so the panel can never be stranded off-screen. */
+  function revealDetail() {
+    var sheet = document.getElementById("cyc-detail"); if (!sheet) return;
+    if (getComputedStyle(sheet).position === "fixed") { sheet.classList.add("expanded"); return; }
+    var top = sheet.getBoundingClientRect().top + (window.pageYOffset || 0) - Math.round(window.innerHeight * 0.48);
+    var reduce = false; try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+    try { window.scrollTo({ top: Math.max(0, top), behavior: reduce ? "auto" : "smooth" }); } catch (e2) { window.scrollTo(0, Math.max(0, top)); }
+  }
+  function expandSheet(on) {
+    if (on === false) { var s = document.getElementById("cyc-detail"); if (s) s.classList.remove("expanded"); return; }
+    revealDetail();
+  }
   function initSheet() {
     var sheet = document.getElementById("cyc-detail"), handle = document.getElementById("cyc-handle");
     if (!sheet || !handle) return;

@@ -26,6 +26,7 @@ log = logging.getLogger(__name__)
 class CanadaBreadthAdapter(BreadthAdapter):
     name = "canada_breadth"
     group = "canada_breadth"
+    session_calendar = "CA"  # observation dates follow the cash/Connect session
 
     def __init__(self) -> None:
         self.cfg = config.load()["canada"]["breadth"]

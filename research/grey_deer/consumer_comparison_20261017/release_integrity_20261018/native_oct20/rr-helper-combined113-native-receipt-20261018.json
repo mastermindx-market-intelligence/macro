@@ -1,0 +1,77 @@
+{
+  "schema": "risk_radar.helper_combined_native.v1",
+  "status": "COMPLETED",
+  "started_at_utc": "2026-10-18T09:47:02.640830+00:00",
+  "source_status": "WORKTREE_CANDIDATE",
+  "base_source_head": "797c760f3e18eb6993579f56986103de9d9fdcb4",
+  "source_sha256": {
+    "scripts/deploy_code_to_vps.sh": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+    "tests/test_deploy_provenance.py": "0da8a0d094b3b6f20bdedbdc427481a6425d709736621e7c5554a125cf78cc48",
+    "tests/conftest.py": "27f8e1b605eac16fad17a17b92878e2d561b8dd17d2481c6ecf5fb8024245f80",
+    "tests/test_datadog_vps_install.py": "a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95",
+    "tests/test_forward_evaluation.py": "637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d",
+    "tests/test_portfolio_archival.py": "0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384"
+  },
+  "runtime_versions": {
+    "claude-agent-sdk": "0.2.168",
+    "mcp": "1.28.1",
+    "uvicorn": "0.52.4",
+    "PyJWT": "2.13.0",
+    "pytest": "9.1.1",
+    "pydantic": "2.13.4",
+    "fastapi": "0.141.1",
+    "anyio": "4.14.2"
+  },
+  "argv": [
+    "/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-rA",
+    "--basetemp=/tmp/rr-helper-combined113-20261018-pytest",
+    "--junitxml=/tmp/rr-helper-combined113-native-20261018.xml",
+    "tests/test_deploy_provenance.py",
+    "tests/test_datadog_vps_install.py",
+    "tests/test_forward_evaluation.py",
+    "tests/test_portfolio_archival.py"
+  ],
+  "fuses": {
+    "BOT_TEST_LIVE_LLM": "0",
+    "MASTERMIND_BOT_RESPONSE_LOG_DISABLED": "1",
+    "MASTERMIND_RESEARCH_LLM": "0",
+    "AUTONOMOUS_FIRST_RUN": "0",
+    "CHINA_FIRST_RUN": "0",
+    "HK_FIRST_RUN": "0",
+    "ETF_FIRST_RUN": "0"
+  },
+  "purpose": "Verify all four affected modules together after real SDK installation and exact dev pins; resolves the five missing-dependency failures and the changed-environment/cross-file risk.",
+  "prior_54_result": {
+    "passed": 49,
+    "failed": 5,
+    "failure": "claude_agent_sdk missing",
+    "receipt": "/tmp/rr-helper-companion-modules-native-receipt-20261018.json"
+  },
+  "production_deploy": false,
+  "held_worktree_mutation": false,
+  "completed_at_utc": "2026-10-18T09:47:07.850514+00:00",
+  "elapsed_seconds": 5.209,
+  "exit_code": 1,
+  "log_path": "/tmp/rr-helper-combined113-native-20261018.log",
+  "log_bytes": 91911,
+  "log_sha256": "b0c051e75a52ae36ae9129f08708d7d241570805a8b15e137629371087cbcf6b",
+  "post_source_hashes_match": true,
+  "post_git_status": " M tests/test_datadog_vps_install.py\n M tests/test_deploy_provenance.py\n M tests/test_forward_evaluation.py\n M tests/test_portfolio_archival.py\n",
+  "junit_sha256": "917560cfc39a900c466e101a29b01cd916b5d811992cb70c13afa54496e5ffbc",
+  "counts": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "53",
+      "skipped": "0",
+      "tests": "113",
+      "time": "4.674",
+      "timestamp": "2026-10-18T02:47:02.902357-07:00",
+      "hostname": "m2studio"
+    }
+  ]
+}

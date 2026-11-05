@@ -1,0 +1,92 @@
+{
+  "observed_at": "2026-10-20T05:06:27.147109+00:00",
+  "head_expected": "8ccfa5ddba6770cef48f2f162c08474d023e094e",
+  "incoming": "92c51f1ff800b36fc63e7869243945996ac7315c",
+  "head": {
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit": 0,
+    "stdout": "8ccfa5ddba6770cef48f2f162c08474d023e094e\n",
+    "stderr": ""
+  },
+  "branch": {
+    "argv": [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    "exit": 0,
+    "stdout": "sol/market-os-shared-shell-design-20260924\n",
+    "stderr": ""
+  },
+  "status": {
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "unmerged": {
+    "argv": [
+      "git",
+      "ls-files",
+      "-u"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "remote": {
+    "argv": [
+      "git",
+      "ls-remote",
+      "origin",
+      "refs/heads/sol/market-os-shared-shell-design-20260924"
+    ],
+    "exit": 0,
+    "stdout": "8ccfa5ddba6770cef48f2f162c08474d023e094e\trefs/heads/sol/market-os-shared-shell-design-20260924\n",
+    "stderr": ""
+  },
+  "fetch": {
+    "argv": [
+      "git",
+      "fetch",
+      "--no-tags",
+      "origin",
+      "92c51f1ff800b36fc63e7869243945996ac7315c"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "From https://github.com/mastermindx-market-intelligence/macro\n * branch                        92c51f1ff800b36fc63e7869243945996ac7315c -> FETCH_HEAD\n"
+  },
+  "base": {
+    "argv": [
+      "git",
+      "merge-base",
+      "8ccfa5ddba6770cef48f2f162c08474d023e094e",
+      "92c51f1ff800b36fc63e7869243945996ac7315c"
+    ],
+    "exit": 0,
+    "stdout": "0f058428717ac7c96c11e5a3ebc960db6a61edab\n",
+    "stderr": ""
+  },
+  "preview": {
+    "argv": [
+      "git",
+      "merge-tree",
+      "--write-tree",
+      "--name-only",
+      "8ccfa5ddba6770cef48f2f162c08474d023e094e",
+      "92c51f1ff800b36fc63e7869243945996ac7315c"
+    ],
+    "exit": 1,
+    "stdout": "b750bc4f1a9fec2d48e2e9eb66e09f8e669263d8\n.github/ci/legacy-jobs.yml\ntests/test_ci_pack.py\n\nAuto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAuto-merging tests/test_ci_pack.py\nCONFLICT (content): Merge conflict in tests/test_ci_pack.py\n",
+    "stderr": ""
+  }
+}

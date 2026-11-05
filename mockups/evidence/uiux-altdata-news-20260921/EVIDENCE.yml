@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/alt_data.html.j2
+manifest: mockups/evidence/uiux-altdata-news-20260921/manifest.json

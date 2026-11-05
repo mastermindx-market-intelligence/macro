@@ -1,0 +1,6133 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      "arrival",
+      "dest_hover",
+      "e1",
+      "e2",
+      "e3",
+      "e4",
+      "e5",
+      "e6",
+      "heading_focus",
+      "inflation_foot",
+      "money_central_banks",
+      "rates",
+      "scroll_max"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "tablet": [
+        768,
+        1400
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-08T16:19:41Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "every declared family cell that was not captured is recorded in gaps with a reason; force_states, empty_states, clearance, chip_opens_chat, strip_void, rail_viewport, e5, fab, rest_views, full_page, and movement_row are published as data and gaps is computed from that structure"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [],
+      "page_id": "macro_monetary.html",
+      "registry_route": "/macro_monetary.html",
+      "route": "/macro_monetary.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 971405,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "01-dark-en-1440.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 1800,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "19c6c3e3ea341939f5ca99765f48a6320e3fb0380328b3e6e054bd8ddc98cadc",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 957581,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "02-dark-zh-1440.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 1800,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "4084d00f9ee330316de676f3e877a79393a94db90335bbce70fcbcaa25f5d702",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 832085,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "03-light-en-1440.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 1800,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "884c92eaf9e50a682ac550fc72505ac9206b4e3b73ecefd05321b91975c7f51a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 829911,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "04-light-zh-1440.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 1800,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "e67f3fa80042bd86ec0c8516d7964033aea5e09fba0ec08ef23cb67f3e5872a9",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 302574,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "09-dark-en-390.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 1688,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "505467599f3daa4a102acc1ea38171f4e28b1ee8576cc1757e41dddc5c434b98",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780,
+          "scroll": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 319414,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "10-dark-zh-390.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 1688,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "a87a5d1285ae4a9355c45fd4b1984c5698bf37982cce3d2765c36aa9fb98f150",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780,
+          "scroll": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 278512,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "11-light-en-390.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 1688,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "86cc7d7baf75226d0dc07cd274a328f30c3df44494ee10df6eee85f8a01ee189",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780,
+          "scroll": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 298810,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "12-light-zh-390.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 1688,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "2da059a7d2d4548acc851edebacecfc6e38bb550a51b1a1e3df2ba7038a55900",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780,
+          "scroll": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 967020,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "05-dark-en-1440-rates.png",
+          "fixture": "builder-payload",
+          "force_state": "rates",
+          "full_page": false,
+          "height": 1800,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "570a4c8b7af52df86b78dc98a42fb38d37d78e60068c2d7969f4829c167e0c69",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 956378,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "06-dark-zh-1440-rates.png",
+          "fixture": "builder-payload",
+          "force_state": "rates",
+          "full_page": false,
+          "height": 1800,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "9f56c75b46311d014f72651fdef2db3ae1a7c5aa23d609dd210832dcbffd99ef",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 854152,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "07-light-en-1440-rates.png",
+          "fixture": "builder-payload",
+          "force_state": "rates",
+          "full_page": false,
+          "height": 1800,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "0176e29c7c30d3da3420feca7d01745ced745347f40a00dfaf1a13f9a1128460",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 842223,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "08-light-zh-1440-rates.png",
+          "fixture": "builder-payload",
+          "force_state": "rates",
+          "full_page": false,
+          "height": 1800,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "4924f61554445ca9b7a03ccb5bdedc6a8b03fd8caba1f924140f5b712608b597",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 543384,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "15-dark-en-768.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 2800,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "eb9fe672b1b93eac34c3c309d38aa9dc38824c9896e2a261bf767c0bea84901c",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1400,
+          "viewport_width": 768,
+          "width": 1536,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 514827,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "16-light-en-768.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 2800,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "e64b1091798df977e44201ac803f0b0d35893693d87a752c9e010bace2114a6a",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1400,
+          "viewport_width": 768,
+          "width": 1536,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 130320,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "17-dark-en-1440-arrival.png",
+          "fixture": "builder-payload",
+          "force_state": "arrival",
+          "full_page": false,
+          "height": 1014,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 348.0,
+          "sha256": "955d28ec9872036f3224111cf2c2b0b7bd3c3853065de22deb58dd4de0b71db2",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1496,
+          "crop_selector": "#rates",
+          "crop_box": {
+            "x": 332,
+            "y": 260.453125,
+            "width": 748,
+            "height": 505.953125
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 608.453125,
+            "width": 748,
+            "height": 505.953125
+          },
+          "scroll_y_at_shot": 348.0,
+          "element_text_head": "You opened Macro Command at Rates & the curve. Read today's overview \u2192  Rates & ",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 520,
+            "y1": 1534
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 131281,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "18-light-en-1440-arrival.png",
+          "fixture": "builder-payload",
+          "force_state": "arrival",
+          "full_page": false,
+          "height": 1018,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 354.0,
+          "sha256": "d8dabc72a45f882100167415f83e3597f2c24c000ff4467071b94df46a48d283",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1496,
+          "crop_selector": "#rates",
+          "crop_box": {
+            "x": 332,
+            "y": 258.453125,
+            "width": 748,
+            "height": 507.953125
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 612.453125,
+            "width": 748,
+            "height": 507.953125
+          },
+          "scroll_y_at_shot": 354.0,
+          "element_text_head": "You opened Macro Command at Rates & the curve. Read today's overview \u2192  Rates & ",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 516,
+            "y1": 1534
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 17026,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "19-dark-en-1440-dest-hover.png",
+          "fixture": "builder-payload",
+          "force_state": "dest_hover",
+          "full_page": false,
+          "height": 208,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 520.0,
+          "sha256": "e27c988e0b7c974209c696c77186afd041cd50b4289e636ab7fc8bc4fe7f537c",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 452,
+          "crop_selector": "#overview .mc-dest",
+          "crop_box": {
+            "x": 357,
+            "y": 787.59375,
+            "width": 226,
+            "height": 102.9375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 1307.59375,
+            "width": 226,
+            "height": 102.9375
+          },
+          "scroll_y_at_shot": 520.0,
+          "element_text_head": "Liquidity Regime Monitor Whether cash in the system is getting easier or tighter",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 1166,
+            "y0": 1574,
+            "y1": 1782
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 16982,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "20-light-en-1440-dest-hover.png",
+          "fixture": "builder-payload",
+          "force_state": "dest_hover",
+          "full_page": false,
+          "height": 208,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 524.0,
+          "sha256": "b44f16bb637093147170d99026984754cabadff875d8c4b0aa494e05d90fa6e0",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 452,
+          "crop_selector": "#overview .mc-dest",
+          "crop_box": {
+            "x": 357,
+            "y": 789.59375,
+            "width": 226,
+            "height": 102.9375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 1313.59375,
+            "width": 226,
+            "height": 102.9375
+          },
+          "scroll_y_at_shot": 524.0,
+          "element_text_head": "Liquidity Regime Monitor Whether cash in the system is getting easier or tighter",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 1166,
+            "y0": 1578,
+            "y1": 1786
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 8042,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "21-dark-en-1440-heading-focus.png",
+          "fixture": "builder-payload",
+          "force_state": "heading_focus",
+          "full_page": false,
+          "height": 58,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 520.0,
+          "sha256": "04b902841959957aa41d25e3409284b41387544e89a9d2a5bb8c8117fd23a5a9",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 174,
+          "crop_selector": "#overview-h",
+          "crop_box": {
+            "x": 353.046875,
+            "y": 113.453125,
+            "width": 86.078125,
+            "height": 28.390625
+          },
+          "crop_box_doc": {
+            "x": 353.046875,
+            "y": 633.453125,
+            "width": 86.078125,
+            "height": 28.390625
+          },
+          "scroll_y_at_shot": 520.0,
+          "element_text_head": "Overview",
+          "device_px_span": {
+            "x0": 706,
+            "x1": 880,
+            "y0": 226,
+            "y1": 284
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 3906,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "22-light-en-1440-heading-focus.png",
+          "fixture": "builder-payload",
+          "force_state": "heading_focus",
+          "full_page": false,
+          "height": 58,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 524.0,
+          "sha256": "7384f7199be97e00327acf9bde8e3637bd85ae2e10c9764165653f9784f2a8dd",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 174,
+          "crop_selector": "#overview-h",
+          "crop_box": {
+            "x": 353.046875,
+            "y": 113.453125,
+            "width": 86.078125,
+            "height": 28.390625
+          },
+          "crop_box_doc": {
+            "x": 353.046875,
+            "y": 637.453125,
+            "width": 86.078125,
+            "height": 28.390625
+          },
+          "scroll_y_at_shot": 524.0,
+          "element_text_head": "Overview",
+          "device_px_span": {
+            "x0": 706,
+            "x1": 880,
+            "y0": 226,
+            "y1": 284
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 973215,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "23-dark-en-1440-money-central-banks.png",
+          "fixture": "builder-payload",
+          "force_state": "money_central_banks",
+          "full_page": false,
+          "height": 1800,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "4b148d68f7aaa06a19f661f7ee958b9a1dcb17fc44e4c2f0e1e4b15a1484c020",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 948124,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "24-dark-en-1440-inflation-foot.png",
+          "fixture": "builder-payload",
+          "force_state": "inflation_foot",
+          "full_page": false,
+          "height": 1800,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "92db788682846085ca9d111f77725ad9a9fb20b7368f601165466d51a4d9bdfc",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 340820,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "25-dark-en-1440-e3.png",
+          "fixture": "builder-payload",
+          "force_state": "e3",
+          "full_page": false,
+          "height": 2110,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 520.0,
+          "sha256": "f1df33850e8885554f9dcdf186cbd95b21612469e0813a3ff0b1b66dd1b2f5f1",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1496,
+          "trigger": "Overview figure slot empty; directory untouched",
+          "crop_selector": "#overview",
+          "crop_box": {
+            "x": 332,
+            "y": 88.453125,
+            "width": 748,
+            "height": 1053.90625
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 608.453125,
+            "width": 748,
+            "height": 1053.90625
+          },
+          "scroll_y_at_shot": 520.0,
+          "element_text_head": "Overview  What is macro saying today, and what moved?  What this means for you: ",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 176,
+            "y1": 2286
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 337858,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "26-light-en-1440-e3.png",
+          "fixture": "builder-payload",
+          "force_state": "e3",
+          "full_page": false,
+          "height": 2114,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 524.0,
+          "sha256": "3977e27fc0e15172e33b7f6e6a9a57b4eccae60b2c4b5eb9f5d67b5e1e48b89b",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1496,
+          "trigger": "Overview figure slot empty; directory untouched",
+          "crop_selector": "#overview",
+          "crop_box": {
+            "x": 332,
+            "y": 88.453125,
+            "width": 748,
+            "height": 1055.90625
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 612.453125,
+            "width": 748,
+            "height": 1055.90625
+          },
+          "scroll_y_at_shot": 524.0,
+          "element_text_head": "Overview  What is macro saying today, and what moved?  What this means for you: ",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 176,
+            "y1": 2290
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 38932,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e1-dark.png",
+          "fixture": "builder-payload",
+          "force_state": "e1",
+          "full_page": false,
+          "height": 314,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 383.0,
+          "sha256": "2d4aaa060065320bac13e8b410f0ebc922fa1c3fc12742c7c18ba830ed58118d",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "trigger": "Contract-legal inflation_system JSON: no date, no deltas \u2192 E1",
+          "crop_selector": "#inflation [data-mc-empty='e1']",
+          "crop_box": {
+            "x": 371,
+            "y": 370.828125,
+            "width": 670,
+            "height": 156.015625
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 753.828125,
+            "width": 670,
+            "height": 156.015625
+          },
+          "scroll_y_at_shot": 383.0,
+          "element_text_head": "We don't have this reading yet  The source this section is built from has not pu",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 740,
+            "y1": 1054
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 39168,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e2-dark.png",
+          "fixture": "builder-payload",
+          "force_state": "e2",
+          "full_page": false,
+          "height": 298,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 348.0,
+          "sha256": "fc656f19e75b27e63826e95d084e227c14f1a932c836a45e671f8460e7b2efd2",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE",
+          "crop_selector": "#rates [data-mc-empty='e2']",
+          "crop_box": {
+            "x": 371,
+            "y": 425.96875,
+            "width": 670,
+            "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 773.96875,
+            "width": 670,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 348.0,
+          "element_text_head": "Today's number didn't arrive  The data provider did not deliver in time. We show",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 850,
+            "y1": 1148
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 35936,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e3-dark.png",
+          "fixture": "builder-payload",
+          "force_state": "e3",
+          "full_page": false,
+          "height": 298,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 395.0,
+          "sha256": "defdb2ee63a58c0a99bc45465d4fbbb26affd39789b399fd5b4112c7ceb76089",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas \u2192 E3",
+          "crop_selector": "#inflation [data-mc-empty='e3']",
+          "crop_box": {
+            "x": 371,
+            "y": 378.96875,
+            "width": 670,
+            "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 773.96875,
+            "width": 670,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 395.0,
+          "element_text_head": "We can't show the change yet  There is no earlier reading measured the same way,",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 756,
+            "y1": 1054
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 27249,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e4-dark.png",
+          "fixture": "fixtures/e4_central_banks.json",
+          "force_state": "e4",
+          "full_page": false,
+          "height": 256,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "98f6ffedc53e723a09ecb0ba58e9bcf3b8827149b7eda60d28ea898ea34aec29",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "trigger": " --empty-state-fixture e4_central_banks.json \u2192 withheld_command_tabs",
+          "crop_selector": "#money [data-mc-empty='e4']",
+          "crop_box": {
+            "x": 371,
+            "y": 399.78125,
+            "width": 670,
+            "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 980.78125,
+            "width": 670,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 581.0,
+          "element_text_head": "Not open yet  This part is built but not switched on for customers.  It appears ",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 798,
+            "y1": 1054
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 26131,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e5-dark.png",
+          "fixture": "builder-payload",
+          "force_state": "e5",
+          "full_page": false,
+          "height": 296,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 401.0,
+          "sha256": "61ea41021edc1e3a200677b223b334cfdf38e2cbdca2378734a87b2fb018294e",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
+          "crop_selector": "[data-mc-empty=\"e5\"]",
+          "crop_box": {
+            "x": 371,
+            "y": 455.96875,
+            "width": 670,
+            "height": 146.3125
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 856.96875,
+            "width": 670,
+            "height": 146.3125
+          },
+          "scroll_y_at_shot": 401.0,
+          "element_text_head": "This section didn't load  The page couldn't fetch it just now.  Reload the page,",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 910,
+            "y1": 1206
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 36247,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e6-dark.png",
+          "fixture": "fixtures/e6_inflation_system.json",
+          "force_state": "e6",
+          "full_page": false,
+          "height": 462,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 477.0,
+          "sha256": "44296e4ae678dff63c467feacc4c633a2faa631f1fb11c3c8ade0c76d31856b0",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "trigger": "--empty-state-fixture e6_inflation_system.json \u2192 entitlement=Research",
+          "crop_selector": "#inflation [data-mc-empty='e6']",
+          "crop_box": {
+            "x": 371,
+            "y": 296.96875,
+            "width": 670,
+            "height": 229.375
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 773.96875,
+            "width": 670,
+            "height": 229.375
+          },
+          "scroll_y_at_shot": 477.0,
+          "element_text_head": "Included in a higher plan  This section is part of Research.  The reading is ava",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 592,
+            "y1": 1054
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 39912,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e2-light.png",
+          "fixture": "builder-payload",
+          "force_state": "e2",
+          "full_page": false,
+          "height": 298,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 354.0,
+          "sha256": "79d4be177959d558246660ab1e4ae34acc3b3119cd190061d2cbd78ea0d81c8f",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE",
+          "crop_selector": "#rates [data-mc-empty='e2']",
+          "crop_box": {
+            "x": 357,
+            "y": 424.96875,
+            "width": 698,
+            "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 778.96875,
+            "width": 698,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 354.0,
+          "element_text_head": "Today's number didn't arrive  The data provider did not deliver in time. We show",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 848,
+            "y1": 1146
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 36139,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e6-light.png",
+          "fixture": "fixtures/e6_inflation_system.json",
+          "force_state": "e6",
+          "full_page": false,
+          "height": 462,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 483.0,
+          "sha256": "56a78cf3efb7fe6be48a6abb48ee0e49ed595faf62753e7eb1b9d2a1f0cb0c4b",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "trigger": "--empty-state-fixture e6_inflation_system.json \u2192 entitlement=Research",
+          "crop_selector": "#inflation [data-mc-empty='e6']",
+          "crop_box": {
+            "x": 357,
+            "y": 295.96875,
+            "width": 698,
+            "height": 229.375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 778.96875,
+            "width": 698,
+            "height": 229.375
+          },
+          "scroll_y_at_shot": 483.0,
+          "element_text_head": "Included in a higher plan  This section is part of Research.  The reading is ava",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 590,
+            "y1": 1052
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 39616,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e1-light.png",
+          "fixture": "builder-payload",
+          "force_state": "e1",
+          "full_page": false,
+          "height": 314,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 389.0,
+          "sha256": "3bf86dd632fb4f8a862163941849b37aca2ce287f3dd3cb6e03f26b99b0c3004",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "trigger": "Contract-legal inflation_system JSON: no date, no deltas \u2192 E1",
+          "crop_selector": "#inflation [data-mc-empty='e1']",
+          "crop_box": {
+            "x": 357,
+            "y": 369.828125,
+            "width": 698,
+            "height": 156.015625
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 758.828125,
+            "width": 698,
+            "height": 156.015625
+          },
+          "scroll_y_at_shot": 389.0,
+          "element_text_head": "We don't have this reading yet  The source this section is built from has not pu",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 738,
+            "y1": 1052
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 36730,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e3-light.png",
+          "fixture": "builder-payload",
+          "force_state": "e3",
+          "full_page": false,
+          "height": 298,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 401.0,
+          "sha256": "a4e50ce4e9a0a96e3a36fc9339e2a99baffd1ae763e7e53337fefe1c4bbf39e2",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas \u2192 E3",
+          "crop_selector": "#inflation [data-mc-empty='e3']",
+          "crop_box": {
+            "x": 357,
+            "y": 377.96875,
+            "width": 698,
+            "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 778.96875,
+            "width": 698,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 401.0,
+          "element_text_head": "We can't show the change yet  There is no earlier reading measured the same way,",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 754,
+            "y1": 1052
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 27186,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e4-light.png",
+          "fixture": "fixtures/e4_central_banks.json",
+          "force_state": "e4",
+          "full_page": false,
+          "height": 256,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "58e1b3695c0b1f9381acd249c92795ed835c3631a62308e9abdcc5a34cfe2561",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "trigger": " --empty-state-fixture e4_central_banks.json \u2192 withheld_command_tabs",
+          "crop_selector": "#money [data-mc-empty='e4']",
+          "crop_box": {
+            "x": 357,
+            "y": 398.78125,
+            "width": 698,
+            "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 964.78125,
+            "width": 698,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 566.0,
+          "element_text_head": "Not open yet  This part is built but not switched on for customers.  It appears ",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 796,
+            "y1": 1052
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 847890,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "27-light-en-1440-money-central-banks.png",
+          "fixture": "builder-payload",
+          "force_state": "money_central_banks",
+          "full_page": false,
+          "height": 1800,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "d01837e000649dd5202cbdab2e3f110471d3e77049fc5d90e15253c292ce40cb",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 550313,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "28-dark-zh-768.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 2800,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "fde3b12f24f3f91b0e890ffd584765279012a6e6a151c9c0ea504c449728a0c9",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1400,
+          "viewport_width": 768,
+          "width": 1536,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 524073,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "29-light-zh-768.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 2800,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "2fbb7861a0dfa9cf56d5435a1f1f14a69bb05f02c45bd4a89ba30ba94c7b1c22",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1400,
+          "viewport_width": 768,
+          "width": 1536,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 140266,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "30-dark-zh-1440-arrival.png",
+          "fixture": "builder-payload",
+          "force_state": "arrival",
+          "full_page": false,
+          "height": 1014,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 271.0,
+          "sha256": "7c6d85251a1dd5b4de3eb4d05b815fed3a379540bf42bc2c9eab1c5e79d6d7b9",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1496,
+          "crop_selector": "#rates",
+          "crop_box": {
+            "x": 332,
+            "y": 259.703125,
+            "width": 748,
+            "height": 505.953125
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 530.703125,
+            "width": 748,
+            "height": 505.953125
+          },
+          "scroll_y_at_shot": 271.0,
+          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf  \u4e0d\u540c\u671f\u9650\u7684\u653f\u5e9c\u501f\u8d37\u6210\u672c\u662f\u4ec0\u4e48\u6837\uff1f  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2  \u4eca\u5929\u7684\u6570\u636e\u672a\u80fd",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 518,
+            "y1": 1532
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 141699,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "31-light-zh-1440-arrival.png",
+          "fixture": "builder-payload",
+          "force_state": "arrival",
+          "full_page": false,
+          "height": 1018,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 277.0,
+          "sha256": "194a1774d45c2a676628928305b019ddc926857336017173d467ccf9a080383f",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1496,
+          "crop_selector": "#rates",
+          "crop_box": {
+            "x": 332,
+            "y": 257.703125,
+            "width": 748,
+            "height": 507.953125
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 534.703125,
+            "width": 748,
+            "height": 507.953125
+          },
+          "scroll_y_at_shot": 277.0,
+          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf  \u4e0d\u540c\u671f\u9650\u7684\u653f\u5e9c\u501f\u8d37\u6210\u672c\u662f\u4ec0\u4e48\u6837\uff1f  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2  \u4eca\u5929\u7684\u6570\u636e\u672a\u80fd",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 514,
+            "y1": 1532
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 191051,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "36-dark-en-390-arrival.png",
+          "fixture": "builder-payload",
+          "force_state": "arrival",
+          "full_page": false,
+          "height": 1688,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 665.0,
+          "sha256": "191a0146b05f2ad68abef48c282a909f693bb2f7166644ad1c149c5f37f1746c",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 197078,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "37-dark-zh-390-arrival.png",
+          "fixture": "builder-payload",
+          "force_state": "arrival",
+          "full_page": false,
+          "height": 1688,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 576.0,
+          "sha256": "100f2e732f3d1af164606998de1c97724e2eacde419c0497cb041e141d7d0f02",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 190482,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "38-light-en-390-arrival.png",
+          "fixture": "builder-payload",
+          "force_state": "arrival",
+          "full_page": false,
+          "height": 1688,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 682.0,
+          "sha256": "67e3ff96908cdaed267398958eda79a2f1783093a47861855ee894c698c459c0",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 196165,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "39-light-zh-390-arrival.png",
+          "fixture": "builder-payload",
+          "force_state": "arrival",
+          "full_page": false,
+          "height": 1688,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 554.0,
+          "sha256": "3b0135395acd0951701b61ea9caaf9576f42f1d25a2d62ba45387d12094fe172",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 18146,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "32-dark-zh-1440-dest-hover.png",
+          "fixture": "builder-payload",
+          "force_state": "dest_hover",
+          "full_page": false,
+          "height": 178,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 443.0,
+          "sha256": "9b7da3fe39c93803bd5fe1a5a8a6ec31a76e07aa981277b0b1abd549891b404b",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 452,
+          "crop_selector": "#overview .mc-dest",
+          "crop_box": {
+            "x": 357,
+            "y": 764.34375,
+            "width": 226,
+            "height": 88.25
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 1207.34375,
+            "width": 226,
+            "height": 88.25
+          },
+          "scroll_y_at_shot": 443.0,
+          "element_text_head": "\u6d41\u52a8\u6027\u4f53\u5236\u76d1\u6d4b \u7cfb\u7edf\u91cc\u7684\u8d44\u91d1\u662f\u5728\u53d8\u5bbd\u677e\u8fd8\u662f\u53d8\u7d27\u3002 \u2192",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 1166,
+            "y0": 1528,
+            "y1": 1706
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 18111,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "33-light-zh-1440-dest-hover.png",
+          "fixture": "builder-payload",
+          "force_state": "dest_hover",
+          "full_page": false,
+          "height": 178,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 447.0,
+          "sha256": "3153d61ea224208b0bd7f4b8cd3439d4f7d3b1b90c398754be4a0c5d6d213da8",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 452,
+          "crop_selector": "#overview .mc-dest",
+          "crop_box": {
+            "x": 357,
+            "y": 766.34375,
+            "width": 226,
+            "height": 88.25
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 1213.34375,
+            "width": 226,
+            "height": 88.25
+          },
+          "scroll_y_at_shot": 447.0,
+          "element_text_head": "\u6d41\u52a8\u6027\u4f53\u5236\u76d1\u6d4b \u7cfb\u7edf\u91cc\u7684\u8d44\u91d1\u662f\u5728\u53d8\u5bbd\u677e\u8fd8\u662f\u53d8\u7d27\u3002 \u2192",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 1166,
+            "y0": 1532,
+            "y1": 1710
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 4536,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "34-dark-zh-1440-heading-focus.png",
+          "fixture": "builder-payload",
+          "force_state": "heading_focus",
+          "full_page": false,
+          "height": 60,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 443.0,
+          "sha256": "95fdd9879c24da86c902c04cdaf55cc357eeceb6279ff429f8cd87efe0ac40fc",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 88,
+          "crop_selector": "#overview-h",
+          "crop_box": {
+            "x": 353.046875,
+            "y": 112.703125,
+            "width": 43.90625,
+            "height": 28.390625
+          },
+          "crop_box_doc": {
+            "x": 353.046875,
+            "y": 555.703125,
+            "width": 43.90625,
+            "height": 28.390625
+          },
+          "scroll_y_at_shot": 443.0,
+          "element_text_head": "\u603b\u89c8",
+          "device_px_span": {
+            "x0": 706,
+            "x1": 794,
+            "y0": 224,
+            "y1": 284
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 2357,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "35-light-zh-1440-heading-focus.png",
+          "fixture": "builder-payload",
+          "force_state": "heading_focus",
+          "full_page": false,
+          "height": 60,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 447.0,
+          "sha256": "ccc35c21e214c836ea601ec072d2a916913e954bfdd91fadd3b9d180ef580dd4",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 88,
+          "crop_selector": "#overview-h",
+          "crop_box": {
+            "x": 353.046875,
+            "y": 112.703125,
+            "width": 43.90625,
+            "height": 28.390625
+          },
+          "crop_box_doc": {
+            "x": 353.046875,
+            "y": 559.703125,
+            "width": 43.90625,
+            "height": 28.390625
+          },
+          "scroll_y_at_shot": 447.0,
+          "element_text_head": "\u603b\u89c8",
+          "device_px_span": {
+            "x0": 706,
+            "x1": 794,
+            "y0": 224,
+            "y1": 284
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 336941,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "40-dark-zh-1440-e3.png",
+          "fixture": "builder-payload",
+          "force_state": "e3",
+          "full_page": false,
+          "height": 2028,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 443.0,
+          "sha256": "7218adc283b664a0557529d7ec9fc51dfdb81ca39317cde3e997c480590f47ea",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1496,
+          "trigger": "Overview figure slot empty; directory untouched",
+          "crop_selector": "#overview",
+          "crop_box": {
+            "x": 332,
+            "y": 87.703125,
+            "width": 748,
+            "height": 1012.484375
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 530.703125,
+            "width": 748,
+            "height": 1012.484375
+          },
+          "scroll_y_at_shot": 443.0,
+          "element_text_head": "\u603b\u89c8  \u4eca\u5929\u5b8f\u89c2\u5728\u8bf4\u4ec0\u4e48\uff1f\u6709\u4ec0\u4e48\u53d8\u5316\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u90e8\u5206\u5c0f\u7ec4\u4eca\u5929\u5c1a\u672a\u53d1\u5e03\u3002\u4e0b\u65b9\u7684\u53d8\u5316\u5c31\u662f\u6211\u4eec\u76ee\u524d\u638c\u63e1\u7684\u5185\u5bb9\u3002  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2 \u5b8f\u89c2\u4e0d\u662f\u4e00\u4e2a\u6570",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 174,
+            "y1": 2202
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 334394,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "41-light-zh-1440-e3.png",
+          "fixture": "builder-payload",
+          "force_state": "e3",
+          "full_page": false,
+          "height": 2032,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 447.0,
+          "sha256": "35b7642e79c0dec2eef2ee78f112e527a676ec3c729dc0777a31865c5d097620",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1496,
+          "trigger": "Overview figure slot empty; directory untouched",
+          "crop_selector": "#overview",
+          "crop_box": {
+            "x": 332,
+            "y": 87.703125,
+            "width": 748,
+            "height": 1014.484375
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 534.703125,
+            "width": 748,
+            "height": 1014.484375
+          },
+          "scroll_y_at_shot": 447.0,
+          "element_text_head": "\u603b\u89c8  \u4eca\u5929\u5b8f\u89c2\u5728\u8bf4\u4ec0\u4e48\uff1f\u6709\u4ec0\u4e48\u53d8\u5316\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u90e8\u5206\u5c0f\u7ec4\u4eca\u5929\u5c1a\u672a\u53d1\u5e03\u3002\u4e0b\u65b9\u7684\u53d8\u5316\u5c31\u662f\u6211\u4eec\u76ee\u524d\u638c\u63e1\u7684\u5185\u5bb9\u3002  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2 \u5b8f\u89c2\u4e0d\u662f\u4e00\u4e2a\u6570",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 174,
+            "y1": 2206
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 43157,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e1-dark-zh.png",
+          "fixture": "builder-payload",
+          "force_state": "e1",
+          "full_page": false,
+          "height": 314,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 305.0,
+          "sha256": "d79dc6b0ef1455a6ec3715c08cfd6f7707c7d9e9c0271c2487ad1b0c1943a29e",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "trigger": "Contract-legal inflation_system JSON: no date, no deltas \u2192 E1",
+          "crop_selector": "#inflation [data-mc-empty='e1']",
+          "crop_box": {
+            "x": 371,
+            "y": 391.21875,
+            "width": 670,
+            "height": 156.015625
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 696.21875,
+            "width": 670,
+            "height": 156.015625
+          },
+          "scroll_y_at_shot": 305.0,
+          "element_text_head": "\u8be5\u8bfb\u6570\u6682\u4e0d\u53ef\u7528  \u672c\u677f\u5757\u6240\u4f9d\u636e\u7684\u6570\u636e\u6e90\u5c1a\u672a\u53d1\u5e03\u5e26\u65e5\u671f\u7684\u8bfb\u6570\u3002  \u8be5\u6570\u636e\u6e90\u9996\u6b21\u53d1\u5e03\u540e\u5373\u4f1a\u51fa\u73b0\u5728\u6b64\u5904\u3002  \u4eca\u665a\u7684\u66f4\u65b0\u4f1a\u518d\u6b21\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 782,
+            "y1": 1096
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 44398,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e1-light-zh.png",
+          "fixture": "builder-payload",
+          "force_state": "e1",
+          "full_page": false,
+          "height": 314,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 311.0,
+          "sha256": "bcba56cef72662c430a39b582f16d38ad2952fa9e57f7b110505618a2ec9ab03",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "trigger": "Contract-legal inflation_system JSON: no date, no deltas \u2192 E1",
+          "crop_selector": "#inflation [data-mc-empty='e1']",
+          "crop_box": {
+            "x": 357,
+            "y": 390.21875,
+            "width": 698,
+            "height": 156.015625
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 701.21875,
+            "width": 698,
+            "height": 156.015625
+          },
+          "scroll_y_at_shot": 311.0,
+          "element_text_head": "\u8be5\u8bfb\u6570\u6682\u4e0d\u53ef\u7528  \u672c\u677f\u5757\u6240\u4f9d\u636e\u7684\u6570\u636e\u6e90\u5c1a\u672a\u53d1\u5e03\u5e26\u65e5\u671f\u7684\u8bfb\u6570\u3002  \u8be5\u6570\u636e\u6e90\u9996\u6b21\u53d1\u5e03\u540e\u5373\u4f1a\u51fa\u73b0\u5728\u6b64\u5904\u3002  \u4eca\u665a\u7684\u66f4\u65b0\u4f1a\u518d\u6b21\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 780,
+            "y1": 1094
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 44602,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e2-dark-zh.png",
+          "fixture": "builder-payload",
+          "force_state": "e2",
+          "full_page": false,
+          "height": 298,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 271.0,
+          "sha256": "d8aeb4a1fb94ede3e7643e98eed8f9d6b256ff449ea5132799bf43df3b25ccb9",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE",
+          "crop_selector": "#rates [data-mc-empty='e2']",
+          "crop_box": {
+            "x": 371,
+            "y": 425.21875,
+            "width": 670,
+            "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 696.21875,
+            "width": 670,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 271.0,
+          "element_text_head": "\u4eca\u5929\u7684\u6570\u636e\u672a\u80fd\u9001\u8fbe  \u6570\u636e\u63d0\u4f9b\u65b9\u672a\u80fd\u53ca\u65f6\u9001\u8fbe\u3002\u6211\u4eec\u5b81\u53ef\u4e0d\u663e\u793a\uff0c\u4e5f\u4e0d\u4f1a\u628a\u6628\u5929\u7684\u6570\u5b57\u5f53\u4f5c\u4eca\u5929\u7684\u3002  \u6570\u636e\u6e90\u6062\u590d\u53d1\u5e03\u540e\u5373\u4f1a\u663e\u793a\uff1b\u6bcf\u665a\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 850,
+            "y1": 1148
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 45711,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e2-light-zh.png",
+          "fixture": "builder-payload",
+          "force_state": "e2",
+          "full_page": false,
+          "height": 298,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 277.0,
+          "sha256": "4e891ef0a5ce38b3dd1c3a0ad3aa03c04713ede028a5cc6d648f040391d4adde",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE",
+          "crop_selector": "#rates [data-mc-empty='e2']",
+          "crop_box": {
+            "x": 357,
+            "y": 424.21875,
+            "width": 698,
+            "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 701.21875,
+            "width": 698,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 277.0,
+          "element_text_head": "\u4eca\u5929\u7684\u6570\u636e\u672a\u80fd\u9001\u8fbe  \u6570\u636e\u63d0\u4f9b\u65b9\u672a\u80fd\u53ca\u65f6\u9001\u8fbe\u3002\u6211\u4eec\u5b81\u53ef\u4e0d\u663e\u793a\uff0c\u4e5f\u4e0d\u4f1a\u628a\u6628\u5929\u7684\u6570\u5b57\u5f53\u4f5c\u4eca\u5929\u7684\u3002  \u6570\u636e\u6e90\u6062\u590d\u53d1\u5e03\u540e\u5373\u4f1a\u663e\u793a\uff1b\u6bcf\u665a\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 848,
+            "y1": 1146
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 35452,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e3-dark-zh.png",
+          "fixture": "builder-payload",
+          "force_state": "e3",
+          "full_page": false,
+          "height": 256,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 276.0,
+          "sha256": "739ed61be2825b1517c4150ab7f708ebd9f29447c1184c3fc0a4d99384140dfa",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas \u2192 E3",
+          "crop_selector": "#inflation [data-mc-empty='e3']",
+          "crop_box": {
+            "x": 371,
+            "y": 420.21875,
+            "width": 670,
+            "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 696.21875,
+            "width": 670,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 276.0,
+          "element_text_head": "\u6682\u65f6\u65e0\u6cd5\u663e\u793a\u53d8\u5316  \u4e0d\u5b58\u5728\u4ee5\u76f8\u540c\u65b9\u6cd5\u6d4b\u5f97\u7684\u5386\u53f2\u8bfb\u6570\uff0c\u4efb\u4f55\u7bad\u5934\u90fd\u4f1a\u662f\u81c6\u9020\u7684\u3002  \u4e0b\u4e00\u6b21\u53d1\u5e03\u540e\u5c06\u51fa\u73b0\u9996\u4e2a\u53ef\u5bf9\u6bd4\u8bfb\u6570\u3002",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 840,
+            "y1": 1096
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 35739,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e3-light-zh.png",
+          "fixture": "builder-payload",
+          "force_state": "e3",
+          "full_page": false,
+          "height": 256,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 282.0,
+          "sha256": "563f79773c7a0671f01ea9d677d868195d4a31307a35568141dbe37a6ae58128",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas \u2192 E3",
+          "crop_selector": "#inflation [data-mc-empty='e3']",
+          "crop_box": {
+            "x": 357,
+            "y": 419.21875,
+            "width": 698,
+            "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 701.21875,
+            "width": 698,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 282.0,
+          "element_text_head": "\u6682\u65f6\u65e0\u6cd5\u663e\u793a\u53d8\u5316  \u4e0d\u5b58\u5728\u4ee5\u76f8\u540c\u65b9\u6cd5\u6d4b\u5f97\u7684\u5386\u53f2\u8bfb\u6570\uff0c\u4efb\u4f55\u7bad\u5934\u90fd\u4f1a\u662f\u81c6\u9020\u7684\u3002  \u4e0b\u4e00\u6b21\u53d1\u5e03\u540e\u5c06\u51fa\u73b0\u9996\u4e2a\u53ef\u5bf9\u6bd4\u8bfb\u6570\u3002",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 838,
+            "y1": 1094
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 24409,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e4-dark-zh.png",
+          "fixture": "fixtures/e4_central_banks.json",
+          "force_state": "e4",
+          "full_page": false,
+          "height": 256,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "b1f81ca2f87671fc2b2efd3aee1ad02ff40943f84234438b7733bc92d8e63346",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "trigger": " --empty-state-fixture e4_central_banks.json \u2192 withheld_command_tabs",
+          "crop_selector": "#money [data-mc-empty='e4']",
+          "crop_box": {
+            "x": 371,
+            "y": 772.640625,
+            "width": 670,
+            "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 880.640625,
+            "width": 670,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 108.0,
+          "element_text_head": "\u5c1a\u672a\u5f00\u653e  \u8be5\u529f\u80fd\u5df2\u5efa\u6210\uff0c\u4f46\u5c1a\u672a\u5bf9\u5ba2\u6237\u5f00\u653e\u3002  \u5f00\u653e\u540e\u4f1a\u81ea\u52a8\u51fa\u73b0\uff0c\u65e0\u9700\u64cd\u4f5c\u3002",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 1544,
+            "y1": 1800
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 24451,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e4-light-zh.png",
+          "fixture": "fixtures/e4_central_banks.json",
+          "force_state": "e4",
+          "full_page": false,
+          "height": 256,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "3d1b3c5b77e801268d3092d1ba194dc32f0be6a60ef042c8ff7264bdfec2f29a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "trigger": " --empty-state-fixture e4_central_banks.json \u2192 withheld_command_tabs",
+          "crop_selector": "#money [data-mc-empty='e4']",
+          "crop_box": {
+            "x": 357,
+            "y": 772.640625,
+            "width": 698,
+            "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 864.640625,
+            "width": 698,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 92.0,
+          "element_text_head": "\u5c1a\u672a\u5f00\u653e  \u8be5\u529f\u80fd\u5df2\u5efa\u6210\uff0c\u4f46\u5c1a\u672a\u5bf9\u5ba2\u6237\u5f00\u653e\u3002  \u5f00\u653e\u540e\u4f1a\u81ea\u52a8\u51fa\u73b0\uff0c\u65e0\u9700\u64cd\u4f5c\u3002",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 1544,
+            "y1": 1800
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 33546,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e6-dark-zh.png",
+          "fixture": "fixtures/e6_inflation_system.json",
+          "force_state": "e6",
+          "full_page": false,
+          "height": 460,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 378.0,
+          "sha256": "3d065330b54692402a471c822a1a4081c69787f3ec09989c591578d374ff0e96",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "trigger": "--empty-state-fixture e6_inflation_system.json \u2192 entitlement=Research",
+          "crop_selector": "#inflation [data-mc-empty='e6']",
+          "crop_box": {
+            "x": 371,
+            "y": 318.21875,
+            "width": 670,
+            "height": 229.375
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 696.21875,
+            "width": 670,
+            "height": 229.375
+          },
+          "scroll_y_at_shot": 378.0,
+          "element_text_head": "\u5305\u542b\u5728\u66f4\u9ad8\u65b9\u6848\u4e2d  \u672c\u677f\u5757\u5c5e\u4e8eResearch\u3002  \u5347\u7ea7\u540e\u53ef\u67e5\u770b\u8be5\u8bfb\u6570\u3002  \u5347\u7ea7\u5373\u53ef\u67e5\u770b\u3002  \u67e5\u770b\u5347\u7ea7\u65b9\u6848",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 636,
+            "y1": 1096
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 34119,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e6-light-zh.png",
+          "fixture": "fixtures/e6_inflation_system.json",
+          "force_state": "e6",
+          "full_page": false,
+          "height": 460,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 384.0,
+          "sha256": "954d0589a7cf50033ad61c75d469e731898e76b6b6b233c664becc58e4dc43b9",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "trigger": "--empty-state-fixture e6_inflation_system.json \u2192 entitlement=Research",
+          "crop_selector": "#inflation [data-mc-empty='e6']",
+          "crop_box": {
+            "x": 357,
+            "y": 317.21875,
+            "width": 698,
+            "height": 229.375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 701.21875,
+            "width": 698,
+            "height": 229.375
+          },
+          "scroll_y_at_shot": 384.0,
+          "element_text_head": "\u5305\u542b\u5728\u66f4\u9ad8\u65b9\u6848\u4e2d  \u672c\u677f\u5757\u5c5e\u4e8eResearch\u3002  \u5347\u7ea7\u540e\u53ef\u67e5\u770b\u8be5\u8bfb\u6570\u3002  \u5347\u7ea7\u5373\u53ef\u67e5\u770b\u3002  \u67e5\u770b\u5347\u7ea7\u65b9\u6848",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 634,
+            "y1": 1094
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 178763,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "44-dark-en-390-max.png",
+          "fixture": "builder-payload",
+          "force_state": "scroll_max",
+          "full_page": false,
+          "height": 1688,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 2457.0,
+          "sha256": "065b363703df99ad610565f174ffc0f2c6f7b013bcdb918891fc9cb17464ae9f",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780,
+          "scroll": "max",
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 179947,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "45-dark-zh-390-max.png",
+          "fixture": "builder-payload",
+          "force_state": "scroll_max",
+          "full_page": false,
+          "height": 1688,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 2101.0,
+          "sha256": "c36c11cae73c00620c701bf936b9cf8126aa48c1eea5761a6256fe636b50026f",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780,
+          "scroll": "max",
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 180455,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "46-light-en-390-max.png",
+          "fixture": "builder-payload",
+          "force_state": "scroll_max",
+          "full_page": false,
+          "height": 1688,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 2495.0,
+          "sha256": "8c3adb010db417b053dce4e3ba33c36865f2c0c29144b7c9d8d722a1beffc5fd",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780,
+          "scroll": "max",
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 181514,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "47-light-zh-390-max.png",
+          "fixture": "builder-payload",
+          "force_state": "scroll_max",
+          "full_page": false,
+          "height": 1688,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 2121.0,
+          "sha256": "63d57170d9f36b9daeb9aa23b7373e55870d3a1b200a01df3f073bd8401cf995",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780,
+          "scroll": "max",
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 981095,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "48-dark-zh-1440-money-central-banks.png",
+          "fixture": "builder-payload",
+          "force_state": "money_central_banks",
+          "full_page": false,
+          "height": 1800,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "430e70194d64c8c1d07e84a8195ef35d3d5a9207f288c819a2c01baa10433fa2",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 861302,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "49-light-zh-1440-money-central-banks.png",
+          "fixture": "builder-payload",
+          "force_state": "money_central_banks",
+          "full_page": false,
+          "height": 1800,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "2132938a8c65f4b8102abf77c23acb8ad44b041d0a77ecd5a3454d2136dd729a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 825630,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "55-light-en-1440-inflation-foot.png",
+          "fixture": "builder-payload",
+          "force_state": "inflation_foot",
+          "full_page": false,
+          "height": 1800,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "429a5752c9ab755ee0b44aa79bfe61a402ac2bd2f16400207e21ffe2137fe906",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 953256,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "56-dark-zh-1440-inflation-foot.png",
+          "fixture": "builder-payload",
+          "force_state": "inflation_foot",
+          "full_page": false,
+          "height": 1800,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "59aa6734395b7430f3033c879541b6e16e572235f3eca1750fd7900727ca163a",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 834555,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "57-light-zh-1440-inflation-foot.png",
+          "fixture": "builder-payload",
+          "force_state": "inflation_foot",
+          "full_page": false,
+          "height": 1800,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "bd9a7f1b486a29069e15e7b13c3137a4b27c4bfa7077d4e794efd048288f6e6a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1317162,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "01-dark-en-1440-full.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": true,
+          "height": 3944,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "9b3e49b372bc6ed5ff2d17e87ecad3e28ff7595940f872f02ef5e5b550fe1001",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1264777,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "02-dark-zh-1440-full.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": true,
+          "height": 3704,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "b9a9e6663d37ed681eda77a7f540a4e1db8882ba00f8ddb15bf0c8668686a9eb",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1183984,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "03-light-en-1440-full.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": true,
+          "height": 3956,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "a81c29ce548e98e43b307bf1a0816ba3016cd48e1f5152919fea870d50dd6463",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1141989,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "04-light-zh-1440-full.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": true,
+          "height": 3716,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "7311ee0accb5fbb9e50d3bea20f7229f124c9394d39a7a2ef621df99b8e9234b",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 25687,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e5-dark-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e5",
+          "full_page": false,
+          "height": 334,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 660.0,
+          "sha256": "6a7e9508853ee4a4b1dceb2e23d22a6aec7a156b44f32e3e232079293e18a221",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 584,
+          "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
+          "crop_selector": "[data-mc-empty=\"e5\"]",
+          "crop_box": {
+            "x": 49,
+            "y": 443.484375,
+            "width": 292,
+            "height": 166.453125
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1103.484375,
+            "width": 292,
+            "height": 166.453125
+          },
+          "scroll_y_at_shot": 660.0,
+          "element_text_head": "This section didn't load  The page couldn't fetch it just now.  Reload the page,",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 886,
+            "y1": 1220
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 29215,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e5-dark-zh.png",
+          "fixture": "builder-payload",
+          "force_state": "e5",
+          "full_page": false,
+          "height": 296,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 259.0,
+          "sha256": "c78074f1e27c7fa2987a4c1dec0ccc00bf91e50e4e9a8c38cacd8c2eb87b23a9",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
+          "crop_selector": "[data-mc-empty=\"e5\"]",
+          "crop_box": {
+            "x": 371,
+            "y": 497.71875,
+            "width": 670,
+            "height": 146.3125
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 756.71875,
+            "width": 670,
+            "height": 146.3125
+          },
+          "scroll_y_at_shot": 259.0,
+          "element_text_head": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165  \u9875\u9762\u6b64\u523b\u672a\u80fd\u53d6\u56de\u8be5\u677f\u5757\u3002  \u8bf7\u91cd\u65b0\u8f7d\u5165\u9875\u9762\uff0c\u6216\u6253\u5f00\u5b8c\u6574\u5de5\u4f5c\u533a \u2192",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 994,
+            "y1": 1290
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 26596,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e5-dark-zh-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e5",
+          "full_page": false,
+          "height": 334,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 536.0,
+          "sha256": "84c6bf41cb17a8bf580fd3aa0847bfdb508027e5b38d5a731e2143e2fa01f077",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 584,
+          "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
+          "crop_selector": "[data-mc-empty=\"e5\"]",
+          "crop_box": {
+            "x": 49,
+            "y": 464.375,
+            "width": 292,
+            "height": 166.453125
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1000.375,
+            "width": 292,
+            "height": 166.453125
+          },
+          "scroll_y_at_shot": 536.0,
+          "element_text_head": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165  \u9875\u9762\u6b64\u523b\u672a\u80fd\u53d6\u56de\u8be5\u677f\u5757\u3002  \u8bf7\u91cd\u65b0\u8f7d\u5165\u9875\u9762\uff0c\u6216\u6253\u5f00\u5b8c\u6574\u5de5\u4f5c\u533a \u2192",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 928,
+            "y1": 1262
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 26119,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e5-light.png",
+          "fixture": "builder-payload",
+          "force_state": "e5",
+          "full_page": false,
+          "height": 296,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 407.0,
+          "sha256": "08a8f087bc06dcb70eca4345bc2c5607b5836d0e0154c94f057589e9be3c072f",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
+          "crop_selector": "[data-mc-empty=\"e5\"]",
+          "crop_box": {
+            "x": 357,
+            "y": 454.96875,
+            "width": 698,
+            "height": 146.3125
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 861.96875,
+            "width": 698,
+            "height": 146.3125
+          },
+          "scroll_y_at_shot": 407.0,
+          "element_text_head": "This section didn't load  The page couldn't fetch it just now.  Reload the page,",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 908,
+            "y1": 1204
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 25215,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e5-light-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e5",
+          "full_page": false,
+          "height": 336,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 698.0,
+          "sha256": "ca5a75c3df9578c0fd0c81f72ff0832cd3c6f9e8765795426a2e7185129f1f9a",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 616,
+          "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
+          "crop_selector": "[data-mc-empty=\"e5\"]",
+          "crop_box": {
+            "x": 41,
+            "y": 435.984375,
+            "width": 308,
+            "height": 166.453125
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1133.984375,
+            "width": 308,
+            "height": 166.453125
+          },
+          "scroll_y_at_shot": 698.0,
+          "element_text_head": "This section didn't load  The page couldn't fetch it just now.  Reload the page,",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 870,
+            "y1": 1206
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 29306,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e5-light-zh.png",
+          "fixture": "builder-payload",
+          "force_state": "e5",
+          "full_page": false,
+          "height": 296,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 265.0,
+          "sha256": "697c2650a27c68dfad4e8a8f05f94da224543fc77fc7720ef8624baf085c425e",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
+          "crop_selector": "[data-mc-empty=\"e5\"]",
+          "crop_box": {
+            "x": 357,
+            "y": 496.71875,
+            "width": 698,
+            "height": 146.3125
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 761.71875,
+            "width": 698,
+            "height": 146.3125
+          },
+          "scroll_y_at_shot": 265.0,
+          "element_text_head": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165  \u9875\u9762\u6b64\u523b\u672a\u80fd\u53d6\u56de\u8be5\u677f\u5757\u3002  \u8bf7\u91cd\u65b0\u8f7d\u5165\u9875\u9762\uff0c\u6216\u6253\u5f00\u5b8c\u6574\u5de5\u4f5c\u533a \u2192",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 992,
+            "y1": 1288
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 25663,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e5-light-zh-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e5",
+          "full_page": false,
+          "height": 294,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 556.0,
+          "sha256": "ff2cb34e4e296716d3b6ed04a8c59c96e969bf7abd393ed3db431a2fd07b2dfd",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 616,
+          "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
+          "crop_selector": "[data-mc-empty=\"e5\"]",
+          "crop_box": {
+            "x": 41,
+            "y": 457.375,
+            "width": 308,
+            "height": 146.3125
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1013.375,
+            "width": 308,
+            "height": 146.3125
+          },
+          "scroll_y_at_shot": 556.0,
+          "element_text_head": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165  \u9875\u9762\u6b64\u523b\u672a\u80fd\u53d6\u56de\u8be5\u677f\u5757\u3002  \u8bf7\u91cd\u65b0\u8f7d\u5165\u9875\u9762\uff0c\u6216\u6253\u5f00\u5b8c\u6574\u5de5\u4f5c\u533a \u2192",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 914,
+            "y1": 1208
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 39555,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e1-dark-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e1",
+          "full_page": false,
+          "height": 398,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 662.0,
+          "sha256": "efef8a23215c725b83c01de830ae2dc60b55111e4da4b12054e5cb45e5afeb12",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 584,
+          "trigger": "Contract-legal inflation_system JSON: no date, no deltas \u2192 E1",
+          "crop_selector": "#inflation [data-mc-empty='e1']",
+          "crop_box": {
+            "x": 49,
+            "y": 315.84375,
+            "width": 292,
+            "height": 197.859375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 977.84375,
+            "width": 292,
+            "height": 197.859375
+          },
+          "scroll_y_at_shot": 662.0,
+          "element_text_head": "We don't have this reading yet  The source this section is built from has not pu",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 630,
+            "y1": 1028
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 40115,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e1-light-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e1",
+          "full_page": false,
+          "height": 398,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 687.0,
+          "sha256": "81cd0163368184b9f2265aad6c29a1f2280656ce640d4d33419fd1756d1f2c67",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 616,
+          "trigger": "Contract-legal inflation_system JSON: no date, no deltas \u2192 E1",
+          "crop_selector": "#inflation [data-mc-empty='e1']",
+          "crop_box": {
+            "x": 41,
+            "y": 321.34375,
+            "width": 308,
+            "height": 197.859375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1008.34375,
+            "width": 308,
+            "height": 197.859375
+          },
+          "scroll_y_at_shot": 687.0,
+          "element_text_head": "We don't have this reading yet  The source this section is built from has not pu",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 642,
+            "y1": 1040
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 43098,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e2-dark-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e2",
+          "full_page": false,
+          "height": 422,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 665.0,
+          "sha256": "7f18ec8874d86fa52cb31f1a14e8c569e0ec2370fae0802c421da4d1d3a6a47e",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 584,
+          "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE",
+          "crop_selector": "#rates [data-mc-empty='e2']",
+          "crop_box": {
+            "x": 49,
+            "y": 371.109375,
+            "width": 292,
+            "height": 210.78125
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1036.109375,
+            "width": 292,
+            "height": 210.78125
+          },
+          "scroll_y_at_shot": 665.0,
+          "element_text_head": "Today's number didn't arrive  The data provider did not deliver in time. We show",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 742,
+            "y1": 1164
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 42106,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e2-light-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e2",
+          "full_page": false,
+          "height": 382,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 682.0,
+          "sha256": "a1c6da4baf20d1c1c813e72f346155bc5c51b3be870d701af4228a7ac635795c",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 616,
+          "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE",
+          "crop_selector": "#rates [data-mc-empty='e2']",
+          "crop_box": {
+            "x": 41,
+            "y": 384.609375,
+            "width": 308,
+            "height": 189.859375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1066.609375,
+            "width": 308,
+            "height": 189.859375
+          },
+          "scroll_y_at_shot": 682.0,
+          "element_text_head": "Today's number didn't arrive  The data provider did not deliver in time. We show",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 768,
+            "y1": 1150
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 37829,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e3-dark-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e3",
+          "full_page": false,
+          "height": 382,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 674.0,
+          "sha256": "507a59ed52fdded913e3e62ce088a5de1bb2fae4bf11022216c01a6fdf718c60",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 584,
+          "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas \u2192 E3",
+          "crop_selector": "#inflation [data-mc-empty='e3']",
+          "crop_box": {
+            "x": 49,
+            "y": 323.984375,
+            "width": 292,
+            "height": 189.859375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 997.984375,
+            "width": 292,
+            "height": 189.859375
+          },
+          "scroll_y_at_shot": 674.0,
+          "element_text_head": "We can't show the change yet  There is no earlier reading measured the same way,",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 646,
+            "y1": 1028
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 38264,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e3-light-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e3",
+          "full_page": false,
+          "height": 382,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 707.0,
+          "sha256": "94064860f822d582facc985205ebb275ac5625c1f1adbab2aa4974af37d6251e",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 616,
+          "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas \u2192 E3",
+          "crop_selector": "#inflation [data-mc-empty='e3']",
+          "crop_box": {
+            "x": 41,
+            "y": 321.484375,
+            "width": 308,
+            "height": 189.859375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1028.484375,
+            "width": 308,
+            "height": 189.859375
+          },
+          "scroll_y_at_shot": 707.0,
+          "element_text_head": "We can't show the change yet  There is no earlier reading measured the same way,",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 642,
+            "y1": 1024
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 28757,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e4-dark-390.png",
+          "fixture": "fixtures/e4_central_banks.json",
+          "force_state": "e4",
+          "full_page": false,
+          "height": 340,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "6b26dccd842d6cc8d4a532b2fba4b04a1ad8db075b9370cdf69e346e61f1f9ae",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 584,
+          "trigger": " --empty-state-fixture e4_central_banks.json \u2192 withheld_command_tabs",
+          "crop_selector": "#money [data-mc-empty='e4']",
+          "crop_box": {
+            "x": 49,
+            "y": 344.9375,
+            "width": 292,
+            "height": 168.9375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1290.9375,
+            "width": 292,
+            "height": 168.9375
+          },
+          "scroll_y_at_shot": 946.0,
+          "element_text_head": "Not open yet  This part is built but not switched on for customers.  It appears ",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 688,
+            "y1": 1028
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 28636,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e4-light-390.png",
+          "fixture": "fixtures/e4_central_banks.json",
+          "force_state": "e4",
+          "full_page": false,
+          "height": 340,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "65c61832aef9aaf09da730e748630049ddaccbcd5e7e39c660b2c0fea55895af",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 616,
+          "trigger": " --empty-state-fixture e4_central_banks.json \u2192 withheld_command_tabs",
+          "crop_selector": "#money [data-mc-empty='e4']",
+          "crop_box": {
+            "x": 41,
+            "y": 337.4375,
+            "width": 308,
+            "height": 168.9375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1300.4375,
+            "width": 308,
+            "height": 168.9375
+          },
+          "scroll_y_at_shot": 963.0,
+          "element_text_head": "Not open yet  This part is built but not switched on for customers.  It appears ",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 674,
+            "y1": 1014
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 32474,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e6-dark-390.png",
+          "fixture": "fixtures/e6_inflation_system.json",
+          "force_state": "e6",
+          "full_page": false,
+          "height": 462,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 684.0,
+          "sha256": "83f8984e24b27d6f73be37b6d4a00e30a74bea9c00a86f24781a870f30b2c268",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 584,
+          "trigger": "--empty-state-fixture e6_inflation_system.json \u2192 entitlement=Research",
+          "crop_selector": "#inflation [data-mc-empty='e6']",
+          "crop_box": {
+            "x": 49,
+            "y": 313.984375,
+            "width": 292,
+            "height": 229.375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 997.984375,
+            "width": 292,
+            "height": 229.375
+          },
+          "scroll_y_at_shot": 684.0,
+          "element_text_head": "Included in a higher plan  This section is part of Research.  The reading is ava",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 626,
+            "y1": 1088
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 32213,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e6-light-390.png",
+          "fixture": "fixtures/e6_inflation_system.json",
+          "force_state": "e6",
+          "full_page": false,
+          "height": 460,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 707.0,
+          "sha256": "59cfcfed35ba427ea72ad8127049eb73d03bb2c733fc99fc6ba7638a5dcfe03b",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 616,
+          "trigger": "--empty-state-fixture e6_inflation_system.json \u2192 entitlement=Research",
+          "crop_selector": "#inflation [data-mc-empty='e6']",
+          "crop_box": {
+            "x": 41,
+            "y": 321.484375,
+            "width": 308,
+            "height": 229.375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1028.484375,
+            "width": 308,
+            "height": 229.375
+          },
+          "scroll_y_at_shot": 707.0,
+          "element_text_head": "Included in a higher plan  This section is part of Research.  The reading is ava",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 642,
+            "y1": 1102
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 40288,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e1-dark-zh-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e1",
+          "full_page": false,
+          "height": 356,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 540.0,
+          "sha256": "35450635659a350f31e03ba1b7a185a61b508ffe44a2fc7400c8a7c1b8ad4557",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 584,
+          "trigger": "Contract-legal inflation_system JSON: no date, no deltas \u2192 E1",
+          "crop_selector": "#inflation [data-mc-empty='e1']",
+          "crop_box": {
+            "x": 49,
+            "y": 357.234375,
+            "width": 292,
+            "height": 176.9375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 897.234375,
+            "width": 292,
+            "height": 176.9375
+          },
+          "scroll_y_at_shot": 540.0,
+          "element_text_head": "\u8be5\u8bfb\u6570\u6682\u4e0d\u53ef\u7528  \u672c\u677f\u5757\u6240\u4f9d\u636e\u7684\u6570\u636e\u6e90\u5c1a\u672a\u53d1\u5e03\u5e26\u65e5\u671f\u7684\u8bfb\u6570\u3002  \u8be5\u6570\u636e\u6e90\u9996\u6b21\u53d1\u5e03\u540e\u5373\u4f1a\u51fa\u73b0\u5728\u6b64\u5904\u3002  \u4eca\u665a\u7684\u66f4\u65b0\u4f1a\u518d\u6b21\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 714,
+            "y1": 1070
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 39924,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e1-light-zh-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e1",
+          "full_page": false,
+          "height": 356,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 560.0,
+          "sha256": "966bf05b6a45ebe4083732fca143e1def4fa2eeaffb06771c6c8d1363642c92b",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 616,
+          "trigger": "Contract-legal inflation_system JSON: no date, no deltas \u2192 E1",
+          "crop_selector": "#inflation [data-mc-empty='e1']",
+          "crop_box": {
+            "x": 41,
+            "y": 350.234375,
+            "width": 308,
+            "height": 176.9375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 910.234375,
+            "width": 308,
+            "height": 176.9375
+          },
+          "scroll_y_at_shot": 560.0,
+          "element_text_head": "\u8be5\u8bfb\u6570\u6682\u4e0d\u53ef\u7528  \u672c\u677f\u5757\u6240\u4f9d\u636e\u7684\u6570\u636e\u6e90\u5c1a\u672a\u53d1\u5e03\u5e26\u65e5\u671f\u7684\u8bfb\u6570\u3002  \u8be5\u6570\u636e\u6e90\u9996\u6b21\u53d1\u5e03\u540e\u5373\u4f1a\u51fa\u73b0\u5728\u6b64\u5904\u3002  \u4eca\u665a\u7684\u66f4\u65b0\u4f1a\u518d\u6b21\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 700,
+            "y1": 1056
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 42587,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e2-dark-zh-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e2",
+          "full_page": false,
+          "height": 382,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 576.0,
+          "sha256": "6459013578b2a7146477606e3b7d02ff8d6b133dee0b9fdbdafcab5b26cdfb02",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 584,
+          "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE",
+          "crop_selector": "#rates [data-mc-empty='e2']",
+          "crop_box": {
+            "x": 49,
+            "y": 391.21875,
+            "width": 292,
+            "height": 189.859375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 967.21875,
+            "width": 292,
+            "height": 189.859375
+          },
+          "scroll_y_at_shot": 576.0,
+          "element_text_head": "\u4eca\u5929\u7684\u6570\u636e\u672a\u80fd\u9001\u8fbe  \u6570\u636e\u63d0\u4f9b\u65b9\u672a\u80fd\u53ca\u65f6\u9001\u8fbe\u3002\u6211\u4eec\u5b81\u53ef\u4e0d\u663e\u793a\uff0c\u4e5f\u4e0d\u4f1a\u628a\u6628\u5929\u7684\u6570\u5b57\u5f53\u4f5c\u4eca\u5929\u7684\u3002  \u6570\u636e\u6e90\u6062\u590d\u53d1\u5e03\u540e\u5373\u4f1a\u663e\u793a\uff1b\u6bcf\u665a\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 782,
+            "y1": 1164
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 41797,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e2-light-zh-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e2",
+          "full_page": false,
+          "height": 298,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 554.0,
+          "sha256": "bb3c067040b57d7cbb95b0258db5e79ebe1872348a2bf4ec37be3004bb1c2aca",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 616,
+          "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE",
+          "crop_selector": "#rates [data-mc-empty='e2']",
+          "crop_box": {
+            "x": 41,
+            "y": 426.21875,
+            "width": 308,
+            "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 980.21875,
+            "width": 308,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 554.0,
+          "element_text_head": "\u4eca\u5929\u7684\u6570\u636e\u672a\u80fd\u9001\u8fbe  \u6570\u636e\u63d0\u4f9b\u65b9\u672a\u80fd\u53ca\u65f6\u9001\u8fbe\u3002\u6211\u4eec\u5b81\u53ef\u4e0d\u663e\u793a\uff0c\u4e5f\u4e0d\u4f1a\u628a\u6628\u5929\u7684\u6570\u5b57\u5f53\u4f5c\u4eca\u5929\u7684\u3002  \u6570\u636e\u6e90\u6062\u590d\u53d1\u5e03\u540e\u5373\u4f1a\u663e\u793a\uff1b\u6bcf\u665a\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 852,
+            "y1": 1150
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 33487,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e3-dark-zh-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e3",
+          "full_page": false,
+          "height": 298,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 531.0,
+          "sha256": "f3ed74d2fa7943819dae98d4b23e9a354a00f9e009f6ecc27e543977abbd60fd",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 584,
+          "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas \u2192 E3",
+          "crop_selector": "#inflation [data-mc-empty='e3']",
+          "crop_box": {
+            "x": 49,
+            "y": 386.375,
+            "width": 292,
+            "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 917.375,
+            "width": 292,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 531.0,
+          "element_text_head": "\u6682\u65f6\u65e0\u6cd5\u663e\u793a\u53d8\u5316  \u4e0d\u5b58\u5728\u4ee5\u76f8\u540c\u65b9\u6cd5\u6d4b\u5f97\u7684\u5386\u53f2\u8bfb\u6570\uff0c\u4efb\u4f55\u7bad\u5934\u90fd\u4f1a\u662f\u81c6\u9020\u7684\u3002  \u4e0b\u4e00\u6b21\u53d1\u5e03\u540e\u5c06\u51fa\u73b0\u9996\u4e2a\u53ef\u5bf9\u6bd4\u8bfb\u6570\u3002",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 772,
+            "y1": 1070
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 34224,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e3-light-zh-390.png",
+          "fixture": "builder-payload",
+          "force_state": "e3",
+          "full_page": false,
+          "height": 298,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 551.0,
+          "sha256": "777b022c1ec8b29f4e5e04fd80bdb6bce14dce081a4c2dbf21fc9ccbfa5f0b59",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 616,
+          "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas \u2192 E3",
+          "crop_selector": "#inflation [data-mc-empty='e3']",
+          "crop_box": {
+            "x": 41,
+            "y": 379.375,
+            "width": 308,
+            "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 930.375,
+            "width": 308,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 551.0,
+          "element_text_head": "\u6682\u65f6\u65e0\u6cd5\u663e\u793a\u53d8\u5316  \u4e0d\u5b58\u5728\u4ee5\u76f8\u540c\u65b9\u6cd5\u6d4b\u5f97\u7684\u5386\u53f2\u8bfb\u6570\uff0c\u4efb\u4f55\u7bad\u5934\u90fd\u4f1a\u662f\u81c6\u9020\u7684\u3002  \u4e0b\u4e00\u6b21\u53d1\u5e03\u540e\u5c06\u51fa\u73b0\u9996\u4e2a\u53ef\u5bf9\u6bd4\u8bfb\u6570\u3002",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 758,
+            "y1": 1056
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 21876,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e4-dark-zh-390.png",
+          "fixture": "fixtures/e4_central_banks.json",
+          "force_state": "e4",
+          "full_page": false,
+          "height": 256,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "e78704a49c8bcacf5eb42423bbe3a59ef0ad8729fbc477f38eaef206b263d2a1",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 584,
+          "trigger": " --empty-state-fixture e4_central_banks.json \u2192 withheld_command_tabs",
+          "crop_selector": "#money [data-mc-empty='e4']",
+          "crop_box": {
+            "x": 49,
+            "y": 407.78125,
+            "width": 292,
+            "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1177.78125,
+            "width": 292,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 770.0,
+          "element_text_head": "\u5c1a\u672a\u5f00\u653e  \u8be5\u529f\u80fd\u5df2\u5efa\u6210\uff0c\u4f46\u5c1a\u672a\u5bf9\u5ba2\u6237\u5f00\u653e\u3002  \u5f00\u653e\u540e\u4f1a\u81ea\u52a8\u51fa\u73b0\uff0c\u65e0\u9700\u64cd\u4f5c\u3002",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 814,
+            "y1": 1070
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 21992,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e4-light-zh-390.png",
+          "fixture": "fixtures/e4_central_banks.json",
+          "force_state": "e4",
+          "full_page": false,
+          "height": 256,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0.0,
+          "sha256": "c6fdb33f23fe90fa2cfae8e9cbb9d8810eb3c6048ea3c916e04f269676e9bdab",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 616,
+          "trigger": " --empty-state-fixture e4_central_banks.json \u2192 withheld_command_tabs",
+          "crop_selector": "#money [data-mc-empty='e4']",
+          "crop_box": {
+            "x": 41,
+            "y": 400.78125,
+            "width": 308,
+            "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1169.78125,
+            "width": 308,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 769.0,
+          "element_text_head": "\u5c1a\u672a\u5f00\u653e  \u8be5\u529f\u80fd\u5df2\u5efa\u6210\uff0c\u4f46\u5c1a\u672a\u5bf9\u5ba2\u6237\u5f00\u653e\u3002  \u5f00\u653e\u540e\u4f1a\u81ea\u52a8\u51fa\u73b0\uff0c\u65e0\u9700\u64cd\u4f5c\u3002",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 800,
+            "y1": 1056
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 30859,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e6-dark-zh-390.png",
+          "fixture": "fixtures/e6_inflation_system.json",
+          "force_state": "e6",
+          "full_page": false,
+          "height": 460,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 612.0,
+          "sha256": "7332d61ac311ff599475c2e289c7052eff12398c566442b950e27b4f286869de",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 584,
+          "trigger": "--empty-state-fixture e6_inflation_system.json \u2192 entitlement=Research",
+          "crop_selector": "#inflation [data-mc-empty='e6']",
+          "crop_box": {
+            "x": 49,
+            "y": 305.375,
+            "width": 292,
+            "height": 229.375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 917.375,
+            "width": 292,
+            "height": 229.375
+          },
+          "scroll_y_at_shot": 612.0,
+          "element_text_head": "\u5305\u542b\u5728\u66f4\u9ad8\u65b9\u6848\u4e2d  \u672c\u677f\u5757\u5c5e\u4e8eResearch\u3002  \u5347\u7ea7\u540e\u53ef\u67e5\u770b\u8be5\u8bfb\u6570\u3002  \u5347\u7ea7\u5373\u53ef\u67e5\u770b\u3002  \u67e5\u770b\u5347\u7ea7\u65b9\u6848",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 610,
+            "y1": 1070
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 30543,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "empty-e6-light-zh-390.png",
+          "fixture": "fixtures/e6_inflation_system.json",
+          "force_state": "e6",
+          "full_page": false,
+          "height": 460,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 632.0,
+          "sha256": "5ac1e80c473a1c85cccab9de029b18b2620b676cf0635f3f7abb72089566ca43",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 616,
+          "trigger": "--empty-state-fixture e6_inflation_system.json \u2192 entitlement=Research",
+          "crop_selector": "#inflation [data-mc-empty='e6']",
+          "crop_box": {
+            "x": 41,
+            "y": 298.375,
+            "width": 308,
+            "height": 229.375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 930.375,
+            "width": 308,
+            "height": 229.375
+          },
+          "scroll_y_at_shot": 632.0,
+          "element_text_head": "\u5305\u542b\u5728\u66f4\u9ad8\u65b9\u6848\u4e2d  \u672c\u677f\u5757\u5c5e\u4e8eResearch\u3002  \u5347\u7ea7\u540e\u53ef\u67e5\u770b\u8be5\u8bfb\u6570\u3002  \u5347\u7ea7\u5373\u53ef\u67e5\u770b\u3002  \u67e5\u770b\u5347\u7ea7\u65b9\u6848",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 596,
+            "y1": 1056
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 16723,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "movement-row-dark-en.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 156,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 520.0,
+          "sha256": "a70741f4fe77715411a6a1113168987ad699bb6ef21b482e81ec3565eb438fb6",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "crop_selector": "#inflation .mc-move-row:not(.mc-move-current-only)",
+          "crop_box": {
+            "x": 371,
+            "y": 336.96875,
+            "width": 670,
+            "height": 76.28125
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 856.96875,
+            "width": 670,
+            "height": 76.28125
+          },
+          "scroll_y_at_shot": 520.0,
+          "element_text_head": "Speed of price rises 49.59 pts unchanged since the last reading",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 672,
+            "y1": 828
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 13578,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "movement-row-dark-zh.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 122,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 385.0,
+          "sha256": "df11b308ffb26550a56229a33a9cc3c0a2339b1e41feea17f8d49ddfb9f60cc2",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "crop_selector": "#inflation .mc-move-row:not(.mc-move-current-only)",
+          "crop_box": {
+            "x": 371,
+            "y": 371.71875,
+            "width": 670,
+            "height": 59.484375
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 756.71875,
+            "width": 670,
+            "height": 59.484375
+          },
+          "scroll_y_at_shot": 385.0,
+          "element_text_head": "\u7269\u4ef7\u4e0a\u6da8\u901f\u5ea6 49.59 \u70b9 \u8f83\u4e0a\u6b21\u8bfb\u6570\u6301\u5e73",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 742,
+            "y1": 864
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 16929,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "movement-row-light-en.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 156,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 524.0,
+          "sha256": "f71aebec2e16988db9947c34642a710e7a55d49f170d80ae61337ae2a59256f0",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "crop_selector": "#inflation .mc-move-row:not(.mc-move-current-only)",
+          "crop_box": {
+            "x": 357,
+            "y": 337.96875,
+            "width": 698,
+            "height": 76.28125
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 861.96875,
+            "width": 698,
+            "height": 76.28125
+          },
+          "scroll_y_at_shot": 524.0,
+          "element_text_head": "Speed of price rises 49.59 pts unchanged since the last reading",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 674,
+            "y1": 830
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 13897,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "movement-row-light-zh.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 122,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 391.0,
+          "sha256": "c82910575f22a83215337982998db4ff5ca947c668dd6ee73528a18c8af4e66d",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "crop_selector": "#inflation .mc-move-row:not(.mc-move-current-only)",
+          "crop_box": {
+            "x": 357,
+            "y": 370.71875,
+            "width": 698,
+            "height": 59.484375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 761.71875,
+            "width": 698,
+            "height": 59.484375
+          },
+          "scroll_y_at_shot": 391.0,
+          "element_text_head": "\u7269\u4ef7\u4e0a\u6da8\u901f\u5ea6 49.59 \u70b9 \u8f83\u4e0a\u6b21\u8bfb\u6570\u6301\u5e73",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 740,
+            "y1": 862
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 971405,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "strip-dark-en.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 1800,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0,
+          "sha256": "19c6c3e3ea341939f5ca99765f48a6320e3fb0380328b3e6e054bd8ddc98cadc",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 957600,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "strip-dark-zh.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 1800,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0,
+          "sha256": "8e0b8bd64aa39d7c1758bcd8e89491996b18d9c7d75d624c560a741cbed9a03b",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 832085,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "strip-light-en.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 1800,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 0,
+          "sha256": "884c92eaf9e50a682ac550fc72505ac9206b4e3b73ecefd05321b91975c7f51a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 829911,
+          "captured": true,
+          "crop": false,
+          "dpr": 2.0,
+          "file": "strip-light-zh.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 1800,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 0,
+          "sha256": "e67f3fa80042bd86ec0c8516d7964033aea5e09fba0ec08ef23cb67f3e5872a9",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          }
+        }
+      ]
+    }
+  ],
+  "target": {
+    "resolved_sha_or_none": "54be458c734755e6456f82c98f57bfc9aca2e65c",
+    "resolved_sha_source": "committed HEAD of this worktree (54be458c734755e6456f82c98f57bfc9aca2e65c); tree_clean_start=True from `git status --short` at start (empty=True); tree_clean_end=True from `git status --short -- templates scripts lib` at end (empty=True); head_start=54be458c734755e6456f82c98f57bfc9aca2e65c; head_end=54be458c734755e6456f82c98f57bfc9aca2e65c; generated_at_start=2026-09-08T16:17:17Z; generated_at_end=2026-09-08T16:19:41Z; commit_time_of_capture_sha=2026-09-08T09:17:12-07:00 (git show -s --format=%cI). Every composition, state and empty frame was recaptured in this run (R6-B1). E5 is photographed by stalling the fragment request until the 8000 ms client timeout clones template[data-mc-empty-e5]."
+  },
+  "strip_void_probes": {
+    "dark_en": {
+      "ok": true,
+      "chipCount": 5,
+      "childCount": 5,
+      "emptyChildren": 0,
+      "stripBg": "rgba(0, 0, 0, 0)",
+      "stripFilled": false,
+      "bodyBackgroundColor": "rgb(13, 16, 24)",
+      "bgToken": "#0d1018",
+      "voids": [],
+      "maxVoidWidth": 0,
+      "voidWiderThan40": false,
+      "chipBoxes": [
+        {
+          "left": 332,
+          "right": 578,
+          "top": 386.859375,
+          "bottom": 491.15625,
+          "width": 246,
+          "height": 104.296875
+        },
+        {
+          "left": 586,
+          "right": 832,
+          "top": 386.859375,
+          "bottom": 491.15625,
+          "width": 246,
+          "height": 104.296875
+        },
+        {
+          "left": 840,
+          "right": 1086,
+          "top": 386.859375,
+          "bottom": 491.15625,
+          "width": 246,
+          "height": 104.296875
+        },
+        {
+          "left": 1094,
+          "right": 1340,
+          "top": 386.859375,
+          "bottom": 491.15625,
+          "width": 246,
+          "height": 104.296875
+        },
+        {
+          "left": 332,
+          "right": 1340,
+          "top": 499.15625,
+          "bottom": 576.453125,
+          "width": 1008,
+          "height": 77.296875
+        }
+      ],
+      "stripBox": {
+        "left": 332,
+        "right": 1340,
+        "top": 386.859375,
+        "bottom": 576.453125,
+        "width": 1008,
+        "height": 189.59375
+      },
+      "viewport": {
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "stripWidth": 1008
+      },
+      "scrollY": 0,
+      "scrollYAtMeasure": 0.0,
+      "scrollYAtShot": 0.0,
+      "pixelVoidWiderThan40": false,
+      "pixelVoids": [],
+      "pixelVoidCount": 0,
+      "pixelsScanned": 421344,
+      "canvasRgb": [
+        13,
+        16,
+        24
+      ],
+      "canvasSource": "strip-inter-chip-gap (582.00css,439.01css) gapCss=8.00",
+      "bgTokenRgb": [
+        13,
+        16,
+        24
+      ],
+      "delta": [
+        0,
+        0,
+        0
+      ],
+      "band": {
+        "x0": 664,
+        "x1": 2680,
+        "y0": 773,
+        "y1": 982
+      }
+    },
+    "dark_zh": {
+      "ok": true,
+      "chipCount": 5,
+      "childCount": 5,
+      "emptyChildren": 0,
+      "stripBg": "rgba(0, 0, 0, 0)",
+      "stripFilled": false,
+      "bodyBackgroundColor": "rgb(13, 16, 24)",
+      "bgToken": "#0d1018",
+      "voids": [],
+      "maxVoidWidth": 0,
+      "voidWiderThan40": false,
+      "chipBoxes": [
+        {
+          "left": 332,
+          "right": 578,
+          "top": 322.609375,
+          "bottom": 413.40625,
+          "width": 246,
+          "height": 90.796875
+        },
+        {
+          "left": 586,
+          "right": 832,
+          "top": 322.609375,
+          "bottom": 413.40625,
+          "width": 246,
+          "height": 90.796875
+        },
+        {
+          "left": 840,
+          "right": 1086,
+          "top": 322.609375,
+          "bottom": 413.40625,
+          "width": 246,
+          "height": 90.796875
+        },
+        {
+          "left": 1094,
+          "right": 1340,
+          "top": 322.609375,
+          "bottom": 413.40625,
+          "width": 246,
+          "height": 90.796875
+        },
+        {
+          "left": 332,
+          "right": 1340,
+          "top": 421.40625,
+          "bottom": 498.703125,
+          "width": 1008,
+          "height": 77.296875
+        }
+      ],
+      "stripBox": {
+        "left": 332,
+        "right": 1340,
+        "top": 322.609375,
+        "bottom": 498.703125,
+        "width": 1008,
+        "height": 176.09375
+      },
+      "viewport": {
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "stripWidth": 1008
+      },
+      "scrollY": 0,
+      "scrollYAtMeasure": 0.0,
+      "scrollYAtShot": 0.0,
+      "pixelVoidWiderThan40": false,
+      "pixelVoids": [],
+      "pixelVoidCount": 0,
+      "pixelsScanned": 364896,
+      "canvasRgb": [
+        13,
+        16,
+        24
+      ],
+      "canvasSource": "strip-inter-chip-gap (582.00css,368.01css) gapCss=8.00",
+      "bgTokenRgb": [
+        13,
+        16,
+        24
+      ],
+      "delta": [
+        0,
+        0,
+        0
+      ],
+      "band": {
+        "x0": 664,
+        "x1": 2680,
+        "y0": 645,
+        "y1": 826
+      }
+    },
+    "light_en": {
+      "ok": true,
+      "chipCount": 5,
+      "childCount": 5,
+      "emptyChildren": 0,
+      "stripBg": "rgba(0, 0, 0, 0)",
+      "stripFilled": false,
+      "bodyBackgroundColor": "rgb(232, 235, 241)",
+      "bgToken": "#e8ebf1",
+      "voids": [],
+      "maxVoidWidth": 0,
+      "voidWiderThan40": false,
+      "chipBoxes": [
+        {
+          "left": 332,
+          "right": 578,
+          "top": 386.859375,
+          "bottom": 493.15625,
+          "width": 246,
+          "height": 106.296875
+        },
+        {
+          "left": 586,
+          "right": 832,
+          "top": 386.859375,
+          "bottom": 493.15625,
+          "width": 246,
+          "height": 106.296875
+        },
+        {
+          "left": 840,
+          "right": 1086,
+          "top": 386.859375,
+          "bottom": 493.15625,
+          "width": 246,
+          "height": 106.296875
+        },
+        {
+          "left": 1094,
+          "right": 1340,
+          "top": 386.859375,
+          "bottom": 493.15625,
+          "width": 246,
+          "height": 106.296875
+        },
+        {
+          "left": 332,
+          "right": 1340,
+          "top": 501.15625,
+          "bottom": 580.453125,
+          "width": 1008,
+          "height": 79.296875
+        }
+      ],
+      "stripBox": {
+        "left": 332,
+        "right": 1340,
+        "top": 386.859375,
+        "bottom": 580.453125,
+        "width": 1008,
+        "height": 193.59375
+      },
+      "viewport": {
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "stripWidth": 1008
+      },
+      "scrollY": 0,
+      "scrollYAtMeasure": 0.0,
+      "scrollYAtShot": 0.0,
+      "pixelVoidWiderThan40": false,
+      "pixelVoids": [],
+      "pixelVoidCount": 0,
+      "pixelsScanned": 429408,
+      "canvasRgb": [
+        232,
+        235,
+        241
+      ],
+      "canvasSource": "strip-inter-chip-gap (582.00css,440.01css) gapCss=8.00",
+      "bgTokenRgb": [
+        232,
+        235,
+        241
+      ],
+      "delta": [
+        0,
+        0,
+        0
+      ],
+      "band": {
+        "x0": 664,
+        "x1": 2680,
+        "y0": 773,
+        "y1": 986
+      }
+    },
+    "light_zh": {
+      "ok": true,
+      "chipCount": 5,
+      "childCount": 5,
+      "emptyChildren": 0,
+      "stripBg": "rgba(0, 0, 0, 0)",
+      "stripFilled": false,
+      "bodyBackgroundColor": "rgb(232, 235, 241)",
+      "bgToken": "#e8ebf1",
+      "voids": [],
+      "maxVoidWidth": 0,
+      "voidWiderThan40": false,
+      "chipBoxes": [
+        {
+          "left": 332,
+          "right": 578,
+          "top": 322.609375,
+          "bottom": 415.40625,
+          "width": 246,
+          "height": 92.796875
+        },
+        {
+          "left": 586,
+          "right": 832,
+          "top": 322.609375,
+          "bottom": 415.40625,
+          "width": 246,
+          "height": 92.796875
+        },
+        {
+          "left": 840,
+          "right": 1086,
+          "top": 322.609375,
+          "bottom": 415.40625,
+          "width": 246,
+          "height": 92.796875
+        },
+        {
+          "left": 1094,
+          "right": 1340,
+          "top": 322.609375,
+          "bottom": 415.40625,
+          "width": 246,
+          "height": 92.796875
+        },
+        {
+          "left": 332,
+          "right": 1340,
+          "top": 423.40625,
+          "bottom": 502.703125,
+          "width": 1008,
+          "height": 79.296875
+        }
+      ],
+      "stripBox": {
+        "left": 332,
+        "right": 1340,
+        "top": 322.609375,
+        "bottom": 502.703125,
+        "width": 1008,
+        "height": 180.09375
+      },
+      "viewport": {
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "stripWidth": 1008
+      },
+      "scrollY": 0,
+      "scrollYAtMeasure": 0.0,
+      "scrollYAtShot": 0.0,
+      "pixelVoidWiderThan40": false,
+      "pixelVoids": [],
+      "pixelVoidCount": 0,
+      "pixelsScanned": 372960,
+      "canvasRgb": [
+        232,
+        235,
+        241
+      ],
+      "canvasSource": "strip-inter-chip-gap (582.00css,369.01css) gapCss=8.00",
+      "bgTokenRgb": [
+        232,
+        235,
+        241
+      ],
+      "delta": [
+        0,
+        0,
+        0
+      ],
+      "band": {
+        "x0": 664,
+        "x1": 2680,
+        "y0": 645,
+        "y1": 830
+      }
+    }
+  },
+  "capture_sha": "54be458c734755e6456f82c98f57bfc9aca2e65c",
+  "commit_time_of_capture_sha": "2026-09-08T09:17:12-07:00",
+  "generated_at_start": "2026-09-08T16:17:17Z",
+  "generated_at_end": "2026-09-08T16:19:41Z",
+  "tree_clean_start": true,
+  "tree_clean_end": true,
+  "head_start": "54be458c734755e6456f82c98f57bfc9aca2e65c",
+  "head_end": "54be458c734755e6456f82c98f57bfc9aca2e65c",
+  "declared": {
+    "force_states": [
+      {
+        "family": "force_states",
+        "force_state": "arrival",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "arrival",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "arrival",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "arrival",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "arrival",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "force_states",
+        "force_state": "arrival",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "force_states",
+        "force_state": "arrival",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "force_states",
+        "force_state": "arrival",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "force_states",
+        "force_state": "dest_hover",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "dest_hover",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "dest_hover",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "dest_hover",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "heading_focus",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "heading_focus",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "heading_focus",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "heading_focus",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "rates",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "rates",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "rates",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "rates",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "money_central_banks",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "money_central_banks",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "money_central_banks",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "money_central_banks",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "inflation_foot",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "inflation_foot",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "inflation_foot",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "inflation_foot",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "scroll_max",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "force_states",
+        "force_state": "scroll_max",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "force_states",
+        "force_state": "scroll_max",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "force_states",
+        "force_state": "scroll_max",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "force_states",
+        "force_state": "e3",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "e3",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "e3",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "force_states",
+        "force_state": "e3",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      }
+    ],
+    "empty_states": [
+      {
+        "family": "empty_states",
+        "force_state": "e1",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e1",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e1",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e1",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e1",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e1",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e1",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e1",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e2",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e2",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e2",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e2",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e2",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e2",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e2",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e2",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e3",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e3",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e3",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e3",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e3",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e3",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e3",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e3",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e4",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e4",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e4",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e4",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e4",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e4",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e4",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e4",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e5",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e5",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e5",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e5",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e5",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e5",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e5",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e5",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e6",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e6",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e6",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e6",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e6",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e6",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e6",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "empty_states",
+        "force_state": "e6",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      }
+    ],
+    "clearance": [
+      {
+        "family": "clearance",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "clearance",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "clearance",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "clearance",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "clearance",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "clearance",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "clearance",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "clearance",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "clearance",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "clearance",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "clearance",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "clearance",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      }
+    ],
+    "chip_opens_chat": [
+      {
+        "family": "chip_opens_chat",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "chip_opens_chat",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "chip_opens_chat",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "chip_opens_chat",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      }
+    ],
+    "strip_void": [
+      {
+        "family": "strip_void",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "strip_void",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "strip_void",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "strip_void",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      }
+    ],
+    "rail_viewport": [
+      {
+        "family": "rail_viewport",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "rail_viewport",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "rail_viewport",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "rail_viewport",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "rail_viewport",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "rail_viewport",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "rail_viewport",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "rail_viewport",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      }
+    ],
+    "e5": [
+      {
+        "family": "e5",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "e5",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "e5",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "e5",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "e5",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "e5",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "e5",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "e5",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      }
+    ],
+    "fab": [
+      {
+        "family": "fab",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "fab",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "fab",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "fab",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      }
+    ],
+    "rest_views": [
+      {
+        "family": "rest_views",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "rest_views",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "rest_views",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "rest_views",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "rest_views",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "rest_views",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "rest_views",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "rest_views",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "rest_views",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "rest_views",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "rest_views",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "rest_views",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      }
+    ],
+    "full_page": [
+      {
+        "family": "full_page",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "full_page",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "full_page",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "full_page",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      }
+    ],
+    "movement_row": [
+      {
+        "family": "movement_row",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "movement_row",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "movement_row",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "movement_row",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      }
+    ]
+  },
+  "gaps": []
+}

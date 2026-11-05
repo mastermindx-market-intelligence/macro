@@ -520,3 +520,25 @@ def test_ws_handshake_403_reads_as_not_entitled():
     rec = mep.probe_ws("wss://x.test/indices", "V.I:SPX", FAKE_KEY, lib_pair=pair)
     assert rec["verdict"] == "not_entitled"
     assert rec["evidence"]["handshake_status"] == 403
+
+
+def test_rest_battery_probes_exact_gold_cny_minute_endpoint_used_by_product():
+    p = _prober(
+        lambda url, params, n: _FakeResponse(
+            200, {"resultsCount": 1, "results": [{"t": 1, "c": 1.0}]}
+        )
+    )
+
+    rest = mep.run_rest_battery(p, probe_day="2026-09-18")
+
+    assert rest["fx_gold_cny_minute"]["verdict"] == "entitled"
+    assert rest["fx_gold_cny_minute"]["evidence"] == {
+        "results_count": 1,
+        "non_empty": True,
+    }
+    calls = [
+        c for c in p.session.calls
+        if "/v2/aggs/ticker/C:XAUCNY/range/1/minute/2026-09-18/2026-09-18" in c["url"]
+    ]
+    assert len(calls) == 1
+    assert calls[0]["params"]["limit"] == 5

@@ -1,0 +1,503 @@
+{
+  "observed_at": "2026-10-14T03:28:23.855787+00:00",
+  "operation": "read_only_current_catalog_shortlist",
+  "catalog_sha256": "718357ab48aa7e8521c2e7ae6672b6b23268c1aeb8d6641b25dca4aa3b0891ba",
+  "enumeration_only": true,
+  "canonical_private_history_carried": true,
+  "candidates": [
+    {
+      "slot_id": "press-research_desk-2026-10-14-4f14910c446a",
+      "source": "research_vault:marketdesk-augnhdcr2jm-0cbff4",
+      "story": {
+        "kind": "research_report",
+        "title_hint": "Europe Automobiles Chinese OEM Competition Monitor Aug 26 Chinese share hits new high of 8 on softer individual premium br...",
+        "institution": "Goldman Sachs",
+        "side": "sell",
+        "published_at": "2026-09-23T16:51:06Z",
+        "tickers": [],
+        "themes": []
+      },
+      "triage": {
+        "tier": "flagship",
+        "rank": 4,
+        "w_score": 0.444,
+        "w_score_pre_veto": 0.444,
+        "components": {
+          "institution_tier": 0.5,
+          "cluster_density": 0.0,
+          "relevance": 0.0,
+          "extraction_quality": 1.0,
+          "attention_potential": 0.8,
+          "novelty": 0.5
+        },
+        "veto": null,
+        "scoring_version": "w2r.1",
+        "score_source": "planner-recomputed",
+        "datasketch_present": true,
+        "ordered": true
+      },
+      "facts": [
+        {
+          "id": "vault_point_0",
+          "text": "Chinese OEM Market Share Surge: Europe-5 registrations up 199% YoY (43,825 units Aug-26), market share at 8.13% (+524bps YoY), directly eroding VW Group mass brands (-188bps) and Renault (-44bps) as total China-owned brands capture 12.48% share.",
+          "ref": "research_vault:marketdesk-augnhdcr2jm-0cbff4",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/europe-automobiles-chinese-oem-competition-monitor-aug-26-chinese-shar-0cbff4.html",
+          "source_name": "Mastermind Research coverage of Goldman Sachs",
+          "dated": "2026-09-23"
+        },
+        {
+          "id": "vault_point_1",
+          "text": "Policy Shift & Pricing Discipline: Chinese ministries\u2019 Aug 24 guidelines mandate cost-based pricing and anti-disruptive competition abroad, ending aggressive price wars\u2014providing near-term reprieve for European incumbents while positioning Chinese brands for sustainable long-term growth.",
+          "ref": "research_vault:marketdesk-augnhdcr2jm-0cbff4",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/europe-automobiles-chinese-oem-competition-monitor-aug-26-chinese-shar-0cbff4.html",
+          "source_name": "Mastermind Research coverage of Goldman Sachs",
+          "dated": "2026-09-23"
+        },
+        {
+          "id": "vault_point_2",
+          "text": "BYD Dominance & Structural Shift: BYD leads with 3.16% Europe-5 share (Aug-26) and 2.98% R3M growth (+166bps), outpacing VW mass brands (-19.48% volume, -139bps) and Stellantis (-15.11% volume, -59bps), signaling irreversible market share transfer.",
+          "ref": "research_vault:marketdesk-augnhdcr2jm-0cbff4",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/europe-automobiles-chinese-oem-competition-monitor-aug-26-chinese-shar-0cbff4.html",
+          "source_name": "Mastermind Research coverage of Goldman Sachs",
+          "dated": "2026-09-23"
+        },
+        {
+          "id": "vault_point_3",
+          "text": "Germany as Strategic Battleground: Chinese brands sold 9,679 units in Germany (+311% YoY), capturing 241bps gain in market share; Germany dominates EU auto retail (31.1% of sales), making it critical for European premium automakers\u2019 competitive positioning.",
+          "ref": "research_vault:marketdesk-augnhdcr2jm-0cbff4",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/europe-automobiles-chinese-oem-competition-monitor-aug-26-chinese-shar-0cbff4.html",
+          "source_name": "Mastermind Research coverage of Goldman Sachs",
+          "dated": "2026-09-23"
+        },
+        {
+          "id": "vault_point_4",
+          "text": "European Production Acceleration: Chinese brands\u2019 European production to grow 15% CAGR (2025\u20132030), with Spain as dominant hub (46%/58% volume in 2026/2027), reflecting strategic localization and supply chain maturity.",
+          "ref": "research_vault:marketdesk-augnhdcr2jm-0cbff4",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/europe-automobiles-chinese-oem-competition-monitor-aug-26-chinese-shar-0cbff4.html",
+          "source_name": "Mastermind Research coverage of Goldman Sachs",
+          "dated": "2026-09-23"
+        },
+        {
+          "id": "vault_meta",
+          "text": "The report is Goldman Sachs research published 2026-09-23, 16 pages.",
+          "ref": "research_vault:marketdesk-augnhdcr2jm-0cbff4",
+          "tier": "first_party",
+          "values": [
+            "16"
+          ],
+          "url": "https://www.mastermind-x.com/research/europe-automobiles-chinese-oem-competition-monitor-aug-26-chinese-shar-0cbff4.html",
+          "source_name": "Mastermind Research vault",
+          "dated": "2026-09-23"
+        }
+      ],
+      "allowed_links": [
+        "https://www.mastermind-x.com/research/europe-automobiles-chinese-oem-competition-monitor-aug-26-chinese-shar-0cbff4.html"
+      ]
+    },
+    {
+      "slot_id": "press-research_desk-2026-10-14-4a7c93bddf20",
+      "source": "research_vault:marketdesk-8inwlunucuj-8950ab",
+      "story": {
+        "kind": "research_report",
+        "title_hint": "China Weekly Kickstart MXCN gained 1 while A shares lost 1",
+        "institution": "Goldman Sachs",
+        "side": "sell",
+        "published_at": "2026-10-10T03:44:45Z",
+        "tickers": [],
+        "themes": []
+      },
+      "triage": {
+        "tier": "flagship",
+        "rank": 5,
+        "w_score": 0.4419,
+        "w_score_pre_veto": 0.4419,
+        "components": {
+          "institution_tier": 0.5,
+          "cluster_density": 0.0,
+          "relevance": 0.0,
+          "extraction_quality": 0.99125,
+          "attention_potential": 0.8,
+          "novelty": 0.5
+        },
+        "veto": null,
+        "scoring_version": "w2r.1",
+        "score_source": "planner-recomputed",
+        "datasketch_present": true,
+        "ordered": true
+      },
+      "facts": [
+        {
+          "id": "vault_point_0",
+          "text": "China's Domestic Resilience: Golden Week tourism (826m trips, Rmb 738bn spending) and 9% YoY outbound travel growth (Macau +11%, HK +9%) signal robust consumer recovery, countering trade tension risks and supporting tourism/airline sectors.",
+          "ref": "research_vault:marketdesk-8inwlunucuj-8950ab",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/china-weekly-kickstart-mxcn-gained-1-while-a-shares-lost-1-8950ab.html",
+          "source_name": "Mastermind Research coverage of Goldman Sachs",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_1",
+          "text": "Geopolitical Risk Surge: US-China relations barometer at 53 (geopolitics component 80) and FCC restrictions on Chinese labs + Huawei/Qualcomm patent deal heighten tensions, impacting capital flows and China asset sentiment.",
+          "ref": "research_vault:marketdesk-8inwlunucuj-8950ab",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/china-weekly-kickstart-mxcn-gained-1-while-a-shares-lost-1-8950ab.html",
+          "source_name": "Mastermind Research coverage of Goldman Sachs",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_2",
+          "text": "3Q Earnings Catalyst: Concentrated HADR (A+H) earnings window (Nov 8\u201315) drives market flows; positive profit alerts and offshore tech profit growth improvement offset flattened hard tech earnings revisions.",
+          "ref": "research_vault:marketdesk-8inwlunucuj-8950ab",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/china-weekly-kickstart-mxcn-gained-1-while-a-shares-lost-1-8950ab.html",
+          "source_name": "Mastermind Research coverage of Goldman Sachs",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_3",
+          "text": "Critical Valuation Divergence: MSCI China 12m forward P/E (25.7x) exceeds CSI300 (23.1x), with Health Care/Cons Staples overvalued in MSCI China (18.3x/11.2x vs. 9x/15.0x), signaling sector-specific risk.",
+          "ref": "research_vault:marketdesk-8inwlunucuj-8950ab",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/china-weekly-kickstart-mxcn-gained-1-while-a-shares-lost-1-8950ab.html",
+          "source_name": "Mastermind Research coverage of Goldman Sachs",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_meta",
+          "text": "The report is Goldman Sachs research published 2026-10-10, 25 pages.",
+          "ref": "research_vault:marketdesk-8inwlunucuj-8950ab",
+          "tier": "first_party",
+          "values": [
+            "25"
+          ],
+          "url": "https://www.mastermind-x.com/research/china-weekly-kickstart-mxcn-gained-1-while-a-shares-lost-1-8950ab.html",
+          "source_name": "Mastermind Research vault",
+          "dated": "2026-10-10"
+        }
+      ],
+      "allowed_links": [
+        "https://www.mastermind-x.com/research/china-weekly-kickstart-mxcn-gained-1-while-a-shares-lost-1-8950ab.html"
+      ]
+    },
+    {
+      "slot_id": "press-research_desk-2026-10-14-46398b97f93e",
+      "source": "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+      "story": {
+        "kind": "research_report",
+        "title_hint": "BofA Follow The Flow Seeking shelter 2026 10 09",
+        "institution": "Bank of America",
+        "side": "sell",
+        "published_at": "2026-10-10T00:03:56Z",
+        "tickers": [],
+        "themes": []
+      },
+      "triage": {
+        "tier": "flagship",
+        "rank": 6,
+        "w_score": 0.4398,
+        "w_score_pre_veto": 0.4398,
+        "components": {
+          "institution_tier": 0.5,
+          "cluster_density": 0.0,
+          "relevance": 0.0,
+          "extraction_quality": 0.9825,
+          "attention_potential": 0.8,
+          "novelty": 0.5
+        },
+        "veto": null,
+        "scoring_version": "w2r.1",
+        "score_source": "planner-recomputed",
+        "datasketch_present": true,
+        "ordered": true
+      },
+      "facts": [
+        {
+          "id": "vault_point_0",
+          "text": "Sovereign yield-driven asset rotation: Higher sovereign yields and geopolitical uncertainty are driving capital toward government debt (vs. credit), reversing 2024-2025 trends and positioning 2026 as a \"risk-free\" asset preference year.",
+          "ref": "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/bofa-follow-the-flow-seeking-shelter-2026-10-09-baf3cc.html",
+          "source_name": "Mastermind Research coverage of Bank of America",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_1",
+          "text": "Weekly flows divergence: Record inflows into government bond funds (largest since April 2025) contrast with 5th consecutive weekly outflows in high-yield funds and 10th straight weekly inflows in equity ETFs, signaling active risk appetite shifts.",
+          "ref": "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/bofa-follow-the-flow-seeking-shelter-2026-10-09-baf3cc.html",
+          "source_name": "Mastermind Research coverage of Bank of America",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_2",
+          "text": "IG vs HY flow shift: Investment Grade (MM) recorded 2.7% weekly inflows versus High Yield\u2019s -0.3% outflows, reflecting capital reallocation toward safer credit amid volatility.",
+          "ref": "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/bofa-follow-the-flow-seeking-shelter-2026-10-09-baf3cc.html",
+          "source_name": "Mastermind Research coverage of Bank of America",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_3",
+          "text": "ETF flow divergence: IG ETFs (Exhibit 17) show distinct flow patterns versus traditional IG funds, indicating ETF-specific dynamics that could alter portfolio allocation strategies.",
+          "ref": "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/bofa-follow-the-flow-seeking-shelter-2026-10-09-baf3cc.html",
+          "source_name": "Mastermind Research coverage of Bank of America",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_meta",
+          "text": "The report is Bank of America research published 2026-10-10, 6 pages.",
+          "ref": "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+          "tier": "first_party",
+          "values": [
+            "6"
+          ],
+          "url": "https://www.mastermind-x.com/research/bofa-follow-the-flow-seeking-shelter-2026-10-09-baf3cc.html",
+          "source_name": "Mastermind Research vault",
+          "dated": "2026-10-10"
+        }
+      ],
+      "allowed_links": [
+        "https://www.mastermind-x.com/research/bofa-follow-the-flow-seeking-shelter-2026-10-09-baf3cc.html"
+      ]
+    },
+    {
+      "slot_id": "press-research_desk-2026-10-14-ea7ef53822de",
+      "source": "research_vault:marketdesk-xyyijkslpal-b997fb",
+      "story": {
+        "kind": "research_report",
+        "title_hint": "Q4 2026 Corporate Bond Market Outlook",
+        "institution": "Other",
+        "side": "independent",
+        "published_at": "2026-10-10T03:12:53Z",
+        "tickers": [],
+        "themes": []
+      },
+      "triage": {
+        "tier": "flagship",
+        "rank": 7,
+        "w_score": 0.4392,
+        "w_score_pre_veto": 0.4392,
+        "components": {
+          "institution_tier": 0.5,
+          "cluster_density": 0.0,
+          "relevance": 0.0,
+          "extraction_quality": 1.0,
+          "attention_potential": 0.74,
+          "novelty": 0.5
+        },
+        "veto": null,
+        "scoring_version": "w2r.1",
+        "score_source": "planner-recomputed",
+        "datasketch_present": true,
+        "ordered": true
+      },
+      "facts": [
+        {
+          "id": "vault_point_0",
+          "text": "Rate repricing dominates market pressure: Q3 returns driven by yield spikes (>6%) and $500B August supply surge, not credit spreads; IG bonds fully valued at +80bps OAS despite 6% yields above average.",
+          "ref": "research_vault:marketdesk-xyyijkslpal-b997fb",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/q4-2026-corporate-bond-market-outlook-b997fb.html",
+          "source_name": "Mastermind Research coverage of Other",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_1",
+          "text": "Hyperscalers' AI capex threatens banking dominance: $1T+ 2026 AI debt-funded capex (2 in top 8 issuers) risks banking sector concentration, with Financials driving $232B Q3 supply amid AI-driven leverage risks.",
+          "ref": "research_vault:marketdesk-xyyijkslpal-b997fb",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/q4-2026-corporate-bond-market-outlook-b997fb.html",
+          "source_name": "Mastermind Research coverage of Other",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_2",
+          "text": "Institutional flow deterioration signals risk: Net fund purchases collapsed from $357B (2025) to $23B (Q26), indicating sharp decline in demand and heightened flow risk for IG credit.",
+          "ref": "research_vault:marketdesk-xyyijkslpal-b997fb",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/q4-2026-corporate-bond-market-outlook-b997fb.html",
+          "source_name": "Mastermind Research coverage of Other",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_3",
+          "text": "Credit spreads at extreme tightness: IG spreads at 7th percentile (20-yr), with AA bucket underperforming (7bps widening) and Tech/Media underperforming (+24bps), signaling defensive positioning amid yield-driven flows.",
+          "ref": "research_vault:marketdesk-xyyijkslpal-b997fb",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/q4-2026-corporate-bond-market-outlook-b997fb.html",
+          "source_name": "Mastermind Research coverage of Other",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_4",
+          "text": "Geopolitical risks offset fundamentals: Middle East/Ukraine wars and Fed rate hikes (1 in 2026, 1 in 1H2027) compound elevated issuance ($561B Q3) and tight spreads, despite strong earnings growth (>25% S&P 500) and 6:1 upgrade/downgrade ratio.",
+          "ref": "research_vault:marketdesk-xyyijkslpal-b997fb",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/q4-2026-corporate-bond-market-outlook-b997fb.html",
+          "source_name": "Mastermind Research coverage of Other",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_meta",
+          "text": "The report is Other research published 2026-10-10, 8 pages.",
+          "ref": "research_vault:marketdesk-xyyijkslpal-b997fb",
+          "tier": "first_party",
+          "values": [
+            "8"
+          ],
+          "url": "https://www.mastermind-x.com/research/q4-2026-corporate-bond-market-outlook-b997fb.html",
+          "source_name": "Mastermind Research vault",
+          "dated": "2026-10-10"
+        }
+      ],
+      "allowed_links": [
+        "https://www.mastermind-x.com/research/q4-2026-corporate-bond-market-outlook-b997fb.html"
+      ]
+    },
+    {
+      "slot_id": "press-research_desk-2026-10-14-ece4cfde391a",
+      "source": "research_vault:marketdesk-rc9hi0toy31-75d4dc",
+      "story": {
+        "kind": "research_report",
+        "title_hint": "Jefferies Wood GREED and fear Election rout pending and credit tremors 1 Oct 2026",
+        "institution": "Greed and Fear",
+        "side": "sell",
+        "published_at": "2026-10-10T03:47:36Z",
+        "tickers": [],
+        "themes": []
+      },
+      "triage": {
+        "tier": "flagship",
+        "rank": 8,
+        "w_score": 0.43784,
+        "w_score_pre_veto": 0.43784,
+        "components": {
+          "institution_tier": 0.5,
+          "cluster_density": 0.0,
+          "relevance": 0.0,
+          "extraction_quality": 0.974333,
+          "attention_potential": 0.8,
+          "novelty": 0.5
+        },
+        "veto": null,
+        "scoring_version": "w2r.1",
+        "score_source": "planner-recomputed",
+        "datasketch_present": true,
+        "ordered": true
+      },
+      "facts": [
+        {
+          "id": "vault_point_0",
+          "text": "US Consumer Confidence Index Decline: Conference Board index fell to 81.9 (lowest since 2014), down 6.7 points, signaling heightened political uncertainty ahead of midterms.",
+          "ref": "research_vault:marketdesk-rc9hi0toy31-75d4dc",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/jefferies-wood-greed-and-fear-election-rout-pending-and-credit-tremors-75d4dc.html",
+          "source_name": "Mastermind Research coverage of Greed and Fear",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_1",
+          "text": "S&P500 Earnings Growth Surge: Q3 2026 consensus forecasts 30.2% YoY earnings growth (vs 16.1% last Oct), driven by AI capex; IT sector (semiconductors) leads at 131.7% growth.",
+          "ref": "research_vault:marketdesk-rc9hi0toy31-75d4dc",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/jefferies-wood-greed-and-fear-election-rout-pending-and-credit-tremors-75d4dc.html",
+          "source_name": "Mastermind Research coverage of Greed and Fear",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_2",
+          "text": "Bond Yield Surge & Structural Bear Market: 10Y/30Y Treasury yields at 5.34%/5.69% (highest since 2002); 2Y yield at 4.96% (108bp above Fed funds rate) implies further rate hikes and duration risk.",
+          "ref": "research_vault:marketdesk-rc9hi0toy31-75d4dc",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/jefferies-wood-greed-and-fear-election-rout-pending-and-credit-tremors-75d4dc.html",
+          "source_name": "Mastermind Research coverage of Greed and Fear",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_3",
+          "text": "Geopolitical Risk Escalation: Iran\u2019s UN envoy move signals negotiation intent, but US polling shows 62% disapproval of strikes and 67% disapproval of Trump\u2019s economy handling, heightening market volatility.",
+          "ref": "research_vault:marketdesk-rc9hi0toy31-75d4dc",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/jefferies-wood-greed-and-fear-election-rout-pending-and-credit-tremors-75d4dc.html",
+          "source_name": "Mastermind Research coverage of Greed and Fear",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_point_4",
+          "text": "China Real Estate Fundamentals Deterioration: MSCI China Real Estate Index shows sustained decline since Jan-22; household loans down 1.6% YoY (Rmb1.03tn drop in first 8 months), signaling sector collapse.",
+          "ref": "research_vault:marketdesk-rc9hi0toy31-75d4dc",
+          "tier": "first_party",
+          "values": [],
+          "url": "https://www.mastermind-x.com/research/jefferies-wood-greed-and-fear-election-rout-pending-and-credit-tremors-75d4dc.html",
+          "source_name": "Mastermind Research coverage of Greed and Fear",
+          "dated": "2026-10-10"
+        },
+        {
+          "id": "vault_meta",
+          "text": "The report is Greed and Fear research published 2026-10-10, 17 pages.",
+          "ref": "research_vault:marketdesk-rc9hi0toy31-75d4dc",
+          "tier": "first_party",
+          "values": [
+            "17"
+          ],
+          "url": "https://www.mastermind-x.com/research/jefferies-wood-greed-and-fear-election-rout-pending-and-credit-tremors-75d4dc.html",
+          "source_name": "Mastermind Research vault",
+          "dated": "2026-10-10"
+        }
+      ],
+      "allowed_links": [
+        "https://www.mastermind-x.com/research/jefferies-wood-greed-and-fear-election-rout-pending-and-credit-tremors-75d4dc.html"
+      ]
+    }
+  ],
+  "provider_calls": 0,
+  "staging_writes": 0,
+  "canonical_private_history_sha256": {
+    "data/press/staging/press-official-cd2747adeed2.json": "444946ab02c0537c539e367cf121ee8efd4d6ab8a6c5f27ae880ff2934053931",
+    "data/press/staging/_run_summary.json": "d8aa6bae34ec95e4fd873b2e1cc62ae6555eab2fb61e9eac5562e37c184ebbf2",
+    "data/press/staging/press-research_desk-2026-10-13-6baf3247f154.json": "2aef46759c72b4621e772d0da04d2eeee4025b525988f8dd7f1ae1f207206c0a"
+  },
+  "initial_exclusions": [
+    "artifact:data/gex/latest.json",
+    "artifact:data/market_state/latest.json",
+    "artifact:data/risk_radar/forward_log.jsonl",
+    "artifact:site/basketdata/breadth_split.json",
+    "artifact:site/basketdata/fear_greed.json",
+    "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+    "official_feed:url:cd2747adeed2",
+    "research_vault:marketdesk-dxcjj8lpx8k-75b4af",
+    "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+    "research_vault:marketdesk-uc6giunqscq-05fcee"
+  ]
+}

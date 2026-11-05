@@ -232,27 +232,105 @@ def test_fetch_organ_index_branch_still_derives_its_own_date(monkeypatch):
 
 
 # --------------------------------------------------------------------------- #
-# storage — keep-FIRST date-keyed parquet + read_corpus (PIT: first print wins)
+# storage — first-observation PIT + distinct official source versions
 # --------------------------------------------------------------------------- #
-def _corpus_row(doc_id, title, body, crawled, organ="pboc", rank=-1):
+def _corpus_row(doc_id, title, body, crawled, organ="pboc", rank=-1, url=None):
+    url = url or ("u/" + doc_id)
     return {"doc_id": doc_id, "organ": organ, "organ_name": "PBOC",
-            "title": title, "url": "u/" + doc_id, "body": body,
+            "title": title, "url": url, "body": body,
             "body_sha256": coc.body_sha256(body), "seendate": crawled[:10],
             "_crawled_at": crawled, "lang": "zh",
             "timestamp_quality": "PUBLISHER_STATED", "theme": "monetary",
             "layout_rank": rank}
 
 
-def test_write_day_keep_first_pit(tmp_path, monkeypatch):
+def test_source_locator_is_stable_across_title_and_body_revision():
+    url = "https://www.pbc.gov.cn/policy/one.html"
+    first = coc._source_locator_id("pboc", url)
+    assert first == coc._source_locator_id("pboc", url)
+    assert first != coc._source_locator_id("ndrc", url)
+    assert coc.content_sha256("原始标题", "适度宽松") != \
+        coc.content_sha256("更正标题", "适度宽松")
+
+
+def test_write_day_repeated_identical_observation_keeps_first_clock(tmp_path, monkeypatch):
     monkeypatch.setattr(coc, "_store_dir", lambda: tmp_path)
     d = date(2026, 7, 2)
-    first = _corpus_row("a1", "原始标题", "适度宽松", "2026-07-02T01:00:00")
-    restated = _corpus_row("a1", "被改写的标题", "内容变化", "2026-07-02T05:00:00")
+    url = "https://www.pbc.gov.cn/policy/one.html"
+    first = _corpus_row("a1", "原始标题", "适度宽松", "2026-07-02T01:00:00", url=url)
+    repeat = _corpus_row("a1", "原始标题", "适度宽松", "2026-07-02T05:00:00", url=url)
     coc.write_day([first], d)
-    coc.write_day([restated], d)   # same doc_id later → must NOT overwrite
+    coc.write_day([repeat], d)
     corpus = coc.read_corpus()
     assert len(corpus) == 1
-    assert corpus.iloc[0]["title"] == "原始标题"   # first print wins (Missing-Tape body hash)
+    assert corpus.iloc[0]["_crawled_at"] == "2026-07-02T01:00:00"
+    assert int(corpus.iloc[0]["version_ordinal"]) == 1
+    assert not bool(corpus.iloc[0]["is_revision_observed"])
+
+
+def test_write_day_retains_changed_content_at_same_source_locator(tmp_path, monkeypatch):
+    monkeypatch.setattr(coc, "_store_dir", lambda: tmp_path)
+    d = date(2026, 7, 2)
+    url = "https://www.pbc.gov.cn/policy/one.html"
+    first = _corpus_row("a1", "原始标题", "适度宽松", "2026-07-02T01:00:00", url=url)
+    revised = _corpus_row("a2", "更正标题", "内容变化", "2026-07-02T05:00:00", url=url)
+    locator = coc._source_locator_id("pboc", url)
+    first["source_locator_id"] = locator
+    revised["source_locator_id"] = locator
+    coc.write_day([first], d)
+    coc.write_day([revised], d)
+    corpus = coc.read_corpus()
+
+    assert len(corpus) == 2
+    assert list(corpus["title"]) == ["原始标题", "更正标题"]
+    assert list(corpus["version_ordinal"]) == [1, 2]
+    assert list(corpus["is_revision_observed"]) == [False, True]
+    assert corpus.iloc[0]["source_locator_id"] == corpus.iloc[1]["source_locator_id"]
+    assert corpus.iloc[0]["content_sha256"] != corpus.iloc[1]["content_sha256"]
+    assert corpus.iloc[1]["supersedes_content_sha256"] == corpus.iloc[0]["content_sha256"]
+    assert corpus.iloc[1]["supersedes_observed_at"] == "2026-07-02T01:00:00"
+
+
+def test_legacy_rows_with_reused_url_remain_separate_documents(tmp_path, monkeypatch):
+    monkeypatch.setattr(coc, "_store_dir", lambda: tmp_path)
+    d = date(2026, 7, 2)
+    url = "https://www.pbc.gov.cn/policy/navigation.html"
+    a = _corpus_row("legacy-a", "旧文甲", "稳中求进", "2026-07-02T01:00:00", url=url)
+    b = _corpus_row("legacy-b", "旧文乙", "稳中求进", "2026-07-02T02:00:00", url=url)
+
+    coc.write_day([a, b], d)
+    corpus = coc.read_corpus()
+
+    assert len(corpus) == 2
+    assert set(corpus["doc_id"]) == {"legacy-a", "legacy-b"}
+    assert set(corpus["source_locator_id"]) == {""}
+    assert list(corpus["version_ordinal"]) == [1, 1]
+    assert list(corpus["is_revision_observed"]) == [False, False]
+
+
+def test_content_reversion_is_retained_as_a_new_observation(tmp_path, monkeypatch):
+    monkeypatch.setattr(coc, "_store_dir", lambda: tmp_path)
+    url = "https://www.pbc.gov.cn/policy/reversion.html"
+    locator = coc._source_locator_id("pboc", url)
+
+    a1 = _corpus_row("a1", "版本A", "稳中求进", "2026-07-01T01:00:00", url=url)
+    b = _corpus_row("b1", "版本B", "适度宽松", "2026-07-02T01:00:00", url=url)
+    a2 = _corpus_row("a2", "版本A", "稳中求进", "2026-07-03T01:00:00", url=url)
+    for row in (a1, b, a2):
+        row["source_locator_id"] = locator
+
+    coc.write_day([a1], date(2026, 7, 1))
+    coc.write_day([b], date(2026, 7, 2))
+    coc.write_day([a2], date(2026, 7, 3))
+    corpus = coc.read_corpus()
+
+    assert len(corpus) == 3
+    assert list(corpus["version_ordinal"]) == [1, 2, 3]
+    assert corpus.iloc[0]["content_sha256"] == corpus.iloc[2]["content_sha256"]
+    assert corpus.iloc[1]["content_sha256"] != corpus.iloc[2]["content_sha256"]
+    assert corpus.iloc[2]["supersedes_content_sha256"] == corpus.iloc[1]["content_sha256"]
+    assert corpus.iloc[2]["supersedes_observed_at"] == "2026-07-02T01:00:00"
+
 
 
 def test_read_corpus_none_when_empty(tmp_path, monkeypatch):
