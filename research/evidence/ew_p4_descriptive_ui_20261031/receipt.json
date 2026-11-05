@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "ce62bab96ed4466c4a0f6f156578d270e8764b9b",
+  "source_revision": "67ea5cb977b08223a3825d14ccb816ac6b6e9422",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1496,7 +1496,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-unreadable-en-dark-390.png",
-      "sha256": "cf76b5116a47408bf08a80fc9fa96aca4cc7d7b0e2f0ed0df1e28c5904ba2e24",
+      "sha256": "5eb57c75755390a0daf35a94f3886ac7b4ebe688067ef667dd42a8d41f84f777",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Actual full 68-case isolated Chromium recapture from integrated source commit ce62bab96ed4466c4a0f6f156578d270e8764b9b (the Sector Cycles wave after its merge of main d3ab2890); the probe file is unchanged and ran under a local Chrome for Testing 153.0.8010.12 headless shell passed as executable_path, because the Python Playwright 1.62 default build is not cached on this host; all 31 render inputs verified byte-for-byte against the Git tree before evidence publication; 2 PNG artifacts changed (1 screenshot, 1 contact sheet; 8 pixels in total, at most 2/255 per channel). This is source evidence only, not signed-in production acceptance.",
+    "note": "Actual full 68-case isolated Chromium recapture from source commit 67ea5cb977b08223a3825d14ccb816ac6b6e9422 (the Sector Cycles wave with its PR #10777 review repairs, which changed three bound render inputs: templates/sector_central.html.j2, templates/si_workspace.js and site/si_workspace.js); the probe file is unchanged and ran under the local Playwright chromium_headless_shell-1228 build (reports Google Chrome for Testing 149.0.7827.55) passed as executable_path, because the Python Playwright 1.62 default build is not cached on this host; all 31 render inputs verified byte-for-byte against the Git tree before evidence publication; 2 PNG artifacts changed (1 screenshot, 1 contact sheet; 8 pixels in total, at most 2/255 per channel). This is source evidence only, not signed-in production acceptance.",
     "pr_branch": "claude/sic-cycles-wave-20261102",
-    "pr_parent_of_evidence_commit": "ce62bab96ed4466c4a0f6f156578d270e8764b9b",
+    "pr_parent_of_evidence_commit": "67ea5cb977b08223a3825d14ccb816ac6b6e9422",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2160,14 +2160,14 @@
       },
       {
         "path": "templates/sector_central.html.j2",
-        "blob_at_source_revision": "b967e879b94b9fc41f5a24af030da8394fba38ca",
-        "blob_on_pr_branch": "b967e879b94b9fc41f5a24af030da8394fba38ca",
+        "blob_at_source_revision": "ce5f80d57d76d188cf4fd37a991c6f40a5d7bd1c",
+        "blob_on_pr_branch": "ce5f80d57d76d188cf4fd37a991c6f40a5d7bd1c",
         "equal": true
       },
       {
         "path": "templates/si_workspace.js",
-        "blob_at_source_revision": "1aa5c8256cf2c684e01be3b4647a2e6669c0b695",
-        "blob_on_pr_branch": "1aa5c8256cf2c684e01be3b4647a2e6669c0b695",
+        "blob_at_source_revision": "eb2f6a171458c3b91a5e402e2a388747fd4e50f2",
+        "blob_on_pr_branch": "eb2f6a171458c3b91a5e402e2a388747fd4e50f2",
         "equal": true
       },
       {
@@ -2178,8 +2178,8 @@
       },
       {
         "path": "site/si_workspace.js",
-        "blob_at_source_revision": "1aa5c8256cf2c684e01be3b4647a2e6669c0b695",
-        "blob_on_pr_branch": "1aa5c8256cf2c684e01be3b4647a2e6669c0b695",
+        "blob_at_source_revision": "eb2f6a171458c3b91a5e402e2a388747fd4e50f2",
+        "blob_on_pr_branch": "eb2f6a171458c3b91a5e402e2a388747fd4e50f2",
         "equal": true
       }
     ],
