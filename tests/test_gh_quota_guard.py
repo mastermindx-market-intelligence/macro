@@ -52,11 +52,24 @@ _HOOK_SPEC.loader.exec_module(GUARD)
 # the pre-2026-08-09 behaviour: every older test in this file keeps its old answer.
 
 _SHIM = """#!{python}
-import os, sys
+import json, os, sys
 code = int(os.environ.get("GH_SHIM_EXIT", "0"))
 if code:
     sys.stderr.write(os.environ.get("GH_SHIM_STDERR", "HTTP 403: rate limit exceeded"))
     sys.exit(code)
+# Request-sensitive routing (shape 8, 2026-11-05): the occupancy probe asks
+# GitHub for five DIFFERENT status populations, so a shim that answers every
+# call with one payload cannot tell a status-filtered read from an all-history
+# one. GH_SHIM_ROUTES maps a substring of the command line to the payload that
+# request gets; the first matching key wins, in insertion order. Anything that
+# matches no key falls through to GH_SHIM_PAYLOAD.
+blob = " ".join(sys.argv[1:])
+routes = os.environ.get("GH_SHIM_ROUTES")
+if routes:
+    for key, value in json.loads(routes).items():
+        if key in blob:
+            sys.stdout.write(value if isinstance(value, str) else json.dumps(value))
+            sys.exit(0)
 sys.stdout.write(os.environ.get("GH_SHIM_PAYLOAD", "[]"))
 """
 
@@ -762,8 +775,16 @@ def _capacity_row(
     }
 
 
-def _capacity_runs(monkeypatch, *runs: dict) -> None:
-    monkeypatch.setenv("GH_SHIM_PAYLOAD", json.dumps({"workflow_runs": list(runs)}))
+def _capacity_runs(monkeypatch, *runs: dict, total_count: int | None = None) -> None:
+    """The payload every `gh api` occupancy read returns.
+
+    `total_count` is what the Actions API reports alongside `workflow_runs`,
+    and it is what proves a page is the WHOLE population rather than merely a
+    full one. It defaults to the row count, i.e. a complete page.
+    """
+    payload = {"workflow_runs": list(runs)}
+    payload["total_count"] = len(runs) if total_count is None else total_count
+    monkeypatch.setenv("GH_SHIM_PAYLOAD", json.dumps(payload))
 
 
 @pytest.mark.parametrize("target", sorted(GUARD.HEAVY_M2_MANUAL_WORKFLOWS))
@@ -822,21 +843,358 @@ def test_capacity_probe_failure_fails_open_and_says_so(monkeypatch):
     assert "fail-open" in proc.stderr.decode().lower()
 
 
-def test_capacity_guard_uses_one_probe_per_dispatch(monkeypatch):
+def test_capacity_guard_reads_five_statuses_under_one_shared_deadline(monkeypatch):
+    """The occupancy contract: up to FIVE status-filtered reads, not one
+    all-history read.
+
+    The first revision asked for `actions/runs?branch=main&per_page=100` — every
+    run on main, newest first, with `total_count` dropped — so 100 newer
+    completed or unrelated runs could hide an older still-running heavy lane.
+    The replacement asks for the five documented non-completed populations, one
+    page each, in a fixed order, sharing ONE 20s deadline.
+    """
     calls = []
 
     class _Result:
         returncode = 0
-        stdout = json.dumps({"workflow_runs": []}).encode()
+        stdout = json.dumps({"workflow_runs": [], "total_count": 0}).encode()
         stderr = b""
 
-    class _OneProbe:
+    class _Recorder:
         def run(self, *args, **kwargs):
             calls.append((args, kwargs))
             return _Result()
 
-    monkeypatch.setattr(GUARD, "subprocess", _OneProbe())
+    monkeypatch.setattr(GUARD, "subprocess", _Recorder())
     assert GUARD.check("gh workflow run research-ingest.yml --ref main") is None
-    assert len(calls) == 1
-    argv = calls[0][0][0]
-    assert "actions/runs?branch=main&per_page=100" in argv[-1]
+    assert len(calls) == 5, "one read per documented non-completed status"
+    urls = [c[0][0][-1] for c in calls]
+    assert [u.split("status=")[1].split("&")[0] for u in urls] == [
+        "requested", "pending", "waiting", "queued", "in_progress",
+    ], "the status order is fixed, not incidental"
+    assert len(set(urls)) == 5, "five DISTINCT reads"
+    for url in urls:
+        assert "branch=main" in url
+        assert "per_page=100" in url
+        assert "page=1" in url
+        assert url.count("?") == 1
+    assert not any("actions/runs?branch=main&per_page=100" in u for u in urls), (
+        "the all-history read is exactly the read this revision removed"
+    )
+
+    # ONE shared deadline: every request gets what is left of the same 20s.
+    timeouts = [c[1]["timeout"] for c in calls]
+    assert all(0 < t <= 20 for t in timeouts)
+    assert timeouts == sorted(timeouts, reverse=True), "the budget only shrinks"
+    assert timeouts[-1] < timeouts[0], "and it really does shrink"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Shape 8, revised 2026-11-05 — the active-run inventory must be READABLE
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# The first shape-8 probe read `actions/runs?branch=main&per_page=100`: all
+# history on main, newest first, with `total_count` dropped. On a mature
+# repository 100 newer completed or unrelated runs are ROUTINE, so an older
+# still-running `daily.yml` fell off the end of that page and the guard
+# reported the physical M2 free while a heavy lane was live on it.
+#
+# The revision asks GitHub for the five documented non-completed status
+# populations instead — one page each, `total_count` intact — so a full page
+# can now be distinguished from a complete one.
+
+
+def _routes(monkeypatch, routes: dict, default=None) -> None:
+    """Route each `gh api` occupancy read by the status it asks for."""
+    monkeypatch.setenv("GH_SHIM_ROUTES", json.dumps(routes))
+    monkeypatch.setenv("GH_SHIM_PAYLOAD", json.dumps(
+        default if default is not None else {"workflow_runs": [], "total_count": 0}))
+
+
+def test_a_hundred_newer_completed_runs_can_no_longer_hide_a_live_heavy_lane(monkeypatch):
+    """THE DEFECT THIS REVISION FIXES.
+
+    The request-sensitive shim answers the OLD all-history URL with exactly the
+    100 newer completed, unrelated rows — and the status-filtered
+    `in_progress` read with the older live `daily.yml`. The old source reads
+    the first and permits; the repaired source reads the second and refuses.
+    """
+    live = _capacity_row("daily.yml", status="in_progress", minutes_ago=180,
+                         run_id=35508880009)
+    newer = [
+        _capacity_row("ci.yml", status="completed", minutes_ago=float(5 - i / 20),
+                      run_id=35508880100 + i)
+        for i in range(100)
+    ]
+    _routes(monkeypatch, {
+        # the OLD all-history read: newest first, no status filter
+        "actions/runs?branch=main&per_page=100":
+            json.dumps({"workflow_runs": newer, "total_count": len(newer)}),
+        # the status-filtered read that can still see the live lane
+        "status=in_progress":
+            json.dumps({"workflow_runs": [live], "total_count": 1}),
+    })
+
+    d = _run("gh workflow run research-ingest.yml --ref main")
+    assert d and d.get("permissionDecision") == "deny", (
+        "a live daily.yml must refuse the dispatch even with 100 newer "
+        "completed runs in front of it"
+    )
+    reason = d["permissionDecisionReason"]
+    assert "M2 PHYSICAL HOST BUSY" in reason
+    assert "daily.yml" in reason
+    assert "35508880009" in reason
+
+
+def test_an_arbitrarily_large_completed_history_with_clear_active_inventories_allows(monkeypatch):
+    """The revision must NOT be "saturated all-history -> deny".
+
+    A mature repository always carries a long completed history. Refusing
+    merely because history exists would permanently refuse normal dispatches
+    on a mature repo, so with all five ACTIVE inventories complete and empty
+    the dispatch is allowed.
+    """
+    completed = [
+        _capacity_row("ci.yml", status="completed", minutes_ago=float(2000 - i),
+                      run_id=35508890000 + i)
+        for i in range(100)
+    ]
+    _routes(monkeypatch, {
+        "actions/runs?branch=main&per_page=100":
+            json.dumps({"workflow_runs": completed, "total_count": len(completed)}),
+    })
+    assert not _denied("gh workflow run asia-close.yml --ref main")
+
+
+@pytest.mark.parametrize("status", ["requested", "pending", "waiting", "queued",
+                                    "in_progress"])
+def test_every_documented_active_status_can_carry_a_conflict(monkeypatch, status):
+    """All five non-completed populations are read, so a conflicting heavy lane
+    in ANY of them refuses the dispatch."""
+    _routes(monkeypatch, {
+        f"status={status}": json.dumps({
+            "workflow_runs": [_capacity_row("daily.yml", status=status,
+                                             run_id=35508880010)],
+            "total_count": 1,
+        }),
+    })
+    assert _denied("gh workflow run research-ingest.yml --ref main")
+
+
+def test_the_old_queued_exemption_is_kept_for_the_queued_inventory(monkeypatch):
+    """A queued run that never starts would otherwise block the lever forever."""
+    _routes(monkeypatch, {
+        "status=queued": json.dumps({
+            "workflow_runs": [_capacity_row("daily.yml", status="queued",
+                                             minutes_ago=95)],
+            "total_count": 1,
+        }),
+    })
+    assert not _denied("gh workflow run research-ingest.yml --ref main")
+
+
+@pytest.mark.parametrize("status", ["requested", "pending", "waiting", "in_progress"])
+def test_the_orphan_exemption_does_not_apply_to_the_other_active_statuses(monkeypatch, status):
+    """Only `queued` ages out. A long-running `in_progress` lane is the evidence
+    being waited on, and the exemption grants no cancellation or retry."""
+    _routes(monkeypatch, {
+        f"status={status}": json.dumps({
+            "workflow_runs": [_capacity_row("daily.yml", status=status,
+                                             minutes_ago=95)],
+            "total_count": 1,
+        }),
+    })
+    assert _denied("gh workflow run research-ingest.yml --ref main")
+
+
+def test_an_inventory_that_omits_rows_is_refused_as_incomplete_not_as_busy(monkeypatch):
+    """`total_count` is the proof that a page is the whole population.
+
+    101 matching runs with 100 returned means one active run was never read, so
+    the conflicting-lane check is inconclusive and the dispatch is refused. It
+    is refused as INCOMPLETE: the guard must not claim an observed busy host,
+    and it must not name a run it never saw.
+    """
+    rows = [
+        _capacity_row("ci.yml", status="in_progress", minutes_ago=float(3 - i / 40),
+                      run_id=35508870000 + i)
+        for i in range(100)
+    ]
+    _routes(monkeypatch, {
+        "status=queued": json.dumps({"workflow_runs": rows, "total_count": 101}),
+    })
+    d = _run("gh workflow run research-ingest.yml --ref main")
+    assert d and d.get("permissionDecision") == "deny"
+    reason = d["permissionDecisionReason"]
+    assert "INCOMPLETE ACTIVE INVENTORY" in reason
+    assert "M2 PHYSICAL HOST BUSY" not in reason, "must not claim an observed busy host"
+    assert "101" in reason and "100" in reason
+    # no fabricated identity for the run that was never read
+    assert "35508870000" not in reason
+    assert "35508870099" not in reason
+
+
+def test_a_full_page_of_unrelated_rows_is_a_complete_inventory_and_allows(monkeypatch):
+    """100 rows with `total_count` 100 IS the whole population. A full page is
+    not a refusal — only an unread remainder is."""
+    rows = [
+        _capacity_row("ci.yml", status="in_progress", minutes_ago=float(3 - i / 40),
+                      run_id=35508860000 + i)
+        for i in range(100)
+    ]
+    _routes(monkeypatch, {
+        "status=queued": json.dumps({"workflow_runs": rows, "total_count": 100}),
+    })
+    assert not _denied("gh workflow run research-ingest.yml --ref main")
+
+
+@pytest.mark.parametrize("payload,label", [
+    ('{"workflow_runs": [], "total_count": "5"}', "a string count"),
+    ('{"workflow_runs": [], "total_count": true}', "a bool count"),
+    ('{"workflow_runs": [], "total_count": -1}', "a negative count"),
+    ('{"workflow_runs": [], "total_count": 0.0}', "a float count"),
+    ('{"workflow_runs": []}', "a missing count"),
+    ('{"workflow_runs": {}, "total_count": 0}', "a malformed run list"),
+    ('[]', "a non-object response"),
+])
+def test_malformed_occupancy_responses_keep_the_fail_open_warning(monkeypatch, payload, label):
+    """A malformed schema is an unreadable probe: not evidence of a busy host,
+    and not evidence of a clear one. The guard stays fail-open and says so."""
+    monkeypatch.setenv("GH_SHIM_PAYLOAD", payload)
+    proc = _raw("gh workflow run research-ingest.yml --ref main")
+    assert proc.returncode == 0
+    assert proc.stdout.decode().strip() == "", "fail-open must ALLOW (stdout stays empty)"
+    err = proc.stderr.decode().lower()
+    assert "fail-open" in err, f"the warning must be loud ({label}), got: {err!r}"
+
+
+def test_a_timed_out_occupancy_read_keeps_the_fail_open_warning(monkeypatch, capsys):
+    """A read that outlives its share of the deadline is a probe error."""
+    class _Timeout:
+        def run(self, *args, **kwargs):
+            raise subprocess.TimeoutExpired(cmd="gh api", timeout=kwargs.get("timeout"))
+
+    monkeypatch.setattr(GUARD, "subprocess", _Timeout())
+    assert GUARD.check("gh workflow run research-ingest.yml --ref main") is None
+    err = capsys.readouterr().err.lower()
+    assert "fail-open" in err
+    assert "occupancy" in err
+
+
+def test_the_five_reads_share_one_monotonic_deadline(monkeypatch):
+    """ONE 20s budget for the whole probe, not five.
+
+    A controlled clock — no real sleep — shows the timeout handed to each
+    subprocess strictly decreasing.
+    """
+    clock = {"now": 1000.0}
+    calls = []
+
+    class _Result:
+        returncode = 0
+        stdout = json.dumps({"workflow_runs": [], "total_count": 0}).encode()
+        stderr = b""
+
+    class _Recorder:
+        def run(self, *args, **kwargs):
+            calls.append((args, kwargs))
+            clock["now"] += 3.0        # each read costs three seconds
+            return _Result()
+
+    monkeypatch.setattr(GUARD, "_monotonic_now", lambda: clock["now"])
+    monkeypatch.setattr(GUARD, "subprocess", _Recorder())
+
+    assert GUARD.check("gh workflow run research-ingest.yml --ref main") is None
+    assert len(calls) == 5, "five statuses, five reads"
+    timeouts = [c[1]["timeout"] for c in calls]
+    assert all(0 < t <= 20 for t in timeouts)
+    assert timeouts == sorted(timeouts, reverse=True), "the budget only shrinks"
+    assert timeouts[-1] < timeouts[0], "and it really does shrink"
+
+
+def test_the_probe_stops_reading_once_its_deadline_is_spent(monkeypatch, capsys):
+    """No request is issued after the shared deadline is exhausted."""
+    clock = {"now": 1000.0}
+    calls = []
+
+    class _Result:
+        returncode = 0
+        stdout = json.dumps({"workflow_runs": [], "total_count": 0}).encode()
+        stderr = b""
+
+    class _SlowRecorder:
+        def run(self, *args, **kwargs):
+            calls.append((args, kwargs))
+            clock["now"] += 11.0        # each read costs eleven seconds
+            return _Result()
+
+    monkeypatch.setattr(GUARD, "_monotonic_now", lambda: clock["now"])
+    monkeypatch.setattr(GUARD, "subprocess", _SlowRecorder())
+
+    assert GUARD.check("gh workflow run research-ingest.yml --ref main") is None
+    assert len(calls) == 2, "a third read would start after the deadline"
+    err = capsys.readouterr().err.lower()
+    assert "fail-open" in err
+    assert "deadline" in err
+
+
+def test_compound_heavy_commands_share_one_bounded_probe(monkeypatch):
+    """The probe runs ONCE per hook invocation and is reused for every matched
+    heavy command on the line — five reads, not ten."""
+    calls = []
+
+    class _Result:
+        returncode = 0
+        stdout = json.dumps({"workflow_runs": [], "total_count": 0}).encode()
+        stderr = b""
+
+    class _Recorder:
+        def run(self, *args, **kwargs):
+            calls.append((args, kwargs))
+            return _Result()
+
+    monkeypatch.setattr(GUARD, "subprocess", _Recorder())
+    cmd = ("gh workflow run asia-close.yml --ref main && "
+           "gh workflow run research-ingest.yml --ref main")
+    assert GUARD.check(cmd) is None
+    assert len(calls) == 5, "one bounded probe, reused across both commands"
+
+
+def test_an_unrelated_dispatch_costs_no_capacity_probe(monkeypatch):
+    """The probe is spent only on an exact heavy-manual match."""
+    exploding = _ExplodingSubprocess()
+    monkeypatch.setattr(GUARD, "subprocess", exploding)
+    assert GUARD.check("gh workflow run render.yml --ref main", "/some/checkout") is None
+    assert exploding.calls == []
+
+
+@pytest.mark.parametrize("path,conflicts", [
+    (".github/workflows/daily.yml", True),
+    (".github/workflows/daily.yml@main", True),
+    (".github/workflows/asia-close.yml", True),
+    (".github/workflows/research-ingest.yml", True),
+    (".github/workflows/ci.yml", False),
+    (".github/workflows/daily.yml.bak", False),
+    (".github/workflows/notdaily.yml", False),
+])
+def test_a_ref_suffixed_workflow_path_names_the_same_lane(monkeypatch, path, conflicts):
+    """The Actions API may report a workflow path with an optional `@ref`
+    suffix. `daily.yml` and `daily.yml@main` are the SAME lane, so both must
+    match — and the matching must not widen to anything else."""
+    _capacity_runs(monkeypatch, {
+        "path": path,
+        "status": "in_progress",
+        "created_at": _stamp(2),
+        "id": 35508880011,
+        "html_url": "https://example.test/run/35508880011",
+    })
+    assert _denied("gh workflow run research-ingest.yml --ref main") is conflicts
+
+
+def test_the_ref_suffix_does_not_widen_the_manual_dispatch_target_set(monkeypatch):
+    """The set of dispatch targets the guard spends a probe on is unchanged:
+    `asia-close.yml` and `research-ingest.yml`, on main or the default."""
+    exploding = _ExplodingSubprocess()
+    monkeypatch.setattr(GUARD, "subprocess", exploding)
+    assert GUARD.check("gh workflow run daily.yml@main --ref main") is None
+    assert exploding.calls == []

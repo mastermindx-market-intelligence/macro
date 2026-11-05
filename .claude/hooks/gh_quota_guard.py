@@ -127,6 +127,23 @@ M2_CAPACITY_CONFLICT_WORKFLOWS = frozenset({
     "asia-close.yml",
     "research-ingest.yml",
 })
+#: Shape 8 occupancy probe (2026-11-05 revision). The first revision read
+#: `actions/runs?branch=main&per_page=100` — ALL history, newest first, and it
+#: dropped `total_count`. On a mature repository 100 newer completed or
+#: unrelated runs are ROUTINE, so an older still-running heavy lane could fall
+#: off the end of that single page and the guard would report the host free
+#: while the M2 was busy. The replacement asks GitHub for the five documented
+#: NON-COMPLETED status populations instead, one page each, in this fixed
+#: order. `total_count` is what proves a page is the whole population, so the
+#: probe can now tell "no active run" from "an active run I could not see".
+#: https://docs.github.com/en/rest/actions/workflow-runs#list-workflow-runs-for-a-repository
+M2_CAPACITY_STATUS_FILTERS = ("requested", "pending", "waiting", "queued", "in_progress")
+#: ONE shared monotonic deadline for the WHOLE shape-8 probe — all five reads
+#: together, not five budgets. Each subprocess is handed only what is left of
+#: it, and no request is issued once the deadline is spent. No retry, no
+#: pagination, no second endpoint, no cache, no watcher, no scheduler, no
+#: capacity registry, no lock or reservation plane, no workflow action.
+M2_CAPACITY_PROBE_DEADLINE_S = 20
 
 #: Lanes whose runs a session may NOT cancel (shape 6). These are the lanes that
 #: advance data or publish the site: killing one costs a session of ledger the next
@@ -448,18 +465,42 @@ def live_proof_reason(workflow: str):
 
 
 
-def m2_capacity_runs():
-    """Recent Actions runs on main for the physical-M2 admission check.
+def _monotonic_now() -> float:
+    """Monotonic clock seam.
 
-    ONE REST call, and only after the command has already matched an exact heavy
-    manual dispatch. None means unknown -> allow. This is anti-waste admission,
-    not a scheduler, queue, retry owner, or production-health oracle.
+    Isolated behind one function so the shape-8 deadline can be driven by a
+    controlled clock in tests — proving the shared budget and its exhaustion
+    behaviour without a single real sleep.
     """
+    return time.monotonic()
+
+
+def _workflow_basename(path) -> str:
+    """Basename of a workflow-run path, with the optional `@ref` suffix removed.
+
+    The Actions API reports the workflow a run belongs to as a path
+    (`.github/workflows/daily.yml`); a reusable-workflow reference may carry an
+    `@ref` suffix (`daily.yml@main`). Both name the SAME lane, so both must
+    match a known basename — without widening the set of lanes the guard treats
+    as conflicting.
+    """
+    name = os.path.basename(str(path or "").strip())
+    return name.split("@", 1)[0] if "@" in name else name
+
+
+def _m2_status_runs(status: str, timeout: float):
+    """One status-filtered read of the active-run inventory.
+
+    Returns (rows, total_count), or None when the probe cannot answer —
+    transport, API, timeout, or malformed schema. None means "unknown" ->
+    allow, never deny (see the fail-open note in the module docstring).
+    """
+    url = (f"repos/{{owner}}/{{repo}}/actions/runs?branch=main"
+           f"&status={status}&per_page=100&page=1")
     try:
         proc = subprocess.run(
-            ["gh", "api",
-             "repos/{owner}/{repo}/actions/runs?branch=main&per_page=100"],
-            capture_output=True, timeout=PROBE_TIMEOUT_S,
+            ["gh", "api", url],
+            capture_output=True, timeout=timeout,
         )
     except Exception as exc:
         warn(f"could not probe physical-M2 run occupancy ({exc.__class__.__name__})")
@@ -478,46 +519,168 @@ def m2_capacity_runs():
         warn("unexpected Actions-runs shape for physical-M2 occupancy")
         return None
     runs = data.get("workflow_runs")
-    return runs if isinstance(runs, list) else None
-
-
-def live_m2_capacity_reason(target_workflow: str):
-    """Deny reason when another measured heavyweight M2 lane is already live."""
-    runs = m2_capacity_runs()
-    if runs is None:
+    if not isinstance(runs, list):
+        warn("unexpected Actions-runs shape for physical-M2 occupancy")
         return None
+    # `total_count` is what proves a page is the WHOLE population, not just a
+    # full one. A bool is an int in Python and a float is not a count, so the
+    # type test has to be exact.
+    total_count = data.get("total_count")
+    if type(total_count) is not int or total_count < 0:
+        warn("malformed total_count in Actions-runs output for physical-M2 occupancy")
+        return None
+    if total_count < len(runs):
+        warn("inconsistent total_count in Actions-runs output for physical-M2 occupancy")
+        return None
+    return runs, total_count
 
+
+def _m2_conflicting_run(runs):
+    """Classify one active-status inventory.
+
+    Returns ("conflict", (workflow, run)) when a conflicting heavyweight lane
+    is live in it, ("malformed", None) when a row cannot be classified at all,
+    and ("clear", None) otherwise. A row that cannot be classified is NOT
+    evidence of a clear inventory, so it is reported rather than skipped — but
+    it is never dressed up as an observed conflict either.
+    """
     candidates = []
+    malformed = False
     for run in runs:
         if not isinstance(run, dict):
+            malformed = True
             continue
-        workflow = os.path.basename(str(run.get("path") or ""))
+        path = run.get("path")
+        if not isinstance(path, str) or not path.strip():
+            malformed = True
+            continue
+        workflow = _workflow_basename(path)
         status = str(run.get("status") or "")
         if workflow not in M2_CAPACITY_CONFLICT_WORKFLOWS or status == "completed":
             continue
         candidates.append((str(run.get("created_at") or ""), workflow, run))
 
-    for _stamp, incumbent, run in sorted(candidates, reverse=True):
+    # The same run can surface under more than one status filter, so the
+    # tiebreak must never reach the run dict itself.
+    for _stamp, incumbent, run in sorted(candidates, key=lambda c: (c[0], c[1]),
+                                         reverse=True):
         status = str(run.get("status") or "?")
         age = age_minutes(run.get("created_at"))
         if status == "queued" and age is not None and age > ORPHANED_QUEUE_MINUTES:
             continue
-        run_id = run.get("id") or "<id>"
-        url = run.get("html_url") or ""
-        aged = f"{age:.0f} min" if age is not None else "unknown age"
-        return (
-            f"M2 PHYSICAL HOST BUSY: do not dispatch `{target_workflow}` while "
-            f"`{incumbent}` run {run_id} is {status} on main ({aged}). {url}\n\n"
-            "The M2 runner labels are logical slots on one physical machine. "
-            "On 2026-09-20 a scheduled daily run overlapped manual asia-close and "
-            "research-ingest dispatches; the cancelled build_china step then left "
-            "a PID-1 survivor executing while the job had already advanced to commit. "
-            "This guard prevents that measured amplification before another runner "
-            "is acquired. It does not queue, retry, cancel, or reroute anything.\n\n"
-            "Let the live production lane conclude, or use a separately accepted "
-            "alternate-host route when that workflow explicitly supports one."
-        )
-    return None
+        return ("conflict", (incumbent, run))
+    if malformed:
+        return ("malformed", None)
+    return ("clear", None)
+
+
+def _m2_occupancy_probe():
+    """Read the physical-M2 active-run inventory under ONE shared deadline.
+
+    Up to five reads, in the fixed documented status order, each handed only
+    the time left on the shared 20s budget. Returns (outcome, detail):
+
+      ("clear", None)               - all five inventories complete and conflict-free
+      ("conflict", (workflow, run)) - a conflicting heavyweight lane is live
+      ("incomplete", (status, total, shown)) - an inventory omitted rows
+      ("error", None)               - the probe could not answer (fail open)
+
+    A conclusive refusal or an actual probe error returns immediately: no
+    retry, no pagination, no fallback endpoint, no second attempt. This is
+    anti-waste admission, not a scheduler, queue, retry owner, reservation
+    plane, or production-health oracle.
+    """
+    deadline = _monotonic_now() + M2_CAPACITY_PROBE_DEADLINE_S
+    for status in M2_CAPACITY_STATUS_FILTERS:
+        remaining = deadline - _monotonic_now()
+        if remaining <= 0:
+            warn(f"physical-M2 occupancy probe spent its "
+                 f"{M2_CAPACITY_PROBE_DEADLINE_S}s deadline before `{status}`")
+            return ("error", None)
+        read = _m2_status_runs(status, remaining)
+        if read is None:
+            return ("error", None)
+        runs, total_count = read
+        kind, detail = _m2_conflicting_run(runs)
+        if kind == "conflict":
+            return ("conflict", detail)
+        if kind == "malformed":
+            warn("unclassifiable Actions run row for physical-M2 occupancy")
+            return ("error", None)
+        if total_count > len(runs):
+            return ("incomplete", (status, total_count, len(runs)))
+    return ("clear", None)
+
+
+def _m2_busy_reason(target_workflow: str, incumbent: str, run: dict):
+    """The busy-host refusal, unchanged in substance from the first revision."""
+    status = str(run.get("status") or "?")
+    age = age_minutes(run.get("created_at"))
+    run_id = run.get("id") or "<id>"
+    url = run.get("html_url") or ""
+    aged = f"{age:.0f} min" if age is not None else "unknown age"
+    return (
+        f"M2 PHYSICAL HOST BUSY: do not dispatch `{target_workflow}` while "
+        f"`{incumbent}` run {run_id} is {status} on main ({aged}). {url}\n\n"
+        "The M2 runner labels are logical slots on one physical machine. "
+        "On 2026-09-20 a scheduled daily run overlapped manual asia-close and "
+        "research-ingest dispatches; the cancelled build_china step then left "
+        "a PID-1 survivor executing while the job had already advanced to commit. "
+        "This guard prevents that measured amplification before another runner "
+        "is acquired. It does not queue, retry, cancel, or reroute anything.\n\n"
+        "Let the live production lane conclude, or use a separately accepted "
+        "alternate-host route when that workflow explicitly supports one."
+    )
+
+
+def _m2_incomplete_reason(target_workflow: str, status: str,
+                          total_count: int, shown: int):
+    """Refuse a dispatch whose active-run population could not be read whole.
+
+    Deliberately NOT a busy-host claim: no live heavyweight lane was observed,
+    and the omitted run is not named because it was never read.
+    """
+    return (
+        f"INCOMPLETE ACTIVE INVENTORY: could not prove the physical M2 is free "
+        f"before dispatching `{target_workflow}`.\n\n"
+        f"The `{status}` inventory on main reported {total_count} matching "
+        f"workflow runs but returned {shown} on the first page, so at least "
+        f"{total_count - shown} of them were never observed. The conflicting-lane "
+        f"check is therefore inconclusive.\n\n"
+        f"This is NOT a claim that the M2 is busy — no live heavyweight lane was "
+        f"seen. It is a claim that the active population could not be read whole, "
+        f"and an unreadable population is not an empty one.\n\n"
+        f"The probe is bounded on purpose: one page of at most 100 runs per "
+        f"non-completed status ({', '.join(M2_CAPACITY_STATUS_FILTERS)}), "
+        f"{len(M2_CAPACITY_STATUS_FILTERS)} reads, one shared "
+        f"{M2_CAPACITY_PROBE_DEADLINE_S}s deadline. It does not paginate, retry, "
+        f"cache, or reserve capacity, so it cannot answer a population larger "
+        f"than one page per status. Let the in-flight lanes drain and dispatch "
+        f"again, or use a separately accepted alternate-host route when that "
+        f"workflow explicitly supports one."
+    )
+
+
+def live_m2_capacity_reason(target_workflow: str, probe=None):
+    """Deny reason when the physical M2 is already occupied, or unreadable.
+
+    `probe` is the per-invocation cache: the bounded read happens AT MOST ONCE
+    per hook invocation and is reused for every matched heavy command on the
+    same command line. It is a local, in-invocation reuse — never a persistent
+    cache, a registry, or a reservation.
+    """
+    if probe is None:
+        probe = {}
+    if "outcome" not in probe:
+        probe["outcome"] = _m2_occupancy_probe()
+    outcome, detail = probe["outcome"]
+    if outcome == "conflict":
+        incumbent, run = detail
+        return _m2_busy_reason(target_workflow, incumbent, run)
+    if outcome == "incomplete":
+        status, total_count, shown = detail
+        return _m2_incomplete_reason(target_workflow, status, total_count, shown)
+    return None        # "clear" -> allow;  "error" -> fail open
 
 def allow(context: str | None = None):
     """Exit ALLOW. With `context`, attach it so the session actually reads it.
@@ -618,15 +781,18 @@ def check(raw: str, cwd=None):
             return reason
 
     # 8. Manual heavyweight M2 dispatch while the physical host is already
-    # occupied by another measured heavyweight lane. One bounded REST read only
-    # after an exact workflow-run match; probe failure remains fail-open.
+    # occupied by another measured heavyweight lane. ONE bounded probe per hook
+    # invocation — up to five status-filtered reads sharing a single 20s
+    # deadline — spent only after an exact workflow-run match, and reused for
+    # every matched heavy command on the line. Probe failure remains fail-open.
+    m2_probe: dict = {}
     for m in WORKFLOW_RUN_RE.finditer(cmd):
         workflow, ref = dispatch_target(m.group("args"))
         if workflow not in HEAVY_M2_MANUAL_WORKFLOWS:
             continue
         if ref is not None and ref not in MAIN_REFS:
             continue
-        reason = live_m2_capacity_reason(workflow)
+        reason = live_m2_capacity_reason(workflow, m2_probe)
         if reason:
             return reason
 
