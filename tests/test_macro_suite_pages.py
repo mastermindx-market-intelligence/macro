@@ -998,6 +998,25 @@ def test_bond_desk_cycle_phase_tokens_have_reviewed_pairs() -> None:
         assert labels.value_pair(token) == pair, token
 
 
+def test_business_cycle_phase_tokens_have_reviewed_pairs() -> None:
+    """The business_activity four-phase clock renders reviewed EN/ZH (2026-11-05).
+
+    `engine.business_cycle._phase` emits {expansion, slowdown, contraction,
+    recovery}; the business_activity workspace republishes the token as the
+    categorical `business_cycle_phase`. Without an OWNER_VALUE entry the token
+    deslugs to an ASCII ZH twin and the copy-law gate goes red (main,
+    market-os-macro-suite-pages: macro_business_activity.html "Contraction").
+    """
+    expected = {
+        "expansion": {"en": "Expansion", "zh": "扩张"},
+        "slowdown": {"en": "Slowdown", "zh": "放缓"},
+        "contraction": {"en": "Contraction", "zh": "收缩"},
+        "recovery": {"en": "Recovery", "zh": "复苏"},
+    }
+    for token, pair in expected.items():
+        assert labels.value_pair(token) == pair, token
+
+
 def test_suite_section_navigation_uses_only_the_existing_shell_candidate() -> None:
     """Execute the shipped IIFE, including initial boot and accepted-location events.
 
