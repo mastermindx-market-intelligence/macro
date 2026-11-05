@@ -9,6 +9,8 @@ import logging
 
 import pandas as pd
 
+from engine.run import _atomic_write_latest_json  # existing strict/atomic publication owner
+
 from engine.china_inputs import (build_features, pair_ratios_snapshot,
                                  preference_check, rs_table)
 from engine.china_regime import classify
@@ -64,7 +66,7 @@ def run() -> dict:
         "confidence": round(float(row["regime_confidence"]), 3),
         "liquidity_overlay": row["liquidity"],
         "cycle_tag": row["cycle"],
-        "pending_quad": row["pending_quad"],
+        "pending_quad": row["pending_quad"] if pd.notna(row["pending_quad"]) else None,
         "pending_days": int(row["pending_days"]) if pd.notna(row["pending_days"]) else 0,
         "confirming": confirming,
         "contradicting": contradicting,
@@ -106,8 +108,8 @@ def run() -> dict:
     except Exception as e:  # noqa: BLE001 — additive display leaf, never fatal
         log.warning("china alerts layer failed: %s", e)
         latest["alerts"] = []
-    with open(p / "latest.json", "w") as fh:
-        json.dump(latest, fh, indent=2, default=str)
+    # Strict JSON before replacing last-good bytes; preserves publication authority.
+    latest = _atomic_write_latest_json(p / "latest.json", latest)
     log.info("china regime %s (%s) conf=%.2f liq=%s cycle=%s",
              quad, latest["quad_name"], latest["confidence"],
              latest["liquidity_overlay"], latest["cycle_tag"])
