@@ -1,4 +1,36 @@
-# D04 — Foundation delta consumed on 4 November 2026
+# D04 — Foundation deltas and consumer qualification
+
+## Current refresh — 5 November 2026
+
+This refresh supersedes the older scope, board-count and current-head statements below. The Chairman's later D04 implementation mandate remains authoritative; F01/F02 records are versioned dependency evidence, not a substitute grant. Protected law pin for this continuation is `d753bd6e9ef3e5a5435ba5649e448b1610185f6e`.
+
+| Dependency | Exact inspected input | D04 consequence |
+| --- | --- | --- |
+| F01 Macro | [#10645 / dce261d](https://github.com/mastermindx-market-intelligence/macro/blob/dce261d07ebc993e8a9579cca2200e445b6636d4/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md) | Candidate.4 remains operative; candidate.5 is proposed, not adopted. Final joint v1 remains unreleased. |
+| F01 Terminal | [#1276 / d02a496](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1276), [run 41910489816](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41910489816) | Read-only dependency refresh observed exact-head hosted CI success. This clears that source-CI observation only; it does not qualify D04 shell integration, identity/entitlement or uncertain saves. |
+| F02 design | [#10630 / 3b27c7b](https://github.com/mastermindx-market-intelligence/macro/blob/3b27c7b9c8382ac8f21161a37b833dd6cb4f4933/research/design_candidates/production_design_20261102/f02/paper/returns/native-32-board-publication-candidate-20261105.json) | Complete provisional artifact set: 32 full native JPEG/JSX pairs, 21 role bindings, 67 retained originals, 20 unchanged tokens. **Not final native freeze.** |
+| F02 source | [#10698 / aeecadd](https://github.com/mastermindx-market-intelligence/macro/pull/10698), [ci 41926207505](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41926207505), [fences 41926207308](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41926207308) | Read-only refresh observed exact-head main CI and fences success. Final native/joint qualification and actual 400%-zoom browser/keyboard proof remain separate. |
+| D23 | [Programme c9361d0 assignment](https://github.com/mastermindx-market-intelligence/macro/blob/c9361d089d0fd296280accfcfe2dfcd0b71770f0/research/design_candidates/production_design_20261102/handoffs/D23-monitor.md) and current F01 owner evidence | No inspected durable return supplies a qualified D04 saved-view schema, authenticated mutation/readback owner or fixed-snapshot/live-query acceptance binding. This is a bounded evidence finding, not proof that no D23/backend work exists. |
+
+### F02 operation truth remains target-scoped
+
+The [current F02 pending-work record](https://github.com/mastermindx-market-intelligence/macro/blob/3b27c7b9c8382ac8f21161a37b833dd6cb4f4933/research/design_candidates/production_design_20261102/f02/paper/NATIVE_PENDING_WORK.md) and publication-candidate receipt were directly consumed. They retain original operation `f02-c2-macro-light-zh-390-chart-footer-20261103-01` on original Mastermind Paper direct, file `01M312VSDSZFVT45674GDVJVZN`, board/body `7IS-0 / 7J4-0`.
+
+Its intended content was absent on same-carrier reconciliation; later distinct operations supplied corrected children. **That absence finding and later visible completion do not establish a terminal response for the original operation.** The original transport outcome remains uncertain, and the F02 receiver retains recovery ownership. D04 has no authority to replay, clear or take over that effect.
+
+The current strict preflight still refuses `UNRESOLVED_OPERATIONS=2`, `UNRESOLVED_OPERATION=1`, `RETENTION_UNRESOLVED=1` and `FINAL_RECEIPT_MISSING=1`; `freeze_created=false`. The receipt audits 650 scoped operations, 649 observed applied and one historically uncertain, with zero owned-target violations. These are owner-bound receipt counts, not new D04 live Paper measurements.
+
+### Consumer consequence
+
+Continue independent D04 source/product/data and standalone browser proof under the existing implementation mandate. Provisional composition analysis may consume candidate.4 and the current F02 artifact set with their limits. Final editable composition and shared-shell acceptance remain unqualified. D23 still owns account persistence, uncertain-save reconciliation and fixed-versus-live semantics; no parallel saved-object owner is introduced.
+
+The programme return table's D23 `NOT_STARTED` projection is not conclusive absence evidence: it also retained a stale `NOT_STARTED` projection for already-active D04. The assigned D23 contract and current owner receipts govern what a consumer can actually use.
+
+No Paper call, operation replay, external message, source-owner takeover, release action or new approval occurred in this refresh. Top Picks source delivery is [#10753](https://github.com/mastermindx-market-intelligence/macro/pull/10753); current programme execution is recorded in [the continuation](CONTINUATION_IMPLEMENTATION_20261104.md).
+
+---
+
+## Historical delta — 4 November 2026
 
 The final dependency recheck found newer F01/F02 heads after the first D04 artifact publication. This amendment consumes the material delta without redoing accepted source analysis. It changes no D04 authority and creates no Paper effect. Exact source/blob receipts are in [foundation_refresh.json](evidence/foundation_refresh.json).
 
