@@ -40,6 +40,7 @@ from collections.abc import Mapping
 
 import json
 import logging
+import os
 import re
 from pathlib import Path
 from typing import Any, Callable
@@ -857,6 +858,14 @@ def _llm_cfg(root: Path | None, *, model: str, fallback_model: str) -> dict:
     attached ChatGPT account as a last resort, and a mechanical weekly grading
     pass must never spend the operator's subscription (the same reasoning as the
     house model-routing law: mechanical work goes to the cheap tier).
+
+    The shared owner's caller selection and the trusted workload profile travel
+    from the same fast-lane block BY KEY PRESENCE: an explicit null or invalid
+    value stays visible to the owner (which then refuses) instead of being
+    silently dropped back into the legacy waterfall. When a selection is in
+    force and the lane names no profile, this cheap scheduled grading batch
+    defaults to ``site_batch`` — the ordinary inference profile — never a
+    native-agent lane and never the operator's subscription.
     """
     lane = _brain_fast_lane(root)
     cfg: dict[str, Any] = {
@@ -873,7 +882,190 @@ def _llm_cfg(root: Path | None, *, model: str, fallback_model: str) -> dict:
         v = lane.get(key)
         if isinstance(v, str) and v.strip():
             cfg[key] = v.strip()
+    try:
+        from engine import llm_auth  # noqa: PLC0415
+    except Exception:  # noqa: BLE001 — an unimportable owner cannot select either
+        llm_auth = None
+    if llm_auth is not None:
+        # Forwarded by PRESENCE, not truthiness: the owner owns these keys'
+        # meaning, including an explicit null or an invalid value.
+        if llm_auth.APPLICATION_MODE_CFG_KEY in lane:
+            cfg[llm_auth.APPLICATION_MODE_CFG_KEY] = lane[llm_auth.APPLICATION_MODE_CFG_KEY]
+        if "workload_profile" in lane:
+            cfg["workload_profile"] = lane["workload_profile"]
+        if (llm_auth.APPLICATION_MODE_ENV in os.environ
+                or llm_auth.APPLICATION_MODE_CFG_KEY in cfg):
+            cfg.setdefault("workload_profile", "site_batch")
     return cfg
+
+
+def _owner():
+    """The shared provider owner, or None when it cannot be imported."""
+    try:
+        from engine import llm_auth  # noqa: PLC0415
+    except Exception as exc:  # noqa: BLE001
+        log.warning("response_eval: llm_auth import failed (%s)", exc)
+        return None
+    return llm_auth
+
+
+def _shared_lane(cfg: dict, context: str):
+    """(owner, bound operation, selected) with a distinct refusal state.
+
+    A selected lane whose binding fails must NOT look like an unselected
+    legacy lane. Preserve that distinction across all three consumers:
+    selected+None means refuse, never rebuild/fall through to another provider.
+    The selection comes only from the trusted lane, not benchmark data.
+    """
+    llm_auth = _owner()
+    if llm_auth is None:
+        return None, None, True
+    try:
+        selected = llm_auth.application_mode_id(cfg) is not None
+    except Exception as exc:  # noqa: BLE001
+        log.warning("response_eval: %s selection refused (%s)", context, exc)
+        return None, None, True
+    if not selected:
+        return llm_auth, None, False
+    return llm_auth, _bind_operation(cfg, llm_auth, context), True
+
+
+def _bind_operation(cfg: dict, llm_auth, context: str):
+    """Bind ONE shared-owner operation for a Fabric-selected cfg, or None.
+
+    The recipe is pure selection; the ONE incumbent binder composes the live
+    turn-latched client, the serving identity and the native-safe operation id
+    once per complete invocation. Any refusal — empty/null/invalid selection, a
+    denied or native-agent workload profile, an unqualified transport, an
+    unavailable owner — returns None: no credential is discovered and nothing
+    falls back.
+    """
+    try:
+        providers = llm_auth.build_providers(
+            cfg,
+            opus_model=cfg.get("opus_model"),
+            deepseek_model=cfg.get("deepseek_model"),
+        )
+    except Exception as exc:  # noqa: BLE001
+        log.warning("response_eval: %s provider recipe refused (%s)", context, exc)
+        return None
+    try:
+        return llm_auth.begin_operation(providers, context=context)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("response_eval: %s operation bind refused (%s)", context, exc)
+        return None
+
+
+def _serving_model(operation) -> str | None:
+    """The model the CURRENT bound operation actually served, or None.
+
+    Read from the bound operation after a validated completed response — the
+    shared wrapper refuses a reply whose model differs from the binding — never
+    from the legacy requested label, which stays a request, not a provenance
+    claim.
+    """
+    providers = getattr(operation, "providers", None) or []
+    model = providers[0].get("model") if providers else None
+    return model if isinstance(model, str) and model else None
+
+
+def _fabric_reply(llm_auth, operation, *, system: str, user: str,
+                  max_tokens: int, context: str) -> str | None:
+    """One wrapped buffered create on an ALREADY bound operation.
+
+    Returns the completed text, or None. A text lane accepts ONLY a complete
+    end_turn, nonempty text-only response: a tool block, truncation, refusal,
+    model mismatch, empty content, receipt-only result, terminal provider
+    error, pending/effect_unknown or transport failure ends the invocation here
+    and is never converted into a parse failure. The shared make_call/capture
+    owner records the completed step's usage once; this helper adds none.
+    """
+    def _do_call(client, model: str):
+        kw: dict[str, Any] = {
+            "model": model,
+            "max_tokens": int(max_tokens),
+            "messages": [{"role": "user", "content": user}],
+        }
+        if system:
+            kw["system"] = system
+        resp = client.messages.create(**kw)
+        content = getattr(resp, "content", None) or []
+        blocks = [b for b in content if getattr(b, "type", "") == "text"]
+        if getattr(resp, "stop_reason", None) != "end_turn" or len(blocks) != len(content):
+            raise llm_auth.FabricProviderError("fabric_text_protocol_invalid")
+        text = "".join(b.text for b in blocks)
+        if not text.strip():
+            raise llm_auth.FabricProviderError("fabric_text_protocol_invalid")
+        return text, None, resp
+
+    try:
+        text, _reason, _used = llm_auth.make_call(
+            operation.providers, _do_call, context=context)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("response_eval: %s fabric step failed (%s)", context, exc)
+        return None
+    return text or None
+
+
+def _judge_reask_prompt(prompt: str) -> str:
+    """The ONE deliberate parse re-ask: an intentional NEW prompt step.
+
+    The rubric, the mechanical findings and the graded row are untouched — only
+    the closing instruction is restated, so the owner's next step identity
+    carries a new request rather than a replay of the first one. The reply is
+    parsed by the same parse_judge.
+    """
+    score_keys = ", ".join(f'"{axis}": <0-{w}>' for axis, w in RUBRIC.items())
+    return (
+        f"{prompt}\n\nYour previous reply was not the required JSON object. "
+        "Reply AGAIN with ONLY the JSON object — no prose, no code fence — "
+        "grading the same row against the same rubric and mechanical findings:\n"
+        f'{{"scores": {{{score_keys}}}, "tags": ["..."], "note": "<one line>"}}\n'
+    )
+
+
+def _fabric_judge(llm_auth, operation, prompt: str):
+    """One complete selected judge invocation on an ALREADY bound operation.
+
+    Returns (text, serving_model): the raw reply parse_judge accepted and the
+    model that actually served it, or (None, None) when the invocation ends
+    without an accepted judgement. The at-most-two-attempt contract holds: the
+    only second provider step is ONE deliberate parse re-ask on the SAME
+    operation, providers, model and account — with the owner's next step
+    identity, never a third call and never a second binding.
+    """
+    text = _fabric_reply(llm_auth, operation, system="", user=prompt,
+                         max_tokens=JUDGE_MAX_TOKENS, context="response_eval_judge")
+    if text is None:
+        # A failed STEP (transport/timeout, pending/effect_unknown, receipt-only,
+        # terminal provider error, model mismatch, refusal, max_tokens,
+        # missing/empty response or unsolicited tool block) ends the invocation.
+        # It is not a parse failure and must not authorize the re-ask.
+        return None, None
+    if parse_judge(text) is not None:
+        return text, _serving_model(operation)
+    text = _fabric_reply(llm_auth, operation, system="", user=_judge_reask_prompt(prompt),
+                         max_tokens=JUDGE_MAX_TOKENS, context="response_eval_judge")
+    if text is not None and parse_judge(text) is not None:
+        return text, _serving_model(operation)
+    return None, None
+
+
+def _construction_model_id(cfg: dict, model: str) -> str | None:
+    """A fresh callable's ``model_id`` — the label it may honestly advertise.
+
+    An unselected callable keeps the requested legacy label: the native
+    DeepSeek-first waterfall serves exactly that model. A selected callable has
+    served nothing yet, so it advertises nothing (an invalid selection can
+    never serve anything) and earns its serving identity per invocation.
+    """
+    llm_auth = _owner()
+    if llm_auth is None:
+        return model
+    try:
+        return model if llm_auth.application_mode_id(cfg) is None else None
+    except Exception:  # noqa: BLE001 — a refused selection serves no model
+        return None
 
 
 def _one_shot(cfg: dict, system: str, user: str, *, max_tokens: int,
@@ -882,12 +1074,23 @@ def _one_shot(cfg: dict, system: str, user: str, *, max_tokens: int,
 
     Mirrors engine/earnings_qual.py::_call_llm_auth — the clean single-shot
     idiom in this repo. Returns None on any failure; never raises.
+
+    Under a shared Fabric selection this is exactly one bound operation: one
+    wrapped buffered create, then an all-exit close. A direct selected call
+    owns its own single operation — sharing one binding across a lane's
+    intentional steps is the selected judge's job, not this helper's.
     """
-    try:
-        from engine import llm_auth  # noqa: PLC0415
-    except Exception as exc:  # noqa: BLE001
-        log.warning("response_eval: llm_auth import failed (%s)", exc)
+    llm_auth, operation, selected = _shared_lane(cfg, context)
+    if llm_auth is None:
         return None
+    if selected:
+        if operation is None:
+            return None  # selected pre-dispatch refusal: never enter native fallback
+        try:
+            return _fabric_reply(llm_auth, operation, system=system, user=user,
+                                 max_tokens=max_tokens, context=context)
+        finally:
+            operation.close()
     try:
         providers = llm_auth.build_providers(
             cfg,
@@ -940,22 +1143,42 @@ def judge_via_llm_auth(
     rather than retried again: at 150 rows a per-row retry storm is real money.
 
     The returned callable carries ``model_id`` so score_response can stamp every
-    score with the model that produced it.
+    score with the model that produced it. Under a shared Fabric selection the
+    complete invocation owns ONE binding across its at-most-one deliberate
+    parse re-ask, and ``model_id`` names the model that ACTUALLY served that
+    invocation: cleared at the start of every call and set only by an accepted
+    reply, so a later failure can never inherit an earlier call's model. An
+    unselected (native) callable keeps the requested DeepSeek label, as before.
     """
     cfg = _llm_cfg(root, model=model, fallback_model=JUDGE_FALLBACK_MODEL)
 
     def _judge(prompt: str) -> str | None:
+        _judge.model_id = None  # this invocation owns its serving evidence
+        llm_auth, operation, selected = _shared_lane(cfg, "response_eval_judge")
+        if llm_auth is None:
+            return None
+        if selected:
+            if operation is None:
+                return None  # no native re-ask after selected bind refusal
+            try:
+                text, served = _fabric_judge(llm_auth, operation, prompt)
+                _judge.model_id = served
+                return text
+            finally:
+                operation.close()
         for attempt in (1, 2):
             text = _one_shot(
                 cfg, "", prompt, max_tokens=JUDGE_MAX_TOKENS, context="response_eval_judge"
             )
             if text and parse_judge(text) is not None:
-                return text
+                break
+            text = None
             if attempt == 1:
                 log.debug("response_eval: judge reply unparseable — one retry")
-        return None
+        _judge.model_id = model  # the legacy requested label, as before
+        return text
 
-    _judge.model_id = model  # type: ignore[attr-defined]
+    _judge.model_id = _construction_model_id(cfg, model)  # type: ignore[attr-defined]
     return _judge
 
 
@@ -970,16 +1193,40 @@ def answer_via_llm_auth(
     benchmark's subject is whether the DOCTRINE plus a frozen state still
     produces the ratified read, and a tool-using turn would make the score a
     function of live data that changes nightly.
+
+    Under a shared Fabric selection the answer owns exactly ONE operation, one
+    wrapped create and an all-exit close: a failure is None with no re-ask, no
+    fallback and no rebinding, and ``model_id`` names the model that actually
+    served only a successful reply. An unselected (native) callable keeps the
+    requested DeepSeek label, as before.
     """
     cfg = _llm_cfg(root, model=model, fallback_model=JUDGE_FALLBACK_MODEL)
 
     def _answer(system: str, user: str) -> str | None:
-        return _one_shot(
+        _answer.model_id = None  # this invocation owns its serving evidence
+        llm_auth, operation, selected = _shared_lane(cfg, "response_eval_benchmark")
+        if llm_auth is None:
+            return None
+        if selected:
+            if operation is None:
+                return None  # selected denial cannot become legacy answer generation
+            try:
+                text = _fabric_reply(llm_auth, operation, system=system, user=user,
+                                     max_tokens=BENCHMARK_MAX_TOKENS,
+                                     context="response_eval_benchmark")
+                if text is not None:
+                    _answer.model_id = _serving_model(operation)
+                return text
+            finally:
+                operation.close()
+        text = _one_shot(
             cfg, system, user,
             max_tokens=BENCHMARK_MAX_TOKENS, context="response_eval_benchmark",
         )
+        _answer.model_id = model  # the legacy requested label, as before
+        return text
 
-    _answer.model_id = model  # type: ignore[attr-defined]
+    _answer.model_id = _construction_model_id(cfg, model)  # type: ignore[attr-defined]
     return _answer
 
 
