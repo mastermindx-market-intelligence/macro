@@ -295,6 +295,10 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3538,6 +3542,10 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -27610,6 +27618,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -28461,6 +28470,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -42000,6 +42010,7 @@ jobs:
           tests/test_market_memory.py
           tests/test_market_memory_pit.py
           tests/test_market_memory_sources.py
+          tests/test_market_memory_alfred_revision_evidence.py
           tests/test_market_memory_source_deploy.py
           tests/test_market_memory_m0d_v2.py
           tests/test_market_memory_identity.py
