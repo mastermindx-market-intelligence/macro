@@ -214,3 +214,32 @@ test('test_small_claims_cohort_does_not_blank_the_tile', async () => {
   assert.ok(tiles(s2).some((t) => t.value === '18,675') &&
     tiles(s2).some((t) => t.value === '263'), 'other tiles unaffected');
 });
+
+
+test('test_null_verdict_receipt_explains_measured_no_significant_lead_or_lag', async () => {
+  const fixture = base();
+  const before = JSON.stringify(fixture.ic);
+  const html = await renderHonesty(fixture);
+  const receipt = receiptSpans(html);
+  assert.ok(receipt.en.includes('status: no significant lead or lag.'));
+  assert.ok(receipt.zh.includes('当前状态：未显示显著领先或落后。'));
+  assert.ok(!receipt.en.includes('status: null'));
+  assert.ok(!receipt.zh.includes('当前状态：null'));
+  assert.ok(html.includes('no proof either way yet.'));
+  assert.ok(html.includes('暂无任何方向的证据。'));
+  assert.equal(JSON.stringify(fixture.ic), before, 'producer enum and IC input preserved');
+});
+
+for (const status of ['leading', 'lagging', 'insufficient', null, undefined]) {
+  test('test_non_null_verdict_receipt_preserves_existing_status_' + String(status), async () => {
+    const fixture = base();
+    fixture.ic.verdict.status = status;
+    const html = await renderHonesty(fixture);
+    const receipt = receiptSpans(html);
+    const expected = status || 'insufficient';
+    assert.ok(receipt.en.includes('status: ' + expected + '.'));
+    assert.ok(receipt.zh.includes('当前状态：' + expected + '。'));
+    assert.ok(!receipt.en.includes('no significant lead or lag'));
+    assert.ok(!receipt.zh.includes('未显示显著领先或落后'));
+  });
+}
