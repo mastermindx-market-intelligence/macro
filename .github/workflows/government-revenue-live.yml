@@ -864,6 +864,7 @@ jobs:
       # verified and kept clean, and only governed source/output paths may be
       # staged. The retry loop rebuilds after each rebase so a concurrent daily
       # evidence commit cannot be overwritten by a mixed generation.
+      # Guard inputs in the complete evidence projection.
       - name: commit complete evidence projection
         if: ${{ steps.gate.outputs.publish == 'yes' }}
         env:
@@ -875,7 +876,6 @@ jobs:
           set -euo pipefail
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           . "$RUNNER_TEMP/govrev-reviewed-source-guards.sh"
-          # Guard inputs.
           PUSH_LABEL="government-revenue evidence"
           if ! push_on_main_ok; then exit 0; fi
           git config user.name "dashboard-bot"

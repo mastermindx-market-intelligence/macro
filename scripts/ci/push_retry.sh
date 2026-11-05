@@ -364,16 +364,33 @@ push_do() {
   fi
   # Native publication is selected BEFORE any direct push. Exit 80 is only
   # affirmative legacy classification; every unavailable/denied result holds.
-  local library_root py native_rc=0
+  local library_root py native_rc=0 native_out
   local -a native_args=()
   library_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P) || return 76
   if command -v python3 >/dev/null 2>&1; then py=python3; else py=python; fi
   for qledger_arg in "$@"; do native_args+=("--push-arg=$qledger_arg"); done
-  PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$library_root" "$py" -P -m scripts.ci.native_queue_push \
-    publish --root "$(pwd -P)" --deadline "${PUSH_DEADLINE:-0}" "${native_args[@]}" || native_rc=$?
-  # This source interface stages native intent (77); its separate read-only
-  # settle command proves publication. An unexpected bare zero is not evidence.
-  if [ "$native_rc" -eq 0 ]; then native_rc=76; fi
+  native_out=$(PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$library_root" "$py" -P -m scripts.ci.native_queue_push \
+    publish --root "$(pwd -P)" --deadline "${PUSH_DEADLINE:-0}" "${native_args[@]}") || native_rc=$?
+  # The pinned client emits a receipt ONLY after actual protected landing.
+  # App producers stage (77) for official upload first. An empty/bare zero
+  # from a broken invocation never becomes publication success.
+  if [ "$native_rc" -eq 0 ]; then
+    if [ "${NATIVE_PUBLICATION_TOKEN_ORIGIN:-}" = ADMIN_GH_TOKEN ] && printf '%s' "$native_out" | "$py" -I -c '
+import json,re,sys
+try:
+ r=json.load(sys.stdin)
+ assert set(r)=={"source_head","merge_sha","observed_target_sha","projection_sha256","pr_number"}
+ assert all(isinstance(r[k],str) and re.fullmatch("[0-9a-f]{40}",r[k]) for k in ("source_head","merge_sha","observed_target_sha"))
+ assert isinstance(r["projection_sha256"],str) and re.fullmatch("[0-9a-f]{64}",r["projection_sha256"])
+ assert type(r["pr_number"]) is int and r["pr_number"]>0
+except Exception:sys.exit(76)
+'; then
+      printf '%s\n' "$native_out"
+      PUSH_FAIL_CLASS=""
+      return 0
+    fi
+    native_rc=76
+  fi
   if [ "$native_rc" -ne 80 ]; then
     PUSH_TERMINAL_RC="$native_rc"
     PUSH_NATIVE_STATE=retained
@@ -389,6 +406,7 @@ push_do() {
     fi
     return "$native_rc"
   fi
+  if [ "${PUSH_NATIVE_ONLY:-0}" = 1 ]; then return 80; fi
   if [ -n "${PUSH_ALARM}" ]; then
     out=$(perl -e 'alarm shift @ARGV; exec @ARGV or die' -- "${PUSH_ALARM}" git push "$@" 2>&1) || rc=$?
   else
@@ -401,6 +419,12 @@ push_do() {
   fi
   push_classify "$rc" "$out"
   return "$rc"
+}
+
+push_native_do() {
+  # Same guarded publisher, affirmative OFF does NOT perform a legacy push.
+  # Callers may then enter their unchanged legacy synchronization loop.
+  PUSH_NATIVE_ONLY=1 push_do "$@"
 }
 
 push_native_pending() {

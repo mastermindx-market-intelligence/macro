@@ -6,7 +6,26 @@
 # Invoked as: bash scripts/ci/daily_cortex_commit.sh
 set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declares no shell:
 
-. "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+if [ "${GITHUB_REPOSITORY:-}" = mastermindx-market-intelligence/macro ] && [ "${GITHUB_REF:-}" = refs/heads/main ]; then
+  # Capture repository-owned execution bytes from the original protected
+  # workflow SHA BEFORE rebase can replace files in the candidate tree.
+  umask 077
+  [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+  native_code_root="${RUNNER_TEMP%/}/native-publication-code-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
+  mkdir -m 700 -- "$native_code_root"
+  mkdir -p -- "$native_code_root/scripts/ci"
+  GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show \
+    "$GITHUB_WORKFLOW_SHA:scripts/ci/native_publication_source.sh" \
+    > "$native_code_root/scripts/ci/native_publication_source.sh"
+  case "$(GIT_NO_REPLACE_OBJECTS=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_publication_source.sh)" in
+    100644*) : ;; *) exit 76 ;;
+  esac
+  . "$native_code_root/scripts/ci/native_publication_source.sh"
+  native_publication_capture_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"
+  . "$native_code_root/scripts/ci/push_retry.sh"
+else
+  . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+fi
 git config user.name "dashboard-bot"
 git config user.email "actions@users.noreply.github.com"
 # Own commit lane (W7b PR2 + P1-D): all cortex + factor_attention subtrees — STAGING LAW
@@ -42,6 +61,14 @@ git commit -m "cortex: attention grades + A2 earn-in + hypothesis metabolism $(d
 # Retry-rebase push loop (stock_briefs pattern)
 PUSH_ALARM=420
 push_retry_init "cortex outputs"
+native_initial_rc=0
+push_native_do origin HEAD:main || native_initial_rc=$?
+case "$native_initial_rc" in
+  0) push_won; exit 0 ;;
+  77) echo "publication=pending" >> "$GITHUB_OUTPUT"; exit 0 ;;
+  80) export NATIVE_PUBLICATION_EXPECT_OFF=1 ;;
+  *) exit "$native_initial_rc" ;;
+esac
 while push_attempt; do
   # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can
   # TRACK a path this job wrote as an UNTRACKED side-effect — the rebase checkout then

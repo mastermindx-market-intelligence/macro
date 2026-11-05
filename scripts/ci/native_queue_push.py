@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -158,6 +159,8 @@ class GitHub:
             if key.lower() != 'authorization' or not separator or '\n' in header or '\r' in header:
                 raise PublicationHeld('configured_authorization_header_invalid')
             self.authorization = value.strip()
+        elif os.environ.get('NATIVE_PUBLICATION_TOKEN_ORIGIN') == 'ADMIN_GH_TOKEN':
+            raise PublicationHeld('configured_render_authorization_header_missing')
         elif os.environ.get('GITHUB_TOKEN'):
             self.authorization = 'Bearer ' + os.environ['GITHUB_TOKEN']
         else:
@@ -378,8 +381,9 @@ def publication(api, root, origin):
     locator = dict(run_id=origin['producer_run_id'], run_attempt=origin['producer_run_attempt'],
         job=origin['publishing_job'], step=origin['publishing_step'], generation=origin['original_generation'])
     body = pull.get('body')
-    marker = producer_origin_pointer(**locator)
-    if not isinstance(body, str) or body.count(marker) != 1 or body.count('<!-- mastermind-native-publication-origin:v1 ') != 1:
+    marker = intent_pointer(origin['credential_origin'],locator)
+    prefix = '<!-- mastermind-native-publication-' + ('origin' if origin['credential_origin']=='GITHUB_TOKEN' else 'intent') + ':v1 '
+    if not isinstance(body, str) or body.count(marker) != 1 or body.count(prefix) != 1:
         raise PublicationHeld('original_intent_pointer_changed')
     if pull.get('user') != {'id': origin['pr_creation_user_id'], 'login': origin['pr_creation_login']}:
         user = pull.get('user') or {}
@@ -420,29 +424,51 @@ def publication(api, root, origin):
 
 
 def producer_identity(head, digest, *, require_staging_step=True):
-    """The initial exact protected producer; adding another requires core join."""
-    workflow = '.github/workflows/commodity-sentinel.yml'
+    """Closed producer source tuples; each also needs the trusted core join."""
+    credential=os.environ.get('NATIVE_PUBLICATION_TOKEN_ORIGIN')
+    if credential=='GITHUB_TOKEN':
+        producers = {'shock': '.github/workflows/commodity-sentinel.yml',
+                     'acquire': '.github/workflows/fms-acquire.yml',
+                     'render': '.github/workflows/public-render.yml',
+                     'cortex': '.github/workflows/daily.yml',
+                     'engine-render': '.github/workflows/engine-render.yml'}
+        step='native_publication_stage'
+    elif credential=='ADMIN_GH_TOKEN':
+        producers={'render':'.github/workflows/render.yml'}
+        step='native_publication'
+    else:raise PublicationHeld('producer_original_credential_not_bound')
+    job = os.environ.get('GITHUB_JOB')
+    workflow = producers.get(job)
     if (os.environ.get('GITHUB_REPOSITORY') != REPOSITORY
             or os.environ.get('GITHUB_REF') != 'refs/heads/main'
-            or os.environ.get('GITHUB_JOB') != 'shock'
-            or (require_staging_step and os.environ.get('NATIVE_PUBLICATION_PUBLISHING_STEP') != 'native_publication_stage')
+            or workflow is None
+            or (require_staging_step and os.environ.get('NATIVE_PUBLICATION_PUBLISHING_STEP') != step)
             or os.environ.get('GITHUB_WORKFLOW_REF') != REPOSITORY + '/' + workflow + '@refs/heads/main'):
         raise PublicationHeld('producer_original_source_not_allowlisted')
     run = positive(int(os.environ.get('GITHUB_RUN_ID', '0')))
     attempt = positive(int(os.environ.get('GITHUB_RUN_ATTEMPT', '0')))
     workflow_sha = sha(os.environ.get('GITHUB_WORKFLOW_SHA'))
-    generation = hashlib.sha256(canonical([REPOSITORY, run, attempt, 'shock', head, digest])).hexdigest()[:12]
-    locator = dict(run_id=run, run_attempt=attempt, job='shock',
-                   step='native_publication_stage', generation=generation)
+    generation = hashlib.sha256(canonical([REPOSITORY, run, attempt, job, head, digest])).hexdigest()[:12]
+    locator = dict(run_id=run, run_attempt=attempt, job=job,
+                   step=step, generation=generation)
     return locator, workflow, workflow_sha
 
 
-def stage(api, root, target, head, repository_id):
+def intent_pointer(credential,locator):
+    if credential=='GITHUB_TOKEN':return producer_origin_pointer(**locator)
+    if credential!='ADMIN_GH_TOKEN':raise PublicationHeld('producer_original_credential_not_bound')
+    # Lookup only. This local settlement marker is NOT producer-origin evidence,
+    # first-proof admission, an App event or a protected release authorization.
+    return '<!-- mastermind-native-publication-intent:v1 '+canonical(locator).decode()+' -->'
+
+
+def stage(api, root, target, head, repository_id, *, source_ref=None):
     """Create/reconcile ONE source-bound PR and verify explicit original intent."""
     outputs = projection(root, head)
     digest = projection_digest(outputs)
     locator, workflow, workflow_sha = producer_identity(head, digest)
-    marker = producer_origin_pointer(**locator)
+    credential=os.environ.get('NATIVE_PUBLICATION_TOKEN_ORIGIN')
+    marker = intent_pointer(credential,locator)
     # Exclusive original local namespace precedes every candidate/intent write.
     # Retain it on any uncertain return; no automatic second stage may adopt it.
     directory = Path(os.environ['RUNNER_TEMP']) / ('native-publication-' + locator['generation'])
@@ -471,8 +497,11 @@ def stage(api, root, target, head, repository_id):
                 remaining = min(45, remaining - time.time()) if remaining else 45
                 if remaining <= 0:
                     raise PublicationHeld('original_publication_budget_expired')
+                source_ref=source_ref or head
+                if git(root,'rev-parse',source_ref+'^{commit}').decode().strip()!=head:
+                    raise PublicationHeld('original_staging_source_changed')
                 result = subprocess.run(['git', '-C', str(root), 'push', '--porcelain', 'origin',
-                                         head + ':refs/heads/' + branch], capture_output=True, timeout=remaining)
+                                         source_ref + ':refs/heads/' + branch], capture_output=True, timeout=remaining)
             except (OSError, subprocess.TimeoutExpired):
                 raise EffectUnknown('original_staging_push_unconfirmed') from None
             if result.returncode:
@@ -480,7 +509,12 @@ def stage(api, root, target, head, repository_id):
                              result.stdout + result.stderr, re.I):
                     raise PublicationHeld('original_staging_push_refused')
                 raise EffectUnknown('original_staging_push_unconfirmed')
-        pull = api.request('POST', '/pulls', {'title': 'Publish commodity generation ' + locator['generation'],
+            readback=api.request('GET','/git/ref/heads/'+urllib.parse.quote(branch,safe=''))
+            if ((readback or {}).get('object') or {}).get('sha')!=head:
+                raise EffectUnknown('original_staging_push_readback_unconfirmed')
+            if git(root,'rev-parse',source_ref+'^{commit}').decode().strip()!=head:
+                raise EffectUnknown('original_staging_source_changed_after_push')
+        pull = api.request('POST', '/pulls', {'title': 'Publish ' + locator['job'] + ' generation ' + locator['generation'],
             'head': branch, 'base': target, 'body': marker + '\n\nOriginal generated source: ' + head +
             '\nPending publication; only the protected incumbent controller may admit and release.'})
         pull = exact_pull(pull, repository_id=repository_id, head=head, target=target)
@@ -492,34 +526,45 @@ def stage(api, root, target, head, repository_id):
     user = current.get('user') or {}
     origin = dict(producer_run_id=locator['run_id'], producer_run_attempt=locator['run_attempt'],
         workflow_path=workflow, workflow_ref=REPOSITORY + '/' + workflow + '@refs/heads/main',
-        workflow_sha=workflow_sha, publishing_job='shock', publishing_step='native_publication_stage',
-        credential_origin='GITHUB_TOKEN', pr_number=positive(current['number']), published_source_head=head,
+        workflow_sha=workflow_sha, publishing_job=locator['job'], publishing_step=locator['step'],
+        credential_origin=credential, pr_number=positive(current['number']), published_source_head=head,
         selected_target=target, original_generation=locator['generation'], candidate_tree=candidate_tree,
         projection_sha256=digest, pr_creation_user_id=positive(user.get('id')), pr_creation_login=user.get('login'))
     envelope = dict(schema='mastermind.ci-proof-producer-origin.v1', repository_id=repository_id,
                     producer_origin=origin)
     # Codec validation is not authority. Only the successful exact request/readback
     # above precedes this official-upload input; no Admission is produced here.
-    raw = encode_origin(envelope, repository_id=repository_id, repository_full_name=REPOSITORY)
-    path = directory / 'ci-proof-admission.json'
+    if credential=='GITHUB_TOKEN':
+        raw = encode_origin(envelope, repository_id=repository_id, repository_full_name=REPOSITORY)
+        path = directory / 'ci-proof-admission.json'
+    else:
+        # SAME original private namespace, no upload/registry. Validate all
+        # existing codec shapes using a temporary syntax-only credential value;
+        # never export this as GITHUB_TOKEN origin or authenticated admission.
+        syntax=dict(envelope,producer_origin=dict(origin,credential_origin='GITHUB_TOKEN'))
+        encode_origin(syntax,repository_id=repository_id,repository_full_name=REPOSITORY)
+        envelope['schema']='mastermind.native-publication-local.v1'
+        raw=canonical(envelope)
+        path=directory/'publication.json'
     descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
     with os.fdopen(descriptor, 'wb') as output:
         output.write(raw)
         output.flush()
         os.fsync(output.fileno())
     with Path(os.environ['GITHUB_OUTPUT']).open('a') as output:
-        output.write('native_origin_name=' + producer_origin_artifact_name(**locator) + '\n')
-        output.write('native_origin_path=' + str(path) + '\n')
+        if credential=='GITHUB_TOKEN':
+            output.write('native_origin_name=' + producer_origin_artifact_name(**locator) + '\n')
+            output.write('native_origin_path=' + str(path) + '\n')
         output.write('native_code_root=' + str(Path(__file__).resolve().parents[2]) + '\n')
     return path
 
 
-def settle(api, root, path, deadline, *, clock=time.time, sleep=time.sleep):
+def settle(api, root, path, deadline, *, clock=time.time, sleep=time.sleep, on_published=None):
     if clock() >= deadline:
         return PENDING
     path = Path(path)
     namespace = path.parent
-    if (path.name != 'ci-proof-admission.json' or namespace.is_symlink()
+    if (path.name not in ('ci-proof-admission.json','publication.json') or namespace.is_symlink()
             or not re.fullmatch('native-publication-[0-9a-f]{12}', namespace.name)
             or namespace.parent.resolve() != Path(os.environ['RUNNER_TEMP']).resolve()):
         raise PublicationHeld('original_private_record_required')
@@ -530,6 +575,7 @@ def settle(api, root, path, deadline, *, clock=time.time, sleep=time.sleep):
     with os.fdopen(descriptor, 'rb') as stream:
         metadata = os.fstat(stream.fileno())
         if (not stat.S_ISREG(metadata.st_mode) or metadata.st_uid != os.getuid()
+                or stat.S_IMODE(metadata.st_mode)!=0o600
                 or metadata.st_nlink != 1 or metadata.st_size > MAX_DOCUMENT_BYTES):
             raise PublicationHeld('original_record_identity_invalid')
         raw = stream.read(MAX_DOCUMENT_BYTES + 1)
@@ -537,7 +583,22 @@ def settle(api, root, path, deadline, *, clock=time.time, sleep=time.sleep):
     repository_id = positive(repository.get('id'))
     if repository.get('full_name') != REPOSITORY:
         raise PublicationHeld('original_repository_changed')
-    envelope = decode_origin(raw, repository_id=repository_id, repository_full_name=REPOSITORY)
+    if path.name=='ci-proof-admission.json':
+        envelope = decode_origin(raw, repository_id=repository_id, repository_full_name=REPOSITORY)
+    else:
+        def pairs(rows):
+            result={}
+            for key,value in rows:
+                if key in result:raise PublicationHeld('duplicate_local_publication_field')
+                result[key]=value
+            return result
+        envelope=json.loads(raw,object_pairs_hook=pairs)
+        if (envelope.get('schema')!='mastermind.native-publication-local.v1'
+                or envelope.get('producer_origin',{}).get('credential_origin')!='ADMIN_GH_TOKEN'):
+            raise PublicationHeld('original_render_local_record_required')
+        syntax=dict(envelope,schema='mastermind.ci-proof-producer-origin.v1',
+            producer_origin=dict(envelope['producer_origin'],credential_origin='GITHUB_TOKEN'))
+        decode_origin(canonical(syntax),repository_id=repository_id,repository_full_name=REPOSITORY)
     origin = dict(envelope['producer_origin'], _repository_id=repository_id)
     if (str(origin['producer_run_id']) != os.environ.get('GITHUB_RUN_ID')
             or str(origin['producer_run_attempt']) != os.environ.get('GITHUB_RUN_ATTEMPT')):
@@ -547,6 +608,7 @@ def settle(api, root, path, deadline, *, clock=time.time, sleep=time.sleep):
     if (origin['original_generation'] != locator['generation']
             or origin['workflow_path'] != workflow or origin['workflow_sha'] != workflow_sha
             or origin['publishing_job'] != locator['job'] or origin['publishing_step'] != locator['step']
+            or origin['credential_origin'] != os.environ.get('NATIVE_PUBLICATION_TOKEN_ORIGIN')
             or namespace.name != 'native-publication-' + locator['generation']):
         raise PublicationHeld('settlement_original_source_generation_changed')
     while True:
@@ -554,11 +616,37 @@ def settle(api, root, path, deadline, *, clock=time.time, sleep=time.sleep):
             return PENDING
         status, result = publication(api, root, origin)
         if status == 0:
+            if on_published is not None:
+                on_published(result)
             print(json.dumps(result, sort_keys=True))
             return 0
         if clock() >= deadline:
             return PENDING
         sleep(min(15, max(0, deadline - clock())))
+
+
+def prepare_publication(root, arguments, deadline):
+    """Select one native stage or affirmative legacy route; no fallback on error."""
+    if not github_origin(root):
+        return LEGACY, None
+    resolved = destination(root, arguments)
+    if resolved is None:
+        return LEGACY, None
+    target, head = resolved
+    api = GitHub(root, deadline)
+    repo = api.request('GET', '/')
+    if repo.get('full_name') != REPOSITORY:
+        raise PublicationHeld('repository_identity_mismatch')
+    repository_id = positive(repo.get('id'))
+    if protection(api, root, repository_id, target) is None:
+        return LEGACY, None
+    if type(deadline) not in (int,float) or not math.isfinite(deadline) or deadline<=time.time():
+        raise PublicationHeld('original_publication_budget_expired')
+    if os.environ.get('NATIVE_PUBLICATION_EXPECT_OFF')=='1':
+        raise PublicationHeld('native_mode_changed_after_legacy_selection')
+    arguments=list(arguments)
+    source_ref=arguments[-1].split(':')[0] if len(arguments)==2 and ':' in arguments[-1] else 'HEAD'
+    return PENDING, stage(api, root, target, head, repository_id,source_ref=source_ref)
 
 
 def main(argv=None):
@@ -572,21 +660,10 @@ def main(argv=None):
     try:
         root = Path(args.root).resolve()
         if args.command == 'publish':
-            if not github_origin(root):
-                return LEGACY
-            resolved = destination(root, args.push_arg)
-            if resolved is None:
-                return LEGACY
-            target, head = resolved
-            api = GitHub(root, args.deadline)
-            repo = api.request('GET', '/')
-            if repo.get('full_name') != REPOSITORY:
-                raise PublicationHeld('repository_identity_mismatch')
-            repository_id = positive(repo.get('id'))
-            if protection(api, root, repository_id, target) is None:
-                return LEGACY
-            stage(api, root, target, head, repository_id)
-            return PENDING
+            status, record = prepare_publication(root, args.push_arg, args.deadline)
+            if status==PENDING and os.environ.get('NATIVE_PUBLICATION_TOKEN_ORIGIN')=='ADMIN_GH_TOKEN':
+                return settle(GitHub(root,args.deadline),root,record,args.deadline)
+            return status
         if not args.record or args.deadline <= 0:
             raise PublicationHeld('original_record_and_budget_required')
         return settle(GitHub(root, args.deadline), root, args.record, args.deadline)

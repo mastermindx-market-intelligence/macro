@@ -161,7 +161,15 @@ def test_workflow_contract_no_floating_main_or_shell_input_interpolation():
     fms = load_workflow("fms-acquire.yml")["jobs"]
     assert fms["publish"]["with"]["source_sha"] == "${{ needs.acquire.outputs.source_sha }}"
     persist = next(s["run"] for s in fms["acquire"]["steps"] if s.get("id") == "persist")
-    assert persist.index("python -B -m scripts.ci.fms_persist") < persist.index("--fms-receipt") < persist.index('echo "publish_default=true"')
+    stage = next(s for s in fms['acquire']['steps'] if s.get('id')=='native_publication_stage')
+    upload = next(s for s in fms['acquire']['steps'] if s.get('id')=='native_publication_origin')
+    final = next(s for s in fms['acquire']['steps'] if s.get('id')=='persist')
+    graph=fms['acquire']['steps']
+    assert graph.index(stage)<graph.index(upload)<graph.index(final)
+    assert '--native-deadline' in stage['run'] and '--settle-native' in persist
+    assert persist.index('--settle-native') < persist.index("--fms-receipt") < persist.index('echo "publish_default=true"')
+    assert upload['uses']=='actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02'
+    assert all('continue-on-error' not in s for s in (stage,upload,final))
     assert "scripts/ci/govrev_source_binding.py" in pre.SOURCE_PATHS
 
 

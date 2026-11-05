@@ -83,10 +83,12 @@ def test_proposed_workflow_persist_shell_preserves_concurrent_source(fixture):
  p=root/m.FMS_FILES[1];p.write_text(p.read_text()+'{"next":true}\n')
  advance(peer,body='next unrelated\n')
  y=yaml.load((Path(__file__).resolve().parents[1]/'.github/workflows/fms-acquire.yml').read_text(),Loader=yaml.BaseLoader)
+ stage=next(x for x in y['jobs']['acquire']['steps'] if x.get('id')=='native_publication_stage')
  step=next(x for x in y['jobs']['acquire']['steps'] if x.get('id')=='persist')
  env={**os.environ,'PATH':str(Path(sys.executable).parent)+os.pathsep+os.environ['PATH'],'FMS_TARGET_REF':'main','FMS_DEFAULT_BRANCH':'main','GITHUB_REF':'refs/heads/main','GITHUB_RUN_ID':'local-fixture','GITHUB_RUN_ATTEMPT':'1','RUNNER_TEMP':str(out.parent),'GITHUB_OUTPUT':str(out.parent/'outputs')}
  env.pop('PYTHONPATH',None)
- r=subprocess.run(['bash','-e','-o','pipefail','-c',step['run']],cwd=root,env=env,capture_output=True,text=True)
+ env['NATIVE_ORIGINAL_RECORD']=''
+ r=subprocess.run(['bash','-e','-o','pipefail','-c',stage['run']+'\n'+step['run']],cwd=root,env=env,capture_output=True,text=True)
  assert r.returncode==0,r.stdout+r.stderr
  outputs=dict(line.split('=',1) for line in (out.parent/'outputs').read_text().splitlines())
  assert outputs['publish_default']=='true'
@@ -195,3 +197,73 @@ def test_native_group_does_not_accept_changed_original_append_only_source(fixtur
  base=run(root,'rev-parse','HEAD^')
  with pytest.raises(m.Refusal,match='append_only'):
   m.validate_native_group(root,candidate,base,candidate)
+
+
+def staged_native(fixture,monkeypatch):
+ from scripts.ci import native_queue_push as native
+ root,origin,peer,out=fixture
+ candidate=run(root,'rev-parse','HEAD')
+ monkeypatch.setenv('GITHUB_OUTPUT',str(out.parent/'outputs'))
+ record=out.parent/'origin.json'
+ monkeypatch.setattr(native,'prepare_publication',lambda *args:(native.PENDING,record))
+ assert m.persist(root,'main',out,native_deadline=m.time.time()+120)==77
+ assert run(origin,'rev-parse','main')!=candidate
+ assert json.loads(out.read_text())['state']=='NATIVE_PUBLICATION_PENDING'
+ return candidate,native
+
+
+def test_native_fms_squash_settlement_preserves_original_and_hands_off_actual_merge(fixture,monkeypatch):
+ from scripts.ci.govrev_source_binding import settled_fms_source
+ root,origin,peer,out=fixture;candidate,native=staged_native(fixture,monkeypatch)
+ base=run(root,'rev-parse',candidate+'^');advance(peer)
+ group_base=m.remote_head(root,'refs/heads/main',m.origin(root))
+ merge=m.prepare(root,base,candidate,group_base,out)
+ run(root,'push','origin',merge+':refs/heads/main')
+ def settle(api,where,path,deadline,*,on_published):
+  on_published({'source_head':candidate,'merge_sha':merge,'observed_target_sha':merge,
+                'projection_sha256':'a'*64,'pr_number':7})
+  return 0
+ monkeypatch.setattr(native,'GitHub',lambda *args:None);monkeypatch.setattr(native,'settle',settle)
+ assert m.settle_native(root,out)==0
+ receipt=json.loads(out.read_text())
+ assert receipt['state']=='ORIGINAL_EFFECT_CONFIRMED'
+ assert settled_fms_source(receipt)==merge and merge!=candidate
+ assert run(root,'rev-parse','HEAD')==candidate
+
+
+@pytest.mark.parametrize('reason',['pending','source','projection','head','origin'])
+def test_native_fms_unconfirmed_or_changed_original_never_releases_consumer(fixture,monkeypatch,reason):
+ root,origin,peer,out=fixture;candidate,native=staged_native(fixture,monkeypatch)
+ base=run(root,'rev-parse',candidate+'^')
+ if reason in ('source','projection'):
+  path='scripts/changed.py' if reason=='source' else m.FMS_FILES[1]
+  (root/Path(path).parent).mkdir(parents=True,exist_ok=True)
+  (root/path).write_text('superseded\n');run(root,'add','.');run(root,'commit','-m','changed landing')
+  merge=run(root,'rev-parse','HEAD');run(root,'checkout','--detach',candidate)
+ else:merge=candidate
+ run(root,'push','origin',merge+':refs/heads/main')
+ original=out.read_bytes()
+ if reason=='origin':run(root,'remote','set-url','--push','origin',str(out.parent/'another.git'))
+ def settle(api,where,path,deadline,*,on_published):
+  if reason=='pending':return 77
+  on_published({'source_head':'f'*40 if reason=='head' else candidate,'merge_sha':merge,
+                'observed_target_sha':merge,'projection_sha256':'a'*64,'pr_number':7})
+  return 0
+ monkeypatch.setattr(native,'GitHub',lambda *args:None);monkeypatch.setattr(native,'settle',settle)
+ if reason=='origin':
+  with pytest.raises(m.Refusal,match='origin_binding'):
+   m.settle_native(root,out)
+ else:assert m.settle_native(root,out)==(77 if reason=='pending' else 76)
+ assert out.read_bytes()==original
+
+
+def test_native_first_stage_unknown_has_no_legacy_push_or_second_acquisition(fixture,monkeypatch):
+ from scripts.ci import native_queue_push as native
+ root,origin,peer,out=fixture;before=run(origin,'rev-parse','main')
+ def unknown(*args):raise native.EffectUnknown('retained original request')
+ monkeypatch.setattr(native,'prepare_publication',unknown)
+ assert m.persist(root,'main',out,native_deadline=m.time.time()+120)==75
+ assert json.loads(out.read_text())['state']=='EFFECT_UNKNOWN'
+ assert run(origin,'rev-parse','main')==before
+ with pytest.raises(m.Refusal,match='receipt_identity'):
+  m.persist(root,'main',out,native_deadline=m.time.time()+120)

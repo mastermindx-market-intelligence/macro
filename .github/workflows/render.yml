@@ -1315,15 +1315,37 @@ jobs:
       # checkout. Missing ADMIN_GH_TOKEN fails closed; falling back to github.token
       # would retry GH013 twenty times.
       - name: commit rendered site (site/ ONLY — never data/, so ledgers stay pristine)
+        id: native_publication
         if: ${{ success() && steps.render_pages.outputs.complete == 'true' }}
         env:
           ADMIN_GH_TOKEN: ${{ secrets.ADMIN_GH_TOKEN }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: ADMIN_GH_TOKEN
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication
         run: |
           if [ -z "${ADMIN_GH_TOKEN:-}" ]; then
             echo "::error title=rendered site publisher denied::ADMIN_GH_TOKEN is required to publish through the main freeze"
             exit 1
           fi
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+          if [ "${GITHUB_REPOSITORY:-}" = mastermindx-market-intelligence/macro ]; then
+            # Capture repository-owned execution bytes from the original protected
+            # workflow SHA BEFORE rebase can replace files in the candidate tree.
+            umask 077
+            [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+            native_code_root="${RUNNER_TEMP%/}/native-publication-code-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
+            mkdir -m 700 -- "$native_code_root"
+            mkdir -p -- "$native_code_root/scripts/ci"
+            GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show \
+              "$GITHUB_WORKFLOW_SHA:scripts/ci/native_publication_source.sh" \
+              > "$native_code_root/scripts/ci/native_publication_source.sh"
+            case "$(GIT_NO_REPLACE_OBJECTS=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_publication_source.sh)" in
+              100644*) : ;; *) exit 76 ;;
+            esac
+            . "$native_code_root/scripts/ci/native_publication_source.sh"
+            native_publication_capture_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"
+            . "$native_code_root/scripts/ci/push_retry.sh"
+          else
+            . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+          fi
           git config user.name "dashboard-bot"
           git config user.email "actions@users.noreply.github.com"
           # checkout@v4 historically persisted this header. Remove any survivor before
@@ -1432,6 +1454,19 @@ jobs:
           PUSH_BUDGET_SECS=2400
           PUSH_MAX_ATTEMPTS=20   # the deadline governs cold hydration; attempts cap warm ref races
           push_retry_init "rendered site"
+          git update-ref "$PUBLISH_REF" "$RENDER_COMMIT" "" || exit 76
+          native_initial_rc=0
+          push_native_do origin "$PUBLISH_REF:refs/heads/main" || native_initial_rc=$?
+          case "$native_initial_rc" in
+            0)
+              git update-ref -d "$PUBLISH_REF" "$RENDER_COMMIT"
+              echo "published original rendered generation through protected queue"
+              push_won
+              exit 0 ;;
+            80)
+              export NATIVE_PUBLICATION_EXPECT_OFF=1 ;;
+            *) exit "$native_initial_rc" ;;
+          esac
           while push_attempt; do
             # Fetch the exact named ref we will rebase onto, then quarantine only the
             # untracked paths it tracks.  `git fetch origin main` updates FETCH_HEAD but

@@ -39,6 +39,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   # Daily stays off the shared "pipeline" lane (a 2-3h backfill once starved it).
@@ -6564,8 +6565,39 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=orchestrator_log::rc=$rc (non-fatal)"; fi
           exit 0
       - name: commit cortex outputs
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # Body extracted verbatim to scripts/ci/daily_cortex_commit.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
         run: bash scripts/ci/daily_cortex_commit.sh
+
+      - name: Retain original cortex publication origin
+        id: native_publication_origin
+        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected cortex publication
+        id: native_publication
+        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
         run: bash scripts/ci/nightly_timings_finish.sh 30

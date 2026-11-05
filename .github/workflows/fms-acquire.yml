@@ -37,6 +37,7 @@ env:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   acquire:
@@ -60,7 +61,7 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.FMS_TARGET_REF }}
+          ref: ${{ env.FMS_TARGET_REF == 'main' && github.sha || env.FMS_TARGET_REF }}
           fetch-depth: 1
 
       - name: python 3.12 (Homebrew venv — self-hosted runner)
@@ -80,8 +81,12 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
         run: python -m collectors.fms_notifications_live acquire
 
-      - name: commit triad + graph back to the selected ref (fms files only)
-        id: persist
+      - name: Stage original FMS acquisition persistence
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain)" ]; then
@@ -107,15 +112,72 @@ jobs:
           git commit -m "fms-acquire: official 36(b) notification acquisition $(date -u +%FT%H:%MZ)"
           # Preserve this acquisition across unrelated branch movement. Never
           # rerun source effects or blindly replay an uncertain Git push.
-          python3 -B -m scripts.ci.fms_persist \
-            --branch "$FMS_TARGET_REF" \
-            --receipt "$RUNNER_TEMP/fms-persist-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
+          native_args=()
+          export PYTHONPATH="${GITHUB_WORKSPACE:-$PWD}" PYTHONDONTWRITEBYTECODE=1
+          if [ "$FMS_TARGET_REF" = main ] && [ "${GITHUB_REF:-}" = refs/heads/main ] && [ "${GITHUB_REPOSITORY:-}" = mastermindx-market-intelligence/macro ]; then
+            umask 077
+            [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+            native_code_root="${RUNNER_TEMP%/}/native-publication-code-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
+            mkdir -m 700 -- "$native_code_root"
+            mkdir -p -- "$native_code_root/scripts/ci"
+            GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show \
+              "$GITHUB_WORKFLOW_SHA:scripts/ci/native_publication_source.sh" \
+              > "$native_code_root/scripts/ci/native_publication_source.sh"
+            case "$(GIT_NO_REPLACE_OBJECTS=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_publication_source.sh)" in
+              100644*) : ;; *) exit 76 ;;
+            esac
+            . "$native_code_root/scripts/ci/native_publication_source.sh"
+            native_publication_capture_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"
+            export PYTHONPATH="$native_code_root" PYTHONDONTWRITEBYTECODE=1
+            # Bound the queue settlement inside the original three 45-second
+            # push-attempt allowance; upload consumes this SAME deadline.
+            native_args=(--native-deadline "$(python3 -c 'import time; print(time.time()+135)')")
+          fi
+          persist_rc=0
+          python3 -P -B -m scripts.ci.fms_persist \
+            --branch "$FMS_TARGET_REF" "${native_args[@]}" \
+            --receipt "$RUNNER_TEMP/fms-persist-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json" || persist_rc=$?
+          if [ "$persist_rc" -ne 0 ] && [ "$persist_rc" -ne 77 ]; then exit "$persist_rc"; fi
+          echo "projection_changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Retain original FMS publication origin
+        id: native_publication_origin
+        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original FMS persistence before dependent publication
+        id: persist
+        if: steps.native_publication_stage.outputs.projection_changed == 'true'
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -n "$NATIVE_ORIGINAL_RECORD" ]; then
+            export PYTHONPATH="$NATIVE_ORIGINAL_CODE" PYTHONDONTWRITEBYTECODE=1
+            python3 -P -B -m scripts.ci.fms_persist --settle-native \
+              --receipt "$RUNNER_TEMP/fms-persist-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
+          fi
           echo "projection_changed=true" >> "$GITHUB_OUTPUT"
           # Only released main code committing main may request the main publisher.
           # GITHUB_TOKEN pushes do not trigger its on:push subscription.
           if [ "${FMS_DEFAULT_BRANCH:-}" = "main" ] && [ "$FMS_TARGET_REF" = "main" ] && [ "${GITHUB_REF:-}" = "refs/heads/main" ]; then
-            python3 scripts/ci/govrev_source_binding.py \
-              --fms-receipt "$RUNNER_TEMP/fms-persist-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
+            if [ -n "$NATIVE_ORIGINAL_RECORD" ]; then
+              python3 -P -m scripts.ci.govrev_source_binding \
+                --fms-receipt "$RUNNER_TEMP/fms-persist-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
+            else
+              python3 scripts/ci/govrev_source_binding.py \
+                --fms-receipt "$RUNNER_TEMP/fms-persist-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
+            fi
+            # source_sha is emitted ONLY by the settled source binding.
             echo "publish_default=true" >> "$GITHUB_OUTPUT"
           else
             echo "publish_default=false" >> "$GITHUB_OUTPUT"

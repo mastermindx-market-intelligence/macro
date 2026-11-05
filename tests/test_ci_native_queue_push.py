@@ -39,7 +39,7 @@ def candidate(tmp_path, monkeypatch):
     runtemp = tmp_path / 'runner'
     runtemp.mkdir()
     environment = {'GITHUB_REPOSITORY': m.REPOSITORY, 'GITHUB_REF': 'refs/heads/main',
-        'GITHUB_JOB': 'shock', 'NATIVE_PUBLICATION_PUBLISHING_STEP': 'native_publication_stage',
+        'GITHUB_JOB': 'shock', 'NATIVE_PUBLICATION_TOKEN_ORIGIN': 'GITHUB_TOKEN', 'NATIVE_PUBLICATION_PUBLISHING_STEP': 'native_publication_stage',
         'GITHUB_WORKFLOW_REF': m.REPOSITORY + '/.github/workflows/commodity-sentinel.yml@refs/heads/main',
         'GITHUB_WORKFLOW_SHA': base, 'GITHUB_RUN_ID': '42000000000', 'GITHUB_RUN_ATTEMPT': '1',
         'RUNNER_TEMP': str(runtemp), 'GITHUB_OUTPUT': str(tmp_path / 'outputs')}
@@ -61,7 +61,7 @@ class ExistingIntent:
         self.root, self.head, self.env = candidate
         outputs = m.projection(self.root, self.head)
         locator, _, _ = m.producer_identity(self.head, m.projection_digest(outputs))
-        self.pull = pull(self.head, m.producer_origin_pointer(**locator))
+        self.pull = pull(self.head, m.intent_pointer(os.environ['NATIVE_PUBLICATION_TOKEN_ORIGIN'],locator))
         self.events = []
         self.mutation = mutation
 
@@ -226,8 +226,14 @@ def test_local_non_github_origin_never_acquires_api_or_native_authority(candidat
 
 @pytest.mark.parametrize('state', ['published', 'pending', 'superseded', 'missing',
                                   'truncated', 'wrong_head', 'wrong_ancestry'])
-def test_readonly_settlement_requires_original_protected_landing_and_projection(candidate, monkeypatch, state):
+@pytest.mark.parametrize('credential',['GITHUB_TOKEN','ADMIN_GH_TOKEN'])
+def test_readonly_settlement_requires_original_protected_landing_and_projection(candidate, monkeypatch, state,credential):
     root, head, _ = candidate
+    if credential=='ADMIN_GH_TOKEN':
+        monkeypatch.setenv('GITHUB_JOB','render')
+        monkeypatch.setenv('NATIVE_PUBLICATION_TOKEN_ORIGIN',credential)
+        monkeypatch.setenv('NATIVE_PUBLICATION_PUBLISHING_STEP','native_publication')
+        monkeypatch.setenv('GITHUB_WORKFLOW_REF',m.REPOSITORY+'/.github/workflows/render.yml@refs/heads/main')
     stage_api = ExistingIntent(candidate)
     path = m.stage(stage_api, root, 'main', head, 1)
     origin = dict(json.loads(path.read_bytes())['producer_origin'], _repository_id=1)
@@ -245,6 +251,7 @@ def test_readonly_settlement_requires_original_protected_landing_and_projection(
             self.effects = []
         def request(self, method, endpoint, body=None):
             assert method == 'GET', 'settlement must never repair or recreate intent'
+            if endpoint=='/':return {'id':1,'full_name':m.REPOSITORY}
             if endpoint == '/pulls/7':
                 row = copy.deepcopy(stage_api.pull)
                 if state != 'pending':
@@ -269,6 +276,10 @@ def test_readonly_settlement_requires_original_protected_landing_and_projection(
         assert status == 0 and receipt['merge_sha'] == merge
         assert receipt['observed_target_sha'] == observed and receipt['source_head'] == head
         assert receipt['source_head'] != receipt['merge_sha']
+        if credential=='ADMIN_GH_TOKEN':
+            monkeypatch.setattr(m,'prepare_publication',lambda *args:(m.PENDING,path))
+            monkeypatch.setattr(m,'GitHub',lambda *args:Readback())
+            assert m.main(['publish','--root',str(root),'--deadline',str(m.time.time()+30)])==0
     else:
         with pytest.raises((m.PublicationHeld, m.PublicationValidationError)):
             m.publication(Readback(), root, origin)
@@ -365,6 +376,98 @@ def test_settlement_checks_original_stage_without_impersonating_final_step(candi
     assert len(observed) == 1 and observed[0]['publishing_step'] == 'native_publication_stage'
 
 
+def test_fms_origin_names_actual_acquisition_stage_without_impersonating_shock(candidate,monkeypatch):
+    root,head,env=candidate
+    monkeypatch.setenv('GITHUB_JOB','acquire')
+    monkeypatch.setenv('GITHUB_WORKFLOW_REF',m.REPOSITORY+'/.github/workflows/fms-acquire.yml@refs/heads/main')
+    api=ExistingIntent(candidate)
+    record=m.stage(api,root,'main',head,1)
+    origin=json.loads(record.read_bytes())['producer_origin']
+    assert origin['workflow_path']=='.github/workflows/fms-acquire.yml'
+    assert origin['publishing_job']=='acquire' and origin['publishing_step']=='native_publication_stage'
+
+
+def test_fms_final_gate_never_turns_pending_into_a_source_handoff(tmp_path):
+    base=Path(__file__).resolve().parents[1]
+    workflow=yaml.safe_load((base/'.github/workflows/fms-acquire.yml').read_text())
+    final=next(s for s in workflow['jobs']['acquire']['steps'] if s.get('id')=='persist')
+    output=tmp_path/'outputs'
+    result=subprocess.run(['bash','-eo','pipefail','-c','python3() { return 77; }\n'+final['run']],
+        env={**os.environ,'NATIVE_ORIGINAL_RECORD':'original','NATIVE_ORIGINAL_CODE':str(tmp_path),
+             'RUNNER_TEMP':str(tmp_path),'GITHUB_RUN_ID':'42000000000','GITHUB_RUN_ATTEMPT':'1',
+             'GITHUB_OUTPUT':str(output)},capture_output=True,text=True)
+    assert result.returncode==77 and not output.exists()
+
+
+def test_render_local_record_is_never_uploaded_as_app_origin(candidate,monkeypatch):
+    root,head,env=candidate
+    monkeypatch.setenv('GITHUB_JOB','render')
+    monkeypatch.setenv('NATIVE_PUBLICATION_TOKEN_ORIGIN','ADMIN_GH_TOKEN')
+    monkeypatch.setenv('NATIVE_PUBLICATION_PUBLISHING_STEP','native_publication')
+    monkeypatch.setenv('GITHUB_WORKFLOW_REF',m.REPOSITORY+'/.github/workflows/render.yml@refs/heads/main')
+    api=ExistingIntent(candidate)
+    path=m.stage(api,root,'main',head,1)
+    assert path.name=='publication.json'
+    record=json.loads(path.read_bytes())
+    assert record['schema']=='mastermind.native-publication-local.v1'
+    assert record['producer_origin']['credential_origin']=='ADMIN_GH_TOKEN'
+    assert 'mastermind-native-publication-intent:v1' in api.pull['body']
+    outputs=Path(env['GITHUB_OUTPUT']).read_text()
+    assert 'native_origin_path' not in outputs and 'native_origin_name' not in outputs
+    class Repository:
+        def request(self,method,endpoint):
+            assert (method,endpoint)==('GET','/')
+            return {'id':1,'full_name':m.REPOSITORY}
+    calls=[]
+    monkeypatch.setattr(m,'publication',lambda *args:(calls.append(args[2]) or (m.PENDING,None)))
+    ticks=iter((0,0,0,0,5))
+    assert m.settle(Repository(),root,path,5,clock=lambda:next(ticks),sleep=lambda _:None)==m.PENDING
+    assert len(calls)==1 and calls[0]['credential_origin']=='ADMIN_GH_TOKEN'
+
+
+def test_render_credential_does_not_fall_back_to_present_app_token(candidate,monkeypatch):
+    root,head,env=candidate
+    git(root,'remote','add','origin','https://github.com/'+m.REPOSITORY+'.git')
+    monkeypatch.setenv('NATIVE_PUBLICATION_TOKEN_ORIGIN','ADMIN_GH_TOKEN')
+    monkeypatch.setenv('GITHUB_TOKEN','fake-app-must-not-be-used')
+    with pytest.raises(m.PublicationHeld,match='render_authorization_header_missing'):
+        m.GitHub(root)
+
+
+def test_render_native_route_precedes_legacy_rebase_and_retains_candidate_on_pending():
+    base=Path(__file__).resolve().parents[1]
+    workflow=yaml.safe_load((base/'.github/workflows/render.yml').read_text())
+    step=next(s for s in workflow['jobs']['render']['steps'] if s.get('id')=='native_publication')
+    body=step['run']
+    assert step['env']['ADMIN_GH_TOKEN']=='${{ secrets.ADMIN_GH_TOKEN }}'
+    assert step['env']['NATIVE_PUBLICATION_TOKEN_ORIGIN']=='ADMIN_GH_TOKEN'
+    assert body.index('native_publication_capture_source')<body.index('push_native_do')<body.index('while push_attempt')
+    native=body[body.index('native_initial_rc=0'):body.index('while push_attempt')]
+    assert '*) exit "$native_initial_rc"' in native
+    assert 'NATIVE_PUBLICATION_EXPECT_OFF=1' in native
+    # Original forty-minute budget retained; native admission is not publication.
+    assert 'PUSH_BUDGET_SECS=2400' in body
+
+
+@pytest.mark.parametrize('workflow,job',[('public-render','render'),('daily','cortex'),('engine-render','engine-render')])
+@pytest.mark.parametrize('unsettled',[75,77])
+def test_active_app_producer_graph_refuses_unsettled_publication(tmp_path,workflow,job,unsettled):
+    base=Path(__file__).resolve().parents[1]
+    steps=yaml.safe_load((base/f'.github/workflows/{workflow}.yml').read_text())['jobs'][job]['steps']
+    byid={s['id']:s for s in steps if 'id' in s}
+    stage,upload,final=(byid[k] for k in ('native_publication_stage','native_publication_origin','native_publication'))
+    assert steps.index(stage)<steps.index(upload)<steps.index(final)
+    assert stage['env']['GITHUB_TOKEN']=='${{ secrets.GITHUB_TOKEN }}'
+    assert upload['uses']=='actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02'
+    assert all('continue-on-error' not in s for s in (stage,upload,final))
+    output=tmp_path/'outputs'
+    result=subprocess.run(['bash','-eo','pipefail','-c',f'python3() {{ return {unsettled}; }}\n'+final['run']],
+        env={**os.environ,'NATIVE_ORIGINAL_RECORD':'original','NATIVE_ORIGINAL_CODE':str(tmp_path),
+             'NATIVE_ORIGINAL_DEADLINE':'123','GITHUB_WORKSPACE':str(tmp_path),'GITHUB_OUTPUT':str(output)},
+        capture_output=True,text=True)
+    assert result.returncode==unsettled and not output.exists()
+
+
 def test_explicit_app_rest_reference_never_falls_back_or_repurposes_render_header(candidate, monkeypatch):
     root, _, _ = candidate
     git(root, 'remote', 'add', 'origin', 'https://github.com/' + m.REPOSITORY + '.git')
@@ -395,6 +498,7 @@ def test_actual_post_rebase_execution_uses_original_git_source_frame(tmp_path, m
     paths = set(m.GUARD_PATHS) | {'scripts/__init__.py', 'scripts/ci/push_retry.sh',
         'scripts/ci/native_queue_push.py', 'scripts/ci/native_publication.py',
         'scripts/ci/native_publication_origin.py', 'scripts/ci/native_publication_source.sh',
+        'scripts/ci/fms_persist.py', 'scripts/ci/govrev_source_binding.py',
         '.github/workflows/commodity-sentinel.yml', '.github/actions/native-publication-origin/action.yml'}
     for name in paths:
         target = root / name

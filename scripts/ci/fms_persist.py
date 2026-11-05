@@ -5,7 +5,7 @@ gets one same-origin observation; absent confirmation remains effect-unknown.
 This module does not acquire sources, rebuild projections or publish site data.
 """
 from __future__ import annotations
-import argparse, hashlib, json, os, re, subprocess, tempfile
+import argparse, hashlib, json, math, os, re, subprocess, tempfile, time
 from pathlib import Path
 
 FMS_FILES = tuple('data/government_revenue/fms_' + n for n in (
@@ -156,8 +156,11 @@ def classify(result):
     if result.returncode==1 and len(lines)==1 and re.fullmatch(rb'!\t[^\t]+\t\[rejected\] \((?:fetch first|non-fast-forward|stale info)\)',lines[0]):return 'definite_contention_rejection'
     return 'effect_unknown'
 
-def persist(root,branch,out,max_attempts=3):
+def persist(root,branch,out,max_attempts=3,*,native_deadline=0):
     root=Path(root).resolve();out=Path(out).resolve()
+    if native_deadline and (type(native_deadline) not in (int,float)
+            or not math.isfinite(native_deadline) or not 0<native_deadline-time.time()<=135):
+        raise Refusal('original_fms_publication_budget_invalid')
     if out.is_relative_to(root) or out.exists() or not 1<=max_attempts<=3:raise Refusal('receipt_identity_or_attempt_bound_invalid')
     if git(root,'check-ref-format','refs/heads/'+branch).returncode:raise Refusal('invalid_target_branch')
     out.parent.mkdir(parents=True,exist_ok=True)
@@ -165,6 +168,24 @@ def persist(root,branch,out,max_attempts=3):
     rec={'contract':'fms.acquisition_persistence.v1','candidate':candidate,'base':base,'target_ref':ref,'origin_sha256':binding,'attempts':[],'state':'PREPARED_NO_PUSH'}
     save(out,rec,create=True)
     try:
+        if native_deadline:
+            from scripts.ci import native_queue_push as native
+            try:
+                status,record=native.prepare_publication(root,['origin',candidate+':'+ref],native_deadline)
+            except native.EffectUnknown:
+                rec['state']='EFFECT_UNKNOWN';save(out,rec);return UNKNOWN
+            except (native.PublicationHeld,OSError,ValueError,subprocess.SubprocessError):
+                rec['state']='NATIVE_PUBLICATION_HELD';save(out,rec);return REFUSED
+            if status==native.PENDING:
+                rec.update(state='NATIVE_PUBLICATION_PENDING',native_origin_path=str(record),
+                           native_deadline=native_deadline)
+                rec['attempts'].append({'expected_commit':candidate,'state':'native_pending'})
+                save(out,rec)
+                with open(os.environ['GITHUB_OUTPUT'],'a') as output:
+                    output.write('native_deadline='+str(native_deadline)+'\n')
+                return native.PENDING
+            if status!=native.LEGACY:
+                rec['state']='NATIVE_PUBLICATION_HELD';save(out,rec);return REFUSED
         for _ in range(max_attempts):
             remote=remote_head(root,ref,binding)
             expected=prepare(root,base,candidate,remote,out)
@@ -191,7 +212,52 @@ def persist(root,branch,out,max_attempts=3):
         rec['state']='EFFECT_UNKNOWN' if live else 'PREPARATION_REFUSED_NO_NEW_PUSH'
         rec['reason']=str(exc) if isinstance(exc,Refusal) else 'bounded_git_operation_failed';save(out,rec);return UNKNOWN if live else 1
 
+
+def settle_native(root,out):
+    """Read the SAME original intent, then conserve the FMS domain receipt.
+
+    A pending origin upload never confirms acquisition persistence. No source
+    acquisition, intent write, label request or second push is performed here.
+    The original receipt stays pending/UNKNOWN on any unconfirmed observation.
+    """
+    from scripts.ci import native_queue_push as native
+    root=Path(root).resolve();out=Path(out).resolve()
+    if out.is_relative_to(root) or out.is_symlink():raise Refusal('original_fms_receipt_required')
+    rec=json.loads(out.read_text())
+    if (rec.get('contract')!='fms.acquisition_persistence.v1'
+            or rec.get('state')!='NATIVE_PUBLICATION_PENDING'
+            or rec.get('target_ref')!='refs/heads/main'
+            or rec.get('attempts')!=[{'expected_commit':rec.get('candidate'),'state':'native_pending'}]):
+        raise Refusal('original_pending_fms_receipt_required')
+    candidate,base=validate_acquisition(root)
+    if candidate!=rec.get('candidate') or base!=rec.get('base') or origin(root)!=rec.get('origin_sha256'):
+        raise Refusal('original_acquisition_identity_changed')
+    deadline=rec['native_deadline']
+    if type(deadline) not in (float,int) or deadline<=0:raise Refusal('original_fms_deadline_required')
+    def confirmed(receipt):
+        if time.time()>=deadline:raise Refusal('original_fms_publication_budget_expired')
+        if receipt.get('source_head')!=candidate:raise Refusal('original_fms_source_head_changed')
+        observed=remote_head(root,rec['target_ref'],rec['origin_sha256'])
+        merge=receipt['merge_sha']
+        if not ancestor(root,merge,observed):raise Refusal('protected_fms_merge_not_observed')
+        line=need(root,'rev-list','--parents','-n','1',merge).decode().split()
+        if len(line)!=2:raise Refusal('protected_fms_squash_parent_required')
+        validate_native_group(root,candidate,line[1],merge)
+        if any(artifact_entry(root,candidate,name)!=artifact_entry(root,observed,name) for name in FMS_FILES):
+            raise Refusal('protected_fms_generation_superseded')
+        if origin(root)!=rec['origin_sha256']:raise Refusal('origin_binding_changed')
+        if time.time()>=deadline:raise Refusal('original_fms_publication_budget_expired')
+        rec['attempts'][-1].update(state='native_published',observed_commit=observed)
+        rec.update(state='ORIGINAL_EFFECT_CONFIRMED',native_publication=receipt)
+        save(out,rec)
+    try:
+        return native.settle(native.GitHub(root,deadline),root,rec['native_origin_path'],deadline,
+                             on_published=confirmed)
+    except native.EffectUnknown:return UNKNOWN
+    except (native.PublicationHeld,Refusal,OSError,ValueError,subprocess.SubprocessError):return REFUSED
+
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--root',type=Path,default=Path.cwd());p.add_argument('--branch',required=True);p.add_argument('--receipt',required=True,type=Path);a=p.parse_args()
-    try:raise SystemExit(persist(a.root,a.branch,a.receipt))
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--root',type=Path,default=Path.cwd());p.add_argument('--branch');p.add_argument('--receipt',required=True,type=Path);p.add_argument('--native-deadline',type=float,default=0);p.add_argument('--settle-native',action='store_true');a=p.parse_args()
+    if not a.settle_native and not a.branch:p.error('--branch required for original persistence')
+    try:raise SystemExit(settle_native(a.root,a.receipt) if a.settle_native else persist(a.root,a.branch,a.receipt,native_deadline=a.native_deadline))
     except Refusal as e:print('fms-persist refused:',str(e));raise SystemExit(1)

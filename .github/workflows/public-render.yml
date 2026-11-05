@@ -40,6 +40,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: pipeline-public-render
@@ -58,7 +59,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           # Full history accounted for roughly seven minutes of the first
           # 13-minute proof run. Two commits are enough for the bot commit and
           # its rebase/push retry while keeping this lane inside merge cadence.
@@ -72,5 +73,35 @@ jobs:
           node-version: "22"
       - name: Install public-render dependencies
         run: python -m pip install --quiet jinja2 pyyaml rjsmin==1.2.5
-      - name: Render and publish public surfaces
+      - name: Stage public surfaces and publication intent
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/ci/public_render.sh
+
+      - name: Retain original public-render publication origin
+        id: native_publication_origin
+        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected public-render publication
+        id: native_publication
+        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"

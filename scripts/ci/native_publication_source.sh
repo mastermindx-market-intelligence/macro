@@ -20,6 +20,8 @@ native_publication_capture_source() {
     scripts/ci/native_queue_push.py \
     scripts/ci/native_publication.py \
     scripts/ci/native_publication_origin.py \
+    scripts/ci/fms_persist.py \
+    scripts/ci/govrev_source_binding.py \
     scripts/ci/qledger_publication.py \
     engine/__init__.py \
     engine/qledger_store.py \

@@ -62,6 +62,21 @@ def settled_fms_source(receipt):
             or not isinstance(receipt.get("attempts"), list) or not receipt["attempts"]):
         raise BindingRefused("fms_source_effect_not_confirmed")
     attempt = receipt["attempts"][-1]
+    if isinstance(attempt,dict) and attempt.get('state')=='native_published':
+        publication=receipt.get('native_publication')
+        if (not isinstance(publication,dict)
+                or publication.get('source_head')!=attempt.get('expected_commit')
+                or publication.get('source_head')!=receipt.get('candidate')
+                or type(publication.get('pr_number')) is not int or publication['pr_number']<=0
+                or not isinstance(publication.get('projection_sha256'),str)
+                or not re.fullmatch('[0-9a-f]{64}',publication['projection_sha256'])):
+            raise BindingRefused('fms_native_publication_not_confirmed')
+        commit_sha(attempt.get('observed_commit'))
+        commit_sha(publication.get('observed_target_sha'))
+        # Native SQUASH does not retain acquisition ancestry. The producer
+        # validated the full original generation/source closure at this actual
+        # protected merge, separately from a later target observation.
+        return commit_sha(publication.get('merge_sha'))
     if not isinstance(attempt, dict) or attempt.get("state") not in {"acknowledged", "effect_unknown"}:
         raise BindingRefused("fms_source_effect_not_confirmed")
     commit_sha(attempt.get("observed_commit"))

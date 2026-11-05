@@ -3,6 +3,27 @@ set -e
 set -u
 set -o pipefail
 
+if [ "${GITHUB_REPOSITORY:-}" = mastermindx-market-intelligence/macro ] && [ "${GITHUB_REF:-}" = refs/heads/main ]; then
+  # Capture repository-owned execution bytes from the original protected
+  # workflow SHA BEFORE rebase can replace files in the candidate tree.
+  umask 077
+  [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+  native_code_root="${RUNNER_TEMP%/}/native-publication-code-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
+  mkdir -m 700 -- "$native_code_root"
+  mkdir -p -- "$native_code_root/scripts/ci"
+  GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show \
+    "$GITHUB_WORKFLOW_SHA:scripts/ci/native_publication_source.sh" \
+    > "$native_code_root/scripts/ci/native_publication_source.sh"
+  case "$(GIT_NO_REPLACE_OBJECTS=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_publication_source.sh)" in
+    100644*) : ;; *) exit 76 ;;
+  esac
+  . "$native_code_root/scripts/ci/native_publication_source.sh"
+  native_publication_capture_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"
+  . "$native_code_root/scripts/ci/push_retry.sh"
+else
+  . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+fi
+
 # Fast, data-free public-surface render. This intentionally does not invoke any
 # market builder, restore a parquet cache, publish R2 data, or use a self-hosted
 # runner. The PR already carries direct template/site pairs; this pass renders
@@ -42,10 +63,19 @@ fi
 
 git commit -m "render-public: public pages + asset stamps"
 
-. "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
 PUSH_BUDGET_SECS=600
 PUSH_MAX_ATTEMPTS=12
 push_retry_init "public render"
+# Route the already-guarded original generation before any legacy rebase.
+# Native stage completion is pending, never ordinary publication success.
+native_initial_rc=0
+push_native_do origin HEAD:main || native_initial_rc=$?
+case "$native_initial_rc" in
+  0) push_won; exit 0 ;;
+  77) echo "publication=pending" >> "$GITHUB_OUTPUT"; exit 0 ;;
+  80) export NATIVE_PUBLICATION_EXPECT_OFF=1 ;;
+  *) exit "$native_initial_rc" ;;
+esac
 
 while push_attempt; do
   PRE_SYNC_HEAD=$(git rev-parse HEAD)

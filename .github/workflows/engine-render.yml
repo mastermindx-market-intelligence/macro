@@ -61,7 +61,8 @@ on:
       - "engine/**"
 
 permissions:
-  contents: write   # commit the rendered site/ to main; the VPS (Caddy) serves from main
+  contents: write
+  pull-requests: write   # commit the rendered site/ to main; the VPS (Caddy) serves from main
 
 concurrency:
   # Its OWN lane — NEVER shares a group with `pipeline-daily` (so it can't cancel the nightly)
@@ -889,8 +890,28 @@ jobs:
       - name: commit rendered site (site/ ONLY — never data/, so every ledger stays pristine)
         # Fail closed: no cancelled run or failed guard is allowed to mutate main.
         if: ${{ success() }}
+        id: native_publication_stage
+        env:
+          NATIVE_PUBLICATION_PUBLISHING_STEP: native_publication_stage
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+          # Capture repository-owned execution bytes from the original protected
+          # workflow SHA BEFORE rebase can replace files in the candidate tree.
+          umask 077
+          [[ "$GITHUB_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]]
+          native_code_root="${RUNNER_TEMP%/}/native-publication-code-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
+          mkdir -m 700 -- "$native_code_root"
+          mkdir -p -- "$native_code_root/scripts/ci"
+          GIT_NO_REPLACE_OBJECTS=1 GIT_NO_LAZY_FETCH=1 git show \
+            "$GITHUB_WORKFLOW_SHA:scripts/ci/native_publication_source.sh" \
+            > "$native_code_root/scripts/ci/native_publication_source.sh"
+          case "$(GIT_NO_REPLACE_OBJECTS=1 git ls-tree "$GITHUB_WORKFLOW_SHA" -- scripts/ci/native_publication_source.sh)" in
+            100644*) : ;; *) exit 76 ;;
+          esac
+          . "$native_code_root/scripts/ci/native_publication_source.sh"
+          native_publication_capture_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"
+          . "$native_code_root/scripts/ci/push_retry.sh"
           git config user.name "dashboard-bot"
           git config user.email "actions@users.noreply.github.com"
           # ONLY site/ — never data/ or reports/. engine.run + the builders touch data/ in the
@@ -948,6 +969,14 @@ jobs:
           PUSH_MAX_ATTEMPTS=20   # let the 600s DEADLINE stop this loop, not the attempt count: 10 contention
                                  # retries burn only ~2 min, so the raised budget above would never bind
           push_retry_init "engine-rendered site"
+          native_initial_rc=0
+          push_native_do origin HEAD:main || native_initial_rc=$?
+          case "$native_initial_rc" in
+            0) push_won; exit 0 ;;
+            77) echo "publication=pending" >> "$GITHUB_OUTPUT"; exit 0 ;;
+            80) export NATIVE_PUBLICATION_EXPECT_OFF=1 ;;
+            *) exit "$native_initial_rc" ;;
+          esac
           while push_attempt; do
             # Fetch the named tracking ref explicitly. checkout fetch configuration can
             # otherwise leave origin/main stale; the accepted pin must be the rebase base.
@@ -1071,3 +1100,28 @@ jobs:
           push_lost
           echo "::error title=engine-rendered site NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — this push is the ONLY path to the live site (VPS serves committed main; no Pages-artifact fallback), so live pages stay stale until the next render lane re-lands. Check the per-attempt [class] tags above: repeated [contention] means main is simply busier than this budget, repeated [rebase-conflict] means a NEW deterministic conflict class — see scripts/rebase_autoresolve_hashed_css.sh."
           echo "### ❌ engine-rendered site NOT pushed after $PUSH_ATTEMPT attempts — live site stale until the next render/nightly re-lands" >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain original engine-render publication origin
+        id: native_publication_origin
+        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.native_publication_stage.outputs.native_origin_name }}
+          path: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: false
+
+      - name: Confirm original protected engine-render publication
+        id: native_publication
+        if: steps.native_publication_stage.outputs.native_origin_path != ''
+        env:
+          NATIVE_ORIGINAL_RECORD: ${{ steps.native_publication_stage.outputs.native_origin_path }}
+          NATIVE_ORIGINAL_DEADLINE: ${{ steps.native_publication_stage.outputs.native_deadline }}
+          NATIVE_ORIGINAL_CODE: ${{ steps.native_publication_stage.outputs.native_code_root }}
+          NATIVE_PUBLICATION_TOKEN_ORIGIN: GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PYTHONPATH="$NATIVE_ORIGINAL_CODE" python3 -P -m scripts.ci.native_queue_push settle --root "$GITHUB_WORKSPACE" \
+            --record "$NATIVE_ORIGINAL_RECORD" --deadline "$NATIVE_ORIGINAL_DEADLINE"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
