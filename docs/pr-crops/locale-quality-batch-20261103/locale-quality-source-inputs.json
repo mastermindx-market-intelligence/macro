@@ -1,0 +1,424 @@
+{
+  "task": "P12.T41.S3",
+  "base": "f87eee9fd5961b572e5b0278960b5b12fe14a172",
+  "source_base": "2e17ae66adca54dcecb9cbe9c669f32d8593ff41",
+  "inputs": {
+    "AM": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+    "checker": "209c83ec6a487549795d68678a478adf8b26efe5",
+    "Intl": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a"
+  },
+  "paths": [
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/PLAN.md",
+      "mode": "100644",
+      "git_blob": "de28287395da7db707379230ca5303052ebc6862",
+      "sha256": "4b43bb0aa09232e0d17987887ef4526cb84f09a14bd78015ed7c0c44369df8ee"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/README.md",
+      "mode": "100644",
+      "git_blob": "dd69fe4c3c7ecc0fd7b0210e368d49deffb67d11",
+      "sha256": "aba8e922a0f67b47c9b35d8381e210292f4a310f8dd18ef410061cae614a9c0a"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/after.html",
+      "mode": "100644",
+      "git_blob": "98fb2bfae499a440c77dc3ac0d83ea2ac977a948",
+      "sha256": "9f6384cb363d4dc965c725a348af52792f8ac493a51e79cd06af95bc4cc10d2b"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/before.html",
+      "mode": "100644",
+      "git_blob": "c0c0c3f7491784d0cc9cf4be8dedd08f651f922b",
+      "sha256": "23738b18222892db553b803466387165ded6f7bbab744ead0150535abd349a59"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/ci-ownership.json",
+      "mode": "100644",
+      "git_blob": "b3545b9285183d9217087e0d7c043652367cebeb",
+      "sha256": "3b044f40a48978fcf62c962f2a6af178e8bd45c6c3faf4ff0475ae42c7bad721"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/design-check.log",
+      "mode": "100644",
+      "git_blob": "af7d8700cd623ef4c1cb2823c067fdd45b7d1d55",
+      "sha256": "4fda28dcf5467ea6be4919c28d730d678d5f2b49c8f521653e98ae44d26e13fc"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/incumbent-am-suite.log",
+      "mode": "100644",
+      "git_blob": "74c645d8889074dbd751423661c55e24acec1ea2",
+      "sha256": "9611db733fdf409a8328e4bcd2805ed7f88e8050c7f9d0fdf27f00d960f5655b"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/qualification.json",
+      "mode": "100644",
+      "git_blob": "f6e1933878ebe8596dfd045ba9d2d2f8695f1a66",
+      "sha256": "57f56d808ecf92743a2449efefbff90711a91a1c78fb57f3cef782d1715a16a2"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/qualify.py",
+      "mode": "100644",
+      "git_blob": "11cd737e9dc9290a2325a4d740f7c1c260a1cc2c",
+      "sha256": "6722cec032e251cd8b89a78760971c94e4c1c9b9836352ac60e10001f6a6afd8"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/regression-green.log",
+      "mode": "100644",
+      "git_blob": "a42a987a4fde993ed78c9967231725263648437b",
+      "sha256": "ee961c7da189bf3542ce3c8dd3d9ca4a92cd7237bb5126456725ee0c44b159c1"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/regression-red.log",
+      "mode": "100644",
+      "git_blob": "a7a68356dd05548d73a5854d7283e8f81d4612ff",
+      "sha256": "6c63da53b6777f4863591caf7045a5c63b657b4c180b303701e909c6154ffc8f"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/source-baseline.json",
+      "mode": "100644",
+      "git_blob": "faa8b8b3f28f928998cf07c03b6e54a8a2164948",
+      "sha256": "9552cdf82f2db4480d22ce34c6112d73a3c272e74364cce5b456d67ed9f471e3"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/source.diff",
+      "mode": "100644",
+      "git_blob": "3efe6911ef53f1e6d308d098f8222e79fa1e3f94",
+      "sha256": "cecedf38ec4a0f3d90d98b6e7f00f1427416384b97af6c4529cb97cb67e5a554"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/test-migration.json",
+      "mode": "100644",
+      "git_blob": "79cd2e43183c68bed5c3634169d5e7c8d432d3b3",
+      "sha256": "49a6df0afc5678131ef5eab9bfdd007144f61a5066bfb3796ccae75d2d827e5f"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/title-green.log",
+      "mode": "100644",
+      "git_blob": "16b637c96b43d7af9443aa8b025129b7a172e2e8",
+      "sha256": "d2ad9623346fc88c84033cc0bc9e5310cc4cd745d1023dc2c59aacf2050230c4"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/title-qualified.log",
+      "mode": "100644",
+      "git_blob": "fe1ab6b3d9b67a2bcda5f28bf5a37a736d064bd7",
+      "sha256": "3927dc7cdaceddbbd22c5b5bb6331b4a0502c21a15a7d401002b0bb56719b25b"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/title-red.log",
+      "mode": "100644",
+      "git_blob": "763ab8a438bcb89aba2ef3fb5f2a6118cc967a1e",
+      "sha256": "d7e989f02bfc6f59c4376d1343a2f3a85b4c320675063339c8474aeedb2fa880"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/title-selftest.log",
+      "mode": "100644",
+      "git_blob": "fa704291c6107ae01394815e078383ce5d587c11",
+      "sha256": "3a0e96494bb6b065c4dc0511045d4627116cf632128a223bd97e61197c3e26ec"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "docs/pr-crops/morning-edition-plain-title-20261103/ui-evidence-check.log",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "templates/am_edition.html.j2",
+      "mode": "100644",
+      "git_blob": "33e36bb808db7a8c597cd4bb03b47e821b31c20d",
+      "sha256": "57924b511b4c77cf6218a21d063b539137554348191444b2e83cc89bf7123061"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "tests/fixtures/am_edition_title_snapshot_2e17ae66.json",
+      "mode": "100644",
+      "git_blob": "48f00c6ab5b60de96dfe3337404de94b5cc8c7b0",
+      "sha256": "8f70c342f602af606e1e67bf2271ede0eb65d3476f8132eaf0920503c4b8ec93"
+    },
+    {
+      "input": "AM",
+      "source": "ac01c5a65c5e970518e88f708f1e3ca10ecb37c3",
+      "path": "tests/test_am_edition_producer.py",
+      "mode": "100644",
+      "git_blob": "9f016aeaf8089e2eae8064880310ad22203d8ddb",
+      "sha256": "e4a0860632de19a41d20e7f51c9be956432fa3db9e401790d7ff487922967eae"
+    },
+    {
+      "input": "checker",
+      "source": "209c83ec6a487549795d68678a478adf8b26efe5",
+      "path": "scripts/check_title_i18n.py",
+      "mode": "100644",
+      "git_blob": "b38926a55c1e6f793f62a4ac92e6dbcb07a06b47",
+      "sha256": "be83c402265440e77bd4fa8fef70fd4c1c568392162ff2f2f82f691a9186db99"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/ADJUDICATION.md",
+      "mode": "100644",
+      "git_blob": "5f886172ae26f094643bc698d3148ef33c536e3a",
+      "sha256": "a76415b9508f22904ebc3249c1c932a62c42cd160beda532f4da224b1a257589"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/CI_OWNERSHIP_ADDENDUM.md",
+      "mode": "100644",
+      "git_blob": "7a6374e8eb5c83a1cb25ba3d9f34a16aa44f6fc8",
+      "sha256": "ff2641c171c7a059cfddf6d4bd6404b9b5947f472cca479a7fb4aecbd96e96a8"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/FROZEN_TOOLTIP_PACKET.md",
+      "mode": "100644",
+      "git_blob": "8ad82f01e0ecb680bd15fa769fe74d49e8dcd1d2",
+      "sha256": "23320fac882437093f54670c67da0bd844cf79eb0714a280fc340f84766dc9ca"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/ci-owned-focused-final.log",
+      "mode": "100644",
+      "git_blob": "52fd3d00db80d07561d0ea7b20f0f229c6765628",
+      "sha256": "c4d62be5491a0e4b63ac493fea8f15f72226eba26448e8d27176e558fac7acbb"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/ci-ownership-focused.json",
+      "mode": "100644",
+      "git_blob": "6ea89ca7874f5cecd0c53fd10c0a9cb5e676d304",
+      "sha256": "feec3ba5c9d6df6a977122e0af73ff701ead8166e2e91ab3440459579f8752ac"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/ci-relocation.json",
+      "mode": "100644",
+      "git_blob": "c4b55f82024927b9ee2b0b74cbefe2cea4c1956a",
+      "sha256": "8adca63d8e8ebde57527c54ccba39a09e117feee95114696707ff39884cb54c3"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/design-final-guard.log",
+      "mode": "100644",
+      "git_blob": "af7d8700cd623ef4c1cb2823c067fdd45b7d1d55",
+      "sha256": "4fda28dcf5467ea6be4919c28d730d678d5f2b49c8f521653e98ae44d26e13fc"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/disabled-action-green-final.log",
+      "mode": "100644",
+      "git_blob": "07d878644ab3242fa44efd7505b74a15fd21e61b",
+      "sha256": "a8891861f06628cacc94d175dff8e8fad96bcc1ae3c7d5bb627cf29ef242a739"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/disabled-action-red.log",
+      "mode": "100644",
+      "git_blob": "9fc76763a985c0af99eb78e3e3f7d0546b74f926",
+      "sha256": "dd4c3923400b0c3480da75f3ec47e07f7c64a25d68e806907a54e92b27c0522b"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/disabled-attribute-projection.json",
+      "mode": "100644",
+      "git_blob": "33e4ba18515f189d9d03d6ab1a04b3b1001a89a0",
+      "sha256": "1e84af9bf5f452499325206df0649497c8808d8ba336b8e0c55408e5e9995aff"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/disabled-render-report.json",
+      "mode": "100644",
+      "git_blob": "bf37121ef8960fd10ebecb7f97da080804687010",
+      "sha256": "24a0967a45f5aa8b74f5ea4a95b8bd04e8094dd84da629ba2903361c0e4c2164"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/final-source-projection.json",
+      "mode": "100644",
+      "git_blob": "9ed657f14a6efcd6b91a25d2465aa64a6dea8842",
+      "sha256": "1d02627a33a0f1e61e7d930046134efe7f6af9ac4e287f8bf081365e77935ec8"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/initial-seven-green.log",
+      "mode": "100644",
+      "git_blob": "fa866f81d7b2332253dc40ef5708fafd5e927630",
+      "sha256": "2c550e5f2e0a705cd30297f1a90f937618f7ef4f145591e62516631517e37454"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/preflight.json",
+      "mode": "100644",
+      "git_blob": "9999d9b4a1bef9f3925ed9bad07881d66835efb1",
+      "sha256": "ff05d20df1d071be0844bf4bcc37b1d2116e540f06638ea6fce4b220e022f090"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/render_evidence.py",
+      "mode": "100644",
+      "git_blob": "1e88a2b83e57e4f50f83ba4cf2527b4be0e15311",
+      "sha256": "4e1c7973ab2a014747bf47e57bf32770e7eb6a51b118b0d6598658f1043996fc"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/retained-render-report.json",
+      "mode": "100644",
+      "git_blob": "bee4721e25e200a47c6f5dd496b375490cd12a1a",
+      "sha256": "3b7ceeff3fc0d87459f9a29c0f90b57380dbc336d956b0ebc43b556c27240a15"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/retained-target-guard-final.log",
+      "mode": "100644",
+      "git_blob": "392f3aa832ed00f4e7323028ba6b31242ded2e28",
+      "sha256": "a57a974aea1590f800c256f19074880bc744cf9ed64cae2ae0ab9320582fce32"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/source-attribute-projection.json",
+      "mode": "100644",
+      "git_blob": "29db332b917c193fe581abd1daff07dbd927dca2",
+      "sha256": "78b20526f07b2b6b67fd87f0cb15c7d5a6671141d577004e367dbb880cce5363"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/source-qualification.json",
+      "mode": "100644",
+      "git_blob": "85c9d10207f75cb00abce94557ee8291c7d6e72c",
+      "sha256": "e6565bdd19204f7a0f0c69970454f9fba2caefcdc625af4ab219aebf810b5e23"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "research/market_os/evidence/intl-tooltip-locale-20261103/stdlib-parser-equivalence.json",
+      "mode": "100644",
+      "git_blob": "6384884d6e1a271de257d01ae73f0e2295de6808",
+      "sha256": "cacce04b53530a4f43ab679fa8bb710caddf2179c3383f4fa196a1f6ea92e284"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "templates/intl_workspace/_gs_scanner_macros.html.j2",
+      "mode": "100644",
+      "git_blob": "9e70464c075bff9fa1d03f1712a52f897c585882",
+      "sha256": "62e0909883c72ed61ac30a1e1720e971614b0c951d28d06d14507a059ec7d8d9"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "templates/intl_workspace/dislocations.html.j2",
+      "mode": "100644",
+      "git_blob": "138185f6b9d3562823f29f2c8cac800dc2e69868",
+      "sha256": "61cfeaa85a1cfc767863ef8cbb7c9637c12b22f44eb2a8d614ad33f33b2228ae"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "templates/intl_workspace/transmission.html.j2",
+      "mode": "100644",
+      "git_blob": "e6c2f80a76bb86a891c417ed1cb58ec692e865c8",
+      "sha256": "2504a1aa8cce6fa2c62993b2ee2f65402e7a8a054136b2bd0471b82793aa1549"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "tests/intl_gs_fixture_site.py",
+      "mode": "100644",
+      "git_blob": "75071d5147513f0067d8b0d8b76c706d3b3fab9a",
+      "sha256": "5137a60a035d3c8b6c6eb9a5fb811ad8977216a142b5646e20f2fb93a0968913"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "tests/test_intl_gs_dislocations_view.py",
+      "mode": "100644",
+      "git_blob": "bd482bfc6d9592880b5d53ce2a5c8e2eae007711",
+      "sha256": "5cbe85392fe42c3f4bfc0fd1bf3a6f73a9e7af96133037937f1e5429d9ef0cf4"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "tests/test_intl_gs_scanner.py",
+      "mode": "100644",
+      "git_blob": "42ab1dd9a0ee4d7ef6ac387f5e3ae475c86881ed",
+      "sha256": "76251ecefcf6bbdc661f32ef7dfb21932c169f4b6e013f2c44d055577f1c7210"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "tests/test_intl_gs_transmission_view.py",
+      "mode": "100644",
+      "git_blob": "5c05b44bfccd557620caa03f0fb973fa84a8841e",
+      "sha256": "ccb3c38e7a81b2c35d6bc3d28118ed288de9ece1473aad87bd5b038c9bc75edf"
+    },
+    {
+      "input": "Intl",
+      "source": "ae6fec9c13ab7f4c8ab8ae1f81624a54d96ac34a",
+      "path": "tests/test_lens_nested_control_taps.py",
+      "mode": "100644",
+      "git_blob": "8ab751d4e5b78fa030dc62d2fd031e177d8e1110",
+      "sha256": "fbe972676aed53098e83617695bda26e9d82ab6e523c8aedde53fbc4e1b24c05"
+    }
+  ],
+  "all_exact": true,
+  "source_path_sets_disjoint": true,
+  "preimages_equal_current_base": true,
+  "scope": "Local source composition only; native Intl/fullguard/render/runtime not yet qualified"
+}

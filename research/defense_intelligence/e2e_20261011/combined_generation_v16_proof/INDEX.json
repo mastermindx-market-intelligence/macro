@@ -1,0 +1,30 @@
+{
+  "CANDIDATE_PROOF.json": {
+    "bytes": 865624,
+    "sha256": "f624a7ed3d31776ae76f44255e071b767d6f5bae52a3344227530dea37d10e4f"
+  },
+  "full-proof.log.xml.sealed-2042e600f040242a": {
+    "bytes": 17432,
+    "sha256": "2042e600f040242aeb2105c8b5c28df4f6109fa909cedcfe160647c45657d702"
+  },
+  "full-proof.log": {
+    "bytes": 800,
+    "sha256": "0aba61f6871004405a3fceb8f9d0d791f95f633d778c50361eec5e071d624fef"
+  },
+  "full-proof.log.xml": {
+    "bytes": 17432,
+    "sha256": "2042e600f040242aeb2105c8b5c28df4f6109fa909cedcfe160647c45657d702"
+  },
+  "full-proof.log.collection.sealed-0affa28560010c4c": {
+    "bytes": 12686,
+    "sha256": "0affa28560010c4c49e4d4798a272a01d0fd9d1b18882dd8a4f1d0e35e981990"
+  },
+  "full-proof.log.collection": {
+    "bytes": 12686,
+    "sha256": "0affa28560010c4c49e4d4798a272a01d0fd9d1b18882dd8a4f1d0e35e981990"
+  },
+  "full-proof.log.sealed-0aba61f687100440": {
+    "bytes": 800,
+    "sha256": "0aba61f6871004405a3fceb8f9d0d791f95f633d778c50361eec5e071d624fef"
+  }
+}

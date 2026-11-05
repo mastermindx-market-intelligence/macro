@@ -1,0 +1,11 @@
+{
+  "observed_at": "2026-10-15T06:30:42.089254+00:00",
+  "parent": "b1db2fc7510b3121bb9494f7f55a4351e6a48c77",
+  "base": "1865cac77212150ea674688eb1dbea1b848fda20",
+  "head": "fea04c414282a29f8f757430c7e1e1b3c52998fe",
+  "preview_rc": 0,
+  "preview_tree": "a912044e6f699337156f983f1efbd676cb787ee2",
+  "actual_tree": "a912044e6f699337156f983f1efbd676cb787ee2",
+  "exact_ordinary_merge": true,
+  "effect": "read-only preview; no checkout/index/ref/branch update"
+}
