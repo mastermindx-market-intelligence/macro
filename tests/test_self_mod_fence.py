@@ -1118,8 +1118,9 @@ def _run_fences_workflow_live_step(
     trailers_file: Path,
     fail_merge_base: bool = False,
 ) -> subprocess.CompletedProcess:
+    step = _fences_live_step(job_id)
     command = render_command(
-        str(_fences_live_step(job_id)["run"]),
+        str(step["run"]),
         base_ref="main",
         head_ref=branch,
     )
@@ -1130,6 +1131,7 @@ def _run_fences_workflow_live_step(
             "PATH": f"{fake_bin}{os.pathsep}{env['PATH']}",
             "RUNNER_TEMP": str(tmp_path / "runner-temp"),
             "GITHUB_SHA": "synthetic-merge",
+            "GITHUB_EVENT_NAME": "pull_request",
             "FAKE_GIT_MERGE_SHA": "synthetic-merge",
             "FAKE_GIT_BASE_SHA": "tested-base",
             "FAKE_GIT_HEAD_SHA": "subject-head",
@@ -1138,6 +1140,10 @@ def _run_fences_workflow_live_step(
             "FAKE_GIT_FAIL_MERGE_BASE": "1" if fail_merge_base else "0",
         }
     )
+    # Actions supplies step.env separately from run. Reproduce that exact
+    # contract instead of inheriting this test runner's PR branch or event.
+    env.update({key: render_command(str(value), base_ref="main", head_ref=branch)
+                for key, value in step.get("env", {}).items()})
     return subprocess.run(
         ["bash", "-eo", "pipefail", "-c", command],
         cwd=REPO_ROOT,
@@ -1166,6 +1172,24 @@ def test_real_workflow_paths_launch_with_both_large_populations(
         "the real workflow must launch the checker and classify the complete "
         f"large payload\nstdout: {result.stdout}\nstderr: {result.stderr}"
     )
+
+
+
+@pytest.mark.parametrize("branch", ["metabolism/fixture", "claude/loop-fixture"])
+def test_real_workflow_step_environment_preserves_fixture_loop_branch(
+    tmp_path, oversized_fence_inputs, monkeypatch, branch,
+):
+    # A different outer CI context must not hide the branch-only attribution.
+    monkeypatch.setenv("SOURCE_BRANCH", "claude/human-looking")
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "merge_group")
+    result = _run_fences_workflow_live_step(
+        tmp_path, job_id="fence-pack", branch=branch,
+        files_nul=oversized_fence_inputs["immutable_nul"],
+        trailers_file=oversized_fence_inputs["human_trailers_file"],
+    )
+    assert result.returncode == 1
+    assert "loop branch prefix" in result.stderr
+    assert "unbound variable" not in result.stderr
 
 
 def test_bounded_checkout_ancestry_failure_remains_fail_closed(

@@ -123,7 +123,7 @@ def test_the_workflow_is_event_driven_with_a_ten_minute_recovery_schedule():
         "fences",
         "integration-baseline",
     }
-    assert workflow_run.get("types") == ["completed"]
+    assert workflow_run.get("types") == ["requested", "completed"]
 
 
 def test_the_sweep_is_hosted_outside_the_m2_failure_domain():
@@ -301,6 +301,9 @@ def test_the_sweeper_sparse_checks_out_only_what_it_reads():
         "scripts/ci_admission_stages.py",
         "scripts/ci_semantic_proof.py",
         "scripts/ci_authority_paths.py",
+        "scripts/ci_authority.py",
+        "scripts/ci_native_review_policy.py",
+        "scripts/check_runner_policy.py",
         "scripts/gh_path_filter.py",
         "scripts/run_ci_pack.py",
         ".github/ci/legacy-jobs.yml",
@@ -3464,8 +3467,9 @@ def test_one_bad_pull_request_does_not_fail_the_sweep(monkeypatch, capsys):
 
     attempts = 0
 
-    def flaky(_repo, pull, *_a):
+    def flaky(_repo, pull, *_a, native_guard):
         nonlocal attempts
+        assert native_guard is True
         attempts += 1
         if attempts == 1:
             raise RuntimeError("transient")
@@ -3473,6 +3477,7 @@ def test_one_bad_pull_request_does_not_fail_the_sweep(monkeypatch, capsys):
 
     monkeypatch.setattr(MOG, "sweep_pull", flaky)
     assert MOG.main() == 0
+    assert attempts == 2, "the typed native guard must not prevent either real fixture invocation"
     assert "::warning" in capsys.readouterr().out
 
 
@@ -3492,7 +3497,8 @@ def test_a_red_main_blocks_ordinary_pulls_and_allows_one_explicit_repair(
     monkeypatch.setattr(MOG.ProofFreshness, "build", classmethod(lambda *_a, **_k: _freshness()))
     swept: list[int] = []
 
-    def record(_repo, pull, *_a):
+    def record(_repo, pull, *_a, native_guard):
+        assert native_guard is True
         swept.append(pull["number"])
         return "merged"
 
@@ -4942,7 +4948,8 @@ def _main_harness(
     monkeypatch.setattr(MOG, "ensure_main_baseline", lambda *_a: "stubbed")
     seen: list[int] = []
 
-    def fake_sweep(_repo, pull, *_rest):
+    def fake_sweep(_repo, pull, *_rest, native_guard):
+        assert native_guard is True
         seen.append(pull["number"])
         return verdict
 
@@ -5157,8 +5164,10 @@ def test_repo_wide_active_proofs_clamp_update_branch_capacity(
     allowances: list[int] = []
 
     def inspect_budget(
-        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked,
+        *, native_guard,
     ):
+        assert native_guard is True
         allowances.append(budget.max_refreshes)
         return "pending"
 
@@ -5204,8 +5213,10 @@ def test_existing_owner_only_consumes_extra_capacity_until_its_run_is_indexed(
     observed: list[tuple[int, bool]] = []
 
     def inspect_budget(
-        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked,
+        *, native_guard,
     ):
+        assert native_guard is True
         observed.append((budget.max_refreshes, budget.requires_refresh_lease))
         return "pending"
 
@@ -8380,7 +8391,8 @@ def test_the_sweep_orders_the_baseline_AFTER_it_learns_what_it_could_not_answer(
     seen: dict[str, object] = {}
 
     def fake_sweep(_repo, pull, _read, _write, _fresh, _proof=None, _budget=None,
-                   blocked=None):
+                   blocked=None, *, native_guard):
+        assert native_guard is True
         if blocked is not None:
             blocked.add("ci-pack-2")
         return "blocked"

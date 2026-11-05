@@ -98,6 +98,9 @@ jobs:
             scripts/ci_admission_stages.py
             scripts/ci_semantic_proof.py
             scripts/ci_authority_paths.py
+            scripts/ci_authority.py
+            scripts/ci_native_review_policy.py
+            scripts/check_runner_policy.py
             scripts/gh_path_filter.py
             scripts/run_ci_pack.py
             .github/ci/legacy-jobs.yml
@@ -173,6 +176,9 @@ jobs:
             scripts/ci_admission_stages.py \
             scripts/ci_semantic_proof.py \
             scripts/ci_authority_paths.py \
+            scripts/ci_authority.py \
+            scripts/ci_native_review_policy.py \
+            scripts/check_runner_policy.py \
             scripts/gh_path_filter.py \
             scripts/run_ci_pack.py
           python3 - <<'PY'

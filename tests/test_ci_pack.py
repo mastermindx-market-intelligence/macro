@@ -387,7 +387,7 @@ def test_workflows_cancel_superseded_pr_runs() -> None:
     # PR events keep cancel-on-newer-push. Dispatches (ci) and main pushes (fences)
     # do not — those are the two proof paths.
     assert ci["concurrency"]["cancel-in-progress"] == (
-        "${{ github.event_name != 'workflow_dispatch' }}"
+        "${{ github.event_name != 'workflow_dispatch' && github.event_name != 'merge_group' }}"
     ), "a main baseline dispatch must never cancel the proof already running"
     assert fences["concurrency"]["cancel-in-progress"] == (
         "${{ github.event_name == 'pull_request' }}"
@@ -396,10 +396,18 @@ def test_workflows_cancel_superseded_pr_runs() -> None:
     assert "github.ref" in ci["concurrency"]["group"]
     assert "pull_request.number" in fences["concurrency"]["group"]
     assert ci["concurrency"]["group"] == (
-        "ci-${{ inputs.proof_role == 'pr_head' && format('admitted-{0}-{1}', "
+        "ci-${{ github.event_name == 'merge_group' && format('group-{0}-{1}-{2}', "
+        "github.event.merge_group.base_ref, github.sha, github.run_id) || "
+        "inputs.proof_role == 'pr_head' && format('admitted-{0}-{1}', "
         "inputs.admission_generation, github.run_id) || github.event.pull_request.number || github.ref }}"
     ), "admitted original runs must not replace one another; legacy PR/main grouping remains"
+    assert fences["concurrency"]["group"] == (
+        "fences-${{ github.event_name == 'merge_group' && format('group-{0}-{1}-{2}', "
+        "github.event.merge_group.base_ref, github.sha, github.run_id) || "
+        "github.event.pull_request.number || github.ref }}"
+    ), "native target/group/run identities must not cancel or replace one another"
     triggers = ci.get("on") or ci.get(True)
+    assert triggers["merge_group"] == {"types": ["checks_requested"]}
     assert triggers["pull_request"]["types"] == [
         "opened", "synchronize", "reopened"
     ], "a closed event must never occupy or replace the active PR proof slot"
@@ -3952,7 +3960,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
     assert pack["if"] == (
         "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
-        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "(github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || needs.trusted-ci.result == 'success')"
     )
     run_text = "\n".join(
@@ -4095,8 +4103,15 @@ def test_same_repo_fences_share_one_runner_and_keep_required_contexts() -> None:
     checkout = next(
         step
         for step in pack["steps"]
-        if str(step.get("uses", "")).startswith("actions/checkout@")
+        if step.get("id") == "candidate_checkout"
     )
+    assert checkout["uses"] == "actions/checkout@v4"
+    protected = next(step for step in pack["steps"]
+                     if step.get("name") == "check out protected native membership control")
+    assert protected["if"] == "github.event_name == 'merge_group'"
+    assert protected["with"]["ref"] == "${{ github.workflow_sha }}"
+    assert protected["with"]["persist-credentials"] is False
+    assert pack["steps"].index(protected) < pack["steps"].index(checkout)
     assert checkout["with"]["filter"] == "blob:none"
     # Commit 09abde056620 "fix(ci): contain fence checkout to proof surface"
     # bounded fence-pack's checkout to fetch-depth 256 + sparse-checkout
@@ -8895,3 +8910,21 @@ def test_options_nbbo_cohort_keeps_exact_source_and_avoids_unrelated_code_probes
                   "engine/prophet/plan_book.py"):  # ci-trigger-closure: data — selector input name, never opened
         selected, _ = PACK.select_jobs([job], [probe])
         assert selected == [], probe
+
+
+@pytest.mark.parametrize("regression", ["group_cancellation", "group_pc_wait", "candidate_depth"])
+def test_native_workflow_packing_contract_rejects_regressions(monkeypatch, regression):
+    ci, fences = _yaml(WORKFLOW), _yaml(FENCES)
+    if regression == "group_cancellation":
+        ci["concurrency"]["cancel-in-progress"] = "${{ github.event_name != 'workflow_dispatch' }}"
+        check = test_workflows_cancel_superseded_pr_runs
+    elif regression == "group_pc_wait":
+        ci["jobs"]["ci-pack"]["if"] = ci["jobs"]["ci-pack"]["if"].replace("github.event_name == 'merge_group' || ", "")
+        check = test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs
+    else:
+        checkout = next(s for s in fences["jobs"]["fence-pack"]["steps"] if s.get("id") == "candidate_checkout")
+        checkout["with"]["fetch-depth"] = 0
+        check = test_same_repo_fences_share_one_runner_and_keep_required_contexts
+    monkeypatch.setattr(sys.modules[__name__], "_yaml", lambda path: ci if path == WORKFLOW else fences)
+    with pytest.raises(AssertionError):
+        check()
