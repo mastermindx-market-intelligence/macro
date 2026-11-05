@@ -36,6 +36,19 @@ failure. Preserve declarations/private assessment on the trusted-side carrier an
 verify the connected path, excluding those fields from candidate/public payloads.
 Do not publish unattested metadata as a standalone P01 success.
 
+The active P2.T6 source prerequisites retain separate acceptance:
+
+- **P2.T6.S1:** join complete accounting, causal prefix attempts, fixed evaluation
+  and existing review. Source implemented/reviewed; protected release pending.
+- **P2.T6.S2:** supply one canonical, plan/CID-bound single-use engine per
+  preflighted prefix through the existing staged synthetic caller. Refusal freezes
+  the shared provider, including already-issued sibling engines; no default
+  executor or qualification issuer. Source tests and changed-risk review precede
+  normal release, and never establish physical P01 acceptance.
+- **P2.T1.S1:** preserve private role assessment through the unchanged connected
+  consumers. Source implemented/reviewed; effective identity qualification remains
+  separate from declarations.
+
 The adapter must validate the whole batch before effects, account for the full emitted
 set before the first attempt, use the actual ledger readback for every variant, retain
 all outcomes, stop after uncertainty, and pass validated artifacts to the incumbent

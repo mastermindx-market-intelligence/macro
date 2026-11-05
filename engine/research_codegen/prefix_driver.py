@@ -457,14 +457,21 @@ def prepare_prefix_plans(prepared, *, source, spec, config_sha256=None):
     return plans
 
 
-def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None):
+def run_prefix_driver(prepared, *, source, spec, engine=None, engine_provider=None,
+                      config_sha256=None):
     """Execute caller-supplied transport after pure whole-run preflight.
 
     Source bytes remain opaque here. No default engine or qualification is
     constructed. Uncertain or non-adopted attempts stop the run without salvage.
     """
-    _require(engine is not None and not callable(engine)
-             and callable(getattr(engine, "run", None)), "TRANSPORT_ENGINE_REQUIRED")
+    _require(engine is not None or engine_provider is not None, "TRANSPORT_ENGINE_REQUIRED")
+    _require((engine is None) != (engine_provider is None), "ONE_TRANSPORT_SOURCE_REQUIRED")
+    if engine_provider is not None:
+        _require(type(engine_provider) is transport_module.PlanBoundEngineProvider,
+                 "EXACT_PLAN_PROVIDER_REQUIRED")
+    else:
+        _require(not callable(engine) and callable(getattr(engine, "run", None)),
+                 "TRANSPORT_ENGINE_REQUIRED")
     plans = prepare_prefix_plans(prepared, source=source, spec=spec,
                                  config_sha256=config_sha256)
     identity = prepared.identity
@@ -479,7 +486,8 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None):
             reasons.append("WALL_BUDGET_EXHAUSTED")
             break
         try:
-            attempt = transport_module.TransportOrchestrator(engine).execute(
+            selected = engine_provider.engine_for(plan) if engine_provider is not None else engine
+            attempt = transport_module.TransportOrchestrator(selected).execute(
                 transport_module.TransportSession(plan))
         except transport_module.TransportError as exc:
             reasons.append("TRANSPORT_REFUSED:" + type(exc).__name__)

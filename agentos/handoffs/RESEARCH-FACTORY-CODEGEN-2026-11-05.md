@@ -9,6 +9,9 @@ mission: Deliver isolated original research features through causal inputs, exis
 state_before: Original31-package programme recovered against Macro2498181e; component acceptance preserved,
   real P01 incomplete; original V4 and worktree effects remain UNKNOWN.
 changed:
+- path: engine/research_codegen/transport.py
+  what: P2.T6.S2 adds canonical single-use per-plan engine selection to the existing prefix and staged
+    synthetic caller; explicit injected executor and CID receipt required, no issuer or activation.
 - path: engine/research_factory/adapter_codegen.py
   what: P2.T6.S1 at a63bd50e186d2ccd9a3ed1a100c5675d8d5b7547 joins full emitted-set staging, exact prefix
     plans, fixed evaluator and incumbent review; no public activation. Reconciled history cannot replay
@@ -24,6 +27,12 @@ changed:
     consumers; pure declaration helper does not fabricate pre-stage accounting. All observations remain
     UNKNOWN/unattested and authority false.
 verified:
+- claim: Per-plan transport selection reaches the existing staged review consumer
+  command: python3 -m pytest -q tests/test_research_codegen_transport.py tests/test_research_codegen_prefix_driver.py
+    tests/test_research_codegen_connected_p01.py
+  result: 253 passed; canonical result types, changed-plan/foreign-CID refusal, receipt-before-start,
+    no replacement create, unknown stopping and public dormancy covered. Independent Sol SOURCE_PASS
+    on repaired patch21097c2e; provider-wide permission fence and hostile argv equality bypass fixed.
 - claim: P2.T6.S1 P01 source prerequisite — join accounting, prefix outputs and review into one staged
     cycle — reviewed
   command: 'evidence recorded with mmtask: Local source adapter/prefix preflight/default-refusing CLI;93
@@ -46,6 +55,10 @@ unverified:
 - Hosted source CI/merge and postmerge source consumer for this new adapter increment
 - Actual P01, containment, authenticated candidate workflow and scientific acceptance
 unresolved:
+- PR10758 original CI42019121485 completed failure; observer87871 consumed. Eleven packs passed;
+  pack2 failed the shared board-cap assertion on candidate and base. Existing repair10755 owns the
+  480-to-640 cap change; no copied repair, assertion waiver or manual rerun. Review5784193453 covers
+  e563f930 only; final changed candidate requires exact-head qualification.
 - Original V4 rf-fixed-smoke-runsc-01a1333c-v4/controller62193 EFFECT_UNKNOWN after77 and1200-second budget
   breach; original grant/carrier preserved; no recovery/replay/alternate reader.
 - Original worktree operation36875c9c remainsUNKNOWN; permitted existing edd6 source workspace reused,
@@ -56,9 +69,9 @@ next_actions:
 - Finish normal protected release of the connected adapter and private S01 carrier; consume exact-head
   CI and actual formal review, verify merged bytes and existing native consumer. No runtime activation
   from source release.
-- Keep generic Docker engine dormant. Future RF16 executor integration needs an actual scoped issuer plus
-  per-plan/CID-constrained engine using canonical transport types; do not treat an unrelated native-worker
-  grant as candidate authority.
+- Complete scoped review and release of the inert per-plan provider connection. Keep generic Docker
+  engine dormant; actual RF16 executor integration still needs a qualified scoped executor and original
+  effect settlement. Do not treat an unrelated native-worker grant as candidate authority.
 - After real qualification, execute original P01 good/bad cycle and retain all accounting/results, then
   unchanged P02/P03 and R01/R02 obligations.
 do_not_redo:
@@ -77,6 +90,7 @@ danger_areas:
 - Chris identified himself as repository administrator and directed continuation with the documented protection-read
   gap. Do not change repository controls or credentials.
 prs:
+- 10758
 - 9463
 - 9487
 - 9851
@@ -90,4 +104,4 @@ The actual next customer milestone is one real known-answer primitive and delibe
 
 The approved rights ruling remains settled. The current-source data reassessment found a missing historical fact, not an owner wait: present corrected histories and newly captured bytes cannot establish old publication/revision timing. Source-limited reconstructed diagnostics remain available only under their original noncausal interpretation.
 
-A supported hourly mission continuation, research-factory-autonomous-delivery, is registered and read back for original root01a1333c. Future wake has not yet been observed; native child/controllers have their separate exact foreground return paths. Keep only the existing checkpoint at /Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/ROOT_CONTINUATION.json current.
+A supported hourly mission continuation, research-factory-autonomous-delivery, is registered for original root01a1333c; actual original-root triggers were observed on November5. This is scheduled attention, not an idle-chat daemon; child/controllers retain separate exact result paths. Keep only the existing checkpoint at /Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/ROOT_CONTINUATION.json current.

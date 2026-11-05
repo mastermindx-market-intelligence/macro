@@ -8,7 +8,7 @@ in the existing prefix driver; returned engineering observations grant nothing.
 from dataclasses import dataclass, field, replace
 import hashlib
 
-from engine.research_codegen import bridge, prefix_driver, staging_accounting
+from engine.research_codegen import bridge, prefix_driver, staging_accounting, transport
 from engine.research_factory.review_queue import diagnostic_review_packet
 
 
@@ -53,7 +53,7 @@ def _require(condition, reason):
         raise StagedCycleRefused(reason)
 
 
-def _preflight(variants, configurations, expected_generation, commission, engines):
+def _preflight(variants, configurations, expected_generation, commission, engines, *, providers=False):
     _require(type(commission) is bridge.SyntheticTestCommission,
              "SYNTHETIC_COMMISSION_REQUIRED")
     expected = staging_accounting._load_bound_json(expected_generation, "EXPECTED")
@@ -77,8 +77,11 @@ def _preflight(variants, configurations, expected_generation, commission, engine
         seen.add(variant.variant_id)
         _require(variant.expected in ("diagnostic", "scripted_malformed_output"),
                  "UNKNOWN_ENGINEERING_EXPECTATION")
-        _require(engine is not None and not callable(engine)
-                 and callable(getattr(engine, "run", None)), "TEST_ENGINE_REQUIRED")
+        if providers:
+            _require(type(engine) is transport.PlanBoundEngineProvider, "EXACT_TEST_PROVIDER_REQUIRED")
+        else:
+            _require(engine is not None and not callable(engine)
+                     and callable(getattr(engine, "run", None)), "TEST_ENGINE_REQUIRED")
         run = variant.run
         _require(type(run) is bridge.SyntheticRun and run.outputs == (), "EMPTY_RUN_REQUIRED")
         _require(run.expected_generation == expected_generation, "GENERATION_BINDING_MISMATCH")
@@ -101,7 +104,8 @@ def _preflight(variants, configurations, expected_generation, commission, engine
 
 
 def run_staged_cycle(*, commission, run_id, expected_generation, configurations,
-                     history_anchor, variants, synthetic_test_engines=None):
+                     history_anchor, variants, synthetic_test_engines=None,
+                     synthetic_test_providers=None):
     """Account the entire frozen emitted set once, then join every owner consumer.
 
     ``synthetic_test_engines`` is a dependency-injection seam for engineering
@@ -113,8 +117,13 @@ def run_staged_cycle(*, commission, run_id, expected_generation, configurations,
     Any unexpected refusal or unknown effect
     stops later variants; all charged variants remain represented in the result.
     """
-    _require(synthetic_test_engines is not None, "RUNTIME_QUALIFICATION_UNAVAILABLE")
-    _preflight(variants, configurations, expected_generation, commission, synthetic_test_engines)
+    _require(synthetic_test_engines is not None or synthetic_test_providers is not None,
+             "RUNTIME_QUALIFICATION_UNAVAILABLE")
+    _require((synthetic_test_engines is None) != (synthetic_test_providers is None),
+             "ONE_TEST_TRANSPORT_SOURCE_REQUIRED")
+    providers = synthetic_test_providers is not None
+    sources = synthetic_test_providers if providers else synthetic_test_engines
+    _preflight(variants, configurations, expected_generation, commission, sources, providers=providers)
     staged = staging_accounting.stage_synthetic_generation(commission=commission, run_id=run_id,
         expected_generation=expected_generation, configurations=configurations,
         history_anchor=history_anchor)
@@ -145,13 +154,14 @@ def run_staged_cycle(*, commission, run_id, expected_generation, configurations,
                                 None, None, None, "BATCH_INPUT_PREFLIGHT_REFUSED")
             for variant, run in zip(variants, runs)))
     results, stopped, unknown = [], False, False
-    for variant, run, prepared, engine in zip(variants, runs, prepared_runs, synthetic_test_engines):
+    for variant, run, prepared, engine in zip(variants, runs, prepared_runs, sources):
         if stopped:
             results.append(StagedVariantResult(variant.variant_id, "NOT_ATTEMPTED_AFTER_REFUSAL",
                                                run, None, None, None))
             continue
+        selected = {"engine_provider" if providers else "engine": engine}
         outcome = prefix_driver.run_prefix_driver(prepared, source=variant.source,
-            engine=engine, spec=variant.spec, config_sha256=run.identity.config_sha256)
+            **selected, spec=variant.spec, config_sha256=run.identity.config_sha256)
         unsettled = any(attempt.execution_uncertain or attempt.reconciliation_required
                         or not attempt.cleanup_confirmed for attempt in outcome.attempts)
         raw = None

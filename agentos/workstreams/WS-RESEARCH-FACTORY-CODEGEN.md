@@ -24,7 +24,9 @@ waves:
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
   Release the implemented source-owned staged-cycle adapter through normal checks;
-  qualify the integrated private S01 carrier through the same driver/review path.
+  qualify the integrated private S01 carrier and inert per-plan engine provider
+  through the same driver/review path. Preserve the existing shared cap-repair10755
+  carrier before final CI qualification of10758; no copied repair or CI waiver.
   Both new Fabric leaves failed terminally; root completed permitted local source work.
   Preserve original V4 and worktree unknown effects. Source readiness is not
   P01 runtime or scientific acceptance. After qualification, complete the actual
@@ -80,6 +82,15 @@ The S01 carrier is now integrated with108 affected checks and independent source
 review. Both new Fabric source deliveries terminated78 with no result; their original
 evidence is preserved. Root completed source in the existing workspace. No standalone
 metadata release is counted as P01 progress.
+
+The next source connection fixes the concrete engine-lifetime mismatch: distinct
+preflighted prefix plans receive distinct single-use canonical engines, retaining
+the original CID before start and stopping on refused/unknown effects. The actual
+staged synthetic caller uses this provider;253 affected checks pass after independent
+review repairs for shared permission fencing and hostile argv equality. Its executor
+is explicitly injected, never supplied by default, and cannot issue qualification.
+The existing fixed-workload allowlist and generic Docker dormancy are unchanged.
+This is P2.T6.S2 source readiness, not physical candidate execution.
 
 Original physical V4 remains EFFECT_UNKNOWN after controller77 and the recorded
 1200-second commission overrun. No provider final, install/smoke/cleanup or absence

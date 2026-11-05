@@ -332,6 +332,77 @@ def _cycle(case, variants=None, engines=None, **overrides):
         "synthetic_test_engines": engines or _cycle_engines(case), **overrides})
 
 
+def test_application_cycle_plan_providers_join_real_consumers_without_activation(connected_case):
+    case = connected_case
+    engines, retained = [[], []], set()
+    def provider(index):
+        def factory(plan):
+            class Guarded(ColdLedgerFakeEngine):
+                def run(self, argv, **kwargs):
+                    if argv[1] == "start":
+                        assert (plan.operation_id, pf.CID) in retained
+                    return super().run(argv, **kwargs)
+            fake = Guarded(case, None if index == 0 else {"workload": b'{"value":Infinity}'})
+            engines[index].append(fake)
+            return fake
+        def receipt(plan, cid):
+            retained.add((plan.operation_id, cid))
+            return True
+        return pf.tp.PlanBoundEngineProvider(executor_for_plan=factory, retain_container=receipt)
+    providers = tuple(provider(i) for i in range(2))
+    result = cycle.run_staged_cycle(**case[3], variants=_cycle_variants(case),
+                                     synthetic_test_providers=providers)
+    assert result.status == "DIAGNOSTIC_CYCLE_COMPLETE"
+    assert [len(group) for group in engines] == [6, 1]
+    assert all(fake.creates == 1 for group in engines for fake in group)
+    assert len(retained) == 7
+    assert all(row.review_packet is not None for row in result.variants)
+    assert not result.physical_acceptance and not result.authority_granted
+    assert result.scientific_acceptance == "UNQUALIFIED"
+    _assert_full_cold_accounting(case, result.staged)
+
+
+def test_application_cycle_provider_unknown_stops_selection_and_preserves_accounting(connected_case):
+    case = connected_case
+    selected = []
+    class Unknown(ColdLedgerFakeEngine):
+        def run(self, argv, **kwargs):
+            if argv[1] == "create":
+                return pf.tp.EngineCommandResult(None, b"", b"", kwargs["deadline_seconds"],
+                                                  kwargs["output_cap_bytes"])
+            raise AssertionError("no guessed lifecycle command")
+    def factory(plan):
+        selected.append(plan)
+        return Unknown(case)
+    provider = pf.tp.PlanBoundEngineProvider(executor_for_plan=factory,
+                                            retain_container=lambda p, c: True)
+    result = cycle.run_staged_cycle(**case[3], variants=_cycle_variants(case),
+                                     synthetic_test_providers=(provider, provider))
+    assert result.status == "EFFECT_UNKNOWN" and len(selected) == 1
+    assert result.variants[1].status == "NOT_ATTEMPTED_AFTER_REFUSAL"
+    assert len(result.variants[0].outcome.attempts) == 1
+    with pytest.raises(pf.tp.TransportStateError): provider.engine_for(selected[0])
+    _assert_full_cold_accounting(case, result.staged)
+
+
+def test_application_cycle_provider_map_is_explicit_and_default_remains_dormant(connected_case):
+    case = connected_case
+    variants = _cycle_variants(case)
+    provider = pf.tp.PlanBoundEngineProvider()
+    for sources in ({"synthetic_test_engines": _cycle_engines(case),
+                     "synthetic_test_providers": (provider, provider)},
+                    {"synthetic_test_providers": (provider, object())}):
+        with pytest.raises(cycle.StagedCycleRefused):
+            cycle.run_staged_cycle(**case[3], variants=variants, **sources)
+        assert (case[0] / sa.LEDGER_BASENAME).read_bytes() == b""
+    result = cycle.run_staged_cycle(**case[3], variants=variants,
+                                     synthetic_test_providers=(provider, provider))
+    assert result.status == "REFUSED" and result.variants[0].outcome.attempts == ()
+    assert result.variants[1].status == "NOT_ATTEMPTED_AFTER_REFUSAL"
+    assert not result.physical_acceptance
+    _assert_full_cold_accounting(case, result.staged)
+
+
 def test_application_cycle_accounts_once_and_reaches_review(connected_case, monkeypatch):
     case = connected_case
     engines = _cycle_engines(case)
