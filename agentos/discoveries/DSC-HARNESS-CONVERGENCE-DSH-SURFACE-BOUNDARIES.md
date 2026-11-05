@@ -16,12 +16,12 @@ falsifier: >
   but must not retroactively relabel this inspected version or constitute native
   Mastermind production proof.
 so_what: >
-  Do not replace the existing direct Claude/Codex worker and rich-operator owners
-  with DSH product wrappers or declare the SDK a ready sustained-operator backend.
-  Preserve the existing v1 contracts and OCR-4A carrier; treat DSH ACP as an
-  integration challenger requiring native, permission, result and effect proof.
-  Continue with the delta-only cross-harness workflow map in Mastermind research
-  PR 687 rather than restarting the company harness architecture.
+  These are dated September 16 planning implications of the pinned source
+  finding. The original comparison favored the direct native owners and treated
+  DSH ACP as a challenger requiring separate native, permission, result and
+  effect proof. This archive commissions no workflow-map task, replacement
+  backend or architecture change. Future authorized work must recover current
+  source and admission constraints and preserve actual original-carrier effects.
 kind: architecture
 verified_at: 2026-09-16
 verified_by: >
@@ -37,14 +37,38 @@ scope:
 confidence: verified
 ---
 
+# Dated DSH source-contract discovery
+
+## Archival qualification — November 5, 2026
+
+This is the **September 16, 2026** discovery about the exact upstream commit
+`0d1f50007f9bca3f52b06e1c3074fa14d5fb0720`. The source-contract claim and its
+original verification date remain unchanged. Independent current source review
+rechecked the pinned wrapper/SDK/ACP documentation and relevant ACP settlement,
+codec and retry contracts. It establishes a static source reading, not runtime
+compatibility, universal late-event race behavior, provider execution, installed
+identity, host enforcement or production acceptance.
+
+The original owner names, source-law pin, PR status and proposed Chunk 3 work
+are historical context. This record neither establishes their present state nor
+creates a new assignment, approval gate or control plane. Current receivers must
+recover applicable source, admission and original-carrier effects for separately
+authorized work. Preserving this discovery does not adopt the linked architecture
+recommendations or duplicate the current publication of Mastermind #687.
+
+Original record: Macro #7195 at `25dc5613df7fc73ad44e017db9938164dd6cae3d`,
+blob `3be03f58a807d37e15caf046969244c2607740f0`. This is a qualified edition;
+the original file remains available in that immutable commit.
+
 ## Research and authority boundary
 
-This is a discovery candidate from the Chairman-authorized multi-turn planning
-assignment, not a runtime admission or new workstream. The full source register,
-adopt/adapt/reject matrix, falsifiers and continuation are in
+This discovery records the September 16 planning assignment. The original source
+register, adopt/adapt/reject matrix, falsifiers and proposed continuation are in
 [Mastermind research at its authored commit](https://github.com/mastermindx-market-intelligence/Mastermind/blob/8ff2b9bfd2ee906c3a3418b4e580fd3df0b76804/research/HARNESS_CONVERGENCE_DSH_TEARDOWN_2026-09-16.md),
-carried by [draft PR 687](https://github.com/mastermindx-market-intelligence/Mastermind/pull/687).
-That record is not yet protected architecture or accepted production policy.
+carried by [PR 687](https://github.com/mastermindx-market-intelligence/Mastermind/pull/687).
+Its former Draft/Hold description is historical. Current source-publication
+receipts belong to that PR; this discovery neither releases it nor adopts its
+architecture or production recommendations.
 
 Protected Mastermind source/procedure was
 `0fe8074ff953b2ced9025ed40f0f66019c759967`, compatible Skillpack 1.0.1/bootstrap 1.
@@ -54,7 +78,7 @@ checked at the publication base `a780b16f53ceb05944fedf04d20b3735182aab52`.
 The existing `WS:EXECUTIVE-CAPACITY-FABRIC` remains the organizational home.
 No umbrella status, claim, next action or generated view is rewritten here.
 
-## Load-bearing qualifications
+## Pinned source interpretations and historical planning limits
 
 The native DSH wrappers return final text and safe diagnostics, not the full
 Mastermind evidence envelope. DSH's SDK accepts a message and collects to whole-agent
@@ -72,23 +96,28 @@ broad process-accessible authority. The optional DSH retry plugin can also add a
 independent retry budget, including an unbounded always mode. Proposed adoption
 must preserve existing host enforcement and retry/effect ownership.
 
-Native transcripts and local tool ordering are legitimate subordinate engine
-state. They should not be banned as duplicate control planes; company admission,
-placement, responsibility, global recovery and organizational memory must instead
-retain their current owners. The existing skills-only capability package cannot
-silently admit an executable JavaScript plugin closure.
+The original planning interpretation treated native transcripts and local tool
+ordering as subordinate engine state, while retaining company admission,
+placement, responsibility, global recovery and organizational memory with their
+existing owners. It also distinguished the then-existing skills-only capability
+package from an executable JavaScript plugin closure. Those interpretations are
+preserved as dated planning context, not newly adopted architecture or admission.
 
-## Exact continuation
+## Historical proposed continuation — not a current task
 
-Chunk 2 produced source-backed planning inputs. Chunk 3 should map the existing
-worker v1 and rich-operator v1 contracts onto one minimum cross-harness workflow:
+The September 16 record described Chunk 2 source-backed planning inputs and
+proposed that Chunk 3 map the then-existing worker v1 and rich-operator v1
+contracts onto one minimum cross-harness workflow:
 required tools and skills, actual permission enforcement, attributable results,
 context/compaction, cancellation, exact continuation and parent consumption.
 Each missing requirement must name the existing owner, proposed additive delta,
 provider-specific realization and a discriminating proof. No new ABI version,
 registry, lifecycle or DSH fork is selected merely to describe convergence.
 
-Keep OCR-4A PR 660 and the incumbent HF1/PF1/ACP/Fable integration writers intact.
-DSH is a challenger, not a new prerequisite blocking the direct native paths.
-Installation, model calls, credential enrollment, route activation and migration
-remain outside this records-only operation.
+The original owner references included OCR-4A PR 660 and the HF1/PF1/ACP/Fable
+integration writers. Their present assignments and release states are not
+established by this archive. Any future authorized receiver must reconcile actual
+current source, leases and original-carrier effects; historical names are not
+live approvers. The original proposal treated DSH as a challenger, not a new
+prerequisite blocking direct native paths. This record grants no installation,
+model call, credential enrollment, route activation or migration permission.

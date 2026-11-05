@@ -1,0 +1,53 @@
+........................................................................ [ 44%]
+........................................................................ [ 89%]
+.........F.......                                                        [100%]
+=================================== FAILURES ===================================
+_ test_refresh_uses_accepted_generation_and_restores_rejected_read_without_raw_error _
+
+    def test_refresh_uses_accepted_generation_and_restores_rejected_read_without_raw_error():
+        node=shutil.which("node")
+        if node is None:pytest.skip("node unavailable")
+        source=APP.read_text(encoding="utf-8")
+        renderer=source[source.index("RENDER.intelligence_os = async"):source.index("/* ---- Intelligence OS · engine detail")]
+        harness=r'''
+    const vm=require('node:vm');
+    const renderer=JSON.parse(process.argv[2]);
+    async function run(reject) {
+     const v={innerHTML:''},b={disabled:false,textContent:''},status={textContent:'',dataset:{}};
+     let cache={ok:true,marker:'old',generated:{observed_at:'fixture-old'},engines:[],census:{}};
+     const calls=[],toasts=[];let wrapped=false;
+     const c={RENDER:{},IOS:{},Date,$:s=>s==='#view'?v:s==='#ios-refresh'?b:s==='#iosRefreshStatus'?status:null,
+     api:async p=>{calls.push(p);if(p.includes('force=1')){if(reject)throw Error('SECRET_CANARY');return{ok:true,marker:'fresh',generated:{observed_at:'fixture-fresh'},engines:[],census:{}}}return cache},
+     clearApiCache:()=>{cache=null},apiCacheStore:(p,e)=>{cache=e.value},apiCacheTtl:()=>300000,
+     iosText:s=>s,iosCopy:s=>s,iosHero:d=>d.generated.observed_at,iosReasonCard:()=>'',iosCeoView:()=>'',
+     iosRenderChips:()=>{},iosRenderTable:()=>{},fmtNum:String,nwEmpty:()=>'',toast:s=>toasts.push(s),
+     wrapViewTables:()=>{wrapped=true},iosRestoreFocus:()=>{if(!wrapped)throw Error('focus before synchronous table wrapping')},iosLanguageAttributes:()=>{status.textContent='Refresh failed '+status.dataset.assessed},go:()=>{}};
+     vm.createContext(c);vm.runInContext(renderer,c);await c.RENDER.intelligence_os();await b.onclick();await Promise.resolve();await Promise.resolve();
+     return{marker:c.IOS.data.marker,calls,disabled:b.disabled,status:status.textContent,toasts,html:v.innerHTML};
+    }
+    (async()=>console.log(JSON.stringify({fresh:await run(false),failed:await run(true)})))();
+    '''
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"refresh.cjs";path.write_text(harness)
+            result=subprocess.run([node,str(path),json.dumps(renderer)],capture_output=True,text=True)
+>       assert result.returncode==0,result.stderr
+E       AssertionError: evalmachine.<anonymous>:12
+E           v.innerHTML = iosHero(d) + iosReasonCard(c) + `
+E                                                       ^
+E         
+E         ReferenceError: iosTypedFindings is not defined
+E             at RENDER.intelligence_os (evalmachine.<anonymous>:12:47)
+E             at async run (/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/tmpft0pp9cs/refresh.cjs:14:50)
+E             at async /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/tmpft0pp9cs/refresh.cjs:17:45
+E         
+E         Node.js v26.5.0
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/homebrew/bin/node', '/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/tmpft0pp9cs/refresh... at async /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/tmpft0pp9cs/refresh.cjs:17:45\n\nNode.js v26.5.0\n').returncode
+
+tests/test_admin_intelligence_os_ui.py:304: AssertionError
+
+NOTE: sparse worktree — data, mockups, plugins, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_admin_intelligence_os_ui.py::test_refresh_uses_accepted_generation_and_restores_rejected_read_without_raw_error
+1 failed, 160 passed in 27.20s

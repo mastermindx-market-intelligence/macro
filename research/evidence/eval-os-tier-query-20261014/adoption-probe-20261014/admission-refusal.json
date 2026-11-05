@@ -1,0 +1,16 @@
+{
+  "observed_at": "2026-10-14T11:52:27.337081+00:00",
+  "run_id": "eval-followon-adoption-probe-01a1333d-c1",
+  "request_rc": 75,
+  "reason": "no eligible remote mode satisfying required_modes",
+  "blockers": [
+    "telemetry-source",
+    "ubuntu0:disk",
+    "ubuntu1:thermal-recovery",
+    "ubuntu2:lane-ceiling",
+    "ubuntu3:lane-ceiling+load+thermal+thermal-recovery"
+  ],
+  "worker_started": false,
+  "retry_authorized": false,
+  "next_action": "Original assigning root performs permitted bounded source work directly; no remote retry, host-policy change or native replacement."
+}
