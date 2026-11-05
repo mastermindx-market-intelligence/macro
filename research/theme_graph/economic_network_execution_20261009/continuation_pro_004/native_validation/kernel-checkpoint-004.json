@@ -1,0 +1,92 @@
+{
+  "ci_enrollment_contract_tests_passed_across_actual_runs": 4,
+  "ci_review_archive_member_count_verified": 16,
+  "ci_review_archive_sha256": "2567157e56833211d8743878f3f9b5b5d3ffcef4ddf76fa13e6d972250df9bba",
+  "commissioning_sol_ceo_adjudication": "NOT_ASSERTED",
+  "current_readme_sha256": "f43a754931efba47098c108de029cb9de6574080628f256f0ea3859ef55859ef",
+  "finished_at": "2026-10-09T14:06:59.685942+00:00",
+  "git_commit_or_push": false,
+  "hosted_ci": "PENDING_CURRENT_CANDIDATE",
+  "independent_review_did_not_claim_later_principal_check": "PENDING_SEPARATE_PRINCIPAL_RECEIPT",
+  "kernel_tests_passed": 117,
+  "kernel_tests_repeated_for_staging": false,
+  "new_or_updated_files": [
+    {
+      "byte_length": 12825,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/EXECUTION_STATUS_20261009_004.md",
+      "sha256": "01d1ed28349c37e8c7c2fe74a2dae31d227137b0b6b9cd3e3b91d1af4bfb5331"
+    },
+    {
+      "byte_length": 14763,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/KERNEL_NATIVE_ADJUDICATION_004.md",
+      "sha256": "56d99d00e07c9454745a46a7fe1d8a445a9f514a2b059c946cb5409382d7b28d"
+    },
+    {
+      "byte_length": 9795,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/README.md",
+      "sha256": "f43a754931efba47098c108de029cb9de6574080628f256f0ea3859ef55859ef"
+    },
+    {
+      "byte_length": 7985,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_applied_review_v2/APPLIED_CI_REVIEW_V2.md",
+      "sha256": "73cb1f337d3199c98853fdb14d7a6a7c9f6f597ac03e612e95f717833a730566"
+    },
+    {
+      "byte_length": 12746,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_applied_review_v2/APPLIED_INVERSE_RECEIPT_V2.json",
+      "sha256": "df8872234155adedf5b4eec80909ba47cd3e6b2a697fbab00dc3665455256d0e"
+    },
+    {
+      "byte_length": 3699,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_applied_review_v2/ARCHIVE_MANIFEST.json",
+      "sha256": "949d6c7934816d034ca102a2aa595df9837bee6edc248881327b216c25cb1bed"
+    },
+    {
+      "byte_length": 2056,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_applied_review_v2/PRINCIPAL_VALIDATION_CONTEXT.md",
+      "sha256": "63f5f93f9134e7aa6f74a95459c9acf2c7b24cb41e5eeaa7f957a32aa635a26b"
+    },
+    {
+      "byte_length": 23925,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_applied_review_v2/WP02_INDEPENDENT_CI_INTEGRATION_REVIEW.tar.gz",
+      "sha256": "2567157e56833211d8743878f3f9b5b5d3ffcef4ddf76fa13e6d972250df9bba"
+    },
+    {
+      "byte_length": 5384,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/KERNEL_NATIVE_VALIDATION_RUNNER_001.py.txt",
+      "sha256": "4c29223191d7798a903ec26a9f56c385b6ac4368031a8f2981bca574738271fd"
+    },
+    {
+      "byte_length": 8548,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/KERNEL_STAGED_CI_VALIDATION_RUNNER_002.py.txt",
+      "sha256": "cb59ce4b3f54896e61609487037148faf0a1a33887e148917e91f6b4edff51e9"
+    },
+    {
+      "byte_length": 8470,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/PRE_KERNEL_README_002.md",
+      "sha256": "de17d4cfaa3f077ded42d6c3593bb9782d2d6e869f7c13c8a4264db728398b27"
+    }
+  ],
+  "old_readme_exact_preserved_at": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/PRE_KERNEL_README_002.md",
+  "old_readme_sha256": "de17d4cfaa3f077ded42d6c3593bb9782d2d6e869f7c13c8a4264db728398b27",
+  "operation_id": "gmi-economic-source-diagnostic-20261009-pro-004",
+  "original_failure_receipt_preserved_sha256": "7ae2fd0082870f15aad38583c4b2dd066e0508c5f3151baaf4c9ab93146c3ed3",
+  "precommit_source_head": "07e663731b7ad7f1854b181180fee5855746d237",
+  "protected_master_source": "8c3bc581e747c8b7c066ff0adec3b54573231baf",
+  "real_source_or_cohort_admission": false,
+  "reviewed_runtime_and_ci_unchanged": true,
+  "schema": "economic_network.kernel_checkpoint_integration/v1",
+  "separate_staged_ci_recovery_receipt_sha256": "b6ee7ed78f2767e979767fa534732dbc4377ee5a93de2cebb858fc584bd42f82",
+  "started_at": "2026-10-09T14:06:57.849552+00:00",
+  "transport": {
+    "archive_bytes": 56704,
+    "archive_sha256": "6669aa9e6b58acd19a6f3df7d6565abb1d8930714fca79262a37749e864cd70c",
+    "base64_length": 75608,
+    "frozen_independent_archive_member_count": 16,
+    "frozen_independent_archive_sha256": "2567157e56833211d8743878f3f9b5b5d3ffcef4ddf76fa13e6d972250df9bba",
+    "git_blob_sha": "3c64ffb758c649daa6d45a9a5e1984f51f3438db",
+    "member_bytes": 110196,
+    "member_count": 11,
+    "schema": "economic_network.native_checkpoint_transport/v1"
+  }
+}

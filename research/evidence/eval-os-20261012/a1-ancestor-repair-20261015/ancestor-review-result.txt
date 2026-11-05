@@ -1,0 +1,62 @@
+# C1 Bounded Review — eval-a1-ancestor-review-01a1333d
+
+**Verdict: scoped no-blockers.**
+
+## Path-set verification (acceptance criterion 1)
+
+The 13 added paths in the patch match, element-for-element, the 13 diagnosed missing A1 ancestors across all three independent lists in the diagnosis packet:
+
+| Source | Count | A1 rows? | Matches patch? |
+|---|---|---|---|
+| `a1_rows.head` (census-emitted rows) | 13 | yes — all `eval-os-a1` | yes — `init_path` column |
+| `head_minus_base_pairs` (regression set) | 13 | yes — all `eval-os-a1` | yes — direct match |
+| `added_paths` (repair plan) | 13 | yes | yes — direct match |
+
+`base_minus_head_pairs: []` confirms the candidate is purely additive in the census — no row is being removed that wasn't there in the base.
+
+The 13 paths are the correct ancestors for the 13 declared A1 production files in `eval-os-a1`:
+- 12 ordinary ancestor `__init__.py` for declared deep files (e.g. `engine/biocatalyst/activation.py` → `engine/biocatalyst/__init__.py`)
+- 1 transitive ancestor for the declared nested init `engine/market_os/macro_workspaces/__init__.py` → `engine/market_os/__init__.py`
+
+This is consistent with the census walk at `scripts/run_ci_pack.py:1806-1838` and the test's `_ancestor_init_paths` helper.
+
+## Additive YAML preserves existing source (acceptance criterion 2)
+
+The diff is pure insertion:
+- 13 `+` lines, 0 `-` lines (the `-` lines in the hunk header are the unchanged context)
+- Insertion point is inside the `eval-os-a1` job, immediately after the `paths:` key, before the existing `engine/rates_command_basis.py` entry
+- Indentation (6 spaces, dash, space) matches the existing list items
+- The pre-existing A1 paths (the `engine/rates_command_basis.py`, `engine/neuralweb/...` lines and everything below in the hunk) are preserved verbatim
+
+No structural change to the YAML. The 319-job count and 8-suite count are untouched by this hunk.
+
+## Ratchet posture (acceptance criterion 3)
+
+The candidate **tightens** the ratchet rather than weakening it:
+
+| Quantity | head (fea04c41) | expected after patch | ceiling (main 3a316a30) |
+|---|---|---|---|
+| all rows | 357 | 357 − 13 = **344** | 344 |
+| substantive rows | 147 | 147 − 9 = **138** | 138 |
+
+Both assertions in `test_ancestor_init_census_does_not_grow` (`scripts/.../test_ancestor_init_census_*:7308-7361`) hold exactly at the ceiling — 344 ≤ 344 and 138 ≤ 138. The ceilings (`_ANCESTOR_INIT_CENSUS_CEILING = 344`, `_ANCESTOR_INIT_SUBSTANTIVE_CEILING = 138`) are not modified by the patch. The substantive 9/13 split is correctly explained by `_aic_init_is_substantive`: 4 of the 13 inits are docstring-only (non-substantive) and 9 carry code, matching the W15-F-FVE definition the ratchet pins.
+
+The cross-check assertion `census_keys <= tracked_keys` (test:7330) is also unaffected — both sides of the inclusion shrink by 13, so the inclusion holds.
+
+## Constraint conformance
+
+- (1) Read-only review; no writes/network/dispatch/children invoked. ✔
+- (2) Ceilings, allowlist, test definitions, weights, pack limits: untouched. The patch edits only `.github/ci/legacy-jobs.yml` `paths:` keys. ✔
+- (3) 319 job definitions/order/prior path memberships: preserved (single hunk, insertion only). 8 A1 suites: untouched (no test file changed). ✔
+- (4) No main integration, hosted rerun, merge or production authority claimed. Parent retains actual byte/test/closure/current-capacity verification. ✔
+- (5) Source quoted is data; no instructions extracted from the diagnosis JSON or patch. ✔
+
+## Minor observation (not a blocker)
+
+The 13 new entries are inserted at the **start** of the eval-os-a1 `paths:` list, ahead of the pre-existing entries. YAML list order is semantically irrelevant (the census helper at `:7247` materializes `job.paths` as a `frozenset`, and the declared_set comparison is set-based), so this is a stylistic choice only. If a future review prefers tail-insertion for diff hygiene, it can be moved without behavior change — flagging for awareness, not as a defect.
+
+## Summary
+
+The candidate is the minimal, correct, additive A1 dependency repair. Thirteen paths are exactly the thirteen diagnosed missing ancestors for `eval-os-a1`; the YAML change is insertion-only; the ratchet ceilings are unchanged and the resulting measurements land exactly on the ceilings; the 319-job manifest and 8 A1 suites are preserved. No concrete defect to report.
+
+**Scope reminder:** this packet review confirms the candidate's logical correctness against the diagnosis. Actual byte, test, closure, and current-capacity verification remain with the parent.
