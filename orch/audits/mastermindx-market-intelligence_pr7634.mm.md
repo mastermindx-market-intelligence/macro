@@ -1,3 +1,28 @@
+# Historical repository-named audit for Macro PR #7634
+
+## Reconciliation recorded 2026-11-05 UTC
+
+This is the third distinct September 22 report preserved by #7702. The original payload below is retained verbatim, alongside two different editions in [the companion source reconciliation](macro_PR-7634.mm.md). Its PASS labels, test/browser/validator output, worker-style identity, source-law statements, instructions and release conclusions are historical author claims; this filing does not reissue them or prove current production acceptance.
+
+### Verified identity and corrections
+
+The audited target is #7634 source head `a56ead2a1d46b785a6e6a59586a2e99a6293b4c2`, protected **one-parent squash** `e83b33bb8254d7e973efa74f4d6e89d3cfd453eb`, parent `c538c78eef57b810ab36ddc8c7d93ef15a5dec7f`, merged **2026-09-22 07:13:09 UTC**. Its complete actual-parent delta is **57 paths, +1,801/-30**. The registered test source adds five top-level test functions (28 to 33); definition counts are not test execution.
+
+The report's PNG split is inaccurate: the complete delta contains **37 PNGs**, comprising **24 mockup captures** and **13 research images** (12 native browser captures plus a before-image), not its stated 25/26 split. The protected canonical manifest records **24 visual states** at **1440x900, 820x1180 and 390x844**; the separate browser-results file contains **12 native-case records**. These historical static-fixture receipts are different measures and are not live production proof. The README's 768-width summary differs from the manifest's 820-width tablet axis.
+
+The report describes a nonzero estate-wide validated-claims result with 38 pre-existing hits and zero hits on scoped paths. Its scoped PASS is not a whole-estate green result. No historical script, test, browser capture, screenshot-digest verification or public journey was rerun. Other reports' universal 44x44/accessibility and pre-#7634 chronology assertions are separately qualified in the companion file; no current conformance ruling or deployment is made here.
+
+### Exact preservation and authority boundary
+
+This report was introduced by `02af5b0aa9374e8cf056c962ece0144d2df98d60` and retained at original #7702 head `c515418bc3aa69f296f135fcb08bb3301e7b8e26`. Original blob `92eadc09d8428301a0f5ba2cd436db5cff3020af`, **31,637 UTF-8 bytes**, SHA256 `cc8e6c4c054adf915d7da76be63304255c20861c2a600216009e58d65e88998f`. GitHub attributes the commit to `claude`, raw author Claude Code; the style label is not proof of actual qwen worker execution. This path was absent at captured integration base `b3134cb2ad3b594c129fd5c6db3f294cf40bfba6`.
+
+The payload occurs exactly once below and originally had **no terminal LF**. One outside framing LF separates it from the closing four-tilde fence; all framing and corrections are outside the original bytes.
+
+This archival source change does not edit the product/CI/validator, release historical worktree or publication holds, resolve the old Reports checkout stall, waive public/VPS proof, confer trade authority, or appoint an old named actor as approver. Separate work belongs to the currently assigned receiver under current protected law and actual original-carrier constraints. Hash identity does not establish truth, rights, empirical validity or live acceptance; disclaimers and absent validator findings do not waive required proof.
+
+## Edition C — original repository-named #7702 report, verbatim historical payload
+
+~~~~markdown
 # Audit — mastermindx-market-intelligence/macro PR #7634
 
 Mode: qwen_auditor2-style (plain-language / theme / validated-claims laws). One-pass audit against the merged head. No durable writes outside this report.
@@ -255,3 +280,4 @@ This is a one-pass qwen_auditor2-style plain-language / theme / validated-claims
 - Terminal #704 (chart stale-request guard) — already audited by `mastermind-terminal_PR-704.mm.md`.
 
 `/tmp/pr7634.diff` is the gated diff used by `check_design_system.py` and `check_ui_visual_evidence.py`; it can be regenerated as `git diff e83b33bb825^1..e83b33bb825 -- templates/reports.html.j2 site/reports.html site/assets/css/b219cddc.css tests/test_reports_timeline_ui.py > /tmp/pr7634.diff`. Audit head: `3647902e1f4f1ee50e7be8677ec3f603b809496b` on `origin/main` (post-merge). Working tree was returned to clean `origin/main` after the audit (`git status --short` exits 0).
+~~~~

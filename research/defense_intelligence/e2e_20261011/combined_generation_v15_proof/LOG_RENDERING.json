@@ -1,0 +1,7 @@
+{
+  "exact_sanitized_log": "ci-pack-9.exact.log.gz",
+  "decoded_sha256": "83cbf46f98b138c8b143e90d92bafbd8c894b463e0245711f098ba223ef4be00",
+  "readable_log": "ci-pack-9.log",
+  "transformation": "Remove trailing whitespace only. Original ANSI-bearing log retained externally; sanitized original is lossless in gzip.",
+  "raw_external_sha256": "2fbdd8a17ad99e7630a1c92b5938c68eed68d1c31ac1d2cfd3174d2ea5b32920"
+}

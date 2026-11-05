@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-25T21:08:08Z",
+ "accession": "0001421517-26-000022",
+ "cik": "0001421517",
+ "doc_byte_length": 4618102,
+ "doc_sha256": "961ef30246690d6777344d1013cd207ac00e7d0ad78ff9f07b005816584a474e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "erii-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3878273,
+  "byte_start": 3877004,
+  "normalized": "Customer BWater12%",
+  "normalized_sha256": "1522eba50038dc94cbac8228ccf8d220f5335dbc20a74f3e0ca242f08a227ba3",
+  "raw": "Customer B</span></div></div></div></td><td style=\"background-color:#ffffff;font-size:0;text-align:left;vertical-align:top\"/><td style=\"background-color:#ffffff;font-size:0;text-align:left;vertical-align:top\"><div style=\"left:237.75pt;position:var(--position);top:36.75pt;width:69pt\"><div><div style=\"line-height:9pt;position:var(--position);top:2.72pt;width:69pt\"><span style=\"color:#000000;font-family:'Arial Narrow', sans-serif;font-size:9pt;font-style:normal;font-weight:normal;left:24.67pt;position:var(--position);text-decoration:none;white-space:pre\">Water</span></div></div></div></td><td style=\"background-color:#ffffff;font-size:0;text-align:left;vertical-align:top\"/><td style=\"background-color:#ffffff;font-size:0;text-align:left;vertical-align:top\"><div style=\"left:309.75pt;position:var(--position);top:36.75pt;width:65.25pt\"><div><div style=\"line-height:9pt;position:var(--position);top:2.72pt;width:65.25pt\"><span style=\"color:#000000;font-family:'Arial Narrow', sans-serif;font-size:9pt;font-style:normal;font-weight:normal;left:26.18pt;position:var(--position);text-decoration:none;white-space:pre\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-246\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1118\">12</ix:nonFraction>%",
+  "raw_sha256": "6dcc23e27426987393052baea61f476c9fc112c0f281f5e1f5c48fc2d45e8e35"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1421517/000142151726000022/erii-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 122483,
+   "byte_start": 121686,
+   "context_ref": "c-246",
+   "raw": "<xbrli:context id=\"c-246\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001421517</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">erii:CustomerBMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:StatementBusinessSegmentsAxis\">erii:WaterSegmentMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "52205209f214bf3f577835bcd9eb93efaec9c6eeb3dc9277f71354dcde9196f1"
+  }
+ ]
+}

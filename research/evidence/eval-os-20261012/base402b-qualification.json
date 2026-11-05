@@ -1,0 +1,25 @@
+{
+  "schema": "eval_os.base402b_qualification.v1",
+  "candidate_parent": "ae037b81c0aec563afe94314bf11275ea2a5b88e",
+  "incoming_main": "402b57defb301fc611ab81242f685a96e085d035",
+  "review_sha256": "bae8b3956836aeff91de00bc2387238eeae32b96aef94c3ccd5acf4bdfa44217",
+  "tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "2",
+    "time": "34.369",
+    "timestamp": "2026-10-13T18:39:30.643616-07:00",
+    "hostname": "m2studio"
+  },
+  "agentos": "agentos: 1733 records (95 workstreams, 461 decisions, 516 discoveries, 661 handoffs) \u2014 0 error(s), 164 warning(s)",
+  "unchanged_accepted_evidence": {
+    "isolated_A1": "373 passed; zero errors, failures or skips",
+    "base6b_integration": "56 passed; 4 existing sparse-store skips; zero errors or failures"
+  },
+  "resolution": "Exact curated-set union; all incoming owner changes preserved; A1 job and 21 qualified blobs unchanged.",
+  "hosted_CI": "Required after final publication",
+  "release": "Chairman authorized existing repository controller including base-only updates with fresh checks; issuecomment-6158644348",
+  "programme_complete": false
+}

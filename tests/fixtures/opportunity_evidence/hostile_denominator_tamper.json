@@ -7,21 +7,19 @@
         "state": "unknown"
       },
       "native_identity": {
-        "date": "2026-08-14",
-        "direction": "up",
-        "ticker": "IMXI"
+        "case_id": "synthetic_imxi"
       },
-      "owner_store": "data/price_pressure/",
+      "owner_store": "research/winners/cases/",
       "recorded_clock": {
-        "clock_class": "observed",
+        "clock_class": "belief_or_build",
         "grain": "date",
-        "native_field": "harvested_asof",
+        "native_field": "t0_hypothesis",
         "state": "known",
         "value": "2026-08-14"
       }
     },
     "t0_mode": "live",
-    "t0_source": "drl_event_date",
+    "t0_source": "winner_case_t0_hypothesis",
     "value": "2026-08-14"
   },
   "authority": {
@@ -32,17 +30,17 @@
     "can_size": false
   },
   "compilation_state": "partial",
-  "content_sha256": "b7b10e8d8d7735b608ca17286a95ee477a20f815d89c7459b43a735546d96e19",
+  "content_sha256": "71c6b9dbd7cb8f8780e5bf10e60a53dd897888331f625520547e6a4ae2d9c361",
   "denominator": {
     "conflicted": 0,
-    "excluded": 3,
+    "excluded": 4,
     "identity_unresolved": 0,
-    "included": 2,
+    "included": 1,
     "missing": 3,
     "rights_blocked": 0,
     "stale": 0,
     "total": 5,
-    "unknown": 0,
+    "unknown": 1,
     "unsupported": 0
   },
   "display_only": true,
@@ -84,19 +82,18 @@
     "inferred": {
       "denominator": {
         "excluded": 0,
-        "included": 2,
-        "total": 2
+        "included": 1,
+        "total": 1
       },
       "label": "owner_derived_system_belief",
       "slot_refs": [
-        "drl_resid_shock",
         "options_state"
       ]
     },
     "market_reflection": {
       "denominator": {
-        "excluded": 6,
-        "included": 1,
+        "excluded": 7,
+        "included": 0,
         "total": 7
       },
       "incorporation_legs": [
@@ -110,7 +107,7 @@
           "slot_refs": [
             "drl_resid_shock"
           ],
-          "state": "observed"
+          "state": "unknown"
         },
         {
           "leg": "I3_estimate_revision",
@@ -158,9 +155,9 @@
       "slot_refs": []
     },
     "strongest_unresolved_fact": {
-      "fact": "attention_views unresolved: source_missing",
+      "fact": "drl_resid_shock unresolved: unknown",
       "slot_refs": [
-        "attention_views"
+        "drl_resid_shock"
       ],
       "state": "named"
     }
@@ -184,23 +181,23 @@
         "state": "full"
       },
       "derivation": "owner_read",
-      "exclusion_reason": null,
+      "exclusion_reason": "unknown",
       "family_binding": {
         "family_id": null,
         "kind": "research_only",
         "routed_to": null
       },
-      "included_in_composition": true,
+      "included_in_composition": false,
       "known_at": {
         "clock_class": "observed",
         "grain": "date",
-        "native_field": "harvested_asof",
-        "state": "known",
-        "value": "2026-08-14"
+        "native_field": null,
+        "state": "unknown",
+        "value": null
       },
       "missingness": {
-        "reason": null,
-        "state": "present",
+        "reason": "unknown",
+        "state": "absent",
         "zero_substituted": false
       },
       "object_class": "derived_view",
@@ -211,13 +208,8 @@
         "reader": "engine.price_pressure.ledger.read_ledger"
       },
       "provenance_class": "owner_artifact",
-      "state": "observed",
-      "value_or_null": {
-        "peer_ret": 0.0014,
-        "resid": 0.2456,
-        "resid_z": 11.85,
-        "ret": 0.247
-      },
+      "state": "unknown",
+      "value_or_null": null,
       "variation_receipt": null
     },
     {
