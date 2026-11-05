@@ -5468,8 +5468,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_913),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_928),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_668),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5478,6 +5478,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-05 RF canonical-design acquisition port: hosted contract-delta
+    job127410128229 compared candidate18f9df75 against actual base457c1cad.
+    Index remains137 jobs, weight5912->5913; free-content remains137 jobs,
+    weight5927->5928; Prophet stays131/5668. All probes remain ten packs,
+    with no new selected jobs. Qualified native RED on the same candidate
+    reproduces both one-unit excesses. The sole job delta is existing
+    design-governance18->19: eight commands and four test-path tokens stay
+    fixed; command text2055->2702 crosses one len(text)//800 tier after the
+    bounded acquisition/verification calls. Fund exactly that planner unit
+    in the two exceeded weight ceilings, preserving all job/pack counts,
+    selectors, test coverage and execution deadlines. These are planning
+    estimates, not measured runtime or new resource/admission allowance.
+
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
