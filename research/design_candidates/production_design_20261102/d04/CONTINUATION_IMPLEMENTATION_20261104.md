@@ -4,6 +4,8 @@
 
 **Disposition: MORE_WORK_EXISTS — attended execution continues; no background root or watcher is claimed.** This section supersedes older current-head, CI, next-lane and pending-publication statements below. Protected Mastermind/master pin is **`d753bd6e9ef3e5a5435ba5649e448b1610185f6e`**, INDEX 1.0.1 / bootstrap-major 1 compatible. Applicable bootstrap, execution, continuity, custody and Web review law were consumed at that pin. No new Paper action occurred.
 
+**Current successor status: Quant Lab source admission is reconciled and implementation is active.** Original operation `d04-quant-lab-availability-20261105` now owns clean workspace `/Volumes/Mastermind/agent-workspaces/macro/web/d04-quant-lab-availability-20261105`, branch `sol/web-d04-quant-lab-availability-20261105`, exact base `3e4821132540270d52f6e83c29638ec2eeb16e3f`. The later source-owner reconciliation below supersedes the initial refusal/gate text. Root is the sole source writer; no current Paper mutation or release is authorized.
+
 ### Published Top Picks phase
 
 The timed-out “Resume Discovery Package” session was recovered on its original operation **`d04-top-picks-return-20261104`**, repository alias `macro`, branch **`sol/web-d04-top-picks-return-20261104`**, workspace **`/Volumes/Mastermind 2/agent-workspaces/macro/web/d04-top-picks-return-20261104`**, acquired base **`d18d83019f3972c9bd915c736210176c7bd0b6b5`**. Root retained the sole source-writer role. Existing uncommitted source and failed diagnostic evidence were continued, not restarted.
@@ -92,6 +94,22 @@ Same-owner repository inventory reports macro READY with admission_evaluated=fal
 The next source action is blocked until the **existing workspace owner** resolves/qualifies this exact repository-source condition. Preserve the same operation and canonical intent; do not turn READY inventory into a grant or repeat the refusal unchanged. Root retains recovery ownership; no background repair worker, transport ACK or delegated START is claimed.
 
 The basket-date finding is retained with incumbents #7669, #8639 and D05 #10703: builder fallback from missing analytical as-of to basket creation date can be described as market close in the detail template. No overlapping basket hunk or D05 takeover was attempted.
+
+### Same-owner source admission reconciled; Quant Lab implementation active
+
+The installed owner source `mastermind_workspace.py` at installed revision `4b35c9ed93efe5cc2c802d9fec0273a3ca083b0f` shows that REPOSITORY_SOURCE_UNAVAILABLE originates from a bounded local Git observation. It was a technical preflight failure before allocation, not a storage/policy/permission refusal.
+
+Subsequent read-only qualification found the exact base object available. The same sanitized observation used by the owner — `/usr/bin/git -C /Users/chriswong/Documents/Cluade/macro-main rev-parse --verify 3e4821132540270d52f6e83c29638ec2eeb16e3f^{commit}`, with no lazy fetch/replacement objects/prompts and the original 10-second bound — returned exit 0 and the exact SHA. Repository binding inventory was READY, and original-operation status had established NOT_APPLIED/unregistered. No fetch, configuration edit, alternate base or host was used.
+
+One same-owner acquisition attempt followed this positive preflight qualification. It returned PARTIAL / EFFECT_UNKNOWN / WORKSPACE_ACQUISITION_UNQUALIFIED. It was **not replayed**. Same-operation installed status then returned:
+- workspace `/Volumes/Mastermind/agent-workspaces/macro/web/d04-quant-lab-availability-20261105`;
+- branch `sol/web-d04-quant-lab-availability-20261105`;
+- head `3e4821132540270d52f6e83c29638ec2eeb16e3f`;
+- dirty=false, removed=false, recoverability=UNCHANGED_FROM_ACQUIRED_BASE, state=RELEASABLE.
+
+The original typed publisher independently confirmed that exact clean local head and no remote source branch/publication. Acquisition is reconciled to the original registered carrier; no unresolved allocation effect remains. Root now proceeds with the already recorded three-module availability/provenance contract, preferring the existing template seam and focused fixtures without altering producer calculations.
+
+Next: inspect the fresh target/test conventions, establish the unavailable-anchor and non-63-day regressions, implement the bounded template states, exercise real local browser journeys and source gates, preserve evidence and publish this same operation as a held draft. #10753's queued original CI remains an independent lane; no duplicate runner is started.
 
 ---
 
