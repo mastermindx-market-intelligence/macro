@@ -47,7 +47,7 @@
 <meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../../favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="../../apple-touch-icon.png"><link rel="stylesheet" href="../../theme.css?v=9bd171a6"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/"},{"@type":"ListItem","position":2,"name":"Learn","item":"https://www.mastermind-x.com/learn/index.html"},{"@type":"ListItem","position":3,"name":"Options \u0026 Dealer Positioning","item":"https://www.mastermind-x.com/learn/options/"},{"@type":"ListItem","position":4,"name":"What Open Interest Can and Cannot Tell You"}]}</script><script type="application/ld+json">{
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png"><link rel="stylesheet" href="../../theme.css?v=9bd171a6"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/"},{"@type":"ListItem","position":2,"name":"Learn","item":"https://www.mastermind-x.com/learn/index.html"},{"@type":"ListItem","position":3,"name":"Options \u0026 Dealer Positioning","item":"https://www.mastermind-x.com/learn/index.html#track-options"},{"@type":"ListItem","position":4,"name":"What Open Interest Can and Cannot Tell You"}]}</script><script type="application/ld+json">{
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "What Open Interest Can and Cannot Tell You",
@@ -68,7 +68,7 @@
   }
 }</script>
 
-<link rel="stylesheet" href="../../assets/css/3c29bc85.css?v=3c29bc85">
+<link rel="stylesheet" href="../../assets/css/bdb8adf8.css?v=bdb8adf8">
 
 <link rel="stylesheet" href="../../assets/css/17c15c21.css?v=17c15c21">
 <link rel="preload" as="style" href="../../product-nav-icons.css?v=432f6a45">
@@ -186,17 +186,17 @@
   <ol>
     
     <li>
-      <a href="../../">Home</a>
+      <a href="../../"><span class="l-en">Home</span><span class="l-zh">首页</span></a>
     </li>
     <li class="sep" aria-hidden="true">/</li>
     
     <li>
-      <a href="../../learn/index.html">Learn</a>
+      <a href="../../learn/index.html"><span class="l-en">Learn</span><span class="l-zh">学习</span></a>
     </li>
     <li class="sep" aria-hidden="true">/</li>
     
     <li>
-      <a href="../../learn/options/">Options &amp; Dealer Positioning</a>
+      <a href="../../learn/index.html#track-options"><span class="l-en">Options & Dealer Positioning</span><span class="l-zh">期权与做市商持仓</span></a>
     </li>
     <li class="sep" aria-hidden="true">/</li>
     
@@ -218,8 +218,8 @@
     <path d="M2 11 C 40 11, 55 4, 90 7 S 150 3, 178 5 S 210 4, 218 3"/>
     <circle class="dot" cx="218" cy="3" r="2.6"/>
   </svg>
-  <h1 class="est-title">What Open Interest Can and Cannot Tell You</h1>
-  <p class="est-dek">The same open interest fits a dealer being flat, long, or short. Learn why OI alone cannot sign dealer inventory and what modelling fills the gap.</p>
+  <h1 class="est-title" lang="en">What Open Interest Can and Cannot Tell You</h1>
+  <p class="est-dek" lang="en">The same open interest fits a dealer being flat, long, or short. Learn why OI alone cannot sign dealer inventory and what modelling fills the gap.</p>
   <div class="est-meta">
     <span><span class="l-en">Published</span><span class="l-zh">发布</span> <span class="mono">2026-07-25</span></span>
     
@@ -228,14 +228,19 @@
 
 <div class="art-layout">
   
-  <nav class="art-toc" id="toc" aria-label="On this page">
-    <p class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></p>
-    <a href="#every-contract-has-two-sides-open-interest-hides-which-is-which">Every contract has two sides — open interest hides which is which</a><a href="#some-venues-publish-data-that-does-sign-it">Some venues publish data that does sign it</a><a href="#how-we-handle-it-here-stated-plainly">How we handle it here — stated plainly</a><a href="#what-open-interest-is-still-good-for">What open interest is still good for</a>
-  </nav>
+  <details class="art-outline" open>
+    <summary>
+      <span class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></span>
+      <span class="toc-caret" aria-hidden="true"></span>
+    </summary>
+    <nav class="art-toc" id="toc" aria-label="On this page">
+      <a href="#every-contract-has-two-sides-open-interest-hides-which-is-which" lang="en">Every contract has two sides — open interest hides which is which</a><a href="#some-venues-publish-data-that-does-sign-it" lang="en">Some venues publish data that does sign it</a><a href="#how-we-handle-it-here-stated-plainly" lang="en">How we handle it here — stated plainly</a><a href="#what-open-interest-is-still-good-for" lang="en">What open interest is still good for</a>
+    </nav>
+  </details>
   
 
   <div class="art-main">
-    <article class="est-prose">
+    <article class="est-prose" lang="en">
       <div class="callout lead">
 <span class="co-h">Learning objective</span>
 Understand exactly what open interest measures, why it cannot by itself tell you which side the dealer is on, that some venues publish exchange-tagged participant data that can, and — most importantly — that our own surfaces present dealer positioning as a model built from open interest plus heuristics, and label it as such.
@@ -392,6 +397,18 @@ Understand exactly what open interest measures, why it cannot by itself tell you
     function spy(){ var y=window.scrollY+96, act=0; hs.forEach(function(h,i){ if(h&&h.offsetTop<=y) act=i; });
       ls.forEach(function(a,i){ a.classList.toggle('active',i===act); }); }
     window.addEventListener('scroll',spy,{passive:true}); spy(); })();
+</script>
+<script>
+  /* TOC disclosure governance: one details, two regimes. Desktop rail stays
+     open (summary inert); mobile starts collapsed, user may expand. Same
+     900px boundary as the estate_css media query. */
+  (function(){ var d=document.querySelector('details.art-outline'); if(!d)return;
+    var mq=window.matchMedia('(max-width:900px)');
+    function sync(){ if(mq.matches) d.removeAttribute('open'); else d.setAttribute('open',''); }
+    if(mq.addEventListener) mq.addEventListener('change',sync);
+    else if(mq.addListener) mq.addListener(sync);
+    d.addEventListener('toggle',function(){ if(!mq.matches&&!d.open) d.setAttribute('open',''); });
+    sync(); })();
 </script>
 
 

@@ -28,6 +28,7 @@ import subprocess
 import sys
 import tempfile
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path, PurePosixPath
@@ -39,6 +40,7 @@ SCHEMA = "project_active_builds.v1"
 SOURCE_SCHEMA = "project_active_builds.source.v1"
 RECENT_MERGE_LIMIT = 50
 OPEN_PR_LIMIT = 100
+MAX_FILE_READ_CONCURRENCY = 8  # bounded subprocess reads, not another collector
 MAX_MERGED_DAYS = 90
 _PARSE_ISO_TIMESTAMP = datetime.fromisoformat
 _MERGE_STATES = frozenset(
@@ -928,35 +930,51 @@ def _collect_repository(
             "number,title,headRefName,updatedAt,isDraft,mergeStateStatus,url,body",
         ]
     )
-    if not isinstance(open_data, list):
+    if (not isinstance(open_data, list) or len(open_data) > OPEN_PR_LIMIT
+            or any(type(item) is not dict or type(item.get("number")) is not int
+                   or item["number"] <= 0 for item in open_data)):
+        return None
+    numbers = [item["number"] for item in open_data]
+    if len(numbers) != len(set(numbers)):
+        return None
+
+    def changed_files_page(item: dict[str, Any]) -> list[str] | None:
+        # `gh pr view --json files` follows GraphQL's entire file connection.
+        # Very large PRs (observed 17,430 files) can produce a false empty
+        # connection. Acquire only one bounded REST page per exact PR number.
+        files = gh_runner([
+            "api", f"repos/{spec.repository}/pulls/{item['number']}/files?per_page=100&page=1",
+            "--jq", "[.[].filename]",
+        ])
+        if (type(files) is not list or len(files) > 100
+                or any(type(path) is not str or not path for path in files)
+                or len(files) != len(set(files))):
+            return None
+        return files
+
+    # The existing Control Room permits 180 seconds for this entire three-repo
+    # refresh. Serial subprocess acquisition of the 300 bounded file pages
+    # measured 191 seconds on the actual M2 host. At most eight ephemeral
+    # workers acquire independent GETs; executor.map retains PR-list order,
+    # and any missing/bad page still fails the WHOLE snapshot closed.
+    if open_data:
+        with ThreadPoolExecutor(max_workers=min(MAX_FILE_READ_CONCURRENCY, len(open_data))) as pool:
+            file_pages = list(pool.map(changed_files_page, open_data))
+    else:
+        file_pages = []
+    if any(page is None for page in file_pages):
         return None
 
     open_prs: list[dict[str, Any]] = []
-    for item in open_data:
-        detail = gh_runner(
-            [
-                "pr",
-                "view",
-                str(item["number"]),
-                "--repo",
-                spec.repository,
-                "--json",
-                "files,mergeStateStatus,body",
-            ]
-        )
-        if not isinstance(detail, dict) or not isinstance(detail.get("files"), list):
-            return None
-        files = [
-            str(file["path"])
-            for file in detail["files"]
-            if isinstance(file, dict) and file.get("path")
-        ]
-        resolved_state = str(detail.get("mergeStateStatus") or "")
-        list_state = str(item.get("mergeStateStatus") or "UNKNOWN")
-        merge_state = resolved_state if resolved_state and resolved_state != "UNKNOWN" else list_state
+    for item, files in zip(open_data, file_pages):
+        number = item["number"]
+        # The bounded list observation is authoritative only for the fields
+        # it actually supplies. UNKNOWN merge status is retained as UNKNOWN,
+        # never inferred to be clean from a stale or second source read.
+        merge_state = str(item.get("mergeStateStatus") or "UNKNOWN")
         open_prs.append(
             {
-                "number": item["number"],
+                "number": number,
                 "url": item.get("url", ""),
                 "title": item.get("title", ""),
                 "branch": item.get("headRefName", ""),
@@ -964,8 +982,12 @@ def _collect_repository(
                 "draft": bool(item.get("isDraft", False)),
                 "merge_state": merge_state,
                 "files": files,
-                "files_truncated": len(files) >= 100,
-                "body": detail.get("body") or item.get("body") or "",
+                # An empty page does not prove zero changed files: GraphQL
+                # can report zero for exceptionally large PRs while REST
+                # still reports changed paths. Never imply complete negative
+                # collision coverage from an uncorroborated empty page.
+                "files_truncated": len(files) == 100 or len(files) == 0,
+                "body": item.get("body") or "",
             }
         )
 
