@@ -216,23 +216,31 @@ jobs:
 
           git commit -m "codex-research: loop outputs $(date -u +%F)"
 
-          # Retry-rebase push loop with --autostash (stranded-data law #1823)
-          for i in 1 2 3 4 5; do
+          # Publish through the shared policy (scripts/ci/push_retry.sh):
+          # push_do carries the publication preflight and its sticky terminal
+          # receipt, so a PENDING/UNKNOWN publication stop can never enter a
+          # second rebase/write, and push_lost keeps a lost publication RED
+          # instead of a warning-only success. Ceiling/budget preserved from
+          # the old deterministic ladder (5 attempts inside its ~90s envelope).
+          PUSH_MAX_ATTEMPTS=5
+          PUSH_BUDGET_SECS=90
+          push_retry_init "codex-research outputs"
+          while push_attempt; do
             git fetch origin main || true
             comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
                      <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
               | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if git pull --rebase --autostash origin main && push_autostash_ok && git push origin HEAD:main; then
-              echo "pushed codex outputs on attempt $i"
+            if git pull --rebase --autostash origin main && push_autostash_ok && push_do origin HEAD:main; then
+              echo "pushed codex outputs on attempt $PUSH_ATTEMPT"
+              push_won
               exit 0
             fi
-            git rebase --abort 2>/dev/null || true
-            echo "codex push attempt $i lost a race; re-syncing"
-            sleep $((i * 7))
+            push_abort_rebase
+            push_backoff
           done
-
-          echo "could not push codex outputs after 5 attempts (non-fatal)"
-          exit 0
+          push_lost
+          echo "::error title=codex-research NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — the codex_lane/signal_foundry outputs commit exists only on the runner and is discarded by the next clean checkout; re-run this workflow"
+          exit 1
 
       - name: summary
         if: always()

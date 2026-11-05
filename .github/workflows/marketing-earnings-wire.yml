@@ -90,6 +90,9 @@ concurrency:
 
 jobs:
   earnings:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest      # OFF the render path — never the macstudio pool
     timeout-minutes: 10
     steps:
@@ -232,19 +235,29 @@ jobs:
             exit 0
           fi
           git commit -m "marketing-earnings: queued $(date -u +%FT%H:%MZ) [skip ci]"
-          for i in 1 2 3 4 5; do
+          # Publish through the shared policy (scripts/ci/push_retry.sh):
+          # push_do carries the publication preflight and its sticky terminal
+          # receipt, so a PENDING/UNKNOWN publication stop can never enter a
+          # second rebase/write, and push_lost keeps a lost publication RED
+          # instead of a warning-only success. Ceiling/budget preserved from
+          # the old deterministic ladder (5 attempts inside its ~90s envelope).
+          PUSH_MAX_ATTEMPTS=5
+          PUSH_BUDGET_SECS=90
+          push_retry_init "marketing-earnings-wire"
+          while push_attempt; do
             # --depth 20 mirrors the other marketing lanes: the checkout is
             # shallow, so `pull --rebase` needs deepening to find a merge base
             # once main advances mid-run. The outbox ledgers carry merge=union,
             # so a concurrent append resolves instead of conflicting.
             git fetch --depth 20 origin main || true
-            if git pull --rebase --autostash origin main && push_autostash_ok && git push origin HEAD:main; then
-              echo "marketing-earnings-wire: pushed on attempt $i"
+            if git pull --rebase --autostash origin main && push_autostash_ok && push_do origin HEAD:main; then
+              echo "marketing-earnings-wire: pushed on attempt $PUSH_ATTEMPT"
+              push_won
               exit 0
             fi
-            git rebase --abort 2>/dev/null || true
-            echo "marketing-earnings-wire: push attempt $i lost a race; re-syncing"
-            sleep $((i * 7))
+            push_abort_rebase
+            push_backoff
           done
-          echo "::warning title=marketing-earnings-wire::could not push after 5 attempts (non-fatal)"
-          exit 0
+          push_lost
+          echo "::error title=marketing-earnings-wire NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — the queued earnings posts commit exists only on the runner and is discarded by the next clean checkout; re-run this workflow"
+          exit 1

@@ -17,6 +17,9 @@ concurrency:
 
 jobs:
   seo-audit:
+    permissions:
+      contents: write
+      pull-requests: write
     # Gate: manual dispatch always runs; scheduled runs only when var is true.
     # Unset var = off / dark (safe default — won't run on first deploy until operator enables).
     if: github.event_name == 'workflow_dispatch' || vars.SEO_DIRECTOR_ENABLED == 'true'
@@ -83,24 +86,32 @@ jobs:
 
           git commit -m "seo-director: weekly audit $(date -u +%F)"
 
-          # Retry-rebase push loop with --autostash (mirrors codex-research.yml push mechanics).
-          for i in 1 2 3 4 5; do
+          # Publish through the shared policy (scripts/ci/push_retry.sh):
+          # push_do carries the publication preflight and its sticky terminal
+          # receipt, so a PENDING/UNKNOWN publication stop can never enter a
+          # second rebase/write, and push_lost keeps a lost publication RED
+          # instead of a warning-only success. Ceiling/budget preserved from
+          # the old deterministic ladder (5 attempts inside its ~90s envelope).
+          PUSH_MAX_ATTEMPTS=5
+          PUSH_BUDGET_SECS=90
+          push_retry_init "seo-director audit artifacts"
+          while push_attempt; do
             git fetch origin main || true
             # Remove any untracked files that shadow origin/main paths (stranded-data guard).
             comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
                      <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
               | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if git pull --rebase --autostash origin main && push_autostash_ok && git push origin HEAD:main; then
-              echo "seo-director: pushed audit artifacts on attempt $i"
+            if git pull --rebase --autostash origin main && push_autostash_ok && push_do origin HEAD:main; then
+              echo "seo-director: pushed audit artifacts on attempt $PUSH_ATTEMPT"
+              push_won
               exit 0
             fi
-            git rebase --abort 2>/dev/null || true
-            echo "seo-director: push attempt $i lost a race; re-syncing"
-            sleep $((i * 7))
+            push_abort_rebase
+            push_backoff
           done
-
-          echo "::warning::seo-director: could not push audit artifacts after 5 attempts (non-fatal)"
-          exit 0
+          push_lost
+          echo "::error title=seo-director NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — the seo audit artifacts commit exists only on the runner and is discarded by the next clean checkout; re-run this workflow"
+          exit 1
 
       - name: summary
         if: always()

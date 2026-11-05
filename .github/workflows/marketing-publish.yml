@@ -143,6 +143,9 @@ jobs:
           --delivery-readback-item "$DELIVERY_READBACK_ITEM"
 
   publish:
+    permissions:
+      contents: write
+      pull-requests: write
     # Readback is a separate permission-bounded job. A readback dispatch cannot
     # enter sender, recall, batch telemetry, ledger commit, or liveness steps.
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.delivery_readback_item == '' }}
@@ -427,10 +430,16 @@ jobs:
 
           git commit -m "marketing-publish: outbox run $(date -u +%FT%H:%MZ) [skip ci]"
 
-          # Retry-rebase push loop to tolerate races with the nightly/other lanes
-          # (mirrors seo-director.yml push mechanics). --autostash parks nothing
-          # here since everything is already committed above.
-          for i in 1 2 3 4 5; do
+          # Publish through the shared policy (scripts/ci/push_retry.sh):
+          # push_do carries the publication preflight and its sticky terminal
+          # receipt, so a PENDING/UNKNOWN publication stop can never enter a
+          # second rebase/write, and push_lost keeps a lost publication RED
+          # instead of a warning-only success. Ceiling/budget preserved from
+          # the old deterministic ladder (5 attempts inside its ~90s envelope).
+          PUSH_MAX_ATTEMPTS=5
+          PUSH_BUDGET_SECS=90
+          push_retry_init "marketing-publish"
+          while push_attempt; do
             # --depth 20: the checkout is shallow, so a bare fetch would leave
             # `pull --rebase` without a merge base once main advances. 20 covers
             # any realistic mid-run drift; the ledgers themselves carry
@@ -444,17 +453,17 @@ jobs:
             comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
                      <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
               | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if git pull --rebase --autostash origin main && push_autostash_ok && git push origin HEAD:main; then
-              echo "marketing-publish: pushed ledger on attempt $i"
+            if git pull --rebase --autostash origin main && push_autostash_ok && push_do origin HEAD:main; then
+              echo "marketing-publish: pushed ledger on attempt $PUSH_ATTEMPT"
+              push_won
               exit 0
             fi
-            git rebase --abort 2>/dev/null || true
-            echo "marketing-publish: push attempt $i lost a race; re-syncing"
-            sleep $((i * 7))
+            push_abort_rebase
+            push_backoff
           done
-
-          echo "::warning::marketing-publish: could not push ledger after 5 attempts (non-fatal)"
-          exit 0
+          push_lost
+          echo "::error title=marketing-publish NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — the outbox ledger commit exists only on the runner and is discarded by the next clean checkout; re-run this workflow"
+          exit 1
 
       - name: liveness tripwire
         # THE OBSERVER FOR "NOTHING CAME OUT". 2026-08-06 Buffer's plan locked

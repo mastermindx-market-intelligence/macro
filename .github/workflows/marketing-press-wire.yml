@@ -73,6 +73,10 @@ concurrency:
 
 jobs:
   wire:
+    permissions:
+      contents: write
+      actions: write
+      pull-requests: write
     runs-on: ubuntu-latest      # OFF the render path — never the macstudio pool
     # A pass is ~1 min. 10 is head-room for a slow mirror fetch (the CNN archive
     # is ~19 MB on its 6-hourly conditional GET), the LLM summarize call and the
@@ -269,7 +273,16 @@ jobs:
           # outbox paths. items.jsonl, spend.jsonl and seen_ring.jsonl all carry
           # merge=union (.gitattributes) so a concurrent append resolves instead
           # of conflicting the loop to death.
-          for i in 1 2 3 4 5; do
+          # Publish through the shared policy (scripts/ci/push_retry.sh):
+          # push_do carries the publication preflight and its sticky terminal
+          # receipt, so a PENDING/UNKNOWN publication stop can never enter a
+          # second rebase/write, and push_lost keeps a lost publication RED
+          # instead of a warning-only success. Ceiling/budget preserved from
+          # the old deterministic ladder (5 attempts inside its ~90s envelope).
+          PUSH_MAX_ATTEMPTS=5
+          PUSH_BUDGET_SECS=90
+          push_retry_init "marketing-press-wire"
+          while push_attempt; do
             # --depth 20: the checkout is shallow, so a bare fetch would leave
             # `pull --rebase` without a merge base once main advanced mid-run.
             git fetch --depth 20 origin main || true
@@ -279,15 +292,16 @@ jobs:
             comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
                      <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
               | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if git pull --rebase --autostash origin main && push_autostash_ok && git push origin HEAD:main; then
-              echo "marketing-press-wire: pushed state on attempt $i"
+            if git pull --rebase --autostash origin main && push_autostash_ok && push_do origin HEAD:main; then
+              echo "marketing-press-wire: pushed state on attempt $PUSH_ATTEMPT"
               echo "pushed=true" >> "$GITHUB_OUTPUT"
+              push_won
               exit 0
             fi
-            git rebase --abort 2>/dev/null || true
-            echo "marketing-press-wire: push attempt $i lost a race; re-syncing"
-            sleep $((i * 7))
+            push_abort_rebase
+            push_backoff
           done
+          push_lost
 
           # TERMINAL PUSH FAILURE IS A RED RUN, NOT A WARNING. Exiting 0 here made
           # a persistent push outage invisible: every */5 run went green while

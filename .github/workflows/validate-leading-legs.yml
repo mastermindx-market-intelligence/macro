@@ -19,6 +19,9 @@ concurrency:
 
 jobs:
   validate:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: [self-hosted, macstudio]
     timeout-minutes: 60
     steps:
@@ -71,9 +74,24 @@ jobs:
                      reports/index-reconstitution-validation.md 2>/dev/null || true
           if git diff --cached --quiet; then echo "no gate changes"; exit 0; fi
           git commit -m "validate: refresh leading-leg gates $(date -u +%F)"
-          for i in 1 2 3; do
-            if git pull --rebase -X theirs origin main && git push; then exit 0; fi
-            git rebase --abort 2>/dev/null || true
-            sleep $((i * 7))
+          # Publish through the shared policy (scripts/ci/push_retry.sh):
+          # push_do carries the publication preflight and its sticky terminal
+          # receipt, so a PENDING/UNKNOWN publication stop can never enter a
+          # second rebase/write, and push_lost keeps a lost publication RED
+          # instead of a warning-only success. Ceiling/budget preserved from
+          # the old ladder (3 attempts inside ~45s).
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+          PUSH_MAX_ATTEMPTS=3
+          PUSH_BUDGET_SECS=45
+          push_retry_init "leading-leg gate refresh"
+          while push_attempt; do
+            if git pull --rebase -X theirs origin main && push_do; then
+              push_won
+              exit 0
+            fi
+            push_abort_rebase
+            push_backoff
           done
-          echo "::warning::could not push gate refresh (non-fatal)"
+          push_lost
+          echo "::error title=validate-leading-legs NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — the gate refresh commit exists only on the runner and is discarded by the next clean checkout; re-run this workflow"
+          exit 1

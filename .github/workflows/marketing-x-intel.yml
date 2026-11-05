@@ -104,6 +104,9 @@ concurrency:
 
 jobs:
   harvest:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest      # OFF the render path — never the macstudio pool
     # A full 17-account pass is ~20 requests at a 15s timeout each, plus the
     # analysis (pure arithmetic over a few thousand rows). 15m is generous.
@@ -228,18 +231,27 @@ jobs:
           # (.gitattributes) so a concurrent append from any other lane resolves
           # instead of conflicting this loop to death; the JSON documents beside
           # it have a single writer (this concurrency group) and last-wins.
-          for i in 1 2 3 4 5; do
+          # Publish through the shared policy (scripts/ci/push_retry.sh):
+          # push_do carries the publication preflight and its sticky terminal
+          # receipt, so a PENDING/UNKNOWN publication stop can never enter a
+          # second rebase/write, and push_lost keeps a lost publication RED
+          # instead of a warning-only success. Ceiling/budget preserved from
+          # the old deterministic ladder (5 attempts inside its ~90s envelope).
+          PUSH_MAX_ATTEMPTS=5
+          PUSH_BUDGET_SECS=90
+          push_retry_init "marketing-x-intel corpus"
+          while push_attempt; do
             # --depth 20: the checkout is shallow, so a bare fetch would leave
             # `pull --rebase` without a merge base once main advanced mid-run.
             git fetch --depth 20 origin main || true
-            if git pull --rebase --autostash origin main && push_autostash_ok && git push origin HEAD:main; then
-              echo "marketing-x-intel: pushed on attempt $i"
+            if git pull --rebase --autostash origin main && push_autostash_ok && push_do origin HEAD:main; then
+              echo "marketing-x-intel: pushed on attempt $PUSH_ATTEMPT"
+              push_won
               exit 0
             fi
-            git rebase --abort 2>/dev/null || true
-            echo "marketing-x-intel: push attempt $i lost a race; re-syncing"
-            sleep $((i * 7))
+            push_abort_rebase
+            push_backoff
           done
-
-          echo "::warning::marketing-x-intel: could not push the corpus after 5 attempts (non-fatal; next week's run re-harvests)"
-          exit 0
+          push_lost
+          echo "::error title=marketing-x-intel NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — the corpus/report/state commit exists only on the runner and is discarded by the next clean checkout (next scheduled run re-harvests); re-run this workflow"
+          exit 1

@@ -26,6 +26,9 @@ concurrency:
 
 jobs:
   weekly-cycle:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: [self-hosted, macstudio]
     timeout-minutes: 45
     steps:
@@ -93,8 +96,16 @@ jobs:
 
           git commit -m "foundry: weekly cycle $(date -u +%F)"
 
-          # Retry-rebase push loop with --autostash (stranded-data law #1823)
-          for i in 1 2 3 4 5; do
+          # Publish through the shared policy (scripts/ci/push_retry.sh):
+          # push_do carries the publication preflight and its sticky terminal
+          # receipt, so a PENDING/UNKNOWN publication stop can never enter a
+          # second rebase/write, and push_lost keeps a lost publication RED
+          # instead of a warning-only success. Ceiling/budget preserved from
+          # the old deterministic ladder (5 attempts inside its ~90s envelope).
+          PUSH_MAX_ATTEMPTS=5
+          PUSH_BUDGET_SECS=90
+          push_retry_init "signal-foundry outputs"
+          while push_attempt; do
             # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can
             # TRACK a path this job wrote as an UNTRACKED side-effect — the rebase checkout then
             # refuses ("untracked working tree files would be overwritten") and --autostash can't
@@ -107,14 +118,14 @@ jobs:
             comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
                      <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
               | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if git pull --rebase --autostash origin main && push_autostash_ok && git push; then
-              echo "pushed foundry outputs on attempt $i"
+            if git pull --rebase --autostash origin main && push_autostash_ok && push_do; then
+              echo "pushed foundry outputs on attempt $PUSH_ATTEMPT"
+              push_won
               exit 0
             fi
-            git rebase --abort 2>/dev/null || true
-            echo "foundry push attempt $i lost a race; re-syncing"
-            sleep $((i * 7))
+            push_abort_rebase
+            push_backoff
           done
-
-          echo "could not push foundry outputs after 5 attempts (non-fatal)"
-          exit 0
+          push_lost
+          echo "::error title=signal-foundry NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — the foundry outputs commit exists only on the runner and is discarded by the next clean checkout; re-run this workflow"
+          exit 1

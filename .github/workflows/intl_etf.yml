@@ -20,6 +20,9 @@ concurrency:
 
 jobs:
   collect-intl-etf:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: [self-hosted, macstudio]
     timeout-minutes: 30     # 23 tickers × yfinance — should finish in <5 min; 30 min guard
     steps:
@@ -71,14 +74,24 @@ jobs:
           fi
           git commit -m "data(intl_etf): weekly substrate refresh $(date -u +%F)"
           # Rebase-retry loop: a concurrent push (e.g. daily closing up at the same
-          # time) must not permanently fail this job.
-          for i in 1 2 3 4 5; do
-            if git pull --rebase -X theirs origin main && push_autostash_ok && git push; then
-              echo "pushed intl_etf data on attempt $i"
+          # time) must not permanently fail this job. Publish through the shared
+          # policy (scripts/ci/push_retry.sh): push_do carries the publication
+          # preflight and its sticky terminal receipt, so a PENDING/UNKNOWN
+          # publication stop can never enter a second rebase/write, and push_lost
+          # keeps a lost publication RED instead of a warning-only success.
+          # Ceiling/budget preserved from the old ladder (5 attempts inside ~60s).
+          PUSH_MAX_ATTEMPTS=5
+          PUSH_BUDGET_SECS=60
+          push_retry_init "intl-etf data"
+          while push_attempt; do
+            if git pull --rebase -X theirs origin main && push_autostash_ok && push_do; then
+              echo "pushed intl_etf data on attempt $PUSH_ATTEMPT"
+              push_won
               exit 0
             fi
-            git rebase --abort 2>/dev/null || true
-            echo "push attempt $i lost a race; re-syncing"
-            sleep $((i * 5))
+            push_abort_rebase
+            push_backoff
           done
-          echo "::warning::could not push intl_etf data after 5 attempts (non-fatal)"
+          push_lost
+          echo "::error title=intl-etf NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — the weekly substrate refresh commit exists only on the runner and is discarded by the next clean checkout; re-run this workflow"
+          exit 1

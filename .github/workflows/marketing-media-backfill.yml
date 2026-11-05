@@ -65,6 +65,9 @@ concurrency:
 
 jobs:
   backfill:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest    # OFF the render path — never the macstudio pool
     timeout-minutes: 30
     steps:
@@ -136,19 +139,29 @@ jobs:
             exit 0
           fi
           git commit -m "marketing-media-backfill: recovered chart URLs $(date -u +%FT%H:%MZ) [skip ci]"
-          for i in 1 2 3 4 5; do
+          # Publish through the shared policy (scripts/ci/push_retry.sh):
+          # push_do carries the publication preflight and its sticky terminal
+          # receipt, so a PENDING/UNKNOWN publication stop can never enter a
+          # second rebase/write, and push_lost keeps a lost publication RED
+          # instead of a warning-only success. Ceiling/budget preserved from
+          # the old deterministic ladder (5 attempts inside its ~90s envelope).
+          PUSH_MAX_ATTEMPTS=5
+          PUSH_BUDGET_SECS=90
+          push_retry_init "marketing-media-backfill"
+          while push_attempt; do
             # --depth 20 mirrors marketing-publish.yml: the checkout is shallow,
             # so `pull --rebase` needs deepening to find a merge base once main
             # advances mid-run. The sidecar carries merge=union, so a concurrent
             # append resolves instead of conflicting.
             git fetch --depth 20 origin main || true
-            if git pull --rebase --autostash origin main && push_autostash_ok && git push origin HEAD:main; then
-              echo "marketing-media-backfill: pushed on attempt $i"
+            if git pull --rebase --autostash origin main && push_autostash_ok && push_do origin HEAD:main; then
+              echo "marketing-media-backfill: pushed on attempt $PUSH_ATTEMPT"
+              push_won
               exit 0
             fi
-            git rebase --abort 2>/dev/null || true
-            echo "marketing-media-backfill: push attempt $i lost a race; re-syncing"
-            sleep $((i * 7))
+            push_abort_rebase
+            push_backoff
           done
-          echo "::warning::marketing-media-backfill: could not push after 5 attempts (non-fatal)"
-          exit 0
+          push_lost
+          echo "::error title=marketing-media-backfill NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — the recovered-URL sidecar commit exists only on the runner and is discarded by the next clean checkout; re-run this workflow"
+          exit 1

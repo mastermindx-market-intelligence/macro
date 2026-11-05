@@ -14,6 +14,9 @@ concurrency:
 
 jobs:
   reconcile:
+    permissions:
+      contents: write
+      pull-requests: write
     # intraday-fastpath used to carry this canonical repair every 30 minutes.
     # After VPS cutover retain one local reconciliation pass without making the
     # VPS a second writer for regime/market-state/reflex ledgers.
@@ -41,11 +44,24 @@ jobs:
           git clean -fdq data/ 2>/dev/null || true
           if git diff --cached --quiet; then echo "canonical regime pointer already fresh"; exit 0; fi
           git commit -m "repair: reconcile stale regime pointer $(date -u +%FT%H:%MZ)"
-          for i in 1 2 3 4 5; do
-            if git pull --rebase -X theirs origin main && git push; then echo "pushed (attempt $i)"; exit 0; fi
-            git rebase --abort 2>/dev/null || true
-            echo "push attempt $i lost a race"
-            sleep $((i * 5))
+          # Publish through the shared policy (scripts/ci/push_retry.sh):
+          # push_do carries the publication preflight and its sticky terminal
+          # receipt, so a PENDING/UNKNOWN publication stop can never enter a
+          # second rebase/write. Ceiling/budget preserved from the old ladder
+          # (5 attempts inside ~60s).
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+          PUSH_MAX_ATTEMPTS=5
+          PUSH_BUDGET_SECS=60
+          push_retry_init "canonical regime repair"
+          while push_attempt; do
+            if git pull --rebase -X theirs origin main && push_do; then
+              echo "pushed (attempt $PUSH_ATTEMPT)"
+              push_won
+              exit 0
+            fi
+            push_abort_rebase
+            push_backoff
           done
-          echo "::error::could not push canonical regime repair after 5 attempts"
+          push_lost
+          echo "::error::could not push canonical regime repair after $PUSH_ATTEMPT attempts ($PUSH_STOP)"
           exit 1

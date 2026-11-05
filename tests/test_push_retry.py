@@ -3077,3 +3077,632 @@ def test_commodity_workflow_uses_shared_publication_completion(tmp_path, publica
     )
     assert result.returncode == (75 if publication_pending else 0), (result.stdout, result.stderr)
     assert log.read_text().splitlines() == ["pull", "publication"]
+
+
+# ---------------------------------------------------------------------------
+# 13. Caller adoption — the enabled automatic main publishers (2026-11-05
+#     caller-adoption lane) route their ACTUAL publication through push_do
+#     inside the shared retry policy. Two layers, matching the sections above:
+#
+#     * structural, derived from the shipped workflows: a lane that regresses
+#       to a bare `git push`, drops the retry wiring, or loses its red give-up
+#       tail goes red here — no allow-list of known-good blobs;
+#     * executed: the shipped step/function bodies run in temporary fake-runner
+#       repositories against fake provider commands, so a PENDING/UNKNOWN
+#       terminal receipt (PUSH_TERMINAL_RC=75 from push_do's publication
+#       preflight) provably cannot enter a second rebase/write, a GH001
+#       permission rejection provably cannot retry, and the preserved
+#       destination args still land over a racing commit.
+#     The central native publication adapter is separately owned; these tests
+#     stub the preflight exit code it will set and never touch its code.
+# ---------------------------------------------------------------------------
+
+# lane -> (job, step name, the exact preserved push_do publication call,
+#          attempt ceiling, wall-clock budget) — ceilings/budgets carried over
+#          from each lane's own previous ladder.
+_CALLER_ADOPTION_PUBLISHERS = {
+    "codex-research.yml": (
+        "research-loop", "narrow commit and push (codex_lane + sf stores only)",
+        "push_do origin HEAD:main", 5, 90),
+    "marketing-earnings-wire.yml": (
+        "earnings", "commit queued earnings posts (no-op when nothing changed)",
+        "push_do origin HEAD:main", 5, 90),
+    "marketing-hot-tape.yml": (
+        "radar", "run the radar (session-long, one pass every PASS_INTERVAL_S)",
+        "push_do origin HEAD:main", 5, 90),
+    "marketing-media-backfill.yml": (
+        "backfill", "commit recovered URLs (no-op when nothing changed)",
+        "push_do origin HEAD:main", 5, 90),
+    "marketing-press-wire.yml": (
+        "wire", "commit press-wire state (no-op when nothing changed)",
+        "push_do origin HEAD:main", 5, 90),
+    "marketing-publish.yml": (
+        "publish", "commit changed outbox ledgers (no-op when nothing changed)",
+        "push_do origin HEAD:main", 5, 90),
+    "marketing-x-intel.yml": (
+        "harvest", "commit corpus + report + state (no-op when nothing changed)",
+        "push_do origin HEAD:main", 5, 90),
+    "seo-director.yml": (
+        "seo-audit", "commit data/marketing/seo artifacts",
+        "push_do origin HEAD:main", 5, 90),
+    "cortex-retry.yml": (
+        "cortex-retry", "commit cortex retry outputs", "push_do", 5, 90),
+    "intl_etf.yml": (
+        "collect-intl-etf", "commit intl-etf data", "push_do", 5, 60),
+    "regime-self-heal.yml": (
+        "reconcile", "commit only canonical repair artifacts", "push_do", 5, 60),
+    "sentinel.yml": (
+        "flash-crash", "rebuild vector + hub and commit (only on flash-state change)",
+        "push_do", 5, 90),
+    "signal-foundry.yml": (
+        "weekly-cycle", "narrow commit and push (signal_foundry + trial_ledger only)",
+        "push_do", 5, 90),
+    "special-sits-backfill.yml": (
+        "backfill", "commit", "push_do", 5, 90),
+    "validate-leading-legs.yml": (
+        "validate", "commit gates + reports", "push_do", 3, 45),
+    "whitehouse-sentinel.yml": (
+        "monitor", "commit + push (only on change)", "push_do", 5, 90),
+}
+
+# The pre-adoption least-privilege permissions state, pinned so the adoption
+# cannot accidentally widen (or strip) a grant. codex-research keeps
+# pull-requests: write for its existing same-repo draft-PR intent (CRX-R6);
+# hot-tape/press-wire keep actions: write for the publisher dispatch; the
+# zero-mutation delivery-readback job keeps its read-only override.
+_CALLER_ADOPTION_WORKFLOW_PERMISSIONS = {
+    "codex-research.yml": {"contents": "write", "pull-requests": "write"},
+    "marketing-earnings-wire.yml": {"contents": "write"},
+    "marketing-hot-tape.yml": {"contents": "write", "actions": "write"},
+    "marketing-media-backfill.yml": {"contents": "write"},
+    "marketing-press-wire.yml": {"contents": "write", "actions": "write"},
+    "marketing-publish.yml": {"contents": "write"},
+    "marketing-x-intel.yml": {"contents": "write"},
+    "seo-director.yml": {"contents": "write"},
+    "cortex-retry.yml": {"contents": "write"},
+    "intl_etf.yml": {"contents": "write"},
+    "regime-self-heal.yml": {"contents": "write"},
+    "sentinel.yml": {"contents": "write"},
+    "signal-foundry.yml": {"contents": "write"},
+    "special-sits-backfill.yml": {"contents": "write"},
+    "validate-leading-legs.yml": {"contents": "write"},
+    "whitehouse-sentinel.yml": {"contents": "write"},
+}
+_CALLER_ADOPTION_JOB_PERMISSIONS = {
+    "marketing-publish.yml": {"delivery-readback": {"contents": "read"}},
+}
+
+
+def _caller_step(lane: str) -> dict:
+    job, step_name, _dest, _attempts, _budget = _CALLER_ADOPTION_PUBLISHERS[lane]
+    doc = yaml.safe_load((WORKFLOW_DIR / lane).read_text())
+    return next(
+        s for s in doc["jobs"][job]["steps"] if s.get("name") == step_name
+    )
+
+
+@pytest.mark.parametrize("lane", sorted(_CALLER_ADOPTION_PUBLISHERS))
+def test_caller_adoption_routes_publication_through_push_do(lane):
+    """Every enabled automatic main publisher publishes ONLY through push_do,
+    inside the shared retry loop, with a red give-up tail — never a bare
+    `git push` and never a warning-only success after losing the retries."""
+    _job, _step_name, dest, attempts, budget = _CALLER_ADOPTION_PUBLISHERS[lane]
+    code = _shell_code(_caller_step(lane)["run"])
+    # exactly ONE publication call site, through push_do, with the lane's
+    # preserved destination args (origin HEAD:main for the HEAD publishers;
+    # the no-argument bare push for the simple data publishers)
+    assert code.count("push_do") == 1, f"{lane}: publication must be one push_do call"
+    assert dest in code, f"{lane}: preserved destination args lost"
+    assert not re.search(r"\bgit push\b", code), (
+        f"{lane}: a bare git push survived outside push_do"
+    )
+    # ceiling and budget are the lane's own, set BEFORE the policy init
+    init = code.index("push_retry_init")
+    assert f"PUSH_MAX_ATTEMPTS={attempts}" in code[:init], lane
+    assert f"PUSH_BUDGET_SECS={budget}" in code[:init], lane
+    # the shared loop wiring: init → while push_attempt → abort/backoff → lost
+    assert code.count("while push_attempt; do") == 1, lane
+    loop_start = code.index("while push_attempt; do")
+    lost = code.index("push_lost")
+    assert code.index(dest) > loop_start, f"{lane}: publication is outside the retry loop"
+    loop_body = code[loop_start:lost]
+    assert "push_abort_rebase" in loop_body and "push_backoff" in loop_body, lane
+    # a lost publication is RED, never a warning-only success. marketing-hot-tape
+    # is the session lane: its loss tail returns 1 (the pass is not a success and
+    # the publisher dispatch is skipped); the red ::error tails live on the
+    # terminal path and on the next pass's sticky stop.
+    tail = code[lost:]
+    if lane == "marketing-hot-tape.yml":
+        assert "return 1" in tail and "HOT_TAPE_PUBLISH_STOPPED=" in tail, lane
+    else:
+        assert "::error" in tail, f"{lane}: a lost publication must be a red ::error"
+        assert "exit 1" in tail, f"{lane}: the give-up tail must fail the step"
+    # callers carry no queue/controller/native-adapter code
+    assert "native_publication" not in code and "gh pr create" not in code, lane
+
+
+def test_caller_adoption_publisher_job_permissions_preserve_inherited_grants():
+    """Only actual publisher jobs gain PR creation; inherited grants survive."""
+    for lane, expected in _CALLER_ADOPTION_WORKFLOW_PERMISSIONS.items():
+        doc = yaml.safe_load((WORKFLOW_DIR / lane).read_text())
+        assert (doc.get("permissions") or {}) == expected
+        publisher_job = _CALLER_ADOPTION_PUBLISHERS[lane][0]
+        wanted = {**expected, "pull-requests": "write"}
+        actual = doc["jobs"][publisher_job].get("permissions", expected)
+        assert actual == wanted, f"{lane}:{publisher_job}: publisher grants differ"
+        for name, job in doc["jobs"].items():
+            if name == publisher_job:
+                continue
+            expected_override = _CALLER_ADOPTION_JOB_PERMISSIONS.get(lane, {}).get(name)
+            if expected_override is None:
+                assert "permissions" not in job
+            else:
+                assert job.get("permissions") == expected_override
+
+
+def test_caller_adoption_hot_tape_session_stop_is_sticky_before_reinit():
+    """marketing-hot-tape re-enters commit_and_push every pass; a fresh
+    push_retry_init would CLEAR the sticky terminal receipt and let a later
+    pass re-enter the rebase/push. The session flag must gate the function
+    BEFORE the policy init, and only a terminal push_lost may set it."""
+    body = _lane_block(
+        "marketing-hot-tape.yml",
+        _CALLER_ADOPTION_PUBLISHERS["marketing-hot-tape.yml"][1],
+        {},
+    )
+    code = _shell_code(body)
+    flag_decl = code.index('HOT_TAPE_PUBLISH_STOPPED=""')
+    guard = code.index('if [ -n "${HOT_TAPE_PUBLISH_STOPPED:-}" ]')
+    init = code.index("push_retry_init")
+    assert flag_decl < guard < init, "the sticky stop must gate before a new init"
+    assert "push_lost || HOT_TAPE_PUBLISH_STOPPED=" in code, (
+        "only a terminal push_lost may stop the session"
+    )
+
+
+# --- executed: the shipped blocks in temporary fake-runner repositories -----
+
+
+def _caller_py_stub(stub: Path, qledger_publish_rc: int) -> None:
+    """python/python3 stand-ins: the real publication preflight is replaced by
+    the exit code the caller must treat as authoritative. rc != 0 ONLY for the
+    publish-candidate boundary — the pre-rebase boundary stays healthy."""
+    for name in ("python", "python3"):
+        (stub / name).write_text(
+            "#!/usr/bin/env bash\n"
+            'case "$*" in\n'
+            f"  *qledger_publication*publish-candidate*) exit {qledger_publish_rc} ;;\n"
+            "esac\n"
+            "exit 0\n"
+        )
+        (stub / name).chmod(0o755)
+
+
+def _caller_git_wrapper(stub: Path, log: Path, *, gh001: bool = False,
+                        reject_pushes: int = 0) -> None:
+    """A transparent git wrapper that records every command line, and can
+    either reject pushes with a GH001 size rejection (terminal) or drop the
+    first N pushes as ref-lock contention (retryable)."""
+    real_git = subprocess.run(
+        ["which", "git"], capture_output=True, text=True, check=True
+    ).stdout.strip()
+    body = f"printf '%s\\n' \"$*\" >> {shlex.quote(str(log))}\n"
+    if gh001:
+        body += (
+            'if [ "$1" = "push" ]; then\n'
+            "  echo 'remote: error: GH001: file exceeds the 100 MB size limit' >&2\n"
+            "  exit 128\n"
+            "fi\n"
+        )
+    if reject_pushes:
+        counter = log.parent / "push-reject-count"
+        counter.write_text("0")
+        body += (
+            'if [ "$1" = "push" ]; then\n'
+            f"  n=$(cat {shlex.quote(str(counter))}); n=$((n+1)); echo \"$n\" > {shlex.quote(str(counter))}\n"
+            f'  if [ "$n" -le {reject_pushes} ]; then\n'
+            "    echo \" ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main')\" >&2\n"
+            "    exit 1\n"
+            "  fi\n"
+            "fi\n"
+        )
+    body += f"exec {shlex.quote(real_git)} \"$@\"\n"
+    (stub / "git").write_text("#!/usr/bin/env bash\n" + body)
+    (stub / "git").chmod(0o755)
+
+
+def _caller_fixture(
+    tmp_path: Path, tracked: dict, dirty: dict, *, racing: bool = True
+) -> tuple[Path, Path]:
+    """A bare origin + a lane clone holding the lane's fresh output, plus a
+    racing lane already on main so the first push is stale."""
+    bare = tmp_path / "origin.git"
+    subprocess.run(["git", "init", "-q", "--bare", "-b", "main", str(bare)], check=True)
+    seed = tmp_path / "seed"
+    _init_repo(seed)
+    for rel, body_text in tracked.items():
+        target = seed / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(body_text)
+    _git_output(seed, "add", ".")
+    _git_output(seed, "commit", "-qm", "seed")
+    _git_output(seed, "push", "-q", str(bare), "main")
+    lane = tmp_path / "lane"
+    subprocess.run(["git", "clone", "-q", str(bare), str(lane)], check=True)
+    _git_output(lane, "config", "user.email", "t@t")
+    _git_output(lane, "config", "user.name", "t")
+    for rel, body_text in dirty.items():
+        target = lane / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(body_text)
+    if racing:
+        other = tmp_path / "other"
+        subprocess.run(["git", "clone", "-q", str(bare), str(other)], check=True)
+        _git_output(other, "config", "user.email", "t@t")
+        _git_output(other, "config", "user.name", "t")
+        (other / "other.txt").write_text("racing lane")
+        _git_output(other, "add", ".")
+        _git_output(other, "commit", "-qm", "other lane")
+        _git_output(other, "push", "-q", "origin", "main")
+    return bare, lane
+
+
+def _run_caller_step(block: str, lane: Path, stub: Path, workdir: Path) -> subprocess.CompletedProcess:
+    """Run the shipped shell under GitHub's `bash -e` with no real sleeping."""
+    env = {
+        **os.environ,
+        "PATH": f"{stub}:{os.environ['PATH']}",
+        "GITHUB_WORKSPACE": str(REPO_ROOT),
+        "GITHUB_STEP_SUMMARY": str(workdir / "summary.md"),
+        "GITHUB_OUTPUT": str(workdir / "output.txt"),
+        "GITHUB_ACTIONS": "true",
+    }
+    (workdir / "summary.md").touch()
+    (workdir / "output.txt").touch()
+    return subprocess.run(
+        ["bash", "-eo", "pipefail", "-c", "sleep() { :; }\n" + block],
+        cwd=str(lane), capture_output=True, text=True, env=env,
+    )
+
+
+def _caller_git_calls(log: Path) -> list[str]:
+    return [ln for ln in log.read_text().splitlines() if ln]
+
+
+def test_caller_adoption_marketing_publish_lands_over_a_race(tmp_path):
+    """The shipped marketing block, executed: one publication call through
+    push_do, the racing lane preserved, and one lost ref-lock retried to a
+    landing (the old loop's job) with the push_won summary wired."""
+    tracked = {"data/marketing/outbox/items.jsonl": '{"rows": 0}\n'}
+    dirty = {"data/marketing/outbox/items.jsonl": '{"rows": 3}\n'}
+    block = _lane_block(
+        "marketing-publish.yml",
+        _CALLER_ADOPTION_PUBLISHERS["marketing-publish.yml"][1],
+        {},
+    )
+    for rejects in (0, 1):
+        work = tmp_path / f"rejects-{rejects}"
+        work.mkdir()
+        bare, lane = _caller_fixture(work, tracked, dirty)
+        stub = work / "bin"
+        stub.mkdir()
+        _caller_py_stub(stub, 0)
+        log = work / "git-calls.log"
+        _caller_git_wrapper(stub, log, reject_pushes=rejects)
+        r = _run_caller_step(block, lane, stub, work)
+        combined = r.stdout + r.stderr
+        assert r.returncode == 0, combined
+        pushes = [c for c in _caller_git_calls(log) if c.startswith("push")]
+        assert pushes == ["push origin HEAD:main"] * (rejects + 1), (
+            f"{pushes} — every publication call must be push_do origin HEAD:main"
+        )
+        assert '{"rows": 3}' in _git_output(bare, "show", "main:data/marketing/outbox/items.jsonl")
+        assert "other.txt" in _git_output(bare, "ls-tree", "-r", "--name-only", "main"), (
+            "the racing lane's commit was clobbered"
+        )
+        if rejects:
+            summary = (work / "summary.md").read_text()
+            assert "push-retry · **marketing-publish**: pushed" in summary, summary
+
+
+def test_caller_adoption_codex_research_lands_over_a_race(tmp_path):
+    """The research lane's shipped block: one push_do origin HEAD:main call,
+    racing commit preserved, outputs landed."""
+    tracked = {
+        "data/codex_lane/loop.json": '{"n": 0}\n',
+        "data/signal_foundry/out.json": '{}\n',
+        "data/trial_ledger.jsonl": '{"t": 0}\n',
+    }
+    dirty = {"data/codex_lane/loop.json": '{"n": 7}\n'}
+    block = _lane_block(
+        "codex-research.yml",
+        _CALLER_ADOPTION_PUBLISHERS["codex-research.yml"][1],
+        {},
+    )
+    bare, lane = _caller_fixture(tmp_path, tracked, dirty)
+    stub = tmp_path / "bin"
+    stub.mkdir()
+    _caller_py_stub(stub, 0)
+    log = tmp_path / "git-calls.log"
+    _caller_git_wrapper(stub, log)
+    r = _run_caller_step(block, lane, stub, tmp_path)
+    assert r.returncode == 0, r.stdout + r.stderr
+    pushes = [c for c in _caller_git_calls(log) if c.startswith("push")]
+    assert pushes == ["push origin HEAD:main"], pushes
+    assert '{"n": 7}' in _git_output(bare, "show", "main:data/codex_lane/loop.json")
+    assert "other.txt" in _git_output(bare, "ls-tree", "-r", "--name-only", "main")
+
+
+def test_caller_adoption_sentinel_single_publication_call_lands(tmp_path):
+    """The simple data publisher's shipped block: the preserved no-argument
+    push_do publishes the checked-out main exactly once — no direct main push
+    outside the policy, and the alert content lands."""
+    tracked = {
+        "data/vector/state.json": '{}\n',
+        "data/coinbase/btc_hourly.parquet": "bytes\n",
+        "site/vector.html": "<html>old</html>\n",
+        "site/index.html": "<html>old</html>\n",
+        "templates/index.html": "<html>old</html>\n",
+        "site/assets/css/app.css": "body{}\n",
+        "site/assets/js/app.js": "// js\n",
+    }
+    dirty = {
+        "data/vector/state.json": '{"flash": true}\n',
+        "site/vector.html": "<html>FRESH ALERT</html>\n",
+    }
+    block = _lane_block(
+        "sentinel.yml",
+        _CALLER_ADOPTION_PUBLISHERS["sentinel.yml"][1],
+        {},
+    )
+    bare, lane = _caller_fixture(tmp_path, tracked, dirty)
+    stub = tmp_path / "bin"
+    stub.mkdir()
+    _caller_py_stub(stub, 0)
+    log = tmp_path / "git-calls.log"
+    _caller_git_wrapper(stub, log)
+    r = _run_caller_step(block, lane, stub, tmp_path)
+    assert r.returncode == 0, r.stdout + r.stderr
+    pushes = [c for c in _caller_git_calls(log) if c.startswith("push")]
+    assert pushes == ["push"], f"{pushes} — the no-argument push_do call site is the only publication"
+    assert '{"flash": true}' in _git_output(bare, "show", "main:data/vector/state.json")
+    assert "other.txt" in _git_output(bare, "ls-tree", "-r", "--name-only", "main")
+
+
+def test_caller_adoption_pending_unknown_terminal_is_red_without_a_second_write(tmp_path):
+    """push_do's publication preflight returns 75 (a PENDING/UNKNOWN landing
+    state from the separately-owned native adapter): the sticky receipt must
+    end the run RED at push_lost with NO second rebase and NO push at all —
+    the lane commit stays local and main keeps the racing lane's commit."""
+    tracked = {"data/marketing/outbox/items.jsonl": '{"rows": 0}\n'}
+    dirty = {"data/marketing/outbox/items.jsonl": '{"rows": 3}\n'}
+    block = _lane_block(
+        "marketing-publish.yml",
+        _CALLER_ADOPTION_PUBLISHERS["marketing-publish.yml"][1],
+        {},
+    )
+    bare, lane = _caller_fixture(tmp_path, tracked, dirty)
+    stub = tmp_path / "bin"
+    stub.mkdir()
+    _caller_py_stub(stub, 75)
+    log = tmp_path / "git-calls.log"
+    _caller_git_wrapper(stub, log)
+    r = _run_caller_step(block, lane, stub, tmp_path)
+    combined = r.stdout + r.stderr
+    assert r.returncode == 75, combined
+    assert "::error title=QLedger publication stopped::" in combined, combined
+    calls = _caller_git_calls(log)
+    assert [c for c in calls if c.startswith("push")] == [], calls
+    assert len([c for c in calls if c.startswith("pull")]) == 1, (
+        f"the terminal receipt stopped the run after ONE rebase leg: {calls}"
+    )
+    assert '{"rows": 3}' not in _git_output(bare, "show", "main:data/marketing/outbox/items.jsonl")
+    assert "other.txt" in _git_output(bare, "ls-tree", "-r", "--name-only", "main")
+
+
+def test_caller_adoption_attempt_ceiling_is_preserved(tmp_path):
+    """Five ref-lock losses burn exactly the lane's five attempts, then the
+    give-up tail is a RED step with the lane's ::error — never a green run."""
+    tracked = {"data/marketing/outbox/items.jsonl": '{"rows": 0}\n'}
+    dirty = {"data/marketing/outbox/items.jsonl": '{"rows": 3}\n'}
+    block = _lane_block(
+        "marketing-publish.yml",
+        _CALLER_ADOPTION_PUBLISHERS["marketing-publish.yml"][1],
+        {},
+    )
+    bare, lane = _caller_fixture(tmp_path, tracked, dirty)
+    stub = tmp_path / "bin"
+    stub.mkdir()
+    _caller_py_stub(stub, 0)
+    log = tmp_path / "git-calls.log"
+    _caller_git_wrapper(stub, log, reject_pushes=5)
+    r = _run_caller_step(block, lane, stub, tmp_path)
+    combined = r.stdout + r.stderr
+    assert r.returncode == 1, combined
+    pushes = [c for c in _caller_git_calls(log) if c.startswith("push")]
+    assert len(pushes) == 5, f"the lane's own attempt ceiling is 5: {pushes}"
+    assert "::error title=marketing-publish NOT pushed::" in combined, combined
+    assert '{"rows": 3}' not in _git_output(bare, "show", "main:data/marketing/outbox/items.jsonl")
+
+
+def test_caller_adoption_gh001_terminal_preserves_no_retry(tmp_path):
+    """A GH001 size rejection is a terminal permission stop: exactly ONE push,
+    then push_lost reds the run — a second attempt must never happen."""
+    tracked = {
+        "data/codex_lane/loop.json": '{"n": 0}\n',
+        "data/signal_foundry/out.json": '{}\n',
+        "data/trial_ledger.jsonl": '{"t": 0}\n',
+    }
+    dirty = {"data/codex_lane/loop.json": '{"n": 7}\n'}
+    block = _lane_block(
+        "codex-research.yml",
+        _CALLER_ADOPTION_PUBLISHERS["codex-research.yml"][1],
+        {},
+    )
+    bare, lane = _caller_fixture(tmp_path, tracked, dirty)
+    stub = tmp_path / "bin"
+    stub.mkdir()
+    _caller_py_stub(stub, 0)
+    log = tmp_path / "git-calls.log"
+    _caller_git_wrapper(stub, log, gh001=True)
+    r = _run_caller_step(block, lane, stub, tmp_path)
+    combined = r.stdout + r.stderr
+    assert r.returncode == 128, combined
+    assert "::error title=GH001 push stopped::" in combined, combined
+    pushes = [c for c in _caller_git_calls(log) if c.startswith("push")]
+    assert pushes == ["push origin HEAD:main"], f"no retry after the terminal receipt: {pushes}"
+    assert '{"n": 7}' not in _git_output(bare, "show", "main:data/codex_lane/loop.json")
+
+
+def test_caller_adoption_sentinel_pending_unknown_terminal_no_second_write(tmp_path):
+    """The simple data publisher under the same PENDING/UNKNOWN terminal: red
+    at 75, one rebase leg, no push, alert NOT published."""
+    tracked = {
+        "data/vector/state.json": '{}\n',
+        "data/coinbase/btc_hourly.parquet": "bytes\n",
+        "site/vector.html": "<html>old</html>\n",
+        "site/index.html": "<html>old</html>\n",
+        "templates/index.html": "<html>old</html>\n",
+        "site/assets/css/app.css": "body{}\n",
+        "site/assets/js/app.js": "// js\n",
+    }
+    dirty = {
+        "data/vector/state.json": '{"flash": true}\n',
+        "site/vector.html": "<html>FRESH ALERT</html>\n",
+    }
+    block = _lane_block(
+        "sentinel.yml",
+        _CALLER_ADOPTION_PUBLISHERS["sentinel.yml"][1],
+        {},
+    )
+    bare, lane = _caller_fixture(tmp_path, tracked, dirty)
+    stub = tmp_path / "bin"
+    stub.mkdir()
+    _caller_py_stub(stub, 75)
+    log = tmp_path / "git-calls.log"
+    _caller_git_wrapper(stub, log)
+    r = _run_caller_step(block, lane, stub, tmp_path)
+    combined = r.stdout + r.stderr
+    assert r.returncode == 75, combined
+    calls = _caller_git_calls(log)
+    assert [c for c in calls if c.startswith("push")] == [], calls
+    assert len([c for c in calls if c.startswith("pull")]) == 1, calls
+    assert '{"flash": true}' not in _git_output(bare, "show", "main:data/vector/state.json")
+    assert "::error title=QLedger publication stopped::" in combined, combined
+
+
+@pytest.mark.parametrize("reject_pushes,pushed,expect_pushes", [
+    (0, "pushed=true", 1),
+    (5, "pushed=false", 5),
+])
+def test_caller_adoption_press_wire_downstream_gate_preserved(
+    tmp_path, reject_pushes, pushed, expect_pushes
+):
+    """The publisher dispatch downstream of press-wire is gated on the
+    `pushed` output: `true` exactly when the publication landed through
+    push_do, `false` after the lane's five-attempt ceiling — never a success
+    claim for state that did not land."""
+    tracked = {
+        "data/marketing/outbox/items.jsonl": "x\n",
+        "data/marketing/press_wire/cursors.json": '{}\n',
+        "data/marketing/fomc/state.json": '{}\n',
+    }
+    dirty = {"data/marketing/outbox/items.jsonl": "x2\n"}
+    block = _lane_block(
+        "marketing-press-wire.yml",
+        _CALLER_ADOPTION_PUBLISHERS["marketing-press-wire.yml"][1],
+        {},
+    )
+    bare, lane = _caller_fixture(tmp_path, tracked, dirty)
+    stub = tmp_path / "bin"
+    stub.mkdir()
+    _caller_py_stub(stub, 0)
+    log = tmp_path / "git-calls.log"
+    _caller_git_wrapper(stub, log, reject_pushes=reject_pushes)
+    r = _run_caller_step(block, lane, stub, tmp_path)
+    combined = r.stdout + r.stderr
+    assert (r.returncode == 0) == (reject_pushes == 0), combined
+    assert pushed in (tmp_path / "output.txt").read_text(), combined
+    pushes = [c for c in _caller_git_calls(log) if c.startswith("push")]
+    assert len(pushes) == expect_pushes and all(p == "push origin HEAD:main" for p in pushes), pushes
+    if reject_pushes == 0:
+        assert "x2" in _git_output(bare, "show", "main:data/marketing/outbox/items.jsonl")
+    else:
+        assert "::error title=press-wire-push::" in combined, combined
+        assert "x2" not in _git_output(bare, "show", "main:data/marketing/outbox/items.jsonl")
+
+
+def test_caller_adoption_regime_self_heal_mid_step_source_publishes(tmp_path):
+    """The lanes that only now source the policy mid-step (regime-self-heal's
+    `set -euo pipefail` step) publish through the preserved no-argument
+    push_do and land over a racing commit."""
+    tracked = {
+        "data/regime/latest.json": '{"as_of": "old"}\n',
+        "data/market_state/latest.json": '{}\n',
+        "data/reflexes/attention.json": '{}\n',
+    }
+    dirty = {"data/regime/latest.json": '{"as_of": "fresh"}\n'}
+    block = _lane_block(
+        "regime-self-heal.yml",
+        _CALLER_ADOPTION_PUBLISHERS["regime-self-heal.yml"][1],
+        {},
+    )
+    bare, lane = _caller_fixture(tmp_path, tracked, dirty)
+    stub = tmp_path / "bin"
+    stub.mkdir()
+    _caller_py_stub(stub, 0)
+    log = tmp_path / "git-calls.log"
+    _caller_git_wrapper(stub, log)
+    r = _run_caller_step(block, lane, stub, tmp_path)
+    combined = r.stdout + r.stderr
+    assert r.returncode == 0, combined
+    pushes = [c for c in _caller_git_calls(log) if c.startswith("push")]
+    assert pushes == ["push"], pushes
+    assert '{"as_of": "fresh"}' in _git_output(bare, "show", "main:data/regime/latest.json")
+    assert "other.txt" in _git_output(bare, "ls-tree", "-r", "--name-only", "main")
+
+
+def test_caller_adoption_hot_tape_session_stops_after_terminal(tmp_path):
+    """The shipped session function, executed across TWO passes: pass one hits
+    the terminal receipt, pass two must not re-init the policy or execute
+    another rebase/write — the sticky ::error is the only thing it emits."""
+    body = _lane_block(
+        "marketing-hot-tape.yml",
+        _CALLER_ADOPTION_PUBLISHERS["marketing-hot-tape.yml"][1],
+        {},
+    )
+    start = body.index('HOT_TAPE_PUBLISH_STOPPED=""')
+    fn_end = body.index("\n}", start) + 2  # include the function's closing brace
+    shipped = body[start:fn_end]
+    tracked = {
+        "data/marketing/outbox/items.jsonl": "x\n",
+        "data/marketing/hot_tape_ring.jsonl": "old\n",
+        "data/marketing/hot_tape_fired.jsonl": "old\n",
+    }
+    dirty = {"data/marketing/hot_tape_ring.jsonl": "old\nnew\n"}
+    work = tmp_path
+    bare, lane = _caller_fixture(work, tracked, dirty)
+    stub = work / "bin"
+    stub.mkdir()
+    _caller_py_stub(stub, 75)
+    log = work / "git-calls.log"
+    _caller_git_wrapper(stub, log)
+    driver = (
+        f'. "{LIB}"\n'
+        + shipped
+        + "\nr1=0; r2=0\n"
+        + "commit_and_push || r1=$?\n"
+        + "commit_and_push || r2=$?\n"
+        + 'echo "r1=$r1 r2=$r2 stopped=[$HOT_TAPE_PUBLISH_STOPPED]"\n'
+    )
+    r = _run_caller_step(driver, lane, stub, work)
+    combined = r.stdout + r.stderr
+    assert f"r1=1 r2=1 stopped=[push_retry terminal stop rc=75" in combined, combined
+    # the terminal red from push_lost, and the second pass's sticky red
+    assert "::error title=QLedger publication stopped::" in combined, combined
+    assert "::error title=marketing-hot-tape publication stopped::" in combined, combined
+    calls = _caller_git_calls(log)
+    assert [c for c in calls if c.startswith("push")] == [], calls
+    assert len([c for c in calls if c.startswith("pull")]) == 1, (
+        f"pass two re-entered the rebase: {calls}"
+    )

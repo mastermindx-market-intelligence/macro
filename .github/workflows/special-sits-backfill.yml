@@ -26,6 +26,9 @@ concurrency:
 
 jobs:
   backfill:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: [self-hosted, macstudio]
     timeout-minutes: 180
     steps:
@@ -99,14 +102,25 @@ jobs:
           git add --ignore-removal site/assets/js 2>/dev/null || true
           if git diff --cached --quiet; then echo "no special-sits changes to commit"; exit 0; fi
           git commit -m "special-sits: backlog burn-down + priors refresh $(date -u +%F)"
-          # best-effort push: daily now runs in its own lane and may push concurrently.
-          # The old `git push || echo` SILENTLY DROPPED this commit on a lost race — retry
-          # rebase+push instead, preferring our freshly-enriched store on conflict.
-          for i in 1 2 3 4 5; do
-            if git pull --rebase -X theirs origin main && git push; then
-              echo "pushed special-sits on attempt $i"; exit 0
+          # Publish through the shared policy (scripts/ci/push_retry.sh):
+          # push_do carries the publication preflight and its sticky terminal
+          # receipt, so a PENDING/UNKNOWN publication stop can never enter a
+          # second rebase/write, and push_lost keeps a lost publication RED
+          # instead of a warning-only success. Ceiling/budget preserved from
+          # the old deterministic ladder (5 attempts inside its ~90s envelope).
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+          PUSH_MAX_ATTEMPTS=5
+          PUSH_BUDGET_SECS=90
+          push_retry_init "special-sits backlog"
+          while push_attempt; do
+            if git pull --rebase -X theirs origin main && push_do; then
+              echo "pushed special-sits on attempt $PUSH_ATTEMPT"
+              push_won
+              exit 0
             fi
-            git rebase --abort 2>/dev/null || true
-            echo "special-sits push attempt $i lost a race; re-syncing"; sleep $((i * 7))
+            push_abort_rebase
+            push_backoff
           done
-          echo "::warning::could not push special-sits after 5 attempts (non-fatal)"
+          push_lost
+          echo "::error title=special-sits NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — the backlog burn-down commit exists only on the runner and is discarded by the next clean checkout; re-run this workflow"
+          exit 1

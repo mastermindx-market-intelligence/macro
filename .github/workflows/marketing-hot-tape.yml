@@ -97,6 +97,10 @@ concurrency:
 
 jobs:
   radar:
+    permissions:
+      contents: write
+      actions: write
+      pull-requests: write
     runs-on: ubuntu-latest      # OFF the render path — never the macstudio pool
     # ── SESSION-LONG POLLER (operator decision 2026-07-30, masterplan §3.6) ────
     # TWO HALVES OF ONE SESSION, SERIALIZED. GitHub caps a JOB at 6h and the ET
@@ -342,7 +346,16 @@ jobs:
           # same event. In a multi-pass run that second role is load-bearing
           # within the run itself, not just across runs. Echoes "pushed" so the
           # caller can gate the dispatch on it.
+          # A terminal publication stop (GH001 receipt, QLedger integrity, or a
+          # PENDING/UNKNOWN native publication state) is STICKY for the session:
+          # a later pass must not re-run push_retry_init (a fresh init clears the
+          # receipt) or execute another rebase/write after the stop.
+          HOT_TAPE_PUBLISH_STOPPED=""
           commit_and_push() {
+            if [ -n "${HOT_TAPE_PUBLISH_STOPPED:-}" ]; then
+              echo "::error title=marketing-hot-tape publication stopped::$HOT_TAPE_PUBLISH_STOPPED — no further rebase/write/dispatch this session; the booked ids in the log above are NOT published"
+              return 1
+            fi
             # workflow_dispatch takes any ref — never publish HEAD to main from one.
             # Inside the function, not before the poller: the radar above must still
             # run and log its passes on an off-main dispatch. Returning 1 also keeps
@@ -362,11 +375,15 @@ jobs:
 
             git commit -m "hot-tape: radar $(date -u +%FT%H:%MZ) [skip ci]"
 
-            # Retry-rebase push loop, identical in mechanics to marketing-publish's:
-            # this lane races the publish sweeps and the nightly on the same outbox
-            # paths. All three ledgers carry merge=union (.gitattributes) so a
-            # concurrent append resolves instead of conflicting the loop to death.
-            for i in 1 2 3 4 5; do
+            # Publish through the shared policy (scripts/ci/push_retry.sh):
+            # push_do carries the publication preflight and its sticky terminal
+            # receipt, so a PENDING/UNKNOWN publication stop can never enter a
+            # second rebase/write. Ceiling/budget preserved from the old
+            # deterministic ladder (5 attempts inside its ~90s envelope).
+            PUSH_MAX_ATTEMPTS=5
+            PUSH_BUDGET_SECS=90
+            push_retry_init "marketing-hot-tape"
+            while push_attempt; do
               # --depth 20: the checkout is shallow, so a bare fetch would leave
               # `pull --rebase` without a merge base once main advanced mid-run.
               git fetch --depth 20 origin main || true
@@ -376,14 +393,15 @@ jobs:
               comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
                        <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
                 | while IFS= read -r f; do rm -f -- "$f" || true; done
-              if git pull --rebase --autostash origin main && push_autostash_ok && git push origin HEAD:main; then
-                echo "marketing-hot-tape: pushed radar state on attempt $i"
+              if git pull --rebase --autostash origin main && push_autostash_ok && push_do origin HEAD:main; then
+                echo "marketing-hot-tape: pushed radar state on attempt $PUSH_ATTEMPT"
+                push_won
                 return 0
               fi
-              git rebase --abort 2>/dev/null || true
-              echo "marketing-hot-tape: push attempt $i lost a race; re-syncing"
-              sleep $((i * 7))
+              push_abort_rebase
+              push_backoff
             done
+            push_lost || HOT_TAPE_PUBLISH_STOPPED="push_retry terminal stop rc=$? — this receipt is sticky for the session"
 
             echo "::warning::marketing-hot-tape: could not push radar state after 5 attempts (non-fatal)"
             return 1
