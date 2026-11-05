@@ -91,6 +91,23 @@ a fixed order, so a diff of the file is a diff of facts.
 | `source_evidence` | `path` or `path:line` strings backing the derived facts. Every row has at least one. |
 | `notes` | Free text: caveats, counts, why a fact is missing. |
 
+### Public-carrier withdrawals
+
+A producer with an existing public-carrier withdrawal declares the literal
+module-level boolean `PUBLIC_CARRIER_HELD = True` and uses that same value in
+its runtime carrier guard. The registry scanner reads it as source data, without
+importing or running the builder. Resolved concrete routes from that producer
+stay in diagnostic write-site provenance but have no canonical page row, even
+if a stale HTML copy or another writer names the same route. A withdrawal is
+stronger than a parked or consumer-withheld row; the existing Product Trust
+no-registry/override/SEO guard remains binding.
+
+Absent metadata preserves historical builder-only diagnostic rows. Explicit
+metadata must be one immutable module-level boolean; an ambiguous or dynamic
+declaration or an unresolved/parameterized held write refuses generation. The producer owner controls the declaration
+under its existing withdrawal/promotion contract. It supplies no public-serving
+or consumer-purpose grant, and does not replace Shared Shell's separate marker.
+
 ### Shared Shell consumer admission
 
 The exact, case-sensitive `known_contracts` list element
