@@ -1,0 +1,18 @@
+{
+  "safe_accounting_rows": [
+    {
+      "ts": "2026-10-14T00:03:00Z",
+      "provider": "codex",
+      "model": "gpt-5.6-terra",
+      "input_tokens": 19942,
+      "output_tokens": 1134,
+      "lane": "press-research_desk",
+      "stage": "press_research_desk"
+    }
+  ],
+  "staged_model_field": "Configured model key claude-sonnet-4-6, not actual routed provider model",
+  "actual_routed_model": "gpt-5.6-terra",
+  "writer_estimate": 3626,
+  "actual_reported_tokens": 21076,
+  "no_replay_of_prior_unknown_attempt": true
+}

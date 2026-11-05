@@ -1,0 +1,18 @@
+{
+  "schema": "tiingo.actual_owned_finite_capture_scope_observation/v1",
+  "observed_at_utc": "2026-10-13T03:00:32.426618+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "original_tool_session": 85004,
+  "scope_sha256": "72b39d1f35495e39f8c8fcfacbcf7f4c33406f7db20e6cceebf9ad7e19db442c",
+  "method_sha256": "da2d96f1ff5ecba2647da1b2642cc40b33521aedc296da4d3eddd8a8b42870c9",
+  "plan_sha256": "23499857c88ec5e32996db7d2aa566ee96ee96a264f1ea4c488741e0ae581418",
+  "actual_scope_started_at_utc": "2026-10-13T03:00:18.899678+00:00",
+  "actual_scope_created": true,
+  "request_cap": 1893,
+  "held_excluded": 30,
+  "raw_budget_bytes": 24513266301,
+  "actual_capture_terminal_return_consumed": false,
+  "capture_complete_claimed": false,
+  "provider_failure_retry_claimed": false,
+  "programme_acceptance_claimed": false
+}

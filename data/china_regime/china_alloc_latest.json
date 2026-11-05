@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-29",
+  "date": "2026-11-04",
   "present": true,
   "variant": "balanced",
   "label_en": "Balanced",
@@ -8,9 +8,9 @@
   "defensive_w": 65,
   "sharpe": 0.93,
   "maxdd": -17.2,
-  "cagr": 7.65,
+  "cagr": 7.63,
   "band": "elevated",
-  "years": 13.2,
-  "bench_csi_sharpe": 0.42,
+  "years": 13.3,
+  "bench_csi_sharpe": 0.4,
   "bench_csi_maxdd": -45.5
 }

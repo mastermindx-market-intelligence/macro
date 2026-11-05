@@ -1577,12 +1577,86 @@ what turned that from a finding into a non-finding.
 by the wrapper, so it can only ever describe a run that STARTED. A run that never starts writes
 nothing — which is the same structural blind spot as `last_run.json`, moved one level out. The fix
 in this wave converts a crash into a record; it cannot convert an absence into one. The only
-instrument that can is EXTERNAL and age-based: something that reads the receipt's `started` and
-alarms when it is older than the schedule. That is not built, and this section is where that debt is
-recorded rather than implied.
+instrument that can is EXTERNAL.
+
+**BUILT 2026-09-29 — §12 below.** The sentence above read "That is not built, and this section is
+where that debt is recorded rather than implied", and the debt is now paid by
+`scripts/worktree_gc_liveness.py`. One design point from that paragraph did NOT survive contact:
+it proposed an age check over the receipt's `started` field, and an age threshold is the wrong
+shape. Read at 00:58 local against an 05:17 schedule, a receipt from yesterday is perfectly
+healthy; read at 06:00 the same receipt is an outage. The expectation has to come from the
+SCHEDULE and the clock, not from an elapsed-time constant — see §12.
 
 **What this means for the storage numbers.** The measured reclaim is bounded from two independent
 directions that were being reported as one: scope (§9 — most trees are unreachable) and
 **availability** (this section — 13 crashes plus 4 non-starts across 45 scheduled days, so on
 roughly a third of days the reachable trees were not swept either). Neither is a failure of the
 tool's classification, and neither is fixed by widening `roots`.
+
+## §12. The external liveness check — the one instrument the job cannot be (R12, shipped 2026-09-29)
+
+§11 closed the crash half of availability and named the other half as a debt: **every receipt this
+programme owns is written BY the wrapper, so none of them can witness an absence.** The four-day
+non-start of 2026-09-18 → 09-21 was found by hand, weeks later, and nothing would ever have
+reported it. `scripts/worktree_gc_liveness.py` is the answer and it is deliberately tiny: it reads
+the installed plist's `StartCalendarInterval` and the start markers in `launchd.out.log`, compares
+an expectation built from the SCHEDULE and the CLOCK against what the log shows, and writes
+nothing. It has no `--apply`, touches no worktree, and never runs the sweeper.
+
+**Positive control, which is the only reason to believe it.** Pointed at the real host with
+`--days 20`, it independently rediscovers the incident:
+
+```
+log spans     2026-08-12 .. 2026-09-28 (45 start markers)
+  2026-09-18  NO START
+  2026-09-19  NO START
+  2026-09-20  NO START
+  2026-09-21  NO START
+note          today (2026-09-29) is not yet due at 05:17 — its absence is not a miss
+MISSING 4 scheduled start(s): 2026-09-18, 2026-09-19, 2026-09-20, 2026-09-21
+```
+
+45 start markers is also the census figure in §11, arrived at by a different route — which is the
+corroboration that its marker filter is right.
+
+**Four traps it exists to avoid, all of them measured on the real log rather than imagined.**
+
+| # | trap | why it bites |
+|---|---|---|
+| 1 | `== worktree-gc done rc=0 ==` shares the start marker's prefix | a bare `grep -c` counts 75 against 45 real starts |
+| 2 | markers are stamped UTC; `StartCalendarInterval` is LOCAL | comparing them unconverted moves runs across the date line, inventing a miss on one side and a phantom run on the other |
+| 3 | "nothing logged today" ≠ "today was missed" | at 00:58 against an 05:17 schedule the identical file means the opposite of what it means at 06:00 |
+| 4 | a rotated or new log has no markers for days that ran | an unclipped window greets every rotation with a fortnight of fabricated outages, which is how a real alert gets ignored |
+
+Trap 1 is defended twice — the pattern requires a single-token payload, and the payload must also
+parse as a timestamp — and **mutation testing found that removing either layer alone leaves the
+behaviour correct.** That is recorded in the source because it is precisely the condition under
+which a later reader deletes "the redundant half" and sees a green suite;
+`tests/test_worktree_gc_liveness.py` now pins each layer independently. All seven mutants
+(one per trap, the two trap-1 layers, and the schedule refusal) are caught by the 14 tests.
+
+**Refusals are loud.** No plist, no log, no start markers, or a schedule shape it does not model
+(`{Minute: 17}` means hourly; a `Weekday` key means most days are not expected at all) all exit
+**2** with a sentence saying which — never exit 0. A checker for a silent failure is itself easy to
+build silent, and an unexplained clean exit is the exact thing this file exists to stop.
+
+**What is still NOT done, and is not this session's to do.** Nothing runs this on a schedule.
+Installing it — a second LaunchAgent, or a line in an existing one — is a host act on the same
+footing as `scripts/install_worktree_gc_launchd.sh`, and it needs an explicit operator yes. Until
+then it is a command a person or a session runs by hand:
+
+```
+python3 scripts/worktree_gc_liveness.py --days 20
+```
+
+### A new fetch-failure class, recorded the same day
+
+The 09-28 run's warning was `error: cannot lock ref 'refs/remotes/origin/main'` — a **compare-and-swap
+loss against the fleet's own concurrency on the shared primary clone**, not a network or TCC fault,
+and the first of its kind in this job's history. git updates refs individually, so only that one ref
+was behind; `fetch_origin` (`scripts/worktree_gc.py:473-479`) nonetheless reports the whole-world
+phrase "continuing with stale refs" and has no retry. The effect direction is conservative — staler
+refs satisfy fewer landedness proofs, so the sweep deletes less — which is why this is an
+observability problem and not a safety one. A retry plus a message naming the contended ref is the
+repair direction and is NOT taken here: it is a code change to an armed deleter's fetch path and
+owes its own ratification. `DSC:A-SHARED-CLONES-FETCH-CAN-LOSE-A-REF-LOCK-RACE-AND-IT-READS-AS-AN-OUTAGE`.

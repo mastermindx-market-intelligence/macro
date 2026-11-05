@@ -1,6 +1,6 @@
 ---
 workstream: WS:FLEET-STORAGE-LIFECYCLE
-session: claude/fleet-storage-tmp-pool-reach-20260929 (W16, which amends this file in place, as W15 did before it on claude/fleet-storage-records-wave14-20260929; the day's earlier waves shipped on claude/human-driven-roots-denylist-20260929 (W11), claude/gc-wrapper-timeouts-fail-silently-20260929 (W12) and claude/gc-protective-key-defaults-unprotected-20260929 (W14))
+session: claude/gc-liveness-external-check-20260929 (W17, which amends this file in place, as W16 did on claude/fleet-storage-tmp-pool-reach-20260929 and W15 on claude/fleet-storage-records-wave14-20260929; the day's earlier waves shipped on claude/human-driven-roots-denylist-20260929 (W11), claude/gc-wrapper-timeouts-fail-silently-20260929 (W12) and claude/gc-protective-key-defaults-unprotected-20260929 (W14))
 model: opus
 ended_because: blocked
 mission: >
@@ -158,6 +158,39 @@ verified:
       under a host checkout, which is the sweeper's only route to an unregistered directory.
       Shipped as `DSC:THE-SSD-TMP-POOLS-PROVEN-RECLAIM-IS-UNREACHABLE-BY-THIS-SWEEPER`; §9's
       "lacks only authorization" sentence is superseded in place.
+  - claim: "The external liveness check finds the real 2026-09-18 -> 09-21 non-start gap on the live host, and correctly declines to call a not-yet-due day a miss."
+    command: "python3 scripts/worktree_gc_liveness.py --days 20 (run at 2026-09-29T01:08 local against the installed plist and ~/Library/Logs/macro_worktree_gc/launchd.out.log)"
+    result: >
+      `log spans 2026-08-12 .. 2026-09-28 (45 start markers)`; `2026-09-18` through `2026-09-21`
+      each `NO START`; `MISSING 4 scheduled start(s)`; exit 1. It also prints `today (2026-09-29)
+      is not yet due at 05:17 - its absence is not a miss`, which is the distinction the whole
+      instrument turns on. The 45-marker count matches §11's independently derived census, which
+      is the corroboration that the marker filter is right (a bare `grep -c '== worktree-gc '`
+      reads 75, counting completion markers).
+  - claim: "The liveness suite pins the verdict, not merely the exit code: all seven mutants are caught."
+    command: "python3 -m pytest tests/test_worktree_gc_liveness.py -q; plus a mutation battery flipping each trap in turn (completion-marker regex, the unparseable-payload fallback, the zone conversion, the not-yet-due guard, the log-span clip, the schedule refusal)"
+    result: >
+      14 passed. 7 of 7 mutants caught. The battery is what found that trap 1 has TWO independent
+      layers — the single-token regex and the timestamp parse — and that removing EITHER alone
+      leaves behaviour correct, so each is now asserted separately. Without that, a later reader
+      deleting the "redundant" half would see a green suite.
+  - claim: "The 09-28 fetch warning is a ref-lock CAS loss against fleet concurrency, not an outage, and it is the first of its class."
+    command: "grep -c 'cannot lock ref' ~/Library/Logs/macro_worktree_gc/launchd.err.log ; grep -oE 'git fetch --prune failed [^\n]{0,80}' … | sort | uniq -c ; sed -n '462,485p' scripts/worktree_gc.py"
+    result: >
+      Exactly 1 ref-lock occurrence and exactly 2 fetch failures ever recorded — the other is one
+      `TimeoutExpired` at the 600 s git cap. `fetch_origin` has no retry and flattens every
+      failure into "continuing with stale refs", which is whole-world phrasing for a
+      one-ref event. Effect direction is conservative: staler refs satisfy fewer landedness
+      proofs. Shipped as
+      `DSC:A-SHARED-CLONES-FETCH-CAN-LOSE-A-REF-LOCK-RACE-AND-IT-READS-AS-AN-OUTAGE`.
+  - claim: "No deletion went unrecorded on 09-28, despite the log tail reading exactly as though one had."
+    command: "a set-difference of the 203 `INFO removed` rows in launchd.err.log against the 296 rows of ledger.jsonl, by basename"
+    result: >
+      0 logged removals are absent from the ledger; the ledger's last row is
+      `2026-09-27T12:25:29+00:00`. The removals sitting immediately above the 09-28 traceback are
+      the 09-27 run's, stacked there by an append-only file. The 09-28 run emitted its fetch
+      warning, swept, and was killed at `RUN_TIMEOUT_S` having removed nothing. The hypothesis
+      was checked before it was reported, and it was wrong.
   - claim: "Registrations are 789 and the fleet is not growing; the internal disk's improvement was NOT this programme."
     command: "git worktree list --porcelain | grep -c '^worktree ' ; the same stream bucketed by mint root ; df -g /System/Volumes/Data"
     result: >
@@ -236,6 +269,11 @@ do_not_redo:
   - "Do NOT re-verify #8176's 4-GIT-timeout claim. It was independently re-verified on 2026-09-29 against the live log and is CORRECT: 13 `^subprocess.TimeoutExpired:` lines = 9 RUN + 4 GIT. A substring `grep -o` says 22 because it counts message OCCURRENCES inside traceback bodies, not events."
   - "Do NOT propose restoring `filter: blob:none` to the pack checkout to shrink the runner stores. Drafted and withdrawn 2026-09-29: it would revert `DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION`, which has three named production failures behind it."
   - "Do NOT ask for `…/agent-workspaces/tmp` in the roots widening. 0 registrations and `scan_orphans` skips non-host roots — inert."
+  - "Do NOT ship a new pytest suite without naming it in a `run:` step in `.github/ci/legacy-jobs.yml`. `contract-delta` refuses it (`1 introduced, 0 inherited`), and the `paths:` entry is NOT the half that satisfies it — a path only decides when the job re-runs. Measured by positive control: deleting the `run:` entry alone makes `scripts/audit_unrun_tests.py` exit 1 and name the suite."
+  - "Do NOT build the availability check as an AGE threshold over a receipt's `started` field, which is the shape §11 proposed. An elapsed-time constant cannot tell 'not due yet' from 'missed'. Derive the expectation from the SCHEDULE and the clock — built that way in W17."
+  - "Do NOT count run starts with `grep -c '== worktree-gc '`. The completion marker shares the prefix: 75 against 45 real starts."
+  - "Do NOT triage `cannot lock ref 'refs/remotes/origin/main'` as a network or TCC fault. It is a CAS loss against the fleet's own concurrency on the shared primary clone."
+  - "Do NOT re-verify whether the 09-28 run lost deletions to its crash. It removed nothing; 0 of 203 logged removals are absent from the 296-row ledger."
   - "Do NOT ask for `/Volumes/Mastermind/tmp` in the roots widening either, however tempting the 44.19 GiB §9 proved reclaimable there. Both candidates are standalone clones (`.git` is a directory) that no `git worktree list` reports, and all 17 registrations under that root are DETACHED HEAD. Zero bytes. `roots` governs which paths a sweeper may ACT on, never which objects it can SEE."
   - "Do NOT use `ls <dir>/*.pack | wc -l` on a runner pack directory. 36,271 paths overflow ARG_MAX, the glob fails and it prints 0 — 'none' and 'too many to count' are the same reading. Use `find … | wc -l`."
   - "Do NOT use `pgrep -c -f X 2>/dev/null || echo 0` to ask whether a runner is busy. `-c` is not a count flag on macOS, the `2>/dev/null` swallows the usage error and the fallback literal fabricates a 0 while workers run."
@@ -245,7 +283,7 @@ danger_areas:
   - "A PROTECTIVE config key inverts the wrapper's staleness argument: for arming and roots, older policy is narrower is safer, but for a deny-list older policy means LESS protection. Bounded because refs only advance — once one successful fetch has seen an entry, no later staleness drops it — but the protective half must always land in the EARLIER commit."
   - "The deny-list went live ON MERGE, and so would anything dangerous. There is no fast-forward buffer, so commit ORDER on main is the real safeguard for gate 3."
   - "The caps are deliberately unchanged and a test guards the reasoning. Raising one without a measurement would convert a legible timeout back into a silent slow no-op."
-prs: [8175, 8176, 8177, 8178, 8179]
+prs: [8175, 8176, 8177, 8178, 8179, 8180]
 decisions: [DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM]
 discoveries:
   - DSC:TWO-INDEPENDENT-GATES-MAKE-A-REGRESSION-IN-EITHER-ONE-INVISIBLE
@@ -257,6 +295,7 @@ discoveries:
   - DSC:GC-DISABLED-RUNNER-STORES-ACCUMULATE-EVERY-TRANSFER-PATHOLOGY-FOREVER
   - DSC:THE-SWEEPERS-FOUR-DAY-NON-START-WAS-AN-UNLOADED-AGENT-NOT-A-CRASH
   - DSC:THE-SSD-TMP-POOLS-PROVEN-RECLAIM-IS-UNREACHABLE-BY-THIS-SWEEPER
+  - DSC:A-SHARED-CLONES-FETCH-CAN-LOSE-A-REF-LOCK-RACE-AND-IT-READS-AS-AN-OUTAGE
 ---
 
 ## The one thing a cold stranger must take from this handoff
@@ -367,3 +406,57 @@ separately by the pending count reaching zero: a floor naming FEWER rows than ac
 harmless, a floor naming a row that never arrives waits forever. So the repair was to the false
 sentence, not the code — derive a floor from an early read only downward, and never tighten one
 later because more rows showed up.
+
+## W17 amendment — the instrument that can finally say "nothing ran"
+
+W17 pays the one instrument debt this programme had been carrying openly. §11 closed the crash
+half of availability — a receipt now survives a wrapper crash — and then wrote down, honestly,
+that the other half was not built: **every receipt this job owns is written BY the job, so none of
+them can witness an absence.** The four-day non-start of 2026-09-18 → 09-21 was found by hand,
+weeks after it happened, by a session that went looking. Nothing would ever have reported it.
+
+`scripts/worktree_gc_liveness.py` is the answer, and the reason to believe it is not its tests —
+it is that, pointed at the real host with `--days 20`, it rediscovers that incident on its own:
+four `NO START` rows for 09-18 through 09-21, `MISSING 4 scheduled start(s)`, exit 1. Its
+`45 start markers` also matches §11's census, which was derived by a different route.
+
+**One design point from §11 did not survive contact, and that is the durable lesson here.** §11
+proposed an AGE check over the receipt's `started` field — alarm when it is older than the
+schedule. That shape cannot work, and the reason generalises: **an elapsed-time constant cannot
+tell "not due yet" from "missed".** Read at 00:58 local against an 05:17 schedule, yesterday's
+receipt is perfectly healthy; read at 06:00 the identical bytes are an outage. The expectation has
+to be derived from the SCHEDULE and the CLOCK, never from a threshold — so the check reads the
+installed plist rather than a constant, and it prints `today is not yet due at 05:17` as a first-
+class verdict. The test suite pins that as the same-bytes/opposite-verdicts pair, because it is
+the distinction the instrument exists for. This session nearly filed a fifth non-start day before
+checking the clock.
+
+**The mutation battery found something a passing suite could not.** Trap 1 — the completion marker
+`== worktree-gc done rc=0 ==` sharing the start marker's prefix — is defended twice: the regex
+requires a single-token payload, and the payload must also parse as a timestamp. Mutating each in
+turn showed **either layer can be removed alone with no behaviour change**, because the other
+backstops it. An outcome-only suite therefore pins neither, and a later reader deleting "the
+redundant half" sees green. Both layers now have their own assertion, and the source says why the
+redundancy is deliberate. Seven mutants, seven caught, 14 tests.
+
+**A hypothesis was refuted before it was reported, and that is worth recording as a habit.** The
+`INFO removed` lines sitting immediately above the 09-28 traceback read exactly like deletions
+lost to a crash. Measured: 0 of 203 logged removals are absent from the 296-row ledger, whose last
+entry is 09-27T12:25:29Z. Those lines are the 09-27 run's, stacked there by an append-only file.
+The 09-28 run deleted nothing. An append-only log invites this reading on every crash — the tail
+is not the run.
+
+**The new fetch class is an observability problem, not a safety one.** `cannot lock ref
+'refs/remotes/origin/main'` is a compare-and-swap loss against the fleet's own concurrency on the
+shared primary clone — the first of its kind in this job's history, against one `TimeoutExpired`
+as the only other fetch failure ever recorded. git updates refs individually, so one ref lost its
+lock and the rest updated; `fetch_origin` nonetheless says "continuing with stale refs", which is
+whole-world phrasing for a one-ref event. The direction is conservative: staler refs satisfy fewer
+landedness proofs, so the sweep deletes LESS. A retry plus a message naming the contended ref is
+the repair, and it is **not taken here** — it is a code change to an armed deleter's fetch path
+and owes its own ratification.
+
+**Nothing new was reclaimed in W17, and that is the correct outcome.** Every remaining candidate
+sits behind a standing operator decline or an unratified gate. The decision list grew by one:
+scheduling this check is a host act on the same footing as installing the sweeper's LaunchAgent,
+so until an operator says yes it is a command run by hand.

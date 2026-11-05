@@ -1,6 +1,15 @@
 ---
 key: A-VENDORED-TRACEABILITY-MAP-STILL-HAS-NO-REQUIREMENT-TEXT
 claim: >
+  AMENDED 2026-09-29 (same day, Sol ruling 5894127980): the measurement and the cure
+  below both stand, but the inference that the 41 unsourced requirements had NO
+  RETRIEVABLE authority is WITHDRAWN. Absent at every path on `main` is a statement
+  about the namespace, not the object store: all three specification blobs were
+  present locally the whole time and the corpus was recovered intact (56 ids, zero
+  missing) - see DSC:A-PATH-LOOKUP-IS-NOT-AN-OBJECT-LOOKUP and the AMENDED section
+  at the end of this file. What remains true is narrower and still load-bearing: an
+  id's presence in the tree is downstream of delivery, so it can never gate an
+  anchor. Original claim follows.
   Vendoring a plan's requirement-to-test map into the repository makes the map
   gradeable but does NOT make a coverage claim honest, because the thing a plan's
   traceability table never contains is the requirement's own TEXT. The table
@@ -29,15 +38,23 @@ falsifier: >
   map itself; a citation is not a source. Then check the program carrier. If the
   obligation text for some id is genuinely reachable, this record is refuted for
   that id and an anchor for it can be justified.
+  ADDED 2026-09-29, and run it FIRST because it is cheaper and definitive: if any
+  authority anywhere quotes a blob sha for the specification, ask the OBJECT STORE,
+  not the namespace - `git cat-file -s <sha>` answers instantly with no fetch and no
+  branch checkout. That is how this record's inference was refuted; the per-path
+  greps above were all correct and all answered a different question.
 so_what: >
   It changes which blocker a program reports, and it changes what a coverage
   guard has to check. GMI Industrials tracked T02-T09 as waiting on two shared-seam
   PRs (#7870, #7905); those are real gates for LANDING that code, but they are not
-  what prevents the work - with both merged, no seat could write an honest test for
-  41 of 56 requirements, because the obligation each test must enforce has no
-  retrievable text. Reporting "blocked on a merge" invites waiting; reporting
-  "the requirement corpus is missing" produces a one-line ask only the
-  commissioning authority can answer. For the guard: binding an anchor map to a
+  what prevents the work - with both merged, a seat still cannot write an honest test
+  for a requirement whose obligation text it cannot READ. Reporting "blocked on a
+  merge" invites waiting; reporting "I cannot resolve the obligation text for these
+  41 ids, here is where I looked" produces a one-line ask only the commissioning
+  authority can answer - and AMENDED 2026-09-29, that ask is what resolved this in
+  hours. State the SCOPE of the lookup, never "the corpus is missing": the
+  authority's answer here was three blob shas already on the host, and a seat that
+  had reported deletion would have invited a re-specification nobody needed. For the guard: binding an anchor map to a
   vendored table catches an invented id and a wrong-suite row, and misses the
   fabrication that matters, so the vendored table needs a declared per-requirement
   `anchor_basis` naming the authority for the obligation - a ruling that states the
@@ -131,3 +148,44 @@ record is the measurement showing that cure is necessary and not sufficient; tha
 record has been amended at source to say so, because a correction only reaches a
 reader travelling the path they actually travel -
 `DSC:SUPERSEDING-A-RECORD-IN-A-NEWER-FILE-DOES-NOT-CORRECT-IT`.
+
+## AMENDED 2026-09-29 — the corpus was never missing
+
+Sol's `SOL RULING / CONTINUE` on carrier #7789 (comment `5894127980`) answered the ask this
+record's `so_what` prescribed, and inverted its conclusion: recovery **succeeded**, the
+original corpus was never deleted, and **no replacement specification is authorized or
+needed**. This seat then verified it independently rather than on trust, by reading each
+blob out of the local object store:
+
+| source | blob | bytes | ids in its own bytes |
+|---|---|---|---|
+| r1 | `40fd1e3783102c28fe748fe35b927484d4f3dddb` | 28,638 | 30 `IND-D` |
+| r2 | `9c98e106b954d0a48610afad418de2a9eeb1e58b` | 20,947 | 18 `IND-R` |
+| W12 | `b343cbd7bc1f52cfc6fbb5e18ab8d9e9f9392f6c` | 21,187 | 8 `IND-SF` |
+
+30 + 18 + 8 = **56, zero missing, zero extra**, all reachable from commit
+`40d91e50a38c604e26255c1451eda5ddc95fb9cc` on `sol/industrials-sector-research-20260923`.
+Every `git cat-file -s` returned immediately — no fetch, no checkout. The blobs are
+vendored at **no path on `main`**, which is exactly why 41 ids appeared nowhere and why the
+per-path measurement above is still correct.
+
+**What the correction cost, since that is the part worth remembering.** The wrong inference
+did not stay on paper. A records PR was armed `merge-on-green` carrying a PAUSE gate built
+on it — four polls into its wait — and would have installed superseded authority into the
+two documents a future seat reads first. It was caught by re-reading the carrier for an
+unrelated reason, disarmed, retargeted, and merged as `d90d5b967b4c` with the ruling in it
+instead. The carrier post asserting the withdrawn claim (`5894142128`) went out **52 seconds**
+after the ruling landed, from a read taken before it existed.
+
+**The follow-through this record's cure demanded.** A fourth `anchor_basis`,
+`RECOVERED_ORIGINAL`, now names the exact blob for a migrated row, and it is the strongest of
+the four: `RULING` and `LANDED_BEHAVIOUR` reconstruct the compliant/violating pair from
+something downstream of the obligation, while this quotes the obligation itself. Rows migrate
+one substantive change at a time, because the guard's clause 4 (`sourced == set(anchors)`)
+makes a partial claim impossible by construction — claiming a source costs exactly as much as
+enforcing it. First migration: `IND-R214`, which on reading its recovered wording turned out
+to name a **real defect in merged T04 code** (`FORMULA_VERSION` absent from the comparison
+receipt's digest, so the same operands under two methods shared one derived identity
+`synthetic:comparison:548c66766cdec8a4`). That is the argument for recovering obligation text
+rather than re-specifying it: a re-specification would have been written by the same seat that
+wrote the code, and would have described what the code already did.

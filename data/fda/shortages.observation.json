@@ -1,17 +1,50 @@
 {
-  "history_coverage": {},
-  "last_refresh": {
-    "attempted_at": "2026-09-29T06:14:10.755657+00:00",
-    "failure_code": "PAGE_FAILED",
-    "partial_rows_observed": 0,
-    "qualified": false
+  "history_coverage": {
+    "earliest_qualified_generation": "2026-09-29",
+    "forward_retention_started_at": "2026-09-29T15:31:54.333061+00:00",
+    "generations_seen": [
+      "2026-09-29",
+      "2026-09-30",
+      "2026-10-01",
+      "2026-10-02",
+      "2026-10-05",
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-09",
+      "2026-10-13",
+      "2026-10-15",
+      "2026-10-16",
+      "2026-10-20",
+      "2026-10-30",
+      "2026-11-02",
+      "2026-11-04"
+    ]
   },
-  "parquet_sha256": null,
-  "predecessor": "4c3abf937a66e74d0cdfdf935194c8a980f207a863557b79406ec8b43e8445af",
+  "last_refresh": {
+    "attempted_at": "2026-11-04T14:35:00.047945+00:00",
+    "failure_code": null,
+    "partial_rows_observed": 0,
+    "qualified": true
+  },
+  "parquet_sha256": "60c256081f88a8619a1138f2886b7f00c0dd08e1a18666c6eea6392b6a380d6a",
+  "predecessor": "3ec6b73a5b1907830f322bda136582b6e66109fc130906c19671603eb4b1b1bc",
   "retention": {
     "absent_generations_kept": 90,
     "dropped_absent_rows": 0
   },
   "schema": "fda_shortages_observation.v1",
-  "selected_capture": null
+  "selected_capture": {
+    "acquisition_interval_s": 12.039051,
+    "atomic_snapshot_proven": false,
+    "complete": true,
+    "finished_at": "2026-11-04T14:35:00.047945+00:00",
+    "max_pages": 25,
+    "page_size": 100,
+    "pages": 16,
+    "raw_count": 1597,
+    "reported_total": 1597,
+    "source_generation": "2026-11-04",
+    "started_at": "2026-11-04T14:34:48.008894+00:00",
+    "unique_count": 1593
+  }
 }

@@ -604,3 +604,138 @@ def test_missing_required_clock_is_refused_instead_of_defaulted():
     del payload["rights_public_at"]
     with pytest.raises(ValueError, match="rights_public_at"):
         qualify(exposure=payload)
+
+
+# Synthetic publication-clock regression; no observed data or scheduled-date API.
+SYNTHETIC_CUTOFF = "2030-01-02T12:00:00Z"
+SYNTHETIC_BEFORE = "2030-01-01T12:00:00Z"
+SYNTHETIC_AFTER = "2030-01-03T12:00:00Z"
+
+
+def _invented_event_clock_inputs(*, public_at=SYNTHETIC_BEFORE, decision="approved"):
+    event = {
+        "pathway": "PMA_ORIGINAL", "decision_state": decision,
+        "public_at": public_at, "source_id": "SYNTHETIC:EVENT:A",
+        "device_id": "SYNTHETIC:DEVICE", "applicant": "Invented Applicant",
+        "submission_id": "SYNTHETIC:SUBMISSION", "indication_id": "SYNTHETIC:USE",
+        "territory": "US",
+    }
+    exposure = {
+        "issuer_id": "SYNTHETIC:ISSUER", "security_id": "SYNTHETIC:SECURITY",
+        "relationship_issuer_id": "SYNTHETIC:ISSUER",
+        "relationship_security_id": "SYNTHETIC:SECURITY",
+        "rights_state": "owned", "materiality_state": "core",
+        "relationship_id": "SYNTHETIC:RELATIONSHIP", "rights_source_id": "SYNTHETIC:RIGHTS",
+        "rights_public_at": SYNTHETIC_BEFORE, "rights_basis": "applicant_owned",
+        "materiality_source_id": "SYNTHETIC:MATERIALITY", "materiality_public_at": SYNTHETIC_BEFORE,
+        "materiality_basis": "focused_pure_play", "materiality_issuer_id": "SYNTHETIC:ISSUER",
+        "materiality_security_id": "SYNTHETIC:SECURITY",
+        "materiality_relationship_id": "SYNTHETIC:RELATIONSHIP",
+        **{key: event[key] for key in ("device_id", "applicant", "submission_id", "indication_id", "territory")},
+        "regulatory_source_id": event["source_id"],
+    }
+    commercial = {
+        "manufacturing_readiness": "ready", "launch_readiness": "ready",
+        "coverage_state": "not_applicable", "adoption_state": "early",
+        "public_at": SYNTHETIC_BEFORE, "source_id": "SYNTHETIC:COMMERCIAL",
+        "bound_case": {key: exposure[key] for key in (
+            "issuer_id", "security_id", "relationship_id", "device_id", "applicant",
+            "submission_id", "indication_id", "territory", "regulatory_source_id",
+        )},
+    }
+    return dict(event=event, exposure=exposure, commercial=commercial, as_of=SYNTHETIC_CUTOFF)
+
+
+@pytest.mark.parametrize("public_at", [SYNTHETIC_BEFORE, SYNTHETIC_CUTOFF])
+def test_public_event_at_or_before_cutoff_can_qualify(public_at):
+    result = qualify_case(**_invented_event_clock_inputs(public_at=public_at))
+    assert result["disposition"] == "CANDIDATE_REVIEW"
+    assert result["exposure"]["relationship"]["state"] == "RESOLVED"
+    assert result["exposure"]["materiality_evidence"]["state"] == "RESOLVED"
+    assert result["commercial"]["state"] == "COMMERCIAL_READY"
+    assert result["recommendation_eligible"] is False
+
+
+def test_public_pending_event_is_not_future_publication():
+    # An announced future schedule is public knowledge. This R1 API models the
+    # publication clock and pending outcome, not a separate scheduled-event date.
+    result = qualify_case(**_invented_event_clock_inputs(public_at=SYNTHETIC_BEFORE, decision="pending"))
+    assert result["event"]["knowledge_state"] == "PUBLIC_AT_CUTOFF"
+    assert result["event"]["decision_state"] == "pending"
+    assert result["disposition"] == "RESEARCHING_EVENT_OUTCOME"
+    assert result["native_event_probability"] is None
+
+
+def test_future_publication_preserves_direct_redaction():
+    result = qualify_case(**_invented_event_clock_inputs(public_at=SYNTHETIC_AFTER))
+    assert result["disposition"] == "WITHHELD_TEMPORAL"
+    assert result["reasons"] == ["EVENT_NOT_PUBLIC_AT_CUTOFF"]
+    for field in ("source_id", "public_at", "decision_state", "marketing_status", "positive_decision"):
+        assert result["event"][field] is None
+
+
+def test_future_publication_cannot_resolve_dependent_claims():
+    result = qualify_case(**_invented_event_clock_inputs(public_at=SYNTHETIC_AFTER))
+    assert result["exposure"]["rights_state"] == "unresolved"
+    assert result["exposure"]["relationship"]["state"] != "RESOLVED"
+    assert result["exposure"]["materiality_state"] == "unknown"
+    assert result["exposure"]["materiality_evidence"]["state"] != "RESOLVED"
+    assert result["commercial"]["state"] != "COMMERCIAL_READY"
+
+
+def test_redacted_future_source_cannot_change_historical_output():
+    inputs = _invented_event_clock_inputs(public_at=SYNTHETIC_AFTER)
+    before = deepcopy(inputs)
+    matching = qualify_case(**inputs)
+    assert inputs == before
+    inputs["event"]["source_id"] = "SYNTHETIC:EVENT:B"
+    changed_hidden_source = qualify_case(**inputs)
+    assert matching["event"] == changed_hidden_source["event"]
+    assert matching == changed_hidden_source
+
+
+def test_public_source_mismatch_remains_fail_closed():
+    inputs = _invented_event_clock_inputs()
+    inputs["event"]["source_id"] = "SYNTHETIC:EVENT:B"
+    result = qualify_case(**inputs)
+    assert result["disposition"] == "WITHHELD_IDENTITY_RIGHTS"
+    assert "RELATIONSHIP_REGULATORY_SOURCE_MISMATCH" in result["reasons"]
+    assert "COMMERCIAL_REGULATORY_SOURCE_MISMATCH" in result["commercial"]["gaps"]
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    [
+        ("source_id", "SYNTHETIC:EVENT:B"),
+        ("device_id", "SYNTHETIC:OTHER-DEVICE"),
+        ("applicant", "Other Invented Applicant"),
+        ("submission_id", "SYNTHETIC:OTHER-SUBMISSION"),
+        ("indication_id", "SYNTHETIC:OTHER-USE"),
+        ("territory", "SYNTHETIC:OTHER-TERRITORY"),
+        ("decision_state", "denied"),
+        ("public_at", "2030-01-04T12:00:00Z"),
+    ],
+)
+def test_unpublished_event_facts_cannot_change_dependent_states_or_gaps(field, replacement):
+    inputs = _invented_event_clock_inputs(public_at=SYNTHETIC_AFTER)
+    before = qualify_case(**inputs)
+    inputs["event"][field] = replacement
+    after = qualify_case(**inputs)
+    for layer in ("exposure", "commercial", "expectations", "disposition", "reasons"):
+        assert before[layer] == after[layer]
+
+
+def test_future_event_preserves_independent_public_evidence_and_diagnostics():
+    inputs = _invented_event_clock_inputs(public_at=SYNTHETIC_AFTER)
+    inputs["commercial"]["manufacturing_readiness"] = "not_ready"
+    result = qualify_case(**inputs)
+    assert result["exposure"]["relationship"]["source_id"] == "SYNTHETIC:RIGHTS"
+    assert result["exposure"]["relationship"]["public_at"] == SYNTHETIC_BEFORE
+    assert result["exposure"]["materiality_evidence"]["source_id"] == "SYNTHETIC:MATERIALITY"
+    assert result["exposure"]["materiality_evidence"]["public_at"] == SYNTHETIC_BEFORE
+    assert result["commercial"]["source_id"] == "SYNTHETIC:COMMERCIAL"
+    assert result["commercial"]["public_at"] == SYNTHETIC_BEFORE
+    assert "MANUFACTURING_NOT_READY" in result["commercial"]["gaps"]
+    inputs["commercial"]["bound_case"]["issuer_id"] = "SYNTHETIC:OTHER-ISSUER"
+    mismatch = qualify_case(**inputs)
+    assert "COMMERCIAL_ISSUER_MISMATCH" in mismatch["commercial"]["gaps"]

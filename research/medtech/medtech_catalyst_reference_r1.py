@@ -121,7 +121,7 @@ def _commercial_state(commercial: Mapping[str, Any]) -> tuple[str, list[str]]:
 
 
 def _commercial_binding_reasons(
-    event: Mapping[str, Any],
+    event: Mapping[str, Any] | None,
     exposure: Mapping[str, Any],
     commercial: Mapping[str, Any],
 ) -> list[str]:
@@ -165,12 +165,12 @@ def _commercial_binding_reasons(
     )
     for bound_field, event_field, reason in event_comparisons:
         value = bound_case.get(bound_field)
-        if value not in (None, "") and value != event.get(event_field):
+        if event is not None and value not in (None, "") and value != event.get(event_field):
             reasons.append(reason)
     return reasons
 
 
-def _relationship_reasons(event: Mapping[str, Any], exposure: Mapping[str, Any]) -> list[str]:
+def _relationship_reasons(event: Mapping[str, Any] | None, exposure: Mapping[str, Any]) -> list[str]:
     reasons: list[str] = []
     required = {
         "relationship_id": "RELATIONSHIP_ID_MISSING",
@@ -208,7 +208,7 @@ def _relationship_reasons(event: Mapping[str, Any], exposure: Mapping[str, Any])
     )
     for exposure_field, event_field, reason in comparisons:
         value = exposure.get(exposure_field)
-        if value not in (None, "") and value != event.get(event_field):
+        if event is not None and value not in (None, "") and value != event.get(event_field):
             reasons.append(reason)
 
     rights = str(exposure["rights_state"])
@@ -388,6 +388,10 @@ def qualify_case(
 
     cutoff = _utc(as_of, field="as_of")
     event_public_at = _utc(str(event["public_at"]), field="event.public_at")
+    event_future = event_public_at > cutoff
+    # Public evidence may be inspected, but withheld event facts cannot validate
+    # its case binding or act as an oracle through mismatch reasons.
+    public_event = None if event_future else event
 
     _require(
         exposure,
@@ -415,7 +419,7 @@ def qualify_case(
 
     readiness_state, readiness_gaps = _commercial_state(commercial)
     commercial_public_at = _utc(str(commercial["public_at"]), field="commercial.public_at")
-    commercial_binding_reasons = _commercial_binding_reasons(event, exposure, commercial)
+    commercial_binding_reasons = _commercial_binding_reasons(public_event, exposure, commercial)
     if commercial_binding_reasons:
         commercial_state = "COMMERCIAL_UNQUALIFIED"
         commercial_gaps = ["COMMERCIAL_CASE_BINDING_UNRESOLVED", *commercial_binding_reasons]
@@ -429,15 +433,14 @@ def qualify_case(
         security_id=str(exposure["security_id"]),
     )
 
-    event_future = event_public_at > cutoff
     rights_future = rights_public_at > cutoff
     materiality_future = materiality_public_at > cutoff
     commercial_future = commercial_public_at > cutoff
 
-    relationship_reasons = _relationship_reasons(event, exposure)
+    relationship_reasons = _relationship_reasons(public_event, exposure)
     materiality_reasons = _materiality_reasons(exposure)
     relationship_resolved = not relationship_reasons and rights != "unresolved"
-    relationship_qualified = relationship_resolved and not rights_future
+    relationship_qualified = relationship_resolved and not rights_future and not event_future
     materiality_resolved = not materiality_reasons and relationship_qualified
 
     if not relationship_qualified:
@@ -526,7 +529,7 @@ def qualify_case(
         }
     elif relationship_resolved:
         relationship_view = {
-            "state": "RESOLVED",
+            "state": "UNRESOLVED" if event_future else "RESOLVED",
             "relationship_id": exposure["relationship_id"],
             "source_id": exposure["rights_source_id"],
             "public_at": _iso(rights_public_at),
