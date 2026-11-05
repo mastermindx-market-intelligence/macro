@@ -92,3 +92,14 @@ def test_subsector_template_names_engine_words_in_chinese():
     text = SUBSECTOR.read_text(encoding="utf-8")
     for zh in ("动量偏多", "动量偏空", "动量分歧", "已回落", "等待确认", "入场信号开启"):
         assert zh in text, zh
+
+
+def test_subsector_chart_legend_wraps_on_phones():
+    """SIC-D37: on a phone the shared chart legend (one nowrap line, ~291px)
+    ran under the price scale and the fullscreen button. The page wraps it
+    to 29ch below 560px; the desktop legend keeps its single line. The space
+    in `{ #chart-host` stops Jinja reading `{#` as a comment opener."""
+    text = SUBSECTOR.read_text(encoding="utf-8")
+    assert "@media (max-width:560px){ #chart-host .bchart-legend{white-space:normal;max-width:29ch" in text
+    assert "#chart-host .bchart-legend span{white-space:nowrap}" in text
+    assert "{#chart-host" not in text
