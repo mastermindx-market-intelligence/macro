@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import logging
 import sys
+from datetime import date
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
@@ -22,6 +23,7 @@ from engine.international_macro_dashboard import (
     REGIONS,
     build_country_view,
     load_history,
+    load_history_result,
     validate_view,
 )
 from lib import config, site_assets
@@ -74,7 +76,14 @@ def _radar_display(record: dict) -> dict | None:
         return None
 
 
-def build_all(latest: dict | None = None) -> list[Path]:
+def build_all(latest: dict | None = None, *, history_receipts: dict | None = None) -> list[Path]:
+    """Render the incumbent routes, optionally retaining their single reads.
+
+    The empty caller-owned sink shares typed receipts with the same publication.
+    It is neither a second acquisition nor a disclosure or vintage decision.
+    """
+    if history_receipts is not None and (type(history_receipts) is not dict or history_receipts):
+        raise ValueError("invalid_history_receipts_sink")
     latest = latest or _load_latest()
     records = {
         str(record.get("cc")): record
@@ -102,7 +111,13 @@ def build_all(latest: dict | None = None) -> list[Path]:
     template = env.get_template("international_macro.html.j2")
     outputs: list[Path] = []
     for cc, spec in REGIONS.items():
-        view = build_country_view(records[cc], load_history(cc))
+        if history_receipts is None:
+            history = load_history(cc)
+        else:
+            receipt = load_history_result(cc)
+            history_receipts[cc] = receipt
+            history = receipt["frame"] if receipt["status"] in {"ready", "empty"} else None
+        view = build_country_view(records[cc], history)
         validate_view(view)
         (data_out / f"{cc}_latest.json").write_text(
             json.dumps(view, indent=2, ensure_ascii=False, default=str) + "\n"
@@ -111,7 +126,40 @@ def build_all(latest: dict | None = None) -> list[Path]:
         # RADAR is a render-time display variable, deliberately outside the
         # international_macro_dashboard.v1 payload written above: it is a re-shaping of
         # data/intl/latest.json for one card, not a new term of the data contract.
-        write_page(page, template.render(D=view, RADAR=_radar_display(records[cc])))
+        # europe_news is likewise a render-time display packet over the existing
+        # qbus join surface; absent for every country except EZ. Fail-soft: a
+        # missing parquet or any panel() error must not fail the EZ page.
+        europe_news = None
+        if cc == "EZ":
+            try:
+                from engine import europe_news_intel as eni
+
+                asof_raw = view.get("asof")
+                asof_date: date | None = None
+                if isinstance(asof_raw, date):
+                    asof_date = asof_raw
+                elif asof_raw:
+                    asof_date = date.fromisoformat(str(asof_raw)[:10])
+                europe_news = eni.panel(asof_date)
+            except Exception as exc:  # noqa: BLE001 — additive display layer
+                log.warning(
+                    "europe official-press panel failed for EZ (%s); "
+                    "rendering without it",
+                    exc,
+                )
+                europe_news = None
+        if europe_news and not europe_news.get("items"):
+            europe_news = None
+        europe_news_items = europe_news["items"] if europe_news else None
+        write_page(
+            page,
+            template.render(
+                D=view,
+                RADAR=_radar_display(records[cc]),
+                europe_news=europe_news,
+                europe_news_items=europe_news_items,
+            ),
+        )
         outputs.append(page)
         log.info("wrote %s (%s, score=%s)", page.name, cc, view["decision"]["score"])
 

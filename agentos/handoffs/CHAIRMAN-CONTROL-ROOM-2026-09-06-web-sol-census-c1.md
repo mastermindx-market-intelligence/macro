@@ -4,6 +4,166 @@ session: sol/web-sol-session-census-c1-records-20260906
 model: sol
 ended_because: ci_handoff
 mission: >
+  Preserve the September 6, 2026 CENSUS1 checkpoint as dated history, with a
+  November 5 records correction for the later protected source releases.
+  This archive creates no present implementation, review, placement or
+  installation assignment and does not close the wider workstream.
+state_before: >
+  The original checkpoint described Mastermind PR #502 as Draft and its review
+  delivery as unconsumed. Later continuation comments recorded source review,
+  synthetic proof and protection of #502, followed by the separate #514
+  read-budget repair. The unchanged checkpoint could therefore direct a reader
+  to repeat completed source/review work or mistake historical waits for
+  current execution state.
+changed:
+  - path: macro:agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-06-web-sol-census-c1.md
+    what: >
+      Correct the machine-readable current action fields and add an explicit
+      archival boundary. Preserve the full original 231-line checkpoint
+      verbatim in the historical block, including initial test results,
+      failed browser attempts, delivery roots and unresolved proof limits.
+      No implementation, workstream, generated projection or runtime is changed.
+verified:
+  - claim: >
+      Canonical GitHub reads on November 5, 2026 confirm that Mastermind PR #502
+      reached protected source on September 6 at 21:13:09 UTC.
+    command: >
+      GET https://api.github.com/repos/mastermindx-market-intelligence/Mastermind/pulls/502;
+      GET https://api.github.com/repos/mastermindx-market-intelligence/Mastermind/issues/comments/5562217043.
+    result: >
+      merged=true; final head 27411942f2c3ef26ccd7f8c603f709d23f98242a;
+      protected merge c5fe346fc6ffe865232454c07fc9aefec46951fe. The historical
+      release receipt records tested merge ref fe699b0bf926853f0df89c083ef6f87ea861ea67,
+      CI 34059280573/job101556775898, semantic approval 5125891246 under
+      material-disjoint reuse, eight-blob parity and a terminal release carrier.
+      Those tests and the old release action were not rerun by this records repair.
+  - claim: >
+      Canonical GitHub reads on November 5, 2026 confirm that the separate
+      Mastermind PR #514 read-budget repair reached protected source on
+      September 7 at 12:31:29 UTC.
+    command: >
+      GET https://api.github.com/repos/mastermindx-market-intelligence/Mastermind/pulls/514.
+    result: >
+      merged=true; final head 7b303edc9fb3387f65e8116e5d0063a249c6551d;
+      protected merge aefafc6dd12bebc0d8849f05e29d2dc11eced011.
+      Its historical reviewer-delivery and release waits are superseded as
+      instructions to obtain that same source merge. No present deployment,
+      installed generation or provider acceptance is inferred.
+  - claim: >
+      The September continuation evidence already distinguishes original
+      failed browser attempts from later synthetic proof and source protection.
+    command: >
+      GET https://api.github.com/repos/mastermindx-market-intelligence/macro/issues/6941/comments;
+      read comments 5561426719, 5561877048, 5562567273, 5563046363 and 5563317192.
+    result: >
+      The source child was recorded terminal and writer-released; the separate release
+      carrier was recorded terminal. The historical WATCH_STOP_FAILED exception
+      remains retained.
+      Later synthetic evidence was bound to its stated historical candidates,
+      including c2ae335e4728bbeb8da742a8d5bf1e33fd4c52d1; this archive attributes
+      those receipts and does not claim a new execution or independent rerun.
+      The one permitted #502 close/reopen was consumed and must not repeat.
+  - claim: >
+      The original checkpoint is preserved as an immutable historical input
+      rather than silently overwritten by the later chronology.
+    command: >
+      GitHub.fetch_file macro/agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-06-web-sol-census-c1.md
+      at 6f57ae4fb7e194674d19572799659b2fc973efae; verify original Git blob
+      f36f7e7f5e881e8d52694ece47079544e91f8b7d against the verbatim historical block.
+    result: >
+      Original source statements, proof commands, negative results and old
+      next actions remain visible with their September date. They are not
+      current assignments, writer grants or claims that the old waits persist.
+unverified:
+  - claim: >
+      The source-protected census or read-budget repair is currently installed
+      as a coherent accepted generation on the intended managed profiles.
+    what_would_verify: >
+      A separately authorized current continuation must consume the existing
+      installation owner's exact-byte, profile, fault and rollback receipts.
+      Historical #340 ownership and restrictions are preserved; this archive
+      does not commission a new install or attest its current operator status.
+  - claim: >
+      Current provider/account behavior, native global census, fleet coverage,
+      selected model/effort or served-model truth has been accepted.
+    what_would_verify: >
+      Accepted current producer-to-consumer proof from the existing canonical
+      owners under a separate assignment, retaining the historical #480/BRA-S0
+      and resource/installation boundaries. Source merge and synthetic fixtures
+      are insufficient and model prose or private interception is not a substitute.
+  - claim: >
+      Every historical watcher, receiver or external effect has been reconciled
+      in its present execution environment.
+    what_would_verify: >
+      The assigned receiver for separately authorized work must read the actual
+      original carrier, current lease and effect state before acting. Retain
+      WATCH_STOP_FAILED, blocked-operation history and any real START or
+      uncertain effect; neither this archive nor silence proves global absence.
+unresolved:
+  - "Source protection of #502 and #514 is established; installed/native/provider/model/fleet acceptance is outside this archive and is not implied."
+  - "Historical #509 packaging, #511 C2 research, #340 installation and #480 model-observation references name existing boundaries, not claims about their current live status or new assignments."
+  - "Original browser-policy failures, the WATCH_STOP_FAILED exception and exact transport/review roots remain dated evidence. The archive neither retries them nor adjudicates unseen external effects."
+  - "The wider WS:CHAIRMAN-CONTROL-ROOM / MAS-198 outcome is not closed by publication of this one record."
+next_actions:
+  - "For a separately authorized product continuation, the currently assigned receiver must inspect current canonical source and the existing installation, resource and model-observation owners; reconcile any real original-carrier START, lease or uncertain effect before the next action."
+  - "For future records maintenance, update this same record only when new canonical evidence changes its history or proof limits; preserve the original evidence and cite the new source. This archive alone does not dispatch work or require another review of unchanged #502/#514 code."
+do_not_redo:
+  - "Do not restart the completed #502 or #514 source/release operation, repeat #502's consumed close/reopen, recreate its terminal child, or re-review unchanged historical code merely because the original checkpoint contains old instructions."
+  - "Do not interpret historical author names or delivery roots as a live approver, current receiver grant or permission to bypass a denial. Preserve actual STARTed custody and uncertain effects."
+  - "Do not duplicate existing census, packaging, installation, model-observation, resource, binding/readiness or capacity owners, or create another lifecycle, registry, queue, watcher or control plane."
+  - "Do not convert local tests, synthetic browser proof, delivery, CI or source merge into installed/provider/account/model/fleet or production proof."
+  - "Do not replay blocked browser operations, override policy or intercept private request/stream metadata to populate unverified model fields."
+  - "Do not edit the existing workstream or generated Agent OS projections as a side effect of this archival correction."
+danger_areas:
+  - "Historical timeout/read-budget findings require their exact source generation: a caller deadline does not establish settlement of the underlying operation."
+  - "Inventory completeness and probe completeness are separate; unknown or stale evidence must not become missing, idle or accepted capacity."
+  - "Duplicate views and before/after URL agreement do not prove document-generation identity or an action target."
+  - "A visible model selection is not automatically evidence of which model served a current or historical turn."
+  - "The verbatim historical block contains superseded action instructions and present-tense statements; its explicit date and archival boundary govern their interpretation."
+---
+
+# ARCHIVAL CHECKPOINT — corrected November 5, 2026
+
+This is the existing September 6 CENSUS1 handoff, corrected for later source
+protection. It grants no current assignment, review placement, worker admission,
+browser action, installation or publication authority beyond this records change.
+
+## Reconciled source chronology
+
+| Event | Canonical evidence | Meaning retained |
+|---|---|---|
+| Original September 6 checkpoint | Original head `6f57ae4fb7e194674d19572799659b2fc973efae`, blob `f36f7e7f5e881e8d52694ece47079544e91f8b7d` | Initial source, partial local tests, failed browser attempts and unconsumed delivery were observations at that checkpoint. |
+| Later source/synthetic review | [Continuation 5561426719](https://github.com/mastermindx-market-intelligence/macro/pull/6941#issuecomment-5561426719) | Later evidence superseded the old review/browser gap within its stated source and synthetic scope. Original failures and the watcher exception remain recorded. |
+| #502 source protection, September 6 at21:13:09 UTC | [Release 5562217043](https://github.com/mastermindx-market-intelligence/Mastermind/pull/502#issuecomment-5562217043), merge `c5fe346fc6ffe865232454c07fc9aefec46951fe` | The old instruction to obtain this source merge is complete. The release carrier is recorded terminal; no installed or production acceptance follows. |
+| #514 separate read-budget source protection, September 7 at12:31:29 UTC | [PR #514](https://github.com/mastermindx-market-intelligence/Mastermind/pull/514), merge `aefafc6dd12bebc0d8849f05e29d2dc11eced011` | Its old review-delivery/release wait is not a current task. Its source is distinct from the original #502 semantic review. |
+| Later packaging/C2 support | [Composition 5563046363](https://github.com/mastermindx-market-intelligence/macro/pull/6941#issuecomment-5563046363) and [C2 conformance 5563317192](https://github.com/mastermindx-market-intelligence/macro/pull/6941#issuecomment-5563317192) | Attributed dated support with its original exact inputs, permission limits and proof class; no fresh run, adoption or global capability claim. |
+
+The November 5 record repair re-read GitHub's canonical #502/#514 merge metadata
+and the existing continuation receipts. It did not re-run historical tests, replay
+a close/reopen, deliver another review request, touch Slack/browser/provider state,
+or change any source, installation or workstream owner.
+
+The original browser-policy denials remain denials. Later synthetic evidence does
+not authorize retry through a different host or tool. The historical
+`WATCH_STOP_FAILED` exception remains evidence to reconcile on its actual carrier
+if a future authorized action depends on it; the archive does not pronounce an
+unseen watcher stopped or transfer its effects.
+
+## Original September 6 checkpoint — verbatim historical evidence
+
+The complete original file follows. Its old `verified`, `unverified`,
+`unresolved`, `next_actions` and present-tense statements describe that dated
+checkpoint. The active frontmatter at the beginning of this corrected file
+supersedes them for records navigation. No instruction inside the historical block
+is a new assignment or permission.
+
+```markdown
+---
+workstream: WS:CHAIRMAN-CONTROL-ROOM
+session: sol/web-sol-session-census-c1-records-20260906
+model: sol
+ended_because: ci_handoff
+mission: >
   Preserve the implemented Web-Sol profile-local census, its exact tested source,
   two Secretary delivery carriers, and the remaining independent review, browser,
   installation and model-observation gates without implying fleet completion.
@@ -229,3 +389,4 @@ This file is a unique proposed Agent OS handoff on a records-only branch from Ma
 source law, runtime state, browser state or authority. Publication of this records PR is not its
 merge or an acceptance claim for the source PR. Current-source and exact-root reads remain required
 before the next operation.
+```
