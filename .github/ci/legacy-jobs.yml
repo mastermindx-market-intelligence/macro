@@ -38679,7 +38679,7 @@ jobs:
               -o "$native_target"
           done
           MM_FABRIC_GATEWAY_SOURCE_ROOT="$fabric_fixture_root" python -m pytest \
-            tests/test_fabric_native_application_client.py tests/test_fabric_native_application_composition.py tests/test_fabric_brain_buffered_delivery.py tests/test_fabric_caller_native_composition.py tests/test_native_go_application_recipe.py \
+            tests/test_fabric_native_application_client.py tests/test_fabric_native_application_composition.py tests/test_fabric_brain_buffered_delivery.py tests/test_fabric_caller_native_composition.py tests/test_fabric_small_consumers.py tests/test_native_go_application_recipe.py \
             tests/test_fabric_inference_client.py tests/test_fabric_consumer_composition.py \
             tests/test_fabric_gateway_composition.py tests/test_orchestrator_fabric_composition.py tests/test_fabric_application_binding.py \
             tests/test_fabric_shared_default.py tests/test_master_brain_fabric_composition.py \

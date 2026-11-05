@@ -175,8 +175,9 @@ def _model_id(model_key: str) -> str:
 
 
 def _default_call(system_prompt: str, user_prompt: str, *, model_id: str,
-                  max_tokens: int, deepseek_model: str = "") -> tuple[str, str, str]:
-    """The real model call.  Returns (text, provider_name, model_id).
+                  max_tokens: int, deepseek_model: str = "",
+                  cfg: dict | None = None) -> tuple[str, str, str]:
+    """The real model call. Returns text, route and completed serving model.
 
     Usage lands in lib.ai_costs through llm_auth.make_call's own capture, under
     the ``usage_lane`` below — no new spend path is created here.
@@ -191,8 +192,11 @@ def _default_call(system_prompt: str, user_prompt: str, *, model_id: str,
     # argument is "the cheapest model that can answer" must not pick a tier by
     # accident.  The two ids are DIFFERENT strings on purpose: an Anthropic
     # model id is not a DeepSeek model id, so the pin is per-provider.
+    provider_cfg = {**dict(cfg or {}), "usage_lane": "press-research-triage-veto"}
+    if llm_auth.application_mode_id(provider_cfg) is not None:
+        provider_cfg.setdefault("workload_profile", "site_batch")
     providers = llm_auth.build_providers(
-        {"usage_lane": "press-research-triage-veto"},
+        provider_cfg,
         opus_model=model_id,
         deepseek_model=deepseek_model or _DEEPSEEK_FALLBACK)
     if not providers:
@@ -204,20 +208,32 @@ def _default_call(system_prompt: str, user_prompt: str, *, model_id: str,
               flush=True)
         return "", "", model_id
 
+    selected = llm_auth.is_fabric_selection(providers)
+    served_model = ""
+
     def _do_call(client, model):
+        nonlocal served_model
         resp = client.messages.create(
             model=model, max_tokens=max_tokens, system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
         )
+        if selected and (getattr(resp, "stop_reason", None) != "end_turn"
+                         or not resp.content
+                         or any(getattr(b, "type", "") != "text" for b in resp.content)):
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
         if getattr(resp, "stop_reason", None) == "refusal":
             return None, "stop_refusal", resp
         text = "".join(b.text for b in resp.content
                        if getattr(b, "type", "") == "text")
+        if selected and not text.strip():
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+        served_model = str(getattr(resp, "model", None) or model or "")
         return (text or None), None, resp
 
-    raw, _reason, provider = llm_auth.make_call(
-        providers, _do_call, context="press_research_veto")
-    return str(raw or ""), str(provider or ""), model_id
+    with llm_auth.begin_operation(providers, context="press_research_veto") as operation:
+        raw, _reason, provider = llm_auth.make_call(
+            operation.providers, _do_call, context="press_research_veto")
+    return str(raw or ""), str(provider or ""), served_model
 
 
 def run(result: dict, *, cfg: dict | None = None,
@@ -275,7 +291,7 @@ def run(result: dict, *, cfg: dict | None = None,
     deepseek_model = str(vcfg.get("deepseek_model") or _DEEPSEEK_FALLBACK)
     caller = call or (lambda s, u: _default_call(
         s, u, model_id=model_id, max_tokens=max_tokens,
-        deepseek_model=deepseek_model))
+        deepseek_model=deepseek_model, cfg=vcfg))
 
     vetoes: dict[str, dict] = {}
     batches = 0
