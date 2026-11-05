@@ -703,9 +703,139 @@ def test_annotation_starts_the_line(capsys):
     assert out and out[0].startswith("::error title=page-registry::")
 
 
+def test_gmi_source_classification_does_not_grant_a_new_shell_audience():
+    """Actual source overrides must close the real exporter, not just describe a hold."""
+    import copy
+    from scripts.export_shared_shell_routes import derive_projection
+
+    routes = {
+        "macro:gmi": "/gmi.html",
+        "macro:gmi_index": "/gmi-index.html",
+        "macro:gmi_coverage": "/gmi-coverage.html",
+        "macro:gmi_issuer_mu": "/gmi-issuer-mu.html",
+        "macro:gmi_relationships": "/gmi-relationships.html",
+        "macro:gmi_states": "/gmi-states.html",
+        "macro:expectation_surface": "/expectation_surface.html",
+    }
+    rows = []
+    for page_id, route in routes.items():
+        row = reg.blank_row(page_id, "macro", route)
+        # The published HTML shell policy is independent of downstream purpose.
+        row.update(lifecycle="live", access_shell="anonymous",
+                   payload_tier="public_shell_premium_payload")
+        row["known_contracts"] = ["site_access.v1:default_insider"]
+        rows.append(row)
+    original = copy.deepcopy(rows)
+    overlay = reg.load_overrides(OVERRIDES)
+    assert "macro:consumer_cyclical_plnt" not in overlay
+    assert reg.apply_overrides(rows, {key: overlay[key] for key in routes},
+                               source_name=str(OVERRIDES)) == []
+    held = {"macro:gmi_issuer_mu", "macro:gmi_relationships",
+            "macro:expectation_surface"}
+    for before, after in zip(original, rows):
+        assert "site_access.v1:default_insider" in after["known_contracts"]
+        if after["page_id"] in held:
+            assert all(after[key] == before[key]
+                       for key in ("lifecycle", "access_shell", "payload_tier"))
+            assert "shared_shell:admission_withheld" in after["known_contracts"]
+    index = rows_by_id(rows)
+    assert index["macro:gmi_states"]["lifecycle"] == "internal"
+    pin = "a" * 40
+    doc = {"schema": reg.SCHEMA, "generated_at": "2026-11-02T00:00:00Z",
+           "sources": {"macro": {"sha": pin}, "terminal": {"sha": "b" * 40},
+                       "mastermind": {"sha": "c" * 40}}, "pages": rows}
+    # The withdrawn fixture has no canonical row or override. A stale copy
+    # must remain unregistered, rather than acquiring a diagnostic audience.
+    tracked = list(routes.values())
+    def project(candidate, paths):
+        return derive_projection(candidate, paths, {"exact": [], "prefixes": []},
+                                 {}, registry_digest="fixture", inventory_ref=pin,
+                                 document_paths=set(paths))
+    result = project(doc, tracked)
+    assert result["legacyPaths"] == ["/gmi-coverage.html", "/gmi-index.html", "/gmi.html"]
+    reasons = {entry["path"]: entry["reason"]
+               for entry in result["coverage"]["excluded"]}
+    assert reasons == {
+        "/expectation_surface.html": "consumer_admission_withheld",
+        "/gmi-issuer-mu.html": "consumer_admission_withheld",
+        "/gmi-relationships.html": "consumer_admission_withheld",
+        "/gmi-states.html": "lifecycle_internal",
+    }
+    assert {entry["href"] for entry in result["directory"]} == set(result["legacyPaths"])
+    stale = project(doc, tracked + ["/consumer_cyclical_plnt.html"])
+    assert {entry["path"]: entry["reason"] for entry in stale["coverage"]["excluded"]}[
+        "/consumer_cyclical_plnt.html"] == "unregistered"
+    # A hypothetical exact-surface qualification must not qualify a sibling.
+    # Removing this marker in a fixture is not a real purpose grant.
+    qualified = copy.deepcopy(doc)
+    for row in qualified["pages"]:
+        if row["page_id"] == "macro:gmi_relationships":
+            row["known_contracts"].remove("shared_shell:admission_withheld")
+    admitted = project(qualified, tracked)
+    assert set(admitted["legacyPaths"]) - set(result["legacyPaths"]) == {
+        "/gmi-relationships.html"}
+    assert "/gmi-issuer-mu.html" not in admitted["legacyPaths"]
 
 
 # Source-shaped render-table attribution fixtures; builders are parsed, never run.
+
+@pytest.mark.parametrize("tracked", [False, True])
+def test_public_carrier_withdrawal_keeps_diagnostic_writes_out_of_rows(tmp_path, tracked):
+    source = '''PUBLIC_CARRIER_HELD = True
+def render():
+    write_page(site / "private_fixture.html", "private fixture")
+'''
+    _gmi_builder_fixture(tmp_path, "build_private_fixture.py", source)
+    # A second writer cannot clear the source-owned route withdrawal.
+    _gmi_builder_fixture(tmp_path, "build_other.py", '''def render():
+    write_page(site / "private_fixture.html", "stale copy")
+    write_page(site / "ordinary.html", "ordinary")
+''')
+    sites, _ = reg.scan_write_sites(tmp_path / "scripts")
+    assert any(s.route == "/private_fixture.html" and s.public_carrier_held for s in sites)
+    listing = ["site/index.html"] + (["site/private_fixture.html"] if tracked else [])
+    rows, metadata = reg.derive_macro(tmp_path, git=_gmi_fake_git(listing))
+    assert "/private_fixture.html" not in {r["route"] for r in rows}
+    assert "/ordinary.html" in {r["route"] for r in rows}
+    assert any("/private_fixture.html" in s for s in metadata["public_carrier_held_write_sites"])
+
+
+@pytest.mark.parametrize("declaration", ["", "PUBLIC_CARRIER_HELD = False\n"])
+def test_ordinary_unpublished_builder_diagnostics_remain_in_registry(tmp_path, declaration):
+    _gmi_builder_fixture(tmp_path, "build_ordinary.py", declaration + '''def render():
+    write_page(site / "ordinary.html", "ordinary")
+''')
+    rows, metadata = reg.derive_macro(tmp_path, git=_gmi_fake_git(["site/index.html"]))
+    assert "/ordinary.html" in {r["route"] for r in rows}
+    assert metadata["public_carrier_held_write_sites"] == []
+
+
+@pytest.mark.parametrize("declaration", [
+    "PUBLIC_CARRIER_HELD = 1", "PUBLIC_CARRIER_HELD = None",
+    "PUBLIC_CARRIER_HELD = read_policy()",
+    "PUBLIC_CARRIER_HELD = True\nPUBLIC_CARRIER_HELD = False",
+    "PUBLIC_CARRIER_HELD = True\ndef reset():\n    PUBLIC_CARRIER_HELD = False",
+    "if enabled:\n    PUBLIC_CARRIER_HELD = True",
+    "PUBLIC_CARRIER_HELD, other = (True, 1)",
+    "from policy import PUBLIC_CARRIER_HELD",
+])
+def test_ambiguous_public_carrier_withdrawal_refuses_registry(tmp_path, declaration):
+    _gmi_builder_fixture(tmp_path, "build_held.py", declaration + '''
+def render():
+    write_page(site / "held.html", "held")
+''')
+    with pytest.raises(ValueError, match="PUBLIC_CARRIER_HELD"):
+        reg.scan_write_sites(tmp_path / "scripts")
+
+
+@pytest.mark.parametrize("destination", ['site / f"held_{ticker}.html"', 'unknown_destination'])
+def test_public_carrier_withdrawal_requires_concrete_route(tmp_path, destination):
+    _gmi_builder_fixture(tmp_path, "build_held.py", f'''PUBLIC_CARRIER_HELD = True
+def render():
+    write_page({destination}, "held")
+''')
+    with pytest.raises(ValueError, match="requires concrete write sites"):
+        reg.scan_write_sites(tmp_path / "scripts")
 def _gmi_write_fixture(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
