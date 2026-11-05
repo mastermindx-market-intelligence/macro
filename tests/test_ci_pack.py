@@ -4406,6 +4406,9 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # Paid Fabric source-only guidance and deterministic attribution tests are
+    # exclusively scoped; do not widen unrelated ordinary-code packing probes.
+    "meta-ceo-fabric-contracts",
     # A1 pure product/finite QA must run on code PRs without the legacy data job.
     "eval-os-a1",
     # Qledger suites retain all named imports; opaque fixture roots are audited.
@@ -4467,6 +4470,7 @@ CURATED_EXCLUSIVE = {
     "china-search-universe",
     "china-radar-record",  # W31 China Radar: render/ledger suites keep their measured closure.
     "quant-q02-american-exercise",  # Q02 quant assessment: suite imports importlib/subprocess; AST-derived closure
+    "p08-synthetic-composition",  # Research-only composition: curated solver/adapter/test closure.
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
     # off workflow-yaml, which was `gate: data` and never ran on a PR. Exclusive
     # because its suites read most of the repository: inferred, the job would add
@@ -5462,9 +5466,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_909),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_924),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_665),
+    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_668),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5472,6 +5476,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
+    candidate 5f0f047b160b against real base b4df44260aef, using the same
+    run_ci_pack blob 3cbed589. Comparison SHA256
+    18c613726a07f17a5484f76639079111ef7b69306f3d0360754c69fea2525888:
+    index137jobs/5909->5912, free137jobs/5924->5927, Prophet131jobs/5665->5668,
+    all ten packs, identical selected IDs with no entrants or exits. The sole
+    definition/selected-weight delta is existing basket-staleness-warn4->7
+    from its regional coverage step. Raise only those three estimated-weight
+    ceilings to the measured values. These are planner estimates, not runtime
+    evidence; job-count, pack, timeout and admission bounds remain unchanged.
 
     2026-11-01 main-red repair after #10294 (ee5cd3e1a8a8), which split the
     ``gate: data`` job ``tier-gate`` into ``tier-gate``, ``paywall-contracts``
