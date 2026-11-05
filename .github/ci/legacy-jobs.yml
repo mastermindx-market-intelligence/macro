@@ -46688,8 +46688,9 @@ jobs:
     # the fixture-rendered, synthetic and template-bound copy law (the
     # template halves of the split M2 and trace-row tests included), so a
     # template, label-table or builder change still proves the law before
-    # merge; the one p4_copy scanner over the committed monetary page rides
-    # the same marker and this job's run line. Pinned by
+    # merge; the p4_copy scanner over the committed monetary page and the
+    # read_strip shipped-artifact check over the nightly macrodata ride the
+    # same marker and this job's run line. Pinned by
     # tests/test_ci_pack.py::
     # test_macro_suite_copy_law_site_scanners_run_on_the_data_gate.
     #
@@ -46789,7 +46790,7 @@ jobs:
         # the page builder; pillow stays for the stitched-band helpers' import.
         run: pip install pytest jinja2 pyyaml jsonschema==4.26.0 pillow
       - name: Market OS macro suite pages — copy law over the nightly-rendered pages
-        run: python -m pytest tests/test_macro_command_copy_law.py tests/test_macro_command_p4_copy.py -m data_gate -q
+        run: python -m pytest tests/test_macro_command_copy_law.py tests/test_macro_command_p4_copy.py tests/test_macro_command_read_strip.py -m data_gate -q
 
   markets-regime-strip:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free

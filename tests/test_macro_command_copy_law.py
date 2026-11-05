@@ -2028,7 +2028,10 @@ COMPOSITION_DISCLOSURE_ROWS = (
 )
 
 
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
 def test_axis_move_clauses_cover_every_axis_and_direction() -> None:
+    """Verdict moves with the nightly macrodata (payload axis census), so data gate."""
     from lib.macro_suite_disclosure import (
         AXIS_MOVE_CLAUSES, axis_move_clause, payload_axis_ids, required_axis_ids,
     )

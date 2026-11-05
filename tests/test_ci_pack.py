@@ -1683,10 +1683,12 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_m
 def test_macro_suite_copy_law_site_scanners_run_on_the_data_gate(real_manifest_scopes) -> None:
     """A nightly-rendered page must never red the source merge gate (S1, 2026-11-05).
 
-    ``tests/test_macro_command_copy_law.py`` holds two kinds of test: the copy
+    ``tests/test_macro_command_copy_law.py`` (and, for one test each, its
+    ``p4_copy`` and ``read_strip`` siblings) holds two kinds of test: the copy
     law over fixture-rendered or synthetic payloads (a property of the code),
-    and scanners over the committed ``site/macro_*.html`` the nightly rewrites
-    on every run (a property of the data). On 2026-11-05 the nightly committed
+    and scanners over the committed ``site/macro_*.html`` or the nightly
+    ``site/macrodata`` the nightly rewrites on every run (a property of the
+    data). On 2026-11-05 the nightly committed
     a ``macro_business_activity.html`` carrying an unpaired ``Contraction``
     label; ``market-os-macro-suite-pages`` went red on main at 04:41Z and
     merge-on-green's main-red circuit breaker held every ordinary merge for 18
@@ -1697,10 +1699,13 @@ def test_macro_suite_copy_law_site_scanners_run_on_the_data_gate(real_manifest_s
     """
     manifest = _yaml(MANIFEST)
     suite = "tests/test_macro_command_copy_law.py"
-    sibling = "tests/test_macro_command_p4_copy.py"
+    siblings = (
+        "tests/test_macro_command_p4_copy.py",
+        "tests/test_macro_command_read_strip.py",
+    )
     code_job = manifest["jobs"]["market-os-macro-suite-pages"]
     assert code_job["gate"] == "code"
-    for scanner in (suite, sibling):
+    for scanner in (suite, *siblings):
         code_runs = [
             str(step.get("run") or "") for step in code_job["steps"]
             if scanner in str(step.get("run") or "")
@@ -1714,9 +1719,11 @@ def test_macro_suite_copy_law_site_scanners_run_on_the_data_gate(real_manifest_s
     assert data_job["scope"] == "exclusive"
     data_runs = [
         str(step.get("run") or "") for step in data_job["steps"]
-        if suite in str(step.get("run") or "")
+        if re.search(r"pytest\s+tests/", str(step.get("run") or ""))
     ]
-    assert data_runs == [f"python -m pytest {suite} {sibling} -m data_gate -q"]
+    assert data_runs == [
+        f"python -m pytest {suite} {' '.join(siblings)} -m data_gate -q"
+    ]
     assert _job_pip_packages(data_job) == _job_pip_packages(code_job)
     assert set(code_job["paths"]) == set(data_job["paths"]), (
         "the data sibling declares the parent's closure; widen both together"
@@ -1728,10 +1735,11 @@ def test_macro_suite_copy_law_site_scanners_run_on_the_data_gate(real_manifest_s
     # the code gate. A new committed-site scanner is added to this set,
     # never to the code gate.
     marked: list[str] = []
-    for scanner in (suite, sibling):
+    for scanner in (suite, *siblings):
         marked += re.findall(
-            r"@pytest\.mark\.data_gate\s*\n(?:@pytest\.mark\.[^\n]*\n)*def (test_\w+)\(",
+            r"^@pytest\.mark\.data_gate\s*\n(?:^@pytest\.mark\.[^\n]*\n)*^def (test_\w+)\(",
             (ROOT / scanner).read_text(encoding="utf-8"),
+            re.M,
         )
     assert sorted(marked) == sorted({
         "test_committed_payloads_have_zero_plain_fallbacks",
@@ -1745,6 +1753,8 @@ def test_macro_suite_copy_law_site_scanners_run_on_the_data_gate(real_manifest_s
         "test_trace_row_present_iff_trace_ref",
         "test_committed_monetary_policy_page_keeps_restored_rows",
         "test_rendered_sections_have_no_repeated_visible_sentence",
+        "test_axis_move_clauses_cover_every_axis_and_direction",
+        "test_unknown_tokens_are_empty_for_the_shipped_artifact",
     }), marked
 
     jobs, _ = real_manifest_scopes
