@@ -65,7 +65,8 @@
     <div>
       <h1>{{ t(sub.name, sub.name_zh) }}</h1>
       <div class="sd-theme">{{ t('Theme', '主题') }}: <b>{{ t(sub.theme, sub.theme_zh) }}</b> · {{ sub.n_members }} {{ t('stocks', '只成分股') }}
-        · {{ t('heat rank', '热度排名') }} #{{ sub.rank }}{{ ' / ' ~ n_total }}</div>
+        · {{ t('heat rank', '热度排名') }} #{{ sub.rank }}{{ ' / ' ~ n_total }}</div>{% if rotation_feed_clocks | default(false) %}
+      <div class="sd-theme">{{ t('Data as of', '数据截至') }}: <b>{% if rotation_source_asof %}{{ rotation_source_asof }}{% else %}{{ t('Not published', '未发布') }}{% endif %}</b> · {{ t('Feed generated (UTC)', '数据生成（UTC）') }}: <b>{% if rotation_feed_generated_utc %}{{ rotation_feed_generated_utc }}{% else %}{{ t('Not published', '未发布') }}{% endif %}</b></div>{% endif %}
     </div>
     <span class="sd-q {{ q_cls }}">{{ t(q_en, q_zh) }} · {{ t(qx_en, qx_zh) }}</span>
   </div>

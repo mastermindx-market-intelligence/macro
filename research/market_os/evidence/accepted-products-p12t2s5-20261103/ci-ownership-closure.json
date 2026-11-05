@@ -1,0 +1,102 @@
+{
+  "at": "2026-11-03T22:00:02.084349+00:00",
+  "suites": {
+    "tests/test_bonds_glance_copy.py": {
+      "named_by_actual_run_step": true,
+      "owners": [
+        {
+          "job": "ccw-w4-credit-desk",
+          "gate": "code",
+          "exclusive": false,
+          "uncovered_concrete_closure": [],
+          "concrete_files": 53,
+          "ambiguities": [
+            "collectors/base.py:221: filesystem roots=collectors,data suffixes=.parquet",
+            "lib/pages.py:116: subprocess roots=content,site,templates",
+            "lib/pages.py:139: filesystem roots=content,site,templates suffixes=.html",
+            "lib/pages.py:165: filesystem roots=content,site,templates suffixes=.html"
+          ]
+        }
+      ]
+    },
+    "tests/test_fundamental_forensics_ui.py": {
+      "named_by_actual_run_step": true,
+      "owners": [
+        {
+          "job": "fif-kernel-guards",
+          "gate": "code",
+          "exclusive": true,
+          "uncovered_concrete_closure": [],
+          "concrete_files": 5,
+          "ambiguities": [
+            "engine/thetadata_store.py:1010: filesystem roots=data",
+            "engine/thetadata_store.py:1015: filesystem roots=data suffixes=.parquet",
+            "engine/thetadata_store.py:225: filesystem roots=data",
+            "engine/thetadata_store.py:558: filesystem roots=data suffixes=.parquet",
+            "engine/thetadata_store.py:618: filesystem roots=data",
+            "scripts/publish_r2.py:476: filesystem glob",
+            "tests/test_fundamental_forensics_ui.py:242: subprocess roots=data,research,scripts,site,templates,tests",
+            "tests/test_fundamental_forensics_ui.py:255: subprocess roots=data,research,scripts,site,templates,tests",
+            "tests/test_fundamental_forensics_ui.py:284: subprocess roots=data,research,scripts,site,templates,tests",
+            "tests/test_fundamental_forensics_ui.py:374: subprocess roots=data,research,scripts,site,templates,tests",
+            "tests/test_fundamental_forensics_ui.py:391: subprocess roots=data,research,scripts,site,templates,tests"
+          ]
+        }
+      ]
+    },
+    "tests/test_macro_suite_pages.py": {
+      "named_by_actual_run_step": true,
+      "owners": [
+        {
+          "job": "market-os-macro-suite-pages",
+          "gate": "code",
+          "exclusive": true,
+          "uncovered_concrete_closure": [],
+          "concrete_files": 20,
+          "ambiguities": [
+            "lib/macro_suite_disclosure.py:860: filesystem roots=data",
+            "lib/pages.py:116: subprocess roots=content,site,templates",
+            "lib/pages.py:139: filesystem roots=content,site,templates suffixes=.html",
+            "lib/pages.py:165: filesystem roots=content,site,templates suffixes=.html",
+            "scripts/build_macro_suite_pages.py:1449: filesystem roots=data,research,site,templates suffixes=.html",
+            "tests/test_macro_suite_pages.py:1133: subprocess roots=data,engine,site,templates,tests",
+            "tests/test_macro_suite_pages.py:356: filesystem roots=data,engine,site,templates,tests suffixes=.py",
+            "tests/test_macro_suite_pages.py:798: subprocess roots=data,engine,site,templates,tests"
+          ]
+        }
+      ]
+    },
+    "tests/test_china_intel_visits_render.py": {
+      "named_by_actual_run_step": true,
+      "owners": [
+        {
+          "job": "unrun-brain-desks",
+          "gate": "code",
+          "exclusive": false,
+          "uncovered_concrete_closure": [],
+          "concrete_files": 79,
+          "ambiguities": [
+            "collectors/base.py:221: filesystem roots=collectors,data suffixes=.parquet",
+            "collectors/openfigi.py:62: filesystem roots=data suffixes=.parquet",
+            "engine/codex_lane/runner.py:547: subprocess invocation",
+            "engine/codex_lane/runner.py:793: subprocess invocation",
+            "engine/smart_money.py:205: filesystem roots=config,data suffixes=.parquet",
+            "engine/smart_money.py:321: filesystem roots=config,data suffixes=.parquet",
+            "engine/smart_money.py:331: filesystem roots=config,data suffixes=.parquet",
+            "engine/smart_money.py:609: filesystem roots=config,data suffixes=.parquet",
+            "engine/smart_money.py:726: filesystem roots=config,data suffixes=.parquet",
+            "lib/ai_costs.py:425: filesystem roots=config,data suffixes=.jsonl",
+            "lib/pages.py:116: subprocess roots=content,site,templates",
+            "lib/pages.py:139: filesystem roots=content,site,templates suffixes=.html",
+            "lib/pages.py:165: filesystem roots=content,site,templates suffixes=.html"
+          ]
+        }
+      ]
+    }
+  },
+  "removed_unowned_business_standalone": true,
+  "no_manifest_job_budget_change": true,
+  "harness_correction": "First targeted probe used _matches_any args in wrong order and returned TypeError; corrected to actual API (patterns,path); not a CI/source verdict.",
+  "all_suites_named": true,
+  "all_concrete_code_closures_covered": true
+}

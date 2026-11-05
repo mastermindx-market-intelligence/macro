@@ -1,0 +1,168 @@
+{
+  "scope": "Native intl_bonds.snapshot over exact retained Git parquet values; no provider, acquisition or full feature-engine run",
+  "rows": [
+    {
+      "code": "US",
+      "source_key": "us10y",
+      "ccy": "USD",
+      "slope_basis": "2s10s",
+      "cadence": "daily",
+      "actual_observation": "2026-10-30",
+      "analysis_endpoint": "2026-10-30",
+      "raw_age_days": 0,
+      "existing_stale_flag": false,
+      "expected_by_existing_threshold": false,
+      "y10": 4.94
+    },
+    {
+      "code": "DE",
+      "source_key": "ez_aaa_10y",
+      "ccy": "EUR",
+      "slope_basis": "2s10s",
+      "cadence": "daily",
+      "actual_observation": "2026-10-30",
+      "analysis_endpoint": "2026-10-30",
+      "raw_age_days": 0,
+      "existing_stale_flag": false,
+      "expected_by_existing_threshold": false,
+      "y10": 3.37
+    },
+    {
+      "code": "JP",
+      "source_key": "jgb_10y",
+      "ccy": "JPY",
+      "slope_basis": "2s10s",
+      "cadence": "daily",
+      "actual_observation": "2026-09-30",
+      "analysis_endpoint": "2026-10-30",
+      "raw_age_days": 30,
+      "existing_stale_flag": true,
+      "expected_by_existing_threshold": true,
+      "y10": 3.06
+    },
+    {
+      "code": "GB",
+      "source_key": "IRLTLT01GBM156N",
+      "ccy": "GBP",
+      "slope_basis": "10y-3m",
+      "cadence": "monthly",
+      "actual_observation": "2026-09-01",
+      "analysis_endpoint": "2026-10-30",
+      "raw_age_days": 59,
+      "existing_stale_flag": false,
+      "expected_by_existing_threshold": false,
+      "y10": 5.24
+    },
+    {
+      "code": "CA",
+      "source_key": "IRLTLT01CAM156N",
+      "ccy": "CAD",
+      "slope_basis": "10y-3m",
+      "cadence": "monthly",
+      "actual_observation": "2026-09-01",
+      "analysis_endpoint": "2026-10-30",
+      "raw_age_days": 59,
+      "existing_stale_flag": false,
+      "expected_by_existing_threshold": false,
+      "y10": 3.88
+    },
+    {
+      "code": "AU",
+      "source_key": "IRLTLT01AUM156N",
+      "ccy": "AUD",
+      "slope_basis": "10y-3m",
+      "cadence": "monthly",
+      "actual_observation": "2026-09-01",
+      "analysis_endpoint": "2026-10-30",
+      "raw_age_days": 59,
+      "existing_stale_flag": false,
+      "expected_by_existing_threshold": false,
+      "y10": 5.28
+    },
+    {
+      "code": "CH",
+      "source_key": "IRLTLT01CHM156N",
+      "ccy": "CHF",
+      "slope_basis": null,
+      "cadence": "monthly",
+      "actual_observation": "2026-09-01",
+      "analysis_endpoint": "2026-10-30",
+      "raw_age_days": 59,
+      "existing_stale_flag": false,
+      "expected_by_existing_threshold": false,
+      "y10": 0.59
+    }
+  ],
+  "input_receipts": {
+    "data/fred/DGS10.parquet": {
+      "sha256": "3727660cf31f16be9361cd419ca93f899b491fd168f1fbdbbb67ed01d8717270",
+      "rows": 16193
+    },
+    "data/fred/DGS2.parquet": {
+      "sha256": "ed05d034f9220a6fe17bba8dfb09293cfb0ab548c2700203c612d84e879c6df7",
+      "rows": 12601
+    },
+    "data/fred/DGS3MO.parquet": {
+      "sha256": "20f0f8d6ef2c14146876b6a3537eb10a16f320c7050f0ff9a7b348d4359815c2",
+      "rows": 11291
+    },
+    "data/fred/DFII10.parquet": {
+      "sha256": "32319aa5caf14ef6e66f88e115d8b51c0cadf89fddbcfd3b642cce7dab2bf0c8",
+      "rows": 5962
+    },
+    "data/sovereign/ez_aaa_10y.parquet": {
+      "sha256": "c1b2ca212414204f07534e2ada0016be74f564aea453d91744cdfa67816cfb44",
+      "rows": 5664
+    },
+    "data/sovereign/ez_aaa_2y.parquet": {
+      "sha256": "b5ae0b6cd6d4f4b406a6d8ea5491b50c980bdc262b3e753ef538ee049c57de6c",
+      "rows": 5664
+    },
+    "data/sovereign/jgb_10y.parquet": {
+      "sha256": "e8f910b40c5abf4b9d04db7897f4f6e40d155543c1952f9733378ae9508a192d",
+      "rows": 9948
+    },
+    "data/sovereign/jgb_2y.parquet": {
+      "sha256": "cabcb40d76d12ded4c71b8ebf8a5e4c4d97619cece384276e3098797726a1e4f",
+      "rows": 12948
+    },
+    "data/fred/IRLTLT01GBM156N.parquet": {
+      "sha256": "37b0ed34aaa25fe67ea43ff653ee45f0f391b923ca94a58b3978c6fb7f331f97",
+      "rows": 801
+    },
+    "data/fred/IR3TIB01GBM156N.parquet": {
+      "sha256": "057a2143c29402c036dcac803f04c29d10015900322a90f16a0dfd9977379e94",
+      "rows": 829
+    },
+    "data/fred/IRLTLT01CAM156N.parquet": {
+      "sha256": "fb2ab27db943bd7e67708da2b778ef1722682a95f208d44b22d8d0c2a6734642",
+      "rows": 861
+    },
+    "data/fred/IR3TIB01CAM156N.parquet": {
+      "sha256": "9a50d7daaa6650591a721a5cc0c047afc849b052930e455cc9fd2b8c828874b9",
+      "rows": 849
+    },
+    "data/fred/IRLTLT01AUM156N.parquet": {
+      "sha256": "e79b9779c5292d94d818aa6687da25f45cf79e7f89499dfd687fa53cb9f581dd",
+      "rows": 687
+    },
+    "data/fred/IR3TIB01AUM156N.parquet": {
+      "sha256": "3806a5023b213e7c8fb7a3103a4d1b2ced6c7d18d7a02e69a788ca653baaf663",
+      "rows": 704
+    },
+    "data/fred/IRLTLT01CHM156N.parquet": {
+      "sha256": "63e03dc8da559e9233a03eae123644f204d00f277c2f8f744c2178fa24890875",
+      "rows": 861
+    },
+    "data/fred/BAMLEMCBPIOAS.parquet": {
+      "sha256": "8a1dd8b3ec3bc50b4957a685e2c03dfdec6fb9ea4034f02aa5a664995bde690e",
+      "rows": 888
+    },
+    "data/yahoo/EMB.parquet": {
+      "sha256": "7b150ed821d91afcf2324d4ab2cdc3ffd80f970c0343d661c6cb7c66726aab20",
+      "rows": 4747
+    }
+  },
+  "retained_data_source": "ed9fb81da853429ce87495d6c012467ebf057548",
+  "engine_source_sha256": "1d6289649850b2809cf6ac5fa1ece9f0760da26855f3d00e26c93dd5bb8e36ef"
+}

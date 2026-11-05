@@ -1,0 +1,86 @@
+{
+  "scope": "S14.S1 fault/copy repair: existing build_page/read_workspace/write_page + externalize_css_text + optimize_assets.make_optimizer, single paired static Business rendition only",
+  "actual_document_rendered_at": "2026-11-04T08:56:36Z",
+  "raw_artifact": {
+    "path": "macrodata/workspaces/business_activity/US/latest.json",
+    "manifest_path": "macrodata/workspaces/manifest.json",
+    "sha256": "d1c1cbde31c074c74d88546da34a1531b49cdf0cd50b9d88f5ea4153aeec5393",
+    "bytes": 109502,
+    "min_client_contract": "mastermind.macro_workspace_snapshot.v1@1.0.0"
+  },
+  "input_sha256": {
+    "site/macrodata/workspaces/manifest.json": "39b93af545ded66bcb30cea9186557f225533011a44cc9f800c3ad9a610e1601",
+    "site/macrodata/workspaces/business_activity/US/latest.json": "26180d18fbda8661acb5a959be65cf200b840f0582a997ba6419badd384255ca",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "templates/macro_suite_boot.js": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69",
+    "site/macro_suite_boot.js": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69",
+    "templates/macro_suite.css": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3",
+    "site/macro_suite.css": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3",
+    "templates/macro_suite.js": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b",
+    "site/macro_suite.js": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b",
+    "templates/macro_command.css": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65",
+    "site/macro_command.css": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65",
+    "templates/macro_command.js": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b",
+    "site/macro_command.js": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+  },
+  "snapshot_immutable_and_digest_verified": true,
+  "values_periods_source_identity_count": 31,
+  "derived_unknown_clocks": true,
+  "no_clock_absence_as_value_failure": true,
+  "inline_style_bytes": [
+    379
+  ],
+  "externalization": "all existing styles below1024; no opt-in JS, no new asset",
+  "asset_hashes": {
+    "site/shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "site/shared_shell_bridge.js": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+    "site/macro_suite_boot.js": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69",
+    "site/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "site/macro_suite.css": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3",
+    "site/macro_command.css": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65",
+    "site/product-nav-icons.css": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+    "site/navigation-refresh.css": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+    "site/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "site/live_config.js": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+    "site/live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+    "site/theme.js": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+    "site/macro_suite.js": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b",
+    "site/macro_command.js": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+  },
+  "native_prepublication_sha256": "6c364f563c7439ca9d48c6f04bc92fa14c22f9fc2184c8a2e29f88229fee9454",
+  "final_html_sha256": "fb9fc63772787faf97e592bbef4f07f21d0eec379a346a3157e0f5a2296dd2fe",
+  "publication_transform_preserves_all_body_text_and_time_nodes": true,
+  "asset_stage_fixed_point": true,
+  "writes": [
+    [
+      "os.mkdir",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/site"
+    ],
+    [
+      "open",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/site/.macro_business_activity.html.83823.tmp"
+    ],
+    [
+      "os.rename",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/site/.macro_business_activity.html.83823.tmp"
+    ],
+    [
+      "os.remove",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/site/.macro_business_activity.html.83823.tmp"
+    ],
+    [
+      "open",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/site/macro_business_activity.html"
+    ]
+  ],
+  "blocked": [],
+  "network": "OSdeny network*",
+  "not_claimed": [
+    "full financial producer",
+    "current observation or source authenticity",
+    "PIT",
+    "fresh visual/browser/touch",
+    "host/runtime/served publication"
+  ]
+}

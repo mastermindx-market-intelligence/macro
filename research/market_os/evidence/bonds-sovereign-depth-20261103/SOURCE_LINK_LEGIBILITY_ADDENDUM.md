@@ -1,0 +1,3 @@
+# Prospective source-link legibility repair
+
+The first actual after-capture reveals inherited var(--blue) (#285FFF) on the dark source card (#141821) for new small source links (approximately3.6:1). This is the newly added disclosure, not a gauge/global redesign. Before final capture, bind `.mx-disc a` in the existing Bonds presentation to existing `var(--ink)` and underline it, preserving native full focus outlines. No literal palette, shared style, JS, geometry, data or gauge region changes. Dark links use the current light ink and light links use current dark ink, respecting the incumbent two materials. Preserve first captures under capture-after; final capture goes under capture-after-v2.

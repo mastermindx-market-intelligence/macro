@@ -1,0 +1,11 @@
+{
+  "scope": "Exact native retained7-country snapshot: every original numeric/model/scoring/narrative field unchanged; only Japan source-age stale flag corrected plus additive metadata",
+  "original_field_differences": [
+    {
+      "path": "/countries/2/stale",
+      "before": false,
+      "after": true
+    }
+  ],
+  "source": "ed9fb81da853429ce87495d6c012467ebf057548"
+}

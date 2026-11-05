@@ -1778,7 +1778,7 @@ def test_j6_against_committed_fixture():
 
 
 @pytest.mark.needs_full_checkout("mockups")
-def test_cli_against_committed_fixture():
+def test_cli_against_committed_fixture(tmp_path):
     """End-to-end CLI run on the committed fixture.
 
     Per the spec: ``PARTIAL`` is acceptable when the fixture lacks the
@@ -1786,9 +1786,9 @@ def test_cli_against_committed_fixture():
     full board). We assert the verdict is reported and identify which
     checks landed N/A.
     """
-    su_p = TMP_DIR / "amd_standouts.json"
-    ix_p = TMP_DIR / "amd_index.json"
-    out = TMP_DIR / "amd_out.json"
+    su_p = tmp_path / "amd_standouts.json"
+    ix_p = tmp_path / "amd_index.json"
+    out = tmp_path / "amd_out.json"
     su_p.write_text(json.dumps({
         "as_of": "2026-09-27",
         "buy": [{
@@ -1812,7 +1812,7 @@ def test_cli_against_committed_fixture():
         "as_of": "2026-09-27", "source_board_asof": "2026-09-27",
         "plans": []}), encoding="utf-8")
     wrapped = _wrapped_amd_fixture()
-    wrapped_path = TMP_DIR / "fixture_wrapped.html"
+    wrapped_path = tmp_path / "fixture_wrapped.html"
     wrapped_path.write_text(wrapped, encoding="utf-8")
     rc = _pjr.run(["--page", str(wrapped_path), "--standouts", str(su_p),
                    "--index", str(ix_p), "--ticker", "AMD",

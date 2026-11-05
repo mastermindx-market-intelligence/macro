@@ -4953,6 +4953,15 @@ def _stream_process_with_deadline(
         ) from exc
 
 
+# Immutable original diagnostic effects. A new head proof must not duplicate
+# these exact base/job children while their descendant settlement is unknown.
+# This does not settle either original timeout or exempt any head proof.
+_UNSETTLED_EXACT_BASE_REPLAYS = (
+    ("2fbee06234fec4e792918c1cb0d9f8ea2ed833c4", "ci-control-plane-contracts", "41966589230"),
+    ("75f1ed49f9ad991dfc04dcba3a787166751fe91c", "washout-turn-organ", "41887071408"),
+)
+
+
 def _base_replay_unavailable(base_sha: str, detail: object) -> dict[str, Any]:
     return {
         "tested_tree_sha": base_sha,
@@ -4979,6 +4988,29 @@ def _run_exact_base_replays(
     ]
     if not failed_records or plan.role != "pr_head":
         return
+    eligible_records = []
+    for record in failed_records:
+        original_run = next(
+            (
+                run_id
+                for base, job_id, run_id in _UNSETTLED_EXACT_BASE_REPLAYS
+                if (plan.base_sha, record["logical_job_id"]) == (base, job_id)
+            ),
+            None,
+        )
+        if original_run is None:
+            eligible_records.append(record)
+            continue
+        replay = _base_replay_unavailable(
+            plan.base_sha,
+            f"diagnostic withheld: original workflow {original_run} descendant settlement unknown",
+        )
+        for step in record["steps"]:
+            if step.get("outcome") in {"failed", "timed_out"}:
+                step.setdefault("base_replay", replay)
+    if not eligible_records:
+        return
+    failed_records = eligible_records
     deadline = time.monotonic() + max(1, budget_seconds)
     base_sha = plan.base_sha
     current_steps: list[dict[str, Any]] = []

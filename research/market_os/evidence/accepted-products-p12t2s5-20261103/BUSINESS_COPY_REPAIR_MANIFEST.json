@@ -1,0 +1,36 @@
+{
+  "task": "P12.T2.S11",
+  "parent_head": "d34f6702ed9ca83b5a430d75e4907f47470f1459",
+  "at": "2026-11-04T00:26:15.218204+00:00",
+  "scope": "Source-backed copy, exact retained singlepage native renderer, no financial producer/currenteconomic/PIT/served claim",
+  "preimage_packet": "/private/tmp/ci-refresh-starvation-20261103/macro-business-copy-diagnosis-4caa",
+  "paths": [
+    {
+      "path": "lib/macro_suite_labels.py",
+      "pre_blob": "3fd66dc5822ded36c7e9889283443e6daee7a337",
+      "post_blob": "7e5360e7abda4e44681d74ffa555ea7a83604dfa",
+      "sha256": "d17c225917e652ae3c882df97ffb471b146993ad03279a5221cf30d3d0713784"
+    },
+    {
+      "path": "tests/test_macro_command_copy_law.py",
+      "pre_blob": "6de72c30c4c62d40013018fdaf8c9b6bd177a70b",
+      "post_blob": "cff4f8317879f27a1791149a022d5530c534f954",
+      "sha256": "a31d4bb080a04ca811689cc7150cf022ba3f218ac11ff89709f66400cac5cd2c"
+    },
+    {
+      "path": "site/macro_business_activity.html",
+      "pre_blob": "9c4f8ad040566f77c39b8922599c14da95df842f",
+      "post_blob": "48a8d4dfa59541ac64c096cb88c42ee992564f05",
+      "sha256": "2a8e990c8b1ea54a59cb4d048074019490ae00c9e95187306c5c7b748b7a8f33"
+    }
+  ],
+  "checks": {
+    "source_red": "2 failed in5.08s",
+    "focused_new_and_unknown_fallback": "6 passed in3.54s",
+    "unchanged_original_guard_nodes": "..                                                                       [100%]\n2 passed in 5.98s"
+  },
+  "native": "Exactly2changedHTMLlines;31metric records equal except business_cycle_phase.value.zh, all time/code nodes and snapshot/manifest bytes equal; no blocked write or network events",
+  "clock_limit": "Existing retained source dates beyond wall time preserved, not newly authenticated/qualified; controlled old Pagebuilt replay not a new publication",
+  "current_CI": "95436/41745367406 still sole active original; this source has not been pushed or tested by that run",
+  "language_review": "Pending one fresh scoped nonauthor judgment on the actual opposing EN/ZH pairs and four owner phase labels"
+}

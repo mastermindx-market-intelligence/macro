@@ -1,0 +1,26 @@
+{
+  "site/fonts/Inter-400.woff2": {
+    "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "bytes": 23664
+  },
+  "site/fonts/Inter-500.woff2": {
+    "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+    "bytes": 24272
+  },
+  "site/fonts/Inter-600.woff2": {
+    "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "bytes": 24452
+  },
+  "site/fonts/Inter-700.woff2": {
+    "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+    "bytes": 24356
+  },
+  "site/fonts/Inter-800.woff2": {
+    "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+    "bytes": 24400
+  },
+  "site/fonts/Inter-900.woff2": {
+    "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
+    "bytes": 23900
+  }
+}

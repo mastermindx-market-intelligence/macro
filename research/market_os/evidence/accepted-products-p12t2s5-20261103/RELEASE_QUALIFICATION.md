@@ -1,0 +1,13 @@
+# P12.T2.S5 — ordinary source-release qualification
+
+Root accepted the local composition a35ef91b/tree075e5743, bounded to source and the two actual native outputs. Root then authorized ordinary source release without another ACK. This addendum records the supported sparse remedy; it does not modify or restamp accepted old captures, receipts or raw RED logs.
+
+The installed storage helper verified this same owned external SSD tree and volume223C95C2-9D0D-4829-B39A-853BC4065915, with752157696000 bytes above the configured reserve at admission. The canonical `python3 scripts/worktree_sparse.py full` completed once, preserving the clean index/worktree and removable-volume protection. Runtime-style validation now passes (275JS files,44injecting,88hits within frozen allowances). UI-evidence validation now passes on the actual composition diff and complete existing evidence tree. Original sparse precondition failures remain in ordinary-guards.json; no allow-sparse, guard bypass, internal fallback, policy/lock override or data replacement occurred.
+
+A normal fetch observed origin/main4b24ad2d2f70367cab960a1dbf18ae4e05a6140a. Relevant runtime/template/renderer/CI definitions and the qualified real producer inputs/normal outputs have no drift from the12c551c base. Existing4 code-job owners/concrete closure and13affected test passes are reused. The added-line design ratchet remains0. No full title guard, broad suite or matrix was repeated. The immutable Business raw RED diagnostic retains its original whitespace; new seam diff validation passes.
+
+Source protection can proceed before the next natural complete Bonds/China producer run. There is no invented full-retained-VM prerequisite. Forensics public shell and Business current31metric output qualify only their documented native interfaces; China frontend replay does not imply upstream bus production. Owner data/model/rights/clocks remain unchanged.
+
+The formal UI-evidence guard validates existing receipt structure and ownership, not new visual truth. The changed Business input generation/analyst-present path invalidates reuse of old cut-specific native proof; only genuinely unchanged source/style evidence is reused. Fresh changed-state visual/native/served claims remain open under the explicit Chromium child-sandbox hold. No recapture, alternate browser/host, provider request or manual producer was used.
+
+Next is one ordinary nonforce source push, Draft PR and natural CI with one observed original return. Actual current-head/base protection, normal release and eventual normal covering producer/served proof remain distinct. No merge or public-delivery claim is made by this addendum.

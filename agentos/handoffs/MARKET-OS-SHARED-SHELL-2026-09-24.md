@@ -5,10 +5,10 @@ model: sol
 ended_because: ci_handoff
 mission: Continue the original Shared Shell commission through protected Macro publication and isolated beta acceptance
   using the existing Terminal and Macro owners. Preserve six-view Sector Central while Paper remains REVISE.
-state_before: 'Original branch push bd89047e is confirmed. Its hosted CI exposed two concrete failures: a missing
-  canonical About footer receipt and a press replay comparison mismatch. Both now have actual local repairs and
-  passing scoped checks; MOG remains unarmed.'
+state_before: 'November 4 continuation: the full product remains NOT_ACCEPTED. Projection current CI failed and is visibly unarmed; Company P9 is unmerged. Accepted source, installation and routing evidence is retained at its exact scope.'
 changed:
+- path: research/market_os/SHARED_SHELL_CEO_CONTINUATION_2026-10-21.md
+  what: Restored original W0-W10 scope and the existing delivery task IDs with current dependency boundaries, accepted evidence and remaining Paper/runtime obligations.
 - path: templates/shared_shell.css; site/shared_shell.css; tests/js/shared_shell_bridge.test.cjs
   what: Source commit cd00da8f433f512baf471dfef4517a838cbef145 removes two unused navigation-offset custom properties
     and their literal-only assertion. CSS readiness, selectors, protocol, history and authentication behavior remain
@@ -119,6 +119,9 @@ changed:
   what: Append actual hosted failure, scratch replay, regression, canonical capture/adoption, review and previous
     publication receipts while preserving all 1,219 prior indexed entries and prose history.
 verified:
+- claim: Projection10696 is visibly fenced at e5dd3a73; no formal review is admitted.
+  command: Same-carrier PR readback after original60661 and99463 EXIT0; SHA256 verification of retained45f7d1dd and supersedingad741350 receipts.
+  result: Hold6649247998 exact; merge-on-green absent; merge-blocked preserved; head unchanged. Excluded reviewer metadata is not admission.
 - claim: The original source correction passes the focused source gates.
   command: .venv-shared-shell/bin/python scripts/check_design_system.py --mode enforce-added --diff-file /tmp/shared-shell-unused-offsets-design-20261019.diff;
     node --test tests/js/shared_shell_bridge.test.cjs; .venv-shared-shell/bin/python -m pytest tests/test_shared_shell_injection.py
@@ -410,12 +413,10 @@ unresolved:
 - Preserve Sector six views and basket behavior, Paper REVISE, and C4 SPEC_ONLY/UNAPPLIED/UNRUN. previous_runtime=null
   does not establish A-to-B-to-A rollback.
 next_actions:
-- Commit and normal-push the two qualified CI repairs with this same-pack proof extension; attend exact-head hosted
-  checks and fix actual failures through existing owners.
-- Use incumbent MOG after its concluded predicates and hold checks, then bind landed source to covering render input,
-  pushed output and stable served bytes.
-- Complete canonical beta DNS/TLS/auth/public browser and applicable remaining acceptance when authenticated domain-owner
-  access is available.
+- Continue the existing Company owner's independently ready T52 composition. The finite P9 publication window has expired; actual review/CI/custody gates still apply.
+- Preserve Projection10696 unarmed until the existing Ontology repair, original effects, current CI and actual independent formal review/release decision qualify; then export through the original canonical owner.
+- Through original Compatibility, qualify final International1b inventory and installation order; actual IW2 protected absorption and current admission precede installation.
+- Complete remaining original Paper and authenticated producer-consumer-persistence-return acceptance only through permitted original paths; reuse accepted unchanged checks.
 do_not_redo:
 - 'Terminal #859 at e45bde2cac07ac3b29285ff70c40d68900fad62c is merged and browser-qualified; do not rerun or reopen
   its completed qualification.'
@@ -470,6 +471,26 @@ danger_areas:
 prs:
 - 7949
 ---
+
+## Current Shared Shell continuation — 2026-11-04
+
+Current receiver: native root `01a15e6c-42f8-7941-ac2b-296021932fbb`.
+The current scoped task tree and full product contract are in
+`research/market_os/SHARED_SHELL_CEO_CONTINUATION_2026-10-21.md`,
+section "Current delivery contract — 2026-11-04". It preserves the original
+production plan, W0–W10 and accepted component evidence while keeping all
+unfulfilled product obligations visible. Older outstanding actions and source
+carriers below are historical; they do not revive closed checks, superseded
+reservations or refused effects. Existing global WS ownership and other programmes
+are unchanged. The current root owns permitted recovery without a historical-owner
+ACK. Active writers, unknown effects, real refusals and source/release gates remain.
+
+The November4 source result and exact release fence are recorded at
+https://github.com/mastermindx-market-intelligence/macro/pull/7949#issuecomment-6589273748
+and https://github.com/mastermindx-market-intelligence/macro/pull/10696#issuecomment-6649247998 .
+This records source continuity only: protected incorporation, beta admission,
+authenticated behavior, Paper parity and production acceptance are distinct.
+
 
 # R39 — source topic discovery; native refinement frontier
 

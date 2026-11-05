@@ -893,3 +893,119 @@ def test_the_bundle_route_does_not_excuse_theme_css(tmp_path):
     """theme.css is in the bundle's list, and every page must still link it."""
     _bundle_tree(tmp_path, _BUNDLE_LINK, _BUILDER)
     assert _orphaned_paired_stylesheets(tmp_path) == ["theme.css"]
+
+
+# P12.T2.S8: source-CSS refresh is a native asset stage, never a financial render.
+def _source_asset_page(tmp_path, monkeypatch, *, extra_link=""):
+    import hashlib
+    import shutil
+    from lib import pages, shared_shell
+
+    site = tmp_path / "site"
+    site.mkdir()
+    monkeypatch.setattr(pages, "_site_root", lambda: site)
+    for name in ("shared_shell_bridge.js", "shared_shell.css", "data_base.js"):
+        shutil.copyfile(Path(__file__).resolve().parents[1] / "templates" / name, site / name)
+    shared_shell.asset_version.cache_clear()
+    shared_shell.stylesheet_version.cache_clear()
+    shared_shell.ensure_shared_shell_asset.cache_clear()
+    old = ".owned{color:var(--ink)}" + "/*" + "x" * 1100 + "*/"
+    digest = hashlib.sha256(old.encode()).hexdigest()[:8]
+    asset = site / "assets" / "css" / f"{digest}.css"
+    asset.parent.mkdir(parents=True)
+    asset.write_text(old)
+    href = f"assets/css/{digest}.css?v={digest}"
+    link = f'<link rel="stylesheet" href="{href}">'
+    page = site / "bonds.html"
+    pages.write_page(page, '<!doctype html><html><head>' + link + extra_link
+                     + '</head><body><time>2026-10-16</time>'
+                     + '<script type="application/json">{"zero":0,"missing":null}</script>'
+                     + '<p data-source-asof="2026-10-16">原始读数</p></body></html>', encoding="utf-8")
+    return page, asset, old, link
+
+
+def test_source_css_refresh_changes_only_owned_slot_and_is_idempotent(tmp_path, monkeypatch):
+    import hashlib
+    from lib.pages import refresh_externalized_stylesheet
+
+    page, old_asset, old, old_link = _source_asset_page(tmp_path, monkeypatch)
+    before = page.read_bytes()
+    mode = page.stat().st_mode
+    css = old.replace("--ink", "--ink-secondary")
+    digest = hashlib.sha256(css.encode()).hexdigest()[:8]
+    new_link = f'<link rel="stylesheet" href="assets/css/{digest}.css?v={digest}">'
+    result = refresh_externalized_stylesheet(page, css, marker=".owned")
+    after = page.read_bytes()
+    assert result["changed"]
+    assert before.decode().replace(old_link, "CSS_SLOT") == after.decode().replace(new_link, "CSS_SLOT")
+    assert before.split(b"<body", 1)[1] == after.split(b"<body", 1)[1]
+    assert old_asset.read_text() == old
+    assert (old_asset.parent / f"{digest}.css").read_text() == css
+    assert page.stat().st_mode == mode
+    snapshot = {p.name: p.read_bytes() for p in old_asset.parent.iterdir()}
+    assert not refresh_externalized_stylesheet(page, css, marker=".owned")["changed"]
+    assert snapshot == {p.name: p.read_bytes() for p in old_asset.parent.iterdir()}
+    assert not list(page.parent.glob(".css-stage-*"))
+
+
+@pytest.mark.parametrize("problem", ["missing", "ambiguous", "hash", "version", "attributes", "symlink", "noncanonical"])
+def test_source_css_refresh_refuses_unqualified_inputs_before_page_write(tmp_path, monkeypatch, problem):
+    import hashlib
+    from lib.pages import refresh_externalized_stylesheet
+
+    page, asset, old, link = _source_asset_page(tmp_path, monkeypatch)
+    if problem == "missing":
+        asset.write_text(".different{}")
+    elif problem == "ambiguous":
+        other = old + "/* another source */"
+        digest = hashlib.sha256(other.encode()).hexdigest()[:8]
+        (asset.parent / f"{digest}.css").write_text(other)
+        page.write_text(page.read_text().replace(link, link + f'<link rel="stylesheet" href="assets/css/{digest}.css?v={digest}">'))
+    elif problem == "hash":
+        asset.write_text(old + "/* mismatch */")
+    elif problem == "version":
+        page.write_text(page.read_text().replace(link, link.replace("?v=", "?wrong=")))
+    elif problem == "attributes":
+        page.write_text(page.read_text().replace(link, link[:-1] + ' integrity="unqualified">'))
+    elif problem == "symlink":
+        outside = tmp_path / "outside.css"
+        outside.write_text(old)
+        asset.unlink()
+        asset.symlink_to(outside)
+    else:
+        page.write_text(page.read_text().replace("<head>", "<head><!-- malformed owner -->", 1)
+                        .replace('mmx-shell-document', 'unknown-shell-document', 1))
+    before = page.read_bytes()
+    files = {p.name for p in asset.parent.iterdir()}
+    with pytest.raises(ValueError):
+        refresh_externalized_stylesheet(page, old + "/* new */", marker=".owned")
+    assert page.read_bytes() == before
+    assert {p.name for p in asset.parent.iterdir()} == files
+    assert not list(page.parent.glob(".css-stage-*"))
+
+
+def test_source_css_refresh_does_not_follow_body_or_inert_links(tmp_path, monkeypatch):
+    from lib.pages import refresh_externalized_stylesheet
+
+    page, asset, old, link = _source_asset_page(tmp_path, monkeypatch)
+    page.write_text(page.read_text().replace(link, '<template>' + link + '</template>')
+                    .replace('<body>', '<body>' + link))
+    before = page.read_bytes()
+    with pytest.raises(ValueError, match="Missing or ambiguous"):
+        refresh_externalized_stylesheet(page, old + "/* new */", marker=".owned")
+    assert page.read_bytes() == before
+
+
+def test_source_css_refresh_never_promotes_a_changed_financial_body(tmp_path, monkeypatch):
+    from lib import pages
+
+    page, asset, old, link = _source_asset_page(tmp_path, monkeypatch)
+    before = page.read_bytes()
+    native_write = pages.write_page
+    def wrong_writer(path, text, **kwargs):
+        return native_write(path, text.replace('"zero":0', '"zero":99'), **kwargs)
+    monkeypatch.setattr(pages, "write_page", wrong_writer)
+    with pytest.raises(ValueError, match="Native writer changed"):
+        pages.refresh_externalized_stylesheet(page, old + "/* new */", marker=".owned")
+    assert page.read_bytes() == before
+    assert not list(page.parent.glob(".css-stage-*"))

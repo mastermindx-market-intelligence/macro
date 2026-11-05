@@ -1,0 +1,37 @@
+{
+  "base": "719d80a277a4e297e72d1dcb11a5b2e0dd545bf4",
+  "task": "P12.T2.S14.S1",
+  "runtime": {
+    "lib/macro_suite_view.py": {
+      "sha256": "4a24afb319d44f2102f01fc582d4f3d09762286bdddf08ba6117fcec71c88e27",
+      "git_blob": "3fef545d1df6c3adfc3a5de5ebe9462eabbb3609"
+    },
+    "templates/_macro_suite_shell.html.j2": {
+      "sha256": "622b0a70c86d6c913eb5491d162c1ec31aaefd938b06c1877b82a7a2d7f2018a",
+      "git_blob": "a2a04b330ea678c4d6104064d73bfb7327f95bdf"
+    },
+    "site/macro_business_activity.html": {
+      "sha256": "1016b2fa0895bd114eb724a9dfa0e86878d2d7a009196a6eb826a643df97ccc1",
+      "git_blob": "c7aa01220032e8ce79c8d1f098d6a248b9bc71ab"
+    },
+    "tests/fixtures/macro_suite_t11/collapses/zz_business_period_clocks_p12t2s14.json": {
+      "sha256": "1711bda390f078c44574c97f62d73e4e939d2b95d78709d64ae74073d5687e24",
+      "git_blob": "a71d651324036a7aa69eba76a28cd9a872697a2b"
+    }
+  },
+  "evidence": {
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/PACKET.md": "857b360cf48d2567967e3f34763080870aac76a2d7143b0d8f452c69c21c436e",
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/s14-fault-native-business-emission.json": "2311f89b253db4fc4ebbe978ddff2b754cc94fb2360a9d2f4fdbd43af5d21c1b",
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/CAUSAL_CHECKS.json": "6e6579fed576662df7ad703e2f3baf30f5bf66965b9808800570e9639be846d9",
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/s14-fault-t11-measure-report.json": "924e74687bd55cffccb675e4d6d4bea4a2135b9cf070fd2cfaae4425a4cd996d"
+  },
+  "external_original_semantic": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-original-semantic-consumption.json",
+  "external_unchanged_pair_binding": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-plan-source-binding.json",
+  "new_T11_only": {
+    "count": 33,
+    "all_old_fragments_exact": true,
+    "unchanged_frozen_golden_and_raw_paths": 38,
+    "no_global_regex_or_exemption": true
+  },
+  "current_api_composer_core": "unchanged from719; qualification schema/labels retained; source raw immutable and genuine failure priority retained"
+}

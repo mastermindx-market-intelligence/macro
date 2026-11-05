@@ -1,0 +1,56 @@
+[
+  {
+    "path": "site/macro_business_activity.html",
+    "actual_sha256": "b6f1230f217d42f5b3fec9df8aa2ba52a1329e915940c406c23b793cafbf8f42",
+    "packet_sha256": "2c22080aef6f7a8cb71401f9874decf79d20193c2f34d99091cf60df507d34bb",
+    "equal": false
+  },
+  {
+    "path": "site/macrodata/workspaces/business_activity/US/latest.json",
+    "actual_sha256": "26180d18fbda8661acb5a959be65cf200b840f0582a997ba6419badd384255ca",
+    "packet_sha256": "26180d18fbda8661acb5a959be65cf200b840f0582a997ba6419badd384255ca",
+    "equal": true
+  },
+  {
+    "path": "lib/macro_suite_labels.py",
+    "actual_sha256": "c1310f2c8ea9f10edaf232bc7858d94047fb4a9ecb448b7c789078db1533a54b",
+    "packet_sha256": "c1310f2c8ea9f10edaf232bc7858d94047fb4a9ecb448b7c789078db1533a54b",
+    "equal": true
+  },
+  {
+    "path": "lib/macro_suite_zh_parity.py",
+    "actual_sha256": "bfe42e01941d8c04254ac4f55b9c933c45f4638cb3241c119aa9babefbe76571",
+    "packet_sha256": "bfe42e01941d8c04254ac4f55b9c933c45f4638cb3241c119aa9babefbe76571",
+    "equal": true
+  },
+  {
+    "path": "lib/macro_suite_view.py",
+    "actual_sha256": "bda2a21027c034fe9fe02f73439223bafc2685f1ece86b2a6d28305bdefdb489",
+    "packet_sha256": "bda2a21027c034fe9fe02f73439223bafc2685f1ece86b2a6d28305bdefdb489",
+    "equal": true
+  },
+  {
+    "path": "engine/market_os/macro_workspaces/business_activity.py",
+    "actual_sha256": "81704a788fd39525a5b7993499d13ab1a1ae7ee2a56ecec0bff8d3588025046f",
+    "packet_sha256": "81704a788fd39525a5b7993499d13ab1a1ae7ee2a56ecec0bff8d3588025046f",
+    "equal": true
+  },
+  {
+    "path": "scripts/build_macro_suite_pages.py",
+    "actual_sha256": "150ddd0ab332669a18e399b4bb3037242fddaf4b3587c394963a72b9f13bc03e",
+    "packet_sha256": "150ddd0ab332669a18e399b4bb3037242fddaf4b3587c394963a72b9f13bc03e",
+    "equal": true
+  },
+  {
+    "path": "templates/macro_business_activity.html.j2",
+    "actual_sha256": "eda7c4a7723d764206d031ca8805ca07d89a1b8d6790697ab2c1ec0ba5b36fa1",
+    "packet_sha256": "2d01aff78c00bd074d6e0a845af5d6f57ba69cb9c2a8a69ecff4f2a718797dbb",
+    "equal": false
+  },
+  {
+    "path": "tests/test_macro_command_copy_law.py",
+    "actual_sha256": "094a5681a9b91ef6a385ffcbbe50af713d847b6b5ed6ecab7524d5fb6b37a9be",
+    "packet_sha256": "094a5681a9b91ef6a385ffcbbe50af713d847b6b5ed6ecab7524d5fb6b37a9be",
+    "equal": true
+  }
+]

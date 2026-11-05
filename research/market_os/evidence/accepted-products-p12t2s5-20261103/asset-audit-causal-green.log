@@ -1,0 +1,55 @@
+{"body_sha256": "5dda0256c01350c57ee408379362d6560b31fb0be6cd6694b5a5a83b52a0858a", "changed": true, "css_sha256": "de1c4f805688a2f2c0229eafc2f797095684d56562b178f360c9f57d1eb6a17a", "new_href": "assets/css/de1c4f80.css?v=de1c4f80", "old_href": "assets/css/ebe31e14.css?v=ebe31e14", "scope": "asset-only; no full Bonds emission, VM, data or clock change", "slots": 1}
+AUDIT_CAPTURE {"blocked": [], "writes": [["os.mkdir", "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/assets/css"], ["open", "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/assets/css/de1c4f80.css"], ["open", "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/.css-stage-xs1npvko.tmp"], ["open", "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/.css-stage-xs1npvko.tmp"], ["os.chmod", "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/.css-stage-xs1npvko.tmp"], ["os.rename", "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/.css-stage-xs1npvko.tmp"], ["os.remove", "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/.css-stage-xs1npvko.tmp"]]}
+{
+  "at": "2026-11-04T00:01:15.309991+00:00",
+  "scope": "ACTUAL native asset-only stage, NOT full Bonds emission/producer/VM/served proof",
+  "entry": "scripts.build_bonds.entrypoint([--stylesheet-only]) -> native lib.pages CSS slot/fingerprint/write_page stage",
+  "source_template_sha256": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+  "canonical_C_sha256": "d8af2f611ded7009a69ec754f8515f54e47c4b09597683abc9a2b1e736149bed",
+  "before_page_sha256": "44680f9b35d054d13e0af5e9df3c195e694bd51edebec3169bf772f81e7fccbc",
+  "after_page_sha256": "658e7c0ee6e49012c57815df5c958556bdcc36eb3f695cebfc61a2f71c04d0b7",
+  "css_sha256": "de1c4f805688a2f2c0229eafc2f797095684d56562b178f360c9f57d1eb6a17a",
+  "stylesheet": "site/assets/css/de1c4f80.css",
+  "new_fingerprint": "de1c4f80",
+  "old_asset_retained": true,
+  "all_non_asset_bytes_exact": true,
+  "financial_body_sha256": "eaddab2858077e317153c8194d4864635b4fe1bf4bc72f4a5324e436e22747b9",
+  "write_events": [
+    [
+      "os.mkdir",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/assets/css"
+    ],
+    [
+      "open",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/assets/css/de1c4f80.css"
+    ],
+    [
+      "open",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/.css-stage-xs1npvko.tmp"
+    ],
+    [
+      "open",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/.css-stage-xs1npvko.tmp"
+    ],
+    [
+      "os.chmod",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/.css-stage-xs1npvko.tmp"
+    ],
+    [
+      "os.rename",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/.css-stage-xs1npvko.tmp"
+    ],
+    [
+      "os.remove",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-q3diohcq/site/.css-stage-xs1npvko.tmp"
+    ],
+    [
+      "open",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-green.json"
+    ]
+  ],
+  "blocked_write_events": [],
+  "network": "OS sandbox deny network*",
+  "full_financial_producer_called": false,
+  "model_data_clock_values_changed": false
+}

@@ -1,0 +1,18 @@
+{
+  "task": "P12.T2.S14.S3",
+  "cause": "single Business generated-page conflict, protected delta only two real page render timestamps",
+  "base": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "own": "90c0b08fca5b45a261a7093cc46ac21aaa872544",
+  "composition": "ed2529fc91d580a479ec797d5c31ed62053d6541 exact five functional/test paths plus ten additive lines in two current CI jobs",
+  "resolution": "Merge protected source, replace conflicted Business page ONLY by incumbent verified snapshot single-page renderer plus existing asset transforms at real document time; retain new main data/assets/source. Validate financial values/reference periods/raw digest/clock qualification and unchanged source closure. Bonds asset-only coupling if needed, no full financial render.",
+  "proof": "Re-use unchanged S13/S14 and Calendar/History source reviews. Only affected composition/preservation/routing/packing guards. Root scoped integration judgment before push.",
+  "holds": [
+    "browser",
+    "provider",
+    "full financial producer",
+    "raw snapshot mutation",
+    "host/serving effect",
+    "manual CI",
+    "live/unknown refresh"
+  ]
+}

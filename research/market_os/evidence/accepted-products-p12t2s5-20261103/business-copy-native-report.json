@@ -1,0 +1,41 @@
+{
+  "scope": "one native singlepage renderer replay in owned isolated worktree; not full producer/acquisition/neweconomictruth/publication/served",
+  "input_sha256": {
+    "site/macrodata/workspaces/manifest.json": "39b93af545ded66bcb30cea9186557f225533011a44cc9f800c3ad9a610e1601",
+    "site/macrodata/workspaces/business_activity/US/latest.json": "26180d18fbda8661acb5a959be65cf200b840f0582a997ba6419badd384255ca"
+  },
+  "artifact": {
+    "path": "macrodata/workspaces/business_activity/US/latest.json",
+    "manifest_path": "macrodata/workspaces/manifest.json",
+    "sha256": "d1c1cbde31c074c74d88546da34a1531b49cdf0cd50b9d88f5ea4153aeec5393",
+    "bytes": 109502,
+    "min_client_contract": "mastermind.macro_workspace_snapshot.v1@1.0.0"
+  },
+  "unchanged_all31_metric_records_except_phase_zh": true,
+  "numeric_values_and_all_metric_metadata_unchanged": true,
+  "all_time_and_definition_code_nodes_equal": true,
+  "controlled_retained_page_build_clock": "2026-11-03T21:52:38Z",
+  "before_html_sha256": "b6f1230f217d42f5b3fec9df8aa2ba52a1329e915940c406c23b793cafbf8f42",
+  "after_html_sha256": "2a8e990c8b1ea54a59cb4d048074019490ae00c9e95187306c5c7b748b7a8f33",
+  "writes": [
+    [
+      "os.mkdir",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/site"
+    ],
+    [
+      "open",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/site/.macro_business_activity.html.19676.tmp"
+    ],
+    [
+      "os.rename",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/site/.macro_business_activity.html.19676.tmp"
+    ],
+    [
+      "os.remove",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/site/.macro_business_activity.html.19676.tmp"
+    ]
+  ],
+  "blocked": [],
+  "network": "OSdeny network*",
+  "limits": "Retained owner snapshot includes source clocks beyond wall time; those existing values are preserved, not independently qualified as authentic/PIT/current economic evidence."
+}

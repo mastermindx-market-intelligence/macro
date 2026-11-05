@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-05T05:49:28.049092+00:00",
+  "protected": "95a4f76b3fde9dd8224b5d257a5e5a75390a55e1",
+  "current_cap_unit": {
+    "command": [
+      "sandbox-exec",
+      "-f",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/deny-network.sb",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/prophet-parser-venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_build_live_quotes.py::test_the_board_leg_has_headroom_over_the_cap",
+      "-q",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "returncode": 0,
+    "scope": "One actualcurrent-board hermeticintegrationassertion, notpeerprovider/latencyprobe orpeersuite replay"
+  },
+  "business": "Exactd7canonicalHTMLexcept2actualdocumentrenderclocknodes; rawmanifest+snapshot+all15assets exactprioracceptednativeproof;31values/period/source preserved",
+  "old_document_clock": "2026-11-05T04:04:58Z",
+  "new_document_clock": "2026-11-05T05:41:00Z",
+  "Bonds": "Wholeactualprotected95adocument/financialbody+clocks exactexceptsingleacceptedCSSslot",
+  "T11": "39frozenfiles/comparatorandrelatedview,label,template sources haveZEROdiff vsd7; acceptedcurrentT11proof reused, nofixture/comparator change ornewcollapsedexception",
+  "HK": "CompleteRootaccepted0317 fivepostimages; normalmath/clock/authority reviews unchanged/reused, noaccepted19/37suite redo",
+  "no_provider_browser_host_or_source_publication": true
+}
