@@ -726,7 +726,12 @@ def test_stylesheet_typography_and_shape_law():
 
 
 def test_stylesheet_never_fixes_card_height_and_never_spacers():
-    assert not re.search(r"min-height\s*:", CSS_CODE)
+    # The disclosure needs a touch target; cards still size to their content.
+    for selector, body in _css_rules():
+        minimums = re.findall(r"min-height\s*:\s*([^;}]+)", body)
+        if minimums:
+            assert selector == ".po-cautions>summary", selector
+            assert [value.strip() for value in minimums] == ["44px"]
     heights = re.findall(r"(?<![-a-zA-Z])height:([^;}]*)", CSS_CODE)
     assert heights and set(h.strip() for h in heights) <= {"72px", "16px", "3px", "8px"}
     assert "margin-top:auto" not in CSS_CODE and "margin-bottom:auto" not in CSS_CODE
