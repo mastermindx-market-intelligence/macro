@@ -1,0 +1,19 @@
+{
+  "parent": "c808ee5a6fb0d38afa845aae5b1d0bdb33d66fe6",
+  "observed_main": "74aa06c9a4b9fb441db5991a47a1ec80d673b029",
+  "change": "Add exactly incoming options_hub_retention/options_scenario_capture restart names to existing regex; preserve response_eval.",
+  "entire_updater_equals_main_plus_only_response_eval": true,
+  "no_manual_base_integration": true,
+  "updater_tests_passed": 376,
+  "bash_syntax_passed": true,
+  "positive_trigger_checks": [
+    "engine/options_hub_retention.py",
+    "engine/options_scenario_capture.py",
+    "engine/neuralweb/response_eval.py"
+  ],
+  "negative_trigger_checks": [
+    "engine/options_hub_retention.py.bak",
+    "engine/options_scenario_capture_extra.py"
+  ],
+  "production_effects": false
+}

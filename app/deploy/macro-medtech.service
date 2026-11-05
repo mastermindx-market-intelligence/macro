@@ -1,0 +1,59 @@
+[Unit]
+Description=MedTech bounded FDA reference refresh
+After=network-online.target macro-api.service
+Wants=network-online.target
+Requisite=macro-api.service
+
+[Service]
+Type=oneshot
+User=macro-medtech
+Group=macro-medtech
+WorkingDirectory=/opt/macro
+# Mandatory fixed configuration: MEDTECH_START_ON only; no provider credentials.
+EnvironmentFile=/etc/macro-medtech.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+UnsetEnvironment=PYTHONPATH PYTHONHOME PYTHONSTARTUP LD_PRELOAD LD_LIBRARY_PATH
+# '+' runs this fixed, root-only inspection outside the worker sandbox. The
+# acquisition command below remains macro-medtech with no capabilities.
+ExecStartPre=+/usr/bin/python3 -I /opt/macro/app/deploy/medtech-api-boundary.py
+ExecStart=/opt/macro-api/.venv/bin/python /opt/macro/scripts/medtech_worker.py --state-db /srv/medtech/private/events.sqlite3 --public-root /srv/medtech/public --start ${MEDTECH_START_ON} --through-today --max-records 10000 --min-free-bytes 5368709120
+# No restart/retry: incomplete acquisition leaves the prior publication intact.
+TimeoutStartSec=900
+Restart=no
+UMask=0077
+Nice=12
+CPUWeight=20
+CPUQuota=50%
+MemoryHigh=384M
+MemoryMax=512M
+TasksMax=32
+IOWeight=20
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectProc=invisible
+ProcSubset=pid
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/srv/medtech/private /srv/medtech/public
+InaccessiblePaths=/etc/macro-medtech.env
+InaccessiblePaths=-/etc/macro-api.env -/etc/macro-ollama.env
+InaccessiblePaths=-/opt/macro/.env -/opt/macro/app/.env
+InaccessiblePaths=-/var/lib/macro-codex -/var/lib/macro-codex-2 -/var/lib/macro-codex-3
+InaccessiblePaths=-/etc/macro-biocatalyst.env -/etc/macro-biocatalyst-control.env
+InaccessiblePaths=-/etc/macro-market-memory.env -/etc/macro-ticker-news.env
+
+# Install-only through medtech-setup.sh; activation belongs to the release owner.
+# No [Install] target: enable only macro-medtech.timer after live proof.

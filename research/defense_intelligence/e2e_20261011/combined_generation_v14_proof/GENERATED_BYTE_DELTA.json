@@ -1,0 +1,32 @@
+{
+  "site/theme.js": [
+    {
+      "offset": 197945,
+      "old": "e3bc0580",
+      "new": "3c737978",
+      "context": "meCharts();wrapTables();});var MM_BRAIN_VER=\"3c737978\";var MMB_EXPLAIN_SEL='.sx[id^=\"sx-\"] .mx5-ca"
+    }
+  ],
+  "site/government_revenue.html": [
+    {
+      "offset": 1756,
+      "old": "05217f4b",
+      "new": "c4daaedd",
+      "context": "script>\n<link rel=\"preload\" href=\"theme.js?v=c4daaedd\" as=\"script\" fetchpriority=\"high\"><link rel="
+    },
+    {
+      "offset": 185334,
+      "old": "05217f4b",
+      "new": "c4daaedd",
+      "context": "\"></script><script data-sync src=\"theme.js?v=c4daaedd\"></script><script data-sync src=\"government-"
+    }
+  ],
+  "site/research_screener.html": [
+    {
+      "offset": 68304,
+      "old": "05217f4b",
+      "new": "c4daaedd",
+      "context": " });\n})();\n</script>\n<script src=\"theme.js?v=c4daaedd\" defer></script>\n<script src=\"watchstore.js?"
+    }
+  ]
+}

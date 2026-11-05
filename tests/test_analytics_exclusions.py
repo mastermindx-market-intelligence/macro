@@ -81,19 +81,45 @@ def test_excluded_cte_contains_emails_and_location(monkeypatch):
     assert "'::1'" in cte
 
 
-def test_excluded_cte_empty_config_is_valid_and_matches_nothing(monkeypatch):
+def test_excluded_cte_empty_config_still_hides_registered_operator(monkeypatch):
     monkeypatch.setattr(a, "_load_exclusions",
                         lambda: {"emails": [], "locations": [], "ips": [], "visitor_ids": [], "bots": {}, "geo_overrides": []})
     cte = a._excluded_cte()
-    assert "auth.users where false" in cte
+    # The exact operator account is excluded even when the optional private config is absent.
+    assert "lower(email) in (\'admin@mastermind-x.com\')" in cte
     assert "ip_geo where false" in cte
     assert "as ip where false" in cte      # empty excl_ips
+
+
+def test_operator_email_is_merged_with_private_exclusions_without_duplicates(monkeypatch):
+    monkeypatch.setattr(a, "_load_exclusions", lambda: {
+        "emails": ["other@example.com", "admin@mastermind-x.com"],
+        "locations": [], "ips": [], "visitor_ids": [], "bots": {}, "geo_overrides": [],
+    })
+    cte = a._excluded_cte()
+    assert "lower(email) in ('admin@mastermind-x.com','other@example.com')" in cte
+    assert cte.count("'admin@mastermind-x.com'") == 1
+
+
+def test_implicit_operator_link_does_not_exclude_other_registered_accounts(monkeypatch):
+    monkeypatch.setattr(a, "_load_exclusions", lambda: {
+        "emails": [], "locations": [], "ips": [], "visitor_ids": [],
+        "bots": {}, "geo_overrides": [],
+    })
+    cte = a._excluded_cte()
+    # An explicit seed is still hidden; otherwise a shared fingerprint/IP only
+    # hides a linked cookie when it has no authenticated *other* account owner.
+    assert "excluded as (select visitor_id from excl_seed" in cte
+    assert "union select l.visitor_id from excl_link l" in cte
+    assert "where not exists (select 1 from public.analytics_events e3" in cte
+    assert "e3.visitor_id = l.visitor_id" in cte
+    assert "e3.user_id not in (select id from excl_users)" in cte
 
 
 # ---- surface functions: SQL generation (network monkeypatched) -------------
 def _capture(monkeypatch, ret=None):
     seen = {"all": []}
-    def fake_query(sql):
+    def fake_query(sql, *args, **kwargs):
         seen["sql"] = sql
         seen["all"].append(sql)
         return list(ret) if ret is not None else []
@@ -129,6 +155,19 @@ def test_sessions_applies_exclusion_and_filter(monkeypatch):
     assert "excluded as" in sql
     assert "g.city ilike '%richmond%'" in sql
     assert "limit 500" in sql
+
+
+def test_sessions_focuses_bot_history_on_visitors_in_window(monkeypatch):
+    seen = _capture(monkeypatch)
+    a.sessions(limit=100, minutes=1440)
+    sql = seen["sql"]
+    # The bot classifier keeps historical evidence for the visitors that can actually
+    # appear in this panel, instead of distinct-scanning every visitor ever recorded.
+    assert ("focus_visitors as (select distinct visitor_id from public.analytics_events "
+            "where visitor_id is not null and created_at > now() - interval '1440 minutes')") in sql
+    assert "visitor_id is not null and visitor_id in (select visitor_id from focus_visitors)" in sql
+    # Farm detection remains historically exact for every fingerprint used by a focused visitor.
+    assert "fp in (select fp from focus_fp)" in sql
 
 
 # ---- soft candidate-identity linkage (anon cookie -> likely registered user) --------
@@ -291,6 +330,38 @@ def test_overview_reports_bot_count_and_humans_only(monkeypatch):
     assert "e.visitor_id in (select visitor_id from bots)" in joined            # bots counted separately
 
 
+def test_overview_bounds_bot_classification_to_requested_window(monkeypatch):
+    seen = _capture(monkeypatch)
+    a.overview(minutes=1440)
+    sqls = seen["all"]
+    # One shared core query owns all live-window projections; the only second query
+    # is the exact-but-optional all-time human summary.
+    assert len(sqls) == 2
+    focused = [sql for sql in sqls if "focus_visitors as (" in sql]
+    assert len(focused) == 1
+    core = focused[0]
+    assert "created_at > now() - interval '1440 minutes'" in core
+    assert "he as (" in core and "vb as (" in core
+    assert "json_build_object" in core
+    unbounded = [sql for sql in sqls if "focus_visitors as (" not in sql]
+    assert len(unbounded) == 1
+    assert "select count(*)::int as events" in unbounded[0]
+
+
+def test_overview_alltime_timeout_does_not_blank_live_window(monkeypatch):
+    monkeypatch.setattr(a, "status", lambda: {"configured": True})
+
+    def fake_query(sql, *args, **kwargs):
+        if "focus_visitors as (" not in sql:
+            raise TimeoutError("historical summary too slow")
+        return []
+
+    monkeypatch.setattr(a, "_query", fake_query)
+    out = a.overview(minutes=1440)
+    assert out["ok"] is True
+    assert out["alltime"] == {}
+
+
 # ---- geo overrides ---------------------------------------------------------
 def test_apply_geo_overrides_relabels_by_prefix(monkeypatch):
     monkeypatch.setattr(a, "_load_exclusions", lambda: {
@@ -375,3 +446,27 @@ def test_request_budget_stays_under_the_edge_origin_pull_timeout():
     """
     assert a._REQUEST_BUDGET_S <= 12.0
     assert a._QUERY_TIMEOUT_S <= a._REQUEST_BUDGET_S
+
+def test_all_windowed_analytics_surfaces_bound_bot_history(monkeypatch):
+    cases = [
+        ("pages", lambda: a.pages(minutes=1440)),
+        ("geo", lambda: a.geo(minutes=1440)),
+        ("visitors", lambda: a.visitors(minutes=1440)),
+        ("flow", lambda: a.flow(minutes=1440)),
+        ("realtime", lambda: a.realtime()),
+    ]
+    for name, call in cases:
+        seen = _capture(monkeypatch)
+        call()
+        joined = " ".join(seen["all"])
+        assert "focus_visitors as (" in joined, name
+        expected = "15 minutes" if name == "realtime" else "1440 minutes"
+        assert expected in joined, name
+
+def test_terminal_bot_focus_includes_current_search_visitors(monkeypatch):
+    seen = _capture(monkeypatch)
+    a.terminal(minutes=1440)
+    joined = " ".join(seen["all"])
+    assert "focus_visitors as (" in joined
+    assert "select distinct anon_id as visitor_id from public.search_events" in joined
+    assert "created_at > now() - interval '1440 minutes'" in joined

@@ -1,4 +1,82 @@
 ---
+workstream: WS:RATES-INFLATION-COMMAND
+session: github-pr-sweep-2028-c4
+model: sol
+ended_because: ci_handoff
+mission: Deliver the corrected source handoff on original PR6788 while preserving the six reviewed architecture blobs, existing W1–W5 ownership and the complete September3 record. Continue only through current source, review and effect evidence.
+state_before: Before this qualification, PR6788 head46d5a05a3ceb9946dbed2d9314d4d7231a0b55e0 retained a handoff directing repetition of completed architecture repairs and wake of an old terminal review task. Reviews5101718053/5103203344 remained CHANGES_REQUESTED; the six architecture findings and enum had been repaired, while the handoff's active continuation was stale. The original Mac handoff matched the remote blob; three other unpublished local proposals were separately preserved without adoption.
+changed:
+- path: agentos/handoffs/RATES-INFLATION-COMMAND-2026-09-03-actor-liquidity-monthly-transition-clock.md
+  what: Replace stale active next actions with a dated current reading boundary and canonical fields, and preserve the full original as a verbatim archive. The other six published reviewed blobs remain byte-identical.
+verified:
+- claim: The remaining source finding concerned the stale handoff/reviewer continuation, after the six architecture repairs and valid ci_handoff enum.
+  command: GitHub connector read PR6788, reviews5101718053/5103203344 and source at46d5a05a3ceb9946dbed2d9314d4d7231a0b55e0
+  result: Original review states are retained. This source change addresses the handoff finding; it does not fabricate a new review verdict.
+- claim: RIC F3 PR6721 already merged.
+  command: GitHub connector GET https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/6721
+  result: Merged2026-09-04T00:50:23Z at7a2a84df4d14d29864189e846a535697766fffc5, frombeca06c8204dfcb5bb90d931abc8c44158461b8c. Source acceptance is distinct from current runtime/product proof.
+- claim: The narrow W5 exception permits a pre-outcome R0 coverage child, and that child already published source on6807.
+  command: GitHub connector read issue6794 comment5529187973 and PR6807
+  result: PR6807 observed OPEN/Draft ata270c62721fc3fb2c90d52ddd1e5962dd92d05c8. Source is APPLIED; outcome computation, research acceptance and release are not inferred.
+- claim: The original R0 carrier records an actual native-task pickup and START, followed by a published-source status; its fetched complete thread has no terminal result or writer-release receipt.
+  command: Slack read original public thread C0BSBM78V1N/1788454805.562159, all5messages, no remaining page
+  result: Native task01a0686f-7ef2-7323-b7bd-a37ec7f3b661; pickup1788459472.533019; START1788459512.027639; status1788460999.087279. These are September3 receipts, not proof of current RUNNING. The status's effect=NONE cannot erase the published source effect.
+- claim: Original PR6788 workspace custody was reconciled without host writes and the three retained local amendments are recoverable proposals.
+  command: Original Studio read-only processes77612/80930, exact file reads/hashes, plus GitHub comment6656911938 write/readback
+  result: The original checkout's gitdir target was missing. Four of7files, including this handoff, matched remote; complete three-file unpublished diffs and hashes were preserved in https://github.com/mastermindx-market-intelligence/macro/pull/6788#issuecomment-6656911938. Bounded process/lsof observations do not establish universal absence. Root continuation is6656983263.
+unverified:
+- claim: Current published PR6788 head qualification, hosted CI and actual review/CR disposition.
+  what_would_verify: Read the current published head, actual checks and review records on this same PR at execution time; consume the existing review findings under current source law.
+- claim: Current W1–W4 implementation, receiver and execution state.
+  what_would_verify: Read the existing issue6798/6799/6800 and W1 issue6787 owners and their actual source/Executive/AgentOS effects. September PRE_START observations do not prove current absence.
+- claim: Terminal state and pending source/workspace effects of the original R0 native task on6807.
+  what_would_verify: Reconcile that exact task/session and original source custody through the existing owner; do not invent an Executive Job identity or infer terminal state from age, missing workspace or source publication.
+- claim: Qualification or adoption of the retained three-file month-end proposal.
+  what_would_verify: Use the existing RLT/W1 ownership and original preserved diffs to qualify licensed inputs, PIT clocks, valid wealth/price domain, post-return NAV scaling, scenario timing/citation and current authority before adoption.
+- claim: Product, outcome research, forecast or operational acceptance.
+  what_would_verify: Actual approved original-journey producer-to-consumer evidence under existing owners; specification/source merge and this handoff do not establish those outcomes.
+unresolved:
+- Complete current-head CI and legitimate finding/review disposition on the same PR6788; no replay of the old terminal reviewer.
+- Reconcile original R0 task/holder effects before any source takeover of6807; published coverage and current research acceptance remain distinct.
+- Keep retained month-end amendments as recoverable proposals until the existing owner qualifies them; no new producer, store or authority is adopted here.
+next_actions:
+- Resolve the current published PR6788 head, consume its actual CI and existing review/CR findings, and complete source delivery through the current protected Macro controller. Do not repeat the six completed architecture edits or wake the archived terminal reviewer task.
+- Continue the existing W1→W2/W3→W4 dependency path using current owner evidence. RIC F3 source6721 is already merged; do not reopen or rebuild it merely from the archived next action.
+- Use the original6807 carrier and native task identity to reconcile terminal/writer/pending effects before any bounded source repair. Retain the pre-outcome R0 exception and all outcome restrictions; no duplicate child or backtest follows from this record.
+- Before any month-end proposal adoption, consume the exact preserved hashes/diffs in6656911938 and qualify insertion into existing RLT/W1 owners and data/math/clock authority.
+do_not_redo:
+- Repeat completed architecture repairs or stale-main composition solely because the September handoff lists them.
+- Restart the old terminal review child or duplicate the already published R0 child6807.
+- Modify the other six published6788 blobs or fold the three retained local month-end proposals into this handoff-only repair.
+- Treat archived CI/owner/worker/source states as current, infer current absence from September PRE_START, or turn a source merge into production/research acceptance.
+- Create another scheduler, observer, queue, canonical store, identity or release plane, or promote forecast/rank/size/trade authority from research records.
+- Modify, clean, reset or repurpose the retained original Mac workspace during this source qualification.
+danger_areas:
+- Existing W1–W5, RLT, F3 and R0 owners retain their scopes. The narrow pre-outcome R0 exception does not authorize outcomes or promotion.
+- Actual live writers and uncertain effects stay protected; source custody recovery does not grant a worker restart or cross-carrier retry.
+- The preserved local month-end proposal contains a historical approval claim whose original acceptance was not verified; custody is not adoption.
+- All original PIT, no-regress, eligible-trigger, axis-separation, Policy Watch/Neural Web and false-authority boundaries remain in the complete archive and reviewed source.
+- The architecture is specification evidence. Current implementation and decision usefulness require actual current owner receipts.
+prs:
+- 6788
+- 6721
+- 6807
+decisions:
+- DEC:POLICY-PRETURN-CALENDAR-FLOW-COMPOSITION
+---
+
+## Current reading boundary — 2026-11-05
+
+This qualified handoff replaces the stale active repair and reviewer-wake instructions on the original PR. The entire September3 file follows as a dated archive. Its source pins, CI states, then-open F3 description, PRE_START statements, terminal-reviewer wake and repair-next-action text describe that historical boundary; they are not current commands or current absence evidence.
+
+RIC F3 source6721 is already merged. The narrow R0 exception already has a published child6807 and dated native pickup/START receipts. Its terminal writer/effect disposition remains unqualified; source APPLIED must not become blanket effect NONE or a fresh RUNNING claim. Current W1–W4 execution is to be established through their existing owners, without duplicating the W1→W2/W3→W4 sequence.
+
+The three retained local month-end amendments are preserved with full hashes and diffs in6656911938. They are proposals, not adopted source or proof of the historical approval claim. This repair changes only this handoff; all six other published reviewed blobs stay intact. Actual current Chairman intent and the protected source law at Mastermind17f6e4ad95f7006c1e607885a40210115049d024 govern the next action. Source delivery, review, deployment, outcome research and product acceptance remain separate.
+
+## Dated archive — complete original September3 handoff
+
+``````markdown
+---
 workstream: "WS:RATES-INFLATION-COMMAND"
 session: "sol/policy-preturn-monthly-transition-architecture-20260903"
 model: sol
@@ -133,3 +211,4 @@ decisions:
 # Continuation boundary
 
 This record ends at the six-finding forward-repair/current-validation boundary. The architecture remains `SPEC_ONLY`; W1 remains `NOT_BUILT/PRE_START`; RIC F3 remains separately owned. The next lawful effects are only same-branch semantic repair, current-main composition, exact-head validation and wake of the already-existing independent reviewer after checks become terminal. No W1 implementation, Ready, merge, deployment, provider-product action or capital use is authorized by this handoff.
+``````

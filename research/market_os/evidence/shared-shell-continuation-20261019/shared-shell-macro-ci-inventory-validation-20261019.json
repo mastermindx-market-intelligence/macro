@@ -1,0 +1,28 @@
+{
+  "started_at": "2026-10-19T09:31:05.717559+00:00",
+  "completed_at": "2026-10-19T09:31:20.439085+00:00",
+  "argv": [
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+    "scripts/run_ci_pack.py",
+    "--workflow",
+    ".github/ci/legacy-jobs.yml",
+    "--validate-only"
+  ],
+  "exit": 0,
+  "index_tree": "dbcaadef4514bb614aa266992fa681b3fee2d6bf",
+  "index_tree_after": "dbcaadef4514bb614aa266992fa681b3fee2d6bf",
+  "manifest_sha256": "2ab0a9d753cfe1f0b8611ac709dae87a369e89c96a3d7aa8af010c40b05c5514",
+  "log_path": "/tmp/shared-shell-macro-ci-inventory-validation-20261019.log",
+  "log_sha256": "8eb54bf878735a255a4c55f09ec175008c17a23cd6414631a541899021963123",
+  "sector_view_ids": [
+    "overview",
+    "map",
+    "moving",
+    "money",
+    "explore",
+    "confluence"
+  ],
+  "sector_builder_unchanged_from_ours": true,
+  "visual_admission_claimed": false,
+  "programme_complete": false
+}

@@ -1,0 +1,16 @@
+{
+  "p0b_primary": 96,
+  "p0b_degraded": 32,
+  "screenshot_count": 16,
+  "screenshots_unchanged": true,
+  "actual_inputs_verified": true,
+  "old_extension_sha256": "716e0fd82ecf715651e1dc9236ce3ee43d97a571dcb6450f0d0d8596998affad",
+  "new_extension_sha256": "7ce6b1735ab6dd3891cf38662093733c2a022ee2aac554f5c6605fe2abda2a2e",
+  "reason": "Existing builder incorporates protected main shared theme change; no excluded-product source edits",
+  "claims": {
+    "browser_fixture": "reproducible",
+    "canonical_build": "unavailable",
+    "production": "none",
+    "source_contract": "browser_fixture"
+  }
+}

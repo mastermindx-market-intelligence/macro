@@ -22,20 +22,26 @@ research harness into a nightly production lane:
       truncation → weinstein_stage.classify) and ``load_ticker_prices`` /
       ``load_bench_close``.
   * EC join         -> ``prophet_stage_inputs.load_ec_table`` / ``ec_index`` /
-      ``ec_sent_at_entry`` (earnings_calls.parquet, most-recent call STRICTLY before
-      entry).
+      ``ec_sent_at_entry`` (the native EquityDesk store — R2-transported history, else
+      the local backfill — most-recent call STRICTLY before entry).
   * grading         -> ``grading.terminal_state`` (clean15_126 & clean8_21) +
       ``grading.forward_metrics`` (21/63/126). Win = ``CLEAN_LIFTOFF``.
 
-EC SOURCE STARVATION (R0-C — read before grading ``median_tilt``). The EC join's
-backing parquet is a local-only EquityDesk backfill: gitignored, never committed, and
-absent on every CI/deploy host. Where it is absent, every ``last_ec`` tag is null, the
-Stage-2 ∩ EC cohort is empty, and ``median_tilt`` is computed on ZERO EC-tagged
-entries. The hold-leash's §4 auto-demote clause reads exactly that cohort's count, so a
-starved join does not merely weaken the measurement — it makes the clause unreachable,
-and the promoted tilt can never be graded or self-demoted. ``median_tilt.ec_coverage``
-and the summary's ``ec_source`` block state this explicitly so a starved sample is
-never read as a real ≤0 tilt.
+EC SOURCE STARVATION (R0-C — read before grading ``median_tilt``). Where the EC join has
+no source, every ``last_ec`` tag is null, the Stage-2 ∩ EC cohort is empty, and
+``median_tilt`` is computed on ZERO EC-tagged entries. The hold-leash's §4 auto-demote
+clause reads exactly that cohort's count, so a starved join does not merely weaken the
+measurement — it makes the clause unreachable, and the promoted tilt can never be graded
+or self-demoted. ``median_tilt.ec_coverage`` and the summary's ``ec_source`` block state
+this explicitly so a starved sample is never read as a real ≤0 tilt.
+
+Until 2026-09-18 that starvation was UNCONDITIONAL: the join resolved only a local-only
+EquityDesk backfill that is gitignored, was never committed, and had no publisher, so it
+was absent on every CI and deploy host. ``prophet_stage_inputs`` now walks a native-store
+ladder whose first tier is the R2-transported EquityDesk history, and the nightly hydrates
+it before origination — so a cohort CAN accrue. Starvation is still possible (no published
+generation, no R2 credentials, a rejected generation) and the disclosure above is exactly
+how you tell. Check ``ec_source.tier`` before reading any ``median_tilt`` number.
 
 FORWARD LEDGER (house law): ``data/prophet_stage_shadow/ledger.jsonl`` is a
 forward ledger; NIGHTLY IS THE SOLE ADVANCER of its grades. The grade advance is
