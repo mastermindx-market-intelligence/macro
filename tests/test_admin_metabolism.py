@@ -147,6 +147,32 @@ class TestPanelFailSoft:
         assert result["organism"]["phase"] == "sense"
         assert result["organism"]["cycle"] == 3
 
+    def test_panel_overlaps_independent_github_reads(self, tmp_path):
+        """Repo-variable and workflow-run fetches must start concurrently."""
+        import threading  # noqa: PLC0415
+        import admin.metabolism_panel as mp  # noqa: PLC0415
+
+        barrier = threading.Barrier(2, timeout=2.0)
+
+        def vars_call():
+            barrier.wait()
+            return {"AUTONOMY_PAUSED": "false"}
+
+        def runs_call(*, cap=15):
+            assert cap == 15
+            barrier.wait()
+            return []
+
+        with mock.patch.object(mp.github_api, "token", return_value="configured"), \
+             mock.patch.object(mp.github_api, "list_repo_variables", side_effect=vars_call), \
+             mock.patch.object(mp, "_recent_metabolism_runs", side_effect=runs_call), \
+             mock.patch.object(mp, "_MET_DIR", tmp_path / "data" / "metabolism"):
+            result = mp.panel(root=tmp_path)
+
+        assert result["armed"] is True
+        assert result["state"] == "armed"
+        assert result["runs"] == []
+
 
 # ---------------------------------------------------------------------------
 # 3. Toggle route validation
