@@ -1,0 +1,11 @@
+{
+  "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000110465926053223/0001104659-26-053223.txt",
+  "request_started_at": "2026-10-19T19:23:43.125581+00:00",
+  "retained_at": "2026-10-19T19:23:43.620825+00:00",
+  "status": 200,
+  "bytes": 34155,
+  "sha256": "bdf3e6e7c77485bb6ccb461beb8db59e8c1199b9e16bcfab7ec4956c61c8a7df",
+  "response_date": "Mon, 19 Oct 2026 19:23:43 GMT",
+  "content_type": "text/plain",
+  "transport": "requests with existing collectors.beneficial_ownership._sec_ua"
+}

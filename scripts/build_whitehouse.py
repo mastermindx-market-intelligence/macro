@@ -275,10 +275,22 @@ def _banner_payload(rows: list[dict], now: datetime, max_alerts: int = 6) -> dic
     return {"schema": "wh_banner.v1", "alerts": alerts}
 
 
+# Who actually wrote a read. evaluate() stamps the FIRST configured model in `model`
+# before the call; only degraded_reason "served_by:<provider>" records a fallback. A
+# None reason does not prove the first model wrote it (a reply cached under the
+# first-model key comes back with no reason), so only a recorded fallback is named.
+_SERVED_BY = {"anthropic": "Claude (API)", "codex": "Codex", "deepseek": "DeepSeek",
+              "ollama": "Ollama"}
+
+
 def _alert_view(r: dict) -> dict:
     """Enrich a ledger row for the report template."""
     v = dict(r)
     v["date_display"] = _date_display(r.get("published"))
+    v["generated_display"] = _date_display(r.get("generated_at"))
+    reason = str(r.get("degraded_reason") or "")
+    v["served_by"] = (_SERVED_BY.get(reason.split(":", 1)[1], "")
+                      if reason.startswith("served_by:") else "")
     exp = _expires_at(r)
     v["expires_display"] = _date_display(exp.isoformat()) if exp else ""
     v["live"] = bool(exp and datetime.now(timezone.utc) < exp)
@@ -300,7 +312,8 @@ def _render_page(root: Path, rows: list[dict], treasury: dict | None = None) -> 
             log.warning("alert view skipped (%s): %s", r.get("id"), e)
     html = env.get_template("whitehouse.html.j2").render(
         alerts=views, treasury=treasury, disclaimer=wb.DISCLAIMER,
-        provider=wb.provider_label(), active_section="research", active_page="whitehouse")
+        provider=wb.provider_label(), n_fallback=sum(1 for v in views if v["served_by"]),
+        active_section="research", active_page="whitehouse")
     # self-include the alert banner (whitehouse.html is at site root → prefix "") so the
     # page is stable across renders and the daily inject pass skips it (marker present).
     try:

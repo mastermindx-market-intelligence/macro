@@ -50,16 +50,16 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 634750,
+        "payload_bytes_total": 230925,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 27,
         "screenshot_completion": 1.0,
-        "section_count": 13,
+        "section_count": 14,
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 44
+        "visible_word_count": 45
       },
       "page_id": "fundamental_forensics.html?symbol=AAPL",
       "route": "/fundamental_forensics.html?symbol=AAPL"
@@ -69,10 +69,10 @@
   "target": {
     "base_url": null,
     "kind": "site_dir",
-    "resolved_gitdir_or_none": "/home/ubuntu2/lanes/repos/macro/.git/worktrees/fif-p2-r3-20261012",
-    "resolved_sha_or_none": "2407648d50b6a7b095d6f31d92a93b427a84c18b",
-    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /home/ubuntu2/lanes/repos/macro/.git/worktrees/fif-p2-r3-20261012 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/home/ubuntu2/lanes/wt/fif-p2-r3-20261012/site"
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/fif-doctrine-r3-20261020-cab14be062902186",
+    "resolved_sha_or_none": "2d23934a630b8e04d87f24f686e24424c1ceba0a",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/fif-doctrine-r3-20261020-cab14be062902186 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/fif-doctrine-r3-20261020-cab14be062902186/site"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",

@@ -10,10 +10,12 @@ from __future__ import annotations
 import hashlib
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from .financial_intelligence_packet import load_core_registry
+from .models import parse_utc
 from .query_service import (
     MAX_REQUEST_BYTES,
     MAX_RESPONSE_BYTES,
@@ -34,6 +36,7 @@ from .statement_graph import (
 _REQUEST_SCHEMA = "fundamental_forensics.financial_statement_request/v1"
 _RESPONSE_SCHEMA = "fundamental_forensics.financial_statement_response/v1"
 _REQUIRED_ROOT_FIELDS = frozenset({"schema", "entity_id", "accession"})
+_OPTIONAL_ROOT_FIELDS = frozenset({"recorded_at"})
 _GOLDEN_ENTITY_ID = "ISS:US-XNAS-AAPL"
 _RELATED_EVENT_REF_KEYS = frozenset(
     {"plane", "event_id", "relation", "source_filing_distinction"}
@@ -44,6 +47,7 @@ _RELATED_EVENT_REF_KEYS = frozenset(
 class AdmittedStatementRequest:
     entity_id: str
     accession: str
+    recorded_at: datetime | None = None
 
 
 @dataclass(frozen=True)
@@ -83,7 +87,7 @@ class GoldenAaplStatementProvider:
 
 def admit_statement_request(body: bytes) -> AdmittedStatementRequest:
     parsed = admit_request_bytes(body)
-    extra = set(parsed) - _REQUIRED_ROOT_FIELDS
+    extra = set(parsed) - _REQUIRED_ROOT_FIELDS - _OPTIONAL_ROOT_FIELDS
     missing = _REQUIRED_ROOT_FIELDS - set(parsed)
     if extra or missing:
         raise FinancialQueryAdmissionError(400, "request contract violation")
@@ -97,7 +101,23 @@ def admit_statement_request(body: bytes) -> AdmittedStatementRequest:
         raise FinancialQueryAdmissionError(400, "request contract violation")
     if not isinstance(accession, str) or not accession:
         raise FinancialQueryAdmissionError(400, "request contract violation")
-    return AdmittedStatementRequest(entity_id=entity_id, accession=accession)
+    # R-9761 follow-up: the optional rule-clock cutoff, admitted under the
+    # same law as the financial query body's timestamp — an aware RFC 3339
+    # instant, never a naive machine-local guess.
+    recorded_at_raw = parsed.get("recorded_at")
+    recorded_at = None
+    if recorded_at_raw is not None:
+        if isinstance(recorded_at_raw, float) or not isinstance(recorded_at_raw, str):
+            raise FinancialQueryAdmissionError(400, "request contract violation")
+        try:
+            recorded_at = parse_utc(recorded_at_raw, field="recorded_at")
+        except ValueError:
+            raise FinancialQueryAdmissionError(400, "request contract violation") from None
+        if recorded_at is None:
+            raise FinancialQueryAdmissionError(400, "request contract violation")
+    return AdmittedStatementRequest(
+        entity_id=entity_id, accession=accession, recorded_at=recorded_at
+    )
 
 
 def _load_security_records(repo_root: Path) -> list[dict[str, Any]]:
@@ -260,6 +280,52 @@ def _related_event_ref(manifest: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
+def _precomputed_registry_horizon(registry: Any) -> datetime:
+    """The newest rule clock the registry carries.
+
+    Precomputed trees are published under the full, unclocked registry, so
+    they cannot honestly answer a clock older than any rule they already
+    bake in — that view must be refused, never re-labelled as clocked.
+    """
+    clocks = [
+        registry.available_at,
+        registry.mapping_pack_available_at,
+        registry.formula_pack_available_at,
+    ]
+    for contract in getattr(registry, "contracts", None) or ():
+        clocks.append(contract.rule.available_at)
+        for mapping in getattr(contract, "mappings", None) or ():
+            clocks.append(mapping.rule.available_at)
+        formula = getattr(contract, "formula", None)
+        if formula is not None:
+            clocks.append(formula.rule.available_at)
+            policy = getattr(formula, "not_presented_policy", None)
+            if policy is not None:
+                clocks.append(policy.rule.available_at)
+        definition = getattr(contract, "definition", None)
+        if definition is not None:
+            clocks.append(definition.rule.available_at)
+    return max(clocks)
+
+
+def _refuse_early_clock_on_precomputed_trees(
+    repo_root: Path, recorded_at: datetime | None
+) -> None:
+    """A cutoff older than the registry horizon cannot reuse published trees."""
+    if recorded_at is None:
+        return
+    try:
+        horizon = _precomputed_registry_horizon(load_core_registry(repo_root))
+    except FinancialQueryAdmissionError:
+        raise
+    except Exception:
+        raise FinancialQueryUnavailableError() from None
+    if recorded_at < horizon:
+        raise FinancialQueryAdmissionError(
+            400, "recorded_at precedes the precomputed trees' registry rules"
+        )
+
+
 def execute_financial_statements(
     *,
     body: bytes,
@@ -307,10 +373,18 @@ def execute_financial_statements(
     package_delivery = getattr(package, "delivery", None)
     precomputed_trees = getattr(package, "statement_trees", None)
     if precomputed_trees is not None:
+        # R-9761 follow-up: trees published under the unclocked registry answer
+        # only clocks at or after its newest rule; an earlier cutoff must be
+        # refused, never served 1.1.0 bytes as if clocked.
+        _refuse_early_clock_on_precomputed_trees(repo_root, admitted.recorded_at)
         reconstructed = precomputed_trees
     elif package_delivery is None:
         try:
             registry = load_core_registry(repo_root)
+            if admitted.recorded_at is not None:
+                # R-9761 follow-up: reconstruct through the registry view the
+                # caller's clock makes visible, mirroring the query API cutoff.
+                registry = registry.governance_bundle_at(admitted.recorded_at)
             reconstructed = reconstruct_primary_statements(package=package, registry=registry)
         except FinancialQueryAdmissionError:
             raise

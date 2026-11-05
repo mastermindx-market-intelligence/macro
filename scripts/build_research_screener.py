@@ -161,13 +161,17 @@ def stamp_page_html(site: Path, html: str) -> str:
 
 
 def bake_html(root: Path, payload: dict[str, Any]) -> str:
-    """Render + stamp + data-base shim. Matches the committed site HTML."""
+    """Render + stamp + shared page shims. Matches the committed site HTML."""
     _ensure_yaml_importable()
     from lib.pages import dbase_prefix, inject_text
+    from lib.shared_shell import inject_shared_shell_text
 
     site = root / "site"
     html = stamp_page_html(site, render_html(root, payload))
-    return inject_text(html, dbase_prefix(site / HTML_NAME))
+    prefix = dbase_prefix(site / HTML_NAME)
+    # bake_html is also consumed directly by the committed-output contract.
+    # Use write_page's idempotent owner so that both paths return the same page.
+    return inject_shared_shell_text(inject_text(html, prefix), prefix, site_dir=site)
 
 
 def render(root: Path) -> dict[str, Any]:

@@ -717,3 +717,18 @@ def test_preregistered_etf_rotation_legs_are_in_active_yahoo_collection():
         f"the incumbent nightly Yahoo configuration omits their legs: {missing}"
     )
     assert roster.count("DIA") == 1  # do not silently substitute ^DJI
+
+
+def test_early_context_frontend_executable_contract():
+    """Keep the real pair renderer in this already-registered CI test pack."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    assert node is not None, "Node is required for the rotation UI contract tests"
+    root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [node, str(root / "tests" / "rotation_early_context_ui.test.cjs")],
+        cwd=root, capture_output=True, text=True, timeout=30, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
