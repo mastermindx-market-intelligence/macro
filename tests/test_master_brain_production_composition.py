@@ -18,6 +18,12 @@ from unittest.mock import patch
 from engine import master_brain, provider_production_modes as owner
 
 
+# Pytest's repository fixture disables cache I/O by default. This suite owns
+# a TemporaryDirectory and explicitly tests the actual root-aware cache.
+_REAL_CACHE_GET = master_brain._mb_reply_cache_get
+_REAL_CACHE_PUT = master_brain._mb_reply_cache_put
+
+
 class MasterBrainProductionCompositionTests(unittest.TestCase):
     def setUp(self):
         temp = tempfile.TemporaryDirectory()
@@ -46,6 +52,8 @@ class MasterBrainProductionCompositionTests(unittest.TestCase):
             "AI_COSTS_STATE_ROOT": str(self.root / "costs"),
         }, clear=True))
         start(patch.object(owner, "DEFAULT_PATH", self.mode_path))
+        start(patch.object(master_brain, "_mb_reply_cache_get", _REAL_CACHE_GET))
+        start(patch.object(master_brain, "_mb_reply_cache_put", _REAL_CACHE_PUT))
         start(patch.object(master_brain, "_is_deepseek_lane",
                            side_effect=AssertionError("legacy ladder reached")))
         start(patch.object(master_brain, "_client",

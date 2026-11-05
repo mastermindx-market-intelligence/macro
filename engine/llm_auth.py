@@ -50,9 +50,11 @@ import inspect
 import logging
 import os
 import re
+import secrets
 import threading
 import time
 from contextlib import contextmanager
+from pathlib import Path
 from typing import Any, Callable
 from types import SimpleNamespace
 
@@ -384,6 +386,10 @@ def build_fabric_provider(factory, *, request_id: str, workload_cfg=None) -> dic
     from engine.provider_production_modes import ApplicationFabricFactory
 
     owned_factory = type(factory) is ApplicationFabricFactory
+    if "MM_PROVIDER_APPLICATION_MODE" in os.environ:
+        selected_mode, _ = _application_mode({})
+        if not owned_factory or factory.mode_id != selected_mode:
+            raise FabricProviderError("fabric_application_owner_required")
     # A generic injected callable is not proof of workload qualification. Only
     # the incumbent owner may compose the real host/startup/caller intersection.
     if not owned_factory and ("MM_PROVIDER_WORKLOAD_PROFILE" in os.environ
@@ -434,6 +440,8 @@ def fabric_request_kwargs(provider: dict, kwargs: dict) -> dict:
     """Identify an intentional step before I/O; never mint identity in recovery."""
     if provider.get("_fabric_failure") is not None:
         raise provider["_fabric_failure"]
+    if provider.get("_fabric_closed"):
+        raise FabricProviderError("fabric_operation_closed")
     if provider.get("_fabric_pending"):
         raise FabricProviderError("fabric_step_unsettled", effect_unknown=True)
     if set(kwargs) - _FABRIC_CALL_KEYS or kwargs.get("model") != provider["model"]:
@@ -614,6 +622,135 @@ class _FabricConsumerClient:
         self.messages = _FabricMessages(client, provider)
 
 
+# Ordinary consumers cache selection recipes, never live Fabric turn clients.
+APPLICATION_MODE_ENV = "MM_PROVIDER_APPLICATION_MODE"
+APPLICATION_MODE_CFG_KEY = "application_fabric_mode"
+
+
+class _FabricInherit:
+    __slots__ = ()
+
+
+FABRIC_INHERIT = _FabricInherit()
+
+
+def _application_mode(cfg: dict) -> tuple[str | None, str]:
+    if APPLICATION_MODE_ENV in os.environ:
+        raw, source = os.environ[APPLICATION_MODE_ENV], "host"
+    elif APPLICATION_MODE_CFG_KEY in cfg:
+        raw, source = cfg[APPLICATION_MODE_CFG_KEY], "caller"
+    else:
+        return None, ""
+    if not isinstance(raw, str) or not re.fullmatch(r"[a-z][a-z0-9_]{2,63}", raw):
+        raise FabricProviderError("fabric_application_mode_invalid")
+    return raw, source
+
+
+def application_mode_id(cfg: dict | None = None) -> str | None:
+    """Resolve selection only. Presence with an invalid value always refuses."""
+    return _application_mode(dict(cfg or {}))[0]
+
+
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
+def _shared_fabric_providers(cfg: dict, *, mode_id: str, source: str) -> list[dict]:
+    # A missing/unqualified owner remains a selected recipe. Actual eligibility
+    # is checked at begin_operation, so cached recipes retain neither a secret
+    # nor a stale permission and cannot disappear into a fallback convention.
+    return [{"name": "fabric", "exclusive": True, "cred": "", "client": None,
+             "model": "", "env_var": "", "_fabric_recipe": True,
+             "_fabric_cfg": dict(cfg), "_fabric_mode_id": mode_id,
+             "_fabric_mode_source": source}]
+
+
+def close_fabric_provider(provider: dict) -> None:
+    """Close this local binding without declaring the upstream effect settled."""
+    if not is_fabric_provider(provider) or provider.get("_fabric_recipe"):
+        return
+    if provider.get("_fabric_pending"):
+        fabric_failure(provider, FabricProviderError("fabric_operation_unsettled", effect_unknown=True))
+    provider["_fabric_closed"] = True
+
+
+class ProviderOperation:
+    """One caller-owned operation; no admission, durable retry or usage ledger.
+
+    Reusing this handle retains its identity and uncertainty latch. Recreating
+    a handle with the same ID is not proof of durable idempotency: the incumbent
+    gateway/caller effect owner must enforce that boundary across processes.
+    """
+    __slots__ = ("_providers", "operation_id", "context", "_closed")
+
+    def __init__(self, providers: list[dict], *, operation_id: str, context: str = ""):
+        self._providers = providers
+        self.operation_id = operation_id
+        self.context = context
+        self._closed = False
+
+    @property
+    def providers(self) -> list[dict]:
+        return self._providers
+
+    def close(self) -> None:
+        """Invalidate retained local Fabric references, without claiming lease release."""
+        if self._closed:
+            return
+        self._closed = True
+        for provider in self._providers:
+            close_fabric_provider(provider)
+        self._providers = []
+
+    def __enter__(self):
+        if self._closed:
+            raise FabricProviderError("fabric_operation_closed")
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
+
+
+def begin_operation(providers, *, operation_id: str | None = None,
+                    context: str = "") -> ProviderOperation:
+    """Bind the current trusted selection once, outside the caller's retry loop."""
+    providers = list(providers or [])
+    is_fabric_selection(providers)
+    recipes = [p for p in providers if p.get("_fabric_recipe")]
+    if not recipes:
+        # A cached native client cannot bypass a host that now requires Fabric.
+        if APPLICATION_MODE_ENV in os.environ and not is_fabric_selection(providers):
+            raise FabricProviderError("fabric_selection_changed")
+        return ProviderOperation(providers, operation_id=str(operation_id or ""),
+                                 context=context)
+    if len(recipes) != 1 or len(providers) != 1:
+        raise FabricProviderError("fabric_mixed_providers")
+    recipe = recipes[0]
+    cfg = dict(recipe["_fabric_cfg"])
+    mode_id, source = _application_mode(cfg)
+    # Never silently retarget a cached selection; callers rebuild their recipe.
+    if (mode_id, source) != (recipe["_fabric_mode_id"], recipe["_fabric_mode_source"]):
+        raise FabricProviderError("fabric_selection_changed")
+    op_id = operation_id if operation_id is not None else "app:" + secrets.token_hex(16)
+    # Only the selected transport changes. Preserve null/empty caller profiles.
+    selected_cfg = {**cfg, "provider_order": ["fabric"]}
+    try:
+        from engine.provider_production_modes import make_application_fabric_factory
+        factory = make_application_fabric_factory(
+            mode_id=mode_id,
+            lane=str(cfg.get("oauth_pool_lane") or cfg.get("usage_lane") or "application"),
+            workload_cfg=selected_cfg, root=_repo_root())
+    except Exception:
+        raise FabricProviderError("fabric_owner_unavailable") from None
+    # The ONE existing binder performs the real owner/policy/capability checks.
+    provider = build_fabric_provider(factory, request_id=op_id, workload_cfg=selected_cfg)
+    for key in ("usage_lane", "usage_stage"):
+        if cfg.get(key):
+            provider[key] = str(cfg[key])
+    provider["usage_cycle_id"] = str(cfg.get("usage_cycle_id") or op_id)
+    return ProviderOperation([provider], operation_id=op_id, context=context)
+
+
 def make_call(
     providers: list[dict],
     call_fn: Callable[[Any, str], tuple[str | None, str | None]],
@@ -654,7 +791,11 @@ def make_call(
                          "anthropic", "deepseek", or "ollama"),
                          or None when no provider could serve.
     """
-    is_fabric_selection(providers)  # Reject mixed lists before any legacy effect.
+    selected = is_fabric_selection(providers)  # Refuse mixed lists before effects.
+    if any(p.get("_fabric_recipe") for p in providers):
+        return None, "fabric_operation_required", None
+    if APPLICATION_MODE_ENV in os.environ and not selected:
+        return None, "fabric_selection_changed", None
     last_auth_reason: str | None = None
     saw_rate_limit = False
     last_exc: BaseException | None = None
@@ -1249,7 +1390,7 @@ def build_providers(
     opus_model: str | None = None,
     deepseek_model: str | None = None,
     extra_headers: dict | None = None,
-    fabric_selected: bool = False,
+    fabric_selected: "bool | _FabricInherit" = FABRIC_INHERIT,
     fabric_provider_factory=None,
     request_id: str | None = None,
 ) -> list[dict]:
@@ -1299,11 +1440,17 @@ def build_providers(
     extra_headers:
         Additional headers to attach to every client (merged with oauth beta).
     """
-    if type(fabric_selected) is not bool:
+    if fabric_selected is not FABRIC_INHERIT and type(fabric_selected) is not bool:
         raise FabricProviderError("fabric_selection_invalid")
-    if fabric_selected:
+    if fabric_selected is True:
         return [build_fabric_provider(fabric_provider_factory, request_id=request_id,
                                       workload_cfg=cfg)]
+    # A trusted host selection is mandatory even for explicit legacy callers.
+    # Resolve it before checking the rung order: the order alone grants nothing.
+    if fabric_selected is not False or APPLICATION_MODE_ENV in os.environ:
+        mode_id, source = _application_mode(cfg)
+        if mode_id is not None:
+            return _shared_fabric_providers(cfg, mode_id=mode_id, source=source)
     if "fabric" in (cfg.get("provider_order") or []):
         raise FabricProviderError("fabric_binding_not_selected")
 

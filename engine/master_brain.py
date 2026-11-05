@@ -28,6 +28,8 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -1702,6 +1704,196 @@ def _call_production_mode(system: str, user: str, cfg: dict,
     return None, "production_mode_" + reason
 
 
+# --------------------------------------------------------------------------- #
+# application Fabric route — the incumbent owner's shared Fabric binding
+#
+# The AI Brief's synthesis is a PAID, task-shaped inference. On a host whose
+# trusted configuration selects the shared Fabric application route
+# (MM_PROVIDER_APPLICATION_MODE), this lane serves through the incumbent Fabric
+# owner or not at all: never through a custom SDK client, a legacy secret, a
+# provider waterfall, a retry layer, a second cache or a second accounting
+# plane.
+#
+# The OWNER keeps eligibility (closed identity, workload permission,
+# enablement/qualification, application entitlement, the capability broker),
+# the credential, the transport, response validation, the per-turn uncertainty
+# latch and the usage/attribution write. This consumer keeps the request
+# contract (only the arguments the transport supports), the two-tuple result,
+# the served out-parameter and the reply-cache identity.
+#
+# The same owner composes host/startup/caller workload policy and fresh
+# qualification/capability checks. A selected unavailable route never falls back.
+# --------------------------------------------------------------------------- #
+_APPLICATION_MODE_ENV = "MM_PROVIDER_APPLICATION_MODE"
+_APPLICATION_FABRIC_LANE = "master-brain"
+_APPLICATION_FABRIC_CACHE_SCHEMA = "master_brain.application_fabric.v1"
+
+
+def _bounded_reason(value) -> str:
+    """Reduce a failure code to a closed, log-safe reason token."""
+    text = "".join(
+        ch if ch in "abcdefghijklmnopqrstuvwxyz0123456789_" else "_"
+        for ch in str(value).lower())
+    return text[:48]
+
+
+def _fabric_reason(code) -> str:
+    """The owner's bounded refusal code, without its redundant prefix."""
+    bounded = _bounded_reason(code)
+    return bounded[len("fabric_"):] if bounded.startswith("fabric_") else bounded
+
+
+def _application_selection(cfg: dict) -> tuple[bool, str | None, str | None]:
+    """Resolve the trusted host's application selection.
+
+    Returns ``(selected, mode_id, refusal)``. ``selected`` is True whenever the
+    host environment names an application mode: that selection is MANDATORY,
+    so this lane serves through the incumbent Fabric owner or not at all. A
+    refusal is a bounded reason and never falls back to another selection.
+
+    An explicit ``production_mode`` that names a DIFFERENT owner contradicts
+    the trusted host choice; it refuses rather than quietly serving a
+    different owner behind the host's selection. The custom-endpoint lane
+    config is NOT a contradiction: it is this lane's legacy default, and the
+    application route replaces it.
+    """
+    raw = os.environ.get(_APPLICATION_MODE_ENV)
+    if raw is None:
+        return False, None, None
+    mode_id = raw.strip() if isinstance(raw, str) else ""
+    if not mode_id:
+        # Presence is meaningful: an empty selection must fail closed, not
+        # quietly fall through to the legacy ladder or the legacy cache.
+        return True, None, "application_fabric_invalid_mode"
+    if "production_mode" in cfg:
+        explicit = cfg.get("production_mode")
+        explicit_id = explicit.strip() if isinstance(explicit, str) else ""
+        if explicit_id != mode_id:
+            return True, None, "application_fabric_conflicting_mode"
+    return True, mode_id, None
+
+
+def _application_operation_id() -> str:
+    """Allocate this operation's identity ONCE, before any inference.
+
+    The draft and its optional accepted rewrite are distinct intentional steps
+    of the SAME operation, so they share this id and differ only in the step
+    suffix the owner's per-turn wrapper assigns. It is never minted in a
+    recovery branch.
+    """
+    return f"master_brain:{uuid.uuid4().hex}"
+
+
+def _application_workload_cfg(cfg: dict) -> dict:
+    """The preserved lane cfg handed to the owner's workload gate.
+
+    ``_ladder_cfg`` keeps the operator's configured keys — ``provider_order``
+    and any ``workload_profile`` — exactly as they are. An invalid null/empty
+    workload profile travels UNCHANGED so the owner's gate, not this consumer,
+    decides whether the workload is permitted. This consumer never removes an
+    unqualified-workload refusal of its own.
+    """
+    out = {**_ladder_cfg(cfg), "provider_order": ["fabric"]}
+    out.setdefault("workload_profile", "site_batch")
+    return out
+
+
+def _resolve_application_route(cfg: dict, mode_id: str, root, operation_id: str):
+    """Resolve the incumbent owner's Fabric binding for THIS operation.
+
+    Returns ``(route, refusal)``. The route carries the owner's per-turn
+    provider descriptor and the identity the reply cache is keyed on. A
+    refusal means the owner did not admit this workload; the caller must not
+    substitute another selection, client, credential or cache.
+    """
+    from engine import llm_auth
+    from engine import provider_production_modes as owner
+
+    maker = getattr(owner, "make_application_fabric_factory", None)
+    if not callable(maker):
+        # The companion owner dependency is not installed on this host.
+        return None, "application_fabric_owner_unavailable"
+    max_tokens = cfg.get("max_tokens", 4000)
+    if type(max_tokens) is not int or not 1 <= max_tokens <= 32768:
+        return None, "application_fabric_invalid_request"
+    try:
+        factory = maker(
+            mode_id=mode_id,
+            lane=_APPLICATION_FABRIC_LANE,
+            workload_cfg=_application_workload_cfg(cfg),
+            root=Path(owner.__file__).resolve().parents[1],
+        )
+    except Exception:  # noqa: BLE001 — the owner's refusal is the answer
+        return None, "application_fabric_owner_refused"
+    try:
+        provider = llm_auth.build_fabric_provider(
+            factory, request_id=operation_id, workload_cfg=_application_workload_cfg(cfg))
+        provider["usage_cycle_id"] = operation_id
+    except llm_auth.FabricProviderError as exc:
+        return None, "application_fabric_" + _fabric_reason(
+            getattr(exc, "code", "") or "binding_unavailable")
+    except Exception:  # noqa: BLE001 — degrade, never raise
+        return None, "application_fabric_binding_unavailable"
+    return {
+        "mode_id": mode_id,
+        "provider": provider,
+        "provider_id": provider.get("provider"),
+        "model": provider.get("model"),
+        "cap_id": provider.get("cap_id"),
+        "cost_basis": provider.get("cost_basis"),
+        "max_tokens": max_tokens,
+    }, None
+
+
+def _call_application_fabric(system: str, user: str, cfg: dict, route: dict,
+                              served: dict | None = None) -> tuple[str | None, str | None]:
+    """One intentional request through the incumbent Fabric owner.
+
+    No custom client, no credential discovery, no provider waterfall, no retry
+    and no fallback. The request carries ONLY the arguments the transport
+    supports — never ``seed`` and never a hidden ignored kwarg — and the owner
+    refuses to walk a ladder for a Fabric selection on its own.
+    """
+    from engine import llm_auth
+
+    provider = route["provider"]
+    max_tokens = route["max_tokens"]
+    # Attribution for the owner's usage write: this lane and this step. The
+    # owner still owns the write; the consumer only names the lane it serves.
+    provider["usage_lane"] = str(cfg.get("usage_lane") or _APPLICATION_FABRIC_LANE)
+    provider["usage_stage"] = str(cfg.get("usage_stage") or "")
+
+    def _do_call(_client, _model: str):
+        resp = _client.messages.create(
+            model=_model,
+            max_tokens=max_tokens,
+            system=system,
+            messages=[{"role": "user", "content": user}],
+        )
+        if (getattr(resp, "stop_reason", None) == "tool_use"
+                or any(getattr(b, "type", "") == "tool_use" for b in resp.content)):
+            raise llm_auth.FabricProviderError("fabric_text_response_required")
+        text = "".join(b.text for b in getattr(resp, "content", [])
+                       if getattr(b, "type", "") == "text")
+        stop = getattr(resp, "stop_reason", None)
+        return text, ("truncated" if stop == "max_tokens" else None), resp
+
+    try:
+        text, reason, _rung = llm_auth.make_call(
+            [provider], _do_call, context="master_brain")
+    except Exception as exc:  # noqa: BLE001 — degrade, never raise
+        code = exc.code if isinstance(exc, llm_auth.FabricProviderError) else "error"
+        return None, "application_fabric_" + _fabric_reason(code)
+    if text is None:
+        return None, reason or "application_fabric_no_reply"
+    if served is not None:
+        # The ACTUAL provider and model that served this step — never a lane
+        # default and never a label the reply did not earn.
+        served["provider"] = provider.get("provider")
+        served["model"] = provider.get("model")
+    return text, reason
+
+
 def _call_model(system: str, user: str, cfg: dict,
                  served: dict | None = None) -> tuple[str | None, str | None]:
     """Return (reply_text, degraded_reason). Never raises.
@@ -1736,6 +1928,24 @@ def _call_model(system: str, user: str, cfg: dict,
     balance exhaustion no longer blanks the whole brief. An operator who
     pinned some OTHER endpoint keeps the historic single-provider descriptor.
     """
+    # The trusted host's application selection is MANDATORY for this lane: when
+    # it is present, the incumbent Fabric owner serves the call — never a custom
+    # client, a legacy secret or the provider waterfall. This branch also
+    # bypasses the legacy empty-reply/SDK retries: a Fabric selection has no
+    # ladder to retry and no dead-key to strike off.
+    application_selected, application_mode, application_refusal = _application_selection(cfg)
+    if application_selected:
+        if application_refusal:
+            return None, application_refusal
+        route, route_refusal = _resolve_application_route(
+            cfg, application_mode, None, _application_operation_id())
+        if route is None:
+            return None, route_refusal
+        from engine import llm_auth
+        try:
+            return _call_application_fabric(system, user, cfg, route, served=served)
+        finally:
+            llm_auth.close_fabric_provider(route["provider"])
     # Presence is intentional: an empty/unknown mode must fail closed, not enter
     # the legacy ladder. This branch also bypasses its empty-reply/SDK retries.
     if "production_mode" in cfg:
@@ -1999,10 +2209,15 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
     cfg = cfg or _cfg()
     spec = LENSES.get(lens, LENSES["macro"])
     production_selected = "production_mode" in cfg
+    # The trusted host's application selection is MANDATORY when present: this
+    # lane then serves through the incumbent Fabric owner or not at all, and the
+    # legacy DeepSeek label must never be published for it.
+    application_selected, application_mode, application_refusal = _application_selection(cfg)
     brief = {
         "schema": "master_brief.v2", "lens": lens, "is_context_only": True,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "model": None if production_selected else cfg.get("llm_model", "deepseek-v4-pro"),
+        "model": None if (production_selected or application_selected)
+        else cfg.get("llm_model", "deepseek-v4-pro"),
         # rung that served this brief — "codex" / "oauth" / "anthropic" / "deepseek",
         # "cache" on a reply-cache hit, or None on a degraded call. Populated below
         # from _call_model's `served` out-param so the ladder is verifiable from
@@ -2027,7 +2242,36 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
     model = cfg.get("llm_model", "deepseek-v4-pro")
     cache_allowed = True
     production_cache_identity = None
-    if production_selected:
+    application_cache_identity = None
+    route = None
+    if application_selected:
+        # The owner's eligibility is resolved BEFORE any cache read: a revoked,
+        # disabled or unqualified binding must never be able to look healthy on
+        # a stale cached reply. Binding construction may read the proxy
+        # credential only after the owner's own gates, but a cache hit performs
+        # NO provider call, admission or charge.
+        cache_allowed = False
+        if application_refusal:
+            brief["degraded_reason"] = application_refusal
+            return brief
+        route, route_refusal = _resolve_application_route(
+            cfg, application_mode, root, _application_operation_id())
+        if route is None:
+            brief["degraded_reason"] = route_refusal
+            return brief
+        brief["model"] = route["model"]
+        application_cache_identity = (route["provider_id"], route["model"])
+        # A distinct Fabric identity: mode, actual provider, exact model, the
+        # closed binding identity and the output limit. It can never alias the
+        # legacy model cache or the PAYG production-mode cache.
+        model = json.dumps(
+            [_APPLICATION_FABRIC_CACHE_SCHEMA, route["mode_id"],
+             route["provider_id"], route["model"], route["cap_id"],
+             route["cost_basis"], route["max_tokens"]],
+            separators=(",", ":"),
+        )
+        cache_allowed = True
+    elif production_selected:
         # Production replies must never alias a legacy model cache. Re-resolve
         # eligibility before a cache read so disabled/unqualified modes cannot
         # look healthy by serving old output. The owner alone handles secrets.
@@ -2048,146 +2292,190 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
             # The actual call below returns the bounded failure; no alternate
             # cache, provider or credential resolver is tried here.
             pass
-    phash = _mb_prompt_hash(model, system, user) if cache_allowed else None
-    cached = _mb_reply_cache_get(phash, cfg, root) if phash is not None else None
-    _cache_was_hit = cached is not None
-    if _cache_was_hit:
-        log.debug("master_brain: reply cache HIT (%s)", phash[:12])
-        reply, reason = cached, None
-        brief["served_by"] = "cache"
-    else:
-        # Tag the lens (macro/china/btc) as the usage stage for cost drill-down.
-        served: dict = {}
-        try:
-            reply, reason = _call_model(
-                system, user, {**cfg, "usage_stage": lens}, served=served)
-        except TypeError:
-            if production_selected:
-                # A TypeError may follow dispatch. Production requests are never
-                # replayed for the legacy test-stub signature compatibility path.
-                reply, reason = None, "production_mode_error"
-            else:
-                # Preserve existing callers that stub the old signature.
-                reply, reason = _call_model(system, user, {**cfg, "usage_stage": lens})
-            served = {}
-        if reply is not None:
-            brief["served_by"] = served.get("provider")
-            if served.get("model"):
-                brief["model"] = served["model"]
+    try:
+        phash = _mb_prompt_hash(model, system, user) if cache_allowed else None
+        cached = _mb_reply_cache_get(phash, cfg, root) if phash is not None else None
+        _cache_was_hit = cached is not None
+        if _cache_was_hit:
+            log.debug("master_brain: reply cache HIT (%s)", phash[:12])
+            reply, reason = cached, None
+            brief["served_by"] = "cache"
+        else:
+            # Tag the lens (macro/china/btc) as the usage stage for cost drill-down.
+            served: dict = {}
+            try:
+                if application_selected:
+                    # The SAME route (and therefore the SAME per-turn provider and
+                    # operation identity) serves the draft and its accepted rewrite.
+                    reply, reason = _call_application_fabric(
+                        system, user, {**cfg, "usage_stage": lens}, route, served=served)
+                else:
+                    reply, reason = _call_model(
+                        system, user, {**cfg, "usage_stage": lens}, served=served)
+            except TypeError:
+                if application_selected:
+                    # A TypeError may follow dispatch. The application route is
+                    # never replayed for a signature-compatibility path.
+                    reply, reason = None, "application_fabric_error"
+                elif production_selected:
+                    # A TypeError may follow dispatch. Production requests are never
+                    # replayed for the legacy test-stub signature compatibility path.
+                    reply, reason = None, "production_mode_error"
+                else:
+                    # Preserve existing callers that stub the old signature.
+                    reply, reason = _call_model(system, user, {**cfg, "usage_stage": lens})
+                served = {}
+            if reply is not None:
+                brief["served_by"] = served.get("provider")
+                if served.get("model"):
+                    brief["model"] = served["model"]
 
-    brief["raw_text"] = reply
-    if reply is None:
-        brief["degraded_reason"] = reason
+        brief["raw_text"] = reply
+        if reply is None:
+            brief["degraded_reason"] = reason
+            return brief
+        parsed = _extract_json(reply)
+        if not isinstance(parsed, dict):
+            brief["degraded_reason"] = reason or "unparseable_reply"   # surfaces "truncated"
+            return brief
+
+        # Style lint + ONE rewrite retry (spec §4).
+        # Skip lint on cache hits — stored text was already linted on the run that wrote it.
+        style_flags: list[str] = []
+        rewrite_degraded = False
+        if not _cache_was_hit:
+            try:
+                violations = _collect_style_violations(parsed)
+                if violations:
+                    # Build a deduplicated list of banned token names for the rewrite prompt
+                    banned_list = list(dict.fromkeys(v.split(": ", 1)[-1] for v in violations))[:15]
+                    rewrite_system = (
+                        "Your brief contains banned machine tokens: "
+                        + ", ".join(banned_list)
+                        + ". Rewrite the SAME JSON — identical structure and claims — "
+                        "replacing every banned token with plain language a non-finance "
+                        "reader understands. Return only the JSON."
+                    )
+                    # THE REWRITE IS A SECOND TRIP DOWN THE LADDER, so it can be served
+                    # by a DIFFERENT rung than the original draft — mark_dead and pool
+                    # cooling both move between the two calls. When the rewrite is
+                    # ACCEPTED below it becomes the published text, so served_by/model
+                    # must follow it; otherwise the brief carries the draft's label over
+                    # the rewrite's words, and the field the operator reads to check
+                    # "did DeepSeek quietly serve this?" answers about a reply that was
+                    # thrown away. Tracked separately and only promoted on acceptance.
+                    #
+                    # On the application Fabric route the rewrite is a second
+                    # INTENTIONAL STEP of the SAME operation, not retry work: it
+                    # reuses the same per-turn provider and operation identity, and
+                    # the owner serves it from the same binding. There is no ladder,
+                    # so there is no third request and no fallback.
+                    rw_served: dict = {}
+                    rw_reason = None
+                    if application_selected:
+                        rw_reply, rw_reason = _call_application_fabric(
+                            rewrite_system, reply, {**cfg, "usage_stage": lens},
+                            route, served=rw_served)
+                    else:
+                        rw_reply, _rw_reason = _call_model(
+                            rewrite_system, reply, {**cfg, "usage_stage": lens},
+                            served=rw_served)
+                    if rw_reply:
+                        rw_parsed = _extract_json(rw_reply)
+                        if isinstance(rw_parsed, dict):
+                            rw_violations = _collect_style_violations(rw_parsed)
+                            if len(rw_violations) <= len(violations):
+                                # Rewrite is better (or no worse) — accept it
+                                reply = rw_reply
+                                parsed = rw_parsed
+                                violations = rw_violations
+                                if rw_served.get("provider"):
+                                    brief["served_by"] = rw_served["provider"]
+                                if rw_served.get("model"):
+                                    brief["model"] = rw_served["model"]
+                    elif application_selected:
+                        # A FAILED or UNCERTAIN rewrite keeps the KNOWN draft — the
+                        # useful text is real — but the brief is not a clean success
+                        # and must not be cached as one. No third request, no
+                        # fallback, no regenerated identity.
+                        rewrite_degraded = True
+                        brief["degraded_reason"] = rw_reason or "application_fabric_rewrite_failed"
+                    style_flags = violations
+                # Cache the FINAL post-lint text under the ORIGINAL prompt hash. On a
+                # lint failure above we cache NOTHING (next run re-calls and re-lints)
+                # — never a raw pre-lint reply that would dodge the lint on a hit.
+                # A future owner/model transition must not cache a receipt under a
+                # different identity than the one resolved before dispatch.
+                if application_selected:
+                    # The served identity is compared with the identity resolved
+                    # BEFORE dispatch. A changed owner/model must not poison the
+                    # cache under a stale identity, and a degraded rewrite is never
+                    # a clean success.
+                    cache_identity_matches = (
+                        not rewrite_degraded
+                        and application_cache_identity == (brief["served_by"], brief["model"]))
+                else:
+                    cache_identity_matches = (
+                        not production_selected
+                        or production_cache_identity == (brief["served_by"], brief["model"])
+                    )
+                if phash is not None and cache_identity_matches:
+                    _mb_reply_cache_put(phash, reply, cfg, root)
+            except Exception:  # noqa: BLE001 — degrade, never raise
+                pass
+
+        brief["style_flags"] = style_flags
+
+        for k in _BRIEF_FIELDS:
+            if k in parsed:
+                brief[k] = parsed[k]
+        # ADB-W2: forward_watch and forward_read (macro lens only).  Parsed defensively:
+        # - forward_watch: must be a list of dicts; any malformed row is dropped.
+        # - forward_read: must be a string; missing → omitted.
+        if lens == "macro":
+            try:
+                raw_fw = parsed.get("forward_watch")
+                if isinstance(raw_fw, list):
+                    valid_rows = []
+                    for row in raw_fw:
+                        if isinstance(row, dict) and row.get("date") and row.get("label"):
+                            valid_rows.append({
+                                "date": str(row["date"]),
+                                "label": str(row["label"]),
+                                "kind": str(row.get("kind", "")),
+                                "note": str(row.get("note", ""))[:120],  # guard runaway notes
+                            })
+                    if valid_rows:
+                        brief["forward_watch"] = valid_rows
+                raw_fr = parsed.get("forward_read")
+                if isinstance(raw_fr, str) and raw_fr.strip():
+                    brief["forward_read"] = raw_fr.strip()
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.debug("master_brain: forward_watch/read parse failed: %s", e)
+        # macro-lens producer: stake the brain's OWN falsifiable leans. Wrapped in its own try so
+        # a theses bug can NEVER discard the free-text already copied above (the schema tail is
+        # placed last, so a truncated reply drops the trailing theses array first, not the narrative).
+        if lens == "macro" and cfg.get("emit_theses", True):
+            try:
+                raw = parsed.get("theses") if isinstance(parsed.get("theses"), list) else []
+                built = []
+                token = _ledger_law.run_token(brief.get("generated_at"))
+                for t in raw[: int(cfg.get("max_theses", 2))]:
+                    th = _mb_build_thesis(t, len(built), brief["state_asof"], root, cfg,
+                                          run_token=token)
+                    if th is not None:
+                        built.append(th)
+                brief["theses"] = built
+            except Exception as e:  # noqa: BLE001 — a theses bug must never lose the free-text
+                log.warning("master_brain: theses parse failed: %s", e)
+                brief["theses"] = []
+        if reason:
+            brief["degraded_reason"] = reason          # parsed, but flag e.g. truncation
         return brief
-    parsed = _extract_json(reply)
-    if not isinstance(parsed, dict):
-        brief["degraded_reason"] = reason or "unparseable_reply"   # surfaces "truncated"
-        return brief
-
-    # Style lint + ONE rewrite retry (spec §4).
-    # Skip lint on cache hits — stored text was already linted on the run that wrote it.
-    style_flags: list[str] = []
-    if not _cache_was_hit:
-        try:
-            violations = _collect_style_violations(parsed)
-            if violations:
-                # Build a deduplicated list of banned token names for the rewrite prompt
-                banned_list = list(dict.fromkeys(v.split(": ", 1)[-1] for v in violations))[:15]
-                rewrite_system = (
-                    "Your brief contains banned machine tokens: "
-                    + ", ".join(banned_list)
-                    + ". Rewrite the SAME JSON — identical structure and claims — "
-                    "replacing every banned token with plain language a non-finance "
-                    "reader understands. Return only the JSON."
-                )
-                # THE REWRITE IS A SECOND TRIP DOWN THE LADDER, so it can be served
-                # by a DIFFERENT rung than the original draft — mark_dead and pool
-                # cooling both move between the two calls. When the rewrite is
-                # ACCEPTED below it becomes the published text, so served_by/model
-                # must follow it; otherwise the brief carries the draft's label over
-                # the rewrite's words, and the field the operator reads to check
-                # "did DeepSeek quietly serve this?" answers about a reply that was
-                # thrown away. Tracked separately and only promoted on acceptance.
-                rw_served: dict = {}
-                rw_reply, _rw_reason = _call_model(
-                    rewrite_system, reply, {**cfg, "usage_stage": lens},
-                    served=rw_served)
-                if rw_reply:
-                    rw_parsed = _extract_json(rw_reply)
-                    if isinstance(rw_parsed, dict):
-                        rw_violations = _collect_style_violations(rw_parsed)
-                        if len(rw_violations) <= len(violations):
-                            # Rewrite is better (or no worse) — accept it
-                            reply = rw_reply
-                            parsed = rw_parsed
-                            violations = rw_violations
-                            if rw_served.get("provider"):
-                                brief["served_by"] = rw_served["provider"]
-                            if rw_served.get("model"):
-                                brief["model"] = rw_served["model"]
-                style_flags = violations
-            # Cache the FINAL post-lint text under the ORIGINAL prompt hash. On a
-            # lint failure above we cache NOTHING (next run re-calls and re-lints)
-            # — never a raw pre-lint reply that would dodge the lint on a hit.
-            # A future owner/model transition must not cache a receipt under a
-            # different identity than the one resolved before dispatch.
-            cache_identity_matches = (
-                not production_selected
-                or production_cache_identity == (brief["served_by"], brief["model"])
-            )
-            if phash is not None and cache_identity_matches:
-                _mb_reply_cache_put(phash, reply, cfg, root)
-        except Exception:  # noqa: BLE001 — degrade, never raise
-            pass
-
-    brief["style_flags"] = style_flags
-
-    for k in _BRIEF_FIELDS:
-        if k in parsed:
-            brief[k] = parsed[k]
-    # ADB-W2: forward_watch and forward_read (macro lens only).  Parsed defensively:
-    # - forward_watch: must be a list of dicts; any malformed row is dropped.
-    # - forward_read: must be a string; missing → omitted.
-    if lens == "macro":
-        try:
-            raw_fw = parsed.get("forward_watch")
-            if isinstance(raw_fw, list):
-                valid_rows = []
-                for row in raw_fw:
-                    if isinstance(row, dict) and row.get("date") and row.get("label"):
-                        valid_rows.append({
-                            "date": str(row["date"]),
-                            "label": str(row["label"]),
-                            "kind": str(row.get("kind", "")),
-                            "note": str(row.get("note", ""))[:120],  # guard runaway notes
-                        })
-                if valid_rows:
-                    brief["forward_watch"] = valid_rows
-            raw_fr = parsed.get("forward_read")
-            if isinstance(raw_fr, str) and raw_fr.strip():
-                brief["forward_read"] = raw_fr.strip()
-        except Exception as e:  # noqa: BLE001 — additive, never fatal
-            log.debug("master_brain: forward_watch/read parse failed: %s", e)
-    # macro-lens producer: stake the brain's OWN falsifiable leans. Wrapped in its own try so
-    # a theses bug can NEVER discard the free-text already copied above (the schema tail is
-    # placed last, so a truncated reply drops the trailing theses array first, not the narrative).
-    if lens == "macro" and cfg.get("emit_theses", True):
-        try:
-            raw = parsed.get("theses") if isinstance(parsed.get("theses"), list) else []
-            built = []
-            token = _ledger_law.run_token(brief.get("generated_at"))
-            for t in raw[: int(cfg.get("max_theses", 2))]:
-                th = _mb_build_thesis(t, len(built), brief["state_asof"], root, cfg,
-                                      run_token=token)
-                if th is not None:
-                    built.append(th)
-            brief["theses"] = built
-        except Exception as e:  # noqa: BLE001 — a theses bug must never lose the free-text
-            log.warning("master_brain: theses parse failed: %s", e)
-            brief["theses"] = []
-    if reason:
-        brief["degraded_reason"] = reason          # parsed, but flag e.g. truncation
-    return brief
+    finally:
+        if route is not None:
+            from engine import llm_auth
+            llm_auth.close_fabric_provider(route["provider"])
 
 
 # --------------------------------------------------------------------------- #

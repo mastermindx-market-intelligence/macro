@@ -455,3 +455,73 @@ def test_public_http_startup_owner_composes_real_brain_and_gateway(
         assert costs[0]["input_tokens"] == 22
     finally:
         main.app.dependency_overrides.pop(main._brain_user_or_guest, None)
+
+
+def test_shared_news_and_cached_auditor_reach_real_owner_gateway(gateway_module, tmp_path, monkeypatch):
+    import yaml
+    from engine import llm_auth, news_llm
+    from engine.marketing import copy_auditor
+
+    news_reply = packet()
+    news_reply["choices"][0]["message"]["content"] = json.dumps([
+        {"i": 0, "summary": "Measured observation.", "importance": 60, "tone": "neutral"}])
+    audit_reply = packet()
+    audit_reply["choices"][0]["message"]["content"] = json.dumps({
+        "verdicts": [{"n": 1, "verdict": "keep", "codes": [], "note": "Supported."}]})
+    costs = []
+    monkeypatch.setattr("lib.ai_costs.record_usage", lambda **kw: costs.append(kw))
+    monkeypatch.setattr("engine.provider_health.record_attempt", lambda **kw: None)
+    monkeypatch.setattr("lib.config.secret", Mock(side_effect=AssertionError("legacy credentials")))
+    monkeypatch.setattr(news_llm, "_cfg", lambda: {"enabled": True})
+    monkeypatch.setattr(news_llm, "_classify_model", lambda: "legacy-model")
+    monkeypatch.setattr(copy_auditor, "_PROVIDER_CACHE", {})
+    monkeypatch.setenv("MARKETING_LLM_ENABLED", "1")
+    with owner_gateway(gateway_module, tmp_path, [news_reply, audit_reply, audit_reply]) as (url, calls, wire, asgi):
+        path, manifest = configure_owned_application(monkeypatch, tmp_path, url)
+        manifest["capabilities"][0]["allowed_lanes"] += ["news-llm", "marketing-auditor"]
+        path.write_text(yaml.safe_dump(manifest))
+        monkeypatch.setattr(llm_auth, "_repo_root", lambda: tmp_path)
+        headlines = news_llm.annotate([{"title": "Measured news"}])
+        assert headlines[0]["summary"] == "Measured observation."
+        posts = [{"text": "Measured observation."}]
+        assert copy_auditor.audit_batch(posts)["ok"]
+        assert copy_auditor.audit_batch(posts)["ok"]
+        assert len(copy_auditor._PROVIDER_CACHE) == 1
+        snapshot = status(asgi)
+    assert len(calls) == len(wire) == len(costs) == 3
+    assert len({call["headers"]["idempotency-key"] for call in calls}) == 3
+    assert all(row["provider"] == "fixture-provider" and row["model"] == MODEL for row in costs)
+    assert snapshot["shared_used_in_window"] == 3 and snapshot["pending"] == 0
+
+
+@pytest.mark.parametrize("rewrite_fails", [False, True])
+def test_ai_brief_intentional_rewrite_uses_real_owner_gateway(gateway_module, tmp_path, monkeypatch, rewrite_fails):
+    import yaml
+    from engine import master_brain, provider_production_modes as owner
+
+    draft = packet()
+    draft["choices"][0]["message"]["content"] = json.dumps({"summary": "neural_web conditions."})
+    final = packet()
+    final["choices"][0]["message"]["content"] = json.dumps({"summary": "Measured conditions."})
+    costs = []
+    monkeypatch.setattr("lib.ai_costs.record_usage", lambda **kw: costs.append(kw))
+    monkeypatch.setattr("engine.provider_health.record_attempt", lambda **kw: None)
+    monkeypatch.setattr(master_brain, "_client", Mock(side_effect=AssertionError("legacy client")))
+    monkeypatch.setattr(master_brain, "_is_deepseek_lane", Mock(side_effect=AssertionError("legacy route")))
+    plans = [draft, httpx.ReadError("synthetic interrupted rewrite") if rewrite_fails else final]
+    with owner_gateway(gateway_module, tmp_path, plans) as (url, calls, wire, asgi):
+        path, manifest = configure_owned_application(monkeypatch, tmp_path, url)
+        manifest["capabilities"][0]["allowed_lanes"].append("master-brain")
+        path.write_text(yaml.safe_dump(manifest))
+        monkeypatch.setattr(owner, "__file__", str(tmp_path / "engine/provider_production_modes.py"))
+        brief = master_brain.synthesize({"macro": {"date": "2026-11-04"}},
+            cfg={"max_tokens": 1000, "emit_theses": False}, root=tmp_path)
+        snapshot = status(asgi)
+    assert brief["served_by"] == "fixture-provider" and brief["model"] == MODEL
+    assert brief["summary"] == ("neural_web conditions." if rewrite_fails else "Measured conditions.")
+    assert bool(brief["degraded_reason"]) is rewrite_fails
+    assert len(calls) == len(wire) == 2 and len(costs) == (1 if rewrite_fails else 2)
+    ids = [call["headers"]["idempotency-key"] for call in calls]
+    assert ids[0].endswith(":brain:0") and ids[1].endswith(":brain:1")
+    assert ids[0].rsplit(":", 1)[0] == ids[1].rsplit(":", 1)[0]
+    assert snapshot["shared_used_in_window"] == 2
