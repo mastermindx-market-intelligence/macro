@@ -1,0 +1,8 @@
+{
+  "source_qualification_sha256": "aa77dd35b3aaf296a5b50530666753121a88a8b7a5f06097e5c4069fd38e7731",
+  "result": "refused_before_candidate_or_writer_admission",
+  "reason": "explicit external planning qualification required",
+  "provider_calls": 0,
+  "allow_stage": false,
+  "allow_emit": false
+}
