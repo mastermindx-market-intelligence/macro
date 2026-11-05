@@ -510,10 +510,12 @@ The same Macro #10674 carrier remains unarmed/merge-blocked at published
 Original observer69181 is closed. Formal5788443077 applies only to4462;
 historical8c/687PASS/formal5782911631 are not successor proof.
 
-Current unpublished product-source boundary is `4f4024c996f663c4786c237df68af4a5cb9f6c5f` on actual
-protected `39133a6dfe1c9ff2100e5726bb82a61416682828`. All407 prior owned diff
-entries and all ten nonoverlapping newer protected entries were preserved by
-mode/blob. Reviewed Company/T55, Bonds/Forensics/Business/China/Radar/Calendar/HK/
+The reviewed product-source boundary is `4f4024c996f663c4786c237df68af4a5cb9f6c5f`.
+The first protected39133 composition preserved all407 prior owned diff entries
+and ten incoming entries by mode/blob. Action-time protected
+`a20e6437cc8a892b769d549876ebf81ca0e2dcd1` is now composed: its28 further
+nonoverlapping paths are exact, all product-source entries unchanged. The actual
+protected CI-authority conservative inventory/admin checks are preserved, not waived. Reviewed Company/T55, Bonds/Forensics/Business/China/Radar/Calendar/HK/
 T52 scope, B2 outline projection, current API/MarketMemory/Options contracts and
 protected quote-board cap640 remain. Source clocks and B2 activation are
 **NOT_YET_LIVE** until their actual normal installation/publication and consumer
