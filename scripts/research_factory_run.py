@@ -525,6 +525,14 @@ def run(
         raise ValueError("market_memory_only_requires_exact_bool")
     if type(market_memory_inputs) is not tuple or len(market_memory_inputs) > 1:
         raise ValueError("at_most_one_typed_market_memory_evidence_input")
+    if market_memory_inputs:
+        from engine.research_factory.adapter_market_memory_fitted_evidence import FittedMarketMemoryEvidenceInput
+        # Include subclasses in refusal; the downstream exact-type owner will
+        # reject them even in context-only mode. No private work precedes this.
+        if any(isinstance(item, FittedMarketMemoryEvidenceInput) for item in market_memory_inputs) and (
+            market_memory_only is not True or dry_run is not True or count is not False
+        ):
+            raise ValueError("fitted_evidence_requires_context_only_dry_run_true_count_false")
     # Validate the bounded contextual-only mode BEFORE any private read
     # (evidence build, binding/policy recheck, candidate load).
     if market_memory_only and (
