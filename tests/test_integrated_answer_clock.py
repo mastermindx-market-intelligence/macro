@@ -624,3 +624,263 @@ def test_legs_see_the_request_context(monkeypatch) -> None:
         probe.reset(token)
 
     assert seen == ["request"]
+
+
+# --- Retained-submission bound: saturated composes cannot pile up ------------------------------
+#
+# The pool bounds only executing work; queued submissions are retained in its queue until
+# a worker drains them. ``_leg_admission`` caps retained submissions (executing plus
+# queued) so repeated timed-out composes cannot grow them without limit.
+
+MAX_RETAINED = integrated_answer._MAX_RETAINED_READ_LEGS
+
+
+@pytest.fixture
+def _fresh_leg_admission(monkeypatch):
+    admission = threading.BoundedSemaphore(MAX_RETAINED)
+    monkeypatch.setattr(integrated_answer, "_leg_admission", admission)
+    return admission
+
+
+def _drain_admission_slots() -> int:
+    acquired = 0
+    while integrated_answer._leg_admission.acquire(blocking=False):
+        acquired += 1
+    return acquired
+
+
+def _admission_slots_are_all_free() -> bool:
+    acquired = _drain_admission_slots()
+    for _slot in range(acquired):
+        integrated_answer._leg_admission.release()
+    return acquired == MAX_RETAINED
+
+
+def _pool_queue_depth(pool: ThreadPoolExecutor) -> int:
+    # Direct measurement of retained-but-not-drained submissions (CPython work deque).
+    return pool._work_queue.qsize()
+
+
+def _instant_leg_read(leg_id: str):
+    def read(*_a, **_k):
+        return _surfaced_leg(leg_id, route=PUBLICATION_ROUTE, as_of=NOW, payload={"leg": leg_id})
+
+    return read
+
+
+def test_repeated_saturated_requests_bound_retained_leg_work(monkeypatch, _fresh_leg_admission) -> None:
+    """Eight timed-out composes against a saturated pool must retain at most the
+    documented envelope of leg submissions, and no abandoned read may run once
+    capacity returns."""
+    release = threading.Event()
+    ran: list[str] = []
+
+    def recorded(leg_id: str):
+        def read(*_a, **_k):
+            ran.append(leg_id)
+            release.wait(timeout=30)
+            return integrated_answer._leg_fixed_absent(leg_id, "released")
+
+        return read
+
+    pool = ThreadPoolExecutor(max_workers=1)
+    _stub_read_legs(monkeypatch, **{attr: recorded(leg_id) for attr, leg_id in READ_LEGS.items()})
+    monkeypatch.setattr(integrated_answer, "_leg_pool", pool)
+    monkeypatch.setattr(integrated_answer, "COMPOSE_DEADLINE_SECONDS", 0.02)
+    depths: list[int] = []
+    try:
+        for _request in range(8):
+            page = integrated_answer._compose_page("AAPL")
+            assert [item["leg"] for item in page["legs"]] == PAGE_LEG_ORDER
+            depths.append(_pool_queue_depth(pool))
+            assert depths[-1] <= MAX_RETAINED
+    finally:
+        release.set()
+        pool.shutdown(wait=True)
+
+    # 1 executing + 27 queued once the envelope is full; further requests refuse their
+    # admissions instead of enqueueing (6, 13, 20, 27, then flat).
+    assert depths == [6, 13, 20, 27, 27, 27, 27, 27]
+    # Only the single read that got a worker ever ran: every queued leg was marked past
+    # the deadline and skipped when the pool finally drained its queue.
+    assert ran == ["financial_facts"]
+    assert _admission_slots_are_all_free()
+
+
+def test_saturated_admission_degrades_without_enqueuing_and_recovers(monkeypatch, _fresh_leg_admission) -> None:
+    """With the retained envelope already full, every leg degrades honestly, nothing new
+    is enqueued, and the envelope recovers completely once slots are freed."""
+    pool = ThreadPoolExecutor(max_workers=2)
+    monkeypatch.setattr(integrated_answer, "_leg_pool", pool)
+    calls = [
+        (leg_id, _instant_leg_read(leg_id), ())
+        for leg_id in READ_LEGS.values()
+    ]
+
+    acquired = _drain_admission_slots()
+    assert acquired == MAX_RETAINED
+    try:
+        legs = integrated_answer._read_legs(calls)
+        assert [item["leg"] for item in legs] == [*READ_LEGS.values()]
+        for item in legs:
+            assert item["status"] == "absent"
+            assert item["degraded_reason"] == integrated_answer.COMPOSE_CAPACITY_REASON
+            assert item["ref"] is None and item["payload"] is None
+        # no retained submission was enqueued behind the refused admissions
+        assert _pool_queue_depth(pool) == 0
+        assert all(item["status"] == "NO_REF" for item in integrated_answer._receipt_entries(legs))
+    finally:
+        for _slot in range(acquired):
+            integrated_answer._leg_admission.release()
+
+    try:
+        # recovery run while this test's pool is still the live _leg_pool
+        recovered = integrated_answer._read_legs(calls)
+        assert [item["status"] for item in recovered] == ["ok"] * len(READ_LEGS)
+    finally:
+        pool.shutdown(wait=True)
+
+
+def test_admission_slots_recover_after_a_leg_exception(monkeypatch, _fresh_leg_admission) -> None:
+    """A leg read that raises must not leak its admission slot: the envelope is whole
+    again afterwards and later composes still run their reads."""
+    pool = ThreadPoolExecutor(max_workers=2)
+    monkeypatch.setattr(integrated_answer, "_leg_pool", pool)
+
+    def broken(*_a, **_k):
+        raise ValueError("leg bug")
+
+    calls = [
+        ("financial_facts", _instant_leg_read("financial_facts"), ()),
+        ("capital_structure", broken, ()),
+    ]
+    try:
+        with pytest.raises(ValueError, match="leg bug"):
+            integrated_answer._read_legs(calls)
+        assert _admission_slots_are_all_free()
+        healthy = integrated_answer._read_legs([calls[0]])
+        assert healthy[0]["status"] == "ok"
+    finally:
+        pool.shutdown(wait=True)
+
+
+def test_early_exception_abandons_later_queued_reads(monkeypatch, _fresh_leg_admission) -> None:
+    release = threading.Event()
+    started = threading.Event()
+    ran: list[str] = []
+    pool = ThreadPoolExecutor(max_workers=1)
+    monkeypatch.setattr(integrated_answer, "_leg_pool", pool)
+    monkeypatch.setattr(integrated_answer, "COMPOSE_DEADLINE_SECONDS", 0.2)
+
+    def broken():
+        raise ValueError("first leg failed")
+
+    def blocked():
+        ran.append("running")
+        started.set()
+        release.wait(timeout=5)
+        return integrated_answer._leg_fixed_absent("earnings_expectation", "released")
+
+    def queued():
+        ran.append("abandoned")
+        return integrated_answer._leg_fixed_absent("capital_structure", "unexpected")
+
+    try:
+        with pytest.raises(ValueError, match="first leg failed"):
+            integrated_answer._read_legs([
+                ("financial_facts", broken, ()),
+                ("earnings_expectation", blocked, ()),
+                ("capital_structure", queued, ()),
+            ])
+        assert started.is_set()
+    finally:
+        release.set()
+        pool.shutdown(wait=True)
+    assert ran == ["running"]
+    assert _admission_slots_are_all_free()
+
+
+@pytest.mark.parametrize("failure_at", ["submit", "wait"])
+def test_request_failure_abandons_admitted_work(
+    monkeypatch, _fresh_leg_admission, failure_at
+) -> None:
+    release = threading.Event()
+    started = threading.Event()
+    ran: list[str] = []
+    pool = ThreadPoolExecutor(max_workers=1)
+
+    def blocked():
+        ran.append("running")
+        started.set()
+        release.wait(timeout=5)
+        return integrated_answer._leg_fixed_absent("financial_facts", "released")
+
+    def queued():
+        ran.append("abandoned")
+        return integrated_answer._leg_fixed_absent("earnings_expectation", "unexpected")
+
+    class FailingSubmit:
+        count = 0
+
+        def submit(self, *args, **kwargs):
+            self.count += 1
+            if self.count == 3:
+                assert started.wait(timeout=2)
+                raise RuntimeError("submission failure")
+            return pool.submit(*args, **kwargs)
+
+    def failing_wait(*_args, **_kwargs):
+        assert started.wait(timeout=2)
+        raise RuntimeError("wait failure")
+
+    monkeypatch.setattr(
+        integrated_answer, "_leg_pool", FailingSubmit() if failure_at == "submit" else pool
+    )
+    if failure_at == "wait":
+        monkeypatch.setattr(integrated_answer, "wait", failing_wait)
+    try:
+        with pytest.raises(RuntimeError, match="failure"):
+            integrated_answer._read_legs([
+                ("financial_facts", blocked, ()),
+                ("earnings_expectation", queued, ()),
+                ("capital_structure", queued, ()),
+            ])
+    finally:
+        release.set()
+        pool.shutdown(wait=True)
+    assert ran == ["running"]
+    assert _admission_slots_are_all_free()
+
+
+def test_leg_releases_the_admission_instance_it_acquired(monkeypatch, _fresh_leg_admission) -> None:
+    original = _fresh_leg_admission
+    replacement = threading.BoundedSemaphore(MAX_RETAINED)
+    pool = ThreadPoolExecutor(max_workers=1)
+    monkeypatch.setattr(integrated_answer, "_leg_pool", pool)
+
+    def read():
+        monkeypatch.setattr(integrated_answer, "_leg_admission", replacement)
+        return integrated_answer._leg_fixed_absent("financial_facts", "read")
+
+    try:
+        integrated_answer._read_legs([("financial_facts", read, ())])
+    finally:
+        pool.shutdown(wait=True)
+    assert _admission_slots_are_all_free()
+    monkeypatch.setattr(integrated_answer, "_leg_admission", original)
+    assert _admission_slots_are_all_free()
+
+
+def test_queued_leg_checks_absolute_deadline_before_read(monkeypatch, _fresh_leg_admission) -> None:
+    ran: list[bool] = []
+    assert _fresh_leg_admission.acquire(blocking=False)
+    monkeypatch.setattr(integrated_answer, "monotonic", lambda: 11.0)
+    leg = integrated_answer._run_leg_read(
+        _fresh_leg_admission, threading.Event(), 10.0, "financial_facts",
+        contextvars.copy_context(), lambda: ran.append(True), (),
+    )
+    assert ran == []
+    assert leg["status"] == "absent"
+    assert leg["degraded_reason"] == integrated_answer.COMPOSE_DEADLINE_REASON
+    assert leg["ref"] is None and leg["payload"] is None
+    assert _admission_slots_are_all_free()

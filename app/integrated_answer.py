@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import subprocess
 import threading
+from time import monotonic
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Response
@@ -32,6 +33,7 @@ STALE_DAYS = 4
 # Under EdgeOne's roughly 30 s origin budget: a slow leg degrades, the page still answers.
 COMPOSE_DEADLINE_SECONDS = 20.0
 COMPOSE_DEADLINE_REASON = "compose_deadline_exceeded"
+COMPOSE_CAPACITY_REASON = "compose_capacity_exhausted"
 
 CONSUMER_RECEIPT_VERSION = "c19-wp08-v1"
 CONSUMED_RECEIPTS_HEADER = "X-Integrated-Answer-Consumed-Receipts"
@@ -181,8 +183,14 @@ _chip_lock = threading.Lock()
 _chip_cached_day: str | None = None
 _chip_cached_value: dict[str, dict[str, Any]] | None = None
 
-# Bounded so abandoned legs cannot pile up: four concurrent composes of seven read legs.
+# The pool bounds only work that is executing. Queued submissions are retained in the
+# pool's own queue until a worker drains them — canceling a future does not remove them —
+# so _leg_admission also caps retained submissions (executing plus queued) at the same
+# envelope, four concurrent composes of seven read legs. A compose past the cap degrades
+# its remaining legs instead of enqueueing submissions that would outlive the request.
 _leg_pool = ThreadPoolExecutor(max_workers=28, thread_name_prefix="integrated-answer-leg")
+_MAX_RETAINED_READ_LEGS = 4 * 7
+_leg_admission = threading.BoundedSemaphore(_MAX_RETAINED_READ_LEGS)
 
 
 def _require_enabled() -> None:
@@ -972,21 +980,72 @@ def _leg_fixed_absent(leg_id: str, degraded_reason: str) -> dict[str, Any]:
     return leg
 
 
+def _run_leg_read(
+    admission: threading.BoundedSemaphore,
+    abandoned: threading.Event,
+    deadline: float,
+    leg_id: str,
+    context: contextvars.Context,
+    read: Any,
+    args: tuple[Any, ...],
+) -> Any:
+    """Keep the admission slot until this queued or running work actually drains."""
+    try:
+        if abandoned.is_set() or monotonic() >= deadline:
+            return _leg_fixed_absent(leg_id, COMPOSE_DEADLINE_REASON)
+        return context.run(read, *args)
+    finally:
+        # Release the same owner acquired at submission, even if a test replaces
+        # the module's pool/admission pair before an outstanding read returns.
+        admission.release()
+
+
 def _read_legs(calls: list[tuple[str, Any, tuple[Any, ...]]]) -> list[dict[str, Any]]:
-    futures = [
-        (leg_id, _leg_pool.submit(contextvars.copy_context().run, read, *args))
-        for leg_id, read, args in calls
-    ]
-    _done, late = wait([future for _leg_id, future in futures], timeout=COMPOSE_DEADLINE_SECONDS)
-    legs = []
-    for leg_id, future in futures:
-        if future in late:
-            # A queued leg never runs; a running one ends on its own inner bounds and warms its cache.
-            future.cancel()
-            legs.append(_leg_fixed_absent(leg_id, COMPOSE_DEADLINE_REASON))
-        else:
-            legs.append(future.result())
-    return legs
+    deadline = monotonic() + COMPOSE_DEADLINE_SECONDS
+    pool, admission = _leg_pool, _leg_admission
+    submissions: list[tuple[int, str, threading.Event, Any]] = []
+    legs: dict[int, dict[str, Any]] = {}
+    try:
+        for index, (leg_id, read, args) in enumerate(calls):
+            if monotonic() >= deadline:
+                legs[index] = _leg_fixed_absent(leg_id, COMPOSE_DEADLINE_REASON)
+                continue
+            if not admission.acquire(blocking=False):
+                legs[index] = _leg_fixed_absent(leg_id, COMPOSE_CAPACITY_REASON)
+                continue
+            abandoned = threading.Event()
+            try:
+                future = pool.submit(
+                    _run_leg_read, admission, abandoned, deadline, leg_id,
+                    contextvars.copy_context(), read, args,
+                )
+            except BaseException:
+                admission.release()
+                raise
+            submissions.append((index, leg_id, abandoned, future))
+        if submissions:
+            _done, late_futures = wait(
+                [entry[3] for entry in submissions],
+                timeout=max(0.0, deadline - monotonic()),
+            )
+            # Mark every late submission before retrieving a completed result:
+            # an earlier exception must not leave later queued reads runnable.
+            for _index, _leg_id, abandoned, future in submissions:
+                if future in late_futures:
+                    abandoned.set()
+            for index, leg_id, _abandoned, future in submissions:
+                if future in late_futures:
+                    legs[index] = _leg_fixed_absent(leg_id, COMPOSE_DEADLINE_REASON)
+                else:
+                    legs[index] = future.result()
+        return [legs[index] for index in range(len(calls))]
+    except BaseException:
+        # Submission, wait, or result failure abandons the request's remaining
+        # work. Queued wrappers release only when drained; running reads cannot
+        # be killed and keep their slot until they actually exit.
+        for _index, _leg_id, abandoned, _future in submissions:
+            abandoned.set()
+        raise
 
 
 def _compose_page_with_receipts(ticker: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
