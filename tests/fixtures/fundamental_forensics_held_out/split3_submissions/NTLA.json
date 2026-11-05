@@ -1,0 +1,40 @@
+{
+  "cik": "0001652130",
+  "filings_10k": [
+    {
+      "accessionNumber": "0000950170-22-001981",
+      "filingDate": "2022-02-24",
+      "form": "10-K",
+      "primaryDocument": "ntla-20211231.htm",
+      "reportDate": "2021-12-31"
+    },
+    {
+      "accessionNumber": "0000950170-23-004097",
+      "filingDate": "2023-02-23",
+      "form": "10-K",
+      "primaryDocument": "ntla-20221231.htm",
+      "reportDate": "2022-12-31"
+    },
+    {
+      "accessionNumber": "0000950170-24-018736",
+      "filingDate": "2024-02-22",
+      "form": "10-K",
+      "primaryDocument": "ntla-20231231.htm",
+      "reportDate": "2023-12-31"
+    }
+  ],
+  "fiscalYearEnd": "1231",
+  "name": "Intellia Therapeutics, Inc.",
+  "response_sha256": {
+    "https://data.sec.gov/submissions/CIK0001652130.json": "ce36e6b1adbb586a486e9c0567ff00f027b07e3e9af6e7e1a1c1d580a7ad0832"
+  },
+  "retrieved_at": "2026-11-01T20:23:08Z",
+  "sic": "2835",
+  "sicDescription": "In Vitro & In Vivo Diagnostic Substances",
+  "source_urls": [
+    "https://data.sec.gov/submissions/CIK0001652130.json"
+  ],
+  "tickers": [
+    "NTLA"
+  ]
+}

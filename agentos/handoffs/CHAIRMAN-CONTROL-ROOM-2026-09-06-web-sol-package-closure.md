@@ -4,6 +4,203 @@ session: sol/web-sol-census-package-records-20260906
 model: sol
 ended_because: ci_handoff
 mission: >
+  Preserve the September 6, 2026 package-closure checkpoint as dated evidence,
+  corrected on November 5 for the later #502, #509 and #499 protected source
+  merges. This archive creates no current review, release, installation,
+  host, provider or C2 assignment and does not close the wider workstream.
+state_before: >
+  The published September correction still described #509 as OPEN/DRAFT at
+  00c1fe2 and #499 as unapproved and unprotected, directed their review/release
+  sequence, and represented the separately started C2 preflight as current.
+  Later source merges supersede the source-release waits. This records
+  maintenance does not establish present C2, reviewer-dialogue or host-effect
+  state and must not turn those unresolved boundaries into new instructions.
+changed:
+  - path: macro:agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-06-web-sol-package-closure.md
+    what: >
+      Replace active stale continuation fields with dated source-protection
+      facts and explicit unresolved effect/proof limits. Preserve the entire
+      original 204-line checkpoint verbatim inside a historical block.
+      No other handoff, shared workstream, generated projection, product
+      source, authority, runtime or installation artifact is changed.
+verified:
+  - claim: >
+      Canonical GitHub reads on November 5, 2026 confirm that Mastermind #502
+      merged on September 6 at 21:13:09 UTC.
+    command: >
+      GET https://api.github.com/repos/mastermindx-market-intelligence/Mastermind/pulls/502;
+      GET https://api.github.com/repos/mastermindx-market-intelligence/Mastermind/issues/comments/5562217043.
+    result: >
+      merged=true; final head 27411942f2c3ef26ccd7f8c603f709d23f98242a;
+      protected merge c5fe346fc6ffe865232454c07fc9aefec46951fe.
+      The release receipt is historical source-protection evidence, not
+      present installation, provider, model, fleet or production acceptance.
+  - claim: >
+      Canonical GitHub reads on November 5, 2026 confirm that the separate
+      Mastermind #509 package source merged on September 7 at 08:43:12 UTC.
+    command: >
+      GET https://api.github.com/repos/mastermindx-market-intelligence/Mastermind/pulls/509.
+    result: >
+      merged=true; final head 3e671540858b4e290f406d9b87d8e0f6552e55f4;
+      protected merge 8aeaeda693da23f2d01c91916aff08026e4ab65f.
+      The old OPEN/DRAFT/source-release instruction is superseded. This
+      metadata does not prove an explicit terminal STOP in a separate
+      reviewer dialogue or settlement of unrelated external effects.
+  - claim: >
+      Canonical GitHub reads on November 5, 2026 confirm that the separate
+      Mastermind #499 H2 source merged on September 12 at 09:44:27 UTC.
+    command: >
+      GET https://api.github.com/repos/mastermindx-market-intelligence/Mastermind/pulls/499.
+    result: >
+      merged=true; final head 15609d338f6cf4deae5f0fda9d04bda0bd4e9686;
+      protected merge 57a2672af5b9dcea282e4bae01d1a0b9d10bb1cd.
+      This is protected source only. It does not authorize Keychain, vendor,
+      Profile Search, Profile B, sign-in, browser, PF-1 or INSTALL1 activity,
+      or reset the historical Realm1 host-attempt restrictions.
+  - claim: >
+      The records operation's September withheld successor publication has
+      a later canonical source effect, after its original CI became terminal.
+    command: >
+      GET https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/runs/34047363620;
+      GET https://api.github.com/repos/mastermindx-market-intelligence/macro/git/commits/a8674726d2757b80c05ac6c9c2a8ddc0a927f9cc;
+      GET https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/6956.
+    result: >
+      Old-head workflow 34047363620 on 1d4a3f45a5c1f700509c5043f0208f4883b71179
+      is COMPLETED/SUCCESS with terminal updatedAt 2026-09-06T22:20:06Z.
+      Published correction a8674726d2757b80c05ac6c9c2a8ddc0a927f9cc was authored
+      by Chris at 22:29:47Z and committed at 22:31:17Z, with parents
+      [1d4a3f45a5c1f700509c5043f0208f4883b71179,
+      f701fd28ae5f88689c16b6dad336cd4cf09c4b47]. That is the immutable input
+      preserved here, not an unexecuted push to retry or a new release grant.
+  - claim: >
+      The historical public-identity findings, incomplete support candidates,
+      permission refusal and separate effect owners remain preserved evidence.
+    command: >
+      GET https://api.github.com/repos/mastermindx-market-intelligence/macro/issues/6956/comments;
+      read comments 5561428621, 5561982578 and 5562560838 and the original file
+      at a8674726d2757b80c05ac6c9c2a8ddc0a927f9cc.
+    result: >
+      Initial 319/25-test claims did not establish complete public-output
+      correctness. Later source-specific review and repair evidence remains
+      attributed to its original heads and operators, without a new test run.
+      The expanded native support request was tool-safety-blocked with no
+      execution receipt; it was not retried or rerouted and supplies no
+      124-test native result. Separate C2, Realm1, install and model effects
+      are not adjudicated by a source merge or this archive.
+  - claim: >
+      The complete original 204-line checkpoint is retained without changing
+      its bytes, including its original lack of a terminal newline.
+    command: >
+      GitHub.fetch_file macro/agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-06-web-sol-package-closure.md
+      at a8674726d2757b80c05ac6c9c2a8ddc0a927f9cc; verify Git blob
+      09b361cb21e20ccebecf26511d33766480773616 over the exact historical payload.
+    result: >
+      The historical payload is byte-identical. One newline separating the
+      payload from the closing Markdown fence is framing and is excluded
+      from the original payload hash. Original proof limits, negative
+      findings, source/review roots and superseded actions remain visible.
+unverified:
+  - claim: >
+      The historical #509 review/result dialogue or every related source,
+      watcher and host-effect carrier is presently terminal and reconciled.
+    what_would_verify: >
+      Under a separate assignment that depends on the effect, the currently
+      assigned receiver must inspect its actual original carrier and current
+      lease/effect receipts. Source merge alone does not prove dialogue STOP,
+      absence of a live process, or permission to replay a held action.
+  - claim: >
+      The separately recorded C2 dependency-freeze START has a current accepted
+      result, terminal disposition, release or known present execution state.
+    what_would_verify: >
+      Reconcile the actual original C2 carrier through the existing canonical
+      owner when a separately authorized continuation requires it. This
+      archive supplies no current running, finished, released, retryable or
+      replaceable classification and creates no replacement C2 task.
+  - claim: >
+      Disposable profiles, account ceremony, the protected package and
+      installed native-to-Control-Room behavior are currently accepted.
+    what_would_verify: >
+      Accepted current real-path evidence from the existing Realm1 and #340
+      resource/installation owners, with exact installed artifacts, isolation,
+      fault, readback and rollback proof. Historical source/staging fixtures
+      neither perform nor authorize those effects.
+  - claim: >
+      Selected model, effort, served model, usage authority or fleet
+      completion has been established by this records correction.
+    what_would_verify: >
+      Separately accepted evidence from the existing #480/#473 and #364
+      owners and the actual producer-to-consumer path. The archive does not
+      promote labels, prose, duration, local DOM or research into that proof.
+unresolved:
+  - "Protected source merges for #502, #509 and #499 are established. Current implementation compatibility, installation, provider/account behavior, model/usage and fleet acceptance are not established here."
+  - "The historical C2 START and review/result-dialogue boundaries remain unreconciled in this record; no live-state conclusion, replacement, release or repeated effect follows."
+  - "The original Realm1 host-attempt, resource, Profile Search, Keychain, vendor and installation restrictions remain preserved; source protection does not reset them."
+  - "Historical #340, #480/#473, #364, #511 and packaging references retain their existing owner/proof boundaries. This archive makes no claim about their present assignments or implementation status."
+  - "The wider WS:CHAIRMAN-CONTROL-ROOM / MAS-198 outcome and nightly-owned generated Agent OS projections are not changed or completed by this one record."
+next_actions:
+  - "For separately authorized product continuation, the currently assigned receiver must inspect current canonical source and the existing C2, review/result, resource, installation and model/usage carriers; reconcile actual START, lease or uncertain effects before a dependent action. Do not repeat completed #502/#509/#499 source releases."
+  - "For future records maintenance, incorporate materially new canonical evidence into this same record while preserving its dated history and proof limits. This archive alone does not dispatch a reviewer, child, host attempt, installer or provider action."
+do_not_redo:
+  - "Do not rebuild the census, package renderer or H2 source, recreate their review/source carriers, or repeat completed source releases because the original checkpoint contains old instructions."
+  - "Do not infer or manufacture terminal dialogue STOP from a source merge, resubmit an old formal review, or use a different identity to supply an author's independent approval."
+  - "Do not replace the historical C2 worker, transfer a real lease, or retry any uncertain original effect without original-carrier reconciliation."
+  - "Do not rerun, delegate or reroute the tool-safety-blocked expanded native support request; it has no execution receipt or 124-test native result."
+  - "Do not retry Profile Search, Keychain, vendor creation, Profile B, PF-1 or INSTALL1 from source/test/merge evidence or treat this record as a reset of the original host-attempt restrictions."
+  - "Do not create another handoff, lifecycle, watcher, socket, browser registry, quota store, queue, state or publication plane; retain the existing canonical owners."
+  - "Do not hand-edit shared workstream state or nightly-owned docs/AGENT_OS_STATE.md and data/governance/agent_os_state.json as part of this archival correction."
+danger_areas:
+  - "Historical approvals bind their reviewed source or explicitly accepted compatibility evidence; they are not a new approval of this corrected record."
+  - "Hashes identify bytes; source provenance, installed identity and permission to act remain distinct."
+  - "Identity-free public projections and exact private artifact/readback/rollback bindings must not be conflated."
+  - "Historical CI module-selection counts are not test-case totals or evidence of zero skipped tests."
+  - "The historical block contains superseded current-state and action language; its date and explicit inert status govern interpretation."
+---
+
+# ARCHIVAL CHECKPOINT — package record corrected November 5, 2026
+
+This is the existing September 6 package-closure handoff. Its original source
+checkpoint is preserved below; its active frontmatter now records the later
+protected-source events and the limits that remain unproved. It creates no current
+execution, review-placement, host, installation or provider assignment.
+
+## Reconciled source chronology
+
+| Carrier | Canonical source event | Boundary |
+|---|---|---|
+| [Mastermind #502](https://github.com/mastermindx-market-intelligence/Mastermind/pull/502) | Merged2026-09-06 at21:13:09 UTC as `c5fe346fc6ffe865232454c07fc9aefec46951fe`; finalhead `27411942f2c3ef26ccd7f8c603f709d23f98242a`. | Profile-local census source protection, not current installed or native/fleet acceptance. |
+| [Mastermind #509](https://github.com/mastermindx-market-intelligence/Mastermind/pull/509) | Merged2026-09-07 at08:43:12 UTC as `8aeaeda693da23f2d01c91916aff08026e4ab65f`; finalhead `3e671540858b4e290f406d9b87d8e0f6552e55f4`. | Package source protection, not proof of separate reviewer dialogue STOP or installation. |
+| [Mastermind #499](https://github.com/mastermindx-market-intelligence/Mastermind/pull/499) | Merged2026-09-12 at09:44:27 UTC as `57a2672af5b9dcea282e4bae01d1a0b9d10bb1cd`; finalhead `15609d338f6cf4deae5f0fda9d04bda0bd4e9686`. | H2 source protection, not authorization for Profile Search, Keychain, vendor, profile, account or install effects. |
+| This original records correction | [Old workflow34047363620](https://github.com/mastermindx-market-intelligence/macro/actions/runs/34047363620) completed successfully; Chris's correction commit, authored22:29:47Z and committed22:31:17Z, is published at `a8674726d2757b80c05ac6c9c2a8ddc0a927f9cc`. | The old withheld successor publication is not a pending push to replay. No unrelated carrier termination follows. |
+
+The original proof, defect and repair chronology is retained. In particular,
+[continuation5561982578](https://github.com/mastermindx-market-intelligence/macro/pull/6956#issuecomment-5561982578)
+records incomplete support candidates and a tool-safety-blocked expanded native
+request. That blocked action remains untouched; there is no124-test native
+receipt to substitute for it. The November records correction reruns none of the
+historical code, browser, provider or host work.
+
+The old C2 START is a historical claim with no current reconciliation supplied
+here. This archive does not say C2 is now running, finished, released or available
+for replacement. The existing C2 carrier, reviewer/result dialogue, Realm1
+restrictions, #340 installation, #480/#473 model and #364 usage boundaries remain
+with their actual owners. A future assigned receiver must reconcile relevant
+original effects before any separately authorized dependent action.
+
+## Original September 6 checkpoint — verbatim historical payload
+
+The entire original204-line file follows. Its source blob is
+`09b361cb21e20ccebecf26511d33766480773616`; it originally had no terminal newline.
+The newline before the closing four-backtick fence is Markdown framing, not part
+of the original payload used for its hash. Its old frontmatter, present-tense
+claims and next actions are dated evidence and grant no current assignment.
+
+````markdown
+---
+workstream: WS:CHAIRMAN-CONTROL-ROOM
+session: sol/web-sol-census-package-records-20260906
+model: sol
+ended_because: ci_handoff
+mission: >
   Preserve the current Web-Sol census package, exact review chain, H2 prerequisite,
   and remaining installation/native/model gates so a fresh Sol can continue without
   reviving superseded heads or calling source, review, merge, installation, or
@@ -202,3 +399,4 @@ GitHub tuples and exact Slack carriers before acting.
 Current critical path: finish the existing #509 exact-head review and source release; finish H2 review/protection;
 then let the established Realm1/#340 owners prove resources and installation. C2 remains a separate started preflight,
 and C3 remains a later consumer in the existing Chairman Control Room.
+````

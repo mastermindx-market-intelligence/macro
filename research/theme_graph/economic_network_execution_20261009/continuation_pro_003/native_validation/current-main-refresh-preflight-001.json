@@ -1,0 +1,581 @@
+{
+  "at": "2026-10-09T13:28:40.748171+00:00",
+  "candidate": "42174563149254d2399e23e101baafd8b06f9b1e",
+  "changed_upstream_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "scripts/build_stock_library.py",
+    "tests/test_build_stock_library_price_clock.py"
+  ],
+  "clean": true,
+  "existing_research_file_hashes": {
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/ARCHIVED_TEST_SOURCE_CORRECTION.md": "06993f9701ba2d1828a7345d0a56970885f0e1c7eab291da5367c182d1bdf15e",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/ARCHIVED_TEST_SOURCE_MAP.json": "e79558bf8466b6f0b10faa281cb5164e9d4d39cf8e8be331193758acb006f75f",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/ARCHIVE_REPAIR_CHECKPOINT_MANIFEST_001.json": "311f3ff68cb1068f9170e4dd53bb4509ce1d8fd483ece141cc12b45bac35ebd3",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/CHECKPOINT_ARTIFACT_MANIFEST_001.json": "7ef34c888916994e8b27a38751c4849736494e830af8a59f2aa2f05cf1e2e43a",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/EVIDENCE_MANIFEST.json": "36270629c367bc06caec5a2a079b9f0be8a0d0fac97a54675f8654838adc24ab",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/EXECUTION_CHECKPOINT_20261009_1120.md": "d3be715f30fdc5b153b650bc342f1e3c3d4cccd185cae7127766ac6e0d71b16c",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/NATIVE_OBSERVATION_STORAGE_ADJUDICATION.md": "e4966d1e38fe0c5cc495982b74600ab77860fdf0d807db1129d70638bba67543",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/OBSERVATION_NATIVE_PROOF_ADJUDICATION.md": "2131a609cfd59e6ec8eb71bbf8ad029d06b3a64347320aa7ba2a7d49bd19a95d",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/PROOF_ARTIFACT_MANIFEST_001.json": "4a34e3782d0ad6b99ddf679ca25d4572fd28b2480079bee0248af0b16be59463",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/README.md": "13b5ea0dac01f56d2870f00be2ad133a86665c3b869ac8abc6e329813009e1a6",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/ci_enrollment_review_v1/INVERSE_CHECK_ATTEMPT.txt": "1f6b325218b436b228321abdd66f29cfd6088b01f9ef33cc236fc128c22e286e",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/ci_enrollment_review_v1/NATIVE_READ_EVIDENCE.json": "118776ac649f4f014578f0dd7b7e5acf585ba7ac23266db4ccd703b25c412fd3",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/ci_enrollment_review_v1/OWNER_DELTA.diff": "8a132e9290a029d9af82d35561583484f5e65499e7f567e030e9d47d402d644e",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/ci_enrollment_review_v1/REVIEW.md": "568a300ff52267a4abb18a77a43100f8ee683caf3cdaca9a63091611ac30e399",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/ci_enrollment_review_v1/REVIEW_RECEIPT.json": "bb7761a2ae683aeaca1678bf568b976439250f4a67ca7f8e3a935adfe5ad725d",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/ci_enrollment_review_v1/STATIC_IMPORT_ENROLLMENT.json": "088052c0ccf8ebc515c812503fbf43e665f2fdecd840eeda36975695018ebbdd",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/archive-repair-checkpoint-001.json": "1b6075a3fd0cf747682916936093028f95655dc859b21bb36578b344d7da407a",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/archive-representation-relocation-001.json": "51fc7a8d751b0a80eb25495f2719031ad2fe7e2721a16928469f5c58bbab5b11",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/c01-observation-premerge-execution-001.json": "b4d9e7ae9f66ea362fa30f6a889ad7fad3039507348571e7cdee8adb249ac87e",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/c01-observation-premerge-public-001.json": "85aca2ac1e822349b287b0ac54b2e5d94513d4cd97c70ce0e5d5908d1bb108e9",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/c01-observation-source-premerge-001.json": "e955ec0f462369f42b0d3689360682d1a30dcbcea63bf090d935db73b2c9d293",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/c01-source-reconciliation-premerge-001.json": "8036ccda78d63bace65790e186b67bbe2e62a128182d661c42687fc2e9920c6b",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/checkpoint-push-receipt-001.json": "add2c47c3f1c867d2beb9a50f74fcce4d970e7876f092e50f79225fef75ecc66",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/main-integration-reconciled-001.json": "f6088c92957757db155a4a80963a6ef0f2c008d0703e9d36bcc7af6d32d86118",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/observation-agentos-validation-001.log": "dcc725ecd68c3dbfaa7c1a0e06b8e494deb0235c0776c333df70fea19a585116",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/observation-ci-contracts-001.json": "2e23cb06ad8f4ec02288e0bc797940fa6c285784b94022fafa6d797824c484b3",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/observation-ci-contracts-001.log": "ae0e46b82d84d5644d71e04d6a013ae24fbd2f6aed500af4dae154741712c1a9",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/observation-native-suite-001.json": "b82552787f7999e024fe8b6f77a1883cdb3303f5b60007c3d7dd720a68c0f786",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/observation-native-suite-001.log": "4d921bf2a8ec4e5cb30df710e21a208085fbff02fa286ba2410a1bc5b1d2909b",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/observation-source-application-001.json": "db39e4aaa76ac7a98820a6853e83e85b9dbf5d07e740acdca3447aac9a354bf5",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/pr8711-original-contract-delta-001.log": "85fe520d6cb4f29cafe4f990a792bb7c28218742ac72a54e17710f0858666334",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/pr8711-original-contract-log-read-002.json": "fb68050873d9cd99998904d9c64b6db1614d5fc65bdddd690a87892368e7c62d",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/protected-procedure-refresh-002.json": "20ae8eeccdff684f379340a8bd543841517b0d0a8821787f51578cddf1e73631",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/research-archive-transfer-receipt-001.json": "2355dbe42ac4f82d15267608904b8befddf1ac214e9472b6b34adf030364219f",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/upstream-research-reconciliation-001.json": "efdaa81952961c7b3f0e7d9a86dcdffdb7ac45b9c837b4533bd438a18a3cbe73",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/review_v1/FINDINGS.json": "64e05e70521f4654fcfc6e25562868cb3c777f3518531e1dff2546b8e3acbe8a",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/review_v1/REVIEW.md": "6d2e452fadff42bbf3b25928bbed8795fb5bc3a6e32c1f58f494f1df360ed51c",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/review_v2/CORRECTIVE_RECEIPT.json": "615fe9e87d3dc33981823b3b3aa8a1d051829df67023332238f06edd804bdcaf",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/review_v2/CORRECTIVE_REVIEW.md": "735f1c8a26b9c5e0bd3be9af94fc0c7dcfa78c1b6e2f6045f85eb6b52a4b3f3a",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v1/artifact_manifest.json": "96b7cce353a6e65baca5d89f4a80a562cde9d60ad4f002233ee6e0bf0b1b9c60",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v1/implementation_return.md": "1f6331c43ac797f5814025fe3aef5c76860217694a0af4ef0bfad5600f289395",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v1/relationship_observations.py": "4239285b177d2947173404f96f1672394b6f246e70ea4a82885e25ca8990196b",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v1/test_company_relationship_observations.py.txt": "80acae7aadcecec3214fe86d77c99da841d2544629d35380ec11b5d9cc94d67e",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v2/artifact_manifest.json": "fe90aeb9755edd126d1bb243299f091b107f087e89d0bf0f78c346e1c5e27fd6",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v2/implementation_return.md": "ba4dd017ed8e4090aea14584ee89b983ed3f5e0656992d227ba2929b8f6247ea",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v2/relationship_observations.py": "85c07b309ff7b7220ec12f2b3f25c924a2ef4c9ab495ce9030f61038cbb9e8c7",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v2/test_company_relationship_observations.py.txt": "a73700e639c8e97a4ff84951b48358abe63b1f5048560d03b0e40f2310ac44da",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_real_native_proof_review_v1/final_source_review.json": "0d182d747a1c1c7c1d6092914ca89b7fc9f19e3d5b53a8153d1949de7224363b",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_real_native_proof_v1/ARTIFACT_MANIFEST.json": "4de1cb6922b4819a7910cc2268e49277d18fc2d0d7c2c771a2da9693ed74fc85",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_real_native_proof_v1/PREPARATION_RECEIPT.json": "0c5f8cd6c3c87903f920481528e5deab3f1e3e9448642e4bafa8fc4fc63dd894",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_real_native_proof_v1/README.md": "9a3bf0fa4ec00d03dfc162f0fa0a789620231f82c5496b82eb8a38aaafc3a89f",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_real_native_proof_v1/incumbent_store_read.json": "23caa72f306a2c11b309b6ea99efb3c5657df61fe83dc28fa883abae3044ad76",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_real_native_proof_v1/prove_retained_c01_observation.py": "871b539f94fb3b55de9c12e11fadd78c99920ea034503e755eb6bb7f1ea57b74",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_real_native_proof_v1/source_manifest.example.json": "3b708683e3505726f2fc18aa8c5f03a9428a8e9e2b77a7540686fa538ed6f82e",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/parent_release/combined-real-postmerge-001.json": "2c5033bac44db938e4d3af2ecb1ab7ee74b8eb159211f85107da9730ed2e2217",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/parent_release/postmerge-source-receipt-001.json": "9cd19b0ba187a7785c5bd2b793c6b3d5ad597fe3c5d7074caf5bb5d9a1d447cb",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/parent_release/pr8705-action-time-release-001.json": "0e7a88ac683b247a1afab8dd7c222b8d614cca96e4f50b773e73d359bf8640e3",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/parent_release/pr8705-final-release-check-001.json": "d2b5de0a1869c782c574c5378292ab8834afea203644900d8fb1fa102a5e67ac",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/parent_release/pr8705-final-release-check-summary-001.json": "82cb8c96c1448aadf2e5dff8b4f05cade5bbad3d1a0c0c07ead93861a378a324",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/parent_release/strict-native-postmerge-001.json": "d44a042624dfb4382f1174dfd5480d99fb931511c9ba6d808615e56903a6de77",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8705_ci_archive/PACKAGING_VERIFICATION_RECEIPT.json": "5c19b8d443e42d508154264b68009fb0c37392046f9781e3306c3ca6a84d4cb5",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8705_ci_archive/PR8705_CONCLUDED_CI_EVIDENCE_93012584.tar.gz": "ca65d83a987fc11197c3e66eb58670dc40d887ca1fcd66c3167df4773b6368e6",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8705_ci_archive/PR8705_CONCLUDED_CI_EVIDENCE_MANIFEST.json": "5ae19794c42fd025415e20d84490e7cf3b510641de481aa4be3c1216f87b5c49",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8705_ci_archive/README.md": "3ea202488911c7f250ef271381bb4d6015765dfd9cf47c73d5e5829891625526",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8711_integration_review_v1/REVIEW.md": "6ff43c22f641ba83e9c3ae06a84bc7aab182c9199e205907e0e9944bd00c1e86",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8711_integration_review_v1/SOURCE_ARCHIVE.tar.gz": "00dd594d1439e3647c8c03006a2a2253fcbc4d72a91b2662bca0f8ca3cf341dd",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8711_integration_review_v1/SOURCE_ARCHIVE_MANIFEST.json": "80e498889e3796a9f7057e93ff6ea511e945c739ea655be6f7a80fd463c4b447",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8711_original_ci_evidence_v1/ARCHIVE_MANIFEST.json": "0fc883c4ecc4338c3f6132129f21e6dd88631267218ccb13cae93d01a4f39c86",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8711_original_ci_evidence_v1/ARCHIVE_README.md": "4a903fdf29262b50b4f498af0b47d1fddce01242dcded32a95012dc5824e9c4f",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8711_original_ci_evidence_v1/ARCHIVE_VERIFICATION.json": "04355823aeb3e5146d97572cac7e55a477a2c032fc69a4a81b6327712da1dc60",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8711_original_ci_evidence_v1/PR8711_ORIGINAL_CANDIDATE_FAILED_PENDING_EVIDENCE.tar.gz": "e8f6e688d6805daea04a827dd02ffe1eb6add5d57a7385ee02fac0fa99209db8",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/PACKAGE_MANIFEST.json": "f2bb5d6393ee6a82388062d00a883713cd2e45505d796aa87c8c0d4b911ccd6c",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/WP02_SAMPLING_FRAME_ASSESSMENT.md": "9ab4ef6dcb81eb0a3185269a851f22d315a2ff45c0be5c67dfb154efa4cfc1e0",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/artifact_validation.json": "ec1d14e254bec6e628aba58574b334c4447160b41dc018d8f8266873abd4afcf",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/extended_snapshot_profiles.json": "05facfe2ddfe6b411ee069c723da3de35d76dfdfc0e1fb8cce3782ef6604f3e1",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/final_snapshot_details.json": "42068b51a19fad94132465edfcd410c7aebaa2a9823d97bd445d0765e2fc7a1b",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/frame_deficiency_receipt.json": "78fd26201344c844cec1068d12f29038f3f9aded44e223d32d19e44f0da4b201",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/inspection_source_manifest.json": "943fb98b83780c2ab664a4e4a26dc66a756ffca27e0a263f2dffdfc28330f83c",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/native_process_completion_receipts.json": "1893cb663016d6b2f55916ff172cdcba529069a4ca62d3a3d206fa883c4e3768",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/primary_source_route_register.json": "180f009c7e743f808e8658da4c9f46177825c1352b5e7008b1af4a16d703ae34",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/reference_receipt_selected.json": "100f3c846e6c69dcbf83c8671d8b7a79966e304df00f100396d51b9b8e7b2b13",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/required_field_mapping.json": "c75bd713d79d72d9a7ae986fd331aa645292fa392b3880af41382c9943d9700f",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/snapshot_details.json": "156f4079d3c89330e3766e4d5168de84b2115b14047121ed7665cb5378048fb6",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/snapshot_profiles.json": "3522ae1312a04fec3d5a5c3efe3d242eb0874894b981d1d0bedcfac44d7a69d2",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/source_contract_bindings.json": "0b766ee5352e35c8690769c29b76094f82855efce1b4c1ae2837367fed9538d9",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/source_contracts/build_polygon_universe.py": "a37b017558e5d331f448b3cae039df89b3524af3c5f9c36a1aa1e4ae0504ecf5",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/source_contracts/canada_breadth.py": "d0afd1a9797eac1e6c14f83b3572f3b8812d16c785843a348118fd6af26dd90d",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/source_contracts/canada_universe.py": "940c221ea6670e1cf5c92046a47f946fd91490298cd13159d19b26167742848f",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/source_contracts/china_sectors.py": "b23be8f706033d84d548a1f0696f5bcfa2417c15c5a13c0cfdd91fb423265238",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/source_contracts/dataset_registry.yml": "bb9b6975eeabebf630f73e632d307d280ea1d9e34f30953ac3989c65fc90f0a7",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/source_contracts/hk_universe.py": "d3bda094cc3f82a3a6fe198e22cd88e26b53768cfdd21da8f7992f5e60442e67",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_frame_v1/source_contracts/universe_history.py": "f1c26fbb2abfc405916a60e4adc3b09973181fa7e7b3b9d29225cd0e71f9b9d9",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_review_v1/FINAL_POLICY_BINDINGS.json": "5b8f455a1180daaafe69ef9f8198afca17c8f97f0ce342c6f86433b451ef4c2d",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_review_v1/FINDINGS.json": "ce6e7c2364fdd5db96cf47120e5dc14d79e036ffabc9d8f955bf94e2491af446",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_review_v1/METHOD_CHECKS.json": "c7bbdaf7b8acfd3008ff2f1fd4c630d75bfdc80fe4e15bd6c92f20a7b1892bf5",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_review_v1/METHOD_REVIEW.md": "e35cc6b4bffa57cb7203f126620b069e7b2944dd45e29f71c4e9bf827dc390b6",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_review_v1/REVIEW_MANIFEST.json": "e3319b04840b48866dba1c1414293c8f67068cc3d877570a7ffe22ef263042ec",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_review_v1/SNAPSHOT_001.json": "cbf0cb01e400eb6e531c586d118fecf407b66883ff86f859376adaccf27aee08",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_review_v1/SOURCE_OBSERVATIONS.json": "d16eea19bd56f8cd59a7ad15d54148cda6990ced2f690cca30d6194e1a917af0",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_review_v1/input_snapshot_001/PRIMARY_SOURCE_REGISTER.json": "cf2521ad18316785ecd48c34cbdd132ab4606214041132548b0ff4898cfa2b43",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_review_v1/input_snapshot_001/RECOMMENDED_SELECTION_POLICY.json": "03881ee568f6f08f06ef88a2fad0e33ff2fe14b3ab1db526c35221d642cfe9fd",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_review_v1/input_snapshot_001/SELECTION_POLICY_ADJUDICATION_MEMO.md": "763f8724b1ec9e88a60b94dd65b3d61befe6af79ff28f64f472f0a87ecf9a582",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_v1/ARTIFACT_VALIDATION.json": "8042fa90e6cd48d80abdcd9a171dcc462914ed2313b1e8dc2c2d0313fbe480c3",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_v1/PACKAGE_MANIFEST.json": "eee4790063d4ae92d3b1b97cd3730daa4f87f0a47ad906bf1b478d8dde20951d",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_v1/PRIMARY_SOURCE_REGISTER.json": "cf2521ad18316785ecd48c34cbdd132ab4606214041132548b0ff4898cfa2b43",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_v1/RECOMMENDED_SELECTION_POLICY.json": "03881ee568f6f08f06ef88a2fad0e33ff2fe14b3ab1db526c35221d642cfe9fd",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/source_diagnostic_policy_v1/SELECTION_POLICY_ADJUDICATION_MEMO.md": "763f8724b1ec9e88a60b94dd65b3d61befe6af79ff28f64f472f0a87ecf9a582"
+  },
+  "fetch_exit": 0,
+  "manifest_before_sha256": "3c23ea9dcc9094a10a3e5874b8281998f203227f522752d00f578820c5b9e581",
+  "normal_merge_not_yet_executed": true,
+  "owner_job": {
+    "gate": "code",
+    "if": "${{ false }}",
+    "paths": [
+      "collectors/__init__.py",
+      "collectors/edgar_forensics.py",
+      "collectors/fundamental_forensics_acquisition.py",
+      "collectors/fundamental_forensics_companyfacts.py",
+      "collectors/sec_document_spine.py",
+      "collectors/sec_filing_parser.py",
+      "config/dataset_registry.yml",
+      "config/fundamental_forensics_disclosure_diff.v1.json",
+      "engine/__init__.py",
+      "engine/basket_breadth_divergence.py",
+      "engine/catalyst_tone.py",
+      "engine/company_intelligence/__init__.py",
+      "engine/company_intelligence/contracts.py",
+      "engine/company_intelligence/health.py",
+      "engine/company_intelligence/pinned_relationship_candidates.py",
+      "engine/company_intelligence/relationship_candidates.py",
+      "engine/company_intelligence/relationship_observations.py",
+      "engine/company_intelligence/views.py",
+      "engine/desk_ledger.py",
+      "engine/earnings_release/__init__.py",
+      "engine/earnings_release/receipts.py",
+      "engine/fundamental_forensics/__init__.py",
+      "engine/fundamental_forensics/detectors.py",
+      "engine/fundamental_forensics/disclosure_diff.py",
+      "engine/fundamental_forensics/filing_attestation.py",
+      "engine/fundamental_forensics/filing_package.py",
+      "engine/fundamental_forensics/ixbrl_extraction.py",
+      "engine/fundamental_forensics/models.py",
+      "engine/fundamental_forensics/normalize.py",
+      "engine/fundamental_forensics/pipeline.py",
+      "engine/fundamental_forensics/sec_companyfacts.py",
+      "engine/fundamental_forensics/sec_document_spine.py",
+      "engine/fundamental_forensics/source_sync.py",
+      "engine/gdelt_client.py",
+      "engine/marketing/__init__.py",
+      "engine/marketing/accounts.py",
+      "engine/marketing/authority.py",
+      "engine/marketing/chart_render.py",
+      "engine/marketing/charter.py",
+      "engine/marketing/claims.py",
+      "engine/marketing/cmo.py",
+      "engine/marketing/departments.py",
+      "engine/marketing/economics.py",
+      "engine/marketing/events.py",
+      "engine/marketing/ledgers.py",
+      "engine/marketing/logo_cache.py",
+      "engine/marketing/opportunity_bus.py",
+      "engine/marketing/publication.py",
+      "engine/marketing/state.py",
+      "engine/master_brain.py",
+      "engine/research_vault/__init__.py",
+      "engine/research_vault/r2_store.py",
+      "lib/__init__.py",
+      "lib/config.py",
+      "lib/dataos/__init__.py",
+      "lib/dataos/identity.py",
+      "lib/dataos/nulls.py",
+      "lib/dataos/price.py",
+      "lib/dataos/quality.py",
+      "lib/dataos/registry.py",
+      "lib/dataos/temporal.py",
+      "research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json",
+      "research/theme_graph/economic_network_execution_20261009/replay_micron_witness.py",
+      "scripts/__init__.py",
+      "scripts/worktree_sparse.py",
+      "tests/__init__.py",
+      "tests/conftest.py",
+      "tests/test_company_pinned_relationship_candidates.py",
+      "tests/test_company_relationship_candidates.py",
+      "tests/test_company_relationship_observations.py",
+      "tests/test_company_relationship_review_set.py"
+    ],
+    "runs-on": "ubuntu-latest",
+    "scope": "exclusive",
+    "steps": [
+      {
+        "uses": "actions/checkout@v4"
+      },
+      {
+        "uses": "actions/setup-python@v5",
+        "with": {
+          "python-version": "3.12"
+        }
+      },
+      {
+        "name": "install candidate inspection test dependencies",
+        "run": "pip install pytest pyyaml requests"
+      },
+      {
+        "name": "File, pinned-source and immutable observation replay contracts",
+        "run": "python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py -q"
+      }
+    ]
+  },
+  "owner_path_pins": [
+    {
+      "byte_length": 0,
+      "path": "collectors/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 27625,
+      "path": "collectors/edgar_forensics.py",
+      "sha256": "8e153f35b1d9f243790c2df16749207243168c42676802f1f0e5a886537a9a29"
+    },
+    {
+      "byte_length": 44318,
+      "path": "collectors/fundamental_forensics_acquisition.py",
+      "sha256": "fba28cca50d8f8fe249c12bb8f6b9d29dd7e41dd439f32210908fb7869d97216"
+    },
+    {
+      "byte_length": 99526,
+      "path": "collectors/fundamental_forensics_companyfacts.py",
+      "sha256": "024fcace6c21ca84e6a262aa8ecd434955877ec2db19ce47ee190bbc9a4e989a"
+    },
+    {
+      "byte_length": 42289,
+      "path": "collectors/sec_document_spine.py",
+      "sha256": "1c6fec647373372858f4ad5fc0b6a88d9da84d605f5d14e8e148ac2ee7e8a3e5"
+    },
+    {
+      "byte_length": 123233,
+      "path": "collectors/sec_filing_parser.py",
+      "sha256": "37622fc108944e65fa1ca4cb80497633e6b1157348b9aa029afd990d28225090"
+    },
+    {
+      "byte_length": 50632,
+      "path": "config/dataset_registry.yml",
+      "sha256": "bb9b6975eeabebf630f73e632d307d280ea1d9e34f30953ac3989c65fc90f0a7"
+    },
+    {
+      "byte_length": 7364,
+      "path": "config/fundamental_forensics_disclosure_diff.v1.json",
+      "sha256": "e530774b66de375f88f7ae64aace5127c8c15ba5e131b43cf9bc443de677f8e6"
+    },
+    {
+      "byte_length": 0,
+      "path": "engine/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 16985,
+      "path": "engine/basket_breadth_divergence.py",
+      "sha256": "f073f778f43f9e040b5b3b76cfb66fe5085940ca00b92e7ae2fac359d1d68be6"
+    },
+    {
+      "byte_length": 31503,
+      "path": "engine/catalyst_tone.py",
+      "sha256": "1856dc10ea0c9fc480517d50b1b8488303ea29dbc18c7b86cd11d29ea0e7dbb0"
+    },
+    {
+      "byte_length": 832,
+      "path": "engine/company_intelligence/__init__.py",
+      "sha256": "09e8425cdca490d03bece9462af575fddd25802e0ca2aa12be7d24f6ded8b347"
+    },
+    {
+      "byte_length": 34222,
+      "path": "engine/company_intelligence/contracts.py",
+      "sha256": "a9ab0b648e72b7537fc812618adab8325bd9f88410ba1169103929ddccc276ad"
+    },
+    {
+      "byte_length": 7219,
+      "path": "engine/company_intelligence/health.py",
+      "sha256": "db924871e9a49446ebbe6e84c2c9c57a361b903fb8764a5a891a531cdb449210"
+    },
+    {
+      "byte_length": 11962,
+      "path": "engine/company_intelligence/pinned_relationship_candidates.py",
+      "sha256": "afafacb978face2775c769844a2773e04a5cb5b755aacd6c9724d7e51eb07cb7"
+    },
+    {
+      "byte_length": 45473,
+      "path": "engine/company_intelligence/relationship_candidates.py",
+      "sha256": "a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55"
+    },
+    {
+      "byte_length": 42756,
+      "path": "engine/company_intelligence/relationship_observations.py",
+      "sha256": "85c07b309ff7b7220ec12f2b3f25c924a2ef4c9ab495ce9030f61038cbb9e8c7"
+    },
+    {
+      "byte_length": 36392,
+      "path": "engine/company_intelligence/views.py",
+      "sha256": "b5cc18f5722305f841a18b94867edcdd36e6797889136bd807e6a5161cef70f4"
+    },
+    {
+      "byte_length": 6683,
+      "path": "engine/desk_ledger.py",
+      "sha256": "9e079f7d26e3a60e75ee651140612c2efd6a9d00a9405ac5c424fe219600dbc2"
+    },
+    {
+      "byte_length": 1009,
+      "path": "engine/earnings_release/__init__.py",
+      "sha256": "efb8ea9960f8fe2e5e6ab79eff5bef7abde6b7d7fa63f7b5faca17081a9bbe85"
+    },
+    {
+      "byte_length": 12010,
+      "path": "engine/earnings_release/receipts.py",
+      "sha256": "463c97d12c74baaf76fe1abab359b38d2b89a2958f455e5d541caa8fa580fb84"
+    },
+    {
+      "byte_length": 1854,
+      "path": "engine/fundamental_forensics/__init__.py",
+      "sha256": "c4c6084411d11e5b07bfd0e4600880ccbbc60309712262bdd266657c120ad5fb"
+    },
+    {
+      "byte_length": 17295,
+      "path": "engine/fundamental_forensics/detectors.py",
+      "sha256": "3a5b3ceb58cbfd21253052676c4ef38b3125b45799f44c799a8977c3685f522a"
+    },
+    {
+      "byte_length": 118522,
+      "path": "engine/fundamental_forensics/disclosure_diff.py",
+      "sha256": "a266960ac1c3d48b7ebedbe1141d50e1ed3cbfd617d27d01aa6e1554fce389ba"
+    },
+    {
+      "byte_length": 76795,
+      "path": "engine/fundamental_forensics/filing_attestation.py",
+      "sha256": "1b2693a9bbff66761a573a8c1bd5d32b352a2d43719407e2864fda6e725d0a47"
+    },
+    {
+      "byte_length": 57231,
+      "path": "engine/fundamental_forensics/filing_package.py",
+      "sha256": "929de48d3391844f71dc0875d97eddd4372524133de41de90953819a7d5da4d9"
+    },
+    {
+      "byte_length": 77632,
+      "path": "engine/fundamental_forensics/ixbrl_extraction.py",
+      "sha256": "e9a3ad540b154d37f2a8724ac4bd523d6aa951c70d500f9fed80295fc60b6e58"
+    },
+    {
+      "byte_length": 14519,
+      "path": "engine/fundamental_forensics/models.py",
+      "sha256": "cd8e5e62d4e29378453b89ea6b2f5cfd4028ed5ea4502a9d43f98f0819c3aa97"
+    },
+    {
+      "byte_length": 12032,
+      "path": "engine/fundamental_forensics/normalize.py",
+      "sha256": "b23163c565ad0bd5bc079542538725c56d747a1212346ba74f8f6f9f3ea80487"
+    },
+    {
+      "byte_length": 5086,
+      "path": "engine/fundamental_forensics/pipeline.py",
+      "sha256": "ecb8d2ebe9da231a70b9edcfea654f0bfee00e01570fbfd596106e5fe528817b"
+    },
+    {
+      "byte_length": 7430,
+      "path": "engine/fundamental_forensics/sec_companyfacts.py",
+      "sha256": "bf575fdcb307e12efdf9e281697e0fe143e7a373282efde6f1799e2582c89170"
+    },
+    {
+      "byte_length": 48206,
+      "path": "engine/fundamental_forensics/sec_document_spine.py",
+      "sha256": "ee240863943823e598083f45164c6a288e9098292a47a454cc70898c2bdf8366"
+    },
+    {
+      "byte_length": 54924,
+      "path": "engine/fundamental_forensics/source_sync.py",
+      "sha256": "73ddb5ac6ed910b1f4d9a7d76a944063f3251011e7b2af96d7fbb8306f46776a"
+    },
+    {
+      "byte_length": 17148,
+      "path": "engine/gdelt_client.py",
+      "sha256": "9282e05655b3de93da3046c0fe36d17e6b682d5825237fd68a16017ae788ab6a"
+    },
+    {
+      "byte_length": 660,
+      "path": "engine/marketing/__init__.py",
+      "sha256": "6c9056208c0a9c0115eb54b9f8abfd01b36fd168e843b0d5235c9291240bfa5c"
+    },
+    {
+      "byte_length": 5038,
+      "path": "engine/marketing/accounts.py",
+      "sha256": "868a6f728f177009808c9321416d08a9a8e610ff2c6aa3733bf3cb1c0adcc40f"
+    },
+    {
+      "byte_length": 5355,
+      "path": "engine/marketing/authority.py",
+      "sha256": "0d73e0cdd1bc36b24a6ea45658e63c254094bd3b8ef8878b092020afd1a27368"
+    },
+    {
+      "byte_length": 287289,
+      "path": "engine/marketing/chart_render.py",
+      "sha256": "2d8d596c39545c9c0b064a56ec8508b41fb7845ff8fb124902a956896668fbcd"
+    },
+    {
+      "byte_length": 3628,
+      "path": "engine/marketing/charter.py",
+      "sha256": "af4bef84e91e4631534e7da7508c4c6eae9b0529272365228339fe7b48ec4f1f"
+    },
+    {
+      "byte_length": 4436,
+      "path": "engine/marketing/claims.py",
+      "sha256": "ad6667e71d23ddb4cda28cf5b8d79fc7328a80f94f415540063822c6dd0d9d0b"
+    },
+    {
+      "byte_length": 10714,
+      "path": "engine/marketing/cmo.py",
+      "sha256": "f2b124754fb808d1935fcde19bdad3d66f334ada97b1f292fbfc9af0686974f9"
+    },
+    {
+      "byte_length": 45779,
+      "path": "engine/marketing/departments.py",
+      "sha256": "f42be96b317a040bf28c6dcdb4343aa9d8b83fce0133ef77121448f2015f889f"
+    },
+    {
+      "byte_length": 4797,
+      "path": "engine/marketing/economics.py",
+      "sha256": "bb4e78bb1251366d536a79aa789a357ce6ece47c32ca4534e920e8ee4d24b3d9"
+    },
+    {
+      "byte_length": 2136,
+      "path": "engine/marketing/events.py",
+      "sha256": "f940ba236256f56841cc944fdab5914ee4c5a85a5b9ce774137bcede7c5caace"
+    },
+    {
+      "byte_length": 1686,
+      "path": "engine/marketing/ledgers.py",
+      "sha256": "a94a60f25914ff67328c3b54eb46befa81c1b3910a9a0f72c260fb0609c7a3e8"
+    },
+    {
+      "byte_length": 14389,
+      "path": "engine/marketing/logo_cache.py",
+      "sha256": "afc70743c63ba6c7ddc732914876baa38ef0eff384b296b42f249fe09510d0c6"
+    },
+    {
+      "byte_length": 5350,
+      "path": "engine/marketing/opportunity_bus.py",
+      "sha256": "09f0ce3e55bcbda2e83051c396ba78bdc68d9e7d0fdfb093fdb4b09197f94df2"
+    },
+    {
+      "byte_length": 7182,
+      "path": "engine/marketing/publication.py",
+      "sha256": "9904f90241f1b236dd88094aa6b388fdf43d627c6117900a3b36ededb6f4beb2"
+    },
+    {
+      "byte_length": 18901,
+      "path": "engine/marketing/state.py",
+      "sha256": "1b933891c7c3c1d22018ea6b49fbb370a7f6cd5f9e5e9123912405081b81c15b"
+    },
+    {
+      "byte_length": 142755,
+      "path": "engine/master_brain.py",
+      "sha256": "9d58cfe754f365206be998d95b29a60cf2a54df46a1cad8ac7788fae66a16b70"
+    },
+    {
+      "byte_length": 1175,
+      "path": "engine/research_vault/__init__.py",
+      "sha256": "5b35706ac8760796f9ac445b8c1fceda53a058aa64ea46cf6c79d19e420a97f8"
+    },
+    {
+      "byte_length": 47498,
+      "path": "engine/research_vault/r2_store.py",
+      "sha256": "7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd"
+    },
+    {
+      "byte_length": 0,
+      "path": "lib/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 1131,
+      "path": "lib/config.py",
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+    },
+    {
+      "byte_length": 5496,
+      "path": "lib/dataos/__init__.py",
+      "sha256": "0d8df3c0c127df3ec7a5b7148dd32dfed66dbd4c22e5fa496b77ec15377213a7"
+    },
+    {
+      "byte_length": 49306,
+      "path": "lib/dataos/identity.py",
+      "sha256": "8baefdf03e29afb59b4bc70805327e88e0e4e96e0a720727ffa695ba1775ad6f"
+    },
+    {
+      "byte_length": 7737,
+      "path": "lib/dataos/nulls.py",
+      "sha256": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49"
+    },
+    {
+      "byte_length": 10509,
+      "path": "lib/dataos/price.py",
+      "sha256": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15"
+    },
+    {
+      "byte_length": 15792,
+      "path": "lib/dataos/quality.py",
+      "sha256": "e56dfb5baa8f53ccf8141dbfa357d266faed519043e258a56d657abe264f9706"
+    },
+    {
+      "byte_length": 16599,
+      "path": "lib/dataos/registry.py",
+      "sha256": "b57ec16a61086b8d35beb2f81af30efc4af55f1ac07ec95cfcfd87beefeef0a5"
+    },
+    {
+      "byte_length": 12847,
+      "path": "lib/dataos/temporal.py",
+      "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67"
+    },
+    {
+      "byte_length": 1588,
+      "path": "research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json",
+      "sha256": "dd72d31afce12ca727a171e6f635d7085c8c2d6bff6bea2750f9c29a04fe101b"
+    },
+    {
+      "byte_length": 5231,
+      "path": "research/theme_graph/economic_network_execution_20261009/replay_micron_witness.py",
+      "sha256": "69da2f393711923be68f05b1da563dbbcb736761fa60a8bf5ea4aa6cbf9f1830"
+    },
+    {
+      "byte_length": 2217,
+      "path": "scripts/__init__.py",
+      "sha256": "099b906ef95aec83bbfc4d84b5ceb4f050e57a5fd2840e99faa9dc202e90c378"
+    },
+    {
+      "byte_length": 88324,
+      "path": "scripts/worktree_sparse.py",
+      "sha256": "08a6c23c75569c7acb6c8e1ef028bd7d752d283bbb37d540d666c25ab117657f"
+    },
+    {
+      "byte_length": 0,
+      "path": "tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 34456,
+      "path": "tests/conftest.py",
+      "sha256": "ad0b342a4303b5dc098d203530e8e8a83d4b5c3cbc38730309448cac14570425"
+    },
+    {
+      "byte_length": 27799,
+      "path": "tests/test_company_pinned_relationship_candidates.py",
+      "sha256": "08fa9e22f7c35681b2fd97ccd97796a01a98988b05b8d047c8368ff24f6eb669"
+    },
+    {
+      "byte_length": 29602,
+      "path": "tests/test_company_relationship_candidates.py",
+      "sha256": "0a8c73d5e5b968fd3795fed1e08305597f9c254cc5702b9946b702b8f31bdbd4"
+    },
+    {
+      "byte_length": 49406,
+      "path": "tests/test_company_relationship_observations.py",
+      "sha256": "a73700e639c8e97a4ff84951b48358abe63b1f5048560d03b0e40f2310ac44da"
+    },
+    {
+      "byte_length": 35165,
+      "path": "tests/test_company_relationship_review_set.py",
+      "sha256": "67636cc6eca4f9be84b383bb44b4835a3dc8447f6b288e2e99073f61182ce212"
+    }
+  ],
+  "prior_tested_base": "40ebaebdbcd57eedaa627623f1cfd1860ff3ee3a",
+  "schema": "economic_network.current_main_refresh_preflight/v1",
+  "upstream": "3bb1ee47939d9caa1db10a4e764365d3a2ee5b77",
+  "upstream_manifest_sha256": "b1b3d11fea1aa0aafa808f63d408adb5b92f1f0c285097a6edf8612c73d22008"
+}

@@ -1,0 +1,102 @@
+{
+  "schema": "tiingo_exact_head_original_ci_terminal_acceptance.v1",
+  "accepted_at_utc": "2026-10-13T01:39:25.517435+00:00",
+  "pr": 9045,
+  "tested_head": "ce0ca042c68b649219198bd4ff0f498f2a27a52c",
+  "run_id": 38331358673,
+  "original_final_tool_session_id": 31817,
+  "original_final_tool_exit_code": 0,
+  "original_final_tool_return_consumed": true,
+  "original_terminal_status": "completed",
+  "original_terminal_conclusion": "success",
+  "expanded_jobs_successful": 12,
+  "job_evidence": [
+    {
+      "name": "ci-pack-2",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-13T01:20:15Z",
+      "completedAt": "2026-10-13T01:35:20Z"
+    },
+    {
+      "name": "ci-pack-9",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-13T01:20:15Z",
+      "completedAt": "2026-10-13T01:30:16Z"
+    },
+    {
+      "name": "ci-pack-6",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-13T01:20:15Z",
+      "completedAt": "2026-10-13T01:30:03Z"
+    },
+    {
+      "name": "ci-pack-4",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-13T01:20:14Z",
+      "completedAt": "2026-10-13T01:29:20Z"
+    },
+    {
+      "name": "ci-pack-3",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-13T01:20:14Z",
+      "completedAt": "2026-10-13T01:26:05Z"
+    },
+    {
+      "name": "ci-pack-10",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-13T01:21:19Z",
+      "completedAt": "2026-10-13T01:26:58Z"
+    },
+    {
+      "name": "ci-pack-7",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-13T01:20:14Z",
+      "completedAt": "2026-10-13T01:29:00Z"
+    },
+    {
+      "name": "ci-pack-0",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-13T01:20:14Z",
+      "completedAt": "2026-10-13T01:25:59Z"
+    },
+    {
+      "name": "ci-pack-11",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-13T01:20:15Z",
+      "completedAt": "2026-10-13T01:28:10Z"
+    },
+    {
+      "name": "ci-pack-8",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-13T01:20:15Z",
+      "completedAt": "2026-10-13T01:30:36Z"
+    },
+    {
+      "name": "ci-pack-5",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-13T01:20:14Z",
+      "completedAt": "2026-10-13T01:29:46Z"
+    },
+    {
+      "name": "ci-pack-1",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-13T01:20:15Z",
+      "completedAt": "2026-10-13T01:29:44Z"
+    }
+  ],
+  "terminal_same_run_read_sha256": "22d9db0a85432dc40ac7a4ff971846e5e797ec7328fe64f5d875aff6cdb238d1",
+  "protected_merge_not_yet_performed": true,
+  "runtime_change": false
+}

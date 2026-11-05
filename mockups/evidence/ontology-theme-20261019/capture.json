@@ -1,0 +1,205 @@
+{
+  "generated_at": "2026-10-19T09:20:02.776767+00:00",
+  "scope": "Synthetic owner parquet rows passed through real backend composer and emitted Macro shell. Network fully intercepted. Not production, source-body, or market-truth evidence.",
+  "cells": [
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/1440-dark-en-available.png",
+      "sha256": "85b87f081c6b92b8853eb2b204bd78ea420c0f648f11b028f644174bb7eaeb18",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "state": "unavailable_binding",
+      "file": "mockups/evidence/ontology-theme-20261019/1440-dark-en-unavailable_binding.png",
+      "sha256": "59107ea72543c943a9b8aded7df60e7fb2eb00a0553106d98a1bdae7e87ab1e4",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/1440-dark-zh-available.png",
+      "sha256": "6c65de381d8546848cd4aac8db20fd43fb894ee6f832f78a3c2cdd70a56fa79b",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "state": "unavailable_binding",
+      "file": "mockups/evidence/ontology-theme-20261019/1440-dark-zh-unavailable_binding.png",
+      "sha256": "0660a010887b590c62822ac67a7c08693421042c1396ade0e8bec9e6f0dd4a4c",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "locale": "en",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/1440-light-en-available.png",
+      "sha256": "68d2a30c4068630ab205d9e1f23f08ff3b05ecacff88df70b9839b17a4d01a19",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "locale": "en",
+      "state": "unavailable_binding",
+      "file": "mockups/evidence/ontology-theme-20261019/1440-light-en-unavailable_binding.png",
+      "sha256": "4b9221e26bc65e642f7fbb31fe9587100e0b6450a107cfa83ce7c2ccf38c56c7",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/1440-light-zh-available.png",
+      "sha256": "caef3663ca83dd8ec0ee1ed6ddfc70f896700504ce37e82594364d2258fb12ca",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "state": "unavailable_binding",
+      "file": "mockups/evidence/ontology-theme-20261019/1440-light-zh-unavailable_binding.png",
+      "sha256": "f40f8c49ce59e4d23d15b4d74c14a07dd8f18afca3a9b82d06c5c75ef360120e",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/390-dark-en-available.png",
+      "sha256": "092c3af4abb455fb70a4fb7845f7708ade3e514d980c728892560928b323fa1d",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "state": "unavailable_binding",
+      "file": "mockups/evidence/ontology-theme-20261019/390-dark-en-unavailable_binding.png",
+      "sha256": "a9e6df0087cf0fdf45fc2328487198db4c60107e496b9b15c26c323852386812",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/390-dark-zh-available.png",
+      "sha256": "98f029dc6ac3c0659559ba6a41a6a8410ccdabcc285403c918f424e73b50371d",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "state": "unavailable_binding",
+      "file": "mockups/evidence/ontology-theme-20261019/390-dark-zh-unavailable_binding.png",
+      "sha256": "234012d1c08afd55183fcc0c5b29f6a25b7acaf7d6995f1be580a33662f15e81",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "light",
+      "locale": "en",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/390-light-en-available.png",
+      "sha256": "e4f74b23e7729d4a0642919e630db25049484f642b3ab546e818701289764a21",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "light",
+      "locale": "en",
+      "state": "unavailable_binding",
+      "file": "mockups/evidence/ontology-theme-20261019/390-light-en-unavailable_binding.png",
+      "sha256": "db5b557b968298570087cb12ec929ffd7a938eef9b5d0869b021b97befe65b1b",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/390-light-zh-available.png",
+      "sha256": "489515e5f6b84e246721f530be6880d15af3f4ea23e6792d29fc896a28881ae5",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "state": "unavailable_binding",
+      "file": "mockups/evidence/ontology-theme-20261019/390-light-zh-unavailable_binding.png",
+      "sha256": "4123d39ce697f8079a431228f64b17b9c564929a83b6ec332aa2982e39564850",
+      "console_errors": []
+    }
+  ],
+  "source_sha256": {
+    "templates/ontology-theme.js": "2b1394028b434dbb6e21aebafba9e188f3ea9e85a84c2428b6c86f4cf75dcb2c",
+    "templates/ontology-company.js": "68db35ec3a31f7ada0eb90aba1bbdf99af196af7b26bdbb70e71d9f45a8c6b21",
+    "templates/ontology.js": "bd1470ac6e9911d781dffc6bfb9d015b393367e1d8559ded1ef271c9dd0654d2",
+    "templates/ontology.html.j2": "2ea5c278b5f0298fa86578760f447a11def6a9e97a34d6ee2feda58bd2e37d1c",
+    "engine/ontology_theme.py": "fc2656b8bef747da682343a814b18daadfb099b303d59dadbbc26690baa844d8"
+  }
+}

@@ -1,0 +1,104 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_extract_cycle_quotes_uses_cash_session_rows_only[2026-07-06-2026-07-06T20:06:00Z-2026-07-06T15:59:00-2026-07-06T16:05:00-2026-07-06T19:59:00Z] _
+
+session_date = '2026-07-06', observed_at = '2026-07-06T20:06:00Z'
+in_session_trade = '2026-07-06T15:59:00'
+after_close_trade = '2026-07-06T16:05:00'
+expected_trade_at = '2026-07-06T19:59:00Z'
+
+    @pytest.mark.parametrize(
+        "session_date, observed_at, in_session_trade, after_close_trade, expected_trade_at",
+        [
+            (
+                "2026-07-06", "2026-07-06T20:06:00Z",
+                "2026-07-06T15:59:00", "2026-07-06T16:05:00",
+                "2026-07-06T19:59:00Z",
+            ),
+            (
+                "2026-11-27", "2026-11-27T18:06:00Z",
+                "2026-11-27T12:59:00", "2026-11-27T13:05:00",
+                "2026-11-27T17:59:00Z",
+            ),
+        ],
+    )
+    def test_extract_cycle_quotes_uses_cash_session_rows_only(
+        session_date, observed_at, in_session_trade, after_close_trade, expected_trade_at,
+    ):
+        tape = pd.DataFrame([
+            {
+                "expiration": "2026-12-18", "strike": 600.0, "right": "C",
+                "trade_timestamp": in_session_trade,
+                "quote_timestamp": in_session_trade,
+                "bid": 5.0, "ask": 5.2,
+            },
+            {
+                "expiration": "2026-12-18", "strike": 600.0, "right": "C",
+                "trade_timestamp": after_close_trade,
+                "quote_timestamp": after_close_trade,
+                "bid": 9.0, "ask": 9.2,
+            },
+        ])
+        q = extract_cycle_quotes(
+            tape, None, session_date=session_date,
+            observed_at=observed_at, near_dte_cap_days=None,
+        )
+        assert len(q) == 1
+>       assert q[0]["mid"] == 5.1
+E       assert 9.1 == 5.1
+
+tests/test_flow_surface.py:884: AssertionError
+_ test_extract_cycle_quotes_uses_cash_session_rows_only[2026-11-27-2026-11-27T18:06:00Z-2026-11-27T12:59:00-2026-11-27T13:05:00-2026-11-27T17:59:00Z] _
+
+session_date = '2026-11-27', observed_at = '2026-11-27T18:06:00Z'
+in_session_trade = '2026-11-27T12:59:00'
+after_close_trade = '2026-11-27T13:05:00'
+expected_trade_at = '2026-11-27T17:59:00Z'
+
+    @pytest.mark.parametrize(
+        "session_date, observed_at, in_session_trade, after_close_trade, expected_trade_at",
+        [
+            (
+                "2026-07-06", "2026-07-06T20:06:00Z",
+                "2026-07-06T15:59:00", "2026-07-06T16:05:00",
+                "2026-07-06T19:59:00Z",
+            ),
+            (
+                "2026-11-27", "2026-11-27T18:06:00Z",
+                "2026-11-27T12:59:00", "2026-11-27T13:05:00",
+                "2026-11-27T17:59:00Z",
+            ),
+        ],
+    )
+    def test_extract_cycle_quotes_uses_cash_session_rows_only(
+        session_date, observed_at, in_session_trade, after_close_trade, expected_trade_at,
+    ):
+        tape = pd.DataFrame([
+            {
+                "expiration": "2026-12-18", "strike": 600.0, "right": "C",
+                "trade_timestamp": in_session_trade,
+                "quote_timestamp": in_session_trade,
+                "bid": 5.0, "ask": 5.2,
+            },
+            {
+                "expiration": "2026-12-18", "strike": 600.0, "right": "C",
+                "trade_timestamp": after_close_trade,
+                "quote_timestamp": after_close_trade,
+                "bid": 9.0, "ask": 9.2,
+            },
+        ])
+        q = extract_cycle_quotes(
+            tape, None, session_date=session_date,
+            observed_at=observed_at, near_dte_cap_days=None,
+        )
+        assert len(q) == 1
+>       assert q[0]["mid"] == 5.1
+E       assert 9.1 == 5.1
+
+tests/test_flow_surface.py:884: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, agentos, browser, calibration, content, data, docs, finviz_themes, knowledge, mockups, properties, reports, requirements, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_flow_surface.py::test_extract_cycle_quotes_uses_cash_session_rows_only[2026-07-06-2026-07-06T20:06:00Z-2026-07-06T15:59:00-2026-07-06T16:05:00-2026-07-06T19:59:00Z]
+FAILED tests/test_flow_surface.py::test_extract_cycle_quotes_uses_cash_session_rows_only[2026-11-27-2026-11-27T18:06:00Z-2026-11-27T12:59:00-2026-11-27T13:05:00-2026-11-27T17:59:00Z]
+2 failed in 1.80s

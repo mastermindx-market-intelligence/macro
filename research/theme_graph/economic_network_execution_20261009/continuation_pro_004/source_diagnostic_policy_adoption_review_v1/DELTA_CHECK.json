@@ -1,0 +1,88 @@
+{
+  "all_other_policy_values_equal": true,
+  "all_three_adopted_meanings_match_v2": true,
+  "base_policy_canonical_content": {
+    "byte_length": 52590,
+    "sha256": "6349f2b2c9f8d9257d3853d4906bdfcc9dd6fe706cf053e957f9a4098c133266"
+  },
+  "canonical_digest_scope": "Recomputed policy content identity only, not original raw bytes, owner authentication, adoption signature or source admission",
+  "canonical_encoding": "UTF-8 JSON; ensure_ascii=False, sort_keys=True, separators=(',',':'), allow_nan=False; no terminal newline",
+  "created_at_utc": "2026-10-09T12:09:27.454340+00:00",
+  "effective_normative_changed_pointers": [
+    "/capitalization/numeric_rule"
+  ],
+  "effective_policy_canonical_content": {
+    "byte_length": 53677,
+    "sha256": "90bec6078348af6e41c9538e12e0443dd37d671c85a7089c64c547f5ce5e7714"
+  },
+  "native_Git_application_provider_capture_effects": false,
+  "policy_and_review_bindings_verified": [
+    {
+      "byte_length": 60312,
+      "path": "lanes/source_diagnostic_policy_v2/RECOMMENDED_SELECTION_POLICY.json",
+      "sha256": "d41422d76219b1c5d3a3c9cbb19a1bc3124433031200b09499033bd4dc30d522"
+    },
+    {
+      "byte_length": 58436,
+      "path": "lanes/source_diagnostic_policy_v2/SELECTION_POLICY_ADJUDICATION_MEMO.md",
+      "sha256": "4d322ba08f488c6b4b71f22899416b4cb412f951dc893c4145f43796126fea29"
+    },
+    {
+      "byte_length": 23737,
+      "path": "lanes/source_diagnostic_policy_review_v2/CORRECTIVE_METHOD_REVIEW.md",
+      "sha256": "8cafe4d8208d224d3ebf49b2f5db88785cc7543f48788ba5d1d347cff95945b8"
+    },
+    {
+      "byte_length": 6613,
+      "path": "lanes/source_diagnostic_policy_review_v2/FINDINGS.json",
+      "sha256": "268c16cdc118fef8f3cf2955e07e81da6f12b2b4ee5aee5a8398c8966e94e142"
+    },
+    {
+      "byte_length": 2358,
+      "path": "lanes/source_diagnostic_policy_review_v2/REVIEW_MANIFEST.json",
+      "sha256": "de4e69ae57a041b244b5e73662aeaed5095b45084bf90183b7529f557e1a05d2"
+    }
+  ],
+  "quotas_dates_seed_difficult_case_law_unchanged": true,
+  "real_source_authority_rights_or_history_verified": false,
+  "result": "PASS_EXACT_BINDINGS_SINGLE_OVERRIDE_AND_SYNTHETIC_ARITHMETIC",
+  "schema": "research.gmi.wp02.independent_adoption_delta_checks/v1",
+  "sidecar_inputs": [
+    {
+      "byte_length": 1170,
+      "path": "lanes/source_diagnostic_policy_adoption_v1/ADOPTION_VALIDATION.json",
+      "sha256": "3c5b371b868ca66a8352fc7d03b462fe72fad5b817ad82878e0bb27a9531dc9d"
+    },
+    {
+      "byte_length": 1091,
+      "path": "lanes/source_diagnostic_policy_adoption_v1/MANIFEST.json",
+      "sha256": "82839b3edfb68baf03ebbc8e435d9c9b63dd7bea50e0c8eb3b17bd52e9194e7e"
+    },
+    {
+      "byte_length": 501,
+      "path": "lanes/source_diagnostic_policy_adoption_v1/NUMERIC_CLARIFICATION_CONTROL.json",
+      "sha256": "d6c19a783783c60ea506fe829e15ed90e06c7f6db27719fadd61b7085d1d95e1"
+    },
+    {
+      "byte_length": 9593,
+      "path": "lanes/source_diagnostic_policy_adoption_v1/POLICY_ADOPTION.json",
+      "sha256": "645a20a39842d9c5a03b4ff39a37280d1aa02c32ef545c061d0aa959f06e0016"
+    },
+    {
+      "byte_length": 7155,
+      "path": "lanes/source_diagnostic_policy_adoption_v1/PRINCIPAL_ADOPTION.md",
+      "sha256": "1c2d9c72ad7ea969a5b41294845bb55d4fcb0158802b74e5ccff815e36264783"
+    }
+  ],
+  "sol_ceo_architectural_adjudication_claimed": false,
+  "source_files_changed": false,
+  "synthetic_numeric_control": {
+    "actual_numeric_parser_or_kernel_tested": false,
+    "incorrect_abs_delta_cap": "2200000000",
+    "negative_delta_cap": "1800000000",
+    "negative_delta_preserves_sign": true,
+    "zero_delta_cap": "2000000000",
+    "zero_evidenced_no_change_source_verified": false
+  },
+  "unconditional_real_source_holds_preserved": true
+}
