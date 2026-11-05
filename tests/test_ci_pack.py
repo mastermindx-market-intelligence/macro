@@ -4413,10 +4413,6 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
-    # Y7 #10656 scratch-only: retain measured named imports; drop opaque fallback selection.
-    "engine-render-guards",
-    "market-memory-contract",
-    "capital-structure-intelligence",
     # A1 pure product/finite QA must run on code PRs without the legacy data job.
     "eval-os-a1",
     # Qledger suites retain all named imports; opaque fixture roots are audited.
@@ -5190,6 +5186,10 @@ CURATED_EXCLUSIVE = {
     # exact 55-file non-wildcard import closure plus the eight Jinja templates the
     # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
     "global-liquidity-transmission",
+    # Y7 #10656: retain named import closure without incidental fallback fan-out.
+    "engine-render-guards",
+    "market-memory-contract",
+    "capital-structure-intelligence",
 }
 
 

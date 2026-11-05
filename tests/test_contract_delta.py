@@ -607,6 +607,28 @@ def test_noncone_caller_base_mirrors_exact_binary_exclusions(tmp_path: Path, mon
     assert not tree.exists()
 
 
+def test_noncone_caller_git_default_without_explicit_cone_flag(tmp_path: Path) -> None:
+    """Hosted sparse checkout may omit optional core.sparseCheckoutCone key."""
+    repo = _make_repo(tmp_path)
+    rules = ["/*", "!/data/", "!/mockups/**/*.png"]
+    _git("sparse-checkout", "set", "--no-cone", "--", *rules, cwd=repo)
+    _git("config", "--worktree", "--unset", "core.sparseCheckoutCone", cwd=repo)
+    assert subprocess.run(["git", "config", "--get", "core.sparseCheckoutCone"],
+                          cwd=repo, capture_output=True, check=False).returncode == 1
+    assert _git("config", "--get", "core.sparseCheckout", cwd=repo).strip() == "true"
+    assert _git("sparse-checkout", "list", cwd=repo).splitlines() == rules
+    assert CCD.caller_sparse_noncone_rules(repo) == rules
+
+
+def test_noncone_caller_corrupt_git_boolean_fails_closed(tmp_path: Path) -> None:
+    """Invalid cone values must not silently select a full base tree."""
+    repo = _make_repo(tmp_path)
+    _git("sparse-checkout", "set", "--no-cone", "--", "/*", "!/data/", cwd=repo)
+    _git("config", "--worktree", "core.sparseCheckoutCone", "invalid", cwd=repo)
+    with pytest.raises(CCD.ContractDeltaError):
+        CCD.caller_sparse_noncone_rules(repo)
+
+
 def test_contract_delta_checkout_excludes_media_but_keeps_source_and_proof() -> None:
     job = _ci_jobs()["contract-delta"]
     checkout = _step_named(job, "check out the exact candidate")

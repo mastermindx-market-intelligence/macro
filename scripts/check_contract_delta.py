@@ -917,7 +917,8 @@ def caller_sparse_noncone_rules(repo_root: Path) -> list[str] | None:
         return None
     if enabled != "true":
         return None
-    cone = _git("config", "--get", "core.sparseCheckoutCone", cwd=repo_root).strip()
+    cone = _git("config", "--get", "--type=bool", "--default=false",
+                "core.sparseCheckoutCone", cwd=repo_root).strip()
     if cone != "false":
         return None
     rules = _git("sparse-checkout", "list", cwd=repo_root).splitlines()
