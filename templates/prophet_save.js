@@ -77,10 +77,23 @@
       '保存到 ' + hold.listName + ' 的操作尚未确认，可只读检查列表，不会再次保存。');
     var inspect = button('Check account list', '检查账户列表', function () {
       if (!current(origin) || inspect.disabled) return; inspect.disabled = true;
-      origin.store.symbols.inspect(hold.listId, origin.entry.ticker).then(function (read) {
+      // A user click may repeat an authorized read, never the uncertain Save.
+      Promise.resolve().then(function () {
+        if (!current(origin)) return null;
+        return origin.store.symbols.inspect(hold.listId, origin.entry.ticker);
+      }).then(function (read) {
         if (!current(origin)) return;
         if (read && read.state === 'present') message('observed', 'Your account currently contains this ticker. This read does not prove the earlier save.', '账户列表目前包含此代码；本次读取不证明此前保存已完成。');
-        else message('uncertain', 'Membership is not confirmed. No new save or retry was made.', '尚未确认列表成员关系，未重新保存或重试。');
+        else {
+          message('uncertain', 'Membership is not confirmed. No new save or retry was made.', '尚未确认列表成员关系，未重新保存或重试。');
+          inspect.disabled = !(read && read.readRetryAllowed === true);
+        }
+      }).catch(function () {
+        if (!current(origin)) return;
+        // Unexpected owner failures carry no permission to retry the read.
+        inspect.disabled = true;
+        message('uncertain', 'Membership could not be checked. No new save or retry was made.',
+          '无法检查列表成员关系，未重新保存或重试。');
       });
     }); content.append(inspect, watchlists());
   }

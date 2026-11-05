@@ -1,0 +1,33 @@
+{
+  "schema": "prophet.save_read_recovery_visual_review.v1",
+  "reviewer": "attended parent self-QA",
+  "sourceControllerSha256": "63364e5bf444b4ebcd3ca7689362b7f393a64ea0b5d9539445c14ba4631fa193",
+  "scope": "original modal crops from hermetic actual-controller browser fixtures",
+  "reviewed": [
+    {
+      "file": "browser/recoverable-320-light-en.png",
+      "sha256": "90729d35b2a3574f1f8ebd748a83d243d4117ae4fd2fa3938caf8e901f9a0e47",
+      "result": "accepted",
+      "observed": "Readable hierarchy and wrapping; no clipping; controls fit; enabled recovery focus ring visible on recoverable captures; generic bilingual failure text on unexpected captures."
+    },
+    {
+      "file": "browser/recoverable-390-dark-zh.png",
+      "sha256": "3b3f5761f4a749722fe912b329200b6029ce90409c7156df8c875899d094eb64",
+      "result": "accepted",
+      "observed": "Readable hierarchy and wrapping; no clipping; controls fit; enabled recovery focus ring visible on recoverable captures; generic bilingual failure text on unexpected captures."
+    },
+    {
+      "file": "browser/unexpected-320-light-zh.png",
+      "sha256": "125e3268e35c8038f7acd1195b9a0a25319a996ed414dcf4b5da0c155b411e07",
+      "result": "accepted",
+      "observed": "Readable hierarchy and wrapping; no clipping; controls fit; enabled recovery focus ring visible on recoverable captures; generic bilingual failure text on unexpected captures."
+    },
+    {
+      "file": "browser/unexpected-390-dark-en.png",
+      "sha256": "0fd119f987e77fa5e64bd0218d82b10dd69a3366c545d0a5902388f58e0af008",
+      "result": "accepted",
+      "observed": "Readable hierarchy and wrapping; no clipping; controls fit; enabled recovery focus ring visible on recoverable captures; generic bilingual failure text on unexpected captures."
+    }
+  ],
+  "productionAcceptance": false
+}

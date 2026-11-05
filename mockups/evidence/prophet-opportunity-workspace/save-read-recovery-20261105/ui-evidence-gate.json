@@ -1,0 +1,21 @@
+{
+  "schema": "prophet.save_read_recovery_ui_gate.v1",
+  "argv": [
+    "/home/ubuntu0/lanes/venv/bin/python",
+    "scripts/check_ui_visual_evidence.py",
+    "--repo-root",
+    "/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105",
+    "--diff-file",
+    "/tmp/prophet-save-read-recovery-ec24a85-ui.diff"
+  ],
+  "base": "b48b5dc562cf1e2600699fc24a445709e18ef8fe",
+  "head_parent": "ec24a85de3fc91988ca5a6fb25a97384b1cf2ab5",
+  "includes_uncommitted_save_change": true,
+  "scope": "full merge-base to working-tree templates/site diff",
+  "exit_code": 0,
+  "elapsed_seconds": 8.586,
+  "diff_bytes": 19864898,
+  "diff_sha256": "03debcfa025d646dad1444b86f30fddb05e53fa5fca7a099e15431bad749bb9e",
+  "checker_sha256": "6d3a8661db2de7802b873f2d1dc220746a681167befdf3e44cc1d0256f80dc7c",
+  "completed_at": "2026-11-05T05:22:48.219983+00:00"
+}
