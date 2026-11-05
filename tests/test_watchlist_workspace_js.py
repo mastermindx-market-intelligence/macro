@@ -2435,3 +2435,377 @@ def test_the_watchlists_mode_return_is_safe_because_the_panel_is_portfolio_only(
         "the mode containers are no longer hidden by default — watchlists mode would "
         "render the Portfolio column, Risk Center included, with nothing painted in it"
     )
+
+
+# Factor artifact failures are request state, never a permanent session cache.
+FACTOR_RECOVERY_MODEL = {
+    "factors": [{"key": "mkt", "label": "Market", "tier": "high"},
+                {"key": "growth", "label": "Growth", "tier": "high"}],
+    "factor_cov": {"mkt": {"mkt": .03, "growth": 0},
+                   "growth": {"mkt": 0, "growth": .02}},
+    "betas": {"AAPL": {"mkt": 1, "growth": .5, "idio_vol": .25, "name": "Apple"},
+              "MSFT": {"mkt": .9, "growth": .4, "idio_vol": .22, "name": "Microsoft"},
+              "NVDA": {"mkt": 1.3, "growth": .9, "idio_vol": .4, "name": "NVIDIA"}},
+}
+
+FACTOR_RECOVERY_SETUP = r"""
+var listeners = {};
+document.addEventListener = function (name, fn) {
+  (listeners[name] || (listeners[name] = [])).push(fn);
+};
+document.dispatchEvent = function (event) {
+  __events.push(event);
+  (listeners[event.type] || []).forEach(function (fn) { fn(event); });
+  return true;
+};
+global.MutationObserver = function () { this.observe = function () {}; };
+var panel = {style: {}, innerHTML: '', querySelectorAll: function () { return []; },
+             querySelector: function () { return null; }};
+document.getElementById = function (id) {
+  return id === 'fx_panel' ? panel : id === 'ws_seam' ? {} : null;
+};
+var mode = 'watchlists', gen = 1, risk = [];
+document.documentElement.getAttribute = function (key) {
+  return key === 'data-ws-mode' ? mode : key === 'data-lang' ? 'en' : null;
+};
+window.WS = {
+  prov: function () { return {scope: mode === 'portfolio' ? 'portfolio' : 'watchlist', gen: gen}; },
+  setRisk: function (payload) { risk.push(payload); }
+};
+function turn() { return new Promise(function (resolve) { setImmediate(resolve); }); }
+function initRisk() { document.dispatchEvent(new CustomEvent('DOMContentLoaded')); }
+"""
+
+
+@needs_node
+@pytest.mark.parametrize("failure", [
+    "network", "sync", "http-401", "http-404", "http-429", "http-500",
+    "parse-reject", "parse-throw", "null",
+])
+def test_factor_load_recovery_reaches_current_risk_center(failure):
+    """The real FX -> fx-weights -> WRI -> RiskCore -> WS.setRisk chain recovers.
+    Removing either loader's pending cleanup makes the recovery assertion fail."""
+    out = _run(
+        FACTOR_RECOVERY_SETUP + r"""
+        var failed = true, count = 0, jsonOnError = 0;
+        global.fetch = function (url) {
+          if (url !== 'factor_betas.json') return Promise.resolve({ok: false});
+          count++;
+          if (failed) {
+            if (FAILURE === 'sync') throw new Error('offline');
+            if (FAILURE === 'network') return Promise.reject(new Error('offline'));
+            if (FAILURE.indexOf('http-') === 0) return Promise.resolve({
+              ok: false, status: Number(FAILURE.slice(5)),
+              json: function () { jsonOnError++; throw new Error('must not parse HTTP failure'); }
+            });
+            return Promise.resolve({ok: true, json: function () {
+              if (FAILURE === 'parse-throw') return JSON.parse('{');
+              if (FAILURE === 'parse-reject') return Promise.reject(new SyntaxError('truncated JSON'));
+              return Promise.resolve(null);
+            }});
+          }
+          return Promise.resolve({ok: true, json: function () { return Promise.resolve(MODEL); }});
+        };
+        require(RISK_CORE_PATH);
+        require(FACTOR_PATH);
+        require(WRI_PATH);
+        (async function () {
+          var syncErrors = [];
+          try { window.FX.update(['AAPL', 'MSFT']); } catch (e) { syncErrors.push(e.message); }
+          try { initRisk(); } catch (e) { syncErrors.push(e.message); }
+          await turn();
+          var afterFailure = {count: count, visible: risk.some(function (r) { return !!r.concHTML; })};
+          await turn();
+          var withoutAction = count;
+          failed = false;
+          window.FX.refresh();
+          await turn();
+          var recovered = risk[risk.length - 1];
+          var countAfterRecovery = count;
+          window.FX.refresh(); await turn();
+          OUT({syncErrors: syncErrors, afterFailure: afterFailure, withoutAction: withoutAction,
+               countAfterRecovery: countAfterRecovery, countAfterCachedRead: count,
+               recovered: recovered, jsonOnError: jsonOnError});
+        })().catch(function (e) { console.error(e); process.exitCode = 1; });
+        """,
+        {"MODEL": FACTOR_RECOVERY_MODEL, "FAILURE": failure,
+         "RISK_CORE_PATH": str(ROOT / "templates" / "risk_core.js"),
+         "FACTOR_PATH": str(ROOT / "templates" / "factor_exposure.js"),
+         "WRI_PATH": str(ROOT / "templates" / "watchlist_risk.js")},
+    )
+    assert out["syncErrors"] == [], out
+    assert out["afterFailure"] == {"count": 2, "visible": False}, out
+    assert out["withoutAction"] == 2, "Failure must not cause an automatic retry loop"
+    assert out["countAfterRecovery"] == 4, out
+    assert out["countAfterCachedRead"] == 4, "Successful models remain cached"
+    assert "AAPL" in out["recovered"]["concHTML"], out
+    assert out["recovered"]["rcTabs"], out
+    assert out["recovered"]["prov"] == {"scope": "watchlist", "gen": 1}
+    assert out["jsonOnError"] == 0
+
+
+@needs_node
+@pytest.mark.parametrize("empty_model", [False, True])
+def test_factor_load_recovery_coalesces_fetch_and_json_then_caches_success(empty_model):
+    model = {**FACTOR_RECOVERY_MODEL, "betas": {} if empty_model else FACTOR_RECOVERY_MODEL["betas"]}
+    out = _run(
+        FACTOR_RECOVERY_SETUP + r"""
+        var requests = [], bodies = [], count = 0;
+        global.fetch = function (url) {
+          if (url !== 'factor_betas.json') return Promise.resolve({ok: false});
+          count++;
+          return new Promise(function (resolve) { requests.push(resolve); });
+        };
+        require(RISK_CORE_PATH); require(FACTOR_PATH); require(WRI_PATH);
+        (async function () {
+          window.FX.update(['AAPL', 'MSFT']);
+          window.FX.update(['NVDA', 'MSFT']);
+          initRisk();
+          document.dispatchEvent(new CustomEvent('langchange'));
+          await turn();
+          var fetchPending = count;
+          requests.forEach(function (resolve) {
+            resolve({ok: true, json: function () {
+              return new Promise(function (done) { bodies.push(done); });
+            }});
+          });
+          await turn();
+          window.FX.refresh();
+          document.dispatchEvent(new CustomEvent('themechange'));
+          await turn();
+          var jsonPending = count;
+          bodies.forEach(function (resolve) { resolve(MODEL); });
+          await turn();
+          var first = risk[risk.length - 1];
+          window.FX.refresh(); await turn();
+          OUT({fetchPending: fetchPending, jsonPending: jsonPending, finalCount: count,
+               weights: window.FX.currentWeights(), first: first});
+        })().catch(function (e) { console.error(e); process.exitCode = 1; });
+        """,
+        {"MODEL": model, "RISK_CORE_PATH": str(ROOT / "templates" / "risk_core.js"),
+         "FACTOR_PATH": str(ROOT / "templates" / "factor_exposure.js"),
+         "WRI_PATH": str(ROOT / "templates" / "watchlist_risk.js")},
+    )
+    assert out["fetchPending"] == out["jsonPending"] == out["finalCount"] == 2, out
+    assert out["weights"]["universe"] == ["NVDA", "MSFT"], out
+    if empty_model:
+        assert out["first"]["rcTabs"] is None, out
+        assert out["first"]["concHTML"] == "", out
+    else:
+        assert "NVDA" in out["first"]["concHTML"], out
+        assert "AAPL" not in out["first"]["concHTML"], out
+
+
+@needs_node
+def test_factor_load_recovery_rejects_stale_provenance_after_delayed_model():
+    out = _run(
+        FACTOR_RECOVERY_SETUP + r"""
+        var resolveBody;
+        global.fetch = function (url) {
+          if (url !== 'factor_betas.json') return Promise.resolve({ok: false});
+          return Promise.resolve({ok: true, json: function () {
+            return new Promise(function (resolve) { resolveBody = resolve; });
+          }});
+        };
+        require(RISK_CORE_PATH); require(WRI_PATH);
+        initRisk();
+        (async function () {
+          document.dispatchEvent(new CustomEvent('fx-weights', {detail: {
+            universe: ['AAPL', 'MSFT'], wmap: {}, mode: 'manual',
+            prov: {scope: 'watchlist', gen: 1}
+          }}));
+          await turn();
+          mode = 'portfolio'; gen = 2;
+          resolveBody(MODEL); await turn();
+          var stalePublications = risk.length;
+          document.dispatchEvent(new CustomEvent('fx-weights', {detail: {
+            universe: [], wmap: {}, mode: 'auto', prov: {scope: 'portfolio', gen: 2}
+          }}));
+          await turn();
+          OUT({stalePublications: stalePublications, latest: risk[risk.length - 1]});
+        })().catch(function (e) { console.error(e); process.exitCode = 1; });
+        """,
+        {"MODEL": FACTOR_RECOVERY_MODEL, "RISK_CORE_PATH": str(ROOT / "templates" / "risk_core.js"),
+         "WRI_PATH": str(ROOT / "templates" / "watchlist_risk.js")},
+    )
+    assert out["stalePublications"] == 0, out
+    assert out["latest"]["prov"] == {"scope": "portfolio", "gen": 2}, out
+    assert out["latest"]["concHTML"] == "", out
+
+
+@needs_node
+@pytest.mark.parametrize("language", ["en", "zh"])
+def test_factor_load_recovery_paints_actual_workspace_risk_center(language):
+    """Use the real WS.setRisk/renderRiskCenter consumer, not a copied renderer.
+    The page's auth/data backend is outside this native regression's boundary."""
+    out = _run(
+        FACTOR_RECOVERY_SETUP + r"""
+        var body = {innerHTML: ''}, failed = true;
+        var baseGet = document.getElementById;
+        document.getElementById = function (id) { return id === 'rc_body' ? body : baseGet(id); };
+        document.documentElement.getAttribute = function (key) {
+          return key === 'data-ws-mode' ? 'portfolio' : key === 'data-lang' ? LANGUAGE : null;
+        };
+        window.SD = {};
+        global.fetch = function (url) {
+          if (url !== 'factor_betas.json') return Promise.resolve({ok: false});
+          if (failed) return Promise.reject(new Error('offline'));
+          return Promise.resolve({ok: true, json: function () { return Promise.resolve(MODEL); }});
+        };
+        require(WATCHLIST_PATH); // installs the actual current WS consumer and provenance owner
+        require(RISK_CORE_PATH); require(FACTOR_PATH); require(WRI_PATH);
+        // Invoke WRI's registered bootstrap only; no unrelated auth/store bootstrap.
+        listeners.DOMContentLoaded[listeners.DOMContentLoaded.length - 1]();
+        (async function () {
+          window.FX.setAutoWeights({AAPL: 100, MSFT: 100}); await turn();
+          var before = body.innerHTML;
+          failed = false;
+          window.FX.setAutoWeights({AAPL: 100, MSFT: 100}); await turn();
+          OUT({before: before, after: body.innerHTML, prov: window.FX.currentWeights().prov});
+        })().catch(function (e) { console.error(e); process.exitCode = 1; });
+        """,
+        {"MODEL": FACTOR_RECOVERY_MODEL, "LANGUAGE": language,
+         "WATCHLIST_PATH": str(WATCHLIST), "RISK_CORE_PATH": str(ROOT / "templates" / "risk_core.js"),
+         "FACTOR_PATH": str(ROOT / "templates" / "factor_exposure.js"),
+         "WRI_PATH": str(ROOT / "templates" / "watchlist_risk.js")},
+    )
+    assert "AAPL" not in out["before"], out
+    assert "AAPL" in out["after"], out
+    assert "rc-claim" in out["after"], out
+    assert out["prov"] == {"scope": "portfolio", "gen": 0}, out
+
+
+# A parsed response is not necessarily a model. Admission must happen BEFORE DATA
+# is cached; neither failed arithmetic nor a later render may poison the session.
+@needs_node
+@pytest.mark.parametrize("mutation", [
+    "bad = {}", "bad = []", "bad = true", "bad = 23", "bad = 'unavailable'",
+    "delete bad.factors", "bad.factors = {}", "bad.factors = []",
+    "bad.factors[0] = null", "bad.factors[0] = []", "delete bad.factors[0].key",
+    "bad.factors[0].key = 7", "bad.factors[0].key = ''",
+    "bad.factors[1].key = 'mkt'", "bad.factors[0].key = '__proto__'",
+    "delete bad.factors[0].label", "bad.factors[0].label = 7",
+    "delete bad.betas", "bad.betas = []", "bad.betas.AAPL = true",
+    "bad.betas.AAPL = []", "bad.betas.AAPL = 2", "bad.betas.AAPL = '1'",
+    "delete bad.factor_cov", "bad.factor_cov = []", "delete bad.factor_cov.mkt",
+    "bad.factor_cov.mkt = null", "bad.factor_cov.mkt = []", "bad.factor_cov.mkt = 2",
+    "bad.betas.AAPL.mkt = '1'", "bad.betas.AAPL.mkt = {}",
+    "bad.betas.AAPL.mkt = false", "bad.betas.AAPL.idio_vol = []",
+    "bad.factor_cov.mkt.mkt = '0.03'", "bad.factor_cov.mkt.mkt = {}",
+    "bad.betas.AAPL.raw = []", "bad.betas.AAPL.raw = {mkt:'1'}",
+    "bad.factor_cov_stress = []", "bad.factor_cov_stress = {mkt:1}",
+    "bad.factor_cov_stress = {mkt:{mkt:'0.06'}}",
+    # JSON.parse accepts exponent overflow even though it is not a finite number.
+    "bad.betas.AAPL.mkt = JSON.parse('1e400')",
+    "bad.betas.AAPL.name = {toString:null}", "bad.betas.AAPL.name = [{toString:null}]",
+])
+def test_factor_model_admission_recovers_after_invalid_parsed_payload(mutation):
+    """Actual FX -> WRI -> RiskCore publications recover only through new callers.
+    Removing admission from either loader makes this test fail."""
+    out = _run(
+        FACTOR_RECOVERY_SETUP + r"""
+        var count = 0, invalid = true, errors = [];
+        var bad = JSON.parse(JSON.stringify(MODEL));
+        """ + mutation + r""";
+        process.on('unhandledRejection', function (e) { errors.push(String(e)); });
+        global.fetch = function (url) {
+          if (url !== 'factor_betas.json') return Promise.resolve({ok: false});
+          count++;
+          return Promise.resolve({ok: true, json: function () {
+            return Promise.resolve(invalid ? bad : MODEL);
+          }});
+        };
+        require(RISK_CORE_PATH); require(FACTOR_PATH); require(WRI_PATH);
+        (async function () {
+          window.FX.update(['AAPL', 'MSFT']); initRisk(); await turn();
+          var rejected = {count: count, visible: risk.some(function (r) { return !!r.concHTML; }),
+                          panel: panel.innerHTML};
+          await turn(); var withoutAction = count;
+          invalid = false; window.FX.refresh(); await turn();
+          var recovered = risk[risk.length - 1]; var afterRecovery = count;
+          window.FX.refresh(); await turn();
+          OUT({rejected: rejected, withoutAction: withoutAction, afterRecovery: afterRecovery,
+               cached: count, recovered: recovered, errors: errors});
+        })().catch(function (e) { console.error(e); process.exitCode = 1; });
+        """,
+        {"MODEL": FACTOR_RECOVERY_MODEL,
+         "RISK_CORE_PATH": str(ROOT / "templates" / "risk_core.js"),
+         "FACTOR_PATH": str(ROOT / "templates" / "factor_exposure.js"),
+         "WRI_PATH": str(ROOT / "templates" / "watchlist_risk.js")},
+    )
+    assert out["errors"] == [], out
+    assert out["rejected"] == {"count": 2, "visible": False, "panel": ""}, out
+    assert out["withoutAction"] == 2, "Invalid payload must not start a retry loop"
+    assert out["afterRecovery"] == out["cached"] == 4, out
+    assert "AAPL" in out["recovered"]["concHTML"], out
+    assert out["recovered"]["prov"] == {"scope": "watchlist", "gen": 1}
+
+
+@needs_node
+@pytest.mark.parametrize("mutation", [
+    "MODEL.betas = {}",
+    "MODEL.betas = {AAPL: MODEL.betas.AAPL}",
+    "MODEL.betas.MSFT = null",
+    "MODEL.betas.AAPL = {}; delete MODEL.betas.MSFT.growth; delete MODEL.betas.MSFT.idio_vol",
+    "MODEL.betas.AAPL.mkt = null; MODEL.betas.AAPL.idio_vol = null; MODEL.betas.AAPL.raw = {mkt:null}",
+    "MODEL.factor_cov.mkt = {mkt:0.03}; MODEL.factor_cov.growth = {}",
+    "MODEL.factor_cov.mkt.growth = null; MODEL.betas.AAPL.raw = null",
+    "MODEL.factor_cov_stress = null; MODEL.stress_meta = {available:false}",
+    "MODEL.factor_cov_stress = {mkt:'unused'}; MODEL.stress_meta = {available:false}",
+    "MODEL.factor_cov_stress = {}; MODEL.stress_meta = {available:true}",
+    "MODEL.factor_cov_stress = {mkt:{mkt:0.06},growth:null}",
+    "MODEL.extra = {future:true}; MODEL.betas.AAPL.extra = 'ignored'",
+])
+def test_factor_model_admission_preserves_sparse_empty_and_nullable_models(mutation):
+    """Do not turn sparse data into a failed load or alter its measured coverage."""
+    out = _run(
+        FACTOR_RECOVERY_SETUP + mutation + r""";
+        var count = 0, original = JSON.stringify(MODEL), pf = [];
+        window.PF = {setBookRisk: function (p) { pf.push(p); }};
+        global.fetch = function (url) {
+          if (url !== 'factor_betas.json') return Promise.resolve({ok: false});
+          count++;
+          return Promise.resolve({ok: true, json: function () { return Promise.resolve(MODEL); }});
+        };
+        require(RISK_CORE_PATH); require(FACTOR_PATH); require(WRI_PATH);
+        (async function () {
+          window.FX.update(['AAPL', 'MSFT']); initRisk(); await turn();
+          var first = risk[risk.length - 1];
+          window.FX.refresh(); await turn();
+          var read = RiskCore.read(MODEL, {AAPL:1, MSFT:1});
+          var active = read.calm; // Actual PF/WS seam publications use the all-days read.
+          OUT({count: count, unchanged: original === JSON.stringify(MODEL), first: first,
+               latest: risk[risk.length - 1], active: active, pf: pf[pf.length - 1]});
+        })().catch(function (e) { console.error(e); process.exitCode = 1; });
+        """,
+        {"MODEL": FACTOR_RECOVERY_MODEL,
+         "RISK_CORE_PATH": str(ROOT / "templates" / "risk_core.js"),
+         "FACTOR_PATH": str(ROOT / "templates" / "factor_exposure.js"),
+         "WRI_PATH": str(ROOT / "templates" / "watchlist_risk.js")},
+    )
+    assert out["count"] == 2, "Valid sparse/empty models must retain both success caches"
+    assert out["unchanged"], "Admission must not repair, drop, or densify model fields"
+    assert out["first"] == out["latest"], "Stable input must preserve the actual risk payload"
+    if out["active"]["ok"]:
+        assert out["pf"]["shares"] == out["active"]["mctrShare"]
+    else:
+        assert out["active"]["reason"] == "thin"
+        assert out["latest"]["concHTML"] == ""
+
+
+@needs_node
+@pytest.mark.parametrize("key", [
+    "constructor", "toString", "valueOf", "hasOwnProperty", "isPrototypeOf",
+    "propertyIsEnumerable", "toLocaleString", "__defineGetter__", "__defineSetter__",
+    "__lookupGetter__", "__lookupSetter__",
+])
+def test_factor_model_admission_rejects_inherited_factor_identifiers(key):
+    """RiskCore groups factor bets in ordinary objects; prototype keys are not factors.
+    Explicit numeric cells ensure this targets the key guard, not a leaf check."""
+    mutation = "var key = " + json.dumps(key) + r""";
+    bad.factors[0].key = key;
+    bad.factor_cov[key] = {growth:0}; bad.factor_cov[key][key] = 0.03;
+    bad.factor_cov.growth[key] = 0;
+    Object.keys(bad.betas).forEach(function (t) { bad.betas[t][key] = 1; });
+    """
+    test_factor_model_admission_recovers_after_invalid_parsed_payload(mutation)

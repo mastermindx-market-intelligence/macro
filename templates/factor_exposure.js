@@ -86,13 +86,58 @@
     { key: 'btc', ret: -0.20, en: 'Bitcoin −20%', zh: '比特币 −20%' }
   ];
 
+  // Admit only the containers and numeric leaves these consumers read. Missing
+  // tickers, sparse numeric fields and explicit nulls retain their existing
+  // coverage/zero-fallback semantics; never repair or densify a fetched model.
+  function validFactorModel(data) {
+    function record(v) { return v !== null && typeof v === 'object' && !Array.isArray(v); }
+    function numbers(row, keys) {
+      return keys.every(function (k) {
+        var v = row[k]; return v == null || (typeof v === 'number' && isFinite(v));
+      });
+    }
+    if (!record(data) || !Array.isArray(data.factors) || !data.factors.length
+        || !record(data.betas) || !record(data.factor_cov)) return false;
+    var keys = [];
+    if (!data.factors.every(function (f) {
+      if (!record(f) || typeof f.key !== 'string' || !f.key
+          || Object.prototype.hasOwnProperty.call(Object.prototype, f.key)
+          || keys.indexOf(f.key) !== -1 || typeof f.label !== 'string') return false;
+      keys.push(f.key); return true;
+    })) return false;
+    function covariance(cov, requiredRows) {
+      return record(cov) && keys.every(function (k) {
+        var row = cov[k];
+        return (!requiredRows && row == null) || (record(row) && numbers(row, keys));
+      });
+    }
+    // FX directly indexes every calm row; RiskCore intentionally allows sparse
+    // stress rows. An explicitly disabled stress block is never consumed.
+    if (!covariance(data.factor_cov, true)) return false;
+    if (data.factor_cov_stress != null && !(data.stress_meta && data.stress_meta.available === false)
+        && !covariance(data.factor_cov_stress, false)) return false;
+    return Object.keys(data.betas).every(function (t) {
+      var b = data.betas[t];
+      return b == null || (record(b) && (b.name == null || typeof b.name === 'string')
+        && numbers(b, keys.concat(['idio_vol']))
+        && (b.raw == null || (record(b.raw) && numbers(b.raw, Object.keys(b.raw)))));
+    });
+  }
+
+
   function load() {
     if (DATA) return Promise.resolve(DATA);
     if (LOADING) return LOADING;
-    LOADING = fetch('factor_betas.json')
+    // Keep only an in-flight request here; a settled outage must be retryable
+    // on the next normal update. DATA remains the successful session cache.
+    var request;
+    try { request = fetch('factor_betas.json'); }
+    catch (error) { request = Promise.reject(error); }
+    LOADING = Promise.resolve(request)
       .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (j) { DATA = j; return j; })
-      .catch(function () { return null; });
+      .then(function (j) { DATA = validFactorModel(j) ? j : null; return DATA; })
+      .catch(function () { return null; })
+      .then(function (j) { LOADING = null; return j; });
     return LOADING;
   }
 
