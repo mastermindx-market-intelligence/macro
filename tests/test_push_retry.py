@@ -3033,3 +3033,47 @@ def test_ohlc_delivery_workflow_missing_key_is_visible_before_publish(tmp_path):
     assert result.returncode == 1
     assert "::error::OHLC origin delivery" in result.stdout
     assert not list(tmp_path.iterdir())
+
+
+@pytest.mark.parametrize("publication_pending", [False, True])
+def test_commodity_workflow_uses_shared_publication_completion(tmp_path, publication_pending):
+    """Execute its real loop: pending intent cannot trigger a second rebase/push."""
+    workflow = yaml.safe_load(
+        (REPO_ROOT / ".github/workflows/commodity-sentinel.yml").read_text()
+    )
+    step = next(
+        step for step in workflow["jobs"]["shock"]["steps"]
+        if step.get("name") == "rebuild commodities + commit (only on shock-state change)"
+    )
+    body = step["run"]
+    marker = "PUSH_MAX_ATTEMPTS=5" if "PUSH_MAX_ATTEMPTS=5" in body else "for i in 1 2 3 4 5; do"
+    loop = body[body.index(marker):]
+    log = tmp_path / "publication-calls.txt"
+    setup = r'''
+        git() {
+          case "$1" in
+            pull) printf 'pull\n' >> "$CALL_LOG" ;;
+            push) printf 'raw-push\n' >> "$CALL_LOG"; return 99 ;;
+          esac
+          return 0
+        }
+        sleep() { printf 'sleep\n' >> "$CALL_LOG"; }
+        push_autostash_ok() { return 0; }
+        push_do() {
+          printf 'publication\n' >> "$CALL_LOG"
+          if [ "$PUBLICATION_PENDING" = true ]; then
+            PUSH_TERMINAL_RC=75
+            PUSH_FAIL_CLASS=publication-pending
+            PUSH_STOP='original protected publication is pending'
+            return 75
+          fi
+          return 0
+        }
+    '''
+    result = run_sh(
+        textwrap.dedent(setup) + "\n" + loop,
+        env={"CALL_LOG": str(log), "PUBLICATION_PENDING": str(publication_pending).lower()},
+        cwd=tmp_path,
+    )
+    assert result.returncode == (75 if publication_pending else 0), (result.stdout, result.stderr)
+    assert log.read_text().splitlines() == ["pull", "publication"]
