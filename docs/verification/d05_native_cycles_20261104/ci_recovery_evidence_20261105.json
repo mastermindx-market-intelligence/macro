@@ -1,0 +1,178 @@
+{
+  "target_head": "82c377fb79ec746a0705c3c62a0be0a760cb001a",
+  "donor": "74930f6931773b23072f91590319dc39fe5a7d07",
+  "quote_donor": "5fd9201274c0e92a5250b301e5b8b629ea4afca6",
+  "evidence_files": 27,
+  "evidence_tree": [
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/0f6a98dc7507bb67--hover.png",
+      "sha": "f2e0ae33c7fece5cfaa29e1ca75bde1454ece8d2",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/20d1e559486eaad8--focus.png",
+      "sha": "5c3fe89bbef38014aa09993c1164ec2afcb8b071",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/23452e810b5bdb12--hover.png",
+      "sha": "dd52e2df452aa274fa204368a7e79bdb5b1a15da",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/30b5bd922bf7d719.png",
+      "sha": "1bf0cff48f076f460eaf1ee89e14ece486e3e3b3",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/5b7b7610201ed106.png",
+      "sha": "892cb1fa6fe2ee125bd169f0eb445952e7ecb039",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/5bbfbe51ff527997.png",
+      "sha": "3ec9b394af8e26a08bd524973ba40c0df5ea7590",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/6d896fbee159a76f--hover.png",
+      "sha": "3a808ef685038fa4caea87b5a8c33d4ccb5e0953",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/6ec1674489ea1634.png",
+      "sha": "1ce2ed88a9e3358a462e7c0f89b25ef35f804100",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/836fcbb5eac066c4--focus.png",
+      "sha": "45959acdcb3815e5150dec03636f30d8ad4fd052",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/897ac509de7570a0--hover.png",
+      "sha": "febad8b1f3bd209bd5dff0bce4dde2643192ad88",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/918ca3ced23c5641.png",
+      "sha": "e1d0f1762a85b1f8b40bc1675189c45bb8b1f72b",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/921ea73b560abe88--hover.png",
+      "sha": "590e07e0f83fdc6820ad625d1c05d0b1bae4580a",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/9a5fcc18ffc9affa--hover.png",
+      "sha": "daac17074ffc89cd836e478766034948f74c6b8c",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/9b976022845f9949--focus.png",
+      "sha": "6a0f91d1f4efa99900440e0a493098685cfc624e",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/9bb1c5df2395c234.png",
+      "sha": "f5a133310f0cc845e237eb6da993ebab95ff69a7",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/EVIDENCE.yml",
+      "sha": "dc2ddc166a1954c573d05b63dcb467422ab4efdb",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/a55db9a3cbac2ff6--focus.png",
+      "sha": "c7c18e141362d26fa386c689b94a05ff2797b194",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/b04e0533f8130322.png",
+      "sha": "19cd22ff7861c57da77d13954b655705f747d5a1",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/cb9c3174da840068--focus.png",
+      "sha": "7bb74d59c75d7d1168da811bc8314e0290d50dd4",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/cd51c90767a4c5d8.png",
+      "sha": "8bc7ed096c5446f989c9de5ad22f019047e56cea",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/d84f7fff4ce4e89b--hover.png",
+      "sha": "b506f5d59d079a8e5bd7d5d806f8305307726ebd",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/df3a4da6824370bb--focus.png",
+      "sha": "013a7607d3116a64a7f75145e41438f1e3736fc6",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/dfd0f1331950f369--focus.png",
+      "sha": "f9fc95556a78404d8f6036469df227e51501f641",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/fdc2183f6d199bcb--hover.png",
+      "sha": "10b32d2e19022b3d82a4dfcd12d325809edc7779",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/fe0aadc391312f23--focus.png",
+      "sha": "89f21f0dbfdf13e0dab29f182fb8705f067c8784",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/manifest.json",
+      "sha": "9beadb84666db074bf3bf204073b320bff6262f6",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "mockups/evidence/sector-r41-dossier-component/smells.json",
+      "sha": "b09d103e13a1e745cb219a1875d2a2ac08849fd2",
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "states": {
+    "pages": 1,
+    "states_attempted": 24,
+    "states_captured": 24
+  },
+  "source_assets_equal": true,
+  "visual_guard_errors": [],
+  "capture_scope": "original synthetic component, unchanged CSS and current adopted JS; not new host or production proof"
+}
