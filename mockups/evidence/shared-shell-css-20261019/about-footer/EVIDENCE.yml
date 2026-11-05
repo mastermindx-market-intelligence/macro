@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/landing.css
+manifest: mockups/evidence/shared-shell-css-20261019/about-footer/manifest.json

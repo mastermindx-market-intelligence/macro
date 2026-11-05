@@ -41,11 +41,15 @@ _READ_LAYERS = frozenset({"full", "thin", "none"})
 
 
 def _derivative_tag() -> str:
+    return _derivative_tag_for(EXTRACTOR_VERSION)
+
+
+def _derivative_tag_for(extractor_version: str) -> str:
     payload = json.dumps(
         [
             fulltext.EXTRACTED_TEXT_SCHEMA,
             EXTRACTOR_NAME,
-            EXTRACTOR_VERSION,
+            extractor_version,
             fulltext.SEGMENTER_VERSION,
         ],
         separators=(",", ":"),
@@ -53,20 +57,46 @@ def _derivative_tag() -> str:
     return "v1-" + hashlib.sha256(payload).hexdigest()[:16]
 
 
-DERIVATIVE_TAG = _derivative_tag()
+DERIVATIVE_TAG = _derivative_tag_for(EXTRACTOR_VERSION)
+
+# Explicit opt-in candidate (pdftotext default reading order). Its tag is a
+# pure function of the closed version vocabulary, so the v2 derivative key is
+# distinct from — and immutable alongside — the v1 key for the same revision.
+READING_ORDER_EXTRACTOR_VERSION = fulltext.EXTRACTOR_VERSION_READING_ORDER_V2
+READING_ORDER_DERIVATIVE_TAG = _derivative_tag_for(READING_ORDER_EXTRACTOR_VERSION)
+SUPPORTED_EXTRACTOR_VERSIONS = fulltext.SUPPORTED_EXTRACTOR_VERSIONS
 
 
-def derivative_key(report_id: str, source_pdf_sha256: str) -> str:
+def validate_extractor_version(extractor_version: object) -> str:
+    """Bind an explicit extractor version against the closed vocabulary.
+
+    Raises ValueError on anything unsupported. Callers run this BEFORE any
+    store I/O so an unknown version can never reach a read or write path.
+    """
+    return fulltext.resolve_extractor_version(extractor_version)
+
+
+def derivative_key(
+    report_id: str,
+    source_pdf_sha256: str,
+    *,
+    extractor_version: str = EXTRACTOR_VERSION,
+) -> str:
     """Object key for one revision-bound derivative.
 
-    Raises ValueError on an invalid report id or a sha that is not 64 lowercase
-    hex. This is the only function in the module that raises.
+    ``extractor_version`` defaults to the incumbent v1 tag and must be in the
+    closed supported vocabulary; an unsupported version raises before any key
+    (and therefore any I/O) is built. Raises ValueError on an invalid report id
+    or a sha that is not 64 lowercase hex. This is the only function in the
+    module that raises.
     """
+    version = validate_extractor_version(extractor_version)
     if not corpus.valid_doc_id(report_id):
         raise ValueError("report_id is not a catalog slug")
     if not isinstance(source_pdf_sha256, str) or _SHA_RE.fullmatch(source_pdf_sha256) is None:
         raise ValueError("source_pdf_sha256 must be lowercase sha256")
-    return f"{FULLTEXT_PREFIX}{report_id}/{source_pdf_sha256}/{DERIVATIVE_TAG}.json"
+    tag = DERIVATIVE_TAG if version == EXTRACTOR_VERSION else _derivative_tag_for(version)
+    return f"{FULLTEXT_PREFIX}{report_id}/{source_pdf_sha256}/{tag}.json"
 
 
 def receipt_key(report_id: str) -> str:
@@ -88,9 +118,21 @@ def encode_record(record: Mapping) -> bytes:
     ).encode("utf-8")
 
 
-def decode_record(blob: bytes, report_id: str, source_pdf_sha256: str) -> dict | None:
-    """Return the record only when it is the canonical derivative for this revision."""
+def decode_record(
+    blob: bytes,
+    report_id: str,
+    source_pdf_sha256: str,
+    *,
+    extractor_version: str = EXTRACTOR_VERSION,
+) -> dict | None:
+    """Return the record only when it is the canonical derivative for this revision.
+
+    The bound ``extractor_version`` defaults to the incumbent v1 contract; an
+    explicit supported version accepts only a record stamped with that same
+    version. An unsupported version decodes nothing.
+    """
     try:
+        version = validate_extractor_version(extractor_version)
         if type(blob) is not bytes:
             return None
         parsed = json.loads(blob.decode("utf-8"))
@@ -104,7 +146,7 @@ def decode_record(blob: bytes, report_id: str, source_pdf_sha256: str) -> dict |
             return None
         if parsed.get("extractor_name") != EXTRACTOR_NAME:
             return None
-        if parsed.get("extractor_version") != EXTRACTOR_VERSION:
+        if parsed.get("extractor_version") != version:
             return None
         fulltext._validate_extracted_text(parsed)
         if parsed.get("text_layer_state") not in _READ_LAYERS:
@@ -156,6 +198,29 @@ def load_extracted_text(store, report_id: str, item) -> Mapping | None:
     At most two store operations: the receipt, then that revision's object.
     Never reads a ``.pdf`` key, never runs an extractor, and never lists.
     """
+    return load_extracted_text_version(store, report_id, item)
+
+
+def load_extracted_text_version(
+    store,
+    report_id: str,
+    item,
+    *,
+    extractor_version: str = EXTRACTOR_VERSION,
+) -> Mapping | None:
+    """Load the derivative bound to an explicit supported extractor version.
+
+    Additive opt-in read path. The default binds the incumbent v1 contract and
+    behaves exactly like :func:`load_extracted_text`. The version is validated
+    against the closed vocabulary BEFORE any store I/O, so an unsupported
+    version reads nothing. A v1 reader stays closed to v2 objects and a v2
+    reader stays closed to v1 objects: the stored record must be stamped with
+    the requested version.
+    """
+    try:
+        version = validate_extractor_version(extractor_version)
+    except Exception:
+        return None
     del item
     digest = source_digest(store, report_id)
     if digest is None:
@@ -164,12 +229,15 @@ def load_extracted_text(store, report_id: str, item) -> Mapping | None:
         reader = getattr(store, "get_bytes_strict_bounded", None)
         if not callable(reader):
             return None
-        blob = reader(derivative_key(report_id, digest), FULLTEXT_MAX_BYTES)
+        blob = reader(
+            derivative_key(report_id, digest, extractor_version=version),
+            FULLTEXT_MAX_BYTES,
+        )
     except Exception:
         return None
     if blob is None:
         return None
-    return decode_record(blob, report_id, digest)
+    return decode_record(blob, report_id, digest, extractor_version=version)
 
 
 def _split_derivative_key(key: object) -> tuple[str, str] | None:

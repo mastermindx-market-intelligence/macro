@@ -526,8 +526,8 @@ def test_thesis_monitor_llm_only_row_shows_its_inputs(monkeypatch, tmp_path):
 
 def test_thesis_monitor_llm_row_does_not_claim_heat_decay(monkeypatch, tmp_path):
     """The producer breaks an LLM thesis on lost physical confirmation, too few
-    surfaces OR a heat drop, and does not record which.  Steady heat with
-    physical confirmation lost must not be labelled as heat decay."""
+    surfaces OR a heat drop; a row that carries no broken_reasons record does not
+    say which.  Steady heat with physical confirmation lost must not be labelled as heat decay."""
     fixture_path = tmp_path / "foresight" / "thesis_monitor.json"
     _write_json(fixture_path, {
         "asof": "2026-01-01", "n_broken": 1, "n_weakening": 0,
@@ -672,3 +672,345 @@ def test_measurement_template_hides_broken_block_when_unavailable():
         thesis_monitor_broken=unavailable
     )
     assert "eg-thesis-broken" not in _render_measurement()
+
+
+# ---------------------------------------------------------------------------
+# W17-B-C3 Spec 2: grading-closure "Last graded" column (display-only of
+# row.last_graded_at, already copied at scripts/build_measurement.py:1258).
+# ---------------------------------------------------------------------------
+
+GRADING_CLOSURE_LAST_GRADED_CONTEXT = {
+    "available": True,
+    "generated_at": "2026-10-17T00:00:00Z",
+    "n_ledgers": 2,
+    "n_closed": 1,
+    "n_grader_starved": 1,
+    "n_log_only": 0,
+    "rows": [
+        {
+            "key": "qledger_claims",
+            "path": "data/qledger/claims.jsonl",
+            "n_logged": 246813,
+            "n_graded": 208167,
+            "grader_wired": "True",
+            "verdict": "CLOSED",
+            "starvation": "closed",
+            "starvation_type": "closed",
+            "last_graded_at": "2026-10-16T11:32:33.971947+00:00",
+        },
+        {
+            "key": "stub_forward_log",
+            "path": "data/governance/stub_forward.jsonl",
+            "n_logged": 5,
+            "n_graded": 0,
+            "grader_wired": "False",
+            "verdict": "TIME-STARVED",
+            "starvation": "accruing (time-starved)",
+            "starvation_type": "time",
+            "last_graded_at": None,
+        },
+    ],
+}
+
+
+def _grading_closure_table(html: str) -> str:
+    start = html.index('id="eg-grading-closure"')
+    return html[start:html.index("</table>", start)]
+
+
+def test_grading_closure_last_graded_at_renders():
+    html = _render_measurement(
+        grading_closure=GRADING_CLOSURE_LAST_GRADED_CONTEXT)
+    table = _grading_closure_table(html)
+    assert "Last graded" in table            # EN header
+    assert "\u6700\u8fd1\u8bc4\u5206" in table  # ZH header 最近评分
+    assert "2026-10-16" in table             # date prefix only
+    assert "2026-10-16T11:32:33" not in table  # never the raw timestamp
+    body = table[table.index("<tbody>"):table.index("</tbody>")]
+    row_cells = body.split("<tr>")[1:]
+    assert len(row_cells) == 2
+    assert "None" not in table and "null" not in table
+    assert "2026-10-16" in row_cells[0]      # date lands on the stamped row
+    assert "\u2014" in row_cells[1]          # em dash on the null row
+    assert "None" not in row_cells[1]
+
+
+# ---------------------------------------------------------------------------
+# W17-B-C3 Spec 5: cone-recalibration "Half-width (days)" stat. Display-only
+# of headline.recal_halfwidth_days; skipped entirely when the key is missing.
+# ---------------------------------------------------------------------------
+
+CONE_RECAL_HALFWIDTH_CONTEXT = {
+    "engines": {
+        "sector_cycles": {
+            "headline": {
+                "recal_multiplier": 8.191,
+                "empirical": 0.188,
+                "recal_halfwidth_days": 1484.237,
+            },
+            "forward_only": {"recal_multiplier": 7.657},
+            "overdue_fraction": 0.346,
+            "epoch": {"basis_version": "price_v1", "zz_version": "zz14_v0"},
+        }
+    }
+}
+
+
+def test_cone_recal_halfwidth_days_renders():
+    html = _render_measurement(
+        cone_recalibration=CONE_RECAL_HALFWIDTH_CONTEXT)
+    assert "1484.2" in html
+    assert "1484.237" not in html  # rounded to one decimal
+    assert "Half-width (days)" in html
+    assert "\u534a\u5bbd\uff08\u5929\uff09" in html  # ZH 半宽（天）
+    assert "8.191" in html  # existing headline stat still renders
+
+
+def test_cone_recal_halfwidth_stat_skipped_when_key_missing():
+    ctx = json.loads(json.dumps(CONE_RECAL_HALFWIDTH_CONTEXT))
+    del ctx["engines"]["sector_cycles"]["headline"]["recal_halfwidth_days"]
+    html = _render_measurement(cone_recalibration=ctx)
+    assert "8.191" in html                    # the card still renders
+    assert "Half-width (days)" not in html    # the stat is skipped
+    assert "\u534a\u5bbd\uff08\u5929\uff09" not in html
+    assert "1484.2" not in html
+
+
+# ---------------------------------------------------------------------------
+# 15. LLM overlay pass-through on BROKEN rows (W17 spec 3) + the INTACT
+#     "Still tracked" sibling table (W17 spec 4)
+# ---------------------------------------------------------------------------
+
+def _thesis_fixture(monkeypatch, tmp_path, monitored):
+    fixture_path = tmp_path / "foresight" / "thesis_monitor.json"
+    _write_json(fixture_path, {"schema": "thesis_monitor.v1",
+                               "asof": "2026-10-18", "n_open": 11,
+                               "n_broken": 1, "n_weakening": 0,
+                               "monitored": monitored})
+    monkeypatch.setattr(bm, "THESIS_MONITOR_PATH", fixture_path)
+    return bm.build_thesis_monitor_broken()
+
+
+def test_broken_row_llm_overlay_from_committed_shape(monkeypatch, tmp_path):
+    """The folded overlay keys ride the BROKEN row; the panel renders them."""
+    result = _thesis_fixture(monkeypatch, tmp_path, [{
+        "theme": "data_center_power", "source": "deterministic",
+        "status": "BROKEN", "opened": "2026-08-02",
+        "stage_at_open": "BROADENING (text)",
+        "kill_criteria": [{"kind": "cycle_tripwire", "detail": "dd"}],
+        "criterion_statuses": ["BROKEN"],
+        "llm_status": "INTACT", "llm_heat_at_open": 0.467,
+        "llm_heat_now": 0.467,
+    }])
+    (row,) = result["rows"]
+    assert row["llm_status"] == "INTACT"
+    assert row["llm_heat_at_open"] == 0.467
+    assert row["llm_heat_now"] == 0.467
+    html = _render_measurement(thesis_monitor_broken=result)
+    panel = html.split('id="eg-thesis-broken"', 1)[1].split("eg-footnote", 1)[0]
+    assert "0.467" in panel
+    assert "still tracked" in panel
+    # the producer never records WHICH LLM condition fired — no cause label
+    assert "heat decay" not in panel
+
+
+def test_overlay_words_null_heat_and_missing_heat_guard(monkeypatch, tmp_path):
+    """BROKEN maps to its own EN/ZH word, a null heat renders a dash (never
+    "None"), and a row carrying llm_status without both heats gets no clause."""
+    base = {"source": "deterministic", "status": "BROKEN",
+            "opened": "2026-08-02", "stage_at_open": "BROADENING (text)",
+            "kill_criteria": [{"kind": "cycle_tripwire", "detail": "dd"}],
+            "criterion_statuses": ["BROKEN"]}
+    result = _thesis_fixture(monkeypatch, tmp_path, [
+        dict(base, theme="grid_storage", llm_status="BROKEN",
+             llm_heat_at_open=0.512, llm_heat_now=None),
+        dict(base, theme="optical_links", llm_status="WEAKENING"),
+    ])
+    html = _render_measurement(thesis_monitor_broken=result)
+    panel = html.split('id="eg-thesis-broken"', 1)[1].split("eg-footnote", 1)[0]
+    assert "overlay broken · heat" in panel
+    assert "叠加 已失效" in panel
+    assert "None" not in panel
+    assert "0.512 → —" in panel
+    assert "overlay weakening" not in panel and "叠加 走弱" not in panel
+
+
+def test_intact_rows_from_committed_shape(monkeypatch, tmp_path):
+    """INTACT rows land in intact_rows (file order); rows stays BROKEN-only."""
+    result = _thesis_fixture(monkeypatch, tmp_path, [
+        {"theme": "grid_electrification", "source": "deterministic",
+         "status": "INTACT", "opened": "2026-07-04",
+         "stage_at_open": "BROADENING (text)"},
+        {"theme": "nuclear_power", "source": "deterministic",
+         "status": "INTACT", "opened": "2026-07-04",
+         "stage_at_open": "BROADENING (text)", "llm_status": "BROKEN",
+         "llm_heat_at_open": 0.213, "llm_heat_now": 0.169},
+        {"theme": "space_satellite", "source": "deterministic",
+         "status": "INTACT", "opened": "2026-10-06",
+         "stage_at_open": "BROADENING (text)"},
+        {"theme": "rare_earth_critical_min", "source": "deterministic",
+         "status": "BROKEN", "opened": "2026-06-01",
+         "stage_at_open": "PRECIPICE",
+         "kill_criteria": [{"kind": "k_b", "detail": "b"}],
+         "criterion_statuses": ["BROKEN"]},
+    ])
+    assert [r["theme"] for r in result["intact_rows"]] == [
+        "grid_electrification", "nuclear_power", "space_satellite"]
+    assert [r["theme"] for r in result["rows"]] == ["rare_earth_critical_min"]
+    grid = result["intact_rows"][0]
+    assert grid["opened"] == "2026-07-04"
+    assert grid["stage_at_open"] == "BROADENING (text)"
+    html = _render_measurement(thesis_monitor_broken=result)
+    assert "eg-thesis-intact" in html
+    assert "Still tracked" in html
+    assert "grid_electrification" in html
+    assert "2026-07-04" in html
+
+
+def test_still_tracked_header_hidden_when_intact_rows_empty():
+    """An empty intact_rows list must render no Still tracked header."""
+    ctx = dict(BROKEN_THESIS_CONTEXT, intact_rows=[])
+    html = _render_measurement(thesis_monitor_broken=ctx)
+    assert "eg-thesis-broken" in html
+    assert "Still tracked" not in html
+    assert "仍在跟踪" not in html
+
+
+# ---------------------------------------------------------------------------
+# 16. W20-L1 — the producer records WHICH AI kill condition fired
+#     (broken_reasons / llm_broken_reasons); the reader relays it.
+# ---------------------------------------------------------------------------
+
+def test_w20l1_llm_row_names_recorded_reason(monkeypatch, tmp_path):
+    """An LLM row carrying broken_reasons names that condition, not its inputs."""
+    result = _thesis_fixture(monkeypatch, tmp_path, [{
+        "theme": "fixture_med", "source": "llm", "status": "BROKEN",
+        "heat_at_open": 0.196, "heat_now": 0.137, "n_surfaces_now": 1,
+        "physical_now": False, "opened_asof": "2026-09-30",
+        "kill_criteria": ["t"], "broken_reasons": ["below_quorum"],
+    }])
+    (row,) = result["rows"]
+    assert row["fired"] == [{"kind": "below_quorum", "detail": "1 surface(s) now"}]
+    html = _render_measurement(thesis_monitor_broken=result)
+    panel = html.split('id="eg-thesis-broken"', 1)[1].split("eg-footnote", 1)[0]
+    assert "below_quorum — 1 surface(s) now" in panel
+    assert "llm_inputs" not in panel
+    assert "heat 0.196" not in panel
+
+
+def test_w20l1_llm_row_all_reasons_keep_producer_order(monkeypatch, tmp_path):
+    """Every recorded reason becomes its own fired entry, in list order."""
+    result = _thesis_fixture(monkeypatch, tmp_path, [{
+        "theme": "fixture_all", "source": "llm", "status": "BROKEN",
+        "heat_at_open": 0.5, "heat_now": 0.2, "n_surfaces_now": 1,
+        "physical_now": False, "opened_asof": "2026-09-30",
+        "kill_criteria": ["t"],
+        "broken_reasons": ["physical_lost", "below_quorum", "heat_drop"],
+    }])
+    (row,) = result["rows"]
+    assert row["fired"] == [
+        {"kind": "physical_lost", "detail": "physical now: no"},
+        {"kind": "below_quorum", "detail": "1 surface(s) now"},
+        {"kind": "heat_drop", "detail": "heat 0.5 → 0.2"},
+    ]
+
+
+def test_w20l1_reason_list_degrades_to_inputs(monkeypatch, tmp_path):
+    """Empty/string/garbage/unknown broken_reasons degrade without re-judging."""
+    inputs = "heat 0.196 → 0.137 · 1 surface(s) now · physical now: no"
+    fields = {"source": "llm", "status": "BROKEN", "heat_at_open": 0.196,
+              "heat_now": 0.137, "n_surfaces_now": 1, "physical_now": False,
+              "opened_asof": "2026-09-30", "kill_criteria": ["t"]}
+    result = _thesis_fixture(monkeypatch, tmp_path, [
+        dict(fields, theme="r1", broken_reasons=[]),
+        dict(fields, theme="r2", broken_reasons="below_quorum"),
+        dict(fields, theme="r3", broken_reasons=[None, 7, "", "below_quorum"]),
+        dict(fields, theme="r4", broken_reasons=["new_rule"]),
+    ])
+    rows = result["rows"]
+    assert rows[0]["fired"] == [{"kind": "llm_inputs", "detail": inputs}]
+    assert rows[1]["fired"] == [{"kind": "llm_inputs", "detail": inputs}]
+    assert rows[2]["fired"] == [{"kind": "below_quorum", "detail": "1 surface(s) now"}]
+    assert rows[3]["fired"] == [{"kind": "new_rule", "detail": inputs}]
+
+
+def test_w20l1_overlay_reasons_pass_through_and_render(monkeypatch, tmp_path):
+    """llm_broken_reasons rides the deterministic row only when written (as a
+    list) and the overlay clause names the fired codes, escaped."""
+    base = {"source": "deterministic", "status": "BROKEN",
+            "opened": "2026-08-02", "stage_at_open": "BROADENING (text)",
+            "kill_criteria": [{"kind": "cycle_tripwire", "detail": "dd"}],
+            "criterion_statuses": ["BROKEN"]}
+    result = _thesis_fixture(monkeypatch, tmp_path, [
+        dict(base, theme="w20l1_o1", llm_status="BROKEN",
+             llm_heat_at_open=0.213, llm_heat_now=0.169,
+             llm_broken_reasons=["below_quorum"]),
+        dict(base, theme="w20l1_o2", llm_status="BROKEN",
+             llm_heat_at_open=0.213, llm_heat_now=0.169, llm_broken_reasons="x"),
+        dict(base, theme="w20l1_o3", llm_status="INTACT",
+             llm_heat_at_open=0.4, llm_heat_now=0.4, llm_broken_reasons=[]),
+        dict(base, theme="w20l1_o4", llm_status="BROKEN",
+             llm_heat_at_open=0.3, llm_heat_now=0.3,
+             llm_broken_reasons=["<b>r</b>"]),
+        dict(base, theme="w20l1_o5", llm_status="BROKEN",
+             llm_heat_at_open=0.1),
+    ])
+    assert [r["llm_broken_reasons"] for r in result["rows"][:4]] == [
+        ["below_quorum"], [], [], ["<b>r</b>"]]
+    assert "llm_broken_reasons" not in result["rows"][4]
+    html = _render_measurement(thesis_monitor_broken=result)
+    panel = html.split('id="eg-thesis-broken"', 1)[1].split("eg-footnote", 1)[0]
+    assert "0.213 → 0.169 · fired: below_quorum" in panel
+    assert "· 触发：below_quorum" in panel
+    assert panel.count("fired:") == 2  # o1 and o4 only
+    # strengthening for m14: o5 lacks llm_heat_now, so only o1..o4 render a
+    # clause; a guard missing the 'llm_heat_now' in row check would add o5.
+    assert panel.count("overlay ") == 4
+    assert "&lt;b&gt;r&lt;/b&gt;" in panel
+    assert "<b>r</b>" not in panel
+
+
+def test_w20l1_intact_row_carries_overlay(monkeypatch, tmp_path):
+    """The AI overlay rides INTACT rows too, so disagreement stays visible."""
+    result = _thesis_fixture(monkeypatch, tmp_path, [
+        {"theme": "grid_electrification", "source": "deterministic",
+         "status": "INTACT", "opened": "2026-07-04",
+         "stage_at_open": "BROADENING (text)"},
+        {"theme": "nuclear_power", "source": "deterministic",
+         "status": "INTACT", "opened": "2026-07-04",
+         "stage_at_open": "BROADENING (text)", "llm_status": "BROKEN",
+         "llm_heat_at_open": 0.213, "llm_heat_now": 0.169,
+         "llm_broken_reasons": ["below_quorum"]},
+    ])
+    keys = ("llm_status", "llm_heat_at_open", "llm_heat_now", "llm_broken_reasons")
+    nuclear = result["intact_rows"][1]
+    assert nuclear["llm_status"] == "BROKEN"
+    assert nuclear["llm_heat_at_open"] == 0.213
+    assert nuclear["llm_heat_now"] == 0.169
+    assert nuclear["llm_broken_reasons"] == ["below_quorum"]
+    assert not any(k in result["intact_rows"][0] for k in keys)
+    html = _render_measurement(thesis_monitor_broken=result)
+    panel = html.split('id="eg-thesis-intact"', 1)[1].split("</table>", 1)[0]
+    assert "AI overlay" in panel and "AI 叠加" in panel
+    assert "overlay broken · heat" in panel
+    assert "0.213 → 0.169 · fired: below_quorum" in panel
+    assert "叠加 已失效" in panel
+    (grid_seg,) = [s for s in panel.split("<tr>") if "grid_electrification" in s]
+    assert "—" in grid_seg
+    assert "overlay" not in grid_seg
+
+
+def test_w20l1_footnote_and_docstring_name_reasons():
+    """The footnote and the reader docstring name the recorded reason codes."""
+    html = _render_measurement(thesis_monitor_broken=BROKEN_THESIS_CONTEXT)
+    note = html.split('id="eg-thesis-broken"', 1)[1]
+    note = note.split("eg-footnote", 1)[1].split("</div>", 1)[0]
+    assert "not which one fired" not in note
+    assert "不指明具体触发哪一项" not in note
+    en, zh = note.split('class="l-zh"')
+    for token in ("physical_lost", "below_quorum", "heat_drop", "llm_inputs"):
+        assert token in en
+        assert token in zh
+    doc = bm.build_thesis_monitor_broken.__doc__
+    assert "broken_reasons" in doc
+    assert "does not\n    record which" not in doc

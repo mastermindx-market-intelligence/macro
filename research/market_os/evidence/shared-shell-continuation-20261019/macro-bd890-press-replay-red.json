@@ -1,0 +1,163 @@
+{
+  "started_at": "2026-10-20T23:22:28.837861+00:00",
+  "source_head": "bd89047e4e403a93183c6a4763274e09acfdd044",
+  "scope": "Actual existing estate owner in scratch only; compare press projection without invoking emit or writing tracked output.",
+  "source_sha256": {
+    "scripts/run_press.py": "46e7761acbfb0f8cd8fe10c8ac51f18d196a651a0ccc023b8dcf77a1208171d2",
+    "scripts/build_free_content.py": "4916b1164c615d81bc9f39ed69a84caa7963e5672137fc36eaf3afef5282bee8",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+    "lib/pages.py": "ee50b30dc5cd990e6c07ec433422f1032379d6857e4cd0586ee4de65f3b6c1a5",
+    "scripts/optimize_assets.py": "1c6ada51deb3be91f7b621bb6c1d3c52f373c6424c346ec6563ffb7b97cf26be"
+  },
+  "changed": [
+    {
+      "path": "blog/compound-growth-for-traders.html",
+      "built_bytes": 38207,
+      "built_sha256": "2280683b5fa7b4d194c27a10837bf858af0f96577817790aed86e3aa780c9ebb",
+      "committed_bytes": 37911,
+      "committed_sha256": "392af711a64ae70401d63cc9ea3e5e54531f70d87bc7b5b260d9c5496aff866c",
+      "only_owned_shell_block": true,
+      "built_blocks": 1,
+      "committed_blocks": 0,
+      "canonical_owner_projection_equal": true,
+      "projected_diff": {
+        "file": "blog--compound-growth-for-traders.html.diff",
+        "bytes": 745,
+        "sha256": "37740ca1ecbe5c3b18a3bf6dd2d59f3d851a99f04cc723613ac5ff1105f620c3"
+      }
+    },
+    {
+      "path": "blog/conduent-settlement-has-gross-fund-open-net-cost.html",
+      "built_bytes": 33244,
+      "built_sha256": "85befcb6f1b9c4001273baa149129177f5e2d6dad9ea4f8a45aec813496c04e9",
+      "committed_bytes": 32866,
+      "committed_sha256": "d666cf1347955f35c4c7f49f3e7d0f2b999022ed07545d77fd5483e01654e469",
+      "only_owned_shell_block": true,
+      "built_blocks": 1,
+      "committed_blocks": 0,
+      "canonical_owner_projection_equal": true,
+      "projected_diff": {
+        "file": "blog--conduent-settlement-has-gross-fund-open-net-cost.html.diff",
+        "bytes": 787,
+        "sha256": "df92723fe694093f123f7cc15d4653a4ed51c443f2dbaf1d9d497b908679d37e"
+      }
+    },
+    {
+      "path": "blog/congress-trades-are-not-realtime-signals.html",
+      "built_bytes": 37494,
+      "built_sha256": "96b27b6067db868f38a559b53a8806940180ea5360f728bdf2d3eeb519c2b616",
+      "committed_bytes": 37198,
+      "committed_sha256": "c1cbe9b7031685fffc3673058545c997222e330b38d7539d406da6a26edfd886",
+      "only_owned_shell_block": true,
+      "built_blocks": 1,
+      "committed_blocks": 0,
+      "canonical_owner_projection_equal": true,
+      "projected_diff": {
+        "file": "blog--congress-trades-are-not-realtime-signals.html.diff",
+        "bytes": 771,
+        "sha256": "f5dc2c818ae939c6c6a635a32ae1dbc9a6d5cf9b59d38c0d4bf89a978605711f"
+      }
+    },
+    {
+      "path": "blog/how-to-keep-a-trading-journal.html",
+      "built_bytes": 37206,
+      "built_sha256": "914632868847b7dfdc32eb4a8d88084d53ef2917b375c426d198b6aa33006103",
+      "committed_bytes": 36910,
+      "committed_sha256": "509109520d0ed7c6a42fdc7dfe58c5bbec0d2bef10fae601dbec7275298f8465",
+      "only_owned_shell_block": true,
+      "built_blocks": 1,
+      "committed_blocks": 0,
+      "canonical_owner_projection_equal": true,
+      "projected_diff": {
+        "file": "blog--how-to-keep-a-trading-journal.html.diff",
+        "bytes": 749,
+        "sha256": "61640e1d04715284c3ba161334fba8735e3cf0312e7c117e9c538cf0b3dabc08"
+      }
+    },
+    {
+      "path": "blog/index.html",
+      "built_bytes": 30811,
+      "built_sha256": "24a3cb8ed5be1c90caf698de562d49fa676bfb3afa53dc483a89709ef4db1df6",
+      "committed_bytes": 30515,
+      "committed_sha256": "eaa0c1902683e198d56c60f047f80295981d01bac4bde08e94e9f284fbdf85e8",
+      "only_owned_shell_block": true,
+      "built_blocks": 1,
+      "committed_blocks": 0,
+      "canonical_owner_projection_equal": true,
+      "projected_diff": {
+        "file": "blog--index.html.diff",
+        "bytes": 701,
+        "sha256": "80e77a8e06065602ee05ae624a53b01de5e183636a3c88f5b99ab77b0a98f00b"
+      }
+    },
+    {
+      "path": "blog/the-math-of-losing-streaks.html",
+      "built_bytes": 37451,
+      "built_sha256": "4c34534751358bfe3c4a489aa44eccb16f55b8fe1d5361e4bcd69a3cba23ab71",
+      "committed_bytes": 37155,
+      "committed_sha256": "f9aeae2e0e0a4c0b96b431d74098b5149a19806f78505e5881b91005b9300f7d",
+      "only_owned_shell_block": true,
+      "built_blocks": 1,
+      "committed_blocks": 0,
+      "canonical_owner_projection_equal": true,
+      "projected_diff": {
+        "file": "blog--the-math-of-losing-streaks.html.diff",
+        "bytes": 743,
+        "sha256": "4ef265e0ccce779092362d8899e2a629e6eea7b7a6d6f84b694b219cab34bfbe"
+      }
+    },
+    {
+      "path": "blog/usda-nass-harvest-data-show-uneven-october-pace.html",
+      "built_bytes": 33281,
+      "built_sha256": "8da7aed3705369738d7a84f0f7001b76fc8fedb5aade2013089d733ee1028d49",
+      "committed_bytes": 32903,
+      "committed_sha256": "b06da362c91f6415530396956a990281b28d2e7af02a95dc07b02981ce5aed60",
+      "only_owned_shell_block": true,
+      "built_blocks": 1,
+      "committed_blocks": 0,
+      "canonical_owner_projection_equal": true,
+      "projected_diff": {
+        "file": "blog--usda-nass-harvest-data-show-uneven-october-pace.html.diff",
+        "bytes": 785,
+        "sha256": "395c03e9e425d1cf164452dfdc94034e4cdd815510db78b2f397aad8ae1badc0"
+      }
+    },
+    {
+      "path": "blog/why-a-50-percent-loss-needs-a-100-percent-gain.html",
+      "built_bytes": 36778,
+      "built_sha256": "e0cd8751c316095c091c371e5ff285b7e99c72fac99b70e95cda2fb348c415ac",
+      "committed_bytes": 36482,
+      "committed_sha256": "9d94702d95675209ed9e565582951fa413d3af8a907ca0765472d90c83a78f34",
+      "only_owned_shell_block": true,
+      "built_blocks": 1,
+      "committed_blocks": 0,
+      "canonical_owner_projection_equal": true,
+      "projected_diff": {
+        "file": "blog--why-a-50-percent-loss-needs-a-100-percent-gain.html.diff",
+        "bytes": 783,
+        "sha256": "a72a6dfd1425139aeb148659e9e0fab1d03bcebd27f53df2c1d77300425b0be1"
+      }
+    },
+    {
+      "path": "blog/win-rate-is-overrated.html",
+      "built_bytes": 37359,
+      "built_sha256": "2be085eda542795161ea3089b80f1c5f7c784603038c518f223c5f461f1ad7a8",
+      "committed_bytes": 37063,
+      "committed_sha256": "9945e7161c9c2aa645eb5f473eacf327808543ab838764d859e15a6b9efd9073",
+      "only_owned_shell_block": true,
+      "built_blocks": 1,
+      "committed_blocks": 0,
+      "canonical_owner_projection_equal": true,
+      "projected_diff": {
+        "file": "blog--win-rate-is-overrated.html.diff",
+        "bytes": 733,
+        "sha256": "f6fd49b51b94ff9f203c36bb75b6414b99319134786b7cacf61180b764396c25"
+      }
+    }
+  ],
+  "finished_at": "2026-10-20T23:22:30.031008+00:00",
+  "tracked_blog_unchanged": true,
+  "worktree_clean": true,
+  "head_unchanged": true,
+  "seeded_assets": 187
+}
