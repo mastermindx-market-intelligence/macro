@@ -1,0 +1,97 @@
+{
+  "kind": "D08A_SOURCE_CONFORMANCE_SELF_QA",
+  "observed_at_utc": "2026-11-04T03:21:11.144Z",
+  "scope": "Document/source compatibility assertions only. No new unit, browser, provider, Paper visual or product test execution.",
+  "checks": [
+    {
+      "id": "shared_version",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "Frozen common version is unchanged."
+    },
+    {
+      "id": "logical_not_wire",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "The interface is a logical owner contract, not runtime admission."
+    },
+    {
+      "id": "a_to_b_shape",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "A emits observation/returnContext; B resolves node/cohort."
+    },
+    {
+      "id": "source_list_required",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "Required provenance is retained without changing identity keys."
+    },
+    {
+      "id": "b_exact_blob",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "Latest B contract matches its original receiving decision blob."
+    },
+    {
+      "id": "b_source_provenance",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "B explicitly addresses source-list meaning and full-list ambiguity."
+    },
+    {
+      "id": "c_existing_source_only",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "C admits the existing source-resolution path only."
+    },
+    {
+      "id": "shortlist_current_blob",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "Current protected consumer retains the characterized shortlist module."
+    },
+    {
+      "id": "pin_key_separate_hot_view",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "Identity key and optional hot-list provenance remain separate."
+    },
+    {
+      "id": "locate_not_temporal",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "The current helper performs identity presence/root-filter lookup, not temporal-origin validation."
+    },
+    {
+      "id": "access_safe_return",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "Protected observation payload is excluded from transient return metadata."
+    },
+    {
+      "id": "prior_head_lease",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "Additive publication starts from the existing D08A head."
+    },
+    {
+      "id": "paper_exact_read",
+      "result": "PASS",
+      "method": "Exact source/metadata readback and comparison",
+      "note": "Exact B reference was read on the existing carrier; no A write/admission inferred."
+    }
+  ],
+  "passed": 13,
+  "failed": 0,
+  "existing_tests_rerun": false,
+  "formal_review": false,
+  "optional_review_wait": false,
+  "protected_release_gates_unchanged": true,
+  "original_39_files": "No predecessor path is supplied to the additive tree mutation; exact post-write comparison is recorded in the publishing PR/return receipt.",
+  "new_artifacts": [
+    "CONSUMPTION.md",
+    "EVIDENCE.json",
+    "SELF_QA.json"
+  ]
+}

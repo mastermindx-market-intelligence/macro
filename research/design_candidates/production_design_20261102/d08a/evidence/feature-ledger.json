@@ -1,0 +1,561 @@
+{
+  "scope": "D08A",
+  "counts": {
+    "IMPROVE": 20,
+    "RETAIN": 32,
+    "RELOCATE": 1,
+    "BLOCKED_DATA": 2
+  },
+  "items": [
+    {
+      "id": "F01",
+      "capability": "Native route/category/view navigation",
+      "baseline": "OptionsWorkspace/optionsIa",
+      "disposition": "IMPROVE",
+      "successor": "Existing D0815-pane hierarchy,9A views and all aliases; accessible phone view selection",
+      "owner": "A/D08",
+      "evidence": "B01,B08",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F02",
+      "capability": "Desk qualified feed and NEW/SCORE ordering",
+      "baseline": "FlowDeskView/FeedPane",
+      "disposition": "IMPROVE",
+      "successor": "One principal feed with source grain, stale state and stable selection",
+      "owner": "A",
+      "evidence": "B05",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F03",
+      "capability": "Desk watchlist and active-root shortcuts",
+      "baseline": "FlowDeskView/WatchlistRail",
+      "disposition": "RETAIN",
+      "successor": "Existing watchlist owner and deliberate add/select actions; no auto-add on inspect",
+      "owner": "A/current watchlist owner",
+      "evidence": "B05",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F04",
+      "capability": "Desk heuristic score/tier/component breakdown",
+      "baseline": "FeedPane/InspectorPane",
+      "disposition": "RETAIN",
+      "successor": "Original components, missingness and methodology one disclosure away; no profitability claim",
+      "owner": "A/source",
+      "evidence": "B05",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F05",
+      "capability": "Desk elite/whale/0DTE/sweep/filter controls",
+      "baseline": "FeedPane/FiltersPanel",
+      "disposition": "IMPROVE",
+      "successor": "Same predicates in accessible filter disclosure; long-tail filters remain available",
+      "owner": "A",
+      "evidence": "Source",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F06",
+      "capability": "Desk flow gauge and unsigned call/put coverage",
+      "baseline": "FlowGauge/flowPrintInspector",
+      "disposition": "RETAIN",
+      "successor": "Compact support object; call/put premium, unknown coverage and denominator preserved",
+      "owner": "A",
+      "evidence": "B05",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F07",
+      "capability": "Desk radar and root baseline activity",
+      "baseline": "RadarStrip/feed.names",
+      "disposition": "IMPROVE",
+      "successor": "Neutral activity terminology, original baseline/n_obs; root filter separate",
+      "owner": "A",
+      "evidence": "B05",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F08",
+      "capability": "Desk chain heat/campaign detail",
+      "baseline": "FlowDeskView chainheat",
+      "disposition": "RETAIN",
+      "successor": "Independent source receipt and retry; failure never no-campaign claim",
+      "owner": "A/source",
+      "evidence": "B05",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F09",
+      "capability": "Desk enrichment/detections and full print inspector",
+      "baseline": "InspectorPane/flowPrintInspector",
+      "disposition": "RETAIN",
+      "successor": "Original row usable without enrichment; missing quote/conditions/terms explicit",
+      "owner": "A",
+      "evidence": "Source",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F10",
+      "capability": "Desk tutorial and workflow progress guide",
+      "baseline": "TutorialOverlay/OptionsWorkflowGuide",
+      "disposition": "IMPROVE",
+      "successor": "Optional close/revisit Guide; preserve lessons/progress without blocking scan",
+      "owner": "A",
+      "evidence": "B05",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F11",
+      "capability": "Tape11 visible fields",
+      "baseline": "OptionsHubView",
+      "disposition": "IMPROVE",
+      "successor": "All11 reachable; phone contract identity visible and full row detail",
+      "owner": "A",
+      "evidence": "B01,B08",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F12",
+      "capability": "Tape index/sector/root filtering",
+      "baseline": "OptionsHubView",
+      "disposition": "RETAIN",
+      "successor": "Exact current filters, clear active chips and applicable universe",
+      "owner": "A",
+      "evidence": "B01",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F13",
+      "capability": "Tape premium/DTE/moneyness/side/flag predicates",
+      "baseline": "optionsTapeView/OptionsHubView",
+      "disposition": "RELOCATE",
+      "successor": "Phone advanced filters move to named sheet; desktop compact toolbar; no predicate removal",
+      "owner": "A",
+      "evidence": "B01,B08",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F14",
+      "capability": "Tape presets and sorting",
+      "baseline": "optionsTapeView/OptionsHubView",
+      "disposition": "RETAIN",
+      "successor": "Existing defaults/codec/order; semantic source rank shown",
+      "owner": "A",
+      "evidence": "B01",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F15",
+      "capability": "Tape biggest/repeat highlights",
+      "baseline": "OptionsHubView",
+      "disposition": "IMPROVE",
+      "successor": "Retain jumps with aggregate/event wording and repeat meaning",
+      "owner": "A",
+      "evidence": "B01",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F16",
+      "capability": "Tape root drill summary",
+      "baseline": "OptionsHubView setDrillTicker",
+      "disposition": "IMPROVE",
+      "successor": "Explicit Filter to root action retains current drill; Inspect becomes separate",
+      "owner": "A",
+      "evidence": "B02",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F17",
+      "capability": "Tape progressive rendering and full filtered export",
+      "baseline": "OptionsHubView/optionsCsv",
+      "disposition": "RETAIN",
+      "successor": "Bounded render;30-column CSV uses full matching array and source receipt",
+      "owner": "A",
+      "evidence": "B01",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F18",
+      "capability": "Tape saved screens",
+      "baseline": "OptionsTapeSavedViews/optionsTapeView",
+      "disposition": "RETAIN",
+      "successor": "Existing local v1 codec,20-item cap, storage failure; clearly browser-local",
+      "owner": "A",
+      "evidence": "B01",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F19",
+      "capability": "Tape share view",
+      "baseline": "optionsTapeView",
+      "disposition": "RETAIN",
+      "successor": "Existing supported filter URL; no market snapshot/protected row embedded",
+      "owner": "A/D08",
+      "evidence": "B01",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F20",
+      "capability": "Tide cumulative chart and session submode",
+      "baseline": "OptionsHubView tide/dte",
+      "disposition": "RETAIN",
+      "successor": "Primary time-series object, rebase/window/gaps, table alternative",
+      "owner": "A/source",
+      "evidence": "Source; live loading only",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F21",
+      "capability": "0DTE event dashboard",
+      "baseline": "OptionsFlowBoardView/optionsFlowBoards",
+      "disposition": "IMPROVE",
+      "successor": "Flag plus source-session/expiry qualification; actual expiry and aggregate counts",
+      "owner": "A/source",
+      "evidence": "B03",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F22",
+      "capability": "Largest events dashboard",
+      "baseline": "OptionsFlowBoardView/optionsFlowBoards",
+      "disposition": "IMPROVE",
+      "successor": "Premium/time/id ordering, coalesced grain; reuse strong phone cards",
+      "owner": "A",
+      "evidence": "B09",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F23",
+      "capability": "Board summaries and filters",
+      "baseline": "OptionsFlowBoardView",
+      "disposition": "RETAIN",
+      "successor": "Events/prints/contracts/roots/premium distinct; root/right/side filters and display-limit disclosure",
+      "owner": "A",
+      "evidence": "B03,B09",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F24",
+      "capability": "Tickers root list/search and context",
+      "baseline": "OptionsHubView ticker",
+      "disposition": "RETAIN",
+      "successor": "Exact-root request generation; independently dated metrics and source receipts",
+      "owner": "A/D08B",
+      "evidence": "B10",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F25",
+      "capability": "Screener Top Premium",
+      "baseline": "optionsScreener top_prem",
+      "disposition": "RETAIN",
+      "successor": "Current rank/columns/source, exact filter/export array",
+      "owner": "A",
+      "evidence": "B04",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F26",
+      "capability": "Screener Unusual Activity",
+      "baseline": "optionsScreener unusual_z",
+      "disposition": "IMPROVE",
+      "successor": "Absolute z ranking with signed value and above/below-baseline explanation",
+      "owner": "A/source",
+      "evidence": "Source",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F27",
+      "capability": "Screener Volume > OI",
+      "baseline": "optionsScreener fresh",
+      "disposition": "IMPROVE",
+      "successor": "Volume > prior OI, event count/premium; no recency/opening claim",
+      "owner": "A/source",
+      "evidence": "B04",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F28",
+      "capability": "Screener OI builds/changes",
+      "baseline": "optionsScreener doi",
+      "disposition": "IMPROVE",
+      "successor": "Signed OI difference, absolute rank, report dates; discoverable unavailable source",
+      "owner": "A/source",
+      "evidence": "Source; absent chip live",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F29",
+      "capability": "Screener0DTE Heavy",
+      "baseline": "optionsScreener zerodte",
+      "disposition": "IMPROVE",
+      "successor": "Source-session flagged share with explicit denominator and unknown for zero denominator",
+      "owner": "A/source",
+      "evidence": "B04",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F30",
+      "capability": "Screener Hot Contracts",
+      "baseline": "optionsScreener hot",
+      "disposition": "IMPROVE",
+      "successor": "By-premium/by-volume source lists, reference close, unavailable reason",
+      "owner": "A/source",
+      "evidence": "Source; absent chip live",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F31",
+      "capability": "Screener filter applicability/sort/CSV",
+      "baseline": "optionsScreener/optionsCsv",
+      "disposition": "RETAIN",
+      "successor": "No sector filter on OI/hot;38-column full filtered export; honest null sorting",
+      "owner": "A",
+      "evidence": "Source",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F32",
+      "capability": "Exact contract shortlist and comparison",
+      "baseline": "optionsContractShortlist",
+      "disposition": "RETAIN",
+      "successor": "2–4 qualified pins with source/list/session/terms; exact-row return",
+      "owner": "A/B/C",
+      "evidence": "Source",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F33",
+      "capability": "Statistics root selection and prospective population",
+      "baseline": "OptionsStatisticsView/optionsObservedStatistics",
+      "disposition": "RETAIN",
+      "successor": "Independent decoded producer snapshot; no Tape recomputation",
+      "owner": "A/source",
+      "evidence": "B06",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F34",
+      "capability": "Statistics right/location/venue partitions",
+      "baseline": "optionsObservedStatistics",
+      "disposition": "RETAIN",
+      "successor": "Exact reconciled counts, UNKNOWN and typed venue codes, no intent/market-share inference",
+      "owner": "A/source",
+      "evidence": "B06",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F35",
+      "capability": "Statistics coverage/time/exclusions/expanded venues",
+      "baseline": "OptionsStatisticsView",
+      "disposition": "RETAIN",
+      "successor": "Observed and trade windows, acquisition, qualified premium and exclusions remain visible",
+      "owner": "A/source",
+      "evidence": "B06",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F36",
+      "capability": "Prophet Macro Plans",
+      "baseline": "ProphetLanesView/ProphetView",
+      "disposition": "RETAIN",
+      "successor": "Nightly factor geometry, forward ledger, source model-close and original details",
+      "owner": "A/incumbent",
+      "evidence": "B07",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F37",
+      "capability": "Prophet Options Alpha",
+      "baseline": "OptionsAlphaView",
+      "disposition": "RETAIN",
+      "successor": "Candidate methodology/readiness and separately labeled measured observations",
+      "owner": "A/incumbent",
+      "evidence": "Source",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F38",
+      "capability": "Prophet operator Issue Desk",
+      "baseline": "OptionsIssueDeskView",
+      "disposition": "RETAIN",
+      "successor": "Separate operator gate, proposal revision, explicit review receipt/idempotency; no audit mutation",
+      "owner": "Incumbent operator",
+      "evidence": "Source",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F39",
+      "capability": "Public five-task navigation and deep links",
+      "baseline": "options.html.j2",
+      "disposition": "RETAIN",
+      "successor": "Brief/Flow/Scanner/Ticker/Leaders with current fragment/query forms",
+      "owner": "A/D08/#10494",
+      "evidence": "Source/Paper",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F40",
+      "capability": "Public dated Daily Brief/prior research",
+      "baseline": "options.html.j2/build_options_command.py",
+      "disposition": "IMPROVE",
+      "successor": "Per-module dates, unavailable last-session brief, earlier research kept",
+      "owner": "A/#10494",
+      "evidence": "Paper6Y1Q-0",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F41",
+      "capability": "Public dealer-level/index/payoff context",
+      "baseline": "options.html.j2",
+      "disposition": "RETAIN",
+      "successor": "Estimated floor/flip/ceiling and own dates; model interpretation separated from prints",
+      "owner": "A/B/C/#10494",
+      "evidence": "Paper6Y1Q-0",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F42",
+      "capability": "Public sector premium and Tide history",
+      "baseline": "options.html.j2 flow_desk",
+      "disposition": "IMPROVE",
+      "successor": "Separate named populations/dates with actionable scan entry",
+      "owner": "A/D09/#10494",
+      "evidence": "Paper6YFM-0",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F43",
+      "capability": "Public ETF share-change estimates",
+      "baseline": "options.html.j2 flow",
+      "disposition": "RETAIN",
+      "successor": "Estimated share-change basis, source dates and limits; no transaction-flow fiction",
+      "owner": "A/D09/#10494",
+      "evidence": "Paper6YFM-0",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F44",
+      "capability": "Public theme/cohort grouping",
+      "baseline": "flowdata/cohorts.json optional",
+      "disposition": "BLOCKED_DATA",
+      "successor": "Keep compact unavailable entry until actual qualified source; other Flow modules usable",
+      "owner": "Existing public producer",
+      "evidence": "Paper6YFM-0",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F45",
+      "capability": "Public Scanner7 presets/ranges",
+      "baseline": "options.html.j2/build_options_screener.py",
+      "disposition": "RETAIN",
+      "successor": "7presets,10range fields plus flip bound; distinct underlying population",
+      "owner": "A/#10494",
+      "evidence": "Source",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F46",
+      "capability": "Public Scanner column groups and sorting",
+      "baseline": "options.html.j2",
+      "disposition": "IMPROVE",
+      "successor": "Overview/flow/positioning fields, active sort, own row date/relative row lag",
+      "owner": "A/#10494",
+      "evidence": "Source",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F47",
+      "capability": "Public Ticker optional source joins",
+      "baseline": "gex/flow/session per root",
+      "disposition": "IMPROVE",
+      "successor": "Independent errors/dates, generation guard, root exact; coordinate incumbent race repair",
+      "owner": "A/B/#10494",
+      "evidence": "Source",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F48",
+      "capability": "Public Leaders ranking/context",
+      "baseline": "flowleaders/leaders.json",
+      "disposition": "RETAIN",
+      "successor": "Original universe/date/source and public destination",
+      "owner": "A/#10494",
+      "evidence": "Source",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F49",
+      "capability": "Public legacy screener redirect",
+      "baseline": "options_screener.html.j2",
+      "disposition": "RETAIN",
+      "successor": "Replace into /options.html#scanner; same public access",
+      "owner": "A/D08/F03",
+      "evidence": "Source",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F50",
+      "capability": "Public recovery/open-original path",
+      "baseline": "beta wrapper/public route",
+      "disposition": "IMPROVE",
+      "successor": "Explicit host/load failure and permitted retry; original access proof required",
+      "owner": "Host owner/A",
+      "evidence": "B12",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F51",
+      "capability": "Exposure/surface/volatility sibling access",
+      "baseline": "D08 native hierarchy",
+      "disposition": "RETAIN",
+      "successor": "D08B owns5views; A transfers qualified observation/return, no sibling redesign",
+      "owner": "D08B",
+      "evidence": "D08 contract",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F52",
+      "capability": "Structure/planning sibling access",
+      "baseline": "D08 native hierarchy",
+      "disposition": "RETAIN",
+      "successor": "D08C owns actual Plan and leg qualification; no aggregate-to-plan shortcut",
+      "owner": "D08C",
+      "evidence": "D08 contract",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F53",
+      "capability": "Futures/replay separate access",
+      "baseline": "/options/futures and existing codecs",
+      "disposition": "RETAIN",
+      "successor": "D08D closed grammar, instrument and distribution authority, safe origin return",
+      "owner": "D08D",
+      "evidence": "D08 contract",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F54",
+      "capability": "Theme/language/zoom and workflow guide",
+      "baseline": "Existing shell/preferences/page viewport",
+      "disposition": "RETAIN",
+      "successor": "Current owner preferences,EN/ZH,light/dark, user zoom and progress",
+      "owner": "F01/F02/A",
+      "evidence": "Source/live",
+      "review": "Source candidate; reference acceptance held"
+    },
+    {
+      "id": "F55",
+      "capability": "Research save/watch continuation",
+      "baseline": "D08 saveIntent/Investigation",
+      "disposition": "BLOCKED_DATA",
+      "successor": "Draft-only until D23 owner protocol admitted; local screen save remains usable",
+      "owner": "D23/D08C",
+      "evidence": "D08 contract",
+      "review": "Source candidate; reference acceptance held"
+    }
+  ]
+}
