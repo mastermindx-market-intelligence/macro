@@ -534,6 +534,34 @@ def test_business_depth_breadth_caution_keeps_original_source() -> None:
         f'<main><p>{reading["en"]}</p><p>{reading["zh"]}</p></main>') == []
 
 
+def test_business_contradiction_diagnostic_uses_reviewed_pair_without_mutating_source() -> None:
+    """The real source's breadth/depth alert has reviewed copy, not a fallback."""
+    import json
+    from copy import deepcopy
+    from lib import macro_suite_view
+    from lib.macro_suite_labels import PLAIN_FALLBACK, lookup_plain_producer
+
+    path = DATA_ROOT / "workspaces" / "business_activity" / "US" / "latest.json"
+    if not path.is_file():
+        pytest.skip("business_activity source is sparse-omitted")
+    snapshot = json.loads(path.read_text(encoding="utf-8"))
+    original = deepcopy(snapshot)
+    raw = snapshot["availability"]["contradiction"]
+    assert raw["present"] is True and raw["kind"] == "depth_breadth_divergence"
+    expected = lookup_plain_producer(raw["en"])
+    assert expected is not None and expected != PLAIN_FALLBACK
+
+    context = macro_suite_view._context(snapshot, BUILT_AT)
+    rendered = context["contradiction"]["text"]
+    assert rendered == expected
+    assert "not deep enough to confirm recession risk" in rendered["en"]
+    assert "广度与深度必须同时达到各自阈值" in rendered["zh"]
+    diagnostics = macro_suite_view._diagnostics(snapshot, context, {}, {})
+    assert diagnostics[0]["title"]["en"] == "Contradictory signals"
+    assert diagnostics[0]["body"] == expected
+    assert snapshot == original  # source truth is never rewritten for customer copy
+
+
 def test_labor_coverage_refusal_is_plain_without_claiming_neutral() -> None:
     from html import escape
     from lib.macro_suite_labels import PLAIN_FALLBACK, apply_plain_producer

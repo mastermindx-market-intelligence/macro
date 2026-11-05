@@ -135,10 +135,15 @@ def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
     contradiction = availability.get("contradiction") or {}
     contradiction_view = None
     if contradiction.get("present"):
+        # The owner supplies full source prose, including machine-language rules.
+        # Apply the same reviewed customer copy as its implication ribbon; do not
+        # mutate or relabel the original contradiction in the owner snapshot.
+        original_text = _bilingual(contradiction) or _pair("Contradiction present", "存在矛盾")
+        customer_text, _original = L.apply_plain_producer(original_text)
         contradiction_view = {
             "kind": L.label("contradiction_kind", contradiction.get("kind")) if contradiction.get("kind") else None,
             "kind_raw": contradiction.get("kind"),
-            "text": _bilingual(contradiction) or _pair("Contradiction present", "存在矛盾"),
+            "text": customer_text or _pair("Contradiction present", "存在矛盾"),
             "components": list(contradiction.get("components") or []),
         }
 
