@@ -27,6 +27,7 @@ import scripts.merge_on_green as MOG
 
 ROOT = Path(__file__).resolve().parents[1]
 REAL_IN_FLIGHT_PR_PROOFS = MOG.in_flight_pr_proofs
+REAL_SHARED_POOL_CENSUS = MOG.shared_pool_census
 REAL_REFRESH_LEASE_RESERVATION_COUNT = MOG.refresh_lease_reservation_count
 REAL_PREPARE_REFRESH_LEASE = MOG.prepare_refresh_lease
 REAL_SERIALIZED_REFRESH_AUTHORITY = MOG.serialized_refresh_authority
@@ -74,6 +75,10 @@ def _no_unstubbed_http(monkeypatch):
     # The repo-wide Actions census is another main()-only read. Healthy/idle is the
     # neutral default; tests about global refresh backpressure override it.
     monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 0)
+    # The adaptive-cap census is another main()-only read. Its neutral default is
+    # "unreadable" (the flat cap of 8), so every test written against the flat cap
+    # keeps its numbers; tests about the adaptive cap override it.
+    monkeypatch.setattr(MOG, "shared_pool_census", lambda *_a: None)
     monkeypatch.setattr(MOG, "refresh_lease_reservation_count", lambda *_a: 0)
     monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a: True)
     monkeypatch.setattr(
@@ -5191,6 +5196,121 @@ def test_existing_owner_only_consumes_extra_capacity_until_its_run_is_indexed(
     monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
     assert MOG.main() == 0
     assert observed == [(expected_allowance, requires_lease)]
+
+
+@pytest.mark.parametrize(
+    "census,expected_cap,needle",
+    [
+        (None, 8, "census unavailable"),
+        ((1, 0), 8, "+0 adaptive: 1 queued, 0 in progress"),
+        ((0, 0), 16, "+8 adaptive"),
+        ((0, 6), 16, "+8 adaptive"),
+        ((0, 7), 12, "+4 adaptive"),
+        ((0, 12), 12, "+4 adaptive"),
+        ((0, 13), 8, "+0 adaptive"),
+        ((2, 3), 8, "+0 adaptive: 2 queued"),
+    ],
+)
+def test_adaptive_proof_cap_is_clamped_between_flat_cap_and_sixteen(
+    census, expected_cap, needle
+):
+    cap, detail = MOG.adaptive_proof_cap(census)
+    assert cap == expected_cap
+    assert needle in detail
+    assert MOG.MAX_IN_FLIGHT_PR_PROOFS <= cap <= MOG.ADAPTIVE_PROOF_CAP_MAX == 16
+
+
+def test_shared_pool_census_reads_repo_run_totals_and_fails_closed(monkeypatch):
+    seen: list[str] = []
+
+    def fake_request(method, url, token, payload=None):
+        seen.append(url)
+        assert method == "GET" and "/repos/acme/widgets/actions/runs?" in url
+        assert "per_page=1" in url
+        if "status=queued" in url:
+            return 200, {"total_count": 2}
+        if "status=in_progress" in url:
+            return 200, {"total_count": 9}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    assert REAL_SHARED_POOL_CENSUS("acme/widgets", "read") == (2, 9)
+    assert len(seen) == 2
+    for bad in (
+        lambda *_a, **_k: (403, {"message": "rate limited"}),
+        lambda *_a, **_k: (200, {"total_count": True}),
+        lambda *_a, **_k: (200, {"total_count": -1}),
+        lambda *_a, **_k: (200, None),
+    ):
+        monkeypatch.setattr(MOG, "_request", bad)
+        assert REAL_SHARED_POOL_CENSUS("acme/widgets", "read") is None
+
+
+@pytest.mark.parametrize(
+    "census,active,expected_allowance",
+    [
+        ((0, 0), 8, 8),
+        ((0, 0), 15, 1),
+        ((0, 0), 16, 0),
+        ((0, 10), 10, 2),
+        ((3, 2), 8, 0),
+        (None, 8, 0),
+    ],
+    ids=(
+        "idle-pool-cap-16",
+        "idle-pool-last-slot",
+        "idle-pool-full",
+        "light-pool-cap-12",
+        "queued-run-flat-cap",
+        "census-unreadable-flat-cap",
+    ),
+)
+def test_adaptive_cap_widens_update_branch_capacity_only_on_a_free_pool(
+    monkeypatch, capsys, census, active, expected_allowance
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "shared_pool_census", lambda *_a: census)
+    allowances: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        allowances.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert allowances == [expected_allowance]
+    out = capsys.readouterr().out
+    expected_cap, _ = MOG.adaptive_proof_cap(census)
+    assert f"global cap {expected_cap} (" in out
+
+
+def test_adaptive_census_exception_degrades_to_the_flat_cap_without_deferring(
+    monkeypatch, capsys
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 7)
+
+    def rate_limited(*_a):
+        raise MOG.RateLimited("core budget exhausted")
+
+    monkeypatch.setattr(MOG, "shared_pool_census", rate_limited)
+    allowances: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        allowances.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert allowances == [1]
+    out = capsys.readouterr().out
+    assert "global cap 8 (census unavailable: flat cap)" in out
+    assert "Sweep deferred" not in out
 
 
 def test_every_update_branch_call_is_behind_the_refresh_admission_gateway():

@@ -405,6 +405,20 @@ MAX_IN_FLIGHT_PR_PROOFS = 8
 # breaker and re-created the CI stampede it was meant to stop.
 HIGH_LOAD_LEASE_THRESHOLD = 1
 ACTIVE_PR_PROOF_STATUSES = ("queued", "in_progress", "pending", "requested", "waiting")
+# Adaptive headroom ABOVE the flat cap, never a flat raise.  The flat 8 was sized
+# against a pool pinned at 180/180 on 2026-08-11; on an idle pool it leaves half the
+# runners unused while a red backlog drains at 8 proofs per hour.  Each sweep reads
+# the repo's own queued and in-progress run totals (two `per_page=1` reads under the
+# existing read token; `READ_TOKEN` is repo-scoped, so cross-repo pool reads are not
+# available and the census is deliberately repo-local).  A queued run in this repo
+# means the shared pool already refused a job, so headroom is zero; a light pool
+# adds 4; an idle pool adds 8.  The cap is recomputed every sweep, so the first
+# queued run collapses it back to 8 within a minute.  An unreadable census is the
+# flat cap, exactly today's behaviour.  The per-sweep cap and the durable lease are
+# unchanged: a sweep still launches at most MAX_REFRESHES_PER_SWEEP.
+ADAPTIVE_PROOF_CAP_MAX = 16
+ADAPTIVE_POOL_IDLE_RUNS = 6
+ADAPTIVE_POOL_LIGHT_RUNS = 12
 # The rotation advances by the live pull cap every bucket, so every armed pull
 # request enters the window within ceil(N / cap) buckets — ~40 minutes for a
 # 93-PR backlog. Ten minutes matches the recovery cron; the sweeper keeps NO state
@@ -3028,6 +3042,52 @@ def in_flight_pr_proofs(repo: str, token: str) -> int | None:
             return None
         total += count
     return total
+
+
+def shared_pool_census(repo: str, token: str) -> tuple[int, int] | None:
+    """Repo-visible shared-pool pressure: ``(queued, in_progress)`` run totals.
+
+    Two tiny ``per_page=1`` reads of GitHub's own status index across every
+    workflow and event in this repository.  ``None`` when either read is not a
+    clean non-negative integer, so the caller falls back to the flat cap rather
+    than reading an API blip as an idle pool.
+    """
+    counts: list[int] = []
+    for run_status in ("queued", "in_progress"):
+        query = urllib.parse.urlencode({"status": run_status, "per_page": "1"})
+        status, payload = _request(
+            "GET", f"{GITHUB_API}/repos/{repo}/actions/runs?{query}", token
+        )
+        count = (payload or {}).get("total_count") if isinstance(payload, dict) else None
+        if (
+            status >= 400
+            or not isinstance(count, int)
+            or isinstance(count, bool)
+            or count < 0
+        ):
+            return None
+        counts.append(count)
+    return counts[0], counts[1]
+
+
+def adaptive_proof_cap(census: tuple[int, int] | None) -> tuple[int, str]:
+    """``clamp(8 + headroom, 8, 16)`` from a live census; flat cap when unreadable."""
+    if census is None:
+        return MAX_IN_FLIGHT_PR_PROOFS, "census unavailable: flat cap"
+    queued, running = census
+    if queued > 0:
+        headroom = 0
+    elif running <= ADAPTIVE_POOL_IDLE_RUNS:
+        headroom = ADAPTIVE_PROOF_CAP_MAX - MAX_IN_FLIGHT_PR_PROOFS
+    elif running <= ADAPTIVE_POOL_LIGHT_RUNS:
+        headroom = (ADAPTIVE_PROOF_CAP_MAX - MAX_IN_FLIGHT_PR_PROOFS) // 2
+    else:
+        headroom = 0
+    cap = max(
+        MAX_IN_FLIGHT_PR_PROOFS,
+        min(ADAPTIVE_PROOF_CAP_MAX, MAX_IN_FLIGHT_PR_PROOFS + headroom),
+    )
+    return cap, f"+{headroom} adaptive: {queued} queued, {running} in progress"
 
 
 def refresh_lease_reservation_count(
@@ -8173,6 +8233,13 @@ def main() -> int:
     except Exception as exc:
         active_pr_proofs = None
         refresh_load_detail = f"census failed ({exc}); new refreshes paused"
+    # The adaptive cap degrades to the flat cap on ANY census problem, including a
+    # RateLimited read: it must never route the sweep into the deferred path.
+    try:
+        pool_census = shared_pool_census(repo, read_token)
+    except Exception:
+        pool_census = None
+    proof_cap, adaptive_detail = adaptive_proof_cap(pool_census)
     budget.refresh_lease = refresh_lease
     # A durable owner closes the update-branch -> Actions indexing gap. Count only
     # the unindexed gap as an extra reservation: once an exact-current-head ci.yml
@@ -8191,7 +8258,7 @@ def main() -> int:
         refresh_load_detail = refresh_load_detail or "census/lease unreadable; new refreshes paused"
     else:
         available_refreshes = max(
-            0, MAX_IN_FLIGHT_PR_PROOFS - int(effective_active_proofs or 0)
+            0, proof_cap - int(effective_active_proofs or 0)
         )
         budget.max_refreshes = min(budget.max_refreshes, available_refreshes)
         budget.requires_refresh_lease = (
@@ -8201,7 +8268,7 @@ def main() -> int:
             f"{active_pr_proofs} indexed pull-request ci run(s) plus "
             f"{reservation_count} unindexed durable "
             f"reservation(s), global cap "
-            f"{MAX_IN_FLIGHT_PR_PROOFS}, {budget.max_refreshes} CI workload slot(s) "
+            f"{proof_cap} ({adaptive_detail}), {budget.max_refreshes} CI workload slot(s) "
             "available this sweep"
             + (" (durable lease required)" if budget.requires_refresh_lease else "")
         )
