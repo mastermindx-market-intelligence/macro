@@ -1,0 +1,70 @@
+{
+  "schema": "medtech.main-integration.v3",
+  "observed_at": "2026-10-20T17:32:25.428561+00:00",
+  "first_parent": "a1a141e09ef1c32549b76bd494d8fd89d2ee3754",
+  "second_parent": "c4856d476954873cf7a11ce08a94b13da309e897",
+  "reason": "Fresh canonical main caused actual content conflicts in CI paths and API restart closure",
+  "conflicts": {
+    "manifest_blocks": 12,
+    "resolution": "Union every path from both parents; every non-path job value and top-level field equals incoming main",
+    "job_count": 341,
+    "updater": "Retain both MedTech events/publication and incoming engine/news_common restart triggers; all other conflict-line bytes preserved"
+  },
+  "locked_source_files": {
+    "agentos/decisions/DEC-SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06.md": "4bb6ab8c10821420abcd2bbf968fae6d4c02423ca6d17dd57fac7aac9cde3ef2",
+    "agentos/decisions/DEC-TERMINAL-MIGRATION-PR-LANDS-SOLO-WITH-LEDGER-FOLLOWUP.md": "2d2fb3f32e8a5a1f0c4534318b28342194dcacf7a52731f9d22fd8d3ef19df75",
+    "app/deploy/macro-medtech.service": "c3df7b6269c81c2a23de8f3d363e6b63dcee59ade5f28b4ba2553f8d0e290f4e",
+    "app/deploy/macro-medtech.timer": "218dc9baf2fae1684e606d6ea7c42e7aa99f645d1fb9d266b8d14c274d350a32",
+    "app/deploy/medtech-api-boundary.py": "aa8c9d51af0c219ff64576a97dc7a3a6bea010599d7a2fdcd7dea5f1c90257ee",
+    "app/deploy/medtech-environment.example": "99c0214c6621dc43ea32a4021857bf5eea3f0a24d24db9218b1ef01ed8574d8a",
+    "app/deploy/medtech-prereqs.py": "16cd1ece169d2a4ae124803f07d02633cdff92143dc27778857fab492633c5c8",
+    "app/deploy/medtech-setup.sh": "dc38d225db36167cb27d03cb4a3dca1be51914c1aa5e5477a698520d710d4c3d",
+    "app/medtech.py": "38c4a16cbe81b4d321bd3ebb071202df543de67e4b033e72200003f5bb3117db",
+    "collectors/medtech/__init__.py": "df100749c188ba25ec29ae02addd75cb8b2fa89b65d240f678aff1f7c3cc2310",
+    "collectors/medtech/openfda.py": "c1cd72ecb1f3a9de676ef893a7f42e4a39610c89feaa5635949f272652f42440",
+    "engine/medtech/__init__.py": "373e4ae6d18e48c8f3e5b1d5de5024e76739fcaa5a98e2329099e7ed82744353",
+    "engine/medtech/events.py": "08d08f107ac32dc1b072bc38384547ec4c662433d689bcccc8aa8fb980f87afc",
+    "engine/medtech/publication.py": "49bde58450600bb36344c15179e146322b911396f4f1480b09f34c638dbea675",
+    "engine/medtech/store.py": "b2a3815370d56f8063af85dd0afd95ee2b297b2810991e20fd85e9540ae252bf",
+    "scripts/medtech_worker.py": "460b05149dc27b03fb36742764295e7538181ccc061d6c2980ef4b5701c35c1f",
+    "tests/test_medtech.py": "149521fc812292449980e54b4f76a458b7382702a8d8736cbdfcb67bd5fc7fe5",
+    "tests/test_medtech_deployment.py": "ecbb4d4dff0ddc5f95a24ac7460bcea472d4bc7ed4e531c003afc39a4f4ab684"
+  },
+  "additional_reviewed_changes": {
+    "dedicated_workflow": "Add only four package ancestor paths to both event filters (8 lines); immutable principal audit accepted; current old-head dedicated success retained separately",
+    "release_runbook": "Source-reviewed sequence with final credential binding, fresh receipt destination, installed owner admission and P-number clarifications"
+  },
+  "file_hashes": {
+    ".github/ci/legacy-jobs.yml": "2b1d699009a08663626760a48a3de3b7d4ad4f2adc1524f59751bca3593f7756",
+    "app/deploy/update.sh": "003007489480c6172d202323953535630d41e6f4b60918d0441d27fa3a15285e",
+    ".github/workflows/medtech-contracts.yml": "23df27a0a85dcd137c872bcf9c570546c66596753c6ef2e6e6816e12efb3eaa5",
+    "docs/medtech_r14_release_runbook.md": "d3865d51c3fd473e9dcc2b5dde1557342464002efcbde8b96c6afe53880e17c5"
+  },
+  "verification": {
+    "focused_and_updater_command": [
+      "python3",
+      "-m",
+      "pytest",
+      "tests/test_medtech.py",
+      "tests/test_medtech_deployment.py",
+      "tests/test_deploy_update_self_heal.py",
+      "-q"
+    ],
+    "exit_code": 0,
+    "log": "/tmp/medtech-r14-main-reconcile-tests-20261020.log",
+    "summary": "383 passed, 7 warnings, 31 subtests passed in 30.05s",
+    "pr_delta_whitespace": "pass against exact incoming canonical c4856d; inherited canonical whitespace is not modified",
+    "shell_syntax": "pass",
+    "unresolved_paths": [],
+    "hosted_ci": "required on resulting new commit"
+  },
+  "input_composition_head": "5d1265f063be09e1193c0698a249eaaf5cd000a4",
+  "lineage_reconciliation": {
+    "observed_at": "2026-10-20T17:38:56.110944+00:00",
+    "single_parent_index_commit": "a1a141e09ef1c32549b76bd494d8fd89d2ee3754",
+    "actual_index_commit_parent": "5d1265f063be09e1193c0698a249eaaf5cd000a4",
+    "pending_merge_head": "c4856d476954873cf7a11ce08a94b13da309e897",
+    "finding": "Managed commit recorded the reconciled index as one-parent commit and left MERGE_HEAD pending. Immutable readback rejected the earlier two-parent claim.",
+    "repair": "Finalize that same existing merge through ordinary local git commit, without force/rebase, then publish through the existing exact-head owner. Source/test bytes are unchanged; only this receipt is corrected."
+  }
+}

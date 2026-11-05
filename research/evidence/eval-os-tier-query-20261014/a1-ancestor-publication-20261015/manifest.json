@@ -1,0 +1,39 @@
+{
+  "schema": "eval_os.retained_evidence_manifest.v1",
+  "records": [
+    {
+      "file": "canonical-admission-065217.json.gz",
+      "sha256": "c0c388da490872350c52a2d6f551343c2af1cea4e063261fab31304def723334",
+      "bytes": 12450,
+      "encoding": "gzip",
+      "decoded_sha256": "45df8d22f30df6b8a938a365a60c35b66ad9f3050d7698c6f9adbb51506be1e0",
+      "decoded_bytes": 198672
+    },
+    {
+      "file": "publication-preflight.json",
+      "sha256": "6d312d3b7608e563ca9c1f6bfbec46bfcf29925bedebbe14d8946f4f7806e2bf",
+      "bytes": 429
+    },
+    {
+      "file": "publication-readback.json",
+      "sha256": "6d1814ad7bd7bbea407a679dfd53bf8274bf26b5415a51ded8f533c4bac10906",
+      "bytes": 562
+    },
+    {
+      "file": "pr-body-update.json",
+      "sha256": "9c40b064a3bbb095d596d5b8f6c23ef639326479af14c35461cefdbaec2c8689",
+      "bytes": 250
+    },
+    {
+      "file": "repair-pr-body.md",
+      "sha256": "eed7095f4a3d750ecf3eed5ffb91fdef2a289724b50925e45e47dedcfa70e82f",
+      "bytes": 2839
+    },
+    {
+      "file": "containing-head-current-main-preview.json",
+      "sha256": "f26d5ea88f02b3b8bf5d14580ce3e4069e24005c414c82439c7e50621daaa231",
+      "bytes": 340
+    }
+  ],
+  "scope": "A1ba848 ordinary publication admitted6/cap8 and exact remote readback; PRbody updated. Fresh hosted run/current-head checks, incumbent merge and production still owed."
+}

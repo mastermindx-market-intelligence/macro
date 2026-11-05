@@ -17,13 +17,21 @@ def _gex(net_gex_bn, flip, spot, spot_vs_flip_pct, asof="2026-06-20"):
 def test_snapshot_populates_structured_contract_field(monkeypatch):
     """engine.run writes latest['market_gamma'] = market_gamma.snapshot(); assert that,
     fed a stubbed cboe/gex read, it carries every field the contract promises."""
-    monkeypatch.setattr(market_gamma.store, "read",
-                        lambda group, name: _gex(6.8, 8300, 7500.58, -9.63))
+    def _read(group, name):
+        if (group, name) == ("cboe", "gex"):
+            return _gex(6.8, 8300, 7500.58, -9.63)
+        if (group, name) == ("cboe", "gex_SPX"):
+            return pd.DataFrame({"gamma_regime": ["short"]},
+                                index=pd.to_datetime(["2026-06-20"]))
+        return None
+
+    monkeypatch.setattr(market_gamma.store, "read", _read)
     mg = market_gamma.snapshot()
     assert mg is not None
     for k in ("regime", "gamma_flip", "net_gex_bn", "spot_vs_flip_pct", "spot", "asof"):
         assert k in mg, f"contract field {k!r} missing"
     assert mg["regime"] == "short"          # spot below flip -> dealers SHORT gamma
+    assert mg["regime_basis"] == "engine_direct_sign"
     assert mg["gamma_flip"] == 8300 and mg["spot"] == 7501
     assert mg["spot_vs_flip_pct"] == -9.6
     assert mg["asof"] == "2026-06-20"
@@ -32,10 +40,18 @@ def test_snapshot_populates_structured_contract_field(monkeypatch):
 def test_steady_state_no_crossing_still_emits_regime(monkeypatch):
     """Unlike the gex_flip_cross alert (fires only on a sign change), the verdict is
     standing: a frame with NO recent crossing still yields a structured regime."""
-    monkeypatch.setattr(market_gamma.store, "read",
-                        lambda group, name: _gex(20.0, 5000, 4700.0, -6.0))
+    def _read(group, name):
+        if (group, name) == ("cboe", "gex"):
+            return _gex(20.0, 5000, 4700.0, -6.0)
+        if (group, name) == ("cboe", "gex_SPX"):
+            return pd.DataFrame({"gamma_regime": ["short"]},
+                                index=pd.to_datetime(["2026-06-20"]))
+        return None
+
+    monkeypatch.setattr(market_gamma.store, "read", _read)
     mg = market_gamma.snapshot()
     assert mg is not None and mg["regime"] == "short"
+    assert mg["regime_basis"] == "engine_direct_sign"
 
 
 def test_snapshot_degrades_to_none_when_store_absent(monkeypatch):

@@ -1,8 +1,8 @@
 """AI-native news feed connector — OPTIONAL, key-gated, degrade-safe.
 
 The newer generation of financial-news APIs run an LLM over each article and
-return a PRECOMPUTED per-article sentiment + importance/relevance (and often the
-full article body). This connector pulls that stream and normalises it into the
+return precomputed per-article sentiment and sometimes explicit importance.
+Sentiment confidence and company relevance are NOT importance measurements. This connector pulls that stream and normalises it into the
 suite's standard display-headline shape, carrying the vendor's AI fields through
 as ``ai_sentiment`` / ``ai_importance`` so the deterministic display ranker
 (``news_common.rank_score``) can use them as INPUTS.
@@ -14,9 +14,11 @@ CONTRACT (house law):
   • KEY-GATED + DEGRADE-SAFE. With no key (or disabled), ``fetch()`` returns []
     and the whole news pipeline is byte-identical to the keyless build. It never
     raises into the build.
-  • PROVIDER-AGNOSTIC. Default provider is Finlight (finlight.me) — free tier is
-    ~5k requests/month with full article bodies + AI sentiment. The parser is
-    tolerant of field-name variants so switching vendors is a config swap.
+  • Default Finlight uses its documented POST /v2/articles contract; custom
+    providers retain the legacy GET transport. Entity enrichment requires the
+    appropriate vendor entitlement; this module never activates or buys it.
+  • Missing publication times stay missing; receipt, indexing and revision
+    clocks are separate. Only explicit importance can affect display order.
 
 Default OFF. To light it up: set ``news_ai_feed.enabled: true`` in config and
 export the API key (env ``FINLIGHT_KEY`` by default).
@@ -24,11 +26,13 @@ export the API key (env ``FINLIGHT_KEY`` by default).
 from __future__ import annotations
 
 import logging
+import math
 from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 from lib import config
 from engine import news_common as nc
+from engine.ticker_shape import valid_us_ticker
 
 log = logging.getLogger(__name__)
 
@@ -80,88 +84,166 @@ def _domain(url: str, source_name: str) -> str:
     return host or (source_name or "").lower().replace(" ", "")
 
 
-def _iso(v, now: datetime) -> str:
-    if v in (None, ""):
-        return now.isoformat()
-    if isinstance(v, (int, float)):        # epoch seconds or millis
-        try:
-            ts = v / 1000.0 if v > 1e12 else float(v)
-            return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
-        except Exception:  # noqa: BLE001
-            return now.isoformat()
+def _text(value) -> str:
+    """Only source strings are text; malformed objects are never stringified."""
+    return value.strip() if isinstance(value, str) else ""
+
+
+def _finite_number(value, *, upper: float) -> float | None:
+    if value is None or isinstance(value, bool):
+        return None
     try:
-        dt = datetime.fromisoformat(str(v).strip().replace("Z", "+00:00"))
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return number if math.isfinite(number) and 0.0 <= number <= upper else None
+
+
+def _iso(v, now: datetime) -> str:
+    """Parse a source clock, NEVER replace an absent/bad one with receipt time.
+
+    ``now`` is retained for callers using the old helper signature.
+    """
+    del now
+    if v is None or v == "" or isinstance(v, bool):
+        return ""
+    try:
+        if isinstance(v, (int, float)):
+            stamp = float(v)
+            if not math.isfinite(stamp):
+                return ""
+            stamp = stamp / 1000.0 if stamp > 1e12 else stamp
+            return datetime.fromtimestamp(stamp, tz=timezone.utc).isoformat()
+        if not isinstance(v, str):
+            return ""
+        dt = datetime.fromisoformat(v.strip().replace("Z", "+00:00"))
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=timezone.utc)
-        return dt.isoformat()
-    except Exception:  # noqa: BLE001
-        return now.isoformat()
+        return dt.astimezone(timezone.utc).isoformat()
+    except (TypeError, ValueError, OverflowError, OSError):
+        return ""
+
+
+# Vendor listing labels only, not a new issuer/security identity map. Unknown
+# venues are excluded WITH COUNT; company domicile is not a listing market.
+_US_VENUES = frozenset({
+    "XNAS", "XNYS", "XASE", "ARCX", "BATS", "NASDAQ", "NYSE", "AMEX",
+    "NYSE ARCA", "NYSE AMERICAN", "NASDAQ GLOBAL SELECT MARKET",
+    "NASDAQ GLOBAL MARKET", "NASDAQ CAPITAL MARKET",
+})
+
+
+def _ticker_fields(art: dict) -> tuple[list[str], int]:
+    candidates = []
+    excluded = 0
+    raw = _first(art.get("tickers"), art.get("symbols"), art.get("entities"))
+    if isinstance(raw, list):
+        for value in raw:
+            if isinstance(value, dict):
+                value = _first(value.get("ticker"), value.get("symbol"), value.get("code"))
+            candidates.append(value)
+    elif raw is not None:
+        excluded += 1
+
+    companies = art.get("companies")
+    if isinstance(companies, list):
+        for company in companies:
+            if not isinstance(company, dict):
+                excluded += 1
+                continue
+            ticker = company.get("ticker")
+            venue = _text(company.get("exchange")).upper()
+            listing_country = ""
+            primary = company.get("primaryListing")
+            if not ticker and isinstance(primary, dict):
+                ticker = primary.get("ticker")
+                venue = _text(primary.get("exchangeCode")).upper()
+                listing_country = _text(primary.get("exchangeCountry")).upper()
+            if venue not in _US_VENUES or listing_country not in ("", "US"):
+                excluded += 1
+                continue
+            candidates.append(ticker)
+    elif companies is not None:
+        excluded += 1
+
+    valid: set[str] = set()
+    for value in candidates:
+        symbol = valid_us_ticker(value) if isinstance(value, str) else None
+        if symbol is None:
+            excluded += 1
+        else:
+            valid.add(symbol.upper())
+    ordered = sorted(valid)
+    excluded += max(0, len(ordered) - 8)
+    return ordered[:8], excluded
 
 
 def _tickers(art: dict) -> list[str]:
-    raw = _first(art.get("tickers"), art.get("symbols"), art.get("entities")) or []
-    out: list[str] = []
-    if isinstance(raw, list):
-        for t in raw:
-            if isinstance(t, str):
-                out.append(t.upper())
-            elif isinstance(t, dict):
-                s = _first(t.get("ticker"), t.get("symbol"), t.get("code"))
-                if s:
-                    out.append(str(s).upper())
-    return sorted(set(out))[:8]
+    return _ticker_fields(art)[0]
 
 
 def _ai_importance(art: dict):
-    """Vendor importance/relevance/confidence → 0-100, or None."""
-    v = _first(art.get("importance"), art.get("importanceScore"),
-               art.get("relevance"), art.get("relevanceScore"), art.get("confidence"))
-    if v is None:
+    """Only explicit importance → 0-100; confidence/relevance are different axes."""
+    value = _finite_number(
+        _first(art.get("importance"), art.get("importanceScore")), upper=100.0,
+    )
+    if value is None:
         return None
-    try:
-        v = float(v)
-    except (TypeError, ValueError):
-        return None
-    return round(max(0.0, min(100.0, v * 100.0 if v <= 1.0 else v)), 1)
+    return round(value * 100.0 if value <= 1.0 else value, 1)
 
 
 def _ai_sentiment(art: dict):
-    s = _first(art.get("sentiment"), art.get("sentimentLabel"), art.get("sentiment_score"))
-    if isinstance(s, (int, float)):
-        return "pos" if s > 0.1 else "neg" if s < -0.1 else "neutral"
-    if isinstance(s, str):
-        low = s.lower()
-        if "pos" in low or low == "bullish":
-            return "pos"
-        if "neg" in low or low == "bearish":
-            return "neg"
-        return "neutral"
-    return None
+    value = _first(art.get("sentiment"), art.get("sentimentLabel"), art.get("sentiment_score"))
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        try:
+            number = float(value)
+        except (TypeError, ValueError, OverflowError):
+            return None
+        if not math.isfinite(number) or not -1.0 <= number <= 1.0:
+            return None
+        return "pos" if number > 0.1 else "neg" if number < -0.1 else "neutral"
+    return {
+        "positive": "pos", "pos": "pos", "bullish": "pos",
+        "negative": "neg", "neg": "neg", "bearish": "neg", "neutral": "neutral",
+    }.get(_text(value).lower())
 
 
 def _normalise_ai(art: dict, now: datetime) -> dict | None:
-    title = (_first(art.get("title"), art.get("headline")) or "").strip()
+    title = _text(_first(art.get("title"), art.get("headline")))
     if not title:
         return None
-    url = _first(art.get("link"), art.get("url"), art.get("articleUrl")) or ""
-    source_name = _first(art.get("source"), art.get("publisher"), art.get("domain")) or ""
+    url = _text(_first(art.get("link"), art.get("url"), art.get("articleUrl")))
+    source_name = _text(_first(art.get("source"), art.get("publisher"), art.get("domain")))
     domain = _domain(url, source_name)
     if nc.is_blocked(domain) or nc.low_value_reason(title, domain):
         return None
-    seendate = _iso(_first(art.get("publishDate"), art.get("published_at"),
-                           art.get("publishedAt"), art.get("datetime"), art.get("date")), now)
-    summary = (_first(art.get("summary"), art.get("description"), art.get("content")) or "").strip()[:400]
+    publication = _first(art.get("publishDate"), art.get("published_at"),
+                         art.get("publishedAt"), art.get("datetime"), art.get("date"))
+    seendate = _iso(publication, now)
+    timestamp_quality = "PUBLISHER_STATED" if seendate else (
+        "CRAWL_BOUNDED" if publication is None else "CORRUPTED"
+    )
+    summary = _text(_first(art.get("summary"), art.get("description"), art.get("content")))[:400]
+    tickers, ticker_exclusions = _ticker_fields(art)
     tier = nc.source_tier(domain) or 3     # AI-curated → tier-3 floor so it survives
     ai_sent = _ai_sentiment(art)
     out = {
         "title": title, "url": url, "domain": domain,
         "source": source_name or domain, "source_name": source_name or domain,
         "seendate": seendate, "summary": summary,
-        "tickers": _tickers(art), "sentiment": ai_sent, "tier": tier,
+        "tickers": tickers, "sentiment": ai_sent, "tier": tier,
+        "ai_ticker_exclusions": ticker_exclusions,
+        "timestamp_quality": timestamp_quality,
+        "_crawled_at": now.isoformat(),
+        "provider_indexed_at": _iso(art.get("createdAt"), now) or None,
+        "source_revised_at": _iso(art.get("revisedDate"), now) or None,
         "source_tier": _TIER_STR.get(tier, "quality"),
         "quality": nc.quality_score(title, domain, seendate, relevance=1.0, now=now, tier=tier),
         "provider": "ai_feed",
         "ai_sentiment": ai_sent, "ai_importance": _ai_importance(art),
+        "ai_sentiment_confidence": _finite_number(art.get("confidence"), upper=1.0),
         "_id": nc.event_id(title, domain),
     }
     try:                                   # event identity feeds the display ranker
@@ -177,24 +259,37 @@ def fetch(now: datetime | None = None, limit: int | None = None) -> list[dict]:
     ``ai_sentiment`` / ``ai_importance``). Returns [] when disabled / keyless / on
     ANY error. NEVER raises into the build."""
     cfg = _cfg()
+    if not cfg.get("enabled", False):
+        return []
     key = _key(cfg)
-    if not cfg.get("enabled", False) or not key:
+    if not key:
         return []
     now = now or datetime.now(timezone.utc)
     base = (cfg.get("base_url") or _DEFAULT_BASE).rstrip("/")
-    limit = int(limit or cfg.get("max_articles", 50))
+    try:
+        limit = int(limit if limit is not None else cfg.get("max_articles", 50))
+    except (TypeError, ValueError, OverflowError):
+        limit = 50
+    limit = max(1, min(100, limit))
     query = cfg.get("query", "stock market OR earnings OR Federal Reserve OR US economy")
     try:
         import requests
     except Exception:  # noqa: BLE001
         return []
     try:
-        r = requests.get(
-            f"{base}/v2/articles",
-            params={"query": query, "pageSize": limit, "language": "en"},
-            headers={"X-API-KEY": key, "Accept": "application/json"},
-            timeout=_TIMEOUT,
-        )
+        params = {"query": query, "pageSize": limit, "language": "en"}
+        headers = {"X-API-KEY": key, "Accept": "application/json"}
+        if str(cfg.get("provider") or "finlight").lower() == "finlight":
+            # https://docs.finlight.me/en/v2/rest-endpoints/ — POST body,
+            # not URL params. Requires the configured vendor entitlement.
+            r = requests.post(
+                f"{base}/v2/articles", json={**params, "includeEntities": True},
+                headers=headers, timeout=_TIMEOUT,
+            )
+        else:
+            r = requests.get(
+                f"{base}/v2/articles", params=params, headers=headers, timeout=_TIMEOUT,
+            )
         if r.status_code != 200:
             log.warning("news_ai_feed http %s", r.status_code)
             return []
@@ -209,7 +304,11 @@ def fetch(now: datetime | None = None, limit: int | None = None) -> list[dict]:
     out: list[dict] = []
     for art in arts:
         if isinstance(art, dict):
-            h = _normalise_ai(art, now)
+            try:
+                h = _normalise_ai(art, now)
+            except (TypeError, ValueError, OverflowError, AttributeError):
+                log.warning("news_ai_feed: skipped malformed article")
+                continue
             if h:
                 out.append(h)
     log.info("news_ai_feed: %d AI-scored items via %s", len(out), provider_label() or "?")
