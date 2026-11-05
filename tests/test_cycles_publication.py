@@ -270,3 +270,94 @@ def test_three_regional_builders_use_the_same_publication_serializer():
         source = (ROOT / "scripts" / name).read_text()
         assert "publication_scripts(data, narr, dna, sources=sources" in source
         assert 'receipt.update(publication_receipt(res))' in source
+
+
+STANDALONE_PRESENTATION_NODE = r"""
+
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),{webcrypto}=require('crypto');
+const input=JSON.parse(fs.readFileSync(0,'utf8'));
+const renderer=fs.readFileSync(input.renderer,'utf8');
+const settle=()=>new Promise(resolve=>setTimeout(resolve,20));
+async function boot(query,guard){
+ let href='https://fixture.test/sector_cycles.html'+query+'#xle';
+ const docEvents={},windowEvents={},clicks={},writes=[],notifications=[];
+ const foreign={owner:{opaque:'preserve-reference'}};
+ let historyState=foreign;
+ const buttons=(kind,values)=>values.map(value=>({
+  getAttribute:name=>name==='data-'+kind?value:null,setAttribute(){},
+  classList:{toggle(){}},addEventListener:(name,fn)=>{clicks[kind+':'+value]=fn}
+ }));
+ const modes={querySelectorAll:()=>buttons('mode',['osc','price'])};
+ const scale={querySelectorAll:()=>buttons('scale',['log','linear']),classList:{toggle(){}},hidden:true};
+ const document={readyState:'loading',title:'Cycles',documentElement:{getAttribute:()=> 'en'},
+  getElementById:id=>id==='sc-modes'?modes:id==='sc-scale'?scale:null,
+  querySelector:selector=>guard==='dom'&&selector==='.si-view'?{}:null,
+  querySelectorAll:()=>[],head:{appendChild(){}},body:{style:{}},
+  addEventListener:(name,fn)=>(docEvents[name]||=[]).push(fn),
+  dispatchEvent:event=>(docEvents[event.type]||[]).forEach(fn=>fn(event))};
+ const c={document,console,crypto:webcrypto,TextEncoder,Uint8Array,URL,
+  innerWidth:1440,get location(){return new URL(href)},
+  history:{get state(){return historyState},replaceState(state,_,url){historyState=state;href=new URL(url,href).href;writes.push(href)}},
+  setTimeout:()=>0,clearTimeout(){},requestAnimationFrame:fn=>fn(),cancelAnimationFrame(){},
+  matchMedia:()=>({matches:false}),addEventListener:(name,fn)=>(windowEvents[name]||=[]).push(fn),
+  CustomEvent:function(type,options){this.type=type;this.detail=options&&options.detail}};
+ if(guard==='host')c.SectorCyclesHost={onState:s=>notifications.push(s),onFocus(){}};
+ if(guard==='lazy')c.SC_LAZY_EXTRAS=true;
+ c.window=c;vm.createContext(c);
+ for(const part of ['core','series','narr','dna'])vm.runInContext(input.scripts[part],c);
+ vm.runInContext(renderer,c);
+ (docEvents.DOMContentLoaded||[]).forEach(fn=>fn());
+ await settle();assert.equal(c.SectorCyclesEvidence().status,'verified');
+ const mode=()=>[c.SectorCyclesCapture().mode,c.SectorCyclesCapture().scale];
+ return {c,mode,clicks,writes,foreign,notifications,
+  traverse(query){href='https://fixture.test/sector_cycles.html'+query+'#xle';for(const event of ['popstate','hashchange'])(windowEvents[event]||[]).forEach(fn=>fn({}));}};
+}
+(async()=>{
+ for(const [query,expected]of[
+  ['', ['osc','log']],
+  ['?sc_mode=price&sc_scale=linear',['price','linear']],
+  ['?sc_mode=unsupported&sc_scale=invalid',['osc','log']],
+  ['?sc_mode=price&sc_mode=osc&sc_scale=linear&sc_scale=log',['osc','log']],
+  ['?%73c_mode=price&sc_scale=%6cinear',['price','linear']],
+  ['?sc_mode=price%ZZ&sc_scale=linear',['osc','linear']]
+ ]){
+  const a=await boot(query);assert.deepEqual(a.mode(),expected);assert.equal(a.writes.length,0,'initial read is effect-free');
+ }
+ const raw='?keep=a%20b&opaque=%2f%2F&keep=x+y&flag&bad%ZZ=unchanged';
+ const a=await boot(raw);
+ a.clicks['mode:price']();a.clicks['scale:linear']();
+ assert.deepEqual(a.mode(),['price','linear']);assert.equal(a.writes.length,2);
+ assert.equal(a.c.location.search,raw+'&sc_mode=price&sc_scale=linear','unrelated query bytes/order/duplicates changed');
+ assert.equal(a.c.location.hash,'#xle');assert.strictEqual(a.c.history.state,a.foreign);
+ const count=a.writes.length;
+ a.clicks['mode:price']();a.clicks['scale:linear']();
+ assert.equal(a.writes.length,count,'same values must not checkpoint again');
+ a.traverse(raw+'&sc_mode=osc&sc_scale=log');
+ assert.deepEqual(a.mode(),['osc','log']);assert.equal(a.writes.length,count,'traversal is read-only');
+ a.traverse(raw+'&sc_mode=price&sc_scale=linear');
+ assert.deepEqual(a.mode(),['price','linear']);assert.equal(a.writes.length,count);
+ const reloaded=await boot(a.c.location.search);assert.deepEqual(reloaded.mode(),['price','linear']);
+ a.clicks['mode:osc']();a.clicks['scale:log']();
+ assert.equal(a.c.location.search,raw,'default settings should remove only owned parameters');
+ for(const guard of ['host','lazy','dom']){
+  const h=await boot('?sc_mode=price&sc_scale=linear',guard);
+  assert.deepEqual(h.mode(),['osc','log'],'embedded owner must ignore standalone URL presentation');
+  h.clicks['mode:price']();h.clicks['scale:linear']();
+  assert.equal(h.writes.length,0,'embedded chart wrote navigation');
+  if(guard==='host')assert.equal(h.notifications.length,2,'existing host notifications changed');
+ }
+ process.stdout.write('standalone presentation and three embedded ownership guards passed\n');
+})().catch(error=>{console.error(error);process.exitCode=1});
+"""
+
+
+def test_standalone_presentation_uses_existing_url_and_preserves_embedded_ownership():
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node is required for actual receiver execution")
+    result = subprocess.run(
+        [node, "-e", STANDALONE_PRESENTATION_NODE],
+        input=json.dumps({"renderer": str(ROOT / "templates/sector_cycles.js"), "scripts": bundle()}),
+        text=True, capture_output=True, timeout=20,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

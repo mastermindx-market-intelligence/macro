@@ -2,6 +2,10 @@
 
 Recorded 2026-11-05 08:21 UTC. Classification: **SELF_REVIEWED; bounded archived-China proof, full D05 still open**.
 
+## Follow-up
+
+The later [standalone presentation receipt](../china_history_20261105/README.md) closes the specific Price/Linear reset recorded below. The rest of this document preserves the earlier phase's observations and limits.
+
 ## Outcome
 
 Returning from a selected Shenwan sector to China Sector Central now opens the visible Map with that exact native selection. The phone detail sheet and sticky view tabs remain legible over the chart in both themes. The sheet close control is exposed to assistive technology, localized in English/Chinese, and operable with Enter. Missing archived engine text is described as unavailable in the source.

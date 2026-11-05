@@ -1,0 +1,7 @@
+Source parent: 1f050a234311a8c2a90d325b048159ebf2fe2386
+Renderer Git blob: f6c4de027c5e2a07cb4d30aedb0f2a90d89e2af4
+Receiver test Git blob: a8553c758ef170e72027514c34d2ff52da47dc17
+Command: python3 -m pytest -q tests/test_cycles_publication.py tests/test_china_si_workspace_shell.py
+Result: 73 passed in 2.10s
+Exit code: 0
+Exact candidate stage; unchanged helpers from qualified source; original tracked worktree preserved.

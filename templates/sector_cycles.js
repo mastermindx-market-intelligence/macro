@@ -147,12 +147,56 @@
   function embedded() {
     return !!(window.SectorCyclesHost || window.SC_LAZY_EXTRAS || document.querySelector(".si-view"));
   }
+  // Standalone presentation belongs to this chart's existing URL/history owner.
+  // Only these two enums travel; source identity and host-owned snapshots do not.
+  function presentationKey(part) {
+    try { return decodeURIComponent(part.split("=")[0].replace(/\+/g, " ")); }
+    catch (e) { return ""; }
+  }
+  function standalonePresentation() {
+    var values = {sc_mode: [], sc_scale: []};
+    (location.search || "").slice(1).split("&").forEach(function (part) {
+      var key = presentationKey(part);
+      if (!Object.prototype.hasOwnProperty.call(values, key)) return;
+      var at = part.indexOf("="), value = at < 0 ? "" : part.slice(at + 1);
+      try { value = decodeURIComponent(value.replace(/\+/g, " ")); } catch (e) { value = ""; }
+      values[key].push(value);
+    });
+    return {
+      mode: values.sc_mode.length === 1 && ["osc", "price"].indexOf(values.sc_mode[0]) >= 0 ? values.sc_mode[0] : "osc",
+      scale: values.sc_scale.length === 1 && ["log", "linear"].indexOf(values.sc_scale[0]) >= 0 ? values.sc_scale[0] : "log"
+    };
+  }
+  function readStandalonePresentation() {
+    if (embedded()) return;
+    var view = standalonePresentation();
+    state.mode = view.mode; state.scale = view.scale;
+  }
+  function writeStandalonePresentation() {
+    if (embedded()) return;
+    var current = standalonePresentation();
+    if (current.mode === state.mode && current.scale === state.scale) return;
+    // Keep unrelated query bytes (including duplicate keys and transport fields)
+    // verbatim. The existing shared-shell wrapper owns canonical URL transport.
+    var raw = (location.search || "").slice(1);
+    var parts = (raw ? raw.split("&") : []).filter(function (part) {
+      var key = presentationKey(part);
+      return key !== "sc_mode" && key !== "sc_scale";
+    });
+    if (state.mode !== "osc") parts.push("sc_mode=" + state.mode);
+    if (state.scale !== "log") parts.push("sc_scale=" + state.scale);
+    try {
+      history.replaceState(history.state, "", location.pathname + (parts.length ? "?" + parts.join("&") : "") + location.hash);
+      if (_navDedupeReset) _navDedupeReset();
+    } catch (e) {}
+  }
   function notifyHostFocus(id) {
     var host = window.SectorCyclesHost;
     if (host && typeof host.onFocus === "function") host.onFocus(id, state.family);
   }
   function notifyState() {
     if (!stateReady || restoring) return;
+    writeStandalonePresentation();
     var host=window.SectorCyclesHost;
     if (host && typeof host.onState==='function') host.onState(captureView());
   }
@@ -2497,6 +2541,7 @@
 
   /* ---- boot -------------------------------------------------------------- */
   function boot() {
+    readStandalonePresentation();
     // Basket-like families: chart only the STRONGEST few to start — overlaid lines are an
     // unreadable tangle. The whole field is one tap away via "Select all visible". (They're
     // off the chart for now anyway because Sector ETFs is the active family at load.)
@@ -2535,6 +2580,8 @@
       var syncFocusHash = function () {
         if (location.href === lastNavHref) return;
         lastNavHref = location.href;
+        readStandalonePresentation();
+        syncHeroControls();
         // fromHistory=true: the traversed entry's URL is already where the browser put
         // it — setFocus(null) must not replaceState it fragment-less
         if (!applyFocusHash()) setFocus(null, true);
